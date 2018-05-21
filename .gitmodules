@@ -1,3 +1,3 @@
-[submodule "GibbedIO"]
-	path = GibbedIO
+[submodule "modules/GibbedIO"]
+	path = modules/GibbedIO
 	url = https://github.com/gibbed/Gibbed.IO
