@@ -153,7 +153,8 @@ namespace Mafia2
             newOBJ.Add("");
             for (int i = 0; i != lod.Vertices.Length; i++)
             {
-                newOBJ.Add(string.Format("vt {0} {1} {2}", lod.Vertices[i].UVs[0].X, 1 - lod.Vertices[i].UVs[0].Y, 0));
+                if(lod.Vertices[i].UVs.Length != 0)
+                    newOBJ.Add(string.Format("vt {0} {1} {2}", lod.Vertices[i].UVs[0].X, 1 - lod.Vertices[i].UVs[0].Y, 0));
             }
             newOBJ.Add("");
             for (int i = 0; i != lod.Vertices.Length; i++)

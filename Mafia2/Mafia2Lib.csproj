@@ -60,6 +60,7 @@
     <Compile Include="FrameResource\ObjectTypes\FrameObjectDummy.cs" />
     <Compile Include="FrameResource\ObjectTypes\FrameObjectFrame.cs" />
     <Compile Include="FrameResource\ObjectTypes\FrameObjectJoint.cs" />
+    <Compile Include="FrameResource\ObjectTypes\FrameObjectModel.cs" />
     <Compile Include="FrameResource\ObjectTypes\FrameObjectSector.cs" />
     <Compile Include="FrameResource\ObjectTypes\FrameObjectSingleMesh.cs" />
     <Compile Include="MaterialStructure\MaterialsParse.cs" />

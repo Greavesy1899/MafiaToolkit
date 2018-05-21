@@ -76,6 +76,9 @@ namespace Mafia2
             {
                 if (hash == materials[i].MaterialNumID)
                 {
+                    if (materials[i].SPS.Length == 0)
+                        return materials[i].MaterialName;
+
                     return materials[i].SPS[0].File;
                 }
             }

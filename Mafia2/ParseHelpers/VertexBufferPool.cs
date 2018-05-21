@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 namespace Mafia2 {
     public class VertexBufferPool {
         byte version;
@@ -6,23 +7,54 @@ namespace Mafia2 {
         int size;
         VertexBuffer[] buffers;
 
+        private List<VertexBuffer[]> prebuffers = new List<VertexBuffer[]>();
+
         public VertexBuffer[] Buffers {
             get { return buffers; }
             set { buffers = value; }
         }
 
-        public VertexBufferPool(BinaryReader reader) {
-            ReadFromFile(reader);
+        public VertexBufferPool(List<FileInfo> files) {
+            foreach (FileInfo file in files)
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open(file.Name, FileMode.Open)))
+                    ReadFromFile(reader);
+            }
+            BuildBuffer();
         }
 
         public void ReadFromFile(BinaryReader reader) {
             version = reader.ReadByte();
             numBuffers = reader.ReadInt32();
             size = reader.ReadInt32();
-            buffers = new VertexBuffer[numBuffers];
-            for(int i = 0; i != numBuffers; i++) {
-                buffers[i] = new VertexBuffer(reader);
+
+            VertexBuffer[] buffer = new VertexBuffer[numBuffers];
+
+            for (int i = 0; i != numBuffers; i++)
+            {
+                buffer[i] = new VertexBuffer(reader);
             }
+            prebuffers.Add(buffer);
+        }
+
+        public void BuildBuffer()
+        {
+            int totalsize = 0;
+
+            for (int i = 0; i != prebuffers.Count; i++)
+                totalsize += prebuffers[i].Length;
+
+            List<VertexBuffer> listBuffer = new List<VertexBuffer>();
+
+            for (int i = 0; i != prebuffers.Count; i++)
+            {
+                for (int x = 0; x != prebuffers[i].Length; x++)
+                {
+                    listBuffer.Add(prebuffers[i][x]);
+                }
+            }
+
+            Buffers = listBuffer.ToArray();
         }
     }
 

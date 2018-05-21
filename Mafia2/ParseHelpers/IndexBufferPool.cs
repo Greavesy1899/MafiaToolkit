@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Mafia2 {
     public class IndexBufferPool {
@@ -7,24 +9,53 @@ namespace Mafia2 {
         private int size;
         private IndexBuffer[] buffers;
 
+        private List<IndexBuffer[]> prebuffers = new List<IndexBuffer[]>();
+
         public IndexBuffer[] Buffers {
             get { return buffers; }
             set { buffers = value; }
         }
 
-        public IndexBufferPool(BinaryReader reader) {
-            ReadFromFile(reader);
+        public IndexBufferPool(List<FileInfo> files) {
+            foreach(FileInfo file in files)
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open(file.Name, FileMode.Open)))
+                    ReadFromFile(reader);
+            }
+            BuildBuffer();
         }
 
         public void ReadFromFile(BinaryReader reader) {
             version = reader.ReadByte();
             numBuffers = reader.ReadInt32();
             size = reader.ReadInt32();
-            buffers = new IndexBuffer[numBuffers];
-            for(int i = 0; i < numBuffers; i++) {
-                buffers[i] = new IndexBuffer(reader);
+
+            IndexBuffer[] buffer = new IndexBuffer[numBuffers];
+
+            for(int i = 0; i != numBuffers; i++) {
+                buffer[i] = new IndexBuffer(reader);
+            }
+            prebuffers.Add(buffer);
+        }
+
+        public void BuildBuffer()
+        {
+            int totalsize = 0;
+
+            for (int i = 0; i != prebuffers.Count; i++)
+                totalsize += prebuffers[i].Length;
+
+            List<IndexBuffer> listBuffer = new List<IndexBuffer>(); 
+
+            for(int i = 0; i != prebuffers.Count; i++)
+            {
+                for(int x = 0; x != prebuffers[i].Length; x++)
+                {
+                    listBuffer.Add(prebuffers[i][x]);
+                }
             }
 
+            Buffers = listBuffer.ToArray();        
         }
     }
 

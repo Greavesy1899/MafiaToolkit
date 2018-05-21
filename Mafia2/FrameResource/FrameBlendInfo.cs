@@ -10,6 +10,11 @@ namespace Mafia2
         BoundingBox[] boundingBoxes;
         BlendDataToBoneIndexMap[] blendDataToBoneIndexMaps;
 
+        public BlendDataToBoneIndexMap[] BlendDataToBoneIndexMaps {
+            get { return blendDataToBoneIndexMaps; }
+            set { blendDataToBoneIndexMaps = value; }
+        }
+
         public FrameBlendInfo(BinaryReader reader)
         {
             ReadFromFile(reader);
@@ -64,6 +69,11 @@ namespace Mafia2
         List<byte[]> blendIndices;
         byte[] blendIndexRanges;
 
+        public List<byte[]> BlendIndices {
+            get { return blendIndices; }
+            set { blendIndices = value; }
+        }
+
         public BlendDataToBoneIndexMap(BinaryReader reader, BlendDataToBoneIndexInfo info)
         {
             ReadFromFile(reader, info);
@@ -72,14 +82,14 @@ namespace Mafia2
         public void ReadFromFile(BinaryReader reader, BlendDataToBoneIndexInfo info)
         {
             byte[] numArray = reader.ReadBytes(8);
-
             blendIndices = new List<byte[]>();
 
-            for(int i = 0; i != 8; i++)
+            for (int i = 0; i != 8; i++)
             {
                 if (numArray[i] != 0)
                     blendIndices.Add(reader.ReadBytes(numArray[i]));
             }
+
             blendIndexRanges = reader.ReadBytes(info.NumBlendIndexRanges * 2);
         }
     }

@@ -52,15 +52,23 @@ namespace Mafia2Tool
 
         private void OnClickLoad3D(object sender, System.EventArgs e)
         {
+            DirectoryInfo dir = new DirectoryInfo(Application.StartupPath);
+            FileInfo[] files = dir.GetFiles();
 
-            using (BinaryReader reader = new BinaryReader(File.Open("IndexBufferPool_0.bin", FileMode.Open)))
+            List<FileInfo> indexFiles = new List<FileInfo>();
+            List<FileInfo> vertexFiles = new List<FileInfo>();
+
+            foreach (FileInfo file in files)
             {
-                indexBufferPool = new IndexBufferPool(reader);
+                if (file.FullName.Contains("IndexBufferPool"))
+                    indexFiles.Add(file);
+                if (file.FullName.Contains("VertexBufferPool"))
+                    vertexFiles.Add(file);
             }
-            using (BinaryReader reader = new BinaryReader(File.Open("VertexBufferPool_0.bin", FileMode.Open)))
-            {
-                vertexBufferPool = new VertexBufferPool(reader);
-            }
+
+            indexBufferPool = new IndexBufferPool(indexFiles);
+            vertexBufferPool = new VertexBufferPool(vertexFiles);
+            
             for (int i = 0; i != mesh.Count; i++)
             {
                 Model newModel = new Model((mesh[i]), vertexBufferPool, indexBufferPool, frameResource);

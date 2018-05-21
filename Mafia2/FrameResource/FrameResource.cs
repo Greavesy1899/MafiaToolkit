@@ -104,7 +104,7 @@ namespace Mafia2
                         throw new Exception("Not Implemented");
 
                     else if (objectTypeList[i] == (int)ObjectType.Model)
-                        throw new Exception("Not Implemented");
+                        newObject = new FrameObjectModel(reader, frameBlocks);
 
                     else if (objectTypeList[i] == (int)ObjectType.Collision)
                         newObject = new FrameObjectCollision(reader);

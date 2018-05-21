@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.IO;
 
 namespace Mafia2
 {
@@ -21,9 +16,21 @@ namespace Mafia2
         TransformMatrix[] worldTransforms;
         SkeletonLodInfo[] lodInfo;
 
+        public int Count1 {
+            get { return count1; }
+            set { count1 = value; }
+        }
         public int Count4 {
             get { return count4; }
             set { count4 = value; }
+        }
+        public SkeletonLodInfo[] LodInfo {
+            get { return lodInfo; }
+            set { lodInfo = value; }
+        }
+        public Hash[] Names {
+            get { return names; }
+            set { names = value; }
         }
 
         public FrameSkeleton(BinaryReader reader)
@@ -79,6 +86,11 @@ namespace Mafia2
         Bounds[] bounds;
         byte[] indexMap;
         byte[] lodBlendIndexMap;
+
+        public byte[] LodBlendIndexMap {
+            get { return lodBlendIndexMap; }
+            set { lodBlendIndexMap = value; }
+        }
 
         public SkeletonLodInfo(BinaryReader reader, FrameSkeleton curFrame)
         {
