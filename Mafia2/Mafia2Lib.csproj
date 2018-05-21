@@ -46,11 +46,14 @@
     <Compile Include="3DHelpers\ModelBuilder.cs" />
     <Compile Include="3DHelpers\TransformMatrix.cs" />
     <Compile Include="FrameNameTable\FrameNameTable.cs" />
+    <Compile Include="FrameResource\FrameBlendInfo.cs" />
     <Compile Include="FrameResource\FrameGeometry.cs" />
     <Compile Include="FrameResource\FrameHeader.cs" />
     <Compile Include="FrameResource\FrameLOD.cs" />
     <Compile Include="FrameResource\FrameMaterial.cs" />
     <Compile Include="FrameResource\FrameResource.cs" />
+    <Compile Include="FrameResource\FrameSkeleton.cs" />
+    <Compile Include="FrameResource\FrameSkeletonHierachy.cs" />
     <Compile Include="FrameResource\ObjectTypes\FrameHeaderScene.cs" />
     <Compile Include="FrameResource\ObjectTypes\FrameObjectBase.cs" />
     <Compile Include="FrameResource\ObjectTypes\FrameObjectCollision.cs" />
@@ -73,7 +76,7 @@
     <Compile Include="3DHelpers\Vectors.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Gibbed.IO-master\Gibbed.IO.csproj">
+    <ProjectReference Include="..\Gibbed.IO\Gibbed.IO.csproj">
       <Project>{047857ba-daa3-4ca7-afb8-a1b082b28c6a}</Project>
       <Name>Gibbed.IO</Name>
     </ProjectReference>

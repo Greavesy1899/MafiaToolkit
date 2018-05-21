@@ -17,7 +17,7 @@ namespace Mafia2Tool
         public FrameResourceTool()
         {
             InitializeComponent();
-            MaterialsParse.ReadMaterialsFile();
+            MaterialsParse.ReadMatFile("default.mtl");
             ReadFrameResource();
         }
 

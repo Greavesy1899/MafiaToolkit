@@ -32,6 +32,18 @@ namespace Mafia2 {
             get { return numObjects; }
             set { numObjects = value; }
         }
+        public int NumBlendInfos {
+            get { return numBlendInfos; }
+            set { numBlendInfos = value; }
+        }
+        public int NumSkeletons {
+            get { return numSkeletons; }
+            set { numSkeletons = value; }
+        }
+        public int NumSkelHierachies {
+            get { return numSkelHierachies; }
+            set { numSkelHierachies = value; }
+        }
         public FrameHeaderScene[] SceneFolders {
             get { return sceneFolders; }
             set { sceneFolders = value; }

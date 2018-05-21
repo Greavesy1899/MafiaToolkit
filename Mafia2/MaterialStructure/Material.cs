@@ -169,7 +169,7 @@ namespace Mafia2 {
 
         public void WriteToFile(FileStream stream) {
             //material hash code and name.
-            stream.WriteValueU64(materialNumID.Swap());
+            stream.WriteValueU64(materialNumID);
             stream.WriteValueS32(materialName.Length);
             stream.WriteString(materialName);
 
@@ -249,7 +249,7 @@ namespace Mafia2 {
         string ufo_x2;
         string flags;
         string file;
-
+        private int fileLength;
         ulong unk;
 
         public string Chunk {
@@ -264,9 +264,18 @@ namespace Mafia2 {
             get { return flags; }
             set { flags = value; }
         }
+        [ReadOnly(true)]
+        public int FileLength {
+            get { return fileLength; }
+            set { fileLength = value; }
+        }
         public string File {
             get { return file; }
-            set { file = value; }
+            set 
+            {
+                file = value;
+                fileLength = file.Length;
+            }
         }
         public ulong Umk {
             get { return unk; }
@@ -281,8 +290,8 @@ namespace Mafia2 {
             unk = reader.ReadUInt64();
             flags = BitConverter.ToString(reader.ReadBytes(16)).Replace("-", "");
 
-            int size = reader.ReadInt32();
-            file = new string(reader.ReadChars(size));
+            fileLength = reader.ReadInt32();
+            file = new string(reader.ReadChars(fileLength));
         }
 
         public override string ToString() {

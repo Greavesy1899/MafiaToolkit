@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections;
 using System;
 
-namespace Mafia2 {
-    public class FrameResource {
+namespace Mafia2
+{
+    public class FrameResource
+    {
 
         FrameHeader header;
         ArrayList frameBlocks;
@@ -20,40 +22,58 @@ namespace Mafia2 {
             set { frameBlocks = value; }
         }
 
-        public void ReadFromFile(BinaryReader reader) {
+        public void ReadFromFile(BinaryReader reader)
+        {
             frameBlocks = new ArrayList();
 
-            //get header information
             header = new FrameHeader();
             header.ReadFromFile(reader);
 
-            foreach(FrameHeaderScene scene in header.SceneFolders) {
+            foreach (FrameHeaderScene scene in header.SceneFolders)
+            {
                 frameBlocks.Add(scene);
             }
 
-            //get geometry information
-            for (int i = 0; i < header.NumGeometries; i++) {
+            for (int i = 0; i < header.NumGeometries; i++)
+            {
                 frameBlocks.Add(new FrameGeometry(reader));
             }
 
-            //get material information
-            for (int i = 0; i < header.NumMaterialResources; i++) {
+            for (int i = 0; i < header.NumMaterialResources; i++)
+            {
                 frameBlocks.Add(new FrameMaterial(reader));
             }
 
-            //get object information
-            if(header.NumObjects > 0) {
+            for (int i = 0; i != header.NumBlendInfos; i++)
+            {
+                FrameBlocks.Add(new FrameBlendInfo(reader));
+            }
 
-                for (int i = 0; i != header.NumObjects; i++) {
+            for (int i = 0; i != header.NumSkeletons; i++)
+            {
+                FrameBlocks.Add(new FrameSkeleton(reader));
+            }
+
+            for (int i = 0; i != header.NumSkelHierachies; i++)
+            {
+                FrameBlocks.Add(new FrameSkeletonHierachy(reader));
+            }
+
+            if (header.NumObjects > 0)
+            {
+
+                for (int i = 0; i != header.NumObjects; i++)
+                {
                     objectTypeList.Add(reader.ReadInt32());
                 }
 
-                for(int i = 0; i != header.NumObjects; i++) {
+                for (int i = 0; i != header.NumObjects; i++)
+                {
                     FrameObjectBase newObject = new FrameObjectBase();
                     if (objectTypeList[i] == (int)ObjectType.Joint)
                         newObject = new FrameObjectJoint(reader);
 
-                    else if (objectTypeList[i] == (int)ObjectType.SingleMesh) 
+                    else if (objectTypeList[i] == (int)ObjectType.SingleMesh)
                         newObject = new FrameObjectSingleMesh(reader);
 
                     else if (objectTypeList[i] == (int)ObjectType.Frame)
@@ -95,17 +115,20 @@ namespace Mafia2 {
 
         }
 
-        public void DefineFrameBlockParents() {
-            for(int i = 0; i != frameBlocks.Count; i++) {
+        public void DefineFrameBlockParents()
+        {
+            for (int i = 0; i != frameBlocks.Count; i++)
+            {
 
                 FrameObjectBase newObject = frameBlocks[i] as FrameObjectBase;
 
                 if (newObject == null)
                     continue;
 
-                if(newObject.ParentIndex1.Index > -1)
+                if (newObject.ParentIndex1.Index > -1)
                     newObject.ParentIndex1.Name = (frameBlocks[newObject.ParentIndex1.Index] as FrameObjectBase).Name.Name;
-                if (newObject.ParentIndex2.Index > -1) {
+                if (newObject.ParentIndex2.Index > -1)
+                {
                     if (frameBlocks[newObject.ParentIndex2.Index].GetType() == typeof(FrameHeaderScene))
                         newObject.ParentIndex2.Name = (frameBlocks[newObject.ParentIndex2.Index] as FrameHeaderScene).Name.Name;
                     else
