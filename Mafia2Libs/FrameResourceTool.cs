@@ -75,9 +75,9 @@ namespace Mafia2Tool
                 for (int c = 0; c != newModel.Lods.Length; c++)
                 {
                     newModel.ExportToOBJ(newModel.Lods[c], mesh[i].Name.Name + "_lod" + c);
+                    newModel.ExportToEDM(newModel.Lods[c], mesh[i].Name.Name + "_lod" + c);
                 }
             }
-
         }
     }
 }

@@ -141,50 +141,82 @@ namespace Mafia2
 
         public void ExportToOBJ(Lod lod, string name)
         {
-            List<string> newOBJ = new List<string>();
-            List<string> newMTL = new List<string>();
+            WavefrontOBJ objMesh = new WavefrontOBJ(lod.Vertices, lod.Parts, name);
+            objMesh.ExportOBJ();
+        }
 
-            newOBJ.Add(string.Format("mtllib {0}", name + ".mtl"));
-            newOBJ.Add("");
-            for (int i = 0; i != lod.Vertices.Length; i++)
+        public void ExportToEDM(Lod lod, string name)
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + name + ".edm")))
             {
-                newOBJ.Add(string.Format("v {0} {1} {2}", lod.Vertices[i].Position.X, lod.Vertices[i].Position.Y, lod.Vertices[i].Position.Z));
-            }
-            newOBJ.Add("");
-            for (int i = 0; i != lod.Vertices.Length; i++)
-            {
-                if(lod.Vertices[i].UVs.Length != 0)
-                    newOBJ.Add(string.Format("vt {0} {1} {2}", lod.Vertices[i].UVs[0].X, 1 - lod.Vertices[i].UVs[0].Y, 0));
-            }
-            newOBJ.Add("");
-            for (int i = 0; i != lod.Vertices.Length; i++)
-            {
-                newOBJ.Add(string.Format("vn {0} {1} {2}", lod.Vertices[i].Normal.X, lod.Vertices[i].Normal.Y, lod.Vertices[i].Normal.Z));
-            }
-            newOBJ.Add("");
-            for (int i = 0; i != lod.Parts.Length; i++)
-            {
-                newMTL.Add(string.Format("newmtl {0}", lod.Parts[i].Material));
-                newMTL.Add(string.Format("kd 0.6 0.6 0.6"));
-                newMTL.Add(string.Format("ka 0 0 0"));
-                newMTL.Add(string.Format("ks 0 0 0"));
-                newMTL.Add(string.Format("Ns 16"));
-                newMTL.Add(string.Format("illum 2"));
-                newMTL.Add(string.Format("map_kd {0}", lod.Parts[i].Material));
-                newMTL.Add("");
+                CustomEDM[] EDMs = new CustomEDM[lod.Parts.Length];
 
-                newOBJ.Add(string.Format("g part{0}", i));
-                newOBJ.Add(string.Format("usemtl {0}", lod.Parts[i].Material));
-                for (int c = 0; c != lod.Parts[i].Indices.Length; c++)
+                writer.Write(name);
+                writer.Write(EDMs.Length);
+
+                for (int i = 0; i != EDMs.Length; i++)
                 {
-                    newOBJ.Add(string.Format("f {0}/{0} {1}/{1} {2}/{2}", lod.Parts[i].Indices[c].s1 + 1, lod.Parts[i].Indices[c].s2 + 1, lod.Parts[i].Indices[c].s3 + 1));
+                    #region convert
+                    List<short> vertlist = new List<short>();
+                    foreach (Short3 s3 in lod.Parts[i].Indices)
+                    {
+                        vertlist.Add(s3.s1);
+                        vertlist.Add(s3.s2);
+                        vertlist.Add(s3.s3);
+                    }
+                    List<Vertex> newVerts = new List<Vertex>();
+                    List<short> newFacesI = new List<short>();
+                    foreach (short s in vertlist)
+                    {
+                        if (!newVerts.Contains(lod.Vertices[s]))
+                        {
+                            newVerts.Add(lod.Vertices[s]);
+                            newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
+                        }
+                        else
+                        {
+                            newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
+                        }
+                    }
+                    List<Short3> newShort3 = new List<Short3>();
+                    int num = 0;
+                    while (num != newFacesI.Count)
+                    {
+                        Short3 face = new Short3();
+                        face.s1 = newFacesI[num];
+                        num++;
+                        face.s2 = newFacesI[num];
+                        num++;
+                        face.s3 = newFacesI[num];
+                        num++;
+                        newShort3.Add(face);
+                    }
+                    #endregion
+
+                    EDMs[i] = new CustomEDM(newVerts.ToArray(), newShort3.ToArray(), lod.Parts[i].Material);
+
+                    writer.Write(EDMs[i].Vertices.Length);
+                    for (int c = 0; c != EDMs[i].Vertices.Length; c++)
+                    {
+                        writer.Write(EDMs[i].Vertices[c].X);
+                        writer.Write(EDMs[i].Vertices[c].Y);
+                        writer.Write(EDMs[i].Vertices[c].Z);
+                    }
+                    writer.Write(EDMs[i].UVs.Length);
+                    for (int c = 0; c != EDMs[i].UVs.Length; c++)
+                    {
+                        writer.Write((float)EDMs[i].UVs[c].X);
+                        writer.Write((float)1f-EDMs[i].UVs[c].Y);
+                    }
+                    writer.Write(EDMs[i].Indices.Length);
+                    for (int c = 0; c != EDMs[i].Indices.Length; c++)
+                    {
+                        writer.Write(EDMs[i].Indices[c].s1 + 1);
+                        writer.Write(EDMs[i].Indices[c].s2 + 1);
+                        writer.Write(EDMs[i].Indices[c].s3 + 1);
+                    }
                 }
-                newOBJ.Add("");
             }
-
-            File.WriteAllLines("objects/" + name + ".obj", newOBJ);
-            File.WriteAllLines("objects/" + name + ".mtl", newMTL);
-
         }
 
         public VertexBuffer GetVertexBuffer(VertexBufferPool vBufferPool, ulong hash)
@@ -262,6 +294,11 @@ namespace Mafia2
         public short s1;
         public short s2;
         public short s3;
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1} {2}", s1, s2, s3);
+        }
     }
 
     public class Lod
