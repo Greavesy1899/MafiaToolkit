@@ -195,6 +195,7 @@ namespace Mafia2
 
                     EDMs[i] = new CustomEDM(newVerts.ToArray(), newShort3.ToArray(), lod.Parts[i].Material);
 
+                    writer.Write(EDMs[i].Name);
                     writer.Write(EDMs[i].Vertices.Length);
                     for (int c = 0; c != EDMs[i].Vertices.Length; c++)
                     {

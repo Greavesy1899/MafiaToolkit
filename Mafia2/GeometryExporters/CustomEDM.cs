@@ -35,7 +35,8 @@ namespace Mafia2
             for(int i = 0; i != vertex.Length; i++)
             {
                 vertices[i] = vertex[i].Position;
-                uvs[i] = vertex[i].UVs[0];
+                if(vertex[i].UVs.Length > 0)
+                    uvs[i] = vertex[i].UVs[0];
             }
 
             this.indices = indices;
