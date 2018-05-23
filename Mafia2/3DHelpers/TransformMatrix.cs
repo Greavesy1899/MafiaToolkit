@@ -16,11 +16,11 @@ public struct TransformMatrix {
 
     public TransformMatrix(BinaryReader reader) {
 
-        float[] m1 = new float[] { reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle() };
+        Vector3 m1 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         float x = reader.ReadSingle();
-        float[] m2 = new float[] { reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle() };
+        Vector3 m2 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         float y = reader.ReadSingle();
-        float[] m3 = new float[] { reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle() };
+        Vector3 m3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         float z = reader.ReadSingle();
 
         rotation = new Matrix33(m1, m2, m3);
@@ -28,6 +28,6 @@ public struct TransformMatrix {
     }
 
     public override string ToString() {
-        return string.Format("{0}, {1}", "TO_ADD", position);
+        return string.Format("{0}, {1}", rotation, position);
     }
 }
