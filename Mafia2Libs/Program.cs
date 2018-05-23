@@ -1,6 +1,7 @@
 ﻿using System.Windows.Forms;
 using System.IO;
 using Mafia2;
+using System;
 
 namespace Mafia2Tool {
     class Program {
@@ -8,17 +9,8 @@ namespace Mafia2Tool {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            //using (BinaryReader reader = new BinaryReader(File.Open("FrameNameTable_0.bin", FileMode.Open)))
-            //{
-            //    FrameNameTable nameTable = new FrameNameTable();
-            //    nameTable.ReadFromFile(reader);
-            //}
-            //using (BinaryReader reader = new BinaryReader(File.Open("SoundSectors_DLC_c23.bin", FileMode.Open)))
-            //{
-            //    SoundSector soundSector = new SoundSector();
-            //    soundSector.ReadFromFile(reader);
-            //}
             //Application.Run(new MaterialTool());
+
             Application.Run(new FrameResourceTool());
         }
     }

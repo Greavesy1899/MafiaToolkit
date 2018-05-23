@@ -81,7 +81,7 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return string.Format("Single Mesh Block");
+            return string.Format("Single Mesh Block:: {0}", Name);
         }
     }
 }

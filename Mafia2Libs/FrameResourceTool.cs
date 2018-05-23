@@ -85,6 +85,7 @@ namespace Mafia2Tool
 
             string[] fileNames = new string[mesh.Count];
             Vector3[] filePos = new Vector3[mesh.Count];
+            float[] rotPos = new float[mesh.Count];
 
             for (int i = 0; i != mesh.Count; i++)
             {
@@ -99,6 +100,7 @@ namespace Mafia2Tool
 
                     fileNames[i] = mesh[i].Name.Name + "_lod" + c;
                     filePos[i] = mesh[i].Matrix.Position;
+                    rotPos[i] = mesh[i].Matrix.Rotation.Vector.X;
 
                     watch.Stop();
                     Debug.WriteLine("Mesh: {0} and time taken was {1}", mesh[i].Name.Name + "_lod" + c, watch.Elapsed);
@@ -115,6 +117,7 @@ namespace Mafia2Tool
                     writer.Write(filePos[i].X);
                     writer.Write(filePos[i].Y);
                     writer.Write(filePos[i].Z);
+                    writer.Write(rotPos[i]);
                 }
             }
         }

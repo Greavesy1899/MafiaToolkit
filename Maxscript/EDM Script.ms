@@ -10,7 +10,8 @@ struct Part
 struct EddStruct
 (
 	fileName,
-	pos
+	pos,
+	rot
 )
 
 fn importFrame =
@@ -37,7 +38,10 @@ fn importFrame =
 		pos.y = readfloat eddFile
 		pos.z = readfloat eddFile
 		
-		files[i] = EddStruct fileName: fa pos: pos
+		rot = [0,0,0]
+		rot.x = readfloat eddFile
+		
+		files[i] = EddStruct fileName: fa pos: pos rot:rot
 	)
 	fclose eddFile
 	
@@ -49,6 +53,8 @@ fn importFrame =
 	for i = 1 to files.count do
 	(
 		aMeshes[i].pos = files[i].pos
+		--Broken, flips the entire mesh upside down. 
+		--aMeshes[i].rotation.x = files[i].rot.x
 	)
 	
 )
@@ -155,15 +161,28 @@ utility EDMImport "EDM Importer"
 	on importer pressed do
 	(
 		edmFile = getopenfilename caption:"Select File" filename: edmLastFile types:"edm (*.edm)"
-		edmLastFile = edmFile
-		importMesh()
+		
+		if edmFile != undefined then
+		(
+			edmLastFile = edmFile
+			importMesh()
+		)
 	)
 	on fimporter pressed do
 	(
 		edmPath = getSavePath caption:"Select Folder" initialDir:"C:\\Users\\Connor\\source\\repos\\Mafia2Tools\\Mafia2Tools\\Mafia2Libs\\bin\\Debug\\exported"
-		files = getFiles (edmpath+"\\*.edd")
 		
-		eddLastFile = files[1]
-		importFrame()
+		--don't know if break, returns, etc exist in this language. 
+		if edmPath != undefined then
+		(
+			files = getFiles (edmpath+"\\*.edd")
+			
+			if files.count > 0 then
+			(
+				eddLastFile = files[1]
+				importFrame()
+			)
+		)
+
 	)
 )
