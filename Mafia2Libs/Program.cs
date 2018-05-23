@@ -13,7 +13,7 @@ namespace Mafia2Tool {
             //    FrameNameTable nameTable = new FrameNameTable();
             //    nameTable.ReadFromFile(reader);
             //}
-            //using (BinaryReader reader = new BinaryReader(File.Open("SoundSectors_99_Joes_Flat.bin", FileMode.Open)))
+            //using (BinaryReader reader = new BinaryReader(File.Open("SoundSectors_DLC_c23.bin", FileMode.Open)))
             //{
             //    SoundSector soundSector = new SoundSector();
             //    soundSector.ReadFromFile(reader);

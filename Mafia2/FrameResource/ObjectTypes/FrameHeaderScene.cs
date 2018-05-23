@@ -1,7 +1,9 @@
 ﻿using System.IO;
 
-namespace Mafia2 {
-    public class FrameHeaderScene {
+namespace Mafia2
+{
+    public class FrameHeaderScene
+    {
         Hash name;
 
         public Hash Name {
@@ -9,7 +11,8 @@ namespace Mafia2 {
             set { name = value; }
         }
 
-        public void ReadFromFile(BinaryReader reader) {
+        public void ReadFromFile(BinaryReader reader)
+        {
             name = new Hash(reader);
         }
 

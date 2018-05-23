@@ -19,6 +19,13 @@ namespace Mafia2Tool
         {
             InitializeComponent();
             MaterialsParse.ReadMatFile("default.mtl");
+
+            FrameListView.Nodes.Add("Headers");
+            FrameListView.Nodes.Add("Geometries");
+            FrameListView.Nodes.Add("Materials");
+            FrameListView.Nodes.Add("Blend Info");
+            FrameListView.Nodes.Add("Skeletons");
+            FrameListView.Nodes.Add("Skeleton Hierachies");
             ReadFrameResource();
         }
 
@@ -34,6 +41,12 @@ namespace Mafia2Tool
                 foreach (object block in frameResource.FrameBlocks)
                 {
                     FrameResourceListBox.Items.Add(block);
+                    //if (block.GetType() == typeof(FrameHeaderScene))
+                    //    FrameListView.Nodes[0].Nodes.Add("Header Block");
+
+                    //if(block.GetType() == typeof(FrameGeometry))
+                    //    FrameListView.Nodes[1].Nodes.Add("Geometry Block");
+
                     if (block.GetType() == typeof(FrameObjectSingleMesh))
                         mesh.Add((FrameObjectSingleMesh)block);
                 }

@@ -1,7 +1,9 @@
 ﻿using System.IO;
 
-namespace Mafia2 {
-    public class FrameObjectSingleMesh : FrameObjectJoint {
+namespace Mafia2
+{
+    public class FrameObjectSingleMesh : FrameObjectJoint
+    {
 
         int unk_09_flags;
         Bounds bounds;
@@ -55,13 +57,16 @@ namespace Mafia2 {
             set { mesh = value; }
         }
 
-        public FrameObjectSingleMesh(BinaryReader reader) : base() {
+        public FrameObjectSingleMesh(BinaryReader reader) : base()
+        {
             ReadFromFile(reader);
         }
-        public FrameObjectSingleMesh() : base() {
+        public FrameObjectSingleMesh() : base()
+        {
         }
 
-        public override void ReadFromFile(BinaryReader reader) {
+        public override void ReadFromFile(BinaryReader reader)
+        {
             base.ReadFromFile(reader);
             unk_09_flags = reader.ReadInt32();
             bounds = new Bounds(reader);
