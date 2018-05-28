@@ -40,9 +40,7 @@ namespace Mafia2 {
             set { unknown_06_short = value; }
         }
 
-        public FrameObjectBase() {
-
-        }
+        public FrameObjectBase() { }
 
         public virtual void ReadFromFile(BinaryReader reader) {
             name = new Hash(reader);

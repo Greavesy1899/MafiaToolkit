@@ -28,7 +28,6 @@
             this.FrameResourceListBox = new System.Windows.Forms.ListBox();
             this.FrameResourceSearch = new System.Windows.Forms.TextBox();
             this.Load3D = new System.Windows.Forms.Button();
-            this.FrameListView = new System.Windows.Forms.TreeView();
             this.SuspendLayout();
             // 
             // FrameResourceButton
@@ -82,19 +81,11 @@
             this.Load3D.UseVisualStyleBackColor = true;
             this.Load3D.Click += new System.EventHandler(this.OnClickLoad3D);
             // 
-            // FrameListView
-            // 
-            this.FrameListView.Location = new System.Drawing.Point(690, 11);
-            this.FrameListView.Name = "FrameListView";
-            this.FrameListView.Size = new System.Drawing.Size(82, 47);
-            this.FrameListView.TabIndex = 9;
-            // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 431);
-            this.Controls.Add(this.FrameListView);
             this.Controls.Add(this.Load3D);
             this.Controls.Add(this.FrameResourceButton);
             this.Controls.Add(this.FrameResourceGrid);
@@ -114,6 +105,5 @@
         private System.Windows.Forms.ListBox FrameResourceListBox;
         private System.Windows.Forms.TextBox FrameResourceSearch;
         private System.Windows.Forms.Button Load3D;
-        private System.Windows.Forms.TreeView FrameListView;
     }
 }

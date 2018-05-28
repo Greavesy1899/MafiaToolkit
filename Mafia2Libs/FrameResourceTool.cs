@@ -14,18 +14,13 @@ namespace Mafia2Tool
         VertexBufferPool vertexBufferPool;
 
         private List<FrameObjectSingleMesh> mesh = new List<FrameObjectSingleMesh>();
+        Dictionary<int, TreeNode> treeNodes = new Dictionary<int, TreeNode>();
 
         public FrameResourceTool()
         {
             InitializeComponent();
             MaterialsParse.ReadMatFile("default.mtl");
 
-            FrameListView.Nodes.Add("Headers");
-            FrameListView.Nodes.Add("Geometries");
-            FrameListView.Nodes.Add("Materials");
-            FrameListView.Nodes.Add("Blend Info");
-            FrameListView.Nodes.Add("Skeletons");
-            FrameListView.Nodes.Add("Skeleton Hierachies");
             ReadFrameResource();
         }
 
@@ -38,17 +33,12 @@ namespace Mafia2Tool
                 frameResource.ReadFromFile(reader);
                 frameResource.DefineFrameBlockParents();
 
-                foreach (object block in frameResource.FrameBlocks)
+                for(int i = 0; i != frameResource.FrameBlocks.Count; i++)
                 {
-                    FrameResourceListBox.Items.Add(block);
-                    //if (block.GetType() == typeof(FrameHeaderScene))
-                    //    FrameListView.Nodes[0].Nodes.Add("Header Block");
+                    FrameResourceListBox.Items.Add(frameResource.FrameBlocks[i]);
 
-                    //if(block.GetType() == typeof(FrameGeometry))
-                    //    FrameListView.Nodes[1].Nodes.Add("Geometry Block");
-
-                    if (block.GetType() == typeof(FrameObjectSingleMesh))
-                        mesh.Add((FrameObjectSingleMesh)block);
+                    if (frameResource.FrameBlocks[i].GetType() == typeof(FrameObjectSingleMesh))
+                        mesh.Add((FrameObjectSingleMesh)frameResource.FrameBlocks[i]);
                 }
             }
         }

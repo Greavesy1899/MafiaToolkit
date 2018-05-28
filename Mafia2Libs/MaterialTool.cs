@@ -8,6 +8,7 @@ namespace Mafia2Tool {
 
         public MaterialTool() {
             InitializeComponent();
+            MaterialsParse.ReadMatFile("default.mtl");
             FetchMaterials();
         }
 

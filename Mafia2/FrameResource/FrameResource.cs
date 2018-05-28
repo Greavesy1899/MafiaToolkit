@@ -83,7 +83,7 @@ namespace Mafia2
                         throw new Exception("Not Implemented");
 
                     else if (objectTypeList[i] == (int)ObjectType.Camera)
-                        throw new Exception("Not Implemented");
+                        newObject = new FrameObjectCamera(reader);
 
                     else if (objectTypeList[i] == (int)ObjectType.Component_U00000005)
                         throw new Exception("Not Implemented");

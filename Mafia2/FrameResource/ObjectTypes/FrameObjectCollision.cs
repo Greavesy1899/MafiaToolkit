@@ -6,6 +6,10 @@ namespace Mafia2 {
 
         ulong hash;
 
+        public ulong Hash {
+            get { return hash; }
+            set { hash = value; }
+        }
         public FrameObjectCollision(BinaryReader reader) : base() {
             ReadFromFile(reader);
         }

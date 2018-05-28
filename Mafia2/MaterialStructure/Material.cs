@@ -277,7 +277,7 @@ namespace Mafia2 {
                 fileLength = file.Length;
             }
         }
-        public ulong Umk {
+        public ulong Unk {
             get { return unk; }
             set { unk = value; }
         }
