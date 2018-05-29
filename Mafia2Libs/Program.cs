@@ -10,10 +10,9 @@ namespace Mafia2Tool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            using (BinaryReader reader = new BinaryReader(File.Open("FrameNameTable_0.bin", FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open("cityareas.bin", FileMode.Open)))
             {
-                FrameNameTable nameTable = new FrameNameTable();
-                nameTable.ReadFromFile(reader);
+                CityAreas areas = new CityAreas(reader);
             }
             //XMLTest xml = new XMLTest();
             //Application.Run(new MaterialTool());

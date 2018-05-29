@@ -6,10 +6,15 @@ namespace Mafia2
     {
         public string header;
         public int unk0_int;
-        public int unk1_int;
-        public int unk2_int;
-        public string[] collection;
-        public AreaStruct[] areaCollection;
+        public int areaCount;
+        public int namesLength;
+        public string names;
+        AreaData[] areaCollection;
+
+        public AreaData[] AreaCollection {
+            get { return areaCollection; }
+            set { areaCollection = value; }
+        }
 
         public CityAreas(BinaryReader reader)
         {
@@ -19,45 +24,66 @@ namespace Mafia2
         public void ReadFromFile(BinaryReader reader)
         {
             header = new string(reader.ReadChars(4));
-
             unk0_int = reader.ReadInt32();
-            unk1_int = reader.ReadInt32();
-            unk2_int = reader.ReadInt32();
-
-            collection = new string(reader.ReadChars(unk2_int)).Split('\0');
-
+            areaCount = reader.ReadInt32();
+            namesLength = reader.ReadInt32();
+            names = new string(reader.ReadChars(namesLength));
             reader.ReadBytes(0);
-
-            areaCollection = new AreaStruct[unk1_int];
+            areaCollection = new AreaData[areaCount];
 
             for(int i = 0; i != areaCollection.Length; i++)
             {
-                areaCollection[i] = new AreaStruct(reader);
-                areaCollection[i].indexedString1 = collection[areaCollection[i].index1];
-                areaCollection[i].indexedString2 = collection[areaCollection[i].index2];
+                areaCollection[i] = new AreaData(reader);
+                int pos = areaCollection[i].Index1;
+                areaCollection[i].IndexedString = names.Substring(pos, names.IndexOf('\0', pos) - pos);
+                pos = areaCollection[i].Index2;
+
+                if(pos != 65535)
+                    areaCollection[i].IndexedString2 = names.Substring(pos, names.IndexOf('\0', pos) - pos);
             }
           
         }
 
-        public class AreaStruct
+        public class AreaData
         {
-            public string name;
+            string name;
+            ushort index1;
+            string indexedString1;
+            ushort index2;
+            string indexedString2;
+            byte unkByte;
 
-            public short index1;
-            public string indexedString1;
+            public string Name {
+                get { return name; }
+                set { name = value; }
+            }
+            public ushort Index1 {
+                get { return index1; }
+                set { index1 = value; }
+            }
+            public string IndexedString {
+                get { return indexedString1; }
+                set { indexedString1 = value; }
+            }
+            public ushort Index2 {
+                get { return index2; }
+                set { index2 = value; }
+            }
+            public string IndexedString2 {
+                get { return indexedString2; }
+                set { indexedString2 = value; }
+            }
+            public byte UnkByte {
+                get { return unkByte; }
+                set { unkByte = value; }
+            }
 
-            public short index2;
-            public string indexedString2;
-
-            public byte unkByte;
-
-
-            public AreaStruct(BinaryReader reader)
+            public AreaData(BinaryReader reader)
             {
                 name = readString(reader);
                 reader.ReadByte();
-                index1 = reader.ReadInt16();
-                index2 = reader.ReadInt16();
+                index1 = reader.ReadUInt16();
+                index2 = reader.ReadUInt16();
                 unkByte = reader.ReadByte();
             }
 

@@ -21,7 +21,6 @@ namespace Mafia2
                 frameData[i] = new Data(reader);
 
                 int pos = frameData[i].NamePos1;
-
                 frameData[i].Name = names.Substring(pos, names.IndexOf('\0', pos) - pos);
             }
         }
@@ -31,9 +30,9 @@ namespace Mafia2
             //more research required.
             string name;                   
             short unk01;                  //still unknown. OR this is the potential root.
-            short namepos1;
-            short namepos2;               //Sometimes ends up as -1.
-            int frameIndex;               //This index begins AT objects. Sometimes has massive values.
+            ushort namepos1;
+            ushort namepos2;               //Sometimes ends up as 65535. null in the engine?
+            int frameIndex;               //This index begins AFTER objects. Sometimes has massive values.
 
             public string Name {
                 get { return name; }
@@ -43,11 +42,11 @@ namespace Mafia2
                 get { return unk01; }
                 set { unk01 = value; }
             }
-            public short NamePos1 {
+            public ushort NamePos1 {
                 get { return namepos1; }
                 set { namepos1 = value; }
             }
-            public short NamePos2 {
+            public ushort NamePos2 {
                 get { return namepos2; }
                 set { namepos2 = value; }
             }
@@ -64,8 +63,8 @@ namespace Mafia2
             public void ReadFromFile(BinaryReader reader)
             {
                 unk01 = reader.ReadInt16();
-                namepos1 = reader.ReadInt16();
-                namepos2 = reader.ReadInt16();
+                namepos1 = reader.ReadUInt16();
+                namepos2 = reader.ReadUInt16();
                 frameIndex = reader.ReadInt32();
             }
 
