@@ -2,39 +2,76 @@
 
 namespace Mafia2
 {
-   public class FrameNameTable
+    public class FrameNameTable
     {
-        string[] names;
-        unk01Struct[] unk01arr;
+        int stringLength;
+        string names;
+        Data[] frameData;
 
         public void ReadFromFile(BinaryReader reader)
         {
-            int stringLength = reader.ReadInt32();
-            string sceneName = new string(reader.ReadChars(stringLength));
-            names = sceneName.Split('\0');
+            stringLength = reader.ReadInt32();
+            names = new string(reader.ReadChars(stringLength));
 
             int count = reader.ReadInt32();
-            unk01arr = new unk01Struct[count];
+            frameData = new Data[count];
 
-            for (int i = 0; i != unk01arr.Length; i++)
+            for (int i = 0; i != frameData.Length; i++)
             {
-                unk01arr[i].unk01 = reader.ReadInt16();
-                unk01arr[i].unk02 = reader.ReadInt16();
-                unk01arr[i].unk03 = reader.ReadInt16();
-                unk01arr[i].unk04 = reader.ReadInt32();
+                frameData[i] = new Data(reader);
+
+                int pos = frameData[i].NamePos1;
+
+                frameData[i].Name = names.Substring(pos, names.IndexOf('\0', pos) - pos);
             }
         }
 
-        struct unk01Struct
+        class Data
         {
-            public short unk01;
-            public short unk02;
-            public short unk03;
-            public int unk04;
+            //more research required.
+            string name;                   
+            short unk01;                  //still unknown. OR this is the potential root.
+            short namepos1;
+            short namepos2;               //Sometimes ends up as -1.
+            int frameIndex;               //This index begins AT objects. Sometimes has massive values.
+
+            public string Name {
+                get { return name; }
+                set { name = value; }
+            }
+            public short Unk01 {
+                get { return unk01; }
+                set { unk01 = value; }
+            }
+            public short NamePos1 {
+                get { return namepos1; }
+                set { namepos1 = value; }
+            }
+            public short NamePos2 {
+                get { return namepos2; }
+                set { namepos2 = value; }
+            }
+            public int FrameIndex {
+                get { return frameIndex; }
+                set { frameIndex = value; }
+            }
+
+            public Data(BinaryReader reader)
+            {
+                ReadFromFile(reader);
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                unk01 = reader.ReadInt16();
+                namepos1 = reader.ReadInt16();
+                namepos2 = reader.ReadInt16();
+                frameIndex = reader.ReadInt32();
+            }
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3}", unk01, unk02, unk03, unk04);
+                return string.Format("{0}, {1}, Frame Index: {2}", unk01, name, frameIndex);
             }
         }
     }

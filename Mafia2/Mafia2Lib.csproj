@@ -79,6 +79,7 @@
     <Compile Include="ParseHelpers\VertexBufferPool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="3DHelpers\Vectors.cs" />
+    <Compile Include="RATC\CityAreas.cs" />
     <Compile Include="RPMG\RPMG.cs" />
     <Compile Include="SoundSectors\SoundSector.cs" />
     <Compile Include="XML\XMLTest.cs" />
