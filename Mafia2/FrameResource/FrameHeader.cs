@@ -63,7 +63,7 @@ namespace Mafia2 {
             {
                 reader.ReadSingle();
                 reader.ReadSingle();
-                sceneName.ReadFromFile(reader);
+                sceneName = new Hash(reader);
 
                 for (int i = 0; i < 4; i++)
                 {

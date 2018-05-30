@@ -20,7 +20,7 @@ namespace Mafia2
             get { return name; }
             set { name = value; }
         }
-
+        public Hash() { }
         public Hash(BinaryReader reader)
         {
             ReadFromFile(reader);
