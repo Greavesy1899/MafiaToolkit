@@ -7,7 +7,10 @@ namespace Mafia2
         ulong[] unk_01_array;
         short[] unk_02_array;
 
-        public SoundSector() { }
+        public SoundSector(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
 
         public void ReadFromFile(BinaryReader reader)
         {

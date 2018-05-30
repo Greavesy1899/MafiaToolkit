@@ -10,13 +10,10 @@ namespace Mafia2Tool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            using (BinaryReader reader = new BinaryReader(File.Open("cityareas.bin", FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open("SoundSectors_L_Motor_Show.bin", FileMode.Open)))
             {
-                CityAreas areas = new CityAreas(reader);
+                SoundSector soundSector = new SoundSector(reader);
             }
-            //XMLTest xml = new XMLTest();
-            //Application.Run(new MaterialTool());
-            //ItemDescParse itemDesc = new ItemDescParse();
             Application.Run(new FrameResourceTool());
         }
     }

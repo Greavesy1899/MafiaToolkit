@@ -1,4 +1,6 @@
 ﻿using Mafia2;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -14,7 +16,6 @@ namespace Mafia2Tool
         VertexBufferPool vertexBufferPool;
 
         private List<FrameObjectSingleMesh> mesh = new List<FrameObjectSingleMesh>();
-        Dictionary<int, TreeNode> treeNodes = new Dictionary<int, TreeNode>();
 
         public FrameResourceTool()
         {
@@ -37,12 +38,40 @@ namespace Mafia2Tool
                 {
                     FrameResourceListBox.Items.Add(frameResource.FrameBlocks[i]);
 
-                    if (frameResource.FrameBlocks[i].GetType() == typeof(FrameObjectSingleMesh))
-                        mesh.Add((FrameObjectSingleMesh)frameResource.FrameBlocks[i]);
+                    FrameObjectBase block = frameResource.FrameBlocks[i] as FrameObjectBase;
+
+                    if (block == null)
+                        continue;
+
+                    if (block.GetType() == typeof(FrameObjectSingleMesh) || block.GetType() == typeof(FrameObjectModel))
+                    {
+                        FrameObjectSingleMesh singleMesh = frameResource.FrameBlocks[i] as FrameObjectSingleMesh;
+
+                        mesh.Add(singleMesh);
+                        TreeNode node = new TreeNode()
+                        {
+                            Name = singleMesh.Name.Name,
+                            Text = singleMesh.Name.Name,
+                            Tag = frameResource.FrameBlocks[i],
+                        };
+                        node.Nodes.Add(createTreeNode("Material", singleMesh.MaterialIndex));
+                        node.Nodes.Add(createTreeNode("Geometry", singleMesh.MeshIndex));
+                        treeView1.Nodes.Add(node);
+                    }
                 }
             }
         }
+        private TreeNode createTreeNode(string NameText, int index)
+        {
+            TreeNode node = new TreeNode
+            {
+                Name = NameText,
+                Text = NameText,
+                Tag = frameResource.FrameBlocks[index]
+            };
 
+            return node;
+        }
         private void OnSelectedChanged(object sender, System.EventArgs e)
         {
             FrameResourceGrid.SelectedObject = FrameResourceListBox.SelectedItem;
@@ -110,6 +139,10 @@ namespace Mafia2Tool
                     writer.Write(rotPos[i]);
                 }
             }
+        }
+        private void OnNodeSelect(object sender, TreeViewEventArgs e)
+        {
+            FrameResourceGrid.SelectedObject = treeView1.SelectedNode.Tag;
         }
     }
 }

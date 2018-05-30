@@ -75,6 +75,11 @@ namespace Mafia2
             }
             reader.ReadBytes(count);           
         }
+
+        public override string ToString()
+        {
+            return string.Format("Model Block:: {0}", Name.Name);
+        }
     }
     public class AttachmentReference
     {
