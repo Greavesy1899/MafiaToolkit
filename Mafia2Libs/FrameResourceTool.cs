@@ -109,20 +109,23 @@ namespace Mafia2Tool
             for (int i = 0; i != mesh.Count; i++)
             {
                 Model newModel = new Model((mesh[i]), vertexBufferPool, indexBufferPool, frameResource);
-                
+
                 for (int c = 0; c != newModel.Lods.Length; c++)
                 {
-                    Stopwatch watch = new Stopwatch();
-                    watch.Start();
-                   //newModel.ExportToOBJ(newModel.Lods[c], mesh[i].Name.Name + "_lod" + c);
-                    newModel.ExportToEDM(newModel.Lods[c], mesh[i].Name.Name + "_lod" + c);
-
+                    if (!File.Exists("exported/" + mesh[i].Name.Name + "_lod" + c + ".edm"))
+                    {
+                        Stopwatch watch = new Stopwatch();
+                        watch.Start();
+                        //newModel.ExportToOBJ(newModel.Lods[c], mesh[i].Name.Name + "_lod" + c);
+                        newModel.ExportToEDM(newModel.Lods[c], mesh[i].Name.Name + "_lod" + c);
+                        Debug.WriteLine("Mesh: {0} and time taken was {1}", mesh[i].Name.Name + "_lod" + c, watch.Elapsed);
+                        watch.Stop();
+                    }
                     fileNames[i] = mesh[i].Name.Name + "_lod" + c;
                     filePos[i] = mesh[i].Matrix.Position;
                     rotPos[i] = mesh[i].Matrix.Rotation.Vector.X;
 
-                    watch.Stop();
-                    Debug.WriteLine("Mesh: {0} and time taken was {1}", mesh[i].Name.Name + "_lod" + c, watch.Elapsed);
+                    Console.WriteLine("{0}/{1}", i, mesh.Count);
                 }
             }
 

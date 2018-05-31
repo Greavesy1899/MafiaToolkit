@@ -4,6 +4,7 @@ bl_info = {
     "description": "Import EDM files into blender"}
         
 import bpy
+import os
 import struct
 from bpy.props import StringProperty
 from bpy_extras.io_utils import ImportHelper
@@ -21,15 +22,31 @@ class ImportEDM(bpy.types.Operator, ImportHelper):
         self.report({'INFO'}, "Begin importing edm..")
         return loadEDM(self, context)
 
+class ImportEDD(bpy.types.Operator, ImportHelper):
+    """EDD Importer"""
+    bl_idname = "import_object.edd"
+    bl_label = "Import EDD"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    filename_ext = ".edd"
+    filter_glob = StringProperty(default="*.edd", options={'HIDDEN'})
+
+    def execute(self, context):
+        self.report({'INFO'}, "Begin importing edd..")
+        return loadEDD(self, context)
+
 def menu_func_import(self, context):
     self.layout.operator(ImportEDM.bl_idname, text="EDM (.edm)")
+    self.layout.operator(ImportEDD.bl_idname, text="EDD (.edd)")
     
 def register():
     bpy.utils.register_class(ImportEDM)
+    bpy.utils.register_class(ImportEDD)
     bpy.types.INFO_MT_file_import.append(menu_func_import)
 
 def unregister():
     bpy.utils.unregister_class(ImportEDM)
+    bpy.utils.unregister_class(ImportEDD)
     bpy.types.INFO_MT_file_import.remove(menu_func_import)
 
 if __name__ == "__main__":
@@ -57,6 +74,39 @@ def readString(file, numChars):
     string = file.read(numChars)
     return string.decode("utf-8")
 
+#EDD OBJECT
+#=================================
+class eddObject(object):
+    def __init__(self):
+        self.frameCount = 0
+        self.frames = []
+
+    def readfile(self, file):
+        self.frameCount = readInt(file)
+        for i in range(self.frameCount):
+            frame = eddFrame()
+            frame.readfile(file)
+            self.frames.append(frame)
+
+#EDD FRAME
+#=================================
+class eddFrame(object):
+    def __init__(self):
+        self.name = ""
+        self.pos = []
+        self.rot = []
+        return
+    
+    def __str__(self):
+        string = self.name + ": Pos: " + str(self.pos)
+        return string
+    
+    def readfile(self, file):
+        numChars = readByte(file)
+        self.name = readString(file, numChars)
+        self.pos = (readFloat(file), readFloat(file), readFloat(file))
+        self.rot = (readFloat(file), 0, 0)
+        
 #EDM OBJECT
 #=================================
 class edmObject(object):
@@ -102,12 +152,12 @@ class edmPart(object):
             uv = (readFloat(file), readFloat(file))
             self.uvs.append(uv)
 
-        self.facesCount = readInt(file);
+        self.facesCount = readInt(file)
         for i in range(self.facesCount):
             face = (readInt(file)-1, readInt(file)-1, readInt(file)-1)
             self.faces.append(face)
             
-#BEGIN LOADING AND PARSING
+#BEGIN LOADING AND PARSING (EDM)
 #==============================
 def loadEDM(operator, context):
     scene = context.scene
@@ -131,5 +181,40 @@ def parseEDM(filepath):
         scene.objects.link(ob)
         me.from_pydata(edmMesh.parts[i].verts, [], edmMesh.parts[i].faces)
         me.update(calc_edges=True)
+    
+    file.close()
+
+#BEGIN LOADING AND PARSING (EDD)
+#==============================
+def loadEDD(operator, context):
+    scene = context.scene
+    filepath = operator.properties.filepath
+    
+    path = "Importing: " + filepath
+    operator.report({'INFO'}, path)
+    parseEDD(filepath);
+    
+    return {'FINISHED'}
+
+def parseEDD(filepath):
+    scene = bpy.context.scene
+    file = open(filepath, 'rb')
+    edd = eddObject()
+    edd.readfile(file)
+
+    directory = os.path.dirname(filepath)
+    objects = []
+    for i in range(edd.frameCount):
+        path = directory + "\\" + edd.frames[i].name + ".edm"
+        try:
+            parseEDM(path)
+        except struct.error:
+            print("ERRORED MESH, WILL NOT IMPORT")
+    #for i in range(edd.frameCount):
+    #    me = bpy.data.meshes.new(edd.frames[i].name)
+    #    ob = bpy.data.objects.new(edmMesh.parts[i].name + "_mesh", me)
+    #    scene.objects.link(ob)
+    #    me.from_pydata(edmMesh.parts[i].verts, [], edmMesh.parts[i].faces)
+    #    me.update(calc_edges=True)
     
     file.close()
