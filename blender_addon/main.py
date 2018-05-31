@@ -1,7 +1,13 @@
 bl_info = {
-    "name":"EDM Importer",
-    "category" : "Object",
-    "description": "Import EDM files into blender"}
+    "name":"Mafia 2 Tools: Mesh Importer",
+    "category": "Object",
+    "description": "Import EDM/EDD files into blender",
+    "author": "Greavesy",
+    "location": "File > Import",
+    "version": (1,0),
+    "blender": (2, 79, 0),
+    "support": "COMMUNITY"
+    }
         
 import bpy
 import os
@@ -183,6 +189,7 @@ def parseEDM(filepath):
         me.update(calc_edges=True)
     
     file.close()
+    return ob
 
 #BEGIN LOADING AND PARSING (EDD)
 #==============================
@@ -207,9 +214,12 @@ def parseEDD(filepath):
     for i in range(edd.frameCount):
         path = directory + "\\" + edd.frames[i].name + ".edm"
         try:
-            parseEDM(path)
+            objects.append(parseEDM(path))
+            objects[i].location = edd.frames[i].pos
         except struct.error:
+            objects.append("null")
             print("ERRORED MESH, WILL NOT IMPORT")
+            
     #for i in range(edd.frameCount):
     #    me = bpy.data.meshes.new(edd.frames[i].name)
     #    ob = bpy.data.objects.new(edmMesh.parts[i].name + "_mesh", me)
