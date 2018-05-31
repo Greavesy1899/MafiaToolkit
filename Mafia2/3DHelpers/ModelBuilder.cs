@@ -93,23 +93,9 @@ namespace Mafia2
                     if (lod1.VertexDeclaration.HasFlag(VertexFlags.Normals))
                     {
                         int index2 = i * stride + vertexOffsets[VertexFlags.Normals].Offset;
-                        vertex.Normal = new Vector3(vertexBuffer.Data[index2] - sbyte.MaxValue, vertexBuffer.Data[index2 + 1] - sbyte.MaxValue, vertexBuffer.Data[index2 + 2] - sbyte.MaxValue);
+                        vertex.Normal = new Vector3(vertexBuffer.Data[index2], vertexBuffer.Data[index2 + 1], vertexBuffer.Data[index2 + 2]);
                         vertex.Normal.Normalize();
                     }
-                    //if (lod1.VertexDeclaration.HasFlag(VertexFlags.Tangent)) {
-                    //    lod2.NormalMapInfoPresent = true;
-                    //    int num3 = i * stride + vertexOffsets[VertexFlags.Position].Offset;
-                    //    num2 = (BitConverter.ToUInt16(vertexBuffer.Data, num3 + 4) & 32768) == 32768 ? 1f : -1f;
-                    //    byte num4 = vertexBuffer.Data[num3 + 6];
-                    //    byte num5 = vertexBuffer.Data[num3 + 7];
-                    //    int num6 = i * stride + vertexOffsets[VertexFlags.Normals].Offset;
-                    //    byte num7 = vertexBuffer.Data[num6 + 3];
-                    //    vertex.Tangent = new Vector3(num4 - sbyte.MaxValue, num5 - sbyte.MaxValue, num6 - sbyte.MaxValue);
-                    //    vertex.Tangent.Normalize();
-                    //}
-                    //if (lod1.VertexDeclaration.HasFlag(VertexFlags.BlendData)) {
-                    //    throw new Exception("Need to do this.");
-                    //}
                     lod2.Vertices[v] = vertex;
                 }
                 IndexBuffer indexBuffer = GetIndexBuffer(indexBufferPool, lod1.IndexBufferRef.uHash);

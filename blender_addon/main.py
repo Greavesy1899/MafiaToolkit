@@ -6,7 +6,7 @@ bl_info = {
     "location": "File > Import",
     "version": (1,0),
     "blender": (2, 79, 0),
-    "support": "COMMUNITY"
+    "support": "COMMUNITY",
     }
         
 import bpy
@@ -79,6 +79,11 @@ def readFloat(file):
 def readString(file, numChars):
     string = file.read(numChars)
     return string.decode("utf-8")
+
+#MESH CREATION HELPERS
+#==============================
+
+
 
 #EDD OBJECT
 #=================================
@@ -180,17 +185,16 @@ def parseEDM(filepath):
     file = open(filepath, 'rb')
     edmMesh = edmObject()
     edmMesh.readfile(file)
-
+    file.close()
+    
     for i in range(edmMesh.partCount):
         me = bpy.data.meshes.new(edmMesh.parts[i].name)
         ob = bpy.data.objects.new(edmMesh.parts[i].name + "_mesh", me)
         scene.objects.link(ob)
         me.from_pydata(edmMesh.parts[i].verts, [], edmMesh.parts[i].faces)
         me.update(calc_edges=True)
+        return ob
     
-    file.close()
-    return ob
-
 #BEGIN LOADING AND PARSING (EDD)
 #==============================
 def loadEDD(operator, context):
@@ -220,11 +224,4 @@ def parseEDD(filepath):
             objects.append("null")
             print("ERRORED MESH, WILL NOT IMPORT")
             
-    #for i in range(edd.frameCount):
-    #    me = bpy.data.meshes.new(edd.frames[i].name)
-    #    ob = bpy.data.objects.new(edmMesh.parts[i].name + "_mesh", me)
-    #    scene.objects.link(ob)
-    #    me.from_pydata(edmMesh.parts[i].verts, [], edmMesh.parts[i].faces)
-    #    me.update(calc_edges=True)
-    
     file.close()
