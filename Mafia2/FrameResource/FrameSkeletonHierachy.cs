@@ -8,6 +8,15 @@ namespace Mafia2
         byte[] parentIndices;
         byte[] lastChildIndices;
 
+        public byte[] ParentIndices {
+            get { return parentIndices; }
+            set { parentIndices = value; }
+        }
+        public byte[] LastChildIndices {
+            get { return lastChildIndices; }
+            set { lastChildIndices = value; }
+        }
+
         public FrameSkeletonHierachy(BinaryReader reader)
         {
             ReadFromFile(reader);

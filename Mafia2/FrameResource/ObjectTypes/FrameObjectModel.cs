@@ -20,6 +20,18 @@ namespace Mafia2
         int unk_29_int;
         unk_struct2[] unk_30_list;
 
+        public int BlendInfoIndex {
+            get { return blendInfoIndex; }
+            set { blendInfoIndex = value; }
+        }
+        public int SkeletonIndex {
+            get { return skeletonIndex; }
+            set { skeletonIndex = value; }
+        }
+        public int SkeletonHierachyIndex {
+            get { return skeletonHierachyIndex; }
+            set { skeletonHierachyIndex = value; }
+        }
 
         public FrameObjectModel (BinaryReader reader, ArrayList fb)
         {

@@ -34,33 +34,78 @@ namespace Mafia2Tool
                 frameResource.ReadFromFile(reader);
                 frameResource.DefineFrameBlockParents();
 
-                for(int i = 0; i != frameResource.FrameBlocks.Count; i++)
+                for (int i = 0; i != frameResource.FrameBlocks.Count; i++)
                 {
                     FrameResourceListBox.Items.Add(frameResource.FrameBlocks[i]);
 
-                    FrameObjectBase block = frameResource.FrameBlocks[i] as FrameObjectBase;
+                    FrameObjectBase frame = frameResource.FrameBlocks[i] as FrameObjectBase;
 
-                    if (block == null)
+                    if (frame == null)
                         continue;
 
-                    if (block.GetType() == typeof(FrameObjectSingleMesh) || block.GetType() == typeof(FrameObjectModel))
+                    string nodeText = "";
+
+                    if (frame.Name.Name == "")
+                        nodeText = "Joint block";
+                    else
+                        nodeText = frame.Name.Name;
+                    
+                    TreeNode node = new TreeNode()
+                    {
+                        Name = nodeText,
+                        Text = nodeText,
+                        Tag = frameResource.FrameBlocks[i],
+                    };
+
+                    if (frameResource.FrameBlocks[i].GetType() == typeof(FrameObjectSingleMesh))
                     {
                         FrameObjectSingleMesh singleMesh = frameResource.FrameBlocks[i] as FrameObjectSingleMesh;
-
-                        mesh.Add(singleMesh);
-                        TreeNode node = new TreeNode()
-                        {
-                            Name = singleMesh.Name.Name,
-                            Text = singleMesh.Name.Name,
-                            Tag = frameResource.FrameBlocks[i],
-                        };
                         node.Nodes.Add(createTreeNode("Material", singleMesh.MaterialIndex));
                         node.Nodes.Add(createTreeNode("Geometry", singleMesh.MeshIndex));
-                        treeView1.Nodes.Add(node);
+                        mesh.Add(singleMesh);
+
+                        if (frameResource.FrameBlocks[i].GetType() == typeof(FrameObjectModel))
+                        {
+                            FrameObjectModel modelMesh = frameResource.FrameBlocks[i] as FrameObjectModel;
+                            node.Nodes.Add(createTreeNode("Blend Info", modelMesh.BlendInfoIndex));
+                            node.Nodes.Add(createTreeNode("Skeleton Info", modelMesh.SkeletonIndex));
+                            node.Nodes.Add(createTreeNode("Skeleton Hierachy Info", modelMesh.SkeletonHierachyIndex));
+                        }
+                    }
+
+                    if (treeView1.Nodes.ContainsKey(frame.ParentIndex2.Name))
+                    {
+                        string name = frame.ParentIndex2.Name;
+                        int index = treeView1.Nodes.IndexOfKey(frame.ParentIndex2.Name);
+                        treeView1.Nodes[index].Nodes.Add(node);
+                    }
+                    else
+                    {
+                        string name = "";
+                        int pIndex = frame.ParentIndex2.Index;
+
+                        if (pIndex == -1)
+                        {
+                            treeView1.Nodes.Add(node);
+                            continue;
+                        }
+                        else if (frameResource.FrameBlocks[pIndex].GetType() == typeof(FrameHeaderScene))
+                        {
+                            name = (frameResource.FrameBlocks[pIndex] as FrameHeaderScene).Name.Name;
+                        }
+                        else if (frameResource.FrameBlocks[pIndex].GetType() == typeof(FrameObjectFrame))
+                        {
+                            name = (frameResource.FrameBlocks[pIndex] as FrameObjectFrame).Name.Name;
+                        }
+
+                        treeView1.Nodes.Add(createTreeNode(name, frameResource.FrameBlocks[pIndex]));
+                        int index = treeView1.Nodes.IndexOfKey(frame.ParentIndex2.Name);
+                        treeView1.Nodes[index].Nodes.Add(node);
                     }
                 }
             }
         }
+
         private TreeNode createTreeNode(string NameText, int index)
         {
             TreeNode node = new TreeNode
@@ -72,17 +117,27 @@ namespace Mafia2Tool
 
             return node;
         }
+        private TreeNode createTreeNode(string NameText, object frame)
+        {
+            TreeNode node = new TreeNode
+            {
+                Name = NameText,
+                Text = NameText,
+                Tag = frame
+            };
+
+            return node;
+        }
+
         private void OnSelectedChanged(object sender, System.EventArgs e)
         {
             FrameResourceGrid.SelectedObject = FrameResourceListBox.SelectedItem;
         }
-
         private void LoadMaterialTool(object sender, System.EventArgs e)
         {
             MaterialTool tool = new MaterialTool();
             tool.ShowDialog();
         }
-
         private void OnClickLoad3D(object sender, System.EventArgs e)
         {
             DirectoryInfo dir = new DirectoryInfo(Application.StartupPath);
