@@ -10,10 +10,6 @@ namespace Mafia2Tool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //using (BinaryReader reader = new BinaryReader(File.Open("SoundSectors_L_Motor_Show.bin", FileMode.Open)))
-            //{
-            //    SoundSector soundSector = new SoundSector(reader);
-            //}
             Application.Run(new FrameResourceTool());
         }
     }

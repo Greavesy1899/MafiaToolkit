@@ -1,11 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Mafia2
 {
     public class FrameObjectSingleMesh : FrameObjectJoint
     {
 
-        int unk_09_flags;
+        SingleMeshFlags flags;
         Bounds bounds;
         byte unk_14_byte;
         int meshIndex;
@@ -16,9 +17,9 @@ namespace Mafia2
         byte unk_18_byte3;
         FrameGeometry mesh;
 
-        public int Unk_09 {
-            get { return unk_09_flags; }
-            set { unk_09_flags = value; }
+        public SingleMeshFlags Flags {
+            get { return flags; }
+            set { flags = value; }
         }
         public Bounds Boundings {
             get { return bounds; }
@@ -68,7 +69,7 @@ namespace Mafia2
         public override void ReadFromFile(BinaryReader reader)
         {
             base.ReadFromFile(reader);
-            unk_09_flags = reader.ReadInt32();
+            flags = (SingleMeshFlags)reader.ReadInt32();
             bounds = new Bounds(reader);
             unk_14_byte = reader.ReadByte();
             meshIndex = reader.ReadInt32();

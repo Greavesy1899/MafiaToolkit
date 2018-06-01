@@ -13,8 +13,8 @@ namespace Mafia2
             stringLength = reader.ReadInt32();
             names = new string(reader.ReadChars(stringLength));
 
-            int count = reader.ReadInt32();
-            frameData = new Data[count];
+            int size = reader.ReadInt32();
+            frameData = new Data[size];
 
             for (int i = 0; i != frameData.Length; i++)
             {
@@ -27,20 +27,20 @@ namespace Mafia2
 
         class Data
         {
-            //more research required.
             string name;                   
-            short unk01;                  //still unknown. OR this is the potential root.
+            short parent;  
             ushort namepos1;
-            ushort namepos2;               //Sometimes ends up as 65535. null in the engine?
-            int frameIndex;               //This index begins AFTER objects. Sometimes has massive values.
+            ushort namepos2;
+            short frameIndex;
+            short flags;
 
             public string Name {
                 get { return name; }
                 set { name = value; }
             }
-            public short Unk01 {
-                get { return unk01; }
-                set { unk01 = value; }
+            public short Parent {
+                get { return parent; }
+                set { parent = value; }
             }
             public ushort NamePos1 {
                 get { return namepos1; }
@@ -50,9 +50,13 @@ namespace Mafia2
                 get { return namepos2; }
                 set { namepos2 = value; }
             }
-            public int FrameIndex {
+            public short FrameIndex {
                 get { return frameIndex; }
                 set { frameIndex = value; }
+            }
+            public short Flags {
+                get { return flags; }
+                set { flags = value; }
             }
 
             public Data(BinaryReader reader)
@@ -62,15 +66,16 @@ namespace Mafia2
 
             public void ReadFromFile(BinaryReader reader)
             {
-                unk01 = reader.ReadInt16();
+                parent = reader.ReadInt16();
                 namepos1 = reader.ReadUInt16();
                 namepos2 = reader.ReadUInt16();
-                frameIndex = reader.ReadInt32();
+                frameIndex = reader.ReadInt16();
+                flags = reader.ReadInt16();
             }
 
             public override string ToString()
             {
-                return string.Format("{0}, {1}, Frame Index: {2}", unk01, name, frameIndex);
+                return string.Format("{0}, {1}, Frame Index: {2}", parent, name, frameIndex, flags);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace Mafia2
@@ -152,6 +153,8 @@ namespace Mafia2
                     }
                     List<Vertex> newVerts = new List<Vertex>();
                     List<short> newFacesI = new List<short>();
+                    Stopwatch watch = new Stopwatch();
+                    watch.Start();
                     foreach (short s in vertlist)
                     {
                         if (!newVerts.Contains(lod.Vertices[s]))
@@ -177,9 +180,11 @@ namespace Mafia2
                         num++;
                         newShort3.Add(face);
                     }
+                    watch.Stop();
+                    Console.WriteLine("{0}", watch.Elapsed);
                     #endregion
 
-                    EDMs[i] = new CustomEDM(newVerts.ToArray(), newShort3.ToArray(), lod.Parts[i].Material);
+                    EDMs[i] = new CustomEDM(newVerts, newShort3, lod.Parts[i].Material);
 
                     writer.Write(EDMs[i].Name);
                     writer.Write(EDMs[i].Vertices.Length);
@@ -195,8 +200,8 @@ namespace Mafia2
                         writer.Write((float)EDMs[i].UVs[c].X);
                         writer.Write((float)1f-EDMs[i].UVs[c].Y);
                     }
-                    writer.Write(EDMs[i].Indices.Length);
-                    for (int c = 0; c != EDMs[i].Indices.Length; c++)
+                    writer.Write(EDMs[i].Indices.Count);
+                    for (int c = 0; c != EDMs[i].Indices.Count; c++)
                     {
                         writer.Write(EDMs[i].Indices[c].s1 + 1);
                         writer.Write(EDMs[i].Indices[c].s2 + 1);

@@ -35,4 +35,83 @@ namespace Mafia2
         flag_0x40000 = 262144, // 0x00040000
         flag_0x100000 = 1048576, // 0x00100000
     }
+
+    [Flags]
+    public enum SingleMeshFlags : int //Need to sort these out.
+    {
+        flag_1 = 1,
+        flag_2 = 2,
+        flag_4 = 4,
+        flag_8 = 8,
+        flag_16 = 16,
+        flag_32 = 32,
+        Unk13_Flag = 64,
+        flag_128 = 128,
+        flag_256 = 256,
+        flag_512 = 512,
+        flag_1024 = 1024,
+        flag_2048 = 2048,
+        flag_4096 = 4096,
+        flag_8192 = 8192,
+        flag_16384 = 16384,
+        flag_32768 = 32768,
+        flag_65536 = 65536,
+        flag_131072 = 131072,
+        flag_262144 = 262144,
+        flag_524288 = 524288,
+        flag_1048576 = 1048576,
+        flag_2097152 = 2097152,
+        flag_4194304 = 4194304,
+        flag_8388608 = 8388608,
+        flag_16777216 = 16777216,
+        flag_33554432 = 33554432,
+        flag_67108864 = 67108864,
+        flag_134217728 = 134217728,
+        flag_268435456 = 268435456,
+        ParentIndex2_Flag = 536870912,
+        OM_Flag = 1073741824,
+    }
+
+    [Flags]
+    public enum MaterialFlags : uint //No idea which ones are used.
+    {
+        flag_1 = 1,
+        flag_2 = 2,
+        flag_4 = 4,
+        flag_8 = 8,
+        flag_16 = 16,
+        flag_32 = 32,
+        flag_64 = 64,
+        flag_128 = 128,
+        flag_256 = 256,
+        flag_512 = 512,
+        flag_1024 = 1024,
+        flag_2048 = 2048,
+        flag_4096 = 4096,
+        flag_8192 = 8192,
+        flag_16384 = 16384,
+        flag_32768 = 32768,
+        flag_65536 = 65536,
+        flag_131072 = 131072,
+        flag_262144 = 262144,
+        flag_524288 = 524288,
+        flag_1048576 = 1048576,
+        flag_2097152 = 2097152,
+        flag_4194304 = 4194304,
+        flag_8388608 = 8388608,
+        flag_16777216 = 16777216,
+        flag_33554432 = 33554432,
+        flag_67108864 = 67108864,
+        flag_134217728 = 134217728,
+        flag_268435456 = 268435456,
+        flag_536870912 = 536870912,
+        flag_1073741824 = 1073741824,
+        flag_2147483648 = 2147483648,
+    }
+
+    public enum BufferType
+    {
+        Vertex = 2,
+        Index = 3,
+    }
 }

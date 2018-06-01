@@ -14,6 +14,7 @@ import os
 import struct
 from bpy.props import StringProperty
 from bpy_extras.io_utils import ImportHelper
+from mathutils import Euler
 
 class ImportEDM(bpy.types.Operator, ImportHelper):
     """EDM Importer"""
@@ -116,7 +117,7 @@ class eddFrame(object):
         numChars = readByte(file)
         self.name = readString(file, numChars)
         self.pos = (readFloat(file), readFloat(file), readFloat(file))
-        self.rot = (readFloat(file), 0, 0)
+        self.rot = (readFloat(file), readFloat(file), readFloat(file))
         
 #EDM OBJECT
 #=================================
@@ -188,7 +189,7 @@ def parseEDM(filepath):
     file.close()
     
     for i in range(edmMesh.partCount):
-        me = bpy.data.meshes.new(edmMesh.parts[i].name)
+        me = bpy.data.meshes.new(os.path.basename(filepath))
         ob = bpy.data.objects.new(edmMesh.parts[i].name + "_mesh", me)
         scene.objects.link(ob)
         me.from_pydata(edmMesh.parts[i].verts, [], edmMesh.parts[i].faces)
@@ -220,6 +221,7 @@ def parseEDD(filepath):
         try:
             objects.append(parseEDM(path))
             objects[i].location = edd.frames[i].pos
+            objects[i].rotation_euler = Euler((edd.frames[i].rot[0], edd.frames[i].rot[1],edd.frames[i].rot[2]), 'XYZ')
         except struct.error:
             objects.append("null")
             print("ERRORED MESH, WILL NOT IMPORT")

@@ -20,7 +20,7 @@ namespace Mafia2 {
         ulong shaderID;
         string shaderName;
 
-        uint flags;
+        MaterialFlags flags;
 
         int sp_count;
         ShaderParameter[] sp;
@@ -49,7 +49,7 @@ namespace Mafia2 {
         [Category("UFOs")]
         public byte UFO1 {
             get { return ufo1; }
-            set { ufo2 = value; }
+            set { ufo1 = value; }
         }
 
         [Category("UFOs")]
@@ -95,7 +95,7 @@ namespace Mafia2 {
         }
 
         [Category("Flags")]
-        public uint Flags {
+        public MaterialFlags Flags {
             get { return flags; }
             set { flags = value; }
         }
@@ -151,7 +151,7 @@ namespace Mafia2 {
             shaderID = reader.ReadUInt64().Swap();
             shaderName = string.Format("{0:X16}", shaderID);
 
-            flags = reader.ReadUInt32();
+            flags = (MaterialFlags)reader.ReadUInt32();
 
             sp_count = reader.ReadInt32();
             sp = new ShaderParameter[sp_count];
@@ -183,7 +183,7 @@ namespace Mafia2 {
 
             //Shader and flags
             stream.WriteValueU64(shaderID.Swap());
-            stream.WriteValueU32(flags);
+            stream.WriteValueU32((uint)flags);
 
             //Shader Parameter
             stream.WriteValueS32(sp_count);

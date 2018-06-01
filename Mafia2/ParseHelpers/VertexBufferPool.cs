@@ -2,7 +2,8 @@
 using System.IO;
 namespace Mafia2 {
     public class VertexBufferPool {
-        byte version;
+        //MAX BUFFER SIZE IS 128
+        BufferType version;
         int numBuffers;
         int size;
         VertexBuffer[] buffers;
@@ -24,7 +25,7 @@ namespace Mafia2 {
         }
 
         public void ReadFromFile(BinaryReader reader) {
-            version = reader.ReadByte();
+            version = (BufferType)reader.ReadByte();
             numBuffers = reader.ReadInt32();
             size = reader.ReadInt32();
 

@@ -16,7 +16,7 @@ namespace Mafia2 {
             get { return name; }
             set { name = value; }
         }
-        public int Unk_00 {
+        public int Unk_00_int {
             get { return unknown_00_int; }
             set { unknown_00_int = value; }
         }

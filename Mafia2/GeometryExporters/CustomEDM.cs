@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Mafia2
 {
@@ -8,7 +9,7 @@ namespace Mafia2
         string name;
         Vector3[] vertices;
         UVVector2[] uvs;
-        Short3[] indices;
+        List<Short3> indices;
 
         public string Name {
             get { return name; }
@@ -22,17 +23,17 @@ namespace Mafia2
             get { return uvs; }
             set { uvs = value; }
         }
-        public Short3[] Indices {
+        public List<Short3> Indices {
             get { return indices; }
             set { indices = value; }
         }
 
-        public CustomEDM(Vertex[] vertex, Short3[] indices, string name)
+        public CustomEDM(List<Vertex> vertex, List<Short3> indices, string name)
         {
-            this.vertices = new Vector3[vertex.Length];
-            this.uvs = new UVVector2[vertex.Length];
+            this.vertices = new Vector3[vertex.Count];
+            this.uvs = new UVVector2[vertex.Count];
 
-            for(int i = 0; i != vertex.Length; i++)
+            for(int i = 0; i != vertex.Count; i++)
             {
                 vertices[i] = vertex[i].Position;
                 if(vertex[i].UVs.Length > 0)

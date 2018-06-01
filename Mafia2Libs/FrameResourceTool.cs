@@ -40,64 +40,67 @@ namespace Mafia2Tool
                 }
                 for (int i = 0; i != frameResource.FrameBlocks.Length; i++)
                 {
-                    //FrameResourceListBox.Items.Add(frameResource.FrameBlocks[i]);
+                    FrameResourceListBox.Items.Add(frameResource.FrameBlocks[i]);
+                }
 
-                    FrameObjectBase frame = frameResource.FrameBlocks[i] as FrameObjectBase;
+                for (int i = 0; i != frameResource.FrameObjects.Length; i++)
+                {
+                    FrameObjectBase frame = frameResource.FrameObjects[i] as FrameObjectBase;
 
                     if (frame == null)
                         continue;
 
                     TreeNode node = convertNode(frame.NodeData);
 
-                    if (frameResource.FrameBlocks[i].GetType() == typeof(FrameObjectSingleMesh))
+                    if (frameResource.FrameObjects[i].GetType() == typeof(FrameObjectSingleMesh))
                     {
-                        FrameObjectSingleMesh singleMesh = frameResource.FrameBlocks[i] as FrameObjectSingleMesh;
-                        node.Nodes.Add(createTreeNode("Material", singleMesh.MaterialIndex));
-                        node.Nodes.Add(createTreeNode("Geometry", singleMesh.MeshIndex));
+                        FrameObjectSingleMesh singleMesh = frameResource.FrameObjects[i] as FrameObjectSingleMesh;
+                        //node.Nodes.Add(createTreeNode("Material", singleMesh.MaterialIndex));
+                        //node.Nodes.Add(createTreeNode("Geometry", singleMesh.MeshIndex));
                         mesh.Add(singleMesh);
 
-                        if (frameResource.FrameBlocks[i].GetType() == typeof(FrameObjectModel))
+                        if (frameResource.FrameObjects[i].GetType() == typeof(FrameObjectModel))
                         {
-                            FrameObjectModel modelMesh = frameResource.FrameBlocks[i] as FrameObjectModel;
-                            node.Nodes.Add(createTreeNode("Blend Info", modelMesh.BlendInfoIndex));
-                            node.Nodes.Add(createTreeNode("Skeleton Info", modelMesh.SkeletonIndex));
-                            node.Nodes.Add(createTreeNode("Skeleton Hierachy Info", modelMesh.SkeletonHierachyIndex));
+                            FrameObjectModel modelMesh = frameResource.FrameObjects[i] as FrameObjectModel;
+                            //node.Nodes.Add(createTreeNode("Blend Info", modelMesh.BlendInfoIndex));
+                            //node.Nodes.Add(createTreeNode("Skeleton Info", modelMesh.SkeletonIndex));
+                            //node.Nodes.Add(createTreeNode("Skeleton Hierachy Info", modelMesh.SkeletonHierachyIndex));
                             mesh.Add(modelMesh);
                         }
                         
                     }
 
-                    if (treeView1.Nodes.ContainsKey(frame.ParentIndex2.Name))
-                    {
-                        string name = frame.ParentIndex2.Name;
-                        int index = treeView1.Nodes.IndexOfKey(frame.ParentIndex2.Name);
-                        treeView1.Nodes[index].Nodes.Add(node);
-                    }
-                    else
-                    {
-                        string name = "";
-                        int pIndex = frame.ParentIndex2.Index;
+                    //if (treeView1.Nodes.ContainsKey(frame.ParentIndex2.Name))
+                    //{
+                    //    string name = frame.ParentIndex2.Name;
+                    //    int index = treeView1.Nodes.IndexOfKey(frame.ParentIndex2.Name);
+                    //    treeView1.Nodes[index].Nodes.Add(node);
+                    //}
+                    //else
+                    //{
+                    //    string name = "";
+                    //    int pIndex = frame.ParentIndex2.Index;
 
-                        if (pIndex == -1)
-                        {
-                            if (!treeView1.Nodes.ContainsKey(frame.Name.Name))
-                                treeView1.Nodes.Add(node);
+                    //    if (pIndex == -1)
+                    //    {
+                    //        if (!treeView1.Nodes.ContainsKey(frame.Name.Name))
+                    //            treeView1.Nodes.Add(node);
 
-                            continue;
-                        }
-                        else if (frameResource.FrameBlocks[pIndex].GetType() == typeof(FrameHeaderScene))
-                        {
-                            name = (frameResource.FrameBlocks[pIndex] as FrameHeaderScene).Name.Name;
-                        }
-                        else if (frameResource.FrameBlocks[pIndex].GetType() == typeof(FrameObjectFrame))
-                        {
-                            name = (frameResource.FrameBlocks[pIndex] as FrameObjectFrame).Name.Name;
-                        }
+                    //        continue;
+                    //    }
+                    //    else if (frameResource.FrameObjects[pIndex].GetType() == typeof(FrameHeaderScene))
+                    //    {
+                    //        name = (frameResource.FrameObjects[pIndex] as FrameHeaderScene).Name.Name;
+                    //    }
+                    //    else if (frameResource.FrameObjects[pIndex].GetType() == typeof(FrameObjectFrame))
+                    //    {
+                    //        name = (frameResource.FrameObjects[pIndex] as FrameObjectFrame).Name.Name;
+                    //    }
 
-                        treeView1.Nodes.Add(createTreeNode(name, frameResource.FrameBlocks[pIndex]));
-                        int index = treeView1.Nodes.IndexOfKey(frame.ParentIndex2.Name);
-                        treeView1.Nodes[index].Nodes.Add(node);
-                    }
+                    //    treeView1.Nodes.Add(createTreeNode(name, frameResource.FrameBlocks[pIndex]));
+                    //    int index = treeView1.Nodes.IndexOfKey(frame.ParentIndex2.Name);
+                    //    treeView1.Nodes[index].Nodes.Add(node);
+                    //}
                 }
             }
         }
@@ -166,7 +169,7 @@ namespace Mafia2Tool
 
             string[] fileNames = new string[mesh.Count];
             Vector3[] filePos = new Vector3[mesh.Count];
-            float[] rotPos = new float[mesh.Count];
+            Vector3[] rotPos = new Vector3[mesh.Count];
 
             for (int i = 0; i != mesh.Count; i++)
             {
@@ -185,7 +188,7 @@ namespace Mafia2Tool
                     }
                     fileNames[i] = mesh[i].Name.Name + "_lod" + c;
                     filePos[i] = mesh[i].Matrix.Position;
-                    rotPos[i] = mesh[i].Matrix.Rotation.Vector.X;
+                    rotPos[i] = mesh[i].Matrix.Rotation.Vector;
 
                     Console.WriteLine("{0}/{1}", i, mesh.Count);
                 }
@@ -201,7 +204,9 @@ namespace Mafia2Tool
                     writer.Write(filePos[i].X);
                     writer.Write(filePos[i].Y);
                     writer.Write(filePos[i].Z);
-                    writer.Write(rotPos[i]);
+                    writer.Write(rotPos[i].X);
+                    writer.Write(rotPos[i].Y);
+                    writer.Write(rotPos[i].Z);
                 }
             }
         }
