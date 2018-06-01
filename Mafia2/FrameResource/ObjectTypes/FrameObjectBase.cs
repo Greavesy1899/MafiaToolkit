@@ -10,6 +10,7 @@ namespace Mafia2 {
         ParentStruct parentIndex1;
         ParentStruct parentIndex2;
         short unknown_06_short;
+        Node node;
 
         public Hash Name {
             get { return name; }
@@ -39,6 +40,10 @@ namespace Mafia2 {
             get { return unknown_06_short; }
             set { unknown_06_short = value; }
         }
+        public Node NodeData{
+            get { return node; }
+            set { node = value; }
+        }
 
         public FrameObjectBase() { }
 
@@ -50,6 +55,32 @@ namespace Mafia2 {
             parentIndex1 = new ParentStruct(reader.ReadInt32());
             parentIndex2 = new ParentStruct(reader.ReadInt32());
             unknown_06_short = reader.ReadInt16();
+            node = new Node(name.Name, this);
+        }
+    }
+
+    public class Node
+    {
+        string nameText;
+        object tag;
+
+        public string NameText {
+            get { return nameText; }
+            set { nameText = value; }
+        }
+        public object Tag {
+            get { return tag; }
+            set { tag = value; }
+        }
+
+        public Node(string nameText, object tag)
+        {
+            if (nameText == "")
+                this.nameText = tag.GetType().ToString();
+            else
+                this.nameText = nameText;
+
+            this.tag = tag;
         }
     }
 }

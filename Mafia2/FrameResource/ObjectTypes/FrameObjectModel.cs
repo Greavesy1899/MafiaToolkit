@@ -6,7 +6,7 @@ namespace Mafia2
 {
     public class FrameObjectModel : FrameObjectSingleMesh
     {
-        private ArrayList frameBlocks;
+        private object[] frameBlocks;
         private FrameSkeleton skeleton;
         private FrameBlendInfo blendInfo;
 
@@ -33,7 +33,7 @@ namespace Mafia2
             set { skeletonHierachyIndex = value; }
         }
 
-        public FrameObjectModel (BinaryReader reader, ArrayList fb)
+        public FrameObjectModel (BinaryReader reader, object[] fb)
         {
             frameBlocks = fb;
             ReadFromFile(reader);

@@ -34,28 +34,20 @@ namespace Mafia2Tool
                 frameResource.ReadFromFile(reader);
                 frameResource.DefineFrameBlockParents();
 
-                for (int i = 0; i != frameResource.FrameBlocks.Count; i++)
+                for(int i = 0; i != frameResource.FrameObjects.Length; i++)
                 {
-                    FrameResourceListBox.Items.Add(frameResource.FrameBlocks[i]);
+                    FrameResourceListBox.Items.Add(frameResource.FrameObjects[i]);
+                }
+                for (int i = 0; i != frameResource.FrameBlocks.Length; i++)
+                {
+                    //FrameResourceListBox.Items.Add(frameResource.FrameBlocks[i]);
 
                     FrameObjectBase frame = frameResource.FrameBlocks[i] as FrameObjectBase;
 
                     if (frame == null)
                         continue;
 
-                    string nodeText = "";
-
-                    if (frame.Name.Name == "")
-                        nodeText = "Joint block";
-                    else
-                        nodeText = frame.Name.Name;
-                    
-                    TreeNode node = new TreeNode()
-                    {
-                        Name = nodeText,
-                        Text = nodeText,
-                        Tag = frameResource.FrameBlocks[i],
-                    };
+                    TreeNode node = convertNode(frame.NodeData);
 
                     if (frameResource.FrameBlocks[i].GetType() == typeof(FrameObjectSingleMesh))
                     {
@@ -70,7 +62,9 @@ namespace Mafia2Tool
                             node.Nodes.Add(createTreeNode("Blend Info", modelMesh.BlendInfoIndex));
                             node.Nodes.Add(createTreeNode("Skeleton Info", modelMesh.SkeletonIndex));
                             node.Nodes.Add(createTreeNode("Skeleton Hierachy Info", modelMesh.SkeletonHierachyIndex));
+                            mesh.Add(modelMesh);
                         }
+                        
                     }
 
                     if (treeView1.Nodes.ContainsKey(frame.ParentIndex2.Name))
@@ -86,7 +80,9 @@ namespace Mafia2Tool
 
                         if (pIndex == -1)
                         {
-                            treeView1.Nodes.Add(node);
+                            if (!treeView1.Nodes.ContainsKey(frame.Name.Name))
+                                treeView1.Nodes.Add(node);
+
                             continue;
                         }
                         else if (frameResource.FrameBlocks[pIndex].GetType() == typeof(FrameHeaderScene))
@@ -127,6 +123,17 @@ namespace Mafia2Tool
             };
 
             return node;
+        }
+        private TreeNode convertNode(Node node)
+        {
+            TreeNode treeNode = new TreeNode()
+            {
+                Name = node.NameText,
+                Text = node.NameText,
+                Tag = node.Tag,
+            };
+
+            return treeNode;
         }
 
         private void OnSelectedChanged(object sender, System.EventArgs e)

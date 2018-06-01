@@ -57,9 +57,9 @@
             this.FrameResourceListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FrameResourceListBox.FormattingEnabled = true;
-            this.FrameResourceListBox.Location = new System.Drawing.Point(35, 185);
+            this.FrameResourceListBox.Location = new System.Drawing.Point(12, 40);
             this.FrameResourceListBox.Name = "FrameResourceListBox";
-            this.FrameResourceListBox.Size = new System.Drawing.Size(289, 173);
+            this.FrameResourceListBox.Size = new System.Drawing.Size(368, 381);
             this.FrameResourceListBox.TabIndex = 5;
             this.FrameResourceListBox.SelectedIndexChanged += new System.EventHandler(this.OnSelectedChanged);
             // 
@@ -95,12 +95,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 431);
-            this.Controls.Add(this.treeView1);
             this.Controls.Add(this.Load3D);
             this.Controls.Add(this.FrameResourceButton);
             this.Controls.Add(this.FrameResourceGrid);
             this.Controls.Add(this.FrameResourceSearch);
             this.Controls.Add(this.FrameResourceListBox);
+            this.Controls.Add(this.treeView1);
             this.Name = "FrameResourceTool";
             this.Text = "FrameResourceTool";
             this.ResumeLayout(false);

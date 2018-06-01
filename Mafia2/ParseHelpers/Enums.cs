@@ -1,7 +1,9 @@
 ﻿using System;
 
-namespace Mafia2 {
-    public enum ObjectType {
+namespace Mafia2
+{
+    public enum ObjectType
+    {
         Joint = 0,
         SingleMesh,
         Frame,
@@ -18,7 +20,8 @@ namespace Mafia2 {
     }
 
     [Flags]
-    public enum VertexFlags : uint {
+    public enum VertexFlags : uint
+    {
         Position = 1,
         Normals = 4,
         Tangent = 16, // 0x00000010
