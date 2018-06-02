@@ -117,7 +117,12 @@ class eddFrame(object):
         numChars = readByte(file)
         self.name = readString(file, numChars)
         self.pos = (readFloat(file), readFloat(file), readFloat(file))
-        self.rot = (readFloat(file), readFloat(file), readFloat(file))
+        
+        val1 = readFloat(file) * 3.1415926535897931 / 180
+        val2 = readFloat(file) * 3.1415926535897931 / 180
+        val3 = readFloat(file) * 3.1415926535897931 / 180
+        self.rot = (val1, val2, val3)
+        print(self.rot)
         
 #EDM OBJECT
 #=================================
@@ -221,7 +226,8 @@ def parseEDD(filepath):
         try:
             objects.append(parseEDM(path))
             objects[i].location = edd.frames[i].pos
-            objects[i].rotation_euler = Euler((edd.frames[i].rot[0], edd.frames[i].rot[1],edd.frames[i].rot[2]), 'XYZ')
+            objects[i].rotation_mode = 'XYZ'
+            objects[i].rotation_euler = edd.frames[i].rot
         except struct.error:
             objects.append("null")
             print("ERRORED MESH, WILL NOT IMPORT")

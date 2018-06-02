@@ -56,6 +56,7 @@ namespace Mafia2
                 z = 0;
             }
 
+            //BLENDER USES RADIANS, MAX USES DEGREES
             x = x * 180 / Math.PI;
             y = y * 180 / Math.PI;
             z = z * 180 / Math.PI;
@@ -65,7 +66,7 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return string.Format("{0},", m1);
+            return string.Format("{0},", Vector);
         }
 
 
