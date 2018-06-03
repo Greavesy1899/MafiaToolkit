@@ -1,5 +1,6 @@
 global edmLastFile = ""
 global eddLastFile = ""
+global edcLastFile = ""
 global edmPath = ""
 global aMeshes = #()
 
@@ -38,10 +39,14 @@ fn importFrame =
 		pos.y = readfloat eddFile
 		pos.z = readfloat eddFile
 		
-		rot = [0,0,0]
+		rot = [0,0,0] 
+
 		rot.x = readfloat eddFile
+		rot.y = readfloat eddFile
+		rot.z = readfloat eddFile
 		
-		files[i] = EddStruct fileName: fa pos: pos rot:rot
+		rot2 = eulerAngles rot.x rot.y rot.z		
+		files[i] = EddStruct fileName: fa pos: pos rot:rot2
 	)
 	fclose eddFile
 	
@@ -53,8 +58,10 @@ fn importFrame =
 	for i = 1 to files.count do
 	(
 		aMeshes[i].pos = files[i].pos
-		--Broken, flips the entire mesh upside down. 
-		--aMeshes[i].rotation.x = files[i].rot.x
+		
+		matrix = aMeshes[i].transform
+		preRotate matrix (eulertoquat(files[i].rot))
+		aMeshes[i].transform = matrix
 	)
 	
 )
@@ -137,10 +144,63 @@ fn importMesh =
 			buildTVFaces mesh1
 		
 		for i = 1 to mesh1.numfaces do(setTVFace mesh1 i (getFace mesh1 i))
+			
+		mat = standardMaterial()
+		mat.diffusemap = bitmapTexture()
+		mat.name = mesh1.name
+		mat.Maps[2] = Bitmaptexture fileName:(edmPath + "\\textures\\" + mesh1.name)
 	
+		mesh1.material = mat
+			
 		aParts[i]=Part mesh: mesh1
 	)
 	append aMeshes root
+	fclose file
+)
+fn importCollision =
+(
+	file = fopen edcLastFile "rb"
+	
+	colMesh = undefined
+
+	count = readbyte file
+	sString = ""
+	char_array = #()
+	char_array.count = count
+	for i= 1 to count do
+	(
+		char_array[i] = readbyte file
+		sString += bit.intAsChar char_array[i]
+	)
+
+	colName = sString
+	
+	pos = [0,0,0]
+	pos.x = readFloat file
+	pos.y = readFloat file
+	pos.z = readFloat file
+	rot= [0,0,0]
+	rot.x = readFloat file
+	rot.y = readFloat file
+	rot.z = readFloat file
+	
+	colType = readByte file
+	
+	if colType == 1 then
+	(
+		val1 = readfloat file
+		val2 = readfloat file
+		val3 = readfloat file
+		colMesh = box length:val1 width: val2 height:val3
+	)
+	if colType == 2 then
+	(
+		val1 = readfloat file
+		colMesh = sphere radius:val1
+	)
+	colMesh.name = colName
+	
+	
 	fclose file
 )
 
@@ -150,12 +210,13 @@ utility EDMImport "EDM Importer"
 	(
 		button importer "Import Single Mesh"
 		button fimporter "Import Entire Folder"
+		button cimporter "Import Single Collision"
 	)
 	
 	group "About"
 	(
-		label title "EDM Importer"
-		label desc "Imports EDM files"
+		label title "Mafia 2 Editables tool"
+		label desc "Imports EDM/EDC/EDD files"
 	)
 	
 	on importer pressed do
@@ -168,6 +229,16 @@ utility EDMImport "EDM Importer"
 			importMesh()
 		)
 	)
+	on cimporter pressed do
+	(
+		edcFile = getopenfilename caption:"Select File" filename: edmLastFile types:"edc (*.edc)"
+		
+		if edcFile != undefined then
+		(
+			edcLastFile = edcFile
+			importCollision()
+		)
+	)
 	on fimporter pressed do
 	(
 		edmPath = getSavePath caption:"Select Folder" initialDir:"C:\\Users\\Connor\\source\\repos\\Mafia2Tools\\Mafia2Tools\\Mafia2Libs\\bin\\Debug\\exported"
@@ -175,6 +246,7 @@ utility EDMImport "EDM Importer"
 		--don't know if break, returns, etc exist in this language. 
 		if edmPath != undefined then
 		(
+			aMeshes = #()
 			files = getFiles (edmpath+"\\*.edd")
 			
 			if files.count > 0 then

@@ -58,16 +58,16 @@ namespace Mafia2Tool
                         //node.Nodes.Add(createTreeNode("Material", singleMesh.MaterialIndex));
                         //node.Nodes.Add(createTreeNode("Geometry", singleMesh.MeshIndex));
                         mesh.Add(singleMesh);
-
-                        if (frameResource.FrameObjects[i].GetType() == typeof(FrameObjectModel))
-                        {
-                            FrameObjectModel modelMesh = frameResource.FrameObjects[i] as FrameObjectModel;
-                            //node.Nodes.Add(createTreeNode("Blend Info", modelMesh.BlendInfoIndex));
-                            //node.Nodes.Add(createTreeNode("Skeleton Info", modelMesh.SkeletonIndex));
-                            //node.Nodes.Add(createTreeNode("Skeleton Hierachy Info", modelMesh.SkeletonHierachyIndex));
-                            mesh.Add(modelMesh);
-                        }
                         
+                    }
+
+                    if (frameResource.FrameObjects[i].GetType() == typeof(FrameObjectModel))
+                    {
+                        FrameObjectModel modelMesh = frameResource.FrameObjects[i] as FrameObjectModel;
+                        //node.Nodes.Add(createTreeNode("Blend Info", modelMesh.BlendInfoIndex));
+                        //node.Nodes.Add(createTreeNode("Skeleton Info", modelMesh.SkeletonIndex));
+                        //node.Nodes.Add(createTreeNode("Skeleton Hierachy Info", modelMesh.SkeletonHierachyIndex));
+                        mesh.Add(modelMesh);
                     }
 
                     //if (treeView1.Nodes.ContainsKey(frame.ParentIndex2.Name))
@@ -174,19 +174,18 @@ namespace Mafia2Tool
             for (int i = 0; i != mesh.Count; i++)
             {
                 Model newModel = new Model((mesh[i]), vertexBufferPool, indexBufferPool, frameResource);
-
+                fileNames[i] = mesh[i].Name.Name + "_lod0";
                 for (int c = 0; c != newModel.Lods.Length; c++)
                 {
                     if (!File.Exists("exported/" + mesh[i].Name.Name + "_lod" + c + ".edm"))
                     {
                         Stopwatch watch = new Stopwatch();
                         watch.Start();
-                        //newModel.ExportToOBJ(newModel.Lods[c], mesh[i].Name.Name + "_lod" + c);
                         newModel.ExportToEDM(newModel.Lods[c], mesh[i].Name.Name + "_lod" + c);
                         Debug.WriteLine("Mesh: {0} and time taken was {1}", mesh[i].Name.Name + "_lod" + c, watch.Elapsed);
                         watch.Stop();
                     }
-                    fileNames[i] = mesh[i].Name.Name + "_lod" + c;
+                    //fileNames[i] = mesh[i].Name.Name + "_lod" + c;
                     filePos[i] = mesh[i].Matrix.Position;
                     rotPos[i] = mesh[i].Matrix.Rotation.Vector;
 

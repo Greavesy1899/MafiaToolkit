@@ -14,7 +14,7 @@ namespace Mafia2
             int poolLength = reader.ReadInt32();
             string pool = new string(reader.ReadChars(poolLength));
 
-            int hashesLength = reader.ReadInt32();
+            int hashesLength = reader.ReadInt32()+12;
 
             ActorDefinition[] actors = new ActorDefinition[hashesLength];
             for (int i = 0; i != hashesLength; i++)

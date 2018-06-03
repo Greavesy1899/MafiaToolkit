@@ -25,7 +25,7 @@ namespace Mafia2
 
             using (BinaryWriter writer = new BinaryWriter(File.Create("collisions/" + cBase.Hash + ".edc")))
             {
-                writer.Write(cBase.Hash);
+                writer.Write(cBase.Hash.ToString());
                 writer.Write(cBase.Matrix.Position.X);
                 writer.Write(cBase.Matrix.Position.Y);
                 writer.Write(cBase.Matrix.Position.Z);
