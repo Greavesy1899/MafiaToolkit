@@ -14,7 +14,7 @@ namespace Mafia2
             int poolLength = reader.ReadInt32();
             string pool = new string(reader.ReadChars(poolLength));
 
-            int hashesLength = reader.ReadInt32()+3;
+            int hashesLength = reader.ReadInt32();
 
             ActorDefinition[] actors = new ActorDefinition[hashesLength];
             for (int i = 0; i != hashesLength; i++)
@@ -28,10 +28,10 @@ namespace Mafia2
 
         public struct ActorDefinition
         {
-            ulong hash;
+            ulong hash; //hash, this is the same as in the frame.
             short unk01; //i feel like this has something to do with scenes.
-            public short namePos;
-            int frameIndex;
+            public short namePos; //starting position for the name.
+            int frameIndex; //links to FrameResource
 
             public string name;
 

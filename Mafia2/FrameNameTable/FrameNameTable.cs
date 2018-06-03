@@ -22,11 +22,14 @@ namespace Mafia2
 
                 int pos = frameData[i].NamePos1;
                 frameData[i].Name = names.Substring(pos, names.IndexOf('\0', pos) - pos);
+                pos = frameData[i].Parent;
+                frameData[i].ParentName = names.Substring(pos, names.IndexOf('\0', pos) - pos);
             }
         }
 
         class Data
         {
+            string parentName;
             string name;                   
             short parent;  
             ushort namepos1;
@@ -34,6 +37,10 @@ namespace Mafia2
             short frameIndex;
             short flags;
 
+            public string ParentName {
+                get { return parentName; }
+                set { parentName = value; }
+            }
             public string Name {
                 get { return name; }
                 set { name = value; }
@@ -75,7 +82,7 @@ namespace Mafia2
 
             public override string ToString()
             {
-                return string.Format("{0}, {1}, Frame Index: {2}", parent, name, frameIndex, flags);
+                return string.Format("{0}, {1}, Frame Index: {2}", parentName, name, frameIndex);
             }
         }
     }
