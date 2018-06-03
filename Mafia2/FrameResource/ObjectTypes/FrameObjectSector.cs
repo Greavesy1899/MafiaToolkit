@@ -1,7 +1,9 @@
 ﻿using System.IO;
 
-namespace Mafia2 {
-    public class FrameObjectSector : FrameObjectJoint {
+namespace Mafia2
+{
+    public class FrameObjectSector : FrameObjectJoint
+    {
 
         int unk_08_int;
         int unk_09_int;
@@ -11,17 +13,20 @@ namespace Mafia2 {
         Vector3 unk_14_vector3;
         Hash unk_15_hash;
 
-        public FrameObjectSector(BinaryReader reader) : base() {
+        public FrameObjectSector(BinaryReader reader) : base()
+        {
             ReadFromFile(reader);
         }
 
-        public override void ReadFromFile(BinaryReader reader) {
+        public override void ReadFromFile(BinaryReader reader)
+        {
             base.ReadFromFile(reader);
             unk_08_int = reader.ReadInt32();
             unk_09_int = reader.ReadInt32();
 
             unk_10_floats = new float[unk_09_int * 4];
-            for(int i = 0; i != unk_10_floats.Length; i++) {
+            for (int i = 0; i != unk_10_floats.Length; i++)
+            {
                 unk_10_floats[i] = reader.ReadSingle();
             }
 

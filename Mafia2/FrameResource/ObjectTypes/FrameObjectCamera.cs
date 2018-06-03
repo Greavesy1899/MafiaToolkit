@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.IO;
 
 namespace Mafia2
 {
-    public class FrameObjectCamera : FrameObjectBase
+    public class FrameObjectCamera : FrameObjectJoint
     {
-        byte[] unkBytes;
+        int unk01;
+        unkStruct[] unkData;
 
-        public byte[] UnkBytes {
-            get { return unkBytes; }
-            set { unkBytes = value; }
+        public int Unk01 {
+            get { return unk01; }
+            set { unk01 = value; }
         }
-        
+        public unkStruct[] UnkData {
+            get { return unkData; }
+            set { unkData = value; }
+        }
+
         public FrameObjectCamera(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
@@ -23,12 +23,36 @@ namespace Mafia2
         public override void ReadFromFile(BinaryReader reader)
         {
             base.ReadFromFile(reader);
-            unkBytes = reader.ReadBytes(5);
+            unk01 = reader.ReadInt32();
+
+            if (unk01 <= 0)
+                return;
+
+            unkData = new unkStruct[unk01];
+
+            for (int i = 0; i != unk01; i++)
+                unkData[i] = new unkStruct(reader);
         }
 
         public override string ToString()
         {
             return string.Format("Camera Block");
+        }
+
+        public struct unkStruct
+        {
+            float[] unkFloats;
+            Hash unkHash;
+
+            public unkStruct(BinaryReader reader)
+            {
+                unkFloats = new float[5];
+
+                for (int i = 0; i != 5; i++)
+                    unkFloats[i] = reader.ReadSingle();
+
+                unkHash = new Hash(reader);
+            }
         }
     }
 }

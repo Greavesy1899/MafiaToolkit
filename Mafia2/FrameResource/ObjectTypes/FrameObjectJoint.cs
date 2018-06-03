@@ -1,45 +1,52 @@
 ﻿using System.IO;
 
-namespace Mafia2 {
-    public class FrameObjectJoint : FrameObjectBase {
+namespace Mafia2
+{
+    public class FrameObjectJoint : FrameObjectBase
+    {
 
-        byte unknown_07_byte;
-        unk_struct1[] unk_07_array;
+        byte dataSize;
+        NodeStruct[] nodeData;
 
-        public byte Unk_07_Byte {
-            get { return unknown_07_byte; }
-            set { unknown_07_byte = value; }
+        public byte DataSize {
+            get { return dataSize; }
+            set { dataSize = value; }
         }
-        public unk_struct1[] Unk_07_Array {
-            get { return unk_07_array; }
-            set { unk_07_array = value; }
-        }
-
-        public FrameObjectJoint() : base() {
-
+        public NodeStruct[] Data {
+            get { return nodeData; }
+            set { nodeData = value; }
         }
 
-        public FrameObjectJoint(BinaryReader reader) : base() {
+        public FrameObjectJoint() : base()
+        {
+
+        }
+
+        public FrameObjectJoint(BinaryReader reader) : base()
+        {
             ReadFromFile(reader);
         }
 
-        public override void ReadFromFile(BinaryReader reader) {
+        public override void ReadFromFile(BinaryReader reader)
+        {
             base.ReadFromFile(reader);
-            unknown_07_byte = reader.ReadByte();
-            unk_07_array = new unk_struct1[unknown_07_byte];
+            dataSize = reader.ReadByte();
+            nodeData = new NodeStruct[dataSize];
 
-            for(int i = 0; i != unknown_07_byte; i++) {
-                unk_07_array[i] = new unk_struct1(reader);
+            for (int i = 0; i != dataSize; i++)
+            {
+                nodeData[i] = new NodeStruct(reader);
             }
         }
 
         public override string ToString()
         {
-            return string.Format("Frame Block");
+            return string.Format("Joint Block");
         }
 
-        public struct unk_struct1 {
-            
+        public struct NodeStruct
+        {
+
             int unknown_01;
             Hash unknown_02_hash;
             Hash unknown_03_hash;
@@ -57,7 +64,8 @@ namespace Mafia2 {
                 set { unknown_03_hash = value; }
             }
 
-            public unk_struct1(BinaryReader reader) {
+            public NodeStruct(BinaryReader reader)
+            {
                 unknown_01 = reader.ReadInt32();
                 unknown_02_hash = new Hash(reader);
                 unknown_03_hash = new Hash(reader);

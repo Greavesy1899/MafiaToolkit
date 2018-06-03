@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.IO;
 
 namespace Mafia2
 {
-    public class FrameObjectLight : FrameObjectBase
+    public class FrameObjectLight : FrameObjectJoint
     {
         int flags;
         float[] unkFloat1 = new float[7];
@@ -57,19 +52,12 @@ namespace Mafia2
             for (int i = 0; i < 5; i++)
                 unkFloat4[i] = reader.ReadSingle();
 
-            if (flags == 127744)
-                reader.ReadByte();
-
             nameLight = new Hash(reader);
-
 
             unk_int2 = reader.ReadInt32();
 
             for (int i = 0; i < 20; i++)
                 unkFloat5[i] = reader.ReadSingle();
-
-            if(flags != 127744)
-                reader.ReadByte();
 
             for (int i = 0; i < 4; i++)
                 names[i] = new Hash(reader);

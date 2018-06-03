@@ -1,8 +1,9 @@
 ﻿using System.IO;
-using Mafia2;
 
-namespace Mafia2 {
-    public class FrameObjectCollision : FrameObjectBase {
+namespace Mafia2
+{
+    public class FrameObjectCollision : FrameObjectBase
+    {
 
         ulong hash;
 
@@ -10,11 +11,13 @@ namespace Mafia2 {
             get { return hash; }
             set { hash = value; }
         }
-        public FrameObjectCollision(BinaryReader reader) : base() {
+        public FrameObjectCollision(BinaryReader reader) : base()
+        {
             ReadFromFile(reader);
         }
 
-        public override void ReadFromFile(BinaryReader reader) {
+        public override void ReadFromFile(BinaryReader reader)
+        {
             base.ReadFromFile(reader);
             hash = reader.ReadUInt64();
         }

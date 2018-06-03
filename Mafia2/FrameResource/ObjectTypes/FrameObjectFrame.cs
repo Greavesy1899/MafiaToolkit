@@ -1,16 +1,29 @@
 ﻿using System.IO;
 
-namespace Mafia2 {
-    public class FrameObjectFrame : FrameObjectJoint {
-        Hash unk_19_hash;
+namespace Mafia2
+{
+    public class FrameObjectFrame : FrameObjectJoint
+    {
+        Hash actorHash;
 
-        public FrameObjectFrame(BinaryReader reader) : base() {
+        public Hash ActorHash {
+            get { return actorHash; }
+            set { actorHash = value; }
+        }
+        public FrameObjectFrame(BinaryReader reader) : base()
+        {
             ReadFromFile(reader);
         }
 
-        public override void ReadFromFile(BinaryReader reader) {
+        public override void ReadFromFile(BinaryReader reader)
+        {
             base.ReadFromFile(reader);
-            unk_19_hash = new Hash(reader);
+            actorHash = new Hash(reader);
+        }
+
+        public override string ToString()
+        {
+            return "Frame Block";
         }
     }
 }

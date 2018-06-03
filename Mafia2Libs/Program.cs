@@ -10,6 +10,10 @@ namespace Mafia2Tool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            using (BinaryReader reader = new BinaryReader(File.Open("Actors_0.bin", FileMode.Open)))
+            {
+                ActorParse actor = new ActorParse(reader);
+            }
             //ItemDescParse itemDescs = new ItemDescParse();
             Application.Run(new FrameResourceTool());
         }
