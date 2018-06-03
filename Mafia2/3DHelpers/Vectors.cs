@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Mafia2
 {
@@ -26,6 +27,12 @@ namespace Mafia2
             this.x = x;
             this.y = y;
             this.z = z;
+        }
+        public Vector3(BinaryReader reader)
+        {
+            x = reader.ReadSingle();
+            y = reader.ReadSingle();
+            z = reader.ReadSingle();
         }
 
         public void Normalize()

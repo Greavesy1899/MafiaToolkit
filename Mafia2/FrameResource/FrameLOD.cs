@@ -27,6 +27,10 @@ namespace Mafia2
         VertexFlags vertexDeclaration;
         Hash vertexBufferRef;
         int numVerts;
+        int nZerol;
+        int nPartition;
+        PartitionStruct partition;
+
         bool isBone;
         int count;
         int count2;
@@ -62,8 +66,8 @@ namespace Mafia2
         }
 
         //1st set of unknowns. This needs to be seperated into structs.
-        int u_01_int;
-        int c_01;
+
+
         int u_00_size;
         int u_01_size;
         int u_02_int;
@@ -93,16 +97,12 @@ namespace Mafia2
             vertexDeclaration = (VertexFlags)reader.ReadUInt32();
             vertexBufferRef = new Hash(reader);
             numVerts = reader.ReadInt32();
+            nZerol = reader.ReadInt32();
+            nPartition = reader.ReadInt32();
 
-            u_01_int = reader.ReadInt32();
-            c_01 = reader.ReadInt32();
-
-            if (c_01 != 0)
+            if (nPartition != 0)
             {
-
-                u_00_size = reader.ReadInt32();
-                u_01_size = reader.ReadInt32();
-                u_02_int = reader.ReadInt32();
+                partition = new PartitionStruct(reader);
                 isBone = reader.ReadBoolean();
 
                 if (isBone)
@@ -111,7 +111,7 @@ namespace Mafia2
                     u_01_vector = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
                     count = reader.ReadInt32();
-                    u_01_int = reader.ReadInt32();
+                    reader.ReadInt32();
 
                     for (int i = 0; i != count; i++)
                     {
@@ -177,8 +177,37 @@ namespace Mafia2
             reader.ReadInt32();
         }
 
-        private struct Unk1_struct
+        private class PartitionStruct
         {
+            //TODO
+            int memRequireA;
+            int memRequireB;
+            int partitionType;
+            bool isAvailable;
+
+            string unk_a_string;
+
+            public PartitionStruct(BinaryReader reader)
+            {
+                ReadFromFile(reader);
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                memRequireA = reader.ReadInt32();
+                memRequireB = reader.ReadInt32();
+                partitionType = reader.ReadInt32();
+                isAvailable = reader.ReadBoolean();
+
+                if(isAvailable)
+                {
+
+                }
+                else
+                {
+                    unk_a_string = BitConverter.ToString(reader.ReadBytes(10)).Replace("-", " ");
+                }
+            }
         }
 
         public struct VertexOffset

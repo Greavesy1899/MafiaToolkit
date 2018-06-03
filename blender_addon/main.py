@@ -1,7 +1,7 @@
 bl_info = {
     "name":"Mafia 2 Tools: Mesh Importer",
     "category": "Object",
-    "description": "Import EDM/EDD files into blender",
+    "description": "Import EDM/EDD/EDC files into blender",
     "author": "Greavesy",
     "location": "File > Import",
     "version": (1,0),
@@ -42,18 +42,35 @@ class ImportEDD(bpy.types.Operator, ImportHelper):
         self.report({'INFO'}, "Begin importing edd..")
         return loadEDD(self, context)
 
+class ImportEDC(bpy.types.Operator, ImportHelper):
+    """EDC Importer"""
+    bl_idname = "import_object.edc"
+    bl_label = "Import EDC"
+    bl_options = {'REGISTER', 'UNDO'}
+    
+    filename_ext = ".edc"
+    filter_glob = StringProperty(default="*.edc", options={'HIDDEN'})
+
+    def execute(self, context):
+        self.report({'INFO'}, "Begin importing edc..")
+        return loadEDC(self, context)
+
+
 def menu_func_import(self, context):
     self.layout.operator(ImportEDM.bl_idname, text="EDM (.edm)")
     self.layout.operator(ImportEDD.bl_idname, text="EDD (.edd)")
+    self.layout.operator(ImportEDC.bl_idname, text="EDC (.edc)")
     
 def register():
     bpy.utils.register_class(ImportEDM)
     bpy.utils.register_class(ImportEDD)
+    bpy.utils.register_class(ImportEDC)
     bpy.types.INFO_MT_file_import.append(menu_func_import)
 
 def unregister():
     bpy.utils.unregister_class(ImportEDM)
     bpy.utils.unregister_class(ImportEDD)
+    bpy.utils.unregister_class(ImportEDC)
     bpy.types.INFO_MT_file_import.remove(menu_func_import)
 
 if __name__ == "__main__":
@@ -71,6 +88,10 @@ def readShort(file):
 
 def readInt(file):
     (value,) = struct.unpack('i', file.read(4))
+    return value
+
+def readLong(file):
+    (value,) = struct.unpack('Q', file.read(8))
     return value
 
 def readFloat(file):
@@ -122,7 +143,6 @@ class eddFrame(object):
         val2 = readFloat(file) * 3.1415926535897931 / 180
         val3 = readFloat(file) * 3.1415926535897931 / 180
         self.rot = (val1, val2, val3)
-        print(self.rot)
         
 #EDM OBJECT
 #=================================
@@ -173,7 +193,37 @@ class edmPart(object):
         for i in range(self.facesCount):
             face = (readInt(file)-1, readInt(file)-1, readInt(file)-1)
             self.faces.append(face)
-            
+
+ #EDM OBJECT
+#=================================
+class edcObject(object):
+    def __init__( self ) :
+        self.name = ""
+        self.rot = []
+        self.pos = []
+        self.colType = 0
+        self.floats = []
+        return
+    
+    def readfile(self, file):
+        self.name = str(readLong(file))
+        self.pos = (readFloat(file), readFloat(file), readFloat(file))
+        
+        val1 = readFloat(file) #* 3.1415926535897931 / 180
+        val2 = readFloat(file) #* 3.1415926535897931 / 180
+        val3 = readFloat(file) #* 3.1415926535897931 / 180
+        self.rot = (val1, val2, val3)
+
+        self.colType = readByte(file)
+
+        if(self.colType == 1):
+            self.floats = (readFloat(file), readFloat(file), readFloat(file))
+        if(self.colType == 2):
+            self.floats = (readFloat(file), readFloat(file))
+        if(self.colType == 3):
+            self.floats = (readFloat(file))
+
+           
 #BEGIN LOADING AND PARSING (EDM)
 #==============================
 def loadEDM(operator, context):
@@ -232,4 +282,23 @@ def parseEDD(filepath):
             objects.append("null")
             print("ERRORED MESH, WILL NOT IMPORT")
             
+    file.close()
+
+#BEGIN LOADING AND PARSING (EDC)
+#==============================
+def loadEDC(operator, context):
+    scene = context.scene
+    filepath = operator.properties.filepath
+    
+    path = "Importing: " + filepath
+    operator.report({'INFO'}, path)
+    parseEDC(filepath);
+    
+    return {'FINISHED'}
+
+def parseEDC(filepath):
+    scene = bpy.context.scene
+    file = open(filepath, 'rb')
+    edcCol = edcObject()
+    edcCol.readfile(file)
     file.close()

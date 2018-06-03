@@ -10,6 +10,7 @@ namespace Mafia2Tool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            //ItemDescParse itemDescs = new ItemDescParse();
             Application.Run(new FrameResourceTool());
         }
     }

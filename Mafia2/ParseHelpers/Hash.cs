@@ -9,6 +9,7 @@ namespace Mafia2
     {
         ulong hash;
         string name;
+        short size;
 
         [ReadOnly(true)]
         public ulong uHash {
@@ -28,8 +29,8 @@ namespace Mafia2
         public void ReadFromFile(BinaryReader reader)
         {
             hash = reader.ReadUInt64();
-            short num = reader.ReadInt16();
-            name = Encoding.ASCII.GetString(reader.ReadBytes(num));
+            size = reader.ReadInt16();
+            name = Encoding.ASCII.GetString(reader.ReadBytes(size));
         }
 
         public override string ToString()

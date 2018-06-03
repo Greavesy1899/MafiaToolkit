@@ -19,6 +19,13 @@ namespace Mafia2
         Collision = 472
     }
 
+    public enum CollisionTypes
+    {
+        Box = 1,
+        Sphere,
+        Capsule,
+    }
+
     [Flags]
     public enum VertexFlags : uint
     {
@@ -43,7 +50,7 @@ namespace Mafia2
         flag_2 = 2,
         flag_4 = 4,
         flag_8 = 8,
-        flag_16 = 16,
+        Unk14_Flag = 16,
         flag_32 = 32,
         Unk13_Flag = 64,
         flag_128 = 128,

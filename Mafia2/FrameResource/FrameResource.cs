@@ -62,6 +62,7 @@ namespace Mafia2
 
                 for (int i = 0; i != header.NumObjects; i++)
                 {
+                    Console.WriteLine("ID: {0} Number {1}", (ObjectType)objectTypes[i], i);
                     FrameObjectBase newObject = new FrameObjectBase();
                     if (objectTypes[i] == (int)ObjectType.Joint)
                         newObject = new FrameObjectJoint(reader);
@@ -73,13 +74,13 @@ namespace Mafia2
                         newObject = new FrameObjectFrame(reader);
 
                     else if (objectTypes[i] == (int)ObjectType.Light)
-                        throw new Exception("Not Implemented");
+                        newObject = new FrameObjectLight(reader);
 
                     else if (objectTypes[i] == (int)ObjectType.Camera)
                         newObject = new FrameObjectCamera(reader);
 
                     else if (objectTypes[i] == (int)ObjectType.Component_U00000005)
-                        throw new Exception("Not Implemented");
+                        newObject = new FrameObjectComponent_U005(reader);
 
                     else if (objectTypes[i] == (int)ObjectType.Sector)
                         newObject = new FrameObjectSector(reader);
@@ -88,10 +89,10 @@ namespace Mafia2
                         newObject = new FrameObjectDummy(reader);
 
                     else if (objectTypes[i] == (int)ObjectType.ParticleDeflector)
-                        throw new Exception("Not Implemented");
+                        newObject = new FrameObjectDeflector(reader);
 
                     else if (objectTypes[i] == (int)ObjectType.Area)
-                        throw new Exception("Not Implemented");
+                        newObject = new FrameObjectArea(reader);
 
                     else if (objectTypes[i] == (int)ObjectType.Target)
                         throw new Exception("Not Implemented");
