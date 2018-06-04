@@ -67,6 +67,15 @@ namespace Mafia2
                         vector3 += mesh.PositionOffset;
                         vertex.Position = vector3;
                     }
+                    if(lod1.VertexDeclaration.HasFlag(VertexFlags.Normals))
+                    {
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.Normals].Offset;
+                        float x = (vertexBuffer.Data[startIndex] - sbyte.MaxValue)* 0.007874f;
+                        float y = (vertexBuffer.Data[startIndex+1] - sbyte.MaxValue) * 0.007874f;
+                        float z = (vertexBuffer.Data[startIndex+2] - sbyte.MaxValue) * 0.007874f;
+                        vertex.Normal = new Vector3(x, y, z);
+                        vertex.Normal.Normalize();
+                    }
                     if (lod1.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords0].Offset;
@@ -90,12 +99,6 @@ namespace Mafia2
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords7].Offset;
                         vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex), Half.ToHalf(vertexBuffer.Data, startIndex + 2));
                         num1++;
-                    }
-                    if (lod1.VertexDeclaration.HasFlag(VertexFlags.Normals))
-                    {
-                        int index2 = i * stride + vertexOffsets[VertexFlags.Normals].Offset;
-                        vertex.Normal = new Vector3(vertexBuffer.Data[index2], vertexBuffer.Data[index2 + 1], vertexBuffer.Data[index2 + 2]);
-                        vertex.Normal.Normalize();
                     }
                     lod2.Vertices[v] = vertex;
                 }

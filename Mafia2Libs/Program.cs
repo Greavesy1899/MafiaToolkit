@@ -19,7 +19,8 @@ namespace Mafia2Tool
             //{
             //    ActorParse actor = new ActorParse(reader);
             //}
-            ItemDescParse itemDescs = new ItemDescParse();
+            //XMLTest xml = new XMLTest();
+            //ItemDescParse itemDescs = new ItemDescParse();
             Application.Run(new FrameResourceTool());
         }
     }
