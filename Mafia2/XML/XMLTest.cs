@@ -3,32 +3,99 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.XPath;
+using Gibbed.IO;
 
 namespace Mafia2
 {
     public class XMLBin
     {
-        public int unk0_int;
-        public string unk1_string;
+        XMLHeader header;
+        XMLSection section;
 
-        public int unk2_int;
-        public string unk3_string;
+        public string content;
 
-        public byte unk4_byte;
-        public int unkcount5_int;
 
-        public int unk8_size;
-        public long unk9_rand_long;
-        public long unk10_rand_long;
+        public void ReadFromFile(BinaryReader reader)
+        {
+            header = new XMLHeader();
+            header.ReadFromFile(reader);
 
-        public string unkstring1;
-        public string unkstring2;
+            if(header.unk3 == false)
+            {
+                section = new XMLSection();
+                section.ReadFromFile(reader);
+            }
+        }
 
         public override string ToString()
         {
-            return string.Format("{0}, {1}", unk1_string, unk3_string);
+            return "";
         }
+
+        private struct XMLHeader
+        {
+            string tag;
+            bool unk1;
+            string name;
+            public bool unk3;
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                int tagSize = reader.ReadInt32();
+                tag = new string(reader.ReadChars(tagSize));
+
+                unk1 = reader.ReadBoolean();
+
+                int nameSize = reader.ReadInt32();
+                name = new string(reader.ReadChars(nameSize));
+
+                unk3 = reader.ReadBoolean();
+            }
+
+        }
+        private struct XMLSection
+        {
+            int count;
+            int size;
+            byte[] data;
+            List<XEntry> nodes;
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                if(reader.ReadByte() != 4)
+                    throw new FormatException();
+
+                count = reader.ReadInt32();
+                size = reader.ReadInt32();
+                data = reader.ReadBytes(size);
+
+                nodes = new List<XEntry>();
+
+                for(int i = 0; i != nodes.Count; i++)
+                {
+                    XEntry node = new XEntry();
+
+                }
+
+            }
+        }
+        private class XEntry
+        {
+            public string name;
+            public int value;
+            public uint id;
+            public List<uint> children = new List<uint>();
+            public List<AEntry> attributes = new List<AEntry>();
+        }
+        private class AEntry
+        {
+            public string name;
+            public string value;
+        }
+
+
     }
 
     public class XMLTest
@@ -62,30 +129,7 @@ namespace Mafia2
 
             using (BinaryReader reader = new BinaryReader(File.Open(path + name, FileMode.Open)))
             {
-                xmlBin.unk0_int = reader.ReadInt32();
-                xmlBin.unk1_string = new string(reader.ReadChars(xmlBin.unk0_int));
-
-                reader.ReadByte();
-
-                xmlBin.unk2_int = reader.ReadInt32();
-                xmlBin.unk3_string = new string(reader.ReadChars(xmlBin.unk2_int));
-
-                reader.ReadByte();
-
-                xmlBin.unk4_byte = reader.ReadByte();
-                xmlBin.unkcount5_int = reader.ReadInt32();
-                xmlBin.unk8_size = reader.ReadInt32();
-                xmlBin.unk9_rand_long = reader.ReadInt64();
-                reader.ReadByte();
-                xmlBin.unk10_rand_long = reader.ReadInt64();
-
-                xmlBin.unkstring1 = new string(reader.ReadChars(19));
-
-                reader.ReadBytes(9);
-
-                xmlBin.unkstring2 = new string(reader.ReadChars(13));
-
-
+                xmlBin.ReadFromFile(reader);
             }
             bins.Add(xmlBin);
         }

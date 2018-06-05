@@ -9,12 +9,7 @@ namespace Mafia2
 
         static Material[] materials;
 
-        public MaterialsParse()
-        {
-            ReadMatFile("default.mtl");
-        }
-
-        public static void ReadMatFile(string materialName)
+        public static Material[] ReadMatFile(string materialName)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(materialName, FileMode.Open)))
             {
@@ -32,6 +27,7 @@ namespace Mafia2
                     materials[i].ArrayNum = i;
                 }
             }
+            return materials;
         }
 
         public static void WriteMatFile(string materialName)

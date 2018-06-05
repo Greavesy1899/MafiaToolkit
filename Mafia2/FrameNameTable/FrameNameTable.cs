@@ -8,6 +8,14 @@ namespace Mafia2
         string names;
         Data[] frameData;
 
+        public FrameNameTable(string fileName)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             stringLength = reader.ReadInt32();

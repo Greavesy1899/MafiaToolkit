@@ -9,10 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibbed.IO", "Gibbed.IO\Gibb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mafia2Lib", "Mafia2\Mafia2Lib.csproj", "{F8D4E99D-10E6-457E-8B87-80D675686F90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibbed.Mafia2.ResourceFormats", "Gibbed.Illusion\projects\Gibbed.Mafia2.ResourceFormats\Gibbed.Mafia2.ResourceFormats.csproj", "{0CCC8717-8CFB-449E-9DCC-532F073B1CDD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibbed.Mafia2.FileFormats", "Gibbed.Illusion\projects\Gibbed.Mafia2.FileFormats\Gibbed.Mafia2.FileFormats.csproj", "{4B688E95-DCFB-48A3-B65E-566C53FC4682}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,14 +27,6 @@ Global
 		{F8D4E99D-10E6-457E-8B87-80D675686F90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8D4E99D-10E6-457E-8B87-80D675686F90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8D4E99D-10E6-457E-8B87-80D675686F90}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0CCC8717-8CFB-449E-9DCC-532F073B1CDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CCC8717-8CFB-449E-9DCC-532F073B1CDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0CCC8717-8CFB-449E-9DCC-532F073B1CDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0CCC8717-8CFB-449E-9DCC-532F073B1CDD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4B688E95-DCFB-48A3-B65E-566C53FC4682}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B688E95-DCFB-48A3-B65E-566C53FC4682}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B688E95-DCFB-48A3-B65E-566C53FC4682}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B688E95-DCFB-48A3-B65E-566C53FC4682}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

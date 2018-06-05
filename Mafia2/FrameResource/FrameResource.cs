@@ -25,6 +25,14 @@ namespace Mafia2
             set { frameObjects = value; }
         }
 
+        public FrameResource(string file)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             header = new FrameHeader();

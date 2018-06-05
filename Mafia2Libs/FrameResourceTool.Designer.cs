@@ -29,15 +29,16 @@
             this.FrameResourceSearch = new System.Windows.Forms.TextBox();
             this.Load3D = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.SuspendLayout();
             // 
             // FrameResourceButton
             // 
             this.FrameResourceButton.Location = new System.Drawing.Point(226, 11);
             this.FrameResourceButton.Name = "FrameResourceButton";
-            this.FrameResourceButton.Size = new System.Drawing.Size(75, 23);
+            this.FrameResourceButton.Size = new System.Drawing.Size(91, 23);
             this.FrameResourceButton.TabIndex = 7;
-            this.FrameResourceButton.Text = "button1";
+            this.FrameResourceButton.Text = "View Materials";
             this.FrameResourceButton.UseVisualStyleBackColor = true;
             this.FrameResourceButton.Click += new System.EventHandler(this.LoadMaterialTool);
             // 
@@ -74,7 +75,7 @@
             // 
             // Load3D
             // 
-            this.Load3D.Location = new System.Drawing.Point(305, 11);
+            this.Load3D.Location = new System.Drawing.Point(323, 11);
             this.Load3D.Name = "Load3D";
             this.Load3D.Size = new System.Drawing.Size(75, 23);
             this.Load3D.TabIndex = 8;
@@ -89,6 +90,11 @@
             this.treeView1.Size = new System.Drawing.Size(368, 379);
             this.treeView1.TabIndex = 9;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelect);
+            // 
+            // folderBrowser
+            // 
+            this.folderBrowser.Description = "Select folder which contains extracted SDS content.";
+            this.folderBrowser.ShowNewFolderButton = false;
             // 
             // FrameResourceTool
             // 
@@ -116,5 +122,6 @@
         private System.Windows.Forms.TextBox FrameResourceSearch;
         private System.Windows.Forms.Button Load3D;
         private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowser;
     }
 }
