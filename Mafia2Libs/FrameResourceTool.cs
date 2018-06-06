@@ -214,5 +214,11 @@ namespace Mafia2Tool
         {
             FrameResourceGrid.SelectedObject = treeView1.SelectedNode.Tag;
         }
+
+        private void SwitchView(object sender, EventArgs e)
+        {
+            treeView1.Visible = (!treeView1.Visible) ? true : false;
+            FrameResourceListBox.Visible = (!FrameResourceListBox.Visible) ? true : false;
+        }
     }
 }

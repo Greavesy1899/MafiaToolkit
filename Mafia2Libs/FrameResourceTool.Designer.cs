@@ -30,6 +30,7 @@
             this.Load3D = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // FrameResourceButton
@@ -62,6 +63,7 @@
             this.FrameResourceListBox.Name = "FrameResourceListBox";
             this.FrameResourceListBox.Size = new System.Drawing.Size(368, 381);
             this.FrameResourceListBox.TabIndex = 5;
+            this.FrameResourceListBox.Visible = false;
             this.FrameResourceListBox.SelectedIndexChanged += new System.EventHandler(this.OnSelectedChanged);
             // 
             // FrameResourceSearch
@@ -96,17 +98,28 @@
             this.folderBrowser.Description = "Select folder which contains extracted SDS content.";
             this.folderBrowser.ShowNewFolderButton = false;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(404, 11);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 10;
+            this.button1.Text = "Switch View";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.SwitchView);
+            // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 431);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.Load3D);
             this.Controls.Add(this.FrameResourceButton);
             this.Controls.Add(this.FrameResourceSearch);
-            this.Controls.Add(this.treeView1);
             this.Controls.Add(this.FrameResourceGrid);
             this.Controls.Add(this.FrameResourceListBox);
+            this.Controls.Add(this.treeView1);
             this.Name = "FrameResourceTool";
             this.Text = "FrameResourceTool";
             this.ResumeLayout(false);
@@ -123,5 +136,6 @@
         private System.Windows.Forms.Button Load3D;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowser;
+        private System.Windows.Forms.Button button1;
     }
 }
