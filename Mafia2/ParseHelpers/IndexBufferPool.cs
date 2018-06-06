@@ -23,7 +23,7 @@ namespace Mafia2
         {
             foreach (FileInfo file in files)
             {
-                using (BinaryReader reader = new BinaryReader(File.Open(file.Name, FileMode.Open)))
+                using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
                     ReadFromFile(reader);
             }
             BuildBuffer();

@@ -87,6 +87,8 @@
             // 
             // treeView1
             // 
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView1.Location = new System.Drawing.Point(12, 40);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(368, 381);
@@ -118,8 +120,8 @@
             this.Controls.Add(this.FrameResourceButton);
             this.Controls.Add(this.FrameResourceSearch);
             this.Controls.Add(this.FrameResourceGrid);
-            this.Controls.Add(this.FrameResourceListBox);
             this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.FrameResourceListBox);
             this.Name = "FrameResourceTool";
             this.Text = "FrameResourceTool";
             this.ResumeLayout(false);

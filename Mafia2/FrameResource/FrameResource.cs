@@ -134,10 +134,10 @@ namespace Mafia2
                 if (newObject.ParentIndex2.Index != -1)
                     index2 = newObject.ParentIndex2.Index - frameBlocks.Length;
 
-                if(index1 != -1)
+                if(index1 > -1)
                     newObject.ParentIndex1.Name = (frameObjects[index1] as FrameObjectBase).Name.Name;
 
-                if (index2 != -1)
+                if (index2 > -1)
                 {
                     if (frameObjects[index2].GetType() == typeof(FrameHeaderScene))
                         newObject.ParentIndex2.Name = (frameObjects[index2] as FrameHeaderScene).Name.Name;
