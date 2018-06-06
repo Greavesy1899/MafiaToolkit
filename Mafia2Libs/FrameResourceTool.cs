@@ -23,75 +23,104 @@ namespace Mafia2Tool
 
         public void ReadFrameResource()
         {
-            for (int i = 0; i != SceneData.FrameResource.FrameObjects.Length; i++)
+            treeView1.Nodes.Add(SceneData.FrameNameTable.FrameData[0].ParentName);
+            TreeNode root = treeView1.Nodes[0];
+            foreach(FrameNameTable.Data data in SceneData.FrameNameTable.FrameData)
             {
-                FrameResourceListBox.Items.Add(SceneData.FrameResource.FrameObjects[i]);
+                TreeNode node = convertNode((SceneData.FrameResource.FrameObjects[data.FrameIndex] as FrameObjectBase).NodeData);
+                root.Nodes.Add(node);
             }
             for (int i = 0; i != SceneData.FrameResource.FrameBlocks.Length; i++)
-            {
                 FrameResourceListBox.Items.Add(SceneData.FrameResource.FrameBlocks[i]);
-            }
 
             for (int i = 0; i != SceneData.FrameResource.FrameObjects.Length; i++)
+                FrameResourceListBox.Items.Add(SceneData.FrameResource.FrameObjects[i]);
+
+            foreach (FrameObjectBase fObject in SceneData.FrameResource.FrameObjects)
             {
-                FrameObjectBase frame = SceneData.FrameResource.FrameObjects[i] as FrameObjectBase;
+                TreeNode node = convertNode(fObject.NodeData);
 
-                if (frame == null)
-                    continue;
-
-                TreeNode node = convertNode(frame.NodeData);
-
-                if (SceneData.FrameResource.FrameObjects[i].GetType() == typeof(FrameObjectSingleMesh))
+                if (fObject.GetType() == typeof(FrameObjectSingleMesh))
                 {
-                    FrameObjectSingleMesh singleMesh = SceneData.FrameResource.FrameObjects[i] as FrameObjectSingleMesh;
-                    //node.Nodes.Add(createTreeNode("Material", singleMesh.MaterialIndex));
-                    //node.Nodes.Add(createTreeNode("Geometry", singleMesh.MeshIndex));
-                    mesh.Add(singleMesh);
-
+                    node.Nodes.Add(createTreeNode("Material", (fObject as FrameObjectSingleMesh).MaterialIndex));
+                    node.Nodes.Add(createTreeNode("Geometry", (fObject as FrameObjectSingleMesh).MeshIndex));
+                }
+                if (fObject.GetType() == typeof(FrameObjectModel))
+                {
+                    node.Nodes.Add(createTreeNode("Material", (fObject as FrameObjectModel).MaterialIndex));
+                    node.Nodes.Add(createTreeNode("Geometry", (fObject as FrameObjectModel).MeshIndex));
+                    node.Nodes.Add(createTreeNode("Skeleton Info", (fObject as FrameObjectModel).SkeletonIndex));
+                    node.Nodes.Add(createTreeNode("Skeleton Hierachy Info", (fObject as FrameObjectModel).SkeletonHierachyIndex));
                 }
 
-                if (SceneData.FrameResource.FrameObjects[i].GetType() == typeof(FrameObjectModel))
-                {
-                    FrameObjectModel modelMesh = SceneData.FrameResource.FrameObjects[i] as FrameObjectModel;
-                    //node.Nodes.Add(createTreeNode("Blend Info", modelMesh.BlendInfoIndex));
-                    //node.Nodes.Add(createTreeNode("Skeleton Info", modelMesh.SkeletonIndex));
-                    //node.Nodes.Add(createTreeNode("Skeleton Hierachy Info", modelMesh.SkeletonHierachyIndex));
-                    mesh.Add(modelMesh);
-                }
+                Console.WriteLine(fObject.GetType());
+                int index = treeView1.Nodes[0].Nodes.IndexOfKey(fObject.ParentIndex2.Name);
 
-                //if (treeView1.Nodes.ContainsKey(frame.ParentIndex2.Name))
-                //{
-                //    string name = frame.ParentIndex2.Name;
-                //    int index = treeView1.Nodes.IndexOfKey(frame.ParentIndex2.Name);
-                //    treeView1.Nodes[index].Nodes.Add(node);
-                //}
-                //else
-                //{
-                //    string name = "";
-                //    int pIndex = frame.ParentIndex2.Index;
+                TreeNode[] nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
 
-                //    if (pIndex == -1)
-                //    {
-                //        if (!treeView1.Nodes.ContainsKey(frame.Name.Name))
-                //            treeView1.Nodes.Add(node);
-
-                //        continue;
-                //    }
-                //    else if (frameResource.FrameObjects[pIndex].GetType() == typeof(FrameHeaderScene))
-                //    {
-                //        name = (frameResource.FrameObjects[pIndex] as FrameHeaderScene).Name.Name;
-                //    }
-                //    else if (frameResource.FrameObjects[pIndex].GetType() == typeof(FrameObjectFrame))
-                //    {
-                //        name = (frameResource.FrameObjects[pIndex] as FrameObjectFrame).Name.Name;
-                //    }
-
-                //    treeView1.Nodes.Add(createTreeNode(name, frameResource.FrameBlocks[pIndex]));
-                //    int index = treeView1.Nodes.IndexOfKey(frame.ParentIndex2.Name);
-                //    treeView1.Nodes[index].Nodes.Add(node);
-                //}
-
+                if (nodes.Length > 0)
+                    nodes[0].Nodes.Add(node);
             }
+            //for (int i = 0; i != SceneData.FrameResource.FrameObjects.Length; i++)
+            //{
+            //    FrameObjectBase frame = SceneData.FrameResource.FrameObjects[i] as FrameObjectBase;
+
+            //    if (frame == null)
+            //        continue;
+
+            //    TreeNode node = convertNode(frame.NodeData);
+
+            //    if (SceneData.FrameResource.FrameObjects[i].GetType() == typeof(FrameObjectSingleMesh))
+            //    {
+            //        FrameObjectSingleMesh singleMesh = SceneData.FrameResource.FrameObjects[i] as FrameObjectSingleMesh;
+            //        //node.Nodes.Add(createTreeNode("Material", singleMesh.MaterialIndex));
+            //        //node.Nodes.Add(createTreeNode("Geometry", singleMesh.MeshIndex));
+            //        mesh.Add(singleMesh);
+
+            //    }
+
+            //    if (SceneData.FrameResource.FrameObjects[i].GetType() == typeof(FrameObjectModel))
+            //    {
+            //        FrameObjectModel modelMesh = SceneData.FrameResource.FrameObjects[i] as FrameObjectModel;
+            //        //node.Nodes.Add(createTreeNode("Blend Info", modelMesh.BlendInfoIndex));
+            //        //node.Nodes.Add(createTreeNode("Skeleton Info", modelMesh.SkeletonIndex));
+            //        //node.Nodes.Add(createTreeNode("Skeleton Hierachy Info", modelMesh.SkeletonHierachyIndex));
+            //        mesh.Add(modelMesh);
+            //    }
+
+            //    //if (treeView1.Nodes.ContainsKey(frame.ParentIndex2.Name))
+            //    //{
+            //    //    string name = frame.ParentIndex2.Name;
+            //    //    int index = treeView1.Nodes.IndexOfKey(frame.ParentIndex2.Name);
+            //    //    treeView1.Nodes[index].Nodes.Add(node);
+            //    //}
+            //    //else
+            //    //{
+            //    //    string name = "";
+            //    //    int pIndex = frame.ParentIndex2.Index;
+
+            //    //    if (pIndex == -1)
+            //    //    {
+            //    //        if (!treeView1.Nodes.ContainsKey(frame.Name.Name))
+            //    //            treeView1.Nodes.Add(node);
+
+            //    //        continue;
+            //    //    }
+            //    //    else if (frameResource.FrameObjects[pIndex].GetType() == typeof(FrameHeaderScene))
+            //    //    {
+            //    //        name = (frameResource.FrameObjects[pIndex] as FrameHeaderScene).Name.Name;
+            //    //    }
+            //    //    else if (frameResource.FrameObjects[pIndex].GetType() == typeof(FrameObjectFrame))
+            //    //    {
+            //    //        name = (frameResource.FrameObjects[pIndex] as FrameObjectFrame).Name.Name;
+            //    //    }
+
+            //    //    treeView1.Nodes.Add(createTreeNode(name, frameResource.FrameBlocks[pIndex]));
+            //    //    int index = treeView1.Nodes.IndexOfKey(frame.ParentIndex2.Name);
+            //    //    treeView1.Nodes[index].Nodes.Add(node);
+            //    //}
+
+            //}
         }
 
         private TreeNode createTreeNode(string NameText, int index)

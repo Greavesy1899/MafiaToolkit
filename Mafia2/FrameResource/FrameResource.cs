@@ -70,7 +70,6 @@ namespace Mafia2
 
                 for (int i = 0; i != header.NumObjects; i++)
                 {
-                    Console.WriteLine("ID: {0} Number {1}", (ObjectType)objectTypes[i], i);
                     FrameObjectBase newObject = new FrameObjectBase();
                     if (objectTypes[i] == (int)ObjectType.Joint)
                         newObject = new FrameObjectJoint(reader);
@@ -114,30 +113,39 @@ namespace Mafia2
                     frameObjects[i] = newObject;
                 }
             }
-
+            DefineFrameBlockParents();
         }
 
         public void DefineFrameBlockParents()
         {
-            for (int i = 0; i != frameBlocks.Length; i++)
+            for (int i = 0; i != frameObjects.Length; i++)
             {
 
-                FrameObjectBase newObject = frameBlocks[i] as FrameObjectBase;
+                FrameObjectBase newObject = frameObjects[i] as FrameObjectBase;
 
                 if (newObject == null)
                     continue;
 
-                if (newObject.ParentIndex1.Index > -1)
-                    newObject.ParentIndex1.Name = (frameBlocks[newObject.ParentIndex1.Index] as FrameObjectBase).Name.Name;
-                if (newObject.ParentIndex2.Index > -1)
+                int index1 = -1;
+                int index2 = -1;
+
+                if(newObject.ParentIndex1.Index != -1)
+                    index1 = newObject.ParentIndex1.Index - frameBlocks.Length;
+                if (newObject.ParentIndex2.Index != -1)
+                    index2 = newObject.ParentIndex2.Index - frameBlocks.Length;
+
+                if(index1 != -1)
+                    newObject.ParentIndex1.Name = (frameObjects[index1] as FrameObjectBase).Name.Name;
+
+                if (index2 != -1)
                 {
-                    if (frameBlocks[newObject.ParentIndex2.Index].GetType() == typeof(FrameHeaderScene))
-                        newObject.ParentIndex2.Name = (frameBlocks[newObject.ParentIndex2.Index] as FrameHeaderScene).Name.Name;
+                    if (frameObjects[index2].GetType() == typeof(FrameHeaderScene))
+                        newObject.ParentIndex2.Name = (frameObjects[index2] as FrameHeaderScene).Name.Name;
                     else
-                        newObject.ParentIndex2.Name = (frameBlocks[newObject.ParentIndex2.Index] as FrameObjectBase).Name.Name;
+                        newObject.ParentIndex2.Name = (frameObjects[index2] as FrameObjectBase).Name.Name;
                 }
 
-                frameBlocks[i] = newObject;
+                frameObjects[i] = newObject;
             }
         }
     }

@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{38DB9B9C-5E78-4E92-B4A8-96A219924F5E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Mafia2Libs</RootNamespace>
+    <RootNamespace>Mafia2Tool</RootNamespace>
     <AssemblyName>Mafia2Tool</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

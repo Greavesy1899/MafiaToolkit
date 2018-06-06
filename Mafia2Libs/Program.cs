@@ -6,7 +6,7 @@ namespace Mafia2Tool
 {
     class Program
     {
-        [STAThreadAttribute]
+        [STAThread]
         static void Main(string[] args)
         {
             Application.EnableVisualStyles();

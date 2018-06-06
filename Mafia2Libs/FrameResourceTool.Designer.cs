@@ -47,7 +47,7 @@
             this.FrameResourceGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FrameResourceGrid.Location = new System.Drawing.Point(386, 38);
+            this.FrameResourceGrid.Location = new System.Drawing.Point(387, 40);
             this.FrameResourceGrid.Name = "FrameResourceGrid";
             this.FrameResourceGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
             this.FrameResourceGrid.Size = new System.Drawing.Size(386, 381);
@@ -87,7 +87,7 @@
             // 
             this.treeView1.Location = new System.Drawing.Point(12, 40);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(368, 379);
+            this.treeView1.Size = new System.Drawing.Size(368, 381);
             this.treeView1.TabIndex = 9;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelect);
             // 
@@ -103,10 +103,10 @@
             this.ClientSize = new System.Drawing.Size(785, 431);
             this.Controls.Add(this.Load3D);
             this.Controls.Add(this.FrameResourceButton);
-            this.Controls.Add(this.FrameResourceGrid);
             this.Controls.Add(this.FrameResourceSearch);
-            this.Controls.Add(this.FrameResourceListBox);
             this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.FrameResourceGrid);
+            this.Controls.Add(this.FrameResourceListBox);
             this.Name = "FrameResourceTool";
             this.Text = "FrameResourceTool";
             this.ResumeLayout(false);

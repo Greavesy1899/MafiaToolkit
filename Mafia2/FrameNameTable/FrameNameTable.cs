@@ -8,7 +8,12 @@ namespace Mafia2
         string names;
         Data[] frameData;
 
-        public FrameNameTable(string fileName)
+        public Data[] FrameData {
+            get { return frameData; }
+            set { frameData = value; }
+        }
+
+        public FrameNameTable(string file)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
             {
@@ -35,7 +40,7 @@ namespace Mafia2
             }
         }
 
-        class Data
+        public class Data
         {
             string parentName;
             string name;                   
