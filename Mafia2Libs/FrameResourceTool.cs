@@ -107,16 +107,16 @@ namespace Mafia2Tool
             return treeNode;
         }
 
-        private void OnSelectedChanged(object sender, System.EventArgs e)
+        private void OnSelectedChanged(object sender, EventArgs e)
         {
             FrameResourceGrid.SelectedObject = FrameResourceListBox.SelectedItem;
         }
-        private void LoadMaterialTool(object sender, System.EventArgs e)
+        private void LoadMaterialTool(object sender, EventArgs e)
         {
             MaterialTool tool = new MaterialTool();
             tool.ShowDialog();
         }
-        private void OnClickLoad3D(object sender, System.EventArgs e)
+        private void OnClickLoad3D(object sender, EventArgs e)
         {
             string[] fileNames = new string[mesh.Count];
             Vector3[] filePos = new Vector3[mesh.Count];
@@ -164,7 +164,6 @@ namespace Mafia2Tool
         {
             FrameResourceGrid.SelectedObject = treeView1.SelectedNode.Tag;
         }
-
         private void SwitchView(object sender, EventArgs e)
         {
             treeView1.Visible = (!treeView1.Visible) ? true : false;

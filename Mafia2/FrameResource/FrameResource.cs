@@ -118,6 +118,11 @@ namespace Mafia2
 
         public void DefineFrameBlockParents()
         {
+            object[] entireFrame = new object[frameBlocks.Length+frameObjects.Length];
+
+            Array.Copy(frameBlocks, entireFrame, frameBlocks.Length);
+            Array.Copy(frameObjects, 0, entireFrame, frameBlocks.Length, frameObjects.Length);
+
             for (int i = 0; i != frameObjects.Length; i++)
             {
 
@@ -126,23 +131,15 @@ namespace Mafia2
                 if (newObject == null)
                     continue;
 
-                int index1 = -1;
-                int index2 = -1;
+                if(newObject.ParentIndex1.Index > -1)
+                    newObject.ParentIndex1.Name = (entireFrame[newObject.ParentIndex1.Index] as FrameObjectBase).Name.Name;
 
-                if(newObject.ParentIndex1.Index != -1)
-                    index1 = newObject.ParentIndex1.Index - frameBlocks.Length;
-                if (newObject.ParentIndex2.Index != -1)
-                    index2 = newObject.ParentIndex2.Index - frameBlocks.Length;
-
-                if(index1 > -1)
-                    newObject.ParentIndex1.Name = (frameObjects[index1] as FrameObjectBase).Name.Name;
-
-                if (index2 > -1)
+                if (newObject.ParentIndex2.Index > -1)
                 {
-                    if (frameObjects[index2].GetType() == typeof(FrameHeaderScene))
-                        newObject.ParentIndex2.Name = (frameObjects[index2] as FrameHeaderScene).Name.Name;
+                    if (entireFrame[newObject.ParentIndex2.Index].GetType() == typeof(FrameHeaderScene))
+                        newObject.ParentIndex2.Name = (entireFrame[newObject.ParentIndex2.Index] as FrameHeaderScene).Name.Name;
                     else
-                        newObject.ParentIndex2.Name = (frameObjects[index2] as FrameObjectBase).Name.Name;
+                        newObject.ParentIndex2.Name = (entireFrame[newObject.ParentIndex2.Index] as FrameObjectBase).Name.Name;
                 }
 
                 frameObjects[i] = newObject;

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Collections;
+using System;
 
 namespace Mafia2 {
     public class FrameObjectBase {
