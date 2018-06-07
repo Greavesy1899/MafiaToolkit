@@ -5,6 +5,7 @@ namespace Mafia2
     public class FrameNameTable
     {
         int stringLength;
+        int dataSize;
         string names;
         Data[] frameData;
 
@@ -26,8 +27,8 @@ namespace Mafia2
             stringLength = reader.ReadInt32();
             names = new string(reader.ReadChars(stringLength));
 
-            int size = reader.ReadInt32();
-            frameData = new Data[size];
+            dataSize = reader.ReadInt32();
+            frameData = new Data[dataSize];
 
             for (int i = 0; i != frameData.Length; i++)
             {
@@ -37,6 +38,18 @@ namespace Mafia2
                 frameData[i].Name = names.Substring(pos, names.IndexOf('\0', pos) - pos);
                 pos = frameData[i].Parent;
                 frameData[i].ParentName = names.Substring(pos, names.IndexOf('\0', pos) - pos);
+            }
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(stringLength);
+            writer.Write(names.ToCharArray());
+            writer.Write(dataSize);
+
+            for(int i = 0; i != frameData.Length; i++)
+            {
+                frameData[i].WriteToFile(writer);
             }
         }
 
@@ -91,6 +104,15 @@ namespace Mafia2
                 namepos2 = reader.ReadUInt16();
                 frameIndex = reader.ReadInt16();
                 flags = reader.ReadInt16();
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(parent);
+                writer.Write(namepos1);
+                writer.Write(namepos2);
+                writer.Write(frameIndex);
+                writer.Write(flags);
             }
 
             public override string ToString()

@@ -22,9 +22,9 @@ namespace Mafia2Tool
             List<FileInfo> vbps = new List<FileInfo>();
             List<FileInfo> ibps = new List<FileInfo>();
 
-            foreach(FileInfo file in files)
+            foreach (FileInfo file in files)
             {
-                if(file.FullName.Contains("VertexBufferPool"))
+                if (file.FullName.Contains("VertexBufferPool"))
                     vbps.Add(file);
 
                 if (file.FullName.Contains("IndexBufferPool"))
@@ -39,6 +39,11 @@ namespace Mafia2Tool
 
             IndexBufferPool = new IndexBufferPool(ibps);
             VertexBufferPool = new VertexBufferPool(vbps);
+
+            using (BinaryWriter writer = new BinaryWriter(File.Create("newFrameNameTable_0.bin")))
+            {
+                FrameNameTable.WriteToFile(writer);
+            }          
         }
     }
 
