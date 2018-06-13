@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 
 namespace Mafia2
@@ -27,26 +28,10 @@ namespace Mafia2
         VertexFlags vertexDeclaration;
         Hash vertexBufferRef;
         int numVerts;
-        bool isBone;
         int nZero1;
         int zeroTail;
         int nPartition;
-
-        int memRequireA;
-        int memRequireB;
-        int partitionType;
-        Vector3 offsetVector;
-        Vector3 scaleVector;
-        int numDesc1Length;
-        int unk1;
-        Unk1_struct[] numDesc1;
-        int unk2;
-        bool isAvailB;
-        int[] numLongs1;
-        int numLongs2Length;
-        bool isAvailC;
-        int[] numLongs2;
-
+        PartitionInfo partitionInfo = new PartitionInfo();
         int matSplitType;
         MaterialSplitInfo splitInfo = new MaterialSplitInfo();
 
@@ -70,9 +55,13 @@ namespace Mafia2
             get { return vertexDeclaration; }
             set { vertexDeclaration = value; }
         }
-        public bool IsBone {
-            get { return isBone; }
-            set { isBone = value; }
+        public MaterialSplitInfo SplitInfo {
+            get { return splitInfo; }
+            set { splitInfo = value; }
+        }
+        public PartitionInfo Partition {
+            get { return partitionInfo; }
+            set { partitionInfo = value; }
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -84,9 +73,192 @@ namespace Mafia2
             numVerts = reader.ReadInt32();
 
             nZero1 = reader.ReadInt32();
-            nPartition = reader.ReadInt32();
 
+            nPartition = reader.ReadInt32();
             if (nPartition != 0)
+                partitionInfo.ReadFromFile(reader);
+
+            matSplitType = reader.ReadInt32();
+            if (matSplitType != 0)
+                splitInfo.ReadFromFile(reader, matSplitType);
+
+            zeroTail = reader.ReadInt32();
+        }
+
+        public struct MaterialSplit
+        {
+            int firstBurst;
+            int numBurst;
+            int baseIndex;
+
+            public int FirstBurst {
+                get { return firstBurst; }
+                set { firstBurst = value; }
+            }
+            public int NumBurst {
+                get { return numBurst; }
+                set { numBurst = value; }
+            }
+            public int BaseIndex {
+                get { return baseIndex; }
+                set { baseIndex = value; }
+            }
+
+            public MaterialSplit(BinaryReader reader)
+            {
+                firstBurst = reader.ReadInt32();
+                numBurst = reader.ReadInt32();
+                baseIndex = reader.ReadInt32();
+            }
+        }
+        public struct MaterialBurst
+        {
+            short[] bounds;
+            ushort firstIndex;
+            ushort secondIndex;
+            short nleftIndex;
+            short nrightIndex;
+
+            public short[] Bounds {
+                get { return bounds; }
+                set { bounds = value; }
+            }
+            public ushort FirstIndex {
+                get { return firstIndex; }
+                set { firstIndex = value; }
+            }
+            public ushort SecondIndex {
+                get { return secondIndex; }
+                set { secondIndex = value; }
+            }
+            public short LeftIndex {
+                get { return nleftIndex; }
+                set { nleftIndex = value; }
+            }
+            public short RightIndex {
+                get { return nrightIndex; }
+                set { nrightIndex = value; }
+            }
+
+            public MaterialBurst(BinaryReader reader)
+            {
+                bounds = new short[6];
+
+                for (int i = 0; i != 6; i++)
+                    bounds[i] = reader.ReadInt16();
+
+                firstIndex = reader.ReadUInt16();
+                secondIndex = reader.ReadUInt16();
+                nleftIndex = reader.ReadInt16();
+                nrightIndex = reader.ReadInt16();
+            }
+        }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public struct Descriptor
+        {
+            int num1;
+            int num2;
+            short[] p0;
+            short[] p1;
+
+            public int Num1 {
+                get { return num1; }
+                set { num1 = value; }
+            }
+            public int Num2 {
+                get { return num2; }
+                set { num2 = value; }
+            }
+            public short[] P0 {
+                get { return p0; }
+                set { p0 = value; }
+            }
+            public short[] P1 {
+                get { return p1; }
+                set { p1 = value; }
+            }
+
+            public Descriptor(BinaryReader reader)
+            {
+                num1 = reader.ReadInt32();
+                p0 = new short[3] { reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16()}; //packed
+                p1 = new short[3] { reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16()}; //packed
+                num2 = reader.ReadInt32();
+            }
+        }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public class PartitionInfo
+        {
+            int memRequireA;
+            int memRequireB;
+            int partitionType;
+            Vector3 offsetVector;
+            Vector3 scaleVector;
+            int numDesc1Length;
+            int unk1;
+            Descriptor[] numDesc1;
+            int unk2;
+            bool isAvailB;
+            int[] numLongs1;
+            int numLongs2Length;
+            bool isAvailC;
+            int[] numLongs2;
+            bool isBone;
+
+            public bool IsBone {
+                get { return isBone; }
+                set { isBone = value; }
+            }
+            public bool IsAvailB {
+                get { return isAvailB; }
+                set { isAvailB = value; }
+            }
+            public bool IsAvailC {
+                get { return isAvailC; }
+                set { isAvailC = value; }
+            }
+            public int MemRequiredA {
+                get { return memRequireA; }
+                set { memRequireA = value; }
+            }
+            public int MemRequiredB {
+                get { return memRequireB; }
+                set { memRequireB = value; }
+            }
+            public int Type {
+                get { return partitionType; }
+                set { partitionType = value; }
+            }
+            public int Unk1 {
+                get { return unk1; }
+                set { unk1 = value; }
+            }
+            public int Unk2 {
+                get { return unk2; }
+                set { unk2 = value; }
+            }
+            public int[] Longs1 {
+                get { return numLongs1; }
+                set { numLongs1 = value; }
+            }
+            public int[] Longs2 {
+                get { return numLongs2; }
+                set { numLongs2 = value; }
+            }
+            public Descriptor[] descriptors {
+                get { return numDesc1; }
+                set { numDesc1 = value; }
+            }
+            public Vector3 OffsetVector {
+                get { return offsetVector; }
+                set { offsetVector = value; }
+            }
+            public Vector3 ScaleVector {
+                get { return scaleVector; }
+                set { scaleVector = value; }
+            }
+
+            public void ReadFromFile(BinaryReader reader)
             {
                 memRequireA = reader.ReadInt32();
                 memRequireB = reader.ReadInt32();
@@ -100,10 +272,10 @@ namespace Mafia2
 
                     numDesc1Length = reader.ReadInt32();
                     unk1 = reader.ReadInt32();
-                    numDesc1 = new Unk1_struct[numDesc1Length];
+                    numDesc1 = new Descriptor[numDesc1Length];
                     for (int i = 0; i != numDesc1.Length; i++)
                     {
-                        numDesc1[i] = new Unk1_struct(reader);
+                        numDesc1[i] = new Descriptor(reader);
                     }
                     isAvailB = reader.ReadBoolean();
                     unk2 = reader.ReadInt32();
@@ -125,109 +297,126 @@ namespace Mafia2
                     reader.ReadBytes(10);
                 }
             }
+        }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public class MaterialSplitInfo
+        {
+            int unk18 = 0;
+            int unk20 = 0;
+            int unk21 = 0;
+            int unk24 = 0;
+            int numVerts = 0;
+            int numFaces = 0;
+            int numSplitGroup = 0;
+            bool availD = false;
+            int unk26 = 0;
+            int nSizeOfMatBurstEntries = 0;
+            int nSizeOfMatSplitEntries = 0;
+            int numMatBurst = 0;
+            int numMatSplit = 0;
+            long hash;
+            MaterialBurst[] materialBursts;
+            MaterialSplit[] materialSplits;
 
-            matSplitType = reader.ReadInt32();
+            public bool AvailD {
+                get { return availD; }
+                set { availD = value; }
+            }
+            public int Unk18 {
+                get { return unk18; }
+                set { unk18 = value; }
+            }
+            public int Unk20 {
+                get { return unk20; }
+                set { unk20 = value; }
+            }
+            public int Unk21 {
+                get { return unk21; }
+                set { unk21 = value; }
+            }
+            public int Unk24 {
+                get { return unk24; }
+                set { unk24 = value; }
+            }
+            public int Unk26 {
+                get { return unk26; }
+                set { unk26 = value; }
+            }
+            public int NSizeOfMatBurstEntries {
+                get { return nSizeOfMatBurstEntries; }
+                set { nSizeOfMatBurstEntries = value; }
+            }
+            public int NSizeOfMatSplitEntries {
+                get { return nSizeOfMatSplitEntries; }
+                set { nSizeOfMatSplitEntries = value; }
+            }
+            public int NumMatBurst {
+                get { return numMatBurst; }
+                set { numMatBurst = value; }
+            }
+            public int NumMatSplit {
+                get { return numMatSplit; }
+                set { numMatSplit = value; }
+            }
+            public int NumVerts {
+                get { return numVerts; }
+                set { numVerts = value; }
+            }
+            public int NumFaces {
+                get { return numFaces; }
+                set { numFaces = value; }
+            }
+            public int NumSplitGroup {
+                get { return numSplitGroup; }
+                set { numSplitGroup = value; }
+            }
+            public long Hash {
+                get { return hash; }
+                set { hash = value; }
+            }
+            public MaterialBurst[] MaterialBursts {
+                get { return materialBursts; }
+                set { materialBursts = value; }
+            }
+            public MaterialSplit[] MaterialSplits {
+                get { return materialSplits; }
+                set { materialSplits = value; }
+            }
 
-            if (matSplitType != 0)
+            public void ReadFromFile(BinaryReader reader, int type)
             {
-                splitInfo.unk18 = reader.ReadInt32();
-                splitInfo.numVerts = reader.ReadInt32();
-                splitInfo.numFaces = reader.ReadInt32();
-                splitInfo.unk20 = reader.ReadInt32();
-                splitInfo.unk21 = reader.ReadInt32();
-                splitInfo.numSplitGroup = reader.ReadInt32();
-                splitInfo.availD = reader.ReadBoolean();
-                splitInfo.unk24 = reader.ReadInt32();
-                splitInfo.nSizeOfMatBurstEntries = reader.ReadInt32();
-                splitInfo.nSizeOfMatSplitEntries = reader.ReadInt32();
-                splitInfo.numMatBurst = reader.ReadInt32();
-                splitInfo.numMatSplit = reader.ReadInt32();
-                splitInfo.hash = reader.ReadInt64();
-
-                splitInfo.materialBursts = new MaterialBurst[splitInfo.numMatBurst];
-                splitInfo.materialSplits = new MaterialSplit[splitInfo.numMatSplit];
-
-                for(int i = 0; i != splitInfo.materialBursts.Length; i++)
+                if (type != 1)
                 {
-                    splitInfo.materialBursts[i] = new MaterialBurst(reader);
+                    unk18 = reader.ReadInt32();
+                    numVerts = reader.ReadInt32();
+                    numFaces = reader.ReadInt32();
+                    unk20 = reader.ReadInt32();
+                    unk21 = reader.ReadInt32();
+                    numSplitGroup = reader.ReadInt32();
                 }
-                for (int i = 0; i != splitInfo.materialSplits.Length; i++)
+
+                availD = reader.ReadBoolean();
+
+                unk24 = reader.ReadInt32();
+                nSizeOfMatBurstEntries = reader.ReadInt32();
+                nSizeOfMatSplitEntries = reader.ReadInt32();
+                numMatBurst = reader.ReadInt32();
+                numMatSplit = reader.ReadInt32();
+                hash = reader.ReadInt64();
+
+                materialBursts = new MaterialBurst[numMatBurst];
+                materialSplits = new MaterialSplit[numMatSplit];
+
+
+                for (int i = 0; i != materialBursts.Length; i++)
                 {
-                    splitInfo.materialSplits[i] = new MaterialSplit(reader);
+                    materialBursts[i] = new MaterialBurst(reader);
+                }
+                for (int i = 0; i != materialSplits.Length; i++)
+                {
+                    materialSplits[i] = new MaterialSplit(reader);
                 }
             }
-            zeroTail = reader.ReadInt32();
-        }
-        private struct Unk1_struct
-        {
-            int num1;
-            int num2;
-            short[] P0;
-            short[] P1;
-
-            public Unk1_struct(BinaryReader reader)
-            {
-                num1 = reader.ReadInt32();
-                P0 = new short[3] { reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16()}; //packed
-                P1 = new short[3] { reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16()}; //packed
-                num2 = reader.ReadInt32();
-            }
-        }
-
-        private struct MaterialSplit
-        {
-            int firstBurst;
-            int numBurst;
-            int baseIndex;
-
-            public MaterialSplit(BinaryReader reader)
-            {
-                firstBurst = reader.ReadInt32();
-                numBurst = reader.ReadInt32();
-                baseIndex = reader.ReadInt32();
-            }
-        }
-
-        private struct MaterialBurst
-        {
-            short[] bounds;
-            ushort firstIndex;
-            ushort secondIndex;
-            short nleftIndex;
-            short nrightIndex;
-
-            public MaterialBurst(BinaryReader reader)
-            {
-                bounds = new short[6];
-
-                for (int i = 0; i != 6; i++)
-                    bounds[i] = reader.ReadInt16();
-
-                firstIndex = reader.ReadUInt16();
-                secondIndex = reader.ReadUInt16();
-                nleftIndex = reader.ReadInt16();
-                nrightIndex = reader.ReadInt16();
-            }
-        }
-
-        private class MaterialSplitInfo
-        {
-            public int unk18 = 0;
-            public int unk20 = 0;
-            public int unk21 = 0;
-            public int unk24 = 0;
-            public int numVerts = 0;
-            public int numFaces = 0;
-            public int numSplitGroup = 0;
-            public bool availD = false;
-            public int unk26 = 0;
-            public int nSizeOfMatBurstEntries = 0;
-            public int nSizeOfMatSplitEntries = 0;
-            public int numMatBurst = 0;
-            public int numMatSplit = 0;
-            public long hash;
-            public MaterialBurst[] materialBursts;
-            public MaterialSplit[] materialSplits;
 
         }
 
@@ -246,7 +435,6 @@ namespace Mafia2
                 set { length = value; }
             }
         }
-
         public Dictionary<VertexFlags, VertexOffset> GetVertexOffsets(out int stride)
         {
             Dictionary<VertexFlags, VertexOffset> dictionary = new Dictionary<VertexFlags, VertexOffset>();
