@@ -13,7 +13,7 @@ namespace Mafia2
             VertexFlags.BlendData,
             VertexFlags.flag_0x80,
             VertexFlags.flag_0x20000,
-            VertexFlags.flag_0x100000,
+            VertexFlags.DamageGroup,
             VertexFlags.TexCoords0,
             VertexFlags.TexCoords1,
             VertexFlags.TexCoords2,
@@ -28,13 +28,27 @@ namespace Mafia2
         Hash vertexBufferRef;
         int numVerts;
         bool isBone;
-        int count;
-        int count2;
-        bool flags2;
-        int NumVerts;
-        int NumFaces;
-        int count__1;
-        int count__2;
+        int nZero1;
+        int zeroTail;
+        int nPartition;
+
+        int memRequireA;
+        int memRequireB;
+        int partitionType;
+        Vector3 offsetVector;
+        Vector3 scaleVector;
+        int numDesc1Length;
+        int unk1;
+        Unk1_struct[] numDesc1;
+        int unk2;
+        bool isAvailB;
+        int[] numLongs1;
+        int numLongs2Length;
+        bool isAvailC;
+        int[] numLongs2;
+
+        int matSplitType;
+        MaterialSplitInfo splitInfo = new MaterialSplitInfo();
 
         public float Distance {
             get { return distance; }
@@ -61,124 +75,160 @@ namespace Mafia2
             set { isBone = value; }
         }
 
-        //1st set of unknowns. This needs to be seperated into structs.
-        int u_01_int;
-        int c_01;
-        int u_00_size;
-        int u_01_size;
-        int u_02_int;
-        Vector3 u_00_vector;
-        Vector3 u_01_vector;
-        int u_00_int;
-        int[] P0;
-        int[] P1;
-        int u_07_short;
-        int u_04_int;
-        int unknown_05_ints;
-        bool u_06_bool;
-        int[] int_arr;
-        string u_b_arr;
-        int u_04_i_2;
-        int u_05_i_5;
-        int u_06_i;
-        int u_07_2;
-        int c_1;
-        string[] USELR;
-
         public void ReadFromFile(BinaryReader reader)
         {
-
             distance = reader.ReadSingle();
             indexBufferRef = new Hash(reader);
             vertexDeclaration = (VertexFlags)reader.ReadUInt32();
             vertexBufferRef = new Hash(reader);
             numVerts = reader.ReadInt32();
 
-            u_01_int = reader.ReadInt32();
-            c_01 = reader.ReadInt32();
+            nZero1 = reader.ReadInt32();
+            nPartition = reader.ReadInt32();
 
-            if (c_01 != 0)
+            if (nPartition != 0)
             {
-
-                u_00_size = reader.ReadInt32();
-                u_01_size = reader.ReadInt32();
-                u_02_int = reader.ReadInt32();
+                memRequireA = reader.ReadInt32();
+                memRequireB = reader.ReadInt32();
+                partitionType = reader.ReadInt32();
                 isBone = reader.ReadBoolean();
 
                 if (isBone)
                 {
-                    u_00_vector = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-                    u_01_vector = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                    offsetVector = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                    scaleVector = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
-                    count = reader.ReadInt32();
-                    u_01_int = reader.ReadInt32();
-
-                    for (int i = 0; i != count; i++)
+                    numDesc1Length = reader.ReadInt32();
+                    unk1 = reader.ReadInt32();
+                    numDesc1 = new Unk1_struct[numDesc1Length];
+                    for (int i = 0; i != numDesc1.Length; i++)
                     {
-                        u_00_int = reader.ReadInt32();
-                        P0 = new int[3] { reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16() };
-                        P1 = new int[3] { reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16() };
-                        u_07_short = reader.ReadInt32();
+                        numDesc1[i] = new Unk1_struct(reader);
                     }
-
-                    flags2 = reader.ReadBoolean();
-                    u_04_int = reader.ReadInt32();
-
-                    for (int i = 0; i != count; i++)
+                    isAvailB = reader.ReadBoolean();
+                    unk2 = reader.ReadInt32();
+                    numLongs1 = new int[numDesc1Length];
+                    for (int i = 0; i != numLongs1.Length; i++)
                     {
-                        unknown_05_ints = reader.ReadInt32();
+                        numLongs1[i] = reader.ReadInt32();
                     }
-
-                    count2 = reader.ReadInt32();
-                    u_06_bool = reader.ReadBoolean();
-
-                    int_arr = new int[count2];
-                    for (int i = 0; i != count2; i++)
+                    numLongs2Length = reader.ReadInt32();
+                    isAvailC = reader.ReadBoolean();
+                    numLongs2 = new int[numLongs2Length];
+                    for (int i = 0; i != numLongs2.Length; i++)
                     {
-                        int_arr[i] = reader.ReadInt32();
+                        numLongs2[i] = reader.ReadInt32();
                     }
                 }
                 else
                 {
-                    u_b_arr = BitConverter.ToString(reader.ReadBytes(10)).Replace("-", " ");
+                    reader.ReadBytes(10);
                 }
-                u_04_i_2 = reader.ReadInt32();
-                u_05_i_5 = reader.ReadInt32();
-                NumVerts = reader.ReadInt32();
-                NumFaces = reader.ReadInt32();
-                u_06_i = reader.ReadInt32();
-                u_07_2 = reader.ReadInt32();
             }
-            c_1 = reader.ReadInt32();
 
-            if (c_1 != 0)
+            matSplitType = reader.ReadInt32();
+
+            if (matSplitType != 0)
             {
-                //need to assign these; its 07:49am.
-                reader.ReadBoolean();
-                reader.ReadInt32();
-                reader.ReadInt32();
-                reader.ReadInt32();
-                count__1 = reader.ReadInt32();
-                count__2 = reader.ReadInt32();
-                reader.ReadInt64();
-                USELR = new string[count__1];
-                for (int i = 0; i != count__1; i++)
-                {
-                    USELR[i] = string.Format("{0,-3} {1,-3} {2,-3} {3,-3} {4,-3} {5,-3} {6,-5} {7,-5} {8,-5} {9}", reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16());
-                }
+                splitInfo.unk18 = reader.ReadInt32();
+                splitInfo.numVerts = reader.ReadInt32();
+                splitInfo.numFaces = reader.ReadInt32();
+                splitInfo.unk20 = reader.ReadInt32();
+                splitInfo.unk21 = reader.ReadInt32();
+                splitInfo.numSplitGroup = reader.ReadInt32();
+                splitInfo.availD = reader.ReadBoolean();
+                splitInfo.unk24 = reader.ReadInt32();
+                splitInfo.nSizeOfMatBurstEntries = reader.ReadInt32();
+                splitInfo.nSizeOfMatSplitEntries = reader.ReadInt32();
+                splitInfo.numMatBurst = reader.ReadInt32();
+                splitInfo.numMatSplit = reader.ReadInt32();
+                splitInfo.hash = reader.ReadInt64();
 
-                for (int i = 0; i < count__2; i++)
+                splitInfo.materialBursts = new MaterialBurst[splitInfo.numMatBurst];
+                splitInfo.materialSplits = new MaterialSplit[splitInfo.numMatSplit];
+
+                for(int i = 0; i != splitInfo.materialBursts.Length; i++)
                 {
-                    reader.ReadInt32();
-                    reader.ReadInt32();
-                    reader.ReadInt32();
+                    splitInfo.materialBursts[i] = new MaterialBurst(reader);
+                }
+                for (int i = 0; i != splitInfo.materialSplits.Length; i++)
+                {
+                    splitInfo.materialSplits[i] = new MaterialSplit(reader);
                 }
             }
-            reader.ReadInt32();
+            zeroTail = reader.ReadInt32();
         }
-
         private struct Unk1_struct
         {
+            int num1;
+            int num2;
+            short[] P0;
+            short[] P1;
+
+            public Unk1_struct(BinaryReader reader)
+            {
+                num1 = reader.ReadInt32();
+                P0 = new short[3] { reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16()}; //packed
+                P1 = new short[3] { reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16()}; //packed
+                num2 = reader.ReadInt32();
+            }
+        }
+
+        private struct MaterialSplit
+        {
+            int firstBurst;
+            int numBurst;
+            int baseIndex;
+
+            public MaterialSplit(BinaryReader reader)
+            {
+                firstBurst = reader.ReadInt32();
+                numBurst = reader.ReadInt32();
+                baseIndex = reader.ReadInt32();
+            }
+        }
+
+        private struct MaterialBurst
+        {
+            short[] bounds;
+            ushort firstIndex;
+            ushort secondIndex;
+            short nleftIndex;
+            short nrightIndex;
+
+            public MaterialBurst(BinaryReader reader)
+            {
+                bounds = new short[6];
+
+                for (int i = 0; i != 6; i++)
+                    bounds[i] = reader.ReadInt16();
+
+                firstIndex = reader.ReadUInt16();
+                secondIndex = reader.ReadUInt16();
+                nleftIndex = reader.ReadInt16();
+                nrightIndex = reader.ReadInt16();
+            }
+        }
+
+        private class MaterialSplitInfo
+        {
+            public int unk18 = 0;
+            public int unk20 = 0;
+            public int unk21 = 0;
+            public int unk24 = 0;
+            public int numVerts = 0;
+            public int numFaces = 0;
+            public int numSplitGroup = 0;
+            public bool availD = false;
+            public int unk26 = 0;
+            public int nSizeOfMatBurstEntries = 0;
+            public int nSizeOfMatSplitEntries = 0;
+            public int numMatBurst = 0;
+            public int numMatSplit = 0;
+            public long hash;
+            public MaterialBurst[] materialBursts;
+            public MaterialSplit[] materialSplits;
+
         }
 
         public struct VertexOffset
@@ -235,7 +285,7 @@ namespace Mafia2
                 case VertexFlags.TexCoords2:
                 case VertexFlags.TexCoords7:
                 case VertexFlags.flag_0x20000:
-                case VertexFlags.flag_0x100000:
+                case VertexFlags.DamageGroup:
                     return 4;
                 case VertexFlags.Tangent:
                     return 0;

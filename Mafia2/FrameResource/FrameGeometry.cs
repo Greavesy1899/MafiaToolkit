@@ -1,7 +1,9 @@
 ﻿using System.IO;
 
-namespace Mafia2 {
-    public class FrameGeometry {
+namespace Mafia2
+{
+    public class FrameGeometry
+    {
         byte numLods;
         short unk01_short = 0;
         Vector3 positionOffset;
@@ -34,10 +36,13 @@ namespace Mafia2 {
             set { unk02_int = value; }
         }
 
-        public FrameGeometry(BinaryReader reader) {
+        public FrameGeometry(BinaryReader reader)
+        {
             ReadFromFile(reader);
         }
-        public void ReadFromFile(BinaryReader reader) {
+
+        public void ReadFromFile(BinaryReader reader)
+        {
             numLods = reader.ReadByte();
             unk01_short = reader.ReadInt16();
 
@@ -46,10 +51,20 @@ namespace Mafia2 {
 
             LOD = new FrameLOD[numLods];
 
-            for (int i = 0; i < numLods; i++) {
+            for (int i = 0; i < numLods; i++)
+            {
                 LOD[i] = new FrameLOD();
                 LOD[i].ReadFromFile(reader);
             }
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(numLods);
+            writer.Write(unk01_short);
+            positionOffset.WriteToFile(writer);
+            writer.Write(positionFactor);
+
         }
 
         public override string ToString()

@@ -1,7 +1,9 @@
 ﻿using System.IO;
 
-namespace Mafia2 {
-    public class FrameHeader {
+namespace Mafia2
+{
+    public class FrameHeader
+    {
 
         bool isScene = false;
         int numFolderNames = 0;
@@ -16,9 +18,10 @@ namespace Mafia2 {
         FrameHeaderScene[] sceneFolders;
 
         //unknown
-        float num1 = 0f;
-        float num2 = 0f;
-        float num3 = 0;
+        public float unk1 = 0f;
+        public float unk2 = 0f;
+        public bool unk3;
+        public float[] unkData = new float[4 * 3];
 
         public int NumGeometries {
             get { return numGeometries; }
@@ -49,7 +52,8 @@ namespace Mafia2 {
             set { sceneFolders = value; }
         }
 
-        public void ReadFromFile(BinaryReader reader) {
+        public void ReadFromFile(BinaryReader reader)
+        {
             isScene = reader.ReadBoolean();
             numFolderNames = reader.ReadInt32();
             numGeometries = reader.ReadInt32();
@@ -61,27 +65,58 @@ namespace Mafia2 {
 
             if (isScene)
             {
-                reader.ReadSingle();
-                reader.ReadSingle();
+                unk1 = reader.ReadSingle();
+                unk2 = reader.ReadSingle();
                 sceneName = new Hash(reader);
 
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < (4 * 3); i++)
                 {
-                    num1 = reader.ReadInt32();
-                    num2 = reader.ReadInt32();
-                    num3 = reader.ReadInt32();
+                    unkData[i] = reader.ReadSingle();
                 }
-                reader.ReadBoolean();
+                unk3 = reader.ReadBoolean();
             }
 
             sceneFolders = new FrameHeaderScene[numFolderNames];
-            for (int i = 0; i != numFolderNames; i++) {
+            for (int i = 0; i != numFolderNames; i++)
+            {
                 sceneFolders[i] = new FrameHeaderScene();
                 sceneFolders[i].ReadFromFile(reader);
             }
         }
 
-        public override string ToString() {
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(isScene);
+            writer.Write(numFolderNames);
+            writer.Write(numGeometries);
+            writer.Write(numMaterialResources);
+            writer.Write(numBlendInfos);
+            writer.Write(numSkeletons);
+            writer.Write(numSkelHierachies);
+            writer.Write(numObjects);
+
+            if(isScene)
+            {
+                writer.Write(unk1);
+                writer.Write(unk2);
+                sceneName.WriteToFile(writer);
+
+                for (int i = 0; i < (4 * 3); i++)
+                {
+                    writer.Write(unkData[i]);
+                }
+                writer.Write(unk3);
+            }
+
+            for (int i = 0; i != numFolderNames; i++)
+            {
+                sceneFolders[i].WriteToFile(writer);
+            }
+
+        }
+
+        public override string ToString()
+        {
             return string.Format("{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}", isScene, numFolderNames, numGeometries, numMaterialResources, numBlendInfos, numSkeletons, numSkelHierachies, numObjects);
         }
     }

@@ -33,6 +33,13 @@ namespace Mafia2
             name = Encoding.ASCII.GetString(reader.ReadBytes(size));
         }
 
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(hash);
+            writer.Write(size);
+            writer.Write(name.ToCharArray());
+        }
+
         public override string ToString()
         {
             return string.Format("{0}, {1}", name, hash);

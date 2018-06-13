@@ -16,6 +16,11 @@ namespace Mafia2
             name = new Hash(reader);
         }
 
+        public void WriteToFile(BinaryWriter writer)
+        {
+            name.WriteToFile(writer);
+        }
+
         public override string ToString()
         {
             return string.Format("Header Block");

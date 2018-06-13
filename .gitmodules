@@ -1,6 +1,3 @@
 [submodule "Gibbed.IO"]
 	path = Gibbed.IO
 	url = https://github.com/gibbed/Gibbed.IO
-[submodule "Gibbed.Illusion"]
-	path = Gibbed.Illusion
-	url = https://github.com/gibbed/Gibbed.Illusion

@@ -116,6 +116,11 @@ namespace Mafia2
             DefineFrameBlockParents();
         }
 
+        public void WriteToFile(BinaryWriter writer)
+        {
+            header.WriteToFile(writer);
+        }
+
         public void DefineFrameBlockParents()
         {
             object[] entireFrame = new object[frameBlocks.Length+frameObjects.Length];
