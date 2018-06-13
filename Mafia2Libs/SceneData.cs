@@ -10,9 +10,7 @@ namespace Mafia2Tool
         public static FrameResource FrameResource;
         public static VertexBufferPool VertexBufferPool;
         public static IndexBufferPool IndexBufferPool;
-        //public static string ScenePath = "E:/Games/Steam/steamapps/common/Mafia II/pc/sds/cars/extracted/ascot_baileys200_pha";
-        public static string ScenePath = "E:/Games/Steam/steamapps/common/Mafia II/pc/sds/city/extracted/chinatown";
-        //public static string ScenePath = "E:/Games/Steam/steamapps/common/Mafia II/pc/sds/city_univers/extracted/city_univers";
+        public static string ScenePath = Properties.Settings.Default.SDSPath;
 
         public static void BuildData()
         {

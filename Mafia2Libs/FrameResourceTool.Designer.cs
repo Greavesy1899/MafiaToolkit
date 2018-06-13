@@ -26,7 +26,6 @@
             this.FrameResourceButton = new System.Windows.Forms.Button();
             this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
             this.FrameResourceListBox = new System.Windows.Forms.ListBox();
-            this.FrameResourceSearch = new System.Windows.Forms.TextBox();
             this.Load3D = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
@@ -35,7 +34,7 @@
             // 
             // FrameResourceButton
             // 
-            this.FrameResourceButton.Location = new System.Drawing.Point(226, 11);
+            this.FrameResourceButton.Location = new System.Drawing.Point(12, 11);
             this.FrameResourceButton.Name = "FrameResourceButton";
             this.FrameResourceButton.Size = new System.Drawing.Size(91, 23);
             this.FrameResourceButton.TabIndex = 7;
@@ -66,18 +65,9 @@
             this.FrameResourceListBox.Visible = false;
             this.FrameResourceListBox.SelectedIndexChanged += new System.EventHandler(this.OnSelectedChanged);
             // 
-            // FrameResourceSearch
-            // 
-            this.FrameResourceSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.FrameResourceSearch.Location = new System.Drawing.Point(12, 11);
-            this.FrameResourceSearch.Name = "FrameResourceSearch";
-            this.FrameResourceSearch.Size = new System.Drawing.Size(207, 20);
-            this.FrameResourceSearch.TabIndex = 4;
-            // 
             // Load3D
             // 
-            this.Load3D.Location = new System.Drawing.Point(323, 11);
+            this.Load3D.Location = new System.Drawing.Point(109, 11);
             this.Load3D.Name = "Load3D";
             this.Load3D.Size = new System.Drawing.Size(75, 23);
             this.Load3D.TabIndex = 8;
@@ -102,7 +92,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(404, 11);
+            this.button1.Location = new System.Drawing.Point(190, 11);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 10;
@@ -118,14 +108,12 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.Load3D);
             this.Controls.Add(this.FrameResourceButton);
-            this.Controls.Add(this.FrameResourceSearch);
             this.Controls.Add(this.FrameResourceGrid);
             this.Controls.Add(this.treeView1);
             this.Controls.Add(this.FrameResourceListBox);
             this.Name = "FrameResourceTool";
             this.Text = "FrameResourceTool";
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -134,7 +122,6 @@
         private System.Windows.Forms.Button FrameResourceButton;
         private System.Windows.Forms.PropertyGrid FrameResourceGrid;
         private System.Windows.Forms.ListBox FrameResourceListBox;
-        private System.Windows.Forms.TextBox FrameResourceSearch;
         private System.Windows.Forms.Button Load3D;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowser;

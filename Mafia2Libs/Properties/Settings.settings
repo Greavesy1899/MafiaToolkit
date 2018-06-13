@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Mafia2Tool.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="SDSPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">E:/Games/Steam/steamapps/common/Mafia II/pc/sds/city/extracted/chinatown</Value>
+    </Setting>
+    <Setting Name="SDSPath1" Type="System.String" Scope="User">
+      <Value Profile="(Default)">E:/Games/Steam/steamapps/common/Mafia II/pc/sds/cars/extracted/ascot_baileys200_pha</Value>
+    </Setting>
+    <Setting Name="SDSPath2" Type="System.String" Scope="User">
+      <Value Profile="(Default)">E:/Games/Steam/steamapps/common/Mafia II/pc/sds/city_univers/extracted/city_univers</Value>
+    </Setting>
+    <Setting Name="CurrentVersion" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="CloudVersion" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">-1</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
