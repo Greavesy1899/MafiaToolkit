@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Gibbed.IO;
 
 namespace Mafia2 {
     public class FrameMaterial {

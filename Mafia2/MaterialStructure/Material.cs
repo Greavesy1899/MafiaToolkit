@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Gibbed.IO;
 using System.ComponentModel;
 
 namespace Mafia2 {
@@ -168,34 +167,34 @@ namespace Mafia2 {
         }
 
         public void WriteToFile(FileStream stream) {
-            //material hash code and name.
-            stream.WriteValueU64(materialNumID);
-            stream.WriteValueS32(materialName.Length);
-            stream.WriteString(materialName);
+            ////material hash code and name.
+            //stream.WriteValueU64(materialNumID);
+            //stream.WriteValueS32(materialName.Length);
+            //stream.WriteString(materialName);
 
-            //UFO values
-            stream.WriteValueU8(ufo1);
-            stream.WriteValueU8(ufo2);
-            stream.WriteValueS32(ufo3);
-            stream.WriteValueU8(ufo4);
-            stream.WriteValueS32(ufo5);
-            stream.WriteValueS32(ufo6);
+            ////UFO values
+            //stream.WriteValueU8(ufo1);
+            //stream.WriteValueU8(ufo2);
+            //stream.WriteValueS32(ufo3);
+            //stream.WriteValueU8(ufo4);
+            //stream.WriteValueS32(ufo5);
+            //stream.WriteValueS32(ufo6);
 
-            //Shader and flags
-            stream.WriteValueU64(shaderID.Swap());
-            stream.WriteValueU32((uint)flags);
+            ////Shader and flags
+            //stream.WriteValueU64(shaderID.Swap());
+            //stream.WriteValueU32((uint)flags);
 
-            //Shader Parameter
-            stream.WriteValueS32(sp_count);
-            foreach (ShaderParameter sp in sp) {
-                sp.WriteToFile(stream);
-            }
+            ////Shader Parameter
+            //stream.WriteValueS32(sp_count);
+            //foreach (ShaderParameter sp in sp) {
+            //    sp.WriteToFile(stream);
+            //}
 
-            //Shader Parameter Samplers
-            stream.WriteValueS32(sps_count);
-            foreach (ShaderParameterSampler sps in sps) {
-                sps.WriteToFile(stream);
-            }
+            ////Shader Parameter Samplers
+            //stream.WriteValueS32(sps_count);
+            //foreach (ShaderParameterSampler sps in sps) {
+            //    sps.WriteToFile(stream);
+            //}
         }
 
     }
@@ -235,11 +234,11 @@ namespace Mafia2 {
         }
 
         public void WriteToFile(FileStream stream) {
-            stream.WriteString(chunk);
-            stream.WriteValueS32(floatCount * 4);
-            foreach(float f in floats) {
-                stream.WriteValueF32(f);
-            }
+            //stream.WriteString(chunk);
+            //stream.WriteValueS32(floatCount * 4);
+            //foreach(float f in floats) {
+            //    stream.WriteValueF32(f);
+            //}
         }
     }
 
@@ -299,13 +298,13 @@ namespace Mafia2 {
         }
 
         public void WriteToFile(FileStream stream) {
-            stream.WriteString(chunk);
-            stream.WriteValueS32(int.Parse(ufo_x2.Split(' ')[0]));
-            stream.WriteValueS32(int.Parse(ufo_x2.Split(' ')[1]));
-            stream.WriteValueU64(unk);
-            stream.WriteBytes(Functions.ConvertHexStringToByteArray(flags));
-            stream.WriteValueU32((uint)file.Length);
-            stream.WriteString(file);
+            //stream.WriteString(chunk);
+            //stream.WriteValueS32(int.Parse(ufo_x2.Split(' ')[0]));
+            //stream.WriteValueS32(int.Parse(ufo_x2.Split(' ')[1]));
+            //stream.WriteValueU64(unk);
+            //stream.WriteBytes(Functions.ConvertHexStringToByteArray(flags));
+            //stream.WriteValueU32((uint)file.Length);
+            //stream.WriteString(file);
         }
     }
 }

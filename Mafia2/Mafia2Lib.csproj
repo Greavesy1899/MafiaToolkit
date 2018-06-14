@@ -94,11 +94,5 @@
     <Compile Include="SoundSectors\SoundSector.cs" />
     <Compile Include="XML\XMLTest.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Gibbed.IO\Gibbed.IO.csproj">
-      <Project>{047857ba-daa3-4ca7-afb8-a1b082b28c6a}</Project>
-      <Name>Gibbed.IO</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

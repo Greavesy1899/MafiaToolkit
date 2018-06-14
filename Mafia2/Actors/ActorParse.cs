@@ -18,7 +18,6 @@ namespace Mafia2
             string pool = new string(reader.ReadChars(poolLength));
 
             int hashesLength = reader.ReadInt32();
-            ulong[] flags = new ulong[hashesLength];
 
             ActorDefinition[] actors = new ActorDefinition[hashesLength];
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Gibbed.IO;
 
 namespace Mafia2
 {
@@ -32,18 +31,18 @@ namespace Mafia2
 
         public static void WriteMatFile(string materialName)
         {
-            using (FileStream writer = new FileStream(materialName, FileMode.Truncate))
-            {
-                writer.WriteString("MTLB");
-                writer.WriteValueS32(57);
-                writer.WriteValueS32(materials.Length);
-                writer.WriteValueS32(0);
+            //using (FileStream writer = new FileStream(materialName, FileMode.Truncate))
+            //{
+            //    writer.WriteString("MTLB");
+            //    writer.WriteValueS32(57);
+            //    writer.WriteValueS32(materials.Length);
+            //    writer.WriteValueS32(0);
 
-                for (int i = 0; i != materials.Length; i++)
-                {
-                    materials[i].WriteToFile(writer);
-                }
-            }
+            //    for (int i = 0; i != materials.Length; i++)
+            //    {
+            //        materials[i].WriteToFile(writer);
+            //    }
+            //}
         }
 
         public static string GetMatName(string text)

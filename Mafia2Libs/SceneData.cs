@@ -44,7 +44,7 @@ namespace Mafia2Tool
                 if (file.FullName.Contains("SoundSector"))
                     SoundSector = new SoundSector(file.FullName);
 
-                if (file.FullName.Contains("Actor"))
+                if (file.FullName.Contains("Actors"))
                     Actors = new ActorParse(file.FullName);
             }
 
