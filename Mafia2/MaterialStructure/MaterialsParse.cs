@@ -63,6 +63,11 @@ namespace Mafia2
             return materials;
         }
 
+        public static void SetMaterials(Material[] mats)
+        {
+            materials = mats;
+        }
+
         public static string LookupMaterialByHash(ulong hash)
         {
             if (materials == null)

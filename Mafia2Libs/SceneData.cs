@@ -10,7 +10,10 @@ namespace Mafia2Tool
         public static FrameResource FrameResource;
         public static VertexBufferPool VertexBufferPool;
         public static IndexBufferPool IndexBufferPool;
-        public static string ScenePath = Properties.Settings.Default.SDSPath;
+        public static SoundSector SoundSector;
+        public static ActorParse Actors;
+        public static ItemDesc[] ItemDescs;
+        public static string ScenePath = Properties.Settings.Default.SDSPath1;
 
         public static void BuildData()
         {
@@ -19,6 +22,7 @@ namespace Mafia2Tool
 
             List<FileInfo> vbps = new List<FileInfo>();
             List<FileInfo> ibps = new List<FileInfo>();
+            List<ItemDesc> ids = new List<ItemDesc>();
 
             foreach (FileInfo file in files)
             {
@@ -28,19 +32,29 @@ namespace Mafia2Tool
                 if (file.FullName.Contains("IndexBufferPool"))
                     ibps.Add(file);
 
+                if (file.FullName.Contains("ItemDesc"))
+                    ids.Add(new ItemDesc(file.FullName));
+
                 if (file.FullName.Contains("FrameResource_0.bin"))
                     FrameResource = new FrameResource(file.FullName);
 
                 if (file.FullName.Contains("FrameNameTable_0.bin"))
                     FrameNameTable = new FrameNameTable(file.FullName);
+
+                if (file.FullName.Contains("SoundSector"))
+                    SoundSector = new SoundSector(file.FullName);
+
+                if (file.FullName.Contains("Actor"))
+                    Actors = new ActorParse(file.FullName);
             }
 
             IndexBufferPool = new IndexBufferPool(ibps);
             VertexBufferPool = new VertexBufferPool(vbps);
+            ItemDescs = ids.ToArray();
 
-            using (BinaryWriter writer = new BinaryWriter(File.Create("newFrameResource_0.bin")))
+            for(int i = 0; i != ItemDescs.Length; i++)
             {
-                FrameResource.WriteToFile(writer);
+                ItemDescs[i].WriteToEDC();
             }
         }
     }
@@ -50,6 +64,6 @@ namespace Mafia2Tool
         public static Material[] Default;
         public static Material[] Default50;
         public static Material[] Default60;
-        public static string MaterialPath = "E:/Games/Steam/steamapps/common/Mafia II/edit/materials";
+        public static string MaterialPath = Properties.Settings.Default.MaterialPath;
     }
 }

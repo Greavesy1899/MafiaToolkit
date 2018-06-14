@@ -1,7 +1,10 @@
 ﻿using Mafia2;
+using System.ComponentModel;
 using System.IO;
 
-public struct TransformMatrix {
+[TypeConverter(typeof(ExpandableObjectConverter))]
+public class TransformMatrix
+{
     Matrix33 rotation;
     Vector3 position;
 
@@ -14,7 +17,8 @@ public struct TransformMatrix {
         set { position = value; }
     }
 
-    public TransformMatrix(BinaryReader reader) {
+    public TransformMatrix(BinaryReader reader)
+    {
 
         Vector3 m1 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         float x = reader.ReadSingle();
@@ -27,7 +31,8 @@ public struct TransformMatrix {
         position = new Vector3(x, y, z);
     }
 
-    public override string ToString() {
+    public override string ToString()
+    {
         return string.Format("{0}, {1}", rotation, position);
     }
 }

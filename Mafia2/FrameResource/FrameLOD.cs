@@ -71,7 +71,7 @@ namespace Mafia2
             vertexDeclaration = (VertexFlags)reader.ReadUInt32();
             vertexBufferRef = new Hash(reader);
             numVerts = reader.ReadInt32();
-
+            Console.WriteLine(indexBufferRef);
             nZero1 = reader.ReadInt32();
 
             nPartition = reader.ReadInt32();
@@ -79,6 +79,10 @@ namespace Mafia2
                 partitionInfo.ReadFromFile(reader);
 
             matSplitType = reader.ReadInt32();
+            Console.WriteLine(matSplitType);
+            if (indexBufferRef.Name == "SS_lavicka.UM01.L0.IB0")
+                Console.WriteLine("stop write there");
+
             if (matSplitType != 0)
                 splitInfo.ReadFromFile(reader, matSplitType);
 
@@ -394,28 +398,61 @@ namespace Mafia2
                     unk21 = reader.ReadInt32();
                     numSplitGroup = reader.ReadInt32();
                 }
+                
 
-                availD = reader.ReadBoolean();
+                if (numSplitGroup == 0)
+                    Console.WriteLine("stop");
 
-                unk24 = reader.ReadInt32();
-                nSizeOfMatBurstEntries = reader.ReadInt32();
-                nSizeOfMatSplitEntries = reader.ReadInt32();
-                numMatBurst = reader.ReadInt32();
-                numMatSplit = reader.ReadInt32();
-                hash = reader.ReadInt64();
-
-                materialBursts = new MaterialBurst[numMatBurst];
-                materialSplits = new MaterialSplit[numMatSplit];
-
-
-                for (int i = 0; i != materialBursts.Length; i++)
+                if(type == 1)
                 {
-                    materialBursts[i] = new MaterialBurst(reader);
+                    availD = reader.ReadBoolean();
+                    unk24 = reader.ReadInt32();
+                    nSizeOfMatBurstEntries = reader.ReadInt32();
+                    nSizeOfMatSplitEntries = reader.ReadInt32();
+                    numMatBurst = reader.ReadInt32();
+                    numMatSplit = reader.ReadInt32();
+
+                    hash = reader.ReadInt64();
+
+                    materialBursts = new MaterialBurst[numMatBurst];
+                    materialSplits = new MaterialSplit[numMatSplit];
+
+
+                    for (int i = 0; i != materialBursts.Length; i++)
+                    {
+                        materialBursts[i] = new MaterialBurst(reader);
+                    }
+                    for (int i = 0; i != materialSplits.Length; i++)
+                    {
+                        materialSplits[i] = new MaterialSplit(reader);
+                    }
                 }
-                for (int i = 0; i != materialSplits.Length; i++)
+
+                if (numSplitGroup != 0)
                 {
-                    materialSplits[i] = new MaterialSplit(reader);
+                    availD = reader.ReadBoolean();
+                    unk24 = reader.ReadInt32();
+                    nSizeOfMatBurstEntries = reader.ReadInt32();
+                    nSizeOfMatSplitEntries = reader.ReadInt32();
+                    numMatBurst = reader.ReadInt32();
+                    numMatSplit = reader.ReadInt32();
+
+                    hash = reader.ReadInt64();
+
+                    materialBursts = new MaterialBurst[numMatBurst];
+                    materialSplits = new MaterialSplit[numMatSplit];
+
+
+                    for (int i = 0; i != materialBursts.Length; i++)
+                    {
+                        materialBursts[i] = new MaterialBurst(reader);
+                    }
+                    for (int i = 0; i != materialSplits.Length; i++)
+                    {
+                        materialSplits[i] = new MaterialSplit(reader);
+                    }
                 }
+
             }
 
         }

@@ -191,7 +191,7 @@ fn importCollision =
 		val1 = readfloat file
 		val2 = readfloat file
 		val3 = readfloat file
-		colMesh = box length:val1 width: val2 height:val3
+		colMesh = box length:(val2*2) width:(val1*2) height:(val3*2)
 	)
 	if colType == 2 then
 	(

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Mafia2Tool
@@ -116,13 +117,13 @@ namespace Mafia2Tool
             MaterialTool tool = new MaterialTool();
             tool.ShowDialog();
         }
-        private void OnClickLoad3D(object sender, EventArgs e)
+        private async void OnClickLoad3D(object sender, EventArgs e)
         {
             string[] fileNames = new string[mesh.Count];
             Vector3[] filePos = new Vector3[mesh.Count];
             Vector3[] rotPos = new Vector3[mesh.Count];
 
-            for (int i = 0; i != mesh.Count; i++)
+            Parallel.For(0, mesh.Count, i =>
             {
                 Model newModel = new Model((mesh[i]), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
                 fileNames[i] = mesh[i].Name.Name + "_lod0";
@@ -142,7 +143,7 @@ namespace Mafia2Tool
 
                     Console.WriteLine("{0}/{1}", i, mesh.Count);
                 }
-            }
+            });
 
             using (BinaryWriter writer = new BinaryWriter(File.Create("exported/frame.edd")))
             {

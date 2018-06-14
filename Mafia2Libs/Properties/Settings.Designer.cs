@@ -37,8 +37,7 @@ namespace Mafia2Tool.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("E:/Games/Steam/steamapps/common/Mafia II/pc/sds/cars/extracted/ascot_baileys200_p" +
-            "ha")]
+        [global::System.Configuration.DefaultSettingValueAttribute("E:\\Games\\Steam\\steamapps\\common\\Mafia II\\pc\\sds\\shops\\extracted\\gunshop")]
         public string SDSPath1 {
             get {
                 return ((string)(this["SDSPath1"]));
@@ -82,6 +81,18 @@ namespace Mafia2Tool.Properties {
             }
             set {
                 this["CloudVersion"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("E:/Games/Steam/steamapps/common/Mafia II/edit/materials")]
+        public string MaterialPath {
+            get {
+                return ((string)(this["MaterialPath"]));
+            }
+            set {
+                this["MaterialPath"] = value;
             }
         }
     }

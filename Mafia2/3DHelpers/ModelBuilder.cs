@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Mafia2
 {
@@ -147,17 +149,19 @@ namespace Mafia2
                 for (int i = 0; i != EDMs.Length; i++)
                 {
                     #region convert
+                    Stopwatch watch = new Stopwatch();
+                    watch.Start();
                     List<short> vertlist = new List<short>();
-                    foreach (Short3 s3 in lod.Parts[i].Indices)
+                    for (int x = 0; x != lod.Parts[i].Indices.Length; x++)
                     {
-                        vertlist.Add(s3.s1);
-                        vertlist.Add(s3.s2);
-                        vertlist.Add(s3.s3);
+                        vertlist.Add(lod.Parts[i].Indices[x].s1);
+                        vertlist.Add(lod.Parts[i].Indices[x].s2);
+                        vertlist.Add(lod.Parts[i].Indices[x].s3);
                     }
                     List<Vertex> newVerts = new List<Vertex>();
                     List<short> newFacesI = new List<short>();
-                    Stopwatch watch = new Stopwatch();
-                    watch.Start();
+                    List<Short3> newShort3 = new List<Short3>();
+
                     foreach (short s in vertlist)
                     {
                         if (!newVerts.Contains(lod.Vertices[s]))
@@ -170,7 +174,7 @@ namespace Mafia2
                             newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
                         }
                     }
-                    List<Short3> newShort3 = new List<Short3>();
+                    
                     int num = 0;
                     while (num != newFacesI.Count)
                     {
@@ -200,8 +204,8 @@ namespace Mafia2
                     writer.Write(EDMs[i].UVs.Length);
                     for (int c = 0; c != EDMs[i].UVs.Length; c++)
                     {
-                        writer.Write((float)EDMs[i].UVs[c].X);
-                        writer.Write((float)1f-EDMs[i].UVs[c].Y);
+                        writer.Write(EDMs[i].UVs[c].X);
+                        writer.Write(1f-EDMs[i].UVs[c].Y);
                     }
                     writer.Write(EDMs[i].Indices.Count);
                     for (int c = 0; c != EDMs[i].Indices.Count; c++)
@@ -284,11 +288,22 @@ namespace Mafia2
         }
     }
 
-    public struct Short3
+    public class Short3
     {
         public short s1;
         public short s2;
         public short s3;
+
+        /// <summary>
+        /// SET TO -100
+        /// </summary>
+        public Short3()
+        {
+            s1 = -100;
+            s2 = -100;
+            s3 = -100;
+        }
+
 
         public override string ToString()
         {

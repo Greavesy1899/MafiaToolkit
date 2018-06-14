@@ -48,7 +48,7 @@ namespace Mafia2
             { frameBlocks[j] = header.SceneFolders[i]; j++; }
 
             for (int i = 0; i != header.NumGeometries; i++)
-            { frameBlocks[j] = new FrameGeometry(reader); j++; }
+            { Console.WriteLine("Current: {0}", i); frameBlocks[j] = new FrameGeometry(reader); j++; }
 
             for (int i = 0; i != header.NumMaterialResources; i++)
             { frameBlocks[j] = new FrameMaterial(reader); j++; }

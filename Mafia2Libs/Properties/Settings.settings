@@ -6,7 +6,7 @@
       <Value Profile="(Default)">E:/Games/Steam/steamapps/common/Mafia II/pc/sds/city/extracted/chinatown</Value>
     </Setting>
     <Setting Name="SDSPath1" Type="System.String" Scope="User">
-      <Value Profile="(Default)">E:/Games/Steam/steamapps/common/Mafia II/pc/sds/cars/extracted/ascot_baileys200_pha</Value>
+      <Value Profile="(Default)">E:\Games\Steam\steamapps\common\Mafia II\pc\sds\shops\extracted\gunshop</Value>
     </Setting>
     <Setting Name="SDSPath2" Type="System.String" Scope="User">
       <Value Profile="(Default)">E:/Games/Steam/steamapps/common/Mafia II/pc/sds/city_univers/extracted/city_univers</Value>
@@ -16,6 +16,9 @@
     </Setting>
     <Setting Name="CloudVersion" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">-1</Value>
+    </Setting>
+    <Setting Name="MaterialPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">E:/Games/Steam/steamapps/common/Mafia II/edit/materials</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -15,7 +15,7 @@ namespace Mafia2Tool
             MaterialData.Default = MaterialsParse.ReadMatFile("default.mtl");
             MaterialData.Default50 = MaterialsParse.ReadMatFile("default50.mtl");
             MaterialData.Default60 = MaterialsParse.ReadMatFile("default60.mtl");
-
+            MaterialsParse.SetMaterials(MaterialData.Default);
             Application.Run(new FrameResourceTool());
         }
     }

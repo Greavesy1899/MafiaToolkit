@@ -4,9 +4,12 @@ namespace Mafia2
 {
     public class ActorParse
     {
-        public ActorParse(BinaryReader reader)
+        public ActorParse(string file)
         {
-            ReadFromFile(reader);
+            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -15,8 +18,10 @@ namespace Mafia2
             string pool = new string(reader.ReadChars(poolLength));
 
             int hashesLength = reader.ReadInt32();
+            ulong[] flags = new ulong[hashesLength];
 
             ActorDefinition[] actors = new ActorDefinition[hashesLength];
+
             for (int i = 0; i != hashesLength; i++)
             {
                 actors[i] = new ActorDefinition(reader);
@@ -46,7 +51,7 @@ namespace Mafia2
 
             public override string ToString()
             {
-                return string.Format("{0}, {1}", hash, name);
+                return string.Format("{0}, {1}, {2}", hash, name, unk01);
             }
         }
     }

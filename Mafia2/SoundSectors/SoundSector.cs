@@ -7,9 +7,12 @@ namespace Mafia2
         ulong[] unk_01_array;
         short[] unk_02_array;
 
-        public SoundSector(BinaryReader reader)
+        public SoundSector(string file)
         {
-            ReadFromFile(reader);
+            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
         }
 
         public void ReadFromFile(BinaryReader reader)
