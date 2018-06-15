@@ -23,7 +23,7 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return "Frame Block";
+            return string.Format("{0}", Name);
         }
     }
 }

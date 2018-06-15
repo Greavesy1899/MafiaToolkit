@@ -52,12 +52,15 @@ namespace Mafia2Tool
                 for (int i = 0; i != treeView1.Nodes.Count; i++)
                 {
                     if (index != -1)
-                        break;
+                        continue;
 
                     index = treeView1.Nodes[i].Nodes.IndexOfKey(fObject.ParentIndex2.Name);
                 }
                    
                 TreeNode[] nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
+
+                if (fObject.ParentIndex2.Index == -1)
+                    treeView1.Nodes.Add(node);
 
                 if (nodes.Length > 0)
                     nodes[0].Nodes.Add(node);

@@ -13,7 +13,7 @@ namespace Mafia2Tool
         public static SoundSector SoundSector;
         public static ActorParse Actors;
         public static ItemDesc[] ItemDescs;
-        public static string ScenePath = Properties.Settings.Default.SDSPath1;
+        public static string ScenePath = Properties.Settings.Default.SDSPath2;
 
         public static void BuildData()
         {

@@ -24,7 +24,7 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return string.Format("Collision Block");
+            return string.Format("{0}", Name);
         }
     }
 }

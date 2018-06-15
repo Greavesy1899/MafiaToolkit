@@ -28,12 +28,14 @@ namespace Mafia2
                 actors[i].name = pool.Substring(pos, pool.IndexOf('\0', pos) - pos);
             }
 
+            UnkSector1 unkSector1 = new UnkSector1(reader);
+
         }
 
         public struct ActorDefinition
         {
             ulong hash; //hash, this is the same as in the frame.
-            short unk01; //i feel like this has something to do with scenes.
+            short unk01;
             public short namePos; //starting position for the name.
             int frameIndex; //links to FrameResource
 
@@ -52,6 +54,19 @@ namespace Mafia2
             {
                 return string.Format("{0}, {1}, {2}", hash, name, unk01);
             }
+        }
+
+        public class UnkSector1
+        {
+            int filesize; //size of sector in bits. After this integer (so filesize - 4)
+            ulong unk0; //ALWAYS 0x6 0x2 0x10
+
+            public UnkSector1(BinaryReader reader)
+            {
+                filesize = reader.ReadInt32(); 
+                unk0 = reader.ReadUInt64(); 
+            }
+
         }
     }
 }

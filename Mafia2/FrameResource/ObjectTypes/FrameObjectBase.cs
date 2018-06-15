@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Collections;
 using System;
+using System.ComponentModel;
 
 namespace Mafia2 {
     public class FrameObjectBase {
@@ -44,6 +45,11 @@ namespace Mafia2 {
         public Node NodeData{
             get { return node; }
             set { node = value; }
+        }
+
+        [Category("Object Type"), ReadOnly(true)]
+        public string Type {
+            get { return GetType().ToString(); }
         }
 
         public FrameObjectBase() { }

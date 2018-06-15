@@ -41,7 +41,7 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return string.Format("Joint Block");
+            return string.Format("{0}", Name);
         }
 
         public struct NodeStruct
