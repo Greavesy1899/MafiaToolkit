@@ -71,7 +71,6 @@ namespace Mafia2
             vertexDeclaration = (VertexFlags)reader.ReadUInt32();
             vertexBufferRef = new Hash(reader);
             numVerts = reader.ReadInt32();
-            Console.WriteLine(indexBufferRef);
             nZero1 = reader.ReadInt32();
 
             nPartition = reader.ReadInt32();
@@ -79,9 +78,6 @@ namespace Mafia2
                 partitionInfo.ReadFromFile(reader);
 
             matSplitType = reader.ReadInt32();
-            Console.WriteLine(matSplitType);
-            if (indexBufferRef.Name == "SS_lavicka.UM01.L0.IB0")
-                Console.WriteLine("stop write there");
 
             if (matSplitType != 0)
                 splitInfo.ReadFromFile(reader, matSplitType);
@@ -399,10 +395,6 @@ namespace Mafia2
                     numSplitGroup = reader.ReadInt32();
                 }
                 
-
-                if (numSplitGroup == 0)
-                    Console.WriteLine("stop");
-
                 if(type == 1)
                 {
                     availD = reader.ReadBoolean();
