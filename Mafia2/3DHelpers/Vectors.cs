@@ -82,6 +82,11 @@ namespace Mafia2
             this.x = x;
             this.y = y;
         }
+        public Vector2(BinaryReader reader)
+        {
+            this.x = reader.ReadSingle();
+            this.y = reader.ReadSingle();
+        }
         public override string ToString()
         {
             return string.Format("X: {0}, Y: {1}", x, y);

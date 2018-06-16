@@ -9,6 +9,7 @@ namespace Mafia2
         FrameHeader header;
         object[] frameBlocks;
         object[] frameObjects;
+        object[] entireFrame; //very bad
 
         int[] objectTypes;
 
@@ -23,6 +24,9 @@ namespace Mafia2
         public object[] FrameObjects {
             get { return frameObjects; }
             set { frameObjects = value; }
+        }
+        public object[] EntireFrame {
+            get { return entireFrame; }
         }
 
         public FrameResource(string file)
@@ -123,10 +127,7 @@ namespace Mafia2
 
         public void DefineFrameBlockParents()
         {
-            object[] entireFrame = new object[frameBlocks.Length+frameObjects.Length];
-
-            Array.Copy(frameBlocks, entireFrame, frameBlocks.Length);
-            Array.Copy(frameObjects, 0, entireFrame, frameBlocks.Length, frameObjects.Length);
+            UpdateEntireFrame();
 
             for (int i = 0; i != frameObjects.Length; i++)
             {
@@ -149,6 +150,13 @@ namespace Mafia2
 
                 frameObjects[i] = newObject;
             }
+        }
+
+        public void UpdateEntireFrame()
+        {
+            entireFrame = new object[frameBlocks.Length + frameObjects.Length];
+            Array.Copy(frameBlocks, entireFrame, frameBlocks.Length);
+            Array.Copy(frameObjects, 0, entireFrame, frameBlocks.Length, frameObjects.Length);
         }
     }
 }

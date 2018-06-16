@@ -1,4 +1,5 @@
 ﻿using Mafia2;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -11,7 +12,7 @@ namespace Mafia2Tool
         public static VertexBufferPool VertexBufferPool;
         public static IndexBufferPool IndexBufferPool;
         public static SoundSector SoundSector;
-        public static ActorParse Actors;
+        public static Actor Actors;
         public static ItemDesc[] ItemDescs;
         public static string ScenePath = Properties.Settings.Default.SDSPath2;
 
@@ -45,17 +46,31 @@ namespace Mafia2Tool
                     SoundSector = new SoundSector(file.FullName);
 
                 if (file.FullName.Contains("Actors"))
-                    Actors = new ActorParse(file.FullName);
+                    Actors = new Actor(file.FullName);
             }
 
             IndexBufferPool = new IndexBufferPool(ibps);
             VertexBufferPool = new VertexBufferPool(vbps);
             ItemDescs = ids.ToArray();
 
-            for(int i = 0; i != ItemDescs.Length; i++)
+            for(int i = 0; i != FrameResource.FrameObjects.Length; i++)
             {
-                ItemDescs[i].WriteToEDC();
+                if(FrameResource.FrameObjects[i].GetType() == typeof(FrameObjectFrame))
+                {
+                    for(int x = 0; x != Actors.Items.Length; x++)
+                    {
+                        if(Actors.Items[x].Hash1 == (FrameResource.FrameObjects[i] as FrameObjectFrame).ActorHash.uHash)
+                        {
+                            (FrameResource.FrameObjects[i] as FrameObjectFrame).Item = Actors.Items[x];
+                        }
+                    }
+                }
             }
+            FrameResource.UpdateEntireFrame();
+            //for(int i = 0; i != ItemDescs.Length; i++)
+            //{
+            //    ItemDescs[i].WriteToEDC();
+            //}
         }
     }
 

@@ -130,6 +130,19 @@ namespace Mafia2Tool
             {
                 Model newModel = new Model((mesh[i]), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
                 fileNames[i] = mesh[i].Name.Name + "_lod0";
+
+                filePos[i] = mesh[i].Matrix.Position;
+                rotPos[i] = mesh[i].Matrix.Rotation.Vector;
+
+                if (((mesh[i].ParentIndex1.Index != -1)) && ((mesh[i].ParentIndex1.Index == mesh[i].ParentIndex2.Index)))
+                {
+                    FrameObjectFrame frame = SceneData.FrameResource.EntireFrame[mesh[i].ParentIndex1.Index] as FrameObjectFrame;
+                    if (frame.Item != null)
+                    {
+                        filePos[i] = frame.Item.Position;
+                    }
+                }
+
                 for (int c = 0; c != newModel.Lods.Length; c++)
                 {
                     if (!File.Exists("exported/" + mesh[i].Name.Name + "_lod" + c + ".edm"))
@@ -141,8 +154,6 @@ namespace Mafia2Tool
                         watch.Stop();
                     }
                     //fileNames[i] = mesh[i].Name.Name + "_lod" + c;
-                    filePos[i] = mesh[i].Matrix.Position;
-                    rotPos[i] = mesh[i].Matrix.Rotation.Vector;
 
                     Console.WriteLine("{0}/{1}", i, mesh.Count);
                 }

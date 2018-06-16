@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mafia2Tool", "Mafia2Libs\Ma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mafia2Lib", "Mafia2\Mafia2Lib.csproj", "{F8D4E99D-10E6-457E-8B87-80D675686F90}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mafia2ToolUpdater", "Mafia2ToolUpdater\Mafia2ToolUpdater.csproj", "{8BCF573E-CE6D-4ADD-A90D-C3A8341DA21D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F8D4E99D-10E6-457E-8B87-80D675686F90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8D4E99D-10E6-457E-8B87-80D675686F90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8D4E99D-10E6-457E-8B87-80D675686F90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BCF573E-CE6D-4ADD-A90D-C3A8341DA21D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BCF573E-CE6D-4ADD-A90D-C3A8341DA21D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BCF573E-CE6D-4ADD-A90D-C3A8341DA21D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BCF573E-CE6D-4ADD-A90D-C3A8341DA21D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
