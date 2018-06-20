@@ -68,30 +68,52 @@ namespace Mafia2
 
                 count = reader.ReadInt32();
                 size = reader.ReadInt32();
-                data = reader.ReadBytes(size);
+                //data = reader.ReadBytes(size);
 
                 nodes = new List<XEntry>();
 
-                for(int i = 0; i != nodes.Count; i++)
+                for(int i = 0; i != count; i++)
                 {
-                    XEntry node = new XEntry();
-
+                    XEntry node = new XEntry(reader);
+                    nodes.Add(node);
                 }
 
             }
         }
         private class XEntry
         {
-            public string name;
-            public int value;
+            public DataValue name;
+            public DataValue value;
             public uint id;
-            public List<uint> children = new List<uint>();
-            public List<AEntry> attributes = new List<AEntry>();
+
+            public XEntry(BinaryReader reader)
+            {
+                name = new DataValue(reader, reader.ReadUInt32());
+                value = new DataValue(reader, reader.ReadUInt32());
+            }
         }
-        private class AEntry
+        private class DataValue
         {
-            public string name;
-            public string value;
+            XMLDataType type;
+            object value;
+
+            public DataValue(BinaryReader reader, uint offset)
+            {
+                ReadFromFile(reader, offset);
+            }
+
+            public void ReadFromFile(BinaryReader reader, uint offset)
+            {
+                reader.BaseStream.Seek(offset, SeekOrigin.Begin);
+
+                var type = (XMLDataType)reader.ReadUInt32();
+
+            }
+
+            public override string ToString()
+            {
+                return value.ToString();
+            }
         }
 
 

@@ -288,29 +288,6 @@ namespace Mafia2
         }
     }
 
-    public class Short3
-    {
-        public short s1;
-        public short s2;
-        public short s3;
-
-        /// <summary>
-        /// SET TO -100
-        /// </summary>
-        public Short3()
-        {
-            s1 = -100;
-            s2 = -100;
-            s3 = -100;
-        }
-
-
-        public override string ToString()
-        {
-            return string.Format("{0} {1} {2}", s1, s2, s3);
-        }
-    }
-
     public class Lod
     {
         Vertex[] vertices;

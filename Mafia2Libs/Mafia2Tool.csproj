@@ -65,6 +65,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollisionEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CollisionEditor.Designer.cs">
+      <DependentUpon>CollisionEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrameResourceTool.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,6 +118,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="CollisionEditor.resx">
+      <DependentUpon>CollisionEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrameResourceTool.resx">
       <DependentUpon>FrameResourceTool.cs</DependentUpon>
     </EmbeddedResource>

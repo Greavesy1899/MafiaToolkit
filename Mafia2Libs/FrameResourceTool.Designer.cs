@@ -30,6 +30,7 @@
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.button1 = new System.Windows.Forms.Button();
+            this.collisionEditor = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // FrameResourceButton
@@ -71,7 +72,7 @@
             this.Load3D.Name = "Load3D";
             this.Load3D.Size = new System.Drawing.Size(75, 23);
             this.Load3D.TabIndex = 8;
-            this.Load3D.Text = "Load 3D";
+            this.Load3D.Text = "Save 3D";
             this.Load3D.UseVisualStyleBackColor = true;
             this.Load3D.Click += new System.EventHandler(this.OnClickLoad3D);
             // 
@@ -100,11 +101,22 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.SwitchView);
             // 
+            // collisionEditor
+            // 
+            this.collisionEditor.Location = new System.Drawing.Point(271, 11);
+            this.collisionEditor.Name = "collisionEditor";
+            this.collisionEditor.Size = new System.Drawing.Size(81, 23);
+            this.collisionEditor.TabIndex = 11;
+            this.collisionEditor.Text = "Edit Collisions";
+            this.collisionEditor.UseVisualStyleBackColor = true;
+            this.collisionEditor.Click += new System.EventHandler(this.collisionEditor_Click);
+            // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 431);
+            this.Controls.Add(this.collisionEditor);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.Load3D);
             this.Controls.Add(this.FrameResourceButton);
@@ -126,5 +138,6 @@
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowser;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button collisionEditor;
     }
 }

@@ -14,6 +14,7 @@ namespace Mafia2Tool
         public static SoundSector SoundSector;
         public static Actor Actors;
         public static ItemDesc[] ItemDescs;
+        public static Collision Collisions;
         public static string ScenePath = Properties.Settings.Default.SDSPath2;
 
         public static void BuildData()
@@ -33,8 +34,8 @@ namespace Mafia2Tool
                 if (file.FullName.Contains("IndexBufferPool"))
                     ibps.Add(file);
 
-                if (file.FullName.Contains("ItemDesc"))
-                    ids.Add(new ItemDesc(file.FullName));
+               //at if (file.FullName.Contains("ItemDesc"))
+                   // ids.Add(new ItemDesc(file.FullName));
 
                 if (file.FullName.Contains("FrameResource_0.bin"))
                     FrameResource = new FrameResource(file.FullName);
@@ -47,30 +48,42 @@ namespace Mafia2Tool
 
                 if (file.FullName.Contains("Actors"))
                     Actors = new Actor(file.FullName);
+
+                if (file.FullName.Contains("Collision"))
+                    Collisions = new Collision(file.FullName);
             }
 
             IndexBufferPool = new IndexBufferPool(ibps);
             VertexBufferPool = new VertexBufferPool(vbps);
             ItemDescs = ids.ToArray();
 
-            for(int i = 0; i != FrameResource.FrameObjects.Length; i++)
+            for (int i = 0; i != ItemDescs.Length; i++)
             {
-                if(FrameResource.FrameObjects[i].GetType() == typeof(FrameObjectFrame))
+                ItemDescs[i].WriteToEDC();
+            }
+
+            if (Actors == null)
+                return;
+
+            AttachActors();
+            FrameResource.UpdateEntireFrame();
+        }
+
+        public static void AttachActors()
+        {
+            for (int i = 0; i != FrameResource.FrameObjects.Length; i++)
+            {
+                if (FrameResource.FrameObjects[i].GetType() == typeof(FrameObjectFrame))
                 {
-                    for(int x = 0; x != Actors.Items.Length; x++)
+                    for (int x = 0; x != Actors.Items.Length; x++)
                     {
-                        if(Actors.Items[x].Hash1 == (FrameResource.FrameObjects[i] as FrameObjectFrame).ActorHash.uHash)
+                        if (Actors.Items[x].Hash1 == (FrameResource.FrameObjects[i] as FrameObjectFrame).ActorHash.uHash)
                         {
                             (FrameResource.FrameObjects[i] as FrameObjectFrame).Item = Actors.Items[x];
                         }
                     }
                 }
             }
-            FrameResource.UpdateEntireFrame();
-            //for(int i = 0; i != ItemDescs.Length; i++)
-            //{
-            //    ItemDescs[i].WriteToEDC();
-            //}
         }
     }
 

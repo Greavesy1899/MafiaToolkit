@@ -24,6 +24,7 @@ namespace Mafia2
         Box = 1,
         Sphere,
         Capsule,
+        Unk7 = 7
     }
 
     [Flags]
@@ -120,5 +121,81 @@ namespace Mafia2
     {
         Vertex = 2,
         Index = 3,
+    }
+
+    public enum XMLDataType
+    {
+        Special = 1,
+        Boolean,
+        Float,
+        String,
+        Integer
+    }
+
+    public enum CollisionMaterials
+    {
+        Road,
+        Road_Dusty,
+        Pedestrian_Crossing,
+        Heads_Of_Cats_UNK,
+        Sidewalk,
+        Tiles1,
+        Grass,
+        Ground_Loam,
+        Gravel,
+        Sand,
+        Mud,
+        Puddle,
+        Water,
+        Snow,
+        Metal,
+        Sheet_Metal,
+        Mesh,
+        Railing,
+        Wood,
+        Carpet,
+        Wooden_Boards,
+        Parquets,
+        Gritty_Concrete,
+        Tiles2,
+        Wall,
+        Plaster,
+        Brick,
+        Glass_Break1,
+        Glass_Break2,
+        Glass_BulletProof,
+        Bushes_Trees,
+        Universal_Hard,
+        Universal_Squashy,
+        Person,
+        No_Shot_Coll,
+        Paper,
+        Upholstery,
+        Cloth,
+        Camera_Coll,
+        Player_Coll,
+        Sicily_Wall,
+        Grass_Trashy,
+        Grass_Negen,
+        Grass_Trashy_Negen,
+        SideWalk_Human,
+        Car,
+        Person_Headshot,
+        Person_Leg,
+        Person_Hand,
+        Grass_Sicily,
+        Hedgerow,
+        Seabed,
+        Channel,
+        Road_KY,
+        Road_Dusty_KY,
+        SideWalk_KY,
+        Tiles_KY,
+        Wooden_Board_KY,
+        Road_Tunnel,
+        Railing_Concrete,
+        Railing_Wood,
+        Cartoon
+
     }
 }

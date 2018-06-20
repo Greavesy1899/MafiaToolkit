@@ -143,7 +143,8 @@ fn importMesh =
 		if getNumTVerts mesh1 > 0 then
 			buildTVFaces mesh1
 		
-		for i = 1 to mesh1.numfaces do(setTVFace mesh1 i (getFace mesh1 i))
+		if tvertarray.count  != 0 then
+			for i = 1 to mesh1.numfaces do(setTVFace mesh1 i (getFace mesh1 i))
 			
 		mat = standardMaterial()
 		mat.diffusemap = bitmapTexture()
@@ -174,7 +175,7 @@ fn importCollision =
 	)
 
 	colName = sString
-	
+	print(colName)
 	pos = [0,0,0]
 	pos.x = readFloat file
 	pos.y = readFloat file
@@ -198,8 +199,14 @@ fn importCollision =
 		val1 = readfloat file
 		colMesh = sphere radius:val1
 	)
-	colMesh.name = colName
+	if colType == 3 then
+	(
+		val1 = readfloat file
+		val2 = readfloat file
+		colMesh = Capsule radius:(val1) height:(val2)
+	)
 	
+	colMesh.name = colName
 	
 	fclose file
 )

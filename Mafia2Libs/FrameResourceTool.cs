@@ -56,11 +56,15 @@ namespace Mafia2Tool
 
                     index = treeView1.Nodes[i].Nodes.IndexOfKey(fObject.ParentIndex2.Name);
                 }
-                   
+
                 TreeNode[] nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
+                TreeNode[] nodes2 = treeView1.Nodes.Find(fObject.Name.Name, true);
+
+                if (nodes2.Length > 0)
+                    continue;
 
                 if (fObject.ParentIndex2.Index == -1)
-                    treeView1.Nodes.Add(node);
+                    treeView1.Nodes[0].Nodes.Add(node);
 
                 if (nodes.Length > 0)
                     nodes[0].Nodes.Add(node);
@@ -183,6 +187,11 @@ namespace Mafia2Tool
         {
             treeView1.Visible = (!treeView1.Visible) ? true : false;
             FrameResourceListBox.Visible = (!FrameResourceListBox.Visible) ? true : false;
+        }
+
+        private void collisionEditor_Click(object sender, EventArgs e)
+        {
+            CollisionEditor editor = new CollisionEditor();
         }
     }
 }

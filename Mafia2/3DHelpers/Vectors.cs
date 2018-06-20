@@ -35,6 +35,17 @@ namespace Mafia2
             z = reader.ReadSingle();
         }
 
+        public void ConvertToDegrees()
+        {
+            double x = this.x * 180 / Math.PI;
+            double y = this.y * 180 / Math.PI;
+            double z = this.z * 180 / Math.PI;
+
+            this.x = -(float)x;
+            this.y = -(float)y;
+            this.z = -(float)z;
+        }
+
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(x);
@@ -115,6 +126,101 @@ namespace Mafia2
         public override string ToString()
         {
             return string.Format("X: {0}, Y: {1}", x, y);
+        }
+    }
+
+    public class Short3
+    {
+        public short s1;
+        public short s2;
+        public short s3;
+
+        /// <summary>
+        /// SET TO -100
+        /// </summary>
+        public Short3()
+        {
+            s1 = -100;
+            s2 = -100;
+            s3 = -100;
+        }
+
+        public Short3(BinaryReader reader)
+        {
+            s1 = reader.ReadInt16();
+            s2 = reader.ReadInt16();
+            s3 = reader.ReadInt16();
+        }
+
+        public Short3(int i1, int i2, int i3)
+        {
+            s1 = (short)i1;
+            s2 = (short)i2;
+            s3 = (short)i3;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1} {2}", s1, s2, s3);
+        }
+    }
+
+    public class Int3
+    {
+        public int i1;
+        public int i2;
+        public int i3;
+
+        public Int3(BinaryReader reader)
+        {
+            i1 = reader.ReadInt32();
+            i2 = reader.ReadInt32();
+            i3 = reader.ReadInt32();
+        }
+
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1} {2}", i1, i2, i3);
+        }
+    }
+
+    public struct Polygon
+    {
+        int numPoints;
+        int firstVertIndex;
+        int firstUnkIndex;
+        Vector3 normal;
+        float[] floats;
+
+        public int NumPoints {
+            get { return numPoints; }
+            set { numPoints = value; }
+        }
+        public int FirstVertIndex {
+            get { return firstVertIndex; }
+            set { firstVertIndex = value; }
+        }
+        public int FirstUnkIndex {
+            get { return firstUnkIndex; }
+            set { firstUnkIndex = value; }
+        }
+        public Vector3 Normal {
+            get { return normal; }
+            set { normal = value; }
+        }
+        public float[] Floats {
+            get { return floats; }
+            set { floats = value; }
+        }
+
+        public Polygon(BinaryReader reader)
+        {
+            numPoints = reader.ReadInt32();
+            firstVertIndex = reader.ReadInt32();
+            firstUnkIndex = reader.ReadInt32();
+            normal = new Vector3(reader);
+            floats = new float[]{ reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle() };
         }
     }
 }

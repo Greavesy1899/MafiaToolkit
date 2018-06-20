@@ -32,6 +32,8 @@ namespace Mafia2
                 collision = new CollisionSphere(reader);
             else if (colType == CollisionTypes.Capsule)
                 collision = new CollisionCapsule(reader);
+            else if (colType == CollisionTypes.Unk7)
+                collision = new CollisionUnk7(reader);
             else
                 Console.WriteLine("Unsupported type {0}", colType);
         }
