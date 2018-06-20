@@ -55,29 +55,24 @@ namespace Mafia2
                 nxsData[i] = new NXSStruct(reader);
             }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + "frame" + ".edd")))
+            using (BinaryWriter writer = new BinaryWriter(File.Create("exported/frame.edd")))
             {
-                //writer.Write(count1);
+                writer.Write(count1);
 
-                //for (int i = 0; i != count1; i++)
-                //{
-                //    writer.Write(placementData[i].Hash.ToString());
+                for (int i = 0; i != count1; i++)
+                {
+                    writer.Write(placementData[i].Hash.ToString());
 
-                //    for (int c = 0; c != count2; c++)
-                //    {
-                //        if (placementData[i].Hash == nxsData[c].Hash)
-                //        {
-                //            writer.Write(nxsData[c].definition.Position.X);
-                //            writer.Write(nxsData[c].definition.Position.Y);
-                //            writer.Write(nxsData[c].definition.Position.Z);
-                //            //writer.Write(nxsData[c].definition.rotation.X);
-                //            //writer.Write(nxsData[c].definition.rotation.Y);
-                //            writer.Write(0f);
-                //            writer.Write(0f);
-                //            writer.Write(nxsData[c].definition.Rotation.Z);
-                //        }
-                //    }
-                //}
+                    writer.Write(placementData[i].Position.X);
+                    writer.Write(placementData[i].Position.Y);
+                    writer.Write(placementData[i].Position.Z);
+                    //writer.Write(nxsData[c].definition.rotation.X);
+                    //writer.Write(nxsData[c].definition.rotation.Y);
+                    writer.Write(0f);
+                    writer.Write(0f);
+                    writer.Write(placementData[i].Rotation.Z);
+
+                }
             }
         }
 
@@ -168,8 +163,16 @@ namespace Mafia2
                 long pos2 = reader.BaseStream.Position;
 
                 reader.BaseStream.Position = pos;
-                data = new MeshData(reader);
+                data = new MeshData(reader, sections);
                 reader.BaseStream.Position = pos2;
+
+                CustomEDM EDM = new CustomEDM(Data.Vertices, Data.Triangles, hash.ToString());
+                using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + EDM.Name + ".edm")))
+                {
+                    writer.Write(EDM.Name);
+                    writer.Write(1);
+                    EDM.WriteToFile(writer);
+                }
             }
 
             [TypeConverter(typeof(ExpandableObjectConverter))]
@@ -221,9 +224,17 @@ namespace Mafia2
                     get { return num4; }
                     set { num4 = value; }
                 }
+                public Vector3[] Vertices {
+                    get { return points; }
+                    set { points = value; }
+                }
+                public Int3[] Triangles {
+                    get { return triangles; }
+                    set { triangles = value; }
+                }
 
 
-                public MeshData(BinaryReader reader)
+                public MeshData(BinaryReader reader, Section[] sections)
                 {
                     nxs = new string(reader.ReadChars(4));
                     mesh = new string(reader.ReadChars(4));
@@ -270,7 +281,11 @@ namespace Mafia2
                     }
                     else
                     {
-                        unkBytes = new short[nTriangles];
+                        if (num2 == 3)
+                            unkBytes = new short[num5];
+                        else
+                            unkBytes = new short[nTriangles];
+
                         for (int i = 0; i != unkBytes.Length; i++)
                         {
                             unkBytes[i] = reader.ReadInt16();
@@ -283,27 +298,19 @@ namespace Mafia2
                         unk2 = reader.ReadInt32();
                     }
 
-                    //for (int i = 0; i != sections.Length; i++)
-                    //{
-                    //    sections[i].edgeData = reader.ReadBytes(sections[i].numEdges);
-                    //}
+                    for (int i = 0; i != sections.Length; i++)
+                    {
+                        sections[i].EdgeData = reader.ReadBytes(sections[i].NumEdges);
+                    }
                     finish = reader.ReadInt32();
 
                     bool hasHit = false;
 
                     //string opc = new string(reader.ReadChars(3));
                     //if (opc == "OPC")
-                    //    hasHit = true;
+                     //   hasHit = true;
 
-                    //Console.WriteLine("{0}, {1}, {2}, MeshData: {3}, {4}, {9}, {5}, {6}, {7}, POS: {8}", definition.Hash, definition.Unk4, definition.Unk5, num1, num2, unk1, unk2, hasHit, reader.BaseStream.Position, num3);
-
-                    //CustomEDM EDM = new CustomEDM(points, triangles, definition.Hash.ToString());
-                    //using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + EDM.Name + ".edm")))
-                    //{
-                    //    writer.Write(EDM.Name);
-                    //    writer.Write(1);
-                    //    EDM.WriteToFile(writer);
-                    //}
+                    Console.WriteLine("MeshData: {0}, {1}, {2}, {3}, {4}, {5}, POS: {6}", num1, num2, unk1, unk2, hasHit, reader.BaseStream.Position, num3);
                 }
             }
 
