@@ -16,5 +16,11 @@ namespace Mafia2
             base.ReadFromFile(reader);
             unk_19_bounds = new Bounds(reader);
         }
+
+        public override void WriteToFile(BinaryWriter writer)
+        {
+            base.WriteToFile(writer);
+            unk_19_bounds.WriteToFile(writer);
+        }
     }
 }

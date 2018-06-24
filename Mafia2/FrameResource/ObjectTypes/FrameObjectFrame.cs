@@ -27,6 +27,12 @@ namespace Mafia2
             actorHash = new Hash(reader);
         }
 
+        public override void WriteToFile(BinaryWriter writer)
+        {
+            base.WriteToFile(writer);
+            actorHash.WriteToFile(writer);
+        }
+
         public override string ToString()
         {
             return string.Format("{0}", Name);

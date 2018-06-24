@@ -19,6 +19,10 @@ namespace Mafia2
             base.ReadFromFile(reader);
         }
 
+        public override void WriteToFile(BinaryWriter writer)
+        {
+            base.WriteToFile(writer);
+        }
     }
 
 }

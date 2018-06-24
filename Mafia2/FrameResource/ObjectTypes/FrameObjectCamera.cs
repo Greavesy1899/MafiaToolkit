@@ -34,6 +34,20 @@ namespace Mafia2
                 unkData[i] = new unkStruct(reader);
         }
 
+        public override void WriteToFile(BinaryWriter writer)
+        {
+            base.WriteToFile(writer);
+            writer.Write(unk01);
+
+            if (unk01 <= 0)
+                return;
+
+            unkData = new unkStruct[unk01];
+
+            for (int i = 0; i != unk01; i++)
+                unkData[i].WriteToFile(writer);
+        }
+
         public override string ToString()
         {
             return string.Format("Camera Block");
@@ -52,6 +66,14 @@ namespace Mafia2
                     unkFloats[i] = reader.ReadSingle();
 
                 unkHash = new Hash(reader);
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                for (int i = 0; i != 5; i++)
+                    writer.Write(unkFloats[i]);
+
+                unkHash.WriteToFile(writer);
             }
         }
     }

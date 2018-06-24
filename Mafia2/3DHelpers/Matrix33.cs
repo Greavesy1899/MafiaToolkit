@@ -1,6 +1,7 @@
 ﻿using Mafia2;
 using System;
 using System.ComponentModel;
+using System.IO;
 
 namespace Mafia2
 {
@@ -36,6 +37,13 @@ namespace Mafia2
             this.m2 = m2;
             this.m3 = m3;
             angle = ConvertToAngle();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            m1.WriteToFile(writer);
+            m2.WriteToFile(writer);
+            m3.WriteToFile(writer);
         }
 
         public Vector3 ConvertToAngle()

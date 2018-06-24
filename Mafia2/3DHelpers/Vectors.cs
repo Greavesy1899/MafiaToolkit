@@ -28,11 +28,19 @@ namespace Mafia2
             this.y = y;
             this.z = z;
         }
+
         public Vector3(BinaryReader reader)
         {
             x = reader.ReadSingle();
             y = reader.ReadSingle();
             z = reader.ReadSingle();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(x);
+            writer.Write(y);
+            writer.Write(z);
         }
 
         public void ConvertToDegrees()
@@ -45,14 +53,7 @@ namespace Mafia2
             this.y = -(float)y;
             this.z = -(float)z;
         }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(x);
-            writer.Write(y);
-            writer.Write(z);
-        }
-
+    
         public void Normalize()
         {
             float num1 = (float)(X * (double)X + Y * Y + Z * (double)Z);

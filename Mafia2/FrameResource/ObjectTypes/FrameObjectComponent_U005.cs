@@ -26,6 +26,12 @@ namespace Mafia2
             unk01 = reader.ReadInt32();
         }
 
+        public override void WriteToFile(BinaryWriter writer)
+        {
+            base.WriteToFile(writer);
+            writer.Write(unk01);
+        }
+
     }
 
 }

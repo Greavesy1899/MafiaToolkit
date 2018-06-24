@@ -39,6 +39,17 @@ namespace Mafia2
             }
         }
 
+        public override void WriteToFile(BinaryWriter writer)
+        {
+            base.WriteToFile(writer);
+            writer.Write(dataSize);
+
+            for (int i = 0; i != dataSize; i++)
+            {
+                nodeData[i].WriteToFile(writer);
+            }
+        }
+
         public override string ToString()
         {
             return string.Format("{0}", Name);
@@ -47,28 +58,35 @@ namespace Mafia2
         public struct NodeStruct
         {
 
-            int unknown_01;
-            Hash unknown_02_hash;
-            Hash unknown_03_hash;
+            int unk1;
+            Hash unk2;
+            Hash unk3;
 
             public int Unk_01 {
-                get { return unknown_01; }
-                set { unknown_01 = value; }
+                get { return unk1; }
+                set { unk1 = value; }
             }
             public Hash Unk_02_Hash {
-                get { return unknown_02_hash; }
-                set { unknown_02_hash = value; }
+                get { return unk2; }
+                set { unk2 = value; }
             }
             public Hash Unk_03_Hash {
-                get { return unknown_03_hash; }
-                set { unknown_03_hash = value; }
+                get { return unk3; }
+                set { unk3 = value; }
             }
 
             public NodeStruct(BinaryReader reader)
             {
-                unknown_01 = reader.ReadInt32();
-                unknown_02_hash = new Hash(reader);
-                unknown_03_hash = new Hash(reader);
+                unk1 = reader.ReadInt32();
+                unk2 = new Hash(reader);
+                unk3 = new Hash(reader);
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(unk1);
+                unk2.WriteToFile(writer);
+                unk3.WriteToFile(writer);
             }
         }
 

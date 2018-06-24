@@ -43,6 +43,19 @@ namespace Mafia2
             unkBounds = new Bounds(reader);
         }
 
+        public override void WriteToFile(BinaryWriter writer)
+        {
+            base.WriteToFile(writer);
+            writer.Write(unk01);
+            writer.Write(unk02);
+            unkFloats = new float[unk02 * 4];
+
+            for (int i = 0; i != unkFloats.Length; i++)
+                writer.Write(unkFloats[i]);
+
+            unkBounds.WriteToFile(writer);
+        }
+
         public override string ToString()
         {
             return "Area Block";

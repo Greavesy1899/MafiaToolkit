@@ -3,32 +3,34 @@ using System.Collections;
 using System;
 using System.ComponentModel;
 
-namespace Mafia2 {
-    public class FrameObjectBase {
+namespace Mafia2
+{
+    public class FrameObjectBase
+    {
         Hash name;
-        int unknown_00_int;
+        int unk0;
         TransformMatrix transformMatrix;
-        short unknown_03_short;
+        short unk3;
         ParentStruct parentIndex1;
         ParentStruct parentIndex2;
-        short unknown_06_short;
+        short unk6;
         Node node;
 
         public Hash Name {
             get { return name; }
             set { name = value; }
         }
-        public int Unk_00_int {
-            get { return unknown_00_int; }
-            set { unknown_00_int = value; }
+        public int Unk0 {
+            get { return unk0; }
+            set { unk0 = value; }
         }
         public TransformMatrix Matrix {
             get { return transformMatrix; }
             set { transformMatrix = value; }
         }
-        public short Unk_03 {
-            get { return unknown_03_short; }
-            set { unknown_03_short = value; }
+        public short Unk3 {
+            get { return unk3; }
+            set { unk3 = value; }
         }
         public ParentStruct ParentIndex1 {
             get { return parentIndex1; }
@@ -38,11 +40,11 @@ namespace Mafia2 {
             get { return parentIndex2; }
             set { parentIndex2 = value; }
         }
-        public short Unk_06 {
-            get { return unknown_06_short; }
-            set { unknown_06_short = value; }
+        public short Unk6 {
+            get { return unk6; }
+            set { unk6 = value; }
         }
-        public Node NodeData{
+        public Node NodeData {
             get { return node; }
             set { node = value; }
         }
@@ -54,15 +56,27 @@ namespace Mafia2 {
 
         public FrameObjectBase() { }
 
-        public virtual void ReadFromFile(BinaryReader reader) {
+        public virtual void ReadFromFile(BinaryReader reader)
+        {
             name = new Hash(reader);
-            unknown_00_int = reader.ReadInt32();
+            unk0 = reader.ReadInt32();
             transformMatrix = new TransformMatrix(reader);
-            unknown_03_short = reader.ReadInt16();
+            unk3 = reader.ReadInt16();
             parentIndex1 = new ParentStruct(reader.ReadInt32());
             parentIndex2 = new ParentStruct(reader.ReadInt32());
-            unknown_06_short = reader.ReadInt16();
+            unk6 = reader.ReadInt16();
             node = new Node(name.Name, this);
+        }
+
+        public virtual void WriteToFile(BinaryWriter writer)
+        {
+            name.WriteToFile(writer);
+            writer.Write(unk0);
+            transformMatrix.WriteToFile(writer);
+            writer.Write(unk3);
+            writer.Write(parentIndex1.Index);
+            writer.Write(parentIndex2.Index);
+            writer.Write(unk6);
         }
     }
 

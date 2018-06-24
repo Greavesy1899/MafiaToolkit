@@ -11,6 +11,7 @@ namespace Mafia2
             get { return hash; }
             set { hash = value; }
         }
+
         public FrameObjectCollision(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
@@ -20,6 +21,12 @@ namespace Mafia2
         {
             base.ReadFromFile(reader);
             hash = reader.ReadUInt64();
+        }
+
+        public override void WriteToFile(BinaryWriter writer)
+        {
+            base.WriteToFile(writer);
+            writer.Write(hash);
         }
 
         public override string ToString()

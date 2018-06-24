@@ -1,7 +1,9 @@
 ﻿using System.IO;
 
-namespace Mafia2 {
-    public struct Bounds {
+namespace Mafia2
+{
+    public struct Bounds
+    {
         Vector3 min;
         Vector3 max;
 
@@ -15,9 +17,16 @@ namespace Mafia2 {
             set { max = value; }
         }
 
-        public Bounds(BinaryReader reader) {
+        public Bounds(BinaryReader reader)
+        {
             min = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             max = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            min.WriteToFile(writer);
+            max.WriteToFile(writer);
         }
     }
 }

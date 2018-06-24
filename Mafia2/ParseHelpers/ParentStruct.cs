@@ -1,5 +1,6 @@
 ﻿namespace Mafia2 {
-    public class ParentStruct {
+    public class ParentStruct
+    {
         int index;
         string name;
 
@@ -12,11 +13,13 @@
             set { name = value; }
         }
 
-       public ParentStruct(int index) {
+        public ParentStruct(int index)
+        {
             this.index = index;
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             if (index == -1)
                 return string.Format("{0}, root", index);
             else
