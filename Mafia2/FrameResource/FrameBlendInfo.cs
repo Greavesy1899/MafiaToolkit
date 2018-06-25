@@ -66,12 +66,17 @@ namespace Mafia2
 
     public class BlendDataToBoneIndexMap
     {
-        List<byte[]> blendIndices;
+        private byte[] numData;
+        byte[] blendIndices;
         byte[] blendIndexRanges;
 
-        public List<byte[]> BlendIndices {
+        public byte[] BlendIndices {
             get { return blendIndices; }
             set { blendIndices = value; }
+        }
+        public byte[] BlendIndexRanges {
+            get { return blendIndexRanges; }
+            set { blendIndexRanges = value; }
         }
 
         public BlendDataToBoneIndexMap(BinaryReader reader, BlendDataToBoneIndexInfo info)
@@ -81,16 +86,24 @@ namespace Mafia2
 
         public void ReadFromFile(BinaryReader reader, BlendDataToBoneIndexInfo info)
         {
-            byte[] numArray = reader.ReadBytes(8);
-            blendIndices = new List<byte[]>();
+            numData = reader.ReadBytes(8);
+            //DO HERE
 
             for (int i = 0; i != 8; i++)
             {
-                if (numArray[i] != 0)
-                    blendIndices.Add(reader.ReadBytes(numArray[i]));
+                if (numData[i] != 0)
+                    blendIndices.Add(reader.ReadBytes(numData[i]));
             }
 
             blendIndexRanges = reader.ReadBytes(info.NumBlendIndexRanges * 2);
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            for (int i = 0; i != numData.Length; i++)
+                writer.Write(numData[i]);
+
+
         }
     }
 
@@ -99,6 +112,19 @@ namespace Mafia2
         TransformMatrix transform;
         Bounds bounds;
         bool isValid;
+
+        public TransformMatrix Transform {
+            get { return transform; }
+            set { transform = value; }
+        }
+        public Bounds Bounds {
+            get { return bounds; }
+            set { bounds = value; }
+        }
+        public bool IsValid {
+            get { return isValid; }
+            set { isValid = value; }
+        }
 
         public BoundingBox(BinaryReader reader)
         {
@@ -110,6 +136,13 @@ namespace Mafia2
             transform = new TransformMatrix(reader);
             bounds = new Bounds(reader);
             isValid = reader.ReadBoolean();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            transform.WriteToFile(writer);
+            bounds.WriteToFile(writer);
+            writer.Write(isValid);
         }
     }
 }

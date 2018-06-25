@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace Mafia2 {
-    public class FrameMaterial {
+namespace Mafia2
+{
+    public class FrameMaterial
+    {
 
         uint allMat = 0;
         int[] matCount;
@@ -14,13 +16,15 @@ namespace Mafia2 {
             set { materials = value; }
         }
 
-        public FrameMaterial(BinaryReader reader) {
+        public FrameMaterial(BinaryReader reader)
+        {
             ReadFromFile(reader);
         }
-        public void ReadFromFile(BinaryReader reader) {
+        public void ReadFromFile(BinaryReader reader)
+        {
             allMat = reader.ReadByte();
             matCount = new int[allMat];
-            for(int i = 0; i != allMat; i++)
+            for (int i = 0; i != allMat; i++)
                 matCount[i] = reader.ReadInt32();
 
             materials = new List<MaterialStruct[]>();
@@ -43,7 +47,8 @@ namespace Mafia2 {
         }
     }
 
-    public struct MaterialStruct {
+    public struct MaterialStruct
+    {
         int numFaces;
         int startIndex;
         ulong materialHash;
@@ -71,7 +76,8 @@ namespace Mafia2 {
             set { unk3 = value; }
         }
 
-        public MaterialStruct(BinaryReader reader) {
+        public MaterialStruct(BinaryReader reader)
+        {
             numFaces = reader.ReadInt32();
             startIndex = reader.ReadInt32();
             materialHash = reader.ReadUInt64();
@@ -80,7 +86,8 @@ namespace Mafia2 {
             materialName = MaterialsParse.GetMatName(materialName);
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return string.Format("{0}", materialName);
         }
     }

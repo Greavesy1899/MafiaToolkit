@@ -19,6 +19,7 @@ namespace Mafia2
         int unk_28_int;
         int unk_29_int;
         unk_struct2[] unk_30_list;
+        byte[] unkData;
 
         public int BlendInfoIndex {
             get { return blendInfoIndex; }
@@ -83,20 +84,55 @@ namespace Mafia2
             for(int i = 0; i != unk_30_list.Length; i++)
             {
                 int index2 = numArray[unk_30_list[i].BlendIndex];
-                unk_30_list[1].JointName = skeleton.Names[index2].Name;
+                unk_30_list[i].JointName = skeleton.Names[index2].Name;
             }
-            reader.ReadBytes(count);           
+            unkData = reader.ReadBytes(count);           
+        }
+
+        public override void WriteToFile(BinaryWriter writer)
+        {
+            base.WriteToFile(writer);
+            writer.Write(blendInfoIndex);
+            writer.Write(skeletonIndex);
+            writer.Write(skeletonHierachyIndex);
+
+            for (int i = 0; i != restPose.Length; i++)
+                restPose[i].WriteToFile(writer);
+
+            unkTrasform.WriteToFile(writer);
+            writer.Write(attachmentReferences.Length);
+
+            for (int i = 0; i != attachmentReferences.Length; i++)
+                attachmentReferences[i].WriteToFile(writer);
+
+            writer.Write(unk_28_int);
+            writer.Write(unk_29_int);
+
+            writer.Write(unkData.Length);
+            writer.Write(unk_30_list.Length);
+
+            for (int i = 0; i != unk_30_list.Length; i++)
+                unk_30_list[i].WriteToFile(writer);
         }
 
         public override string ToString()
         {
-            return string.Format("Model Block:: {0}", Name.Name);
+            return string.Format("{0}", Name.Name);
         }
     }
     public class AttachmentReference
     {
         int attachmentIndex;
         byte jointIndex;
+
+        public int AttachmentIndex {
+            get { return attachmentIndex; }
+            set { attachmentIndex = value; }
+        }
+        public byte JointIndex {
+            get { return jointIndex; }
+            set { jointIndex = value; }
+        }
 
         public AttachmentReference(BinaryReader reader)
         {
@@ -107,6 +143,12 @@ namespace Mafia2
         {
             attachmentIndex = reader.ReadInt32();
             jointIndex = reader.ReadByte();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(attachmentIndex);
+            writer.Write(jointIndex);
         }
     }
 
@@ -120,12 +162,21 @@ namespace Mafia2
             get { return blendIndex; }
             set { blendIndex = value; }
         }
+        public unk_struct2_1[] Data {
+            get { return data; }
+            set { data = value; }
+        }
         public string JointName {
             get { return jointName; }
             set { jointName = value; }
         }
 
         public unk_struct2(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
         {
             blendIndex = reader.ReadInt16();
 
@@ -135,11 +186,25 @@ namespace Mafia2
             for (int i = 0; i != num; i++)
                 data[i] = new unk_struct2_1(reader);
         }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(blendIndex);
+            writer.Write((short)data.Length);
+
+            for (int i = 0; i != data.Length; i++)
+                data[i].WriteToFile(writer);
+        }
     }
 
     public class unk_struct2_1
     {
         unk_struct2_1_1[] data;
+
+        public unk_struct2_1_1[] Data {
+            get { return data; }
+            set { data = value; }
+        }
 
         public unk_struct2_1(BinaryReader reader)
         {
@@ -154,12 +219,28 @@ namespace Mafia2
             for (int i = 0; i != num; i++)
                 data[i] = new unk_struct2_1_1(reader);
         }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write((short)data.Length);
+            for (int i = 0; i != data.Length; i++)
+                data[i].WriteToFile(writer);
+        }
     }
 
     public class unk_struct2_1_1
     {
         short materialIndex;
         unk_struct2_1_1_1[] data;
+        
+        public short MaterialIndex {
+            get { return materialIndex; }
+            set { materialIndex = value; }
+        }
+        public unk_struct2_1_1_1[] Data {
+            get { return data; }
+            set { data = value; }
+        }
 
         public unk_struct2_1_1(BinaryReader reader)
         {
@@ -176,12 +257,29 @@ namespace Mafia2
             for (int i = 0; i != num; i++)
                 data[i] = new unk_struct2_1_1_1(reader);
         }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(materialIndex);
+            writer.Write((short)data.Length);
+            for (int i = 0; i != data.Length; i++)
+                data[i].WriteToFile(writer);
+        }
     }
 
     public class unk_struct2_1_1_1
     {
         short startIndex;
         short numFaces;
+
+        public short StartIndex {
+            get { return startIndex; }
+            set { startIndex = value; }
+        }
+        public short NumFaces {
+            get { return numFaces; }
+            set { numFaces = value; }
+        }
 
         public unk_struct2_1_1_1(BinaryReader reader)
         {
@@ -192,6 +290,11 @@ namespace Mafia2
         {
             startIndex = reader.ReadInt16();
             numFaces = reader.ReadInt16();
+        }
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(startIndex);
+            writer.Write(numFaces);
         }
     }
 

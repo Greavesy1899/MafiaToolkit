@@ -80,6 +80,20 @@ namespace Mafia2
             unk_18_byte3 = reader.ReadByte();
         }
 
+        public override void WriteToFile(BinaryWriter writer)
+        {
+            base.WriteToFile(writer);
+            writer.Write((int)flags);
+            bounds.WriteToFile(writer);
+            writer.Write(unk_14_byte);
+            writer.Write(meshIndex);
+            writer.Write(materialIndex);
+            unk_17_textureHash.WriteToFile(writer);
+            writer.Write(unk_18_byte1);
+            writer.Write(unk_18_byte2);
+            writer.Write(unk_18_byte3);
+        }
+
         public override string ToString()
         {
             return string.Format("{0}", Name);

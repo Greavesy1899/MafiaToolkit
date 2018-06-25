@@ -69,7 +69,52 @@ namespace Mafia2
             unkVector4 = new Vector3(reader);
             unkVector5 = new Vector3(reader);
             unkVector6 = new Vector3(reader);
+        }
+        public override void WriteToFile(BinaryWriter writer)
+        {
+            base.WriteToFile(writer);
+            writer.Write(flags);
 
+            for (int i = 0; i < 7; i++)
+                writer.Write(unkFloat1[i]);
+
+            writer.Write(unk_int);
+
+            for (int i = 0; i < 5; i++)
+                writer.Write(unkFloat2[i]);
+
+            writer.Write(unk_byte1);
+
+            for (int i = 0; i < 17; i++)
+                writer.Write(unkFloat3[i]);
+
+            writer.Write(unk_byte2);
+
+            for (int i = 0; i < 5; i++)
+                writer.Write(unkFloat4[i]);
+
+            nameLight.WriteToFile(writer);
+
+            writer.Write(unk_int2);
+
+            for (int i = 0; i != 20; i++)
+                writer.Write(unkFloat5[i]);
+
+            for (int i = 0; i != 4; i++)
+                names[i].WriteToFile(writer);
+
+            unkVector1.WriteToFile(writer);
+            unkVector2.WriteToFile(writer);
+            writer.Write(unk_byte3);
+            unkVector3.WriteToFile(writer);
+            unkVector4.WriteToFile(writer);
+            unkVector5.WriteToFile(writer);
+            unkVector6.WriteToFile(writer);
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
         }
     }
 }
