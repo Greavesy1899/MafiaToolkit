@@ -41,6 +41,22 @@ namespace Mafia2
                 materials.Add(array);
             }
         }
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(allMat);
+            for (int i = 0; i != allMat; i++)
+                writer.Write(matCount[i]);
+
+            bounds.WriteToFile(writer);
+
+            for (int i = 0; i != materials.Count; i++)
+            {
+                for (int d = 0; d != materials[i].Length; d++)
+                {
+                    materials[i][d].WriteToFile(writer);
+                }
+            }
+        }
         public override string ToString()
         {
             return string.Format("Material Block");
@@ -84,6 +100,14 @@ namespace Mafia2
             materialName = string.Format("{0:X16}", materialHash.Swap());
             unk3 = reader.ReadInt32();
             materialName = MaterialsParse.GetMatName(materialName);
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(numFaces);
+            writer.Write(startIndex);
+            writer.Write(materialHash);
+            writer.Write(unk3);
         }
 
         public override string ToString()

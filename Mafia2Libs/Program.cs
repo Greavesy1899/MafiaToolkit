@@ -19,9 +19,9 @@ namespace Mafia2Tool
             //{
                 //Collision areas = new Collision(Properties.Settings.Default.SDSPath2 + "/Collisions_0.bin");
             //}
-            MaterialData.Default = MaterialsParse.ReadMatFile("default.mtl");
-            MaterialData.Default50 = MaterialsParse.ReadMatFile("default50.mtl");
-            MaterialData.Default60 = MaterialsParse.ReadMatFile("default60.mtl");
+            MaterialData.Default = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default.mtl");
+            MaterialData.Default50 = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default50.mtl");
+            MaterialData.Default60 = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default60.mtl");
             MaterialsParse.SetMaterials(MaterialData.Default);
 
 

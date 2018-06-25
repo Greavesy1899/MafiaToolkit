@@ -66,6 +66,11 @@ namespace Mafia2
             positionOffset.WriteToFile(writer);
             writer.Write(positionFactor);
 
+            for(int i = 0; i != numLods; i++)
+            {
+                LOD[i].WriteToFile(writer);
+            }
+
         }
 
         public override string ToString()

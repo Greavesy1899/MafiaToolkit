@@ -85,6 +85,27 @@ namespace Mafia2
             zeroTail = reader.ReadInt32();
         }
 
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(distance);
+            indexBufferRef.WriteToFile(writer);
+            writer.Write((uint)vertexDeclaration);
+            vertexBufferRef.WriteToFile(writer);
+            writer.Write(numVerts);
+            writer.Write(nZero1);
+
+            writer.Write(nPartition);
+            if (nPartition != 0)
+                partitionInfo.WriteToFile(writer);
+
+            writer.Write(matSplitType);
+
+            if (matSplitType != 0)
+                splitInfo.WriteToFile(writer, matSplitType);
+
+            writer.Write(zeroTail);
+        }
+
         public struct MaterialSplit
         {
             int firstBurst;
@@ -109,6 +130,13 @@ namespace Mafia2
                 firstBurst = reader.ReadInt32();
                 numBurst = reader.ReadInt32();
                 baseIndex = reader.ReadInt32();
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(firstBurst);
+                writer.Write(numBurst);
+                writer.Write(baseIndex);
             }
         }
         public struct MaterialBurst
@@ -152,6 +180,17 @@ namespace Mafia2
                 nleftIndex = reader.ReadInt16();
                 nrightIndex = reader.ReadInt16();
             }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                for (int i = 0; i != 6; i++)
+                    writer.Write(bounds[i]);
+
+                writer.Write(firstIndex);
+                writer.Write(secondIndex);
+                writer.Write(nleftIndex);
+                writer.Write(nrightIndex);
+            }
         }
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public struct Descriptor
@@ -184,6 +223,16 @@ namespace Mafia2
                 p0 = new short[3] { reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16()}; //packed
                 p1 = new short[3] { reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16()}; //packed
                 num2 = reader.ReadInt32();
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(num1);
+                for (int i = 0; i != p0.Length; i++)
+                    writer.Write(p0[i]);
+                for (int i = 0; i != p1.Length; i++)
+                    writer.Write(p1[i]);
+                writer.Write(num2);
             }
         }
         [TypeConverter(typeof(ExpandableObjectConverter))]
@@ -295,6 +344,45 @@ namespace Mafia2
                 else
                 {
                     reader.ReadBytes(10);
+                }
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(memRequireA);
+                writer.Write(memRequireB);
+                writer.Write(partitionType);
+                writer.Write(isBone);
+
+                if (isBone)
+                {
+                    offsetVector.WriteToFile(writer);
+                    scaleVector.WriteToFile(writer);
+
+                    writer.Write(numDesc1Length);
+                    writer.Write(unk1);
+                    for (int i = 0; i != numDesc1.Length; i++)
+                    {
+                        numDesc1[i].WriteToFile(writer);
+                    }
+                    writer.Write(isAvailB);
+                    writer.Write(unk2);
+                    for (int i = 0; i != numLongs1.Length; i++)
+                    {
+                        writer.Write(numLongs1[i]);
+                    }
+                    writer.Write(numLongs2Length);
+                    writer.Write(isAvailC);
+                    for (int i = 0; i != numLongs2.Length; i++)
+                    {
+                        writer.Write(numLongs2[i]);
+                    }
+                }
+                else
+                {
+                    writer.Write((byte)1);
+                    for (int i = 0; i != 9; i++)
+                        writer.Write((byte)0);
                 }
             }
         }
@@ -442,6 +530,60 @@ namespace Mafia2
                     for (int i = 0; i != materialSplits.Length; i++)
                     {
                         materialSplits[i] = new MaterialSplit(reader);
+                    }
+                }
+
+            }
+
+            public void WriteToFile(BinaryWriter writer, int type)
+            {
+                if (type != 1)
+                {
+                    writer.Write(unk18);
+                    writer.Write(numVerts);
+                    writer.Write(numFaces);
+                    writer.Write(unk20);
+                    writer.Write(unk21);
+                    writer.Write(numSplitGroup);
+                }
+
+                if (type == 1)
+                {
+                    writer.Write(availD);
+                    writer.Write(unk24);
+                    writer.Write(nSizeOfMatBurstEntries);
+                    writer.Write(nSizeOfMatSplitEntries);
+                    writer.Write(numMatBurst);
+                    writer.Write(numMatSplit);
+                    writer.Write(hash);
+
+                    for (int i = 0; i != materialBursts.Length; i++)
+                    {
+                        materialBursts[i].WriteToFile(writer);
+                    }
+                    for (int i = 0; i != materialSplits.Length; i++)
+                    {
+                        materialSplits[i].WriteToFile(writer);
+                    }
+                }
+
+                if (numSplitGroup != 0)
+                {
+                    writer.Write(availD);
+                    writer.Write(unk24);
+                    writer.Write(nSizeOfMatBurstEntries);
+                    writer.Write(nSizeOfMatSplitEntries);
+                    writer.Write(numMatBurst);
+                    writer.Write(numMatSplit);
+                    writer.Write(hash);
+
+                    for (int i = 0; i != materialBursts.Length; i++)
+                    {
+                        materialBursts[i].WriteToFile(writer);
+                    }
+                    for (int i = 0; i != materialSplits.Length; i++)
+                    {
+                        materialSplits[i].WriteToFile(writer);
                     }
                 }
 

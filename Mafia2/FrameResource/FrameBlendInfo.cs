@@ -67,10 +67,10 @@ namespace Mafia2
     public class BlendDataToBoneIndexMap
     {
         private byte[] numData;
-        byte[] blendIndices;
+        List<byte[]> blendIndices;
         byte[] blendIndexRanges;
 
-        public byte[] BlendIndices {
+        public List<byte[]> BlendIndices {
             get { return blendIndices; }
             set { blendIndices = value; }
         }
@@ -87,12 +87,12 @@ namespace Mafia2
         public void ReadFromFile(BinaryReader reader, BlendDataToBoneIndexInfo info)
         {
             numData = reader.ReadBytes(8);
-            //DO HERE
+            
 
             for (int i = 0; i != 8; i++)
             {
                 if (numData[i] != 0)
-                    blendIndices.Add(reader.ReadBytes(numData[i]));
+                    blendIndices[i] = reader.ReadBytes(numData[i]);
             }
 
             blendIndexRanges = reader.ReadBytes(info.NumBlendIndexRanges * 2);

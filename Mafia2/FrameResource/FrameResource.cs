@@ -35,6 +35,10 @@ namespace Mafia2
             {
                 ReadFromFile(reader);
             }
+            using (BinaryWriter writer = new BinaryWriter(File.Open("newFrame.bin", FileMode.OpenOrCreate)))
+            {
+                WriteToFile(writer);
+            }
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -123,6 +127,19 @@ namespace Mafia2
         public void WriteToFile(BinaryWriter writer)
         {
             header.WriteToFile(writer);
+
+            int count = 0;
+
+            count += header.SceneFolders.Length;
+
+
+            for(int i = count; i != header.SceneFolders.Length + header.NumGeometries; i++)
+            { (frameBlocks[i] as FrameGeometry).WriteToFile(writer); count++; }
+
+            count += header.NumGeometries;
+
+            //for (int i = count; i != header.NumMaterialResources; i++)
+            //{ (frameBlocks[i] as FrameMaterial).WriteToFile(writer); }
         }
 
         public void DefineFrameBlockParents()
