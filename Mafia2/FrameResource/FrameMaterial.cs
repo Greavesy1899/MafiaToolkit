@@ -43,7 +43,7 @@ namespace Mafia2
         }
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(allMat);
+            writer.Write((byte)allMat);
             for (int i = 0; i != allMat; i++)
                 writer.Write(matCount[i]);
 

@@ -35,7 +35,7 @@ namespace Mafia2
             {
                 ReadFromFile(reader);
             }
-            using (BinaryWriter writer = new BinaryWriter(File.Open("newFrame.bin", FileMode.OpenOrCreate)))
+            using (BinaryWriter writer = new BinaryWriter(File.Open("newFrame.bin", FileMode.Create)))
             {
                 WriteToFile(writer);
             }
@@ -128,18 +128,107 @@ namespace Mafia2
         {
             header.WriteToFile(writer);
 
-            int count = 0;
+            for(int i = 0; i != frameBlocks.Length; i++)
+            {
+                if(frameBlocks[i].GetType() == typeof(FrameGeometry))
+                    (frameBlocks[i] as FrameGeometry).WriteToFile(writer);
 
-            count += header.SceneFolders.Length;
+                if (frameBlocks[i].GetType() == typeof(FrameMaterial))
+                    (frameBlocks[i] as FrameMaterial).WriteToFile(writer);
 
+                if (frameBlocks[i].GetType() == typeof(FrameBlendInfo))
+                    throw new NotImplementedException("Not implemented");
 
-            for(int i = count; i != header.SceneFolders.Length + header.NumGeometries; i++)
-            { (frameBlocks[i] as FrameGeometry).WriteToFile(writer); count++; }
+                if (frameBlocks[i].GetType() == typeof(FrameSkeleton))
+                    throw new NotImplementedException("Not implemented");
 
-            count += header.NumGeometries;
+                if (frameBlocks[i].GetType() == typeof(FrameSkeletonHierachy))
+                    throw new NotImplementedException("Not implemented");
+            }
 
-            //for (int i = count; i != header.NumMaterialResources; i++)
-            //{ (frameBlocks[i] as FrameMaterial).WriteToFile(writer); }
+            for(int i = 0; i != frameObjects.Length; i++)
+            {
+                if (frameObjects[i].GetType() == typeof(FrameObjectJoint))
+                    writer.Write((int)ObjectType.Joint);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectSingleMesh))
+                    writer.Write((int)ObjectType.SingleMesh);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectFrame))
+                    writer.Write((int)ObjectType.Frame);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectLight))
+                    writer.Write((int)ObjectType.Light);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectCamera))
+                    writer.Write((int)ObjectType.Camera);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectComponent_U005))
+                    writer.Write((int)ObjectType.Component_U00000005);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectSector))
+                    writer.Write((int)ObjectType.Sector);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectDummy))
+                    writer.Write((int)ObjectType.Dummy);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectDeflector))
+                    writer.Write((int)ObjectType.ParticleDeflector);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectArea))
+                    writer.Write((int)ObjectType.Area);
+
+                if (frameObjects[i].GetType() == typeof(string))
+                    writer.Write((int)ObjectType.Target);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectModel))
+                    writer.Write((int)ObjectType.Model);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectCollision))
+                    writer.Write((int)ObjectType.Collision);
+            }
+
+            for (int i = 0; i != frameObjects.Length; i++)
+            {
+                if (frameObjects[i].GetType() == typeof(FrameObjectJoint))
+                    (frameObjects[i] as FrameObjectJoint).WriteToFile(writer);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectSingleMesh))
+                    (frameObjects[i] as FrameObjectSingleMesh).WriteToFile(writer);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectFrame))
+                    (frameObjects[i] as FrameObjectFrame).WriteToFile(writer);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectLight))
+                    (frameObjects[i] as FrameObjectLight).WriteToFile(writer);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectCamera))
+                    (frameObjects[i] as FrameObjectCamera).WriteToFile(writer);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectComponent_U005))
+                    (frameObjects[i] as FrameObjectComponent_U005).WriteToFile(writer);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectSector))
+                    (frameObjects[i] as FrameObjectSector).WriteToFile(writer);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectDummy))
+                    (frameObjects[i] as FrameObjectDummy).WriteToFile(writer);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectDeflector))
+                    (frameObjects[i] as FrameObjectDeflector).WriteToFile(writer);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectArea))
+                    (frameObjects[i] as FrameObjectArea).WriteToFile(writer);
+
+                if (frameObjects[i].GetType() == typeof(string))
+                    writer.Write((int)ObjectType.Target);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectModel))
+                    (frameObjects[i] as FrameObjectModel).WriteToFile(writer);
+
+                if (frameObjects[i].GetType() == typeof(FrameObjectCollision))
+                    (frameObjects[i] as FrameObjectCollision).WriteToFile(writer);
+            }
         }
 
         public void DefineFrameBlockParents()
