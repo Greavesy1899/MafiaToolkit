@@ -2,8 +2,10 @@
 using System.IO;
 using System.ComponentModel;
 
-namespace Mafia2 {
-    public class Material {
+namespace Mafia2
+{
+    public class Material
+    {
 
         ulong materialNumID;
         string materialNumStr;
@@ -124,15 +126,18 @@ namespace Mafia2 {
         }
 
 
-        public Material(BinaryReader reader) {
+        public Material(BinaryReader reader)
+        {
             ReadFromFile(reader);
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return string.Format("{0}\t{1}", materialNumStr, materialName);
         }
 
-        public void ReadFromFile(BinaryReader reader) {
+        public void ReadFromFile(BinaryReader reader)
+        {
 
             materialNumID = reader.ReadUInt64();
             materialNumStr = string.Format("{0:X16}", materialNumID.Swap());
@@ -154,52 +159,58 @@ namespace Mafia2 {
 
             sp_count = reader.ReadInt32();
             sp = new ShaderParameter[sp_count];
-            for(int i = 0; i != sp_count; i++) {
+            for (int i = 0; i != sp_count; i++)
+            {
                 sp[i] = new ShaderParameter(reader);
             }
 
             sps_count = reader.ReadInt32();
             sps = new ShaderParameterSampler[sps_count];
-            for (int i = 0; i != sps_count; i++) {
+            for (int i = 0; i != sps_count; i++)
+            {
                 sps[i] = new ShaderParameterSampler(reader);
             }
 
         }
 
-        public void WriteToFile(FileStream stream) {
+        public void WriteToFile(BinaryWriter writer)
+        {
             ////material hash code and name.
-            //stream.WriteValueU64(materialNumID);
-            //stream.WriteValueS32(materialName.Length);
-            //stream.WriteString(materialName);
+            writer.Write(materialNumID);
+            writer.Write(materialName.Length);
+            writer.Write(materialName.ToCharArray());
 
             ////UFO values
-            //stream.WriteValueU8(ufo1);
-            //stream.WriteValueU8(ufo2);
-            //stream.WriteValueS32(ufo3);
-            //stream.WriteValueU8(ufo4);
-            //stream.WriteValueS32(ufo5);
-            //stream.WriteValueS32(ufo6);
+            writer.Write(ufo1);
+            writer.Write(ufo2);
+            writer.Write(ufo3);
+            writer.Write(ufo4);
+            writer.Write(ufo5);
+            writer.Write(ufo6);
 
             ////Shader and flags
-            //stream.WriteValueU64(shaderID.Swap());
-            //stream.WriteValueU32((uint)flags);
+            writer.Write(shaderID.Swap());
+            writer.Write((uint)flags);
 
             ////Shader Parameter
-            //stream.WriteValueS32(sp_count);
-            //foreach (ShaderParameter sp in sp) {
-            //    sp.WriteToFile(stream);
-            //}
+            writer.Write(sp_count);
+            foreach (ShaderParameter sp in sp)
+            {
+                sp.WriteToFile(writer);
+            }
 
             ////Shader Parameter Samplers
-            //stream.WriteValueS32(sps_count);
-            //foreach (ShaderParameterSampler sps in sps) {
-            //    sps.WriteToFile(stream);
-            //}
+            writer.Write(sps_count);
+            foreach (ShaderParameterSampler sps in sps)
+            {
+                sps.WriteToFile(writer);
+            }
         }
 
     }
 
-    public struct ShaderParameter {
+    public struct ShaderParameter
+    {
 
         string chunk;
         int floatCount;
@@ -217,32 +228,38 @@ namespace Mafia2 {
             }
         }
 
-        public ShaderParameter(BinaryReader reader) {
+        public ShaderParameter(BinaryReader reader)
+        {
 
             chunk = new string(reader.ReadChars(4));
 
             floatCount = reader.ReadInt32() / 4;
 
             floats = new float[floatCount];
-            for (int i = 0; i != floatCount; i++) {
+            for (int i = 0; i != floatCount; i++)
+            {
                 floats[i] = reader.ReadSingle();
             }
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return string.Format("{0}, {1}", chunk, floatCount);
         }
 
-        public void WriteToFile(FileStream stream) {
-            //stream.WriteString(chunk);
-            //stream.WriteValueS32(floatCount * 4);
-            //foreach(float f in floats) {
-            //    stream.WriteValueF32(f);
-            //}
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(chunk.ToCharArray());
+            writer.Write(floatCount * 4);
+            foreach (float f in floats)
+            {
+                writer.Write(f);
+            }
         }
     }
 
-    public struct ShaderParameterSampler {
+    public struct ShaderParameterSampler
+    {
 
         string chunk;
         string ufo_x2;
@@ -270,8 +287,7 @@ namespace Mafia2 {
         }
         public string File {
             get { return file; }
-            set 
-            {
+            set {
                 file = value;
                 fileLength = file.Length;
             }
@@ -281,7 +297,8 @@ namespace Mafia2 {
             set { unk = value; }
         }
 
-        public ShaderParameterSampler(BinaryReader reader) {
+        public ShaderParameterSampler(BinaryReader reader)
+        {
 
             chunk = new string(reader.ReadChars(4));
 
@@ -293,18 +310,20 @@ namespace Mafia2 {
             file = new string(reader.ReadChars(fileLength));
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return string.Format("{0}, {1}", chunk, file);
         }
 
-        public void WriteToFile(FileStream stream) {
-            //stream.WriteString(chunk);
-            //stream.WriteValueS32(int.Parse(ufo_x2.Split(' ')[0]));
-            //stream.WriteValueS32(int.Parse(ufo_x2.Split(' ')[1]));
-            //stream.WriteValueU64(unk);
-            //stream.WriteBytes(Functions.ConvertHexStringToByteArray(flags));
-            //stream.WriteValueU32((uint)file.Length);
-            //stream.WriteString(file);
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(chunk.ToCharArray());
+            writer.Write((int.Parse(ufo_x2.Split(' ')[0])));
+            writer.Write((int.Parse(ufo_x2.Split(' ')[1])));
+            writer.Write(unk);
+            writer.Write(Functions.ConvertHexStringToByteArray(flags));
+            writer.Write(file.Length);
+            writer.Write(file.ToCharArray());
         }
     }
 }

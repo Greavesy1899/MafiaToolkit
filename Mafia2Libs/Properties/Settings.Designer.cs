@@ -49,8 +49,8 @@ namespace Mafia2Tool.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Mafia II\\pc\\sds\\city\\extracted\\tune" +
-            "l_z")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\Users\\Connor\\Desktop\\SteamLibrary\\steamapps\\common\\Mafia II\\pc\\sds\\shops\\extra" +
+            "cted\\joesflat_chodba")]
         public string SDSPath2 {
             get {
                 return ((string)(this["SDSPath2"]));
@@ -86,7 +86,7 @@ namespace Mafia2Tool.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Mafia II\\edit\\materials")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\Users\\Connor\\Desktop\\SteamLibrary\\steamapps\\common\\Mafia II\\edit\\materials")]
         public string MaterialPath {
             get {
                 return ((string)(this["MaterialPath"]));

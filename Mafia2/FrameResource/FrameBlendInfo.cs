@@ -87,12 +87,13 @@ namespace Mafia2
         public void ReadFromFile(BinaryReader reader, BlendDataToBoneIndexInfo info)
         {
             numData = reader.ReadBytes(8);
-            
+
+            blendIndices = new List<byte[]>();
 
             for (int i = 0; i != 8; i++)
             {
                 if (numData[i] != 0)
-                    blendIndices[i] = reader.ReadBytes(numData[i]);
+                    blendIndices.Add(reader.ReadBytes(numData[i]));
             }
 
             blendIndexRanges = reader.ReadBytes(info.NumBlendIndexRanges * 2);

@@ -31,18 +31,17 @@ namespace Mafia2
 
         public static void WriteMatFile(string materialName)
         {
-            //using (FileStream writer = new FileStream(materialName, FileMode.Truncate))
-            //{
-            //    writer.WriteString("MTLB");
-            //    writer.WriteValueS32(57);
-            //    writer.WriteValueS32(materials.Length);
-            //    writer.WriteValueS32(0);
-
-            //    for (int i = 0; i != materials.Length; i++)
-            //    {
-            //        materials[i].WriteToFile(writer);
-            //    }
-            //}
+            using (BinaryWriter writer = new BinaryWriter(File.Open(materialName, FileMode.Create)))
+            {
+                writer.Write("MTLB".ToCharArray());
+                writer.Write(57);
+                writer.Write(materials.Length);
+                writer.Write(0);
+                for (int i = 0; i != materials.Length; i++)
+                {
+                    materials[i].WriteToFile(writer);
+                }
+            }
         }
 
         public static string GetMatName(string text)

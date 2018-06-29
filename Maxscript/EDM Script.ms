@@ -135,7 +135,7 @@ fn importMesh =
 			facearray[i] = face
 			i+=2
 		)
-	
+		
 		mesh1 = mesh vertices:vertarray tverts:tvertarray faces:facearray
 		mesh1.name = meshString
 		mesh1.parent = root

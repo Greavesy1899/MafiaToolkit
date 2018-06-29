@@ -35,10 +35,10 @@ namespace Mafia2
             {
                 ReadFromFile(reader);
             }
-            using (BinaryWriter writer = new BinaryWriter(File.Open("newFrame.bin", FileMode.Create)))
-            {
-                WriteToFile(writer);
-            }
+            //using (BinaryWriter writer = new BinaryWriter(File.Open("newFrame.bin", FileMode.Create)))
+            //{
+            //    WriteToFile(writer);
+            //}
         }
 
         public void ReadFromFile(BinaryReader reader)
