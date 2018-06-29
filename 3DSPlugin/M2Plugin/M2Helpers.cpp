@@ -1,12 +1,17 @@
 #include "M2Helpers.h";
 
-const char* ReadString(FILE* stream)
+void ReadString(FILE* stream, const wchar_t* string)
 {
 	byte numBytes;
-	fread(&numBytes, sizeof(byte), 1, stream);
-	//char* tempChars = new char[numBytes];
-	fseek(stream, numBytes, SEEK_CUR);
-	//fread(&tempChars, 1, numBytes, stream);
+	std::wstring name;
 
-	return "null";
+	fread(&numBytes, sizeof(byte), 1, stream);
+
+	for (int i = 0; i != numBytes; i++) {
+		char nChar;
+		fread(&nChar, sizeof(char), 1, stream);
+		name += nChar;
+	}
+
+	string = name.c_str();
 }

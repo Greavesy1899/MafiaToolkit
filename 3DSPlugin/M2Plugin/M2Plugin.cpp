@@ -109,13 +109,13 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 
 	file.ReadFromStream(stream);
 
-	TriObject* triObject = CreateNewTriObject();
-	Mesh &mesh = triObject->GetMesh();
-
 	std::vector<EDMPart> parts = file.GetParts();
 
 	for (int i = 0; i != parts.size(); i++)
 	{
+		TriObject* triObject = CreateNewTriObject();
+		Mesh &mesh = triObject->GetMesh();
+
 		EDMPart part = parts[i];
 
 		std::vector<Point3> verts = part.GetVertices();
@@ -123,22 +123,33 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		std::vector<Int3> indices = part.GetIndices();
 
 		mesh.setNumVerts(part.GetVertSize());
-		mesh.setNumFaces(part.GetIndicesSize());
-		mesh.setNumTVerts(part.GetUVSize());
-
 		for (int i = 0; i != mesh.numVerts; i++) {
 			mesh.setVert(i, verts[i]);
 		}
+
+		mesh.setNumMaps(2);
+		mesh.setMapSupport(1, true);
+		MeshMap &map = mesh.Map(1);
+		map.setNumVerts(part.GetUVSize());
+
+		for (int i = 0; i != part.GetUVSize(); i++) {
+			map.tv[i].x = uvs[i].x;
+			map.tv[i].y = uvs[i].y;
+			map.tv[i].z = 0.0f;
+		}
+
+		mesh.setNumFaces(part.GetIndicesSize());
+		map.setNumFaces(part.GetIndicesSize());
+
 		for (int i = 0; i != mesh.numFaces; i++) {
 			mesh.faces[i].setVerts(indices[i].i1, indices[i].i2, indices[i].i3);
-		}
-		for (int i = 0; i != mesh.numTVerts; i++) {
-			mesh.setTVert(i, uvs[i]);
+			mesh.faces[i].setMatID(1);
+			mesh.faces[i].setEdgeVisFlags(1, 1, 1);
+			map.tf[i].setTVerts(indices[i].i1, indices[i].i2, indices[i].i3);
 		}
 
 		mesh.InvalidateGeomCache();
 		mesh.InvalidateTopologyCache();
-
 		ImpNode* node = importerInt->CreateNode();
 
 		if (!node) {

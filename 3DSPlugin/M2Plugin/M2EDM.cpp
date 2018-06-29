@@ -5,7 +5,7 @@
 //===================================================
 //		EDMPART
 //===================================================
-void EDMPart::SetName(const char * name) {
+void EDMPart::SetName(const wchar_t * name) {
 	EDMPart::name = name;
 }
 
@@ -33,7 +33,7 @@ void EDMPart::SetIndices(std::vector<Int3> indices) {
 	EDMPart::indices = indices;
 }
 
-const char* EDMPart::GetName() {
+const wchar_t* EDMPart::GetName() {
 	return EDMPart::name;
 }
 
@@ -62,7 +62,7 @@ std::vector<Int3> EDMPart::GetIndices() {
 }
 
 void EDMPart::ReadFromStream(FILE * stream) {
-	SetName(ReadString(stream));
+	ReadString(stream, name);
 
 	fread(&vertSize, sizeof(int), 1, stream);
 	vertices = std::vector<Point3>(vertSize);
@@ -98,7 +98,7 @@ EDMPart::~EDMPart() {}
 //===================================================
 //		EDMSTRUCTURE
 //===================================================
-void EDMStructure::SetName(const char * name) {
+void EDMStructure::SetName(const wchar_t * name) {
 	EDMStructure::name = name;
 }
 
@@ -110,7 +110,7 @@ void EDMStructure::SetParts(std::vector<EDMPart> parts) {
 	EDMStructure::parts = parts;
 }
 
-const char * EDMStructure::GetName() {
+const wchar_t * EDMStructure::GetName() {
 	return name;
 }
 
@@ -123,7 +123,7 @@ std::vector<EDMPart> EDMStructure::GetParts() {
 }
 
 void EDMStructure::ReadFromStream(FILE * stream) {
-	SetName(ReadString(stream));
+	ReadString(stream, name);
 	fread(&partSize, sizeof(int), 1, stream);
 	parts = std::vector<EDMPart>(partSize);
 	
