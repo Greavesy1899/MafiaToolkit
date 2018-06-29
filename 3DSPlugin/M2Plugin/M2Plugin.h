@@ -70,35 +70,3 @@ public:
 	~EDMWorkClass() { if (stream) fclose(stream); stream = NULL; };
 	FILE *			Stream() { return stream; };
 };
-
-//EDM STRUCTURES.
-typedef struct {
-	int s1;
-	int s2;
-	int s3;
-} Int3;
-
-class EDMPart {
-public:
-	std::string name;
-	int vertSize;
-	std::vector<Point3> vertices;
-	int uvSize;
-	std::vector<UVVert> uvs;
-	int indicesSize;
-	std::vector<Int3> indices;
-
-	EDMPart();
-	~EDMPart();
-};
-
-class EDMStructure {
-private:
-public:
-	const char * name;
-	int partSize;
-	std::vector<EDMPart> parts;
-	EDMStructure();
-	~EDMStructure();
-	
-};

@@ -1,3 +1,3 @@
 #include "M2Plugin.h"
 
-const char * ReadString(FILE* stream);
+const char* ReadString(FILE* stream);

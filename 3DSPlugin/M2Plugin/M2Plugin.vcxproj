@@ -50,6 +50,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="M2EDM.cpp" />
     <ClCompile Include="M2Helpers.cpp" />
     <ClCompile Include="M2Plugin.cpp" />
     <ClCompile Include="DllEntry.cpp" />
@@ -59,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3dsmaxsdk_preinclude.h" />
+    <ClInclude Include="M2EDM.h" />
     <ClInclude Include="M2Helpers.h" />
     <ClInclude Include="M2Plugin.h" />
     <ClInclude Include="resource.h" />

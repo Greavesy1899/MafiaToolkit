@@ -14,6 +14,7 @@
 
 #include "M2Plugin.h"
 #include "M2Helpers.h"
+#include "M2EDM.h"
 #include "triobj.h"
 #include <impapi.h>
 
@@ -58,14 +59,6 @@ INT_PTR CALLBACK M2PluginOptionsDlgProc(HWND hWnd,UINT message,WPARAM ,LPARAM lP
 }
 
 static FILE *stream = NULL;
-
-//EDM STRUCTURES
-//=========================
-
-EDMStructure::EDMStructure() {}
-EDMStructure::~EDMStructure() {}
-EDMPart::EDMPart() {}
-EDMPart::~EDMPart() {}
 
 //EDM IMPORT SECTION
 //=========================
@@ -113,77 +106,50 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 	stream = edm.Stream();
 
 	EDMStructure file = EDMStructure();
-	file.name = ReadString(stream);
-	fread(&file.partSize, sizeof(int), 1, stream);
 
-	std::vector<EDMPart> parts = std::vector<EDMPart>(file.partSize);
-
-	for (int i = 0; i != parts.size(); i++) {
-		parts[i].name = ReadString(stream);
-		fread(&parts[i].vertSize, sizeof(int), 1, stream);
-		parts[i].vertices = std::vector<Point3>(parts[i].vertSize);
-		for (int c = 0; c != parts[i].vertSize; c++) {
-			fread(&parts[i].vertices[c].x, sizeof(float), 1, stream);
-			fread(&parts[i].vertices[c].y, sizeof(float), 1, stream);
-			fread(&parts[i].vertices[c].z, sizeof(float), 1, stream);
-		}
-		fread(&parts[i].uvSize, sizeof(int), 1, stream);
-		parts[i].uvs = std::vector<UVVert>(parts[i].uvSize);
-		for (int c = 0; c != parts[i].uvSize; c++) {
-			fread(&parts[i].uvs[c].x, sizeof(float), 1, stream);
-			fread(&parts[i].uvs[c].y, sizeof(float), 1, stream);
-		}
-		fread(&parts[i].indicesSize, sizeof(int), 1, stream);
-		parts[i].indices = std::vector<Int3>(parts[i].indicesSize);
-		for (int c = 0; c != parts[i].indicesSize; c++) {
-			fread(&parts[i].indices[c].s1, sizeof(int), 1, stream);
-			fread(&parts[i].indices[c].s2, sizeof(int), 1, stream);
-			fread(&parts[i].indices[c].s3, sizeof(int), 1, stream);
-
-			Int3 &indices = parts[i].indices[c];
-			indices.s1 -= 1;
-			indices.s2 -= 1;
-			indices.s3 -= 1;
-		}
-	}
-
-	file.parts = parts;
-
-	DebugPrint(_T("Starting mesh %s\n"), file.name);
+	file.ReadFromStream(stream);
 
 	TriObject* triObject = CreateNewTriObject();
 	Mesh &mesh = triObject->GetMesh();
 
-	mesh.setNumVerts(file.parts[0].vertSize);
-	mesh.setNumFaces(file.parts[0].indicesSize);
-	mesh.setNumTVerts(file.parts[0].uvSize);
+	std::vector<EDMPart> parts = file.GetParts();
 
-	for (int i = 0; i != mesh.numVerts; i++) {
-		mesh.setVert(i, file.parts[0].vertices[i]);
-	}
-	for (int i = 0; i != mesh.numFaces; i++) {
-		mesh.faces[i].setVerts(file.parts[0].indices[i].s1, file.parts[0].indices[i].s2, file.parts[0].indices[i].s3);
-		mesh.faces[i].setEdgeVisFlags(1, 1, 1);
-		mesh.faces[i].setMatID(1);
-	}
-	for (int i = 0; i != mesh.numTVerts; i++) {
-		mesh.setTVert(i, file.parts[0].uvs[i]);
-	}
+	for (int i = 0; i != parts.size(); i++)
+	{
+		EDMPart part = parts[i];
 
-	mesh.InvalidateGeomCache();
-	mesh.InvalidateTopologyCache();
+		std::vector<Point3> verts = part.GetVertices();
+		std::vector<UVVert> uvs = part.GetUVs();
+		std::vector<Int3> indices = part.GetIndices();
 
-	ImpNode* node = importerInt->CreateNode();
+		mesh.setNumVerts(part.GetVertSize());
+		mesh.setNumFaces(part.GetIndicesSize());
+		mesh.setNumTVerts(part.GetUVSize());
 
-	if (!node) {
-		delete triObject;
-		return FALSE;
+		for (int i = 0; i != mesh.numVerts; i++) {
+			mesh.setVert(i, verts[i]);
+		}
+		for (int i = 0; i != mesh.numFaces; i++) {
+			mesh.faces[i].setVerts(indices[i].i1, indices[i].i2, indices[i].i3);
+		}
+		for (int i = 0; i != mesh.numTVerts; i++) {
+			mesh.setTVert(i, uvs[i]);
+		}
+
+		mesh.InvalidateGeomCache();
+		mesh.InvalidateTopologyCache();
+
+		ImpNode* node = importerInt->CreateNode();
+
+		if (!node) {
+			delete triObject;
+			return FALSE;
+		}
+		node->Reference(triObject);
+		node->SetName(_T("NewObject"+i));
+		importerInt->AddNodeToScene(node);
 	}
-	node->Reference(triObject);
-	importerInt->AddNodeToScene(node);
 	importerInt->RedrawViews();
-	TimeValue t(0);
-	Matrix3 tm(1);
 
 
 	//if(!suppressPrompts)
