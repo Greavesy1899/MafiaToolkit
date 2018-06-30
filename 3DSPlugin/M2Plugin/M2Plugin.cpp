@@ -17,6 +17,7 @@
 #include "M2EDM.h"
 #include "triobj.h"
 #include <impapi.h>
+#include <dummy.h>
 
 #define M2Plugin_CLASS_ID	Class_ID(0xac9aa34b, 0xbb4578d1)
 
@@ -102,15 +103,18 @@ void EDMImport::ShowAbout(HWND hWnd) {}
 int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interface* ip, BOOL suppressPrompts)
 {
 	EDMWorkClass edm(filename, _T("rb"));
-
 	stream = edm.Stream();
 
+	//begin reading
 	EDMStructure file = EDMStructure();
-
 	file.ReadFromStream(stream);
 
+	//set up parts and nodes
 	std::vector<EDMPart> parts = file.GetParts();
+	DummyObject* parentDummy = new DummyObject();
+	INode* parent = ip->CreateObjectNode(parentDummy);
 
+	//lets goo.
 	for (int i = 0; i != parts.size(); i++)
 	{
 		TriObject* triObject = CreateNewTriObject();
@@ -150,15 +154,10 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 
 		mesh.InvalidateGeomCache();
 		mesh.InvalidateTopologyCache();
-		ImpNode* node = importerInt->CreateNode();
 
-		if (!node) {
-			delete triObject;
-			return FALSE;
-		}
-		node->Reference(triObject);
-		node->SetName(_T("NewObject"+i));
-		importerInt->AddNodeToScene(node);
+		INode* nPart = ip->CreateObjectNode(triObject);
+		nPart->SetName(_T("Part"));
+		parent->AttachChild(nPart, 0);
 	}
 	importerInt->RedrawViews();
 

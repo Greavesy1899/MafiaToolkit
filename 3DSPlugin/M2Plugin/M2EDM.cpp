@@ -62,7 +62,18 @@ std::vector<Int3> EDMPart::GetIndices() {
 }
 
 void EDMPart::ReadFromStream(FILE * stream) {
-	ReadString(stream, name);
+	byte numBytes;
+	std::wstring wname;
+
+	fread(&numBytes, sizeof(byte), 1, stream);
+
+	for (int i = 0; i != numBytes; i++) {
+		char nChar;
+		fread(&nChar, sizeof(char), 1, stream);
+		wname += nChar;
+	}
+
+	name = wname.c_str();
 
 	fread(&vertSize, sizeof(int), 1, stream);
 	vertices = std::vector<Point3>(vertSize);
@@ -123,7 +134,21 @@ std::vector<EDMPart> EDMStructure::GetParts() {
 }
 
 void EDMStructure::ReadFromStream(FILE * stream) {
-	ReadString(stream, name);
+
+	byte numBytes;
+	std::wstring wname;
+
+	fread(&numBytes, sizeof(byte), 1, stream);
+
+	for (int i = 0; i != numBytes; i++) {
+		char nChar;
+		fread(&nChar, sizeof(char), 1, stream);
+		wname += nChar;
+	}
+
+	name = wname.c_str();
+
+
 	fread(&partSize, sizeof(int), 1, stream);
 	parts = std::vector<EDMPart>(partSize);
 	
