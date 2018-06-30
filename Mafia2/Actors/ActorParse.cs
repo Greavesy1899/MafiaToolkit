@@ -161,8 +161,14 @@ namespace Mafia2
                     else
                     {
                         buffer = reader.ReadBytes((int)bufferLength);
+                        
+                        string folder = "actors_unks/" + bufferType + "/";
+                        string filename = folder + num + ".dat";
 
-                        using (BinaryWriter writer = new BinaryWriter(File.Open("actors_unks/" + num + "_" + bufferType + ".dat", FileMode.Create)))
+                        if (!Directory.Exists(folder))
+                            Directory.CreateDirectory(folder);
+
+                        using (BinaryWriter writer = new BinaryWriter(File.Open(filename, FileMode.Create)))
                         {
                             writer.Write(buffer);
                         }
@@ -198,7 +204,7 @@ namespace Mafia2
             Vector2 direction;
             Vector3 scale;
             bool unkBool;
-            short propID;
+            ushort propID;
 
             public string ItemType {
                 get { return itemType; }
@@ -234,7 +240,7 @@ namespace Mafia2
                 direction = new Vector2(reader);
                 scale = new Vector3(reader);
                 unkBool = reader.ReadBoolean();
-                propID = reader.ReadInt16();
+                propID = reader.ReadUInt16();
                 reader.ReadByte();
             }
 
