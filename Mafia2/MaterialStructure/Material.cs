@@ -21,7 +21,7 @@ namespace Mafia2
         ulong shaderID;
         string shaderName;
 
-        MaterialFlags flags;
+        uint flags;
 
         int sp_count;
         ShaderParameter[] sp;
@@ -96,7 +96,7 @@ namespace Mafia2
         }
 
         [Category("Flags")]
-        public MaterialFlags Flags {
+        public uint Flags {
             get { return flags; }
             set { flags = value; }
         }
@@ -155,7 +155,7 @@ namespace Mafia2
             shaderID = reader.ReadUInt64().Swap();
             shaderName = string.Format("{0:X16}", shaderID);
 
-            flags = (MaterialFlags)reader.ReadUInt32();
+            flags = reader.ReadUInt32();
 
             sp_count = reader.ReadInt32();
             sp = new ShaderParameter[sp_count];
@@ -261,67 +261,77 @@ namespace Mafia2
     public struct ShaderParameterSampler
     {
 
-        string chunk;
+        string id;
+        string ufo_x1;
+        ulong textureHash;
+        byte texType;
+        byte unkZero;
+        byte[] samplerStates;
         string ufo_x2;
-        string flags;
         string file;
-        private int fileLength;
-        ulong unk;
 
-        public string Chunk {
-            get { return chunk; }
-            set { chunk = value; }
+        public string ID {
+            get { return id; }
+            set { id = value; }
+        }
+        public string UFO_X1 {
+            get { return ufo_x1; }
+            set { ufo_x1 = value; }
+        }
+        public ulong TextureHash {
+            get { return textureHash; }
+            set { textureHash = value; }
+        }
+        public byte TexType {
+            get { return texType; }
+            set { texType = value; }
+        }
+        public byte UnkZero {
+            get { return unkZero; }
+            set { unkZero = value; }
+        }
+        public byte[] SamplerStates {
+            get { return samplerStates; }
+            set { samplerStates = value; }
         }
         public string UFO_X2 {
             get { return ufo_x2; }
             set { ufo_x2 = value; }
         }
-        public string Flags {
-            get { return flags; }
-            set { flags = value; }
-        }
-        [ReadOnly(true)]
-        public int FileLength {
-            get { return fileLength; }
-            set { fileLength = value; }
-        }
         public string File {
             get { return file; }
-            set {
-                file = value;
-                fileLength = file.Length;
-            }
-        }
-        public ulong Unk {
-            get { return unk; }
-            set { unk = value; }
+            set { file = value; }
         }
 
         public ShaderParameterSampler(BinaryReader reader)
         {
-
-            chunk = new string(reader.ReadChars(4));
-
-            ufo_x2 = reader.ReadInt32() + " " + reader.ReadInt32();
-            unk = reader.ReadUInt64();
-            flags = BitConverter.ToString(reader.ReadBytes(16)).Replace("-", "");
-
-            fileLength = reader.ReadInt32();
+            id = new string(reader.ReadChars(4));
+            ufo_x1 = reader.ReadInt32() + " " + reader.ReadInt32();
+            textureHash = reader.ReadUInt64();
+            texType = reader.ReadByte();
+            unkZero = reader.ReadByte();
+            samplerStates = reader.ReadBytes(6);
+            ufo_x2 = reader.ReadInt32() + " " + reader.ReadInt32(); //these can be erratic values
+            int fileLength = reader.ReadInt32();
             file = new string(reader.ReadChars(fileLength));
         }
 
         public override string ToString()
         {
-            return string.Format("{0}, {1}", chunk, file);
+            return string.Format("{0}, {1}", id, file);
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(chunk.ToCharArray());
+            writer.Write(id.ToCharArray());
+            writer.Write((int.Parse(ufo_x1.Split(' ')[0])));
+            writer.Write((int.Parse(ufo_x1.Split(' ')[1])));
+            writer.Write(textureHash);
+            writer.Write(texType);
+            writer.Write(UnkZero);
+            writer.Write(samplerStates);
             writer.Write((int.Parse(ufo_x2.Split(' ')[0])));
             writer.Write((int.Parse(ufo_x2.Split(' ')[1])));
-            writer.Write(unk);
-            writer.Write(Functions.ConvertHexStringToByteArray(flags));
             writer.Write(file.Length);
             writer.Write(file.ToCharArray());
         }

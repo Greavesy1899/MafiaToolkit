@@ -27,6 +27,12 @@ namespace Mafia2
         Unk7 = 7
     }
 
+    public enum ActorTypes
+    {
+        ScriptEntity = 98,
+        Pinup = 106
+    }
+
     [Flags]
     public enum VertexFlags : uint
     {
@@ -114,7 +120,7 @@ namespace Mafia2
         flag_268435456 = 268435456,
         flag_536870912 = 536870912,
         flag_1073741824 = 1073741824,
-        flag_2147483648 = 2147483648,
+        flag_2147483648 = 2147483648
     }
 
     public enum BufferType

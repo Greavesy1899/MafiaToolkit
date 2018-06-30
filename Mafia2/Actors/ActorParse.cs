@@ -58,7 +58,7 @@ namespace Mafia2
         public struct ActorDefinition
         {
             ulong hash; //hash, this is the same as in the frame.
-            short unk01;
+            short unk01; //always zero
             public short namePos; //starting position for the name.
             int frameIndex; //links to FrameResource
 
@@ -71,11 +71,14 @@ namespace Mafia2
                 namePos = reader.ReadInt16();
                 frameIndex = reader.ReadInt32();
                 name = "";
+
+                if (unk01 != 0)
+                    throw new Exception("Not ZERO!");
             }
 
             public override string ToString()
             {
-                return string.Format("{0}, {1}, {2}", hash, name, unk01);
+                return string.Format("{0}, {1}", hash, name);
             }
         }
 
@@ -126,7 +129,7 @@ namespace Mafia2
 
                 while(reader.BaseStream.Position < pos_entity)
                 {
-                    temp_Unks.Add(new temp_unk(reader));
+                    temp_Unks.Add(new temp_unk(reader, temp_Unks.Count));
                 }
 
                 itemCount = reader.ReadInt32();
@@ -135,14 +138,43 @@ namespace Mafia2
 
             public struct temp_unk
             {
-                int bufferType;
+                ActorTypes bufferType;
+                object data;
                 byte[] buffer;
 
-                public temp_unk(BinaryReader reader)
+                public temp_unk(BinaryReader reader, int num)
                 {
-                    bufferType = reader.ReadInt32();
+                    buffer = null;
+                    data = null;
+
+                    bufferType = (ActorTypes)reader.ReadInt32();
                     uint bufferLength = reader.ReadUInt32();
-                    buffer = reader.ReadBytes((int)bufferLength);
+
+                    if (bufferType == ActorTypes.Pinup && bufferLength == 4)
+                    {
+                        data = new ActorPinup(reader);
+                    }
+                    else if (bufferType == ActorTypes.ScriptEntity && bufferLength == 100)
+                    {
+                        data = new ActorScriptEntity(reader);
+                    }
+                    else
+                    {
+                        buffer = reader.ReadBytes((int)bufferLength);
+
+                        using (BinaryWriter writer = new BinaryWriter(File.Open("actors_unks/" + num + "_" + bufferType + ".dat", FileMode.Create)))
+                        {
+                            writer.Write(buffer);
+                        }
+                    }
+                }
+
+                public override string ToString()
+                {
+                    if(buffer != null)
+                        return string.Format("{0}, {1}", bufferType, buffer.Length);
+                    else
+                        return string.Format("{0}", bufferType);
                 }
             }
 
@@ -216,7 +248,7 @@ namespace Mafia2
 
             public override string ToString()
             {
-                return string.Format("{0}, {1}", entityType, hash1);
+                return string.Format("{0}, {1}, {2}", entityType, actortype, itemType);
             }
         }
     }

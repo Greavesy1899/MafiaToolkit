@@ -50,7 +50,7 @@ namespace Mafia2Tool.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("D:\\Users\\Connor\\Desktop\\SteamLibrary\\steamapps\\common\\Mafia II\\pc\\sds\\shops\\extra" +
-            "cted\\joesflat_chodba")]
+            "cted\\gas")]
         public string SDSPath2 {
             get {
                 return ((string)(this["SDSPath2"]));

@@ -46,6 +46,7 @@
     <Compile Include="3DHelpers\ModelBuilder.cs" />
     <Compile Include="3DHelpers\TransformMatrix.cs" />
     <Compile Include="Actors\ActorParse.cs" />
+    <Compile Include="Actors\ActorTypes.cs" />
     <Compile Include="Collisions\Collisions.cs" />
     <Compile Include="FrameNameTable\FrameNameTable.cs" />
     <Compile Include="FrameResource\FrameBlendInfo.cs" />
