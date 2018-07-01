@@ -8,7 +8,7 @@ namespace Mafia2
     public class Hash
     {
         ulong hash;
-        string name;
+        string _string;
         short size;
 
         [ReadOnly(true)]
@@ -17,9 +17,9 @@ namespace Mafia2
             set { hash = value; }
         }
         [ReadOnly(true)]
-        public string Name {
-            get { return name; }
-            set { name = value; }
+        public string String {
+            get { return _string; }
+            set { _string = value; }
         }
         public Hash() { }
         public Hash(BinaryReader reader)
@@ -30,19 +30,19 @@ namespace Mafia2
         {
             hash = reader.ReadUInt64();
             size = reader.ReadInt16();
-            name = Encoding.ASCII.GetString(reader.ReadBytes(size));
+            _string = Encoding.ASCII.GetString(reader.ReadBytes(size));
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(hash);
             writer.Write(size);
-            writer.Write(name.ToCharArray());
+            writer.Write(_string.ToCharArray());
         }
 
         public override string ToString()
         {
-            return string.Format("{0}, {1}", name, hash);
+            return string.Format("{0}, {1}", _string, hash);
         }
     }
 }

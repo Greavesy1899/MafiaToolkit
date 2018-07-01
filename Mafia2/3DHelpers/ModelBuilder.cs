@@ -26,7 +26,7 @@ namespace Mafia2
         public void Build(FrameObjectSingleMesh singleMesh, VertexBufferPool vertexBufferPool, IndexBufferPool indexBufferPool, FrameResource frameResource)
         {
             meshBlock = singleMesh;
-            path = singleMesh.Name.Name;
+            path = singleMesh.Name.String;
             FrameGeometry mesh = (frameResource.FrameBlocks[singleMesh.MeshIndex] as FrameGeometry);
             if (mesh == null)
                 return;

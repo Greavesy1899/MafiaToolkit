@@ -35,10 +35,6 @@ namespace Mafia2
             {
                 ReadFromFile(reader);
             }
-            //using (BinaryWriter writer = new BinaryWriter(File.Open("newFrame.bin", FileMode.Create)))
-            //{
-            //    WriteToFile(writer);
-            //}
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -244,14 +240,14 @@ namespace Mafia2
                     continue;
 
                 if(newObject.ParentIndex1.Index > -1)
-                    newObject.ParentIndex1.Name = (entireFrame[newObject.ParentIndex1.Index] as FrameObjectBase).Name.Name;
+                    newObject.ParentIndex1.Name = (entireFrame[newObject.ParentIndex1.Index] as FrameObjectBase).Name.String;
 
                 if (newObject.ParentIndex2.Index > -1)
                 {
                     if (entireFrame[newObject.ParentIndex2.Index].GetType() == typeof(FrameHeaderScene))
-                        newObject.ParentIndex2.Name = (entireFrame[newObject.ParentIndex2.Index] as FrameHeaderScene).Name.Name;
+                        newObject.ParentIndex2.Name = (entireFrame[newObject.ParentIndex2.Index] as FrameHeaderScene).Name.String;
                     else
-                        newObject.ParentIndex2.Name = (entireFrame[newObject.ParentIndex2.Index] as FrameObjectBase).Name.Name;
+                        newObject.ParentIndex2.Name = (entireFrame[newObject.ParentIndex2.Index] as FrameObjectBase).Name.String;
                 }
 
                 frameObjects[i] = newObject;

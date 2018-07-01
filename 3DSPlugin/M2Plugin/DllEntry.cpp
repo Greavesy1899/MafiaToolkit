@@ -15,6 +15,7 @@
 #include "M2Plugin.h"
 
 extern ClassDesc2* GetM2PluginDesc();
+extern ClassDesc2* GetARAImportDesc();
 
 HINSTANCE hInstance;
 int controlsInit = FALSE;
@@ -49,7 +50,7 @@ __declspec( dllexport ) const TCHAR* LibDescription()
 //TODO: Must change this number when adding a new class
 __declspec( dllexport ) int LibNumberClasses()
 {
-	return 1;
+	return 2;
 }
 
 // This function returns the number of plug-in classes this DLL
@@ -57,6 +58,7 @@ __declspec( dllexport ) ClassDesc* LibClassDesc(int i)
 {
 	switch(i) {
 		case 0: return GetM2PluginDesc();
+		case 1: return GetARAImportDesc();
 		default: return 0;
 	}
 }

@@ -65,7 +65,7 @@ namespace Mafia2
             parentIndex1 = new ParentStruct(reader.ReadInt32());
             parentIndex2 = new ParentStruct(reader.ReadInt32());
             unk6 = reader.ReadInt16();
-            node = new Node(name.Name, this);
+            node = new Node(name.String, this);
         }
 
         public virtual void WriteToFile(BinaryWriter writer)

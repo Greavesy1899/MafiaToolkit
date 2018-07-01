@@ -50,9 +50,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EDMImportClass.cpp" />
     <ClCompile Include="M2EDM.cpp" />
     <ClCompile Include="M2Helpers.cpp" />
-    <ClCompile Include="M2Plugin.cpp" />
+    <ClCompile Include="ARAImportClass.cpp" />
     <ClCompile Include="DllEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3dsmaxsdk_preinclude.h" />
+    <ClInclude Include="ARAImportClass.h" />
+    <ClInclude Include="EDMImportClass.h" />
     <ClInclude Include="M2EDM.h" />
     <ClInclude Include="M2Helpers.h" />
     <ClInclude Include="M2Plugin.h" />

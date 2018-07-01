@@ -49,6 +49,21 @@ END
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 #pragma code_page(1252)
 
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
@@ -86,21 +101,6 @@ END
 #endif    // APSTUDIO_INVOKED
 
 
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-3 TEXTINCLUDE 
-BEGIN
-    "\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
@@ -108,14 +108,17 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_LIBDESCRIPTION      "Mafia 2 Plugin"
+    IDS_LIBDESCRIPTION      "Set of tools to modify Mafia 2 file formats"
     IDS_CATEGORY            "Import"
-    IDS_CLASS_NAME          "M2Plugin"
+    IDS_EDM_IMPORT_CLASS    "M2EDMImporter"
     IDS_PARAMS              "Parameters"
     IDS_SPIN                "Spin"
-    IDS_EDM_L_DESC          """Editable Mesh"" format for Mafia 2"
-    IDS_EDM_S_DESC          "Editable Mesh"
-    IDS_EDM_AUTHOR          "Greavesy"
+    IDS_EDM_L_DESC          "Mafia2: ""Editable Mesh"" format for Mafia 2"
+    IDS_EDM_S_DESC          "Mafia2: Editable Mesh"
+    IDS_AUTHOR              "Greavesy"
+    IDS_ARA_IMPORT_CLASS    "M2ARAImporter"
+    IDS_ARA_L_DESC          "Mafia2: ""City Areas"" format for Mafia 2"
+    IDS_ARA_S_DESC          "Mafia2: CityAreas"
 END
 
 #endif    // English (United Kingdom) resources

@@ -1,66 +1,46 @@
-//**************************************************************************/
-// Copyright (c) 1998-2007 Autodesk, Inc.
-// All rights reserved.
-// 
-// These coded instructions, statements, and computer programs contain
-// unpublished proprietary information written by Autodesk, Inc., and are
-// protected by Federal copyright law. They may not be disclosed to third
-// parties or copied or duplicated in any form, in whole or in part, without
-// the prior written consent of Autodesk, Inc.
-//**************************************************************************/
-// DESCRIPTION: Appwizard generated plugin
-// AUTHOR: 
-//***************************************************************************/
-
-#include "M2Plugin.h"
-#include "M2Helpers.h"
+#include "3dsmaxsdk_preinclude.h"
+#include "EDMImportClass.h"
 #include "M2EDM.h"
-#include "triobj.h"
-#include <impapi.h>
-#include <dummy.h>
 
-#define M2Plugin_CLASS_ID	Class_ID(0xac9aa34b, 0xbb4578d1)
+#define EDM_IMPORT_CLASS_ID	Class_ID(0xac9aa34b, 0xbb4578d1)
 
-class M2PluginClassDesc : public ClassDesc2 
+class M2PluginClassDesc : public ClassDesc2
 {
 public:
-	virtual int IsPublic() 							{ return TRUE; }
-	virtual void* Create(BOOL /*loading = FALSE*/) 		{ return new EDMImport(); }
-	virtual const TCHAR *	ClassName() 			{ return GetString(IDS_CLASS_NAME); }
-	virtual SClass_ID SuperClassID() 				{ return SCENE_IMPORT_CLASS_ID; }
-	virtual Class_ID ClassID() 						{ return M2Plugin_CLASS_ID; }
-	virtual const TCHAR* Category() 				{ return GetString(IDS_CATEGORY); }
+	virtual int IsPublic() { return TRUE; }
+	virtual void* Create(BOOL /*loading = FALSE*/) { return new EDMImport(); }
+	virtual const TCHAR *	ClassName() { return GetString(IDS_EDM_IMPORT_CLASS); }
+	virtual SClass_ID SuperClassID() { return SCENE_IMPORT_CLASS_ID; }
+	virtual Class_ID ClassID() { return EDM_IMPORT_CLASS_ID; }
+	virtual const TCHAR* Category() { return GetString(IDS_CATEGORY); }
 
-	virtual const TCHAR* InternalName() 			{ return _T("M2Plugin"); }	// returns fixed parsable name (scripter-visible name)
-	virtual HINSTANCE HInstance() 					{ return hInstance; }					// returns owning module handle
-	
+	virtual const TCHAR* InternalName() { return _T("M2Plugin"); }	// returns fixed parsable name (scripter-visible name)
+	virtual HINSTANCE HInstance() { return hInstance; }					// returns owning module handle
+
 
 };
-
-
-ClassDesc2* GetM2PluginDesc() { 
+ClassDesc2* GetM2PluginDesc() {
 	static M2PluginClassDesc M2PluginDesc;
-	return &M2PluginDesc; 
+	return &M2PluginDesc;
 }
 
-INT_PTR CALLBACK M2PluginOptionsDlgProc(HWND hWnd,UINT message,WPARAM ,LPARAM lParam) {
+
+INT_PTR CALLBACK M2PluginOptionsDlgProc(HWND hWnd, UINT message, WPARAM, LPARAM lParam) {
 	static EDMImport* imp = nullptr;
 
-	switch(message) {
-		case WM_INITDIALOG:
-			imp = (EDMImport *)lParam;
-			CenterWindow(hWnd,GetParent(hWnd));
-			return TRUE;
+	switch (message) {
+	case WM_INITDIALOG:
+		imp = (EDMImport *)lParam;
+		CenterWindow(hWnd, GetParent(hWnd));
+		return TRUE;
 
-		case WM_CLOSE:
-			EndDialog(hWnd, 0);
-			return 1;
+	case WM_CLOSE:
+		EndDialog(hWnd, 0);
+		return 1;
 	}
 	return 0;
 }
-
 static FILE *stream = NULL;
-
 //EDM IMPORT SECTION
 //=========================
 
@@ -85,7 +65,7 @@ const TCHAR* EDMImport::ShortDesc() {
 	return GetString(IDS_EDM_S_DESC);
 }
 const TCHAR* EDMImport::AuthorName() {
-	return GetString(IDS_EDM_AUTHOR);
+	return GetString(IDS_AUTHOR);
 }
 const TCHAR* EDMImport::CopyrightMessage() {
 	return _T("");
@@ -170,4 +150,4 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 
 	return TRUE;
 }
-	
+

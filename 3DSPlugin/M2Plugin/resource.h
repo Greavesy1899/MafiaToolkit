@@ -1,27 +1,22 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by M2Plugin.rc
 //
-
-
 #define IDS_LIBDESCRIPTION              1
 #define IDS_CATEGORY                    2
 #define IDS_CLASS_NAME                  3
+#define IDS_EDM_IMPORT_CLASS            3
 #define IDS_PARAMS                      4
 #define IDS_SPIN                        5
 #define IDS_EDM_L_DESC                  6
 #define IDS_EDM_S_DESC                  7
 #define IDS_EDM_AUTHOR                  8
+#define IDS_AUTHOR                      8
 #define IDS_EDM_COPYRIGHT               9
-
-
-
-
-
-
-
+#define IDS_ARA_IMPORT_CLASS            9
+#define IDS_ARA_L_DESC                  10
+#define IDS_ARA_S_DESC                  11
 #define IDD_PANEL                       101
-
 #define IDC_CLOSEBUTTON                 1000
 #define IDC_DOSTUFF                     1000
 #define IDC_COLOR                       1456

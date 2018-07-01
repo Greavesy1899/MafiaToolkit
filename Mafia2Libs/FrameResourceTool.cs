@@ -58,7 +58,7 @@ namespace Mafia2Tool
                 }
 
                 TreeNode[] nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
-                TreeNode[] nodes2 = treeView1.Nodes.Find(fObject.Name.Name, true);
+                TreeNode[] nodes2 = treeView1.Nodes.Find(fObject.Name.String, true);
 
                 if (nodes2.Length > 0)
                     continue;
@@ -121,6 +121,11 @@ namespace Mafia2Tool
         }
         private void LoadMaterialTool(object sender, EventArgs e)
         {
+            using (BinaryWriter writer = new BinaryWriter(File.Open("FrameResource_0.bin", FileMode.Create)))
+            {
+                SceneData.FrameResource.WriteToFile(writer);
+            }
+
             MaterialTool tool = new MaterialTool();
             tool.ShowDialog();
         }
@@ -133,7 +138,7 @@ namespace Mafia2Tool
             Parallel.For(0, mesh.Count, i =>
             {
                 Model newModel = new Model((mesh[i]), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
-                fileNames[i] = mesh[i].Name.Name + "_lod0";
+                fileNames[i] = mesh[i].Name.String + "_lod0";
 
                 filePos[i] = mesh[i].Matrix.Position;
                 rotPos[i] = mesh[i].Matrix.Rotation.Vector;
@@ -149,12 +154,12 @@ namespace Mafia2Tool
 
                 for (int c = 0; c != newModel.Lods.Length; c++)
                 {
-                    if (!File.Exists("exported/" + mesh[i].Name.Name + "_lod" + c + ".edm"))
+                    if (!File.Exists("exported/" + mesh[i].Name.String + "_lod" + c + ".edm"))
                     {
                         Stopwatch watch = new Stopwatch();
                         watch.Start();
-                        newModel.ExportToEDM(newModel.Lods[c], mesh[i].Name.Name + "_lod" + c);
-                        Debug.WriteLine("Mesh: {0} and time taken was {1}", mesh[i].Name.Name + "_lod" + c, watch.Elapsed);
+                        newModel.ExportToEDM(newModel.Lods[c], mesh[i].Name.String + "_lod" + c);
+                        Debug.WriteLine("Mesh: {0} and time taken was {1}", mesh[i].Name.String + "_lod" + c, watch.Elapsed);
                         watch.Stop();
                     }
                     //fileNames[i] = mesh[i].Name.Name + "_lod" + c;

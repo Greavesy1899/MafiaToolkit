@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 
 namespace Mafia2
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public struct Bounds
     {
         Vector3 min;

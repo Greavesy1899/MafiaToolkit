@@ -6,8 +6,16 @@ namespace Mafia2
     {
         int unk01;
         int unk02;
-        float[] unkFloats;
+        Float4[] unkFloats;
         Bounds unkBounds;
+
+        //-1 means invert the float, eg: 25.459 would be -25.459
+        //data[0] = top face			 1
+        //data[1] = right face		 1
+        //data[2] = front face		-1
+        //data[3] = back face			 1
+        //data[4] = bottom face		-1
+        //data[5] = left face			-1
 
         public int Unk01 {
             get { return unk01; }
@@ -17,7 +25,7 @@ namespace Mafia2
             get { return unk02; }
             set { unk02 = value; }
         }
-        public float[] UnkFloats {
+        public Float4[] UnkFloats {
             get { return unkFloats; }
             set { unkFloats = value; }
         }
@@ -35,10 +43,10 @@ namespace Mafia2
             base.ReadFromFile(reader);
             unk01 = reader.ReadInt32();
             unk02 = reader.ReadInt32();
-            unkFloats = new float[unk02 * 4];
+            unkFloats = new Float4[unk02];
 
-            for(int i = 0; i != unkFloats.Length; i++)
-                unkFloats[i] = reader.ReadSingle();
+            for (int i = 0; i != unkFloats.Length; i++)
+                unkFloats[i] = new Float4(reader);
 
             unkBounds = new Bounds(reader);
         }
@@ -48,17 +56,16 @@ namespace Mafia2
             base.WriteToFile(writer);
             writer.Write(unk01);
             writer.Write(unk02);
-            unkFloats = new float[unk02 * 4];
 
             for (int i = 0; i != unkFloats.Length; i++)
-                writer.Write(unkFloats[i]);
+                unkFloats[i].WriteToFile(writer);
 
             unkBounds.WriteToFile(writer);
         }
 
         public override string ToString()
         {
-            return "Area Block";
+            return Name.String;
         }
     }
 }

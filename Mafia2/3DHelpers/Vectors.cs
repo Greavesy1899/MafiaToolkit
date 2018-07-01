@@ -105,6 +105,35 @@ namespace Mafia2
         }
     }
 
+    public struct Float4
+    {
+        float[] data;
+
+        public float[] Data {
+            get { return data; }
+            set { data = value; }
+        }
+
+        public Float4(BinaryReader reader)
+        {
+            data = new float[4];
+
+            for (int i = 0; i != 4; i++)
+                data[i] = reader.ReadSingle();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            for (int i = 0; i != 4; i++)
+                writer.Write(data[i]);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}, {1}, {2}, {3}", data[0], data[1], data[2], data[3]);
+        }
+    }
+
     public struct UVVector2
     {
         Half x;

@@ -16,9 +16,12 @@ namespace Mafia2
             set { areaCollection = value; }
         }
 
-        public CityAreas(BinaryReader reader)
+        public CityAreas(string fileName)
         {
-            ReadFromFile(reader);
+            using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
         }
 
         public void ReadFromFile(BinaryReader reader)

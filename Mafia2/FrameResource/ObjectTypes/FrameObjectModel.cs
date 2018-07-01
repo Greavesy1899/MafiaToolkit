@@ -84,7 +84,7 @@ namespace Mafia2
             for(int i = 0; i != unk_30_list.Length; i++)
             {
                 int index2 = numArray[unk_30_list[i].BlendIndex];
-                unk_30_list[i].JointName = skeleton.Names[index2].Name;
+                unk_30_list[i].JointName = skeleton.Names[index2].String;
             }
             unkData = reader.ReadBytes(count);           
         }
@@ -117,7 +117,7 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return string.Format("{0}", Name.Name);
+            return string.Format("{0}", Name.String);
         }
     }
     public class AttachmentReference
