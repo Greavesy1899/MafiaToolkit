@@ -14,7 +14,7 @@
 
 #include "M2Plugin.h"
 
-extern ClassDesc2* GetM2PluginDesc();
+extern ClassDesc2* GetEDMImportDesc();
 extern ClassDesc2* GetARAImportDesc();
 
 HINSTANCE hInstance;
@@ -57,7 +57,7 @@ __declspec( dllexport ) int LibNumberClasses()
 __declspec( dllexport ) ClassDesc* LibClassDesc(int i)
 {
 	switch(i) {
-		case 0: return GetM2PluginDesc();
+		case 0: return GetEDMImportDesc();
 		case 1: return GetARAImportDesc();
 		default: return 0;
 	}

@@ -11,7 +11,7 @@
 #include <impexp.h>
 #include <direct.h>
 #include <commdlg.h>
-#include "M2Plugin.h"
+#include <object.h>
 
 class ARAImport : public SceneImport
 {

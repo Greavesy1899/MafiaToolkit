@@ -4,7 +4,7 @@
 
 #define EDM_IMPORT_CLASS_ID	Class_ID(0xac9aa34b, 0xbb4578d1)
 
-class M2PluginClassDesc : public ClassDesc2
+class EDMImportClassDesc : public ClassDesc2
 {
 public:
 	virtual int IsPublic() { return TRUE; }
@@ -19,9 +19,9 @@ public:
 
 
 };
-ClassDesc2* GetM2PluginDesc() {
-	static M2PluginClassDesc M2PluginDesc;
-	return &M2PluginDesc;
+ClassDesc2* GetEDMImportDesc() {
+	static EDMImportClassDesc EDMImportDesc;
+	return &EDMImportDesc;
 }
 
 
