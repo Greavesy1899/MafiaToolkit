@@ -78,49 +78,63 @@ unsigned int ARAImport::Version() {
 	return 1;
 }
 void ARAImport::ShowAbout(HWND hWnd) {}
+static FILE *stream = NULL;
 int ARAImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interface* ip, BOOL suppressPrompts) { 
+	ARAWorkClass ara(filename, _T("rb"));
+	stream = ara.Stream();
+
+	int size = 0;
+	fread(&size, sizeof(4), 1, stream);
+
+	for (int i = 0; i != size; i++) {
+		TriObject* object = CreateNewTriObject();
+		Mesh &mesh = object->GetMesh();
+
+		mesh.setNumVerts(8);
+		mesh.setNumFaces(12);
+
+		for (int c = 0; c != 8; c++) {
+			float x, y, z;
+			fread(&x, sizeof(float), 1, stream);
+			fread(&y, sizeof(float), 1, stream);
+			fread(&z, sizeof(float), 1, stream);
+			mesh.setVert(c, Point3(x, y, z));
+		}
+
+		mesh.faces[0].setVerts(0, 2, 3);
+		mesh.faces[1].setVerts(3, 1, 0);
+		mesh.faces[2].setVerts(4, 5, 7);
+		mesh.faces[3].setVerts(7, 6, 4);
+		mesh.faces[4].setVerts(0, 1, 5);
+		mesh.faces[5].setVerts(5, 4, 0);
+		mesh.faces[6].setVerts(1, 3, 7);
+		mesh.faces[7].setVerts(7, 5, 1);
+		mesh.faces[8].setVerts(3, 2, 6);
+		mesh.faces[9].setVerts(6, 7, 3);
+		mesh.faces[10].setVerts(2, 0, 4);
+		mesh.faces[11].setVerts(4, 6, 2);
+		mesh.InvalidateGeomCache();
+		mesh.InvalidateTopologyCache();
+
+		ImpNode* node = importerInt->CreateNode();
+		Matrix3 matrix = Matrix3();
+		matrix.IdentityMatrix();
+
+		float tx, ty, tz;
+		fread(&tx, sizeof(float), 1, stream);
+		fread(&ty, sizeof(float), 1, stream);
+		fread(&tz, sizeof(float), 1, stream);
+
+		matrix.SetTrans(Point3(tx, ty, tz));
+		node->SetTransform(0, matrix);
+		node->Reference(object);
+		node->SetName(_T("Part"));
+		node->GetINode()->WorldAlignPivot(0, TRUE);
+		node->GetINode()->CenterPivot(0, TRUE);
+		node->GetINode()->SetObjectRef(object);
+		importerInt->AddNodeToScene(node);
+	}
 	
-	TriObject* object = CreateNewTriObject();
-	Mesh &mesh = object->GetMesh();
-
-	mesh.setNumVerts(8);
-	mesh.setNumFaces(12);
-
-	mesh.setVert(0, Point3(-617.4632f, 104.8727f, -39.01695f));
-	mesh.setVert(1, Point3(650.7374f, 104.8727f, -39.01695f));
-	mesh.setVert(2, Point3(-617.4632f, 254.7083f, -39.01695f));
-	mesh.setVert(3, Point3(650.7374f, 254.7083f, -39.01695f));
-	mesh.setVert(4, Point3(-617.4632f, 104.8727f, 39.01695f));
-	mesh.setVert(5, Point3(650.7374f, 104.8727f, 39.01695f));
-	mesh.setVert(6, Point3(-617.4632f, 254.7083f, 39.01695f));
-	mesh.setVert(7, Point3(650.7374f, 254.7083f, 39.01695f));
-
-	mesh.faces[0].setVerts(0, 2, 3);
-	mesh.faces[1].setVerts(3, 1, 0);
-	mesh.faces[2].setVerts(4, 5, 7);
-	mesh.faces[3].setVerts(7, 6, 4);
-	mesh.faces[4].setVerts(0, 1, 5);
-	mesh.faces[5].setVerts(5, 4, 0);
-	mesh.faces[6].setVerts(1, 3, 7);
-	mesh.faces[7].setVerts(7, 5, 1);
-	mesh.faces[8].setVerts(3, 2, 6);
-	mesh.faces[9].setVerts(6, 7, 3);
-	mesh.faces[10].setVerts(2, 0, 4);
-	mesh.faces[11].setVerts(4, 6, 2);
-	mesh.InvalidateGeomCache();
-	mesh.InvalidateTopologyCache();
-
-	ImpNode* node = importerInt->CreateNode();
-	Matrix3 matrix = Matrix3();
-	matrix.IdentityMatrix();
-	matrix.SetTrans(Point3(635.7573f, -969.9177f, 13.732f));
-	node->SetTransform(0, matrix);
-	node->Reference(object);
-	node->SetName(_T("Part"));
-	node->GetINode()->WorldAlignPivot(0, TRUE);
-	node->GetINode()->CenterPivot(0, TRUE);
-	node->GetINode()->SetObjectRef(object);
-	importerInt->AddNodeToScene(node);
 	importerInt->RedrawViews();
 
 	return TRUE; 

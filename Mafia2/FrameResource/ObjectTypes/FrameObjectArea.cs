@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 
 namespace Mafia2
 {
@@ -61,6 +62,37 @@ namespace Mafia2
                 unkFloats[i].WriteToFile(writer);
 
             unkBounds.WriteToFile(writer);
+        }
+
+        public void WriteARAFile(BinaryWriter writer)
+        {
+            Vector3[] verts = new Vector3[8];
+
+            try
+            {
+                verts[0] = new Vector3(unkFloats[5].Data[3], unkFloats[4].Data[3], unkFloats[3].Data[3]);
+                verts[1] = new Vector3(unkFloats[0].Data[3], unkFloats[4].Data[3], unkFloats[3].Data[3]);
+                verts[2] = new Vector3(unkFloats[5].Data[3], unkFloats[1].Data[3], unkFloats[3].Data[3]);
+                verts[3] = new Vector3(unkFloats[0].Data[3], unkFloats[1].Data[3], unkFloats[3].Data[3]);
+                verts[4] = new Vector3(unkFloats[5].Data[3], unkFloats[4].Data[3], -unkFloats[2].Data[3]);
+                verts[5] = new Vector3(unkFloats[0].Data[3], unkFloats[4].Data[3], -unkFloats[2].Data[3]);
+                verts[6] = new Vector3(unkFloats[5].Data[3], unkFloats[1].Data[3], -unkFloats[2].Data[3]);
+                verts[7] = new Vector3(unkFloats[0].Data[3], unkFloats[1].Data[3], -unkFloats[2].Data[3]);
+
+                for (int i = 0; i != verts.Length; i++)
+                    verts[i].WriteToFile(writer);
+
+                Matrix.Position.WriteToFile(writer);
+            }
+            catch
+            {
+                Debug.WriteLine("ERROR WRITING ARA: {0}", Name.String);
+
+                for (int i = 0; i != verts.Length; i++)
+                    verts[i].WriteToFile(writer);
+
+                Matrix.Position.WriteToFile(writer);
+            }
         }
 
         public override string ToString()
