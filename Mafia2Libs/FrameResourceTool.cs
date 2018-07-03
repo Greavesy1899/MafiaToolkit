@@ -141,7 +141,7 @@ namespace Mafia2Tool
                 fileNames[i] = mesh[i].Name.String + "_lod0";
 
                 filePos[i] = mesh[i].Matrix.Position;
-                rotPos[i] = mesh[i].Matrix.Rotation.Vector;
+                rotPos[i] = mesh[i].Matrix.Rotation.Euler;
 
                 if (((mesh[i].ParentIndex1.Index != -1)) && ((mesh[i].ParentIndex1.Index == mesh[i].ParentIndex2.Index)))
                 {

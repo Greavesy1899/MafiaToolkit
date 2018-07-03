@@ -38,16 +38,16 @@ public class TransformMatrix
 
     public void WriteToFile(BinaryWriter writer)
     {
-        rotation.M1.WriteToFile(writer);
+        rotation.Row1.WriteToFile(writer);
         writer.Write(position.X);
-        rotation.M2.WriteToFile(writer);
+        rotation.Row2.WriteToFile(writer);
         writer.Write(position.Y);
-        rotation.M3.WriteToFile(writer);
+        rotation.Row3.WriteToFile(writer);
         writer.Write(position.Z);
     }
 
     public override string ToString()
     {
-        return string.Format("{0}, {1}", rotation, position);
+        return string.Format("{0} {1}", rotation, position);
     }
 }

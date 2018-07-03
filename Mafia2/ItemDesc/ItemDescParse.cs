@@ -51,9 +51,9 @@ namespace Mafia2
                 writer.Write(cBase.Matrix.Position.X);
                 writer.Write(cBase.Matrix.Position.Y);
                 writer.Write(cBase.Matrix.Position.Z);
-                writer.Write(cBase.Matrix.Rotation.Vector.X);
-                writer.Write(cBase.Matrix.Rotation.Vector.Y);
-                writer.Write(cBase.Matrix.Rotation.Vector.Z);
+                writer.Write(cBase.Matrix.Rotation.Euler.X);
+                writer.Write(cBase.Matrix.Rotation.Euler.Y);
+                writer.Write(cBase.Matrix.Rotation.Euler.Z);
                 writer.Write((byte)colType);
                 edc.WriteToFile(writer);
             }

@@ -2,21 +2,25 @@
 #define M2_ARA_HEADER
 #include <iparamb2.h>
 #include <vector>
+#include "quat.h"
 
 class ARAPart {
 private:
 	std::vector<Point3> vertices;
 	std::wstring name;
 	Point3 position;
+	Point3 rotation;
 public:
 	ARAPart();
 	~ARAPart();
 	void SetName(std::wstring name);
 	void SetVertices(std::vector<Point3> vertices);
 	void SetPosition(Point3 position);
+	void SetRotation(Point3 rotation);
 	std::wstring GetName();
 	std::vector<Point3> GetVertices();
 	Point3 GetPosition();
+	Point3 GetRotation();
 
 	void ReadFromStream(FILE* stream);
 };

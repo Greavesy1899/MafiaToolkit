@@ -73,20 +73,21 @@ namespace Mafia2
                 if (unkFloats.Length != 6)
                     throw new Exception("UnkFloats doesn't equal 6");
 
-                verts[0] = new Vector3(unkFloats[5].Data[3], unkFloats[4].Data[3], unkFloats[3].Data[3]);
-                verts[1] = new Vector3(unkFloats[0].Data[3], unkFloats[4].Data[3], unkFloats[3].Data[3]);
-                verts[2] = new Vector3(unkFloats[5].Data[3], unkFloats[1].Data[3], unkFloats[3].Data[3]);
-                verts[3] = new Vector3(unkFloats[0].Data[3], unkFloats[1].Data[3], unkFloats[3].Data[3]);
-                verts[4] = new Vector3(unkFloats[5].Data[3], unkFloats[4].Data[3], -unkFloats[2].Data[3]);
-                verts[5] = new Vector3(unkFloats[0].Data[3], unkFloats[4].Data[3], -unkFloats[2].Data[3]);
-                verts[6] = new Vector3(unkFloats[5].Data[3], unkFloats[1].Data[3], -unkFloats[2].Data[3]);
-                verts[7] = new Vector3(unkFloats[0].Data[3], unkFloats[1].Data[3], -unkFloats[2].Data[3]);
+                verts[0] = new Vector3(unkFloats[5].Data[3], -unkFloats[3].Data[3], unkFloats[4].Data[3]);
+                verts[1] = new Vector3(-unkFloats[1].Data[3], -unkFloats[3].Data[3], unkFloats[4].Data[3]);
+                verts[2] = new Vector3(unkFloats[5].Data[3], unkFloats[2].Data[3], unkFloats[4].Data[3]);
+                verts[3] = new Vector3(-unkFloats[1].Data[3], unkFloats[2].Data[3], unkFloats[4].Data[3]);
+                verts[4] = new Vector3(unkFloats[5].Data[3], -unkFloats[3].Data[3], -unkFloats[0].Data[3]);
+                verts[5] = new Vector3(-unkFloats[1].Data[3], -unkFloats[3].Data[3], -unkFloats[0].Data[3]);
+                verts[6] = new Vector3(unkFloats[5].Data[3], unkFloats[2].Data[3], -unkFloats[0].Data[3]);
+                verts[7] = new Vector3(-unkFloats[1].Data[3], unkFloats[2].Data[3], -unkFloats[0].Data[3]);
 
                 for (int i = 0; i != verts.Length; i++)
                     verts[i].WriteToFile(writer);
 
                 writer.Write(Name.String);
                 Matrix.Position.WriteToFile(writer);
+                Matrix.Rotation.Euler.WriteToFile(writer);
             }
             catch(Exception ex)
             {
@@ -97,6 +98,7 @@ namespace Mafia2
 
                 writer.Write(Name.String);
                 Matrix.Position.WriteToFile(writer);
+                Matrix.Rotation.Euler.WriteToFile(writer);
             }
         }
 

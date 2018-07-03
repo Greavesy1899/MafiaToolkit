@@ -17,6 +17,7 @@
 #include "ARAImportClass.h"
 #include "M2ARA.h"
 #include "triobj.h"
+#include "inode.h"
 #include <impapi.h>
 #include <dummy.h>
 
@@ -114,18 +115,21 @@ int ARAImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		mesh.InvalidateGeomCache();
 		mesh.InvalidateTopologyCache();
 
-		ImpNode* node = importerInt->CreateNode();
-		Matrix3 matrix = Matrix3();
-		matrix.IdentityMatrix();
+		Matrix3 tm = Matrix3();
+		tm.IdentityMatrix();
+		tm.RotateX(part.GetRotation().x);
+		tm.RotateY(part.GetRotation().y);
+		tm.RotateZ(part.GetRotation().z);
+		tm.SetRow(3, part.GetPosition());
 
-		matrix.SetTrans(part.GetPosition());
-		node->SetTransform(0, matrix);
+		ImpNode *node = importerInt->CreateNode();
+		INode *inode = node->GetINode();
 		node->Reference(object);
 		node->SetName(part.GetName().c_str());
-		node->GetINode()->WorldAlignPivot(0, TRUE);
-		node->GetINode()->CenterPivot(0, TRUE);
-		node->GetINode()->SetObjectRef(object);
+		node->SetTransform(0, tm);
+
 		importerInt->AddNodeToScene(node);
+		inode = node->GetINode();
 	}
 	
 	importerInt->RedrawViews();

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 
 namespace Mafia2
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public struct Vector3
     {
         float x;

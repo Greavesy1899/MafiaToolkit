@@ -16,6 +16,9 @@ void ARAPart::SetPosition(Point3 position) {
 	ARAPart::position = position;
 }
 
+void ARAPart::SetRotation(Point3 rotation) {
+	ARAPart::rotation = rotation;
+}
 std::wstring ARAPart::GetName() {
 	return ARAPart::name;
 }
@@ -26,6 +29,10 @@ std::vector<Point3> ARAPart::GetVertices() {
 
 Point3 ARAPart::GetPosition() {
 	return ARAPart::position;
+}
+
+Point3 ARAPart::GetRotation() {
+	return ARAPart::rotation;
 }
 
 void ARAPart::ReadFromStream(FILE * stream) {
@@ -42,6 +49,11 @@ void ARAPart::ReadFromStream(FILE * stream) {
 	fread(&position.x, sizeof(float), 1, stream);
 	fread(&position.y, sizeof(float), 1, stream);
 	fread(&position.z, sizeof(float), 1, stream);
+	Point3 rot = Point3();
+	fread(&rot.x, sizeof(float), 1, stream);
+	fread(&rot.y, sizeof(float), 1, stream);
+	fread(&rot.z, sizeof(float), 1, stream);
+	SetRotation(rot);
 }
 
 ARAPart::ARAPart() {}
