@@ -5,7 +5,7 @@
 //===================================================
 //		EDMPART
 //===================================================
-void EDMPart::SetName(const wchar_t * name) {
+void EDMPart::SetName(std::wstring name) {
 	EDMPart::name = name;
 }
 
@@ -33,7 +33,7 @@ void EDMPart::SetIndices(std::vector<Int3> indices) {
 	EDMPart::indices = indices;
 }
 
-const wchar_t* EDMPart::GetName() {
+std::wstring EDMPart::GetName() {
 	return EDMPart::name;
 }
 
@@ -62,19 +62,9 @@ std::vector<Int3> EDMPart::GetIndices() {
 }
 
 void EDMPart::ReadFromStream(FILE * stream) {
-	byte numBytes;
-	std::wstring wname;
-
-	fread(&numBytes, sizeof(byte), 1, stream);
-
-	for (int i = 0; i != numBytes; i++) {
-		char nChar;
-		fread(&nChar, sizeof(char), 1, stream);
-		wname += nChar;
-	}
-
-	name = wname.c_str();
-
+	std::wstring partName = std::wstring();
+	partName = ReadString(stream, partName);
+	name = partName;
 	fread(&vertSize, sizeof(int), 1, stream);
 	vertices = std::vector<Point3>(vertSize);
 	for (int i = 0; i != vertSize; i++) {
@@ -109,7 +99,7 @@ EDMPart::~EDMPart() {}
 //===================================================
 //		EDMSTRUCTURE
 //===================================================
-void EDMStructure::SetName(const wchar_t * name) {
+void EDMStructure::SetName(std::wstring name) {
 	EDMStructure::name = name;
 }
 
@@ -121,7 +111,7 @@ void EDMStructure::SetParts(std::vector<EDMPart> parts) {
 	EDMStructure::parts = parts;
 }
 
-const wchar_t * EDMStructure::GetName() {
+std::wstring EDMStructure::GetName() {
 	return name;
 }
 
@@ -135,20 +125,9 @@ std::vector<EDMPart> EDMStructure::GetParts() {
 
 void EDMStructure::ReadFromStream(FILE * stream) {
 
-	byte numBytes;
-	std::wstring wname;
-
-	fread(&numBytes, sizeof(byte), 1, stream);
-
-	for (int i = 0; i != numBytes; i++) {
-		char nChar;
-		fread(&nChar, sizeof(char), 1, stream);
-		wname += nChar;
-	}
-
-	name = wname.c_str();
-
-
+	std::wstring edmName = std::wstring();
+	edmName = ReadString(stream, edmName);
+	name = edmName;
 	fread(&partSize, sizeof(int), 1, stream);
 	parts = std::vector<EDMPart>(partSize);
 	

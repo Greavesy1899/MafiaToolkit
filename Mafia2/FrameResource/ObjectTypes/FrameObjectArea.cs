@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace Mafia2
@@ -67,9 +68,11 @@ namespace Mafia2
         public void WriteARAFile(BinaryWriter writer)
         {
             Vector3[] verts = new Vector3[8];
-
             try
             {
+                if (unkFloats.Length != 6)
+                    throw new Exception("UnkFloats doesn't equal 6");
+
                 verts[0] = new Vector3(unkFloats[5].Data[3], unkFloats[4].Data[3], unkFloats[3].Data[3]);
                 verts[1] = new Vector3(unkFloats[0].Data[3], unkFloats[4].Data[3], unkFloats[3].Data[3]);
                 verts[2] = new Vector3(unkFloats[5].Data[3], unkFloats[1].Data[3], unkFloats[3].Data[3]);
@@ -82,15 +85,17 @@ namespace Mafia2
                 for (int i = 0; i != verts.Length; i++)
                     verts[i].WriteToFile(writer);
 
+                writer.Write(Name.String);
                 Matrix.Position.WriteToFile(writer);
             }
-            catch
+            catch(Exception ex)
             {
-                Debug.WriteLine("ERROR WRITING ARA: {0}", Name.String);
+                Debug.WriteLine(string.Format("ERROR WRITING ARA: {0}, {1}", Name.String, ex.Message));
 
                 for (int i = 0; i != verts.Length; i++)
                     verts[i].WriteToFile(writer);
 
+                writer.Write(Name.String);
                 Matrix.Position.WriteToFile(writer);
             }
         }

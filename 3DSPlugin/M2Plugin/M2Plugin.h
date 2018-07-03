@@ -1,4 +1,5 @@
-#pragma once
+#ifndef M2_PLUGIN_HEADER
+#define M2_PLUGIN_HEADER
 
 //**************************************************************************/
 // Copyright (c) 1998-2007 Autodesk, Inc.
@@ -24,3 +25,4 @@ extern TCHAR *GetString(int id);
 
 extern HINSTANCE hInstance;
 
+#endif

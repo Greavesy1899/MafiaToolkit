@@ -1,3 +1,5 @@
+#ifndef M2_EDMIMPORT_HEADER
+#define M2_EDMIMPORT_HEADER
 #include "3dsmaxsdk_preinclude.h"
 #include "resource.h"
 #include <istdplug.h>
@@ -50,3 +52,4 @@ public:
 	~EDMWorkClass() { if (stream) fclose(stream); stream = NULL; };
 	FILE *			Stream() { return stream; };
 };
+#endif

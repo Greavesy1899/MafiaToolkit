@@ -93,6 +93,7 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 	std::vector<EDMPart> parts = file.GetParts();
 	DummyObject* parentDummy = new DummyObject();
 	INode* parent = ip->CreateObjectNode(parentDummy);
+	parent->SetName(file.GetName().c_str());
 
 	//lets goo.
 	for (int i = 0; i != parts.size(); i++)
@@ -136,7 +137,7 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		mesh.InvalidateTopologyCache();
 
 		INode* nPart = ip->CreateObjectNode(triObject);
-		nPart->SetName(_T("Part"));
+		nPart->SetName(part.GetName().c_str());
 		parent->AttachChild(nPart, 0);
 	}
 	importerInt->RedrawViews();

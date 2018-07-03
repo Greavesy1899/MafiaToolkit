@@ -30,6 +30,9 @@
     <ClCompile Include="ARAImportClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="M2ARA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="M2Plugin.def">
@@ -56,6 +59,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ARAImportClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="M2ARA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

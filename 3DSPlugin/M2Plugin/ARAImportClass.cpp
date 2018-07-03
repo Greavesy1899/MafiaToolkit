@@ -15,6 +15,7 @@
 #include "M2Plugin.h"
 #include "M2Helpers.h"
 #include "ARAImportClass.h"
+#include "M2ARA.h"
 #include "triobj.h"
 #include <impapi.h>
 #include <dummy.h>
@@ -83,10 +84,11 @@ int ARAImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 	ARAWorkClass ara(filename, _T("rb"));
 	stream = ara.Stream();
 
-	int size = 0;
-	fread(&size, sizeof(4), 1, stream);
-
-	for (int i = 0; i != size; i++) {
+	ARAStructure file = ARAStructure();
+	file.ReadFromStream(stream);
+	std::vector<ARAPart> parts = file.GetParts();
+	for (int i = 0; i != file.GetPartSize(); i++) {
+		ARAPart part = parts[i];
 		TriObject* object = CreateNewTriObject();
 		Mesh &mesh = object->GetMesh();
 
@@ -94,11 +96,7 @@ int ARAImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		mesh.setNumFaces(12);
 
 		for (int c = 0; c != 8; c++) {
-			float x, y, z;
-			fread(&x, sizeof(float), 1, stream);
-			fread(&y, sizeof(float), 1, stream);
-			fread(&z, sizeof(float), 1, stream);
-			mesh.setVert(c, Point3(x, y, z));
+			mesh.setVert(c, part.GetVertices().at(c));
 		}
 
 		mesh.faces[0].setVerts(0, 2, 3);
@@ -120,15 +118,10 @@ int ARAImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		Matrix3 matrix = Matrix3();
 		matrix.IdentityMatrix();
 
-		float tx, ty, tz;
-		fread(&tx, sizeof(float), 1, stream);
-		fread(&ty, sizeof(float), 1, stream);
-		fread(&tz, sizeof(float), 1, stream);
-
-		matrix.SetTrans(Point3(tx, ty, tz));
+		matrix.SetTrans(part.GetPosition());
 		node->SetTransform(0, matrix);
 		node->Reference(object);
-		node->SetName(_T("Part"));
+		node->SetName(part.GetName().c_str());
 		node->GetINode()->WorldAlignPivot(0, TRUE);
 		node->GetINode()->CenterPivot(0, TRUE);
 		node->GetINode()->SetObjectRef(object);

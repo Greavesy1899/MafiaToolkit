@@ -1,4 +1,5 @@
-#pragma once
+#ifndef M2_EDM_HEADER
+#define M2_EDM_HEADER
 #include <iparamb2.h>
 #include <vector>
 
@@ -10,7 +11,7 @@ typedef struct {
 
 class EDMPart {
 private:
-	const wchar_t* name;
+	std::wstring name;
 	int vertSize;
 	std::vector<Point3> vertices;
 	int uvSize;
@@ -20,14 +21,14 @@ private:
 public:
 	EDMPart();
 	~EDMPart();
-	void SetName(const wchar_t* name);
+	void SetName(std::wstring name);
 	void SetVertSize(int count);
 	void SetVertices(std::vector<Point3> vertices);
 	void SetUVSize(int count);
 	void SetUVs(std::vector<UVVert> uvs);
 	void SetIndicesSize(int count);
 	void SetIndices(std::vector<Int3> indices);
-	const wchar_t* GetName();
+	std::wstring GetName();
 	int GetVertSize();
 	std::vector<Point3> GetVertices();
 	int GetUVSize();
@@ -40,18 +41,19 @@ public:
 
 class EDMStructure {
 private:
-	const wchar_t* name;
+	std::wstring name;
 	int partSize;
 	std::vector<EDMPart> parts;
 public:
 	EDMStructure();
 	~EDMStructure();
-	void SetName(const wchar_t* name);
+	void SetName(std::wstring name);
 	void SetPartSize(int count);
 	void SetParts(std::vector<EDMPart> parts);
-	const wchar_t* GetName();
+	std::wstring GetName();
 	int GetPartSize();
 	std::vector<EDMPart> GetParts();
 
 	void ReadFromStream(FILE* stream);
 };
+#endif
