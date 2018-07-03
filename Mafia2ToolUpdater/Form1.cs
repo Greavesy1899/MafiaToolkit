@@ -25,7 +25,11 @@ namespace Mafia2ToolUpdater
             try
             {
                 percentageLabel.Text = "0%";
-                webClient.DownloadFileAsync(new Uri("https://www.dropbox.com/s/k1bjj1kq2t4ipwi/anvilwell01.zip?dl=1"), "update/Update.zip");
+
+                if (!Directory.Exists("update/"))
+                    Directory.CreateDirectory("update/");
+
+                webClient.DownloadFileAsync(new Uri("https://www.dropbox.com/s/fb7o8w5ttcaeug5/Debug.zip?dl=1"), "update/Update.zip");
             }
             catch(Exception ex)
             {
@@ -37,6 +41,12 @@ namespace Mafia2ToolUpdater
         {
             ZipArchive archive = new ZipArchive(File.Open("update/Update.zip", FileMode.Open));
             archive.ExtractToDirectory(Application.StartupPath, true);
+            archive = null;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Directory.Delete("update", true);
             MessageBox.Show("Completed! This program will close.", "Updater");
             Application.Exit();
         }

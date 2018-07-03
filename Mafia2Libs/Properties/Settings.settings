@@ -11,12 +11,6 @@
     <Setting Name="SDSPath2" Type="System.String" Scope="User">
       <Value Profile="(Default)">D:\Users\Connor\Desktop\SteamLibrary\steamapps\common\Mafia II\pc\sds\city_univers\extracted\city_univers</Value>
     </Setting>
-    <Setting Name="CurrentVersion" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
-    </Setting>
-    <Setting Name="CloudVersion" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">-1</Value>
-    </Setting>
     <Setting Name="MaterialPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">D:\Users\Connor\Desktop\SteamLibrary\steamapps\common\Mafia II\edit\materials</Value>
     </Setting>

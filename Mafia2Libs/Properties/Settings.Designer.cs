@@ -62,30 +62,6 @@ namespace Mafia2Tool.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int CurrentVersion {
-            get {
-                return ((int)(this["CurrentVersion"]));
-            }
-            set {
-                this["CurrentVersion"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
-        public int CloudVersion {
-            get {
-                return ((int)(this["CloudVersion"]));
-            }
-            set {
-                this["CloudVersion"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("D:\\Users\\Connor\\Desktop\\SteamLibrary\\steamapps\\common\\Mafia II\\edit\\materials")]
         public string MaterialPath {
             get {
