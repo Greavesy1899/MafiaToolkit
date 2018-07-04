@@ -38,11 +38,17 @@ public class TransformMatrix
 
     public void WriteToFile(BinaryWriter writer)
     {
-        rotation.Row1.WriteToFile(writer);
+        writer.Write(rotation.Rows[0, 0]);
+        writer.Write(rotation.Rows[0, 1]);
+        writer.Write(rotation.Rows[0, 2]);
         writer.Write(position.X);
-        rotation.Row2.WriteToFile(writer);
+        writer.Write(rotation.Rows[1, 0]);
+        writer.Write(rotation.Rows[1, 1]);
+        writer.Write(rotation.Rows[1, 2]);
         writer.Write(position.Y);
-        rotation.Row3.WriteToFile(writer);
+        writer.Write(rotation.Rows[2, 0]);
+        writer.Write(rotation.Rows[2, 1]);
+        writer.Write(rotation.Rows[2, 2]);
         writer.Write(position.Z);
     }
 

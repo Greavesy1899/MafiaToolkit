@@ -9,7 +9,7 @@
       <Value Profile="(Default)">E:\Games\Steam\steamapps\common\Mafia II\pc\sds\shops\extracted\gunshop</Value>
     </Setting>
     <Setting Name="SDSPath2" Type="System.String" Scope="User">
-      <Value Profile="(Default)">D:\Users\Connor\Desktop\SteamLibrary\steamapps\common\Mafia II\pc\sds\city_univers\extracted\city_univers</Value>
+      <Value Profile="(Default)">D:\Users\Connor\Desktop\SteamLibrary\steamapps\common\Mafia II\pc\sds\city\extracted\italy_z</Value>
     </Setting>
     <Setting Name="MaterialPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">D:\Users\Connor\Desktop\SteamLibrary\steamapps\common\Mafia II\edit\materials</Value>

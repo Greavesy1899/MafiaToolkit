@@ -134,6 +134,7 @@ void EDMStructure::ReadFromStream(FILE * stream) {
 	for (int i = 0; i != parts.size(); i++) {
 		parts[i].ReadFromStream(stream);
 	}
+	fclose(stream);
 }
 
 EDMStructure::EDMStructure() {}

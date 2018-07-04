@@ -88,7 +88,6 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 	//begin reading
 	EDMStructure file = EDMStructure();
 	file.ReadFromStream(stream);
-
 	//set up parts and nodes
 	std::vector<EDMPart> parts = file.GetParts();
 	DummyObject* parentDummy = new DummyObject();

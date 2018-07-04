@@ -87,7 +87,7 @@ namespace Mafia2
 
                 writer.Write(Name.String);
                 Matrix.Position.WriteToFile(writer);
-                Matrix.Rotation.Euler.WriteToFile(writer);
+                Matrix.Rotation.WriteToFile(writer);
             }
             catch(Exception ex)
             {
@@ -98,7 +98,7 @@ namespace Mafia2
 
                 writer.Write(Name.String);
                 Matrix.Position.WriteToFile(writer);
-                Matrix.Rotation.Euler.WriteToFile(writer);
+                Matrix.Rotation.WriteToFile(writer);
             }
         }
 

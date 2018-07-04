@@ -33,9 +33,15 @@
     <ClCompile Include="M2ARA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EDDImportClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="M2Plugin.def">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="M2EDD.cpp">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
@@ -62,6 +68,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="M2ARA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EDDImportClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

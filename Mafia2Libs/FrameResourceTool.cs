@@ -23,7 +23,7 @@ namespace Mafia2Tool
 
         public void ReadFrameResource()
         {
-            foreach(FrameNameTable.Data data in SceneData.FrameNameTable.FrameData)
+            foreach (FrameNameTable.Data data in SceneData.FrameNameTable.FrameData)
             {
                 int index = treeView1.Nodes.IndexOfKey(data.ParentName);
 
@@ -35,6 +35,10 @@ namespace Mafia2Tool
                 TreeNode root = treeView1.Nodes[index];
 
                 TreeNode node = createTreeNode((SceneData.FrameResource.FrameObjects[data.FrameIndex] as FrameObjectBase));
+
+                if (node == null)
+                    continue;
+
                 root.Nodes.Add(node);
             }
             for (int i = 0; i != SceneData.FrameResource.FrameBlocks.Length; i++)
@@ -47,6 +51,9 @@ namespace Mafia2Tool
             {
                 TreeNode node = createTreeNode(fObject);
 
+                if (node == null)
+                    continue;
+
                 int index = 0;
 
                 for (int i = 0; i != treeView1.Nodes.Count; i++)
@@ -58,10 +65,6 @@ namespace Mafia2Tool
                 }
 
                 TreeNode[] nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
-                TreeNode[] nodes2 = treeView1.Nodes.Find(fObject.Name.String, true);
-
-                if (nodes2.Length > 0)
-                    continue;
 
                 if (fObject.ParentIndex2.Index == -1)
                     treeView1.Nodes[0].Nodes.Add(node);
@@ -84,6 +87,11 @@ namespace Mafia2Tool
         }
         private TreeNode createTreeNode(FrameObjectBase fObject)
         {
+            TreeNode[] nodes2 = treeView1.Nodes.Find(fObject.Name.String, true);
+
+            if (nodes2.Length > 0)
+                return null;
+
             TreeNode node = convertNode(fObject.NodeData);
 
             if (fObject.GetType() == typeof(FrameObjectSingleMesh))
@@ -92,7 +100,7 @@ namespace Mafia2Tool
                 node.Nodes.Add(createTreeNode("Geometry", (fObject as FrameObjectSingleMesh).MeshIndex));
                 mesh.Add((fObject as FrameObjectSingleMesh));
             }
-            if (fObject.GetType() == typeof(FrameObjectModel))
+            else if (fObject.GetType() == typeof(FrameObjectModel))
             {
                 node.Nodes.Add(createTreeNode("Material", (fObject as FrameObjectModel).MaterialIndex));
                 node.Nodes.Add(createTreeNode("Geometry", (fObject as FrameObjectModel).MeshIndex));
@@ -133,7 +141,7 @@ namespace Mafia2Tool
         {
             string[] fileNames = new string[mesh.Count];
             Vector3[] filePos = new Vector3[mesh.Count];
-            Vector3[] rotPos = new Vector3[mesh.Count];
+            Matrix33[] rotPos = new Matrix33[mesh.Count];
 
             Parallel.For(0, mesh.Count, i =>
             {
@@ -141,7 +149,7 @@ namespace Mafia2Tool
                 fileNames[i] = mesh[i].Name.String + "_lod0";
 
                 filePos[i] = mesh[i].Matrix.Position;
-                rotPos[i] = mesh[i].Matrix.Rotation.Euler;
+                rotPos[i] = mesh[i].Matrix.Rotation;
 
                 if (((mesh[i].ParentIndex1.Index != -1)) && ((mesh[i].ParentIndex1.Index == mesh[i].ParentIndex2.Index)))
                 {
@@ -175,12 +183,8 @@ namespace Mafia2Tool
                 for (int i = 0; i != mesh.Count; i++)
                 {
                     writer.Write(fileNames[i]);
-                    writer.Write(filePos[i].X);
-                    writer.Write(filePos[i].Y);
-                    writer.Write(filePos[i].Z);
-                    writer.Write(rotPos[i].X);
-                    writer.Write(rotPos[i].Y);
-                    writer.Write(rotPos[i].Z);
+                    filePos[i].WriteToFile(writer);
+                    rotPos[i].WriteToFile(writer);
                 }
             }
         }

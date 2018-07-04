@@ -16,6 +16,7 @@
 
 extern ClassDesc2* GetEDMImportDesc();
 extern ClassDesc2* GetARAImportDesc();
+extern ClassDesc2* GetEDDImportDesc();
 
 HINSTANCE hInstance;
 int controlsInit = FALSE;
@@ -50,7 +51,7 @@ __declspec( dllexport ) const TCHAR* LibDescription()
 //TODO: Must change this number when adding a new class
 __declspec( dllexport ) int LibNumberClasses()
 {
-	return 2;
+	return 3;
 }
 
 // This function returns the number of plug-in classes this DLL
@@ -59,6 +60,7 @@ __declspec( dllexport ) ClassDesc* LibClassDesc(int i)
 	switch(i) {
 		case 0: return GetEDMImportDesc();
 		case 1: return GetARAImportDesc();
+		case 2: return GetEDDImportDesc();
 		default: return 0;
 	}
 }

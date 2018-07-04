@@ -16,6 +16,10 @@
 #define IDS_ARA_IMPORT_CLASS            9
 #define IDS_ARA_L_DESC                  10
 #define IDS_ARA_S_DESC                  11
+#define IDS_EDD_IMPORT_CLASS            12
+#define IDS_EDD_L_DESC                  13
+#define IDS_EDD_S_DESC                  14
+#define IDS_STRING15                    15
 #define IDD_PANEL                       101
 #define IDC_CLOSEBUTTON                 1000
 #define IDC_DOSTUFF                     1000
@@ -27,7 +31,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        101
+#define _APS_NEXT_RESOURCE_VALUE        102
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101

@@ -7,23 +7,13 @@ namespace Mafia2
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Matrix33
     {
-        Vector3 row1;
-        Vector3 row2;
-        Vector3 row3;
+        float[,] rows = new float[3, 3];
 
         Vector3 euler;
 
-        public Vector3 Row1 {
-            get { return row1; }
-            set { row1 = value; }
-        }
-        public Vector3 Row2 {
-            get { return row2; }
-            set { row2 = value; }
-        }
-        public Vector3 Row3 {
-            get { return row3; }
-            set { row3 = value; }
+        public float[,] Rows {
+            get { return rows; }
+            set { rows = value; }
         }
         public Vector3 Euler {
             get { return euler; }
@@ -32,17 +22,29 @@ namespace Mafia2
 
         public Matrix33(Vector3 m1, Vector3 m2, Vector3 m3)
         {
-            this.row1 = m1;
-            this.row2 = m2;
-            this.row3 = m3;
+            rows[0, 0] = m1.X;
+            rows[0, 1] = m2.X;
+            rows[0, 2] = m3.X;
+            rows[1, 0] = m1.Y;
+            rows[1, 1] = m2.Y;
+            rows[1, 2] = m3.Y;
+            rows[2, 0] = m1.Z;
+            rows[2, 1] = m2.Z;
+            rows[2, 2] = m3.Z;
             euler = ConvertToAngle();
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
-            row1.WriteToFile(writer);
-            row1.WriteToFile(writer);
-            row1.WriteToFile(writer);
+            writer.Write(rows[0, 0]);
+            writer.Write(rows[0, 1]);
+            writer.Write(rows[0, 2]);
+            writer.Write(rows[1, 0]);
+            writer.Write(rows[1, 1]);
+            writer.Write(rows[1, 2]);
+            writer.Write(rows[2, 0]);
+            writer.Write(rows[2, 1]);
+            writer.Write(rows[2, 2]);
         }
 
         public Vector3 ConvertToAngle()
@@ -50,16 +52,16 @@ namespace Mafia2
             double x;
             double z;
 
-            double y = Math.Asin(row1.Z);
+            double y = Math.Asin(rows[0,2]);
 
-            if(Math.Abs(row1.Z) < 0.99999)
+            if(Math.Abs(rows[0,2]) < 0.99999)
             {
-                x = Math.Atan2(-row2.Z, row3.Z);
-                z = Math.Atan2(-row1.Y, row1.X);
+                x = Math.Atan2(rows[1, 1], rows[2, 2]);
+                z = Math.Atan2(rows[0, 1], rows[0, 2]);
             }
             else
             {
-                x = Math.Atan2(row3.Y, row2.Y);
+                x = Math.Atan2(rows[2, 1], rows[2, 1]);
                 z = 0;
             }
 

@@ -103,6 +103,17 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_PANEL AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
@@ -113,12 +124,16 @@ BEGIN
     IDS_EDM_IMPORT_CLASS    "M2EDMImporter"
     IDS_PARAMS              "Parameters"
     IDS_SPIN                "Spin"
-    IDS_EDM_L_DESC          "Mafia2: ""Editable Mesh"" format for Mafia 2"
-    IDS_EDM_S_DESC          "Mafia2: Editable Mesh"
+    IDS_EDM_L_DESC          "Mafia 2: ""Editable Mesh"" format for Mafia 2"
+    IDS_EDM_S_DESC          "Mafia 2: Editable Mesh"
     IDS_AUTHOR              "Greavesy"
     IDS_ARA_IMPORT_CLASS    "M2ARAImporter"
-    IDS_ARA_L_DESC          "Mafia2: ""City Areas"" format for Mafia 2"
-    IDS_ARA_S_DESC          "Mafia2: CityAreas"
+    IDS_ARA_L_DESC          "Mafia 2: ""City Areas"" format for Mafia 2"
+    IDS_ARA_S_DESC          "Mafia 2: CityAreas"
+    IDS_EDD_IMPORT_CLASS    "M2EDDImporter"
+    IDS_EDD_L_DESC          "Mafia 2: ""Editable Scene"" format for Mafia 2"
+    IDS_EDD_S_DESC          "Mafia 2: Editable Scene"
+    IDS_STRING15            "Empty String"
 END
 
 #endif    // English (United Kingdom) resources
