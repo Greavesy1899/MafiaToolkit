@@ -12,6 +12,9 @@ namespace Mafia2
         UnkSector1 unkSector;
         int unk16;
 
+        public ActorDefinition[] Definitions {
+            get { return definitions; }
+        }
         public ActorItem[] Items {
             get { return items; }
         }
@@ -36,7 +39,7 @@ namespace Mafia2
             for (int i = 0; i != hashesLength; i++)
             {
                 definitions[i] = new ActorDefinition(reader);
-                int pos = definitions[i].namePos;
+                int pos = definitions[i].NamePos;
                 definitions[i].name = pool.Substring(pos, pool.IndexOf('\0', pos) - pos);
             }
 
@@ -51,18 +54,30 @@ namespace Mafia2
 
             unk16 = reader.ReadInt32();
 
-            if (unk16 != 0)
-                throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
+            //if (unk16 != 0)
+                //throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
         }
 
         public struct ActorDefinition
         {
             ulong hash; //hash, this is the same as in the frame.
             short unk01; //always zero
-            public short namePos; //starting position for the name.
+            short namePos; //starting position for the name.
             int frameIndex; //links to FrameResource
-
             public string name;
+
+            public ulong Hash {
+                get { return hash; }
+                set { hash = value; }
+            }
+            public int FrameIndex {
+                get { return frameIndex; }
+                set { frameIndex = value; }
+            }
+            public short NamePos {
+                get { return namePos; }
+                set { namePos = value; }
+            }
 
             public ActorDefinition (BinaryReader reader)
             {
@@ -213,6 +228,10 @@ namespace Mafia2
             public ulong Hash1 {
                 get { return hash1; }
                 set { hash1 = value; }
+            }
+            public ulong Hash2 {
+                get { return hash2; }
+                set { hash2 = value; }
             }
             public Vector3 Position {
                 get { return position; }

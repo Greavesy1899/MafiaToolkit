@@ -47,7 +47,7 @@ namespace Mafia2Tool
                 if (file.FullName.Contains("SoundSector"))
                     SoundSector = new SoundSector(file.FullName);
 
-                if (file.FullName.Contains("Actors"))
+                if (file.FullName.Contains("Actors_0"))
                     Actors = new Actor(file.FullName);
 
                 if (file.FullName.Contains("Collision"))
@@ -75,16 +75,15 @@ namespace Mafia2Tool
 
         public static void AttachActors()
         {
-            for (int i = 0; i != FrameResource.FrameObjects.Length; i++)
+            for (int i = 0; i != Actors.Definitions.Length; i++)
             {
-                if (FrameResource.FrameObjects[i].GetType() == typeof(FrameObjectFrame))
+                for (int c = 0; c != Actors.Items.Length; c++)
                 {
-                    for (int x = 0; x != Actors.Items.Length; x++)
+                    if (Actors.Items[c].Hash1 == Actors.Definitions[i].Hash)
                     {
-                        if (Actors.Items[x].Hash1 == (FrameResource.FrameObjects[i] as FrameObjectFrame).ActorHash.uHash)
-                        {
-                            (FrameResource.FrameObjects[i] as FrameObjectFrame).Item = Actors.Items[x];
-                        }
+                        FrameObjectFrame frame = FrameResource.FrameObjects[Actors.Definitions[i].FrameIndex] as FrameObjectFrame;
+                        frame.Item = Actors.Items[c];
+                        FrameResource.FrameObjects[Actors.Definitions[i].FrameIndex] = frame;
                     }
                 }
             }

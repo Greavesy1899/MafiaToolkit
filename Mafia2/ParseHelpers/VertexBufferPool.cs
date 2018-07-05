@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-namespace Mafia2 {
-    public class VertexBufferPool {
+namespace Mafia2
+{
+    public class VertexBufferPool
+    {
         //MAX BUFFER SIZE IS 128
         BufferType version;
         int numBuffers;
@@ -15,27 +17,44 @@ namespace Mafia2 {
             set { buffers = value; }
         }
 
-        public VertexBufferPool(List<FileInfo> files) {
+        public VertexBufferPool(List<FileInfo> files)
+        {
             foreach (FileInfo file in files)
             {
                 using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
                     ReadFromFile(reader);
+
+                using (BinaryWriter writer = new BinaryWriter(File.Open(file.Name, FileMode.Create)))
+                    WriteToFile(writer);
             }
             BuildBuffer();
         }
 
-        public void ReadFromFile(BinaryReader reader) {
+        public void ReadFromFile(BinaryReader reader)
+        {
             version = (BufferType)reader.ReadByte();
             numBuffers = reader.ReadInt32();
             size = reader.ReadInt32();
 
-            VertexBuffer[] buffer = new VertexBuffer[numBuffers];
+            buffers = new VertexBuffer[numBuffers];
 
             for (int i = 0; i != numBuffers; i++)
             {
-                buffer[i] = new VertexBuffer(reader);
+                buffers[i] = new VertexBuffer(reader);
             }
-            prebuffers.Add(buffer);
+            prebuffers.Add(buffers);
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write((byte)version);
+            writer.Write(numBuffers);
+            writer.Write(size);
+
+            for (int i = 0; i != numBuffers; i++)
+            {
+                buffers[i].WriteToFile(writer);
+            }
         }
 
         public void BuildBuffer()
@@ -59,7 +78,8 @@ namespace Mafia2 {
         }
     }
 
-    public class VertexBuffer {
+    public class VertexBuffer
+    {
         ulong hash;
         int len;
         byte[] data;
@@ -73,14 +93,23 @@ namespace Mafia2 {
             set { data = value; }
         }
 
-        public VertexBuffer(BinaryReader reader) {
+        public VertexBuffer(BinaryReader reader)
+        {
             ReadFromFile(reader);
         }
 
-        public void ReadFromFile(BinaryReader reader) {
+        public void ReadFromFile(BinaryReader reader)
+        {
             hash = reader.ReadUInt64();
             len = reader.ReadInt32();
             data = reader.ReadBytes(len);
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(hash);
+            writer.Write(len);
+            writer.Write(data);
         }
     }
 }

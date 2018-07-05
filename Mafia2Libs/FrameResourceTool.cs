@@ -34,12 +34,15 @@ namespace Mafia2Tool
 
                 TreeNode root = treeView1.Nodes[index];
 
-                TreeNode node = createTreeNode((SceneData.FrameResource.FrameObjects[data.FrameIndex] as FrameObjectBase));
+                if (data.FrameIndex != -1)
+                {
+                    TreeNode node = createTreeNode((SceneData.FrameResource.FrameObjects[data.FrameIndex] as FrameObjectBase));
 
-                if (node == null)
-                    continue;
+                    if (node == null)
+                        continue;
 
-                root.Nodes.Add(node);
+                    root.Nodes.Add(node);
+                }
             }
             for (int i = 0; i != SceneData.FrameResource.FrameBlocks.Length; i++)
                 FrameResourceListBox.Items.Add(SceneData.FrameResource.FrameBlocks[i]);
@@ -51,6 +54,7 @@ namespace Mafia2Tool
             {
                 TreeNode node = createTreeNode(fObject);
 
+                //if(node.Name == ")
                 if (node == null)
                     continue;
 
@@ -61,13 +65,25 @@ namespace Mafia2Tool
                     if (index != -1)
                         continue;
 
-                    index = treeView1.Nodes[i].Nodes.IndexOfKey(fObject.ParentIndex2.Name);
+                    if (fObject.ParentIndex1.Index != -1)
+                        index = treeView1.Nodes[i].Nodes.IndexOfKey(fObject.ParentIndex2.Name);
+                    else
+                        index = treeView1.Nodes[i].Nodes.IndexOfKey(fObject.ParentIndex1.Name);
                 }
+                TreeNode[] nodes;
 
-                TreeNode[] nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
-
-                if (fObject.ParentIndex2.Index == -1)
-                    treeView1.Nodes[0].Nodes.Add(node);
+                if (fObject.ParentIndex1.Index != -1)
+                {
+                    nodes = treeView1.Nodes.Find(fObject.ParentIndex1.Name, true);
+                    if (fObject.ParentIndex1.Index == -1)
+                        treeView1.Nodes[0].Nodes.Add(node);
+                }
+                else
+                {
+                    nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
+                    if (fObject.ParentIndex2.Index == -1)
+                        treeView1.Nodes[0].Nodes.Add(node);
+                }
 
                 if (nodes.Length > 0)
                     nodes[0].Nodes.Add(node);
@@ -123,6 +139,33 @@ namespace Mafia2Tool
             return treeNode;
         }
 
+        private Vector3 retrieveParent1Position(FrameObjectSingleMesh mesh)
+        {
+            Vector3 curPos;
+            curPos = mesh.Matrix.Position;
+            FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
+
+            while(parent != null)
+            {
+                if (parent.GetType() == typeof(FrameObjectFrame))
+                {
+                    if ((parent as FrameObjectFrame).Item != null)
+                        curPos += (parent as FrameObjectFrame).Item.Position;
+                }
+                else
+                {
+                    curPos += parent.Matrix.Position;
+                }
+
+                if (parent.ParentIndex1.Index != -1)
+                    parent = (SceneData.FrameResource.EntireFrame[parent.ParentIndex1.Index] as FrameObjectBase);
+                else
+                    parent = null;
+            }
+
+            return curPos;
+        }
+
         private void OnSelectedChanged(object sender, EventArgs e)
         {
             FrameResourceGrid.SelectedObject = FrameResourceListBox.SelectedItem;
@@ -150,6 +193,12 @@ namespace Mafia2Tool
 
                 filePos[i] = mesh[i].Matrix.Position;
                 rotPos[i] = mesh[i].Matrix.Rotation;
+
+                if (mesh[i].ParentIndex1.Index != -1)
+                {
+                    FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh[i].ParentIndex1.Index] as FrameObjectBase);
+                    filePos[i] = retrieveParent1Position(mesh[i]);
+                }
 
                 if (((mesh[i].ParentIndex1.Index != -1)) && ((mesh[i].ParentIndex1.Index == mesh[i].ParentIndex2.Index)))
                 {

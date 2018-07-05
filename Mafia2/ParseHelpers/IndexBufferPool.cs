@@ -25,6 +25,9 @@ namespace Mafia2
             {
                 using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
                     ReadFromFile(reader);
+
+                using (BinaryWriter writer = new BinaryWriter(File.Open(file.Name, FileMode.Create)))
+                    WriteToFile(writer);
             }
             BuildBuffer();
         }
@@ -35,13 +38,25 @@ namespace Mafia2
             numBuffers = reader.ReadInt32();
             size = reader.ReadInt32();
 
-            IndexBuffer[] buffer = new IndexBuffer[numBuffers];
+            buffers = new IndexBuffer[numBuffers];
 
             for (int i = 0; i != numBuffers; i++)
             {
-                buffer[i] = new IndexBuffer(reader);
+                buffers[i] = new IndexBuffer(reader);
             }
-            prebuffers.Add(buffer);
+            prebuffers.Add(buffers);
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write((byte)version);
+            writer.Write(numBuffers);
+            writer.Write(size);
+
+            for(int i = 0; i != numBuffers; i++)
+            {
+                buffers[i].WriteToFile(writer);
+            }
         }
 
         public void BuildBuffer()
@@ -102,7 +117,18 @@ namespace Mafia2
                 num += 2;
                 ++index;
             }
+        }
+        
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(hash);
+            writer.Write(u);
+            writer.Write(len);
 
+            for(int i = 0; i != data.Length; i++)
+            {
+                writer.Write(data[i]);
+            }
         }
     }
 }

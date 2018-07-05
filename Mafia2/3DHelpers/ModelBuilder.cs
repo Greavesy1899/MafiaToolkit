@@ -71,7 +71,7 @@ namespace Mafia2
                     }
                     if(lod1.VertexDeclaration.HasFlag(VertexFlags.Normals))
                     {
-                        int startIndex = v * stride + vertexOffsets[VertexFlags.Normals].Offset;
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.Tangent].Offset;
                         float x = (vertexBuffer.Data[startIndex] - sbyte.MaxValue)* 0.007874f;
                         float y = (vertexBuffer.Data[startIndex+1] - sbyte.MaxValue) * 0.007874f;
                         float z = (vertexBuffer.Data[startIndex+2] - sbyte.MaxValue) * 0.007874f;
