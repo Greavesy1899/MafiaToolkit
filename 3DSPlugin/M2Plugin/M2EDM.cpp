@@ -17,6 +17,10 @@ void EDMPart::SetVertices(std::vector<Point3> vertices) {
 	EDMPart::vertices = vertices;
 }
 
+void EDMPart::SetNormals(std::vector<Point3> normals) {
+	EDMPart::normals = normals;
+}
+
 void EDMPart::SetUVSize(int count) {
 	EDMPart::uvSize = count;
 }
@@ -45,6 +49,10 @@ std::vector<Point3> EDMPart::GetVertices() {
 	return EDMPart::vertices;
 }
 
+std::vector<Point3> EDMPart::GetNormals() {
+	return EDMPart::normals;
+}
+
 int EDMPart::GetUVSize() {
 	return EDMPart::uvSize;
 }
@@ -71,6 +79,12 @@ void EDMPart::ReadFromStream(FILE * stream) {
 		fread(&vertices[i].x, sizeof(float), 1, stream);
 		fread(&vertices[i].y, sizeof(float), 1, stream);
 		fread(&vertices[i].z, sizeof(float), 1, stream);
+	}
+	normals = std::vector<Point3>(vertSize);
+	for (int i = 0; i != vertSize; i++) {
+		fread(&normals[i].x, sizeof(float), 1, stream);
+		fread(&normals[i].y, sizeof(float), 1, stream);
+		fread(&normals[i].z, sizeof(float), 1, stream);
 	}
 
 	fread(&uvSize, sizeof(int), 1, stream);

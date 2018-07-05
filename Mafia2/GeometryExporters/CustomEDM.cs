@@ -8,6 +8,7 @@ namespace Mafia2
     {
         string name;
         Vector3[] vertices;
+        Vector3[] normals;
         UVVector2[] uvs;
         List<Short3> indices;
 
@@ -18,6 +19,10 @@ namespace Mafia2
         public Vector3[] Vertices {
             get { return vertices; }
             set { vertices = value; }
+        }
+        public Vector3[] Normals {
+            get { return normals; }
+            set { normals = value; }
         }
         public UVVector2[] UVs {
             get { return uvs; }
@@ -31,12 +36,15 @@ namespace Mafia2
         public CustomEDM(List<Vertex> vertex, List<Short3> indices, string name)
         {
             this.vertices = new Vector3[vertex.Count];
+            this.normals = new Vector3[vertex.Count];
             this.uvs = new UVVector2[vertex.Count];
 
-            for(int i = 0; i != vertex.Count; i++)
+            for (int i = 0; i != vertex.Count; i++)
             {
                 vertices[i] = vertex[i].Position;
-                if(vertex[i].UVs.Length > 0)
+                normals[i] = vertex[i].Normal;
+
+                if (vertex[i].UVs.Length > 0)
                     uvs[i] = vertex[i].UVs[0];
             }
 
@@ -80,11 +88,11 @@ namespace Mafia2
             writer.Write(name);
             writer.Write(vertices.Length);
             for (int c = 0; c != vertices.Length; c++)
-            {
-                writer.Write(vertices[c].X);
-                writer.Write(vertices[c].Y);
-                writer.Write(vertices[c].Z);
-            }
+                vertices[c].WriteToFile(writer);
+
+            for (int c = 0; c != normals.Length; c++)
+                normals[c].WriteToFile(writer);
+
             writer.Write(uvs.Length);
             for (int c = 0; c != uvs.Length; c++)
             {

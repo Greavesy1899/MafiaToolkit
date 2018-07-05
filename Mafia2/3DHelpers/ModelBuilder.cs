@@ -214,28 +214,7 @@ namespace Mafia2
                     #endregion
 
                     EDMs[i] = new CustomEDM(newVerts, newShort3, lod.Parts[i].Material);
-
-                    writer.Write(EDMs[i].Name);
-                    writer.Write(EDMs[i].Vertices.Length);
-                    for (int c = 0; c != EDMs[i].Vertices.Length; c++)
-                    {
-                        writer.Write(EDMs[i].Vertices[c].X);
-                        writer.Write(EDMs[i].Vertices[c].Y);
-                        writer.Write(EDMs[i].Vertices[c].Z);
-                    }
-                    writer.Write(EDMs[i].UVs.Length);
-                    for (int c = 0; c != EDMs[i].UVs.Length; c++)
-                    {
-                        writer.Write(EDMs[i].UVs[c].X);
-                        writer.Write(1f-EDMs[i].UVs[c].Y);
-                    }
-                    writer.Write(EDMs[i].Indices.Count);
-                    for (int c = 0; c != EDMs[i].Indices.Count; c++)
-                    {
-                        writer.Write(EDMs[i].Indices[c].s1 + 1);
-                        writer.Write(EDMs[i].Indices[c].s2 + 1);
-                        writer.Write(EDMs[i].Indices[c].s3 + 1);
-                    }
+                    EDMs[i].WriteToFile(writer);
                 }
             }
         }

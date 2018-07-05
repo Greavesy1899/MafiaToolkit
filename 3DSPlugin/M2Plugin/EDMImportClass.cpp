@@ -1,6 +1,7 @@
 #include "3dsmaxsdk_preinclude.h"
 #include "EDMImportClass.h"
 #include "M2EDM.h"
+#include "MeshNormalSpec.h"
 
 #define EDM_IMPORT_CLASS_ID	Class_ID(0xac9aa34b, 0xbb4578d1)
 
@@ -103,12 +104,22 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		EDMPart part = parts[i];
 
 		std::vector<Point3> verts = part.GetVertices();
+		std::vector<Point3> normals = part.GetNormals();
 		std::vector<UVVert> uvs = part.GetUVs();
 		std::vector<Int3> indices = part.GetIndices();
 
 		mesh.setNumVerts(part.GetVertSize());
 		for (int i = 0; i != mesh.numVerts; i++) {
 			mesh.setVert(i, verts[i]);
+		}
+
+		mesh.SpecifyNormals();
+		MeshNormalSpec *normalSpec = mesh.GetSpecifiedNormals();
+		normalSpec->ClearNormals();
+		normalSpec->SetNumNormals(mesh.numVerts);
+		for (int i = 0; i != mesh.numVerts; i++) {
+			normalSpec->Normal(i) = normals[i];
+			normalSpec->SetNormalExplicit(i, true);
 		}
 
 		mesh.setNumMaps(2);
@@ -124,11 +135,16 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 
 		mesh.setNumFaces(part.GetIndicesSize());
 		map.setNumFaces(part.GetIndicesSize());
+		normalSpec->SetNumFaces(part.GetIndicesSize());
 
 		for (int i = 0; i != mesh.numFaces; i++) {
 			mesh.faces[i].setVerts(indices[i].i1, indices[i].i2, indices[i].i3);
 			mesh.faces[i].setMatID(1);
 			mesh.faces[i].setEdgeVisFlags(1, 1, 1);
+			normalSpec->Face(i).SpecifyAll();
+			normalSpec->Face(i).SetNormalID(0, indices[i].i1);
+			normalSpec->Face(i).SetNormalID(1, indices[i].i2);
+			normalSpec->Face(i).SetNormalID(2, indices[i].i3);
 			map.tf[i].setTVerts(indices[i].i1, indices[i].i2, indices[i].i3);
 		}
 

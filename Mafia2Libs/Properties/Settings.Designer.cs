@@ -49,8 +49,8 @@ namespace Mafia2Tool.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("D:\\Users\\Connor\\Desktop\\SteamLibrary\\steamapps\\common\\Mafia II\\pc\\sds\\traffic\\ext" +
-            "racted\\cbarma")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\Users\\Connor\\Desktop\\SteamLibrary\\steamapps\\common\\Mafia II\\pc\\sds\\city\\extrac" +
+            "ted\\joesflatvara")]
         public string SDSPath2 {
             get {
                 return ((string)(this["SDSPath2"]));
