@@ -55,7 +55,15 @@ namespace Mafia2
             this.y = -(float)y;
             this.z = -(float)z;
         }
-    
+
+        public void CrossProduct(Vector3 vector2)
+        {
+            this =  new Vector3(
+                y * vector2.Z - z * vector2.Y,
+                z * vector2.X - x * vector2.Z,
+                x * vector2.Y - y * vector2.X);
+        }
+
         public void Normalize()
         {
             float num1 = (float)(X * (double)X + Y * Y + Z * (double)Z);
@@ -68,6 +76,10 @@ namespace Mafia2
         public static Vector3 operator +(Vector3 a, Vector3 b)
         {
             return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+        }
+        public static Vector3 operator *(Vector3 a, float scale)
+        {
+            return new Vector3(a.X * scale, a.Y * scale, a.Z * scale);
         }
 
         public override string ToString()

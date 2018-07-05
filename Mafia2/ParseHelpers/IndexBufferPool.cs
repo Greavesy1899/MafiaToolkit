@@ -25,9 +25,6 @@ namespace Mafia2
             {
                 using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
                     ReadFromFile(reader);
-
-                using (BinaryWriter writer = new BinaryWriter(File.Open(file.Name, FileMode.Create)))
-                    WriteToFile(writer);
             }
             BuildBuffer();
         }

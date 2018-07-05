@@ -69,14 +69,29 @@ namespace Mafia2
                         vector3 += mesh.PositionOffset;
                         vertex.Position = vector3;
                     }
-                    if(lod1.VertexDeclaration.HasFlag(VertexFlags.Normals))
+                    if (lod1.VertexDeclaration.HasFlag(VertexFlags.Tangent))
                     {
-                        int startIndex = v * stride + vertexOffsets[VertexFlags.Tangent].Offset;
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
+                        float x = (vertexBuffer.Data[startIndex] - sbyte.MaxValue) * 0.007874f;
+                        float y = (vertexBuffer.Data[startIndex + 1] - sbyte.MaxValue) * 0.007874f;
+                        float z = (vertexBuffer.Data[startIndex + 5] - sbyte.MaxValue) * 0.007874f;
+                        vertex.Tangent = new Vector3(x, y, z);
+                        vertex.Tangent.Normalize();
+                    }
+                    if (lod1.VertexDeclaration.HasFlag(VertexFlags.Normals))
+                    {
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.Normals].Offset;
                         float x = (vertexBuffer.Data[startIndex] - sbyte.MaxValue)* 0.007874f;
                         float y = (vertexBuffer.Data[startIndex+1] - sbyte.MaxValue) * 0.007874f;
                         float z = (vertexBuffer.Data[startIndex+2] - sbyte.MaxValue) * 0.007874f;
                         vertex.Normal = new Vector3(x, y, z);
                         vertex.Normal.Normalize();
+                    }
+                    if(lod1.VertexDeclaration.HasFlag(VertexFlags.BlendData))
+                    {
+                        int startIndex = v * stride +vertexOffsets[VertexFlags.BlendData].Offset;
+                        vertex.BlendWeight = (BitConverter.ToSingle(vertexBuffer.Data, startIndex) / byte.MaxValue);
+                        vertex.BoneID = BitConverter.ToInt32(vertexBuffer.Data, startIndex+4);
                     }
                     if (lod1.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                     {
@@ -101,6 +116,13 @@ namespace Mafia2
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords7].Offset;
                         vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex), Half.ToHalf(vertexBuffer.Data, startIndex + 2));
                         num1++;
+                    }
+                    if (lod2.NormalMapInfoPresent)
+                    {
+                        vertex.Binormal = vertex.Normal;
+                        vertex.Binormal.CrossProduct(vertex.Tangent);
+                        vertex.Binormal *= 2;
+                        vertex.Binormal.Normalize();
                     }
                     lod2.Vertices[v] = vertex;
                 }
@@ -245,9 +267,8 @@ namespace Mafia2
         Vector3 tangent;
         Vector3 binormal;
 
-        float[] blendWeights;
-        byte[] blendIndices;
-        int[] JointIndices;
+        float blendWeight;
+        int boneID;
         UVVector2[] uvs;
 
         public Vector3 Position {
@@ -262,9 +283,21 @@ namespace Mafia2
             get { return tangent; }
             set { tangent = value; }
         }
+        public Vector3 Binormal {
+            get { return binormal; }
+            set { binormal = value; }
+        }
         public UVVector2[] UVs {
             get { return uvs; }
             set { uvs = value; }
+        }
+        public float BlendWeight {
+            get { return blendWeight; }
+            set { blendWeight = value; }
+        }
+        public int BoneID {
+            get { return boneID; }
+            set { boneID = value; }
         }
 
         public override string ToString()
