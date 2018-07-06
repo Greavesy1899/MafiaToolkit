@@ -72,6 +72,7 @@
     <Compile Include="FrameResource\ObjectTypes\FrameObjectSector.cs" />
     <Compile Include="FrameResource\ObjectTypes\FrameObjectSingleMesh.cs" />
     <Compile Include="GeometryExporters\CustomEDC.cs" />
+    <Compile Include="GeometryExporters\CustomEDD.cs" />
     <Compile Include="GeometryExporters\CustomEDM.cs" />
     <Compile Include="GeometryExporters\WavefrontOBJ.cs" />
     <Compile Include="ItemDesc\CollisionTypes\CollisionBase.cs" />

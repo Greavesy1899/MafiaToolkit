@@ -1,4 +1,4 @@
-#include "M2Helpers.h";
+#include "M2Helpers.h"
 
 std::wstring ReadString(FILE* stream, std::wstring &string)
 {

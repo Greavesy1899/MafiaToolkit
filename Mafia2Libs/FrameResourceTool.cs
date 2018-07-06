@@ -186,14 +186,16 @@ namespace Mafia2Tool
             Vector3[] filePos = new Vector3[mesh.Count];
             Matrix33[] rotPos = new Matrix33[mesh.Count];
 
+            CustomEDD frameEDD = new CustomEDD();
+            frameEDD.EntryCount = mesh.Count;
+            frameEDD.Entries = new CustomEDD.Entry[frameEDD.EntryCount];
+
             Parallel.For(0, mesh.Count, i =>
             {
+                CustomEDD.Entry entry = new CustomEDD.Entry();
+
                 Model newModel = new Model((mesh[i]), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
-                fileNames[i] = mesh[i].Name.String + "_lod0";
-
-                filePos[i] = mesh[i].Matrix.Position;
-                rotPos[i] = mesh[i].Matrix.Rotation;
-
+               
                 if (mesh[i].ParentIndex1.Index != -1)
                 {
                     FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh[i].ParentIndex1.Index] as FrameObjectBase);
@@ -209,6 +211,9 @@ namespace Mafia2Tool
                     }
                 }
 
+                entry.LodCount = newModel.Lods.Length;
+                entry.LODNames = new string[entry.LodCount];
+
                 for (int c = 0; c != newModel.Lods.Length; c++)
                 {
                     if (!File.Exists("exported/" + mesh[i].Name.String + "_lod" + c + ".edm"))
@@ -219,22 +224,19 @@ namespace Mafia2Tool
                         Debug.WriteLine("Mesh: {0} and time taken was {1}", mesh[i].Name.String + "_lod" + c, watch.Elapsed);
                         watch.Stop();
                     }
-                    //fileNames[i] = mesh[i].Name.Name + "_lod" + c;
-
+                    entry.LODNames[c] = mesh[i].Name.String + "_lod" + c;
                     Console.WriteLine("{0}/{1}", i, mesh.Count);
                 }
+                entry.Position = mesh[i].Matrix.Position;
+                entry.Rotation = mesh[i].Matrix.Rotation;
+
+                frameEDD.Entries[i] = entry;
+
             });
 
             using (BinaryWriter writer = new BinaryWriter(File.Create("exported/frame.edd")))
             {
-                writer.Write(mesh.Count);
-
-                for (int i = 0; i != mesh.Count; i++)
-                {
-                    writer.Write(fileNames[i]);
-                    filePos[i].WriteToFile(writer);
-                    rotPos[i].WriteToFile(writer);
-                }
+                frameEDD.WriteToFile(writer);
             }
         }
         private void OnNodeSelect(object sender, TreeViewEventArgs e)

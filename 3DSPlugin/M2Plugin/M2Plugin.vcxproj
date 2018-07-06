@@ -47,6 +47,7 @@
       <AdditionalLibraryDirectories>C:\Program Files\Autodesk\3ds Max 2017 SDK\maxsdk\lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>core.lib; geom.lib; gfx.lib; mesh.lib; maxutil.lib; maxscrpt.lib; paramblk2.lib;;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>M2Plugin.def</ModuleDefinitionFile>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/VERBOSE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -54,12 +55,12 @@
     <ClCompile Include="EDMImportClass.cpp" />
     <ClCompile Include="M2ARA.cpp" />
     <ClCompile Include="M2EDM.cpp" />
+    <ClCompile Include="M2EDD.cpp" />
     <ClCompile Include="M2Helpers.cpp" />
     <ClCompile Include="ARAImportClass.cpp" />
     <ClCompile Include="DllEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="M2EDD.cpp" />
     <None Include="M2Plugin.def" />
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +69,7 @@
     <ClInclude Include="EDDImportClass.h" />
     <ClInclude Include="EDMImportClass.h" />
     <ClInclude Include="M2ARA.h" />
+    <ClInclude Include="M2EDD.h" />
     <ClInclude Include="M2EDM.h" />
     <ClInclude Include="M2Helpers.h" />
     <ClInclude Include="M2Plugin.h" />

@@ -2,11 +2,8 @@
 #define M2_EDDIMPORT_HEADER
 #include "3dsmaxsdk_preinclude.h"
 #include "resource.h"
-#include "M2EDM.h"
 #include "M2Plugin.h"
 #include <impexp.h>
-#include "M2EDM.h"
-#include "M2Helpers.h"
 #include <filesystem>
 
 class EDDImport : public SceneImport

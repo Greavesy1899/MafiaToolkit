@@ -1,16 +1,14 @@
 #include "3dsmaxsdk_preinclude.h"
 #include "EDDImportClass.h"
+#include "M2EDD.h"
+#include "M2EDM.h"
 #include <vector>
 #include "triobj.h"
 #include <impapi.h>
 #include "dummy.h"
-#include "control.h"
-#include "euler.h"
 
 #define EDD_IMPORT_CLASS_ID	Class_ID(0x13343918, 0x75cf75f5)
 namespace fs = std::experimental::filesystem;
-
-
 
 class EDDImportClassDesc : public ClassDesc2
 {
@@ -80,27 +78,21 @@ int EDDImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 
 	EDDWorkClass edm(filename, _T("rb"));
 	stream = edm.Stream();
-	int edmCount = 0;
-	fread(&edmCount, sizeof(int), 1, stream);
-	std::vector<EDMStructure> edmFiles = std::vector<EDMStructure>(edmCount);
 
-	for (int i = 0; i != edmCount; i++) {
-		std::wstring edmName = std::wstring();
-		edmName = ReadString(stream, edmName);
-		edmName += _T(".edm");
-		Point3 position;
-		Point3 rotation[3];
-		fread(&position.x, sizeof(float), 1, stream);
-		fread(&position.y, sizeof(float), 1, stream);
-		fread(&position.z, sizeof(float), 1, stream);
+	int magic;
+	fread(&magic, sizeof(int), 1, stream);
 
-		for (int c = 0; c != 3; c++) {
-			fread(&rotation[c].x, sizeof(float), 1, stream);
-			fread(&rotation[c].y, sizeof(float), 1, stream);
-			fread(&rotation[c].z, sizeof(float), 1, stream);
-		}
+	if (magic != 808535109)
+		return FALSE;
 
-		fs::path edmPath = parentPath / edmName;
+	int entryCount = 0;
+	fread(&entryCount, sizeof(int), 1, stream);
+
+	for (int i = 0; i != entryCount; i++) {
+		EDDEntry entry = EDDEntry();
+		entry.ReadFromStream(stream);
+
+		fs::path edmPath = parentPath / entry.GetLodNames()[0];
 
 		if (!fs::exists(edmPath))
 			return FALSE;
@@ -117,17 +109,7 @@ int EDDImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		DummyObject* parentDummy = new DummyObject();
 		ImpNode* parent = importerInt->CreateNode();
 		parent->Reference(parentDummy);
-		parent->SetName(edmName.c_str());
-
-		Matrix3 tm = Matrix3();
-		tm.Identity;
-		tm.SetRow(0, rotation[0]);
-		tm.SetRow(1, rotation[1]);
-		tm.SetRow(2, rotation[2]);
-		tm.SetRow(3, position);
-
-		if (edmName == _T("11_teren_dalnice_A_lod0.edm"))
-			printf("stip here");
+		parent->SetName(entry.GetLodNames()[0].c_str());
 
 		for (int x = 0; x != edmStructure.GetPartSize(); x++) {
 			TriObject* triObject = CreateNewTriObject();
@@ -176,6 +158,7 @@ int EDDImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 			importerInt->AddNodeToScene(node);
 			inode = node->GetINode();
 			parent->GetINode()->AttachChild(inode, 0);
+			Matrix3 tm = entry.GetMatrix();
 			parent->SetTransform(0, tm);
 			importerInt->AddNodeToScene(parent);
 		}
