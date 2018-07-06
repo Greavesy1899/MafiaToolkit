@@ -8,6 +8,7 @@ private:
 	int lodCount;
 	std::vector<std::wstring> lodNames;
 	Matrix3 matrix;
+
 public:
 	EDDEntry();
 	~EDDEntry();

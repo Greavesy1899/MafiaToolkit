@@ -36,6 +36,10 @@ void EDMPart::SetIndices(std::vector<Int3> indices) {
 	EDMPart::indices = indices;
 }
 
+void EDMPart::SetMesh(Mesh mesh) {
+	EDMPart::mesh = mesh;
+}
+
 std::wstring EDMPart::GetName() {
 	return EDMPart::name;
 }
@@ -66,6 +70,10 @@ int EDMPart::GetIndicesSize() {
 
 std::vector<Int3> EDMPart::GetIndices() {
 	return EDMPart::indices;
+}
+
+Mesh EDMPart::GetMesh() {
+	return EDMPart::mesh;
 }
 
 void EDMPart::ReadFromStream(FILE * stream) {
@@ -104,6 +112,52 @@ void EDMPart::ReadFromStream(FILE * stream) {
 		indices[i].i2 -= 1;
 		indices[i].i3 -= 1;
 	}
+
+	mesh = Mesh();
+
+	mesh.setNumVerts(vertSize);
+	for (int i = 0; i != mesh.numVerts; i++) {
+		mesh.setVert(i, vertices[i]);
+	}
+
+	mesh.SpecifyNormals();
+	MeshNormalSpec *normalSpec = mesh.GetSpecifiedNormals();
+	normalSpec->ClearNormals();
+	normalSpec->SetNumNormals(mesh.numVerts);
+	for (int i = 0; i != mesh.numVerts; i++) {
+		normalSpec->Normal(i) = normals[i];
+		normalSpec->SetNormalExplicit(i, true);
+	}
+
+	mesh.setNumMaps(2);
+	mesh.setMapSupport(1, true);
+	MeshMap &map = mesh.Map(1);
+	map.setNumVerts(vertSize);
+
+	for (int i = 0; i != map.getNumVerts(); i++) {
+		map.tv[i].x = uvs[i].x;
+		map.tv[i].y = uvs[i].y;
+		map.tv[i].z = 0.0f;
+	}
+
+	mesh.setNumFaces(indicesSize);
+	map.setNumFaces(indicesSize);
+	normalSpec->SetNumFaces(indicesSize);
+
+	for (int i = 0; i != mesh.numFaces; i++) {
+		mesh.faces[i].setVerts(indices[i].i1, indices[i].i2, indices[i].i3);
+		mesh.faces[i].setMatID(1);
+		mesh.faces[i].setEdgeVisFlags(1, 1, 1);
+		normalSpec->Face(i).SpecifyAll();
+		normalSpec->Face(i).SetNormalID(0, indices[i].i1);
+		normalSpec->Face(i).SetNormalID(1, indices[i].i2);
+		normalSpec->Face(i).SetNormalID(2, indices[i].i3);
+		map.tf[i].setTVerts(indices[i].i1, indices[i].i2, indices[i].i3);
+	}
+
+	mesh.InvalidateGeomCache();
+	mesh.InvalidateTopologyCache();
+
 }
 
 EDMPart::EDMPart() {}

@@ -2,6 +2,8 @@
 #define M2_EDM_HEADER
 #include <iparamb2.h>
 #include <vector>
+#include <mesh.h>
+#include "MeshNormalSpec.h"
 
 typedef struct {
 	int i1;
@@ -19,6 +21,7 @@ private:
 	std::vector<UVVert> uvs;
 	int indicesSize;
 	std::vector<Int3> indices;
+	Mesh mesh;
 public:
 	EDMPart();
 	~EDMPart();
@@ -30,6 +33,7 @@ public:
 	void SetUVs(std::vector<UVVert> uvs);
 	void SetIndicesSize(int count);
 	void SetIndices(std::vector<Int3> indices);
+	void SetMesh(Mesh mesh);
 	std::wstring GetName();
 	int GetVertSize();
 	std::vector<Point3> GetVertices();
@@ -38,6 +42,7 @@ public:
 	std::vector<UVVert> GetUVs();
 	int GetIndicesSize();
 	std::vector<Int3> GetIndices();
+	Mesh GetMesh();
 
 	void ReadFromStream(FILE* stream);
 };

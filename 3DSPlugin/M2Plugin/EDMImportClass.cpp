@@ -98,58 +98,11 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 	//lets goo.
 	for (int i = 0; i != parts.size(); i++)
 	{
-		TriObject* triObject = CreateNewTriObject();
-		Mesh &mesh = triObject->GetMesh();
-
 		EDMPart part = parts[i];
 
-		std::vector<Point3> verts = part.GetVertices();
-		std::vector<Point3> normals = part.GetNormals();
-		std::vector<UVVert> uvs = part.GetUVs();
-		std::vector<Int3> indices = part.GetIndices();
-
-		mesh.setNumVerts(part.GetVertSize());
-		for (int i = 0; i != mesh.numVerts; i++) {
-			mesh.setVert(i, verts[i]);
-		}
-
-		mesh.SpecifyNormals();
-		MeshNormalSpec *normalSpec = mesh.GetSpecifiedNormals();
-		normalSpec->ClearNormals();
-		normalSpec->SetNumNormals(mesh.numVerts);
-		for (int i = 0; i != mesh.numVerts; i++) {
-			normalSpec->Normal(i) = normals[i];
-			normalSpec->SetNormalExplicit(i, true);
-		}
-
-		mesh.setNumMaps(2);
-		mesh.setMapSupport(1, true);
-		MeshMap &map = mesh.Map(1);
-		map.setNumVerts(part.GetUVSize());
-
-		for (int i = 0; i != part.GetUVSize(); i++) {
-			map.tv[i].x = uvs[i].x;
-			map.tv[i].y = uvs[i].y;
-			map.tv[i].z = 0.0f;
-		}
-
-		mesh.setNumFaces(part.GetIndicesSize());
-		map.setNumFaces(part.GetIndicesSize());
-		normalSpec->SetNumFaces(part.GetIndicesSize());
-
-		for (int i = 0; i != mesh.numFaces; i++) {
-			mesh.faces[i].setVerts(indices[i].i1, indices[i].i2, indices[i].i3);
-			mesh.faces[i].setMatID(1);
-			mesh.faces[i].setEdgeVisFlags(1, 1, 1);
-			normalSpec->Face(i).SpecifyAll();
-			normalSpec->Face(i).SetNormalID(0, indices[i].i1);
-			normalSpec->Face(i).SetNormalID(1, indices[i].i2);
-			normalSpec->Face(i).SetNormalID(2, indices[i].i3);
-			map.tf[i].setTVerts(indices[i].i1, indices[i].i2, indices[i].i3);
-		}
-
-		mesh.InvalidateGeomCache();
-		mesh.InvalidateTopologyCache();
+		TriObject* triObject = CreateNewTriObject();
+		Mesh &mesh = triObject->GetMesh();
+		mesh = part.GetMesh();
 
 		INode* nPart = ip->CreateObjectNode(triObject);
 		nPart->SetName(part.GetName().c_str());
