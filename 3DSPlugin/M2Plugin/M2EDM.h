@@ -45,6 +45,7 @@ public:
 	Mesh GetMesh();
 
 	void ReadFromStream(FILE* stream);
+	void WriteToStream(FILE * stream);
 };
 
 class EDMStructure {
@@ -63,5 +64,6 @@ public:
 	std::vector<EDMPart> GetParts();
 
 	void ReadFromStream(FILE* stream);
+	void WriteToStream(FILE * stream);
 };
 #endif

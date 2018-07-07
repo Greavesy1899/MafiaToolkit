@@ -2,6 +2,8 @@
 #include "EDMExportClass.h"
 #include "M2EDM.h"
 #include "MeshNormalSpec.h"
+#include "dummy.h"
+#include "triobj.h"
 
 #define EDM_EXPORT_CLASS_ID	Class_ID(0x14fe2fdc, 0x102f11a2)
 
@@ -68,10 +70,87 @@ unsigned int EDMExport::Version() {
 void EDMExport::ShowAbout(HWND hWnd) {}
 int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL suppressPrompts, DWORD options)
 {
-	
+	if (i->GetSelNodeCount() < 1)
+	{
+		MessageBox(NULL, _T("Select a dummy node containing a mesh"), _T("Error!"), MB_OK);
+		return FALSE;
+	}
 
 	EDMExportWorkFile theFile(name, _T("wb"));
 	FILE *stream = theFile.Stream();
+
+	INode* parentNode = i->GetSelNode(0);
+
+	MSTR mstr;
+	parentNode->GetObjOrWSMRef()->GetClassName(mstr);
+
+	if (mstr != _T("Dummy"))
+	{
+		MessageBox(NULL, _T("Select a dummy node containing a mesh"), _T("Error!"), MB_OK);
+		return FALSE;
+	}
+	EDMStructure fileStructure = EDMStructure();
+	fileStructure.SetName(parentNode->GetName());
+	fileStructure.SetPartSize(parentNode->NumberOfChildren());
+
+	std::vector<EDMPart> parts = std::vector<EDMPart>(fileStructure.GetPartSize());
+
+	for (int i = 0; i != parts.size(); i++)
+	{
+		parts[i] = EDMPart();
+
+		//Get child nodes (1 for now)
+		INode* child = parentNode->GetChildNode(i);
+		parts[i].SetName(child->GetName());
+
+		//get TriObject for mesh
+		TriObject* object = static_cast<TriObject*>(child->GetObjOrWSMRef());
+		Mesh &mesh = object->mesh;
+		
+		//get verts and normals from mesh and save.
+		parts[i].SetVertSize(mesh.numVerts);
+		parts[i].SetIndicesSize(mesh.numFaces);
+		parts[i].SetUVSize(mesh.numVerts);
+
+		//init vectors
+		std::vector<Point3> verts = std::vector<Point3>(mesh.numVerts);
+		std::vector<Point3> normals = std::vector<Point3>(mesh.numVerts);
+		std::vector<Point3> uvs = std::vector<Point3>(mesh.numVerts);
+		std::vector<Int3> indices = std::vector<Int3>(mesh.numFaces);
+
+		MeshNormalSpec* normalSpec = mesh.GetSpecifiedNormals();
+
+		for (int c = 0; c != verts.size(); c++)
+		{
+			verts[c] = mesh.getVert(c);		
+			normals[c] = normalSpec->Normal(c);
+		}
+
+		for (int c = 0; c != indices.size(); c++)
+		{
+			Int3 ind;
+			ind.i1 = mesh.faces[c].v[0];
+			ind.i2 = mesh.faces[c].v[1];
+			ind.i3 = mesh.faces[c].v[2];
+
+			indices[c] = ind;
+		}
+
+		MeshMap &map = mesh.Map(1);
+		for (int c = 0; c != verts.size(); c++)
+		{
+			uvs[c].x = map.tv[c].x;
+			uvs[c].y = map.tv[c].y;
+			uvs[c].z = map.tv[c].z;
+		}
+		parts[i].SetVertices(verts);
+		parts[i].SetNormals(normals);
+		parts[i].SetIndices(indices);
+		parts[i].SetUVs(uvs);
+	}
+	fileStructure.SetParts(parts);
+	fileStructure.WriteToStream(stream);
+
 	return TRUE;
 }
 

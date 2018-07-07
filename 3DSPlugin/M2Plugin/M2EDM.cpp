@@ -160,6 +160,43 @@ void EDMPart::ReadFromStream(FILE * stream) {
 
 }
 
+void EDMPart::WriteToStream(FILE * stream) {
+	WriteString(stream, name);
+
+	fwrite(&vertSize, sizeof(int), 1, stream);
+	for (int i = 0; i != vertSize; i++) {
+		fwrite(&vertices[i].x, sizeof(float), 1, stream);
+		fwrite(&vertices[i].y, sizeof(float), 1, stream);
+		fwrite(&vertices[i].z, sizeof(float), 1, stream);
+	}
+
+	for (int i = 0; i != vertSize; i++) {
+		fwrite(&normals[i].x, sizeof(float), 1, stream);
+		fwrite(&normals[i].y, sizeof(float), 1, stream);
+		fwrite(&normals[i].z, sizeof(float), 1, stream);
+	}
+
+	fwrite(&uvSize, sizeof(int), 1, stream);
+
+	for (int i = 0; i != uvSize; i++) {
+		fwrite(&uvs[i].x, sizeof(float), 1, stream);
+		fwrite(&uvs[i].y, sizeof(float), 1, stream);
+	}
+
+	fwrite(&indicesSize, sizeof(int), 1, stream);
+
+	for (int i = 0; i != indicesSize; i++) {
+		fwrite(&indices[i].i1, sizeof(int), 1, stream);
+		fwrite(&indices[i].i2, sizeof(int), 1, stream);
+		fwrite(&indices[i].i3, sizeof(int), 1, stream);
+
+		indices[i].i1 += 1;
+		indices[i].i2 += 1;
+		indices[i].i3 += 1;
+	}
+
+}
+
 EDMPart::EDMPart() {}
 EDMPart::~EDMPart() {}
 
@@ -198,10 +235,21 @@ void EDMStructure::ReadFromStream(FILE * stream) {
 	fread(&partSize, sizeof(int), 1, stream);
 	parts = std::vector<EDMPart>(partSize);
 	
-	for (int i = 0; i != parts.size(); i++) {
+	for (int i = 0; i != parts.size(); i++)
 		parts[i].ReadFromStream(stream);
-	}
+	
 	fclose(stream);
+}
+
+void EDMStructure::WriteToStream(FILE * stream) {
+	WriteString(stream, name);
+	fwrite(&partSize, sizeof(int), 1, stream);
+
+	for (int x = 0; x != parts.size(); x++)
+		parts[x].WriteToStream(stream);
+
+	fclose(stream);
+	
 }
 
 EDMStructure::EDMStructure() {}

@@ -4,6 +4,7 @@
 #include "resource.h"
 #include <istdplug.h>
 #include <impexp.h>
+#include <impapi.h>
 #include "M2Plugin.h"
 
 class EDMExport : public SceneExport
