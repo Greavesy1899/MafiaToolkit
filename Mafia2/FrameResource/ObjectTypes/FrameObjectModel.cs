@@ -33,6 +33,10 @@ namespace Mafia2
             get { return skeletonHierachyIndex; }
             set { skeletonHierachyIndex = value; }
         }
+        public unk_struct2[] Unk_30 {
+            get { return unk_30_list; }
+            set { unk_30_list = value; }
+        }
 
         public FrameObjectModel (BinaryReader reader, object[] fb)
         {
@@ -84,7 +88,7 @@ namespace Mafia2
             for(int i = 0; i != unk_30_list.Length; i++)
             {
                 int index2 = numArray[unk_30_list[i].BlendIndex];
-                unk_30_list[i].JointName = skeleton.Names[index2].String;
+                unk_30_list[i].JointName = (SkeletonBoneIDs)skeleton.BoneIDs[index2].uHash;
             }
             unkData = reader.ReadBytes(count);           
         }
@@ -156,7 +160,7 @@ namespace Mafia2
     {
         short blendIndex;
         unk_struct2_1[] data;
-        string jointName;
+        SkeletonBoneIDs jointName;
 
         public short BlendIndex {
             get { return blendIndex; }
@@ -166,7 +170,7 @@ namespace Mafia2
             get { return data; }
             set { data = value; }
         }
-        public string JointName {
+        public SkeletonBoneIDs JointName {
             get { return jointName; }
             set { jointName = value; }
         }
@@ -194,6 +198,11 @@ namespace Mafia2
 
             for (int i = 0; i != data.Length; i++)
                 data[i].WriteToFile(writer);
+        }
+
+        public override string ToString()
+        {
+            return jointName.ToString();
         }
     }
 

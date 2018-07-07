@@ -10,7 +10,7 @@ namespace Mafia2
         int count4;
         int numBlendIndices;
         byte lodFlag;
-        Hash[] names;
+        Hash[] boneIDs;
         TransformMatrix[] mats1;
         byte[] lodFlags;
         TransformMatrix[] worldTransforms;
@@ -28,9 +28,9 @@ namespace Mafia2
             get { return lodInfo; }
             set { lodInfo = value; }
         }
-        public Hash[] Names {
-            get { return names; }
-            set { names = value; }
+        public Hash[] BoneIDs {
+            get { return boneIDs; }
+            set { boneIDs = value; }
         }
 
         public FrameSkeleton(BinaryReader reader)
@@ -55,10 +55,10 @@ namespace Mafia2
 
             lodFlag = reader.ReadByte();
 
-            names = new Hash[count1];
+            boneIDs = new Hash[count1];
 
             for (int i = 0; i != count1; i++)
-                names[i] = new Hash(reader);
+                boneIDs[i] = new Hash(reader);
 
             mats1 = new TransformMatrix[count2];
 

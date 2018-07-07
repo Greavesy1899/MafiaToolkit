@@ -54,11 +54,13 @@ namespace Mafia2Tool
             {
                 TreeNode node = createTreeNode(fObject);
 
-                //if(node.Name == ")
                 if (node == null)
                     continue;
 
                 int index = 0;
+
+                if (fObject.ParentIndex1.Index == 343)
+                    Console.WriteLine("HIT ME");
 
                 for (int i = 0; i != treeView1.Nodes.Count; i++)
                 {
@@ -216,15 +218,34 @@ namespace Mafia2Tool
 
                 for (int c = 0; c != newModel.Lods.Length; c++)
                 {
-                    if (!File.Exists("exported/" + mesh[i].Name.String + "_lod" + c + ".edm"))
+                    string edmName;
+
+                    if (mesh[i].Name.String != "")
+                    {
+                        edmName = mesh[i].Name.String;
+                    }
+                    else
+                    {
+                        if (mesh[i].Mesh == null)
+                        {
+                            edmName = (SceneData.FrameResource.EntireFrame[mesh[i].MeshIndex] as FrameGeometry).LOD[c].VertexBufferRef.String;
+                            edmName.Remove(edmName.Length - 5);
+                        }
+                        else
+                            edmName = mesh[i].Mesh.LOD[c].VertexBufferRef.String;
+                    }
+
+                    Console.WriteLine(edmName);
+
+                    if (!File.Exists("exported/" + edmName + "_lod" + c + ".edm"))
                     {
                         Stopwatch watch = new Stopwatch();
                         watch.Start();
-                        newModel.ExportToEDM(newModel.Lods[c], mesh[i].Name.String + "_lod" + c);
-                        Debug.WriteLine("Mesh: {0} and time taken was {1}", mesh[i].Name.String + "_lod" + c, watch.Elapsed);
+                        newModel.ExportToEDM(newModel.Lods[c], edmName + "_lod" + c);
+                        Debug.WriteLine("Mesh: {0} and time taken was {1}", edmName + "_lod" + c, watch.Elapsed);
                         watch.Stop();
                     }
-                    entry.LODNames[c] = mesh[i].Name.String + "_lod" + c;
+                    entry.LODNames[c] = edmName + "_lod" + c;
                     Console.WriteLine("{0}/{1}", i, mesh.Count);
                 }
                 entry.Position = mesh[i].Matrix.Position;
