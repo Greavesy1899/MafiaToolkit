@@ -133,7 +133,14 @@ BEGIN
     IDS_EDD_IMPORT_CLASS    "M2EDDImporter"
     IDS_EDD_L_DESC          "Mafia 2: ""Editable Scene"" format for Mafia 2"
     IDS_EDD_S_DESC          "Mafia 2: Editable Scene"
-    IDS_STRING15            "Empty String"
+    IDS_CATEGORY_EXPORT     "Export"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_EDM_EXPORT_CLASS    "M2EDMExporter"
+    IDS_STRING17            "Emprty"
+    IDS_STRING18            """empty string"
 END
 
 #endif    // English (United Kingdom) resources

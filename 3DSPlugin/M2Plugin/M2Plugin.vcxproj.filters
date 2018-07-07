@@ -36,12 +36,15 @@
     <ClCompile Include="EDDImportClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="M2EDD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EDMExportClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="M2Plugin.def">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="M2EDD.cpp">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
@@ -74,6 +77,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="M2EDD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EDMExportClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

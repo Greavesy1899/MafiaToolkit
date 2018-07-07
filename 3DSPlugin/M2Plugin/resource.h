@@ -19,7 +19,10 @@
 #define IDS_EDD_IMPORT_CLASS            12
 #define IDS_EDD_L_DESC                  13
 #define IDS_EDD_S_DESC                  14
-#define IDS_STRING15                    15
+#define IDS_CATEGORY_EXPORT             15
+#define IDS_EDM_EXPORT_CLASS            16
+#define IDS_STRING17                    17
+#define IDS_STRING18                    18
 #define IDD_PANEL                       101
 #define IDC_CLOSEBUTTON                 1000
 #define IDC_DOSTUFF                     1000

@@ -15,6 +15,7 @@
 #include "M2Plugin.h"
 
 extern ClassDesc2* GetEDMImportDesc();
+extern ClassDesc2* GetEDMExportDesc();
 extern ClassDesc2* GetARAImportDesc();
 extern ClassDesc2* GetEDDImportDesc();
 
@@ -51,7 +52,7 @@ __declspec( dllexport ) const TCHAR* LibDescription()
 //TODO: Must change this number when adding a new class
 __declspec( dllexport ) int LibNumberClasses()
 {
-	return 3;
+	return 4;
 }
 
 // This function returns the number of plug-in classes this DLL
@@ -61,6 +62,7 @@ __declspec( dllexport ) ClassDesc* LibClassDesc(int i)
 		case 0: return GetEDMImportDesc();
 		case 1: return GetARAImportDesc();
 		case 2: return GetEDDImportDesc();
+		case 3: return GetEDMExportDesc();
 		default: return 0;
 	}
 }
