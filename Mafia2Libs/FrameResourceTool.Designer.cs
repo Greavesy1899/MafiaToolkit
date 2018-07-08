@@ -31,6 +31,8 @@
             this.folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.button1 = new System.Windows.Forms.Button();
             this.collisionEditor = new System.Windows.Forms.Button();
+            this.overwriteBuffer = new System.Windows.Forms.Button();
+            this.edmBrowser = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
             // FrameResourceButton
@@ -111,11 +113,26 @@
             this.collisionEditor.UseVisualStyleBackColor = true;
             this.collisionEditor.Click += new System.EventHandler(this.collisionEditor_Click);
             // 
+            // overwriteBuffer
+            // 
+            this.overwriteBuffer.Location = new System.Drawing.Point(358, 11);
+            this.overwriteBuffer.Name = "overwriteBuffer";
+            this.overwriteBuffer.Size = new System.Drawing.Size(94, 23);
+            this.overwriteBuffer.TabIndex = 13;
+            this.overwriteBuffer.Text = "Overwrite Buffer";
+            this.overwriteBuffer.UseVisualStyleBackColor = true;
+            this.overwriteBuffer.Click += new System.EventHandler(this.overwriteBuffer_Click);
+            // 
+            // edmBrowser
+            // 
+            this.edmBrowser.FileName = "edmBrowser";
+            // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 431);
+            this.Controls.Add(this.overwriteBuffer);
             this.Controls.Add(this.collisionEditor);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.Load3D);
@@ -139,5 +156,7 @@
         private System.Windows.Forms.FolderBrowserDialog folderBrowser;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button collisionEditor;
+        private System.Windows.Forms.Button overwriteBuffer;
+        private System.Windows.Forms.OpenFileDialog edmBrowser;
     }
 }

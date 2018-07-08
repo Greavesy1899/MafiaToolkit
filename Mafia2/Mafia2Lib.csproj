@@ -45,6 +45,7 @@
     <Compile Include="3DHelpers\Matrix33.cs" />
     <Compile Include="3DHelpers\ModelBuilder.cs" />
     <Compile Include="3DHelpers\TransformMatrix.cs" />
+    <Compile Include="3DHelpers\Vertex.cs" />
     <Compile Include="Actors\ActorParse.cs" />
     <Compile Include="Actors\ActorTypes.cs" />
     <Compile Include="Collisions\Collisions.cs" />

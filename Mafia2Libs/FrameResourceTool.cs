@@ -274,5 +274,56 @@ namespace Mafia2Tool
         {
             CollisionEditor editor = new CollisionEditor();
         }
+
+        private void overwriteBuffer_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode == null)
+                return;
+
+            if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel))))
+            {
+                ulong indexRef;
+                ulong vertexRef;
+
+                int[] iIndex;
+                int[] iVertex;
+
+                CustomEDM edm;
+
+                FrameObjectSingleMesh mesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
+                FrameGeometry geom = SceneData.FrameResource.EntireFrame[mesh.MeshIndex] as FrameGeometry;
+
+                indexRef = geom.LOD[0].IndexBufferRef.uHash;
+                vertexRef = geom.LOD[0].VertexBufferRef.uHash;
+
+                iIndex = SceneData.IndexBufferPool.SearchBuffer(indexRef);
+                iVertex = SceneData.VertexBufferPool.SearchBuffer(vertexRef);
+
+                if (iIndex[0] == -1 || iVertex[0] == -1)
+                    return;
+
+                edmBrowser.ShowDialog();
+
+                using (BinaryReader reader = new BinaryReader(File.Open(edmBrowser.FileName, FileMode.Open)))
+                {
+                    edm = new CustomEDM(reader);
+                    edm.BufferIndexHash = indexRef;
+                    edm.BufferVertexHash = vertexRef;
+                    edm.BufferFlags = geom.LOD[0].VertexDeclaration;
+                    edm.PositionOffset = geom.PositionOffset;
+                    edm.PositionFactor = geom.PositionFactor;
+                    edm.BuildBuffers();
+                }
+
+                //SceneData.IndexBufferPool.BufferPools[iIndex[0]].Buffers[iIndex[1]] = edm.IndexBuffer;
+               // SceneData.VertexBufferPool.BufferPools[iIndex[0]].Buffers[iIndex[1]] = edm.VertexBuffer;
+                SceneData.IndexBufferPool.WriteToFile();
+                SceneData.VertexBufferPool.WriteToFile();
+            }
+            else
+            {
+                MessageBox.Show("Click on a \"Single Mesh\" type of \"Model\" type in the tree view.", "Error");
+            }
+        }
     }
 }

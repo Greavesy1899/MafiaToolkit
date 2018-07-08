@@ -16,12 +16,12 @@ namespace Mafia2
             set { lods = value; }
         }
 
-        public Model(FrameObjectSingleMesh singleMesh, VertexBufferPool vertexBufferPool, IndexBufferPool indexBufferPool, FrameResource frameResource)
+        public Model(FrameObjectSingleMesh singleMesh, VertexBufferManager vertexBufferPool, IndexBufferManager indexBufferPool, FrameResource frameResource)
         {
             Build(singleMesh, vertexBufferPool, indexBufferPool, frameResource);
         }
 
-        public void Build(FrameObjectSingleMesh singleMesh, VertexBufferPool vertexBufferPool, IndexBufferPool indexBufferPool, FrameResource frameResource)
+        public void Build(FrameObjectSingleMesh singleMesh, VertexBufferManager vertexBufferPool, IndexBufferManager indexBufferPool, FrameResource frameResource)
         {
             meshBlock = singleMesh;
             path = singleMesh.Name.String;
@@ -60,30 +60,17 @@ namespace Mafia2
                     if (lod1.VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
-                        ushort uint16_1 = BitConverter.ToUInt16(vertexBuffer.Data, startIndex);
-                        ushort uint16_2 = BitConverter.ToUInt16(vertexBuffer.Data, startIndex + 2);
-                        ushort num3 = (ushort)((uint)BitConverter.ToUInt16(vertexBuffer.Data, startIndex + 4) & short.MaxValue);
-                        Vector3 vector3 = new Vector3(uint16_1 * mesh.PositionFactor, uint16_2 * mesh.PositionFactor, num3 * mesh.PositionFactor);
-                        vector3 += mesh.PositionOffset;
-                        vertex.Position = vector3;
+                        vertex.ReadPositionData(vertexBuffer.Data, startIndex, mesh.PositionFactor, mesh.PositionOffset);
                     }
                     if (lod1.VertexDeclaration.HasFlag(VertexFlags.Tangent))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
-                        float x = (vertexBuffer.Data[startIndex] - sbyte.MaxValue) * 0.007874f;
-                        float y = (vertexBuffer.Data[startIndex + 1] - sbyte.MaxValue) * 0.007874f;
-                        float z = (vertexBuffer.Data[startIndex + 5] - sbyte.MaxValue) * 0.007874f;
-                        vertex.Tangent = new Vector3(x, y, z);
-                        vertex.Tangent.Normalize();
+                        vertex.ReadTangentData(vertexBuffer.Data, startIndex);
                     }
                     if (lod1.VertexDeclaration.HasFlag(VertexFlags.Normals))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.Normals].Offset;
-                        float x = (vertexBuffer.Data[startIndex] - sbyte.MaxValue)* 0.007874f;
-                        float y = (vertexBuffer.Data[startIndex+1] - sbyte.MaxValue) * 0.007874f;
-                        float z = (vertexBuffer.Data[startIndex+2] - sbyte.MaxValue) * 0.007874f;
-                        vertex.Normal = new Vector3(x, y, z);
-                        vertex.Normal.Normalize();
+                        vertex.ReadNormalData(vertexBuffer.Data, startIndex);
                     }
                     if(lod1.VertexDeclaration.HasFlag(VertexFlags.BlendData))
                     {
@@ -161,12 +148,9 @@ namespace Mafia2
         {
             using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + name + ".edm")))
             {
-                CustomEDM[] EDMs = new CustomEDM[lod.Parts.Length];
+                CustomEDM EDM = new CustomEDM(name, lod.Parts.Length);
 
-                writer.Write(name);
-                writer.Write(EDMs.Length);
-
-                for (int i = 0; i != EDMs.Length; i++)
+                for (int i = 0; i != EDM.PartCount; i++)
                 {
                     #region convert
                     Stopwatch watch = new Stopwatch();
@@ -211,75 +195,36 @@ namespace Mafia2
                     Console.WriteLine("{0}", watch.Elapsed);
                     #endregion
 
-                    EDMs[i] = new CustomEDM(newVerts, newShort3, lod.Parts[i].Material);
-                    EDMs[i].WriteToFile(writer);
+                    EDM.AddPart(newVerts, newShort3, lod.Parts[i].Material, i);
+                }
+
+                EDM.WriteToFile(writer);
+            }
+        }
+
+        public VertexBuffer GetVertexBuffer(VertexBufferManager vBufferManager, ulong indexRef)
+        {
+            for (int i = 0; i != vBufferManager.BufferPools.Length; i++)
+            {
+                for (int c = 0; c != vBufferManager.BufferPools[i].Buffers.Length; c++)
+                {
+                    if (indexRef == vBufferManager.BufferPools[i].Buffers[c].Hash)
+                        return vBufferManager.BufferPools[i].Buffers[c];
                 }
             }
-        }
-
-        public VertexBuffer GetVertexBuffer(VertexBufferPool vBufferPool, ulong hash)
-        {
-            foreach (VertexBuffer vBuffer in vBufferPool.Buffers)
-            {
-                if (vBuffer.Hash == hash)
-                    return vBuffer;
-            }
             return null;
         }
-        public IndexBuffer GetIndexBuffer(IndexBufferPool iBufferPool, ulong hash)
+        public IndexBuffer GetIndexBuffer(IndexBufferManager iBufferManager, ulong indexRef)
         {
-            foreach (IndexBuffer iBuffer in iBufferPool.Buffers)
+            for (int i = 0; i != iBufferManager.BufferPools.Length; i++)
             {
-                if (iBuffer.Hash == hash)
-                    return iBuffer;
+                for (int c = 0; c != iBufferManager.BufferPools[i].Buffers.Length; c++)
+                {
+                    if (indexRef == iBufferManager.BufferPools[i].Buffers[c].Hash)
+                        return iBufferManager.BufferPools[i].Buffers[c];
+                }
             }
             return null;
-        }
-    }
-
-    public struct Vertex
-    {
-        Vector3 position;
-        Vector3 normal;
-        Vector3 tangent;
-        Vector3 binormal;
-
-        float blendWeight;
-        int boneID;
-        UVVector2[] uvs;
-
-        public Vector3 Position {
-            get { return position; }
-            set { position = value; }
-        }
-        public Vector3 Normal {
-            get { return normal; }
-            set { normal = value; }
-        }
-        public Vector3 Tangent {
-            get { return tangent; }
-            set { tangent = value; }
-        }
-        public Vector3 Binormal {
-            get { return binormal; }
-            set { binormal = value; }
-        }
-        public UVVector2[] UVs {
-            get { return uvs; }
-            set { uvs = value; }
-        }
-        public float BlendWeight {
-            get { return blendWeight; }
-            set { blendWeight = value; }
-        }
-        public int BoneID {
-            get { return boneID; }
-            set { boneID = value; }
-        }
-
-        public override string ToString()
-        {
-            return string.Format(position.ToString());
         }
     }
 

@@ -104,13 +104,9 @@ void EDMPart::ReadFromStream(FILE * stream) {
 	fread(&indicesSize, sizeof(int), 1, stream);
 	indices = std::vector<Int3>(indicesSize);
 	for (int i = 0; i != indicesSize; i++) {
-		fread(&indices[i].i1, sizeof(int), 1, stream);
-		fread(&indices[i].i2, sizeof(int), 1, stream);
-		fread(&indices[i].i3, sizeof(int), 1, stream);
-
-		indices[i].i1 -= 1;
-		indices[i].i2 -= 1;
-		indices[i].i3 -= 1;
+		fread(&indices[i].i1, sizeof(short), 1, stream);
+		fread(&indices[i].i2, sizeof(short), 1, stream);
+		fread(&indices[i].i3, sizeof(short), 1, stream);
 	}
 
 	mesh = Mesh();
@@ -186,13 +182,9 @@ void EDMPart::WriteToStream(FILE * stream) {
 	fwrite(&indicesSize, sizeof(int), 1, stream);
 
 	for (int i = 0; i != indicesSize; i++) {
-		fwrite(&indices[i].i1, sizeof(int), 1, stream);
-		fwrite(&indices[i].i2, sizeof(int), 1, stream);
-		fwrite(&indices[i].i3, sizeof(int), 1, stream);
-
-		indices[i].i1 += 1;
-		indices[i].i2 += 1;
-		indices[i].i3 += 1;
+		fwrite(&indices[i].i1, sizeof(short), 1, stream);
+		fwrite(&indices[i].i2, sizeof(short), 1, stream);
+		fwrite(&indices[i].i3, sizeof(short), 1, stream);
 	}
 
 }
@@ -245,7 +237,7 @@ void EDMStructure::WriteToStream(FILE * stream) {
 	WriteString(stream, name);
 	fwrite(&partSize, sizeof(int), 1, stream);
 
-	for (int x = 0; x != parts.size(); x++)
+for (int x = 0; x != parts.size(); x++)
 		parts[x].WriteToStream(stream);
 
 	fclose(stream);

@@ -166,13 +166,13 @@ namespace Mafia2
                 data = new MeshData(reader, sections);
                 reader.BaseStream.Position = pos2;
 
-                CustomEDM EDM = new CustomEDM(Data.Vertices, Data.Triangles, hash.ToString());
-                using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + EDM.Name + ".edm")))
-                {
-                    writer.Write(EDM.Name);
-                    writer.Write(1);
-                    EDM.WriteToFile(writer);
-                }
+                //CustomEDM EDM = new CustomEDM(Data.Vertices, Data.Triangles, hash.ToString());
+                //using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + EDM.Name + ".edm")))
+                //{
+                //    writer.Write(EDM.Name);
+                //    writer.Write(1);
+                //    EDM.WriteToFile(writer);
+                //}
             }
 
             [TypeConverter(typeof(ExpandableObjectConverter))]

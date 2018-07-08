@@ -2,6 +2,51 @@
 using System.IO;
 namespace Mafia2
 {
+    public class VertexBufferManager
+    {
+        VertexBufferPool[] bufferPools;
+
+        public VertexBufferPool[] BufferPools {
+            get { return bufferPools; }
+            set { bufferPools = value; }
+        }
+
+        public VertexBufferManager(List<FileInfo> files)
+        {
+            bufferPools = new VertexBufferPool[files.Count];
+            int i = 0;
+            foreach (FileInfo file in files)
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+                    bufferPools[i] = new VertexBufferPool(reader);
+
+                i++;
+            }
+        }
+
+        public int[] SearchBuffer(ulong indexRef)
+        {
+            for (int i = 0; i != bufferPools.Length; i++)
+            {
+                for (int c = 0; c != bufferPools[i].Buffers.Length; c++)
+                {
+                    if (indexRef == bufferPools[i].Buffers[c].Hash)
+                        return new int[] { i, c };
+                }
+            }
+            return new int[] { -1, -1 };
+        }
+
+        public void WriteToFile()
+        {
+            for (int i = 0; i != bufferPools.Length; i++)
+            {
+                using (BinaryWriter writer = new BinaryWriter(File.Open("VertexBufferPool_" + i + ".bin", FileMode.Create)))
+                    bufferPools[i].WriteToFile(writer);
+            }
+        }
+    }
+
     public class VertexBufferPool
     {
         //MAX BUFFER SIZE IS 128
@@ -10,21 +55,14 @@ namespace Mafia2
         int size;
         VertexBuffer[] buffers;
 
-        private List<VertexBuffer[]> prebuffers = new List<VertexBuffer[]>();
-
         public VertexBuffer[] Buffers {
             get { return buffers; }
             set { buffers = value; }
         }
 
-        public VertexBufferPool(List<FileInfo> files)
+        public VertexBufferPool(BinaryReader reader)
         {
-            foreach (FileInfo file in files)
-            {
-                using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
-                    ReadFromFile(reader);
-            }
-            BuildBuffer();
+            ReadFromFile(reader);
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -39,7 +77,6 @@ namespace Mafia2
             {
                 buffers[i] = new VertexBuffer(reader);
             }
-            prebuffers.Add(buffers);
         }
 
         public void WriteToFile(BinaryWriter writer)
@@ -54,24 +91,15 @@ namespace Mafia2
             }
         }
 
-        public void BuildBuffer()
+        public int SearchBuffer(ulong vertexRef)
         {
-            int totalsize = 0;
-
-            for (int i = 0; i != prebuffers.Count; i++)
-                totalsize += prebuffers[i].Length;
-
-            List<VertexBuffer> listBuffer = new List<VertexBuffer>();
-
-            for (int i = 0; i != prebuffers.Count; i++)
+            for(int i = 0; i != Buffers.Length; i++)
             {
-                for (int x = 0; x != prebuffers[i].Length; x++)
-                {
-                    listBuffer.Add(prebuffers[i][x]);
-                }
+                if (vertexRef == Buffers[i].Hash)
+                    return i;
             }
 
-            Buffers = listBuffer.ToArray();
+            return -1;
         }
     }
 
@@ -87,9 +115,16 @@ namespace Mafia2
         }
         public byte[] Data {
             get { return data; }
-            set { data = value; }
+            set {
+                data = value;
+                len = data.Length;
+            }
         }
 
+        public VertexBuffer(ulong hash)
+        {
+            this.hash = hash;
+        }
         public VertexBuffer(BinaryReader reader)
         {
             ReadFromFile(reader);

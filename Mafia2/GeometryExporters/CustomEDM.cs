@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Mafia2
@@ -7,104 +8,304 @@ namespace Mafia2
     public class CustomEDM
     {
         string name;
-        Vector3[] vertices;
-        Vector3[] normals;
-        UVVector2[] uvs;
-        List<Short3> indices;
+        int partCount;
+        Part[] parts;
+
+        ulong bufferIndexHash;
+        ulong bufferVertexHash;
+        VertexFlags flags;
+        float positionFactor;
+        Vector3 positionOffset;
+        IndexBuffer indexBuffer;
+        VertexBuffer vertexBuffer;
+
 
         public string Name {
             get { return name; }
             set { name = value; }
         }
-        public Vector3[] Vertices {
-            get { return vertices; }
-            set { vertices = value; }
+        public int PartCount {
+            get { return partCount; }
+            set { partCount = value; }
         }
-        public Vector3[] Normals {
-            get { return normals; }
-            set { normals = value; }
+        public Part[] Parts {
+            get { return parts; }
+            set { parts = value; }
         }
-        public UVVector2[] UVs {
-            get { return uvs; }
-            set { uvs = value; }
+        public ulong BufferIndexHash {
+            get { return bufferIndexHash; }
+            set { bufferIndexHash = value; }
         }
-        public List<Short3> Indices {
-            get { return indices; }
-            set { indices = value; }
+        public ulong BufferVertexHash {
+            get { return bufferVertexHash; }
+            set { bufferVertexHash = value; }
+        }
+        public VertexFlags BufferFlags {
+            get { return flags; }
+            set { flags = value; }
+        }
+        public float PositionFactor {
+            get { return positionFactor; }
+            set { positionFactor = value; }
+        }
+        public Vector3 PositionOffset {
+            get { return positionOffset; }
+            set { positionOffset = value; }
+        }
+        public IndexBuffer IndexBuffer {
+            get { return indexBuffer; }
+            set { indexBuffer = value; }
+        }
+        public VertexBuffer VertexBuffer {
+            get { return vertexBuffer; }
+            set { vertexBuffer = value; }
         }
 
-        public CustomEDM(List<Vertex> vertex, List<Short3> indices, string name)
+        public CustomEDM(BinaryReader reader)
         {
-            this.vertices = new Vector3[vertex.Count];
-            this.normals = new Vector3[vertex.Count];
-            this.uvs = new UVVector2[vertex.Count];
+            int size = reader.ReadByte();
+            name = new string(reader.ReadChars(size));
 
-            for (int i = 0; i != vertex.Count; i++)
+            int partCount = reader.ReadInt32();
+            parts = new Part[partCount];
+
+            for(int i = 0; i != partCount; i++)
             {
-                vertices[i] = vertex[i].Position;
-                normals[i] = vertex[i].Normal;
-
-                if (vertex[i].UVs.Length > 0)
-                    uvs[i] = vertex[i].UVs[0];
+                parts[i] = new Part(reader);
             }
-
-            this.indices = indices;
-            this.name = name;
-        }
-        public CustomEDM(Vector3[] vertices, Int3[] triangles, string name)
-        {
-            this.vertices = vertices;
-
-            indices = new List<Short3>();
-
-            foreach(Int3 tri in triangles)
-            {
-                indices.Add(new Short3(tri.i1, tri.i2,  tri.i3));
-            }
-
-            this.name = name;
-
-            uvs = new UVVector2[0];
         }
 
-        public CustomEDM(Vector3[] vertices, Short3[] triangles, string name)
+        public CustomEDM(string name, int numParts)
         {
-            this.vertices = vertices;
-
-            indices = new List<Short3>();
-
-            foreach (Short3 tri in triangles)
-            {
-                indices.Add(tri);
-            }
-
             this.name = name;
-
-            uvs = new UVVector2[0];
+            this.partCount = numParts;
+            parts = new Part[numParts];
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(name);
-            writer.Write(vertices.Length);
-            for (int c = 0; c != vertices.Length; c++)
-                vertices[c].WriteToFile(writer);
+            writer.Write((byte)name.Length);
+            writer.Write(name.ToCharArray());
+            writer.Write(partCount);
+            for (int i = 0; i != partCount; i++)
+                parts[i].WriteToFile(writer);
+        }
 
-            for (int c = 0; c != normals.Length; c++)
-                normals[c].WriteToFile(writer);
+        public void AddPart(List<Vertex> vertex, List<Short3> indices, string name, int slot)
+        {
+            parts[slot] = new Part(vertex, indices, name);
+        }
 
-            writer.Write(uvs.Length);
-            for (int c = 0; c != uvs.Length; c++)
+        public void BuildBuffers()
+        {
+            indexBuffer = new IndexBuffer(bufferIndexHash);
+            vertexBuffer = new VertexBuffer(bufferVertexHash);
+
+            List<ushort> idata = new List<ushort>();
+            List<byte> vdata = new List<byte>(); 
+
+            for(int i  = 0; i != parts[0].Indices.Count; i++)
             {
-                writer.Write(uvs[c].X);
-                writer.Write(1f - uvs[c].Y);
+                idata.Add((ushort)parts[0].Indices[i].s1);
+                idata.Add((ushort)parts[0].Indices[i].s2);
+                idata.Add((ushort)parts[0].Indices[i].s3);
             }
-            writer.Write(indices.Count);
-            for (int c = 0; c != indices.Count; c++)
+
+            indexBuffer.Data = idata.ToArray();
+            int dataSize = 0;
+
+            for (int i = 0; i != parts[0].Vertices.Length; i++)
             {
-                writer.Write(indices[c].s1 + 1);
-                writer.Write(indices[c].s2 + 1);
-                writer.Write(indices[c].s3 + 1);
+                if (flags.HasFlag(VertexFlags.Position))
+                {
+                    short v1 = Convert.ToInt16((parts[0].Vertices[0].X - positionOffset.X) / positionFactor);
+                    short v2 = Convert.ToInt16((parts[0].Vertices[0].Y - positionOffset.Y) / positionFactor);
+                    short v3 = Convert.ToInt16((parts[0].Vertices[0].Z - positionOffset.Z) / positionFactor);
+
+                    byte[] bytesv1 = BitConverter.GetBytes(v1);
+                    byte[] bytesv2 = BitConverter.GetBytes(v2);
+                    byte[] bytesv3 = BitConverter.GetBytes(v3);
+
+                    vdata.Add(bytesv1[0]);
+                    vdata.Add(bytesv1[1]);
+                    vdata.Add(bytesv2[0]);
+                    vdata.Add(bytesv2[1]);
+                    vdata.Add(bytesv3[0]);
+                    vdata.Add(bytesv3[1]);
+
+                    dataSize += 6;
+                }
+                if(flags.HasFlag(VertexFlags.Normals))
+                {
+                    byte x = Convert.ToByte(parts[0].Normals[i].X * 127.0f + 127.0f);
+                    byte y = Convert.ToByte(parts[0].Normals[i].Y * 127.0f + 127.0f);
+                    byte z = Convert.ToByte(parts[0].Normals[i].Z * 127.0f + 127.0f);
+
+                    vdata.Add(0);
+                    vdata.Add(0);
+                    vdata.Add(x);
+                    vdata.Add(y);
+                    vdata.Add(z);
+                    vdata.Add(0);
+
+                    dataSize += 8;
+                }
+
+                if(flags.HasFlag(VertexFlags.TexCoords0))
+                {
+                    byte[] x = Half.GetBytes(parts[0].UVs[i].X);
+                    byte[] y = Half.GetBytes(parts[0].UVs[i].Y);
+
+                    vdata.Add(x[0]);
+                    vdata.Add(x[1]);
+                    vdata.Add(y[0]);
+                    vdata.Add(y[1]);
+
+                    dataSize += 4;
+                }
+            }
+
+            vertexBuffer.Data = vdata.ToArray();
+
+        }
+
+        public class Part
+        {
+            string name;
+            Vector3[] vertices;
+            Vector3[] normals;
+            UVVector2[] uvs;
+            List<Short3> indices;
+
+            public string Name {
+                get { return name; }
+                set { name = value; }
+            }
+            public Vector3[] Vertices {
+                get { return vertices; }
+                set { vertices = value; }
+            }
+            public Vector3[] Normals {
+                get { return normals; }
+                set { normals = value; }
+            }
+            public UVVector2[] UVs {
+                get { return uvs; }
+                set { uvs = value; }
+            }
+            public List<Short3> Indices {
+                get { return indices; }
+                set { indices = value; }
+            }
+
+            public Part(List<Vertex> vertex, List<Short3> indices, string name)
+            {
+                this.vertices = new Vector3[vertex.Count];
+                this.normals = new Vector3[vertex.Count];
+                this.uvs = new UVVector2[vertex.Count];
+
+                for (int i = 0; i != vertex.Count; i++)
+                {
+                    vertices[i] = vertex[i].Position;
+                    normals[i] = vertex[i].Normal;
+
+                    if (vertex[i].UVs.Length > 0)
+                        uvs[i] = vertex[i].UVs[0];
+                }
+
+                this.indices = indices;
+                this.name = name;
+            }
+            public Part(Vector3[] vertices, Int3[] triangles, string name)
+            {
+                this.vertices = vertices;
+
+                indices = new List<Short3>();
+
+                foreach (Int3 tri in triangles)
+                {
+                    indices.Add(new Short3(tri.i1, tri.i2, tri.i3));
+                }
+
+                this.name = name;
+
+                uvs = new UVVector2[0];
+            }
+
+            public Part(Vector3[] vertices, Short3[] triangles, string name)
+            {
+                this.vertices = vertices;
+
+                indices = new List<Short3>();
+
+                foreach (Short3 tri in triangles)
+                {
+                    indices.Add(tri);
+                }
+
+                this.name = name;
+
+                uvs = new UVVector2[0];
+            }
+
+            public Part(BinaryReader reader)
+            {
+                ReadFromFile(reader);
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(name);
+                writer.Write(vertices.Length);
+                for (int c = 0; c != vertices.Length; c++)
+                    vertices[c].WriteToFile(writer);
+
+                for (int c = 0; c != normals.Length; c++)
+                    normals[c].WriteToFile(writer);
+
+                writer.Write(uvs.Length);
+                for (int c = 0; c != uvs.Length; c++)
+                {
+                    writer.Write(uvs[c].X);
+                    writer.Write(1f - uvs[c].Y);
+                }
+                writer.Write(indices.Count);
+                for (int c = 0; c != indices.Count; c++)
+                {
+                    writer.Write(indices[c].s1);
+                    writer.Write(indices[c].s2);
+                    writer.Write(indices[c].s3);
+                }
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                byte nameSize = reader.ReadByte();
+                name = new string(reader.ReadChars(nameSize));
+
+                int size = reader.ReadInt32();
+                vertices = new Vector3[size];
+                normals = new Vector3[size];
+
+                for (int c = 0; c != vertices.Length; c++)
+                    vertices[c] = new Vector3(reader);
+
+                for (int c = 0; c != normals.Length; c++)
+                    normals[c] = new Vector3(reader);
+
+                size = reader.ReadInt32();
+                uvs = new UVVector2[size];
+                for (int c = 0; c != uvs.Length; c++)
+                {
+                    uvs[c] = new UVVector2(HalfHelper.SingleToHalf(reader.ReadSingle()), HalfHelper.SingleToHalf(reader.ReadSingle()));
+                }
+
+                size = reader.ReadInt32();
+                indices = new List<Short3>();
+                for (int c = 0; c != size; c++)
+                {
+                    indices.Add(new Short3(reader));
+                }
             }
         }
     }

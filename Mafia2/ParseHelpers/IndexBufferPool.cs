@@ -4,6 +4,51 @@ using System.IO;
 
 namespace Mafia2
 {
+    public class IndexBufferManager
+    {
+        IndexBufferPool[] bufferPools;
+
+        public IndexBufferPool[] BufferPools {
+            get { return bufferPools; }
+            set { bufferPools = value; }
+        }
+
+        public IndexBufferManager(List<FileInfo> files)
+        {
+            bufferPools = new IndexBufferPool[files.Count];
+            int i = 0;
+            foreach (FileInfo file in files)
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+                    bufferPools[i] = new IndexBufferPool(reader);
+
+                i++;
+            }
+        }
+
+        public int[] SearchBuffer(ulong indexRef)
+        {
+            for (int i = 0; i != bufferPools.Length; i++)
+            {
+                for (int c = 0; c != bufferPools[i].Buffers.Length; c++)
+                {
+                    if (indexRef == bufferPools[i].Buffers[c].Hash)
+                        return new int[] { i, c };
+                }
+            }
+            return new int[] { -1, -1 };
+        }
+
+        public void WriteToFile()
+        {
+            for(int i = 0; i != bufferPools.Length; i++)
+            {
+                using(BinaryWriter writer = new BinaryWriter(File.Open("IndexBufferPool_"+i+".bin", FileMode.Create)))
+                    bufferPools[i].WriteToFile(writer);
+            }
+        }
+    }
+
     public class IndexBufferPool
     {
         //MAX BUFFER SIZE IS 128
@@ -12,21 +57,14 @@ namespace Mafia2
         private int size;
         private IndexBuffer[] buffers;
 
-        private List<IndexBuffer[]> prebuffers = new List<IndexBuffer[]>();
-
         public IndexBuffer[] Buffers {
             get { return buffers; }
             set { buffers = value; }
         }
 
-        public IndexBufferPool(List<FileInfo> files)
+        public IndexBufferPool(BinaryReader reader)
         {
-            foreach (FileInfo file in files)
-            {
-                using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
-                    ReadFromFile(reader);
-            }
-            BuildBuffer();
+            ReadFromFile(reader);
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -41,7 +79,6 @@ namespace Mafia2
             {
                 buffers[i] = new IndexBuffer(reader);
             }
-            prebuffers.Add(buffers);
         }
 
         public void WriteToFile(BinaryWriter writer)
@@ -50,30 +87,10 @@ namespace Mafia2
             writer.Write(numBuffers);
             writer.Write(size);
 
-            for(int i = 0; i != numBuffers; i++)
+            for (int i = 0; i != buffers.Length; i++)
             {
                 buffers[i].WriteToFile(writer);
             }
-        }
-
-        public void BuildBuffer()
-        {
-            int totalsize = 0;
-
-            for (int i = 0; i != prebuffers.Count; i++)
-                totalsize += prebuffers[i].Length;
-
-            List<IndexBuffer> listBuffer = new List<IndexBuffer>();
-
-            for (int i = 0; i != prebuffers.Count; i++)
-            {
-                for (int x = 0; x != prebuffers[i].Length; x++)
-                {
-                    listBuffer.Add(prebuffers[i][x]);
-                }
-            }
-
-            Buffers = listBuffer.ToArray();
         }
     }
 
@@ -90,9 +107,17 @@ namespace Mafia2
         }
         public ushort[] Data {
             get { return data; }
-            set { data = value; }
+            set {
+                data = value;
+                len = (data.Length * 2);
+            }
         }
 
+        public IndexBuffer(ulong hash)
+        {
+            this.hash = hash;
+            u = 1;
+        }
         public IndexBuffer(BinaryReader reader)
         {
             ReadFromFile(reader);

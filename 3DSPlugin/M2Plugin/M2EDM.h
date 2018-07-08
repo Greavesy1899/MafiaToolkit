@@ -6,9 +6,9 @@
 #include "MeshNormalSpec.h"
 
 typedef struct {
-	int i1;
-	int i2;
-	int i3;
+	short i1;
+	short i2;
+	short i3;
 } Int3;
 
 class EDMPart {

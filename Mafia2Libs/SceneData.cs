@@ -9,8 +9,8 @@ namespace Mafia2Tool
     {
         public static FrameNameTable FrameNameTable;
         public static FrameResource FrameResource;
-        public static VertexBufferPool VertexBufferPool;
-        public static IndexBufferPool IndexBufferPool;
+        public static VertexBufferManager VertexBufferPool;
+        public static IndexBufferManager IndexBufferPool;
         public static SoundSector SoundSector;
         public static Actor Actors;
         public static ItemDesc[] ItemDescs;
@@ -57,8 +57,8 @@ namespace Mafia2Tool
                     CityAreas = new CityAreas(file.FullName);
             }
 
-            IndexBufferPool = new IndexBufferPool(ibps);
-            VertexBufferPool = new VertexBufferPool(vbps);
+            IndexBufferPool = new IndexBufferManager(ibps);
+            VertexBufferPool = new VertexBufferManager(vbps);
             ItemDescs = ids.ToArray();
 
             for (int i = 0; i != ItemDescs.Length; i++)
