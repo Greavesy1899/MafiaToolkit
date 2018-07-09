@@ -20,6 +20,10 @@ void EDMPart::SetNormals(std::vector<Point3> normals) {
 	EDMPart::normals = normals;
 }
 
+void EDMPart::SetTangents(std::vector<Point3> tangents) {
+	EDMPart::tangents = tangents;
+}
+
 void EDMPart::SetUVSize(int count) {
 	EDMPart::uvSize = count;
 }
@@ -54,6 +58,10 @@ std::vector<Point3> EDMPart::GetVertices() {
 
 std::vector<Point3> EDMPart::GetNormals() {
 	return EDMPart::normals;
+}
+
+std::vector<Point3> EDMPart::GetTangents() {
+	return EDMPart::tangents;
 }
 
 int EDMPart::GetUVSize() {
@@ -92,6 +100,12 @@ void EDMPart::ReadFromStream(FILE * stream) {
 		fread(&normals[i].x, sizeof(float), 1, stream);
 		fread(&normals[i].y, sizeof(float), 1, stream);
 		fread(&normals[i].z, sizeof(float), 1, stream);
+	}
+	tangents = std::vector<Point3>(vertSize);
+	for (int i = 0; i != vertSize; i++) {
+		fread(&tangents[i].x, sizeof(float), 1, stream);
+		fread(&tangents[i].y, sizeof(float), 1, stream);
+		fread(&tangents[i].z, sizeof(float), 1, stream);
 	}
 
 	fread(&uvSize, sizeof(int), 1, stream);
@@ -153,7 +167,6 @@ void EDMPart::ReadFromStream(FILE * stream) {
 
 	mesh.InvalidateGeomCache();
 	mesh.InvalidateTopologyCache();
-
 }
 
 void EDMPart::WriteToStream(FILE * stream) {
@@ -170,6 +183,12 @@ void EDMPart::WriteToStream(FILE * stream) {
 		fwrite(&normals[i].x, sizeof(float), 1, stream);
 		fwrite(&normals[i].y, sizeof(float), 1, stream);
 		fwrite(&normals[i].z, sizeof(float), 1, stream);
+	}
+
+	for (int i = 0; i != vertSize; i++) {
+		fwrite(&tangents[i].x, sizeof(float), 1, stream);
+		fwrite(&tangents[i].y, sizeof(float), 1, stream);
+		fwrite(&tangents[i].z, sizeof(float), 1, stream);
 	}
 
 	fwrite(&uvSize, sizeof(int), 1, stream);

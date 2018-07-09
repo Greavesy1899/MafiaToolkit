@@ -4,6 +4,7 @@
 #include "MeshNormalSpec.h"
 #include "dummy.h"
 #include "triobj.h"
+#include "gutil.h"
 
 #define EDM_EXPORT_CLASS_ID	Class_ID(0x14fe2fdc, 0x102f11a2)
 
@@ -115,6 +116,7 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 		//init vectors
 		std::vector<Point3> verts = std::vector<Point3>(mesh.numVerts);
 		std::vector<Point3> normals = std::vector<Point3>(mesh.numVerts);
+		std::vector<Point3> tangents = std::vector<Point3>(mesh.numVerts);
 		std::vector<Point3> uvs = std::vector<Point3>(mesh.numVerts);
 		std::vector<Int3> indices = std::vector<Int3>(mesh.numFaces);
 
@@ -143,8 +145,17 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 			uvs[c].y = map.tv[c].y;
 			uvs[c].z = map.tv[c].z;
 		}
+
+		for (int c = 0; c != verts.size(); c++)
+		{
+			Point3 tangent;
+			tangent = ComputeTangent(&map.tv[c], &verts[c]);
+			tangents[c] = tangent;
+		}
+
 		parts[i].SetVertices(verts);
 		parts[i].SetNormals(normals);
+		parts[i].SetTangents(tangents);
 		parts[i].SetIndices(indices);
 		parts[i].SetUVs(uvs);
 	}

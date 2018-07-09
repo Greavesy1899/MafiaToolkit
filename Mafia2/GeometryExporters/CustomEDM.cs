@@ -112,15 +112,15 @@ namespace Mafia2
             }
 
             indexBuffer.Data = idata.ToArray();
-            int dataSize = 0;
-
+            bool hasTangents = false;
             for (int i = 0; i != parts[0].Vertices.Length; i++)
             {
+                byte tz = 0;
                 if (flags.HasFlag(VertexFlags.Position))
                 {
-                    short v1 = Convert.ToInt16((parts[0].Vertices[0].X - positionOffset.X) / positionFactor);
-                    short v2 = Convert.ToInt16((parts[0].Vertices[0].Y - positionOffset.Y) / positionFactor);
-                    short v3 = Convert.ToInt16((parts[0].Vertices[0].Z - positionOffset.Z) / positionFactor);
+                    ushort v1 = Convert.ToUInt16((parts[0].Vertices[i].X - positionOffset.X) / positionFactor);
+                    ushort v2 = Convert.ToUInt16((parts[0].Vertices[i].Y - positionOffset.Y) / positionFactor);
+                    ushort v3 = Convert.ToUInt16((parts[0].Vertices[i].Z - positionOffset.Z) / positionFactor);
 
                     byte[] bytesv1 = BitConverter.GetBytes(v1);
                     byte[] bytesv2 = BitConverter.GetBytes(v2);
@@ -132,26 +132,34 @@ namespace Mafia2
                     vdata.Add(bytesv2[1]);
                     vdata.Add(bytesv3[0]);
                     vdata.Add(bytesv3[1]);
-
-                    dataSize += 6;
                 }
-                if(flags.HasFlag(VertexFlags.Normals))
+                if (flags.HasFlag(VertexFlags.Tangent))
+                {
+                    hasTangents = true;
+
+                    byte x = Convert.ToByte(parts[0].Tangents[i].X * 127.0f + 127.0f);
+                    byte y = Convert.ToByte(parts[0].Tangents[i].Y * 127.0f + 127.0f);
+                    tz = Convert.ToByte(parts[0].Tangents[i].Z * 127.0f + 127.0f);
+
+                    vdata.Add(x);
+                    vdata.Add(y);
+
+                }
+                if (flags.HasFlag(VertexFlags.Normals))
                 {
                     byte x = Convert.ToByte(parts[0].Normals[i].X * 127.0f + 127.0f);
                     byte y = Convert.ToByte(parts[0].Normals[i].Y * 127.0f + 127.0f);
                     byte z = Convert.ToByte(parts[0].Normals[i].Z * 127.0f + 127.0f);
 
-                    vdata.Add(0);
-                    vdata.Add(0);
                     vdata.Add(x);
                     vdata.Add(y);
                     vdata.Add(z);
-                    vdata.Add(0);
-
-                    dataSize += 8;
                 }
-
-                if(flags.HasFlag(VertexFlags.TexCoords0))
+                if (hasTangents)
+                {
+                    vdata.Add(tz);
+                }
+                if (flags.HasFlag(VertexFlags.TexCoords0))
                 {
                     byte[] x = Half.GetBytes(parts[0].UVs[i].X);
                     byte[] y = Half.GetBytes(parts[0].UVs[i].Y);
@@ -160,8 +168,6 @@ namespace Mafia2
                     vdata.Add(x[1]);
                     vdata.Add(y[0]);
                     vdata.Add(y[1]);
-
-                    dataSize += 4;
                 }
             }
 
@@ -174,6 +180,7 @@ namespace Mafia2
             string name;
             Vector3[] vertices;
             Vector3[] normals;
+            Vector3[] tangents;
             UVVector2[] uvs;
             List<Short3> indices;
 
@@ -189,6 +196,10 @@ namespace Mafia2
                 get { return normals; }
                 set { normals = value; }
             }
+            public Vector3[] Tangents {
+                get { return tangents; }
+                set { tangents = value; }
+            }
             public UVVector2[] UVs {
                 get { return uvs; }
                 set { uvs = value; }
@@ -202,12 +213,14 @@ namespace Mafia2
             {
                 this.vertices = new Vector3[vertex.Count];
                 this.normals = new Vector3[vertex.Count];
+                this.tangents = new Vector3[vertex.Count];
                 this.uvs = new UVVector2[vertex.Count];
 
                 for (int i = 0; i != vertex.Count; i++)
                 {
                     vertices[i] = vertex[i].Position;
                     normals[i] = vertex[i].Normal;
+                    tangents[i] = vertex[i].Tangent;
 
                     if (vertex[i].UVs.Length > 0)
                         uvs[i] = vertex[i].UVs[0];
@@ -263,6 +276,9 @@ namespace Mafia2
                 for (int c = 0; c != normals.Length; c++)
                     normals[c].WriteToFile(writer);
 
+                for (int c = 0; c != tangents.Length; c++)
+                    tangents[c].WriteToFile(writer);
+
                 writer.Write(uvs.Length);
                 for (int c = 0; c != uvs.Length; c++)
                 {
@@ -286,6 +302,7 @@ namespace Mafia2
                 int size = reader.ReadInt32();
                 vertices = new Vector3[size];
                 normals = new Vector3[size];
+                tangents = new Vector3[size];
 
                 for (int c = 0; c != vertices.Length; c++)
                     vertices[c] = new Vector3(reader);
@@ -293,19 +310,21 @@ namespace Mafia2
                 for (int c = 0; c != normals.Length; c++)
                     normals[c] = new Vector3(reader);
 
+                for (int c = 0; c != tangents.Length; c++)
+                    tangents[c] = new Vector3(reader);
+
                 size = reader.ReadInt32();
                 uvs = new UVVector2[size];
                 for (int c = 0; c != uvs.Length; c++)
                 {
                     uvs[c] = new UVVector2(HalfHelper.SingleToHalf(reader.ReadSingle()), HalfHelper.SingleToHalf(reader.ReadSingle()));
+                    uvs[c].Y = (Half)1f - uvs[c].Y;
                 }
 
                 size = reader.ReadInt32();
                 indices = new List<Short3>();
                 for (int c = 0; c != size; c++)
-                {
                     indices.Add(new Short3(reader));
-                }
             }
         }
     }

@@ -17,6 +17,7 @@ private:
 	int vertSize;
 	std::vector<Point3> vertices;
 	std::vector<Point3> normals;
+	std::vector<Point3> tangents;
 	int uvSize;
 	std::vector<UVVert> uvs;
 	int indicesSize;
@@ -29,6 +30,7 @@ public:
 	void SetVertSize(int count);
 	void SetVertices(std::vector<Point3> vertices);
 	void SetNormals(std::vector<Point3> normals);
+	void SetTangents(std::vector<Point3> tangents);
 	void SetUVSize(int count);
 	void SetUVs(std::vector<UVVert> uvs);
 	void SetIndicesSize(int count);
@@ -38,6 +40,7 @@ public:
 	int GetVertSize();
 	std::vector<Point3> GetVertices();
 	std::vector<Point3> GetNormals();
+	std::vector<Point3> GetTangents();
 	int GetUVSize();
 	std::vector<UVVert> GetUVs();
 	int GetIndicesSize();

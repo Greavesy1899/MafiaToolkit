@@ -13,11 +13,6 @@ namespace Mafia2Tool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            using (BinaryReader reader = new BinaryReader(File.Open("exported/MP40.WeaponBody.L0.VB0_lod0.edm", FileMode.Open)))
-            {
-                CustomEDM edm = new CustomEDM(reader);
-            }
-
             MaterialData.Default = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default.mtl");
             MaterialData.Default50 = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default50.mtl");
             MaterialData.Default60 = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default60.mtl");
