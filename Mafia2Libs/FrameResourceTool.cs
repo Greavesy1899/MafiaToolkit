@@ -219,6 +219,7 @@ namespace Mafia2Tool
                 for (int c = 0; c != newModel.Lods.Length; c++)
                 {
                     string edmName;
+                    FrameGeometry meshGeom;
 
                     if (mesh[i].Name.String != "")
                     {
@@ -228,11 +229,15 @@ namespace Mafia2Tool
                     {
                         if (mesh[i].Mesh == null)
                         {
-                            edmName = (SceneData.FrameResource.EntireFrame[mesh[i].MeshIndex] as FrameGeometry).LOD[c].VertexBufferRef.String;
+                            meshGeom = SceneData.FrameResource.EntireFrame[mesh[i].MeshIndex] as FrameGeometry;
+                            edmName = meshGeom.LOD[c].VertexBufferRef.String;
                             edmName.Remove(edmName.Length - 5);
                         }
                         else
-                            edmName = mesh[i].Mesh.LOD[c].VertexBufferRef.String;
+                        {
+                            meshGeom = mesh[i].Mesh;
+                            edmName = meshGeom.LOD[c].VertexBufferRef.String;
+                        }
                     }
 
                     Console.WriteLine(edmName);
@@ -292,6 +297,7 @@ namespace Mafia2Tool
 
                 FrameObjectSingleMesh mesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
                 FrameGeometry geom = SceneData.FrameResource.EntireFrame[mesh.MeshIndex] as FrameGeometry;
+                FrameMaterial mat = SceneData.FrameResource.EntireFrame[mesh.MaterialIndex] as FrameMaterial;
 
                 indexRef = geom.LOD[0].IndexBufferRef.uHash;
                 vertexRef = geom.LOD[0].VertexBufferRef.uHash;
@@ -314,6 +320,12 @@ namespace Mafia2Tool
                     edm.PositionFactor = geom.PositionFactor;
                     edm.BuildBuffers();
                 }
+                geom.LOD[0].BuildNewPartition();
+                geom.LOD[0].BuildNewMaterialSplit();
+                geom.LOD[0].SplitInfo.NumVerts = edm.Parts[0].Vertices.Length;
+                geom.LOD[0].NumVertsPr = edm.Parts[0].Vertices.Length;
+                geom.LOD[0].SplitInfo.NumFaces = edm.Parts[0].Indices.Count;
+                mat.Materials[0][0].NumFaces = edm.Parts[0].Indices.Count;
 
                 SceneData.IndexBufferPool.BufferPools[iIndex[0]].Buffers[iIndex[1]] = edm.IndexBuffer;
                 SceneData.VertexBufferPool.BufferPools[iIndex[0]].Buffers[iIndex[1]] = edm.VertexBuffer;

@@ -118,9 +118,13 @@ namespace Mafia2
                 byte tz = 0;
                 if (flags.HasFlag(VertexFlags.Position))
                 {
-                    ushort v1 = Convert.ToUInt16((parts[0].Vertices[i].X - positionOffset.X) / positionFactor);
-                    ushort v2 = Convert.ToUInt16((parts[0].Vertices[i].Y - positionOffset.Y) / positionFactor);
-                    ushort v3 = Convert.ToUInt16((parts[0].Vertices[i].Z - positionOffset.Z) / positionFactor);
+                    float x = parts[0].Vertices[i].X - positionOffset.X / positionFactor;
+                    float y = parts[0].Vertices[i].Y - positionOffset.Y / positionFactor;
+                    float z = parts[0].Vertices[i].Z - positionOffset.Z / positionFactor;
+
+                    ushort v1 = Convert.ToUInt16(x);
+                    ushort v2 = Convert.ToUInt16(y);
+                    ushort v3 = Convert.ToUInt16(z);
 
                     byte[] bytesv1 = BitConverter.GetBytes(v1);
                     byte[] bytesv2 = BitConverter.GetBytes(v2);

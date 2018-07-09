@@ -15,6 +15,7 @@ namespace Mafia2
         byte[] lodFlags;
         TransformMatrix[] worldTransforms;
         SkeletonLodInfo[] lodInfo;
+        int[] numArray;
 
         public int Count1 {
             get { return count1; }
@@ -48,7 +49,7 @@ namespace Mafia2
             numBlendIndices = reader.ReadInt32();
 
             int length = reader.ReadInt32();
-            int[] numArray = new int[length];
+             numArray = new int[length];
 
             for (int i = 0; i != length; i++)
                 numArray[i] = reader.ReadInt32();
@@ -77,7 +78,37 @@ namespace Mafia2
 
             for (int i = 0; i != length; i++)
                 lodInfo[i] = new SkeletonLodInfo(reader, this);
+        }
 
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(count1);
+            writer.Write(count2);
+            writer.Write(count3);
+            writer.Write(count4);
+
+            writer.Write(numBlendIndices);
+            writer.Write(numArray.Length);
+
+            for (int i = 0; i != numArray.Length; i++)
+                writer.Write(numArray[i]);
+
+            writer.Write(lodFlag);
+
+            for (int i = 0; i != count1; i++)
+                boneIDs[i].WriteToFile(writer);
+
+            for (int i = 0; i != count2; i++)
+                mats1[i].WriteToFrame(writer);
+
+            writer.Write(lodFlags.Length);
+            writer.Write(lodFlags);
+
+            for (int i = 0; i != count3; i++)
+                worldTransforms[i].WriteToFrame(writer);
+
+            for (int i = 0; i != lodInfo.Length; i++)
+                lodInfo[i].WriteToFile(writer);
         }
     }
 
@@ -87,6 +118,14 @@ namespace Mafia2
         byte[] indexMap;
         byte[] lodBlendIndexMap;
 
+        public Bounds[] Bounds {
+            get { return bounds; }
+            set { bounds = value; }
+        }
+        public byte[] IndexMap {
+            get { return indexMap; }
+            set { indexMap = value; }
+        }
         public byte[] LodBlendIndexMap {
             get { return lodBlendIndexMap; }
             set { lodBlendIndexMap = value; }
@@ -108,6 +147,16 @@ namespace Mafia2
             indexMap = reader.ReadBytes(count4);
             byte num = reader.ReadByte();
             lodBlendIndexMap = reader.ReadBytes(num);
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            for (int i = 0; i != bounds.Length; i++)
+                bounds[i].WriteToFile(writer);
+
+            writer.Write(indexMap);
+            writer.Write((byte)lodBlendIndexMap.Length);
+            writer.Write(lodBlendIndexMap);
         }
     }
 }

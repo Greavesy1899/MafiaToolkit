@@ -6,13 +6,25 @@ namespace Mafia2
     public class FrameBlendInfo
     {
         BlendDataToBoneIndexInfo[] blendDataToBoneIndexInfos;
-        Bounds bounds;
-        BoundingBox[] boundingBoxes;
         BlendDataToBoneIndexMap[] blendDataToBoneIndexMaps;
+        BoundingBox[] boundingBoxes;
+        Bounds bounds;
 
         public BlendDataToBoneIndexMap[] BlendDataToBoneIndexMaps {
             get { return blendDataToBoneIndexMaps; }
             set { blendDataToBoneIndexMaps = value; }
+        }
+        public BlendDataToBoneIndexInfo[] BlendDataToBoneIndexInfos {
+            get { return blendDataToBoneIndexInfos; }
+            set { blendDataToBoneIndexInfos = value; }
+        }
+        public BoundingBox[] BoundingBoxes {
+            get { return boundingBoxes; }
+            set { boundingBoxes = value; }
+        }
+        public Bounds Bound {
+            get { return bounds; }
+            set { bounds = value; }
         }
 
         public FrameBlendInfo(BinaryReader reader)
@@ -40,6 +52,23 @@ namespace Mafia2
             for (int i = 0; i != num; i++)
                 blendDataToBoneIndexMaps[i] = new BlendDataToBoneIndexMap(reader, blendDataToBoneIndexInfos[i]);
         }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(boundingBoxes.Length);
+            writer.Write((byte)blendDataToBoneIndexInfos.Length);
+
+            for (int i = 0; i != blendDataToBoneIndexInfos.Length; i++)
+                blendDataToBoneIndexInfos[i].WriteToFile(writer);
+
+            bounds.WriteToFile(writer);
+
+            for (int i = 0; i != boundingBoxes.Length; i++)
+                boundingBoxes[i].WriteToFile(writer);
+
+            for (int i = 0; i != blendDataToBoneIndexMaps.Length; i++)
+                blendDataToBoneIndexMaps[i].WriteToFile(writer);
+        }
     }
 
     public class BlendDataToBoneIndexInfo
@@ -61,6 +90,12 @@ namespace Mafia2
         {
             numBoneIndices = reader.ReadInt32();
             NumBlendIndexRanges = reader.ReadInt32();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(numBoneIndices);
+            writer.Write(numBlendIndexRanges);
         }
     }
 
@@ -104,6 +139,11 @@ namespace Mafia2
             for (int i = 0; i != numData.Length; i++)
                 writer.Write(numData[i]);
 
+            for (int i = 0; i != blendIndices.Count; i++)
+                writer.Write(blendIndices[i]);
+
+            writer.Write(blendIndexRanges);
+
 
         }
     }
@@ -141,9 +181,13 @@ namespace Mafia2
 
         public void WriteToFile(BinaryWriter writer)
         {
-            transform.WriteToFile(writer);
+            transform.WriteToFrame(writer);
             bounds.WriteToFile(writer);
-            writer.Write(isValid);
+
+            if (isValid)
+                writer.Write((byte)0xFF);
+            else
+                writer.Write((byte)0x00);
         }
     }
 }

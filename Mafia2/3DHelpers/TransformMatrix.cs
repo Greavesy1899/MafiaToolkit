@@ -52,6 +52,22 @@ public class TransformMatrix
         writer.Write(position.Z);
     }
 
+    public void WriteToFrame(BinaryWriter writer)
+    {
+        writer.Write(rotation.Rows[0, 0]);
+        writer.Write(rotation.Rows[1, 0]);
+        writer.Write(rotation.Rows[2, 0]);
+        writer.Write(position.X);
+        writer.Write(rotation.Rows[0, 1]);
+        writer.Write(rotation.Rows[1, 1]);
+        writer.Write(rotation.Rows[2, 1]);
+        writer.Write(position.Y);
+        writer.Write(rotation.Rows[0, 2]);
+        writer.Write(rotation.Rows[1, 2]);
+        writer.Write(rotation.Rows[2, 2]);
+        writer.Write(position.Z);
+    }
+
     public override string ToString()
     {
         return string.Format("{0} {1}", rotation, position);

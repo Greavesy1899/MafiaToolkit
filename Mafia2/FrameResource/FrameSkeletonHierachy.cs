@@ -7,6 +7,8 @@ namespace Mafia2
     {
         byte[] parentIndices;
         byte[] lastChildIndices;
+        byte unkNum;
+        byte[] unkData;
 
         public byte[] ParentIndices {
             get { return parentIndices; }
@@ -15,6 +17,14 @@ namespace Mafia2
         public byte[] LastChildIndices {
             get { return lastChildIndices; }
             set { lastChildIndices = value; }
+        }
+        public byte Unk01 {
+            get { return unkNum; }
+            set { unkNum = value; }
+        }
+        public byte[] UnkData {
+            get { return unkData; }
+            set { unkData = value; }
         }
 
         public FrameSkeletonHierachy(BinaryReader reader)
@@ -26,9 +36,18 @@ namespace Mafia2
         {
             int count = reader.ReadInt32();
             parentIndices = reader.ReadBytes(count);
-            int num = reader.ReadByte();
+            unkNum = reader.ReadByte();
             lastChildIndices = reader.ReadBytes(count);
-            reader.ReadBytes(count + 1);
+            unkData = reader.ReadBytes(count + 1);
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(parentIndices.Length);
+            writer.Write(parentIndices);
+            writer.Write(unkNum);
+            writer.Write(lastChildIndices);
+            writer.Write(unkData);
         }
     }
 }

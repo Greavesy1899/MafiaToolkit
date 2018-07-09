@@ -106,6 +106,17 @@ namespace Mafia2
             writer.Write(zeroTail);
         }
 
+        public void BuildNewPartition()
+        {
+            nPartition = 1;
+            partitionInfo.BuildBlankPartition();
+        }
+        public void BuildNewMaterialSplit()
+        {
+            matSplitType = 0xC;
+            splitInfo.BuildMaterialSplits();
+        }
+
         public struct MaterialSplit
         {
             int firstBurst;
@@ -288,11 +299,17 @@ namespace Mafia2
             }
             public int[] Longs1 {
                 get { return numLongs1; }
-                set { numLongs1 = value; }
+                set {
+                    numDesc1Length = value.Length;
+                    numLongs1 = value;
+                }
             }
             public int[] Longs2 {
                 get { return numLongs2; }
-                set { numLongs2 = value; }
+                set {
+                    numLongs2Length = value.Length;
+                    numLongs2 = value;
+                }
             }
             public Descriptor[] descriptors {
                 get { return numDesc1; }
@@ -384,6 +401,21 @@ namespace Mafia2
                     for (int i = 0; i != 9; i++)
                         writer.Write((byte)0);
                 }
+            }
+
+            public void BuildBlankPartition()
+            {
+                isBone = false;
+                isAvailB = false;
+                isAvailC = false;
+                memRequireA = 0x44;
+                memRequireB = 0x44;
+                partitionType = 4;
+                numDesc1Length = 0;
+                numLongs2Length = numDesc1Length + 1;
+                Longs1 = new int[0];
+                Longs2 = new int[0];
+
             }
         }
         [TypeConverter(typeof(ExpandableObjectConverter))]
@@ -587,6 +619,19 @@ namespace Mafia2
                     }
                 }
 
+            }
+
+            public void BuildMaterialSplits()
+            {
+                unk18 = 2;
+                unk20 = 0;
+                unk21 = 0xC;
+                numSplitGroup = 1;
+                availD = true;
+                unk24 = 1;
+                nSizeOfMatBurstEntries = 0x14;
+                nSizeOfMatSplitEntries = 0xC;
+                materialBursts[0].Bounds = new short[6] { 32766, 32766, 32766, -32766, -32766, -32766 };
             }
 
         }

@@ -101,9 +101,9 @@ namespace Mafia2
             writer.Write(skeletonHierachyIndex);
 
             for (int i = 0; i != restPose.Length; i++)
-                restPose[i].WriteToFile(writer);
+                restPose[i].WriteToFrame(writer);
 
-            unkTrasform.WriteToFile(writer);
+            unkTrasform.WriteToFrame(writer);
             writer.Write(attachmentReferences.Length);
 
             for (int i = 0; i != attachmentReferences.Length; i++)
@@ -113,10 +113,12 @@ namespace Mafia2
             writer.Write(unk_29_int);
 
             writer.Write(unkData.Length);
-            writer.Write(unk_30_list.Length);
+            writer.Write((short)unk_30_list.Length);
 
             for (int i = 0; i != unk_30_list.Length; i++)
                 unk_30_list[i].WriteToFile(writer);
+
+            writer.Write(unkData);
         }
 
         public override string ToString()

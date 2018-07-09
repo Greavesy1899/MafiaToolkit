@@ -72,7 +72,7 @@ namespace Mafia2
         {
             name.WriteToFile(writer);
             writer.Write(unk0);
-            transformMatrix.WriteToFile(writer);
+            transformMatrix.WriteToFrame(writer);
             writer.Write(unk3);
             writer.Write(parentIndex1.Index);
             writer.Write(parentIndex2.Index);
