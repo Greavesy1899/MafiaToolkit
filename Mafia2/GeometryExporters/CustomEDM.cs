@@ -118,13 +118,16 @@ namespace Mafia2
                 byte tz = 0;
                 if (flags.HasFlag(VertexFlags.Position))
                 {
-                    float x = parts[0].Vertices[i].X - positionOffset.X / positionFactor;
-                    float y = parts[0].Vertices[i].Y - positionOffset.Y / positionFactor;
-                    float z = parts[0].Vertices[i].Z - positionOffset.Z / positionFactor;
+                    float x = parts[0].Vertices[i].X - positionOffset.X;
+                    x = x / positionFactor;
+                    float y = parts[0].Vertices[i].Y - positionOffset.Y;
+                    y = y / positionFactor;
+                    float z = parts[0].Vertices[i].Z - positionOffset.Z;
+                    z = z / positionFactor;
 
-                    short v1 = Convert.ToInt16(x);
-                    short v2 = Convert.ToInt16(y);
-                    short v3 = Convert.ToInt16(z);
+                    ushort v1 = Convert.ToUInt16(x);
+                    ushort v2 = Convert.ToUInt16(y);
+                    ushort v3 = Convert.ToUInt16(z);
 
                     byte[] bytesv1 = BitConverter.GetBytes(v1);
                     byte[] bytesv2 = BitConverter.GetBytes(v2);
@@ -189,6 +192,11 @@ namespace Mafia2
             }
 
             vertexBuffer.Data = vdata.ToArray();
+
+            using (BinaryWriter writer = new BinaryWriter(File.Open("vertexBuffer.bin", FileMode.Create)))
+            {
+                vertexBuffer.WriteToFile(writer);
+            }
 
         }
 

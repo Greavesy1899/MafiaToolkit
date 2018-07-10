@@ -163,6 +163,7 @@ namespace Mafia2
                     data = null;
 
                     bufferType = (ActorTypes)reader.ReadInt32();
+
                     uint bufferLength = reader.ReadUInt32();
 
                     if (bufferType == ActorTypes.Pinup && bufferLength == 4)

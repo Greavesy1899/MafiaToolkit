@@ -255,10 +255,9 @@ namespace Mafia2
             Vector3 offsetVector;
             Vector3 scaleVector;
             int numDesc1Length;
-            int unk1;
             Descriptor[] numDesc1;
-            int unk2;
             bool isAvailB;
+            int numLongs1Length;
             int[] numLongs1;
             int numLongs2Length;
             bool isAvailC;
@@ -289,20 +288,20 @@ namespace Mafia2
                 get { return partitionType; }
                 set { partitionType = value; }
             }
-            public int Unk1 {
-                get { return unk1; }
-                set { unk1 = value; }
-            }
-            public int Unk2 {
-                get { return unk2; }
-                set { unk2 = value; }
+            public int numLong1 {
+                get { return numLongs1Length; }
+                set { numLongs1Length = value; }
             }
             public int[] Longs1 {
                 get { return numLongs1; }
                 set {
-                    numDesc1Length = value.Length;
+                    numLongs1Length = value.Length;
                     numLongs1 = value;
                 }
+            }
+            public int numLong2 {
+                get { return numLongs2Length; }
+                set { numLongs2Length = value; }
             }
             public int[] Longs2 {
                 get { return numLongs2; }
@@ -310,6 +309,10 @@ namespace Mafia2
                     numLongs2Length = value.Length;
                     numLongs2 = value;
                 }
+            }
+            public int NumDesc1Length {
+                get { return numDesc1Length; }
+                set { numDesc1Length = value; }
             }
             public Descriptor[] descriptors {
                 get { return numDesc1; }
@@ -343,12 +346,12 @@ namespace Mafia2
                         numDesc1[i] = new Descriptor(reader);
                     }
                 }
-                unk2 = reader.ReadInt32();
+                numLongs1Length = reader.ReadInt32();
                 isAvailB = reader.ReadBoolean();
                 if (isAvailB)
                 {
 
-                    numLongs1 = new int[unk2];
+                    numLongs1 = new int[numLongs1Length];
                     for (int i = 0; i != numLongs1.Length; i++)
                     {
                         numLongs1[i] = reader.ReadInt32();
@@ -384,7 +387,7 @@ namespace Mafia2
                         numDesc1[i].WriteToFile(writer);
                     }
                 }
-                writer.Write(unk2);
+                writer.Write(numLongs1Length);
                 writer.Write(isAvailB);
                 if (isAvailB)
                 {
@@ -413,11 +416,14 @@ namespace Mafia2
                 memRequireA = 0x44;
                 memRequireB = 0x44;
                 partitionType = 4;
-                numDesc1Length = 0;
-                numLongs2Length = numDesc1Length + 1;
                 Longs1 = new int[0];
                 Longs2 = new int[0];
-
+                descriptors = new Descriptor[0];
+                numDesc1Length = 0;
+                numLongs1Length = numDesc1Length + 1;
+                numLongs2Length = 0;
+                offsetVector = new Vector3(0.0f, 0.0f, 0.0f);
+                scaleVector = new Vector3(1.0f, 1.0f, 1.0f);
             }
         }
         [TypeConverter(typeof(ExpandableObjectConverter))]
