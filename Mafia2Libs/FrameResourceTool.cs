@@ -196,6 +196,9 @@ namespace Mafia2Tool
             {
                 CustomEDD.Entry entry = new CustomEDD.Entry();
 
+                //if (mesh[i].Name.String != "JF_magazL2")
+                //    return;
+
                 Model newModel = new Model((mesh[i]), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
                
                 if (mesh[i].ParentIndex1.Index != -1)
@@ -316,12 +319,14 @@ namespace Mafia2Tool
                     edm.BufferIndexHash = indexRef;
                     edm.BufferVertexHash = vertexRef;
                     edm.BufferFlags = geom.LOD[0].VertexDeclaration;
-                    edm.PositionOffset = geom.PositionOffset;
-                    edm.PositionFactor = geom.PositionFactor;
+                    edm.CalculateBounds(true);
                     edm.BuildBuffers();
                 }
                 geom.LOD[0].BuildNewPartition();
                 geom.LOD[0].BuildNewMaterialSplit();
+                geom.PositionFactor = edm.PositionFactor;
+                geom.PositionOffset = edm.PositionOffset;
+                mesh.Boundings = edm.Bound;
                 geom.LOD[0].SplitInfo.NumVerts = edm.Parts[0].Vertices.Length;
                 geom.LOD[0].NumVertsPr = edm.Parts[0].Vertices.Length;
                 geom.LOD[0].SplitInfo.NumFaces = edm.Parts[0].Indices.Count;

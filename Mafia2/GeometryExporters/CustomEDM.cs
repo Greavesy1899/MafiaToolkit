@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace Mafia2
@@ -18,6 +19,7 @@ namespace Mafia2
         Vector3 positionOffset;
         IndexBuffer indexBuffer;
         VertexBuffer vertexBuffer;
+        Bounds bounds;
 
 
         public string Name {
@@ -39,6 +41,10 @@ namespace Mafia2
         public ulong BufferVertexHash {
             get { return bufferVertexHash; }
             set { bufferVertexHash = value; }
+        }
+        public Bounds Bound {
+            get { return bounds; }
+            set { bounds = value; }
         }
         public VertexFlags BufferFlags {
             get { return flags; }
@@ -96,6 +102,9 @@ namespace Mafia2
             parts[slot] = new Part(vertex, indices, name);
         }
 
+        /// <summary>
+        /// Build new buffers for new mesh. These will replace existing buffers.
+        /// </summary>
         public void BuildBuffers()
         {
             indexBuffer = new IndexBuffer(bufferIndexHash);
@@ -153,7 +162,7 @@ namespace Mafia2
 
                     if (float.IsNaN(fy))
                         fy = 0.0f;
-
+                    
                     if (float.IsNaN(fz))
                         fz = 0.0f;
 
@@ -192,12 +201,53 @@ namespace Mafia2
             }
 
             vertexBuffer.Data = vdata.ToArray();
+        }
 
-            using (BinaryWriter writer = new BinaryWriter(File.Open("vertexBuffer.bin", FileMode.Create)))
+        /// <summary>
+        /// Calculate new bounds on model;
+        /// </summary>
+        /// <param name="updateGeom">If this is true, then the "Position Offset" and "Position Scale will be updated."</param>
+        public void CalculateBounds(bool updateGeom)
+        {
+            Vector3 min = new Vector3(0);
+            Vector3 max = new Vector3(0);
+
+            for (int i = 0; i != parts[0].Vertices.Length; i++)
             {
-                vertexBuffer.WriteToFile(writer);
+                if (parts[0].Vertices[i].X < min.X)
+                    min.X = parts[0].Vertices[i].X;
+
+                if (parts[0].Vertices[i].X > max.X)
+                    max.X = parts[0].Vertices[i].X;
+
+                if (parts[0].Vertices[i].Y < min.Y)
+                    min.Y = parts[0].Vertices[i].Y;
+
+                if (parts[0].Vertices[i].Y > max.Y)
+                    max.Y = parts[0].Vertices[i].Y;
+
+                if (parts[0].Vertices[i].Z < min.Z)
+                    min.Z = parts[0].Vertices[i].Z;
+
+                if (parts[0].Vertices[i].Z > max.Z)
+                    max.Z = parts[0].Vertices[i].Z;
             }
 
+            bounds = new Bounds(min, max);
+
+            if (updateGeom == false)
+                return;
+
+            float minFloatf = 0.000016f;
+            Vector3 minFloat = new Vector3(minFloatf);
+
+            min -= minFloat;
+            max += minFloat;
+
+            positionOffset = min;
+            float fMaxSize = Math.Max(max.X - min.X + minFloatf, Math.Max(max.Y - min.Y + minFloatf, (max.Z - min.Y + minFloatf) * 2.0f));
+
+            positionFactor = fMaxSize / 0x10000;
         }
 
         public class Part

@@ -25,6 +25,12 @@ namespace Mafia2
             max = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         }
 
+        public Bounds(Vector3 min, Vector3 max)
+        {
+            this.min = min;
+            this.max = max;
+        }
+
         public void WriteToFile(BinaryWriter writer)
         {
             min.WriteToFile(writer);

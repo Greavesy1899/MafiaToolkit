@@ -31,6 +31,13 @@ namespace Mafia2
             this.z = z;
         }
 
+        public Vector3(float value)
+        {
+            this.x = value;
+            this.y = value;
+            this.z = value;
+        }
+
         public Vector3(BinaryReader reader)
         {
             x = reader.ReadSingle();
@@ -58,10 +65,9 @@ namespace Mafia2
 
         public void CrossProduct(Vector3 vector2)
         {
-            this =  new Vector3(
-                y * vector2.Z - z * vector2.Y,
-                z * vector2.X - x * vector2.Z,
-                x * vector2.Y - y * vector2.X);
+            x = y * vector2.Z - z * vector2.Y;
+            y = z * vector2.X - x * vector2.Z;
+            z = x * vector2.Y - y * vector2.X;
         }
 
         public void Normalize()
@@ -76,6 +82,10 @@ namespace Mafia2
         public static Vector3 operator +(Vector3 a, Vector3 b)
         {
             return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+        }
+        public static Vector3 operator -(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
         }
         public static Vector3 operator *(Vector3 a, float scale)
         {

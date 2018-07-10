@@ -197,7 +197,6 @@ namespace Mafia2
 
                     EDM.AddPart(newVerts, newShort3, lod.Parts[i].Material, i);
                 }
-
                 EDM.WriteToFile(writer);
             }
         }
