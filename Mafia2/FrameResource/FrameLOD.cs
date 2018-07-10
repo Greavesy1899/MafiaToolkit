@@ -337,30 +337,32 @@ namespace Mafia2
                     scaleVector = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
                     numDesc1Length = reader.ReadInt32();
-                    unk1 = reader.ReadInt32();
                     numDesc1 = new Descriptor[numDesc1Length];
                     for (int i = 0; i != numDesc1.Length; i++)
                     {
                         numDesc1[i] = new Descriptor(reader);
                     }
-                    isAvailB = reader.ReadBoolean();
-                    unk2 = reader.ReadInt32();
-                    numLongs1 = new int[numDesc1Length];
+                }
+                unk2 = reader.ReadInt32();
+                isAvailB = reader.ReadBoolean();
+                if (isAvailB)
+                {
+
+                    numLongs1 = new int[unk2];
                     for (int i = 0; i != numLongs1.Length; i++)
                     {
                         numLongs1[i] = reader.ReadInt32();
                     }
-                    numLongs2Length = reader.ReadInt32();
-                    isAvailC = reader.ReadBoolean();
+                }
+                numLongs2Length = reader.ReadInt32();
+                isAvailC = reader.ReadBoolean();
+                if(isAvailC)
+                { 
                     numLongs2 = new int[numLongs2Length];
                     for (int i = 0; i != numLongs2.Length; i++)
                     {
                         numLongs2[i] = reader.ReadInt32();
                     }
-                }
-                else
-                {
-                    reader.ReadBytes(10);
                 }
             }
 
@@ -377,29 +379,29 @@ namespace Mafia2
                     scaleVector.WriteToFile(writer);
 
                     writer.Write(numDesc1Length);
-                    writer.Write(unk1);
                     for (int i = 0; i != numDesc1.Length; i++)
                     {
                         numDesc1[i].WriteToFile(writer);
                     }
-                    writer.Write(isAvailB);
-                    writer.Write(unk2);
+                }
+                writer.Write(unk2);
+                writer.Write(isAvailB);
+                if (isAvailB)
+                {
                     for (int i = 0; i != numLongs1.Length; i++)
                     {
                         writer.Write(numLongs1[i]);
                     }
-                    writer.Write(numLongs2Length);
-                    writer.Write(isAvailC);
+
+                }
+                writer.Write(numLongs2Length);
+                writer.Write(isAvailC);
+                if (isAvailC)
+                {
                     for (int i = 0; i != numLongs2.Length; i++)
                     {
                         writer.Write(numLongs2[i]);
                     }
-                }
-                else
-                {
-                    writer.Write((byte)1);
-                    for (int i = 0; i != 9; i++)
-                        writer.Write((byte)0);
                 }
             }
 
@@ -505,7 +507,7 @@ namespace Mafia2
 
             public void ReadFromFile(BinaryReader reader, int type)
             {
-                if (type != 1)
+                if (type == 12)
                 {
                     unk18 = reader.ReadInt32();
                     numVerts = reader.ReadInt32();
@@ -513,34 +515,17 @@ namespace Mafia2
                     unk20 = reader.ReadInt32();
                     unk21 = reader.ReadInt32();
                     numSplitGroup = reader.ReadInt32();
+
+                    if (unk18 + unk20 + unk21 + nSizeOfMatBurstEntries + nSizeOfMatSplitEntries != 0xE)
+                        throw new Exception("does not equal 14");
                 }
-                
+
                 if(type == 1)
                 {
-                    availD = reader.ReadBoolean();
-                    unk24 = reader.ReadInt32();
-                    nSizeOfMatBurstEntries = reader.ReadInt32();
-                    nSizeOfMatSplitEntries = reader.ReadInt32();
-                    numMatBurst = reader.ReadInt32();
-                    numMatSplit = reader.ReadInt32();
-
-                    hash = reader.ReadInt64();
-
-                    materialBursts = new MaterialBurst[numMatBurst];
-                    materialSplits = new MaterialSplit[numMatSplit];
-
-
-                    for (int i = 0; i != materialBursts.Length; i++)
-                    {
-                        materialBursts[i] = new MaterialBurst(reader);
-                    }
-                    for (int i = 0; i != materialSplits.Length; i++)
-                    {
-                        materialSplits[i] = new MaterialSplit(reader);
-                    }
+                    numSplitGroup = 1;
                 }
 
-                if (numSplitGroup != 0)
+                if (numSplitGroup == 1)
                 {
                     availD = reader.ReadBoolean();
                     unk24 = reader.ReadInt32();
@@ -564,12 +549,11 @@ namespace Mafia2
                         materialSplits[i] = new MaterialSplit(reader);
                     }
                 }
-
             }
 
             public void WriteToFile(BinaryWriter writer, int type)
             {
-                if (type != 1)
+                if (type == 12)
                 {
                     writer.Write(unk18);
                     writer.Write(numVerts);
@@ -579,27 +563,7 @@ namespace Mafia2
                     writer.Write(numSplitGroup);
                 }
 
-                if (type == 1)
-                {
-                    writer.Write(availD);
-                    writer.Write(unk24);
-                    writer.Write(nSizeOfMatBurstEntries);
-                    writer.Write(nSizeOfMatSplitEntries);
-                    writer.Write(numMatBurst);
-                    writer.Write(numMatSplit);
-                    writer.Write(hash);
-
-                    for (int i = 0; i != materialBursts.Length; i++)
-                    {
-                        materialBursts[i].WriteToFile(writer);
-                    }
-                    for (int i = 0; i != materialSplits.Length; i++)
-                    {
-                        materialSplits[i].WriteToFile(writer);
-                    }
-                }
-
-                if (numSplitGroup != 0)
+                if (numSplitGroup == 1)
                 {
                     writer.Write(availD);
                     writer.Write(unk24);
@@ -631,7 +595,7 @@ namespace Mafia2
                 unk24 = 1;
                 nSizeOfMatBurstEntries = 0x14;
                 nSizeOfMatSplitEntries = 0xC;
-                materialBursts[0].Bounds = new short[6] { 32766, 32766, 32766, -32766, -32766, -32766 };
+                //materialBursts[0].Bounds = new short[6] { 32766, 32766, 32766, -32766, -32766, -32766 };
             }
 
         }

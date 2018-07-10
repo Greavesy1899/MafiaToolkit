@@ -325,6 +325,7 @@ namespace Mafia2Tool
                 geom.LOD[0].SplitInfo.NumVerts = edm.Parts[0].Vertices.Length;
                 geom.LOD[0].NumVertsPr = edm.Parts[0].Vertices.Length;
                 geom.LOD[0].SplitInfo.NumFaces = edm.Parts[0].Indices.Count;
+                geom.LOD[0].SplitInfo.MaterialBursts[0].SecondIndex = Convert.ToUInt16(edm.Parts[0].Indices.Count - 1);
                 mat.Materials[0][0].NumFaces = edm.Parts[0].Indices.Count;
 
                 SceneData.IndexBufferPool.BufferPools[iIndex[0]].Buffers[iIndex[1]] = edm.IndexBuffer;

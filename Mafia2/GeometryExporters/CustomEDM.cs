@@ -122,9 +122,9 @@ namespace Mafia2
                     float y = parts[0].Vertices[i].Y - positionOffset.Y / positionFactor;
                     float z = parts[0].Vertices[i].Z - positionOffset.Z / positionFactor;
 
-                    ushort v1 = Convert.ToUInt16(x);
-                    ushort v2 = Convert.ToUInt16(y);
-                    ushort v3 = Convert.ToUInt16(z);
+                    short v1 = Convert.ToInt16(x);
+                    short v2 = Convert.ToInt16(y);
+                    short v3 = Convert.ToInt16(z);
 
                     byte[] bytesv1 = BitConverter.GetBytes(v1);
                     byte[] bytesv2 = BitConverter.GetBytes(v2);
@@ -141,9 +141,22 @@ namespace Mafia2
                 {
                     hasTangents = true;
 
-                    byte x = Convert.ToByte(parts[0].Tangents[i].X * 127.0f + 127.0f);
-                    byte y = Convert.ToByte(parts[0].Tangents[i].Y * 127.0f + 127.0f);
-                    tz = Convert.ToByte(parts[0].Tangents[i].Z * 127.0f + 127.0f);
+                    float fx = parts[0].Tangents[i].X * 127.0f + 127.0f;
+                    float fy = parts[0].Tangents[i].Y * 127.0f + 127.0f;
+                    float fz = parts[0].Tangents[i].Z * 127.0f + 127.0f;
+
+                    if (float.IsNaN(fx))
+                        fx = 0.0f;
+
+                    if (float.IsNaN(fy))
+                        fy = 0.0f;
+
+                    if (float.IsNaN(fz))
+                        fz = 0.0f;
+
+                    byte x = Convert.ToByte(fx);
+                    byte y = Convert.ToByte(fy);
+                    tz = Convert.ToByte(fz);
 
                     vdata.Add(x);
                     vdata.Add(y);
