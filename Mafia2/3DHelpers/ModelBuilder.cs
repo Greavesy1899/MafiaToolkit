@@ -60,7 +60,7 @@ namespace Mafia2
                     if (lod1.VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
-                        vertex.ReadPositionData(vertexBuffer.Data, startIndex, mesh.PositionFactor, mesh.PositionOffset);
+                        vertex.ReadPositionData(vertexBuffer.Data, startIndex, mesh.DecompressionFactor, mesh.DecompressionOffset);
                     }
                     if (lod1.VertexDeclaration.HasFlag(VertexFlags.Tangent))
                     {

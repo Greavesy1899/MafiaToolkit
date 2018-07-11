@@ -7,8 +7,8 @@ namespace Mafia2
     {
         byte numLods;
         short unk01_short = 0;
-        Vector3 positionOffset;
-        float positionFactor;
+        Vector3 decompressionOffset;
+        float decompressionFactor;
         FrameLOD[] lod;
         int unk02_int;
 
@@ -20,13 +20,13 @@ namespace Mafia2
             get { return unk01_short; }
             set { unk01_short = value; }
         }
-        public Vector3 PositionOffset {
-            get { return positionOffset; }
-            set { positionOffset = value; }
+        public Vector3 DecompressionOffset {
+            get { return decompressionOffset; }
+            set { decompressionOffset = value; }
         }
-        public float PositionFactor {
-            get { return positionFactor; }
-            set { positionFactor = value; }
+        public float DecompressionFactor {
+            get { return decompressionFactor; }
+            set { decompressionFactor = value; }
         }
         public FrameLOD[] LOD {
             get { return lod; }
@@ -47,8 +47,8 @@ namespace Mafia2
             numLods = reader.ReadByte();
             unk01_short = reader.ReadInt16();
 
-            positionOffset = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-            positionFactor = reader.ReadSingle();
+            decompressionOffset = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+            decompressionFactor = reader.ReadSingle();
 
             LOD = new FrameLOD[numLods];
 
@@ -63,8 +63,8 @@ namespace Mafia2
         {
             writer.Write(numLods);
             writer.Write(unk01_short);
-            positionOffset.WriteToFile(writer);
-            writer.Write(positionFactor);
+            decompressionOffset.WriteToFile(writer);
+            writer.Write(decompressionFactor);
 
             for(int i = 0; i != numLods; i++)
             {

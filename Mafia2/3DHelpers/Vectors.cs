@@ -1,11 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 
 namespace Mafia2
 {
-    [TypeConverter(typeof(ExpandableObjectConverter))]
-    public struct Vector3
+    [TypeConverter(typeof(Vector3Converter))]
+    public class Vector3
     {
         float x;
         float y;
@@ -15,10 +16,12 @@ namespace Mafia2
             get { return x; }
             set { x = value; }
         }
+
         public float Y {
             get { return y; }
             set { y = value; }
         }
+
         public float Z {
             get { return z; }
             set { z = value; }
@@ -99,7 +102,20 @@ namespace Mafia2
 
     }
 
-    public struct Vector2
+    public class Vector3Converter : ExpandableObjectConverter
+    {
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        {
+            return base.ConvertTo(context, culture, value, destinationType);
+        }
+        public bool SetProperty(ITypeDescriptorContext context, object value)
+        {
+            return false;
+        }
+    }
+
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class Vector2
     {
         float x;
         float y;
@@ -129,7 +145,8 @@ namespace Mafia2
         }
     }
 
-    public struct Float4
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class Float4
     {
         float[] data;
 
@@ -158,7 +175,8 @@ namespace Mafia2
         }
     }
 
-    public struct UVVector2
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class UVVector2
     {
         Half x;
         Half y;
@@ -239,7 +257,8 @@ namespace Mafia2
         }
     }
 
-    public struct Polygon
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public class Polygon
     {
         int numPoints;
         int firstVertIndex;

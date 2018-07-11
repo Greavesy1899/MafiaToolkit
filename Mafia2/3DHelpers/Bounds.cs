@@ -4,7 +4,7 @@ using System.IO;
 namespace Mafia2
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public struct Bounds
+    public class Bounds
     {
         Vector3 min;
         Vector3 max;

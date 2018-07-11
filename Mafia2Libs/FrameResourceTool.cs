@@ -15,7 +15,7 @@ namespace Mafia2Tool
         public FrameResourceTool()
         {
             InitializeComponent();
-            if(SceneData.ScenePath == null)
+            if(SceneData.ScenePath == "")
                 folderBrowser.ShowDialog();
             SceneData.BuildData();
             ReadFrameResource();
@@ -320,8 +320,8 @@ namespace Mafia2Tool
                 }
                 geom.LOD[0].BuildNewPartition();
                 geom.LOD[0].BuildNewMaterialSplit();
-                geom.PositionFactor = edm.PositionFactor;
-                geom.PositionOffset = edm.PositionOffset;
+                geom.DecompressionFactor = edm.PositionFactor;
+                geom.DecompressionOffset = edm.PositionOffset;
                 mesh.Boundings = edm.Bound;
                 geom.LOD[0].SplitInfo.NumVerts = edm.Parts[0].Vertices.Length;
                 geom.LOD[0].NumVertsPr = edm.Parts[0].Vertices.Length;
