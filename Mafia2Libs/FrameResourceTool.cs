@@ -59,9 +59,6 @@ namespace Mafia2Tool
 
                 int index = 0;
 
-                if (fObject.ParentIndex1.Index == 343)
-                    Console.WriteLine("HIT ME");
-
                 for (int i = 0; i != treeView1.Nodes.Count; i++)
                 {
                     if (index != -1)
@@ -172,16 +169,6 @@ namespace Mafia2Tool
         {
             FrameResourceGrid.SelectedObject = FrameResourceListBox.SelectedItem;
         }
-        private void LoadMaterialTool(object sender, EventArgs e)
-        {
-            using (BinaryWriter writer = new BinaryWriter(File.Open("FrameResource_0.bin", FileMode.Create)))
-            {
-                SceneData.FrameResource.WriteToFile(writer);
-            }
-
-            MaterialTool tool = new MaterialTool();
-            tool.ShowDialog();
-        }
         private async void OnClickLoad3D(object sender, EventArgs e)
         {
             string[] fileNames = new string[mesh.Count];
@@ -278,6 +265,15 @@ namespace Mafia2Tool
             FrameResourceListBox.Visible = (!FrameResourceListBox.Visible) ? true : false;
         }
 
+        private void LoadMaterialTool(object sender, EventArgs e)
+        {
+            if (!MaterialData.HasLoaded)
+                return; 
+
+            MaterialTool tool = new MaterialTool();
+            tool.ShowDialog();
+        }
+
         private void collisionEditor_Click(object sender, EventArgs e)
         {
             CollisionEditor editor = new CollisionEditor();
@@ -341,6 +337,20 @@ namespace Mafia2Tool
             else
             {
                 MessageBox.Show("Click on a \"Single Mesh\" type of \"Model\" type in the tree view.", "Error");
+            }
+        }
+
+        private void saveChanges(object sender, FormClosingEventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Do you want to save your changes?", "Save Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if(result == DialogResult.Yes)
+            {
+                using (BinaryWriter writer = new BinaryWriter(File.Open("FrameResource_0.bin", FileMode.Create)))
+                {
+                    SceneData.FrameResource.WriteToFile(writer);
+                }
+                MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }

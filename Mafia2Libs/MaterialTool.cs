@@ -24,7 +24,13 @@ namespace Mafia2Tool
 
         public void WriteMaterialsFile()
         {
-            MaterialsParse.WriteMatFile("default.mtl");
+            DialogResult result = MessageBox.Show("Do you want to save your changes?", "Save Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                MaterialsParse.WriteMatFile("default.mtl");
+                MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private void OnMaterialSelected(object sender, EventArgs e)

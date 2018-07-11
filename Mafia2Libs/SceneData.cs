@@ -1,6 +1,7 @@
 ﻿using Mafia2;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace Mafia2Tool
@@ -16,7 +17,7 @@ namespace Mafia2Tool
         public static ItemDesc[] ItemDescs;
         public static Collision Collisions;
         public static CityAreas CityAreas;
-        public static string ScenePath = Properties.Settings.Default.SDSPath2;
+        public static string ScenePath = Properties.Settings.Default.SDSPath;
 
         public static void BuildData()
         {
@@ -29,11 +30,11 @@ namespace Mafia2Tool
 
             foreach (FileInfo file in files)
             {
-                if (file.FullName.Contains("VertexBufferPool"))
-                    vbps.Add(file);
+                //if (file.FullName.Contains("VertexBufferPool"))
+                //    vbps.Add(file);
 
-                if (file.FullName.Contains("IndexBufferPool"))
-                    ibps.Add(file);
+                //if (file.FullName.Contains("IndexBufferPool"))
+                //    ibps.Add(file);
 
                //at if (file.FullName.Contains("ItemDesc"))
                    // ids.Add(new ItemDesc(file.FullName));
@@ -44,32 +45,30 @@ namespace Mafia2Tool
                 if (file.FullName.Contains("FrameNameTable_0.bin"))
                     FrameNameTable = new FrameNameTable(file.FullName);
 
-                if (file.FullName.Contains("SoundSector"))
-                    SoundSector = new SoundSector(file.FullName);
+                //if (file.FullName.Contains("SoundSector"))
+                //    SoundSector = new SoundSector(file.FullName);
 
-                if (file.FullName.Contains("Actors_0"))
-                    Actors = new Actor(file.FullName);
+                //if (file.FullName.Contains("Actors_0"))
+                //    Actors = new Actor(file.FullName);
 
-                if (file.FullName.Contains("Collision"))
-                    Collisions = new Collision(file.FullName);
+                //if (file.FullName.Contains("Collision"))
+                //    Collisions = new Collision(file.FullName);
 
-                if (file.FullName.Contains("cityareas"))
-                    CityAreas = new CityAreas(file.FullName);
+                //if (file.FullName.Contains("cityareas"))
+                //    CityAreas = new CityAreas(file.FullName);
             }
 
-            IndexBufferPool = new IndexBufferManager(ibps);
-            VertexBufferPool = new VertexBufferManager(vbps);
-            ItemDescs = ids.ToArray();
+            //IndexBufferPool = new IndexBufferManager(ibps);
+            //VertexBufferPool = new VertexBufferManager(vbps);
+            //ItemDescs = ids.ToArray();
 
-            for (int i = 0; i != ItemDescs.Length; i++)
-            {
-                ItemDescs[i].WriteToEDC();
-            }
+            //for (int i = 0; i != ItemDescs.Length; i++)
+            //    ItemDescs[i].WriteToEDC();
 
             if (Actors == null)
                 return;
 
-            AttachActors();
+            //AttachActors();
             FrameResource.UpdateEntireFrame();
         }
 
@@ -96,5 +95,6 @@ namespace Mafia2Tool
         public static Material[] Default50;
         public static Material[] Default60;
         public static string MaterialPath = Properties.Settings.Default.MaterialPath;
+        public static bool HasLoaded = false;
     }
 }

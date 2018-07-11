@@ -13,10 +13,18 @@ namespace Mafia2Tool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            MaterialData.Default = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default.mtl");
-            MaterialData.Default50 = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default50.mtl");
-            MaterialData.Default60 = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default60.mtl");
-            MaterialsParse.SetMaterials(MaterialData.Default);
+            try
+            {
+                MaterialData.Default = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default.mtl");
+                MaterialData.Default50 = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default50.mtl");
+                MaterialData.Default60 = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default60.mtl");
+                MaterialData.HasLoaded = true;
+                MaterialsParse.SetMaterials(MaterialData.Default);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Missing material libaries, make sure they exist in the path specified.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
 
             Application.Run(new FrameResourceTool());

@@ -70,6 +70,7 @@
             // 
             // Load3D
             // 
+            this.Load3D.Enabled = false;
             this.Load3D.Location = new System.Drawing.Point(109, 11);
             this.Load3D.Name = "Load3D";
             this.Load3D.Size = new System.Drawing.Size(75, 23);
@@ -105,6 +106,7 @@
             // 
             // collisionEditor
             // 
+            this.collisionEditor.Enabled = false;
             this.collisionEditor.Location = new System.Drawing.Point(271, 11);
             this.collisionEditor.Name = "collisionEditor";
             this.collisionEditor.Size = new System.Drawing.Size(81, 23);
@@ -115,6 +117,7 @@
             // 
             // overwriteBuffer
             // 
+            this.overwriteBuffer.Enabled = false;
             this.overwriteBuffer.Location = new System.Drawing.Point(358, 11);
             this.overwriteBuffer.Name = "overwriteBuffer";
             this.overwriteBuffer.Size = new System.Drawing.Size(94, 23);
@@ -142,6 +145,7 @@
             this.Controls.Add(this.FrameResourceListBox);
             this.Name = "FrameResourceTool";
             this.Text = "FrameResourceTool";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.saveChanges);
             this.ResumeLayout(false);
 
         }

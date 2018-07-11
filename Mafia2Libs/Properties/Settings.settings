@@ -5,12 +5,6 @@
     <Setting Name="SDSPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">E:/Games/Steam/steamapps/common/Mafia II/pc/sds/city/extracted/chinatown</Value>
     </Setting>
-    <Setting Name="SDSPath1" Type="System.String" Scope="User">
-      <Value Profile="(Default)">E:\Games\Steam\steamapps\common\Mafia II\pc\sds\shops\extracted\gunshop</Value>
-    </Setting>
-    <Setting Name="SDSPath2" Type="System.String" Scope="User">
-      <Value Profile="(Default)">D:\Users\Connor\Desktop\SteamLibrary\steamapps\common\Mafia II\pc\sds\city\extracted\joesflat</Value>
-    </Setting>
     <Setting Name="MaterialPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">D:\Users\Connor\Desktop\SteamLibrary\steamapps\common\Mafia II\edit\materials</Value>
     </Setting>
