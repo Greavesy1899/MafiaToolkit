@@ -345,14 +345,27 @@ namespace Mafia2
             {
                 writer.Write(name);
                 writer.Write(vertices.Length);
+
                 for (int c = 0; c != vertices.Length; c++)
+                {
                     vertices[c].WriteToFile(writer);
+                }
 
                 for (int c = 0; c != normals.Length; c++)
+                {
+                    if (normals[c] == null)
+                        normals[c] = new Vector3(0f);
+
                     normals[c].WriteToFile(writer);
+                }
 
                 for (int c = 0; c != tangents.Length; c++)
+                {
+                    if (tangents[c] == null)
+                        tangents[c] = new Vector3(0f);
+
                     tangents[c].WriteToFile(writer);
+                }
 
                 writer.Write(uvs.Length);
                 for (int c = 0; c != uvs.Length; c++)

@@ -37,11 +37,11 @@ namespace Mafia2Tool
                     FrameNameTable = new FrameNameTable(file.FullName);
 
 #if (DEBUG)
-                //if (file.FullName.Contains("VertexBufferPool"))
-                //    vbps.Add(file);
+                if (file.FullName.Contains("VertexBufferPool"))
+                    vbps.Add(file);
 
-                //if (file.FullName.Contains("IndexBufferPool"))
-                //    ibps.Add(file);
+                if (file.FullName.Contains("IndexBufferPool"))
+                    ibps.Add(file);
 
                 //if (file.FullName.Contains("ItemDesc"))
                 // ids.Add(new ItemDesc(file.FullName));
@@ -88,6 +88,22 @@ namespace Mafia2Tool
                     }
                 }
             }
+        }
+
+        public static void Reload()
+        {
+            FrameNameTable = null;
+            FrameResource = null;
+            VertexBufferPool = null;
+            IndexBufferPool = null;
+            SoundSector = null;
+            Actors = null;
+            ItemDescs = null;
+            Collisions = null;
+            CityAreas = null;
+
+            GC.Collect();
+            BuildData();
         }
     }
 

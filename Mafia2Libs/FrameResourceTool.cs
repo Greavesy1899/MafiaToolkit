@@ -274,12 +274,12 @@ namespace Mafia2Tool
             tool.ShowDialog();
         }
 
-        private void collisionEditor_Click(object sender, EventArgs e)
+        private void CollisionEditor_Click(object sender, EventArgs e)
         {
             CollisionEditor editor = new CollisionEditor();
         }
 
-        private void overwriteBuffer_Click(object sender, EventArgs e)
+        private void OverwriteBuffer_Click(object sender, EventArgs e)
         {
             if (treeView1.SelectedNode == null)
                 return;
@@ -340,11 +340,27 @@ namespace Mafia2Tool
             }
         }
 
-        private void saveChanges(object sender, FormClosingEventArgs e)
+        private void OnExit(object sender, FormClosingEventArgs e)
+        {
+            SaveChanges();
+        }
+
+        private void SaveClick(object sender, EventArgs e)
+        {
+            SaveChanges();
+        }
+
+        private void ExitClick(object sender, EventArgs e)
+        {
+            SaveChanges();
+            Application.Exit();
+        }
+
+        private void SaveChanges()
         {
             DialogResult result = MessageBox.Show("Do you want to save your changes?", "Save Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if(result == DialogResult.Yes)
+            if (result == DialogResult.Yes)
             {
                 using (BinaryWriter writer = new BinaryWriter(File.Open("FrameResource_0.bin", FileMode.Create)))
                 {
@@ -352,6 +368,28 @@ namespace Mafia2Tool
                 }
                 MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+        }
+        private void ReloadClick(object sender, EventArgs e)
+        {
+            SceneData.Reload();
+            treeView1.Nodes.Clear();
+            FrameResourceListBox.Items.Clear();
+            ReadFrameResource();
+        }
+
+        private void OpenClick(object sender, EventArgs e)
+        {
+            folderBrowser.ShowDialog();
+
+            if (folderBrowser.SelectedPath == "")
+                return;
+
+            Properties.Settings.Default.SDSPath = folderBrowser.SelectedPath;
+            SceneData.ScenePath = Properties.Settings.Default.SDSPath;
+            SceneData.Reload();
+            treeView1.Nodes.Clear();
+            FrameResourceListBox.Items.Clear();
+            ReadFrameResource();
         }
     }
 }
