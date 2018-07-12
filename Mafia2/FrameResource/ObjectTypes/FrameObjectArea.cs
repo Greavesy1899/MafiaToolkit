@@ -93,12 +93,12 @@ namespace Mafia2
             {
                 Debug.WriteLine(string.Format("ERROR WRITING ARA: {0}, {1}", Name.String, ex.Message));
 
-                for (int i = 0; i != verts.Length; i++)
-                    verts[i].WriteToFile(writer);
+                //for (int i = 0; i != verts.Length; i++)
+                //    verts[i].WriteToFile(writer);
 
-                writer.Write(Name.String);
-                Matrix.Position.WriteToFile(writer);
-                Matrix.Rotation.WriteToFile(writer);
+                //writer.Write(Name.String);
+                //Matrix.Position.WriteToFile(writer);
+                //Matrix.Rotation.WriteToFile(writer);
             }
         }
 

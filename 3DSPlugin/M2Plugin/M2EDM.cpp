@@ -8,6 +8,18 @@ void EDMPart::SetName(std::wstring name) {
 	EDMPart::name = name;
 }
 
+void EDMPart::SetHasNormals(bool b) {
+	EDMPart::hasNormals = b;
+}
+
+void EDMPart::SetHasTangents(bool b) {
+	EDMPart::hasTangents = b;
+}
+
+void EDMPart::SetHasUVS(bool b) {
+	EDMPart::hasUVs = b;
+}
+
 void EDMPart::SetVertSize(int count) {
 	EDMPart::vertSize = count;
 }
@@ -46,6 +58,18 @@ void EDMPart::SetMesh(Mesh mesh) {
 
 std::wstring EDMPart::GetName() {
 	return EDMPart::name;
+}
+
+bool EDMPart::GetHasNormals() {
+	return EDMPart::hasNormals;
+}
+
+bool EDMPart::GetHasTangents() {
+	return EDMPart::hasTangents;
+}
+
+bool EDMPart::GetHasUVs() {
+	return EDMPart::hasUVs;
 }
 
 int EDMPart::GetVertSize() {
@@ -88,6 +112,9 @@ void EDMPart::ReadFromStream(FILE * stream) {
 	std::wstring partName = std::wstring();
 	partName = ReadString(stream, partName);
 	name = partName;
+	fread(&hasNormals, sizeof(bool), 1, stream);
+	fread(&hasTangents, sizeof(bool), 1, stream);
+	fread(&hasUVs, sizeof(bool), 1, stream);
 	fread(&vertSize, sizeof(int), 1, stream);
 	vertices = std::vector<Point3>(vertSize);
 	for (int i = 0; i != vertSize; i++) {
@@ -95,26 +122,30 @@ void EDMPart::ReadFromStream(FILE * stream) {
 		fread(&vertices[i].y, sizeof(float), 1, stream);
 		fread(&vertices[i].z, sizeof(float), 1, stream);
 	}
-	normals = std::vector<Point3>(vertSize);
-	for (int i = 0; i != vertSize; i++) {
-		fread(&normals[i].x, sizeof(float), 1, stream);
-		fread(&normals[i].y, sizeof(float), 1, stream);
-		fread(&normals[i].z, sizeof(float), 1, stream);
+	if (hasNormals) {
+		normals = std::vector<Point3>(vertSize);
+		for (int i = 0; i != vertSize; i++) {
+			fread(&normals[i].x, sizeof(float), 1, stream);
+			fread(&normals[i].y, sizeof(float), 1, stream);
+			fread(&normals[i].z, sizeof(float), 1, stream);
+		}
 	}
-	tangents = std::vector<Point3>(vertSize);
-	for (int i = 0; i != vertSize; i++) {
-		fread(&tangents[i].x, sizeof(float), 1, stream);
-		fread(&tangents[i].y, sizeof(float), 1, stream);
-		fread(&tangents[i].z, sizeof(float), 1, stream);
+	if (hasTangents) {
+		tangents = std::vector<Point3>(vertSize);
+		for (int i = 0; i != vertSize; i++) {
+			fread(&tangents[i].x, sizeof(float), 1, stream);
+			fread(&tangents[i].y, sizeof(float), 1, stream);
+			fread(&tangents[i].z, sizeof(float), 1, stream);
+		}
 	}
-
-	fread(&uvSize, sizeof(int), 1, stream);
-	uvs = std::vector<UVVert>(uvSize);
-	for (int i = 0; i != uvSize; i++) {
-		fread(&uvs[i].x, sizeof(float), 1, stream);
-		fread(&uvs[i].y, sizeof(float), 1, stream);
+	if (hasUVs) {
+		fread(&uvSize, sizeof(int), 1, stream);
+		uvs = std::vector<UVVert>(uvSize);
+		for (int i = 0; i != uvSize; i++) {
+			fread(&uvs[i].x, sizeof(float), 1, stream);
+			fread(&uvs[i].y, sizeof(float), 1, stream);
+		}
 	}
-
 	fread(&indicesSize, sizeof(int), 1, stream);
 	indices = std::vector<Int3>(indicesSize);
 	for (int i = 0; i != indicesSize; i++) {
@@ -124,47 +155,54 @@ void EDMPart::ReadFromStream(FILE * stream) {
 	}
 
 	mesh = Mesh();
-
+	mesh.setNumFaces(indicesSize);
 	mesh.setNumVerts(vertSize);
 	for (int i = 0; i != mesh.numVerts; i++) {
 		mesh.setVert(i, vertices[i]);
 	}
 
-	mesh.SpecifyNormals();
-	MeshNormalSpec *normalSpec = mesh.GetSpecifiedNormals();
-	normalSpec->ClearNormals();
-	normalSpec->SetNumNormals(mesh.numVerts);
-	for (int i = 0; i != mesh.numVerts; i++) {
-		normalSpec->Normal(i) = normals[i];
-		normalSpec->SetNormalExplicit(i, true);
-	}
-
-	mesh.setNumMaps(2);
-	mesh.setMapSupport(1, true);
-	MeshMap &map = mesh.Map(1);
-	map.setNumVerts(vertSize);
-
-	for (int i = 0; i != map.getNumVerts(); i++) {
-		map.tv[i].x = uvs[i].x;
-		map.tv[i].y = uvs[i].y;
-		map.tv[i].z = 0.0f;
-	}
-
-	mesh.setNumFaces(indicesSize);
-	map.setNumFaces(indicesSize);
-	normalSpec->SetNumFaces(indicesSize);
-
 	for (int i = 0; i != mesh.numFaces; i++) {
 		mesh.faces[i].setVerts(indices[i].i1, indices[i].i2, indices[i].i3);
 		mesh.faces[i].setMatID(1);
 		mesh.faces[i].setEdgeVisFlags(1, 1, 1);
-		normalSpec->Face(i).SpecifyAll();
-		normalSpec->Face(i).SetNormalID(0, indices[i].i1);
-		normalSpec->Face(i).SetNormalID(1, indices[i].i2);
-		normalSpec->Face(i).SetNormalID(2, indices[i].i3);
-		map.tf[i].setTVerts(indices[i].i1, indices[i].i2, indices[i].i3);
 	}
 
+	if (hasNormals) {
+		mesh.SpecifyNormals();
+		MeshNormalSpec *normalSpec = mesh.GetSpecifiedNormals();
+		normalSpec->ClearNormals();
+		normalSpec->SetNumNormals(mesh.numVerts);
+		for (int i = 0; i != mesh.numVerts; i++) {
+			normalSpec->Normal(i) = normals[i];
+			normalSpec->SetNormalExplicit(i, true);
+		}
+		normalSpec->SetNumFaces(indicesSize);
+		for (int i = 0; i != mesh.numFaces; i++) {
+			normalSpec->Face(i).SpecifyAll();
+			normalSpec->Face(i).SetNormalID(0, indices[i].i1);
+			normalSpec->Face(i).SetNormalID(1, indices[i].i2);
+			normalSpec->Face(i).SetNormalID(2, indices[i].i3);
+		}
+	}
+
+	if (hasUVs)
+	{
+		mesh.setNumMaps(2);
+		mesh.setMapSupport(1, true);
+		MeshMap &map = mesh.Map(1);
+		map.setNumVerts(vertSize);
+
+		for (int i = 0; i != map.getNumVerts(); i++) {
+			map.tv[i].x = uvs[i].x;
+			map.tv[i].y = uvs[i].y;
+			map.tv[i].z = 0.0f;
+		}
+		map.setNumFaces(indicesSize);
+
+		for (int i = 0; i != mesh.numFaces; i++) {
+			map.tf[i].setTVerts(indices[i].i1, indices[i].i2, indices[i].i3);
+		}
+	}
 	mesh.InvalidateGeomCache();
 	mesh.InvalidateTopologyCache();
 }

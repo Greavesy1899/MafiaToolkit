@@ -52,8 +52,8 @@ namespace Mafia2Tool
                 //if (file.FullName.Contains("Actors_0"))
                 //    Actors = new Actor(file.FullName);
 #endif
-                //if (file.FullName.Contains("Collision"))
-                //    Collisions = new Collision(file.FullName);
+                if (file.FullName.Contains("Collision"))
+                    Collisions = new Collision(file.FullName);
 
                 //if (file.FullName.Contains("cityareas"))
                 //    CityAreas = new CityAreas(file.FullName);

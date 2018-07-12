@@ -5,12 +5,12 @@ using System.IO;
 
 namespace Mafia2
 {
-    //exclusive file type to load entire frame (hopefully) into 3ds.
     public class CustomEDM
     {
         string name;
         int partCount;
         Part[] parts;
+
 
         ulong bufferIndexHash;
         ulong bufferVertexHash;
@@ -34,6 +34,8 @@ namespace Mafia2
             get { return parts; }
             set { parts = value; }
         }
+
+        //This part is todo with putting the data into buffers.
         public ulong BufferIndexHash {
             get { return bufferIndexHash; }
             set { bufferIndexHash = value; }
@@ -97,6 +99,13 @@ namespace Mafia2
                 parts[i].WriteToFile(writer);
         }
 
+        /// <summary>
+        /// Overwrite a part of the EDM. This is a better way to create a new part.
+        /// </summary>
+        /// <param name="vertex"></param>
+        /// <param name="indices"></param>
+        /// <param name="name"></param>
+        /// <param name="slot"></param>
         public void AddPart(List<Vertex> vertex, List<Short3> indices, string name, int slot)
         {
             parts[slot] = new Part(vertex, indices, name);
@@ -204,7 +213,7 @@ namespace Mafia2
         }
 
         /// <summary>
-        /// Calculate new bounds on model;
+        /// Calculate new bounds on the model.
         /// </summary>
         /// <param name="updateGeom">If this is true, then the "Position Offset" and "Position Scale will be updated."</param>
         public void CalculateBounds(bool updateGeom)
@@ -258,6 +267,9 @@ namespace Mafia2
             Vector3[] tangents;
             UVVector2[] uvs;
             List<Short3> indices;
+            bool hasNormals = true;
+            bool hasTangents = true;
+            bool hasUVs = true;
 
             public string Name {
                 get { return name; }
@@ -283,31 +295,79 @@ namespace Mafia2
                 get { return indices; }
                 set { indices = value; }
             }
+            public bool HasNormals {
+                get { return hasNormals; }
+                set { hasNormals = value; }
+            }
+            public bool HasTangents {
+                get { return hasTangents; }
+                set { hasTangents = value; }
+            }
+            public bool HasUVs {
+                get { return hasUVs; }
+                set { hasUVs = value; }
+            }
 
+            /// <summary>
+            /// Create an empty part.
+            /// </summary>
+            public Part() { }
+
+            /// <summary>
+            /// Create a part with vertexes, indices and a name.
+            /// </summary>
+            /// <param name="vertex">Vertexes from the buffers</param>
+            /// <param name="indices">Indices from the parts</param>
+            /// <param name="name">Name of the part</param>
             public Part(List<Vertex> vertex, List<Short3> indices, string name)
             {
                 this.vertices = new Vector3[vertex.Count];
-                this.normals = new Vector3[vertex.Count];
-                this.tangents = new Vector3[vertex.Count];
-                this.uvs = new UVVector2[vertex.Count];
+
+                if (vertex[0].Normal == null)
+                    hasNormals = false;
+                else
+                    this.normals = new Vector3[vertex.Count];
+
+                if (vertex[0].Tangent == null)
+                    hasTangents = false;
+                else
+                    this.tangents = new Vector3[vertex.Count];
+
+                if (vertex[0].UVs == null)
+                    hasUVs = false;
+                else
+                    this.uvs = new UVVector2[vertex.Count];
 
                 for (int i = 0; i != vertex.Count; i++)
                 {
                     vertices[i] = vertex[i].Position;
-                    normals[i] = vertex[i].Normal;
-                    tangents[i] = vertex[i].Tangent;
 
-                    if (vertex[i].UVs.Length > 0)
+                    if(hasNormals)
+                        normals[i] = vertex[i].Normal;
+
+                    if(hasTangents)
+                        tangents[i] = vertex[i].Tangent;
+
+                    if(hasUVs)
                         uvs[i] = vertex[i].UVs[0];
                 }
 
                 this.indices = indices;
                 this.name = name;
             }
+
+            /// <summary>
+            /// Usually used for Collisions.
+            /// </summary>
+            /// <param name="vertex">Vertexes from the buffers</param>
+            /// <param name="indices">Indices from the parts</param>
+            /// <param name="name">Name of the part</param>
             public Part(Vector3[] vertices, Int3[] triangles, string name)
             {
                 this.vertices = vertices;
-
+                hasTangents = false;
+                hasNormals = false;
+                hasUVs = false;
                 indices = new List<Short3>();
 
                 foreach (Int3 tri in triangles)
@@ -316,10 +376,14 @@ namespace Mafia2
                 }
 
                 this.name = name;
-
-                uvs = new UVVector2[0];
             }
 
+            /// <summary>
+            /// Unknown
+            /// </summary>
+            /// <param name="vertex">Vertexes from the buffers</param>
+            /// <param name="indices">Indices from the parts</param>
+            /// <param name="name">Name of the part</param>
             public Part(Vector3[] vertices, Short3[] triangles, string name)
             {
                 this.vertices = vertices;
@@ -336,43 +400,52 @@ namespace Mafia2
                 uvs = new UVVector2[0];
             }
 
+            /// <summary>
+            /// Read the EDM part from a mesh file. 
+            /// </summary>
+            /// <param name="reader"></param>
             public Part(BinaryReader reader)
             {
                 ReadFromFile(reader);
             }
 
+            /// <summary>
+            /// Write part to file.
+            /// </summary>
+            /// <param name="writer"></param>
             public void WriteToFile(BinaryWriter writer)
             {
                 writer.Write(name);
+                writer.Write(hasNormals);
+                writer.Write(hasTangents);
+                writer.Write(hasUVs);
                 writer.Write(vertices.Length);
 
                 for (int c = 0; c != vertices.Length; c++)
-                {
                     vertices[c].WriteToFile(writer);
-                }
 
-                for (int c = 0; c != normals.Length; c++)
+                if (hasNormals)
                 {
-                    if (normals[c] == null)
-                        normals[c] = new Vector3(0f);
-
-                    normals[c].WriteToFile(writer);
+                    for (int c = 0; c != normals.Length; c++)
+                        normals[c].WriteToFile(writer);
                 }
 
-                for (int c = 0; c != tangents.Length; c++)
+                if (hasTangents)
                 {
-                    if (tangents[c] == null)
-                        tangents[c] = new Vector3(0f);
-
-                    tangents[c].WriteToFile(writer);
+                    for (int c = 0; c != tangents.Length; c++)
+                        tangents[c].WriteToFile(writer);
                 }
 
-                writer.Write(uvs.Length);
-                for (int c = 0; c != uvs.Length; c++)
+                if (hasUVs)
                 {
-                    writer.Write(uvs[c].X);
-                    writer.Write(1f - uvs[c].Y);
+                    writer.Write(uvs.Length);
+                    for (int c = 0; c != uvs.Length; c++)
+                    {
+                        writer.Write(uvs[c].X);
+                        writer.Write(1f - uvs[c].Y);
+                    }
                 }
+
                 writer.Write(indices.Count);
                 for (int c = 0; c != indices.Count; c++)
                 {
@@ -382,33 +455,51 @@ namespace Mafia2
                 }
             }
 
+            /// <summary>
+            /// Read part from file.
+            /// </summary>
+            /// <param name="reader"></param>
             public void ReadFromFile(BinaryReader reader)
             {
                 byte nameSize = reader.ReadByte();
                 name = new string(reader.ReadChars(nameSize));
-
+                hasNormals = reader.ReadBoolean();
+                hasTangents = reader.ReadBoolean();
+                hasUVs = reader.ReadBoolean();
                 int size = reader.ReadInt32();
                 vertices = new Vector3[size];
-                normals = new Vector3[size];
-                tangents = new Vector3[size];
+
+                if(hasNormals)
+                    normals = new Vector3[size];
+
+                if(hasTangents)
+                    tangents = new Vector3[size];
 
                 for (int c = 0; c != vertices.Length; c++)
                     vertices[c] = new Vector3(reader);
 
-                for (int c = 0; c != normals.Length; c++)
-                    normals[c] = new Vector3(reader);
-
-                for (int c = 0; c != tangents.Length; c++)
-                    tangents[c] = new Vector3(reader);
-
-                size = reader.ReadInt32();
-                uvs = new UVVector2[size];
-                for (int c = 0; c != uvs.Length; c++)
+                if (hasNormals)
                 {
-                    uvs[c] = new UVVector2(HalfHelper.SingleToHalf(reader.ReadSingle()), HalfHelper.SingleToHalf(reader.ReadSingle()));
-                    uvs[c].Y = (Half)1f - uvs[c].Y;
+                    for (int c = 0; c != normals.Length; c++)
+                        normals[c] = new Vector3(reader);
                 }
 
+                if (hasNormals)
+                {
+                    for (int c = 0; c != tangents.Length; c++)
+                        tangents[c] = new Vector3(reader);
+                }
+
+                if (hasUVs)
+                {
+                    size = reader.ReadInt32();
+                    uvs = new UVVector2[size];
+                    for (int c = 0; c != uvs.Length; c++)
+                    {
+                        uvs[c] = new UVVector2(HalfHelper.SingleToHalf(reader.ReadSingle()), HalfHelper.SingleToHalf(reader.ReadSingle()));
+                        uvs[c].Y = (Half)1f - uvs[c].Y;
+                    }
+                }
                 size = reader.ReadInt32();
                 indices = new List<Short3>();
                 for (int c = 0; c != size; c++)

@@ -14,6 +14,9 @@ typedef struct {
 class EDMPart {
 private:
 	std::wstring name;
+	bool hasNormals;
+	bool hasTangents;
+	bool hasUVs;
 	int vertSize;
 	std::vector<Point3> vertices;
 	std::vector<Point3> normals;
@@ -27,6 +30,9 @@ public:
 	EDMPart();
 	~EDMPart();
 	void SetName(std::wstring name);
+	void SetHasNormals(bool b);
+	void SetHasTangents(bool b);
+	void SetHasUVS(bool b);
 	void SetVertSize(int count);
 	void SetVertices(std::vector<Point3> vertices);
 	void SetNormals(std::vector<Point3> normals);
@@ -37,6 +43,9 @@ public:
 	void SetIndices(std::vector<Int3> indices);
 	void SetMesh(Mesh mesh);
 	std::wstring GetName();
+	bool GetHasNormals();
+	bool GetHasTangents();
+	bool GetHasUVs();
 	int GetVertSize();
 	std::vector<Point3> GetVertices();
 	std::vector<Point3> GetNormals();

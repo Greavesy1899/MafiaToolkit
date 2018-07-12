@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 
 namespace Mafia2
 {
@@ -166,13 +168,12 @@ namespace Mafia2
                 data = new MeshData(reader, sections);
                 reader.BaseStream.Position = pos2;
 
-                //CustomEDM EDM = new CustomEDM(Data.Vertices, Data.Triangles, hash.ToString());
-                //using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + EDM.Name + ".edm")))
-                //{
-                //    writer.Write(EDM.Name);
-                //    writer.Write(1);
-                //    EDM.WriteToFile(writer);
-                //}
+                CustomEDM EDM = new CustomEDM(hash.ToString(), 1);
+                using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + EDM.Name + ".edm")))
+                {
+                    EDM.Parts[0] = new CustomEDM.Part(Data.Vertices, Data.Triangles, "Collision_Mesh");
+                    EDM.WriteToFile(writer);
+                }
             }
 
             [TypeConverter(typeof(ExpandableObjectConverter))]
