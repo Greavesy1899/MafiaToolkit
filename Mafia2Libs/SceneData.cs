@@ -37,20 +37,20 @@ namespace Mafia2Tool
                     FrameNameTable = new FrameNameTable(file.FullName);
 
 #if (DEBUG)
-                if (file.FullName.Contains("VertexBufferPool"))
-                    vbps.Add(file);
+                //if (file.FullName.Contains("VertexBufferPool"))
+                //    vbps.Add(file);
 
-                if (file.FullName.Contains("IndexBufferPool"))
-                    ibps.Add(file);
+                //if (file.FullName.Contains("IndexBufferPool"))
+                //    ibps.Add(file);
 
-                if (file.FullName.Contains("ItemDesc"))
-                 ids.Add(new ItemDesc(file.FullName));
+                //if (file.FullName.Contains("ItemDesc"))
+                // ids.Add(new ItemDesc(file.FullName));
 
-                if (file.FullName.Contains("SoundSector"))
-                    SoundSector = new SoundSector(file.FullName);
+                //if (file.FullName.Contains("SoundSector"))
+                //    SoundSector = new SoundSector(file.FullName);
 
-                if (file.FullName.Contains("Actors_0"))
-                    Actors = new Actor(file.FullName);
+                //if (file.FullName.Contains("Actors_0"))
+                //    Actors = new Actor(file.FullName);
 #endif
                 //if (file.FullName.Contains("Collision"))
                 //    Collisions = new Collision(file.FullName);

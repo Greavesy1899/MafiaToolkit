@@ -262,19 +262,19 @@ namespace Mafia2
     {
 
         string id;
-        string ufo_x1;
+        int[] ufo_x1;
         ulong textureHash;
         byte texType;
         byte unkZero;
         byte[] samplerStates;
-        string ufo_x2;
+        int[] ufo_x2;
         string file;
 
         public string ID {
             get { return id; }
             set { id = value; }
         }
-        public string UFO_X1 {
+        public int[] UFO_X1 {
             get { return ufo_x1; }
             set { ufo_x1 = value; }
         }
@@ -294,7 +294,7 @@ namespace Mafia2
             get { return samplerStates; }
             set { samplerStates = value; }
         }
-        public string UFO_X2 {
+        public int[] UFO_X2 {
             get { return ufo_x2; }
             set { ufo_x2 = value; }
         }
@@ -306,12 +306,16 @@ namespace Mafia2
         public ShaderParameterSampler(BinaryReader reader)
         {
             id = new string(reader.ReadChars(4));
-            ufo_x1 = reader.ReadInt32() + " " + reader.ReadInt32();
+            ufo_x1 = new int[2];
+            ufo_x1[0] = reader.ReadInt32();
+            ufo_x1[1] = reader.ReadInt32();
             textureHash = reader.ReadUInt64();
             texType = reader.ReadByte();
             unkZero = reader.ReadByte();
             samplerStates = reader.ReadBytes(6);
-            ufo_x2 = reader.ReadInt32() + " " + reader.ReadInt32(); //these can be erratic values
+            ufo_x2 = new int[2]; //these can have erratic values
+            ufo_x2[0] = reader.ReadInt32();
+            ufo_x2[1] = reader.ReadInt32();
             int fileLength = reader.ReadInt32();
             file = new string(reader.ReadChars(fileLength));
         }
@@ -324,14 +328,19 @@ namespace Mafia2
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(id.ToCharArray());
-            writer.Write((int.Parse(ufo_x1.Split(' ')[0])));
-            writer.Write((int.Parse(ufo_x1.Split(' ')[1])));
+            writer.Write(ufo_x1[0]);
+            writer.Write(ufo_x1[1]);
             writer.Write(textureHash);
             writer.Write(texType);
             writer.Write(UnkZero);
-            writer.Write(samplerStates);
-            writer.Write((int.Parse(ufo_x2.Split(' ')[0])));
-            writer.Write((int.Parse(ufo_x2.Split(' ')[1])));
+
+            if (samplerStates == null)
+                writer.Write(new byte[] { 3, 3, 2, 0, 0, 0 });
+            else
+                writer.Write(samplerStates);
+
+            writer.Write(ufo_x2[0]);
+            writer.Write(ufo_x2[1]);
             writer.Write(file.Length);
             writer.Write(file.ToCharArray());
         }

@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="SDSPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">E:/Games/Steam/steamapps/common/Mafia II/pc/sds/city/extracted/chinatown</Value>
+      <Value Profile="(Default)">D:\Users\Connor\Desktop\SteamLibrary\steamapps\common\Mafia II\pc\sds\city\extracted\joesflat</Value>
     </Setting>
     <Setting Name="MaterialPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">D:\Users\Connor\Desktop\SteamLibrary\steamapps\common\Mafia II\edit\materials</Value>

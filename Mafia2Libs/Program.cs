@@ -21,7 +21,7 @@ namespace Mafia2Tool
                 MaterialData.HasLoaded = true;
                 MaterialsParse.SetMaterials(MaterialData.Default);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Missing material libaries, make sure they exist in the path specified.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

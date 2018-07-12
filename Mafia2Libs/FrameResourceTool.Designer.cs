@@ -23,37 +23,37 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.FrameResourceButton = new System.Windows.Forms.Button();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrameResourceTool));
             this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
             this.FrameResourceListBox = new System.Windows.Forms.ListBox();
-            this.Load3D = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.button1 = new System.Windows.Forms.Button();
-            this.collisionEditor = new System.Windows.Forms.Button();
-            this.overwriteBuffer = new System.Windows.Forms.Button();
             this.edmBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.viewToolButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.switchViewSubButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.modelExporterSubButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.collisionEditorSubButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.materialEditorSubButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.overwriteBufferSubButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // FrameResourceButton
-            // 
-            this.FrameResourceButton.Location = new System.Drawing.Point(12, 11);
-            this.FrameResourceButton.Name = "FrameResourceButton";
-            this.FrameResourceButton.Size = new System.Drawing.Size(91, 23);
-            this.FrameResourceButton.TabIndex = 7;
-            this.FrameResourceButton.Text = "View Materials";
-            this.FrameResourceButton.UseVisualStyleBackColor = true;
-            this.FrameResourceButton.Click += new System.EventHandler(this.LoadMaterialTool);
             // 
             // FrameResourceGrid
             // 
             this.FrameResourceGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FrameResourceGrid.Location = new System.Drawing.Point(387, 40);
+            this.FrameResourceGrid.Location = new System.Drawing.Point(387, 28);
             this.FrameResourceGrid.Name = "FrameResourceGrid";
             this.FrameResourceGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.FrameResourceGrid.Size = new System.Drawing.Size(386, 381);
+            this.FrameResourceGrid.Size = new System.Drawing.Size(386, 393);
             this.FrameResourceGrid.TabIndex = 6;
             // 
             // FrameResourceListBox
@@ -68,24 +68,13 @@
             this.FrameResourceListBox.Visible = false;
             this.FrameResourceListBox.SelectedIndexChanged += new System.EventHandler(this.OnSelectedChanged);
             // 
-            // Load3D
-            // 
-            this.Load3D.Enabled = false;
-            this.Load3D.Location = new System.Drawing.Point(109, 11);
-            this.Load3D.Name = "Load3D";
-            this.Load3D.Size = new System.Drawing.Size(75, 23);
-            this.Load3D.TabIndex = 8;
-            this.Load3D.Text = "Save 3D";
-            this.Load3D.UseVisualStyleBackColor = true;
-            this.Load3D.Click += new System.EventHandler(this.OnClickLoad3D);
-            // 
             // treeView1
             // 
             this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.treeView1.Location = new System.Drawing.Point(12, 40);
+            this.treeView1.Location = new System.Drawing.Point(13, 28);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(368, 381);
+            this.treeView1.Size = new System.Drawing.Size(368, 393);
             this.treeView1.TabIndex = 9;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelect);
             // 
@@ -94,73 +83,161 @@
             this.folderBrowser.Description = "Select folder which contains extracted SDS content.";
             this.folderBrowser.ShowNewFolderButton = false;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(190, 11);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 10;
-            this.button1.Text = "Switch View";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.SwitchView);
-            // 
-            // collisionEditor
-            // 
-            this.collisionEditor.Enabled = false;
-            this.collisionEditor.Location = new System.Drawing.Point(271, 11);
-            this.collisionEditor.Name = "collisionEditor";
-            this.collisionEditor.Size = new System.Drawing.Size(81, 23);
-            this.collisionEditor.TabIndex = 11;
-            this.collisionEditor.Text = "Edit Collisions";
-            this.collisionEditor.UseVisualStyleBackColor = true;
-            this.collisionEditor.Click += new System.EventHandler(this.collisionEditor_Click);
-            // 
-            // overwriteBuffer
-            // 
-            this.overwriteBuffer.Enabled = false;
-            this.overwriteBuffer.Location = new System.Drawing.Point(358, 11);
-            this.overwriteBuffer.Name = "overwriteBuffer";
-            this.overwriteBuffer.Size = new System.Drawing.Size(94, 23);
-            this.overwriteBuffer.TabIndex = 13;
-            this.overwriteBuffer.Text = "Overwrite Buffer";
-            this.overwriteBuffer.UseVisualStyleBackColor = true;
-            this.overwriteBuffer.Click += new System.EventHandler(this.overwriteBuffer_Click);
-            // 
             // edmBrowser
             // 
             this.edmBrowser.FileName = "edmBrowser";
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolButton,
+            this.toolsButton,
+            this.viewToolButton});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(785, 25);
+            this.toolStrip1.TabIndex = 14;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // fileToolButton
+            // 
+            this.fileToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.fileToolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openToolStripMenuItem,
+            this.saveToolStripMenuItem,
+            this.reloadToolStripMenuItem,
+            this.exitToolStripMenuItem});
+            this.fileToolButton.Image = ((System.Drawing.Image)(resources.GetObject("fileToolButton.Image")));
+            this.fileToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.fileToolButton.Name = "fileToolButton";
+            this.fileToolButton.Size = new System.Drawing.Size(38, 22);
+            this.fileToolButton.Text = "File";
+            // 
+            // viewToolButton
+            // 
+            this.viewToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.viewToolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.switchViewSubButton});
+            this.viewToolButton.Image = ((System.Drawing.Image)(resources.GetObject("viewToolButton.Image")));
+            this.viewToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.viewToolButton.Name = "viewToolButton";
+            this.viewToolButton.Size = new System.Drawing.Size(45, 22);
+            this.viewToolButton.Text = "View";
+            // 
+            // switchViewSubButton
+            // 
+            this.switchViewSubButton.Name = "switchViewSubButton";
+            this.switchViewSubButton.Size = new System.Drawing.Size(180, 22);
+            this.switchViewSubButton.Text = "Switch View";
+            this.switchViewSubButton.Click += new System.EventHandler(this.SwitchView);
+            // 
+            // toolsButton
+            // 
+            this.toolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.modelExporterSubButton,
+            this.collisionEditorSubButton,
+            this.materialEditorSubButton,
+            this.overwriteBufferSubButton});
+            this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
+            this.toolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolsButton.Name = "toolsButton";
+            this.toolsButton.Size = new System.Drawing.Size(48, 22);
+            this.toolsButton.Text = "Tools";
+            // 
+            // modelExporterSubButton
+            // 
+            this.modelExporterSubButton.Enabled = false;
+            this.modelExporterSubButton.Name = "modelExporterSubButton";
+            this.modelExporterSubButton.Size = new System.Drawing.Size(180, 22);
+            this.modelExporterSubButton.Text = "3D Exporter";
+            this.modelExporterSubButton.Click += new System.EventHandler(this.OnClickLoad3D);
+            // 
+            // collisionEditorSubButton
+            // 
+            this.collisionEditorSubButton.Enabled = false;
+            this.collisionEditorSubButton.Name = "collisionEditorSubButton";
+            this.collisionEditorSubButton.Size = new System.Drawing.Size(180, 22);
+            this.collisionEditorSubButton.Text = "Collision Editor";
+            this.collisionEditorSubButton.Click += new System.EventHandler(this.collisionEditor_Click);
+            // 
+            // materialEditorSubButton
+            // 
+            this.materialEditorSubButton.Enabled = false;
+            this.materialEditorSubButton.Name = "materialEditorSubButton";
+            this.materialEditorSubButton.Size = new System.Drawing.Size(180, 22);
+            this.materialEditorSubButton.Text = "Material Editor";
+            this.materialEditorSubButton.Click += new System.EventHandler(this.LoadMaterialTool);
+            // 
+            // overwriteBufferSubButton
+            // 
+            this.overwriteBufferSubButton.Enabled = false;
+            this.overwriteBufferSubButton.Name = "overwriteBufferSubButton";
+            this.overwriteBufferSubButton.Size = new System.Drawing.Size(180, 22);
+            this.overwriteBufferSubButton.Text = "Overwrite Buffer";
+            this.overwriteBufferSubButton.Click += new System.EventHandler(this.overwriteBuffer_Click);
+            // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Text = "Open";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            // 
+            // reloadToolStripMenuItem
+            // 
+            this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.reloadToolStripMenuItem.Text = "Reload";
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
             // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 431);
-            this.Controls.Add(this.overwriteBuffer);
-            this.Controls.Add(this.collisionEditor);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.Load3D);
-            this.Controls.Add(this.FrameResourceButton);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.FrameResourceGrid);
             this.Controls.Add(this.treeView1);
             this.Controls.Add(this.FrameResourceListBox);
             this.Name = "FrameResourceTool";
             this.Text = "FrameResourceTool";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.saveChanges);
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Button FrameResourceButton;
         private System.Windows.Forms.PropertyGrid FrameResourceGrid;
         private System.Windows.Forms.ListBox FrameResourceListBox;
-        private System.Windows.Forms.Button Load3D;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowser;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button collisionEditor;
-        private System.Windows.Forms.Button overwriteBuffer;
         private System.Windows.Forms.OpenFileDialog edmBrowser;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripDropDownButton fileToolButton;
+        private System.Windows.Forms.ToolStripDropDownButton viewToolButton;
+        private System.Windows.Forms.ToolStripMenuItem switchViewSubButton;
+        private System.Windows.Forms.ToolStripDropDownButton toolsButton;
+        private System.Windows.Forms.ToolStripMenuItem modelExporterSubButton;
+        private System.Windows.Forms.ToolStripMenuItem collisionEditorSubButton;
+        private System.Windows.Forms.ToolStripMenuItem materialEditorSubButton;
+        private System.Windows.Forms.ToolStripMenuItem overwriteBufferSubButton;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }
