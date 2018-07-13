@@ -118,28 +118,28 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenClick);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveClick);
             // 
             // reloadToolStripMenuItem
             // 
             this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.reloadToolStripMenuItem.Text = "Reload";
             this.reloadToolStripMenuItem.Click += new System.EventHandler(this.ReloadClick);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitClick);
             // 
@@ -159,8 +159,9 @@
             // 
             // modelExporterSubButton
             // 
+            this.modelExporterSubButton.Enabled = false;
             this.modelExporterSubButton.Name = "modelExporterSubButton";
-            this.modelExporterSubButton.Size = new System.Drawing.Size(160, 22);
+            this.modelExporterSubButton.Size = new System.Drawing.Size(180, 22);
             this.modelExporterSubButton.Text = "3D Exporter";
             this.modelExporterSubButton.Click += new System.EventHandler(this.OnClickLoad3D);
             // 
@@ -168,7 +169,7 @@
             // 
             this.collisionEditorSubButton.Enabled = false;
             this.collisionEditorSubButton.Name = "collisionEditorSubButton";
-            this.collisionEditorSubButton.Size = new System.Drawing.Size(160, 22);
+            this.collisionEditorSubButton.Size = new System.Drawing.Size(180, 22);
             this.collisionEditorSubButton.Text = "Collision Editor";
             this.collisionEditorSubButton.Click += new System.EventHandler(this.CollisionEditor_Click);
             // 
@@ -176,7 +177,7 @@
             // 
             this.materialEditorSubButton.Enabled = false;
             this.materialEditorSubButton.Name = "materialEditorSubButton";
-            this.materialEditorSubButton.Size = new System.Drawing.Size(160, 22);
+            this.materialEditorSubButton.Size = new System.Drawing.Size(180, 22);
             this.materialEditorSubButton.Text = "Material Editor";
             this.materialEditorSubButton.Click += new System.EventHandler(this.LoadMaterialTool);
             // 
@@ -184,7 +185,7 @@
             // 
             this.overwriteBufferSubButton.Enabled = false;
             this.overwriteBufferSubButton.Name = "overwriteBufferSubButton";
-            this.overwriteBufferSubButton.Size = new System.Drawing.Size(160, 22);
+            this.overwriteBufferSubButton.Size = new System.Drawing.Size(180, 22);
             this.overwriteBufferSubButton.Text = "Overwrite Buffer";
             this.overwriteBufferSubButton.Click += new System.EventHandler(this.OverwriteBuffer_Click);
             // 

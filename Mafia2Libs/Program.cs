@@ -23,7 +23,7 @@ namespace Mafia2Tool
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Missing material libaries, make sure they exist in the path specified.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Unable to load materials. Error occured: \n\n" + ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
 

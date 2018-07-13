@@ -204,9 +204,6 @@ namespace Mafia2Tool
             {
                 CustomEDD.Entry entry = new CustomEDD.Entry();
 
-                //if (mesh[i].Name.String != "JF_magazL2")
-                //    return;
-
                 Model newModel = new Model((mesh[i]), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
                
                 if (mesh[i].ParentIndex1.Index != -1)
