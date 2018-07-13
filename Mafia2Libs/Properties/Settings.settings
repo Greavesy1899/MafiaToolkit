@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="SDSPath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">D:\Users\Connor\Desktop\SteamLibrary\steamapps\common\Mafia II\pc\sds\city\extracted\tunel_z</Value>
+      <Value Profile="(Default)">D:\Users\Connor\Desktop\SteamLibrary\steamapps\common\Mafia II\pc\sds\city_crash\extracted\city_crash</Value>
     </Setting>
     <Setting Name="MaterialPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">D:\Users\Connor\Desktop\SteamLibrary\steamapps\common\Mafia II\edit\materials</Value>

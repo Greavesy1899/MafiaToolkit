@@ -321,6 +321,12 @@ namespace Mafia2
             /// <param name="name">Name of the part</param>
             public Part(List<Vertex> vertex, List<Short3> indices, string name)
             {
+                if (vertex.Count == 0)
+                {
+                    Debug.WriteLine("Attempted to build " + name + " but no vertexes were present.");
+                    return;
+                }
+
                 this.vertices = new Vector3[vertex.Count];
 
                 if (vertex[0].Normal == null)
@@ -415,6 +421,9 @@ namespace Mafia2
             /// <param name="writer"></param>
             public void WriteToFile(BinaryWriter writer)
             {
+                if (name == null)
+                    return;
+
                 writer.Write(name);
                 writer.Write(hasNormals);
                 writer.Write(hasTangents);

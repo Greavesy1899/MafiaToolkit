@@ -11,6 +11,7 @@ namespace Mafia2Tool
     public partial class FrameResourceTool : Form
     {
         private List<FrameObjectSingleMesh> mesh = new List<FrameObjectSingleMesh>();
+        private List<TreeNode> unadded = new List<TreeNode>();
 
         public FrameResourceTool()
         {
@@ -50,8 +51,16 @@ namespace Mafia2Tool
             for (int i = 0; i != SceneData.FrameResource.FrameObjects.Length; i++)
                 FrameResourceListBox.Items.Add(SceneData.FrameResource.FrameObjects[i]);
 
-            foreach (FrameObjectBase fObject in SceneData.FrameResource.FrameObjects)
+            for (int i = 0; i != SceneData.FrameResource.FrameObjects.Length; i++)
             {
+                FrameObjectBase fObject = (FrameObjectBase)SceneData.FrameResource.FrameObjects[i];
+
+                //if (fObject.ParentIndex1.Index == fObject.ParentIndex2.Index)
+                //{
+                //    if (fObject.ParentIndex1.Index == -1)
+                //        continue;
+                //}
+
                 TreeNode node = createTreeNode(fObject);
 
                 if (node == null)
@@ -59,34 +68,46 @@ namespace Mafia2Tool
 
                 int index = 0;
 
-                for (int i = 0; i != treeView1.Nodes.Count; i++)
-                {
-                    if (index != -1)
-                        continue;
+                if (fObject.ParentIndex2.Index != -1)
+                    index = fObject.ParentIndex2.Index;
 
-                    if (fObject.ParentIndex1.Index != -1)
-                        index = treeView1.Nodes[i].Nodes.IndexOfKey(fObject.ParentIndex2.Name);
-                    else
-                        index = treeView1.Nodes[i].Nodes.IndexOfKey(fObject.ParentIndex1.Name);
-                }
-                TreeNode[] nodes;
+                TreeNode[] nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
 
                 if (fObject.ParentIndex1.Index != -1)
-                {
-                    nodes = treeView1.Nodes.Find(fObject.ParentIndex1.Name, true);
-                    if (fObject.ParentIndex1.Index == -1)
-                        treeView1.Nodes[0].Nodes.Add(node);
-                }
-                else
-                {
-                    nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
-                    if (fObject.ParentIndex2.Index == -1)
-                        treeView1.Nodes[0].Nodes.Add(node);
-                }
+                    node = addChildren(node, fObject);
 
                 if (nodes.Length > 0)
                     nodes[0].Nodes.Add(node);
+                else
+                    unadded.Add(node);
+
             }
+
+            foreach(TreeNode obj in unadded)
+            {
+                TreeNode[] nodes = treeView1.Nodes.Find((obj.Tag as FrameObjectBase).ParentIndex2.Name, true);
+
+                if (nodes.Length > 0)
+                    nodes[0].Nodes.Add(obj);
+            }
+        }
+        private TreeNode addChildren(TreeNode node, FrameObjectBase fObject)
+        {
+            while (fObject.ParentIndex1.Index != -1)
+            {
+                fObject = (SceneData.FrameResource.EntireFrame[fObject.ParentIndex1.Index] as FrameObjectBase);
+
+                if (fObject.ParentIndex1.Index == fObject.ParentIndex2.Index)
+                    return node;
+
+                TreeNode child = createTreeNode(fObject);
+
+                if (child == null)
+                    return node;
+
+                node.Nodes.Add(child);
+            }
+            return node;
         }
 
         private TreeNode createTreeNode(string NameText, int index)
