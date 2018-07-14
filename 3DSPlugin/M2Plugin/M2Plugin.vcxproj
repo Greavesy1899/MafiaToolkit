@@ -60,6 +60,7 @@
     <ClCompile Include="M2Helpers.cpp" />
     <ClCompile Include="ARAImportClass.cpp" />
     <ClCompile Include="DllEntry.cpp" />
+    <ClCompile Include="Mafia2ModifierClasses.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="M2Plugin.def" />
@@ -75,6 +76,7 @@
     <ClInclude Include="M2EDM.h" />
     <ClInclude Include="M2Helpers.h" />
     <ClInclude Include="M2Plugin.h" />
+    <ClInclude Include="Mafia2ModifierClasses.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

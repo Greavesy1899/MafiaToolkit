@@ -12,12 +12,20 @@ namespace Mafia2Tool
     {
         private List<FrameObjectSingleMesh> mesh = new List<FrameObjectSingleMesh>();
         private List<TreeNode> unadded = new List<TreeNode>();
-
+        private IniFile ini = new IniFile();
         public FrameResourceTool()
         {
             InitializeComponent();
-            if(SceneData.ScenePath == "")
-                folderBrowser.ShowDialog();
+            if (SceneData.ScenePath == "")
+            {
+                if (folderBrowser.ShowDialog() == DialogResult.OK)
+                {
+                    string path = ini.Read("SDSPath", "Directories");
+                    path = folderBrowser.SelectedPath;
+                    SceneData.ScenePath = path;
+                    ini.Write("SDSPath", path, "Directories");
+                }
+            }
             SceneData.BuildData();
             ReadFrameResource();
         }
@@ -37,7 +45,7 @@ namespace Mafia2Tool
 
                 if (data.FrameIndex != -1)
                 {
-                    TreeNode node = createTreeNode((SceneData.FrameResource.FrameObjects[data.FrameIndex] as FrameObjectBase));
+                    TreeNode node = CreateTreeNode((SceneData.FrameResource.FrameObjects[data.FrameIndex] as FrameObjectBase));
 
                     if (node == null)
                         continue;
@@ -61,7 +69,7 @@ namespace Mafia2Tool
                 //        continue;
                 //}
 
-                TreeNode node = createTreeNode(fObject);
+                TreeNode node = CreateTreeNode(fObject);
 
                 if (node == null)
                     continue;
@@ -74,7 +82,7 @@ namespace Mafia2Tool
                 TreeNode[] nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
 
                 if (fObject.ParentIndex1.Index != -1)
-                    node = addChildren(node, fObject);
+                    node = AddChildren(node, fObject);
 
                 if (nodes.Length > 0)
                     nodes[0].Nodes.Add(node);
@@ -89,9 +97,11 @@ namespace Mafia2Tool
 
                 if (nodes.Length > 0)
                     nodes[0].Nodes.Add(obj);
+                else
+                    Debug.WriteLine(string.Format("Warning: node: {0} was not added", obj.Name));
             }
         }
-        private TreeNode addChildren(TreeNode node, FrameObjectBase fObject)
+        private TreeNode AddChildren(TreeNode node, FrameObjectBase fObject)
         {
             while (fObject.ParentIndex1.Index != -1)
             {
@@ -100,7 +110,7 @@ namespace Mafia2Tool
                 if (fObject.ParentIndex1.Index == fObject.ParentIndex2.Index)
                     return node;
 
-                TreeNode child = createTreeNode(fObject);
+                TreeNode child = CreateTreeNode(fObject);
 
                 if (child == null)
                     return node;
@@ -110,7 +120,7 @@ namespace Mafia2Tool
             return node;
         }
 
-        private TreeNode createTreeNode(string NameText, int index)
+        private TreeNode CreateTreeNode(string NameText, int index)
         {
             TreeNode node = new TreeNode
             {
@@ -121,33 +131,35 @@ namespace Mafia2Tool
 
             return node;
         }
-        private TreeNode createTreeNode(FrameObjectBase fObject)
+        private TreeNode CreateTreeNode(FrameObjectBase fObject)
         {
             TreeNode[] nodes2 = treeView1.Nodes.Find(fObject.Name.String, true);
 
             if (nodes2.Length > 0)
                 return null;
 
-            TreeNode node = convertNode(fObject.NodeData);
+            TreeNode node = ConvertNode(fObject.NodeData);
 
             if (fObject.GetType() == typeof(FrameObjectSingleMesh))
             {
-                node.Nodes.Add(createTreeNode("Material", (fObject as FrameObjectSingleMesh).MaterialIndex));
-                node.Nodes.Add(createTreeNode("Geometry", (fObject as FrameObjectSingleMesh).MeshIndex));
+                node.Nodes.Add(CreateTreeNode("Material", (fObject as FrameObjectSingleMesh).MaterialIndex));
+                node.Nodes.Add(CreateTreeNode("Geometry", (fObject as FrameObjectSingleMesh).MeshIndex));
+                node.ContextMenuStrip = contextMenuStrip1;
                 mesh.Add((fObject as FrameObjectSingleMesh));
             }
             else if (fObject.GetType() == typeof(FrameObjectModel))
             {
-                node.Nodes.Add(createTreeNode("Material", (fObject as FrameObjectModel).MaterialIndex));
-                node.Nodes.Add(createTreeNode("Geometry", (fObject as FrameObjectModel).MeshIndex));
-                node.Nodes.Add(createTreeNode("Skeleton Info", (fObject as FrameObjectModel).SkeletonIndex));
-                node.Nodes.Add(createTreeNode("Skeleton Hierachy Info", (fObject as FrameObjectModel).SkeletonHierachyIndex));
+                node.Nodes.Add(CreateTreeNode("Material", (fObject as FrameObjectModel).MaterialIndex));
+                node.Nodes.Add(CreateTreeNode("Geometry", (fObject as FrameObjectModel).MeshIndex));
+                node.Nodes.Add(CreateTreeNode("Skeleton Info", (fObject as FrameObjectModel).SkeletonIndex));
+                node.Nodes.Add(CreateTreeNode("Skeleton Hierachy Info", (fObject as FrameObjectModel).SkeletonHierachyIndex));
+                node.ContextMenuStrip = contextMenuStrip1;
                 mesh.Add((fObject as FrameObjectModel));
             }
-
+            
             return node;
         }
-        private TreeNode convertNode(Node node)
+        private TreeNode ConvertNode(Node node)
         {
             TreeNode treeNode = new TreeNode()
             {
@@ -159,7 +171,7 @@ namespace Mafia2Tool
             return treeNode;
         }
 
-        private Vector3 retrieveParent1Position(FrameObjectSingleMesh mesh)
+        private Vector3 RetrieveParent1Position(FrameObjectSingleMesh mesh)
         {
             Vector3 curPos;
             curPos = mesh.Matrix.Position;
@@ -190,7 +202,7 @@ namespace Mafia2Tool
         {
             FrameResourceGrid.SelectedObject = FrameResourceListBox.SelectedItem;
         }
-        private async void OnClickLoad3D(object sender, EventArgs e)
+        private void OnClickLoad3D(object sender, EventArgs e)
         {
             string[] fileNames = new string[mesh.Count];
             Vector3[] filePos = new Vector3[mesh.Count];
@@ -205,11 +217,11 @@ namespace Mafia2Tool
                 CustomEDD.Entry entry = new CustomEDD.Entry();
 
                 Model newModel = new Model((mesh[i]), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
-               
+
                 if (mesh[i].ParentIndex1.Index != -1)
                 {
                     FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh[i].ParentIndex1.Index] as FrameObjectBase);
-                    filePos[i] = retrieveParent1Position(mesh[i]);
+                    filePos[i] = RetrieveParent1Position(mesh[i]);
                 }
 
                 if (((mesh[i].ParentIndex1.Index != -1)) && ((mesh[i].ParentIndex1.Index == mesh[i].ParentIndex2.Index)))
@@ -397,17 +409,27 @@ namespace Mafia2Tool
 
         private void OpenClick(object sender, EventArgs e)
         {
-            folderBrowser.ShowDialog();
-
-            if (folderBrowser.SelectedPath == "")
-                return;
-
-            Properties.Settings.Default.SDSPath = folderBrowser.SelectedPath;
-            SceneData.ScenePath = Properties.Settings.Default.SDSPath;
+            if (folderBrowser.ShowDialog() == DialogResult.OK)
+            {
+                string path = ini.Read("SDSPath", "Directories");
+                path = folderBrowser.SelectedPath;
+                SceneData.ScenePath = path;
+                ini.Write("SDSPath", path, "Directories");
+            }
             SceneData.Reload();
             treeView1.Nodes.Clear();
             FrameResourceListBox.Items.Clear();
             ReadFrameResource();
+        }
+
+        private void ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if (e.ClickedItem.Name == "contextExtract3D")
+            {
+                FrameObjectSingleMesh fObject = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
+                Model newModel = new Model((fObject), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
+                newModel.ExportToEDM(newModel.Lods[0], fObject.Name.String);
+            }
         }
     }
 }

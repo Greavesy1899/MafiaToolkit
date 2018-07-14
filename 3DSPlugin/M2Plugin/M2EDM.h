@@ -4,6 +4,7 @@
 #include <vector>
 #include <mesh.h>
 #include "MeshNormalSpec.h"
+#include <stdmat.h>
 
 typedef struct {
 	short i1;

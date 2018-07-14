@@ -113,6 +113,24 @@ int EDDImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 
 		for (int x = 0; x != edmStructure.GetPartSize(); x++) {
 			EDMPart part = edmStructure.GetParts()[x];
+
+			//BitmapTex *texture = NewDefaultBitmapTex();
+			//std::wstring path = _T("C:/Users/Connor/Desktop/textures/");
+			//path += part.GetName();
+			//texture->SetMapName(path.c_str());
+			//texture->SetName(part.GetName().c_str());
+
+			//StdMat2 *collMat = NewDefaultStdMat();
+
+			//collMat->SetSubTexmap(1, texture);
+			//collMat->SetFaceted(TRUE);
+			//collMat->SetName(part.GetName().c_str());
+
+			////add to material library ONLY if it doesn't exist.
+			//int index = ip->GetMaterialLibrary().FindMtlByName(collMat->GetName());
+			//if (index == -1)
+			//	ip->GetMaterialLibrary().Add(collMat);
+
 			TriObject* triObject = CreateNewTriObject();
 			Mesh &mesh = triObject->GetMesh();
 			mesh = part.GetMesh();
@@ -120,10 +138,12 @@ int EDDImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 			INode *inode = node->GetINode();
 			node->Reference(triObject);
 			node->SetName(part.GetName().c_str());
+			//inode->SetMtl(collMat);
 
 			importerInt->AddNodeToScene(node);
-			inode = node->GetINode();
 			parent->GetINode()->AttachChild(inode, 0);
+			//parent->GetINode()->SetMtl(collMat);
+
 			Matrix3 tm = entry.GetMatrix();
 			parent->SetTransform(0, tm);
 			importerInt->AddNodeToScene(parent);

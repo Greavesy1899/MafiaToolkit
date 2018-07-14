@@ -17,7 +17,7 @@ namespace Mafia2Tool
         public static ItemDesc[] ItemDescs;
         public static Collision Collisions;
         public static CityAreas CityAreas;
-        public static string ScenePath = Properties.Settings.Default.SDSPath;
+        public static string ScenePath = new IniFile().Read("SDSPath", "Directories");
 
         public static void BuildData()
         {
@@ -52,8 +52,8 @@ namespace Mafia2Tool
                 //if (file.FullName.Contains("Actors_0"))
                 //    Actors = new Actor(file.FullName);
 #endif
-                if (file.FullName.Contains("Collision"))
-                    Collisions = new Collision(file.FullName);
+                //if (file.FullName.Contains("Collision"))
+                //    Collisions = new Collision(file.FullName);
 
                 //if (file.FullName.Contains("cityareas"))
                 //    CityAreas = new CityAreas(file.FullName);
@@ -112,7 +112,7 @@ namespace Mafia2Tool
         public static Material[] Default;
         public static Material[] Default50;
         public static Material[] Default60;
-        public static string MaterialPath = Properties.Settings.Default.MaterialPath;
+        public static string MaterialPath = new IniFile().Read("MaterialPath", "Directories");
         public static bool HasLoaded = false;
     }
 }

@@ -42,6 +42,9 @@
     <ClCompile Include="EDMExportClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mafia2ModifierClasses.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="M2Plugin.def">
@@ -80,6 +83,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EDMExportClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mafia2ModifierClasses.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

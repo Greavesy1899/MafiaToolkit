@@ -15,9 +15,11 @@ namespace Mafia2Tool
 
             try
             {
-                MaterialData.Default = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default.mtl");
-                MaterialData.Default50 = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default50.mtl");
-                MaterialData.Default60 = MaterialsParse.ReadMatFile(Properties.Settings.Default.MaterialPath + "/default60.mtl");
+                IniFile ini = new IniFile();
+                string path = ini.Read("MaterialPath", "Directories");
+                MaterialData.Default = MaterialsParse.ReadMatFile(path + "/default.mtl");
+                MaterialData.Default50 = MaterialsParse.ReadMatFile(path + "/default50.mtl");
+                MaterialData.Default60 = MaterialsParse.ReadMatFile(path + "/default60.mtl");
                 MaterialData.HasLoaded = true;
                 MaterialsParse.SetMaterials(MaterialData.Default);
             }

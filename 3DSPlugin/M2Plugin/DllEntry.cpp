@@ -18,6 +18,7 @@ extern ClassDesc2* GetEDMImportDesc();
 extern ClassDesc2* GetEDMExportDesc();
 extern ClassDesc2* GetARAImportDesc();
 extern ClassDesc2* GetEDDImportDesc();
+extern ClassDesc2* GetM2ModifierClassDesc();
 
 HINSTANCE hInstance;
 int controlsInit = FALSE;
@@ -52,7 +53,7 @@ __declspec( dllexport ) const TCHAR* LibDescription()
 //TODO: Must change this number when adding a new class
 __declspec( dllexport ) int LibNumberClasses()
 {
-	return 4;
+	return 5;
 }
 
 // This function returns the number of plug-in classes this DLL
@@ -63,6 +64,7 @@ __declspec( dllexport ) ClassDesc* LibClassDesc(int i)
 		case 1: return GetARAImportDesc();
 		case 2: return GetEDDImportDesc();
 		case 3: return GetEDMExportDesc();
+		case 4: return GetM2ModifierClassDesc();
 		default: return 0;
 	}
 }

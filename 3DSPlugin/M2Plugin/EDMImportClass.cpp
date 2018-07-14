@@ -104,8 +104,23 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		Mesh &mesh = triObject->GetMesh();
 		mesh = part.GetMesh();
 
+		//texture stuff
+		BitmapTex *texture = NewDefaultBitmapTex();
+		std::wstring path = _T("C:/Users/Connor/Desktop/textures/");
+		path += part.GetName();
+		texture->SetMapName(path.c_str());
+		StdMat2 *collMat = NewDefaultStdMat();
+		collMat->SetSubTexmap(1, texture);
+		collMat->SetName(part.GetName().c_str());
+
+		//add to material library ONLY if it doesn't exist.
+		if(ip->GetMaterialLibrary().FindMtlByName(collMat->GetName()) != -1)
+			ip->GetMaterialLibrary().Add(collMat);
+
+
 		INode* nPart = ip->CreateObjectNode(triObject);
 		nPart->SetName(part.GetName().c_str());
+		nPart->SetMtl(collMat);
 		parent->AttachChild(nPart, 0);
 	}
 	importerInt->RedrawViews();

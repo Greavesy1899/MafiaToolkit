@@ -23,6 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrameResourceTool));
             this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
             this.FrameResourceListBox = new System.Windows.Forms.ListBox();
@@ -43,7 +44,10 @@
             this.viewToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.switchViewSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsButton = new System.Windows.Forms.ToolStripButton();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.contextExtract3D = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // FrameResourceGrid
@@ -159,7 +163,6 @@
             // 
             // modelExporterSubButton
             // 
-            this.modelExporterSubButton.Enabled = false;
             this.modelExporterSubButton.Name = "modelExporterSubButton";
             this.modelExporterSubButton.Size = new System.Drawing.Size(180, 22);
             this.modelExporterSubButton.Text = "3D Exporter";
@@ -169,7 +172,7 @@
             // 
             this.collisionEditorSubButton.Enabled = false;
             this.collisionEditorSubButton.Name = "collisionEditorSubButton";
-            this.collisionEditorSubButton.Size = new System.Drawing.Size(180, 22);
+            this.collisionEditorSubButton.Size = new System.Drawing.Size(160, 22);
             this.collisionEditorSubButton.Text = "Collision Editor";
             this.collisionEditorSubButton.Click += new System.EventHandler(this.CollisionEditor_Click);
             // 
@@ -177,7 +180,7 @@
             // 
             this.materialEditorSubButton.Enabled = false;
             this.materialEditorSubButton.Name = "materialEditorSubButton";
-            this.materialEditorSubButton.Size = new System.Drawing.Size(180, 22);
+            this.materialEditorSubButton.Size = new System.Drawing.Size(160, 22);
             this.materialEditorSubButton.Text = "Material Editor";
             this.materialEditorSubButton.Click += new System.EventHandler(this.LoadMaterialTool);
             // 
@@ -185,7 +188,7 @@
             // 
             this.overwriteBufferSubButton.Enabled = false;
             this.overwriteBufferSubButton.Name = "overwriteBufferSubButton";
-            this.overwriteBufferSubButton.Size = new System.Drawing.Size(180, 22);
+            this.overwriteBufferSubButton.Size = new System.Drawing.Size(160, 22);
             this.overwriteBufferSubButton.Text = "Overwrite Buffer";
             this.overwriteBufferSubButton.Click += new System.EventHandler(this.OverwriteBuffer_Click);
             // 
@@ -216,6 +219,21 @@
             this.optionsButton.Size = new System.Drawing.Size(53, 22);
             this.optionsButton.Text = "Options";
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.contextExtract3D});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.ShowImageMargin = false;
+            this.contextMenuStrip1.Size = new System.Drawing.Size(156, 48);
+            this.contextMenuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ItemClicked);
+            // 
+            // contextExtract3D
+            // 
+            this.contextExtract3D.Name = "contextExtract3D";
+            this.contextExtract3D.Size = new System.Drawing.Size(155, 22);
+            this.contextExtract3D.Text = "Extract 3D";
+            // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -230,6 +248,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnExit);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -255,5 +274,7 @@
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton optionsButton;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem contextExtract3D;
     }
 }

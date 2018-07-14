@@ -71,12 +71,14 @@ unsigned int EDMExport::Version() {
 void EDMExport::ShowAbout(HWND hWnd) {}
 int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL suppressPrompts, DWORD options)
 {
+	//Check if nodes are selected.
 	if (i->GetSelNodeCount() < 1)
 	{
-		MessageBox(NULL, _T("Select a dummy node containing a mesh"), _T("Error!"), MB_OK);
+		MessageBox(NULL, _T("Select the root node of a mesh."), _T("Error!"), MB_OK);
 		return FALSE;
 	}
 
+	//define file to write to.
 	EDMExportWorkFile theFile(name, _T("wb"));
 	FILE *stream = theFile.Stream();
 
@@ -85,11 +87,14 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 	MSTR mstr;
 	parentNode->GetObjOrWSMRef()->GetClassName(mstr);
 
+	//check if dummy.
 	if (mstr != _T("Dummy"))
 	{
 		MessageBox(NULL, _T("Select a dummy node containing a mesh"), _T("Error!"), MB_OK);
 		return FALSE;
 	}
+
+	//build file structure
 	EDMStructure fileStructure = EDMStructure();
 	fileStructure.SetName(parentNode->GetName());
 	fileStructure.SetPartSize(parentNode->NumberOfChildren());
