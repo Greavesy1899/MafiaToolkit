@@ -1,10 +1,12 @@
 #include "3dsmaxsdk_preinclude.h"
 #include "EDMExportClass.h"
+#include "Mafia2ModifierClasses.h"
 #include "M2EDM.h"
 #include "MeshNormalSpec.h"
 #include "dummy.h"
 #include "triobj.h"
 #include "gutil.h"
+#include "modstack.h"
 
 #define EDM_EXPORT_CLASS_ID	Class_ID(0x14fe2fdc, 0x102f11a2)
 
@@ -72,8 +74,7 @@ void EDMExport::ShowAbout(HWND hWnd) {}
 int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL suppressPrompts, DWORD options)
 {
 	//Check if nodes are selected.
-	if (i->GetSelNodeCount() < 1)
-	{
+	if (i->GetSelNodeCount() < 1) {
 		MessageBox(NULL, _T("Select the root node of a mesh."), _T("Error!"), MB_OK);
 		return FALSE;
 	}
@@ -84,15 +85,38 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 
 	INode* parentNode = i->GetSelNode(0);
 
-	MSTR mstr;
-	parentNode->GetObjOrWSMRef()->GetClassName(mstr);
-
 	//check if dummy.
-	if (mstr != _T("Dummy"))
-	{
+	if (parentNode->GetObjOrWSMRef()->ClassID() == dummyClassID) {
 		MessageBox(NULL, _T("Select a dummy node containing a mesh"), _T("Error!"), MB_OK);
 		return FALSE;
 	}
+	IDerivedObject *DerivedObjectPtr = (IDerivedObject *)(parentNode->GetObjOrWSMRef());
+
+	int ModStackIndex = 0;
+	DerivedObjectPtr->NumModifiers();
+	M2Modifier* modifier = nullptr;
+	while (ModStackIndex < DerivedObjectPtr->NumModifiers()) {
+		// Get current modifier.
+		Modifier* ModifierPtr = DerivedObjectPtr->GetModifier(ModStackIndex);
+
+		// Is this the mafia modifier?
+		if (ModifierPtr->ClassID() == M2_MODIFIER_CLASS_ID) {
+			modifier = (M2Modifier*)ModifierPtr;
+		}
+		ModStackIndex++;
+	}
+	if (modifier == nullptr) {
+		MessageBox(NULL, _T("Could not find the Mafia 2 Modifier on the root dummy."), _T("Error!"), MB_OK);
+		return FALSE;
+	}
+
+	BOOL hasNormals;
+	BOOL hasTangents;
+	BOOL hasUVs;
+
+	modifier->GetParamBlock(0)->GetValue(0, 0, hasNormals, FOREVER);
+	modifier->GetParamBlock(0)->GetValue(1, 0, hasTangents, FOREVER);
+	modifier->GetParamBlock(0)->GetValue(2, 0, hasUVs, FOREVER);
 
 	//build file structure
 	EDMStructure fileStructure = EDMStructure();
@@ -117,6 +141,10 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 		parts[i].SetVertSize(mesh.numVerts);
 		parts[i].SetIndicesSize(mesh.numFaces);
 		parts[i].SetUVSize(mesh.numVerts);
+		//invert from BOOL;
+		parts[i].SetHasNormals(!hasNormals);
+		parts[i].SetHasTangents(!hasTangents);
+		parts[i].SetHasUVS(!hasUVs);
 
 		//init vectors
 		std::vector<Point3> verts = std::vector<Point3>(mesh.numVerts);
@@ -142,7 +170,6 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 
 			indices[c] = ind;
 		}
-
 		MeshMap &map = mesh.Map(1);
 		for (int c = 0; c != verts.size(); c++)
 		{

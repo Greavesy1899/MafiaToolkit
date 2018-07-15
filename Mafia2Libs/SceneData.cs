@@ -36,7 +36,6 @@ namespace Mafia2Tool
                 if (file.FullName.Contains("FrameNameTable_0.bin"))
                     FrameNameTable = new FrameNameTable(file.FullName);
 
-#if (DEBUG)
                 if (file.FullName.Contains("VertexBufferPool"))
                     vbps.Add(file);
 
@@ -44,21 +43,21 @@ namespace Mafia2Tool
                     ibps.Add(file);
 
                 //if (file.FullName.Contains("ItemDesc"))
-                // ids.Add(new ItemDesc(file.FullName));
+                //    ids.Add(new ItemDesc(file.FullName));
 
                 //if (file.FullName.Contains("SoundSector"))
                 //    SoundSector = new SoundSector(file.FullName);
 
                 //if (file.FullName.Contains("Actors_0"))
                 //    Actors = new Actor(file.FullName);
-#endif
+
                 //if (file.FullName.Contains("Collision"))
                 //    Collisions = new Collision(file.FullName);
 
                 //if (file.FullName.Contains("cityareas"))
                 //    CityAreas = new CityAreas(file.FullName);
             }
-#if(DEBUG)
+
             IndexBufferPool = new IndexBufferManager(ibps);
             VertexBufferPool = new VertexBufferManager(vbps);
             ItemDescs = ids.ToArray();
@@ -70,7 +69,6 @@ namespace Mafia2Tool
                 return;
 
             AttachActors();
-#endif
             FrameResource.UpdateEntireFrame();
         }
 

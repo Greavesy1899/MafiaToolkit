@@ -209,31 +209,36 @@ void EDMPart::ReadFromStream(FILE * stream) {
 
 void EDMPart::WriteToStream(FILE * stream) {
 	WriteString(stream, name);
-
+	fwrite(&hasNormals, sizeof(bool), 1, stream);
+	fwrite(&hasTangents, sizeof(bool), 1, stream);
+	fwrite(&hasUVs, sizeof(bool), 1, stream);
 	fwrite(&vertSize, sizeof(int), 1, stream);
+
 	for (int i = 0; i != vertSize; i++) {
 		fwrite(&vertices[i].x, sizeof(float), 1, stream);
 		fwrite(&vertices[i].y, sizeof(float), 1, stream);
 		fwrite(&vertices[i].z, sizeof(float), 1, stream);
 	}
-
-	for (int i = 0; i != vertSize; i++) {
-		fwrite(&normals[i].x, sizeof(float), 1, stream);
-		fwrite(&normals[i].y, sizeof(float), 1, stream);
-		fwrite(&normals[i].z, sizeof(float), 1, stream);
+	if (hasNormals) {
+		for (int i = 0; i != vertSize; i++) {
+			fwrite(&normals[i].x, sizeof(float), 1, stream);
+			fwrite(&normals[i].y, sizeof(float), 1, stream);
+			fwrite(&normals[i].z, sizeof(float), 1, stream);
+		}
 	}
-
-	for (int i = 0; i != vertSize; i++) {
-		fwrite(&tangents[i].x, sizeof(float), 1, stream);
-		fwrite(&tangents[i].y, sizeof(float), 1, stream);
-		fwrite(&tangents[i].z, sizeof(float), 1, stream);
+	if (hasTangents) {
+		for (int i = 0; i != vertSize; i++) {
+			fwrite(&tangents[i].x, sizeof(float), 1, stream);
+			fwrite(&tangents[i].y, sizeof(float), 1, stream);
+			fwrite(&tangents[i].z, sizeof(float), 1, stream);
+		}
 	}
-
-	fwrite(&uvSize, sizeof(int), 1, stream);
-
-	for (int i = 0; i != uvSize; i++) {
-		fwrite(&uvs[i].x, sizeof(float), 1, stream);
-		fwrite(&uvs[i].y, sizeof(float), 1, stream);
+	if (hasUVs) {
+		fwrite(&uvSize, sizeof(int), 1, stream);
+		for (int i = 0; i != uvSize; i++) {
+			fwrite(&uvs[i].x, sizeof(float), 1, stream);
+			fwrite(&uvs[i].y, sizeof(float), 1, stream);
+		}
 	}
 
 	fwrite(&indicesSize, sizeof(int), 1, stream);

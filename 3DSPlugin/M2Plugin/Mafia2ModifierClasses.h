@@ -85,4 +85,15 @@ private:
 	IParamBlock2 * pblock; //ref 0
 };
 
+
+class M2ModifierMainDlgProc : public ParamMap2UserDlgProc {
+public:
+	M2Modifier * mod;
+	M2ModifierMainDlgProc() { mod = NULL; }
+	void SetEnables(HWND hWnd);
+	void UpdateSelLevelDisplay(HWND hWnd);
+	INT_PTR DlgProc(TimeValue t, IParamMap2 *map, HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	void DeleteThis() { }
+};
+
 #endif

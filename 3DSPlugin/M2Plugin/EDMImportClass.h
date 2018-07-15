@@ -14,6 +14,7 @@
 #include <direct.h>
 #include <commdlg.h>
 #include "M2Plugin.h"
+#include "Mafia2ModifierClasses.h"
 
 class EDMImport : public SceneImport
 {

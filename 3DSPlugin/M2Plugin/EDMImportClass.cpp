@@ -117,12 +117,17 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		if(ip->GetMaterialLibrary().FindMtlByName(collMat->GetName()) != -1)
 			ip->GetMaterialLibrary().Add(collMat);
 
-
 		INode* nPart = ip->CreateObjectNode(triObject);
 		nPart->SetName(part.GetName().c_str());
 		nPart->SetMtl(collMat);
 		parent->AttachChild(nPart, 0);
+		
 	}
+	Modifier *modifier = (Modifier*)ip->CreateInstance(OSM_CLASS_ID, Class_ID(M2_MODIFIER_CLASS_ID));
+	modifier->GetParamBlockByID(0)->SetValue(0, 0, parts[0].GetHasNormals());
+	modifier->GetParamBlockByID(0)->SetValue(1, 0, parts[0].GetHasTangents());
+	modifier->GetParamBlockByID(0)->SetValue(2, 0, parts[0].GetHasUVs());
+	GetCOREInterface12()->AddModifier(*parent, *modifier);
 	importerInt->RedrawViews();
 
 

@@ -62,30 +62,18 @@ namespace Mafia2Tool
             for (int i = 0; i != SceneData.FrameResource.FrameObjects.Length; i++)
             {
                 FrameObjectBase fObject = (FrameObjectBase)SceneData.FrameResource.FrameObjects[i];
-
-                //if (fObject.ParentIndex1.Index == fObject.ParentIndex2.Index)
-                //{
-                //    if (fObject.ParentIndex1.Index == -1)
-                //        continue;
-                //}
-
                 TreeNode node = CreateTreeNode(fObject);
 
                 if (node == null)
                     continue;
 
-                int index = 0;
-
-                if (fObject.ParentIndex2.Index != -1)
-                    index = fObject.ParentIndex2.Index;
-
                 TreeNode[] nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
-
-                if (fObject.ParentIndex1.Index != -1)
-                    node = AddChildren(node, fObject);
+                node = AddChildren(node, fObject);
 
                 if (nodes.Length > 0)
                     nodes[0].Nodes.Add(node);
+                else if (fObject.ParentIndex1.Index == -1 && fObject.ParentIndex2.Index == -1)
+                    treeView1.Nodes.Add(node);
                 else
                     unadded.Add(node);
 
@@ -97,8 +85,10 @@ namespace Mafia2Tool
 
                 if (nodes.Length > 0)
                     nodes[0].Nodes.Add(obj);
+                else if ((treeView1.Nodes.Find((obj.Tag as FrameObjectBase).Name.String, true).Length != 0))
+                    Debug.WriteLine("Unadded node was found");
                 else
-                    Debug.WriteLine(string.Format("Warning: node: {0} was not added", obj.Name));
+                    Debug.WriteLine(string.Format("WARNING: node: {0} was not added properly", obj.Name));
             }
         }
         private TreeNode AddChildren(TreeNode node, FrameObjectBase fObject)

@@ -24,9 +24,14 @@
 #define IDS_M2_MODIFIER                 17
 #define IDS_STRING18                    18
 #define IDD_PANEL                       101
+#define IDD_M2MODIFIERPANEL             101
 #define IDC_CLOSEBUTTON                 1000
 #define IDC_DOSTUFF                     1000
 #define IDC_COMBO1                      1001
+#define IDC_CHECK1                      1002
+#define IDC_HASNORMALS                  1002
+#define IDC_HASTANGENTS                 1003
+#define IDC_HASUVS                      1004
 #define IDC_COLOR                       1456
 #define IDC_EDIT                        1490
 #define IDC_SPIN                        1496
@@ -37,7 +42,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        102
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1002
+#define _APS_NEXT_CONTROL_VALUE         1003
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
