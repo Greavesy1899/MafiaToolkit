@@ -7,134 +7,162 @@ namespace Mafia2
 {
     public class Model
     {
-        Lod[] lods;
-        string path;
-        FrameObjectSingleMesh meshBlock;
+        Lod[] lods; //Holds the models which can be exported, all EDM content is saved here.
+        FrameObjectSingleMesh frameMesh; //model can be either "FrameObjectSingleMesh"
+        FrameObjectModel frameModel; //Or "FrameObjectModel"
+        FrameGeometry frameGeometry; //Holds geometry data, all content is built into here.
+        FrameMaterial frameMaterial; //Data related to material goes into here.
+        IndexBuffer[] indexBuffers; //Holds the buffer which will then be saved/replaced later
+        VertexBuffer[] vertexBuffers; //Holds the buffers which will then be saved/replaced later
+        private bool useSingleMesh; //False means ModelMesh, True means SingleMesh;
 
         public Lod[] Lods {
             get { return lods; }
             set { lods = value; }
         }
 
-        public Model(FrameObjectSingleMesh singleMesh, VertexBufferManager vertexBufferPool, IndexBufferManager indexBufferPool, FrameResource frameResource)
+        /// <summary>
+        /// Constructor used to build Lods. This is used when you want to compile all mesh data together, ready for exporting.
+        /// </summary>
+        public Model(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers, FrameGeometry frameGeometry, FrameMaterial frameMaterial)
         {
-            Build(singleMesh, vertexBufferPool, indexBufferPool, frameResource);
+            this.frameMesh = frameMesh;
+            this.indexBuffers = indexBuffers;
+            this.vertexBuffers = vertexBuffers;
+            this.frameGeometry = frameGeometry;
+            this.frameMaterial = frameMaterial;
+            this.useSingleMesh = true;
+
+            BuildLods();
         }
 
-        public void Build(FrameObjectSingleMesh singleMesh, VertexBufferManager vertexBufferPool, IndexBufferManager indexBufferPool, FrameResource frameResource)
+        /// <summary>
+        /// Constructor used to build Lods. This is used when you want to compile all mesh data together, ready for exporting.
+        /// </summary>
+        public Model(FrameObjectModel frameModel, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers, FrameGeometry frameGeometry, FrameMaterial frameMaterial)
         {
-            meshBlock = singleMesh;
-            path = singleMesh.Name.String;
-            FrameGeometry mesh = (frameResource.FrameBlocks[singleMesh.MeshIndex] as FrameGeometry);
-            if (mesh == null)
-                return;
+            this.frameModel = frameModel;
+            this.indexBuffers = indexBuffers;
+            this.vertexBuffers = vertexBuffers;
+            this.frameGeometry = frameGeometry;
+            this.frameMaterial = frameMaterial;
+            this.useSingleMesh = false;
 
-            lods = new Lod[mesh.LOD.Length];
+            BuildLods();
+        }
 
-            for (int i = 0; i != lods.Length; i++)
+        /// <summary>
+        /// Build Lods from retrieved data.
+        /// </summary>
+        public void BuildLods()
+        {
+            lods = new Lod[frameGeometry.NumLods];
+
+            for(int i = 0; i != lods.Length; i++)
             {
-                FrameLOD lod1 = mesh.LOD[i];
-                Lod lod2 = new Lod();
-                bool flag = lod1.VertexDeclaration.HasFlag(VertexFlags.BlendData);
-                //add blenddata checker.
-                VertexBuffer vertexBuffer = GetVertexBuffer(vertexBufferPool, lod1.VertexBufferRef.uHash);
+                FrameLOD frameLod = frameGeometry.LOD[i];
+                lods[i] = new Lod();
+                IndexBuffer indexBuffer = indexBuffers[i];
+                VertexBuffer vertexBuffer = vertexBuffers[i];
+
                 int stride;
-                Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = lod1.GetVertexOffsets(out stride);
+                Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = frameLod.GetVertexOffsets(out stride);
+
                 int length1 = 0;
-                if (lod1.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                     length1++;
-                if (lod1.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
                     length1++;
-                if (lod1.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
                     length1++;
-                if (lod1.VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
                     length1++;
-                lod2.NumUVChannels = length1;
-                lod2.Vertices = new Vertex[lod1.NumVertsPr];
-                for (int v = 0; v != lod1.NumVertsPr; v++)
+
+                lods[i].NumUVChannels = length1;
+                lods[i].Vertices = new Vertex[frameLod.NumVertsPr];
+
+                for (int v = 0; v != lods[i].Vertices.Length; v++)
                 {
                     int num1 = 0;
                     Vertex vertex = new Vertex();
                     vertex.UVs = new UVVector2[length1];
-                    float num2 = 1f;
-                    if (lod1.VertexDeclaration.HasFlag(VertexFlags.Position))
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
-                        vertex.ReadPositionData(vertexBuffer.Data, startIndex, mesh.DecompressionFactor, mesh.DecompressionOffset);
+                        vertex.ReadPositionData(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset);
                     }
-                    if (lod1.VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Tangent))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
                         vertex.ReadTangentData(vertexBuffer.Data, startIndex);
                     }
-                    if (lod1.VertexDeclaration.HasFlag(VertexFlags.Normals))
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Normals))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.Normals].Offset;
                         vertex.ReadNormalData(vertexBuffer.Data, startIndex);
                     }
-                    if(lod1.VertexDeclaration.HasFlag(VertexFlags.BlendData))
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.BlendData))
                     {
-                        int startIndex = v * stride +vertexOffsets[VertexFlags.BlendData].Offset;
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.BlendData].Offset;
                         vertex.BlendWeight = (BitConverter.ToSingle(vertexBuffer.Data, startIndex) / byte.MaxValue);
-                        vertex.BoneID = BitConverter.ToInt32(vertexBuffer.Data, startIndex+4);
+                        vertex.BoneID = BitConverter.ToInt32(vertexBuffer.Data, startIndex + 4);
                     }
-                    if (lod1.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords0].Offset;
                         vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex), Half.ToHalf(vertexBuffer.Data, startIndex + 2));
                         num1++;
                     }
-                    if (lod1.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords1].Offset;
                         vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex), Half.ToHalf(vertexBuffer.Data, startIndex + 2));
                         num1++;
                     }
-                    if (lod1.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords2].Offset;
                         vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex), Half.ToHalf(vertexBuffer.Data, startIndex + 2));
                         num1++;
                     }
-                    if (lod1.VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords7].Offset;
                         vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex), Half.ToHalf(vertexBuffer.Data, startIndex + 2));
                         num1++;
                     }
-                    if (lod2.NormalMapInfoPresent)
+                    if (lods[i].NormalMapInfoPresent)
                     {
                         vertex.Binormal = vertex.Normal;
                         vertex.Binormal.CrossProduct(vertex.Tangent);
                         vertex.Binormal *= 2;
                         vertex.Binormal.Normalize();
                     }
-                    lod2.Vertices[v] = vertex;
-                }
-                IndexBuffer indexBuffer = GetIndexBuffer(indexBufferPool, lod1.IndexBufferRef.uHash);
-                MaterialStruct[] materials = (frameResource.FrameBlocks[singleMesh.MaterialIndex] as FrameMaterial).Materials[i];
-                lod2.Parts = new ModelPart[materials.Length];
-                for (int x = 0; x != materials.Length; x++)
-                {
-                    ModelPart modelPart = new ModelPart();
-                    modelPart.Material = MaterialsParse.LookupMaterialByHash(materials[x].MaterialHash);
-                    int num = materials[x].StartIndex + materials[x].NumFaces * 3;
-                    List<Short3> intList = new List<Short3>(materials[x].NumFaces);
-                    int startIndex = materials[x].StartIndex;
-                    while (startIndex < num)
-                    {
-                        Short3 indice = new Short3();
-                        indice.s1 = (short)indexBuffer.Data[startIndex + 0];
-                        indice.s2 = (short)indexBuffer.Data[startIndex + 1];
-                        indice.s3 = (short)indexBuffer.Data[startIndex + 2];
-                        intList.Add(indice);
-                        startIndex += 3;
-                    }
-                    modelPart.Indices = intList.ToArray();
+                    lods[i].Vertices[v] = vertex;
 
-                    lod2.Parts[x] = modelPart;
+                    lods[i].Parts = new ModelPart[frameMaterial.Materials.Count];
+                    for (int x = 0; x != frameMaterial.Materials.Count; x++)
+                    {
+                        MaterialStruct[] material = frameMaterial.Materials[x];
+
+                        ModelPart modelPart = new ModelPart();
+                        modelPart.Material = MaterialsParse.LookupMaterialByHash(material[x].MaterialHash);
+                        int num = material[x].StartIndex + material[x].NumFaces * 3;
+                        List<Short3> intList = new List<Short3>(material[x].NumFaces);
+                        int startIndex = material[x].StartIndex;
+                        while (startIndex < num)
+                        {
+                            Short3 indice = new Short3();
+                            indice.s1 = (short)indexBuffer.Data[startIndex + 0];
+                            indice.s2 = (short)indexBuffer.Data[startIndex + 1];
+                            indice.s3 = (short)indexBuffer.Data[startIndex + 2];
+                            intList.Add(indice);
+                            startIndex += 3;
+                        }
+                        modelPart.Indices = intList.ToArray();
+                        lods[i].Parts[x] = modelPart;
+                    }
                 }
-                lods[i] = lod2;
             }
         }
 
@@ -156,6 +184,8 @@ namespace Mafia2
                     Stopwatch watch = new Stopwatch();
                     watch.Start();
                     List<short> vertlist = new List<short>();
+                    bool[] hasBeenAdded = new bool[lod.Parts[i].Indices.Length*3];
+
                     for (int x = 0; x != lod.Parts[i].Indices.Length; x++)
                     {
                         vertlist.Add(lod.Parts[i].Indices[x].s1);
@@ -166,19 +196,23 @@ namespace Mafia2
                     List<short> newFacesI = new List<short>();
                     List<Short3> newShort3 = new List<Short3>();
 
+                    int hbaIndex = 0;
+
                     foreach (short s in vertlist)
                     {
-                        if (!newVerts.Contains(lod.Vertices[s]))
+                        if (!hasBeenAdded[hbaIndex])
                         {
                             newVerts.Add(lod.Vertices[s]);
                             newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
+                            hasBeenAdded[hbaIndex] = true;
                         }
                         else
                         {
                             newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
                         }
+                        hbaIndex++;
                     }
-                    
+
                     int num = 0;
                     while (num != newFacesI.Count)
                     {
@@ -199,46 +233,6 @@ namespace Mafia2
                 }
                 EDM.WriteToFile(writer);
             }
-        }
-
-        public VertexBuffer GetVertexBuffer(VertexBufferManager vBufferManager, ulong indexRef)
-        {
-            for (int i = 0; i != vBufferManager.BufferPools.Length; i++)
-            {
-                for (int c = 0; c != vBufferManager.BufferPools[i].Buffers.Length; c++)
-                {
-                    if (indexRef == vBufferManager.BufferPools[i].Buffers[c].Hash)
-                        return vBufferManager.BufferPools[i].Buffers[c];
-                }
-            }
-            return null;
-        }
-        public IndexBuffer GetIndexBuffer(IndexBufferManager iBufferManager, ulong indexRef)
-        {
-            for (int i = 0; i != iBufferManager.BufferPools.Length; i++)
-            {
-                for (int c = 0; c != iBufferManager.BufferPools[i].Buffers.Length; c++)
-                {
-                    if (indexRef == iBufferManager.BufferPools[i].Buffers[c].Hash)
-                        return iBufferManager.BufferPools[i].Buffers[c];
-                }
-            }
-            return null;
-        }
-    }
-
-    public struct ModelPart
-    {
-        string material;
-        Short3[] indices;
-
-        public string Material {
-            get { return material; }
-            set { material = value; }
-        }
-        public Short3[] Indices {
-            get { return indices; }
-            set { indices = value; }
         }
     }
 
@@ -266,6 +260,20 @@ namespace Mafia2
             set { parts = value; }
         }
         //ADD SKELETON
+    }
 
+    public class ModelPart
+    {
+        string material;
+        Short3[] indices;
+
+        public string Material {
+            get { return material; }
+            set { material = value; }
+        }
+        public Short3[] Indices {
+            get { return indices; }
+            set { indices = value; }
+        }
     }
 }

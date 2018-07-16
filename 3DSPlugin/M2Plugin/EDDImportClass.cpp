@@ -89,66 +89,73 @@ int EDDImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 	fread(&entryCount, sizeof(int), 1, stream);
 
 	for (int i = 0; i != entryCount; i++) {
-		EDDEntry entry = EDDEntry();
-		entry.ReadFromStream(stream);
+		try
+		{
+			EDDEntry entry = EDDEntry();
+			entry.ReadFromStream(stream);
 
-		fs::path edmPath = parentPath / entry.GetLodNames()[0];
+			fs::path edmPath = parentPath / entry.GetLodNames()[0];
 
-		if (!fs::exists(edmPath))
-			return FALSE;
+			if (!fs::exists(edmPath))
+				return FALSE;
 
-		const wchar_t* wedmPath = edmPath.c_str();
-		edmStream = _tfopen(wedmPath, _T("rb"));
+			const wchar_t* wedmPath = edmPath.c_str();
+			edmStream = _tfopen(wedmPath, _T("rb"));
 
-		if (edmStream == NULL)
-			return FALSE;
+			if (edmStream == NULL)
+				return FALSE;
 
-		EDMStructure edmStructure = EDMStructure();
-		edmStructure.ReadFromStream(edmStream);
+			EDMStructure edmStructure = EDMStructure();
+			edmStructure.ReadFromStream(edmStream);
 
-		DummyObject* parentDummy = new DummyObject();
-		ImpNode* parent = importerInt->CreateNode();
-		parent->Reference(parentDummy);
-		parent->SetName(entry.GetLodNames()[0].c_str());
+			DummyObject* parentDummy = new DummyObject();
+			ImpNode* parent = importerInt->CreateNode();
+			parent->Reference(parentDummy);
+			parent->SetName(entry.GetLodNames()[0].c_str());
 
-		for (int x = 0; x != edmStructure.GetPartSize(); x++) {
-			EDMPart part = edmStructure.GetParts()[x];
+			for (int x = 0; x != edmStructure.GetPartSize(); x++) {
+				EDMPart part = edmStructure.GetParts()[x];
 
-			//BitmapTex *texture = NewDefaultBitmapTex();
-			//std::wstring path = _T("C:/Users/Connor/Desktop/textures/");
-			//path += part.GetName();
-			//texture->SetMapName(path.c_str());
-			//texture->SetName(part.GetName().c_str());
+				//BitmapTex *texture = NewDefaultBitmapTex();
+				//std::wstring path = _T("C:/Users/Connor/Desktop/textures/");
+				//path += part.GetName();
+				//texture->SetMapName(path.c_str());
+				//texture->SetName(part.GetName().c_str());
 
-			//StdMat2 *collMat = NewDefaultStdMat();
+				//StdMat2 *collMat = NewDefaultStdMat();
 
-			//collMat->SetSubTexmap(1, texture);
-			//collMat->SetFaceted(TRUE);
-			//collMat->SetName(part.GetName().c_str());
+				//collMat->SetSubTexmap(1, texture);
+				//collMat->SetFaceted(TRUE);
+				//collMat->SetName(part.GetName().c_str());
 
-			////add to material library ONLY if it doesn't exist.
-			//int index = ip->GetMaterialLibrary().FindMtlByName(collMat->GetName());
-			//if (index == -1)
-			//	ip->GetMaterialLibrary().Add(collMat);
+				////add to material library ONLY if it doesn't exist.
+				//int index = ip->GetMaterialLibrary().FindMtlByName(collMat->GetName());
+				//if (index == -1)
+				//	ip->GetMaterialLibrary().Add(collMat);
 
-			TriObject* triObject = CreateNewTriObject();
-			Mesh &mesh = triObject->GetMesh();
-			mesh = part.GetMesh();
-			ImpNode *node = importerInt->CreateNode();
-			INode *inode = node->GetINode();
-			node->Reference(triObject);
-			node->SetName(part.GetName().c_str());
-			//inode->SetMtl(collMat);
+				TriObject* triObject = CreateNewTriObject();
+				Mesh &mesh = triObject->GetMesh();
+				mesh = part.GetMesh();
+				ImpNode *node = importerInt->CreateNode();
+				INode *inode = node->GetINode();
+				node->Reference(triObject);
+				node->SetName(part.GetName().c_str());
+				//inode->SetMtl(collMat);
 
-			importerInt->AddNodeToScene(node);
-			parent->GetINode()->AttachChild(inode, 0);
-			//parent->GetINode()->SetMtl(collMat);
+				importerInt->AddNodeToScene(node);
+				parent->GetINode()->AttachChild(inode, 0);
+				//parent->GetINode()->SetMtl(collMat);
 
-			Matrix3 tm = entry.GetMatrix();
-			parent->SetTransform(0, tm);
-			importerInt->AddNodeToScene(parent);
+				Matrix3 tm = entry.GetMatrix();
+				parent->SetTransform(0, tm);
+				importerInt->AddNodeToScene(parent);
+			}
+			edmStream = NULL;
 		}
-		edmStream = NULL;
+		catch(const std::exception& e)
+		{
+			//MessageBox(NULL, _T("Failed to import entry"), _T("Error!"), MB_OK);
+		}
 	}
 	importerInt->RedrawViews();
 

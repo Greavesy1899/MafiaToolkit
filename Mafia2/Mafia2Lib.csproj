@@ -44,7 +44,6 @@
   <ItemGroup>
     <Compile Include="3DHelpers\Bounds.cs" />
     <Compile Include="3DHelpers\Matrix33.cs" />
-    <Compile Include="3DHelpers\ModelBuilder.cs" />
     <Compile Include="3DHelpers\TransformMatrix.cs" />
     <Compile Include="3DHelpers\Vertex.cs" />
     <Compile Include="Actors\ActorParse.cs" />
@@ -84,6 +83,7 @@
     <Compile Include="ItemDesc\CollisionTypes\CollisionSphere.cs" />
     <Compile Include="ItemDesc\CollisionTypes\CollisionUnk7.cs" />
     <Compile Include="ItemDesc\ItemDescParse.cs" />
+    <Compile Include="MafiaModel\ModelDefinition.cs" />
     <Compile Include="MaterialStructure\MaterialsParse.cs" />
     <Compile Include="NAV_AI\NAV_AI.cs" />
     <Compile Include="ParseHelpers\Enums.cs" />

@@ -206,7 +206,19 @@ namespace Mafia2Tool
             {
                 CustomEDD.Entry entry = new CustomEDD.Entry();
 
-                Model newModel = new Model((mesh[i]), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
+                FrameGeometry geom = SceneData.FrameResource.EntireFrame[mesh[i].MeshIndex] as FrameGeometry;
+                FrameMaterial mat = SceneData.FrameResource.EntireFrame[mesh[i].MaterialIndex] as FrameMaterial;
+                IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
+                VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
+
+                //we need to retrieve buffers first.
+                for (int c = 0; c != geom.LOD.Length; c++)
+                {
+                    indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
+                    vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
+                }
+
+                Model newModel = new Model(mesh[i], indexBuffers, vertexBuffers, geom, mat);
 
                 if (mesh[i].ParentIndex1.Index != -1)
                 {
@@ -249,9 +261,6 @@ namespace Mafia2Tool
                             edmName = meshGeom.LOD[c].VertexBufferRef.String;
                         }
                     }
-
-                    Console.WriteLine(edmName);
-
                     if (!File.Exists("exported/" + edmName + "_lod" + c + ".edm"))
                     {
                         Stopwatch watch = new Stopwatch();
@@ -261,7 +270,6 @@ namespace Mafia2Tool
                         watch.Stop();
                     }
                     entry.LODNames[c] = edmName + "_lod" + c;
-                    Console.WriteLine("{0}/{1}", i, mesh.Count);
                 }
                 entry.Position = mesh[i].Matrix.Position;
                 entry.Rotation = mesh[i].Matrix.Rotation;
@@ -417,8 +425,8 @@ namespace Mafia2Tool
             if (e.ClickedItem.Name == "contextExtract3D")
             {
                 FrameObjectSingleMesh fObject = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
-                Model newModel = new Model((fObject), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
-                newModel.ExportToEDM(newModel.Lods[0], fObject.Name.String);
+                //Model newModel = new Model((fObject), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
+                //newModel.ExportToEDM(newModel.Lods[0], fObject.Name.String);
             }
         }
     }

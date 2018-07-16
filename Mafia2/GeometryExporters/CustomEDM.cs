@@ -339,7 +339,7 @@ namespace Mafia2
                 else
                     this.tangents = new Vector3[vertex.Count];
 
-                if (vertex[0].UVs == null)
+                if (vertex[0].UVs.Length == 0)
                     hasUVs = false;
                 else
                     this.uvs = new UVVector2[vertex.Count];

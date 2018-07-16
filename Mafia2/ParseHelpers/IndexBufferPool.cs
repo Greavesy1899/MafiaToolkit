@@ -39,6 +39,24 @@ namespace Mafia2
             return new int[] { -1, -1 };
         }
 
+        /// <summary>
+        /// Get buffer from manager. use IndexBufferRef from FrameGeometry.
+        /// </summary>
+        /// <param name="indexRef">indexBufferRef</param>
+        /// <returns></returns>
+        public IndexBuffer GetBuffer(ulong indexRef)
+        {
+            for (int i = 0; i != bufferPools.Length; i++)
+            {
+                for (int c = 0; c != bufferPools[i].Buffers.Length; c++)
+                {
+                    if (indexRef == bufferPools[i].Buffers[c].Hash)
+                        return bufferPools[i].Buffers[c];
+                }
+            }
+            return null;
+        }
+
         public void WriteToFile()
         {
             for(int i = 0; i != bufferPools.Length; i++)
