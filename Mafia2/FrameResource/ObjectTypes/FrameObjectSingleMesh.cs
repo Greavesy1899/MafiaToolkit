@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 
@@ -7,6 +8,7 @@ namespace Mafia2
     public class FrameObjectSingleMesh : FrameObjectJoint
     {
 
+        NameTableFlags nameTableFlags;
         SingleMeshFlags flags;
         Bounds bounds;
         byte unk_14_byte;
@@ -18,6 +20,11 @@ namespace Mafia2
         byte unk_18_byte3;
         FrameGeometry mesh;
 
+        [Description("Only use this if the object is going to be saved in the FrameNameTable")]
+        public NameTableFlags FrameNameTableFlags {
+            get { return nameTableFlags; }
+            set { nameTableFlags = value; }
+        }
         public SingleMeshFlags Flags {
             get { return flags; }
             set { flags = value; }

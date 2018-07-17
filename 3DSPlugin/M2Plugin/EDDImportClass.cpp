@@ -154,7 +154,7 @@ int EDDImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		}
 		catch(const std::exception& e)
 		{
-			//MessageBox(NULL, _T("Failed to import entry"), _T("Error!"), MB_OK);
+			MessageBox(NULL, _T("Failed to import entry"), _T("Error!"), MB_OK);
 		}
 	}
 	importerInt->RedrawViews();

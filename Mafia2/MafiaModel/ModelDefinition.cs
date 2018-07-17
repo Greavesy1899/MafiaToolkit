@@ -57,7 +57,6 @@ namespace Mafia2
         public void BuildLods()
         {
             lods = new Lod[frameGeometry.NumLods];
-
             for(int i = 0; i != lods.Length; i++)
             {
                 FrameLOD frameLod = frameGeometry.LOD[i];
@@ -140,16 +139,16 @@ namespace Mafia2
                     }
                     lods[i].Vertices[v] = vertex;
 
-                    lods[i].Parts = new ModelPart[frameMaterial.Materials.Count];
-                    for (int x = 0; x != frameMaterial.Materials.Count; x++)
+                    MaterialStruct[] materials = frameMaterial.Materials[i];
+                    lods[i].Parts = new ModelPart[materials.Length];
+                    for (int x = 0; x != materials.Length; x++)
                     {
-                        MaterialStruct[] material = frameMaterial.Materials[x];
 
                         ModelPart modelPart = new ModelPart();
-                        modelPart.Material = MaterialsParse.LookupMaterialByHash(material[x].MaterialHash);
-                        int num = material[x].StartIndex + material[x].NumFaces * 3;
-                        List<Short3> intList = new List<Short3>(material[x].NumFaces);
-                        int startIndex = material[x].StartIndex;
+                        modelPart.Material = MaterialsParse.LookupMaterialByHash(materials[x].MaterialHash);
+                        int num = materials[x].StartIndex + materials[x].NumFaces * 3;
+                        List<Short3> intList = new List<Short3>(materials[x].NumFaces);
+                        int startIndex = materials[x].StartIndex;
                         while (startIndex < num)
                         {
                             Short3 indice = new Short3();

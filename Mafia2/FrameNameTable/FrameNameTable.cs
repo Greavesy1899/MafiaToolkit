@@ -87,7 +87,13 @@ namespace Mafia2
                     Data data = new Data();
 
                     //temporarily set flags to zero; need to find out what these are.
-                    data.Flags =  NameTableFlags.flag_1 | NameTableFlags.flag_2048 /*| NameTableFlags.flag_512 | NameTableFlags.flag_1024*/;
+                    if (block.GetType() == typeof(FrameObjectFrame))
+                        data.Flags = (block as FrameObjectFrame).FrameNameTableFlags;
+                    else if (block.GetType() == typeof(FrameObjectSingleMesh))
+                        data.Flags = (block as FrameObjectSingleMesh).FrameNameTableFlags;
+                    if (block.GetType() == typeof(FrameObjectDummy))
+                        data.Flags = (block as FrameObjectDummy).FrameNameTableFlags;
+
                     int sceneIndex = 0;
 
                     //check if this is a scene. If it is, then we get the index for the scene names and pos.

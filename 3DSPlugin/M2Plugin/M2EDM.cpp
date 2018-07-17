@@ -176,13 +176,14 @@ void EDMPart::ReadFromStream(FILE * stream) {
 			normalSpec->Normal(i) = normals[i];
 			normalSpec->SetNormalExplicit(i, true);
 		}
-		normalSpec->SetNumFaces(indicesSize);
-		for (int i = 0; i != mesh.numFaces; i++) {
-			normalSpec->Face(i).SpecifyAll();
-			normalSpec->Face(i).SetNormalID(0, indices[i].i1);
-			normalSpec->Face(i).SetNormalID(1, indices[i].i2);
-			normalSpec->Face(i).SetNormalID(2, indices[i].i3);
-		}
+		//I think this piece of code more or less breaks the normals.
+		//normalSpec->SetNumFaces(indicesSize);
+		//for (int i = 0; i != mesh.numFaces; i++) {
+		//	normalSpec->Face(i).SpecifyAll();
+		//	normalSpec->Face(i).SetNormalID(0, indices[i].i1);
+		//	normalSpec->Face(i).SetNormalID(1, indices[i].i2);
+		//	normalSpec->Face(i).SetNormalID(2, indices[i].i3);
+		//}
 	}
 
 	if (hasUVs)

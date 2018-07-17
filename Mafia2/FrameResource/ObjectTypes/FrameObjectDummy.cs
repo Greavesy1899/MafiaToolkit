@@ -1,10 +1,22 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 
 namespace Mafia2
 {
     public class FrameObjectDummy : FrameObjectJoint
     {
         Bounds unk_19_bounds;
+        NameTableFlags nameTableFlags;
+
+        [Description("Only use this if the object is going to be saved in the FrameNameTable")]
+        public NameTableFlags FrameNameTableFlags {
+            get { return nameTableFlags; }
+            set { nameTableFlags = value; }
+        }
+        public Bounds Unk19 {
+            get { return unk_19_bounds; }
+            set { unk_19_bounds = value; }
+        }
 
         public FrameObjectDummy(BinaryReader reader) : base()
         {

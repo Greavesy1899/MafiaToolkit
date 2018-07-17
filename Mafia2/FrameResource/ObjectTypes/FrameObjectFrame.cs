@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 
 namespace Mafia2
@@ -7,6 +8,7 @@ namespace Mafia2
     {
         Hash actorHash;
         Actor.ActorItem item;
+        NameTableFlags nameTableFlags;
 
         public Hash ActorHash {
             get { return actorHash; }
@@ -15,6 +17,12 @@ namespace Mafia2
         public Actor.ActorItem Item {
             get { return item; }
             set { item = value; }
+        }
+
+        [Description("Only use this if the object is going to be saved in the FrameNameTable")]
+        public NameTableFlags FrameNameTableFlags {
+            get { return nameTableFlags; }
+            set { nameTableFlags = value; }
         }
 
         public FrameObjectFrame(BinaryReader reader) : base()

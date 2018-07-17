@@ -10,7 +10,6 @@ namespace Mafia2Tool
 {
     public partial class FrameResourceTool : Form
     {
-        private List<FrameObjectSingleMesh> mesh = new List<FrameObjectSingleMesh>();
         private List<TreeNode> unadded = new List<TreeNode>();
         private IniFile ini = new IniFile();
         public FrameResourceTool()
@@ -32,6 +31,7 @@ namespace Mafia2Tool
 
         public void ReadFrameResource()
         {
+            int numBlocks = SceneData.FrameResource.EntireFrame.Count - SceneData.FrameResource.Header.NumObjects;
             foreach (FrameNameTable.Data data in SceneData.FrameNameTable.FrameData)
             {
                 int index = treeView1.Nodes.IndexOfKey(data.ParentName);
@@ -45,7 +45,16 @@ namespace Mafia2Tool
 
                 if (data.FrameIndex != -1)
                 {
-                    TreeNode node = CreateTreeNode((SceneData.FrameResource.FrameObjects[data.FrameIndex] as FrameObjectBase));
+                    if (SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks].GetType() == typeof(FrameObjectFrame))
+                        (SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks] as FrameObjectFrame).FrameNameTableFlags = data.Flags;
+                    else if (SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks].GetType() == typeof(FrameObjectSingleMesh))
+                        (SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks] as FrameObjectSingleMesh).FrameNameTableFlags = data.Flags;
+                    else if (SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks].GetType() == typeof(FrameObjectDummy))
+                        (SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks] as FrameObjectDummy).FrameNameTableFlags = data.Flags;
+                    else
+                        throw new Exception("Not found");
+
+                    TreeNode node = CreateTreeNode((SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks] as FrameObjectBase));
 
                     if (node == null)
                         continue;
@@ -135,7 +144,6 @@ namespace Mafia2Tool
                 node.Nodes.Add(CreateTreeNode("Material", (fObject as FrameObjectSingleMesh).MaterialIndex));
                 node.Nodes.Add(CreateTreeNode("Geometry", (fObject as FrameObjectSingleMesh).MeshIndex));
                 node.ContextMenuStrip = contextMenu;
-                mesh.Add((fObject as FrameObjectSingleMesh));
             }
             else if (fObject.GetType() == typeof(FrameObjectModel))
             {
@@ -144,7 +152,6 @@ namespace Mafia2Tool
                 node.Nodes.Add(CreateTreeNode("Skeleton Info", (fObject as FrameObjectModel).SkeletonIndex));
                 node.Nodes.Add(CreateTreeNode("Skeleton Hierachy Info", (fObject as FrameObjectModel).SkeletonHierachyIndex));
                 node.ContextMenuStrip = contextMenu;
-                mesh.Add((fObject as FrameObjectModel));
             }
 
             return node;
@@ -167,23 +174,23 @@ namespace Mafia2Tool
             curPos = mesh.Matrix.Position;
             FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
 
-            while (parent != null)
-            {
-                if (parent.GetType() == typeof(FrameObjectFrame))
-                {
-                    if ((parent as FrameObjectFrame).Item != null)
-                        curPos += (parent as FrameObjectFrame).Item.Position;
-                }
-                else
-                {
-                    curPos += parent.Matrix.Position;
-                }
+            //while (parent != null)
+            //{
+            //    if (parent.GetType() == typeof(FrameObjectFrame))
+            //    {
+            //        if ((parent as FrameObjectFrame).Item != null)
+            //            curPos += (parent as FrameObjectFrame).Item.Position;
+            //    }
+            //    else
+            //    {
+            //        curPos += parent.Matrix.Position;
+            //    }
 
-                if (parent.ParentIndex1.Index != -1)
-                    parent = (SceneData.FrameResource.EntireFrame[parent.ParentIndex1.Index] as FrameObjectBase);
-                else
-                    parent = null;
-            }
+            //    if (parent.ParentIndex1.Index != -1)
+            //        parent = (SceneData.FrameResource.EntireFrame[parent.ParentIndex1.Index] as FrameObjectBase);
+            //    else
+            //        parent = null;
+            //}
 
             return curPos;
         }
@@ -194,20 +201,37 @@ namespace Mafia2Tool
         }
         private void OnClickLoad3D(object sender, EventArgs e)
         {
-            string[] fileNames = new string[mesh.Count];
-            Vector3[] filePos = new Vector3[mesh.Count];
-            Matrix33[] rotPos = new Matrix33[mesh.Count];
+            List<object> meshes = new List<object>();
+
+            for(int i = 0; i != SceneData.FrameResource.EntireFrame.Count; i++)
+            {
+                object fObject = SceneData.FrameResource.EntireFrame[i];
+
+                if(fObject.GetType() == typeof(FrameObjectSingleMesh))
+                {
+                    meshes.Add(fObject);
+                }
+                if (fObject.GetType() == typeof(FrameObjectModel))
+                {
+                    meshes.Add(fObject);
+                }
+            }
+
+
+            string[] fileNames = new string[meshes.Count];
+            Vector3[] filePos = new Vector3[meshes.Count];
+            Matrix33[] rotPos = new Matrix33[meshes.Count];
 
             CustomEDD frameEDD = new CustomEDD();
-            frameEDD.EntryCount = mesh.Count;
+            frameEDD.EntryCount = meshes.Count;
             frameEDD.Entries = new CustomEDD.Entry[frameEDD.EntryCount];
 
-            Parallel.For(0, mesh.Count, i =>
+            Parallel.For(0, meshes.Count, i =>
             {
                 CustomEDD.Entry entry = new CustomEDD.Entry();
-
-                FrameGeometry geom = SceneData.FrameResource.EntireFrame[mesh[i].MeshIndex] as FrameGeometry;
-                FrameMaterial mat = SceneData.FrameResource.EntireFrame[mesh[i].MaterialIndex] as FrameMaterial;
+                FrameObjectSingleMesh mesh = (meshes[i] as FrameObjectSingleMesh);
+                FrameGeometry geom = SceneData.FrameResource.EntireFrame[mesh.MeshIndex] as FrameGeometry;
+                FrameMaterial mat = SceneData.FrameResource.EntireFrame[mesh.MaterialIndex] as FrameMaterial;
                 IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
                 VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
 
@@ -218,22 +242,22 @@ namespace Mafia2Tool
                     vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
                 }
 
-                Model newModel = new Model(mesh[i], indexBuffers, vertexBuffers, geom, mat);
+                Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
 
-                if (mesh[i].ParentIndex1.Index != -1)
-                {
-                    FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh[i].ParentIndex1.Index] as FrameObjectBase);
-                    filePos[i] = RetrieveParent1Position(mesh[i]);
-                }
+                //if (mesh.ParentIndex1.Index != -1)
+                //{
+                //    FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
+                //    filePos[i] = RetrieveParent1Position(mesh);
+                //}
 
-                if (((mesh[i].ParentIndex1.Index != -1)) && ((mesh[i].ParentIndex1.Index == mesh[i].ParentIndex2.Index)))
-                {
-                    FrameObjectFrame frame = SceneData.FrameResource.EntireFrame[mesh[i].ParentIndex1.Index] as FrameObjectFrame;
-                    if (frame.Item != null)
-                    {
-                        filePos[i] = frame.Item.Position;
-                    }
-                }
+                //if (((mesh.ParentIndex1.Index != -1)) && ((mesh.ParentIndex1.Index == mesh.ParentIndex2.Index)))
+                //{
+                //    FrameObjectFrame frame = SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectFrame;
+                //    if (frame.Item != null)
+                //    {
+                //        filePos[i] = frame.Item.Position;
+                //    }
+                //}
 
                 entry.LodCount = newModel.Lods.Length;
                 entry.LODNames = new string[entry.LodCount];
@@ -243,21 +267,21 @@ namespace Mafia2Tool
                     string edmName;
                     FrameGeometry meshGeom;
 
-                    if (mesh[i].Name.String != "")
+                    if (mesh.Name.String != "")
                     {
-                        edmName = mesh[i].Name.String;
+                        edmName = mesh.Name.String;
                     }
                     else
                     {
-                        if (mesh[i].Mesh == null)
+                        if (mesh.Mesh == null)
                         {
-                            meshGeom = SceneData.FrameResource.EntireFrame[mesh[i].MeshIndex] as FrameGeometry;
+                            meshGeom = SceneData.FrameResource.EntireFrame[mesh.MeshIndex] as FrameGeometry;
                             edmName = meshGeom.LOD[c].VertexBufferRef.String;
                             edmName.Remove(edmName.Length - 5);
                         }
                         else
                         {
-                            meshGeom = mesh[i].Mesh;
+                            meshGeom = mesh.Mesh;
                             edmName = meshGeom.LOD[c].VertexBufferRef.String;
                         }
                     }
@@ -271,8 +295,8 @@ namespace Mafia2Tool
                     }
                     entry.LODNames[c] = edmName + "_lod" + c;
                 }
-                entry.Position = mesh[i].Matrix.Position;
-                entry.Rotation = mesh[i].Matrix.Rotation;
+                entry.Position = mesh.Matrix.Position;
+                entry.Rotation = mesh.Matrix.Rotation;
 
                 frameEDD.Entries[i] = entry;
 
