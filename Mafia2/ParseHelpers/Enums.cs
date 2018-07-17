@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace Mafia2
 {
@@ -308,6 +309,24 @@ namespace Mafia2
         flag_0x20000 = 131072, // 0x00020000
         flag_0x40000 = 262144, // 0x00040000
         DamageGroup = 1048576, // 0x00100000
+    }
+
+    [Flags]
+    public enum NameTableFlags : int //There is a possibility that this is correct.
+    {
+        flag_1 = 1,
+        flag_2 = 2,
+        flag_4 = 4,
+        flag_8 = 8,
+        flag_16 = 16,
+        flag_32 = 32,
+        flag_64 = 64,
+        flag_128 = 128,
+        flag_256 = 256,
+        flag_512 = 512,
+        flag_1024 = 1024,
+        flag_2048 = 2048,
+        flag_4096 = 4096,
     }
 
     [Flags]

@@ -23,6 +23,14 @@ namespace Mafia2
         public bool unk3;
         public float[] unkData = new float[4 * 3];
 
+        public bool IsScene {
+            get { return isScene; }
+            set { isScene = value; }
+        }
+        public int NumFolderNames {
+            get { return numFolderNames; }
+            set { numFolderNames = value; }
+        }
         public int NumGeometries {
             get { return numGeometries; }
             set { numGeometries = value; }

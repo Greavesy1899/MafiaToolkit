@@ -79,7 +79,7 @@ namespace Mafia2Tool
 
             }
 
-            foreach(TreeNode obj in unadded)
+            foreach (TreeNode obj in unadded)
             {
                 TreeNode[] nodes = treeView1.Nodes.Find((obj.Tag as FrameObjectBase).ParentIndex2.Name, true);
 
@@ -134,7 +134,7 @@ namespace Mafia2Tool
             {
                 node.Nodes.Add(CreateTreeNode("Material", (fObject as FrameObjectSingleMesh).MaterialIndex));
                 node.Nodes.Add(CreateTreeNode("Geometry", (fObject as FrameObjectSingleMesh).MeshIndex));
-                node.ContextMenuStrip = contextMenuStrip1;
+                node.ContextMenuStrip = contextMenu;
                 mesh.Add((fObject as FrameObjectSingleMesh));
             }
             else if (fObject.GetType() == typeof(FrameObjectModel))
@@ -143,10 +143,10 @@ namespace Mafia2Tool
                 node.Nodes.Add(CreateTreeNode("Geometry", (fObject as FrameObjectModel).MeshIndex));
                 node.Nodes.Add(CreateTreeNode("Skeleton Info", (fObject as FrameObjectModel).SkeletonIndex));
                 node.Nodes.Add(CreateTreeNode("Skeleton Hierachy Info", (fObject as FrameObjectModel).SkeletonHierachyIndex));
-                node.ContextMenuStrip = contextMenuStrip1;
+                node.ContextMenuStrip = contextMenu;
                 mesh.Add((fObject as FrameObjectModel));
             }
-            
+
             return node;
         }
         private TreeNode ConvertNode(Node node)
@@ -167,7 +167,7 @@ namespace Mafia2Tool
             curPos = mesh.Matrix.Position;
             FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
 
-            while(parent != null)
+            while (parent != null)
             {
                 if (parent.GetType() == typeof(FrameObjectFrame))
                 {
@@ -296,7 +296,7 @@ namespace Mafia2Tool
         private void LoadMaterialTool(object sender, EventArgs e)
         {
             if (!MaterialData.HasLoaded)
-                return; 
+                return;
 
             MaterialTool tool = new MaterialTool();
             tool.ShowDialog();
@@ -394,6 +394,13 @@ namespace Mafia2Tool
                 {
                     SceneData.FrameResource.WriteToFile(writer);
                 }
+                using (BinaryWriter writer = new BinaryWriter(File.Open("FrameNameTable_0.bin", FileMode.Create)))
+                {
+                    FrameNameTable nameTable = new FrameNameTable();
+                    nameTable.BuildDataFromResource(SceneData.FrameResource);
+                    nameTable.AddNames();
+                    nameTable.WriteToFile(writer);
+                }
                 MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -428,6 +435,20 @@ namespace Mafia2Tool
                 //Model newModel = new Model((fObject), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
                 //newModel.ExportToEDM(newModel.Lods[0], fObject.Name.String);
             }
+        }
+
+        private void OnDelete(object sender, EventArgs e)
+        {
+            FrameObjectBase fObject = treeView1.SelectedNode.Tag as FrameObjectBase;
+            for (int i = 0; i != SceneData.FrameResource.EntireFrame.Count; i++)
+            {
+                object block = SceneData.FrameResource.EntireFrame[i];
+                if (block == fObject)
+                {
+                    SceneData.FrameResource.EntireFrame.RemoveAt(i);
+                }
+            }
+            treeView1.SelectedNode.Remove();
         }
     }
 }
