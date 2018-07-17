@@ -8,6 +8,7 @@ namespace Mafia2
     {
         Hash actorHash;
         Actor.ActorItem item;
+        bool isOnTable = false;
         NameTableFlags nameTableFlags;
 
         public Hash ActorHash {
@@ -23,6 +24,11 @@ namespace Mafia2
         public NameTableFlags FrameNameTableFlags {
             get { return nameTableFlags; }
             set { nameTableFlags = value; }
+        }
+        [Description("If this is true, it will be added onto the FrameNameTable and the flags will be saved")]
+        public bool IsOnFrameTable {
+            get { return isOnTable; }
+            set { isOnTable = value; }
         }
 
         public FrameObjectFrame(BinaryReader reader) : base()

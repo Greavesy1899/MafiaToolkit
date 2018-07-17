@@ -7,7 +7,7 @@ namespace Mafia2
 {
     public class FrameObjectSingleMesh : FrameObjectJoint
     {
-
+        bool isOnTable;
         NameTableFlags nameTableFlags;
         SingleMeshFlags flags;
         Bounds bounds;
@@ -25,6 +25,12 @@ namespace Mafia2
             get { return nameTableFlags; }
             set { nameTableFlags = value; }
         }
+        [Description("If this is true, it will be added onto the FrameNameTable and the flags will be saved")]
+        public bool IsOnFrameTable {
+            get { return isOnTable; }
+            set { isOnTable = value; }
+        }
+
         public SingleMeshFlags Flags {
             get { return flags; }
             set { flags = value; }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace Mafia2
@@ -73,52 +74,75 @@ namespace Mafia2
 
             for (int i = 0; i != resource.EntireFrame.Count; i++)
             {
+                bool addToTable = false;
                 object block = resource.EntireFrame[i];
 
-                FrameObjectBase fBase = (block as FrameObjectBase);
-
-                if (fBase == null)
-                    continue;
-
-                //FrameObjectBase fBase = (block as FrameObjectBase);
-
-                if (fBase.ParentIndex1.Index == -1)
+                //possible types to save? might change in the future however.
+                if (block.GetType() == typeof(FrameObjectDummy))
                 {
-                    Data data = new Data();
-
-                    //temporarily set flags to zero; need to find out what these are.
-                    if (block.GetType() == typeof(FrameObjectFrame))
-                        data.Flags = (block as FrameObjectFrame).FrameNameTableFlags;
-                    else if (block.GetType() == typeof(FrameObjectSingleMesh))
-                        data.Flags = (block as FrameObjectSingleMesh).FrameNameTableFlags;
-                    if (block.GetType() == typeof(FrameObjectDummy))
-                        data.Flags = (block as FrameObjectDummy).FrameNameTableFlags;
-
-                    int sceneIndex = 0;
-
-                    //check if this is a scene. If it is, then we get the index for the scene names and pos.
-                    if (resource.Header.IsScene)
+                    if((block as FrameObjectDummy).IsOnFrameTable)
                     {
-                        for (int c = 0; c != sceneNames.Length; c++)
-                        {
-                            if (fBase.ParentIndex2.Name == sceneNames[c])
-                                sceneIndex = c;
-                        }
+                        addToTable = true;
                     }
+                }
+                if (block.GetType() == typeof(FrameObjectSingleMesh))
+                {
+                    if ((block as FrameObjectSingleMesh).IsOnFrameTable)
+                    {
+                        addToTable = true;
+                    }
+                }
+                if (block.GetType() == typeof(FrameObjectFrame))
+                {
+                    if ((block as FrameObjectFrame).IsOnFrameTable)
+                    {
+                        addToTable = true;
+                    }
+                }
 
-                    //set parent index.
-                    data.Parent = (short)scenePos[sceneIndex];
+                if (addToTable)
+                {
+                    FrameObjectBase fBase = (block as FrameObjectBase);
 
-                    //add name to string and set namepos1 For namepos2, check if this is a scene. If so, then use 0xFFFF.
-                    data.NamePos1 = (ushort)names.Length;
-                    names += fBase.Name.String;
-                    names += "\0";
-                    data.NamePos2 = (resource.Header.IsScene) ? (ushort)0xFFFF : data.NamePos1;
+                    if (fBase.ParentIndex1.Index == -1)
+                    {
+                        Data data = new Data();
 
-                    //set frameIndex. minus the blockID and then subtract it from the total number of blocks.
-                    data.FrameIndex = (short)(totalNumBlocks - (i - resource.Header.NumObjects) - 1);
+                        //temporarily set flags to zero; need to find out what these are.
+                        if (block.GetType() == typeof(FrameObjectFrame))
+                            data.Flags = (block as FrameObjectFrame).FrameNameTableFlags;
+                        else if (block.GetType() == typeof(FrameObjectSingleMesh))
+                            data.Flags = (block as FrameObjectSingleMesh).FrameNameTableFlags;
+                        if (block.GetType() == typeof(FrameObjectDummy))
+                            data.Flags = (block as FrameObjectDummy).FrameNameTableFlags;
 
-                    tableData.Add(data);
+                        int sceneIndex = 0;
+
+                        //check if this is a scene. If it is, then we get the index for the scene names and pos.
+                        if (resource.Header.IsScene)
+                        {
+                            for (int c = 0; c != sceneNames.Length; c++)
+                            {
+                                if (fBase.ParentIndex2.Name == sceneNames[c])
+                                    sceneIndex = c;
+                            }
+                        }
+
+                        //set parent index.
+                        data.Parent = (short)scenePos[sceneIndex];
+
+                        //add name to string and set namepos1 For namepos2, check if this is a scene. If so, then use 0xFFFF.
+                        data.NamePos1 = (ushort)names.Length;
+                        names += fBase.Name.String;
+                        names += "\0";
+                        data.NamePos2 = (resource.Header.IsScene) ? (ushort)0xFFFF : data.NamePos1;
+
+                        //set frameIndex. minus the blockID and then subtract it from the total number of blocks.
+                        //data.FrameIndex = (short)(totalNumBlocks - (i - resource.Header.NumObjects)-1);
+                        data.FrameIndex = (short)(i - totalNumBlocks);
+
+                        tableData.Add(data);
+                    }
                 }
 
             }

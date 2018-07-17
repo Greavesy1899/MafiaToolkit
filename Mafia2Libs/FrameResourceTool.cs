@@ -45,16 +45,26 @@ namespace Mafia2Tool
 
                 if (data.FrameIndex != -1)
                 {
-                    if (SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks].GetType() == typeof(FrameObjectFrame))
-                        (SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks] as FrameObjectFrame).FrameNameTableFlags = data.Flags;
-                    else if (SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks].GetType() == typeof(FrameObjectSingleMesh))
-                        (SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks] as FrameObjectSingleMesh).FrameNameTableFlags = data.Flags;
-                    else if (SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks].GetType() == typeof(FrameObjectDummy))
-                        (SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks] as FrameObjectDummy).FrameNameTableFlags = data.Flags;
+                    object block = SceneData.FrameResource.EntireFrame[(data.FrameIndex + numBlocks)];
+                    if (block.GetType() == typeof(FrameObjectFrame))
+                    {
+                        (block as FrameObjectFrame).FrameNameTableFlags = data.Flags;
+                        (block as FrameObjectFrame).IsOnFrameTable = true;
+                    }
+                    else if (block.GetType() == typeof(FrameObjectSingleMesh))
+                    {
+                        (block as FrameObjectSingleMesh).FrameNameTableFlags = data.Flags;
+                        (block as FrameObjectSingleMesh).IsOnFrameTable = true;
+                    }
+                    else if (block.GetType() == typeof(FrameObjectDummy))
+                    {
+                        (block as FrameObjectDummy).FrameNameTableFlags = data.Flags;
+                        (block as FrameObjectDummy).IsOnFrameTable = true;
+                    }
                     else
                         throw new Exception("Not found");
 
-                    TreeNode node = CreateTreeNode((SceneData.FrameResource.EntireFrame[data.FrameIndex + numBlocks] as FrameObjectBase));
+                    TreeNode node = CreateTreeNode((SceneData.FrameResource.EntireFrame[(data.FrameIndex + numBlocks)] as FrameObjectBase));
 
                     if (node == null)
                         continue;
