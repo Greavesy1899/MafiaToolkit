@@ -254,20 +254,20 @@ namespace Mafia2Tool
 
                 Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
 
-                //if (mesh.ParentIndex1.Index != -1)
-                //{
-                //    FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
-                //    filePos[i] = RetrieveParent1Position(mesh);
-                //}
+                if (mesh.ParentIndex1.Index != -1)
+                {
+                    FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
+                    filePos[i] = RetrieveParent1Position(mesh);
+                }
 
-                //if (((mesh.ParentIndex1.Index != -1)) && ((mesh.ParentIndex1.Index == mesh.ParentIndex2.Index)))
-                //{
-                //    FrameObjectFrame frame = SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectFrame;
-                //    if (frame.Item != null)
-                //    {
-                //        filePos[i] = frame.Item.Position;
-                //    }
-                //}
+                if (((mesh.ParentIndex1.Index != -1)) && ((mesh.ParentIndex1.Index == mesh.ParentIndex2.Index)))
+                {
+                    FrameObjectFrame frame = SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectFrame;
+                    if (frame.Item != null)
+                    {
+                        filePos[i] = frame.Item.Position;
+                    }
+                }
 
                 entry.LodCount = newModel.Lods.Length;
                 entry.LODNames = new string[entry.LodCount];

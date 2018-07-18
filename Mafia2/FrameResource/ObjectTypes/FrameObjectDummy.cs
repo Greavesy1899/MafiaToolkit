@@ -9,12 +9,12 @@ namespace Mafia2
         bool isOnTable;
         NameTableFlags nameTableFlags;
 
-        [Description("Only use this if the object is going to be saved in the FrameNameTable")]
+        [Description("Only use this if the object is going to be saved in the FrameNameTable"), Category("FrameNameTable Data")]
         public NameTableFlags FrameNameTableFlags {
             get { return nameTableFlags; }
             set { nameTableFlags = value; }
         }
-        [Description("If this is true, it will be added onto the FrameNameTable and the flags will be saved")]
+        [Description("If this is true, it will be added onto the FrameNameTable and the flags will be saved"), Category("FrameNameTable Data")]
         public bool IsOnFrameTable {
             get { return isOnTable; }
             set { isOnTable = value; }

@@ -27,7 +27,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrameResourceTool));
             this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
             this.FrameResourceListBox = new System.Windows.Forms.ListBox();
-            this.treeView1 = new System.Windows.Forms.TreeView();
             this.folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.edmBrowser = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -47,6 +46,7 @@
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextExtract3D = new System.Windows.Forms.ToolStripMenuItem();
             this.contextDelete = new System.Windows.Forms.ToolStripMenuItem();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.toolStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -67,22 +67,12 @@
             this.FrameResourceListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.FrameResourceListBox.FormattingEnabled = true;
-            this.FrameResourceListBox.Location = new System.Drawing.Point(12, 40);
+            this.FrameResourceListBox.Location = new System.Drawing.Point(12, 27);
             this.FrameResourceListBox.Name = "FrameResourceListBox";
-            this.FrameResourceListBox.Size = new System.Drawing.Size(368, 381);
+            this.FrameResourceListBox.Size = new System.Drawing.Size(368, 394);
             this.FrameResourceListBox.TabIndex = 5;
             this.FrameResourceListBox.Visible = false;
             this.FrameResourceListBox.SelectedIndexChanged += new System.EventHandler(this.OnSelectedChanged);
-            // 
-            // treeView1
-            // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.treeView1.Location = new System.Drawing.Point(13, 28);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(368, 393);
-            this.treeView1.TabIndex = 9;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelect);
             // 
             // folderBrowser
             // 
@@ -164,8 +154,9 @@
             // 
             // modelExporterSubButton
             // 
+            this.modelExporterSubButton.Enabled = false;
             this.modelExporterSubButton.Name = "modelExporterSubButton";
-            this.modelExporterSubButton.Size = new System.Drawing.Size(160, 22);
+            this.modelExporterSubButton.Size = new System.Drawing.Size(180, 22);
             this.modelExporterSubButton.Text = "3D Exporter";
             this.modelExporterSubButton.Click += new System.EventHandler(this.OnClickLoad3D);
             // 
@@ -232,6 +223,7 @@
             // 
             // contextExtract3D
             // 
+            this.contextExtract3D.Enabled = false;
             this.contextExtract3D.Name = "contextExtract3D";
             this.contextExtract3D.Size = new System.Drawing.Size(155, 22);
             this.contextExtract3D.Text = "Extract 3D";
@@ -244,14 +236,23 @@
             this.contextDelete.Text = "Delete";
             this.contextDelete.Click += new System.EventHandler(this.OnDelete);
             // 
+            // treeView1
+            // 
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.treeView1.Location = new System.Drawing.Point(12, 27);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(368, 394);
+            this.treeView1.TabIndex = 15;
+            // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 431);
+            this.Controls.Add(this.treeView1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.FrameResourceGrid);
-            this.Controls.Add(this.treeView1);
             this.Controls.Add(this.FrameResourceListBox);
             this.Name = "FrameResourceTool";
             this.Text = "Frame Resource Editor";
@@ -267,7 +268,6 @@
         #endregion
         private System.Windows.Forms.PropertyGrid FrameResourceGrid;
         private System.Windows.Forms.ListBox FrameResourceListBox;
-        private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowser;
         private System.Windows.Forms.OpenFileDialog edmBrowser;
         private System.Windows.Forms.ToolStrip toolStrip1;
@@ -287,5 +287,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem contextExtract3D;
         private System.Windows.Forms.ToolStripMenuItem contextDelete;
+        private System.Windows.Forms.TreeView treeView1;
     }
 }

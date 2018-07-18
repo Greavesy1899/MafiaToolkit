@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
+using System;
 using System.IO;
 
 namespace Mafia2
@@ -138,7 +138,6 @@ namespace Mafia2
                         data.NamePos2 = (resource.Header.IsScene) ? (ushort)0xFFFF : data.NamePos1;
 
                         //set frameIndex. minus the blockID and then subtract it from the total number of blocks.
-                        //data.FrameIndex = (short)(totalNumBlocks - (i - resource.Header.NumObjects)-1);
                         data.FrameIndex = (short)(i - totalNumBlocks);
 
                         tableData.Add(data);
