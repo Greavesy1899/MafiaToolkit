@@ -36,7 +36,7 @@
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.modelExporterSubButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAllSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.collisionEditorSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.materialEditorSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.overwriteBufferSubButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,6 +47,9 @@
             this.contextExtract3D = new System.Windows.Forms.ToolStripMenuItem();
             this.contextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.farLodsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -142,7 +145,7 @@
             // 
             this.toolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.modelExporterSubButton,
+            this.exportAllSubButton,
             this.collisionEditorSubButton,
             this.materialEditorSubButton,
             this.overwriteBufferSubButton});
@@ -152,13 +155,16 @@
             this.toolsButton.Size = new System.Drawing.Size(48, 22);
             this.toolsButton.Text = "Tools";
             // 
-            // modelExporterSubButton
+            // exportAllSubButton
             // 
-            this.modelExporterSubButton.Enabled = false;
-            this.modelExporterSubButton.Name = "modelExporterSubButton";
-            this.modelExporterSubButton.Size = new System.Drawing.Size(180, 22);
-            this.modelExporterSubButton.Text = "3D Exporter";
-            this.modelExporterSubButton.Click += new System.EventHandler(this.OnClickLoad3D);
+            this.exportAllSubButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.farLodsToolStripMenuItem,
+            this.modelsToolStripMenuItem,
+            this.allToolStripMenuItem});
+            this.exportAllSubButton.Name = "exportAllSubButton";
+            this.exportAllSubButton.Size = new System.Drawing.Size(180, 22);
+            this.exportAllSubButton.Text = "Export All";
+            this.exportAllSubButton.Click += new System.EventHandler(this.OnClickLoadAll);
             // 
             // collisionEditorSubButton
             // 
@@ -245,6 +251,24 @@
             this.treeView1.TabIndex = 15;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnSelect);
             // 
+            // farLodsToolStripMenuItem
+            // 
+            this.farLodsToolStripMenuItem.Name = "farLodsToolStripMenuItem";
+            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.farLodsToolStripMenuItem.Text = "Far Lods";
+            // 
+            // modelsToolStripMenuItem
+            // 
+            this.modelsToolStripMenuItem.Name = "modelsToolStripMenuItem";
+            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.modelsToolStripMenuItem.Text = "Models";
+            // 
+            // allToolStripMenuItem
+            // 
+            this.allToolStripMenuItem.Name = "allToolStripMenuItem";
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.allToolStripMenuItem.Text = "All";
+            // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -275,7 +299,7 @@
         private System.Windows.Forms.ToolStripDropDownButton viewToolButton;
         private System.Windows.Forms.ToolStripMenuItem switchViewSubButton;
         private System.Windows.Forms.ToolStripDropDownButton toolsButton;
-        private System.Windows.Forms.ToolStripMenuItem modelExporterSubButton;
+        private System.Windows.Forms.ToolStripMenuItem exportAllSubButton;
         private System.Windows.Forms.ToolStripMenuItem collisionEditorSubButton;
         private System.Windows.Forms.ToolStripMenuItem materialEditorSubButton;
         private System.Windows.Forms.ToolStripMenuItem overwriteBufferSubButton;
@@ -288,5 +312,8 @@
         private System.Windows.Forms.ToolStripMenuItem contextExtract3D;
         private System.Windows.Forms.ToolStripMenuItem contextDelete;
         private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.ToolStripMenuItem farLodsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem modelsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
     }
 }

@@ -209,7 +209,7 @@ namespace Mafia2Tool
         {
             FrameResourceGrid.SelectedObject = FrameResourceListBox.SelectedItem;
         }
-        private void OnClickLoad3D(object sender, EventArgs e)
+        private void OnClickLoadAll(object sender, EventArgs e)
         {
             List<object> meshes = new List<object>();
 
