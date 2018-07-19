@@ -484,5 +484,10 @@ namespace Mafia2Tool
             }
             treeView1.SelectedNode.Remove();
         }
+
+        private void OnSelect(object sender, TreeViewEventArgs e)
+        {
+            FrameResourceGrid.SelectedObject = treeView1.SelectedNode.Tag;
+        }
     }
 }

@@ -34,6 +34,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,6 +52,9 @@
     <Compile Include="Actors\ActorParse.cs" />
     <Compile Include="Actors\ActorTypes.cs" />
     <Compile Include="Collisions\Collisions.cs" />
+    <Compile Include="FormExtenders\UITypeEditors.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FrameNameTable\FrameNameTable.cs" />
     <Compile Include="FrameResource\FrameBlendInfo.cs" />
     <Compile Include="FrameResource\FrameGeometry.cs" />
