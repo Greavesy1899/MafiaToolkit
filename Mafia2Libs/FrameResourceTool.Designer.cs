@@ -37,6 +37,9 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.exportAllSubButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.farLodsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.collisionEditorSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.materialEditorSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.overwriteBufferSubButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,9 +50,7 @@
             this.contextExtract3D = new System.Windows.Forms.ToolStripMenuItem();
             this.contextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
-            this.farLodsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextViewModel = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -166,6 +167,24 @@
             this.exportAllSubButton.Text = "Export All";
             this.exportAllSubButton.Click += new System.EventHandler(this.OnClickLoadAll);
             // 
+            // farLodsToolStripMenuItem
+            // 
+            this.farLodsToolStripMenuItem.Name = "farLodsToolStripMenuItem";
+            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.farLodsToolStripMenuItem.Text = "Far Lods";
+            // 
+            // modelsToolStripMenuItem
+            // 
+            this.modelsToolStripMenuItem.Name = "modelsToolStripMenuItem";
+            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.modelsToolStripMenuItem.Text = "Models";
+            // 
+            // allToolStripMenuItem
+            // 
+            this.allToolStripMenuItem.Name = "allToolStripMenuItem";
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.allToolStripMenuItem.Text = "All";
+            // 
             // collisionEditorSubButton
             // 
             this.collisionEditorSubButton.Enabled = false;
@@ -203,7 +222,7 @@
             // switchViewSubButton
             // 
             this.switchViewSubButton.Name = "switchViewSubButton";
-            this.switchViewSubButton.Size = new System.Drawing.Size(137, 22);
+            this.switchViewSubButton.Size = new System.Drawing.Size(180, 22);
             this.switchViewSubButton.Text = "Switch View";
             this.switchViewSubButton.Click += new System.EventHandler(this.SwitchView);
             // 
@@ -220,24 +239,25 @@
             // 
             this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.contextExtract3D,
-            this.contextDelete});
+            this.contextDelete,
+            this.contextViewModel});
             this.contextMenu.Name = "contextMenuStrip1";
             this.contextMenu.ShowImageMargin = false;
-            this.contextMenu.Size = new System.Drawing.Size(107, 48);
+            this.contextMenu.Size = new System.Drawing.Size(156, 92);
             this.contextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ItemClicked);
             // 
             // contextExtract3D
             // 
             this.contextExtract3D.Enabled = false;
             this.contextExtract3D.Name = "contextExtract3D";
-            this.contextExtract3D.Size = new System.Drawing.Size(106, 22);
+            this.contextExtract3D.Size = new System.Drawing.Size(155, 22);
             this.contextExtract3D.Text = "Extract 3D";
             // 
             // contextDelete
             // 
             this.contextDelete.Name = "contextDelete";
             this.contextDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.contextDelete.Size = new System.Drawing.Size(106, 22);
+            this.contextDelete.Size = new System.Drawing.Size(155, 22);
             this.contextDelete.Text = "Delete";
             this.contextDelete.Click += new System.EventHandler(this.OnDelete);
             // 
@@ -251,23 +271,12 @@
             this.treeView1.TabIndex = 15;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnSelect);
             // 
-            // farLodsToolStripMenuItem
+            // contextViewModel
             // 
-            this.farLodsToolStripMenuItem.Name = "farLodsToolStripMenuItem";
-            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.farLodsToolStripMenuItem.Text = "Far Lods";
-            // 
-            // modelsToolStripMenuItem
-            // 
-            this.modelsToolStripMenuItem.Name = "modelsToolStripMenuItem";
-            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.modelsToolStripMenuItem.Text = "Models";
-            // 
-            // allToolStripMenuItem
-            // 
-            this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.allToolStripMenuItem.Text = "All";
+            this.contextViewModel.Name = "contextViewModel";
+            this.contextViewModel.Size = new System.Drawing.Size(155, 22);
+            this.contextViewModel.Text = "View Model";
+            this.contextViewModel.Click += new System.EventHandler(this.OnViewModel);
             // 
             // FrameResourceTool
             // 
@@ -315,5 +324,6 @@
         private System.Windows.Forms.ToolStripMenuItem farLodsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modelsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem contextViewModel;
     }
 }

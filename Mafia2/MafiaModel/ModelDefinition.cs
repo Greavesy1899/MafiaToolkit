@@ -15,10 +15,15 @@ namespace Mafia2
         IndexBuffer[] indexBuffers; //Holds the buffer which will then be saved/replaced later
         VertexBuffer[] vertexBuffers; //Holds the buffers which will then be saved/replaced later
         private bool useSingleMesh; //False means ModelMesh, True means SingleMesh;
+        CustomEDM edm; //mesh stored here. Doesn't store all LODs, just the most recent.
 
         public Lod[] Lods {
             get { return lods; }
             set { lods = value; }
+        }
+        public CustomEDM EDM {
+            get { return edm; }
+            set { edm = value; }
         }
 
         /// <summary>
@@ -57,7 +62,7 @@ namespace Mafia2
         public void BuildLods()
         {
             lods = new Lod[frameGeometry.NumLods];
-            for(int i = 0; i != lods.Length; i++)
+            for (int i = 0; i != lods.Length; i++)
             {
                 FrameLOD frameLod = frameGeometry.LOD[i];
                 lods[i] = new Lod();
@@ -171,66 +176,74 @@ namespace Mafia2
             objMesh.ExportOBJ();
         }
 
+        public void CompileEDM(Lod lod, string name)
+        {
+            EDM = new CustomEDM(name, lod.Parts.Length);
+
+            for (int i = 0; i != EDM.PartCount; i++)
+            {
+                #region convert
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
+                List<short> vertlist = new List<short>();
+                bool[] hasBeenAdded = new bool[lod.Parts[i].Indices.Length * 3];
+
+                for (int x = 0; x != lod.Parts[i].Indices.Length; x++)
+                {
+                    vertlist.Add(lod.Parts[i].Indices[x].s1);
+                    vertlist.Add(lod.Parts[i].Indices[x].s2);
+                    vertlist.Add(lod.Parts[i].Indices[x].s3);
+                }
+                List<Vertex> newVerts = new List<Vertex>();
+                List<short> newFacesI = new List<short>();
+                List<Short3> newShort3 = new List<Short3>();
+
+                int hbaIndex = 0;
+
+                foreach (short s in vertlist)
+                {
+                    if (!hasBeenAdded[hbaIndex])
+                    {
+                        newVerts.Add(lod.Vertices[s]);
+                        newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
+                        hasBeenAdded[hbaIndex] = true;
+                    }
+                    else
+                    {
+                        newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
+                    }
+                    hbaIndex++;
+                }
+
+                int num = 0;
+                while (num != newFacesI.Count)
+                {
+                    Short3 face = new Short3();
+                    face.s1 = newFacesI[num];
+                    num++;
+                    face.s2 = newFacesI[num];
+                    num++;
+                    face.s3 = newFacesI[num];
+                    num++;
+                    newShort3.Add(face);
+                }
+                watch.Stop();
+                Console.WriteLine("{0}", watch.Elapsed);
+                #endregion
+
+                EDM.AddPart(newVerts, newShort3, "unk01", i);
+            }
+        }
+
         public void ExportToEDM(Lod lod, string name)
         {
+            //check if edm isn't null.
+            if (edm == null)
+                CompileEDM(lod, name);
+
             using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + name + ".edm")))
             {
-                CustomEDM EDM = new CustomEDM(name, lod.Parts.Length);
-
-                for (int i = 0; i != EDM.PartCount; i++)
-                {
-                    #region convert
-                    Stopwatch watch = new Stopwatch();
-                    watch.Start();
-                    List<short> vertlist = new List<short>();
-                    bool[] hasBeenAdded = new bool[lod.Parts[i].Indices.Length*3];
-
-                    for (int x = 0; x != lod.Parts[i].Indices.Length; x++)
-                    {
-                        vertlist.Add(lod.Parts[i].Indices[x].s1);
-                        vertlist.Add(lod.Parts[i].Indices[x].s2);
-                        vertlist.Add(lod.Parts[i].Indices[x].s3);
-                    }
-                    List<Vertex> newVerts = new List<Vertex>();
-                    List<short> newFacesI = new List<short>();
-                    List<Short3> newShort3 = new List<Short3>();
-
-                    int hbaIndex = 0;
-
-                    foreach (short s in vertlist)
-                    {
-                        if (!hasBeenAdded[hbaIndex])
-                        {
-                            newVerts.Add(lod.Vertices[s]);
-                            newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
-                            hasBeenAdded[hbaIndex] = true;
-                        }
-                        else
-                        {
-                            newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
-                        }
-                        hbaIndex++;
-                    }
-
-                    int num = 0;
-                    while (num != newFacesI.Count)
-                    {
-                        Short3 face = new Short3();
-                        face.s1 = newFacesI[num];
-                        num++;
-                        face.s2 = newFacesI[num];
-                        num++;
-                        face.s3 = newFacesI[num];
-                        num++;
-                        newShort3.Add(face);
-                    }
-                    watch.Stop();
-                    Console.WriteLine("{0}", watch.Elapsed);
-                    #endregion
-
-                    EDM.AddPart(newVerts, newShort3, lod.Parts[i].Material, i);
-                }
-                EDM.WriteToFile(writer);
+                edm.WriteToFile(writer);
             }
         }
     }

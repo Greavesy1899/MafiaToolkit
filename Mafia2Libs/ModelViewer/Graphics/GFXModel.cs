@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using ModelViewer.System;
+using Mafia2;
 
 namespace ModelViewer.Graphics
 {
@@ -17,8 +18,8 @@ namespace ModelViewer.Graphics
         [StructLayout(LayoutKind.Sequential)]
         public struct Vertex
         {
-            public Vector3 position;
-            public Vector2 texture;
+            public SharpDX.Vector3 position;
+            public SharpDX.Vector2 texture;
         }
         [StructLayout(LayoutKind.Sequential)]
         public struct ModelFormat
@@ -36,16 +37,11 @@ namespace ModelViewer.Graphics
 
         public ModelClass() { }
 
-        public bool Init(SharpDX.Direct3D11.Device device, string modelFormatFilename, string[] textureFileNames)
+        public bool Init(SharpDX.Direct3D11.Device device, CustomEDM model, string[] textureFileNames)
         {
-            if (!LoadModel(modelFormatFilename))
+            if (!InitBuffer(device, model))
             {
-                MessageBox.Show("unable to load model " + modelFormatFilename);
-                return false;
-            }
-            if (!InitBuffer(device))
-            {
-                MessageBox.Show("unable to init buffer");
+                MessageBox.Show("Unable to load the model into the buffer.");
                 return false;
             }
             if (!LoadTexture(device, textureFileNames))
@@ -54,43 +50,6 @@ namespace ModelViewer.Graphics
                 return false;
             }
             return true;
-        }
-        private bool LoadModel(string modelFormatFilename)
-        {
-            List<string> lines = null;
-
-            try
-            {
-                lines = File.ReadLines(modelFormatFilename).ToList();
-
-                var vertexCountString = lines[0].Split(new char[] { ':' })[1].Trim();
-                VertexCount = int.Parse(vertexCountString);
-                IndexCount = VertexCount;
-                ModelObj = new ModelFormat[VertexCount];
-
-                for (var i = 4; i < lines.Count && i < 4 + VertexCount; i++)
-                {
-                    var modelArray = lines[i].Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-
-                    ModelObj[i - 4] = new ModelFormat()
-                    {
-                        x = float.Parse(modelArray[0]),
-                        y = float.Parse(modelArray[1]),
-                        z = float.Parse(modelArray[2]),
-                        tu = float.Parse(modelArray[3]),
-                        tv = float.Parse(modelArray[4]),
-                        nx = float.Parse(modelArray[5]),
-                        ny = float.Parse(modelArray[6]),
-                        nz = float.Parse(modelArray[7])
-                    };
-                }
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
         }
         public void Shutdown()
         {
@@ -101,29 +60,42 @@ namespace ModelViewer.Graphics
         {
             RenderBuffers(deviceContext);
         }
-        private bool InitBuffer(SharpDX.Direct3D11.Device device)
+        private bool InitBuffer(SharpDX.Direct3D11.Device device, CustomEDM model)
         {
             try
             {
-                var vertices = new LightShaderClass.Vertex[VertexCount];
-                var indices = new int[IndexCount];
-                for (var i = 0; i < VertexCount; i++)
-                {
-                    vertices[i] = new LightShaderClass.Vertex()
-                    {
-                        position = new Vector3(ModelObj[i].x, ModelObj[i].y, ModelObj[i].z),
-                        texture = new Vector2(ModelObj[i].tu, ModelObj[i].tv),
-                        normal = new Vector3(ModelObj[i].nx, ModelObj[i].ny, ModelObj[i].nz)
-                    };
-                    indices[i] = i;
+                int part = 2;
+                VertexCount = model.Parts[part].Vertices.Length;
+                IndexCount = model.Parts[part].Indices.Count * 3;
 
+                LightShaderClass.Vertex[] vertices = new LightShaderClass.Vertex[VertexCount];
+                int[] indices = new int[IndexCount];
+
+                for (int i = 0; i != VertexCount; i++)
+                {
+                    SharpDX.Vector3 vert = new SharpDX.Vector3(model.Parts[part].Vertices[i].X, model.Parts[part].Vertices[i].Y, model.Parts[part].Vertices[i].Z);
+                    SharpDX.Vector3 norm = new SharpDX.Vector3(model.Parts[part].Normals[i].X, model.Parts[part].Normals[i].Y, model.Parts[part].Normals[i].Z);
+                    SharpDX.Vector2 uv = new SharpDX.Vector2(model.Parts[part].UVs[i].X, model.Parts[part].UVs[i].Y);
+
+                    vertices[i] = new LightShaderClass.Vertex(vert, uv,  norm);
+                }
+                int index = 0;
+                foreach(Short3 s in model.Parts[0].Indices)
+                {
+                    indices[index] = s.s1;
+                    index++;
+                    indices[index] = s.s2;
+                    index++;
+                    indices[index] = s.s3;
+                    index++;
                 }
                 VertexBuffer = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertices);
                 IndexBuffer = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.IndexBuffer, indices);
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
+                MessageBox.Show(ex.Message);
                 return false;
             }
         }

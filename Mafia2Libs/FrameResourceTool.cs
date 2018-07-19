@@ -1,4 +1,5 @@
 ﻿using Mafia2;
+using ModelViewer.System;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -483,6 +484,27 @@ namespace Mafia2Tool
                 }
             }
             treeView1.SelectedNode.Remove();
+        }
+
+        private void OnViewModel(object sender, EventArgs e)
+        {
+            FrameObjectSingleMesh mesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
+            FrameGeometry geom = SceneData.FrameResource.EntireFrame[mesh.MeshIndex] as FrameGeometry;
+            FrameMaterial mat = SceneData.FrameResource.EntireFrame[mesh.MaterialIndex] as FrameMaterial;
+            IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
+            VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
+
+            //we need to retrieve buffers first.
+            for (int c = 0; c != geom.LOD.Length; c++)
+            {
+                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
+                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
+            }
+
+            Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
+            newModel.CompileEDM(newModel.Lods[0], "Mesh");
+
+            SystemClass.StartRenderForm("Model Viewer", 1280, 1024, true, newModel.EDM, false, 0);
         }
 
         private void OnSelect(object sender, TreeViewEventArgs e)

@@ -5,6 +5,7 @@ using SharpDX;
 using System.Linq;
 using ModelViewer.Input;
 using ModelViewer.System;
+using Mafia2;
 
 namespace ModelViewer.Graphics
 {
@@ -20,7 +21,7 @@ namespace ModelViewer.Graphics
         public static float Rotation { get; set; }
         public GraphicsClass() { }
 
-        public bool Init(SystemConfigClass Config, IntPtr WindowHandle, string meshName)
+        public bool Init(SystemConfigClass Config, IntPtr WindowHandle, CustomEDM model)
         {
             try
             {
@@ -35,13 +36,12 @@ namespace ModelViewer.Graphics
                     return false;
                 }
                 Camera = new Camera();
-                string Bounding = File.ReadLines(SystemConfigClass.DataFilePath + meshName + ".txt").Skip(1).First();
                 string[] Textures = new string[2];
-                Textures[0] = File.ReadLines(SystemConfigClass.DataFilePath + meshName + ".txt").Skip(3).First();
-                Textures[1] = "EffectPsiColonypod-nm.dds";
-                Camera.SetPosition(0, 0, float.Parse(Bounding) - float.Parse(Bounding) * 2 - 100);
+                Textures[0] = "white";
+                Textures[1] = "white";
+                Camera.SetPosition(0, 0, 50);
                 Model = new ModelClass();
-                if (!Model.Init(D3D.Device, SystemConfigClass.DataFilePath + meshName + ".txt", Textures))
+                if (!Model.Init(D3D.Device, model, Textures))
                 {
                     MessageBox.Show("Unable to init model. Error from GraphicsClass.");
                     return false;

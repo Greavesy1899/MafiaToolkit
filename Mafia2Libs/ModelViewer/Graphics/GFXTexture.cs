@@ -3,6 +3,7 @@ using SharpDX.WIC;
 using ModelViewer.System;
 using System;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace ModelViewer.Graphics
 {
@@ -28,8 +29,9 @@ namespace ModelViewer.Graphics
                 }
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
+                MessageBox.Show(ex.Message);
                 return false;
             }
         }

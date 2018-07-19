@@ -17,6 +17,13 @@ namespace ModelViewer.Graphics
             public Vector3 position;
             public Vector2 texture;
             public Vector3 normal;
+
+            public Vertex(Vector3 pos, Vector2 uv, Vector3 norm)
+            {
+                position = pos;
+                texture = uv;
+                normal = norm;
+            }
         }
         [StructLayout(LayoutKind.Sequential)]
         internal struct MatrixBuffer

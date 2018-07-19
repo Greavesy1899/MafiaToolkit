@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Mafia2;
 using System.Drawing;
 using System.Windows.Forms;
 using SharpDX.Windows;
@@ -17,14 +17,14 @@ namespace ModelViewer.System
 
         public SystemClass() { }
 
-        public static void StartRenderForm(string title, int width, int height, bool Vsync, string meshName, bool fullscreen = true, int testTimeSeconds = 0)
+        public static void StartRenderForm(string title, int width, int height, bool Vsync, CustomEDM model, bool fullscreen = true, int testTimeSeconds = 0)
         {
             SystemClass System = new SystemClass();
-            System.Init(title, width, height, Vsync, meshName, fullscreen, testTimeSeconds);
+            System.Init(title, width, height, Vsync, model, fullscreen, testTimeSeconds);
             System.RunRenderForm();
         }
 
-        public virtual bool Init(string title, int width, int height, bool Vsync, string meshName, bool fullscreen, int testTimeSeconds)
+        public virtual bool Init(string title, int width, int height, bool Vsync, CustomEDM model, bool fullscreen, int testTimeSeconds)
         {
             bool result = false;
 
@@ -35,8 +35,6 @@ namespace ModelViewer.System
 
             InitWindows(title);
 
-            RenderForm.BackColor = Color.AliceBlue;
-
             if (Input == null)
             {
                 Input = new InputClass();
@@ -46,7 +44,7 @@ namespace ModelViewer.System
             if (Graphics == null)
             {
                 Graphics = new GraphicsClass();
-                result = Graphics.Init(Config, RenderForm.Handle, meshName);
+                result = Graphics.Init(Config, RenderForm.Handle, model);
             }
             return result;
 
@@ -60,7 +58,8 @@ namespace ModelViewer.System
             RenderForm = new RenderForm(title)
             {
                 ClientSize = new Size(Config.Width, Config.Height),
-                FormBorderStyle = SystemConfigClass.BorderStyle
+                FormBorderStyle = SystemConfigClass.BorderStyle,
+                BackColor = Color.AliceBlue
             };
             RenderForm.Show();
             RenderForm.Location = new Point((Width / 2) - (Config.Width / 2), (Height / 2) - (Config.Height / 2));

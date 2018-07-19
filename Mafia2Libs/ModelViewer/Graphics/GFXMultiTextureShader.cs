@@ -159,8 +159,9 @@ namespace ModelViewer.Graphics
                 deviceContext.PixelShader.SetShaderResources(0, 2, texture);
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
+                MessageBox.Show(ex.Message);
                 return false;
             }
         }
