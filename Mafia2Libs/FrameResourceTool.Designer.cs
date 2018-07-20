@@ -271,13 +271,6 @@
             this.treeView1.TabIndex = 15;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnSelect);
             // 
-            // contextViewModel
-            // 
-            this.contextViewModel.Name = "contextViewModel";
-            this.contextViewModel.Size = new System.Drawing.Size(155, 22);
-            this.contextViewModel.Text = "View Model";
-            this.contextViewModel.Click += new System.EventHandler(this.OnViewModel);
-            // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
