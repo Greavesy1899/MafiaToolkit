@@ -24,6 +24,11 @@ namespace Mafia2
             min = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             max = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         }
+        public Bounds()
+        {
+            min = new Vector3(0);
+            max = new Vector3(0);
+        }
 
         public Bounds(Vector3 min, Vector3 max)
         {

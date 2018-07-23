@@ -15,6 +15,8 @@ namespace Mafia2
         ParentStruct parentIndex2;
         short unk6;
         Node node;
+        bool isOnTable;
+        NameTableFlags nameTableFlags;
 
         public Hash Name {
             get { return name; }
@@ -49,6 +51,16 @@ namespace Mafia2
             set { node = value; }
         }
 
+        [Description("Only use this if the object is going to be saved in the FrameNameTable"), Category("FrameNameTable Data"), Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public NameTableFlags FrameNameTableFlags {
+            get { return nameTableFlags; }
+            set { nameTableFlags = value; }
+        }
+        [Description("If this is true, it will be added onto the FrameNameTable and the flags will be saved"), Category("FrameNameTable Data"), Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public bool IsOnFrameTable {
+            get { return isOnTable; }
+            set { isOnTable = value; }
+        }
         [Category("Object Type"), ReadOnly(true)]
         public string Type {
             get { return GetType().ToString(); }

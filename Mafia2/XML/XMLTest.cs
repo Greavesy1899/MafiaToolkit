@@ -59,7 +59,7 @@ namespace Mafia2
             int count;
             int size;
             byte[] data;
-            List<XEntry> nodes;
+            List<NodeEntry> nodes;
 
             public void ReadFromFile(BinaryReader reader)
             {
@@ -68,46 +68,140 @@ namespace Mafia2
 
                 count = reader.ReadInt32();
                 size = reader.ReadInt32();
-                //data = reader.ReadBytes(size);
+                nodes = new List<NodeEntry>();
 
-                nodes = new List<XEntry>();
+                int NodeDataPos = (int)reader.BaseStream.Position;
+                data = reader.ReadBytes(size);
+                int ExtraDataPos = (int)reader.BaseStream.Position;
 
+                reader.BaseStream.Seek(NodeDataPos, SeekOrigin.Begin);
                 for(int i = 0; i != count; i++)
                 {
-                    XEntry node = new XEntry(reader);
+                    NodeEntry node = new NodeEntry(reader);
+
+                    //uint childCount = reader.ReadUInt32();
+                    //for(uint x = 0; x != childCount; x++)
+                    //{
+                    //    node.Children.Add(reader.ReadUInt32());
+                    //}
+                    //for (uint x = 0; x != childCount; x++)
+                    //{
+                    //    AttributeEntry attribute = new AttributeEntry();
+                    //    attribute.Name.ReadFromFile(reader);
+                    //    attribute.Value.ReadFromFile(reader);
+                    //    node.Attributes.Add(attribute);
+                    //}
                     nodes.Add(node);
                 }
 
             }
         }
-        private class XEntry
+        private class NodeEntry
         {
-            public DataValue name;
-            public DataValue value;
-            public uint id;
+            DataValue name;
+            DataValue value;
+            uint id;
+            List<uint> children = new List<uint>();
+            List<AttributeEntry> attributes = new List<AttributeEntry>();
 
-            public XEntry(BinaryReader reader)
+            public List<uint> Children {
+                get { return children; }
+                set { children = value; }
+            }
+            public List<AttributeEntry> Attributes {
+                get { return attributes; }
+                set { attributes = value; }
+            }
+
+            public NodeEntry(BinaryReader reader)
             {
-                name = new DataValue(reader, reader.ReadUInt32());
-                value = new DataValue(reader, reader.ReadUInt32());
+                name = new DataValue(reader);
+                value = new DataValue(reader);
+                this.id = reader.ReadUInt32();
+            }
+
+            public override string ToString()
+            {
+                return string.Format("{0}, {1}", name.Value, value.Value);
             }
         }
+
+        private class AttributeEntry
+        {
+            DataValue name;
+            DataValue value;
+
+            public DataValue Name {
+                get { return name; }
+                set { name = value; }
+            }
+            public DataValue Value {
+                get { return value; }
+                set { this.value = value; }
+            }
+
+            public override string ToString()
+            {
+                return string.Format("{0}, {1}", name.Value, value.Value);
+            }
+        }
+
         private class DataValue
         {
             XMLDataType type;
             object value;
 
-            public DataValue(BinaryReader reader, uint offset)
-            {
-                ReadFromFile(reader, offset);
+            public XMLDataType Type {
+                get { return type; }
+                set { type = value; }
+            }
+            public object Value {
+                get { return value; }
+                set { this.value = value; }
             }
 
-            public void ReadFromFile(BinaryReader reader, uint offset)
+            public DataValue(BinaryReader reader)
             {
-                reader.BaseStream.Seek(offset, SeekOrigin.Begin);
+                ReadFromFile(reader);
+            }
 
-                var type = (XMLDataType)reader.ReadUInt32();
+            public void ReadFromFile(BinaryReader reader)
+            {
+                type = (XMLDataType)reader.ReadUInt32();
 
+                if (type == XMLDataType.Special)
+                    throw new NotImplementedException();
+                else if (type == XMLDataType.Boolean)
+                    throw new NotImplementedException();
+                else if (type == XMLDataType.Float)
+                    throw new NotImplementedException();
+                else if (type == XMLDataType.String)
+                    value = ReadString(reader);
+                else if (type == XMLDataType.Integer)
+                    throw new NotImplementedException();
+                else
+                    throw new Exception("Found unknown type: " + type);
+
+            }
+
+            public string ReadString(BinaryReader reader)
+            {
+                if (reader.ReadInt32() != 0)
+                    throw new FormatException();
+
+                bool isWhiteChar = false;
+                string rstring = "";
+
+                while(!isWhiteChar)
+                {
+                    if (reader.PeekChar() == '\0')
+                        isWhiteChar = true;
+                    else
+                        rstring += reader.ReadChar();
+                }
+
+                reader.ReadChar();
+                return rstring;
             }
 
             public override string ToString()

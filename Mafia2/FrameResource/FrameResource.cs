@@ -40,7 +40,7 @@ namespace Mafia2
             //using (BinaryWriter writer = new BinaryWriter(File.Open("CITYAREAS.ara", FileMode.Create)))
             //{
             //    int areaCount = 0;
-            //    for(int i = 0; i != frameObjects.Length; i++)
+            //    for (int i = 0; i != frameObjects.Length; i++)
             //    {
             //        if (frameObjects[i].GetType() == typeof(FrameObjectArea))
             //            areaCount++;

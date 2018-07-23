@@ -13,6 +13,12 @@ namespace Mafia2Tool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            //using (BinaryReader reader = new BinaryReader(File.Open("XML_155.bin", FileMode.Open)))
+            //{
+            //    XMLBin xml = new XMLBin();
+            //    xml.ReadFromFile(reader);
+            //}
+
             try
             {
                 IniFile ini = new IniFile();

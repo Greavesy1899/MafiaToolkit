@@ -120,95 +120,96 @@ namespace Mafia2
             vertexBuffer = new VertexBuffer(bufferVertexHash);
 
             List<ushort> idata = new List<ushort>();
-            List<byte> vdata = new List<byte>(); 
+            List<byte> vdata = new List<byte>();
 
-            for(int i  = 0; i != parts[0].Indices.Count; i++)
-            {
-                idata.Add((ushort)parts[0].Indices[i].s1);
-                idata.Add((ushort)parts[0].Indices[i].s2);
-                idata.Add((ushort)parts[0].Indices[i].s3);
-            }
-
-            indexBuffer.Data = idata.ToArray();
             bool hasTangents = false;
-            for (int i = 0; i != parts[0].Vertices.Length; i++)
+            for (int p = 0; p != parts.Length; p++)
             {
-                byte tz = 0;
-                if (flags.HasFlag(VertexFlags.Position))
+                for (int i = 0; i != parts[p].Indices.Count; i++)
                 {
-                    float x = parts[0].Vertices[i].X - positionOffset.X;
-                    x = x / positionFactor;
-                    float y = parts[0].Vertices[i].Y - positionOffset.Y;
-                    y = y / positionFactor;
-                    float z = parts[0].Vertices[i].Z - positionOffset.Z;
-                    z = z / positionFactor;
-
-                    ushort v1 = Convert.ToUInt16(x);
-                    ushort v2 = Convert.ToUInt16(y);
-                    ushort v3 = Convert.ToUInt16(z);
-
-                    byte[] bytesv1 = BitConverter.GetBytes(v1);
-                    byte[] bytesv2 = BitConverter.GetBytes(v2);
-                    byte[] bytesv3 = BitConverter.GetBytes(v3);
-
-                    vdata.Add(bytesv1[0]);
-                    vdata.Add(bytesv1[1]);
-                    vdata.Add(bytesv2[0]);
-                    vdata.Add(bytesv2[1]);
-                    vdata.Add(bytesv3[0]);
-                    vdata.Add(bytesv3[1]);
+                    idata.Add((ushort)parts[p].Indices[i].s1);
+                    idata.Add((ushort)parts[p].Indices[i].s2);
+                    idata.Add((ushort)parts[p].Indices[i].s3);
                 }
-                if (flags.HasFlag(VertexFlags.Tangent))
+                for (int i = 0; i != parts[p].Vertices.Length; i++)
                 {
-                    hasTangents = true;
+                    byte tz = 0;
+                    if (flags.HasFlag(VertexFlags.Position))
+                    {
+                        float x = parts[p].Vertices[i].X - positionOffset.X;
+                        x = x / positionFactor;
+                        float y = parts[p].Vertices[i].Y - positionOffset.Y;
+                        y = y / positionFactor;
+                        float z = parts[p].Vertices[i].Z - positionOffset.Z;
+                        z = z / positionFactor;
 
-                    float fx = parts[0].Tangents[i].X * 127.0f + 127.0f;
-                    float fy = parts[0].Tangents[i].Y * 127.0f + 127.0f;
-                    float fz = parts[0].Tangents[i].Z * 127.0f + 127.0f;
+                        ushort v1 = Convert.ToUInt16(x);
+                        ushort v2 = Convert.ToUInt16(y);
+                        ushort v3 = Convert.ToUInt16(z);
 
-                    if (float.IsNaN(fx))
-                        fx = 0.0f;
+                        byte[] bytesv1 = BitConverter.GetBytes(v1);
+                        byte[] bytesv2 = BitConverter.GetBytes(v2);
+                        byte[] bytesv3 = BitConverter.GetBytes(v3);
 
-                    if (float.IsNaN(fy))
-                        fy = 0.0f;
-                    
-                    if (float.IsNaN(fz))
-                        fz = 0.0f;
+                        vdata.Add(bytesv1[0]);
+                        vdata.Add(bytesv1[1]);
+                        vdata.Add(bytesv2[0]);
+                        vdata.Add(bytesv2[1]);
+                        vdata.Add(bytesv3[0]);
+                        vdata.Add(bytesv3[1]);
+                    }
+                    if (flags.HasFlag(VertexFlags.Tangent))
+                    {
+                        hasTangents = true;
 
-                    byte x = Convert.ToByte(fx);
-                    byte y = Convert.ToByte(fy);
-                    tz = Convert.ToByte(fz);
+                        float fx = parts[p].Tangents[i].X * 127.0f + 127.0f;
+                        float fy = parts[p].Tangents[i].Y * 127.0f + 127.0f;
+                        float fz = parts[p].Tangents[i].Z * 127.0f + 127.0f;
 
-                    vdata.Add(x);
-                    vdata.Add(y);
+                        if (float.IsNaN(fx))
+                            fx = 0.0f;
 
-                }
-                if (flags.HasFlag(VertexFlags.Normals))
-                {
-                    byte x = Convert.ToByte(parts[0].Normals[i].X * 127.0f + 127.0f);
-                    byte y = Convert.ToByte(parts[0].Normals[i].Y * 127.0f + 127.0f);
-                    byte z = Convert.ToByte(parts[0].Normals[i].Z * 127.0f + 127.0f);
+                        if (float.IsNaN(fy))
+                            fy = 0.0f;
 
-                    vdata.Add(x);
-                    vdata.Add(y);
-                    vdata.Add(z);
-                }
-                if (hasTangents)
-                {
-                    vdata.Add(tz);
-                }
-                if (flags.HasFlag(VertexFlags.TexCoords0))
-                {
-                    byte[] x = Half.GetBytes(parts[0].UVs[i].X);
-                    byte[] y = Half.GetBytes(parts[0].UVs[i].Y);
+                        if (float.IsNaN(fz))
+                            fz = 0.0f;
 
-                    vdata.Add(x[0]);
-                    vdata.Add(x[1]);
-                    vdata.Add(y[0]);
-                    vdata.Add(y[1]);
+                        byte x = Convert.ToByte(fx);
+                        byte y = Convert.ToByte(fy);
+                        tz = Convert.ToByte(fz);
+
+                        vdata.Add(x);
+                        vdata.Add(y);
+
+                    }
+                    if (flags.HasFlag(VertexFlags.Normals))
+                    {
+                        byte x = Convert.ToByte(parts[p].Normals[i].X * 127.0f + 127.0f);
+                        byte y = Convert.ToByte(parts[p].Normals[i].Y * 127.0f + 127.0f);
+                        byte z = Convert.ToByte(parts[p].Normals[i].Z * 127.0f + 127.0f);
+
+                        vdata.Add(x);
+                        vdata.Add(y);
+                        vdata.Add(z);
+                    }
+                    if (hasTangents)
+                    {
+                        vdata.Add(tz);
+                    }
+                    if (flags.HasFlag(VertexFlags.TexCoords0))
+                    {
+                        byte[] x = Half.GetBytes(parts[p].UVs[i].X);
+                        byte[] y = Half.GetBytes(parts[p].UVs[i].Y);
+
+                        vdata.Add(x[0]);
+                        vdata.Add(x[1]);
+                        vdata.Add(y[0]);
+                        vdata.Add(y[1]);
+                    }
                 }
             }
-
+            indexBuffer.Data = idata.ToArray();
             vertexBuffer.Data = vdata.ToArray();
         }
 
@@ -221,25 +222,28 @@ namespace Mafia2
             Vector3 min = new Vector3(0);
             Vector3 max = new Vector3(0);
 
-            for (int i = 0; i != parts[0].Vertices.Length; i++)
+            for (int p = 0; p != parts.Length; p++)
             {
-                if (parts[0].Vertices[i].X < min.X)
-                    min.X = parts[0].Vertices[i].X;
+                for (int i = 0; i != parts[p].Vertices.Length; i++)
+                {
+                    if (parts[p].Vertices[i].X < min.X)
+                        min.X = parts[p].Vertices[i].X;
 
-                if (parts[0].Vertices[i].X > max.X)
-                    max.X = parts[0].Vertices[i].X;
+                    if (parts[p].Vertices[i].X > max.X)
+                        max.X = parts[p].Vertices[i].X;
 
-                if (parts[0].Vertices[i].Y < min.Y)
-                    min.Y = parts[0].Vertices[i].Y;
+                    if (parts[p].Vertices[i].Y < min.Y)
+                        min.Y = parts[p].Vertices[i].Y;
 
-                if (parts[0].Vertices[i].Y > max.Y)
-                    max.Y = parts[0].Vertices[i].Y;
+                    if (parts[p].Vertices[i].Y > max.Y)
+                        max.Y = parts[p].Vertices[i].Y;
 
-                if (parts[0].Vertices[i].Z < min.Z)
-                    min.Z = parts[0].Vertices[i].Z;
+                    if (parts[p].Vertices[i].Z < min.Z)
+                        min.Z = parts[p].Vertices[i].Z;
 
-                if (parts[0].Vertices[i].Z > max.Z)
-                    max.Z = parts[0].Vertices[i].Z;
+                    if (parts[p].Vertices[i].Z > max.Z)
+                        max.Z = parts[p].Vertices[i].Z;
+                }
             }
 
             bounds = new Bounds(min, max);

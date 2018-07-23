@@ -82,7 +82,6 @@
     <Compile Include="GeometryExporters\CustomEDC.cs" />
     <Compile Include="GeometryExporters\CustomEDD.cs" />
     <Compile Include="GeometryExporters\CustomEDM.cs" />
-    <Compile Include="GeometryExporters\WavefrontOBJ.cs" />
     <Compile Include="ItemDesc\CollisionTypes\CollisionBase.cs" />
     <Compile Include="ItemDesc\CollisionTypes\CollisionBox.cs" />
     <Compile Include="ItemDesc\CollisionTypes\CollisionCapsule.cs" />

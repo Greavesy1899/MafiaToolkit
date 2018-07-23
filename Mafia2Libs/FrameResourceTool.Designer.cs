@@ -50,7 +50,6 @@
             this.contextExtract3D = new System.Windows.Forms.ToolStripMenuItem();
             this.contextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
-            this.contextViewModel = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -163,7 +162,7 @@
             this.modelsToolStripMenuItem,
             this.allToolStripMenuItem});
             this.exportAllSubButton.Name = "exportAllSubButton";
-            this.exportAllSubButton.Size = new System.Drawing.Size(180, 22);
+            this.exportAllSubButton.Size = new System.Drawing.Size(160, 22);
             this.exportAllSubButton.Text = "Export All";
             this.exportAllSubButton.Click += new System.EventHandler(this.OnClickLoadAll);
             // 
@@ -189,14 +188,14 @@
             // 
             this.collisionEditorSubButton.Enabled = false;
             this.collisionEditorSubButton.Name = "collisionEditorSubButton";
-            this.collisionEditorSubButton.Size = new System.Drawing.Size(180, 22);
+            this.collisionEditorSubButton.Size = new System.Drawing.Size(160, 22);
             this.collisionEditorSubButton.Text = "Collision Editor";
             this.collisionEditorSubButton.Click += new System.EventHandler(this.CollisionEditor_Click);
             // 
             // materialEditorSubButton
             // 
             this.materialEditorSubButton.Name = "materialEditorSubButton";
-            this.materialEditorSubButton.Size = new System.Drawing.Size(180, 22);
+            this.materialEditorSubButton.Size = new System.Drawing.Size(160, 22);
             this.materialEditorSubButton.Text = "Material Editor";
             this.materialEditorSubButton.Click += new System.EventHandler(this.LoadMaterialTool);
             // 
@@ -204,7 +203,7 @@
             // 
             this.overwriteBufferSubButton.Enabled = false;
             this.overwriteBufferSubButton.Name = "overwriteBufferSubButton";
-            this.overwriteBufferSubButton.Size = new System.Drawing.Size(180, 22);
+            this.overwriteBufferSubButton.Size = new System.Drawing.Size(160, 22);
             this.overwriteBufferSubButton.Text = "Overwrite Buffer";
             this.overwriteBufferSubButton.Click += new System.EventHandler(this.OverwriteBuffer_Click);
             // 
@@ -222,7 +221,7 @@
             // switchViewSubButton
             // 
             this.switchViewSubButton.Name = "switchViewSubButton";
-            this.switchViewSubButton.Size = new System.Drawing.Size(180, 22);
+            this.switchViewSubButton.Size = new System.Drawing.Size(137, 22);
             this.switchViewSubButton.Text = "Switch View";
             this.switchViewSubButton.Click += new System.EventHandler(this.SwitchView);
             // 
@@ -239,16 +238,14 @@
             // 
             this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.contextExtract3D,
-            this.contextDelete,
-            this.contextViewModel});
+            this.contextDelete});
             this.contextMenu.Name = "contextMenuStrip1";
             this.contextMenu.ShowImageMargin = false;
-            this.contextMenu.Size = new System.Drawing.Size(156, 92);
+            this.contextMenu.Size = new System.Drawing.Size(156, 70);
             this.contextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ItemClicked);
             // 
             // contextExtract3D
             // 
-            this.contextExtract3D.Enabled = false;
             this.contextExtract3D.Name = "contextExtract3D";
             this.contextExtract3D.Size = new System.Drawing.Size(155, 22);
             this.contextExtract3D.Text = "Extract 3D";
@@ -317,6 +314,5 @@
         private System.Windows.Forms.ToolStripMenuItem farLodsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modelsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem contextViewModel;
     }
 }

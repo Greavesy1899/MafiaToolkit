@@ -9,18 +9,18 @@ private:
 	std::vector<Point3> vertices;
 	std::wstring name;
 	Point3 position;
-	Point3 rotation;
+	Matrix3 matrix;
 public:
 	ARAPart();
 	~ARAPart();
 	void SetName(std::wstring name);
 	void SetVertices(std::vector<Point3> vertices);
 	void SetPosition(Point3 position);
-	void SetRotation(Point3 rotation);
+	void SetMatrix(Matrix3 matrix);
 	std::wstring GetName();
 	std::vector<Point3> GetVertices();
 	Point3 GetPosition();
-	Point3 GetRotation();
+	Matrix3 GetMatrix();
 
 	void ReadFromStream(FILE* stream);
 };

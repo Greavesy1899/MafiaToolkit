@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Mafia2
 {
@@ -170,68 +171,69 @@ namespace Mafia2
             }
         }
 
-        public void ExportToOBJ(Lod lod, string name)
-        {
-            WavefrontOBJ objMesh = new WavefrontOBJ(lod.Vertices, lod.Parts, name);
-            objMesh.ExportOBJ();
-        }
-
         public void CompileEDM(Lod lod, string name)
         {
             EDM = new CustomEDM(name, lod.Parts.Length);
-
-            for (int i = 0; i != EDM.PartCount; i++)
+            Console.WriteLine("Working on " + name);
+            try
             {
-                #region convert
-                Stopwatch watch = new Stopwatch();
-                watch.Start();
-                List<short> vertlist = new List<short>();
-                bool[] hasBeenAdded = new bool[lod.Parts[i].Indices.Length * 3];
-
-                for (int x = 0; x != lod.Parts[i].Indices.Length; x++)
+                for (int i = 0; i != EDM.PartCount; i++)
                 {
-                    vertlist.Add(lod.Parts[i].Indices[x].s1);
-                    vertlist.Add(lod.Parts[i].Indices[x].s2);
-                    vertlist.Add(lod.Parts[i].Indices[x].s3);
-                }
-                List<Vertex> newVerts = new List<Vertex>();
-                List<short> newFacesI = new List<short>();
-                List<Short3> newShort3 = new List<Short3>();
+                    #region convert
+                    Stopwatch watch = new Stopwatch();
+                    watch.Start();
+                    List<short> vertlist = new List<short>();
+                    bool[] hasBeenAdded = new bool[lod.Parts[i].Indices.Length * 3];
 
-                int hbaIndex = 0;
-
-                foreach (short s in vertlist)
-                {
-                    if (!hasBeenAdded[hbaIndex])
+                    for (int x = 0; x != lod.Parts[i].Indices.Length; x++)
                     {
-                        newVerts.Add(lod.Vertices[s]);
-                        newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
-                        hasBeenAdded[hbaIndex] = true;
+                        vertlist.Add(lod.Parts[i].Indices[x].s1);
+                        vertlist.Add(lod.Parts[i].Indices[x].s2);
+                        vertlist.Add(lod.Parts[i].Indices[x].s3);
                     }
-                    else
+                    List<Vertex> newVerts = new List<Vertex>();
+                    List<short> newFacesI = new List<short>();
+                    List<Short3> newShort3 = new List<Short3>();
+
+                    int hbaIndex = 0;
+
+                    foreach (short s in vertlist)
                     {
-                        newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
+                        if (!hasBeenAdded[hbaIndex])
+                        {
+                            newVerts.Add(lod.Vertices[s]);
+                            newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
+                            hasBeenAdded[hbaIndex] = true;
+                        }
+                        else
+                        {
+                            newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
+                        }
+                        hbaIndex++;
                     }
-                    hbaIndex++;
-                }
 
-                int num = 0;
-                while (num != newFacesI.Count)
-                {
-                    Short3 face = new Short3();
-                    face.s1 = newFacesI[num];
-                    num++;
-                    face.s2 = newFacesI[num];
-                    num++;
-                    face.s3 = newFacesI[num];
-                    num++;
-                    newShort3.Add(face);
-                }
-                watch.Stop();
-                Console.WriteLine("{0}", watch.Elapsed);
-                #endregion
+                    int num = 0;
+                    while (num != newFacesI.Count)
+                    {
+                        Short3 face = new Short3();
+                        face.s1 = newFacesI[num];
+                        num++;
+                        face.s2 = newFacesI[num];
+                        num++;
+                        face.s3 = newFacesI[num];
+                        num++;
+                        newShort3.Add(face);
+                    }
+                    watch.Stop();
+                    Console.WriteLine("{0}", watch.Elapsed);
+                    #endregion
 
-                EDM.AddPart(newVerts, newShort3, "unk01", i);
+                    EDM.AddPart(newVerts, newShort3, lod.Parts[i].Material, i);
+                }
+            }
+            catch(Exception ex)
+            {
+                //MessageBox.Show("Failed to convert mesh and add it. " + ex.Message);
             }
         }
 

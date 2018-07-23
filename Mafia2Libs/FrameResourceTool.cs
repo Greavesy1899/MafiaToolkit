@@ -46,23 +46,13 @@ namespace Mafia2Tool
                 if (data.FrameIndex != -1)
                 {
                     object block = SceneData.FrameResource.EntireFrame[(data.FrameIndex + numBlocks)];
-                    if (block.GetType() == typeof(FrameObjectFrame))
+                    if (block.GetType().BaseType == typeof(FrameObjectBase) || block.GetType().BaseType == typeof(FrameObjectJoint))
                     {
-                        (block as FrameObjectFrame).FrameNameTableFlags = data.Flags;
-                        (block as FrameObjectFrame).IsOnFrameTable = true;
-                    }
-                    else if (block.GetType() == typeof(FrameObjectSingleMesh))
-                    {
-                        (block as FrameObjectSingleMesh).FrameNameTableFlags = data.Flags;
-                        (block as FrameObjectSingleMesh).IsOnFrameTable = true;
-                    }
-                    else if (block.GetType() == typeof(FrameObjectDummy))
-                    {
-                        (block as FrameObjectDummy).FrameNameTableFlags = data.Flags;
-                        (block as FrameObjectDummy).IsOnFrameTable = true;
+                        (block as FrameObjectBase).FrameNameTableFlags = data.Flags;
+                        (block as FrameObjectBase).IsOnFrameTable = true;
                     }
                     else
-                        throw new Exception("Not found");
+                        throw new Exception("Unknown type.");
 
                     TreeNode node = CreateTreeNode((SceneData.FrameResource.EntireFrame[(data.FrameIndex + numBlocks)] as FrameObjectBase));
 
@@ -465,9 +455,25 @@ namespace Mafia2Tool
         {
             if (e.ClickedItem.Name == "contextExtract3D")
             {
-                FrameObjectSingleMesh fObject = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
-                //Model newModel = new Model((fObject), SceneData.VertexBufferPool, SceneData.IndexBufferPool, SceneData.FrameResource);
-                //newModel.ExportToEDM(newModel.Lods[0], fObject.Name.String);
+                FrameObjectSingleMesh mesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
+
+                FrameGeometry geom = SceneData.FrameResource.EntireFrame[mesh.MeshIndex] as FrameGeometry;
+                FrameMaterial mat = SceneData.FrameResource.EntireFrame[mesh.MaterialIndex] as FrameMaterial;
+                IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
+                VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
+
+                //we need to retrieve buffers first.
+                for (int c = 0; c != geom.LOD.Length; c++)
+                {
+                    indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
+                    vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
+                }
+
+                Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
+                for(int i = 0; i != newModel.Lods.Length; i++)
+                {
+                    newModel.ExportToEDM(newModel.Lods[i], mesh.Name.String + "_lod"+i);
+                }
             }
         }
 

@@ -115,12 +115,7 @@ int ARAImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		mesh.InvalidateGeomCache();
 		mesh.InvalidateTopologyCache();
 
-		Matrix3 tm = Matrix3();
-		tm.IdentityMatrix();
-		tm.RotateX(part.GetRotation().x);
-		tm.RotateY(part.GetRotation().y);
-		tm.RotateZ(part.GetRotation().z);
-		tm.SetRow(3, part.GetPosition());
+		Matrix3 tm = part.GetMatrix();
 
 		ImpNode *node = importerInt->CreateNode();
 		INode *inode = node->GetINode();

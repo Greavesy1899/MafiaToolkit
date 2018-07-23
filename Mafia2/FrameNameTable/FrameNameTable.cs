@@ -78,23 +78,9 @@ namespace Mafia2
                 object block = resource.EntireFrame[i];
 
                 //possible types to save? might change in the future however.
-                if (block.GetType() == typeof(FrameObjectDummy))
+                if (block.GetType().BaseType == typeof(FrameObjectBase) || block.GetType().BaseType == typeof(FrameObjectJoint) || block.GetType().BaseType == typeof(FrameObjectSingleMesh))
                 {
-                    if((block as FrameObjectDummy).IsOnFrameTable)
-                    {
-                        addToTable = true;
-                    }
-                }
-                if (block.GetType() == typeof(FrameObjectSingleMesh))
-                {
-                    if ((block as FrameObjectSingleMesh).IsOnFrameTable)
-                    {
-                        addToTable = true;
-                    }
-                }
-                if (block.GetType() == typeof(FrameObjectFrame))
-                {
-                    if ((block as FrameObjectFrame).IsOnFrameTable)
+                    if((block as FrameObjectBase).IsOnFrameTable)
                     {
                         addToTable = true;
                     }
@@ -109,12 +95,8 @@ namespace Mafia2
                         Data data = new Data();
 
                         //temporarily set flags to zero; need to find out what these are.
-                        if (block.GetType() == typeof(FrameObjectFrame))
-                            data.Flags = (block as FrameObjectFrame).FrameNameTableFlags;
-                        else if (block.GetType() == typeof(FrameObjectSingleMesh))
-                            data.Flags = (block as FrameObjectSingleMesh).FrameNameTableFlags;
-                        if (block.GetType() == typeof(FrameObjectDummy))
-                            data.Flags = (block as FrameObjectDummy).FrameNameTableFlags;
+                        if (block.GetType() == typeof(FrameObjectBase))
+                            data.Flags = (block as FrameObjectBase).FrameNameTableFlags;
 
                         int sceneIndex = 0;
 
