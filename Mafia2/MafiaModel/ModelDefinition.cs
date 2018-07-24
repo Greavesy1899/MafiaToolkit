@@ -158,9 +158,9 @@ namespace Mafia2
                         while (startIndex < num)
                         {
                             Short3 indice = new Short3();
-                            indice.s1 = (short)indexBuffer.Data[startIndex + 0];
-                            indice.s2 = (short)indexBuffer.Data[startIndex + 1];
-                            indice.s3 = (short)indexBuffer.Data[startIndex + 2];
+                            indice.S1 = (short)indexBuffer.Data[startIndex + 0];
+                            indice.S2 = (short)indexBuffer.Data[startIndex + 1];
+                            indice.S3 = (short)indexBuffer.Data[startIndex + 2];
                             intList.Add(indice);
                             startIndex += 3;
                         }
@@ -187,9 +187,9 @@ namespace Mafia2
 
                     for (int x = 0; x != lod.Parts[i].Indices.Length; x++)
                     {
-                        vertlist.Add(lod.Parts[i].Indices[x].s1);
-                        vertlist.Add(lod.Parts[i].Indices[x].s2);
-                        vertlist.Add(lod.Parts[i].Indices[x].s3);
+                        vertlist.Add(lod.Parts[i].Indices[x].S1);
+                        vertlist.Add(lod.Parts[i].Indices[x].S2);
+                        vertlist.Add(lod.Parts[i].Indices[x].S3);
                     }
                     List<Vertex> newVerts = new List<Vertex>();
                     List<short> newFacesI = new List<short>();
@@ -216,11 +216,11 @@ namespace Mafia2
                     while (num != newFacesI.Count)
                     {
                         Short3 face = new Short3();
-                        face.s1 = newFacesI[num];
+                        face.S1 = newFacesI[num];
                         num++;
-                        face.s2 = newFacesI[num];
+                        face.S2 = newFacesI[num];
                         num++;
-                        face.s3 = newFacesI[num];
+                        face.S3 = newFacesI[num];
                         num++;
                         newShort3.Add(face);
                     }

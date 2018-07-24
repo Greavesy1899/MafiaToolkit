@@ -76,9 +76,26 @@ namespace Mafia2Tool
                 if (node == null)
                     continue;
 
-                TreeNode[] nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
-                node = AddChildren(node, fObject);
+                //if ParentIndex1 && ParentIndex2 equals then its kind of like the root of the object.
+                //All subobjects of this 'root' should have ParentIndex2 set to the 'roots' parent.
+                //ParentIndex1 is the unique one. 
+                //Looks to me that the objects which have ParentIndex1 && ParentIndex2 having the same value is usually on the 'FrameNameTable'.
 
+                //all nodes found are dumped here.
+                TreeNode[] nodes = null;
+
+                //so first we check for 'root' objects.
+                if (fObject.ParentIndex1.Index == fObject.ParentIndex2.Index)
+                {
+                    nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
+                }
+                else if(fObject.ParentIndex1.Index != fObject.ParentIndex2.Index)
+                {
+                    //test, still trying to nail this fucker down.
+                    nodes = treeView1.Nodes.Find(fObject.ParentIndex1.Name, true);
+                }
+
+                
                 if (nodes.Length > 0)
                     nodes[0].Nodes.Add(node);
                 else if (fObject.ParentIndex1.Index == -1 && fObject.ParentIndex2.Index == -1)
@@ -154,6 +171,7 @@ namespace Mafia2Tool
                 node.ContextMenuStrip = contextMenu;
             }
 
+            node = AddChildren(node, fObject);
             return node;
         }
         private TreeNode ConvertNode(Node node)

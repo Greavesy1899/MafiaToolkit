@@ -5,24 +5,27 @@ using System.IO;
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public class TransformMatrix
 {
-    Matrix33 rotation;
-    Vector3 position;
+    public Matrix33 Rotation { get; set; }
+    public Vector3 Position { get; set; }
 
-    public Matrix33 Rotation {
-        get { return rotation; }
-        set { rotation = value; }
-    }
-    public Vector3 Position {
-        get { return position; }
-        set { position = value; }
-    }
-
+    /// <summary>
+    /// Construct empty TransformMatrix.
+    /// </summary>
     public TransformMatrix() { }
+
+    /// <summary>
+    /// Construct TransformMatrix from parsed data.
+    /// </summary>
+    /// <param name="reader"></param>
     public TransformMatrix(BinaryReader reader)
     {
         ReadFromFile(reader);
     }
 
+    /// <summary>
+    /// Read TransformMatrix from the file.
+    /// </summary>
+    /// <param name="reader"></param>
     public void ReadFromFile(BinaryReader reader)
     {
         Vector3 m1 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
@@ -32,44 +35,52 @@ public class TransformMatrix
         Vector3 m3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         float z = reader.ReadSingle();
 
-        rotation = new Matrix33(m1, m2, m3);
-        position = new Vector3(x, y, z);
+        Rotation = new Matrix33(m1, m2, m3);
+        Position = new Vector3(x, y, z);
     }
 
+    /// <summary>
+    /// Used for Max.
+    /// </summary>
+    /// <param name="writer"></param>
     public void WriteToFile(BinaryWriter writer)
     {
-        writer.Write(rotation.Rows[0, 0]);
-        writer.Write(rotation.Rows[0, 1]);
-        writer.Write(rotation.Rows[0, 2]);
-        writer.Write(position.X);
-        writer.Write(rotation.Rows[1, 0]);
-        writer.Write(rotation.Rows[1, 1]);
-        writer.Write(rotation.Rows[1, 2]);
-        writer.Write(position.Y);
-        writer.Write(rotation.Rows[2, 0]);
-        writer.Write(rotation.Rows[2, 1]);
-        writer.Write(rotation.Rows[2, 2]);
-        writer.Write(position.Z);
+        writer.Write(Rotation.Rows[0, 0]);
+        writer.Write(Rotation.Rows[0, 1]);
+        writer.Write(Rotation.Rows[0, 2]);
+        writer.Write(Position.X);
+        writer.Write(Rotation.Rows[1, 0]);
+        writer.Write(Rotation.Rows[1, 1]);
+        writer.Write(Rotation.Rows[1, 2]);
+        writer.Write(Position.Y);
+        writer.Write(Rotation.Rows[2, 0]);
+        writer.Write(Rotation.Rows[2, 1]);
+        writer.Write(Rotation.Rows[2, 2]);
+        writer.Write(Position.Z);
     }
 
+    /// <summary>
+    /// Use this to write to the FrameResource.
+    /// </summary>
+    /// <param name="writer"></param>
     public void WriteToFrame(BinaryWriter writer)
     {
-        writer.Write(rotation.Rows[0, 0]);
-        writer.Write(rotation.Rows[1, 0]);
-        writer.Write(rotation.Rows[2, 0]);
-        writer.Write(position.X);
-        writer.Write(rotation.Rows[0, 1]);
-        writer.Write(rotation.Rows[1, 1]);
-        writer.Write(rotation.Rows[2, 1]);
-        writer.Write(position.Y);
-        writer.Write(rotation.Rows[0, 2]);
-        writer.Write(rotation.Rows[1, 2]);
-        writer.Write(rotation.Rows[2, 2]);
-        writer.Write(position.Z);
+        writer.Write(Rotation.Rows[0, 0]);
+        writer.Write(Rotation.Rows[1, 0]);
+        writer.Write(Rotation.Rows[2, 0]);
+        writer.Write(Position.X);
+        writer.Write(Rotation.Rows[0, 1]);
+        writer.Write(Rotation.Rows[1, 1]);
+        writer.Write(Rotation.Rows[2, 1]);
+        writer.Write(Position.Y);
+        writer.Write(Rotation.Rows[0, 2]);
+        writer.Write(Rotation.Rows[1, 2]);
+        writer.Write(Rotation.Rows[2, 2]);
+        writer.Write(Position.Z);
     }
 
     public override string ToString()
     {
-        return string.Format("{0} {1}", rotation, position);
+        return $"{Rotation} {Position}";
     }
 }

@@ -7,61 +7,64 @@ namespace Mafia2
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Matrix33
     {
-        float[,] rows = new float[3, 3];
+        public float[,] Rows { get; set; } = new float[3, 3];
+        public Vector3 Euler { get; set; }
 
-        Vector3 euler;
-
-        public float[,] Rows {
-            get { return rows; }
-            set { rows = value; }
-        }
-        public Vector3 Euler {
-            get { return euler; }
-            set { euler = value; }
-        }
-
+        /// <summary>
+        /// Construct Matrix33 from three vectors.
+        /// </summary>
+        /// <param name="m1"></param>
+        /// <param name="m2"></param>
+        /// <param name="m3"></param>
         public Matrix33(Vector3 m1, Vector3 m2, Vector3 m3)
         {
-            rows[0, 0] = m1.X;
-            rows[0, 1] = m2.X;
-            rows[0, 2] = m3.X;
-            rows[1, 0] = m1.Y;
-            rows[1, 1] = m2.Y;
-            rows[1, 2] = m3.Y;
-            rows[2, 0] = m1.Z;
-            rows[2, 1] = m2.Z;
-            rows[2, 2] = m3.Z;
-            euler = ConvertToAngle();
+            Rows[0, 0] = m1.X;
+            Rows[0, 1] = m2.X;
+            Rows[0, 2] = m3.X;
+            Rows[1, 0] = m1.Y;
+            Rows[1, 1] = m2.Y;
+            Rows[1, 2] = m3.Y;
+            Rows[2, 0] = m1.Z;
+            Rows[2, 1] = m2.Z;
+            Rows[2, 2] = m3.Z;
+            Euler = ToEuler();
         }
 
+        /// <summary>
+        /// Write matrix to file.
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(rows[0, 0]);
-            writer.Write(rows[0, 1]);
-            writer.Write(rows[0, 2]);
-            writer.Write(rows[1, 0]);
-            writer.Write(rows[1, 1]);
-            writer.Write(rows[1, 2]);
-            writer.Write(rows[2, 0]);
-            writer.Write(rows[2, 1]);
-            writer.Write(rows[2, 2]);
+            writer.Write(Rows[0, 0]);
+            writer.Write(Rows[0, 1]);
+            writer.Write(Rows[0, 2]);
+            writer.Write(Rows[1, 0]);
+            writer.Write(Rows[1, 1]);
+            writer.Write(Rows[1, 2]);
+            writer.Write(Rows[2, 0]);
+            writer.Write(Rows[2, 1]);
+            writer.Write(Rows[2, 2]);
         }
 
-        public Vector3 ConvertToAngle()
+        /// <summary>
+        /// Convert matrix to euler.
+        /// </summary>
+        /// <returns></returns>
+        public Vector3 ToEuler()
         {
             double x;
             double z;
+            double y = Math.Asin(Rows[0,2]);
 
-            double y = Math.Asin(rows[0,2]);
-
-            if(Math.Abs(rows[0,2]) < 0.99999)
+            if(Math.Abs(Rows[0,2]) < 0.99999)
             {
-                x = Math.Atan2(rows[1, 1], rows[2, 2]);
-                z = Math.Atan2(rows[0, 1], rows[0, 2]);
+                x = Math.Atan2(Rows[1, 1], Rows[2, 2]);
+                z = Math.Atan2(Rows[0, 1], Rows[0, 2]);
             }
             else
             {
-                x = Math.Atan2(rows[2, 1], rows[2, 1]);
+                x = Math.Atan2(Rows[2, 1], Rows[2, 1]);
                 z = 0;
             }
 
@@ -75,7 +78,7 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return string.Format("{0},", Euler);
+            return $"{Euler}";
         }
 
 

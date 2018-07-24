@@ -127,9 +127,9 @@ namespace Mafia2
             {
                 for (int i = 0; i != parts[p].Indices.Count; i++)
                 {
-                    idata.Add((ushort)parts[p].Indices[i].s1);
-                    idata.Add((ushort)parts[p].Indices[i].s2);
-                    idata.Add((ushort)parts[p].Indices[i].s3);
+                    idata.Add((ushort)parts[p].Indices[i].S1);
+                    idata.Add((ushort)parts[p].Indices[i].S2);
+                    idata.Add((ushort)parts[p].Indices[i].S3);
                 }
                 for (int i = 0; i != parts[p].Vertices.Length; i++)
                 {
@@ -376,7 +376,7 @@ namespace Mafia2
 
                 foreach (Int3 tri in triangles)
                 {
-                    indices.Add(new Short3(tri.i1, tri.i2, tri.i3));
+                    indices.Add(new Short3(tri.I1, tri.I2, tri.I3));
                 }
 
                 this.name = name;
@@ -455,11 +455,7 @@ namespace Mafia2
 
                 writer.Write(indices.Count);
                 for (int c = 0; c != indices.Count; c++)
-                {
-                    writer.Write(indices[c].s1);
-                    writer.Write(indices[c].s2);
-                    writer.Write(indices[c].s3);
-                }
+                    indices[c].WriteToFile(writer);
             }
 
             /// <summary>

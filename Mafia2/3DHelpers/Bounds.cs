@@ -6,40 +6,57 @@ namespace Mafia2
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Bounds
     {
-        Vector3 min;
-        Vector3 max;
+        public Vector3 Min { get; set; }
+        public Vector3 Max { get; set; }
 
-        public Vector3 Min {
-            get { return min; }
-            set { min = value; }
-        }
-
-        public Vector3 Max {
-            get { return max; }
-            set { max = value; }
-        }
-
+        /// <summary>
+        /// Construct bounds by reading data from stream.
+        /// </summary>
+        /// <param name="reader"></param>
         public Bounds(BinaryReader reader)
         {
-            min = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-            max = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-        }
-        public Bounds()
-        {
-            min = new Vector3(0);
-            max = new Vector3(0);
+            ReadToFile(reader);
         }
 
+        /// <summary>
+        /// Construct bounds with data set at 0.
+        /// </summary>
+        public Bounds() { }
+
+        /// <summary>
+        /// Construct bounds with passed vectors.
+        /// </summary>
+        /// <param name="min">Minimum vector.</param>
+        /// <param name="max">Maximum vector.</param>
         public Bounds(Vector3 min, Vector3 max)
         {
-            this.min = min;
-            this.max = max;
+            Min = min;
+            Max = max;
         }
 
+        /// <summary>
+        /// Read data from stream.
+        /// </summary>
+        /// <param name="reader"></param>
+        public void ReadToFile(BinaryReader reader)
+        {
+            Min = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+            Max = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        }
+
+        /// <summary>
+        /// Write data to stream.
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
-            min.WriteToFile(writer);
-            max.WriteToFile(writer);
+            Min.WriteToFile(writer);
+            Max.WriteToFile(writer);
+        }
+
+        public override string ToString()
+        {
+            return $"{Min}, {Max}";
         }
     }
 }

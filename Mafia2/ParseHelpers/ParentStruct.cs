@@ -1,14 +1,18 @@
-﻿namespace Mafia2 {
+﻿namespace Mafia2
+{
     public class ParentStruct
     {
         int index;
         string name;
 
-        public int Index {
+        public int Index
+        {
             get { return index; }
             set { index = value; }
         }
-        public string Name {
+
+        public string Name
+        {
             get { return name; }
             set { name = value; }
         }
