@@ -4,8 +4,8 @@
 //===================================================
 //		EDMPART
 //===================================================
-void EDMPart::SetName(std::wstring name) {
-	EDMPart::name = name;
+void EDMPart::SetHasPositions(bool b) {
+	EDMPart::hasPosition = b;
 }
 
 void EDMPart::SetHasNormals(bool b) {
@@ -16,8 +16,40 @@ void EDMPart::SetHasTangents(bool b) {
 	EDMPart::hasTangents = b;
 }
 
-void EDMPart::SetHasUVS(bool b) {
-	EDMPart::hasUVs = b;
+void EDMPart::SetHasBlendData(bool b) {
+	EDMPart::hasBlendData = b;
+}
+
+void EDMPart::SetHasFlag0x80(bool b) {
+	EDMPart::hasFlag0x80 = b;
+}
+
+void EDMPart::SetHasUV0(bool b) {
+	EDMPart::hasUV0 = b;
+}
+
+void EDMPart::SetHasUV1(bool b) {
+	EDMPart::hasUV1 = b;
+}
+
+void EDMPart::SetHasUV2(bool b) {
+	EDMPart::hasUV2 = b;
+}
+
+void EDMPart::SetHasUV7(bool b) {
+	EDMPart::hasUV7 = b;
+}
+
+void EDMPart::SetHasFlag0x20000(bool b) {
+	EDMPart::hasFlag0x20000 = b;
+}
+
+void EDMPart::SetHasFlag0x40000(bool b) {
+	EDMPart::hasFlag0x40000 = b;
+}
+
+void EDMPart::SetHasDamage(bool b) {
+	EDMPart::hasDamageGroup = b;
 }
 
 void EDMPart::SetVertSize(int count) {
@@ -36,12 +68,16 @@ void EDMPart::SetTangents(std::vector<Point3> tangents) {
 	EDMPart::tangents = tangents;
 }
 
-void EDMPart::SetUVSize(int count) {
-	EDMPart::uvSize = count;
-}
-
 void EDMPart::SetUVs(std::vector<UVVert> uvs) {
 	EDMPart::uvs = uvs;
+}
+
+void EDMPart::SetSubMeshCount(int count) {
+	EDMPart::subMeshCount = count;
+}
+
+void EDMPart::SetMatNames(std::vector<std::wstring> names) {
+	EDMPart::matNames = names;
 }
 
 void EDMPart::SetIndicesSize(int count) {
@@ -52,12 +88,16 @@ void EDMPart::SetIndices(std::vector<Int3> indices) {
 	EDMPart::indices = indices;
 }
 
+void EDMPart::SetMatIDs(std::vector<byte> ids) {
+	EDMPart::matIDs = ids;
+}
+
 void EDMPart::SetMesh(Mesh mesh) {
 	EDMPart::mesh = mesh;
 }
 
-std::wstring EDMPart::GetName() {
-	return EDMPart::name;
+bool EDMPart::GetHasPositions() {
+	return EDMPart::hasPosition;
 }
 
 bool EDMPart::GetHasNormals() {
@@ -68,8 +108,40 @@ bool EDMPart::GetHasTangents() {
 	return EDMPart::hasTangents;
 }
 
-bool EDMPart::GetHasUVs() {
-	return EDMPart::hasUVs;
+bool EDMPart::GetHasBlendData() {
+	return EDMPart::hasBlendData;
+}
+
+bool EDMPart::GetHasFlag0x80() {
+	return EDMPart::hasFlag0x80;
+}
+
+bool EDMPart::GetHasUV0() {
+	return EDMPart::hasUV0;
+}
+
+bool EDMPart::GetHasUV1() {
+	return EDMPart::hasUV1;
+}
+
+bool EDMPart::GetHasUV2() {
+	return EDMPart::hasUV2;
+}
+
+bool EDMPart::GetHasUV7() {
+	return EDMPart::hasUV7;
+}
+
+bool EDMPart::GetHasFlag0x20000() {
+	return EDMPart::hasFlag0x20000;
+}
+
+bool EDMPart::GetHasFlag0x40000() {
+	return EDMPart::hasFlag0x40000;
+}
+
+bool EDMPart::GetHasDamage() {
+	return EDMPart::hasDamageGroup;
 }
 
 int EDMPart::GetVertSize() {
@@ -88,12 +160,12 @@ std::vector<Point3> EDMPart::GetTangents() {
 	return EDMPart::tangents;
 }
 
-int EDMPart::GetUVSize() {
-	return EDMPart::uvSize;
-}
-
 std::vector<UVVert> EDMPart::GetUVs() {
 	return EDMPart::uvs;
+}
+
+int EDMPart::GetSubMeshCount() {
+	return EDMPart::subMeshCount;
 }
 
 int EDMPart::GetIndicesSize() {
@@ -104,55 +176,81 @@ std::vector<Int3> EDMPart::GetIndices() {
 	return EDMPart::indices;
 }
 
+std::vector<std::wstring> EDMPart::GetMatNames() {
+	return EDMPart::matNames;
+}
+
+std::vector<byte> EDMPart::GetMatIDs() {
+	return EDMPart::matIDs;
+}
+
 Mesh EDMPart::GetMesh() {
 	return EDMPart::mesh;
 }
 
 void EDMPart::ReadFromStream(FILE * stream) {
-	std::wstring partName = std::wstring();
-	partName = ReadString(stream, partName);
-	name = partName;
+	fread(&hasPosition, sizeof(bool), 1, stream);
 	fread(&hasNormals, sizeof(bool), 1, stream);
 	fread(&hasTangents, sizeof(bool), 1, stream);
-	fread(&hasUVs, sizeof(bool), 1, stream);
+	fread(&hasBlendData, sizeof(bool), 1, stream);
+	fread(&hasFlag0x80, sizeof(bool), 1, stream);
+	fread(&hasUV0, sizeof(bool), 1, stream);
+	fread(&hasUV1, sizeof(bool), 1, stream);
+	fread(&hasUV2, sizeof(bool), 1, stream);
+	fread(&hasUV7, sizeof(bool), 1, stream);
+	fread(&hasFlag0x20000, sizeof(bool), 1, stream);
+	fread(&hasFlag0x40000, sizeof(bool), 1, stream);
+	fread(&hasDamageGroup, sizeof(bool), 1, stream);
 	fread(&vertSize, sizeof(int), 1, stream);
 	vertices = std::vector<Point3>(vertSize);
+	normals = std::vector<Point3>(vertSize);
+	tangents = std::vector<Point3>(vertSize);
+	uvs = std::vector<Point3>(vertSize);
 	for (int i = 0; i != vertSize; i++) {
-		fread(&vertices[i].x, sizeof(float), 1, stream);
-		fread(&vertices[i].y, sizeof(float), 1, stream);
-		fread(&vertices[i].z, sizeof(float), 1, stream);
-	}
-	if (hasNormals) {
-		normals = std::vector<Point3>(vertSize);
-		for (int i = 0; i != vertSize; i++) {
+		if (hasPosition) {
+			fread(&vertices[i].x, sizeof(float), 1, stream);
+			fread(&vertices[i].y, sizeof(float), 1, stream);
+			fread(&vertices[i].z, sizeof(float), 1, stream);
+		}
+		if (hasNormals) {
 			fread(&normals[i].x, sizeof(float), 1, stream);
 			fread(&normals[i].y, sizeof(float), 1, stream);
 			fread(&normals[i].z, sizeof(float), 1, stream);
 		}
-	}
-	if (hasTangents) {
-		tangents = std::vector<Point3>(vertSize);
-		for (int i = 0; i != vertSize; i++) {
+		if (hasTangents) {
 			fread(&tangents[i].x, sizeof(float), 1, stream);
 			fread(&tangents[i].y, sizeof(float), 1, stream);
 			fread(&tangents[i].z, sizeof(float), 1, stream);
 		}
-	}
-	if (hasUVs) {
-		fread(&uvSize, sizeof(int), 1, stream);
-		uvs = std::vector<UVVert>(uvSize);
-		for (int i = 0; i != uvSize; i++) {
+		if (hasUV0) {
 			fread(&uvs[i].x, sizeof(float), 1, stream);
 			fread(&uvs[i].y, sizeof(float), 1, stream);
 		}
 	}
-	fread(&indicesSize, sizeof(int), 1, stream);
-	indices = std::vector<Int3>(indicesSize);
-	for (int i = 0; i != indicesSize; i++) {
-		fread(&indices[i].i1, sizeof(short), 1, stream);
-		fread(&indices[i].i2, sizeof(short), 1, stream);
-		fread(&indices[i].i3, sizeof(short), 1, stream);
+	fread(&subMeshCount, sizeof(int), 1, stream);
+	matNames = std::vector<std::wstring>(subMeshCount);
+	for (int i = 0; i != subMeshCount; i++) {
+		std::wstring edmName = std::wstring();
+		edmName = ReadString(stream, edmName);
+		matNames[i] = edmName;
 	}
+	indices = std::vector<Int3>();
+	matIDs = std::vector<byte>();
+	for (int i = 0; i != subMeshCount; i++) {
+		int ind;
+		fread(&ind, sizeof(int), 1, stream);
+		for (int x = 0; x != ind; x++) {
+			Int3 tri;
+			byte matID;
+			fread(&tri.i1, sizeof(short), 1, stream);
+			fread(&tri.i2, sizeof(short), 1, stream);
+			fread(&tri.i3, sizeof(short), 1, stream);
+			fread(&matID, sizeof(byte), 1, stream);
+			matIDs.push_back(matID);
+			indices.push_back(tri);
+		}
+	}
+	indicesSize = indices.size();
 
 	mesh = Mesh();
 	mesh.setNumFaces(indicesSize);
@@ -163,7 +261,7 @@ void EDMPart::ReadFromStream(FILE * stream) {
 
 	for (int i = 0; i != mesh.numFaces; i++) {
 		mesh.faces[i].setVerts(indices[i].i1, indices[i].i2, indices[i].i3);
-		mesh.faces[i].setMatID(1);
+		mesh.faces[i].setMatID(matIDs[i]);
 		mesh.faces[i].setEdgeVisFlags(1, 1, 1);
 	}
 
@@ -186,7 +284,7 @@ void EDMPart::ReadFromStream(FILE * stream) {
 		//}
 	}
 
-	if (hasUVs)
+	if (hasUV0)
 	{
 		mesh.setNumMaps(2);
 		mesh.setMapSupport(1, true);
@@ -209,7 +307,7 @@ void EDMPart::ReadFromStream(FILE * stream) {
 }
 
 void EDMPart::WriteToStream(FILE * stream) {
-	WriteString(stream, name);
+	/*WriteString(stream, name);
 	fwrite(&hasNormals, sizeof(bool), 1, stream);
 	fwrite(&hasTangents, sizeof(bool), 1, stream);
 	fwrite(&hasUVs, sizeof(bool), 1, stream);
@@ -249,7 +347,7 @@ void EDMPart::WriteToStream(FILE * stream) {
 		fwrite(&indices[i].i2, sizeof(short), 1, stream);
 		fwrite(&indices[i].i3, sizeof(short), 1, stream);
 	}
-
+*/
 }
 
 EDMPart::EDMPart() {}
@@ -283,11 +381,12 @@ std::vector<EDMPart> EDMStructure::GetParts() {
 }
 
 void EDMStructure::ReadFromStream(FILE * stream) {
-
+	int header;
+	fread(&header, 4, 1, stream); //header
 	std::wstring edmName = std::wstring();
 	edmName = ReadString(stream, edmName);
 	name = edmName;
-	fread(&partSize, sizeof(int), 1, stream);
+	fread(&partSize, sizeof(byte), 1, stream);
 	parts = std::vector<EDMPart>(partSize);
 	
 	for (int i = 0; i != parts.size(); i++)

@@ -253,14 +253,18 @@ namespace Mafia2
 
             float minFloatf = 0.000016f;
             Vector3 minFloat = new Vector3(minFloatf);
-
+            Debug.WriteLine("min is: " + min);
+            Debug.WriteLine("max is: " + max);
             min -= minFloat;
             max += minFloat;
 
             positionOffset = min;
             float fMaxSize = Math.Max(max.X - min.X + minFloatf, Math.Max(max.Y - min.Y + minFloatf, (max.Z - min.Y + minFloatf) * 2.0f));
 
-            positionFactor = fMaxSize / 0x10000;
+            Debug.WriteLine("maxSize is: " + fMaxSize);
+
+            //positionFactor = fMaxSize / 0x10000;
+            positionFactor = (float)256 / 0x10000;
         }
 
         public class Part
@@ -487,7 +491,7 @@ namespace Mafia2
                         normals[c] = new Vector3(reader);
                 }
 
-                if (hasNormals)
+                if (hasTangents)
                 {
                     for (int c = 0; c != tangents.Length; c++)
                         tangents[c] = new Vector3(reader);

@@ -95,7 +95,7 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 	INode* parent = ip->CreateObjectNode(parentDummy);
 	parent->SetName(file.GetName().c_str());
 
-	//lets goo.
+	////lets goo.
 	for (int i = 0; i != parts.size(); i++)
 	{
 		EDMPart part = parts[i];
@@ -105,37 +105,46 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		mesh = part.GetMesh();
 
 		//texture stuff
-		BitmapTex *texture = NewDefaultBitmapTex();
 		std::wstring path = _T("C:/Users/Connor/Desktop/textures/");
-		path += part.GetName();
-		texture->SetMapName(path.c_str());
-		StdMat2 *collMat = NewDefaultStdMat();
-		collMat->SetSubTexmap(1, texture);
-		collMat->SetName(part.GetName().c_str());
+
+		MultiMtl *multiMat = NewDefaultMultiMtl();
+		multiMat->SetNumSubMtls(file.GetParts()[0].GetMatNames().size());
+		for (int x = 0; x != file.GetParts()[0].GetMatNames().size(); x++)
+		{
+			BitmapTex *texture = NewDefaultBitmapTex();
+			path += file.GetParts()[0].GetMatNames()[x];
+			texture->SetMapName(path.c_str());
+			texture->SetName(file.GetParts()[0].GetMatNames()[x].c_str());
+
+			Mtl* mtl; 
+			mtl = multiMat->GetSubMtl(x);
+			mtl->SetName(file.GetParts()[0].GetMatNames()[x].c_str());
+			mtl->SetSubTexmap(1, texture);
+
+			path = _T("C:/Users/Connor/Desktop/textures/");
+		}
 
 		//add to material library ONLY if it doesn't exist.
-		if(ip->GetMaterialLibrary().FindMtlByName(collMat->GetName()) != -1)
-			ip->GetMaterialLibrary().Add(collMat);
+		ip->GetMaterialLibrary().Add(multiMat);
 
 		INode* nPart = ip->CreateObjectNode(triObject);
-		nPart->SetName(part.GetName().c_str());
-		nPart->SetMtl(collMat);
+		nPart->SetMtl(multiMat);
 		parent->AttachChild(nPart, 0);
 	}
 
 	Modifier *modifier = (Modifier*)ip->CreateInstance(OSM_CLASS_ID, Class_ID(M2_MODIFIER_CLASS_ID));
 	modifier->GetParamBlockByID(0)->SetValue(1, 0, parts[0].GetHasNormals());
 	modifier->GetParamBlockByID(0)->SetValue(2, 0, parts[0].GetHasTangents());
-	modifier->GetParamBlockByID(0)->SetValue(3, 0, parts[0].GetHasUVs());
+	modifier->GetParamBlockByID(0)->SetValue(3, 0, parts[0].GetHasUV0());
 	GetCOREInterface12()->AddModifier(*parent, *modifier);
 	importerInt->RedrawViews();
 
 
-	//if(!suppressPrompts)
-	//	DialogBoxParam(hInstance, 
-	//			MAKEINTRESOURCE(IDD_PANEL), 
-	//			GetActiveWindow(), 
-	//			M2PluginOptionsDlgProc, (LPARAM)this);
+	////if(!suppressPrompts)
+	////	DialogBoxParam(hInstance, 
+	////			MAKEINTRESOURCE(IDD_PANEL), 
+	////			GetActiveWindow(), 
+	////			M2PluginOptionsDlgProc, (LPARAM)this);
 
 	return TRUE;
 }

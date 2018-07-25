@@ -162,7 +162,7 @@
             this.modelsToolStripMenuItem,
             this.allToolStripMenuItem});
             this.exportAllSubButton.Name = "exportAllSubButton";
-            this.exportAllSubButton.Size = new System.Drawing.Size(160, 22);
+            this.exportAllSubButton.Size = new System.Drawing.Size(180, 22);
             this.exportAllSubButton.Text = "Export All";
             this.exportAllSubButton.Click += new System.EventHandler(this.OnClickLoadAll);
             // 
@@ -188,22 +188,21 @@
             // 
             this.collisionEditorSubButton.Enabled = false;
             this.collisionEditorSubButton.Name = "collisionEditorSubButton";
-            this.collisionEditorSubButton.Size = new System.Drawing.Size(160, 22);
+            this.collisionEditorSubButton.Size = new System.Drawing.Size(180, 22);
             this.collisionEditorSubButton.Text = "Collision Editor";
             this.collisionEditorSubButton.Click += new System.EventHandler(this.CollisionEditor_Click);
             // 
             // materialEditorSubButton
             // 
             this.materialEditorSubButton.Name = "materialEditorSubButton";
-            this.materialEditorSubButton.Size = new System.Drawing.Size(160, 22);
+            this.materialEditorSubButton.Size = new System.Drawing.Size(180, 22);
             this.materialEditorSubButton.Text = "Material Editor";
             this.materialEditorSubButton.Click += new System.EventHandler(this.LoadMaterialTool);
             // 
             // overwriteBufferSubButton
             // 
-            this.overwriteBufferSubButton.Enabled = false;
             this.overwriteBufferSubButton.Name = "overwriteBufferSubButton";
-            this.overwriteBufferSubButton.Size = new System.Drawing.Size(160, 22);
+            this.overwriteBufferSubButton.Size = new System.Drawing.Size(180, 22);
             this.overwriteBufferSubButton.Text = "Overwrite Buffer";
             this.overwriteBufferSubButton.Click += new System.EventHandler(this.OverwriteBuffer_Click);
             // 
@@ -241,20 +240,20 @@
             this.contextDelete});
             this.contextMenu.Name = "contextMenuStrip1";
             this.contextMenu.ShowImageMargin = false;
-            this.contextMenu.Size = new System.Drawing.Size(156, 70);
+            this.contextMenu.Size = new System.Drawing.Size(107, 48);
             this.contextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ItemClicked);
             // 
             // contextExtract3D
             // 
             this.contextExtract3D.Name = "contextExtract3D";
-            this.contextExtract3D.Size = new System.Drawing.Size(155, 22);
+            this.contextExtract3D.Size = new System.Drawing.Size(106, 22);
             this.contextExtract3D.Text = "Extract 3D";
             // 
             // contextDelete
             // 
             this.contextDelete.Name = "contextDelete";
             this.contextDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.contextDelete.Size = new System.Drawing.Size(155, 22);
+            this.contextDelete.Size = new System.Drawing.Size(106, 22);
             this.contextDelete.Text = "Delete";
             this.contextDelete.Click += new System.EventHandler(this.OnDelete);
             // 

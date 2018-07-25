@@ -192,23 +192,23 @@ namespace Mafia2Tool
             curPos = mesh.Matrix.Position;
             FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
 
-            //while (parent != null)
-            //{
-            //    if (parent.GetType() == typeof(FrameObjectFrame))
-            //    {
-            //        if ((parent as FrameObjectFrame).Item != null)
-            //            curPos += (parent as FrameObjectFrame).Item.Position;
-            //    }
-            //    else
-            //    {
-            //        curPos += parent.Matrix.Position;
-            //    }
+            while (parent != null)
+            {
+                if (parent.GetType() == typeof(FrameObjectFrame))
+                {
+                    if ((parent as FrameObjectFrame).Item != null)
+                        curPos += (parent as FrameObjectFrame).Item.Position;
+                }
+                else
+                {
+                    curPos += parent.Matrix.Position;
+                }
 
-            //    if (parent.ParentIndex1.Index != -1)
-            //        parent = (SceneData.FrameResource.EntireFrame[parent.ParentIndex1.Index] as FrameObjectBase);
-            //    else
-            //        parent = null;
-            //}
+                if (parent.ParentIndex1.Index != -1)
+                    parent = (SceneData.FrameResource.EntireFrame[parent.ParentIndex1.Index] as FrameObjectBase);
+                else
+                    parent = null;
+            }
 
             return curPos;
         }
@@ -356,51 +356,52 @@ namespace Mafia2Tool
 
             if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel))))
             {
-                ulong indexRef;
-                ulong vertexRef;
-
-                int[] iIndex;
-                int[] iVertex;
-
-                CustomEDM edm;
-
-                FrameObjectSingleMesh mesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
-                FrameGeometry geom = SceneData.FrameResource.EntireFrame[mesh.MeshIndex] as FrameGeometry;
-                FrameMaterial mat = SceneData.FrameResource.EntireFrame[mesh.MaterialIndex] as FrameMaterial;
-
-                indexRef = geom.LOD[0].IndexBufferRef.uHash;
-                vertexRef = geom.LOD[0].VertexBufferRef.uHash;
-
-                iIndex = SceneData.IndexBufferPool.SearchBuffer(indexRef);
-                iVertex = SceneData.VertexBufferPool.SearchBuffer(vertexRef);
-
-                if (iIndex[0] == -1 || iVertex[0] == -1)
+                if ((treeView1.SelectedNode.Tag as FrameObjectSingleMesh) == null)
                     return;
+
+                Model model = new Model();
+                model.FrameMesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
+                model.FrameGeometry = SceneData.FrameResource.EntireFrame[model.FrameMesh.MeshIndex] as FrameGeometry;
+                model.FrameMaterial = SceneData.FrameResource.EntireFrame[model.FrameMesh.MaterialIndex] as FrameMaterial;
+
+                BufferLocationStruct[] iIndexes = new BufferLocationStruct[model.FrameGeometry.NumLods];
+                BufferLocationStruct[] iVertexes = new BufferLocationStruct[model.FrameGeometry.NumLods];
+                ulong[] indexRefs = new ulong[model.FrameGeometry.NumLods];
+                ulong[] vertexRefs = new ulong[model.FrameGeometry.NumLods];
+
+                for (int i = 0; i != model.FrameGeometry.NumLods; i++)
+                {
+                    indexRefs[i] = model.FrameGeometry.LOD[i].IndexBufferRef.uHash;
+                    iIndexes[i] = SceneData.IndexBufferPool.SearchBuffer(indexRefs[i]);
+                    vertexRefs[i] = model.FrameGeometry.LOD[i].VertexBufferRef.uHash;
+                    iVertexes[i] = SceneData.VertexBufferPool.SearchBuffer(vertexRefs[i]);
+
+                    if (iIndexes[i] == null || iVertexes[i] == null)
+                        return;
+
+                }
 
                 edmBrowser.ShowDialog();
 
+                if (edmBrowser.FileName == null)
+                    return;
+
                 using (BinaryReader reader = new BinaryReader(File.Open(edmBrowser.FileName, FileMode.Open)))
                 {
-                    edm = new CustomEDM(reader);
-                    edm.BufferIndexHash = indexRef;
-                    edm.BufferVertexHash = vertexRef;
-                    edm.BufferFlags = geom.LOD[0].VertexDeclaration;
-                    edm.CalculateBounds(true);
-                    edm.BuildBuffers();
+                    model.EDM = new CustomEDM(reader);
+                    model.EDM.BufferIndexHash = indexRefs[0];
+                    model.EDM.BufferVertexHash = vertexRefs[0];
+                    model.EDM.BufferFlags = model.FrameGeometry.LOD[0].VertexDeclaration;
+                    model.EDM.CalculateBounds(true);
+                    model.EDM.BuildBuffers();
                 }
-                geom.LOD[0].BuildNewPartition();
-                geom.LOD[0].BuildNewMaterialSplit();
-                geom.DecompressionFactor = edm.PositionFactor;
-                geom.DecompressionOffset = edm.PositionOffset;
-                mesh.Boundings = edm.Bound;
-                geom.LOD[0].SplitInfo.NumVerts = edm.Parts[0].Vertices.Length;
-                geom.LOD[0].NumVertsPr = edm.Parts[0].Vertices.Length;
-                geom.LOD[0].SplitInfo.NumFaces = edm.Parts[0].Indices.Count;
-                geom.LOD[0].SplitInfo.MaterialBursts[0].SecondIndex = Convert.ToUInt16(edm.Parts[0].Indices.Count - 1);
-                mat.Materials[0][0].NumFaces = edm.Parts[0].Indices.Count;
+                model.UpdateModelFromEDM();
 
-                SceneData.IndexBufferPool.BufferPools[iIndex[0]].Buffers[iIndex[1]] = edm.IndexBuffer;
-                SceneData.VertexBufferPool.BufferPools[iIndex[0]].Buffers[iIndex[1]] = edm.VertexBuffer;
+                treeView1.SelectedNode.Tag = model.FrameMesh;
+                SceneData.FrameResource.EntireFrame[model.FrameMesh.MeshIndex] = model.FrameGeometry;
+                SceneData.FrameResource.EntireFrame[model.FrameMesh.MaterialIndex] = model.FrameMaterial;
+                SceneData.IndexBufferPool.BufferPools[iIndexes[0].PoolLocation].Buffers[iIndexes[0].BufferLocation] = model.EDM.IndexBuffer;
+                SceneData.VertexBufferPool.BufferPools[iVertexes[0].PoolLocation].Buffers[iVertexes[0].BufferLocation] = model.EDM.VertexBuffer;
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
             }
@@ -488,6 +489,7 @@ namespace Mafia2Tool
                 }
 
                 Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
+                newModel.ExportToM2T();
                 for(int i = 0; i != newModel.Lods.Length; i++)
                 {
                     newModel.ExportToEDM(newModel.Lods[i], mesh.Name.String + "_lod"+i);

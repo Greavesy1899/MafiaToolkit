@@ -73,126 +73,126 @@ unsigned int EDMExport::Version() {
 void EDMExport::ShowAbout(HWND hWnd) {}
 int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL suppressPrompts, DWORD options)
 {
-	//Check if nodes are selected.
-	if (i->GetSelNodeCount() < 1) {
-		MessageBox(NULL, _T("Select the root node of a mesh."), _T("Error!"), MB_OK);
-		return FALSE;
-	}
+	////Check if nodes are selected.
+	//if (i->GetSelNodeCount() < 1) {
+	//	MessageBox(NULL, _T("Select the root node of a mesh."), _T("Error!"), MB_OK);
+	//	return FALSE;
+	//}
 
-	//define file to write to.
-	EDMExportWorkFile theFile(name, _T("wb"));
-	FILE *stream = theFile.Stream();
+	////define file to write to.
+	//EDMExportWorkFile theFile(name, _T("wb"));
+	//FILE *stream = theFile.Stream();
 
-	INode* parentNode = i->GetSelNode(0);
+	//INode* parentNode = i->GetSelNode(0);
 
-	//check if dummy.
-	if (parentNode->GetObjOrWSMRef()->ClassID() == dummyClassID) {
-		MessageBox(NULL, _T("Select a dummy node containing a mesh"), _T("Error!"), MB_OK);
-		return FALSE;
-	}
-	IDerivedObject *DerivedObjectPtr = (IDerivedObject *)(parentNode->GetObjOrWSMRef());
+	////check if dummy.
+	//if (parentNode->GetObjOrWSMRef()->ClassID() == dummyClassID) {
+	//	MessageBox(NULL, _T("Select a dummy node containing a mesh"), _T("Error!"), MB_OK);
+	//	return FALSE;
+	//}
+	//IDerivedObject *DerivedObjectPtr = (IDerivedObject *)(parentNode->GetObjOrWSMRef());
 
-	int ModStackIndex = 0;
-	DerivedObjectPtr->NumModifiers();
-	M2Modifier* modifier = nullptr;
-	while (ModStackIndex < DerivedObjectPtr->NumModifiers()) {
-		// Get current modifier.
-		Modifier* ModifierPtr = DerivedObjectPtr->GetModifier(ModStackIndex);
+	//int ModStackIndex = 0;
+	//DerivedObjectPtr->NumModifiers();
+	//M2Modifier* modifier = nullptr;
+	//while (ModStackIndex < DerivedObjectPtr->NumModifiers()) {
+	//	// Get current modifier.
+	//	Modifier* ModifierPtr = DerivedObjectPtr->GetModifier(ModStackIndex);
 
-		// Is this the mafia modifier?
-		if (ModifierPtr->ClassID() == M2_MODIFIER_CLASS_ID) {
-			modifier = (M2Modifier*)ModifierPtr;
-		}
-		ModStackIndex++;
-	}
-	if (modifier == nullptr) {
-		MessageBox(NULL, _T("Could not find the Mafia 2 Modifier on the root dummy."), _T("Error!"), MB_OK);
-		return FALSE;
-	}
+	//	// Is this the mafia modifier?
+	//	if (ModifierPtr->ClassID() == M2_MODIFIER_CLASS_ID) {
+	//		modifier = (M2Modifier*)ModifierPtr;
+	//	}
+	//	ModStackIndex++;
+	//}
+	//if (modifier == nullptr) {
+	//	MessageBox(NULL, _T("Could not find the Mafia 2 Modifier on the root dummy."), _T("Error!"), MB_OK);
+	//	return FALSE;
+	//}
 
-	BOOL hasNormals;
-	BOOL hasTangents;
-	BOOL hasUVs;
+	//BOOL hasNormals;
+	//BOOL hasTangents;
+	//BOOL hasUVs;
 
-	modifier->GetParamBlock(0)->GetValue(0, 0, hasNormals, FOREVER);
-	modifier->GetParamBlock(0)->GetValue(1, 0, hasTangents, FOREVER);
-	modifier->GetParamBlock(0)->GetValue(2, 0, hasUVs, FOREVER);
+	//modifier->GetParamBlock(0)->GetValue(0, 0, hasNormals, FOREVER);
+	//modifier->GetParamBlock(0)->GetValue(1, 0, hasTangents, FOREVER);
+	//modifier->GetParamBlock(0)->GetValue(2, 0, hasUVs, FOREVER);
 
-	//build file structure
-	EDMStructure fileStructure = EDMStructure();
-	fileStructure.SetName(parentNode->GetName());
-	fileStructure.SetPartSize(parentNode->NumberOfChildren());
+	////build file structure
+	//EDMStructure fileStructure = EDMStructure();
+	//fileStructure.SetName(parentNode->GetName());
+	//fileStructure.SetPartSize(parentNode->NumberOfChildren());
 
-	std::vector<EDMPart> parts = std::vector<EDMPart>(fileStructure.GetPartSize());
+	//std::vector<EDMPart> parts = std::vector<EDMPart>(fileStructure.GetPartSize());
 
-	for (int i = 0; i != parts.size(); i++)
-	{
-		parts[i] = EDMPart();
+	//for (int i = 0; i != parts.size(); i++)
+	//{
+	//	parts[i] = EDMPart();
 
-		//Get child nodes (1 for now)
-		INode* child = parentNode->GetChildNode(i);
-		parts[i].SetName(child->GetName());
+	//	//Get child nodes (1 for now)
+	//	INode* child = parentNode->GetChildNode(i);
+	//	parts[i].SetName(child->GetName());
 
-		//get TriObject for mesh
-		TriObject* object = static_cast<TriObject*>(child->GetObjOrWSMRef());
-		Mesh &mesh = object->mesh;
-		
-		//get verts and normals from mesh and save.
-		parts[i].SetVertSize(mesh.numVerts);
-		parts[i].SetIndicesSize(mesh.numFaces);
-		parts[i].SetUVSize(mesh.numVerts);
-		//invert from BOOL;
-		parts[i].SetHasNormals(!hasNormals);
-		parts[i].SetHasTangents(!hasTangents);
-		parts[i].SetHasUVS(!hasUVs);
+	//	//get TriObject for mesh
+	//	TriObject* object = static_cast<TriObject*>(child->GetObjOrWSMRef());
+	//	Mesh &mesh = object->mesh;
+	//	
+	//	//get verts and normals from mesh and save.
+	//	parts[i].SetVertSize(mesh.numVerts);
+	//	parts[i].SetIndicesSize(mesh.numFaces);
+	//	parts[i].SetUVSize(mesh.numVerts);
+	//	//invert from BOOL;
+	//	parts[i].SetHasNormals(!hasNormals);
+	//	parts[i].SetHasTangents(!hasTangents);
+	//	parts[i].SetHasUVS(!hasUVs);
 
-		//init vectors
-		std::vector<Point3> verts = std::vector<Point3>(mesh.numVerts);
-		std::vector<Point3> normals = std::vector<Point3>(mesh.numVerts);
-		std::vector<Point3> tangents = std::vector<Point3>(mesh.numVerts);
-		std::vector<Point3> uvs = std::vector<Point3>(mesh.numVerts);
-		std::vector<Int3> indices = std::vector<Int3>(mesh.numFaces);
+	//	//init vectors
+	//	std::vector<Point3> verts = std::vector<Point3>(mesh.numVerts);
+	//	std::vector<Point3> normals = std::vector<Point3>(mesh.numVerts);
+	//	std::vector<Point3> tangents = std::vector<Point3>(mesh.numVerts);
+	//	std::vector<Point3> uvs = std::vector<Point3>(mesh.numVerts);
+	//	std::vector<Int3> indices = std::vector<Int3>(mesh.numFaces);
 
-		MeshNormalSpec* normalSpec = mesh.GetSpecifiedNormals();
+	//	MeshNormalSpec* normalSpec = mesh.GetSpecifiedNormals();
 
-		for (int c = 0; c != verts.size(); c++)
-		{
-			verts[c] = mesh.getVert(c);		
-			normals[c] = normalSpec->Normal(c);
-		}
+	//	for (int c = 0; c != verts.size(); c++)
+	//	{
+	//		verts[c] = mesh.getVert(c);		
+	//		normals[c] = normalSpec->Normal(c);
+	//	}
 
-		for (int c = 0; c != indices.size(); c++)
-		{
-			Int3 ind;
-			ind.i1 = mesh.faces[c].v[0];
-			ind.i2 = mesh.faces[c].v[1];
-			ind.i3 = mesh.faces[c].v[2];
+	//	for (int c = 0; c != indices.size(); c++)
+	//	{
+	//		Int3 ind;
+	//		ind.i1 = mesh.faces[c].v[0];
+	//		ind.i2 = mesh.faces[c].v[1];
+	//		ind.i3 = mesh.faces[c].v[2];
 
-			indices[c] = ind;
-		}
-		MeshMap &map = mesh.Map(1);
-		for (int c = 0; c != verts.size(); c++)
-		{
-			uvs[c].x = map.tv[c].x;
-			uvs[c].y = map.tv[c].y;
-			uvs[c].z = map.tv[c].z;
-		}
+	//		indices[c] = ind;
+	//	}
+	//	MeshMap &map = mesh.Map(1);
+	//	for (int c = 0; c != verts.size(); c++)
+	//	{
+	//		uvs[c].x = map.tv[c].x;
+	//		uvs[c].y = map.tv[c].y;
+	//		uvs[c].z = map.tv[c].z;
+	//	}
 
-		for (int c = 0; c != verts.size(); c++)
-		{
-			Point3 tangent;
-			tangent = ComputeTangent(&map.tv[c], &verts[c]);
-			tangents[c] = tangent;
-		}
+	//	for (int c = 0; c != verts.size(); c++)
+	//	{
+	//		Point3 tangent;
+	//		tangent = ComputeTangent(&map.tv[c], &verts[c]);
+	//		tangents[c] = tangent;
+	//	}
 
-		parts[i].SetVertices(verts);
-		parts[i].SetNormals(normals);
-		parts[i].SetTangents(tangents);
-		parts[i].SetIndices(indices);
-		parts[i].SetUVs(uvs);
-	}
-	fileStructure.SetParts(parts);
-	fileStructure.WriteToStream(stream);
+	//	parts[i].SetVertices(verts);
+	//	parts[i].SetNormals(normals);
+	//	parts[i].SetTangents(tangents);
+	//	parts[i].SetIndices(indices);
+	//	parts[i].SetUVs(uvs);
+	//}
+	//fileStructure.SetParts(parts);
+	//fileStructure.WriteToStream(stream);
 
 	return TRUE;
 }

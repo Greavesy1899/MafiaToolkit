@@ -25,17 +25,17 @@ namespace Mafia2
             }
         }
 
-        public int[] SearchBuffer(ulong indexRef)
+        public BufferLocationStruct SearchBuffer(ulong indexRef)
         {
             for (int i = 0; i != bufferPools.Length; i++)
             {
                 for (int c = 0; c != bufferPools[i].Buffers.Length; c++)
                 {
                     if (indexRef == bufferPools[i].Buffers[c].Hash)
-                        return new int[] { i, c };
+                        return new BufferLocationStruct(i, c);
                 }
             }
-            return new int[] { -1, -1 };
+            return null;
         }
 
         /// <summary>

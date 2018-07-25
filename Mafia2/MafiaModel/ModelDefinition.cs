@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Windows.Forms;
 
 namespace Mafia2
 {
@@ -21,6 +20,30 @@ namespace Mafia2
         public Lod[] Lods {
             get { return lods; }
             set { lods = value; }
+        }
+        public FrameObjectSingleMesh FrameMesh {
+            get { return frameMesh; }
+            set { frameMesh = value; }
+        }
+        public FrameObjectModel FrameModel {
+            get { return frameModel; }
+            set { frameModel = value; }
+        }
+        public FrameGeometry FrameGeometry {
+            get { return frameGeometry; }
+            set { frameGeometry = value; }
+        }
+        public FrameMaterial FrameMaterial {
+            get { return frameMaterial; }
+            set { frameMaterial = value; }
+        }
+        public IndexBuffer[] IndexBuffers {
+            get { return indexBuffers; }
+            set { indexBuffers = value; }
+        }
+        public VertexBuffer[] VertexBuffers {
+            get { return vertexBuffers; }
+            set { vertexBuffers = value; }
         }
         public CustomEDM EDM {
             get { return edm; }
@@ -55,6 +78,14 @@ namespace Mafia2
             this.useSingleMesh = false;
 
             BuildLods();
+        }
+
+        /// <summary>
+        /// Construct an empty model.
+        /// </summary>
+        public Model()
+        {
+
         }
 
         /// <summary>
@@ -248,6 +279,124 @@ namespace Mafia2
                 edm.WriteToFile(writer);
             }
         }
+
+        public void ExportToM2T()
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + "test" + ".m2t")))
+            {
+                //An absolute overhaul on the mesh exportation.
+                //file header; M2T\0
+                string header = "M2T ";
+
+                writer.Write(header.ToCharArray());
+
+                //mesh name
+                writer.Write(frameMesh.Name.String);
+
+                //Number of Lods
+                writer.Write(frameGeometry.NumLods);
+
+                for (int i = 0; i != frameGeometry.NumLods; i++)
+                {
+                    FrameLOD lod = frameGeometry.LOD[i];
+
+                    //Write section for VertexFlags. 
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Position));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Normals));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Tangent));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.BlendData));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.flag_0x80));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords7));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.flag_0x20000));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.flag_0x40000));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.DamageGroup));
+
+                    //write length and then all vertices.
+                    writer.Write(lods[i].Vertices.Length);
+                    for (int x = 0; x != lods[i].Vertices.Length; x++)
+                    {
+                        Vertex vert = lods[i].Vertices[x];
+
+                        if(lod.VertexDeclaration.HasFlag(VertexFlags.Position))
+                            vert.Position.WriteToFile(writer);
+
+                        if (lod.VertexDeclaration.HasFlag(VertexFlags.Normals))
+                            vert.Normal.WriteToFile(writer);
+
+                        if (lod.VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                            vert.Tangent.WriteToFile(writer);
+
+                        if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                            vert.UVs[0].WriteToFile(writer);
+                    }
+
+                    //write mesh count and texture names.
+                    writer.Write(frameMaterial.Materials[i].Length);
+                    for (int x = 0; x != frameMaterial.Materials[i].Length; x++)
+                        writer.Write(lods[i].Parts[x].Material);
+
+                    //write triangle data.
+                    for (int x = 0; x != frameMaterial.Materials[i].Length; x++)
+                    {
+                        writer.Write(lods[i].Parts[x].Indices.Length);
+                        for (int z = 0; z != lods[i].Parts[x].Indices.Length; z++)
+                        {
+                            //write triangle, and then material
+                            lods[i].Parts[x].Indices[z].WriteToFile(writer);
+                            writer.Write((byte)x);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void UpdateModelFromEDM()
+        {
+            int totalVerts = 0;
+            int totalFaces = 0;
+
+            for (int i = 0; i != edm.Parts.Length; i++)
+            {
+                totalVerts += edm.Parts[i].Vertices.Length;
+                totalFaces += edm.Parts[i].Indices.Count;
+            }
+
+            frameGeometry.LOD[0].BuildNewPartition();
+            frameGeometry.LOD[0].BuildNewMaterialSplit();
+            frameGeometry.DecompressionFactor = edm.PositionFactor;
+            frameGeometry.DecompressionOffset = edm.PositionOffset;
+            frameMesh.Boundings = edm.Bound;
+            frameGeometry.LOD[0].SplitInfo.NumVerts = totalVerts;
+            frameGeometry.LOD[0].NumVertsPr = totalVerts;
+            frameGeometry.LOD[0].SplitInfo.NumFaces = totalFaces;
+
+            //burst split info.
+            frameGeometry.LOD[0].SplitInfo.NumMatSplit = edm.PartCount;
+            frameGeometry.LOD[0].SplitInfo.NumMatBurst = edm.PartCount;
+            frameGeometry.LOD[0].SplitInfo.MaterialSplits = new FrameLOD.MaterialSplit[edm.PartCount];
+            frameGeometry.LOD[0].SplitInfo.MaterialBursts = new FrameLOD.MaterialBurst[edm.PartCount];
+
+            int faceIndex = 0;
+            for (int i = 0; i != edm.PartCount; i++)
+            {
+                frameMaterial.Materials[0][i].StartIndex = faceIndex;
+                frameMaterial.Materials[0][i].NumFaces = edm.Parts[i].Indices.Count;
+                frameMaterial.Materials[0][i].Unk3 = 0;
+                faceIndex = edm.Parts[0].Indices.Count * 3;
+
+                frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].FirstIndex = 0;
+                frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].LeftIndex = -1;
+                frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].RightIndex = -1;
+                frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].SecondIndex = Convert.ToUInt16(edm.Parts[i].Indices.Count - 1);
+                frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].BaseIndex = faceIndex;
+                frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].FirstBurst = i;
+                frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].NumBurst = 1;
+            }
+            
+        }
     }
 
     public class Lod
@@ -288,6 +437,27 @@ namespace Mafia2
         public Short3[] Indices {
             get { return indices; }
             set { indices = value; }
+        }
+    }
+
+    public class BufferLocationStruct
+    {
+        private int poolLoc;
+        private int bufferLoc;
+
+        public int PoolLocation {
+            get { return poolLoc; }
+            set { poolLoc = value; }
+        }
+        public int BufferLocation {
+            get { return bufferLoc; }
+            set { bufferLoc = value; }
+        }
+
+        public BufferLocationStruct(int i, int c)
+        {
+            poolLoc = i;
+            bufferLoc = c;
         }
     }
 }

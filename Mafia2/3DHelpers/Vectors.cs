@@ -211,6 +211,15 @@ namespace Mafia2
             Y = y;
         }
 
+        /// <summary>
+        /// Write UVVector2 as floats.
+        /// </summary>
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(X);
+            writer.Write(1f - Y);
+        }
+
         public override string ToString()
         {
             return $"X: {X}, Y: {Y}";

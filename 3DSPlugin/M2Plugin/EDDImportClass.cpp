@@ -139,7 +139,7 @@ int EDDImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 				ImpNode *node = importerInt->CreateNode();
 				INode *inode = node->GetINode();
 				node->Reference(triObject);
-				node->SetName(part.GetName().c_str());
+				//node->SetName(part.GetName().c_str());
 				//inode->SetMtl(collMat);
 
 				importerInt->AddNodeToScene(node);
