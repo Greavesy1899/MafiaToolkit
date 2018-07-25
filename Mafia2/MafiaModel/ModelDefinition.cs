@@ -17,35 +17,50 @@ namespace Mafia2
         private bool useSingleMesh; //False means ModelMesh, True means SingleMesh;
         CustomEDM edm; //mesh stored here. Doesn't store all LODs, just the most recent.
 
-        public Lod[] Lods {
+        public Lod[] Lods
+        {
             get { return lods; }
             set { lods = value; }
         }
-        public FrameObjectSingleMesh FrameMesh {
+
+        public FrameObjectSingleMesh FrameMesh
+        {
             get { return frameMesh; }
             set { frameMesh = value; }
         }
-        public FrameObjectModel FrameModel {
+
+        public FrameObjectModel FrameModel
+        {
             get { return frameModel; }
             set { frameModel = value; }
         }
-        public FrameGeometry FrameGeometry {
+
+        public FrameGeometry FrameGeometry
+        {
             get { return frameGeometry; }
             set { frameGeometry = value; }
         }
-        public FrameMaterial FrameMaterial {
+
+        public FrameMaterial FrameMaterial
+        {
             get { return frameMaterial; }
             set { frameMaterial = value; }
         }
-        public IndexBuffer[] IndexBuffers {
+
+        public IndexBuffer[] IndexBuffers
+        {
             get { return indexBuffers; }
             set { indexBuffers = value; }
         }
-        public VertexBuffer[] VertexBuffers {
+
+        public VertexBuffer[] VertexBuffers
+        {
             get { return vertexBuffers; }
             set { vertexBuffers = value; }
         }
-        public CustomEDM EDM {
+
+        public CustomEDM EDM
+        {
             get { return edm; }
             set { edm = value; }
         }
@@ -53,7 +68,8 @@ namespace Mafia2
         /// <summary>
         /// Constructor used to build Lods. This is used when you want to compile all mesh data together, ready for exporting.
         /// </summary>
-        public Model(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers, FrameGeometry frameGeometry, FrameMaterial frameMaterial)
+        public Model(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers,
+            FrameGeometry frameGeometry, FrameMaterial frameMaterial)
         {
             this.frameMesh = frameMesh;
             this.indexBuffers = indexBuffers;
@@ -68,7 +84,8 @@ namespace Mafia2
         /// <summary>
         /// Constructor used to build Lods. This is used when you want to compile all mesh data together, ready for exporting.
         /// </summary>
-        public Model(FrameObjectModel frameModel, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers, FrameGeometry frameGeometry, FrameMaterial frameMaterial)
+        public Model(FrameObjectModel frameModel, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers,
+            FrameGeometry frameGeometry, FrameMaterial frameMaterial)
         {
             this.frameModel = frameModel;
             this.indexBuffers = indexBuffers;
@@ -125,48 +142,61 @@ namespace Mafia2
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
-                        vertex.ReadPositionData(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset);
+                        vertex.ReadPositionData(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor,
+                            frameGeometry.DecompressionOffset);
                     }
+
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Tangent))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
                         vertex.ReadTangentData(vertexBuffer.Data, startIndex);
                     }
+
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Normals))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.Normals].Offset;
                         vertex.ReadNormalData(vertexBuffer.Data, startIndex);
                     }
+
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.BlendData))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.BlendData].Offset;
                         vertex.BlendWeight = (BitConverter.ToSingle(vertexBuffer.Data, startIndex) / byte.MaxValue);
                         vertex.BoneID = BitConverter.ToInt32(vertexBuffer.Data, startIndex + 4);
                     }
+
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords0].Offset;
-                        vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex), Half.ToHalf(vertexBuffer.Data, startIndex + 2));
+                        vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex),
+                            Half.ToHalf(vertexBuffer.Data, startIndex + 2));
                         num1++;
                     }
+
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords1].Offset;
-                        vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex), Half.ToHalf(vertexBuffer.Data, startIndex + 2));
+                        vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex),
+                            Half.ToHalf(vertexBuffer.Data, startIndex + 2));
                         num1++;
                     }
+
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords2].Offset;
-                        vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex), Half.ToHalf(vertexBuffer.Data, startIndex + 2));
+                        vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex),
+                            Half.ToHalf(vertexBuffer.Data, startIndex + 2));
                         num1++;
                     }
+
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords7].Offset;
-                        vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex), Half.ToHalf(vertexBuffer.Data, startIndex + 2));
+                        vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex),
+                            Half.ToHalf(vertexBuffer.Data, startIndex + 2));
                         num1++;
                     }
+
                     if (lods[i].NormalMapInfoPresent)
                     {
                         vertex.Binormal = vertex.Normal;
@@ -174,6 +204,7 @@ namespace Mafia2
                         vertex.Binormal *= 2;
                         vertex.Binormal.Normalize();
                     }
+
                     lods[i].Vertices[v] = vertex;
 
                     MaterialStruct[] materials = frameMaterial.Materials[i];
@@ -189,12 +220,13 @@ namespace Mafia2
                         while (startIndex < num)
                         {
                             Short3 indice = new Short3();
-                            indice.S1 = (short)indexBuffer.Data[startIndex + 0];
-                            indice.S2 = (short)indexBuffer.Data[startIndex + 1];
-                            indice.S3 = (short)indexBuffer.Data[startIndex + 2];
+                            indice.S1 = (short) indexBuffer.Data[startIndex + 0];
+                            indice.S2 = (short) indexBuffer.Data[startIndex + 1];
+                            indice.S3 = (short) indexBuffer.Data[startIndex + 2];
                             intList.Add(indice);
                             startIndex += 3;
                         }
+
                         modelPart.Indices = intList.ToArray();
                         lods[i].Parts[x] = modelPart;
                     }
@@ -202,87 +234,9 @@ namespace Mafia2
             }
         }
 
-        public void CompileEDM(Lod lod, string name)
-        {
-            EDM = new CustomEDM(name, lod.Parts.Length);
-            Console.WriteLine("Working on " + name);
-            try
-            {
-                for (int i = 0; i != EDM.PartCount; i++)
-                {
-                    #region convert
-                    Stopwatch watch = new Stopwatch();
-                    watch.Start();
-                    List<short> vertlist = new List<short>();
-                    bool[] hasBeenAdded = new bool[lod.Parts[i].Indices.Length * 3];
-
-                    for (int x = 0; x != lod.Parts[i].Indices.Length; x++)
-                    {
-                        vertlist.Add(lod.Parts[i].Indices[x].S1);
-                        vertlist.Add(lod.Parts[i].Indices[x].S2);
-                        vertlist.Add(lod.Parts[i].Indices[x].S3);
-                    }
-                    List<Vertex> newVerts = new List<Vertex>();
-                    List<short> newFacesI = new List<short>();
-                    List<Short3> newShort3 = new List<Short3>();
-
-                    int hbaIndex = 0;
-
-                    foreach (short s in vertlist)
-                    {
-                        if (!hasBeenAdded[hbaIndex])
-                        {
-                            newVerts.Add(lod.Vertices[s]);
-                            newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
-                            hasBeenAdded[hbaIndex] = true;
-                        }
-                        else
-                        {
-                            newFacesI.Add((short)newVerts.IndexOf(lod.Vertices[s]));
-                        }
-                        hbaIndex++;
-                    }
-
-                    int num = 0;
-                    while (num != newFacesI.Count)
-                    {
-                        Short3 face = new Short3();
-                        face.S1 = newFacesI[num];
-                        num++;
-                        face.S2 = newFacesI[num];
-                        num++;
-                        face.S3 = newFacesI[num];
-                        num++;
-                        newShort3.Add(face);
-                    }
-                    watch.Stop();
-                    Console.WriteLine("{0}", watch.Elapsed);
-                    #endregion
-
-                    EDM.AddPart(newVerts, newShort3, lod.Parts[i].Material, i);
-                }
-            }
-            catch(Exception ex)
-            {
-                //MessageBox.Show("Failed to convert mesh and add it. " + ex.Message);
-            }
-        }
-
-        public void ExportToEDM(Lod lod, string name)
-        {
-            //check if edm isn't null.
-            if (edm == null)
-                CompileEDM(lod, name);
-
-            using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + name + ".edm")))
-            {
-                edm.WriteToFile(writer);
-            }
-        }
-
         public void ExportToM2T()
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + "test" + ".m2t")))
+            using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + frameMesh.Name.String + ".m2t")))
             {
                 //An absolute overhaul on the mesh exportation.
                 //file header; M2T\0
@@ -320,7 +274,7 @@ namespace Mafia2
                     {
                         Vertex vert = lods[i].Vertices[x];
 
-                        if(lod.VertexDeclaration.HasFlag(VertexFlags.Position))
+                        if (lod.VertexDeclaration.HasFlag(VertexFlags.Position))
                             vert.Position.WriteToFile(writer);
 
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.Normals))
@@ -350,10 +304,113 @@ namespace Mafia2
                         {
                             //write triangle, and then material
                             lods[i].Parts[x].Indices[z].WriteToFile(writer);
-                            writer.Write((byte)x);
+                            writer.Write((byte) x);
                         }
                     }
                 }
+            }
+        }
+
+        public void ReadFromM2T(BinaryReader reader)
+        {
+            if (reader.ReadInt32() != 542388813)
+                return;
+
+            //mesh name
+            reader.ReadString();
+
+            //Number of Lods
+            Lods = new Lod[reader.ReadByte()];
+
+            for (int i = 0; i != Lods.Length; i++)
+            {
+                Lods[i] = new Lod
+                {
+                    VertexDeclaration = 0
+                };
+
+                if (reader.ReadBoolean())
+                    Lods[i].VertexDeclaration += (int) VertexFlags.Position;
+
+                if (reader.ReadBoolean())
+                    Lods[i].VertexDeclaration += (int) VertexFlags.Normals;
+
+                if (reader.ReadBoolean())
+                    Lods[i].VertexDeclaration += (int) VertexFlags.Tangent;
+
+                if (reader.ReadBoolean())
+                    Lods[i].VertexDeclaration += (int) VertexFlags.BlendData;
+
+                if (reader.ReadBoolean())
+                    Lods[i].VertexDeclaration += (int) VertexFlags.flag_0x80;
+
+                if (reader.ReadBoolean())
+                    Lods[i].VertexDeclaration += (int) VertexFlags.TexCoords0;
+
+                if (reader.ReadBoolean())
+                    Lods[i].VertexDeclaration += (int) VertexFlags.TexCoords1;
+
+                if (reader.ReadBoolean())
+                    Lods[i].VertexDeclaration += (int) VertexFlags.TexCoords2;
+
+                if (reader.ReadBoolean())
+                    Lods[i].VertexDeclaration += (int) VertexFlags.TexCoords7;
+
+                if (reader.ReadBoolean())
+                    Lods[i].VertexDeclaration += (int) VertexFlags.flag_0x20000;
+
+                if (reader.ReadBoolean())
+                    Lods[i].VertexDeclaration += (int) VertexFlags.flag_0x40000;
+
+                if (reader.ReadBoolean())
+                    Lods[i].VertexDeclaration += (int) VertexFlags.DamageGroup;
+
+                //write length and then all vertices.
+                lods[i].Vertices = new Vertex[reader.ReadInt32()];
+                for (int x = 0; x != lods[i].Vertices.Length; x++)
+                {
+                    Vertex vert = new Vertex();
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
+                        vert.Position.ReadfromFile(reader);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
+                        vert.Normal.ReadfromFile(reader);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                        vert.Tangent.ReadfromFile(reader);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                    {
+                        vert.UVs = new UVVector2[1];
+                        vert.UVs[0] = new UVVector2();
+                        vert.UVs[0].ReadFromFile(reader);
+                    }
+
+                    lods[i].Vertices[x] = vert;
+                }
+
+                //write mesh count and texture names.
+                Lods[i].Parts = new ModelPart[reader.ReadInt32()];
+                for (int x = 0; x != Lods[i].Parts.Length; x++)
+                {
+                    Lods[i].Parts[x] = new ModelPart();
+                    Lods[i].Parts[x].Material = reader.ReadString();
+                }
+
+                List<List<Short3>> partTriangles = new List<List<Short3>>(Lods[i].Parts.Length);
+                for (int x = 0; x != partTriangles.Capacity; x++)
+                    partTriangles.Add(new List<Short3>());
+
+                int totalFaces = reader.ReadInt32();
+                for (int x = 0; x != totalFaces; x++)
+                {
+                    Short3 tri = new Short3(reader);
+                    byte matId = reader.ReadByte();
+                    partTriangles[matId].Add(tri);
+                }
+
+                for (int x = 0; x != Lods[i].Parts.Length; x++)
+                    Lods[i].Parts[x].Indices = partTriangles[x].ToArray();
             }
         }
 
@@ -394,38 +451,54 @@ namespace Mafia2
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].FirstIndex = 0;
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].LeftIndex = -1;
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].RightIndex = -1;
-                frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].SecondIndex = Convert.ToUInt16(edm.Parts[i].Indices.Count - 1);
+                frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].SecondIndex =
+                    Convert.ToUInt16(edm.Parts[i].Indices.Count - 1);
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].BaseIndex = faceIndex;
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].FirstBurst = i;
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].NumBurst = 1;
             }
-            
+
         }
     }
 
     public class Lod
     {
+        private VertexFlags vertexDeclaration;
         Vertex[] vertices;
         int numUVChannels;
         bool normalMapInfoPresent;
         ModelPart[] parts;
 
-        public Vertex[] Vertices {
+        public VertexFlags VertexDeclaration 
+        {
+            get { return vertexDeclaration; }
+            set { vertexDeclaration = value; }
+        }
+
+        public Vertex[] Vertices
+        {
             get { return vertices; }
             set { vertices = value; }
         }
-        public int NumUVChannels {
+
+        public int NumUVChannels
+        {
             get { return numUVChannels; }
             set { numUVChannels = value; }
         }
-        public bool NormalMapInfoPresent {
+
+        public bool NormalMapInfoPresent
+        {
             get { return normalMapInfoPresent; }
             set { normalMapInfoPresent = value; }
         }
-        public ModelPart[] Parts {
+
+        public ModelPart[] Parts
+        {
             get { return parts; }
             set { parts = value; }
         }
+
         //ADD SKELETON
     }
 
@@ -434,11 +507,14 @@ namespace Mafia2
         string material;
         Short3[] indices;
 
-        public string Material {
+        public string Material
+        {
             get { return material; }
             set { material = value; }
         }
-        public Short3[] Indices {
+
+        public Short3[] Indices
+        {
             get { return indices; }
             set { indices = value; }
         }
@@ -449,11 +525,14 @@ namespace Mafia2
         private int poolLoc;
         private int bufferLoc;
 
-        public int PoolLocation {
+        public int PoolLocation
+        {
             get { return poolLoc; }
             set { poolLoc = value; }
         }
-        public int BufferLocation {
+
+        public int BufferLocation
+        {
             get { return bufferLoc; }
             set { bufferLoc = value; }
         }

@@ -303,15 +303,9 @@ namespace Mafia2Tool
                             edmName = meshGeom.LOD[c].VertexBufferRef.String;
                         }
                     }
-                    if (!File.Exists("exported/" + edmName + "_lod" + c + ".edm"))
-                    {
-                        Stopwatch watch = new Stopwatch();
-                        watch.Start();
-                        newModel.ExportToEDM(newModel.Lods[c], edmName + "_lod" + c);
-                        Debug.WriteLine("Mesh: {0} and time taken was {1}", edmName + "_lod" + c, watch.Elapsed);
-                        watch.Stop();
-                    }
-                    entry.LODNames[c] = edmName + "_lod" + c;
+                    newModel.ExportToM2T();
+
+                    entry.LODNames[c] = newModel.FrameMesh.Name.String;
                 }
                 entry.Position = mesh.Matrix.Position;
                 entry.Rotation = mesh.Matrix.Rotation;

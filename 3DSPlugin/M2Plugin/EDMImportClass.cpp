@@ -55,7 +55,7 @@ int EDMImport::ExtCount() {
 const TCHAR* EDMImport::Ext(int n) {
 	switch (n) {
 	case 0:
-		return _T("EDM");
+		return _T("M2T");
 	}
 	return _T("");
 }

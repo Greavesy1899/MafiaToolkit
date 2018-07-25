@@ -212,12 +212,31 @@ namespace Mafia2
         }
 
         /// <summary>
+        /// Construct empty vector
+        /// </summary>
+        public UVVector2()
+        {
+
+        }
+
+        /// <summary>
         /// Write UVVector2 as floats.
         /// </summary>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(X);
             writer.Write(1f - Y);
+        }
+
+        /// <summary>
+        /// Read UVVector2 from file as floats.
+        /// </summary>
+        /// <param name="reader"></param>
+        public void ReadFromFile(BinaryReader reader)
+        {
+            X = HalfHelper.SingleToHalf(reader.ReadSingle());
+            Y = HalfHelper.SingleToHalf(reader.ReadSingle());
+            Y -= (Half)1.0f;
         }
 
         public override string ToString()

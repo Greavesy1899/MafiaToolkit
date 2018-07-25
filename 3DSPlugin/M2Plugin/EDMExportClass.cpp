@@ -45,7 +45,7 @@ int EDMExport::ExtCount() {
 const TCHAR* EDMExport::Ext(int n) {
 	switch (n) {
 	case 0:
-		return _T("EDM");
+		return _T("M2T");
 	}
 	return _T("");
 }

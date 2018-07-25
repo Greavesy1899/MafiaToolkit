@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Mafia2
 {
-    public struct Vertex
+    public class Vertex
     {
         Vector3 position;
         Vector3 normal;
@@ -42,6 +42,14 @@ namespace Mafia2
         public int BoneID {
             get { return boneID; }
             set { boneID = value; }
+        }
+
+        public Vertex()
+        {
+            position = new Vector3(0);
+            normal = new Vector3(0);
+            tangent = new Vector3(0);
+
         }
 
         public void ReadPositionData(byte[] data, int i, float factor, Vector3 offset)

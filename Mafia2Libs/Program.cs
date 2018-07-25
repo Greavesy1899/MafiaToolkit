@@ -13,11 +13,11 @@ namespace Mafia2Tool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            //using (BinaryReader reader = new BinaryReader(File.Open("XML_155.bin", FileMode.Open)))
-            //{
-            //    XMLBin xml = new XMLBin();
-            //    xml.ReadFromFile(reader);
-            //}
+            using (BinaryReader reader = new BinaryReader(File.Open("proxy_11_Italy.m2t", FileMode.Open)))
+            {
+                Model model = new Model();
+                model.ReadFromM2T(reader);
+            }
 
             try
             {

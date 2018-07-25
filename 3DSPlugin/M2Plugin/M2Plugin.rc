@@ -69,14 +69,14 @@ END
 // Dialog
 //
 
-IDD_M2MODIFIERPANEL DIALOGEX 0, 0, 137, 174
-STYLE DS_SETFONT | WS_CHILD
+IDD_M2MODIFIERPANEL DIALOGEX 0, 0, 100, 174
+STYLE DS_SETFONT | WS_CHILD | WS_BORDER
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     CONTROL         "Has Normals",IDC_HASNORMALS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,18,56,10
     CONTROL         "Has Tangents",IDC_HASTANGENTS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,28,61,10
     CONTROL         "Has UVs",IDC_HASUVS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,39,44,10
-    GROUPBOX        "Model Definition",IDC_STATIC,7,7,123,46
+    GROUPBOX        "Model Definition",IDC_STATIC,7,7,89,46
 END
 
 
@@ -91,7 +91,6 @@ BEGIN
     IDD_M2MODIFIERPANEL, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 130
         TOPMARGIN, 7
         BOTTOMMARGIN, 167
     END
@@ -122,15 +121,15 @@ BEGIN
     IDS_EDM_IMPORT_CLASS    "M2EDMImporter"
     IDS_PARAMS              "Parameters"
     IDS_SPIN                "Spin"
-    IDS_EDM_L_DESC          "Mafia 2: ""Editable Mesh"" format for Mafia 2"
-    IDS_EDM_S_DESC          "Mafia 2: Editable Mesh"
+    IDS_EDM_L_DESC          "Mafia 2: Toolkit mesh format for Mafia 2"
+    IDS_EDM_S_DESC          "Mafia 2: Toolkit mesh"
     IDS_AUTHOR              "Greavesy"
     IDS_ARA_IMPORT_CLASS    "M2ARAImporter"
     IDS_ARA_L_DESC          "Mafia 2: ""City Areas"" format for Mafia 2"
     IDS_ARA_S_DESC          "Mafia 2: CityAreas"
     IDS_EDD_IMPORT_CLASS    "M2EDDImporter"
-    IDS_EDD_L_DESC          "Mafia 2: ""Editable Scene"" format for Mafia 2"
-    IDS_EDD_S_DESC          "Mafia 2: Editable Scene"
+    IDS_EDD_L_DESC          "Mafia 2: Toolkit scene format for Mafia 2"
+    IDS_EDD_S_DESC          "Mafia 2: Toolkit scene"
     IDS_CATEGORY_EXPORT     "Export"
 END
 
