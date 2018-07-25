@@ -490,10 +490,6 @@ namespace Mafia2Tool
 
                 Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
                 newModel.ExportToM2T();
-                for(int i = 0; i != newModel.Lods.Length; i++)
-                {
-                    newModel.ExportToEDM(newModel.Lods[i], mesh.Name.String + "_lod"+i);
-                }
             }
         }
 

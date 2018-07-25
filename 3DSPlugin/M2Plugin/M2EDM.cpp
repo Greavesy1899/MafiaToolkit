@@ -234,23 +234,18 @@ void EDMPart::ReadFromStream(FILE * stream) {
 		edmName = ReadString(stream, edmName);
 		matNames[i] = edmName;
 	}
-	indices = std::vector<Int3>();
-	matIDs = std::vector<byte>();
-	for (int i = 0; i != subMeshCount; i++) {
-		int ind;
-		fread(&ind, sizeof(int), 1, stream);
-		for (int x = 0; x != ind; x++) {
-			Int3 tri;
-			byte matID;
-			fread(&tri.i1, sizeof(short), 1, stream);
-			fread(&tri.i2, sizeof(short), 1, stream);
-			fread(&tri.i3, sizeof(short), 1, stream);
-			fread(&matID, sizeof(byte), 1, stream);
-			matIDs.push_back(matID);
-			indices.push_back(tri);
-		}
+	fread(&indicesSize, sizeof(int), 1, stream);
+	indices = std::vector<Int3>(indicesSize);
+	matIDs = std::vector<byte>(indicesSize);
+	for (int x = 0; x != indicesSize; x++) {
+		Int3 tri;
+		byte matID;
+		fread(&tri.i1, sizeof(short), 1, stream);
+		fread(&tri.i2, sizeof(short), 1, stream);
+		fread(&tri.i3, sizeof(short), 1, stream);
+		fread(&matIDs[x], sizeof(byte), 1, stream);
+		indices[x] = tri;
 	}
-	indicesSize = indices.size();
 
 	mesh = Mesh();
 	mesh.setNumFaces(indicesSize);
@@ -275,13 +270,13 @@ void EDMPart::ReadFromStream(FILE * stream) {
 			normalSpec->SetNormalExplicit(i, true);
 		}
 		//I think this piece of code more or less breaks the normals.
-		//normalSpec->SetNumFaces(indicesSize);
-		//for (int i = 0; i != mesh.numFaces; i++) {
-		//	normalSpec->Face(i).SpecifyAll();
-		//	normalSpec->Face(i).SetNormalID(0, indices[i].i1);
-		//	normalSpec->Face(i).SetNormalID(1, indices[i].i2);
-		//	normalSpec->Face(i).SetNormalID(2, indices[i].i3);
-		//}
+		normalSpec->SetNumFaces(indicesSize);
+		for (int i = 0; i != mesh.numFaces; i++) {
+			normalSpec->Face(i).SpecifyAll();
+			normalSpec->Face(i).SetNormalID(0, indices[i].i1);
+			normalSpec->Face(i).SetNormalID(1, indices[i].i2);
+			normalSpec->Face(i).SetNormalID(2, indices[i].i3);
+		}
 	}
 
 	if (hasUV0)
@@ -307,47 +302,53 @@ void EDMPart::ReadFromStream(FILE * stream) {
 }
 
 void EDMPart::WriteToStream(FILE * stream) {
-	/*WriteString(stream, name);
+	fwrite(&hasPosition, sizeof(bool), 1, stream);
 	fwrite(&hasNormals, sizeof(bool), 1, stream);
 	fwrite(&hasTangents, sizeof(bool), 1, stream);
-	fwrite(&hasUVs, sizeof(bool), 1, stream);
+	fwrite(&hasBlendData, sizeof(bool), 1, stream);
+	fwrite(&hasFlag0x80, sizeof(bool), 1, stream);
+	fwrite(&hasUV0, sizeof(bool), 1, stream);
+	fwrite(&hasUV1, sizeof(bool), 1, stream);
+	fwrite(&hasUV2, sizeof(bool), 1, stream);
+	fwrite(&hasUV7, sizeof(bool), 1, stream);
+	fwrite(&hasFlag0x20000, sizeof(bool), 1, stream);
+	fwrite(&hasFlag0x40000, sizeof(bool), 1, stream);
+	fwrite(&hasDamageGroup, sizeof(bool), 1, stream);
 	fwrite(&vertSize, sizeof(int), 1, stream);
 
 	for (int i = 0; i != vertSize; i++) {
-		fwrite(&vertices[i].x, sizeof(float), 1, stream);
-		fwrite(&vertices[i].y, sizeof(float), 1, stream);
-		fwrite(&vertices[i].z, sizeof(float), 1, stream);
-	}
-	if (hasNormals) {
-		for (int i = 0; i != vertSize; i++) {
+		if (hasPosition) {
+			fwrite(&vertices[i].x, sizeof(float), 1, stream);
+			fwrite(&vertices[i].y, sizeof(float), 1, stream);
+			fwrite(&vertices[i].z, sizeof(float), 1, stream);
+		}
+		if (hasNormals) {
 			fwrite(&normals[i].x, sizeof(float), 1, stream);
 			fwrite(&normals[i].y, sizeof(float), 1, stream);
 			fwrite(&normals[i].z, sizeof(float), 1, stream);
 		}
-	}
-	if (hasTangents) {
-		for (int i = 0; i != vertSize; i++) {
+		if (hasTangents) {
 			fwrite(&tangents[i].x, sizeof(float), 1, stream);
 			fwrite(&tangents[i].y, sizeof(float), 1, stream);
 			fwrite(&tangents[i].z, sizeof(float), 1, stream);
 		}
-	}
-	if (hasUVs) {
-		fwrite(&uvSize, sizeof(int), 1, stream);
-		for (int i = 0; i != uvSize; i++) {
+		if (hasUV0) {
 			fwrite(&uvs[i].x, sizeof(float), 1, stream);
 			fwrite(&uvs[i].y, sizeof(float), 1, stream);
 		}
 	}
+	fwrite(&subMeshCount, sizeof(int), 1, stream);
+
+	for (int i = 0; i != subMeshCount; i++)
+		WriteString(stream, matNames[i]);
 
 	fwrite(&indicesSize, sizeof(int), 1, stream);
-
-	for (int i = 0; i != indicesSize; i++) {
+	for (int i = 0; i != indices.size(); i++) {
 		fwrite(&indices[i].i1, sizeof(short), 1, stream);
 		fwrite(&indices[i].i2, sizeof(short), 1, stream);
 		fwrite(&indices[i].i3, sizeof(short), 1, stream);
+		fwrite(&matIDs[i], sizeof(byte), 1, stream);
 	}
-*/
 }
 
 EDMPart::EDMPart() {}
@@ -360,7 +361,7 @@ void EDMStructure::SetName(std::wstring name) {
 	EDMStructure::name = name;
 }
 
-void EDMStructure::SetPartSize(int count) {
+void EDMStructure::SetPartSize(byte count) {
 	EDMStructure::partSize = count;
 }
 
@@ -372,7 +373,7 @@ std::wstring EDMStructure::GetName() {
 	return name;
 }
 
-int EDMStructure::GetPartSize() {
+byte EDMStructure::GetPartSize() {
 	return partSize;
 }
 
@@ -382,11 +383,11 @@ std::vector<EDMPart> EDMStructure::GetParts() {
 
 void EDMStructure::ReadFromStream(FILE * stream) {
 	int header;
-	fread(&header, 4, 1, stream); //header
+	fread(&header, sizeof(int), 1, stream); //header
 	std::wstring edmName = std::wstring();
 	edmName = ReadString(stream, edmName);
 	name = edmName;
-	fread(&partSize, sizeof(byte), 1, stream);
+	fread(&partSize, 1, 1, stream);
 	parts = std::vector<EDMPart>(partSize);
 	
 	for (int i = 0; i != parts.size(); i++)
@@ -396,10 +397,12 @@ void EDMStructure::ReadFromStream(FILE * stream) {
 }
 
 void EDMStructure::WriteToStream(FILE * stream) {
+	int header = 542388813;
+	fwrite(&header, sizeof(int), 1, stream);
 	WriteString(stream, name);
-	fwrite(&partSize, sizeof(int), 1, stream);
+	fwrite(&partSize, sizeof(byte), 1, stream);
 
-for (int x = 0; x != parts.size(); x++)
+	for (int x = 0; x != parts.size(); x++)
 		parts[x].WriteToStream(stream);
 
 	fclose(stream);

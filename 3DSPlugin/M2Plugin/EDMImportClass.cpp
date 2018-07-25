@@ -128,6 +128,7 @@ int EDMImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 		ip->GetMaterialLibrary().Add(multiMat);
 
 		INode* nPart = ip->CreateObjectNode(triObject);
+		nPart->SetName(_T("Mesh"));
 		nPart->SetMtl(multiMat);
 		parent->AttachChild(nPart, 0);
 	}

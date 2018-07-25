@@ -94,16 +94,16 @@ public:
 class EDMStructure {
 private:
 	std::wstring name;
-	int partSize;
+	byte partSize;
 	std::vector<EDMPart> parts;
 public:
 	EDMStructure();
 	~EDMStructure();
 	void SetName(std::wstring name);
-	void SetPartSize(int count);
+	void SetPartSize(byte count);
 	void SetParts(std::vector<EDMPart> parts);
 	std::wstring GetName();
-	int GetPartSize();
+	byte GetPartSize();
 	std::vector<EDMPart> GetParts();
 
 	void ReadFromStream(FILE* stream);

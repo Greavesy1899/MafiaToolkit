@@ -339,9 +339,13 @@ namespace Mafia2
                         writer.Write(lods[i].Parts[x].Material);
 
                     //write triangle data.
+                    int totalFaces = 0;
+                    foreach (ModelPart part in lods[i].Parts)
+                        totalFaces += part.Indices.Length;
+
+                    writer.Write(totalFaces);
                     for (int x = 0; x != frameMaterial.Materials[i].Length; x++)
                     {
-                        writer.Write(lods[i].Parts[x].Indices.Length);
                         for (int z = 0; z != lods[i].Parts[x].Indices.Length; z++)
                         {
                             //write triangle, and then material
