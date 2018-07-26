@@ -161,49 +161,39 @@ namespace Mafia2
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.BlendData))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.BlendData].Offset;
-                        vertex.BlendWeight = (BitConverter.ToSingle(vertexBuffer.Data, startIndex) / byte.MaxValue);
-                        vertex.BoneID = BitConverter.ToInt32(vertexBuffer.Data, startIndex + 4);
+                        vertex.ReadBlendData(vertexBuffer.Data, startIndex);
                     }
 
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords0].Offset;
-                        vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex),
-                            Half.ToHalf(vertexBuffer.Data, startIndex + 2));
+                        vertex.ReadUvData(vertexBuffer.Data, startIndex, num1);
                         num1++;
                     }
 
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords1].Offset;
-                        vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex),
-                            Half.ToHalf(vertexBuffer.Data, startIndex + 2));
+                        vertex.ReadUvData(vertexBuffer.Data, startIndex, num1);
                         num1++;
                     }
 
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords2].Offset;
-                        vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex),
-                            Half.ToHalf(vertexBuffer.Data, startIndex + 2));
+                        vertex.ReadUvData(vertexBuffer.Data, startIndex, num1);
                         num1++;
                     }
 
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
                     {
                         int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords7].Offset;
-                        vertex.UVs[num1] = new UVVector2(Half.ToHalf(vertexBuffer.Data, startIndex),
-                            Half.ToHalf(vertexBuffer.Data, startIndex + 2));
+                        vertex.ReadUvData(vertexBuffer.Data, startIndex, num1);
                         num1++;
                     }
 
                     if (lods[i].NormalMapInfoPresent)
-                    {
-                        vertex.Binormal = vertex.Normal;
-                        vertex.Binormal.CrossProduct(vertex.Tangent);
-                        vertex.Binormal *= 2;
-                        vertex.Binormal.Normalize();
-                    }
+                        vertex.BuildBinormals();
 
                     lods[i].Vertices[v] = vertex;
 
@@ -414,45 +404,160 @@ namespace Mafia2
             }
         }
 
-        public void UpdateModelFromEDM()
+        /// <summary>
+        /// Calculate new bounds on the model.
+        /// </summary>
+        public void CalculateBounds()
         {
-            int totalVerts = 0;
+            Vector3 min = new Vector3(0);
+            Vector3 max = new Vector3(0);
+
+            for (int p = 0; p != lods.Length; p++)
+            {
+                for (int i = 0; i != lods[p].Vertices.Length; i++)
+                {
+                    Vector3 pos = lods[p].Vertices[i].Position;
+
+                    if (pos.X < min.X)
+                        min.X = pos.X;
+
+                    if (pos.X > max.X)
+                        max.X = pos.X;
+
+                    if (pos.Y < min.Y)
+                        min.Y = pos.Y;
+
+                    if (pos.Y > max.Y)
+                        max.Y = pos.Y;
+
+                    if (pos.Z < min.Z)
+                        min.Z = pos.Z;
+
+                    if (pos.Z > max.Z)
+                        max.Z = pos.Z;
+                }
+            }
+            frameMesh.Boundings = new Bounds(min, max);
+        }
+
+        /// <summary>
+        /// Update decompression offset and position.
+        /// </summary>
+        public void CalculateDecompression()
+        {
+            Bounds bounds = frameMesh.Boundings;
+
+            float minFloatf = 0.000016f;
+            Vector3 minFloat = new Vector3(minFloatf);
+            bounds.Min -= minFloat;
+            bounds.Max += minFloat;
+
+            frameGeometry.DecompressionOffset = bounds.Min;
+            float fMaxSize = Math.Max(bounds.Max.X - bounds.Min.X + minFloatf, Math.Max(bounds.Max.Y - bounds.Min.Y + minFloatf, (bounds.Max.Z - bounds.Min.Y + minFloatf) * 2.0f));
+
+            //positionFactor = fMaxSize / 0x10000;
+            frameGeometry.DecompressionFactor = (float)256 / 0x10000;
+        }
+
+        /// <summary>
+        /// Builds Index buffer from the mesh data.
+        /// </summary>
+        public void BuildIndexBuffer()
+        {
+            if(Lods == null)
+                return;
+
+            List<ushort> idata = new List<ushort>();
+
+            //todo; allow more LODS.
+            for (int i = 0; i != Lods[0].Parts.Length; i++)
+            {
+                for (int x = 0; x != Lods[0].Parts[i].Indices.Length; x++)
+                {
+                    idata.Add((ushort)Lods[0].Parts[i].Indices[x].S1);
+                    idata.Add((ushort)Lods[0].Parts[i].Indices[x].S2);
+                    idata.Add((ushort)Lods[0].Parts[i].Indices[x].S3);
+                }
+            }
+
+            IndexBuffers[0] = new IndexBuffer(frameGeometry.LOD[0].IndexBufferRef.uHash);
+            indexBuffers[0].Data = idata.ToArray();
+        }
+
+        /// <summary>
+        /// Builds vertex buffer from the mesh data.
+        /// </summary>
+        public void BuildVertexBuffer()
+        {
+            if (Lods == null)
+                return;
+
+            List<byte> vdata = new List<byte>();
+
+            for (int i = 0; i != Lods[0].Vertices.Length; i++)
+            {
+                Vertex vert = Lods[0].Vertices[i];
+
+                if (Lods[0].VertexDeclaration.HasFlag(VertexFlags.Position))
+                    vdata.AddRange(vert.WritePositionData(frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset));
+
+                if(Lods[0].VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                    vdata.AddRange(vert.WriteTangentData());
+
+                if (Lods[0].VertexDeclaration.HasFlag(VertexFlags.Normals))
+                    vdata.AddRange(vert.WriteNormalData(Lods[0].VertexDeclaration.HasFlag(VertexFlags.Tangent)));
+
+                if(Lods[0].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                    vdata.AddRange(vert.WriteUvData(0));
+            }
+
+            VertexBuffers[0] = new VertexBuffer(frameGeometry.LOD[0].VertexBufferRef.uHash);
+            VertexBuffers[0].Data = vdata.ToArray();
+        }
+
+        public void UpdateObjectsFromModel()
+        {
             int totalFaces = 0;
 
-            for (int i = 0; i != edm.Parts.Length; i++)
-            {
-                totalVerts += edm.Parts[i].Vertices.Length;
-                totalFaces += edm.Parts[i].Indices.Count;
-            }
+            for (int i = 0; i != Lods[0].Parts.Length; i++)
+                totalFaces += Lods[0].Parts[i].Indices.Length;
 
             frameGeometry.LOD[0].BuildNewPartition();
             frameGeometry.LOD[0].BuildNewMaterialSplit();
-            frameGeometry.DecompressionFactor = edm.PositionFactor;
-            frameGeometry.DecompressionOffset = edm.PositionOffset;
-            frameMesh.Boundings = edm.Bound;
-            frameGeometry.LOD[0].SplitInfo.NumVerts = totalVerts;
-            frameGeometry.LOD[0].NumVertsPr = totalVerts;
+            frameGeometry.LOD[0].SplitInfo.NumVerts = Lods[0].Vertices.Length;
+            frameGeometry.LOD[0].NumVertsPr = Lods[0].Vertices.Length;
             frameGeometry.LOD[0].SplitInfo.NumFaces = totalFaces;
 
             //burst split info.
-            frameGeometry.LOD[0].SplitInfo.NumMatSplit = edm.PartCount;
-            frameGeometry.LOD[0].SplitInfo.NumMatBurst = edm.PartCount;
-            frameGeometry.LOD[0].SplitInfo.MaterialSplits = new FrameLOD.MaterialSplit[edm.PartCount];
-            frameGeometry.LOD[0].SplitInfo.MaterialBursts = new FrameLOD.MaterialBurst[edm.PartCount];
+            frameGeometry.LOD[0].SplitInfo.NumMatSplit = Lods[0].Parts.Length;
+            frameGeometry.LOD[0].SplitInfo.NumMatBurst = Lods[0].Parts.Length;
+            frameGeometry.LOD[0].SplitInfo.MaterialSplits = new FrameLOD.MaterialSplit[Lods[0].Parts.Length];
+            frameGeometry.LOD[0].SplitInfo.MaterialBursts = new FrameLOD.MaterialBurst[Lods[0].Parts.Length];
 
             int faceIndex = 0;
-            for (int i = 0; i != edm.PartCount; i++)
+            for (int i = 0; i != Lods[0].Parts.Length; i++)
             {
                 frameMaterial.Materials[0][i].StartIndex = faceIndex;
-                frameMaterial.Materials[0][i].NumFaces = edm.Parts[i].Indices.Count;
+                frameMaterial.Materials[0][i].NumFaces = Lods[0].Parts[i].Indices.Length;
                 frameMaterial.Materials[0][i].Unk3 = 0;
-                faceIndex = edm.Parts[0].Indices.Count * 3;
+                faceIndex = Lods[0].Parts[i].Indices.Length * 3;
+
+                frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].Bounds = new short[6]
+                {
+                    Convert.ToInt16(frameMesh.Boundings.Min.X),
+                    Convert.ToInt16(frameMesh.Boundings.Min.Y),
+                    Convert.ToInt16(frameMesh.Boundings.Min.Z),
+                    Convert.ToInt16(frameMesh.Boundings.Max.X),
+                    Convert.ToInt16(frameMesh.Boundings.Max.Y),
+                    Convert.ToInt16(frameMesh.Boundings.Max.Z)
+
+                };
 
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].FirstIndex = 0;
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].LeftIndex = -1;
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].RightIndex = -1;
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].SecondIndex =
-                    Convert.ToUInt16(edm.Parts[i].Indices.Count - 1);
+                    Convert.ToUInt16(Lods[0].Parts[i].Indices.Length - 1);
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].BaseIndex = faceIndex;
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].FirstBurst = i;
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].NumBurst = 1;

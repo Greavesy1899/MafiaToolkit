@@ -51,6 +51,7 @@ namespace Mafia2
             get { return numVerts; }
             set { numVerts = value; }
         }
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public VertexFlags VertexDeclaration {
             get { return vertexDeclaration; }
             set { vertexDeclaration = value; }

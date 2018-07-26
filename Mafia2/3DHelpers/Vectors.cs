@@ -111,6 +111,10 @@ namespace Mafia2
         {
             return new Vector3(a.X * scale, a.Y * scale, a.Z * scale);
         }
+        public static Vector3 operator /(Vector3 a, float scale)
+        {
+            return new Vector3(a.X / scale, a.Y / scale, a.Z / scale);
+        }
 
         public override string ToString()
         {

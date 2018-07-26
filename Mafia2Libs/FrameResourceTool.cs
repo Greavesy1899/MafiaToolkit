@@ -362,6 +362,8 @@ namespace Mafia2Tool
                 BufferLocationStruct[] iVertexes = new BufferLocationStruct[model.FrameGeometry.NumLods];
                 ulong[] indexRefs = new ulong[model.FrameGeometry.NumLods];
                 ulong[] vertexRefs = new ulong[model.FrameGeometry.NumLods];
+                model.IndexBuffers = new IndexBuffer[model.FrameGeometry.NumLods];
+                model.VertexBuffers = new VertexBuffer[model.FrameGeometry.NumLods];
 
                 for (int i = 0; i != model.FrameGeometry.NumLods; i++)
                 {
@@ -369,33 +371,34 @@ namespace Mafia2Tool
                     iIndexes[i] = SceneData.IndexBufferPool.SearchBuffer(indexRefs[i]);
                     vertexRefs[i] = model.FrameGeometry.LOD[i].VertexBufferRef.uHash;
                     iVertexes[i] = SceneData.VertexBufferPool.SearchBuffer(vertexRefs[i]);
+                    model.IndexBuffers[i] = SceneData.IndexBufferPool.GetBuffer(indexRefs[i]);
+                    model.VertexBuffers[i] = SceneData.VertexBufferPool.GetBuffer(vertexRefs[i]);
 
                     if (iIndexes[i] == null || iVertexes[i] == null)
                         return;
 
                 }
 
-                edmBrowser.ShowDialog();
+                m2tBrowser.ShowDialog();
 
-                if (edmBrowser.FileName == null)
+                if (m2tBrowser.FileName == null)
                     return;
 
-                using (BinaryReader reader = new BinaryReader(File.Open(edmBrowser.FileName, FileMode.Open)))
+                using (BinaryReader reader = new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)))
                 {
-                    model.EDM = new CustomEDM(reader);
-                    model.EDM.BufferIndexHash = indexRefs[0];
-                    model.EDM.BufferVertexHash = vertexRefs[0];
-                    model.EDM.BufferFlags = model.FrameGeometry.LOD[0].VertexDeclaration;
-                    model.EDM.CalculateBounds(true);
-                    model.EDM.BuildBuffers();
+                    model.ReadFromM2T(reader);
+                    model.CalculateBounds();
+                    model.CalculateDecompression();
+                    model.BuildIndexBuffer();
+                    model.BuildVertexBuffer();
                 }
-                model.UpdateModelFromEDM();
+                model.UpdateObjectsFromModel();
 
                 treeView1.SelectedNode.Tag = model.FrameMesh;
                 SceneData.FrameResource.EntireFrame[model.FrameMesh.MeshIndex] = model.FrameGeometry;
                 SceneData.FrameResource.EntireFrame[model.FrameMesh.MaterialIndex] = model.FrameMaterial;
-                SceneData.IndexBufferPool.BufferPools[iIndexes[0].PoolLocation].Buffers[iIndexes[0].BufferLocation] = model.EDM.IndexBuffer;
-                SceneData.VertexBufferPool.BufferPools[iVertexes[0].PoolLocation].Buffers[iVertexes[0].BufferLocation] = model.EDM.VertexBuffer;
+                SceneData.IndexBufferPool.BufferPools[iIndexes[0].PoolLocation].Buffers[iIndexes[0].BufferLocation] = model.IndexBuffers[0];
+                SceneData.VertexBufferPool.BufferPools[iVertexes[0].PoolLocation].Buffers[iVertexes[0].BufferLocation] = model.VertexBuffers[0];
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
             }

@@ -28,7 +28,7 @@
             this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
             this.FrameResourceListBox = new System.Windows.Forms.ListBox();
             this.folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.edmBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.m2tBrowser = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,9 +82,10 @@
             this.folderBrowser.Description = "Select folder which contains extracted SDS content.";
             this.folderBrowser.ShowNewFolderButton = false;
             // 
-            // edmBrowser
+            // m2tBrowser
             // 
-            this.edmBrowser.FileName = "edmBrowser";
+            this.m2tBrowser.FileName = "m2tBrowser";
+            this.m2tBrowser.Filter = "Meshes|*.m2t";
             // 
             // toolStrip1
             // 
@@ -162,7 +163,7 @@
             this.modelsToolStripMenuItem,
             this.allToolStripMenuItem});
             this.exportAllSubButton.Name = "exportAllSubButton";
-            this.exportAllSubButton.Size = new System.Drawing.Size(180, 22);
+            this.exportAllSubButton.Size = new System.Drawing.Size(160, 22);
             this.exportAllSubButton.Text = "Export All";
             this.exportAllSubButton.Click += new System.EventHandler(this.OnClickLoadAll);
             // 
@@ -188,21 +189,21 @@
             // 
             this.collisionEditorSubButton.Enabled = false;
             this.collisionEditorSubButton.Name = "collisionEditorSubButton";
-            this.collisionEditorSubButton.Size = new System.Drawing.Size(180, 22);
+            this.collisionEditorSubButton.Size = new System.Drawing.Size(160, 22);
             this.collisionEditorSubButton.Text = "Collision Editor";
             this.collisionEditorSubButton.Click += new System.EventHandler(this.CollisionEditor_Click);
             // 
             // materialEditorSubButton
             // 
             this.materialEditorSubButton.Name = "materialEditorSubButton";
-            this.materialEditorSubButton.Size = new System.Drawing.Size(180, 22);
+            this.materialEditorSubButton.Size = new System.Drawing.Size(160, 22);
             this.materialEditorSubButton.Text = "Material Editor";
             this.materialEditorSubButton.Click += new System.EventHandler(this.LoadMaterialTool);
             // 
             // overwriteBufferSubButton
             // 
             this.overwriteBufferSubButton.Name = "overwriteBufferSubButton";
-            this.overwriteBufferSubButton.Size = new System.Drawing.Size(180, 22);
+            this.overwriteBufferSubButton.Size = new System.Drawing.Size(160, 22);
             this.overwriteBufferSubButton.Text = "Overwrite Buffer";
             this.overwriteBufferSubButton.Click += new System.EventHandler(this.OverwriteBuffer_Click);
             // 
@@ -291,7 +292,7 @@
         private System.Windows.Forms.PropertyGrid FrameResourceGrid;
         private System.Windows.Forms.ListBox FrameResourceListBox;
         private System.Windows.Forms.FolderBrowserDialog folderBrowser;
-        private System.Windows.Forms.OpenFileDialog edmBrowser;
+        private System.Windows.Forms.OpenFileDialog m2tBrowser;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton fileToolButton;
         private System.Windows.Forms.ToolStripDropDownButton viewToolButton;
