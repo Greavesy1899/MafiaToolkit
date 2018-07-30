@@ -17,12 +17,24 @@ namespace Mafia2Tool
             InitializeComponent();
             if (SceneData.ScenePath == "")
             {
+                folderBrowser.Description = "Select a folder which includes extracted SDS data.";
                 if (folderBrowser.ShowDialog() == DialogResult.OK)
                 {
                     string path = ini.Read("SDSPath", "Directories");
                     path = folderBrowser.SelectedPath;
                     SceneData.ScenePath = path;
                     ini.Write("SDSPath", path, "Directories");
+                }
+            }
+            if (!MaterialData.HasLoaded)
+            {
+                folderBrowser.Description = "Select the folder which contains 'default*.mtl' files. (Located in ..Mafia II/edit/materials/)";
+                if (folderBrowser.ShowDialog() == DialogResult.OK)
+                {
+                    string path = ini.Read("MaterialPath", "Directories");
+                    path = folderBrowser.SelectedPath;
+                    ini.Write("MaterialPath", path, "Directories");
+                    MaterialData.Load();
                 }
             }
             SceneData.BuildData();
@@ -89,13 +101,13 @@ namespace Mafia2Tool
                 {
                     nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
                 }
-                else if(fObject.ParentIndex1.Index != fObject.ParentIndex2.Index)
+                else if (fObject.ParentIndex1.Index != fObject.ParentIndex2.Index)
                 {
                     //test, still trying to nail this fucker down.
                     nodes = treeView1.Nodes.Find(fObject.ParentIndex1.Name, true);
                 }
 
-                
+
                 if (nodes.Length > 0)
                     nodes[0].Nodes.Add(node);
                 else if (fObject.ParentIndex1.Index == -1 && fObject.ParentIndex2.Index == -1)
@@ -221,11 +233,11 @@ namespace Mafia2Tool
         {
             List<object> meshes = new List<object>();
 
-            for(int i = 0; i != SceneData.FrameResource.EntireFrame.Count; i++)
+            for (int i = 0; i != SceneData.FrameResource.EntireFrame.Count; i++)
             {
                 object fObject = SceneData.FrameResource.EntireFrame[i];
 
-                if(fObject.GetType() == typeof(FrameObjectSingleMesh))
+                if (fObject.GetType() == typeof(FrameObjectSingleMesh))
                 {
                     meshes.Add(fObject);
                 }

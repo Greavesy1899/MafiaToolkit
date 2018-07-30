@@ -56,6 +56,7 @@ namespace Mafia2
         Telephone = 95,
         ScriptEntity = 98,
         Pinup = 106,
+        FramesController = 110,
         Wardrobe = 112,
         PhysicsScene = 113,
         CleanEntity = 114

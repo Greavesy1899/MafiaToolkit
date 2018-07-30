@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Mafia2Tool
 {
@@ -112,5 +113,24 @@ namespace Mafia2Tool
         public static Material[] Default60;
         public static string MaterialPath = new IniFile().Read("MaterialPath", "Directories");
         public static bool HasLoaded = false;
+
+        /// <summary>
+        /// Loads all material data from user-specified path.
+        /// </summary>
+        public static void Load()
+        {
+            try
+            {
+                Default = MaterialsParse.ReadMatFile(MaterialPath + "/default.mtl");
+                Default50 = MaterialsParse.ReadMatFile(MaterialPath + "/default50.mtl");
+                Default60 = MaterialsParse.ReadMatFile(MaterialPath + "/default60.mtl");
+                HasLoaded = true;
+                MaterialsParse.SetMaterials(Default);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to load materials. Error occured: \n\n" + ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

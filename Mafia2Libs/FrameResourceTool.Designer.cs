@@ -79,7 +79,6 @@
             // 
             // folderBrowser
             // 
-            this.folderBrowser.Description = "Select folder which contains extracted SDS content.";
             this.folderBrowser.ShowNewFolderButton = false;
             // 
             // m2tBrowser
