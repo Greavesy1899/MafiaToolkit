@@ -2,32 +2,25 @@
 
 This toolkit is a group of programs a plugin for 3DS max and the library, which allows modders to build their own programs. 
 
+## Features:
+- Open, edit and save 'FrameResource_X' files.
+- Open, edit and save 'FrameNameTable_X' data.
+- Open, edit and save 'defaultXX.mtl'. (Material Libraries)
+- WIP program to open 'Collision_X.bin' data.
+- WIP parsing of 'Actor_X.bin' files.
+- WIP model exporting and re-importing into the game.
+- WIP 'ItemDesc_X' parser, editor and saving.
+- WIP 'Navigation' data parsing.
+- WIP 'PREFAB' data parsing.
+- WIP 'SoundSector' data parsing.
+- WIP 3DS plugin to hopefully help modding the 3D data of Mafia.
+- Both BufferPools can be open, edited and saved.
 
-This includes the following;
-- Library to build your own programs
-- Programs to read the "Material Libraries" and other file types which are included in the "SDS" archives.
-- 3DS plugin to make life easier when exporting and modifying models.
+## Building:
+Only Windows is supported. Use Visual Studio 2017 to build the GitHub solution.
 
-This library has the ability to parse the following file types.
-- FrameNameTable.bin
-- FrameResource.bin
-- Collisions_0.bin
-- ItemDesc.bin
-- defaultXX.mtl
-- VertexBufferPool.bin
-- IndexBufferPool.bin
-- (There might be more, but these are the most important)
+## Known Bugs/Issues
+You can check the current issues [here](https://github.com/Greavesy1899/Mafia2Toolkit/issues "Issues").
 
-It also packages functions to export 3D data to obj/mtl filetypes, or a custom file type, "EDM" and "EDD" built for this tool and allows easy importing and exporting in 3DS Max. This file type is actually really nice; you can export the model from the program, modify and then inject it into the buffers of Mafia 2. 
-
-EDD = Used to view singular meshes. Contains mesh data.
-
-EDM = Used to build the entire scene. Contains name of mesh, position and rotation.
-
-ARA = AREA editing. Very experimental currently.
-
-(For the structure of both of these files, please visit the Wiki.)
-
-# Discord link:
-
+## Discord link:
 To keep upto date on the progress of this toolkit, I recommend joining this discord by using the link [here](http://bit.ly/2L4z8vj "Discord invite")
