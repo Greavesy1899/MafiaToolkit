@@ -29,8 +29,6 @@ namespace Mafia2
         int sps_count;
         ShaderParameterSampler[] sps;
 
-        int arrayNum;
-
         [Category("Material IDs"), ReadOnly(true)]
         public ulong MaterialNumID {
             get { return materialNumID; }
@@ -118,13 +116,6 @@ namespace Mafia2
                 sps_count = value.Length;
             }
         }
-
-        [ReadOnly(true)]
-        public int ArrayNum {
-            get { return arrayNum; }
-            set { arrayNum = value; }
-        }
-
 
         public Material(BinaryReader reader)
         {

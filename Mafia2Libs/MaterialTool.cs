@@ -16,7 +16,7 @@ namespace Mafia2Tool
 
         public void FetchMaterials()
         {
-            foreach (Material mat in MaterialsParse.GetMaterials())
+            foreach (Material mat in MaterialsLib.GetMaterials())
             {
                 MaterialListBox.Items.Add(mat);
             }
@@ -28,7 +28,7 @@ namespace Mafia2Tool
 
             if (result == DialogResult.Yes)
             {
-                MaterialsParse.WriteMatFile("default.mtl");
+                MaterialsLib.WriteMatFile("default.mtl");
                 MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -39,15 +39,10 @@ namespace Mafia2Tool
 
         }
 
-        private void OnClose(object sender, FormClosingEventArgs e)
-        {
-            WriteMaterialsFile();
-        }
-
         private void OnKeyPressed(object sender, KeyPressEventArgs e)
         {
             MaterialListBox.Items.Clear();
-            foreach (Material mat in MaterialsParse.GetMaterials())
+            foreach (Material mat in MaterialsLib.GetMaterials())
             {
                 if (mat.MaterialNumStr.Contains(MaterialSearch.Text))
                 {
@@ -58,6 +53,18 @@ namespace Mafia2Tool
                     MaterialListBox.Items.Add(mat);
                 }
             }
+        }
+
+        private void ExitButton_Click(object sender, EventArgs e)
+        {
+            WriteMaterialsFile();
+            Application.Exit();
+        }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            MaterialsLib.WriteMatFile("default.mtl");
+            MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

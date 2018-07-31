@@ -99,7 +99,7 @@ namespace Mafia2
             materialHash = reader.ReadUInt64();
             materialName = string.Format("{0:X16}", materialHash.Swap());
             unk3 = reader.ReadInt32();
-            materialName = MaterialsParse.GetMatName(materialName);
+            materialName = MaterialsLib.GetMatName(materialName);
         }
 
         public void WriteToFile(BinaryWriter writer)

@@ -121,11 +121,11 @@ namespace Mafia2Tool
         {
             try
             {
-                Default = MaterialsParse.ReadMatFile(MaterialPath + "/default.mtl");
-                Default50 = MaterialsParse.ReadMatFile(MaterialPath + "/default50.mtl");
-                Default60 = MaterialsParse.ReadMatFile(MaterialPath + "/default60.mtl");
+                Default = MaterialsLib.ReadMatFile(MaterialPath + "/default.mtl");
+                Default50 = MaterialsLib.ReadMatFile(MaterialPath + "/default50.mtl");
+                Default60 = MaterialsLib.ReadMatFile(MaterialPath + "/default60.mtl");
                 HasLoaded = true;
-                MaterialsParse.SetMaterials(Default);
+                MaterialsLib.SetMaterials(Default);
             }
             catch (Exception ex)
             {

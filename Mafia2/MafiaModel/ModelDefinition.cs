@@ -203,7 +203,7 @@ namespace Mafia2
                     {
 
                         ModelPart modelPart = new ModelPart();
-                        modelPart.Material = MaterialsParse.LookupMaterialByHash(materials[x].MaterialHash);
+                        modelPart.Material = MaterialsLib.LookupMaterialByHash(materials[x].MaterialHash);
                         int num = materials[x].StartIndex + materials[x].NumFaces * 3;
                         List<Short3> intList = new List<Short3>(materials[x].NumFaces);
                         int startIndex = materials[x].StartIndex;

@@ -89,7 +89,7 @@
     <Compile Include="ItemDesc\CollisionTypes\CollisionUnk7.cs" />
     <Compile Include="ItemDesc\ItemDescParse.cs" />
     <Compile Include="MafiaModel\ModelDefinition.cs" />
-    <Compile Include="MaterialStructure\MaterialsParse.cs" />
+    <Compile Include="MaterialStructure\MaterialsLib.cs" />
     <Compile Include="NAV_AI\NAV_AI.cs" />
     <Compile Include="ParseHelpers\Enums.cs" />
     <Compile Include="ParseHelpers\Functions.cs" />
