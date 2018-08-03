@@ -346,8 +346,8 @@ namespace Mafia2Tool
             if (!MaterialData.HasLoaded)
                 return;
 
-            MaterialTool tool = new MaterialTool();
-            tool.ShowDialog();
+            //MaterialTool tool = new MaterialTool();
+            //tool.ShowDialog();
         }
 
         private void CollisionEditor_Click(object sender, EventArgs e)

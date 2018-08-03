@@ -42,6 +42,24 @@ namespace Mafia2
             }
         }
 
+        /// <summary>
+        /// Used to save from external material source. 
+        /// </summary>
+        /// <param name="name">name of material library.</param>
+        /// <param name="materials">set of materials to save.</param>
+        public static void WriteMatFile(string name, Material[] materials)
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(name, FileMode.Create)))
+            {
+                writer.Write("MTLB".ToCharArray());
+                writer.Write(57);
+                writer.Write(materials.Length);
+                writer.Write(0);
+                for (int i = 0; i != materials.Length; i++)
+                    materials[i].WriteToFile(writer);
+            }
+        }
+
         public static string GetMatName(string text)
         {
             if (mats == null)

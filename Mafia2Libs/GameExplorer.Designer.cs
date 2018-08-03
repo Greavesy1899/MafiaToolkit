@@ -42,11 +42,12 @@ namespace Mafia2Tool
             this.columnLastModified = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.topContainer = new System.Windows.Forms.ToolStripContainer();
             this.tools = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.buttonFile = new System.Windows.Forms.ToolStripButton();
+            this.buttonEdit = new System.Windows.Forms.ToolStripButton();
             this.bottomContainer = new System.Windows.Forms.ToolStripContainer();
             this.status = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.buttonTools = new System.Windows.Forms.ToolStripButton();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -93,7 +94,9 @@ namespace Mafia2Tool
             this.imageBank.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageBank.ImageStream")));
             this.imageBank.TransparentColor = System.Drawing.Color.Transparent;
             this.imageBank.Images.SetKeyName(0, "folderIcon");
-            this.imageBank.Images.SetKeyName(1, "imageIcon");
+            this.imageBank.Images.SetKeyName(1, "defaultIcon");
+            this.imageBank.Images.SetKeyName(2, "dllIcon");
+            this.imageBank.Images.SetKeyName(3, "exeIcon");
             // 
             // fileListView
             // 
@@ -152,31 +155,32 @@ namespace Mafia2Tool
             // tools
             // 
             this.tools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton1,
-            this.toolStripButton2});
+            this.buttonFile,
+            this.buttonEdit,
+            this.buttonTools});
             this.tools.Location = new System.Drawing.Point(0, 0);
             this.tools.Name = "tools";
             this.tools.Size = new System.Drawing.Size(800, 25);
             this.tools.TabIndex = 1;
             this.tools.Text = "toolStrip1";
             // 
-            // toolStripButton1
+            // buttonFile
             // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(29, 22);
-            this.toolStripButton1.Text = "File";
+            this.buttonFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.buttonFile.Image = ((System.Drawing.Image)(resources.GetObject("buttonFile.Image")));
+            this.buttonFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonFile.Name = "buttonFile";
+            this.buttonFile.Size = new System.Drawing.Size(29, 22);
+            this.buttonFile.Text = "File";
             // 
-            // toolStripButton2
+            // buttonEdit
             // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(31, 22);
-            this.toolStripButton2.Text = "Edit";
+            this.buttonEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.buttonEdit.Image = ((System.Drawing.Image)(resources.GetObject("buttonEdit.Image")));
+            this.buttonEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonEdit.Name = "buttonEdit";
+            this.buttonEdit.Size = new System.Drawing.Size(31, 22);
+            this.buttonEdit.Text = "Edit";
             // 
             // bottomContainer
             // 
@@ -212,6 +216,15 @@ namespace Mafia2Tool
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 21);
             this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            // 
+            // buttonTools
+            // 
+            this.buttonTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.buttonTools.Image = ((System.Drawing.Image)(resources.GetObject("buttonTools.Image")));
+            this.buttonTools.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonTools.Name = "buttonTools";
+            this.buttonTools.Size = new System.Drawing.Size(39, 22);
+            this.buttonTools.Text = "Tools";
             // 
             // GameExplorer
             // 
@@ -255,10 +268,11 @@ namespace Mafia2Tool
         private System.Windows.Forms.ColumnHeader columnSize;
         private ToolStripContainer topContainer;
         private ToolStrip tools;
-        private ToolStripButton toolStripButton1;
-        private ToolStripButton toolStripButton2;
+        private ToolStripButton buttonFile;
+        private ToolStripButton buttonEdit;
         private ToolStripContainer bottomContainer;
         private StatusStrip status;
         private ToolStripStatusLabel toolStripStatusLabel1;
+        private ToolStripButton buttonTools;
     }
 }

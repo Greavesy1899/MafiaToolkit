@@ -7,16 +7,21 @@ namespace Mafia2Tool
 {
     public partial class MaterialTool : Form
     {
+        private Material[] materials;
+        private string name;
 
-        public MaterialTool()
+        public MaterialTool(FileInfo file)
         {
             InitializeComponent();
+            materials = MaterialsLib.ReadMatFile(file.FullName);
+            name = file.Name;
             FetchMaterials();
+            ShowDialog();
         }
 
         public void FetchMaterials()
         {
-            foreach (Material mat in MaterialsLib.GetMaterials())
+            foreach (Material mat in materials)
             {
                 MaterialListBox.Items.Add(mat);
             }
@@ -28,7 +33,7 @@ namespace Mafia2Tool
 
             if (result == DialogResult.Yes)
             {
-                MaterialsLib.WriteMatFile("default.mtl");
+                MaterialsLib.WriteMatFile(name, materials);
                 MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -36,13 +41,12 @@ namespace Mafia2Tool
         private void OnMaterialSelected(object sender, EventArgs e)
         {
             MaterialGrid.SelectedObject = MaterialListBox.SelectedItem;
-
         }
 
         private void OnKeyPressed(object sender, KeyPressEventArgs e)
         {
             MaterialListBox.Items.Clear();
-            foreach (Material mat in MaterialsLib.GetMaterials())
+            foreach (Material mat in materials)
             {
                 if (mat.MaterialNumStr.Contains(MaterialSearch.Text))
                 {
@@ -57,13 +61,12 @@ namespace Mafia2Tool
 
         private void ExitButton_Click(object sender, EventArgs e)
         {
-            WriteMaterialsFile();
-            Application.Exit();
+            this.Dispose();
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            MaterialsLib.WriteMatFile("default.mtl");
+            MaterialsLib.WriteMatFile(name, materials);
             MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }

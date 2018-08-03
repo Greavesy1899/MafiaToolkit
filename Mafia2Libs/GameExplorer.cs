@@ -98,7 +98,7 @@ namespace Mafia2Tool
 
             foreach (FileInfo file in directory.GetFiles())
             {
-                item = new ListViewItem(file.Name, 1);
+                item = new ListViewItem(file.Name, DetermineFileIcon(file.Extension));
                 item.Tag = file;
 
                 subItems = new ListViewItem.ListViewSubItem[]
@@ -197,9 +197,34 @@ namespace Mafia2Tool
                     return "SDS Archive";
                 case ".dds":
                     return "Direct-Draw Surface";
-                default:
-                    //return extension.Remove(0, 1) + " file";
+                case ".exe":
+                    return "Executable";
+                case ".dll":
+                    return "Dynamic-Link Library";
+                case ".mtl":
+                    return "Material Library";
+                case "": //fix for content files.
                     return "File";
+                default:
+                    return extension.Remove(0, 1).ToUpper();
+            }
+        }
+
+        /// <summary>
+        /// Use the file extension to determine to file icon.
+        /// </summary>
+        /// <param name="extension">file extension</param>
+        /// <returns></returns>
+        private int DetermineFileIcon(string extension)
+        {
+            switch (extension)
+            {
+                case ".exe":
+                    return 3;
+                case ".dll":
+                    return 2;
+                default:
+                    return 1;
             }
         }
 
@@ -212,11 +237,14 @@ namespace Mafia2Tool
         private void listView1_ItemActivate(object sender, EventArgs e)
         {
             ListViewItem item = fileListView.SelectedItems[0];
+            MaterialTool mTool;
 
             if (item.SubItems[1].Text == "Directory")
                 OpenDirectory((DirectoryInfo)item.Tag);
-            else if (item.SubItems[1].Text == "SDS Archive")
-                OpenSDS((FileInfo)item.Tag);
+            else if (item.SubItems[1].Text == "Material Library")
+                mTool = new MaterialTool((FileInfo)item.Tag);
+            //else if (item.SubItems[1].Text == "SDS Archive")
+                //OpenSDS((FileInfo)item.Tag);
         }
     }
 }
