@@ -94,9 +94,8 @@ namespace Mafia2
                     {
                         Data data = new Data();
 
-                        //temporarily set flags to zero; need to find out what these are.
                         if (block.GetType() == typeof(FrameObjectBase))
-                            data.Flags = (block as FrameObjectBase).FrameNameTableFlags;
+                            data.Flags = fBase.FrameNameTableFlags;
 
                         int sceneIndex = 0;
 
@@ -250,6 +249,10 @@ namespace Mafia2
                 writer.Write(namepos1);
                 writer.Write(namepos2);
                 writer.Write(frameIndex);
+
+                if (flags == 0)
+                    flags = (NameTableFlags)2049;
+
                 writer.Write((short)flags);
             }
 

@@ -220,7 +220,8 @@ namespace Mafia2
         /// </summary>
         public UVVector2()
         {
-
+            X = 0;
+            Y = 0;
         }
 
         /// <summary>

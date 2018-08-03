@@ -32,16 +32,16 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Gibbed.IO">
+      <HintPath>..\..\..\..\Downloads\Gibbed.IO-master\bin\Debug\Gibbed.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -51,7 +51,11 @@
     <Compile Include="3DHelpers\Vertex.cs" />
     <Compile Include="Actors\ActorParse.cs" />
     <Compile Include="Actors\ActorTypes.cs" />
+    <Compile Include="Gibbed.Illusion.FileFormats\BlockReaderStream.cs" />
+    <Compile Include="Gibbed.Illusion.FileFormats\BlockWriterStream.cs" />
     <Compile Include="Collisions\Collisions.cs" />
+    <Compile Include="Cutscene\Cutscene.cs" />
+    <Compile Include="EntityDataStorage\EntityDataStorage.cs" />
     <Compile Include="FormExtenders\UITypeEditors.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -82,6 +86,17 @@
     <Compile Include="GeometryExporters\CustomEDC.cs" />
     <Compile Include="GeometryExporters\CustomEDD.cs" />
     <Compile Include="GeometryExporters\CustomEDM.cs" />
+    <Compile Include="Gibbed.Illusion.FileFormats\FNV32.cs" />
+    <Compile Include="Gibbed.Illusion.FileFormats\FNV64.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\ArchiveEncryption.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\ArchiveFile.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\ArchiveSerializeOptions.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Archive\FileHeader.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Archive\Platform.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Archive\ResourceEntry.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Archive\ResourceHeader.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Archive\ResourceType.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\TEA.cs" />
     <Compile Include="ItemDesc\CollisionTypes\CollisionBase.cs" />
     <Compile Include="ItemDesc\CollisionTypes\CollisionBox.cs" />
     <Compile Include="ItemDesc\CollisionTypes\CollisionCapsule.cs" />
@@ -106,7 +121,11 @@
     <Compile Include="RATC\CityAreas.cs" />
     <Compile Include="RPMG\RPMG.cs" />
     <Compile Include="SoundSectors\SoundSector.cs" />
+    <Compile Include="Gibbed.Illusion.FileFormats\StreamHelpers.cs" />
     <Compile Include="XML\XMLTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Mafia2;
+using Gibbed.Mafia2.FileFormats;
 
 namespace Mafia2Tool
 {
@@ -13,7 +13,7 @@ namespace Mafia2Tool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             MaterialData.Load();
-            Application.Run(new FrameResourceTool());
+            Application.Run(new GameExplorer());
         }
     }
 }

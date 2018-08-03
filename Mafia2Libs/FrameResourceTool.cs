@@ -391,9 +391,7 @@ namespace Mafia2Tool
 
                 }
 
-                m2tBrowser.ShowDialog();
-
-                if (m2tBrowser.FileName == null)
+                if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
                     return;
 
                 using (BinaryReader reader = new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)))
