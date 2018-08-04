@@ -148,6 +148,13 @@ namespace Mafia2Tool
                 }
             }
 
+            string extractedPath = file.Directory.FullName + "/extracted/";
+
+            //todo: need to save files.
+            if (!Directory.Exists(extractedPath))
+                Directory.CreateDirectory(extractedPath);
+
+            Directory.CreateDirectory(extractedPath + file.Name);
 
             //TODO Cleanup this code. It's awful.
             for(int i = 0; i != archiveFile.ResourceEntries.Count; i++)
@@ -178,6 +185,8 @@ namespace Mafia2Tool
 
                         item.SubItems.AddRange(subItems);
                         fileListView.Items.Add(item);
+
+                        string path = "";
                     }
                 }
             }
@@ -243,8 +252,8 @@ namespace Mafia2Tool
                 OpenDirectory((DirectoryInfo)item.Tag);
             else if (item.SubItems[1].Text == "Material Library")
                 mTool = new MaterialTool((FileInfo)item.Tag);
-            //else if (item.SubItems[1].Text == "SDS Archive")
-                //OpenSDS((FileInfo)item.Tag);
+            else if (item.SubItems[1].Text == "SDS Archive")
+                OpenSDS((FileInfo)item.Tag);
         }
     }
 }
