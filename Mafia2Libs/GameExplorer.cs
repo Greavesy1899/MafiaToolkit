@@ -186,13 +186,13 @@ namespace Mafia2Tool
 
             string extractedPath = file.Directory.FullName + "/extracted/";
 
-            XmlWriter resourceXML = XmlWriter.Create(extractedPath + file.Name + "/SDSContent.xml", settings);
-            resourceXML.WriteStartElement("SDSResource");
-
             if (!Directory.Exists(extractedPath))
                 Directory.CreateDirectory(extractedPath);
 
             Directory.CreateDirectory(extractedPath + file.Name);
+
+            XmlWriter resourceXML = XmlWriter.Create(extractedPath + file.Name + "/SDSContent.xml", settings);
+            resourceXML.WriteStartElement("SDSResource");
 
             //TODO Cleanup this code. It's awful.
             for (int i = 0; i != archiveFile.ResourceEntries.Count; i++)
