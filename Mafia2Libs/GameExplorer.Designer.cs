@@ -44,10 +44,13 @@ namespace Mafia2Tool
             this.tools = new System.Windows.Forms.ToolStrip();
             this.buttonFile = new System.Windows.Forms.ToolStripButton();
             this.buttonEdit = new System.Windows.Forms.ToolStripButton();
+            this.buttonTools = new System.Windows.Forms.ToolStripButton();
             this.bottomContainer = new System.Windows.Forms.ToolStripContainer();
             this.status = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.buttonTools = new System.Windows.Forms.ToolStripButton();
+            this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.SDSContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ContextSDSUnpack = new System.Windows.Forms.ToolStripMenuItem();
+            this.ContextSDSPack = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -58,6 +61,7 @@ namespace Mafia2Tool
             this.bottomContainer.ContentPanel.SuspendLayout();
             this.bottomContainer.SuspendLayout();
             this.status.SuspendLayout();
+            this.SDSContext.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainContainer
@@ -114,6 +118,7 @@ namespace Mafia2Tool
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.Details;
             this.fileListView.ItemActivate += new System.EventHandler(this.listView1_ItemActivate);
+            this.fileListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDown);
             // 
             // columnName
             // 
@@ -182,6 +187,15 @@ namespace Mafia2Tool
             this.buttonEdit.Size = new System.Drawing.Size(31, 22);
             this.buttonEdit.Text = "Edit";
             // 
+            // buttonTools
+            // 
+            this.buttonTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.buttonTools.Image = ((System.Drawing.Image)(resources.GetObject("buttonTools.Image")));
+            this.buttonTools.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonTools.Name = "buttonTools";
+            this.buttonTools.Size = new System.Drawing.Size(39, 22);
+            this.buttonTools.Text = "Tools";
+            // 
             // bottomContainer
             // 
             this.bottomContainer.BottomToolStripPanelVisible = false;
@@ -204,27 +218,39 @@ namespace Mafia2Tool
             // 
             this.status.Dock = System.Windows.Forms.DockStyle.Fill;
             this.status.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
+            this.infoText});
             this.status.Location = new System.Drawing.Point(0, 0);
             this.status.Name = "status";
             this.status.Size = new System.Drawing.Size(800, 26);
             this.status.TabIndex = 0;
             this.status.Text = "statusStrip1";
             // 
-            // toolStripStatusLabel1
+            // infoText
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 21);
-            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            this.infoText.Name = "infoText";
+            this.infoText.Size = new System.Drawing.Size(0, 21);
             // 
-            // buttonTools
+            // SDSContext
             // 
-            this.buttonTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.buttonTools.Image = ((System.Drawing.Image)(resources.GetObject("buttonTools.Image")));
-            this.buttonTools.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonTools.Name = "buttonTools";
-            this.buttonTools.Size = new System.Drawing.Size(39, 22);
-            this.buttonTools.Text = "Tools";
+            this.SDSContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ContextSDSUnpack,
+            this.ContextSDSPack});
+            this.SDSContext.Name = "SDSContext";
+            this.SDSContext.Size = new System.Drawing.Size(115, 48);
+            // 
+            // ContextSDSUnpack
+            // 
+            this.ContextSDSUnpack.Name = "ContextSDSUnpack";
+            this.ContextSDSUnpack.Size = new System.Drawing.Size(114, 22);
+            this.ContextSDSUnpack.Text = "Unpack";
+            this.ContextSDSUnpack.Click += new System.EventHandler(this.ContextSDSUnpack_Click);
+            // 
+            // ContextSDSPack
+            // 
+            this.ContextSDSPack.Name = "ContextSDSPack";
+            this.ContextSDSPack.Size = new System.Drawing.Size(114, 22);
+            this.ContextSDSPack.Text = "Pack";
+            this.ContextSDSPack.Click += new System.EventHandler(this.ContextSDSPack_Click);
             // 
             // GameExplorer
             // 
@@ -252,6 +278,7 @@ namespace Mafia2Tool
             this.bottomContainer.PerformLayout();
             this.status.ResumeLayout(false);
             this.status.PerformLayout();
+            this.SDSContext.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -272,7 +299,10 @@ namespace Mafia2Tool
         private ToolStripButton buttonEdit;
         private ToolStripContainer bottomContainer;
         private StatusStrip status;
-        private ToolStripStatusLabel toolStripStatusLabel1;
+        private ToolStripStatusLabel infoText;
         private ToolStripButton buttonTools;
+        private ContextMenuStrip SDSContext;
+        private ToolStripMenuItem ContextSDSUnpack;
+        private ToolStripMenuItem ContextSDSPack;
     }
 }

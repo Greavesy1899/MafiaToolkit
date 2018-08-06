@@ -103,6 +103,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Gibbed.IO\Gibbed.IO.csproj">
+      <Project>{047857BA-DAA3-4CA7-AFB8-A1B082B28C6A}</Project>
+      <Name>Gibbed.IO</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mafia2\Mafia2Lib.csproj">
       <Project>{f8d4e99d-10e6-457e-8b87-80d675686f90}</Project>
       <Name>Mafia2Lib</Name>

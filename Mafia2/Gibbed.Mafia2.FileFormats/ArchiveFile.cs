@@ -25,8 +25,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml;
+using System.Xml.XPath;
 using Gibbed.Illusion.FileFormats;
 using Gibbed.IO;
+using Gibbed.Mafia2.FileFormats.Archive;
 
 namespace Gibbed.Mafia2.FileFormats
 {
@@ -120,7 +123,7 @@ namespace Gibbed.Mafia2.FileFormats
             {
                 data.WriteValueU32(Signature, Endian.Big);
                 data.WriteValueU32(19, endian);
-                data.WriteValueU32((uint)this._Platform, Endian.Big);
+                data.WriteValueU32((uint) this._Platform, Endian.Big);
                 data.Flush();
                 output.WriteFromMemoryStreamSafe(data, endian);
             }
@@ -130,7 +133,7 @@ namespace Gibbed.Mafia2.FileFormats
             Archive.FileHeader fileHeader;
             output.Seek(56, SeekOrigin.Current);
 
-            fileHeader.ResourceTypeTableOffset = (uint)(output.Position - basePosition);
+            fileHeader.ResourceTypeTableOffset = (uint) (output.Position - basePosition);
             output.WriteValueS32(this._ResourceTypes.Count, endian);
             foreach (var resourceType in this._ResourceTypes)
             {
@@ -138,17 +141,17 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != 0
-                ? (uint)this._ResourceEntries.Sum(re => 30 + (re.Data == null ? 0 : re.Data.Length))
+                ? (uint) this._ResourceEntries.Sum(re => 30 + (re.Data == null ? 0 : re.Data.Length))
                 : 0x4000;
 
-            fileHeader.BlockTableOffset = (uint)(output.Position - basePosition);
+            fileHeader.BlockTableOffset = (uint) (output.Position - basePosition);
             fileHeader.ResourceCount = 0;
             var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress);
             foreach (var resourceEntry in this._ResourceEntries)
             {
                 Archive.ResourceHeader resourceHeader;
                 resourceHeader.TypeId = resourceEntry.TypeId;
-                resourceHeader.Size = 30 + (uint)(resourceEntry.Data == null ? 0 : resourceEntry.Data.Length);
+                resourceHeader.Size = 30 + (uint) (resourceEntry.Data == null ? 0 : resourceEntry.Data.Length);
                 resourceHeader.Version = resourceEntry.Version;
                 resourceHeader.SlotRamRequired = resourceEntry.SlotRamRequired;
                 resourceHeader.SlotVramRequired = resourceEntry.SlotVramRequired;
@@ -165,10 +168,11 @@ namespace Gibbed.Mafia2.FileFormats
                 blockStream.WriteBytes(resourceEntry.Data);
                 fileHeader.ResourceCount++;
             }
+
             blockStream.Flush();
             blockStream.Finish();
 
-            fileHeader.XmlOffset = (uint)(output.Position - basePosition);
+            fileHeader.XmlOffset = (uint) (output.Position - basePosition);
             if (string.IsNullOrEmpty(this._ResourceInfoXml) == false)
             {
                 output.WriteString(this._ResourceInfoXml, Encoding.ASCII);
@@ -201,13 +205,14 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             input.Position += 4; // skip version
-            var platform = (Archive.Platform)input.ReadValueU32(Endian.Big);
+            var platform = (Archive.Platform) input.ReadValueU32(Endian.Big);
             if (platform != Archive.Platform.PC &&
                 platform != Archive.Platform.Xbox360 &&
                 platform != Archive.Platform.PS3)
             {
                 throw new FormatException("unsupported archive platform");
             }
+
             var endian = platform == Archive.Platform.PC ? Endian.Little : Endian.Big;
 
             input.Position = basePosition;
@@ -260,7 +265,7 @@ namespace Gibbed.Mafia2.FileFormats
                 {
                     TypeId = resourceHeader.TypeId,
                     Version = resourceHeader.Version,
-                    Data = blockStream.ReadBytes((int)resourceHeader.Size - 30),
+                    Data = blockStream.ReadBytes((int) resourceHeader.Size - 30),
                     SlotRamRequired = resourceHeader.SlotRamRequired,
                     SlotVramRequired = resourceHeader.SlotVramRequired,
                     OtherRamRequired = resourceHeader.OtherRamRequired,
@@ -269,7 +274,7 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             input.Position = basePosition + fileHeader.XmlOffset;
-            var xml = input.ReadString((int)(input.Length - input.Position), Encoding.ASCII);
+            var xml = input.ReadString((int) (input.Length - input.Position), Encoding.ASCII);
 
             this._ResourceTypes.Clear();
             this._ResourceEntries.Clear();
@@ -280,10 +285,44 @@ namespace Gibbed.Mafia2.FileFormats
             this._SlotVramRequired = fileHeader.SlotVramRequired;
             this._OtherRamRequired = fileHeader.OtherRamRequired;
             this._OtherVramRequired = fileHeader.OtherVramRequired;
-            this._Unknown20 = (byte[])fileHeader.Unknown20.Clone();
+            this._Unknown20 = (byte[]) fileHeader.Unknown20.Clone();
             this._ResourceTypes.AddRange(resourceTypes);
             this._ResourceInfoXml = xml;
             this._ResourceEntries.AddRange(resources);
+        }
+
+        /// <summary>
+        /// Build Resource types from given XML.
+        /// </summary>
+        /// <param name="xml"></param>
+        public void BuildResourceTypes(string xml)
+        {
+            List<string> addedTypes = new List<string>();
+
+            XmlDocument document = new XmlDocument();
+            document.Load(xml);
+            XPathNavigator nav = document.CreateNavigator();
+            var nodes = nav.Select("/SDSResource/ResourceEntry");
+            while (nodes.MoveNext() == true)
+            {
+                bool exists = false;
+                nodes.Current.MoveToFirstChild();
+                foreach (string type in addedTypes)
+                {
+                    if (type == nodes.Current.Value)
+                        exists = true;
+                }
+
+                if (!exists)
+                {
+                    ResourceType resource = new ResourceType();
+                    resource.Name = nodes.Current.Value;
+                    resource.Id = (uint)addedTypes.Count;
+                    resource.Parent = 0;
+                    addedTypes.Add(nodes.Current.Value);
+                    ResourceTypes.Add(resource);
+                }
+            }
         }
     }
 }

@@ -42,6 +42,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Gibbed.Illusion.ResourceFormats\IResourceType.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\MemFileResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\ScriptData.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\ScriptResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\SoundResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\TableData.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\TableResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\TextureResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\XmlResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\XmlResource0.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\XmlResource1.cs" />
     <Compile Include="Utils\Bounds.cs" />
     <Compile Include="Utils\Matrix33.cs" />
     <Compile Include="Utils\TransformMatrix.cs" />
@@ -119,7 +130,6 @@
     <Compile Include="FileTypes\RPMG\RPMG.cs" />
     <Compile Include="FileTypes\SoundSectors\SoundSector.cs" />
     <Compile Include="Gibbed.Illusion.FileFormats\StreamHelpers.cs" />
-    <Compile Include="FileTypes\XML\XMLTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

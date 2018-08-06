@@ -411,15 +411,6 @@ namespace Mafia2
         Index = 3,
     }
 
-    public enum XMLDataType
-    {
-        Special = 1,
-        Boolean,
-        Float,
-        String,
-        Integer
-    }
-
     public enum CollisionMaterials
     {
         Road,
