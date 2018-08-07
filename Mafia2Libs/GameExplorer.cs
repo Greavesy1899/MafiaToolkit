@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
@@ -30,12 +32,24 @@ namespace Mafia2Tool
         {
             IniFile ini = new IniFile();
             TreeNode rootTreeNode;
+            DirectoryInfo dirInfo = null;
 
-            DirectoryInfo dirInfo = new DirectoryInfo(ini.Read("MafiaII", "Directories"));
+            string path = ini.Read("MafiaII", "Directories");
+
+            if(string.IsNullOrEmpty(path))
+                GetPath(ini);
+
+            path = ini.Read("MafiaII", "Directories");
+            dirInfo = new DirectoryInfo(path);
 
             //check if directory exists.
             if (!dirInfo.Exists)
+            {
+                MessageBox.Show("Could not find MafiaII 'launcher.exe', please correct the path!", "Error!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
+
 
             //check if launcher.exe exists.
             bool hasLauncher = false;
@@ -46,7 +60,11 @@ namespace Mafia2Tool
             }
 
             if (!hasLauncher)
+            {
+                MessageBox.Show("Could not find MafiaII 'launcher.exe', please correct the path!", "Error!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
 
             infoText.Text = "Building folders..";
             //build treeView.
@@ -55,6 +73,18 @@ namespace Mafia2Tool
             GetSubFolders(dirInfo.GetDirectories(), rootTreeNode);
             folderView.Nodes.Add(rootTreeNode);
             infoText.Text = "Done builidng folders..";
+        }
+
+        /// <summary>
+        /// If the program has errored it will run this.. It's to get a new path.
+        /// </summary>
+        private void GetPath(IniFile ini)
+        {
+            MafiaIIBrowser.SelectedPath = "";
+            if (MafiaIIBrowser.ShowDialog() == DialogResult.OK)
+                ini.Write("MafiaII", MafiaIIBrowser.SelectedPath, "Directories");
+            else
+                return;
         }
 
         /// <summary>
@@ -139,11 +169,21 @@ namespace Mafia2Tool
             infoText.Text = "Saving SDS..";
             ArchiveFile archiveFile = new ArchiveFile
             {
-                Platform = Platform.PC
+                Platform = Platform.PC,
+                Unknown20 = new byte[16] {55, 51, 57, 55, 57, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
             };
-            archiveFile.BuildResourceTypes(file.Directory.FullName + "/extracted/" + file.Name + "/SDSContent.xml");
+            archiveFile.BuildResources(file.Directory.FullName + "/extracted/" + file.Name);
 
+            foreach (ResourceEntry entry in archiveFile.ResourceEntries)
+            {
+                if(entry.Data == null)
+                    throw new FormatException();
+            }
 
+            using (var output = File.Create(file.Directory.FullName + "/extracted/newsds.sds"))
+            {
+                archiveFile.Serialize(output, ArchiveSerializeOptions.Compress);
+            }
         }
 
         /// <summary>
@@ -327,7 +367,7 @@ namespace Mafia2Tool
                 {
                     //Do resource first..
                     SoundResource resource = new SoundResource();
-                    resource.Deserialize(entry.Data, (byte) itemNames[i].Length);
+                    resource.Deserialize(entry.Data, (byte)itemNames[i].Length);
                     entry.Data = resource.Data;
 
                     saveName = itemNames[i] + ".fsb";
@@ -401,7 +441,7 @@ namespace Mafia2Tool
                     MessageBox.Show("Found unknown type: " + archiveFile.ResourceTypes[(int) entry.TypeId].Name);
                     saveName = "unknown.bin";
                 }
-
+                resourceXML.WriteElementString("Version", entry.Version.ToString());
                 using (BinaryWriter writer =
                     new BinaryWriter(
                         File.Open(extractedPath + file.Name + "/" + saveName, FileMode.Create)))
@@ -414,7 +454,7 @@ namespace Mafia2Tool
 
             resourceXML.WriteEndElement();
             resourceXML.Flush();
-
+            resourceXML.Dispose();
             OpenDirectory(new DirectoryInfo(extractedPath + file.Name));
             infoText.Text = "Opened SDS..";
         }
@@ -536,6 +576,17 @@ namespace Mafia2Tool
 
             }
 
+        }
+
+        private void openMafiaIIToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+           folderView.Nodes.Clear();
+           BuildTreeView();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

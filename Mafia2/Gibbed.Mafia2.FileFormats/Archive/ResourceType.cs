@@ -85,5 +85,10 @@ namespace Gibbed.Mafia2.FileFormats.Archive
         {
             return left.Equals(right) == false;
         }
+
+        public override string ToString()
+        {
+            return string.Format("ID: {0}, Name: {1}, Parent: {2}", Id, Name, Parent);
+        }
     }
 }

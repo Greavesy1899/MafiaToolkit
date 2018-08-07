@@ -31,5 +31,10 @@ namespace Gibbed.Mafia2.FileFormats.Archive
         public uint SlotVramRequired;
         public uint OtherRamRequired;
         public uint OtherVramRequired;
+
+        public override string ToString()
+        {
+            return string.Format("TypeID: {0}, Version: {1}, DataSize: {2}", TypeId, Version, Data.Length);
+        }
     }
 }

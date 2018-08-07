@@ -42,15 +42,18 @@ namespace Mafia2Tool
             this.columnLastModified = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.topContainer = new System.Windows.Forms.ToolStripContainer();
             this.tools = new System.Windows.Forms.ToolStrip();
-            this.buttonFile = new System.Windows.Forms.ToolStripButton();
-            this.buttonEdit = new System.Windows.Forms.ToolStripButton();
-            this.buttonTools = new System.Windows.Forms.ToolStripButton();
+            this.dropdownFile = new System.Windows.Forms.ToolStripDropDownButton();
+            this.dropdownView = new System.Windows.Forms.ToolStripDropDownButton();
+            this.dropdownTools = new System.Windows.Forms.ToolStripDropDownButton();
             this.bottomContainer = new System.Windows.Forms.ToolStripContainer();
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
             this.SDSContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextSDSUnpack = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextSDSPack = new System.Windows.Forms.ToolStripMenuItem();
+            this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            this.openMafiaIIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -160,41 +163,44 @@ namespace Mafia2Tool
             // tools
             // 
             this.tools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.buttonFile,
-            this.buttonEdit,
-            this.buttonTools});
+            this.dropdownFile,
+            this.dropdownView,
+            this.dropdownTools});
             this.tools.Location = new System.Drawing.Point(0, 0);
             this.tools.Name = "tools";
             this.tools.Size = new System.Drawing.Size(800, 25);
             this.tools.TabIndex = 1;
             this.tools.Text = "toolStrip1";
             // 
-            // buttonFile
+            // dropdownFile
             // 
-            this.buttonFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.buttonFile.Image = ((System.Drawing.Image)(resources.GetObject("buttonFile.Image")));
-            this.buttonFile.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonFile.Name = "buttonFile";
-            this.buttonFile.Size = new System.Drawing.Size(29, 22);
-            this.buttonFile.Text = "File";
+            this.dropdownFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.dropdownFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openMafiaIIToolStripMenuItem,
+            this.exitToolStripMenuItem});
+            this.dropdownFile.Image = ((System.Drawing.Image)(resources.GetObject("dropdownFile.Image")));
+            this.dropdownFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.dropdownFile.Name = "dropdownFile";
+            this.dropdownFile.Size = new System.Drawing.Size(38, 22);
+            this.dropdownFile.Text = "File";
             // 
-            // buttonEdit
+            // dropdownView
             // 
-            this.buttonEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.buttonEdit.Image = ((System.Drawing.Image)(resources.GetObject("buttonEdit.Image")));
-            this.buttonEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonEdit.Name = "buttonEdit";
-            this.buttonEdit.Size = new System.Drawing.Size(31, 22);
-            this.buttonEdit.Text = "Edit";
+            this.dropdownView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.dropdownView.Image = ((System.Drawing.Image)(resources.GetObject("dropdownView.Image")));
+            this.dropdownView.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.dropdownView.Name = "dropdownView";
+            this.dropdownView.Size = new System.Drawing.Size(45, 22);
+            this.dropdownView.Text = "View";
             // 
-            // buttonTools
+            // dropdownTools
             // 
-            this.buttonTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.buttonTools.Image = ((System.Drawing.Image)(resources.GetObject("buttonTools.Image")));
-            this.buttonTools.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonTools.Name = "buttonTools";
-            this.buttonTools.Size = new System.Drawing.Size(39, 22);
-            this.buttonTools.Text = "Tools";
+            this.dropdownTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.dropdownTools.Image = ((System.Drawing.Image)(resources.GetObject("dropdownTools.Image")));
+            this.dropdownTools.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.dropdownTools.Name = "dropdownTools";
+            this.dropdownTools.Size = new System.Drawing.Size(48, 22);
+            this.dropdownTools.Text = "Tools";
             // 
             // bottomContainer
             // 
@@ -252,6 +258,24 @@ namespace Mafia2Tool
             this.ContextSDSPack.Text = "Pack";
             this.ContextSDSPack.Click += new System.EventHandler(this.ContextSDSPack_Click);
             // 
+            // MafiaIIBrowser
+            // 
+            this.MafiaIIBrowser.Description = "Select your MafiaII folder. The folder should contain \"launcher.exe\"";
+            // 
+            // openMafiaIIToolStripMenuItem
+            // 
+            this.openMafiaIIToolStripMenuItem.Name = "openMafiaIIToolStripMenuItem";
+            this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openMafiaIIToolStripMenuItem.Text = "Open MafiaII";
+            this.openMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.openMafiaIIToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
             // GameExplorer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -295,14 +319,17 @@ namespace Mafia2Tool
         private System.Windows.Forms.ColumnHeader columnSize;
         private ToolStripContainer topContainer;
         private ToolStrip tools;
-        private ToolStripButton buttonFile;
-        private ToolStripButton buttonEdit;
         private ToolStripContainer bottomContainer;
         private StatusStrip status;
         private ToolStripStatusLabel infoText;
-        private ToolStripButton buttonTools;
         private ContextMenuStrip SDSContext;
         private ToolStripMenuItem ContextSDSUnpack;
         private ToolStripMenuItem ContextSDSPack;
+        private FolderBrowserDialog MafiaIIBrowser;
+        private ToolStripDropDownButton dropdownFile;
+        private ToolStripDropDownButton dropdownView;
+        private ToolStripDropDownButton dropdownTools;
+        private ToolStripMenuItem openMafiaIIToolStripMenuItem;
+        private ToolStripMenuItem exitToolStripMenuItem;
     }
 }
