@@ -3,6 +3,7 @@
 This toolkit is a group of programs a plugin for 3DS max and the library, which allows modders to build their own programs. 
 
 ## Features:
+- GameExplorer; a new quick way to modify Mafia II.
 - Open, edit and save 'FrameResource_X' files.
 - Open, edit and save 'FrameNameTable_X' data.
 - Open, edit and save 'defaultXX.mtl'. (Material Libraries)
@@ -14,6 +15,9 @@ This toolkit is a group of programs a plugin for 3DS max and the library, which 
 - WIP 'PREFAB' data parsing.
 - WIP 'SoundSector' data parsing.
 - WIP 3DS plugin to hopefully help modding the 3D data of Mafia.
+- WIP XML Parsing and saving.
+- WIP SDS unpacker and packer.
+- WIP Tables editor.
 - Both BufferPools can be open, edited and saved.
 
 ## Building:
