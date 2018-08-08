@@ -27,6 +27,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
 using Gibbed.Illusion.FileFormats;
@@ -334,8 +335,6 @@ namespace Gibbed.Mafia2.FileFormats
                         resource.Parent = 3;
                     else if (resource.Name == "VertexBufferPool")
                         resource.Parent = 2;
-                    else
-                        resource.Parent = 0;
 
                     addedTypes.Add(nodes.Current.Value);
                     ResourceTypes.Add(resource);
@@ -356,6 +355,16 @@ namespace Gibbed.Mafia2.FileFormats
                     addedTypes[addedTypes.Count - 1] == "PREFAB" ||
                     addedTypes[addedTypes.Count - 1] == "ItemDesc" ||
                     addedTypes[addedTypes.Count - 1] == "FrameNameTable" ||
+                    addedTypes[addedTypes.Count - 1] == "Actors" ||
+                    addedTypes[addedTypes.Count - 1] == "Collisions" ||
+                    addedTypes[addedTypes.Count - 1] == "NAV_AIWORLD_DATA" ||
+                    addedTypes[addedTypes.Count - 1] == "NAV_OBJ_DATA" ||
+                    addedTypes[addedTypes.Count - 1] == "Animation2" ||
+                    addedTypes[addedTypes.Count - 1] == "Cutscene" ||
+                    addedTypes[addedTypes.Count - 1] == "FxActor" ||
+                    addedTypes[addedTypes.Count - 1] == "FxAnimSet" ||
+                    addedTypes[addedTypes.Count - 1] == "Translokator" ||
+                    addedTypes[addedTypes.Count - 1] == "AudioSectors" ||
                     addedTypes[addedTypes.Count - 1] == "EntityDataStorage") 
                 {
                     nodes.Current.MoveToNext();
@@ -372,36 +381,39 @@ namespace Gibbed.Mafia2.FileFormats
                 }
                 else if (addedTypes[addedTypes.Count - 1] == "Texture" || addedTypes[addedTypes.Count - 1] == "Mipmap")
                 {
-                    List<byte> data = new List<byte>();
-                    string file;
-
+                    MemoryStream data = new MemoryStream();
+                    byte[] texData;
                     nodes.Current.MoveToNext();
-                    file = nodes.Current.Value;
+                    string file = nodes.Current.Value;
+                    nodes.Current.MoveToNext();
+                    byte unk09 = Convert.ToByte(nodes.Current.Value);
+                    nodes.Current.MoveToNext();
+                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                    {
+                        texData = reader.ReadBytes((int)reader.BaseStream.Length);
+                    }
+
+                    TextureResource resource;
 
                     if (addedTypes[addedTypes.Count - 1] == "Mipmap")
                     {
+                        resource = new TextureResource(FNV64.Hash(file.Remove(0, 4)), unk09, texData);
+                        resource.SerializeMIP(resourceEntry.Version, data, Endian.Little);
                         sddescNode.InnerText = file.Remove(0, 4);
-                        data.AddRange(BitConverter.GetBytes(FNV64.Hash(file.Remove(0, 4))));
                     }
                     else
                     {
+                        resource = new TextureResource(FNV64.Hash(file), unk09, texData);
+                        resource.Serialize(resourceEntry.Version, data, Endian.Little);
                         sddescNode.InnerText = file;
-                        data.AddRange(BitConverter.GetBytes(FNV64.Hash(file)));
                     }
 
-                    nodes.Current.MoveToNext();
+                    
 
-                    if (addedTypes[addedTypes.Count - 1] == "Texture")
-                        data.Add(0);
-
-                    data.Add(Convert.ToByte(nodes.Current.Value));
-                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                    {
-                        data.AddRange(reader.ReadBytes((int)reader.BaseStream.Length));
-                    }
-                    nodes.Current.MoveToNext();
                     resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-                    resourceEntry.Data = data.ToArray();
+                    resourceEntry.Data = data.GetBuffer();
                 }
                 else if (addedTypes[addedTypes.Count - 1] == "Sound")
                 {
@@ -422,6 +434,71 @@ namespace Gibbed.Mafia2.FileFormats
                     resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
                     resourceEntry.Data = data.ToArray();
                     sddescNode.InnerText = file;
+                }
+                else if (addedTypes[addedTypes.Count - 1] == "MemFile")
+                {
+                    //get file name from XML.
+                    nodes.Current.MoveToNext();
+                    string file = nodes.Current.Value;
+
+                    //construct MemResource.
+                    MemFileResource resource = new MemFileResource
+                    {
+                        Name = file,
+                        Unk1 = 1
+                    };
+                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                    {
+                        resource.Data = reader.ReadBytes((int) reader.BaseStream.Length);
+                    }
+
+                    //Get version.
+                    nodes.Current.MoveToNext();
+                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+                    //serialize.
+                    MemoryStream stream = new MemoryStream();
+                    resource.Serialize(resourceEntry.Version, stream, Endian.Little);
+
+                    //set the data.
+                    resourceEntry.Data = stream.GetBuffer();
+                    sddescNode.InnerText = file;
+                }
+                else if (addedTypes[addedTypes.Count - 1] == "Script")
+                {
+                    
+                    nodes.Current.MoveToNext();
+                    string path = nodes.Current.Value;
+                    nodes.Current.MoveToNext();
+                    int numScripts = Convert.ToInt32(nodes.Current.Value);
+
+                    ScriptResource resource = new ScriptResource();
+                    resource.Path = path;
+
+                    for (int i = 0; i != numScripts; i++)
+                    {
+                        ScriptData data = new ScriptData();
+                        nodes.Current.MoveToNext();
+                        data.Name = nodes.Current.Value;
+                        using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + data.Name, FileMode.Open)))
+                        {
+                            data.Data = reader.ReadBytes((int) reader.BaseStream.Length);
+                        }
+                        resource.Scripts.Add(data);
+                    }
+                    nodes.Current.MoveToNext();
+                    ushort version = Convert.ToUInt16(nodes.Current.Value);
+
+                    MemoryStream stream = new MemoryStream();
+                    resource.Serialize(version, stream, Endian.Little);
+                    resourceEntry.Version = version;
+                    resourceEntry.Data = stream.GetBuffer();
+                    sddescNode.InnerText = path;
+                }
+                else
+                {
+                    MessageBox.Show("Did not pack type: " + addedTypes[addedTypes.Count - 1], "Toolkit",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 resourceNode.AppendChild(typeNameNode);
                 resourceNode.AppendChild(sddescNode);

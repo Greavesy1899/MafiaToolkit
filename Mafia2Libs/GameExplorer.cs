@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
@@ -166,6 +164,14 @@ namespace Mafia2Tool
         /// <param name="file">location of SDS.</param>
         private void PackSDS(FileInfo file)
         {
+            //backup file before repacking..
+            if (!Directory.Exists(file.Directory.FullName + "/BackupSDS"))
+                Directory.CreateDirectory(file.Directory.FullName + "/BackupSDS");
+
+            //place copy in new folder.
+            File.Copy(file.FullName, file.Directory.FullName + "/BackupSDS/"+file.Name, true);
+
+            //begin..
             infoText.Text = "Saving SDS..";
             ArchiveFile archiveFile = new ArchiveFile
             {
@@ -180,7 +186,7 @@ namespace Mafia2Tool
                     throw new FormatException();
             }
 
-            using (var output = File.Create(file.Directory.FullName + "/extracted/newsds.sds"))
+            using (var output = File.Create(file.FullName))
             {
                 archiveFile.Serialize(output, ArchiveSerializeOptions.Compress);
             }
@@ -216,6 +222,14 @@ namespace Mafia2Tool
                     {
                         itemNames.Add(nodes.Current.Value);
                     }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                for (int i = 0; i != archiveFile.ResourceEntries.Count; i++)
+                {
+                    itemNames.Add("unk_"+i);
                 }
             }
 
@@ -319,7 +333,8 @@ namespace Mafia2Tool
                 {
                     ScriptResource resource = new ScriptResource();
                     resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
-
+                    resourceXML.WriteElementString("File", resource.Path);
+                    resourceXML.WriteElementString("ScriptNum", resource.Scripts.Count.ToString());
                     for (int x = 0; x != resource.Scripts.Count; x++)
                     {
                         string scrdir = extractedPath + file.Name;
@@ -335,8 +350,10 @@ namespace Mafia2Tool
                         {
                             writer.Write(resource.Scripts[x].Data);
                         }
+                        resourceXML.WriteElementString("Name", resource.Scripts[x].Name);
                     }
-
+                    resourceXML.WriteElementString("Version", entry.Version.ToString());
+                    resourceXML.WriteEndElement(); //finish early.
                     continue;
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "XML")
@@ -360,14 +377,14 @@ namespace Mafia2Tool
                     {
                         MessageBox.Show("ERROR CONVERTING XML: " + ex.Message);
                     }
-
+                    resourceXML.WriteEndElement(); //finish early.
                     continue;
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "Sound")
                 {
                     //Do resource first..
                     SoundResource resource = new SoundResource();
-                    resource.Deserialize(entry.Data, (byte)itemNames[i].Length);
+                    resource.Deserialize(entry.Data);
                     entry.Data = resource.Data;
 
                     saveName = itemNames[i] + ".fsb";
@@ -396,38 +413,50 @@ namespace Mafia2Tool
                         memdir += "/" + dirs[z];
                         Directory.CreateDirectory(memdir);
                     }
+                    resourceXML.WriteElementString("File", saveName);
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "SoundTable")
                 {
                     saveName = "SoundTable_" + i + ".stbl";
                 }
+                else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "Speech")
+                {
+                    saveName = "Speech_" + i + ".spe";
+                }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "FxAnimSet")
                 {
                     saveName = "FxAnimSet_" + i + ".fas";
+                    resourceXML.WriteElementString("File", saveName);
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "FxActor")
                 {
                     saveName = "FxActor_" + i + ".fxa";
+                    resourceXML.WriteElementString("File", saveName);
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "Cutscene")
                 {
                     saveName = "Cutscene_" + i + ".cut";
+                    resourceXML.WriteElementString("File", saveName);
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "Translokator")
                 {
                     saveName = "Translokator_" + i + ".tra";
+                    resourceXML.WriteElementString("File", saveName);
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "Animation2")
                 {
                     saveName = itemNames[i] + ".an2";
+                    resourceXML.WriteElementString("File", saveName);
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "NAV_AIWORLD_DATA")
                 {
                     saveName = "NAV_AIWORLD_DATA_" + i + ".nav";
+                    resourceXML.WriteElementString("File", saveName);
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "NAV_OBJ_DATA")
                 {
                     saveName = "NAV_OBJ_DATA_" + i + ".nov";
+                    resourceXML.WriteElementString("File", saveName);
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "Table")
                 {

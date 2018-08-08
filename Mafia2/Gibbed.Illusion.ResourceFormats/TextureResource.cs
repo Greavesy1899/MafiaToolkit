@@ -25,7 +25,9 @@
 //https://github.com/gibbed/Gibbed.Illusion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using Gibbed.Illusion.FileFormats.Hashing;
 using Gibbed.IO;
 
 namespace Gibbed.Mafia2.ResourceFormats
@@ -37,6 +39,18 @@ namespace Gibbed.Mafia2.ResourceFormats
         public byte Unknown9;
         public byte[] Data;
 
+        public TextureResource()
+        {
+        }
+
+        public TextureResource(ulong hash, byte unk09, byte[] data)
+        {
+            NameHash = hash;
+            Unknown8 = 0;
+            Unknown9 = unk09;
+            Data = data;
+        }
+
         public void Serialize(ushort version, Stream output, Endian endian)
         {
             output.WriteValueU64(this.NameHash, endian);
@@ -45,6 +59,13 @@ namespace Gibbed.Mafia2.ResourceFormats
             {
                 output.WriteValueU8(this.Unknown9);
             }
+            output.WriteBytes(this.Data);
+        }
+
+        public void SerializeMIP(ushort version, Stream output, Endian endian)
+        {
+            output.WriteValueU64(this.NameHash, endian);
+            output.WriteValueU8(this.Unknown9);
             output.WriteBytes(this.Data);
         }
 

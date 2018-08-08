@@ -7,7 +7,6 @@ namespace Gibbed.Illusion.ResourceFormats
 {
     public class SoundResource
     {
-        public byte ID;
         public string Name;
         public int FileSize;
         public byte[] Data;
@@ -16,13 +15,12 @@ namespace Gibbed.Illusion.ResourceFormats
         /// Deserialize resource using passed bytes.
         /// </summary>
         /// <param name="data"></param>
-        /// <param name="namelength">string length to read.</param>
-        public void Deserialize(byte[] data, byte namelength)
+        public void Deserialize(byte[] data)
         {
             MemoryStream input = new MemoryStream(data);
 
-            this.ID = input.ReadValueU8();
-            this.Name = input.ReadString(namelength);
+            byte length = input.ReadValueU8();
+            this.Name = input.ReadString(length);
             this.FileSize = input.ReadValueS32();
             this.Data = input.ReadBytes((int)(this.FileSize));
         }
