@@ -41,6 +41,15 @@ namespace Mafia2Tool
             ReadFrameResource();
         }
 
+        public FrameResourceTool(FileInfo info)
+        {
+            InitializeComponent();
+            SceneData.ScenePath = info.DirectoryName;
+            SceneData.BuildData();
+            ReadFrameResource();
+            ShowDialog();
+        }
+
         public void ReadFrameResource()
         {
             int numBlocks = SceneData.FrameResource.EntireFrame.Count - SceneData.FrameResource.Header.NumObjects;

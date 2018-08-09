@@ -25,7 +25,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.XPath;
 using Gibbed.IO;
 
@@ -36,8 +38,8 @@ namespace Gibbed.Mafia2.ResourceFormats
         public static void Serialize(Stream output, string content, Endian endian)
         {
             var nodes = new List<NodeEntry>();
-
-            var xml = new XPathDocument(new StringReader(content));
+            XDocument doc = XDocument.Load(new XmlTextReader(content));
+            var xml = new XPathDocument(content);
             var nav = xml.CreateNavigator();
 
             nav.MoveToRoot();
@@ -290,14 +292,16 @@ namespace Gibbed.Mafia2.ResourceFormats
 
             var settings = new XmlWriterSettings();
             settings.Indent = true;
+            settings.OmitXmlDeclaration = true;
 
             var output = new StringBuilder();
             var writer = XmlWriter.Create(output, settings);
-
             writer.WriteStartDocument();
+
             if (nodes.Count > 0)
             {
                 var root = nodes.SingleOrDefault(n => n.Id == 0);
+
                 if (root == null)
                 {
                     throw new InvalidOperationException();
@@ -321,7 +325,6 @@ namespace Gibbed.Mafia2.ResourceFormats
             }
             writer.WriteEndDocument();
             writer.Flush();
-
             return output.ToString();
         }
 
@@ -341,7 +344,8 @@ namespace Gibbed.Mafia2.ResourceFormats
                     }
 
                     var value = input.ReadStringZ(Encoding.UTF8);
-                    if (string.IsNullOrEmpty(value) == true)
+
+                    if (string.IsNullOrEmpty(value) || value.Contains("--") || value.Contains("\n\t >"))
                     {
                         return null;
                     }
@@ -382,7 +386,7 @@ namespace Gibbed.Mafia2.ResourceFormats
                     }
 
                     var value = input.ReadStringZ(Encoding.UTF8);
-                    if (string.IsNullOrEmpty(value) == true)
+                    if (string.IsNullOrEmpty(value) == true || value.Contains("--"))
                     {
                         return null;
                     }
@@ -411,15 +415,12 @@ namespace Gibbed.Mafia2.ResourceFormats
 
         private static void WriteXmlNode(XmlWriter writer, List<NodeEntry> nodes, NodeEntry node)
         {
-            //kind of hacky, but should disable comments.
             writer.WriteStartElement(node.Name.ToString());
 
             foreach (var attribute in node.Attributes)
             {
                 writer.WriteStartAttribute(attribute.Name.ToString());
-                writer.WriteValue(attribute.Value == null
-                                      ? ""
-                                      : attribute.Value.ToString());
+                writer.WriteValue(attribute.Value == null ? "" : attribute.Value.ToString());
                 writer.WriteEndAttribute();
             }
 
@@ -436,19 +437,13 @@ namespace Gibbed.Mafia2.ResourceFormats
 
             if (node.Value != null)
             {
-                if (node.Value.Value is string)
-                {
-                    if(((string) node.Value.Value).Contains("--"))
-                        writer.WriteComment((string)node.Value.Value);
-                }
-                else if (node.Value.Type != DataType.String)
+                if (node.Value.Type != DataType.String)
                 {
                     writer.WriteAttributeString("__type", DataTypeToString(node.Value.Type));
                 }
 
                 writer.WriteValue(node.Value.ToString());
             }
-
             writer.WriteEndElement();
         }
 

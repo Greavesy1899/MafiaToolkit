@@ -24,6 +24,7 @@
 //SEE ORIGINAL CODE HERE::
 //https://github.com/gibbed/Gibbed.Illusion
 
+using System;
 using System.IO;
 using Gibbed.Illusion.FileFormats;
 using Gibbed.IO;
@@ -54,14 +55,14 @@ namespace Gibbed.Mafia2.ResourceFormats
             {
                 output.WriteValueU8((byte)(this.Unk3 ? 1 : 0));
             }
-
             if (this.Unk3 == false)
             {
                 XmlResource0.Serialize(output, this.Content, endian);
             }
             else
             {
-                XmlResource1.Serialize(output, this.Content, endian);
+                //todo
+                //XmlResource1.Serialize(output, this.Content, endian);
             }
         }
 
@@ -71,15 +72,33 @@ namespace Gibbed.Mafia2.ResourceFormats
             this.Unk1 = version >= 3 ? input.ReadValueU8() != 0 : true;
             this.Name = input.ReadStringU32(endian);
             this.Unk3 = version >= 2 ? input.ReadValueU8() != 0 : false;
-
             if (this.Unk3 == false)
             {
                 this.Content = XmlResource0.Deserialize(input, endian);
             }
             else
             {
-                this.Content = XmlResource1.Deserialize(input, endian);
+                //todo
+                //this.Content = XmlResource1.Deserialize(input, endian);
             }
+        }
+
+        public void SerializeVersion3(ushort version, MemoryStream stream, byte[] data)
+        {
+            stream = new MemoryStream();
+            stream.WriteStringU32(this.Tag, Endian.Little);
+            if (version >= 3)
+            {
+                stream.WriteValueU8((byte)(this.Unk1 ? 1 : 0));
+            }
+
+            stream.WriteStringU32(this.Name, Endian.Little);
+
+            if (version >= 2)
+            {
+                stream.WriteValueU8((byte)(this.Unk3 ? 1 : 0));
+            }
+            stream.WriteBytes(data);
         }
     }
 }

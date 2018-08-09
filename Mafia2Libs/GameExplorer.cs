@@ -164,6 +164,14 @@ namespace Mafia2Tool
         /// <param name="file">location of SDS.</param>
         private void PackSDS(FileInfo file)
         {
+            if (file.Name == "ingame.sds" || file.Name == "tables.sds")
+            {
+                MessageBox.Show("Packing " + file.Name + " is temporarily disabled due to game crashing.", "Toolkit",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
             //backup file before repacking..
             if (!Directory.Exists(file.Directory.FullName + "/BackupSDS"))
                 Directory.CreateDirectory(file.Directory.FullName + "/BackupSDS");
@@ -358,11 +366,14 @@ namespace Mafia2Tool
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "XML")
                 {
+                    saveName = itemNames[i];
+                    resourceXML.WriteElementString("File", saveName);
+                    XmlResource resource = new XmlResource();
                     try
                     {
                         saveName = itemNames[i];
                         string[] dirs = itemNames[i].Split('/');
-                        XmlResource resource = new XmlResource();
+                        resource = new XmlResource();
                         resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
                         string xmldir = extractedPath + file.Name;
                         for (int z = 0; z != dirs.Length - 1; z++)
@@ -370,13 +381,26 @@ namespace Mafia2Tool
                             xmldir += "/" + dirs[z];
                             Directory.CreateDirectory(xmldir);
                         }
-
-                        File.WriteAllText(extractedPath + file.Name + "/" + saveName + ".xml", resource.Content);
+                        if(!resource.Unk3)
+                            File.WriteAllText(extractedPath + file.Name + "/" + saveName + ".xml", resource.Content);
+                        else
+                        {
+                            using (BinaryWriter writer =
+                                new BinaryWriter(
+                                    File.Open(extractedPath + file.Name + "/" + saveName + ".xml", FileMode.Create)))
+                            {
+                                writer.Write(entry.Data);
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show("ERROR CONVERTING XML: " + ex.Message);
                     }
+                    resourceXML.WriteElementString("XMLTag", resource.Tag);
+                    resourceXML.WriteElementString("Unk1", Convert.ToByte(resource.Unk1).ToString());
+                    resourceXML.WriteElementString("Unk3", Convert.ToByte(resource.Unk3).ToString());
+                    resourceXML.WriteElementString("Version", entry.Version.ToString());
                     resourceXML.WriteEndElement(); //finish early.
                     continue;
                 }
@@ -418,10 +442,12 @@ namespace Mafia2Tool
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "SoundTable")
                 {
                     saveName = "SoundTable_" + i + ".stbl";
+                    resourceXML.WriteElementString("File", saveName);
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "Speech")
                 {
                     saveName = "Speech_" + i + ".spe";
+                    resourceXML.WriteElementString("File", saveName);
                 }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "FxAnimSet")
                 {
@@ -458,12 +484,18 @@ namespace Mafia2Tool
                     saveName = "NAV_OBJ_DATA_" + i + ".nov";
                     resourceXML.WriteElementString("File", saveName);
                 }
+                else if (archiveFile.ResourceTypes[(int)entry.TypeId].Name == "NAV_HPD_DATA")
+                {
+                    saveName = "NAV_HPD_DATA_" + i + ".nhv";
+                    resourceXML.WriteElementString("File", saveName);
+                }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "Table")
                 {
                     TableResource resource = new TableResource();
                     resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
                     //todo extract individual tables.
                     saveName = "Tables_" + ".tbl";
+                    resourceXML.WriteElementString("File", saveName);
                 }
                 else
                 {
@@ -542,6 +574,7 @@ namespace Mafia2Tool
         {
             ListViewItem item = fileListView.SelectedItems[0];
             MaterialTool mTool;
+            FrameResourceTool fTool;
 
             if (item.SubItems[1].Text == "Directory")
                 OpenDirectory((DirectoryInfo) item.Tag);
@@ -549,6 +582,8 @@ namespace Mafia2Tool
                 mTool = new MaterialTool((FileInfo) item.Tag);
             else if (item.SubItems[1].Text == "SDS Archive")
                 OpenSDS((FileInfo) item.Tag);
+            else if(item.SubItems[1].Text == "FR")
+                fTool = new FrameResourceTool((FileInfo)item.Tag);
         }
 
         private void ContextSDSPack_Click(object sender, EventArgs e)

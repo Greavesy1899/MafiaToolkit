@@ -162,6 +162,7 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceHeader.SlotVramRequired = resourceEntry.SlotVramRequired;
                 resourceHeader.OtherRamRequired = resourceEntry.OtherRamRequired;
                 resourceHeader.OtherVramRequired = resourceEntry.OtherVramRequired;
+                //SlotRamRequired += resourceHeader.SlotRamRequired;
 
                 using (var data = new MemoryStream())
                 {
@@ -359,12 +360,15 @@ namespace Gibbed.Mafia2.FileFormats
                     addedTypes[addedTypes.Count - 1] == "Collisions" ||
                     addedTypes[addedTypes.Count - 1] == "NAV_AIWORLD_DATA" ||
                     addedTypes[addedTypes.Count - 1] == "NAV_OBJ_DATA" ||
+                    addedTypes[addedTypes.Count - 1] == "NAV_HPD_DATA" ||
                     addedTypes[addedTypes.Count - 1] == "Animation2" ||
                     addedTypes[addedTypes.Count - 1] == "Cutscene" ||
                     addedTypes[addedTypes.Count - 1] == "FxActor" ||
                     addedTypes[addedTypes.Count - 1] == "FxAnimSet" ||
                     addedTypes[addedTypes.Count - 1] == "Translokator" ||
-                    addedTypes[addedTypes.Count - 1] == "AudioSectors" ||
+                    addedTypes[addedTypes.Count - 1] == "AudioSectors" || 
+                    addedTypes[addedTypes.Count - 1] == "Speech" ||
+                    addedTypes[addedTypes.Count - 1] == "SoundTable" ||
                     addedTypes[addedTypes.Count - 1] == "EntityDataStorage") 
                 {
                     nodes.Current.MoveToNext();
@@ -450,6 +454,7 @@ namespace Gibbed.Mafia2.FileFormats
                     using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
                     {
                         resource.Data = reader.ReadBytes((int) reader.BaseStream.Length);
+                        //resourceEntry.SlotRamRequired = (uint)reader.BaseStream.Length;
                     }
 
                     //Get version.
@@ -495,8 +500,65 @@ namespace Gibbed.Mafia2.FileFormats
                     resourceEntry.Data = stream.GetBuffer();
                     sddescNode.InnerText = path;
                 }
+                else if (addedTypes[addedTypes.Count - 1] == "Table")
+                {
+                    nodes.Current.MoveToNext();
+                    string file = nodes.Current.Value;
+                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                    {
+                        resourceEntry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+                    }
+
+                    nodes.Current.MoveToNext();
+                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+                    sddescNode.InnerText = file.Remove(file.Length-4, 4);
+                }
+                else if (addedTypes[addedTypes.Count - 1] == "XML")
+                {
+                    nodes.Current.MoveToNext();
+                    string file = nodes.Current.Value;
+
+                    nodes.Current.MoveToNext();
+                    string tag = nodes.Current.Value;
+
+                    nodes.Current.MoveToNext();
+                    bool unk1 = nodes.Current.ValueAsBoolean;
+
+                    nodes.Current.MoveToNext();
+                    bool unk3 = nodes.Current.ValueAsBoolean;
+
+                    //need to do version early.
+                    nodes.Current.MoveToNext();
+                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+                    XmlResource resource = new XmlResource
+                    {
+                        Name = file,
+                        Content = sdsFolder + "/" + file + ".xml",
+                        Tag = tag,
+                        Unk1 = unk1,
+                        Unk3 = unk3
+                    };
+                    MemoryStream stream = new MemoryStream();
+                    resource.Serialize(resourceEntry.Version, stream, Endian.Little);
+
+                    sddescNode.InnerText = file;
+
+                    if (resource.Unk3)
+                    {
+                        using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file + ".xml", FileMode.Open)))
+                        {
+                            resource.SerializeVersion3(resourceEntry.Version, stream, reader.ReadBytes((int)reader.BaseStream.Length));
+                        }
+                    }
+                    resourceEntry.Data = stream.GetBuffer();
+                }
                 else
                 {
+                    if (addedTypes[addedTypes.Count - 1] == "")
+                        continue;
+
                     MessageBox.Show("Did not pack type: " + addedTypes[addedTypes.Count - 1], "Toolkit",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
