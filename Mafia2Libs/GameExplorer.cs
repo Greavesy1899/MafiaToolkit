@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
@@ -651,6 +652,20 @@ namespace Mafia2Tool
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void runMafiaIIToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IniFile ini = new IniFile();
+            string exe = ini.Read("MafiaII", "Directories") + "/launcher.exe";
+
+            if (!File.Exists(exe))
+            {
+                MessageBox.Show("Launcher.exe was not found.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            Process.Start(exe);
         }
     }
 }

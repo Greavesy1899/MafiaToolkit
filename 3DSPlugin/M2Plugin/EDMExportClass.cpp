@@ -114,9 +114,9 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 	BOOL hasTangents;
 	BOOL hasUVs;
 
-	modifier->GetParamBlock(0)->GetValue(0, 0, hasNormals, FOREVER);
-	modifier->GetParamBlock(0)->GetValue(1, 0, hasTangents, FOREVER);
-	modifier->GetParamBlock(0)->GetValue(2, 0, hasUVs, FOREVER);
+	modifier->GetParamBlock(0)->GetValue(1, 0, hasNormals, FOREVER);
+	modifier->GetParamBlock(0)->GetValue(2, 0, hasTangents, FOREVER);
+	modifier->GetParamBlock(0)->GetValue(3, 0, hasUVs, FOREVER);
 
 	////build file structure
 	EDMStructure fileStructure = EDMStructure();
@@ -141,11 +141,11 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 		parts[i].SetIndicesSize(mesh.numFaces);
 		//invert from BOOL;
 		parts[i].SetHasPositions(1);
-		parts[i].SetHasNormals(!hasNormals);
-		parts[i].SetHasTangents(!hasTangents);
+		parts[i].SetHasNormals(hasNormals);
+		parts[i].SetHasTangents(hasTangents);
 		parts[i].SetHasBlendData(0);
 		parts[i].SetHasFlag0x80(0);
-		parts[i].SetHasUV0(!hasUVs);
+		parts[i].SetHasUV0(hasUVs);
 		parts[i].SetHasUV1(0);
 		parts[i].SetHasUV2(0);
 		parts[i].SetHasUV7(0);

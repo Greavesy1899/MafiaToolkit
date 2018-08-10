@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 
 namespace Mafia2
@@ -52,6 +53,41 @@ namespace Mafia2
         {
             Min.WriteToFile(writer);
             Max.WriteToFile(writer);
+        }
+
+        /// <summary>
+        /// Calculate bounds from passed vertices.
+        /// </summary>
+        public void CalculateBounds(List<Vertex[]> data)
+        {
+            Min = new Vector3(0);
+            Max = new Vector3(0);
+
+            for (int p = 0; p != data.Count; p++)
+            {
+                for (int i = 0; i != data[p].Length; i++)
+                {
+                    Vector3 pos = data[p][i].Position;
+
+                    if (pos.X < Min.X)
+                        Min.X = pos.X;
+
+                    if (pos.X > Max.X)
+                        Max.X = pos.X;
+
+                    if (pos.Y < Min.Y)
+                        Min.Y = pos.Y;
+
+                    if (pos.Y > Max.Y)
+                        Max.Y = pos.Y;
+
+                    if (pos.Z < Min.Z)
+                        Min.Z = pos.Z;
+
+                    if (pos.Z > Max.Z)
+                        Max.Z = pos.Z;
+                }
+            }
         }
 
         public override string ToString()

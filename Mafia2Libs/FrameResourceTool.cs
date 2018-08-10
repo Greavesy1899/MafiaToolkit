@@ -409,7 +409,13 @@ namespace Mafia2Tool
                 using (BinaryReader reader = new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)))
                 {
                     model.ReadFromM2T(reader);
-                    model.CalculateBounds();
+
+                    List<Vertex[]> vertData = new List<Vertex[]>();
+                    for(int i = 0; i != model.Lods.Length; i++)
+                        vertData.Add(model.Lods[i].Vertices);
+
+                    model.FrameMesh.Boundings = new Bounds();
+                    model.FrameMesh.Boundings.CalculateBounds(vertData);
                     model.CalculateDecompression();
                     model.BuildIndexBuffer();
                     model.BuildVertexBuffer();

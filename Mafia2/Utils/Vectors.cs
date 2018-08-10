@@ -7,9 +7,23 @@ namespace Mafia2
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Vector3
     {
-        public float X { get; set; }
-        public float Y { get; set; }
-        public float Z { get; set; }
+        protected float x;
+        protected float y;
+        protected float z;
+
+        public float X
+        {
+            get { return x;}
+            set { x = value; }
+        }
+        public float Y {
+            get { return y; }
+            set { y = value; }
+        }
+        public float Z {
+            get { return z; }
+            set { z = value; }
+        }
 
         /// <summary>
         /// Construct a Vector3 from three floats.
@@ -19,9 +33,9 @@ namespace Mafia2
         /// <param name="z"></param>
         public Vector3(float x, float y, float z)
         {
-            X = x;
-            Y = y;
-            Z = z;
+            this.x = x;
+            this.y = y;
+            this.z = z;
         }
 
         /// <summary>
@@ -30,9 +44,9 @@ namespace Mafia2
         /// <param name="value"></param>
         public Vector3(float value)
         {
-            X = value;
-            Y = value;
-            Z = value;
+            this.x = value;
+            this.y = value;
+            this.z = value;
         }
 
         /// <summary>
@@ -50,9 +64,9 @@ namespace Mafia2
         /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(X);
-            writer.Write(Y);
-            writer.Write(Z);
+            writer.Write(x);
+            writer.Write(y);
+            writer.Write(z);
         }
 
         /// <summary>
@@ -61,9 +75,9 @@ namespace Mafia2
         /// <param name="reader"></param>
         public void ReadfromFile(BinaryReader reader)
         {
-            X = reader.ReadSingle();
-            Y = reader.ReadSingle();
-            Z = reader.ReadSingle();
+            x = reader.ReadSingle();
+            y = reader.ReadSingle();
+            z = reader.ReadSingle();
         }
 
         /// <summary>
@@ -71,9 +85,9 @@ namespace Mafia2
         /// </summary>
         public void ConvertToDegrees()
         {
-            X = -(float)(X * 180 / Math.PI);
-            Y = -(float)(Y * 180 / Math.PI);
-            Z = -(float)(Z * 180 / Math.PI);
+            x = -(float)(X * 180 / Math.PI);
+            y = -(float)(Y * 180 / Math.PI);
+            z = -(float)(Z * 180 / Math.PI);
         }
 
         /// <summary>
@@ -81,9 +95,9 @@ namespace Mafia2
         /// </summary>
         public void ConvertToRadians()
         {
-            X = -(float)(X * Math.PI / 180);
-            Y = -(float)(Y * Math.PI / 180);
-            Z = -(float)(Z * Math.PI / 180);
+            x = -(float)(X * Math.PI / 180);
+            y = -(float)(Y * Math.PI / 180);
+            z = -(float)(Z * Math.PI / 180);
         }
 
         /// <summary>
@@ -341,6 +355,17 @@ namespace Mafia2
         public Int3(BinaryReader reader)
         {
             ReadFromFile(reader);
+        }
+
+        /// <summary>
+        /// Build Int3 from Short3
+        /// </summary>
+        /// <param name="ints"></param>
+        public Int3(Short3 s3)
+        {
+            I1 = (int)s3.S1;
+            I2 = (int)s3.S2;
+            I3 = (int)s3.S3;
         }
 
         /// <summary>

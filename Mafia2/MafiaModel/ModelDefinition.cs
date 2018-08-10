@@ -476,42 +476,6 @@ namespace Mafia2
         }
 
         /// <summary>
-        /// Calculate new bounds on the model.
-        /// </summary>
-        public void CalculateBounds()
-        {
-            Vector3 min = new Vector3(0);
-            Vector3 max = new Vector3(0);
-
-            for (int p = 0; p != lods.Length; p++)
-            {
-                for (int i = 0; i != lods[p].Vertices.Length; i++)
-                {
-                    Vector3 pos = lods[p].Vertices[i].Position;
-
-                    if (pos.X < min.X)
-                        min.X = pos.X;
-
-                    if (pos.X > max.X)
-                        max.X = pos.X;
-
-                    if (pos.Y < min.Y)
-                        min.Y = pos.Y;
-
-                    if (pos.Y > max.Y)
-                        max.Y = pos.Y;
-
-                    if (pos.Z < min.Z)
-                        min.Z = pos.Z;
-
-                    if (pos.Z > max.Z)
-                        max.Z = pos.Z;
-                }
-            }
-            frameMesh.Boundings = new Bounds(min, max);
-        }
-
-        /// <summary>
         /// Update decompression offset and position.
         /// </summary>
         public void CalculateDecompression()

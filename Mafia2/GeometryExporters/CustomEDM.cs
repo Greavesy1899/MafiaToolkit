@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Mafia2
 {
@@ -347,7 +348,7 @@ namespace Mafia2
                     uvs = new UVVector2[size];
                     for (int c = 0; c != uvs.Length; c++)
                     {
-                        uvs[c] = new UVVector2(HalfHelper.SingleToHalf(reader.ReadSingle()), HalfHelper.SingleToHalf(reader.ReadSingle()));
+                        uvs[c] = new UVVector2(new Half(reader.ReadSingle()), new Half(reader.ReadSingle()));
                         uvs[c].Y = (Half)1f - uvs[c].Y;
                     }
                 }

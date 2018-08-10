@@ -30,6 +30,8 @@
         {
             this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.buttonLoadMesh = new System.Windows.Forms.Button();
+            this.openM2T = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
             // FrameResourceGrid
@@ -53,11 +55,28 @@
             this.treeView1.TabIndex = 11;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
+            // buttonLoadMesh
+            // 
+            this.buttonLoadMesh.Location = new System.Drawing.Point(12, 12);
+            this.buttonLoadMesh.Name = "buttonLoadMesh";
+            this.buttonLoadMesh.Size = new System.Drawing.Size(75, 23);
+            this.buttonLoadMesh.TabIndex = 12;
+            this.buttonLoadMesh.Text = "Load Mesh";
+            this.buttonLoadMesh.UseVisualStyleBackColor = true;
+            this.buttonLoadMesh.Click += new System.EventHandler(this.buttonLoadMesh_Click);
+            // 
+            // openM2T
+            // 
+            this.openM2T.FileName = "Select M2T file.";
+            this.openM2T.Filter = "\"Model File|*.m2t|All Files|*.*\"";
+            this.openM2T.Tag = "";
+            // 
             // CollisionEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.buttonLoadMesh);
             this.Controls.Add(this.FrameResourceGrid);
             this.Controls.Add(this.treeView1);
             this.Name = "CollisionEditor";
@@ -70,5 +89,7 @@
 
         private System.Windows.Forms.PropertyGrid FrameResourceGrid;
         private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.Button buttonLoadMesh;
+        private System.Windows.Forms.OpenFileDialog openM2T;
     }
 }

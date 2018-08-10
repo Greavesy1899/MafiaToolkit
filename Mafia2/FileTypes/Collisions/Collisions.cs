@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.AccessControl;
-using Gibbed.IO;
+using System.Security.Permissions;
 
 namespace Mafia2
 {
@@ -15,18 +12,20 @@ namespace Mafia2
         int unk0;
 
         int count1;
-        Placement[] placementData;
+       List<Placement> placementData;
 
         int count2;
-        NXSStruct[] nxsData;
+        List<NXSStruct> nxsData;
 
-        public NXSStruct[] NXSData
+        public string name;
+
+        public List<NXSStruct> NXSData
         {
             get { return nxsData; }
             set { nxsData = value; }
         }
 
-        public Placement[] Placements
+        public List<Placement> Placements
         {
             get { return placementData; }
             set { placementData = value; }
@@ -34,31 +33,10 @@ namespace Mafia2
 
         public Collision(string fileName)
         {
-            using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
+            name = fileName;
+            using (BinaryReader reader = new BinaryReader(File.Open(name, FileMode.Open)))
             {
                 ReadFromFile(reader);
-            }
-
-            for (int i = 0; i != placementData.Length; i++)
-                placementData[i].Unk5 = 128;
-
-            nxsData[1].Data.Num2 = 3;
-            nxsData[1].Data.Num5 = nxsData[1].Data.Triangles.Length - 1;
-            if (nxsData[1].Data.Triangles.Length < 256)
-                nxsData[1].Data.UnkData = new byte[nxsData[1].Data.Triangles.Length];
-            else
-                nxsData[1].Data.UnkBytes = new short[nxsData[1].Data.Triangles.Length];
-
-            nxsData[2].Data.Num2 = 3;
-            nxsData[2].Data.Num5 = nxsData[1].Data.Triangles.Length - 1;
-            if (nxsData[2].Data.Triangles.Length < 256)
-                nxsData[2].Data.UnkData = new byte[nxsData[2].Data.Triangles.Length];
-            else
-                nxsData[2].Data.UnkBytes = new short[nxsData[2].Data.Triangles.Length];
-
-            using (BinaryWriter writer = new BinaryWriter(File.Create(fileName)))
-            {
-                WriteToFile(writer);
             }
         }
 
@@ -72,18 +50,18 @@ namespace Mafia2
             unk0 = reader.ReadInt32();
             count1 = reader.ReadInt32();
 
-            placementData = new Placement[count1];
+            placementData = new List<Placement>(count1);
             for (int i = 0; i != count1; i++)
             {
-                placementData[i] = new Placement(reader);
+                placementData.Add(new Placement(reader));
             }
 
             count2 = reader.ReadInt32();
-            nxsData = new NXSStruct[count2];
+            nxsData = new List<NXSStruct>(count2);
 
-            for (int i = 0; i != nxsData.Length; i++)
+            for (int i = 0; i != count2; i++)
             {
-                nxsData[i] = new NXSStruct(reader);
+                nxsData.Add(new NXSStruct(reader));
             }
 
         }
@@ -92,12 +70,12 @@ namespace Mafia2
         {
             writer.Write(version);
             writer.Write(unk0);
-            writer.Write(placementData.Length);
-            for (int i = 0; i != placementData.Length; i++)
+            writer.Write(placementData.Count);
+            for (int i = 0; i != placementData.Count; i++)
                 placementData[i].WriteToFile(writer);
 
-            writer.Write(nxsData.Length);
-            for (int i = 0; i != nxsData.Length; i++)
+            writer.Write(nxsData.Count);
+            for (int i = 0; i != nxsData.Count; i++)
                 nxsData[i].WriteToFile(writer);
         }
 
@@ -108,11 +86,11 @@ namespace Mafia2
 
         public class Placement
         {
-            Vector3 position;
-            Vector3 rotation;
-            ulong hash;
-            int unk4;
-            byte unk5;
+            private Vector3 position;
+            private Vector3 rotation;
+            private ulong hash;
+            private int unk4;
+            private byte unk5;
 
             public Vector3 Position
             {
@@ -162,7 +140,7 @@ namespace Mafia2
             {
                 position = new Vector3(reader);
                 rotation = new Vector3(reader);
-                rotation.ConvertToDegrees();
+                //rotation.ConvertToDegrees();
                 hash = reader.ReadUInt64();
                 unk4 = reader.ReadInt32();
                 unk5 = reader.ReadByte();
@@ -175,7 +153,7 @@ namespace Mafia2
             public void WriteToFile(BinaryWriter writer)
             {
                 position.WriteToFile(writer);
-                rotation.ConvertToRadians();
+                //rotation.ConvertToRadians();
                 rotation.WriteToFile(writer);
                 writer.Write(hash);
                 writer.Write(unk4);
@@ -193,8 +171,8 @@ namespace Mafia2
             ulong hash;
             private int dataSize;
             private byte[] bytes;
-            MeshData data;
-            Section[] sections;
+            protected MeshData data;
+            protected Section[] sections;
 
             public ulong Hash
             {
@@ -217,8 +195,15 @@ namespace Mafia2
             public NXSStruct(BinaryReader reader)
             {
                 ReadFromFile(reader);
-
             }
+            public NXSStruct()
+            {
+                hash = 0;
+                dataSize = 0;
+                bytes = new byte[0];
+                data = new MeshData();
+                sections = new Section[1];
+        }
 
             public void ReadFromFile(BinaryReader reader)
             {
@@ -267,9 +252,9 @@ namespace Mafia2
             int nPoints;
             int nTriangles;
 
-            Vector3[] points;
-            Int3[] triangles; //or some linking thing
-            CollisionMaterials[] unkShorts; //COULD be materialIDs
+            protected Vector3[] points;
+            protected Int3[] triangles; //or some linking thing
+            protected CollisionMaterials[] unkShorts; //COULD be materialIDs
 
             int num5;
 
@@ -297,7 +282,7 @@ namespace Mafia2
             private int unkSize;
             private byte[] unkSizeData;
 
-            private Section[] sections;
+            public Section[] sections;
 
 
             public float UnkSmall
@@ -364,6 +349,16 @@ namespace Mafia2
 
             public MeshData(BinaryReader reader, Section[] sections)
             {
+                this.sections = sections;
+                ReadFromFile(reader);
+            }
+            public MeshData()
+            {
+                
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
                 nxs = new string(reader.ReadChars(4));
                 mesh = new string(reader.ReadChars(4));
                 num1 = reader.ReadInt32();
@@ -391,7 +386,7 @@ namespace Mafia2
 
                 for (int i = 0; i != unkShorts.Length; i++)
                 {
-                    unkShorts[i] = (CollisionMaterials) reader.ReadInt16();
+                    unkShorts[i] = (CollisionMaterials)reader.ReadInt16();
                 }
 
                 if (num2 == 3)
@@ -487,8 +482,6 @@ namespace Mafia2
                 unkSizeData = reader.ReadBytes(unkSize);
 
                 this.sections = sections;
-                Console.WriteLine("MeshData: {0}, {1}, {2}, {3}, {4}, {5}, POS: {6}", num1, num2, unk1, unk2, hasHit,
-                    reader.BaseStream.Position, num3);
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -567,7 +560,6 @@ namespace Mafia2
                     for (int i = 0; i != 6; i++)
                         writer.Write(opcFloats[i]);
                 }
-
                 writer.Write(21840456);
 
                 writer.Write(hbmVersion);
@@ -588,29 +580,6 @@ namespace Mafia2
 
                 writer.Write(unkSize);
                 writer.Write(unkSizeData);
-            }
-
-            private struct UnkOPCData
-            {
-                private short[] unkHalfs;
-                private int unkInt;
-
-                public UnkOPCData(BinaryReader reader)
-                {
-                    unkHalfs = new short[8];
-                    for (int i = 0; i != unkHalfs.Length; i++)
-                        unkHalfs[i] = reader.ReadInt16();
-
-                    unkInt = reader.ReadInt32();
-                }
-
-                public void WriteToFile(BinaryWriter writer)
-                {
-                    for (int i = 0; i != unkHalfs.Length; i++)
-                        writer.Write(unkHalfs[i]);
-
-                    writer.Write(unkInt);
-                }
             }
 
             public int GetMeshSize()
@@ -713,6 +682,101 @@ namespace Mafia2
                 return size;
 
             }
+
+            public void BuildBasicCollision(Vertex[] vertices, Short3[] trianglesData)
+            {
+                nxs = Convert.ToString(22239310);
+                mesh = Convert.ToString(1213416781);
+
+
+                num1 = 1;
+                num2 = 1;
+                unkSmall = 0.001f;
+                num3 = 255;
+                num4 = 0;
+
+                nPoints = vertices.Length;
+                nTriangles = trianglesData.Length;
+
+                points = new Vector3[nPoints];
+                triangles = new Int3[nTriangles];
+                unkShorts = new CollisionMaterials[nTriangles];
+
+                for (int i = 0; i != points.Length; i++)
+                    points[i] = vertices[i].Position;
+
+                for (int i = 0; i != triangles.Length; i++)
+                    triangles[i] = new Int3(trianglesData[i]);
+
+                for (int i = 0; i != unkShorts.Length; i++)
+                    unkShorts[i] = CollisionMaterials.Plaster;
+
+                unk0 = 1;
+                unk1 = 1;
+
+                opcSize = 28;
+
+                bool hasHit = false;
+
+                //BEGIN OPC/HBM SECTION.
+                string opc = Convert.ToString(21188687);
+
+                opcVersion = 1;
+                opcType = 4;
+
+                string hbm = Convert.ToString(21840456);
+
+                hbmVersion = 0;
+                hbmOffset = 1;
+                hbmMaxOffset = 0;
+
+                hbmUnkFloats = new float[24];
+                hbmUnkFloats[0] = 0.0f; //usually really low float or 0.0f;
+                hbmUnkFloats[1] = 0.0f; //bound centre X.
+                hbmUnkFloats[2] = 0.0f; //bound centre Y.
+                hbmUnkFloats[3] = 0.0f; //bound centre Z.
+                hbmUnkFloats[4] = 0.0f; //bound centre radius.
+
+                List<Vertex[]> data = new List<Vertex[]>();
+                data.Add(vertices);
+                Bounds bounds = new Bounds();
+                bounds.CalculateBounds(data);
+
+                hbmUnkFloats[5] = bounds.Min.X;
+                hbmUnkFloats[6] = bounds.Min.Y;
+                hbmUnkFloats[7] = bounds.Min.Z;
+                hbmUnkFloats[8] = bounds.Max.X;
+                hbmUnkFloats[9] = bounds.Max.Y;
+                hbmUnkFloats[10] = bounds.Max.Z;
+
+                unkSize = nTriangles;
+                unkSizeData = new byte[unkSize];
+                for (int i = 0; i != unkSizeData.Length; i++)
+                    unkSizeData[i] = 26;
+            }
+
+            private struct UnkOPCData
+            {
+                private short[] unkHalfs;
+                private int unkInt;
+
+                public UnkOPCData(BinaryReader reader)
+                {
+                    unkHalfs = new short[8];
+                    for (int i = 0; i != unkHalfs.Length; i++)
+                        unkHalfs[i] = reader.ReadInt16();
+
+                    unkInt = reader.ReadInt32();
+                }
+
+                public void WriteToFile(BinaryWriter writer)
+                {
+                    for (int i = 0; i != unkHalfs.Length; i++)
+                        writer.Write(unkHalfs[i]);
+
+                    writer.Write(unkInt);
+                }
+            }
         }
 
         public class Section
@@ -759,6 +823,11 @@ namespace Mafia2
                 numEdges = reader.ReadInt32();
                 unk1 = reader.ReadInt32();
                 unk2 = reader.ReadInt32();
+            }
+
+            public Section()
+            {
+
             }
 
             public void WriteToFile(BinaryWriter writer)
