@@ -52,7 +52,13 @@ namespace Mafia2
                 set { lodNames = value; }
             }
 
-            public Entry() { }
+            public Entry()
+            {
+                lodCount = 0;
+                position = new Vector3(0);
+                rotation = new Matrix33();
+                lodNames = new string[lodCount];
+            }
 
             public void WriteToFile(BinaryWriter writer)
             {

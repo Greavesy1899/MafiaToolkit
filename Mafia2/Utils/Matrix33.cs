@@ -31,6 +31,22 @@ namespace Mafia2
         }
 
         /// <summary>
+        /// Constructs empty Matrix33.
+        /// </summary>
+        public Matrix33()
+        {
+            Rows[0, 0] = 0;
+            Rows[0, 1] = 0;
+            Rows[0, 2] = 0;
+            Rows[1, 0] = 0;
+            Rows[1, 1] = 0;
+            Rows[1, 2] = 0;
+            Rows[2, 0] = 0;
+            Rows[2, 1] = 0;
+            Rows[2, 2] = 0;
+        }
+
+        /// <summary>
         /// Write matrix to file.
         /// </summary>
         /// <param name="writer"></param>

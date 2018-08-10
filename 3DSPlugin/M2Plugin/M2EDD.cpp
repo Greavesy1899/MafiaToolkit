@@ -52,7 +52,7 @@ void EDDEntry::ReadFromStream(FILE * stream) {
 	for (int c = 0; c != lodNames.size(); c++) {
 		lodNames[c] = std::wstring();
 		lodNames[c] = ReadString(stream, lodNames[c]);
-		lodNames[c] += _T(".edm");
+		lodNames[c] += _T(".m2t");
 	}
 }
 

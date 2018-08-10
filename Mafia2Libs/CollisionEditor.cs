@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.IO;
+using System.Windows.Forms;
 using Mafia2;
 
 namespace Mafia2Tool
@@ -27,7 +28,7 @@ namespace Mafia2Tool
 
         public void LoadInCollision()
         {
-            for(int i = 0; i != SceneData.Collisions.NXSData.Length; i++)
+            for (int i = 0; i != SceneData.Collisions.NXSData.Length; i++)
             {
                 Collision.NXSStruct nxsData = SceneData.Collisions.NXSData[i];
 
@@ -35,6 +36,28 @@ namespace Mafia2Tool
                 node.Tag = nxsData;
                 node.Name = nxsData.Hash.ToString();
 
+
+                Model model = new Model();
+                model.Lods = new Lod[1];
+                model.Lods[0] = new Lod();
+                model.Lods[0].Parts = new ModelPart[1];
+                model.Lods[0].Parts[0] = new ModelPart();
+                ;
+                model.Lods[0].Vertices = new Vertex[nxsData.Data.Vertices.Length];
+                model.Lods[0].Parts[0].Indices = new Short3[nxsData.Data.Triangles.Length];
+
+                for (int x = 0; x != model.Lods[0].Vertices.Length; x++)
+                {
+                    model.Lods[0].Vertices[x] = new Vertex();
+                    model.Lods[0].Vertices[x].Position = nxsData.Data.Vertices[x];
+                }
+
+
+                for (int x = 0; x != model.Lods[0].Parts[0].Indices.Length; x++)
+                    model.Lods[0].Parts[0].Indices[x] = new Short3(nxsData.Data.Triangles[x]);
+
+
+                model.ExportCollisionToM2T(node.Name);
                 treeView1.Nodes.Add(node);
             }
 

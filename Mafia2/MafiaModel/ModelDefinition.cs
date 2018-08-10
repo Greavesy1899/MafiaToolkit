@@ -221,7 +221,15 @@ namespace Mafia2
             if (!Directory.Exists("exported"))
                 Directory.CreateDirectory("Exported");
 
-            using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + frameMesh.Name.String + ".m2t")))
+            string name = frameMesh.Name.String;
+
+            if (frameMesh.Name.String == "")
+                name = frameGeometry.LOD[0].VertexBufferRef.String;
+
+            if (File.Exists("exported/" + name + ".m2t"))
+                return;
+
+            using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + name + ".m2t")))
             {
                 //An absolute overhaul on the mesh exportation.
                 //file header; M2T\0
@@ -291,6 +299,72 @@ namespace Mafia2
                             lods[i].Parts[x].Indices[z].WriteToFile(writer);
                             writer.Write((byte) x);
                         }
+                    }
+                }
+            }
+        }
+
+        public void ExportCollisionToM2T(string name)
+        {
+            if (!Directory.Exists("Collisions"))
+                Directory.CreateDirectory("Collisions");
+
+            if (File.Exists("Collisions/ " + name + ".m2t"))
+                return;
+
+            using (BinaryWriter writer = new BinaryWriter(File.Create("Collisions/ " + name + ".m2t")))
+            {
+                //An absolute overhaul on the mesh exportation.
+                //file header; M2T\0
+                string header = "M2T ";
+
+                writer.Write(header.ToCharArray());
+
+                //mesh name
+                writer.Write(name);
+
+                //Number of Lods
+                writer.Write((byte)1);
+
+                for (int i = 0; i != 1; i++)
+                {
+                    //Write section for VertexFlags. 
+                    writer.Write((byte)1);
+                    writer.Write((byte)0);
+                    writer.Write((byte)0);
+                    writer.Write((byte)0);
+                    writer.Write((byte)0);
+                    writer.Write((byte)0);
+                    writer.Write((byte)0);
+                    writer.Write((byte)0);
+                    writer.Write((byte)0);
+                    writer.Write((byte)0);
+                    writer.Write((byte)0);
+                    writer.Write((byte)0);
+
+                    //write length and then all vertices.
+                    writer.Write(lods[i].Vertices.Length);
+                    for (int x = 0; x != lods[i].Vertices.Length; x++)
+                    {
+                        Vertex vert = lods[i].Vertices[x];
+
+                        vert.Position.WriteToFile(writer);
+                    }
+
+                    //write mesh count and texture names.
+                    writer.Write(0);
+
+                    //write triangle data.
+                    int totalFaces = 0;
+                    foreach (ModelPart part in lods[i].Parts)
+                        totalFaces += part.Indices.Length;
+
+                    writer.Write(totalFaces);
+                    for (int z = 0; z != lods[i].Parts[0].Indices.Length; z++)
+                    {
+                        //write triangle, and then material
+                        lods[i].Parts[0].Indices[z].WriteToFile(writer);
+                        writer.Write((byte)0);
                     }
                 }
             }

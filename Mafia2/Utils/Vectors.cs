@@ -77,6 +77,16 @@ namespace Mafia2
         }
 
         /// <summary>
+        /// Convert vector3 degrees to radians
+        /// </summary>
+        public void ConvertToRadians()
+        {
+            X = -(float)(X * Math.PI / 180);
+            Y = -(float)(Y * Math.PI / 180);
+            Z = -(float)(Z * Math.PI / 180);
+        }
+
+        /// <summary>
         /// Find the cross product between two vectors.
         /// </summary>
         /// <param name="vector2"></param>
@@ -278,6 +288,17 @@ namespace Mafia2
         }
 
         /// <summary>
+        /// Build Short3 from Int3
+        /// </summary>
+        /// <param name="ints"></param>
+        public Short3(Int3 ints)
+        {
+            S1 = (short)ints.I1;
+            S2 = (short)ints.I2;
+            S3 = (short)ints.I3;
+        }
+
+        /// <summary>
         /// Construct Short3 from three integers.
         /// </summary>
         /// <param name="i1"></param>
@@ -319,9 +340,29 @@ namespace Mafia2
         /// <param name="reader"></param>
         public Int3(BinaryReader reader)
         {
+            ReadFromFile(reader);
+        }
+
+        /// <summary>
+        /// read data from file.
+        /// </summary>
+        /// <param name="reader"></param>
+        public void ReadFromFile(BinaryReader reader)
+        {
             I1 = reader.ReadInt32();
             I2 = reader.ReadInt32();
             I3 = reader.ReadInt32();
+        }
+
+        /// <summary>
+        /// write data to file
+        /// </summary>
+        /// <param name="writer"></param>
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(I1);
+            writer.Write(I2);
+            writer.Write(I3);
         }
 
         public override string ToString()

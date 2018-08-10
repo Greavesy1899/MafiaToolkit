@@ -325,8 +325,11 @@ namespace Mafia2Tool
                         }
                     }
                     newModel.ExportToM2T();
-
-                    entry.LODNames[c] = newModel.FrameMesh.Name.String;
+                    Console.WriteLine(newModel.FrameMesh.Name.String);
+                    if (newModel.FrameMesh.Name.String == "")
+                        entry.LODNames[c] = newModel.FrameGeometry.LOD[c].VertexBufferRef.String;
+                    else
+                        entry.LODNames[c] = newModel.FrameMesh.Name.String;
                 }
                 entry.Position = mesh.Matrix.Position;
                 entry.Rotation = mesh.Matrix.Rotation;

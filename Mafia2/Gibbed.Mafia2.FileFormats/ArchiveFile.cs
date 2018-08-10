@@ -334,7 +334,7 @@ namespace Gibbed.Mafia2.FileFormats
 
                     if(resource.Name == "IndexBufferPool" || resource.Name == "PREFAB")
                         resource.Parent = 3;
-                    else if (resource.Name == "VertexBufferPool")
+                    else if (resource.Name == "VertexBufferPool" || resource.Name == "NAV_OBJ_DATA")
                         resource.Parent = 2;
 
                     addedTypes.Add(nodes.Current.Value);
