@@ -27,6 +27,7 @@ namespace Mafia2Tool
             List<FileInfo> vbps = new List<FileInfo>();
             List<FileInfo> ibps = new List<FileInfo>();
             List<ItemDesc> ids = new List<ItemDesc>();
+            List<Actor> act = new List<Actor>();
 
             foreach (FileInfo file in files)
             {
@@ -50,9 +51,6 @@ namespace Mafia2Tool
 
                 if (file.FullName.Contains(".act"))
                     Actors = new Actor(file.FullName);
-
-                if (file.FullName.Contains(".col"))
-                    Collisions = new Collision(file.FullName);
 
                 //if (file.FullName.Contains("cityareas"))
                 //    CityAreas = new CityAreas(file.FullName);

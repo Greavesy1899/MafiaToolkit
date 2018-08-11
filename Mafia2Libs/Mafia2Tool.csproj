@@ -71,6 +71,9 @@
     <Compile Include="CollisionEditor.Designer.cs">
       <DependentUpon>CollisionEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="DiscordRPC\DiscordController.cs" />
+    <Compile Include="DiscordRPC\DiscordPrefs.cs" />
+    <Compile Include="DiscordRPC\DiscordRPC.cs" />
     <Compile Include="FrameResourceTool.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,6 +104,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="libs/discord-rpc.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gibbed.IO\Gibbed.IO.csproj">

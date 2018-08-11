@@ -17,6 +17,7 @@ namespace Mafia2Tool
             name = file.Name;
             FetchMaterials();
             ShowDialog();
+            DiscordPrefs.Update("Using the Material Library editor.");
         }
 
         public void FetchMaterials()

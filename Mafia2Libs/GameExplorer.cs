@@ -576,15 +576,18 @@ namespace Mafia2Tool
             ListViewItem item = fileListView.SelectedItems[0];
             MaterialTool mTool;
             FrameResourceTool fTool;
+            CollisionEditor cTool;
 
             if (item.SubItems[1].Text == "Directory")
-                OpenDirectory((DirectoryInfo) item.Tag);
+                OpenDirectory((DirectoryInfo)item.Tag);
             else if (item.SubItems[1].Text == "Material Library")
-                mTool = new MaterialTool((FileInfo) item.Tag);
+                mTool = new MaterialTool((FileInfo)item.Tag);
             else if (item.SubItems[1].Text == "SDS Archive")
-                OpenSDS((FileInfo) item.Tag);
-            else if(item.SubItems[1].Text == "FR")
+                OpenSDS((FileInfo)item.Tag);
+            else if (item.SubItems[1].Text == "FR")
                 fTool = new FrameResourceTool((FileInfo)item.Tag);
+            else if (item.SubItems[1].Text == "COL")
+                cTool = new CollisionEditor((FileInfo)item.Tag);
         }
 
         private void ContextSDSPack_Click(object sender, EventArgs e)

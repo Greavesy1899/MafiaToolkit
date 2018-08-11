@@ -39,6 +39,7 @@ namespace Mafia2Tool
             }
             SceneData.BuildData();
             ReadFrameResource();
+            DiscordPrefs.Update("Using the Frame Resource editor.");
         }
 
         public FrameResourceTool(FileInfo info)
@@ -360,11 +361,6 @@ namespace Mafia2Tool
 
             //MaterialTool tool = new MaterialTool();
             //tool.ShowDialog();
-        }
-
-        private void CollisionEditor_Click(object sender, EventArgs e)
-        {
-            CollisionEditor editor = new CollisionEditor();
         }
 
         private void OverwriteBuffer_Click(object sender, EventArgs e)

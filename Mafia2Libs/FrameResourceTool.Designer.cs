@@ -40,7 +40,6 @@
             this.farLodsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.collisionEditorSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.materialEditorSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.overwriteBufferSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolButton = new System.Windows.Forms.ToolStripDropDownButton();
@@ -146,7 +145,6 @@
             this.toolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportAllSubButton,
-            this.collisionEditorSubButton,
             this.materialEditorSubButton,
             this.overwriteBufferSubButton});
             this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
@@ -183,13 +181,6 @@
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
             this.allToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.allToolStripMenuItem.Text = "All";
-            // 
-            // collisionEditorSubButton
-            // 
-            this.collisionEditorSubButton.Name = "collisionEditorSubButton";
-            this.collisionEditorSubButton.Size = new System.Drawing.Size(180, 22);
-            this.collisionEditorSubButton.Text = "Collision Editor";
-            this.collisionEditorSubButton.Click += new System.EventHandler(this.CollisionEditor_Click);
             // 
             // materialEditorSubButton
             // 
@@ -297,7 +288,6 @@
         private System.Windows.Forms.ToolStripMenuItem switchViewSubButton;
         private System.Windows.Forms.ToolStripDropDownButton toolsButton;
         private System.Windows.Forms.ToolStripMenuItem exportAllSubButton;
-        private System.Windows.Forms.ToolStripMenuItem collisionEditorSubButton;
         private System.Windows.Forms.ToolStripMenuItem materialEditorSubButton;
         private System.Windows.Forms.ToolStripMenuItem overwriteBufferSubButton;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;

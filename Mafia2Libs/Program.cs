@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Gibbed.Mafia2.FileFormats;
 
 namespace Mafia2Tool
 {
@@ -12,9 +11,9 @@ namespace Mafia2Tool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
+            Environment.SetEnvironmentVariable("PATH", Environment.GetEnvironmentVariable("PATH") + ";" + "/libs");
             CheckINIExists();
-
+            DiscordPrefs.InitRPC();
             MaterialData.Load();
             Application.Run(new GameExplorer());
         }

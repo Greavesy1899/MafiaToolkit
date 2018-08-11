@@ -144,6 +144,7 @@ namespace Mafia2
                 hash = reader.ReadUInt64();
                 unk4 = reader.ReadInt32();
                 unk5 = reader.ReadByte();
+                Console.WriteLine(string.Format("hash {0}, unk4 {1}, unk5 {2}", hash, unk4, unk5));
             }
 
             /// <summary>
@@ -277,6 +278,8 @@ namespace Mafia2
             private int hbmMaxOffset;
             private byte[] hbmOffsetData;
             private int hbmNumRefs;
+            private int hbmMaxRefValue;
+            private short[] hbmRefs;
             private float[] hbmUnkFloats;
             private float[] hbmUnkFloats2;
             private int unkSize;
@@ -436,9 +439,9 @@ namespace Mafia2
                 bool hasHit = false;
 
                 //BEGIN OPC/HBM SECTION.
-                string opc = new string(reader.ReadChars(4));
-                if (opc == "OPC\0")
-                    hasHit = true;
+                int opc = reader.ReadInt32();
+                if (opc != 21188687)
+                    throw new FormatException("Did not reach OPC correctly");
 
                 opcVersion = reader.ReadInt32();
                 opcType = reader.ReadInt32();
@@ -455,23 +458,33 @@ namespace Mafia2
                         opcFloats[i] = reader.ReadSingle();
                 }
 
-                string hbm = new string(reader.ReadChars(4));
-                if (hbm == "HBM\0")
-                    hasHit = true;
+                int hbm = reader.ReadInt32();
+                if (hbm != 21840456)
+                    throw new FormatException("Did not reach HBM correctly");
 
                 hbmVersion = reader.ReadInt32();
                 hbmOffset = reader.ReadInt32();
-                hbmMaxOffset = reader.ReadInt32();
+                hbmMaxOffset = reader.ReadInt32(); //max num in offset;
+
+                if (hbmMaxOffset > 256)
+                    Console.WriteLine("HBM MAXOFFSET IS ABOVE 256");
 
                 if (hbmOffset > 1)
                 {
-                    hbmOffsetData = new byte[hbmOffset];
-                    for (int i = 0; i != hbmOffset; i++)
-                        hbmOffsetData[i] = reader.ReadByte();
+                    if (hbmMaxOffset > 256)
+                        hbmOffsetData = reader.ReadBytes(hbmOffset * 2);
+                    else
+                        hbmOffsetData = reader.ReadBytes(hbmOffset);
 
                     hbmNumRefs = reader.ReadInt32();
-                    if (hbmNumRefs != 0)
-                        throw new NotImplementedException();
+                    //if (hbmNumRefs > 0)
+                    //{
+                    //    hbmMaxRefValue = reader.ReadInt32();
+                    //    hbmRefs = new short[hbmOffset];
+                    //    for (int i = 0; i != hbmRefs.Length; i++)
+                    //        hbmRefs[i] = reader.ReadInt16();
+                    //}
+                    //reader.ReadInt32(); //0?
                 }
 
                 hbmUnkFloats = new float[24];
@@ -481,6 +494,10 @@ namespace Mafia2
                 unkSize = reader.ReadInt32();
                 unkSizeData = reader.ReadBytes(unkSize);
 
+                if (unkSize != nTriangles)
+                    throw new FormatException("UnkSize does not equal nTriangles:");
+
+                Console.WriteLine("Passed Collision");
                 this.sections = sections;
             }
 

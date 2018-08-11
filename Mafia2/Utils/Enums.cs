@@ -53,6 +53,7 @@ namespace Mafia2
         StaticParticle = 66,
         FireTarget = 70,
         LightEntity = 71,
+        Cutscene = 73,
         Telephone = 95,
         ScriptEntity = 98,
         Pinup = 106,

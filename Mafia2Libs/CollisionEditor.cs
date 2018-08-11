@@ -6,24 +6,18 @@ namespace Mafia2Tool
 {
     public partial class CollisionEditor : Form
     {
-        public CollisionEditor()
+        public CollisionEditor(FileInfo file)
         {
             InitializeComponent();
-            CheckCollision();
+            CheckCollision(file);
+            ShowDialog();
+            DiscordPrefs.Update("Using the Collision editor.");
         }
 
-        public void CheckCollision()
+        public void CheckCollision(FileInfo file)
         {
-            if (SceneData.Collisions == null)
-            {
-                MessageBox.Show("No collisions have been loaded.", "Error!");
-                Close();
-            }
-            else
-            {
-                LoadInCollision();
-                ShowDialog();
-            }
+            SceneData.Collisions = new Collision(file.FullName);
+            LoadInCollision();
         }
 
         public void LoadInCollision()
