@@ -35,19 +35,20 @@ static ParamBlockDesc2 M2ModifierRollout(m2_pblock, _T("Model Parameters"), 0, G
 	//rollout
 	IDD_M2MODIFIERPANEL, IDS_PARAMS, 0, 0, NULL,
 
+	//Using 2, this is TYPE_SINGLECHECKBOX, but in 2016 it's TYPE_SINGLECHEKBOX. Nice one Autodesk.
 	m2_hasnormals, _T("hasNormals"), TYPE_BOOL, P_RESET_DEFAULT, IDS_ARA_S_DESC,
 	p_default, false,
-	p_ui, TYPE_SINGLECHECKBOX, IDC_HASNORMALS,
+	p_ui, 2, IDC_HASNORMALS,
 	p_end,
 
 	m2_hastangents, _T("hasTangents"), TYPE_BOOL, P_RESET_DEFAULT, IDS_ARA_S_DESC,
 	p_default, false,
-	p_ui, TYPE_SINGLECHECKBOX, IDC_HASTANGENTS,
+	p_ui, 2, IDC_HASTANGENTS,
 	p_end,
 
 	m2_hasuvs, _T("hasUV"), TYPE_BOOL, P_RESET_DEFAULT, IDS_ARA_S_DESC,
 	p_default, false,
-	p_ui, TYPE_SINGLECHECKBOX, IDC_HASUVS,
+	p_ui, 2, IDC_HASUVS,
 	p_end,
 	p_end
 );

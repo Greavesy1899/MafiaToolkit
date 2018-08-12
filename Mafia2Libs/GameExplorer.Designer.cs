@@ -37,8 +37,6 @@ namespace Mafia2Tool
             this.imageBank = new System.Windows.Forms.ImageList(this.components);
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
-            this.buttonStripBack = new System.Windows.Forms.ToolStripButton();
-            this.buttonStripForward = new System.Windows.Forms.ToolStripButton();
             this.buttonStripUp = new System.Windows.Forms.ToolStripButton();
             this.textStripFolderPath = new System.Windows.Forms.ToolStripTextBox();
             this.buttonStripRefresh = new System.Windows.Forms.ToolStripButton();
@@ -63,6 +61,7 @@ namespace Mafia2Tool
             this.ContextSDSUnpack = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextSDSPack = new System.Windows.Forms.ToolStripMenuItem();
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            this.ContextOpenFolder = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -140,8 +139,6 @@ namespace Mafia2Tool
             // 
             this.toolStrip2.CanOverflow = false;
             this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.buttonStripBack,
-            this.buttonStripForward,
             this.buttonStripUp,
             this.textStripFolderPath,
             this.buttonStripRefresh,
@@ -154,25 +151,6 @@ namespace Mafia2Tool
             this.toolStrip2.Text = "toolStrip1";
             this.toolStrip2.Resize += new System.EventHandler(this.toolStrip1_Resize);
             // 
-            // buttonStripBack
-            // 
-            this.buttonStripBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonStripBack.Image = ((System.Drawing.Image)(resources.GetObject("buttonStripBack.Image")));
-            this.buttonStripBack.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonStripBack.Name = "buttonStripBack";
-            this.buttonStripBack.Size = new System.Drawing.Size(23, 20);
-            this.buttonStripBack.Text = "Back";
-            this.buttonStripBack.ToolTipText = "Back";
-            // 
-            // buttonStripForward
-            // 
-            this.buttonStripForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonStripForward.Image = ((System.Drawing.Image)(resources.GetObject("buttonStripForward.Image")));
-            this.buttonStripForward.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonStripForward.Name = "buttonStripForward";
-            this.buttonStripForward.Size = new System.Drawing.Size(23, 20);
-            this.buttonStripForward.Text = "Forward";
-            // 
             // buttonStripUp
             // 
             this.buttonStripUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -182,13 +160,15 @@ namespace Mafia2Tool
             this.buttonStripUp.Size = new System.Drawing.Size(23, 20);
             this.buttonStripUp.Text = "buttonStripUp";
             this.buttonStripUp.ToolTipText = "Up";
+            this.buttonStripUp.Click += new System.EventHandler(this.buttonStripUp_Click);
             // 
             // textStripFolderPath
             // 
             this.textStripFolderPath.AutoSize = false;
             this.textStripFolderPath.Name = "textStripFolderPath";
-            this.textStripFolderPath.Size = new System.Drawing.Size(300, 23);
+            this.textStripFolderPath.Size = new System.Drawing.Size(200, 23);
             this.textStripFolderPath.ToolTipText = "Folder Path";
+            this.textStripFolderPath.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onPathChange);
             // 
             // buttonStripRefresh
             // 
@@ -198,12 +178,14 @@ namespace Mafia2Tool
             this.buttonStripRefresh.Name = "buttonStripRefresh";
             this.buttonStripRefresh.Size = new System.Drawing.Size(23, 20);
             this.buttonStripRefresh.Text = "Refresh";
+            this.buttonStripRefresh.Click += new System.EventHandler(this.buttonStripRefresh_Click);
             // 
             // textStripSearch
             // 
             this.textStripSearch.AutoSize = false;
+            this.textStripSearch.Enabled = false;
             this.textStripSearch.Name = "textStripSearch";
-            this.textStripSearch.Size = new System.Drawing.Size(100, 23);
+            this.textStripSearch.Size = new System.Drawing.Size(200, 23);
             this.textStripSearch.Text = "Search..";
             this.textStripSearch.ToolTipText = "Search";
             // 
@@ -367,27 +349,35 @@ namespace Mafia2Tool
             // 
             this.SDSContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ContextSDSUnpack,
-            this.ContextSDSPack});
+            this.ContextSDSPack,
+            this.ContextOpenFolder});
             this.SDSContext.Name = "SDSContext";
-            this.SDSContext.Size = new System.Drawing.Size(115, 48);
+            this.SDSContext.Size = new System.Drawing.Size(198, 70);
             // 
             // ContextSDSUnpack
             // 
             this.ContextSDSUnpack.Name = "ContextSDSUnpack";
-            this.ContextSDSUnpack.Size = new System.Drawing.Size(114, 22);
+            this.ContextSDSUnpack.Size = new System.Drawing.Size(197, 22);
             this.ContextSDSUnpack.Text = "Unpack";
             this.ContextSDSUnpack.Click += new System.EventHandler(this.ContextSDSUnpack_Click);
             // 
             // ContextSDSPack
             // 
             this.ContextSDSPack.Name = "ContextSDSPack";
-            this.ContextSDSPack.Size = new System.Drawing.Size(114, 22);
+            this.ContextSDSPack.Size = new System.Drawing.Size(197, 22);
             this.ContextSDSPack.Text = "Pack";
             this.ContextSDSPack.Click += new System.EventHandler(this.ContextSDSPack_Click);
             // 
             // MafiaIIBrowser
             // 
             this.MafiaIIBrowser.Description = "Select your MafiaII folder. The folder should contain \"launcher.exe\"";
+            // 
+            // ContextOpenFolder
+            // 
+            this.ContextOpenFolder.Name = "ContextOpenFolder";
+            this.ContextOpenFolder.Size = new System.Drawing.Size(197, 22);
+            this.ContextOpenFolder.Text = "Open Folder in Explorer";
+            this.ContextOpenFolder.Click += new System.EventHandler(this.ContextOpenFolder_Click);
             // 
             // GameExplorer
             // 
@@ -398,7 +388,7 @@ namespace Mafia2Tool
             this.Controls.Add(this.bottomContainer);
             this.Controls.Add(this.topContainer);
             this.Name = "GameExplorer";
-            this.Text = "GameExplorer";
+            this.Text = "Game Explorer";
             this.Load += new System.EventHandler(this.toolStrip1_Resize);
             this.mainContainer.Panel1.ResumeLayout(false);
             this.mainContainer.Panel2.ResumeLayout(false);
@@ -454,11 +444,10 @@ namespace Mafia2Tool
         private ToolStripMenuItem runMafiaIIToolStripMenuItem;
         private ToolStripContainer toolStripContainer1;
         private ToolStrip toolStrip2;
-        private ToolStripButton buttonStripBack;
-        private ToolStripButton buttonStripForward;
         private ToolStripButton buttonStripUp;
         private ToolStripTextBox textStripFolderPath;
         private ToolStripButton buttonStripRefresh;
         private ToolStripTextBox textStripSearch;
+        private ToolStripMenuItem ContextOpenFolder;
     }
 }

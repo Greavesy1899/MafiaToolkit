@@ -125,7 +125,7 @@
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAABi
-        EgAAAk1TRnQBSQFMAgEBBAEAAWgBAAFoAQABEAEAARABAAT/ARkBAAj/AUIBTQE2BwABNgMAASgDAAFA
+        EgAAAk1TRnQBSQFMAgEBBAEAAYgBAAGIAQABEAEAARABAAT/ARkBAAj/AUIBTQE2BwABNgMAASgDAAFA
         AwABIAMAAQEBAAEYBgABGP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AB4AAfsB/gH/AeEC/wFuAcIB3AFc
         AckB6QFYAcAB4wFcAcIB5QFgAcYB6QFWAcEB4wFTAccB5gFKAcIB4AFQAcQB4wFOAcIB4wFLAb0B5gFb
         AcAB5gF2AbwB2QHGAv8D/gP/A7UDtgO1A7EDtAOtA6sDrQOoA6QDqAOgA/4E/wH8Af8B+wH5Af8BkgGU
@@ -207,27 +207,9 @@
 </value>
   </data>
   <metadata name="toolStrip2.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>669, 17</value>
+    <value>555, 15</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="buttonStripBack.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC8SURBVFhH7daxDYMwFARQFxSUHoABPIQH8BAuXDIAvQuP
-        QEHBEB7xR0QhssBSSBQnV9yTToiCr5MF2IqIiAjDuq4yz7M8brFYa7diEmPEKjhNk3Rddy+3BaZgzlmG
-        YXgW2wNR0Dl3KrYnhLBd/yOlJH3fn0p9OZ8xxtSGtch7vPe1IS1zzbIsorWuDWid18ZxrD34q1wDvYIl
-        2HfwCPYrLkH/B0uwO0kJei8uwZ5mjmDPgyXoEzUREREqpW6z0FJNzCCRDAAAAABJRU5ErkJggg==
-</value>
-  </data>
-  <data name="buttonStripForward.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADASURBVFhH7daxDcQgDAVQihSUDMAADMEADEGRMgPQUzAC
-        RQqGYESfLB3SSW5yHIl8kp/0ZVLEsqIkoIQQQgheaq3QWoP3JT85ZxwOvPc8hxwDYrZtg5QSr0E/Bxyx
-        1kLvnceg+76TAUdCCFiXIM1XRWsNpRRc/4Q0Xh3nHNZppOFdiTFi/RppdGeMMXCeJ64vI02eyHEcWC8h
-        N98Z1k+Q7TvI9ite9R+c9tROMo39Xvw3pxm250H2J2ohhBCCE6Very9STejzdRYAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="buttonStripUp.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8

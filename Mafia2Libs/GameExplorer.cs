@@ -5,7 +5,6 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
-using Gibbed.Illusion.FileFormats.Hashing;
 using Gibbed.Illusion.ResourceFormats;
 using Gibbed.IO;
 using Gibbed.Mafia2.FileFormats;
@@ -16,6 +15,9 @@ namespace Mafia2Tool
 {
     public partial class GameExplorer : Form
     {
+        private DirectoryInfo currentDirectory;
+        private DirectoryInfo originalPath;
+
         public GameExplorer()
         {
             InitializeComponent();
@@ -31,7 +33,6 @@ namespace Mafia2Tool
         {
             IniFile ini = new IniFile();
             TreeNode rootTreeNode;
-            DirectoryInfo dirInfo = null;
 
             string path = ini.Read("MafiaII", "Directories");
 
@@ -39,10 +40,10 @@ namespace Mafia2Tool
                 GetPath(ini);
 
             path = ini.Read("MafiaII", "Directories");
-            dirInfo = new DirectoryInfo(path);
+            originalPath = new DirectoryInfo(path);
 
             //check if directory exists.
-            if (!dirInfo.Exists)
+            if (!originalPath.Exists)
             {
                 MessageBox.Show("Could not find MafiaII 'launcher.exe', please correct the path!", "Error!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -52,7 +53,7 @@ namespace Mafia2Tool
 
             //check if launcher.exe exists.
             bool hasLauncher = false;
-            foreach (FileInfo file in dirInfo.GetFiles())
+            foreach (FileInfo file in originalPath.GetFiles())
             {
                 if (file.Name == "launcher.exe" || file.Name == "launcher")
                     hasLauncher = true;
@@ -67,11 +68,12 @@ namespace Mafia2Tool
 
             infoText.Text = "Building folders..";
             //build treeView.
-            rootTreeNode = new TreeNode(dirInfo.Name);
-            rootTreeNode.Tag = dirInfo;
-            GetSubFolders(dirInfo.GetDirectories(), rootTreeNode);
+            rootTreeNode = new TreeNode(originalPath.Name);
+            rootTreeNode.Tag = originalPath;
+            GetSubFolders(originalPath.GetDirectories(), rootTreeNode);
             folderView.Nodes.Add(rootTreeNode);
             infoText.Text = "Done builidng folders..";
+            OpenDirectory(originalPath);
         }
 
         /// <summary>
@@ -157,6 +159,8 @@ namespace Mafia2Tool
 
             fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
             infoText.Text = "Done loading directory.";
+            textStripFolderPath.Text = directory.FullName;
+            currentDirectory = directory;
         }
 
         /// <summary>
@@ -689,6 +693,35 @@ namespace Mafia2Tool
             }
 
             Process.Start(exe);
+        }
+
+        private void buttonStripUp_Click(object sender, EventArgs e)
+        {
+            if (currentDirectory.Name == originalPath.Name)
+                return;
+            OpenDirectory(currentDirectory.Parent);
+        }
+
+        private void buttonStripRefresh_Click(object sender, EventArgs e)
+        {
+            currentDirectory.Refresh();
+            OpenDirectory(currentDirectory);
+        }
+
+        private void onPathChange(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == '\r')
+            {
+                if(Directory.Exists(textStripFolderPath.Text) && textStripFolderPath.Text.Contains(currentDirectory.Name))
+                    OpenDirectory(new DirectoryInfo(textStripFolderPath.Text));
+                else
+                    MessageBox.Show("Game Explorer cannot find path '" + textStripFolderPath + "'. Make sure the path exists and try again.", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ContextOpenFolder_Click(object sender, EventArgs e)
+        {
+            Process.Start(currentDirectory.FullName);
         }
     }
 }

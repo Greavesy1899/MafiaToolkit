@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="2016|x64">
+      <Configuration>2016</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -19,6 +23,7 @@
     <ProjectGuid>{6671F0BA-6FB8-4f35-8392-0676D05113A8}</ProjectGuid>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <MaxSDK>C:\Program Files\Autodesk\3ds Max 2017 SDK\maxsdk</MaxSDK>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(MaxSDK)\ProjectSettings\PropertySheets\3dsmax.general.project.settings.props" />
@@ -28,7 +33,7 @@
   </ImportGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Platform)'=='x64'">C:\Program Files\Autodesk\3ds Max 2017\plugins\</OutDir>
+    <OutDir Condition="'$(Platform)'=='x64'">..\..\..\..\..\..\..\..\Program Files\Autodesk\3ds Max 2017\Plugins</OutDir>
     <IntDir>$(ProjectDir)\obj\$(MaxPlatform)\$(MaxConfiguration)\</IntDir>
     <TargetName>M2Plugin</TargetName>
     <TargetExt>.dli</TargetExt>
@@ -36,11 +41,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='2016|x64'">
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <PreprocessorDefinitions>_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MaxSdkInc);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\3ds Max 2017 SDK\maxsdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level1</WarningLevel>
     </ClCompile>
     <Link>
@@ -48,6 +56,7 @@
       <AdditionalDependencies>core.lib; geom.lib; gfx.lib; mesh.lib; maxutil.lib; maxscrpt.lib; paramblk2.lib;;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>M2Plugin.def</ModuleDefinitionFile>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/VERBOSE %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='2016|x64'">/VERBOSE %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
