@@ -22,6 +22,10 @@ namespace Mafia2
             {
                 ReadFromFile(reader);
             }
+            using (BinaryWriter writer = new BinaryWriter(File.Open(fileName+"2", FileMode.Create)))
+            {
+                WriteToFile(writer);
+            }
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -31,7 +35,6 @@ namespace Mafia2
             areaCount = reader.ReadInt32();
             namesLength = reader.ReadInt32();
             names = new string(reader.ReadChars(namesLength));
-            reader.ReadBytes(0);
             areaCollection = new AreaData[areaCount];
 
             for(int i = 0; i != areaCollection.Length; i++)
@@ -43,22 +46,38 @@ namespace Mafia2
 
                 if(pos != 65535)
                     areaCollection[i].IndexedString2 = names.Substring(pos, names.IndexOf('\0', pos) - pos);
-            }
-          
+            }         
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write("ratc".ToCharArray());
+            writer.Write(unk0_int);
+            writer.Write(areaCount);
+            writer.Write(namesLength);
+            writer.Write(names.ToCharArray());
+
+            for (int i = 0; i != areaCollection.Length; i++)
+                areaCollection[i].WriteToFile(writer);
         }
 
         public class AreaData
         {
             string name;
+            byte unkByte0;
             ushort index1;
             string indexedString1;
             ushort index2;
             string indexedString2;
-            byte unkByte;
+            byte unkByte1;
 
             public string Name {
                 get { return name; }
                 set { name = value; }
+            }
+            public byte UnkByte0 {
+                get { return unkByte0; }
+                set { unkByte0 = value; }
             }
             public ushort Index1 {
                 get { return index1; }
@@ -76,9 +95,9 @@ namespace Mafia2
                 get { return indexedString2; }
                 set { indexedString2 = value; }
             }
-            public byte UnkByte {
-                get { return unkByte; }
-                set { unkByte = value; }
+            public byte UnkByte1 {
+                get { return unkByte1; }
+                set { unkByte1 = value; }
             }
 
             public AreaData(BinaryReader reader)
@@ -87,7 +106,15 @@ namespace Mafia2
                 reader.ReadByte();
                 index1 = reader.ReadUInt16();
                 index2 = reader.ReadUInt16();
-                unkByte = reader.ReadByte();
+                unkByte1 = reader.ReadByte();
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writeString(writer, name);
+                writer.Write(index1);
+                writer.Write(index2);
+                writer.Write(unkByte1);
             }
 
             private string readString(BinaryReader reader)
@@ -99,6 +126,12 @@ namespace Mafia2
                     newString += reader.ReadChar();
                 }
                 return newString;
+            }
+
+            private void writeString(BinaryWriter writer, string text)
+            {
+                writer.Write(text.ToCharArray());
+                writer.Write('\0');
             }
 
             public override string ToString()

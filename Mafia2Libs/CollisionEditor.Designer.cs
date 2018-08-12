@@ -81,6 +81,7 @@
             this.Controls.Add(this.treeView1);
             this.Name = "CollisionEditor";
             this.Text = "CollisionEditor";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnClose);
             this.ResumeLayout(false);
 
         }

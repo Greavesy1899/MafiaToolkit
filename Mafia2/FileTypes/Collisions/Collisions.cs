@@ -223,7 +223,14 @@ namespace Mafia2
                 long pos2 = reader.BaseStream.Position;
 
                 reader.BaseStream.Position = pos;
-                data = new MeshData(reader, sections);
+                //try
+                //{
+                    data = new MeshData(reader, sections);
+                //}
+                //catch(Exception ex)
+                //{
+                //    Console.WriteLine(ex.Message);
+                //}
                 reader.BaseStream.Position = pos2;
             }
 
@@ -392,6 +399,8 @@ namespace Mafia2
                     unkShorts[i] = (CollisionMaterials)reader.ReadInt16();
                 }
 
+                bool overTri1 = false;
+
                 if (num2 == 3)
                 {
                     num5 = reader.ReadInt32();
@@ -409,6 +418,7 @@ namespace Mafia2
                             for (int i = 0; i != nTriangles; i++)
                                 unkBytes[i] = reader.ReadInt16();
                         }
+                        overTri1 = true;
                     }
                     else
                     {
@@ -430,9 +440,15 @@ namespace Mafia2
                 unk0 = reader.ReadInt32();
                 unk1 = reader.ReadInt32();
 
-                //sections for 2 is 186811
                 for (int i = 0; i != sections.Length; i++)
                     sections[i].EdgeData = reader.ReadBytes(sections[i].NumEdges);
+
+                if(overTri1)
+                {
+                    int count = num5 - nTriangles;
+                    count *= 3;
+                    reader.BaseStream.Position -= count;
+                }
 
                 opcSize = reader.ReadInt32();
 

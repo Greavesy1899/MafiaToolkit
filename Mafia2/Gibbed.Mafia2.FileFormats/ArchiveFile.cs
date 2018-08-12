@@ -332,10 +332,12 @@ namespace Gibbed.Mafia2.FileFormats
                     resource.Name = nodes.Current.Value;
                     resource.Id = (uint) addedTypes.Count;
 
-                    if(resource.Name == "IndexBufferPool" || resource.Name == "PREFAB")
+                    if (resource.Name == "IndexBufferPool" || resource.Name == "PREFAB")
                         resource.Parent = 3;
                     else if (resource.Name == "VertexBufferPool" || resource.Name == "NAV_OBJ_DATA")
                         resource.Parent = 2;
+                    else if (resource.Name == "NAV_HPD_DATA")
+                        resource.Parent = 1;
 
                     addedTypes.Add(nodes.Current.Value);
                     ResourceTypes.Add(resource);

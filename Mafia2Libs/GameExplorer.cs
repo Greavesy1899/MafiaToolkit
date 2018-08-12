@@ -565,6 +565,26 @@ namespace Mafia2Tool
             }
         }
 
+        private void toolStrip1_Resize(object sender, EventArgs e)
+        {
+            int width = toolStrip2.DisplayRectangle.Width;
+
+            foreach (ToolStripItem tsi in toolStrip2.Items)
+            {
+                if (!(tsi == textStripFolderPath))
+                {
+                    width -= tsi.Width;
+                    width -= tsi.Margin.Horizontal;
+                }
+            }
+
+            textStripFolderPath.Width = Math.Max(0, width - textStripFolderPath.Margin.Horizontal);
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            toolStrip1_Resize(this, e);
+        }
         void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             TreeNode selectedNode = e.Node;
@@ -586,8 +606,8 @@ namespace Mafia2Tool
                 OpenSDS((FileInfo)item.Tag);
             else if (item.SubItems[1].Text == "FR")
                 fTool = new FrameResourceTool((FileInfo)item.Tag);
-            else if (item.SubItems[1].Text == "COL")
-                cTool = new CollisionEditor((FileInfo)item.Tag);
+            //else if (item.SubItems[1].Text == "COL")
+            //    cTool = new CollisionEditor((FileInfo)item.Tag);
         }
 
         private void ContextSDSPack_Click(object sender, EventArgs e)

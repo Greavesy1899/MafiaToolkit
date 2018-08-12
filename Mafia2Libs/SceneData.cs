@@ -13,7 +13,7 @@ namespace Mafia2Tool
         public static VertexBufferManager VertexBufferPool;
         public static IndexBufferManager IndexBufferPool;
         public static SoundSector SoundSector;
-        public static Actor Actors;
+        public static Actor[] Actors;
         public static ItemDesc[] ItemDescs;
         public static Collision Collisions;
         public static CityAreas CityAreas;
@@ -22,7 +22,7 @@ namespace Mafia2Tool
         public static void BuildData()
         {
             DirectoryInfo dirInfo = new DirectoryInfo(ScenePath);
-            FileInfo[] files = dirInfo.GetFiles();
+            FileInfo[] files = dirInfo.GetFiles("*", SearchOption.AllDirectories);
 
             List<FileInfo> vbps = new List<FileInfo>();
             List<FileInfo> ibps = new List<FileInfo>();
@@ -50,15 +50,16 @@ namespace Mafia2Tool
                 //    SoundSector = new SoundSector(file.FullName);
 
                 if (file.FullName.Contains(".act"))
-                    Actors = new Actor(file.FullName);
+                    act.Add(new Actor(file.FullName));
 
-                //if (file.FullName.Contains("cityareas"))
-                //    CityAreas = new CityAreas(file.FullName);
+                if (file.FullName.Contains("cityareas"))
+                    CityAreas = new CityAreas(file.FullName);
             }
 
             IndexBufferPool = new IndexBufferManager(ibps);
             VertexBufferPool = new VertexBufferManager(vbps);
             ItemDescs = ids.ToArray();
+            Actors = act.ToArray();
 
             for (int i = 0; i != ItemDescs.Length; i++)
                 ItemDescs[i].WriteToEDC();
@@ -72,15 +73,19 @@ namespace Mafia2Tool
 
         public static void AttachActors()
         {
-            for (int i = 0; i != Actors.Definitions.Length; i++)
+            for (int y = 0; y != Actors.Length; y++)
             {
-                for (int c = 0; c != Actors.Items.Length; c++)
+                Actor act = Actors[y];
+                for (int i = 0; i != act.Definitions.Length; i++)
                 {
-                    if (Actors.Items[c].Hash1 == Actors.Definitions[i].Hash)
+                    for (int c = 0; c != act.Items.Length; c++)
                     {
-                        FrameObjectFrame frame = FrameResource.FrameObjects[Actors.Definitions[i].FrameIndex] as FrameObjectFrame;
-                        frame.Item = Actors.Items[c];
-                        FrameResource.FrameObjects[Actors.Definitions[i].FrameIndex] = frame;
+                        if (act.Items[c].Hash1 == act.Definitions[i].Hash)
+                        {
+                            FrameObjectFrame frame = FrameResource.FrameObjects[act.Definitions[i].FrameIndex] as FrameObjectFrame;
+                            frame.Item = act.Items[c];
+                            FrameResource.FrameObjects[act.Definitions[i].FrameIndex] = frame;
+                        }
                     }
                 }
             }

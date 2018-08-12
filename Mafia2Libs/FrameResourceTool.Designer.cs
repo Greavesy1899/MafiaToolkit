@@ -159,6 +159,7 @@
             this.farLodsToolStripMenuItem,
             this.modelsToolStripMenuItem,
             this.allToolStripMenuItem});
+            this.exportAllSubButton.Enabled = false;
             this.exportAllSubButton.Name = "exportAllSubButton";
             this.exportAllSubButton.Size = new System.Drawing.Size(180, 22);
             this.exportAllSubButton.Text = "Export All";
@@ -167,19 +168,19 @@
             // farLodsToolStripMenuItem
             // 
             this.farLodsToolStripMenuItem.Name = "farLodsToolStripMenuItem";
-            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.farLodsToolStripMenuItem.Text = "Far Lods";
             // 
             // modelsToolStripMenuItem
             // 
             this.modelsToolStripMenuItem.Name = "modelsToolStripMenuItem";
-            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.modelsToolStripMenuItem.Text = "Models";
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.allToolStripMenuItem.Text = "All";
             // 
             // materialEditorSubButton
@@ -210,7 +211,7 @@
             // switchViewSubButton
             // 
             this.switchViewSubButton.Name = "switchViewSubButton";
-            this.switchViewSubButton.Size = new System.Drawing.Size(137, 22);
+            this.switchViewSubButton.Size = new System.Drawing.Size(180, 22);
             this.switchViewSubButton.Text = "Switch View";
             this.switchViewSubButton.Click += new System.EventHandler(this.SwitchView);
             // 

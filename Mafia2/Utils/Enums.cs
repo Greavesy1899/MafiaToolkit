@@ -56,6 +56,7 @@ namespace Mafia2
         Cutscene = 73,
         Telephone = 95,
         ScriptEntity = 98,
+        DangerZone = 103,
         Pinup = 106,
         FramesController = 110,
         Wardrobe = 112,

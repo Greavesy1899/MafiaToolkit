@@ -80,7 +80,7 @@ namespace Mafia2Tool
 
         private void buttonLoadMesh_Click(object sender, System.EventArgs e)
         {
-            if(openM2T.ShowDialog() == DialogResult.OK)
+            if (openM2T.ShowDialog() == DialogResult.OK)
             {
                 Model colModel = new Model();
 
@@ -88,7 +88,7 @@ namespace Mafia2Tool
                     colModel.ReadFromM2T(reader);
 
                 Collision.NXSStruct nxsData = new Collision.NXSStruct();
-                nxsData.Hash = 521419385327462243;
+                nxsData.Hash = 5214193213415322;
                 nxsData.Data.BuildBasicCollision(colModel.Lods[0].Vertices, colModel.Lods[0].Parts[0].Indices);
                 nxsData.Sections = new Collision.Section[1];
                 nxsData.Sections[0] = new Collision.Section();
@@ -98,10 +98,10 @@ namespace Mafia2Tool
                 nxsData.Data.sections = nxsData.Sections;
 
                 Collision.Placement placement = new Collision.Placement();
-                placement.Hash = 521419385327462243;
+                placement.Hash = 5214193213415322;
                 placement.Unk5 = 128;
                 placement.Unk4 = -1;
-                placement.Position = new Vector3(-1251.27087f, 489.139954f, -158.0036f);
+                placement.Position = new Vector3(-1567.367f, -269.247f, -20.333f);
                 placement.Rotation = new Vector3(0);
 
 
@@ -110,12 +110,14 @@ namespace Mafia2Tool
                 treeView1.Nodes.Clear();
                 LoadInCollision();
             }
+        }
 
+        private void OnClose(object sender, FormClosingEventArgs e)
+        {
             using (BinaryWriter writer = new BinaryWriter(File.Create(SceneData.Collisions.name)))
             {
                 SceneData.Collisions.WriteToFile(writer);
             }
-
         }
     }
 }
