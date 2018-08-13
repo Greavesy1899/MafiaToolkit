@@ -46,6 +46,10 @@ namespace Mafia2Tool
             this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnLastModified = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.SDSContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ContextSDSUnpack = new System.Windows.Forms.ToolStripMenuItem();
+            this.ContextSDSPack = new System.Windows.Forms.ToolStripMenuItem();
+            this.ContextOpenFolder = new System.Windows.Forms.ToolStripMenuItem();
             this.topContainer = new System.Windows.Forms.ToolStripContainer();
             this.tools = new System.Windows.Forms.ToolStrip();
             this.dropdownFile = new System.Windows.Forms.ToolStripDropDownButton();
@@ -57,11 +61,7 @@ namespace Mafia2Tool
             this.bottomContainer = new System.Windows.Forms.ToolStripContainer();
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
-            this.SDSContext = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ContextSDSUnpack = new System.Windows.Forms.ToolStripMenuItem();
-            this.ContextSDSPack = new System.Windows.Forms.ToolStripMenuItem();
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.ContextOpenFolder = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -69,13 +69,13 @@ namespace Mafia2Tool
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
             this.toolStrip2.SuspendLayout();
+            this.SDSContext.SuspendLayout();
             this.topContainer.ContentPanel.SuspendLayout();
             this.topContainer.SuspendLayout();
             this.tools.SuspendLayout();
             this.bottomContainer.ContentPanel.SuspendLayout();
             this.bottomContainer.SuspendLayout();
             this.status.SuspendLayout();
-            this.SDSContext.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainContainer
@@ -199,6 +199,7 @@ namespace Mafia2Tool
             this.columnType,
             this.columnSize,
             this.columnLastModified});
+            this.fileListView.ContextMenuStrip = this.SDSContext;
             this.fileListView.Location = new System.Drawing.Point(0, 30);
             this.fileListView.Name = "fileListView";
             this.fileListView.Size = new System.Drawing.Size(530, 371);
@@ -207,7 +208,6 @@ namespace Mafia2Tool
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.Details;
             this.fileListView.ItemActivate += new System.EventHandler(this.listView1_ItemActivate);
-            this.fileListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDown);
             // 
             // columnName
             // 
@@ -227,6 +227,39 @@ namespace Mafia2Tool
             // 
             this.columnLastModified.Text = "Last Modified";
             this.columnLastModified.Width = 281;
+            // 
+            // SDSContext
+            // 
+            this.SDSContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ContextSDSUnpack,
+            this.ContextSDSPack,
+            this.ContextOpenFolder});
+            this.SDSContext.Name = "SDSContext";
+            this.SDSContext.Size = new System.Drawing.Size(198, 70);
+            this.SDSContext.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpening);
+            // 
+            // ContextSDSUnpack
+            // 
+            this.ContextSDSUnpack.Name = "ContextSDSUnpack";
+            this.ContextSDSUnpack.Size = new System.Drawing.Size(197, 22);
+            this.ContextSDSUnpack.Text = "Unpack";
+            this.ContextSDSUnpack.Visible = false;
+            this.ContextSDSUnpack.Click += new System.EventHandler(this.ContextSDSUnpack_Click);
+            // 
+            // ContextSDSPack
+            // 
+            this.ContextSDSPack.Name = "ContextSDSPack";
+            this.ContextSDSPack.Size = new System.Drawing.Size(197, 22);
+            this.ContextSDSPack.Text = "Pack";
+            this.ContextSDSPack.Visible = false;
+            this.ContextSDSPack.Click += new System.EventHandler(this.ContextSDSPack_Click);
+            // 
+            // ContextOpenFolder
+            // 
+            this.ContextOpenFolder.Name = "ContextOpenFolder";
+            this.ContextOpenFolder.Size = new System.Drawing.Size(197, 22);
+            this.ContextOpenFolder.Text = "Open Folder in Explorer";
+            this.ContextOpenFolder.Click += new System.EventHandler(this.ContextOpenFolder_Click);
             // 
             // topContainer
             // 
@@ -275,21 +308,21 @@ namespace Mafia2Tool
             // openMafiaIIToolStripMenuItem
             // 
             this.openMafiaIIToolStripMenuItem.Name = "openMafiaIIToolStripMenuItem";
-            this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
-            this.openMafiaIIToolStripMenuItem.Text = "Open MafiaII";
+            this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.openMafiaIIToolStripMenuItem.Text = "Open Mafia II";
             this.openMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.openMafiaIIToolStripMenuItem_Click);
             // 
             // runMafiaIIToolStripMenuItem
             // 
             this.runMafiaIIToolStripMenuItem.Name = "runMafiaIIToolStripMenuItem";
-            this.runMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.runMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.runMafiaIIToolStripMenuItem.Text = "Run Mafia II";
             this.runMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.runMafiaIIToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -345,39 +378,9 @@ namespace Mafia2Tool
             this.infoText.Name = "infoText";
             this.infoText.Size = new System.Drawing.Size(0, 21);
             // 
-            // SDSContext
-            // 
-            this.SDSContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ContextSDSUnpack,
-            this.ContextSDSPack,
-            this.ContextOpenFolder});
-            this.SDSContext.Name = "SDSContext";
-            this.SDSContext.Size = new System.Drawing.Size(198, 70);
-            // 
-            // ContextSDSUnpack
-            // 
-            this.ContextSDSUnpack.Name = "ContextSDSUnpack";
-            this.ContextSDSUnpack.Size = new System.Drawing.Size(197, 22);
-            this.ContextSDSUnpack.Text = "Unpack";
-            this.ContextSDSUnpack.Click += new System.EventHandler(this.ContextSDSUnpack_Click);
-            // 
-            // ContextSDSPack
-            // 
-            this.ContextSDSPack.Name = "ContextSDSPack";
-            this.ContextSDSPack.Size = new System.Drawing.Size(197, 22);
-            this.ContextSDSPack.Text = "Pack";
-            this.ContextSDSPack.Click += new System.EventHandler(this.ContextSDSPack_Click);
-            // 
             // MafiaIIBrowser
             // 
             this.MafiaIIBrowser.Description = "Select your MafiaII folder. The folder should contain \"launcher.exe\"";
-            // 
-            // ContextOpenFolder
-            // 
-            this.ContextOpenFolder.Name = "ContextOpenFolder";
-            this.ContextOpenFolder.Size = new System.Drawing.Size(197, 22);
-            this.ContextOpenFolder.Text = "Open Folder in Explorer";
-            this.ContextOpenFolder.Click += new System.EventHandler(this.ContextOpenFolder_Click);
             // 
             // GameExplorer
             // 
@@ -400,6 +403,7 @@ namespace Mafia2Tool
             this.toolStripContainer1.PerformLayout();
             this.toolStrip2.ResumeLayout(false);
             this.toolStrip2.PerformLayout();
+            this.SDSContext.ResumeLayout(false);
             this.topContainer.ContentPanel.ResumeLayout(false);
             this.topContainer.ContentPanel.PerformLayout();
             this.topContainer.ResumeLayout(false);
@@ -412,7 +416,6 @@ namespace Mafia2Tool
             this.bottomContainer.PerformLayout();
             this.status.ResumeLayout(false);
             this.status.PerformLayout();
-            this.SDSContext.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

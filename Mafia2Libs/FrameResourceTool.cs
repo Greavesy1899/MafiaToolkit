@@ -39,7 +39,6 @@ namespace Mafia2Tool
             }
             SceneData.BuildData();
             ReadFrameResource();
-            DiscordPrefs.Update("Using the Frame Resource editor.");
         }
 
         public FrameResourceTool(FileInfo info)
@@ -138,6 +137,7 @@ namespace Mafia2Tool
                 else
                     Debug.WriteLine(string.Format("WARNING: node: {0} was not added properly", obj.Name));
             }
+            DiscordPrefs.Update("Using the Frame Resource editor.");
         }
         private TreeNode AddChildren(TreeNode node, FrameObjectBase fObject)
         {
@@ -313,17 +313,17 @@ namespace Mafia2Tool
                     }
                     else
                     {
-                        if (mesh.Mesh == null)
-                        {
-                            meshGeom = SceneData.FrameResource.EntireFrame[mesh.MeshIndex] as FrameGeometry;
-                            edmName = meshGeom.LOD[c].VertexBufferRef.String;
-                            edmName.Remove(edmName.Length - 5);
-                        }
-                        else
-                        {
-                            meshGeom = mesh.Mesh;
-                            edmName = meshGeom.LOD[c].VertexBufferRef.String;
-                        }
+                        //if (mesh.Mesh == null)
+                        //{
+                        //    meshGeom = SceneData.FrameResource.EntireFrame[mesh.MeshIndex] as FrameGeometry;
+                        //    edmName = meshGeom.LOD[c].VertexBufferRef.String;
+                        //    edmName.Remove(edmName.Length - 5);
+                        //}
+                        //else
+                        //{
+                        //    meshGeom = mesh.Mesh;
+                        //    edmName = meshGeom.LOD[c].VertexBufferRef.String;
+                        //}
                     }
                     newModel.ExportToM2T();
                     Console.WriteLine(newModel.FrameMesh.Name.String);

@@ -11,7 +11,6 @@ namespace Mafia2Tool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Environment.SetEnvironmentVariable("PATH", Environment.GetEnvironmentVariable("PATH") + ";" + "/libs");
             CheckINIExists();
             DiscordPrefs.InitRPC();
             MaterialData.Load();

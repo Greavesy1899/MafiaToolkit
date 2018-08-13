@@ -45,10 +45,10 @@
             this.viewToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.switchViewSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsButton = new System.Windows.Forms.ToolStripButton();
-            this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.contextExtract3D = new System.Windows.Forms.ToolStripMenuItem();
             this.contextDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -159,41 +159,40 @@
             this.farLodsToolStripMenuItem,
             this.modelsToolStripMenuItem,
             this.allToolStripMenuItem});
-            this.exportAllSubButton.Enabled = false;
             this.exportAllSubButton.Name = "exportAllSubButton";
-            this.exportAllSubButton.Size = new System.Drawing.Size(180, 22);
+            this.exportAllSubButton.Size = new System.Drawing.Size(160, 22);
             this.exportAllSubButton.Text = "Export All";
             this.exportAllSubButton.Click += new System.EventHandler(this.OnClickLoadAll);
             // 
             // farLodsToolStripMenuItem
             // 
             this.farLodsToolStripMenuItem.Name = "farLodsToolStripMenuItem";
-            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.farLodsToolStripMenuItem.Text = "Far Lods";
             // 
             // modelsToolStripMenuItem
             // 
             this.modelsToolStripMenuItem.Name = "modelsToolStripMenuItem";
-            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.modelsToolStripMenuItem.Text = "Models";
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.allToolStripMenuItem.Text = "All";
             // 
             // materialEditorSubButton
             // 
             this.materialEditorSubButton.Name = "materialEditorSubButton";
-            this.materialEditorSubButton.Size = new System.Drawing.Size(180, 22);
+            this.materialEditorSubButton.Size = new System.Drawing.Size(160, 22);
             this.materialEditorSubButton.Text = "Material Editor";
             this.materialEditorSubButton.Click += new System.EventHandler(this.LoadMaterialTool);
             // 
             // overwriteBufferSubButton
             // 
             this.overwriteBufferSubButton.Name = "overwriteBufferSubButton";
-            this.overwriteBufferSubButton.Size = new System.Drawing.Size(180, 22);
+            this.overwriteBufferSubButton.Size = new System.Drawing.Size(160, 22);
             this.overwriteBufferSubButton.Text = "Overwrite Buffer";
             this.overwriteBufferSubButton.Click += new System.EventHandler(this.OverwriteBuffer_Click);
             // 
@@ -211,7 +210,7 @@
             // switchViewSubButton
             // 
             this.switchViewSubButton.Name = "switchViewSubButton";
-            this.switchViewSubButton.Size = new System.Drawing.Size(180, 22);
+            this.switchViewSubButton.Size = new System.Drawing.Size(137, 22);
             this.switchViewSubButton.Text = "Switch View";
             this.switchViewSubButton.Click += new System.EventHandler(this.SwitchView);
             // 
@@ -224,30 +223,6 @@
             this.optionsButton.Size = new System.Drawing.Size(53, 22);
             this.optionsButton.Text = "Options";
             // 
-            // contextMenu
-            // 
-            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.contextExtract3D,
-            this.contextDelete});
-            this.contextMenu.Name = "contextMenuStrip1";
-            this.contextMenu.ShowImageMargin = false;
-            this.contextMenu.Size = new System.Drawing.Size(107, 48);
-            this.contextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ItemClicked);
-            // 
-            // contextExtract3D
-            // 
-            this.contextExtract3D.Name = "contextExtract3D";
-            this.contextExtract3D.Size = new System.Drawing.Size(106, 22);
-            this.contextExtract3D.Text = "Extract 3D";
-            // 
-            // contextDelete
-            // 
-            this.contextDelete.Name = "contextDelete";
-            this.contextDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.contextDelete.Size = new System.Drawing.Size(106, 22);
-            this.contextDelete.Text = "Delete";
-            this.contextDelete.Click += new System.EventHandler(this.OnDelete);
-            // 
             // treeView1
             // 
             this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -257,6 +232,30 @@
             this.treeView1.Size = new System.Drawing.Size(368, 394);
             this.treeView1.TabIndex = 15;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnSelect);
+            // 
+            // contextExtract3D
+            // 
+            this.contextExtract3D.Name = "contextExtract3D";
+            this.contextExtract3D.Size = new System.Drawing.Size(155, 22);
+            this.contextExtract3D.Text = "Extract 3D";
+            // 
+            // contextDelete
+            // 
+            this.contextDelete.Name = "contextDelete";
+            this.contextDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.contextDelete.Size = new System.Drawing.Size(155, 22);
+            this.contextDelete.Text = "Delete";
+            this.contextDelete.Click += new System.EventHandler(this.OnDelete);
+            // 
+            // contextMenu
+            // 
+            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.contextExtract3D,
+            this.contextDelete});
+            this.contextMenu.Name = "contextMenuStrip1";
+            this.contextMenu.ShowImageMargin = false;
+            this.contextMenu.Size = new System.Drawing.Size(156, 70);
+            this.contextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ItemClicked);
             // 
             // FrameResourceTool
             // 
@@ -296,12 +295,12 @@
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton optionsButton;
-        private System.Windows.Forms.ContextMenuStrip contextMenu;
-        private System.Windows.Forms.ToolStripMenuItem contextExtract3D;
-        private System.Windows.Forms.ToolStripMenuItem contextDelete;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.ToolStripMenuItem farLodsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modelsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem contextExtract3D;
+        private System.Windows.Forms.ToolStripMenuItem contextDelete;
+        private System.Windows.Forms.ContextMenuStrip contextMenu;
     }
 }

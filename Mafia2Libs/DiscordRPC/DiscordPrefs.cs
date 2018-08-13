@@ -16,9 +16,9 @@ namespace Mafia2Tool
                 smallImageKey = "",
                 smallImageText = "",
                 largeImageKey = "main_art",
-                largeImageText = ""
-            };
-            long startTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+                largeImageText = "",
+                startTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds
+        };
             controller.presence.state = "Making mods for Mafia II.";
             Update("Using the Game Explorer");
         }

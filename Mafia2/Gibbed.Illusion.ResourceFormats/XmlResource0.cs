@@ -175,6 +175,18 @@ namespace Gibbed.Mafia2.ResourceFormats
                     break;
                 }
 
+                case DataType.Unknown:
+                {
+                    output.WriteValueU32(8, endian);
+                    output.WriteValueU32(0, endian);
+                    output.WriteValueU32(0, endian);
+                    output.WriteValueU32(0, endian);
+
+                    var value = output.ReadValueF32(endian);
+
+                    break;
+                }
+
                 default:
                 {
                     throw new InvalidOperationException();
@@ -406,6 +418,21 @@ namespace Gibbed.Mafia2.ResourceFormats
                     return new DataValue(type, value);
                 }
 
+                case DataType.Unknown:
+                {
+                    var unk0 = input.ReadValueU32(endian);
+                    var unk1 = input.ReadValueU32(endian);
+                    var unk2 = input.ReadValueU32(endian);
+
+                    if (unk0 != 0 && unk1 != 0 && unk2 != 0)
+                    {
+                            Console.WriteLine("Found bug with unk data type.");
+                    }
+
+                    var value = input.ReadValueF32(endian);
+                   return new DataValue(type, value);
+                }
+
                 default:
                 {
                     throw new FormatException();
@@ -469,6 +496,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             Float = 3,
             String = 4,
             Integer = 5,
+            Unknown = 8,
         }
 
         private class DataValue
@@ -516,6 +544,10 @@ namespace Gibbed.Mafia2.ResourceFormats
                 {
                     return "i";
                 }
+                case DataType.Unknown:
+                {
+                    return "u";
+                }
             }
 
             throw new NotSupportedException();
@@ -548,6 +580,11 @@ namespace Gibbed.Mafia2.ResourceFormats
                 case "i":
                 {
                     return DataType.Integer;
+                }
+
+                case "u":
+                {
+                    return DataType.Unknown;
                 }
             }
 

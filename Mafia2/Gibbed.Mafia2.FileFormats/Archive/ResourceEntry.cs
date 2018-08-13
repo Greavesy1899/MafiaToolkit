@@ -24,7 +24,7 @@ namespace Gibbed.Mafia2.FileFormats.Archive
 {
     public class ResourceEntry
     {
-        public uint TypeId;
+        public int TypeId;
         public ushort Version;
         public byte[] Data;
         public uint SlotRamRequired;

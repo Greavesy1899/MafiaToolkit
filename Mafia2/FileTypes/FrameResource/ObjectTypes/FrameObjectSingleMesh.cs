@@ -16,7 +16,6 @@ namespace Mafia2
         byte unk_18_byte1;
         byte unk_18_byte2;
         byte unk_18_byte3;
-        FrameGeometry mesh;
 
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public SingleMeshFlags Flags {
@@ -54,10 +53,6 @@ namespace Mafia2
         public byte Unk_18_3 {
             get { return unk_18_byte3; }
             set { unk_18_byte3 = value; }
-        }
-        public FrameGeometry Mesh {
-            get { return mesh; }
-            set { mesh = value; }
         }
 
         public FrameObjectSingleMesh(BinaryReader reader) : base()

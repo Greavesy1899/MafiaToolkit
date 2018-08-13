@@ -88,6 +88,10 @@ namespace Mafia2
             posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.X)));
             posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.Y)));
             posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.Z)));
+            //posData.Add(Convert.ToByte(Tangent.X * 127.0f + 127.0f));
+            //posData.Add(Convert.ToByte(Tangent.X * 127.0f + 127.0f));
+            posData.Add(0);
+            posData.Add(0);
 
             return posData.ToArray();
         }
@@ -155,31 +159,35 @@ namespace Mafia2
 
             //X..
             if (float.IsNaN(Normal.X * 127.0f + 127.0f))
-                normData.Add(0);
+                normData.Add(127);
             else
-                normData.Add(Convert.ToByte(Normal.X * 127.0f + 127.0f));
+                normData.Add(127);//normData.Add(Convert.ToByte(Normal.X * 127.0f + 127.0f));
+
 
             //Y..
             if (float.IsNaN(Normal.Y * 127.0f + 127.0f))
-                normData.Add(0);
+                normData.Add(127);
             else
-                normData.Add(Convert.ToByte(Normal.Y * 127.0f + 127.0f));
+                normData.Add(127);//normData.Add(Convert.ToByte(Normal.Y * 127.0f + 127.0f));
+
 
             //Z..
             if (float.IsNaN(Normal.Z * 127.0f + 127.0f))
-                normData.Add(0);
+                normData.Add(255);
             else
-                normData.Add(Convert.ToByte(Normal.Z * 127.0f + 127.0f));
+                normData.Add(255);//normData.Add(Convert.ToByte(Normal.Z * 127.0f + 127.0f));
+
 
             if (hasTangents)
             {
                 //Tangent Z..
-                if (float.IsNaN(Tangent.Z * 127.0f + 127.0f))
-                    normData.Add(0);
-                else
-                    normData.Add(Convert.ToByte(Tangent.Z * 127.0f + 127.0f));
+                //if (float.IsNaN(Tangent.Z * 127.0f + 127.0f))
+                //    normData.Add(0);
+                //else
+                //    normData.Add(Convert.ToByte(Tangent.Z * 127.0f + 127.0f));
+                
             }
-
+            normData.Add(0);
             return normData.ToArray();
         }
 

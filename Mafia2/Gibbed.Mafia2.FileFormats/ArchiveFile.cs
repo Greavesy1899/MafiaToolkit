@@ -155,7 +155,7 @@ namespace Gibbed.Mafia2.FileFormats
             foreach (var resourceEntry in this._ResourceEntries)
             {
                 Archive.ResourceHeader resourceHeader;
-                resourceHeader.TypeId = resourceEntry.TypeId;
+                resourceHeader.TypeId = (uint)resourceEntry.TypeId;
                 resourceHeader.Size = 30 + (uint) (resourceEntry.Data == null ? 0 : resourceEntry.Data.Length);
                 resourceHeader.Version = resourceEntry.Version;
                 resourceHeader.SlotRamRequired = resourceEntry.SlotRamRequired;
@@ -269,7 +269,7 @@ namespace Gibbed.Mafia2.FileFormats
 
                 resources[i] = new Archive.ResourceEntry()
                 {
-                    TypeId = resourceHeader.TypeId,
+                    TypeId = (int)resourceHeader.TypeId,
                     Version = resourceHeader.Version,
                     Data = blockStream.ReadBytes((int) resourceHeader.Size - 30),
                     SlotRamRequired = resourceHeader.SlotRamRequired,
@@ -303,14 +303,26 @@ namespace Gibbed.Mafia2.FileFormats
         /// <param name="xml"></param>
         public void BuildResources(string folder)
         {
+            //TODO: MAKE THIS CLEANER
             string sdsFolder = folder;
 
             List<string> addedTypes = new List<string>();
-
             XmlDocument document = new XmlDocument();
-            document.Load(sdsFolder + "/SDSContent.xml");
             XmlDocument xmlDoc = new XmlDocument();
-            XmlNode rootNode = xmlDoc.CreateElement("xml");
+            XmlNode rootNode;
+
+            try
+            {
+                document = new XmlDocument();
+                document.Load(sdsFolder + "/SDSContent.xml");
+                xmlDoc = new XmlDocument();
+                rootNode = xmlDoc.CreateElement("xml");
+            }
+            catch
+            {
+                MessageBox.Show("Could not find SDSContent.xml. Folder Path: " + sdsFolder + "/SDSContent.xml", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             xmlDoc.AppendChild(rootNode);
 
@@ -318,19 +330,29 @@ namespace Gibbed.Mafia2.FileFormats
             var nodes = nav.Select("/SDSResource/ResourceEntry");
             while (nodes.MoveNext() == true)
             {
-                bool exists = false;
+                int exists = -1;
                 nodes.Current.MoveToFirstChild();
-                foreach (string type in addedTypes)
+                string resourceType = nodes.Current.Value;
+
+                if (addedTypes.Count == 0)
                 {
-                    if (type == nodes.Current.Value)
-                        exists = true;
+                    exists = -1;
+                }
+                else
+                {
+                    for (int i = 0; i != addedTypes.Count; i++)
+                    {
+                        if (addedTypes[i] == resourceType)
+                            exists = i;
+                    }
                 }
 
-                if (!exists)
+                if (exists == -1)
                 {
                     ResourceType resource = new ResourceType();
                     resource.Name = nodes.Current.Value;
-                    resource.Id = (uint) addedTypes.Count;
+                    resource.Id = (uint)addedTypes.Count;
+                    exists = addedTypes.Count;
 
                     if (resource.Name == "IndexBufferPool" || resource.Name == "PREFAB")
                         resource.Parent = 3;
@@ -345,47 +367,46 @@ namespace Gibbed.Mafia2.FileFormats
 
                 XmlNode resourceNode = xmlDoc.CreateElement("ResourceInfo");
                 XmlNode typeNameNode = xmlDoc.CreateElement("TypeName");
-                typeNameNode.InnerText = addedTypes[addedTypes.Count - 1];
+                typeNameNode.InnerText = resourceType;
                 XmlNode sddescNode = xmlDoc.CreateElement("SourceDataDescription");
 
                 ResourceEntry resourceEntry = new ResourceEntry();
-                resourceEntry.TypeId = (uint) addedTypes.Count - 1;
+                resourceEntry.TypeId = exists;
 
-                if (addedTypes[addedTypes.Count - 1] == "IndexBufferPool" ||
-                    addedTypes[addedTypes.Count - 1] == "VertexBufferPool" ||
-                    addedTypes[addedTypes.Count - 1] == "FrameResource" ||
-                    addedTypes[addedTypes.Count - 1] == "Effects" ||
-                    addedTypes[addedTypes.Count - 1] == "PREFAB" ||
-                    addedTypes[addedTypes.Count - 1] == "ItemDesc" ||
-                    addedTypes[addedTypes.Count - 1] == "FrameNameTable" ||
-                    addedTypes[addedTypes.Count - 1] == "Actors" ||
-                    addedTypes[addedTypes.Count - 1] == "Collisions" ||
-                    addedTypes[addedTypes.Count - 1] == "NAV_AIWORLD_DATA" ||
-                    addedTypes[addedTypes.Count - 1] == "NAV_OBJ_DATA" ||
-                    addedTypes[addedTypes.Count - 1] == "NAV_HPD_DATA" ||
-                    addedTypes[addedTypes.Count - 1] == "Animation2" ||
-                    addedTypes[addedTypes.Count - 1] == "Cutscene" ||
-                    addedTypes[addedTypes.Count - 1] == "FxActor" ||
-                    addedTypes[addedTypes.Count - 1] == "FxAnimSet" ||
-                    addedTypes[addedTypes.Count - 1] == "Translokator" ||
-                    addedTypes[addedTypes.Count - 1] == "AudioSectors" || 
-                    addedTypes[addedTypes.Count - 1] == "Speech" ||
-                    addedTypes[addedTypes.Count - 1] == "SoundTable" ||
-                    addedTypes[addedTypes.Count - 1] == "EntityDataStorage") 
+                if (resourceType == "IndexBufferPool" ||
+                    resourceType == "VertexBufferPool" ||
+                    resourceType == "FrameResource" ||
+                    resourceType == "Effects" ||
+                    resourceType == "PREFAB" ||
+                    resourceType == "ItemDesc" ||
+                    resourceType == "FrameNameTable" ||
+                    resourceType == "Actors" ||
+                    resourceType == "Collisions" ||
+                    resourceType == "NAV_AIWORLD_DATA" ||
+                    resourceType == "NAV_OBJ_DATA" ||
+                    resourceType == "NAV_HPD_DATA" ||
+                    resourceType == "Cutscene" ||
+                    resourceType == "FxActor" ||
+                    resourceType == "FxAnimSet" ||
+                    resourceType == "Translokator" ||
+                    resourceType == "AudioSectors" ||
+                    resourceType == "Speech" ||
+                    resourceType == "SoundTable" ||
+                    resourceType == "EntityDataStorage")
                 {
                     nodes.Current.MoveToNext();
                     string file = nodes.Current.Value;
                     using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
                     {
-                        resourceEntry.Data = reader.ReadBytes((int) reader.BaseStream.Length);
+                        resourceEntry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
                     }
 
                     nodes.Current.MoveToNext();
                     resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-                    
+
                     sddescNode.InnerText = "not available";
                 }
-                else if (addedTypes[addedTypes.Count - 1] == "Texture" || addedTypes[addedTypes.Count - 1] == "Mipmap")
+                else if (resourceType == "Texture" || resourceType == "Mipmap")
                 {
                     MemoryStream data = new MemoryStream();
                     byte[] texData;
@@ -416,22 +437,22 @@ namespace Gibbed.Mafia2.FileFormats
                         sddescNode.InnerText = file;
                     }
 
-                    
+
 
                     resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
                     resourceEntry.Data = data.GetBuffer();
                 }
-                else if (addedTypes[addedTypes.Count - 1] == "Sound")
+                else if (resourceType == "Sound")
                 {
                     List<byte> data = new List<byte>();
                     string file;
                     nodes.Current.MoveToNext();
                     file = nodes.Current.Value.Remove(nodes.Current.Value.Length - 4, 4);
                     data.Add((byte)file.Length);
-                    for(int i = 0; i != file.Length; i++)
+                    for (int i = 0; i != file.Length; i++)
                         data.Add((byte)file[i]);
 
-                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file +".fsb", FileMode.Open)))
+                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file + ".fsb", FileMode.Open)))
                     {
                         data.AddRange(BitConverter.GetBytes((int)reader.BaseStream.Length));
                         data.AddRange(reader.ReadBytes((int)reader.BaseStream.Length));
@@ -441,7 +462,7 @@ namespace Gibbed.Mafia2.FileFormats
                     resourceEntry.Data = data.ToArray();
                     sddescNode.InnerText = file;
                 }
-                else if (addedTypes[addedTypes.Count - 1] == "MemFile")
+                else if (resourceType == "MemFile")
                 {
                     //get file name from XML.
                     nodes.Current.MoveToNext();
@@ -455,7 +476,7 @@ namespace Gibbed.Mafia2.FileFormats
                     };
                     using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
                     {
-                        resource.Data = reader.ReadBytes((int) reader.BaseStream.Length);
+                        resource.Data = reader.ReadBytes((int)reader.BaseStream.Length);
                         //resourceEntry.SlotRamRequired = (uint)reader.BaseStream.Length;
                     }
 
@@ -471,9 +492,8 @@ namespace Gibbed.Mafia2.FileFormats
                     resourceEntry.Data = stream.GetBuffer();
                     sddescNode.InnerText = file;
                 }
-                else if (addedTypes[addedTypes.Count - 1] == "Script")
+                else if (resourceType == "Script")
                 {
-                    
                     nodes.Current.MoveToNext();
                     string path = nodes.Current.Value;
                     nodes.Current.MoveToNext();
@@ -489,7 +509,7 @@ namespace Gibbed.Mafia2.FileFormats
                         data.Name = nodes.Current.Value;
                         using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + data.Name, FileMode.Open)))
                         {
-                            data.Data = reader.ReadBytes((int) reader.BaseStream.Length);
+                            data.Data = reader.ReadBytes((int)reader.BaseStream.Length);
                         }
                         resource.Scripts.Add(data);
                     }
@@ -502,7 +522,19 @@ namespace Gibbed.Mafia2.FileFormats
                     resourceEntry.Data = stream.GetBuffer();
                     sddescNode.InnerText = path;
                 }
-                else if (addedTypes[addedTypes.Count - 1] == "Table")
+                else if (resourceType == "Animation2")
+                {
+                    nodes.Current.MoveToNext();
+                    string file = nodes.Current.Value;
+                    nodes.Current.MoveToNext();
+                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
+                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                    {
+                        resourceEntry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+                    }
+                    sddescNode.InnerText = file.Remove(file.Length - 4, 4);
+                }
+                else if (resourceType == "Table")
                 {
                     nodes.Current.MoveToNext();
                     string file = nodes.Current.Value;
@@ -514,9 +546,9 @@ namespace Gibbed.Mafia2.FileFormats
                     nodes.Current.MoveToNext();
                     resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
 
-                    sddescNode.InnerText = file.Remove(file.Length-4, 4);
+                    sddescNode.InnerText = file.Remove(file.Length - 4, 4);
                 }
-                else if (addedTypes[addedTypes.Count - 1] == "XML")
+                else if (resourceType == "XML")
                 {
                     nodes.Current.MoveToNext();
                     string file = nodes.Current.Value;
@@ -558,10 +590,10 @@ namespace Gibbed.Mafia2.FileFormats
                 }
                 else
                 {
-                    if (addedTypes[addedTypes.Count - 1] == "")
+                    if (resourceType == "")
                         continue;
 
-                    MessageBox.Show("Did not pack type: " + addedTypes[addedTypes.Count - 1], "Toolkit",
+                    MessageBox.Show("Did not pack type: " + resourceType, "Toolkit",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 resourceNode.AppendChild(typeNameNode);

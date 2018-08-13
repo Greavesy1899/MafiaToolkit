@@ -490,8 +490,8 @@ namespace Mafia2
             frameGeometry.DecompressionOffset = bounds.Min;
             float fMaxSize = Math.Max(bounds.Max.X - bounds.Min.X + minFloatf, Math.Max(bounds.Max.Y - bounds.Min.Y + minFloatf, (bounds.Max.Z - bounds.Min.Y + minFloatf) * 2.0f));
 
-            //positionFactor = fMaxSize / 0x10000;
-            frameGeometry.DecompressionFactor = (float)256 / 0x10000;
+            frameGeometry.DecompressionFactor = fMaxSize / 0x10000;
+            //frameGeometry.DecompressionFactor = (float)256 / 0x10000;
         }
 
         /// <summary>
@@ -570,11 +570,13 @@ namespace Mafia2
             frameGeometry.LOD[0].SplitInfo.MaterialBursts = new FrameLOD.MaterialBurst[Lods[0].Parts.Length];
 
             int faceIndex = 0;
+            frameMaterial.Materials[0] = new MaterialStruct[Lods[0].Parts.Length];
             for (int i = 0; i != Lods[0].Parts.Length; i++)
             {
                 frameMaterial.Materials[0][i].StartIndex = faceIndex;
                 frameMaterial.Materials[0][i].NumFaces = Lods[0].Parts[i].Indices.Length;
                 frameMaterial.Materials[0][i].Unk3 = 0;
+                frameMaterial.Materials[0][i].MaterialHash = 7973993770688595535;
                 faceIndex = Lods[0].Parts[i].Indices.Length * 3;
 
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].Bounds = new short[6]

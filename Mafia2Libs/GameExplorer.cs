@@ -142,9 +142,6 @@ namespace Mafia2Tool
                 item = new ListViewItem(file.Name, DetermineFileIcon(file.Extension));
                 item.Tag = file;
 
-                if (file.Extension == ".sds")
-                    fileListView.ContextMenuStrip = SDSContext;
-
                 subItems = new ListViewItem.ListViewSubItem[]
                 {
                     new ListViewItem.ListViewSubItem(item, DetermineFileType(file.Extension)),
@@ -156,7 +153,6 @@ namespace Mafia2Tool
                 item.SubItems.AddRange(subItems);
                 fileListView.Items.Add(item);
             }
-
             fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
             infoText.Text = "Done loading directory.";
             textStripFolderPath.Text = directory.FullName;
@@ -169,6 +165,10 @@ namespace Mafia2Tool
         /// <param name="file">location of SDS.</param>
         private void PackSDS(FileInfo file)
         {
+
+            if (file == null)
+                MessageBox.Show("File is null");
+
             if (file.Name == "ingame.sds" || file.Name == "tables.sds")
             {
                 MessageBox.Show("Packing " + file.Name + " is temporarily disabled due to game crashing.", "Toolkit",
@@ -616,58 +616,18 @@ namespace Mafia2Tool
 
         private void ContextSDSPack_Click(object sender, EventArgs e)
         {
+            if (fileListView.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Select an item.", "Toolkit", MessageBoxButtons.OK);
+                return;
+            }
+
             PackSDS(fileListView.SelectedItems[0].Tag as FileInfo);
         }
 
         private void ContextSDSUnpack_Click(object sender, EventArgs e)
         {
             OpenSDS(fileListView.SelectedItems[0].Tag as FileInfo);
-        }
-
-        private void listView1_MouseDown(object sender, MouseEventArgs e)
-        {
-            bool match = false;
-
-            if (e.Button == System.Windows.Forms.MouseButtons.Right)
-            {
-                foreach (ListViewItem item in fileListView.Items)
-                {
-                    if (item.Bounds.Contains(e.Location))
-                    {
-                        if (item.Tag is FileInfo)
-                        {
-                            FileInfo info = (FileInfo) item.Tag;
-                            if (info.Extension == ".sds")
-                            {
-                                fileListView.ContextMenuStrip = SDSContext;
-                            }
-                            else
-                            {
-                                fileListView.ContextMenuStrip = null;
-                                match = false;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            match = false;
-                            break;
-                        }
-                        match = true;
-                        break;
-                    }
-                }
-                if (match)
-                {
-                    fileListView.ContextMenuStrip.Show(fileListView, e.Location);
-                }
-                else
-                {
-                    //Show listViews context menu
-                }
-
-            }
-
         }
 
         private void openMafiaIIToolStripMenuItem_Click(object sender, EventArgs e)
@@ -722,6 +682,29 @@ namespace Mafia2Tool
         private void ContextOpenFolder_Click(object sender, EventArgs e)
         {
             Process.Start(currentDirectory.FullName);
+        }
+
+        private void OnOpening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (fileListView.SelectedItems.Count == 0)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            SDSContext.Items[0].Visible = false;
+            SDSContext.Items[1].Visible = false;
+
+            if (fileListView.SelectedItems[0].Tag.GetType() == typeof(FileInfo))
+            {
+                string extension = (fileListView.SelectedItems[0].Tag as FileInfo).Extension;
+
+                if (extension == ".sds")
+                {
+                    SDSContext.Items[0].Visible = true;
+                    SDSContext.Items[1].Visible = true;
+                }
+            }
         }
     }
 }
