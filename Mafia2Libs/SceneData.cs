@@ -17,7 +17,7 @@ namespace Mafia2Tool
         public static ItemDesc[] ItemDescs;
         public static Collision Collisions;
         public static CityAreas CityAreas;
-        public static string ScenePath = new IniFile().Read("SDSPath", "Directories");
+        public static string ScenePath;
 
         public static void BuildData()
         {
@@ -113,7 +113,7 @@ namespace Mafia2Tool
         public static Material[] Default;
         public static Material[] Default50;
         public static Material[] Default60;
-        public static string MaterialPath = new IniFile().Read("MaterialPath", "Directories");
+        public static string MaterialPath = ToolkitSettings.MaterialDirectory;
         public static bool HasLoaded = false;
 
         /// <summary>

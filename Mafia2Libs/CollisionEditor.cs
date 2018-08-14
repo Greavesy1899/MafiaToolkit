@@ -11,7 +11,7 @@ namespace Mafia2Tool
             InitializeComponent();
             CheckCollision(file);
             ShowDialog();
-            DiscordPrefs.Update("Using the Collision editor.");
+            ToolkitSettings.UpdateRichPresence("Using the Collision editor.");
         }
 
         public void CheckCollision(FileInfo file)

@@ -182,7 +182,7 @@ namespace Gibbed.Mafia2.ResourceFormats
                     output.WriteValueU32(0, endian);
                     output.WriteValueU32(0, endian);
 
-                    var value = output.ReadValueF32(endian);
+                    output.WriteValueF32(Convert.ToSingle(data.Value));
 
                     break;
                 }

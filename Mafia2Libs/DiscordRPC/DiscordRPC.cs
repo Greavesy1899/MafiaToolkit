@@ -5,19 +5,19 @@ namespace Mafia2Tool
 {
     public class DiscordRPC
     {
-        [DllImport(DiscordPrefs.LibLocation, EntryPoint = "Discord_Initialize", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(ToolkitSettings.DiscordLibLocation, EntryPoint = "Discord_Initialize", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Initialize(string applicationId, ref EventHandlers handlers, bool autoRegister, string optionalSteamId);
 
-        [DllImport(DiscordPrefs.LibLocation, EntryPoint = "Discord_Shutdown", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(ToolkitSettings.DiscordLibLocation, EntryPoint = "Discord_Shutdown", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Shutdown();
 
-        [DllImport(DiscordPrefs.LibLocation, EntryPoint = "Discord_RunCallbacks", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(ToolkitSettings.DiscordLibLocation, EntryPoint = "Discord_RunCallbacks", CallingConvention = CallingConvention.Cdecl)]
         public static extern void RunCallbacks();
 
-        [DllImport(DiscordPrefs.LibLocation, EntryPoint = "Discord_UpdatePresence", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(ToolkitSettings.DiscordLibLocation, EntryPoint = "Discord_UpdatePresence", CallingConvention = CallingConvention.Cdecl)]
         public static extern void UpdatePresence(ref RichPresence presence);
 
-        [DllImport(DiscordPrefs.LibLocation, EntryPoint = "Discord_Respond", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(ToolkitSettings.DiscordLibLocation, EntryPoint = "Discord_Respond", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Respond(string userId, Reply reply);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]

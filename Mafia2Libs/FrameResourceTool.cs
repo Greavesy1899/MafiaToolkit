@@ -11,35 +11,6 @@ namespace Mafia2Tool
     public partial class FrameResourceTool : Form
     {
         private List<TreeNode> unadded = new List<TreeNode>();
-        private IniFile ini = new IniFile();
-        public FrameResourceTool()
-        {
-            InitializeComponent();
-            if (SceneData.ScenePath == "")
-            {
-                folderBrowser.Description = "Select a folder which includes extracted SDS data.";
-                if (folderBrowser.ShowDialog() == DialogResult.OK)
-                {
-                    string path = ini.Read("SDSPath", "Directories");
-                    path = folderBrowser.SelectedPath;
-                    SceneData.ScenePath = path;
-                    ini.Write("SDSPath", path, "Directories");
-                }
-            }
-            if (!MaterialData.HasLoaded)
-            {
-                folderBrowser.Description = "Select the folder which contains 'default*.mtl' files. (Located in ..Mafia II/edit/materials/)";
-                if (folderBrowser.ShowDialog() == DialogResult.OK)
-                {
-                    string path = ini.Read("MaterialPath", "Directories");
-                    path = folderBrowser.SelectedPath;
-                    ini.Write("MaterialPath", path, "Directories");
-                    MaterialData.Load();
-                }
-            }
-            SceneData.BuildData();
-            ReadFrameResource();
-        }
 
         public FrameResourceTool(FileInfo info)
         {
@@ -137,7 +108,7 @@ namespace Mafia2Tool
                 else
                     Debug.WriteLine(string.Format("WARNING: node: {0} was not added properly", obj.Name));
             }
-            DiscordPrefs.Update("Using the Frame Resource editor.");
+            ToolkitSettings.UpdateRichPresence("Using the Frame Resource editor.");
         }
         private TreeNode AddChildren(TreeNode node, FrameObjectBase fObject)
         {
@@ -480,10 +451,10 @@ namespace Mafia2Tool
         {
             if (folderBrowser.ShowDialog() == DialogResult.OK)
             {
-                string path = ini.Read("SDSPath", "Directories");
-                path = folderBrowser.SelectedPath;
-                SceneData.ScenePath = path;
-                ini.Write("SDSPath", path, "Directories");
+                //string path = ini.Read("SDSPath", "Directories");
+                //path = folderBrowser.SelectedPath;
+                //SceneData.ScenePath = path;
+                //ini.Write("SDSPath", path, "Directories");
             }
             SceneData.Reload();
             treeView1.Nodes.Clear();

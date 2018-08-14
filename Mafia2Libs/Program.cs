@@ -9,10 +9,13 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
+            //do vital inits;
+            CheckINIExists();
+            ToolkitSettings.ReadINI();
+
+            //begin form inits;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            CheckINIExists();
-            DiscordPrefs.InitRPC();
             MaterialData.Load();
             Application.Run(new GameExplorer());
         }
@@ -24,9 +27,8 @@ namespace Mafia2Tool
         {
             if (File.Exists("Mafia2Tool.ini"))
                 return;
-            
-            IniFile file = new IniFile();
-            file.Write("MafiaII", "", "Directories");
+            else
+                new IniFile();
         }
     }
 }

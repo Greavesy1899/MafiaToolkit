@@ -31,16 +31,13 @@ namespace Mafia2Tool
         /// </summary>
         public void BuildTreeView()
         {
-            IniFile ini = new IniFile();
             TreeNode rootTreeNode;
 
-            string path = ini.Read("MafiaII", "Directories");
 
-            if(string.IsNullOrEmpty(path))
-                GetPath(ini);
+            if(string.IsNullOrEmpty(ToolkitSettings.M2Directory))
+                GetPath();
 
-            path = ini.Read("MafiaII", "Directories");
-            originalPath = new DirectoryInfo(path);
+            originalPath = new DirectoryInfo(ToolkitSettings.M2Directory);
 
             //check if directory exists.
             if (!originalPath.Exists)
@@ -79,11 +76,14 @@ namespace Mafia2Tool
         /// <summary>
         /// If the program has errored it will run this.. It's to get a new path.
         /// </summary>
-        private void GetPath(IniFile ini)
+        private void GetPath()
         {
             MafiaIIBrowser.SelectedPath = "";
             if (MafiaIIBrowser.ShowDialog() == DialogResult.OK)
-                ini.Write("MafiaII", MafiaIIBrowser.SelectedPath, "Directories");
+            {
+                ToolkitSettings.M2Directory = MafiaIIBrowser.SelectedPath;
+                ToolkitSettings.WriteKey("MafiaII", "Directories", MafiaIIBrowser.SelectedPath);
+            }
             else
                 return;
         }
@@ -643,8 +643,7 @@ namespace Mafia2Tool
 
         private void runMafiaIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IniFile ini = new IniFile();
-            string exe = ini.Read("MafiaII", "Directories") + "/launcher.exe";
+            string exe = Path.Combine(ToolkitSettings.M2Directory + "launcher.exe");
 
             if (!File.Exists(exe))
             {
@@ -705,6 +704,12 @@ namespace Mafia2Tool
                     SDSContext.Items[1].Visible = true;
                 }
             }
+        }
+
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OptionsForm options = new OptionsForm();
+            options.ShowDialog();
         }
     }
 }
