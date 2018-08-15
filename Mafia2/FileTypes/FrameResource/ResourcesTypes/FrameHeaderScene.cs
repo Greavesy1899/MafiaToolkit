@@ -2,7 +2,7 @@
 
 namespace Mafia2
 {
-    public class FrameHeaderScene
+    public class FrameHeaderScene : FrameEntry
     {
         Hash name;
 

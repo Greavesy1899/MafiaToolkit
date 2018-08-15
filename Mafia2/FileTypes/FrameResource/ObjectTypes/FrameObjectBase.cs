@@ -1,22 +1,22 @@
 ﻿using System.IO;
-using System.Collections;
-using System;
 using System.ComponentModel;
+using System;
 
 namespace Mafia2
 {
-    public class FrameObjectBase
+    public class FrameObjectBase : FrameEntry
     {
-        Hash name;
-        int unk0;
-        TransformMatrix transformMatrix;
-        short unk3;
-        ParentStruct parentIndex1;
-        ParentStruct parentIndex2;
-        short unk6;
-        Node node;
-        bool isOnTable;
-        NameTableFlags nameTableFlags;
+        protected Hash name;
+        protected int unk0;
+        protected TransformMatrix transformMatrix;
+        protected short unk3;
+        protected ParentStruct parentIndex1;
+        protected ParentStruct parentIndex2;
+        protected short unk6;
+        protected Node node;
+        protected bool isOnTable;
+        protected NameTableFlags nameTableFlags;
+
 
         public Hash Name {
             get { return name; }
@@ -66,7 +66,7 @@ namespace Mafia2
             get { return GetType().ToString(); }
         }
 
-        public FrameObjectBase() { }
+        public FrameObjectBase() : base() { }
 
         public virtual void ReadFromFile(BinaryReader reader)
         {

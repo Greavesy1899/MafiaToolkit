@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.XPath;
 
 namespace Mafia2Tool
 {
@@ -21,39 +23,47 @@ namespace Mafia2Tool
 
         public static void BuildData()
         {
-            DirectoryInfo dirInfo = new DirectoryInfo(ScenePath);
-            FileInfo[] files = dirInfo.GetFiles("*", SearchOption.AllDirectories);
-
             List<FileInfo> vbps = new List<FileInfo>();
             List<FileInfo> ibps = new List<FileInfo>();
             List<ItemDesc> ids = new List<ItemDesc>();
             List<Actor> act = new List<Actor>();
 
-            foreach (FileInfo file in files)
+            DirectoryInfo dirInfo = new DirectoryInfo(ScenePath);
+
+            FileInfo[] files = dirInfo.GetFiles("*", SearchOption.AllDirectories);
+
+            XmlDocument document = new XmlDocument();
+            document.Load(ScenePath + "/SDSContent.xml");
+            XPathNavigator nav = document.CreateNavigator();
+            var nodes = nav.Select("/SDSResource/ResourceEntry");
+            while (nodes.MoveNext() == true)
             {
-                if (file.Extension == ".fr")
-                    FrameResource = new FrameResource(file.FullName);
+                string type;
+                string name;
 
-                if (file.FullName.Contains(".fnt"))
-                    FrameNameTable = new FrameNameTable(file.FullName);
+                nodes.Current.MoveToFirstChild();
+                type = nodes.Current.Value;
+                nodes.Current.MoveToNext();
+                name = ScenePath + "/" + nodes.Current.Value;
 
-                if (file.FullName.Contains(".vbp"))
-                    vbps.Add(file);
-
-                if (file.FullName.Contains(".ibp"))
-                    ibps.Add(file);
-
-                //if (file.FullName.Contains("ItemDesc"))
-                //    ids.Add(new ItemDesc(file.FullName));
-
-                //if (file.FullName.Contains("SoundSector"))
-                //    SoundSector = new SoundSector(file.FullName);
-
-                if (file.FullName.Contains(".act"))
-                    act.Add(new Actor(file.FullName));
-
-                if (file.FullName.Contains("cityareas"))
-                    CityAreas = new CityAreas(file.FullName);
+                if (type == "IndexBufferPool")
+                    ibps.Add(new FileInfo(name));
+                else if (type == "VertexBufferPool")
+                    vbps.Add(new FileInfo(name));
+                else if (type == "FrameResource")
+                    FrameResource = new FrameResource(name);
+                else if (type == "FrameNameTable")
+                    FrameNameTable = new FrameNameTable(name);
+                else if (type == "ItemDesc")
+                    ids.Add(new ItemDesc(name));
+                else if (type == "FrameNameTable")
+                    FrameNameTable = new FrameNameTable(name);
+                else if (type == "Actors")
+                    act.Add(new Actor(name));
+                //else if (type == "AudioSectors")
+                //    SoundSector = new SoundSector(name);
+                else if ((type == "MemFile") && (name.Contains("cityareas")))
+                    CityAreas = new CityAreas(name);
             }
 
             IndexBufferPool = new IndexBufferManager(ibps);
@@ -93,6 +103,12 @@ namespace Mafia2Tool
 
         public static void Reload()
         {
+            CleanData();
+            BuildData();
+        }
+
+        public static void CleanData()
+        {
             FrameNameTable = null;
             FrameResource = null;
             VertexBufferPool = null;
@@ -102,9 +118,7 @@ namespace Mafia2Tool
             ItemDescs = null;
             Collisions = null;
             CityAreas = null;
-
             GC.Collect();
-            BuildData();
         }
     }
 

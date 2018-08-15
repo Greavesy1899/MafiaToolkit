@@ -320,7 +320,7 @@ namespace Gibbed.Mafia2.FileFormats
             }
             catch
             {
-                MessageBox.Show("Could not find SDSContent.xml. Folder Path: " + sdsFolder + "/SDSContent.xml", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Could not find 'SDSContent.xml'. Folder Path: " + sdsFolder + "/SDSContent.xml", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 

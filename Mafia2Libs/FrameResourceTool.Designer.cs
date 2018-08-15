@@ -31,7 +31,6 @@
             this.m2tBrowser = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,15 +39,14 @@
             this.farLodsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.materialEditorSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.overwriteBufferSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.switchViewSubButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsButton = new System.Windows.Forms.ToolStripButton();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.contextExtract3D = new System.Windows.Forms.ToolStripMenuItem();
             this.contextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addFrameSingleMesh = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -90,8 +88,7 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolButton,
             this.toolsButton,
-            this.viewToolButton,
-            this.optionsButton});
+            this.viewToolButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(785, 25);
@@ -102,7 +99,6 @@
             // 
             this.fileToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.fileToolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.reloadToolStripMenuItem,
             this.exitToolStripMenuItem});
@@ -111,13 +107,6 @@
             this.fileToolButton.Name = "fileToolButton";
             this.fileToolButton.Size = new System.Drawing.Size(38, 22);
             this.fileToolButton.Text = "File";
-            // 
-            // openToolStripMenuItem
-            // 
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
-            this.openToolStripMenuItem.Text = "Open";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenClick);
             // 
             // saveToolStripMenuItem
             // 
@@ -145,8 +134,8 @@
             this.toolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportAllSubButton,
-            this.materialEditorSubButton,
-            this.overwriteBufferSubButton});
+            this.overwriteBufferSubButton,
+            this.addFrameSingleMesh});
             this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
             this.toolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolsButton.Name = "toolsButton";
@@ -160,7 +149,7 @@
             this.modelsToolStripMenuItem,
             this.allToolStripMenuItem});
             this.exportAllSubButton.Name = "exportAllSubButton";
-            this.exportAllSubButton.Size = new System.Drawing.Size(160, 22);
+            this.exportAllSubButton.Size = new System.Drawing.Size(193, 22);
             this.exportAllSubButton.Text = "Export All";
             this.exportAllSubButton.Click += new System.EventHandler(this.OnClickLoadAll);
             // 
@@ -182,17 +171,10 @@
             this.allToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.allToolStripMenuItem.Text = "All";
             // 
-            // materialEditorSubButton
-            // 
-            this.materialEditorSubButton.Name = "materialEditorSubButton";
-            this.materialEditorSubButton.Size = new System.Drawing.Size(160, 22);
-            this.materialEditorSubButton.Text = "Material Editor";
-            this.materialEditorSubButton.Click += new System.EventHandler(this.LoadMaterialTool);
-            // 
             // overwriteBufferSubButton
             // 
             this.overwriteBufferSubButton.Name = "overwriteBufferSubButton";
-            this.overwriteBufferSubButton.Size = new System.Drawing.Size(160, 22);
+            this.overwriteBufferSubButton.Size = new System.Drawing.Size(193, 22);
             this.overwriteBufferSubButton.Text = "Overwrite Buffer";
             this.overwriteBufferSubButton.Click += new System.EventHandler(this.OverwriteBuffer_Click);
             // 
@@ -214,15 +196,6 @@
             this.switchViewSubButton.Text = "Switch View";
             this.switchViewSubButton.Click += new System.EventHandler(this.SwitchView);
             // 
-            // optionsButton
-            // 
-            this.optionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.optionsButton.Image = ((System.Drawing.Image)(resources.GetObject("optionsButton.Image")));
-            this.optionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.optionsButton.Name = "optionsButton";
-            this.optionsButton.Size = new System.Drawing.Size(53, 22);
-            this.optionsButton.Text = "Options";
-            // 
             // treeView1
             // 
             this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -236,14 +209,14 @@
             // contextExtract3D
             // 
             this.contextExtract3D.Name = "contextExtract3D";
-            this.contextExtract3D.Size = new System.Drawing.Size(155, 22);
+            this.contextExtract3D.Size = new System.Drawing.Size(106, 22);
             this.contextExtract3D.Text = "Extract 3D";
             // 
             // contextDelete
             // 
             this.contextDelete.Name = "contextDelete";
             this.contextDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.contextDelete.Size = new System.Drawing.Size(155, 22);
+            this.contextDelete.Size = new System.Drawing.Size(106, 22);
             this.contextDelete.Text = "Delete";
             this.contextDelete.Click += new System.EventHandler(this.OnDelete);
             // 
@@ -254,8 +227,15 @@
             this.contextDelete});
             this.contextMenu.Name = "contextMenuStrip1";
             this.contextMenu.ShowImageMargin = false;
-            this.contextMenu.Size = new System.Drawing.Size(156, 70);
+            this.contextMenu.Size = new System.Drawing.Size(107, 48);
             this.contextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ItemClicked);
+            // 
+            // addFrameSingleMesh
+            // 
+            this.addFrameSingleMesh.Name = "addFrameSingleMesh";
+            this.addFrameSingleMesh.Size = new System.Drawing.Size(193, 22);
+            this.addFrameSingleMesh.Text = "Add FrameSingleMesh";
+            this.addFrameSingleMesh.Click += new System.EventHandler(this.addFrameSingleMesh_Click);
             // 
             // FrameResourceTool
             // 
@@ -288,13 +268,10 @@
         private System.Windows.Forms.ToolStripMenuItem switchViewSubButton;
         private System.Windows.Forms.ToolStripDropDownButton toolsButton;
         private System.Windows.Forms.ToolStripMenuItem exportAllSubButton;
-        private System.Windows.Forms.ToolStripMenuItem materialEditorSubButton;
         private System.Windows.Forms.ToolStripMenuItem overwriteBufferSubButton;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton optionsButton;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.ToolStripMenuItem farLodsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modelsToolStripMenuItem;
@@ -302,5 +279,6 @@
         private System.Windows.Forms.ToolStripMenuItem contextExtract3D;
         private System.Windows.Forms.ToolStripMenuItem contextDelete;
         private System.Windows.Forms.ContextMenuStrip contextMenu;
+        private System.Windows.Forms.ToolStripMenuItem addFrameSingleMesh;
     }
 }

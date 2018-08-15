@@ -32,22 +32,6 @@ namespace Mafia2
             byte[] unkBytes1 = reader.ReadBytes(5);
             gcsSize = reader.ReadInt32();
 
-
-            byte[] unkBytes = reader.ReadBytes(3);
-        }
-
-        public void ReadFromFile2(BinaryReader reader)
-        {
-            unk01 = reader.ReadInt32();
-
-            if (unk01 != 1)
-                throw new FormatException("Unk01 should equal 1");
-
-            short length = reader.ReadInt16();
-            cutsceneName = new string(reader.ReadChars(length));
-            byte[] unkBytes1 = reader.ReadBytes(5);
-            gcsSize = reader.ReadInt32();
-
             long start = reader.BaseStream.Position;
             gcsData = new GCSData();
             gcsData.ReadFromFile(reader);
@@ -55,13 +39,16 @@ namespace Mafia2
             byte[] unkBytes2 = reader.ReadBytes(gcsSize);
 
             //go back three for size of SPD.
-            reader.BaseStream.Position -= 3;
-            int spdSize = reader.ReadInt32();
-            start = reader.BaseStream.Position;
-            spdData = new SPDData();
-            spdData.ReadFromFile(reader);
-            reader.BaseStream.Seek(start, SeekOrigin.Begin);
-            byte[] unkBytes3 = reader.ReadBytes(spdSize);
+            if (reader.BaseStream.Position != reader.BaseStream.Length)
+            {
+                reader.BaseStream.Position -= 3;
+                int spdSize = reader.ReadInt32();
+                start = reader.BaseStream.Position;
+                spdData = new SPDData();
+                spdData.ReadFromFile(reader);
+                reader.BaseStream.Seek(start, SeekOrigin.Begin);
+                byte[] unkBytes3 = reader.ReadBytes(spdSize);
+            }
 
         }
 

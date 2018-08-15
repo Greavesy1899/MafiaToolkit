@@ -161,6 +161,7 @@ namespace Mafia2Tool
                 node.Nodes.Add(CreateTreeNode("Geometry", (fObject as FrameObjectModel).MeshIndex));
                 node.Nodes.Add(CreateTreeNode("Skeleton Info", (fObject as FrameObjectModel).SkeletonIndex));
                 node.Nodes.Add(CreateTreeNode("Skeleton Hierachy Info", (fObject as FrameObjectModel).SkeletonHierachyIndex));
+                node.Nodes.Add(CreateTreeNode("Blend Info", (fObject as FrameObjectModel).BlendInfoIndex));
                 node.ContextMenuStrip = contextMenu;
             }
 
@@ -325,15 +326,6 @@ namespace Mafia2Tool
             FrameResourceListBox.Visible = (!FrameResourceListBox.Visible) ? true : false;
         }
 
-        private void LoadMaterialTool(object sender, EventArgs e)
-        {
-            if (!MaterialData.HasLoaded)
-                return;
-
-            //MaterialTool tool = new MaterialTool();
-            //tool.ShowDialog();
-        }
-
         private void OverwriteBuffer_Click(object sender, EventArgs e)
         {
             if (treeView1.SelectedNode == null)
@@ -406,6 +398,7 @@ namespace Mafia2Tool
         private void OnExit(object sender, FormClosingEventArgs e)
         {
             SaveChanges();
+            SceneData.CleanData();
         }
 
         private void SaveClick(object sender, EventArgs e)
@@ -437,25 +430,11 @@ namespace Mafia2Tool
                     nameTable.WriteToFile(writer);
                 }
                 MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ReloadClick(null, null);
             }
         }
         private void ReloadClick(object sender, EventArgs e)
         {
-            SceneData.Reload();
-            treeView1.Nodes.Clear();
-            FrameResourceListBox.Items.Clear();
-            ReadFrameResource();
-        }
-
-        private void OpenClick(object sender, EventArgs e)
-        {
-            if (folderBrowser.ShowDialog() == DialogResult.OK)
-            {
-                //string path = ini.Read("SDSPath", "Directories");
-                //path = folderBrowser.SelectedPath;
-                //SceneData.ScenePath = path;
-                //ini.Write("SDSPath", path, "Directories");
-            }
             SceneData.Reload();
             treeView1.Nodes.Clear();
             FrameResourceListBox.Items.Clear();
@@ -502,6 +481,11 @@ namespace Mafia2Tool
         private void OnSelect(object sender, TreeViewEventArgs e)
         {
             FrameResourceGrid.SelectedObject = treeView1.SelectedNode.Tag;
+        }
+
+        private void addFrameSingleMesh_Click(object sender, EventArgs e)
+        {
+            FrameObjectSingleMesh mesh = new FrameObjectSingleMesh();
         }
     }
 }

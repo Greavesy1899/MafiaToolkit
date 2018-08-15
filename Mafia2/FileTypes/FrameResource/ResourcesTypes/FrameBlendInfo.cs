@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 namespace Mafia2
 {
-    public class FrameBlendInfo
+    public class FrameBlendInfo : FrameEntry
     {
         BlendDataToBoneIndexInfo[] blendDataToBoneIndexInfos;
         BlendDataToBoneIndexMap[] blendDataToBoneIndexMaps;
@@ -27,7 +27,7 @@ namespace Mafia2
             set { bounds = value; }
         }
 
-        public FrameBlendInfo(BinaryReader reader)
+        public FrameBlendInfo(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
         }

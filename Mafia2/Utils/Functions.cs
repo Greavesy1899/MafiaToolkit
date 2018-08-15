@@ -1,17 +1,45 @@
 ﻿using System;
-using System.Text;
+using System.Collections.Generic;
 using System.IO;
-using System.Globalization;
 
 namespace Mafia2
 {
     public class Functions
     {
+        public static Random RandomGenerator = new Random();
         public static Vector3 ReadBound(BinaryReader reader)
         {
             return new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-        }  
+        }
+        public static int IndexOfValue(Dictionary<int, object> dic, int key)
+        {
+            int index = -1;
+            foreach (KeyValuePair<int, object> entry in dic)
+            {
+                if (entry.Key == key)
+                    return index;
+                else
+                    index++;                 
+            }
+            return index;
+        }
     }
+    public static class Extensions
+    {
+        public static int IndexOfValue<Tkey, TValue>(this Dictionary<Tkey, TValue> dic, int key)
+        {
+            int index = 0;
+            foreach (KeyValuePair<Tkey, TValue> entry in dic)
+            {
+                if (Convert.ToInt32(entry.Key) == key)
+                    return index;
+                else
+                    index++;
+            }
+            return -1;
+        }
+    }
+
     public static partial class FunctionSwap
     {
         public static ulong Swap(this ulong value)

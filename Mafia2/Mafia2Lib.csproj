@@ -46,6 +46,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileTypes\Animations\Animation2.cs" />
+    <Compile Include="FileTypes\FrameResource\FrameEntry.cs" />
+    <Compile Include="FileTypes\FrameResource\FrameResource - Copy.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\IResourceType.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\MemFileResource.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\ScriptData.cs" />
@@ -72,15 +75,15 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="FileTypes\FrameNameTable\FrameNameTable.cs" />
-    <Compile Include="FileTypes\FrameResource\FrameBlendInfo.cs" />
-    <Compile Include="FileTypes\FrameResource\FrameGeometry.cs" />
+    <Compile Include="FileTypes\FrameResource\ResourcesTypes\FrameBlendInfo.cs" />
+    <Compile Include="FileTypes\FrameResource\ResourcesTypes\FrameGeometry.cs" />
     <Compile Include="FileTypes\FrameResource\FrameHeader.cs" />
-    <Compile Include="FileTypes\FrameResource\FrameLOD.cs" />
-    <Compile Include="FileTypes\FrameResource\FrameMaterial.cs" />
+    <Compile Include="FileTypes\FrameResource\ResourcesTypes\FrameLOD.cs" />
+    <Compile Include="FileTypes\FrameResource\ResourcesTypes\FrameMaterial.cs" />
     <Compile Include="FileTypes\FrameResource\FrameResource.cs" />
-    <Compile Include="FileTypes\FrameResource\FrameSkeleton.cs" />
-    <Compile Include="FileTypes\FrameResource\FrameSkeletonHierachy.cs" />
-    <Compile Include="FileTypes\FrameResource\ObjectTypes\FrameHeaderScene.cs" />
+    <Compile Include="FileTypes\FrameResource\ResourcesTypes\FrameSkeleton.cs" />
+    <Compile Include="FileTypes\FrameResource\ResourcesTypes\FrameSkeletonHierachy.cs" />
+    <Compile Include="FileTypes\FrameResource\ResourcesTypes\FrameHeaderScene.cs" />
     <Compile Include="FileTypes\FrameResource\ObjectTypes\FrameObjectArea.cs" />
     <Compile Include="FileTypes\FrameResource\ObjectTypes\FrameObjectBase.cs" />
     <Compile Include="FileTypes\FrameResource\ObjectTypes\FrameObjectCamera.cs" />

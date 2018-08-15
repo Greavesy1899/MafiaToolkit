@@ -6,7 +6,6 @@ namespace Mafia2
 {
     public class FrameObjectModel : FrameObjectSingleMesh
     {
-        private object[] frameBlocks;
         private FrameSkeleton skeleton;
         private FrameBlendInfo blendInfo;
 
@@ -38,10 +37,8 @@ namespace Mafia2
             set { unk_30_list = value; }
         }
 
-        public FrameObjectModel (BinaryReader reader, object[] fb)
+        public FrameObjectModel (BinaryReader reader)
         {
-            frameBlocks = fb;
-            ReadFromFile(reader);
         }
 
         public override void ReadFromFile(BinaryReader reader)
@@ -51,9 +48,12 @@ namespace Mafia2
             blendInfoIndex = reader.ReadInt32();
             skeletonIndex = reader.ReadInt32();
             skeletonHierachyIndex = reader.ReadInt32();
+        }
 
-            skeleton = frameBlocks[skeletonIndex] as FrameSkeleton;
-            blendInfo = frameBlocks[blendInfoIndex] as FrameBlendInfo;
+        public void ReadFromFilePart2(BinaryReader reader, FrameSkeleton skeleton, FrameBlendInfo blendInfo)
+        {
+            this.skeleton = skeleton;
+            this.blendInfo = blendInfo;
 
             restPose = new TransformMatrix[skeleton.Count1];
             for (int i = 0; i != restPose.Length; i++)
@@ -80,17 +80,17 @@ namespace Mafia2
             byte[] numArray = new byte[skeleton.LodInfo[0].LodBlendIndexMap.Length];
 
             int destIndex = 0;
-            foreach(byte[] blendIndex in blendInfo.BlendDataToBoneIndexMaps[0].BlendIndices)
+            foreach (byte[] blendIndex in blendInfo.BlendDataToBoneIndexMaps[0].BlendIndices)
             {
                 Array.Copy(blendIndex, 0, numArray, destIndex, blendIndex.Length);
                 destIndex += blendIndex.Length;
             }
-            for(int i = 0; i != unk_30_list.Length; i++)
+            for (int i = 0; i != unk_30_list.Length; i++)
             {
                 int index2 = numArray[unk_30_list[i].BlendIndex];
                 unk_30_list[i].JointName = (SkeletonBoneIDs)skeleton.BoneIDs[index2].uHash;
             }
-            unkData = reader.ReadBytes(count);           
+            unkData = reader.ReadBytes(count);
         }
 
         public override void WriteToFile(BinaryWriter writer)

@@ -47,7 +47,6 @@ namespace Mafia2
             List<Data> tableData = new List<Data>();
             int[] scenePos;
             string[] sceneNames;
-            names = "";
             int totalNumBlocks = resource.Header.SceneFolders.Length + resource.Header.NumGeometries + resource.Header.NumMaterialResources + resource.Header.NumBlendInfos + resource.Header.NumSkeletons + resource.Header.NumSkelHierachies;
 
             if (resource.Header.IsScene)
@@ -141,8 +140,12 @@ namespace Mafia2
             {
                 int pos = frameData[i].NamePos1;
                 frameData[i].Name = names.Substring(pos, names.IndexOf('\0', pos) - pos);
-                pos = frameData[i].Parent;
-                frameData[i].ParentName = names.Substring(pos, names.IndexOf('\0', pos) - pos);
+
+                if (frameData[i].Parent != -1)
+                {
+                    pos = frameData[i].Parent;
+                    frameData[i].ParentName = names.Substring(pos, names.IndexOf('\0', pos) - pos);
+                }
             }
         }
 

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Mafia2
 {
-    public class FrameMaterial
+    public class FrameMaterial : FrameEntry
     {
 
         uint allMat = 0;
@@ -16,7 +16,7 @@ namespace Mafia2
             set { materials = value; }
         }
 
-        public FrameMaterial(BinaryReader reader)
+        public FrameMaterial(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
         }

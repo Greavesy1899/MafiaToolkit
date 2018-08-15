@@ -2,7 +2,7 @@
 
 namespace Mafia2
 {
-    public class FrameSkeleton
+    public class FrameSkeleton : FrameEntry
     {
         int count1;
         int count2;
@@ -34,7 +34,7 @@ namespace Mafia2
             set { boneIDs = value; }
         }
 
-        public FrameSkeleton(BinaryReader reader)
+        public FrameSkeleton(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
         }

@@ -40,23 +40,23 @@ namespace Mafia2
 
         public void WriteToEDC()
         {
-            if ((int)colType > 3)
-                return;
+            //if ((int)colType > 3)
+            //    return;
 
-            CustomEDC edc = new CustomEDC(colType, collision, cBase.Matrix);
+            //CustomEDC edc = new CustomEDC(colType, collision, cBase.Matrix);
 
-            using (BinaryWriter writer = new BinaryWriter(File.Create("collisions/" + frameRef + ".edc")))
-            {
-                writer.Write(frameRef.ToString());
-                writer.Write(cBase.Matrix.Position.X);
-                writer.Write(cBase.Matrix.Position.Y);
-                writer.Write(cBase.Matrix.Position.Z);
-                writer.Write(cBase.Matrix.Rotation.Euler.X);
-                writer.Write(cBase.Matrix.Rotation.Euler.Y);
-                writer.Write(cBase.Matrix.Rotation.Euler.Z);
-                writer.Write((byte)colType);
-                edc.WriteToFile(writer);
-            }
+            //using (BinaryWriter writer = new BinaryWriter(File.Create("collisions/" + frameRef + ".edc")))
+            //{
+            //    writer.Write(frameRef.ToString());
+            //    writer.Write(cBase.Matrix.Position.X);
+            //    writer.Write(cBase.Matrix.Position.Y);
+            //    writer.Write(cBase.Matrix.Position.Z);
+            //    writer.Write(cBase.Matrix.Rotation.Euler.X);
+            //    writer.Write(cBase.Matrix.Rotation.Euler.Y);
+            //    writer.Write(cBase.Matrix.Rotation.Euler.Z);
+            //    writer.Write((byte)colType);
+            //    edc.WriteToFile(writer);
+            //}
         }
 
         public override string ToString()

@@ -118,6 +118,7 @@ namespace Mafia2Tool
             {
                 SceneData.Collisions.WriteToFile(writer);
             }
+            SceneData.CleanData();
         }
     }
 }

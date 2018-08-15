@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Mafia2
 {
-    public class FrameSkeletonHierachy
+    public class FrameSkeletonHierachy : FrameEntry
     {
         byte[] parentIndices;
         byte[] lastChildIndices;
@@ -27,7 +27,7 @@ namespace Mafia2
             set { unkData = value; }
         }
 
-        public FrameSkeletonHierachy(BinaryReader reader)
+        public FrameSkeletonHierachy(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
         }

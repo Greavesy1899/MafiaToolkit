@@ -9,9 +9,15 @@ namespace Mafia2
     {
 
         FrameHeader header;
-        object[] frameBlocks;
+        int[] frameBlocks;
         object[] frameObjects;
         List<Object> entireFrame = new List<object>();
+        Dictionary<int, FrameHeaderScene> frameScenes = new Dictionary<int, FrameHeaderScene>();
+        Dictionary<int, FrameGeometry> frameGeometries = new Dictionary<int, FrameGeometry>();
+        Dictionary<int, FrameMaterial> frameMaterials = new Dictionary<int, FrameMaterial>();
+        Dictionary<int, FrameBlendInfo> frameBlendInfos = new Dictionary<int, FrameBlendInfo>();
+        Dictionary<int, FrameSkeleton> frameSkeletons = new Dictionary<int, FrameSkeleton>();
+        Dictionary<int, FrameSkeletonHierachy> frameSkeletonHierachies = new Dictionary<int, FrameSkeletonHierachy>();
 
         int[] objectTypes;
 
@@ -19,7 +25,7 @@ namespace Mafia2
             get { return header; }
             set { header = value; }
         }
-        public object[] FrameBlocks {
+        public int[] FrameBlocks {
             get { return frameBlocks; }
             set { frameBlocks = value; }
         }
@@ -37,21 +43,6 @@ namespace Mafia2
             {
                 ReadFromFile(reader);
             }
-            //using (BinaryWriter writer = new BinaryWriter(File.Open("CITYAREAS.ara", FileMode.Create)))
-            //{
-            //    int areaCount = 0;
-            //    for (int i = 0; i != frameObjects.Length; i++)
-            //    {
-            //        if (frameObjects[i].GetType() == typeof(FrameObjectArea))
-            //            areaCount++;
-            //    }
-            //    writer.Write(areaCount);
-            //    for (int i = 0; i != frameObjects.Length; i++)
-            //    {
-            //        if (frameObjects[i].GetType() == typeof(FrameObjectArea))
-            //            (frameObjects[i] as FrameObjectArea).WriteARAFile(writer);
-            //    }
-            //}
         }
 
         /// <summary>
@@ -64,28 +55,46 @@ namespace Mafia2
             header.ReadFromFile(reader);
 
             objectTypes = new int[header.NumObjects];
-            frameBlocks = new object[header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies];
+            frameBlocks = new int[header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies];
             frameObjects = new object[header.NumObjects];
 
             int j = 0;
 
             for (int i = 0; i != header.SceneFolders.Length; i++)
-            { frameBlocks[j] = header.SceneFolders[i]; j++; }
-
+            {
+                frameScenes.Add(header.SceneFolders[i].RefID, header.SceneFolders[i]);
+                frameBlocks[j++] = header.SceneFolders[i].RefID;
+            }
             for (int i = 0; i != header.NumGeometries; i++)
-            { frameBlocks[j] = new FrameGeometry(reader); j++; }
-
+            {
+                FrameGeometry geo = new FrameGeometry(reader);
+                frameGeometries.Add(geo.RefID, geo);
+                frameBlocks[j++] = geo.RefID;
+            }
             for (int i = 0; i != header.NumMaterialResources; i++)
-            { frameBlocks[j] = new FrameMaterial(reader); j++; }
-
+            {
+                FrameMaterial mat = new FrameMaterial(reader);
+                frameMaterials.Add(mat.RefID, mat);
+                frameBlocks[j++] = mat.RefID;
+            }
             for (int i = 0; i != header.NumBlendInfos; i++)
-            { frameBlocks[j] = new FrameBlendInfo(reader); j++; }
-
+            {
+                FrameBlendInfo blendInfo = new FrameBlendInfo(reader);
+                frameBlendInfos.Add(blendInfo.RefID, blendInfo);
+                frameBlocks[j++] = blendInfo.RefID;
+            }
             for (int i = 0; i != header.NumSkeletons; i++)
-            { frameBlocks[j] = new FrameSkeleton(reader); j++; }
-
+            {
+                FrameSkeleton skeleton = new FrameSkeleton(reader);
+                frameSkeletons.Add(skeleton.RefID, skeleton);
+                frameBlocks[j++] = skeleton.RefID;
+            }
             for (int i = 0; i != header.NumSkelHierachies; i++)
-            { frameBlocks[j] = new FrameSkeletonHierachy(reader); j++; }
+            {
+                FrameSkeletonHierachy skeletonHierachy = new FrameSkeletonHierachy(reader);
+                frameSkeletonHierachies.Add(skeletonHierachy.RefID, skeletonHierachy);
+                frameBlocks[j++] = skeletonHierachy.RefID;
+            }
 
             if (header.NumObjects > 0)
             {
@@ -100,8 +109,12 @@ namespace Mafia2
                         newObject = new FrameObjectJoint(reader);
 
                     else if (objectTypes[i] == (int)ObjectType.SingleMesh)
+                    {
                         newObject = new FrameObjectSingleMesh(reader);
-
+                        FrameObjectSingleMesh mesh = newObject as FrameObjectSingleMesh;
+                        mesh.AddRef(frameBlocks[mesh.MeshIndex]);
+                        mesh.AddRef(frameBlocks[mesh.MaterialIndex]);
+                    }
                     else if (objectTypes[i] == (int)ObjectType.Frame)
                         newObject = new FrameObjectFrame(reader);
 
@@ -130,8 +143,17 @@ namespace Mafia2
                         newObject = new FrameObjectTarget(reader);
 
                     else if (objectTypes[i] == (int)ObjectType.Model)
-                        newObject = new FrameObjectModel(reader, frameBlocks);
-
+                    {
+                        FrameObjectModel mesh = new FrameObjectModel(reader);
+                        mesh.ReadFromFile(reader);
+                        mesh.ReadFromFilePart2(reader, frameSkeletons[frameBlocks[mesh.SkeletonIndex]], frameBlendInfos[frameBlocks[mesh.BlendInfoIndex]]);
+                        mesh.AddRef(frameBlocks[mesh.MeshIndex]);
+                        mesh.AddRef(frameBlocks[mesh.MaterialIndex]);
+                        mesh.AddRef(frameBlocks[mesh.BlendInfoIndex]);
+                        mesh.AddRef(frameBlocks[mesh.SkeletonIndex]);
+                        mesh.AddRef(frameBlocks[mesh.SkeletonHierachyIndex]);
+                        newObject = mesh;
+                    }
                     else if (objectTypes[i] == (int)ObjectType.Collision)
                         newObject = new FrameObjectCollision(reader);
 
@@ -305,6 +327,32 @@ namespace Mafia2
         /// </summary>
         public void UpdateFrameData()
         {
+            int totalResources = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
+
+
+            Dictionary<int, object> newFrame = new Dictionary<int, object>();
+            //TODO SCENES.
+            foreach (KeyValuePair<int, FrameGeometry> entry in frameGeometries)
+            {
+                newFrame.Add(entry.Key, entry.Value);
+            }
+            foreach (KeyValuePair<int, FrameMaterial> entry in frameMaterials)
+            {
+                newFrame.Add(entry.Key, entry.Value);
+            }
+            foreach (KeyValuePair<int, FrameBlendInfo> entry in frameBlendInfos)
+            {
+                newFrame.Add(entry.Key, entry.Value);
+            }
+            foreach (KeyValuePair<int, FrameSkeleton> entry in frameSkeletons)
+            {
+                newFrame.Add(entry.Key, entry.Value);
+            }
+            foreach (KeyValuePair<int, FrameSkeletonHierachy> entry in frameSkeletonHierachies)
+            {
+                newFrame.Add(entry.Key, entry.Value);
+            }
+
             header.NumFolderNames = 0;
             header.NumGeometries = 0;
             header.NumMaterialResources = 0;
@@ -313,6 +361,33 @@ namespace Mafia2
             header.NumSkelHierachies = 0;
             header.NumObjects = 0;
 
+            for (int i = 0; i != frameObjects.Length; i++)
+            {
+                object block = frameObjects[i];
+
+                if (block.GetType() == typeof(FrameObjectSingleMesh))
+                {
+                    FrameObjectSingleMesh mesh = (block as FrameObjectSingleMesh);
+                    mesh.MaterialIndex = newFrame.IndexOfValue(frameBlocks[mesh.MaterialIndex]);
+                    mesh.MeshIndex = newFrame.IndexOfValue(frameBlocks[mesh.MeshIndex]);
+                    newFrame.Add(mesh.RefID, mesh);
+                }
+                else if (block.GetType() == typeof(FrameObjectModel))
+                {
+                    FrameObjectModel mesh = (block as FrameObjectModel);
+                    mesh.MaterialIndex = newFrame.IndexOfValue(frameBlocks[mesh.MaterialIndex]);
+                    mesh.MeshIndex = newFrame.IndexOfValue(frameBlocks[mesh.MeshIndex]);
+                    mesh.BlendInfoIndex = newFrame.IndexOfValue(frameBlocks[mesh.BlendInfoIndex]);
+                    mesh.SkeletonIndex = newFrame.IndexOfValue(frameBlocks[mesh.SkeletonIndex]);
+                    mesh.SkeletonHierachyIndex = frameSkeletonHierachies.IndexOfValue(frameBlocks[mesh.SkeletonHierachyIndex]);
+                    newFrame.Add(mesh.RefID, mesh);
+                }
+                else
+                {
+                    newFrame.Add((block as FrameEntry).RefID, block);
+                }
+            }
+            entireFrame = newFrame.Values.ToList();
             for (int i = 0; i != entireFrame.Count; i++)
             {
                 object block = entireFrame[i];

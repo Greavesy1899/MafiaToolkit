@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Mafia2
 {
-    public class FrameGeometry
+    public class FrameGeometry : FrameEntry
     {
         byte numLods;
         short unk01_short = 0;
@@ -37,7 +37,7 @@ namespace Mafia2
             set { unk02_int = value; }
         }
 
-        public FrameGeometry(BinaryReader reader)
+        public FrameGeometry(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
         }
