@@ -75,7 +75,7 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return string.Format("Geometry Block");
+            return $"Geometry Block";
         }
     }
 }

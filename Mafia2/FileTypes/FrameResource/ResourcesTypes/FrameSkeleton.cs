@@ -110,6 +110,11 @@ namespace Mafia2
             for (int i = 0; i != lodInfo.Length; i++)
                 lodInfo[i].WriteToFile(writer);
         }
+
+        public override string ToString()
+        {
+            return $"Skeleton Block";
+        }
     }
 
     public class SkeletonLodInfo

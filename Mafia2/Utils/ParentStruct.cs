@@ -4,6 +4,7 @@
     {
         int index;
         string name;
+        int refID;
 
         public int Index
         {
@@ -15,6 +16,11 @@
         {
             get { return name; }
             set { name = value; }
+        }
+
+        public int RefID {
+            get { return refID; }
+            set { refID = value; }
         }
 
         public ParentStruct(int index)

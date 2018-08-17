@@ -17,11 +17,10 @@ namespace Mafia2
         Hash sceneName;
         FrameHeaderScene[] sceneFolders;
 
-        //unknown
-        public float unk1 = 0f;
-        public float unk2 = 0f;
-        public bool unk3;
-        public float[] unkData = new float[4 * 3];
+        float unk1;
+        float unk2;
+        bool unk3;
+        float[] unkData = new float[4 * 3];
 
         public bool IsScene {
             get { return isScene; }
@@ -55,11 +54,35 @@ namespace Mafia2
             get { return numSkelHierachies; }
             set { numSkelHierachies = value; }
         }
+        public Hash SceneName {
+            get { return sceneName; }
+            set { sceneName = value; }
+        }
+        public float Unk1 {
+            get { return unk1; }
+            set { unk1 = value; }
+        }
+        public float Unk2 {
+            get { return unk2; }
+            set { unk2 = value; }
+        }
+        public bool Unk3 {
+            get { return unk3; }
+            set { unk3 = value; }
+        }
+        public float[] UnkFloats {
+            get { return unkData; }
+            set { unkData = value; }
+        }
         public FrameHeaderScene[] SceneFolders {
             get { return sceneFolders; }
             set { sceneFolders = value; }
         }
 
+        /// <summary>
+        /// Read data from file.
+        /// </summary>
+        /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
             isScene = reader.ReadBoolean();
@@ -92,6 +115,10 @@ namespace Mafia2
             }
         }
 
+        /// <summary>
+        /// Write data to file.
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(isScene);

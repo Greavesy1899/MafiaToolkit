@@ -40,13 +40,13 @@
             this.modelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.overwriteBufferSubButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.addFrameSingleMesh = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.switchViewSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.contextExtract3D = new System.Windows.Forms.ToolStripMenuItem();
             this.contextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.addFrameSingleMesh = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -156,19 +156,19 @@
             // farLodsToolStripMenuItem
             // 
             this.farLodsToolStripMenuItem.Name = "farLodsToolStripMenuItem";
-            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.farLodsToolStripMenuItem.Text = "Far Lods";
             // 
             // modelsToolStripMenuItem
             // 
             this.modelsToolStripMenuItem.Name = "modelsToolStripMenuItem";
-            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.modelsToolStripMenuItem.Text = "Models";
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.allToolStripMenuItem.Text = "All";
             // 
             // overwriteBufferSubButton
@@ -176,7 +176,13 @@
             this.overwriteBufferSubButton.Name = "overwriteBufferSubButton";
             this.overwriteBufferSubButton.Size = new System.Drawing.Size(193, 22);
             this.overwriteBufferSubButton.Text = "Overwrite Buffer";
-            this.overwriteBufferSubButton.Click += new System.EventHandler(this.OverwriteBuffer_Click);
+            // 
+            // addFrameSingleMesh
+            // 
+            this.addFrameSingleMesh.Name = "addFrameSingleMesh";
+            this.addFrameSingleMesh.Size = new System.Drawing.Size(193, 22);
+            this.addFrameSingleMesh.Text = "Add FrameSingleMesh";
+            this.addFrameSingleMesh.Click += new System.EventHandler(this.AddFrameSingleMesh_Click);
             // 
             // viewToolButton
             // 
@@ -229,13 +235,6 @@
             this.contextMenu.ShowImageMargin = false;
             this.contextMenu.Size = new System.Drawing.Size(107, 48);
             this.contextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ItemClicked);
-            // 
-            // addFrameSingleMesh
-            // 
-            this.addFrameSingleMesh.Name = "addFrameSingleMesh";
-            this.addFrameSingleMesh.Size = new System.Drawing.Size(193, 22);
-            this.addFrameSingleMesh.Text = "Add FrameSingleMesh";
-            this.addFrameSingleMesh.Click += new System.EventHandler(this.addFrameSingleMesh_Click);
             // 
             // FrameResourceTool
             // 

@@ -69,6 +69,11 @@ namespace Mafia2
             for (int i = 0; i != blendDataToBoneIndexMaps.Length; i++)
                 blendDataToBoneIndexMaps[i].WriteToFile(writer);
         }
+
+        public override string ToString()
+        {
+            return $"BlendInfo Block";
+        }
     }
 
     public class BlendDataToBoneIndexInfo

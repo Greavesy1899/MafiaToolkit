@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace Mafia2
 {
@@ -71,10 +72,10 @@ namespace Mafia2
                 sceneNames[0] = "<scene>\0";
             }
 
-            for (int i = 0; i != resource.EntireFrame.Count; i++)
+            for (int i = 0; i != resource.FrameObjects.Count; i++)
             {
                 bool addToTable = false;
-                object block = resource.EntireFrame[i];
+                object block = resource.FrameObjects.ElementAt(i).Value;
 
                 //possible types to save? might change in the future however.
                 if (block.GetType().BaseType == typeof(FrameObjectBase) || block.GetType().BaseType == typeof(FrameObjectJoint) || block.GetType().BaseType == typeof(FrameObjectSingleMesh))

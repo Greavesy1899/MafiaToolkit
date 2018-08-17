@@ -452,8 +452,6 @@ namespace Mafia2
 
                 opcSize = reader.ReadInt32();
 
-                bool hasHit = false;
-
                 //BEGIN OPC/HBM SECTION.
                 int opc = reader.ReadInt32();
                 if (opc != 21188687)
@@ -576,8 +574,6 @@ namespace Mafia2
 
                 writer.Write(opcSize);
 
-                bool hasHit = false;
-
                 //BEGIN OPC/HBM SECTION.
                 writer.Write(21188687);
 
@@ -674,8 +670,6 @@ namespace Mafia2
 
                 size += 4;
 
-                bool hasHit = false;
-
                 //BEGIN OPC/HBM SECTION.
                 size += 4;
 
@@ -748,8 +742,6 @@ namespace Mafia2
                 unk1 = 1;
 
                 opcSize = 28;
-
-                bool hasHit = false;
 
                 //BEGIN OPC/HBM SECTION.
                 string opc = Convert.ToString(21188687);

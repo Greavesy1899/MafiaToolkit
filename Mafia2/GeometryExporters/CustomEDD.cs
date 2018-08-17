@@ -7,13 +7,13 @@ namespace Mafia2
     {
         string header = "ED10";
         int entryCount;
-        Entry[] entries;
+        List<Entry> entries;
 
         public int EntryCount {
             get { return entryCount; }
             set { entryCount = value; }
         }
-        public Entry[] Entries {
+        public List<Entry> Entries {
             get { return entries; }
             set { entries = value; }
         }

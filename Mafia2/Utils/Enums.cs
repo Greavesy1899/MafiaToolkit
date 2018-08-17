@@ -413,6 +413,15 @@ namespace Mafia2
         Index = 3,
     }
 
+    public enum FrameEntryRefTypes
+    {
+        Mesh,
+        Material,
+        BlendInfo,
+        Skeleton,
+        SkeletonHierachy
+    }
+
     public enum CollisionMaterials
     {
         Road,

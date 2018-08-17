@@ -102,7 +102,7 @@ namespace Mafia2
 
             public AreaData(BinaryReader reader)
             {
-                name = readString(reader);
+                name = ReadString(reader);
                 reader.ReadByte();
                 index1 = reader.ReadUInt16();
                 index2 = reader.ReadUInt16();
@@ -111,13 +111,13 @@ namespace Mafia2
 
             public void WriteToFile(BinaryWriter writer)
             {
-                writeString(writer, name);
+                WriteString(writer, name);
                 writer.Write(index1);
                 writer.Write(index2);
                 writer.Write(unkByte1);
             }
 
-            private string readString(BinaryReader reader)
+            private string ReadString(BinaryReader reader)
             {
                 string newString = "";
 
@@ -128,7 +128,7 @@ namespace Mafia2
                 return newString;
             }
 
-            private void writeString(BinaryWriter writer, string text)
+            private void WriteString(BinaryWriter writer, string text)
             {
                 writer.Write(text.ToCharArray());
                 writer.Write('\0');

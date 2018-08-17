@@ -77,7 +77,7 @@ namespace Mafia2
             parentIndex1 = new ParentStruct(reader.ReadInt32());
             parentIndex2 = new ParentStruct(reader.ReadInt32());
             unk6 = reader.ReadInt16();
-            node = new Node(name.String, this);
+            node = new Node(name.String, refID.ToString(), this);
         }
 
         public virtual void WriteToFile(BinaryWriter writer)
@@ -94,25 +94,27 @@ namespace Mafia2
 
     public class Node
     {
-        string nameText;
+        string text;
+        string name;
         object tag;
 
-        public string NameText {
-            get { return nameText; }
-            set { nameText = value; }
+        public string Text {
+            get { return text; }
+            set { text = value; }
+        }
+        public string Name {
+            get { return name; }
+            set { name = value; }
         }
         public object Tag {
             get { return tag; }
             set { tag = value; }
         }
 
-        public Node(string nameText, object tag)
+        public Node(string text, string name, object tag)
         {
-            if (nameText == "")
-                this.nameText = tag.GetType().ToString();
-            else
-                this.nameText = nameText;
-
+            this.name = name;
+            this.text = text;
             this.tag = tag;
         }
     }

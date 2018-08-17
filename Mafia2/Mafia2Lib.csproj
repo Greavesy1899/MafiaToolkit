@@ -48,7 +48,6 @@
   <ItemGroup>
     <Compile Include="FileTypes\Animations\Animation2.cs" />
     <Compile Include="FileTypes\FrameResource\FrameEntry.cs" />
-    <Compile Include="FileTypes\FrameResource\FrameResource - Copy.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\IResourceType.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\MemFileResource.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\ScriptData.cs" />

@@ -9,32 +9,49 @@ namespace Mafia2
     {
 
         FrameHeader header;
-        int[] frameBlocks;
-        object[] frameObjects;
-        List<Object> entireFrame = new List<object>();
         Dictionary<int, FrameHeaderScene> frameScenes = new Dictionary<int, FrameHeaderScene>();
         Dictionary<int, FrameGeometry> frameGeometries = new Dictionary<int, FrameGeometry>();
         Dictionary<int, FrameMaterial> frameMaterials = new Dictionary<int, FrameMaterial>();
         Dictionary<int, FrameBlendInfo> frameBlendInfos = new Dictionary<int, FrameBlendInfo>();
         Dictionary<int, FrameSkeleton> frameSkeletons = new Dictionary<int, FrameSkeleton>();
         Dictionary<int, FrameSkeletonHierachy> frameSkeletonHierachies = new Dictionary<int, FrameSkeletonHierachy>();
+        Dictionary<int, object> frameObjects = new Dictionary<int, object>();
+        Dictionary<int, object> entireFrame = new Dictionary<int, object>();
 
+        int[] frameBlocks;
         int[] objectTypes;
 
         public FrameHeader Header {
             get { return header; }
             set { header = value; }
         }
-        public int[] FrameBlocks {
-            get { return frameBlocks; }
-            set { frameBlocks = value; }
+        public Dictionary<int, FrameHeaderScene> FrameScenes {
+            get { return frameScenes; }
+            set { frameScenes = value; }
         }
-        public object[] FrameObjects {
+        public Dictionary<int, FrameGeometry> FrameGeometries {
+            get { return frameGeometries; }
+            set { frameGeometries = value; }
+        }
+        public Dictionary<int, FrameMaterial> FrameMaterials {
+            get { return frameMaterials; }
+            set { frameMaterials = value; }
+        }
+        public Dictionary<int, FrameBlendInfo> FrameBlendInfos {
+            get { return frameBlendInfos; }
+            set { frameBlendInfos = value; }
+        }
+        public Dictionary<int, FrameSkeleton> FrameSkeletons {
+            get { return frameSkeletons; }
+            set { frameSkeletons = value; }
+        }
+        public Dictionary<int, FrameSkeletonHierachy> FrameSkeletonHierachies {
+            get { return frameSkeletonHierachies; }
+            set { frameSkeletonHierachies = value; }
+        }
+        public Dictionary<int, object> FrameObjects {
             get { return frameObjects; }
             set { frameObjects = value; }
-        }
-        public List<Object> EntireFrame {
-            get { return entireFrame; }
         }
 
         public FrameResource(string file)
@@ -56,7 +73,6 @@ namespace Mafia2
 
             objectTypes = new int[header.NumObjects];
             frameBlocks = new int[header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies];
-            frameObjects = new object[header.NumObjects];
 
             int j = 0;
 
@@ -112,8 +128,8 @@ namespace Mafia2
                     {
                         newObject = new FrameObjectSingleMesh(reader);
                         FrameObjectSingleMesh mesh = newObject as FrameObjectSingleMesh;
-                        mesh.AddRef(frameBlocks[mesh.MeshIndex]);
-                        mesh.AddRef(frameBlocks[mesh.MaterialIndex]);
+                        mesh.AddRef(FrameEntryRefTypes.Mesh, frameBlocks[mesh.MeshIndex]);
+                        mesh.AddRef(FrameEntryRefTypes.Material, frameBlocks[mesh.MaterialIndex]);
                     }
                     else if (objectTypes[i] == (int)ObjectType.Frame)
                         newObject = new FrameObjectFrame(reader);
@@ -147,17 +163,17 @@ namespace Mafia2
                         FrameObjectModel mesh = new FrameObjectModel(reader);
                         mesh.ReadFromFile(reader);
                         mesh.ReadFromFilePart2(reader, frameSkeletons[frameBlocks[mesh.SkeletonIndex]], frameBlendInfos[frameBlocks[mesh.BlendInfoIndex]]);
-                        mesh.AddRef(frameBlocks[mesh.MeshIndex]);
-                        mesh.AddRef(frameBlocks[mesh.MaterialIndex]);
-                        mesh.AddRef(frameBlocks[mesh.BlendInfoIndex]);
-                        mesh.AddRef(frameBlocks[mesh.SkeletonIndex]);
-                        mesh.AddRef(frameBlocks[mesh.SkeletonHierachyIndex]);
+                        mesh.AddRef(FrameEntryRefTypes.Mesh, frameBlocks[mesh.MeshIndex]);
+                        mesh.AddRef(FrameEntryRefTypes.Material, frameBlocks[mesh.MaterialIndex]);
+                        mesh.AddRef(FrameEntryRefTypes.BlendInfo, frameBlocks[mesh.BlendInfoIndex]);
+                        mesh.AddRef(FrameEntryRefTypes.Skeleton, frameBlocks[mesh.SkeletonIndex]);
+                        mesh.AddRef(FrameEntryRefTypes.SkeletonHierachy, frameBlocks[mesh.SkeletonHierachyIndex]);
                         newObject = mesh;
                     }
                     else if (objectTypes[i] == (int)ObjectType.Collision)
                         newObject = new FrameObjectCollision(reader);
 
-                    frameObjects[i] = newObject;
+                    frameObjects.Add(newObject.RefID, newObject);
                 }
             }
             DefineFrameBlockParents();
@@ -175,151 +191,118 @@ namespace Mafia2
 
             int totalBlockCount = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
 
-            for (int i = 0; i != totalBlockCount; i++)
+            foreach (KeyValuePair<int, FrameGeometry> entry in frameGeometries)
             {
-                if (entireFrame[i].GetType() == typeof(FrameGeometry))
-                    (entireFrame[i] as FrameGeometry).WriteToFile(writer);
-
-                if (entireFrame[i].GetType() == typeof(FrameMaterial))
-                    (entireFrame[i] as FrameMaterial).WriteToFile(writer);
-
-                if (entireFrame[i].GetType() == typeof(FrameBlendInfo))
-                    (entireFrame[i] as FrameBlendInfo).WriteToFile(writer);
-
-                if (entireFrame[i].GetType() == typeof(FrameSkeleton))
-                    (entireFrame[i] as FrameSkeleton).WriteToFile(writer);
-
-                if (entireFrame[i].GetType() == typeof(FrameSkeletonHierachy))
-                    (entireFrame[i] as FrameSkeletonHierachy).WriteToFile(writer);
+                entry.Value.WriteToFile(writer);
             }
-
-            for (int i = totalBlockCount; i != totalBlockCount+header.NumObjects; i++)
+            foreach (KeyValuePair<int, FrameMaterial> entry in frameMaterials)
             {
-                if (entireFrame[i].GetType() == typeof(FrameObjectJoint))
+                entry.Value.WriteToFile(writer);
+            }
+            foreach (KeyValuePair<int, FrameBlendInfo> entry in frameBlendInfos)
+            {
+                entry.Value.WriteToFile(writer);
+            }
+            foreach (KeyValuePair<int, FrameSkeleton> entry in frameSkeletons)
+            {
+                entry.Value.WriteToFile(writer);
+            }
+            foreach (KeyValuePair<int, FrameSkeletonHierachy> entry in frameSkeletonHierachies)
+            {
+                entry.Value.WriteToFile(writer);
+            }
+            foreach(KeyValuePair<int, object> entry in frameObjects)
+            {
+                if (entry.Value.GetType() == typeof(FrameObjectJoint))
                     writer.Write((int)ObjectType.Joint);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectSingleMesh))
+                else if (entry.Value.GetType() == typeof(FrameObjectSingleMesh))
                     writer.Write((int)ObjectType.SingleMesh);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectFrame))
+                else if (entry.Value.GetType() == typeof(FrameObjectFrame))
                     writer.Write((int)ObjectType.Frame);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectLight))
+                else if (entry.Value.GetType() == typeof(FrameObjectLight))
                     writer.Write((int)ObjectType.Light);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectCamera))
+                else if (entry.Value.GetType() == typeof(FrameObjectCamera))
                     writer.Write((int)ObjectType.Camera);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectComponent_U005))
+                else if (entry.Value.GetType() == typeof(FrameObjectComponent_U005))
                     writer.Write((int)ObjectType.Component_U00000005);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectSector))
+                else if (entry.Value.GetType() == typeof(FrameObjectSector))
                     writer.Write((int)ObjectType.Sector);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectDummy))
+                else if (entry.Value.GetType() == typeof(FrameObjectDummy))
                     writer.Write((int)ObjectType.Dummy);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectDeflector))
+                else if (entry.Value.GetType() == typeof(FrameObjectDeflector))
                     writer.Write((int)ObjectType.ParticleDeflector);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectArea))
+                else if (entry.Value.GetType() == typeof(FrameObjectArea))
                     writer.Write((int)ObjectType.Area);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectTarget))
+                else if (entry.Value.GetType() == typeof(FrameObjectTarget))
                     writer.Write((int)ObjectType.Target);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectModel))
+                else if (entry.Value.GetType() == typeof(FrameObjectModel))
                     writer.Write((int)ObjectType.Model);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectCollision))
+                else if (entry.Value.GetType() == typeof(FrameObjectCollision))
                     writer.Write((int)ObjectType.Collision);
             }
-
-            for (int i = totalBlockCount; i != totalBlockCount + header.NumObjects; i++)
+            foreach (KeyValuePair<int, object> entry in frameObjects)
             {
-                if (entireFrame[i].GetType() == typeof(FrameObjectJoint))
-                    (entireFrame[i] as FrameObjectJoint).WriteToFile(writer);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectModel))
-                    (entireFrame[i] as FrameObjectModel).WriteToFile(writer);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectSingleMesh))
-                    (entireFrame[i] as FrameObjectSingleMesh).WriteToFile(writer);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectFrame))
-                    (entireFrame[i] as FrameObjectFrame).WriteToFile(writer);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectLight))
-                    (entireFrame[i] as FrameObjectLight).WriteToFile(writer);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectCamera))
-                    (entireFrame[i] as FrameObjectCamera).WriteToFile(writer);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectComponent_U005))
-                    (entireFrame[i] as FrameObjectComponent_U005).WriteToFile(writer);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectSector))
-                    (entireFrame[i] as FrameObjectSector).WriteToFile(writer);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectDummy))
-                    (entireFrame[i] as FrameObjectDummy).WriteToFile(writer);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectDeflector))
-                    (entireFrame[i] as FrameObjectDeflector).WriteToFile(writer);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectArea))
-                    (entireFrame[i] as FrameObjectArea).WriteToFile(writer);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectTarget))
-                    (entireFrame[i] as FrameObjectTarget).WriteToFile(writer);
-
-                else if (entireFrame[i].GetType() == typeof(FrameObjectCollision))
-                    (entireFrame[i] as FrameObjectCollision).WriteToFile(writer);
+                if (entry.Value.GetType() == typeof(FrameObjectJoint))
+                    (entry.Value as FrameObjectJoint).WriteToFile(writer);
+                else if (entry.Value.GetType() == typeof(FrameObjectSingleMesh))
+                    (entry.Value as FrameObjectSingleMesh).WriteToFile(writer);
+                else if (entry.Value.GetType() == typeof(FrameObjectFrame))
+                    (entry.Value as FrameObjectFrame).WriteToFile(writer);
+                else if (entry.Value.GetType() == typeof(FrameObjectLight))
+                    (entry.Value as FrameObjectLight).WriteToFile(writer);
+                else if (entry.Value.GetType() == typeof(FrameObjectCamera))
+                    (entry.Value as FrameObjectCamera).WriteToFile(writer);
+                else if (entry.Value.GetType() == typeof(FrameObjectComponent_U005))
+                    (entry.Value as FrameObjectComponent_U005).WriteToFile(writer);
+                else if (entry.Value.GetType() == typeof(FrameObjectSector))
+                    (entry.Value as FrameObjectSector).WriteToFile(writer);
+                else if (entry.Value.GetType() == typeof(FrameObjectDummy))
+                    (entry.Value as FrameObjectDummy).WriteToFile(writer);
+                else if (entry.Value.GetType() == typeof(FrameObjectDeflector))
+                    (entry.Value as FrameObjectDeflector).WriteToFile(writer);
+                else if (entry.Value.GetType() == typeof(FrameObjectArea))
+                    (entry.Value as FrameObjectArea).WriteToFile(writer);
+                else if (entry.Value.GetType() == typeof(FrameObjectTarget))
+                    (entry.Value as FrameObjectTarget).WriteToFile(writer);
+                else if (entry.Value.GetType() == typeof(FrameObjectModel))
+                    (entry.Value as FrameObjectModel).WriteToFile(writer);
+                else if (entry.Value.GetType() == typeof(FrameObjectCollision))
+                    (entry.Value as FrameObjectCollision).WriteToFile(writer);
             }
         }
 
         /// <summary>
         /// Adds names onto ParentIndex1 and ParentIndex2. Called after the file has been read.
+        /// This won't be required later, so expect it to be removed.
         /// </summary>
         public void DefineFrameBlockParents()
         {
-            UpdateEntireFrame();
+            int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
 
-            for (int i = 0; i != frameObjects.Length; i++)
+            for (int i = 0; i != frameObjects.Count; i++)
             {
+                FrameObjectBase obj = (frameObjects.ElementAt(i).Value as FrameObjectBase);
 
-                FrameObjectBase newObject = frameObjects[i] as FrameObjectBase;
-
-                if (newObject == null)
+                if (obj == null)
                     continue;
 
-                if (newObject.ParentIndex1.Index > -1)
-                    newObject.ParentIndex1.Name = (entireFrame[newObject.ParentIndex1.Index] as FrameObjectBase).Name.String;
 
-                if (newObject.ParentIndex2.Index > -1)
+                if (obj.ParentIndex1.Index > -1)
                 {
-                    if (entireFrame[newObject.ParentIndex2.Index].GetType() == typeof(FrameHeaderScene))
-                        newObject.ParentIndex2.Name = (entireFrame[newObject.ParentIndex2.Index] as FrameHeaderScene).Name.String;
+                    if (obj.ParentIndex1.Index > numBlocks)
+                        obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index - numBlocks).Value as FrameObjectBase).RefID;
                     else
-                        newObject.ParentIndex2.Name = (entireFrame[newObject.ParentIndex2.Index] as FrameObjectBase).Name.String;
+                        obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index).Value as FrameObjectBase).RefID;
                 }
 
-                frameObjects[i] = newObject;
+                if (obj.ParentIndex2.Index > -1)
+                {
+                    if (obj.ParentIndex2.Index > numBlocks)
+                        obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index - numBlocks).Value as FrameObjectBase).RefID;
+                    else
+                        obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index).Value as FrameObjectBase).RefID;
+                }
             }
-        }
-
-        /// <summary>
-        /// This builds the entire frame. This is called after the file has been read.
-        /// </summary>
-        public void UpdateEntireFrame()
-        {
-            entireFrame = new List<object>(frameBlocks.Length + frameObjects.Length);
-
-            foreach (object block in frameBlocks)
-                entireFrame.Add(block);
-
-            foreach (object objects in frameObjects)
-                entireFrame.Add(objects);
         }
 
         /// <summary>
@@ -329,9 +312,12 @@ namespace Mafia2
         {
             int totalResources = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
 
-
             Dictionary<int, object> newFrame = new Dictionary<int, object>();
-            //TODO SCENES.
+
+            foreach (KeyValuePair<int, FrameHeaderScene> entry in frameScenes)
+            {
+                newFrame.Add(entry.Key, entry.Value);
+            }
             foreach (KeyValuePair<int, FrameGeometry> entry in frameGeometries)
             {
                 newFrame.Add(entry.Key, entry.Value);
@@ -352,18 +338,9 @@ namespace Mafia2
             {
                 newFrame.Add(entry.Key, entry.Value);
             }
-
-            header.NumFolderNames = 0;
-            header.NumGeometries = 0;
-            header.NumMaterialResources = 0;
-            header.NumBlendInfos = 0;
-            header.NumSkeletons = 0;
-            header.NumSkelHierachies = 0;
-            header.NumObjects = 0;
-
-            for (int i = 0; i != frameObjects.Length; i++)
+            for (int i = 0; i != frameObjects.Count; i++)
             {
-                object block = frameObjects[i];
+                FrameObjectBase block = (frameObjects.ElementAt(i).Value as FrameObjectBase);
 
                 if (block.GetType() == typeof(FrameObjectSingleMesh))
                 {
@@ -384,53 +361,17 @@ namespace Mafia2
                 }
                 else
                 {
-                    newFrame.Add((block as FrameEntry).RefID, block);
+                    newFrame.Add(block.RefID, block);
                 }
             }
-            entireFrame = newFrame.Values.ToList();
-            for (int i = 0; i != entireFrame.Count; i++)
-            {
-                object block = entireFrame[i];
 
-                if (block.GetType() == typeof(FrameHeaderScene))
-                    header.NumFolderNames++;
-                else if (block.GetType() == typeof(FrameGeometry))
-                    header.NumGeometries++;
-                else if (block.GetType() == typeof(FrameMaterial))
-                    header.NumMaterialResources++;
-                else if (block.GetType() == typeof(FrameBlendInfo))
-                    header.NumBlendInfos++;
-                else if (block.GetType() == typeof(FrameSkeleton))
-                    header.NumSkeletons++;
-                else if (block.GetType() == typeof(FrameSkeletonHierachy))
-                    header.NumSkelHierachies++;
-                else if (block.GetType() == typeof(FrameObjectJoint))
-                    header.NumObjects++;
-                else if (block.GetType() == typeof(FrameObjectModel))
-                    header.NumObjects++;
-                else if (block.GetType() == typeof(FrameObjectSingleMesh))
-                    header.NumObjects++;
-                else if (block.GetType() == typeof(FrameObjectFrame))
-                    header.NumObjects++;
-                else if (block.GetType() == typeof(FrameObjectLight))
-                    header.NumObjects++;
-                else if (block.GetType() == typeof(FrameObjectCamera))
-                    header.NumObjects++;
-                else if (block.GetType() == typeof(FrameObjectComponent_U005))
-                    header.NumObjects++;
-                else if (block.GetType() == typeof(FrameObjectSector))
-                    header.NumObjects++;
-                else if (block.GetType() == typeof(FrameObjectDummy))
-                    header.NumObjects++;
-                else if (block.GetType() == typeof(FrameObjectDeflector))
-                    header.NumObjects++;
-                else if (block.GetType() == typeof(FrameObjectArea))
-                    header.NumObjects++;
-                else if (block.GetType() == typeof(FrameObjectTarget))
-                    header.NumObjects++;
-                else if (block.GetType() == typeof(FrameObjectCollision))
-                    header.NumObjects++;
-            }
+            header.NumFolderNames = FrameScenes.Count;
+            header.NumGeometries = frameGeometries.Count;
+            header.NumMaterialResources = frameMaterials.Count;
+            header.NumBlendInfos = frameBlendInfos.Count;
+            header.NumSkeletons = frameSkeletons.Count;
+            header.NumSkelHierachies = frameSkeletonHierachies.Count;
+            header.NumObjects = frameObjects.Count;
         }
     }
 }

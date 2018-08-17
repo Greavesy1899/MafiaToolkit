@@ -6,12 +6,12 @@ namespace Mafia2
     {
         //All frame entries have their own ID, this is used so we can link the entries with each other instead of using Indexes, like Mafia II uses.
         protected int refID;
-        protected List<int> refs = new List<int>();
+        protected Dictionary<string, int> refs = new Dictionary<string, int>();
 
         public int RefID {
             get { return refID; }
         }
-        public List<int> Refs {
+        public Dictionary<string, int> Refs {
             get { return refs; }
         }
 
@@ -27,9 +27,29 @@ namespace Mafia2
         /// Add reference to this object.
         /// </summary>
         /// <param name="objRef"></param>
-        public void AddRef(int objRef)
+        public void AddRef(FrameEntryRefTypes type, int objRef)
         {
-            refs.Add(objRef);
+            switch (type)
+            {
+                case FrameEntryRefTypes.Mesh:
+                    refs.Add("Mesh", objRef);
+                    break;
+                case FrameEntryRefTypes.Material:
+                    refs.Add("Material", objRef);
+                    break;
+                case FrameEntryRefTypes.BlendInfo:
+                    refs.Add("BlendInfo", objRef);
+                    break;
+                case FrameEntryRefTypes.Skeleton:
+                    refs.Add("Skeleton", objRef);
+                    break;
+                case FrameEntryRefTypes.SkeletonHierachy:
+                    refs.Add("SkeletonHierachy", objRef);
+                    break;
+                default:
+                    refs.Add("UnknownType" + objRef, objRef);
+                    break;
+            }
         }
 
         /// <summary>
@@ -38,10 +58,10 @@ namespace Mafia2
         /// <param name="objRef"></param>
         public void SubRef(int objRef)
         {
-            foreach (int num in refs)
+            foreach (KeyValuePair<string, int> entry in refs)
             {
-                if (objRef == num)
-                    refs.Remove(num);
+                if (entry.Value == objRef)
+                    refs.Remove(entry.Key);
             }
         }
     }

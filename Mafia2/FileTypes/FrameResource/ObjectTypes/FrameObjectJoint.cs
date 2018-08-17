@@ -52,7 +52,7 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return string.Format("{0}", Name);
+            return string.IsNullOrEmpty(name.String) ? $"Joint" : name.String;
         }
 
         public struct NodeStruct

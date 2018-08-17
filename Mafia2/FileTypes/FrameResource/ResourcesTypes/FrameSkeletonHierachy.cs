@@ -49,5 +49,10 @@ namespace Mafia2
             writer.Write(lastChildIndices);
             writer.Write(unkData);
         }
+
+        public override string ToString()
+        {
+            return $"Skeleton Hierachy Block";
+        }
     }
 }

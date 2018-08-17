@@ -59,7 +59,7 @@ namespace Mafia2
         }
         public override string ToString()
         {
-            return string.Format("Material Block");
+            return $"Material Block";
         }
     }
 

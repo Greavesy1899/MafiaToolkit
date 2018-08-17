@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -11,19 +12,45 @@ namespace Mafia2Tool
     public partial class FrameResourceTool : Form
     {
         private List<TreeNode> unadded = new List<TreeNode>();
+        //private int totalResourceNum
 
         public FrameResourceTool(FileInfo info)
         {
             InitializeComponent();
             SceneData.ScenePath = info.DirectoryName;
             SceneData.BuildData();
-            ReadFrameResource();
+            PopulateForm();
             ShowDialog();
         }
 
-        public void ReadFrameResource()
+        public void PopulateForm()
         {
-            int numBlocks = SceneData.FrameResource.EntireFrame.Count - SceneData.FrameResource.Header.NumObjects;
+            foreach (KeyValuePair<int, FrameGeometry> entry in SceneData.FrameResource.FrameGeometries)
+            {
+                FrameResourceListBox.Items.Add(entry.Value);
+            }
+            foreach (KeyValuePair<int, FrameMaterial> entry in SceneData.FrameResource.FrameMaterials)
+            {
+                FrameResourceListBox.Items.Add(entry.Value);
+            }
+            foreach (KeyValuePair<int, FrameBlendInfo> entry in SceneData.FrameResource.FrameBlendInfos)
+            {
+                FrameResourceListBox.Items.Add(entry.Value);
+            }
+            foreach (KeyValuePair<int, FrameSkeleton> entry in SceneData.FrameResource.FrameSkeletons)
+            {
+                FrameResourceListBox.Items.Add(entry.Value);
+            }
+            foreach (KeyValuePair<int, FrameSkeletonHierachy> entry in SceneData.FrameResource.FrameSkeletonHierachies)
+            {
+                FrameResourceListBox.Items.Add(entry.Value);
+            }
+            foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
+            {
+                FrameResourceListBox.Items.Add(entry.Value);
+            }
+
+            //TODO: Modify this when I implement scenes. I want to add REFIDs to them too.
             foreach (FrameNameTable.Data data in SceneData.FrameNameTable.FrameData)
             {
                 int index = treeView1.Nodes.IndexOfKey(data.ParentName);
@@ -32,21 +59,23 @@ namespace Mafia2Tool
                     treeView1.Nodes.Add(data.ParentName, data.ParentName);
 
                 index = treeView1.Nodes.IndexOfKey(data.ParentName);
-
                 TreeNode root = treeView1.Nodes[index];
 
                 if (data.FrameIndex != -1)
                 {
-                    object block = SceneData.FrameResource.EntireFrame[(data.FrameIndex + numBlocks)];
-                    if (block.GetType().BaseType == typeof(FrameObjectBase) || block.GetType().BaseType == typeof(FrameObjectJoint))
-                    {
-                        (block as FrameObjectBase).FrameNameTableFlags = data.Flags;
-                        (block as FrameObjectBase).IsOnFrameTable = true;
-                    }
-                    else
-                        throw new Exception("Unknown type.");
+                    int total = SceneData.FrameResource.Header.SceneFolders.Length +
+                        SceneData.FrameResource.Header.NumGeometries +
+                        SceneData.FrameResource.Header.NumMaterialResources +
+                        SceneData.FrameResource.Header.NumBlendInfos +
+                        SceneData.FrameResource.Header.NumSkeletons +
+                        SceneData.FrameResource.Header.NumSkelHierachies;
 
-                    TreeNode node = CreateTreeNode((SceneData.FrameResource.EntireFrame[(data.FrameIndex + numBlocks)] as FrameObjectBase));
+                    FrameObjectBase block = (SceneData.FrameResource.FrameObjects.ElementAt(data.FrameIndex).Value as FrameObjectBase);
+
+                    block.FrameNameTableFlags = data.Flags;
+                    block.IsOnFrameTable = true;
+
+                    TreeNode node = CreateTreeNode(block);
 
                     if (node == null)
                         continue;
@@ -54,15 +83,10 @@ namespace Mafia2Tool
                     root.Nodes.Add(node);
                 }
             }
-            for (int i = 0; i != SceneData.FrameResource.FrameBlocks.Length; i++)
-                FrameResourceListBox.Items.Add(SceneData.FrameResource.FrameBlocks[i]);
 
-            for (int i = 0; i != SceneData.FrameResource.FrameObjects.Length; i++)
-                FrameResourceListBox.Items.Add(SceneData.FrameResource.FrameObjects[i]);
-
-            for (int i = 0; i != SceneData.FrameResource.FrameObjects.Length; i++)
+            foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
             {
-                FrameObjectBase fObject = (FrameObjectBase)SceneData.FrameResource.FrameObjects[i];
+                FrameObjectBase fObject = (FrameObjectBase)entry.Value;
                 TreeNode node = CreateTreeNode(fObject);
 
                 if (node == null)
@@ -79,14 +103,13 @@ namespace Mafia2Tool
                 //so first we check for 'root' objects.
                 if (fObject.ParentIndex1.Index == fObject.ParentIndex2.Index)
                 {
-                    nodes = treeView1.Nodes.Find(fObject.ParentIndex2.Name, true);
+                    nodes = treeView1.Nodes.Find(fObject.ParentIndex1.RefID.ToString(), true);
                 }
                 else if (fObject.ParentIndex1.Index != fObject.ParentIndex2.Index)
                 {
                     //test, still trying to nail this fucker down.
-                    nodes = treeView1.Nodes.Find(fObject.ParentIndex1.Name, true);
+                    nodes = treeView1.Nodes.Find(fObject.ParentIndex2.RefID.ToString(), true);
                 }
-
 
                 if (nodes.Length > 0)
                     nodes[0].Nodes.Add(node);
@@ -94,27 +117,29 @@ namespace Mafia2Tool
                     treeView1.Nodes.Add(node);
                 else
                     unadded.Add(node);
-
             }
-
             foreach (TreeNode obj in unadded)
             {
-                TreeNode[] nodes = treeView1.Nodes.Find((obj.Tag as FrameObjectBase).ParentIndex2.Name, true);
+                TreeNode[] nodes = treeView1.Nodes.Find((obj.Tag as FrameObjectBase).ParentIndex1.RefID.ToString(), true);
 
                 if (nodes.Length > 0)
+                {
                     nodes[0].Nodes.Add(obj);
-                else if ((treeView1.Nodes.Find((obj.Tag as FrameObjectBase).Name.String, true).Length != 0))
+                    Debug.WriteLine("Added: " + obj.Text);
+                }
+                else if ((treeView1.Nodes.Find((obj.Tag as FrameObjectBase).RefID.ToString(), true).Length != 0))
                     Debug.WriteLine("Unadded node was found");
                 else
-                    Debug.WriteLine(string.Format("WARNING: node: {0} was not added properly", obj.Name));
+                    Debug.WriteLine(string.Format("WARNING: node: {0} was not added properly", obj.Text));
             }
-            ToolkitSettings.UpdateRichPresence("Using the Frame Resource editor.");
+            ToolkitSettings.UpdateRichPresence("Using the Frame Resource editor");
         }
+
         private TreeNode AddChildren(TreeNode node, FrameObjectBase fObject)
         {
             while (fObject.ParentIndex1.Index != -1)
             {
-                fObject = (SceneData.FrameResource.EntireFrame[fObject.ParentIndex1.Index] as FrameObjectBase);
+                fObject = (SceneData.FrameResource.FrameObjects[fObject.ParentIndex1.RefID] as FrameObjectBase);
 
                 if (fObject.ParentIndex1.Index == fObject.ParentIndex2.Index)
                     return node;
@@ -129,20 +154,20 @@ namespace Mafia2Tool
             return node;
         }
 
-        private TreeNode CreateTreeNode(string NameText, int index)
+        private TreeNode CreateTreeNode(string NameText, object data)
         {
             TreeNode node = new TreeNode
             {
                 Name = NameText,
                 Text = NameText,
-                Tag = SceneData.FrameResource.FrameBlocks[index]
+                Tag = data
             };
 
             return node;
         }
         private TreeNode CreateTreeNode(FrameObjectBase fObject)
         {
-            TreeNode[] nodes2 = treeView1.Nodes.Find(fObject.Name.String, true);
+            TreeNode[] nodes2 = treeView1.Nodes.Find(fObject.RefID.ToString(), true);
 
             if (nodes2.Length > 0)
                 return null;
@@ -151,17 +176,17 @@ namespace Mafia2Tool
 
             if (fObject.GetType() == typeof(FrameObjectSingleMesh))
             {
-                node.Nodes.Add(CreateTreeNode("Material", (fObject as FrameObjectSingleMesh).MaterialIndex));
-                node.Nodes.Add(CreateTreeNode("Geometry", (fObject as FrameObjectSingleMesh).MeshIndex));
+                node.Nodes.Add(CreateTreeNode("Material", SceneData.FrameResource.FrameMaterials[fObject.Refs["Material"]]));
+                node.Nodes.Add(CreateTreeNode("Geometry", SceneData.FrameResource.FrameGeometries[fObject.Refs["Mesh"]]));
                 node.ContextMenuStrip = contextMenu;
             }
             else if (fObject.GetType() == typeof(FrameObjectModel))
             {
-                node.Nodes.Add(CreateTreeNode("Material", (fObject as FrameObjectModel).MaterialIndex));
-                node.Nodes.Add(CreateTreeNode("Geometry", (fObject as FrameObjectModel).MeshIndex));
-                node.Nodes.Add(CreateTreeNode("Skeleton Info", (fObject as FrameObjectModel).SkeletonIndex));
-                node.Nodes.Add(CreateTreeNode("Skeleton Hierachy Info", (fObject as FrameObjectModel).SkeletonHierachyIndex));
-                node.Nodes.Add(CreateTreeNode("Blend Info", (fObject as FrameObjectModel).BlendInfoIndex));
+                node.Nodes.Add(CreateTreeNode("Material", SceneData.FrameResource.FrameMaterials[fObject.Refs["Material"]]));
+                node.Nodes.Add(CreateTreeNode("Geometry", SceneData.FrameResource.FrameGeometries[fObject.Refs["Mesh"]]));
+                node.Nodes.Add(CreateTreeNode("BlendInfo", SceneData.FrameResource.FrameBlendInfos[fObject.Refs["BlendInfo"]]));
+                node.Nodes.Add(CreateTreeNode("Skeleton", SceneData.FrameResource.FrameSkeletons[fObject.Refs["Skeleton"]]));
+                node.Nodes.Add(CreateTreeNode("SkeletonHierachy", SceneData.FrameResource.FrameSkeletonHierachies[fObject.Refs["SkeletonHierachy"]]));
                 node.ContextMenuStrip = contextMenu;
             }
 
@@ -172,52 +197,53 @@ namespace Mafia2Tool
         {
             TreeNode treeNode = new TreeNode()
             {
-                Name = node.NameText,
-                Text = node.NameText,
+                Name = node.Name,
+                Text = node.Text,
                 Tag = node.Tag,
             };
 
             return treeNode;
         }
 
-        private Vector3 RetrieveParent1Position(FrameObjectSingleMesh mesh)
-        {
-            Vector3 curPos;
-            curPos = mesh.Matrix.Position;
-            FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
+        //private Vector3 RetrieveParent1Position(FrameObjectSingleMesh mesh)
+        //{
+        //    Vector3 curPos;
+        //    curPos = mesh.Matrix.Position;
+        //    FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
 
-            while (parent != null)
-            {
-                if (parent.GetType() == typeof(FrameObjectFrame))
-                {
-                    if ((parent as FrameObjectFrame).Item != null)
-                        curPos += (parent as FrameObjectFrame).Item.Position;
-                }
-                else
-                {
-                    curPos += parent.Matrix.Position;
-                }
+        //    while (parent != null)
+        //    {
+        //        if (parent.GetType() == typeof(FrameObjectFrame))
+        //        {
+        //            if ((parent as FrameObjectFrame).Item != null)
+        //                curPos += (parent as FrameObjectFrame).Item.Position;
+        //        }
+        //        else
+        //        {
+        //            curPos += parent.Matrix.Position;
+        //        }
 
-                if (parent.ParentIndex1.Index != -1)
-                    parent = (SceneData.FrameResource.EntireFrame[parent.ParentIndex1.Index] as FrameObjectBase);
-                else
-                    parent = null;
-            }
+        //        if (parent.ParentIndex1.Index != -1)
+        //            parent = (SceneData.FrameResource.EntireFrame[parent.ParentIndex1.Index] as FrameObjectBase);
+        //        else
+        //            parent = null;
+        //    }
 
-            return curPos;
-        }
+        //    return curPos;
+        //}
 
         private void OnSelectedChanged(object sender, EventArgs e)
         {
             FrameResourceGrid.SelectedObject = FrameResourceListBox.SelectedItem;
         }
+
         private void OnClickLoadAll(object sender, EventArgs e)
         {
             List<object> meshes = new List<object>();
 
-            for (int i = 0; i != SceneData.FrameResource.EntireFrame.Count; i++)
+            for (int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
             {
-                object fObject = SceneData.FrameResource.EntireFrame[i];
+                object fObject = SceneData.FrameResource.FrameObjects.ElementAt(i).Value;
 
                 if (fObject.GetType() == typeof(FrameObjectSingleMesh))
                 {
@@ -235,87 +261,76 @@ namespace Mafia2Tool
             Matrix33[] rotPos = new Matrix33[meshes.Count];
 
             CustomEDD frameEDD = new CustomEDD();
-            frameEDD.EntryCount = meshes.Count;
-            frameEDD.Entries = new CustomEDD.Entry[frameEDD.EntryCount];
+            frameEDD.Entries = new List<CustomEDD.Entry>();
 
             Parallel.For(0, meshes.Count, i =>
             {
                 CustomEDD.Entry entry = new CustomEDD.Entry();
                 FrameObjectSingleMesh mesh = (meshes[i] as FrameObjectSingleMesh);
-                FrameGeometry geom = SceneData.FrameResource.EntireFrame[mesh.MeshIndex] as FrameGeometry;
-                FrameMaterial mat = SceneData.FrameResource.EntireFrame[mesh.MaterialIndex] as FrameMaterial;
+                FrameGeometry geom = SceneData.FrameResource.FrameGeometries[mesh.Refs["Mesh"]];
+                FrameMaterial mat = SceneData.FrameResource.FrameMaterials[mesh.Refs["Material"]];
                 IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
                 VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
 
-                //we need to retrieve buffers first.
-                for (int c = 0; c != geom.LOD.Length; c++)
+                if (mesh.IsOnFrameTable && mesh.FrameNameTableFlags != 0)
                 {
-                    indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
-                    vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
-                }
 
-                Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
-
-                if (mesh.ParentIndex1.Index != -1)
-                {
-                    FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
-                    filePos[i] = RetrieveParent1Position(mesh);
-                }
-
-                if (((mesh.ParentIndex1.Index != -1)) && ((mesh.ParentIndex1.Index == mesh.ParentIndex2.Index)))
-                {
-                    FrameObjectFrame frame = SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectFrame;
-                    if (frame.Item != null)
+                    //we need to retrieve buffers first.
+                    for (int c = 0; c != geom.LOD.Length; c++)
                     {
-                        filePos[i] = frame.Item.Position;
+                        indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
+                        vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
                     }
-                }
 
-                entry.LodCount = newModel.Lods.Length;
-                entry.LODNames = new string[entry.LodCount];
+                    Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
 
-                for (int c = 0; c != newModel.Lods.Length; c++)
-                {
-                    string edmName;
-                    FrameGeometry meshGeom;
+                    //if (mesh.ParentIndex1.Index != -1)
+                    //{
+                    //    FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
+                    //    filePos[i] = RetrieveParent1Position(mesh);
+                    //}
 
-                    if (mesh.Name.String != "")
+                    //if (((mesh.ParentIndex1.Index != -1)) && ((mesh.ParentIndex1.Index == mesh.ParentIndex2.Index)))
+                    //{
+                    //    FrameObjectFrame frame = SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectFrame;
+                    //    if (frame.Item != null)
+                    //    {
+                    //        filePos[i] = frame.Item.Position;
+                    //    }
+                    //}
+
+                    entry.LodCount = newModel.Lods.Length;
+                    entry.LODNames = new string[entry.LodCount];
+
+                    for (int c = 0; c != newModel.Lods.Length; c++)
                     {
-                        edmName = mesh.Name.String;
+                        string edmName;
+                        FrameGeometry meshGeom;
+
+                        if (mesh.Name.String != "")
+                        {
+                            edmName = mesh.Name.String;
+                        }
+                        newModel.ExportToM2T();
+                        Console.WriteLine(newModel.FrameMesh.Name.String);
+                        if (newModel.FrameMesh.Name.String == "")
+                            entry.LODNames[c] = newModel.FrameGeometry.LOD[c].VertexBufferRef.String;
+                        else
+                            entry.LODNames[c] = newModel.FrameMesh.Name.String;
                     }
-                    else
-                    {
-                        //if (mesh.Mesh == null)
-                        //{
-                        //    meshGeom = SceneData.FrameResource.EntireFrame[mesh.MeshIndex] as FrameGeometry;
-                        //    edmName = meshGeom.LOD[c].VertexBufferRef.String;
-                        //    edmName.Remove(edmName.Length - 5);
-                        //}
-                        //else
-                        //{
-                        //    meshGeom = mesh.Mesh;
-                        //    edmName = meshGeom.LOD[c].VertexBufferRef.String;
-                        //}
-                    }
-                    newModel.ExportToM2T();
-                    Console.WriteLine(newModel.FrameMesh.Name.String);
-                    if (newModel.FrameMesh.Name.String == "")
-                        entry.LODNames[c] = newModel.FrameGeometry.LOD[c].VertexBufferRef.String;
-                    else
-                        entry.LODNames[c] = newModel.FrameMesh.Name.String;
+                    entry.Position = mesh.Matrix.Position;
+                    entry.Rotation = mesh.Matrix.Rotation;
+
+                    frameEDD.Entries.Add(entry);
                 }
-                entry.Position = mesh.Matrix.Position;
-                entry.Rotation = mesh.Matrix.Rotation;
-
-                frameEDD.Entries[i] = entry;
-
             });
-
+            frameEDD.EntryCount = frameEDD.Entries.Count;
             using (BinaryWriter writer = new BinaryWriter(File.Create("exported/frame.edd")))
             {
                 frameEDD.WriteToFile(writer);
             }
         }
+
         private void OnNodeSelect(object sender, TreeViewEventArgs e)
         {
             FrameResourceGrid.SelectedObject = treeView1.SelectedNode.Tag;
@@ -326,74 +341,74 @@ namespace Mafia2Tool
             FrameResourceListBox.Visible = (!FrameResourceListBox.Visible) ? true : false;
         }
 
-        private void OverwriteBuffer_Click(object sender, EventArgs e)
-        {
-            if (treeView1.SelectedNode == null)
-                return;
+        //private void OverwriteBuffer_Click(object sender, EventArgs e)
+        //{
+        //    if (treeView1.SelectedNode == null)
+        //        return;
 
-            if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel))))
-            {
-                if ((treeView1.SelectedNode.Tag as FrameObjectSingleMesh) == null)
-                    return;
+        //    if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel))))
+        //    {
+        //        if ((treeView1.SelectedNode.Tag as FrameObjectSingleMesh) == null)
+        //            return;
 
-                Model model = new Model();
-                model.FrameMesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
-                model.FrameGeometry = SceneData.FrameResource.EntireFrame[model.FrameMesh.MeshIndex] as FrameGeometry;
-                model.FrameMaterial = SceneData.FrameResource.EntireFrame[model.FrameMesh.MaterialIndex] as FrameMaterial;
+        //        Model model = new Model();
+        //        model.FrameMesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
+        //        model.FrameGeometry = SceneData.FrameResource.FrameGeometries[model.FrameMesh.Refs[0]];
+        //        model.FrameMaterial = SceneData.FrameResource.FrameMaterials[model.FrameMesh.Refs[1]];
 
-                BufferLocationStruct[] iIndexes = new BufferLocationStruct[model.FrameGeometry.NumLods];
-                BufferLocationStruct[] iVertexes = new BufferLocationStruct[model.FrameGeometry.NumLods];
-                ulong[] indexRefs = new ulong[model.FrameGeometry.NumLods];
-                ulong[] vertexRefs = new ulong[model.FrameGeometry.NumLods];
-                model.IndexBuffers = new IndexBuffer[model.FrameGeometry.NumLods];
-                model.VertexBuffers = new VertexBuffer[model.FrameGeometry.NumLods];
+        //        BufferLocationStruct[] iIndexes = new BufferLocationStruct[model.FrameGeometry.NumLods];
+        //        BufferLocationStruct[] iVertexes = new BufferLocationStruct[model.FrameGeometry.NumLods];
+        //        ulong[] indexRefs = new ulong[model.FrameGeometry.NumLods];
+        //        ulong[] vertexRefs = new ulong[model.FrameGeometry.NumLods];
+        //        model.IndexBuffers = new IndexBuffer[model.FrameGeometry.NumLods];
+        //        model.VertexBuffers = new VertexBuffer[model.FrameGeometry.NumLods];
 
-                for (int i = 0; i != model.FrameGeometry.NumLods; i++)
-                {
-                    indexRefs[i] = model.FrameGeometry.LOD[i].IndexBufferRef.uHash;
-                    iIndexes[i] = SceneData.IndexBufferPool.SearchBuffer(indexRefs[i]);
-                    vertexRefs[i] = model.FrameGeometry.LOD[i].VertexBufferRef.uHash;
-                    iVertexes[i] = SceneData.VertexBufferPool.SearchBuffer(vertexRefs[i]);
-                    model.IndexBuffers[i] = SceneData.IndexBufferPool.GetBuffer(indexRefs[i]);
-                    model.VertexBuffers[i] = SceneData.VertexBufferPool.GetBuffer(vertexRefs[i]);
+        //        for (int i = 0; i != model.FrameGeometry.NumLods; i++)
+        //        {
+        //            indexRefs[i] = model.FrameGeometry.LOD[i].IndexBufferRef.uHash;
+        //            iIndexes[i] = SceneData.IndexBufferPool.SearchBuffer(indexRefs[i]);
+        //            vertexRefs[i] = model.FrameGeometry.LOD[i].VertexBufferRef.uHash;
+        //            iVertexes[i] = SceneData.VertexBufferPool.SearchBuffer(vertexRefs[i]);
+        //            model.IndexBuffers[i] = SceneData.IndexBufferPool.GetBuffer(indexRefs[i]);
+        //            model.VertexBuffers[i] = SceneData.VertexBufferPool.GetBuffer(vertexRefs[i]);
 
-                    if (iIndexes[i] == null || iVertexes[i] == null)
-                        return;
+        //            if (iIndexes[i] == null || iVertexes[i] == null)
+        //                return;
 
-                }
+        //        }
 
-                if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
-                    return;
+        //        if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
+        //            return;
 
-                using (BinaryReader reader = new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)))
-                {
-                    model.ReadFromM2T(reader);
+        //        using (BinaryReader reader = new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)))
+        //        {
+        //            model.ReadFromM2T(reader);
 
-                    List<Vertex[]> vertData = new List<Vertex[]>();
-                    for(int i = 0; i != model.Lods.Length; i++)
-                        vertData.Add(model.Lods[i].Vertices);
+        //            List<Vertex[]> vertData = new List<Vertex[]>();
+        //            for(int i = 0; i != model.Lods.Length; i++)
+        //                vertData.Add(model.Lods[i].Vertices);
 
-                    model.FrameMesh.Boundings = new Bounds();
-                    model.FrameMesh.Boundings.CalculateBounds(vertData);
-                    model.CalculateDecompression();
-                    model.BuildIndexBuffer();
-                    model.BuildVertexBuffer();
-                }
-                model.UpdateObjectsFromModel();
+        //            model.FrameMesh.Boundings = new Bounds();
+        //            model.FrameMesh.Boundings.CalculateBounds(vertData);
+        //            model.CalculateDecompression();
+        //            model.BuildIndexBuffer();
+        //            model.BuildVertexBuffer();
+        //        }
+        //        model.UpdateObjectsFromModel();
 
-                treeView1.SelectedNode.Tag = model.FrameMesh;
-                SceneData.FrameResource.EntireFrame[model.FrameMesh.MeshIndex] = model.FrameGeometry;
-                SceneData.FrameResource.EntireFrame[model.FrameMesh.MaterialIndex] = model.FrameMaterial;
-                SceneData.IndexBufferPool.BufferPools[iIndexes[0].PoolLocation].Buffers[iIndexes[0].BufferLocation] = model.IndexBuffers[0];
-                SceneData.VertexBufferPool.BufferPools[iVertexes[0].PoolLocation].Buffers[iVertexes[0].BufferLocation] = model.VertexBuffers[0];
-                SceneData.IndexBufferPool.WriteToFile();
-                SceneData.VertexBufferPool.WriteToFile();
-            }
-            else
-            {
-                MessageBox.Show("Click on a \"Single Mesh\" type of \"Model\" type in the tree view.", "Error");
-            }
-        }
+        //        treeView1.SelectedNode.Tag = model.FrameMesh;
+        //        SceneData.FrameResource.FrameGeometries[model.FrameMesh.Refs[0]] = model.FrameGeometry;
+        //        SceneData.FrameResource.FrameMaterials[model.FrameMesh.Refs[1]] = model.FrameMaterial;
+        //        SceneData.IndexBufferPool.BufferPools[iIndexes[0].PoolLocation].Buffers[iIndexes[0].BufferLocation] = model.IndexBuffers[0];
+        //        SceneData.VertexBufferPool.BufferPools[iVertexes[0].PoolLocation].Buffers[iVertexes[0].BufferLocation] = model.VertexBuffers[0];
+        //        SceneData.IndexBufferPool.WriteToFile();
+        //        SceneData.VertexBufferPool.WriteToFile();
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("Click on a \"Single Mesh\" type of \"Model\" type in the tree view.", "Error");
+        //    }
+        //}
 
         private void OnExit(object sender, FormClosingEventArgs e)
         {
@@ -438,43 +453,35 @@ namespace Mafia2Tool
             SceneData.Reload();
             treeView1.Nodes.Clear();
             FrameResourceListBox.Items.Clear();
-            ReadFrameResource();
+            PopulateForm();
         }
 
         private void ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            if (e.ClickedItem.Name == "contextExtract3D")
-            {
-                FrameObjectSingleMesh mesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
+            //if (e.ClickedItem.Name == "contextExtract3D")
+            //{
+            //    FrameObjectSingleMesh mesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
 
-                FrameGeometry geom = SceneData.FrameResource.EntireFrame[mesh.MeshIndex] as FrameGeometry;
-                FrameMaterial mat = SceneData.FrameResource.EntireFrame[mesh.MaterialIndex] as FrameMaterial;
-                IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
-                VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
+            //    FrameGeometry geom = SceneData.FrameResource.FrameGeometries[mesh.Refs[0]];
+            //    FrameMaterial mat = SceneData.FrameResource.FrameMaterials[mesh.Refs[1]];
+            //    IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
+            //    VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
 
-                //we need to retrieve buffers first.
-                for (int c = 0; c != geom.LOD.Length; c++)
-                {
-                    indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
-                    vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
-                }
+            //    //we need to retrieve buffers first.
+            //    for (int c = 0; c != geom.LOD.Length; c++)
+            //    {
+            //        indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
+            //        vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
+            //    }
 
-                Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
-                newModel.ExportToM2T();
-            }
+            //    Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
+            //    newModel.ExportToM2T();
+            //}
         }
 
         private void OnDelete(object sender, EventArgs e)
         {
-            FrameObjectBase fObject = treeView1.SelectedNode.Tag as FrameObjectBase;
-            for (int i = 0; i != SceneData.FrameResource.EntireFrame.Count; i++)
-            {
-                object block = SceneData.FrameResource.EntireFrame[i];
-                if (block == fObject)
-                {
-                    SceneData.FrameResource.EntireFrame.RemoveAt(i);
-                }
-            }
+            SceneData.FrameResource.FrameObjects.Remove((treeView1.SelectedNode.Tag as FrameObjectBase).RefID);
             treeView1.SelectedNode.Remove();
         }
 
@@ -483,7 +490,7 @@ namespace Mafia2Tool
             FrameResourceGrid.SelectedObject = treeView1.SelectedNode.Tag;
         }
 
-        private void addFrameSingleMesh_Click(object sender, EventArgs e)
+        private void AddFrameSingleMesh_Click(object sender, EventArgs e)
         {
             FrameObjectSingleMesh mesh = new FrameObjectSingleMesh();
         }
