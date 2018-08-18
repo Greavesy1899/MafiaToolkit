@@ -356,7 +356,7 @@ namespace Mafia2
                     mesh.MeshIndex = newFrame.IndexOfValue(frameBlocks[mesh.MeshIndex]);
                     mesh.BlendInfoIndex = newFrame.IndexOfValue(frameBlocks[mesh.BlendInfoIndex]);
                     mesh.SkeletonIndex = newFrame.IndexOfValue(frameBlocks[mesh.SkeletonIndex]);
-                    mesh.SkeletonHierachyIndex = frameSkeletonHierachies.IndexOfValue(frameBlocks[mesh.SkeletonHierachyIndex]);
+                    mesh.SkeletonHierachyIndex = newFrame.IndexOfValue(frameBlocks[mesh.SkeletonHierachyIndex]);
                     newFrame.Add(mesh.RefID, mesh);
                 }
                 else

@@ -1,4 +1,4 @@
-﻿using Mafia2;
+﻿using ModelViewer.Programming.SystemClasses;
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -29,6 +29,7 @@ namespace Mafia2Tool
             //begin form inits;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            //SystemClass.StartRenderForm("Model Viewer", 1024, 720, true, "Model", false, 0);
             MaterialData.Load();
             Application.Run(new GameExplorer());
         }

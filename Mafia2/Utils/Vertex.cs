@@ -161,21 +161,21 @@ namespace Mafia2
             if (float.IsNaN(Normal.X * 127.0f + 127.0f))
                 normData.Add(127);
             else
-                normData.Add(127);//normData.Add(Convert.ToByte(Normal.X * 127.0f + 127.0f));
+                normData.Add(Convert.ToByte(Normal.X * 127.0f + 127.0f));
 
 
             //Y..
             if (float.IsNaN(Normal.Y * 127.0f + 127.0f))
                 normData.Add(127);
             else
-                normData.Add(127);//normData.Add(Convert.ToByte(Normal.Y * 127.0f + 127.0f));
+                normData.Add(Convert.ToByte(Normal.Y * 127.0f + 127.0f));
 
 
             //Z..
             if (float.IsNaN(Normal.Z * 127.0f + 127.0f))
                 normData.Add(255);
             else
-                normData.Add(255);//normData.Add(Convert.ToByte(Normal.Z * 127.0f + 127.0f));
+                normData.Add(Convert.ToByte(Normal.Z * 127.0f + 127.0f));
 
 
             if (hasTangents)

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mafia2Tool", "Mafia2Libs\Mafia2Tool.csproj", "{38DB9B9C-5E78-4E92-B4A8-96A219924F5E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mafia2Toolkit", "Mafia2Libs\Mafia2Toolkit.csproj", "{38DB9B9C-5E78-4E92-B4A8-96A219924F5E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mafia2Lib", "Mafia2\Mafia2Lib.csproj", "{F8D4E99D-10E6-457E-8B87-80D675686F90}"
 EndProject

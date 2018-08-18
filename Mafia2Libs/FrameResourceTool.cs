@@ -341,74 +341,74 @@ namespace Mafia2Tool
             FrameResourceListBox.Visible = (!FrameResourceListBox.Visible) ? true : false;
         }
 
-        //private void OverwriteBuffer_Click(object sender, EventArgs e)
-        //{
-        //    if (treeView1.SelectedNode == null)
-        //        return;
+        private void OverwriteBuffer_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode == null)
+                return;
 
-        //    if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel))))
-        //    {
-        //        if ((treeView1.SelectedNode.Tag as FrameObjectSingleMesh) == null)
-        //            return;
+            if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel))))
+            {
+                if ((treeView1.SelectedNode.Tag as FrameObjectSingleMesh) == null)
+                    return;
 
-        //        Model model = new Model();
-        //        model.FrameMesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
-        //        model.FrameGeometry = SceneData.FrameResource.FrameGeometries[model.FrameMesh.Refs[0]];
-        //        model.FrameMaterial = SceneData.FrameResource.FrameMaterials[model.FrameMesh.Refs[1]];
+                Model model = new Model();
+                model.FrameMesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
+                model.FrameGeometry = SceneData.FrameResource.FrameGeometries[model.FrameMesh.Refs["Mesh"]];
+                model.FrameMaterial = SceneData.FrameResource.FrameMaterials[model.FrameMesh.Refs["Material"]];
 
-        //        BufferLocationStruct[] iIndexes = new BufferLocationStruct[model.FrameGeometry.NumLods];
-        //        BufferLocationStruct[] iVertexes = new BufferLocationStruct[model.FrameGeometry.NumLods];
-        //        ulong[] indexRefs = new ulong[model.FrameGeometry.NumLods];
-        //        ulong[] vertexRefs = new ulong[model.FrameGeometry.NumLods];
-        //        model.IndexBuffers = new IndexBuffer[model.FrameGeometry.NumLods];
-        //        model.VertexBuffers = new VertexBuffer[model.FrameGeometry.NumLods];
+                BufferLocationStruct[] iIndexes = new BufferLocationStruct[model.FrameGeometry.NumLods];
+                BufferLocationStruct[] iVertexes = new BufferLocationStruct[model.FrameGeometry.NumLods];
+                ulong[] indexRefs = new ulong[model.FrameGeometry.NumLods];
+                ulong[] vertexRefs = new ulong[model.FrameGeometry.NumLods];
+                model.IndexBuffers = new IndexBuffer[model.FrameGeometry.NumLods];
+                model.VertexBuffers = new VertexBuffer[model.FrameGeometry.NumLods];
 
-        //        for (int i = 0; i != model.FrameGeometry.NumLods; i++)
-        //        {
-        //            indexRefs[i] = model.FrameGeometry.LOD[i].IndexBufferRef.uHash;
-        //            iIndexes[i] = SceneData.IndexBufferPool.SearchBuffer(indexRefs[i]);
-        //            vertexRefs[i] = model.FrameGeometry.LOD[i].VertexBufferRef.uHash;
-        //            iVertexes[i] = SceneData.VertexBufferPool.SearchBuffer(vertexRefs[i]);
-        //            model.IndexBuffers[i] = SceneData.IndexBufferPool.GetBuffer(indexRefs[i]);
-        //            model.VertexBuffers[i] = SceneData.VertexBufferPool.GetBuffer(vertexRefs[i]);
+                for (int i = 0; i != model.FrameGeometry.NumLods; i++)
+                {
+                    indexRefs[i] = model.FrameGeometry.LOD[i].IndexBufferRef.uHash;
+                    iIndexes[i] = SceneData.IndexBufferPool.SearchBuffer(indexRefs[i]);
+                    vertexRefs[i] = model.FrameGeometry.LOD[i].VertexBufferRef.uHash;
+                    iVertexes[i] = SceneData.VertexBufferPool.SearchBuffer(vertexRefs[i]);
+                    model.IndexBuffers[i] = SceneData.IndexBufferPool.GetBuffer(indexRefs[i]);
+                    model.VertexBuffers[i] = SceneData.VertexBufferPool.GetBuffer(vertexRefs[i]);
 
-        //            if (iIndexes[i] == null || iVertexes[i] == null)
-        //                return;
+                    if (iIndexes[i] == null || iVertexes[i] == null)
+                        return;
 
-        //        }
+                }
 
-        //        if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
-        //            return;
+                if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
+                    return;
 
-        //        using (BinaryReader reader = new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)))
-        //        {
-        //            model.ReadFromM2T(reader);
+                using (BinaryReader reader = new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)))
+                {
+                    model.ReadFromM2T(reader);
 
-        //            List<Vertex[]> vertData = new List<Vertex[]>();
-        //            for(int i = 0; i != model.Lods.Length; i++)
-        //                vertData.Add(model.Lods[i].Vertices);
+                    List<Vertex[]> vertData = new List<Vertex[]>();
+                    for (int i = 0; i != model.Lods.Length; i++)
+                        vertData.Add(model.Lods[i].Vertices);
 
-        //            model.FrameMesh.Boundings = new Bounds();
-        //            model.FrameMesh.Boundings.CalculateBounds(vertData);
-        //            model.CalculateDecompression();
-        //            model.BuildIndexBuffer();
-        //            model.BuildVertexBuffer();
-        //        }
-        //        model.UpdateObjectsFromModel();
+                    model.FrameMesh.Boundings = new Bounds();
+                    model.FrameMesh.Boundings.CalculateBounds(vertData);
+                    model.CalculateDecompression();
+                    model.BuildIndexBuffer();
+                    model.BuildVertexBuffer();
+                }
+                model.UpdateObjectsFromModel();
 
-        //        treeView1.SelectedNode.Tag = model.FrameMesh;
-        //        SceneData.FrameResource.FrameGeometries[model.FrameMesh.Refs[0]] = model.FrameGeometry;
-        //        SceneData.FrameResource.FrameMaterials[model.FrameMesh.Refs[1]] = model.FrameMaterial;
-        //        SceneData.IndexBufferPool.BufferPools[iIndexes[0].PoolLocation].Buffers[iIndexes[0].BufferLocation] = model.IndexBuffers[0];
-        //        SceneData.VertexBufferPool.BufferPools[iVertexes[0].PoolLocation].Buffers[iVertexes[0].BufferLocation] = model.VertexBuffers[0];
-        //        SceneData.IndexBufferPool.WriteToFile();
-        //        SceneData.VertexBufferPool.WriteToFile();
-        //    }
-        //    else
-        //    {
-        //        MessageBox.Show("Click on a \"Single Mesh\" type of \"Model\" type in the tree view.", "Error");
-        //    }
-        //}
+                treeView1.SelectedNode.Tag = model.FrameMesh;
+                SceneData.FrameResource.FrameGeometries[model.FrameMesh.Refs["Mesh"]] = model.FrameGeometry;
+                SceneData.FrameResource.FrameMaterials[model.FrameMesh.Refs["Material"]] = model.FrameMaterial;
+                SceneData.IndexBufferPool.BufferPools[iIndexes[0].PoolLocation].Buffers[iIndexes[0].BufferLocation] = model.IndexBuffers[0];
+                SceneData.VertexBufferPool.BufferPools[iVertexes[0].PoolLocation].Buffers[iVertexes[0].BufferLocation] = model.VertexBuffers[0];
+                SceneData.IndexBufferPool.WriteToFile();
+                SceneData.VertexBufferPool.WriteToFile();
+            }
+            else
+            {
+                MessageBox.Show("Click on a \"Single Mesh\" type of \"Model\" type in the tree view.", "Error");
+            }
+        }
 
         private void OnExit(object sender, FormClosingEventArgs e)
         {
@@ -458,25 +458,25 @@ namespace Mafia2Tool
 
         private void ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            //if (e.ClickedItem.Name == "contextExtract3D")
-            //{
-            //    FrameObjectSingleMesh mesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
+            if (e.ClickedItem.Name == "contextExtract3D")
+            {
+                FrameObjectSingleMesh mesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
 
-            //    FrameGeometry geom = SceneData.FrameResource.FrameGeometries[mesh.Refs[0]];
-            //    FrameMaterial mat = SceneData.FrameResource.FrameMaterials[mesh.Refs[1]];
-            //    IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
-            //    VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
+                FrameGeometry geom = SceneData.FrameResource.FrameGeometries[mesh.Refs["Mesh"]];
+                FrameMaterial mat = SceneData.FrameResource.FrameMaterials[mesh.Refs["Material"]];
+                IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
+                VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
 
-            //    //we need to retrieve buffers first.
-            //    for (int c = 0; c != geom.LOD.Length; c++)
-            //    {
-            //        indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
-            //        vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
-            //    }
+                //we need to retrieve buffers first.
+                for (int c = 0; c != geom.LOD.Length; c++)
+                {
+                    indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
+                    vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
+                }
 
-            //    Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
-            //    newModel.ExportToM2T();
-            //}
+                Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
+                newModel.ExportToM2T();
+            }
         }
 
         private void OnDelete(object sender, EventArgs e)
