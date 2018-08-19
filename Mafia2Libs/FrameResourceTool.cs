@@ -399,8 +399,8 @@ namespace Mafia2Tool
                 treeView1.SelectedNode.Tag = model.FrameMesh;
                 SceneData.FrameResource.FrameGeometries[model.FrameMesh.Refs["Mesh"]] = model.FrameGeometry;
                 SceneData.FrameResource.FrameMaterials[model.FrameMesh.Refs["Material"]] = model.FrameMaterial;
-                SceneData.IndexBufferPool.BufferPools[iIndexes[0].PoolLocation].Buffers[iIndexes[0].BufferLocation] = model.IndexBuffers[0];
-                SceneData.VertexBufferPool.BufferPools[iVertexes[0].PoolLocation].Buffers[iVertexes[0].BufferLocation] = model.VertexBuffers[0];
+                SceneData.IndexBufferPool.BufferPools[iIndexes[0].PoolLocation].Buffers[indexRefs[0]] = model.IndexBuffers[0];
+                SceneData.VertexBufferPool.BufferPools[iVertexes[0].PoolLocation].Buffers[indexRefs[1]] = model.VertexBuffers[0];
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
             }

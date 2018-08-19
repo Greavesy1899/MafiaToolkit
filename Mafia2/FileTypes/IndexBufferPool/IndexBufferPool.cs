@@ -1,41 +1,64 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Mafia2
 {
     public class IndexBufferManager
     {
         IndexBufferPool[] bufferPools;
+        List<FileInfo> loadedPoolNames;
 
         public IndexBufferPool[] BufferPools {
             get { return bufferPools; }
             set { bufferPools = value; }
         }
-
-        public IndexBufferManager(List<FileInfo> files)
-        {
-            bufferPools = new IndexBufferPool[files.Count];
-            int i = 0;
-            foreach (FileInfo file in files)
-            {
-                using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
-                    bufferPools[i] = new IndexBufferPool(reader);
-
-                i++;
-            }
+        public List<FileInfo> LoadedPoolNames {
+            get { return loadedPoolNames; }
+            set { loadedPoolNames = value; }
         }
 
+        /// <summary>
+        /// Construct manager with passed files.
+        /// </summary>
+        /// <param name="files"></param>
+        public IndexBufferManager(List<FileInfo> files)
+        {
+            loadedPoolNames = files;
+            ReadFiles();
+        }
+
+        /// <summary>
+        /// Search pool for buffer.
+        /// </summary>
+        /// <param name="indexRef"></param>
+        /// <returns></returns>
         public BufferLocationStruct SearchBuffer(ulong indexRef)
         {
             for (int i = 0; i != bufferPools.Length; i++)
             {
-                for (int c = 0; c != bufferPools[i].Buffers.Length; c++)
+                int c = 0;
+                foreach (KeyValuePair<ulong, IndexBuffer> entry in bufferPools[i].Buffers)
                 {
-                    if (indexRef == bufferPools[i].Buffers[c].Hash)
+                    if (entry.Key == indexRef)
                         return new BufferLocationStruct(i, c);
+                    c++;
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Read files which are passed through constructor.
+        /// </summary>
+        public void ReadFiles()
+        {
+            bufferPools = new IndexBufferPool[loadedPoolNames.Count];
+            for (int i = 0; i != bufferPools.Length; i++)
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open(loadedPoolNames[i].FullName, FileMode.Open)))
+                    bufferPools[i] = new IndexBufferPool(reader);
+            }
         }
 
         /// <summary>
@@ -47,20 +70,23 @@ namespace Mafia2
         {
             for (int i = 0; i != bufferPools.Length; i++)
             {
-                for (int c = 0; c != bufferPools[i].Buffers.Length; c++)
+                foreach (KeyValuePair<ulong, IndexBuffer> entry in bufferPools[i].Buffers)
                 {
-                    if (indexRef == bufferPools[i].Buffers[c].Hash)
-                        return bufferPools[i].Buffers[c];
+                    if (entry.Key == indexRef)
+                        return entry.Value;
                 }
             }
             return null;
         }
 
+        /// <summary>
+        /// writer pools to their files.
+        /// </summary>
         public void WriteToFile()
         {
             for(int i = 0; i != bufferPools.Length; i++)
             {
-                using(BinaryWriter writer = new BinaryWriter(File.Open("IndexBufferPool_"+i+".bin", FileMode.Create)))
+                using(BinaryWriter writer = new BinaryWriter(File.Open(loadedPoolNames[i].FullName, FileMode.Create)))
                     bufferPools[i].WriteToFile(writer);
             }
         }
@@ -72,42 +98,51 @@ namespace Mafia2
         private BufferType version;
         private int numBuffers;
         private int size;
-        private IndexBuffer[] buffers;
+        private Dictionary<ulong, IndexBuffer> buffers = new Dictionary<ulong, IndexBuffer>();
 
-        public IndexBuffer[] Buffers {
+        public Dictionary<ulong, IndexBuffer> Buffers {
             get { return buffers; }
             set { buffers = value; }
         }
 
+        /// <summary>
+        /// Construct pool and read buffers.
+        /// </summary>
+        /// <param name="reader"></param>
         public IndexBufferPool(BinaryReader reader)
         {
             ReadFromFile(reader);
         }
 
+        /// <summary>
+        /// read all buffers from the file.
+        /// </summary>
+        /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
             version = (BufferType)reader.ReadByte();
             numBuffers = reader.ReadInt32();
             size = reader.ReadInt32();
 
-            buffers = new IndexBuffer[numBuffers];
-
             for (int i = 0; i != numBuffers; i++)
             {
-                buffers[i] = new IndexBuffer(reader);
+                IndexBuffer buffer = new IndexBuffer(reader);
+                buffers.Add(buffer.Hash, buffer);
             }
         }
 
+        /// <summary>
+        /// Write all buffers to the file.
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write((byte)version);
             writer.Write(numBuffers);
             writer.Write(size);
 
-            for (int i = 0; i != buffers.Length; i++)
-            {
-                buffers[i].WriteToFile(writer);
-            }
+            for (int i = 0; i != buffers.Count; i++)
+                buffers.ElementAt(i).Value.WriteToFile(writer);
         }
     }
 
@@ -130,16 +165,29 @@ namespace Mafia2
             }
         }
 
+        /// <summary>
+        /// Construct a buffer with given hash.
+        /// </summary>
+        /// <param name="hash"></param>
         public IndexBuffer(ulong hash)
         {
             this.hash = hash;
             u = 1;
         }
+
+        /// <summary>
+        /// Construct buffer and read data.
+        /// </summary>
+        /// <param name="reader"></param>
         public IndexBuffer(BinaryReader reader)
         {
             ReadFromFile(reader);
         }
 
+        /// <summary>
+        /// Read buffer to file.
+        /// </summary>
+        /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
             hash = reader.ReadUInt64();
@@ -158,6 +206,10 @@ namespace Mafia2
             }
         }
         
+        /// <summary>
+        /// Write buffer to file.
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(hash);
