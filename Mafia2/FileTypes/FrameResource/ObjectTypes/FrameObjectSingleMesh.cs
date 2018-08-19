@@ -55,12 +55,36 @@ namespace Mafia2
             set { unk_18_byte3 = value; }
         }
 
+        /// <summary>
+        /// Read single mesh data from reader.
+        /// </summary>
+        /// <param name="reader"></param>
         public FrameObjectSingleMesh(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
         }
+
+        /// <summary>
+        /// Build basic singleMesh data.
+        /// </summary>
         public FrameObjectSingleMesh() : base()
         {
+            
+        }
+
+        public override void CreateBasic()
+        {
+            base.CreateBasic();
+            flags = 0;
+            bounds = new Bounds();
+            unk_14_byte = 255;
+            meshIndex = 0;
+            materialIndex = 0;
+            unk_17_textureHash = new Hash();
+            unk_17_textureHash.Set("0");
+            unk_18_byte1 = 0;
+            unk_18_byte2 = 0;
+            unk_18_byte3 = 0;
         }
 
         public override void ReadFromFile(BinaryReader reader)

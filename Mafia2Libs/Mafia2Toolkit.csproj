@@ -101,6 +101,12 @@
     <Compile Include="3DGraphics\System\TimerClass.cs" />
     <Compile Include="3DGraphics\Graphics\TextureClass.cs" />
     <Compile Include="3DGraphics\Graphics\TextureShaderClass.cs" />
+    <Compile Include="AdditionalControls\ListWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AdditionalControls\ListWindow.Designer.cs">
+      <DependentUpon>ListWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="CollisionEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -225,6 +231,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AdditionalControls\ListWindow.resx">
+      <DependentUpon>ListWindow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CollisionEditor.resx">
       <DependentUpon>CollisionEditor.cs</DependentUpon>
     </EmbeddedResource>

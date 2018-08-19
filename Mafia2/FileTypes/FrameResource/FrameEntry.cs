@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Mafia2
 {
@@ -8,7 +9,9 @@ namespace Mafia2
         protected int refID;
         protected Dictionary<string, int> refs = new Dictionary<string, int>();
 
+        [ReadOnly(true)]
         public int RefID {
+            set { refID = value; }
             get { return refID; }
         }
         public Dictionary<string, int> Refs {

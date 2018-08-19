@@ -119,7 +119,7 @@ namespace Mafia2
                         data.NamePos2 = (resource.Header.IsScene) ? (ushort)0xFFFF : data.NamePos1;
 
                         //set frameIndex. minus the blockID and then subtract it from the total number of blocks.
-                        data.FrameIndex = (short)(i - totalNumBlocks);
+                        data.FrameIndex = (short)i;
 
                         tableData.Add(data);
                     }

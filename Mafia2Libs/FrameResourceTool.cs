@@ -6,13 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2Tool
 {
     public partial class FrameResourceTool : Form
     {
         private List<TreeNode> unadded = new List<TreeNode>();
-        //private int totalResourceNum
 
         public FrameResourceTool(FileInfo info)
         {
@@ -492,7 +492,27 @@ namespace Mafia2Tool
 
         private void AddFrameSingleMesh_Click(object sender, EventArgs e)
         {
+            ListWindow window = new ListWindow();
+            window.PopulateForm();
+            window.ShowDialog();
+            if (window.type == -1)
+                return;
+
+            FrameObjectSingleMesh copy = (window.chosenObject as FrameObjectSingleMesh);
             FrameObjectSingleMesh mesh = new FrameObjectSingleMesh();
+            mesh.CreateBasic();
+            mesh.Name.Set("domek2");
+            mesh.MaterialIndex = copy.MaterialIndex;
+            mesh.MeshIndex = copy.MeshIndex;
+            mesh.Boundings = copy.Boundings;
+            mesh.ParentIndex1 = copy.ParentIndex1;
+            mesh.ParentIndex2 = copy.ParentIndex2;
+            mesh.Matrix = copy.Matrix;
+            mesh.Flags = copy.Flags;
+            mesh.FrameNameTableFlags = copy.FrameNameTableFlags;
+            mesh.IsOnFrameTable = copy.IsOnFrameTable;
+            SceneData.FrameResource.FrameObjects.Add(mesh.RefID, mesh);
+            SaveChanges();
         }
     }
 }

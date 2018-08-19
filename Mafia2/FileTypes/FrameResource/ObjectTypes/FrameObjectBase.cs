@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.ComponentModel;
 using System;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2
 {
@@ -66,7 +67,26 @@ namespace Mafia2
             get { return GetType().ToString(); }
         }
 
-        public FrameObjectBase() : base() { }
+        public FrameObjectBase() : base()
+        {
+        }
+
+        /// <summary>
+        /// Construct basic FrameObject.
+        /// </summary>
+        public virtual void CreateBasic()
+        {
+            //do example name.
+            name = new Hash();
+            name.Set("NewObject");
+            unk0 = 1;
+            transformMatrix = new TransformMatrix();
+            unk3 = -1;
+            parentIndex1 = new ParentStruct(-1);
+            parentIndex2 = new ParentStruct(-1);
+            unk6 = -1;
+            node = new Node(name.String, refID.ToString(), this);
+        }
 
         public virtual void ReadFromFile(BinaryReader reader)
         {

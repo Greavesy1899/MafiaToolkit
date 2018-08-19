@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 
@@ -19,13 +20,18 @@ namespace Mafia2
         [ReadOnly(true)]
         public string String {
             get { return _string; }
-            set { _string = value; }
+            set { Set(value); }
         }
         public Hash() { }
         public Hash(BinaryReader reader)
         {
             ReadFromFile(reader);
         }
+
+        /// <summary>
+        /// read name from file.
+        /// </summary>
+        /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
             hash = reader.ReadUInt64();
@@ -33,11 +39,26 @@ namespace Mafia2
             _string = Encoding.ASCII.GetString(reader.ReadBytes(size));
         }
 
+        /// <summary>
+        /// save hash to file.
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(hash);
             writer.Write(size);
             writer.Write(_string.ToCharArray());
+        }
+
+        /// <summary>
+        /// Sets hash name and updates hash automatically.
+        /// </summary>
+        /// <param name="name"></param>
+        public void Set(string name)
+        {
+            _string = name;
+            size = (short)name.Length;
+            hash = FNV64.Hash(name);
         }
 
         public override string ToString()

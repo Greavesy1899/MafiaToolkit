@@ -22,6 +22,16 @@ namespace Mafia2
 
         }
 
+        public override void CreateBasic()
+        {
+            base.CreateBasic();
+            dataSize = 0;
+            nodeData = new NodeStruct[dataSize];
+
+            for (int i = 0; i != dataSize; i++)
+                nodeData[i] = new NodeStruct();
+        }
+
         public FrameObjectJoint(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
@@ -34,9 +44,7 @@ namespace Mafia2
             nodeData = new NodeStruct[dataSize];
 
             for (int i = 0; i != dataSize; i++)
-            {
                 nodeData[i] = new NodeStruct(reader);
-            }
         }
 
         public override void WriteToFile(BinaryWriter writer)
@@ -45,9 +53,7 @@ namespace Mafia2
             writer.Write(dataSize);
 
             for (int i = 0; i != dataSize; i++)
-            {
                 nodeData[i].WriteToFile(writer);
-            }
         }
 
         public override string ToString()
