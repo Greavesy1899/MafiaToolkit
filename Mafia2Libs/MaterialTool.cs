@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Mafia2;
 
@@ -7,13 +9,13 @@ namespace Mafia2Tool
 {
     public partial class MaterialTool : Form
     {
-        private Material[] materials;
+        private List<Material> materials;
         private string name;
 
         public MaterialTool(FileInfo file)
         {
             InitializeComponent();
-            materials = MaterialsLib.ReadMatFile(file.FullName);
+            materials = MaterialsManager.ReadMatFile(file.FullName).ToList();
             name = file.Name;
             FetchMaterials();
             ShowDialog();
@@ -34,7 +36,7 @@ namespace Mafia2Tool
 
             if (result == DialogResult.Yes)
             {
-                MaterialsLib.WriteMatFile(name, materials);
+                MaterialsManager.WriteMatFile(name, materials.ToArray());
                 MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -67,7 +69,7 @@ namespace Mafia2Tool
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            MaterialsLib.WriteMatFile(name, materials);
+            MaterialsManager.WriteMatFile(name, materials.ToArray());
             MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }

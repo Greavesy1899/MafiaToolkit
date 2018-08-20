@@ -1,9 +1,9 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.IO;
 
 namespace Mafia2
 {
-    public class MaterialsLib
+    public class MaterialsManager
     {
         private static Material[] mats;
 

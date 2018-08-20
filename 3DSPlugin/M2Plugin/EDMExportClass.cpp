@@ -139,7 +139,6 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 		//get verts and normals from mesh and save.
 		parts[i].SetVertSize(mesh.numVerts);
 		parts[i].SetIndicesSize(mesh.numFaces);
-		//invert from BOOL;
 		parts[i].SetHasPositions(1);
 		parts[i].SetHasNormals(hasNormals);
 		parts[i].SetHasTangents(hasTangents);
@@ -169,7 +168,7 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 				verts[c] = mesh.getVert(c);
 
 			if (parts[i].GetHasNormals())
-				normals[c] = normalSpec->Normal(c);
+				normals[c] = mesh.getNormal(c);
 
 			if(parts[i].GetHasTangents())
 				tangents[c] = ComputeTangent(&map.tv[c], &verts[c]);

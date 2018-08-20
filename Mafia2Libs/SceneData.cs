@@ -58,8 +58,8 @@ namespace Mafia2Tool
                     ids.Add(new ItemDesc(name));
                 else if (type == "FrameNameTable")
                     FrameNameTable = new FrameNameTable(name);
-                else if (type == "Actors")
-                    act.Add(new Actor(name));
+                //else if (type == "Actors")
+                //    act.Add(new Actor(name));
                 //else if (type == "AudioSectors")
                 //    SoundSector = new SoundSector(name);
                 else if ((type == "MemFile") && (name.Contains("cityareas")))
@@ -136,11 +136,11 @@ namespace Mafia2Tool
         {
             try
             {
-                Default = MaterialsLib.ReadMatFile(MaterialPath + "/default.mtl");
-                Default50 = MaterialsLib.ReadMatFile(MaterialPath + "/default50.mtl");
-                Default60 = MaterialsLib.ReadMatFile(MaterialPath + "/default60.mtl");
+                Default = MaterialsManager.ReadMatFile(MaterialPath + "/default.mtl");
+                Default50 = MaterialsManager.ReadMatFile(MaterialPath + "/default50.mtl");
+                Default60 = MaterialsManager.ReadMatFile(MaterialPath + "/default60.mtl");
                 HasLoaded = true;
-                MaterialsLib.SetMaterials(Default);
+                MaterialsManager.SetMaterials(Default);
             }
             catch (Exception ex)
             {

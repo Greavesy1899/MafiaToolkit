@@ -6,11 +6,23 @@ namespace Mafia2
     public class FrameMaterial : FrameEntry
     {
 
-        uint allMat = 0;
-        int[] matCount;
+        uint numLods = 0;
+        int[] lodMatCount;
         Bounds bounds;
         List<MaterialStruct[]> materials;
 
+        public uint NumLods {
+            get { return numLods; }
+            set { numLods = value; }
+        }
+        public int[] LodMatCount {
+            get { return lodMatCount; }
+            set { lodMatCount = value; }
+        }
+        public Bounds Bounds {
+            get { return bounds; }
+            set { bounds = value; }
+        }
         public List<MaterialStruct[]> Materials {
             get { return materials; }
             set { materials = value; }
@@ -22,18 +34,18 @@ namespace Mafia2
         }
         public void ReadFromFile(BinaryReader reader)
         {
-            allMat = reader.ReadByte();
-            matCount = new int[allMat];
-            for (int i = 0; i != allMat; i++)
-                matCount[i] = reader.ReadInt32();
+            numLods = reader.ReadByte();
+            lodMatCount = new int[numLods];
+            for (int i = 0; i != numLods; i++)
+                lodMatCount[i] = reader.ReadInt32();
 
             materials = new List<MaterialStruct[]>();
 
             bounds = new Bounds(reader);
 
-            for (int i = 0; i != allMat; i++)
+            for (int i = 0; i != numLods; i++)
             {
-                MaterialStruct[] array = new MaterialStruct[matCount[i]];
+                MaterialStruct[] array = new MaterialStruct[lodMatCount[i]];
                 for (int d = 0; d != array.Length; d++)
                 {
                     array[d] = new MaterialStruct(reader);
@@ -43,9 +55,9 @@ namespace Mafia2
         }
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write((byte)allMat);
-            for (int i = 0; i != allMat; i++)
-                writer.Write(matCount[i]);
+            writer.Write((byte)numLods);
+            for (int i = 0; i != numLods; i++)
+                writer.Write(lodMatCount[i]);
 
             bounds.WriteToFile(writer);
 
@@ -99,7 +111,7 @@ namespace Mafia2
             materialHash = reader.ReadUInt64();
             materialName = string.Format("{0:X16}", materialHash.Swap());
             unk3 = reader.ReadInt32();
-            materialName = MaterialsLib.GetMatName(materialName);
+            materialName = MaterialsManager.GetMatName(materialName);
         }
 
         public void WriteToFile(BinaryWriter writer)

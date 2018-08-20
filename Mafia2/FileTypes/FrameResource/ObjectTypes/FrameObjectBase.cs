@@ -57,7 +57,7 @@ namespace Mafia2
             get { return nameTableFlags; }
             set { nameTableFlags = value; }
         }
-        [Description("If this is true, it will be added onto the FrameNameTable and the flags will be saved"), Category("FrameNameTable Data"), Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        [Description("If this is true, it will be added onto the FrameNameTable and the flags will be saved"), Category("FrameNameTable Data")]
         public bool IsOnFrameTable {
             get { return isOnTable; }
             set { isOnTable = value; }

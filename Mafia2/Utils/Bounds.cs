@@ -56,7 +56,7 @@ namespace Mafia2
         }
 
         /// <summary>
-        /// Calculate bounds from passed vertices.
+        /// Calculate bounds from passed vertexes.
         /// </summary>
         public void CalculateBounds(List<Vertex[]> data)
         {
@@ -87,6 +87,38 @@ namespace Mafia2
                     if (pos.Z > Max.Z)
                         Max.Z = pos.Z;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Calculate bounds from passed vertices.
+        /// </summary>
+        public void CalculateBounds(Vector3[] data)
+        {
+            Min = new Vector3(0);
+            Max = new Vector3(0);
+
+            for (int i = 0; i != data.Length; i++)
+            {
+                Vector3 pos = data[i];
+
+                if (pos.X < Min.X)
+                    Min.X = pos.X;
+
+                if (pos.X > Max.X)
+                    Max.X = pos.X;
+
+                if (pos.Y < Min.Y)
+                    Min.Y = pos.Y;
+
+                if (pos.Y > Max.Y)
+                    Max.Y = pos.Y;
+
+                if (pos.Z < Min.Z)
+                    Min.Z = pos.Z;
+
+                if (pos.Z > Max.Z)
+                    Max.Z = pos.Z;
             }
         }
 

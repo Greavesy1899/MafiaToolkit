@@ -297,6 +297,11 @@ namespace Mafia2Tool
                     saveName = "VertexBufferPool_" + i + ".vbp";
                     resourceXML.WriteElementString("File", saveName);
                 }
+                else if (archiveFile.ResourceTypes[(int)entry.TypeId].Name == "AnimalTrafficPaths")
+                {
+                    saveName = "AnimalTrafficPaths" + i + ".atp";
+                    resourceXML.WriteElementString("File", saveName);
+                }
                 else if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "FrameResource")
                 {
                     saveName = "FrameResource_" + i + ".fr";

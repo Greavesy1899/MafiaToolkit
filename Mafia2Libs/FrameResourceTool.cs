@@ -272,7 +272,7 @@ namespace Mafia2Tool
                 IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
                 VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
 
-                if (mesh.IsOnFrameTable && mesh.FrameNameTableFlags != 0)
+                if (mesh.IsOnFrameTable && mesh.FrameNameTableFlags == 0)
                 {
 
                     //we need to retrieve buffers first.
@@ -390,6 +390,7 @@ namespace Mafia2Tool
 
                     model.FrameMesh.Boundings = new Bounds();
                     model.FrameMesh.Boundings.CalculateBounds(vertData);
+                    model.FrameMaterial.Bounds = model.FrameMesh.Boundings;
                     model.CalculateDecompression();
                     model.BuildIndexBuffer();
                     model.BuildVertexBuffer();
@@ -400,7 +401,7 @@ namespace Mafia2Tool
                 SceneData.FrameResource.FrameGeometries[model.FrameMesh.Refs["Mesh"]] = model.FrameGeometry;
                 SceneData.FrameResource.FrameMaterials[model.FrameMesh.Refs["Material"]] = model.FrameMaterial;
                 SceneData.IndexBufferPool.BufferPools[iIndexes[0].PoolLocation].Buffers[indexRefs[0]] = model.IndexBuffers[0];
-                SceneData.VertexBufferPool.BufferPools[iVertexes[0].PoolLocation].Buffers[indexRefs[1]] = model.VertexBuffers[0];
+                SceneData.VertexBufferPool.BufferPools[iVertexes[0].PoolLocation].Buffers[vertexRefs[0]] = model.VertexBuffers[0];
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
             }

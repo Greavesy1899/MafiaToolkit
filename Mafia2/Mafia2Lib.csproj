@@ -118,7 +118,7 @@
     <Compile Include="FileTypes\ItemDesc\CollisionTypes\CollisionUnk7.cs" />
     <Compile Include="FileTypes\ItemDesc\ItemDescParse.cs" />
     <Compile Include="MafiaModel\ModelDefinition.cs" />
-    <Compile Include="FileTypes\MTL\MaterialsLib.cs" />
+    <Compile Include="FileTypes\MTL\MaterialManager.cs" />
     <Compile Include="FileTypes\NAV_AI\NAV_AI.cs" />
     <Compile Include="Utils\Enums.cs" />
     <Compile Include="Utils\Functions.cs" />

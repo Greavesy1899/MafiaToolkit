@@ -392,6 +392,7 @@ namespace Gibbed.Mafia2.FileFormats
                     resourceType == "AudioSectors" ||
                     resourceType == "Speech" ||
                     resourceType == "SoundTable" ||
+                    resourceType == "AnimalTrafficPaths" ||
                     resourceType == "EntityDataStorage")
                 {
                     nodes.Current.MoveToNext();

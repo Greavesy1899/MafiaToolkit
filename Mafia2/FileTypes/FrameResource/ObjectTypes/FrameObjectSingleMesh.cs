@@ -81,7 +81,6 @@ namespace Mafia2
             meshIndex = 0;
             materialIndex = 0;
             unk_17_textureHash = new Hash();
-            unk_17_textureHash.Set("0");
             unk_18_byte1 = 0;
             unk_18_byte2 = 0;
             unk_18_byte3 = 0;

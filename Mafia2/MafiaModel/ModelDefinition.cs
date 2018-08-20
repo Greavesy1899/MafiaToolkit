@@ -190,7 +190,7 @@ namespace Mafia2
                         {
 
                             ModelPart modelPart = new ModelPart();
-                            modelPart.Material = MaterialsLib.LookupMaterialByHash(materials[x].MaterialHash);
+                            modelPart.Material = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
                             int num = materials[x].StartIndex + materials[x].NumFaces * 3;
                             List<Short3> intList = new List<Short3>(materials[x].NumFaces);
                             int startIndex = materials[x].StartIndex;
@@ -470,8 +470,19 @@ namespace Mafia2
                     partTriangles[matId].Add(tri);
                 }
 
+                //byte[] matIDs = new byte[totalFaces];
+                //Short3[] triangles = new Short3[totalFaces];
+                //for (int x = 0; x != totalFaces; x++)
+                //{
+                //    triangles[x] = new Short3(reader);
+                //    matIDs[x] = reader.ReadByte();
+                //}
+
                 for (int x = 0; x != Lods[i].Parts.Length; x++)
+                {
                     Lods[i].Parts[x].Indices = partTriangles[x].ToArray();
+                    Lods[i].Parts[x].CalculatePartBounds(lods[i].Vertices);
+                }
             }
         }
 
@@ -570,6 +581,9 @@ namespace Mafia2
             frameGeometry.LOD[0].SplitInfo.MaterialBursts = new FrameLOD.MaterialBurst[Lods[0].Parts.Length];
 
             int faceIndex = 0;
+            int baseIndex = 0;
+            frameMaterial.NumLods = 1;
+            frameMaterial.LodMatCount[0] = Lods[0].Parts.Length;
             frameMaterial.Materials[0] = new MaterialStruct[Lods[0].Parts.Length];
             for (int i = 0; i != Lods[0].Parts.Length; i++)
             {
@@ -577,16 +591,16 @@ namespace Mafia2
                 frameMaterial.Materials[0][i].NumFaces = Lods[0].Parts[i].Indices.Length;
                 frameMaterial.Materials[0][i].Unk3 = 0;
                 frameMaterial.Materials[0][i].MaterialHash = 7973993770688595535;
-                faceIndex = Lods[0].Parts[i].Indices.Length * 3;
+                faceIndex += Lods[0].Parts[i].Indices.Length * 3;
 
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].Bounds = new short[6]
                 {
-                    Convert.ToInt16(frameMesh.Boundings.Min.X),
-                    Convert.ToInt16(frameMesh.Boundings.Min.Y),
-                    Convert.ToInt16(frameMesh.Boundings.Min.Z),
-                    Convert.ToInt16(frameMesh.Boundings.Max.X),
-                    Convert.ToInt16(frameMesh.Boundings.Max.Y),
-                    Convert.ToInt16(frameMesh.Boundings.Max.Z)
+                    Convert.ToInt16(Lods[0].Parts[i].Bounds.Min.X),
+                    Convert.ToInt16(Lods[0].Parts[i].Bounds.Min.Y),
+                    Convert.ToInt16(Lods[0].Parts[i].Bounds.Min.Z),
+                    Convert.ToInt16(Lods[0].Parts[i].Bounds.Max.X),
+                    Convert.ToInt16(Lods[0].Parts[i].Bounds.Max.Y),
+                    Convert.ToInt16(Lods[0].Parts[i].Bounds.Max.Z)
 
                 };
 
@@ -595,9 +609,10 @@ namespace Mafia2
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].RightIndex = -1;
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].SecondIndex =
                     Convert.ToUInt16(Lods[0].Parts[i].Indices.Length - 1);
-                frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].BaseIndex = faceIndex;
+                frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].BaseIndex = baseIndex;
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].FirstBurst = i;
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].NumBurst = 1;
+                baseIndex += faceIndex;
             }
 
         }
@@ -648,6 +663,7 @@ namespace Mafia2
     {
         string material;
         Short3[] indices;
+        Bounds bounds;
 
         public string Material
         {
@@ -659,6 +675,24 @@ namespace Mafia2
         {
             get { return indices; }
             set { indices = value; }
+        }
+
+        public Bounds Bounds {
+            get { return bounds; }
+            set { bounds = value; }
+        }
+
+        public void CalculatePartBounds(Vertex[] verts)
+        {
+            bounds = new Bounds();
+            List<Vector3> partVerts = new List<Vector3>();
+            for(int i = 0; i != indices.Length; i++)
+            {
+                partVerts.Add(verts[indices[i].S1].Position);
+                partVerts.Add(verts[indices[i].S2].Position);
+                partVerts.Add(verts[indices[i].S3].Position);
+            }
+            bounds.CalculateBounds(partVerts.ToArray());
         }
     }
 
