@@ -67,7 +67,7 @@ namespace Mafia2
 
             for (int i = 0; i != mats.Length; i++)
             {
-                if (mats[i].MaterialNumStr == text)
+                if (mats[i].MaterialName == text)
                 {
                     return mats[i].MaterialName;
                 }
@@ -92,7 +92,7 @@ namespace Mafia2
 
             for (int i = 0; i != mats.Length; i++)
             {
-                if (hash == mats[i].MaterialNumID)
+                if (hash == mats[i].MaterialHash)
                 {
                     if (mats[i].SPS.Length == 0)
                         return mats[i].MaterialName;

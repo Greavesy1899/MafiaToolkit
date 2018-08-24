@@ -32,6 +32,8 @@
             this.contextOpenButton = new System.Windows.Forms.ToolStripMenuItem();
             this.contextSaveButton = new System.Windows.Forms.ToolStripMenuItem();
             this.contextExitButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.addMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -70,7 +72,8 @@
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.contextFileButton});
+            this.contextFileButton,
+            this.toolButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(785, 25);
@@ -111,6 +114,24 @@
             this.contextExitButton.Text = "Exit";
             this.contextExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
+            // toolButton
+            // 
+            this.toolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addMaterialToolStripMenuItem});
+            this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
+            this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolButton.Name = "toolButton";
+            this.toolButton.Size = new System.Drawing.Size(48, 22);
+            this.toolButton.Text = "Tools";
+            // 
+            // addMaterialToolStripMenuItem
+            // 
+            this.addMaterialToolStripMenuItem.Name = "addMaterialToolStripMenuItem";
+            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addMaterialToolStripMenuItem.Text = "Add Material";
+            this.addMaterialToolStripMenuItem.Click += new System.EventHandler(this.AddMaterial);
+            // 
             // MaterialTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -139,5 +160,7 @@
         private System.Windows.Forms.ToolStripMenuItem contextOpenButton;
         private System.Windows.Forms.ToolStripMenuItem contextSaveButton;
         private System.Windows.Forms.ToolStripMenuItem contextExitButton;
+        private System.Windows.Forms.ToolStripDropDownButton toolButton;
+        private System.Windows.Forms.ToolStripMenuItem addMaterialToolStripMenuItem;
     }
 }

@@ -435,6 +435,7 @@ namespace Gibbed.Mafia2.FileFormats
                     {
                         resource = new TextureResource(FNV64.Hash(file), unk09, texData);
                         resource.Serialize(resourceEntry.Version, data, Endian.Little);
+                        resourceEntry.SlotVramRequired = (uint)texData.Length - 128;
                         sddescNode.InnerText = file;
                     }
 
@@ -455,6 +456,8 @@ namespace Gibbed.Mafia2.FileFormats
 
                     using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file + ".fsb", FileMode.Open)))
                     {
+                        resourceEntry.SlotRamRequired = 40;
+                        resourceEntry.SlotVramRequired = (uint)reader.BaseStream.Length;
                         data.AddRange(BitConverter.GetBytes((int)reader.BaseStream.Length));
                         data.AddRange(reader.ReadBytes((int)reader.BaseStream.Length));
                     }
@@ -605,6 +608,7 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherVramRequired", (int)resourceEntry.OtherVramRequired));
                 rootNode.AppendChild(resourceNode);
                 ResourceEntries.Add(resourceEntry);
+                _SlotVramRequired += resourceEntry.SlotVramRequired;
             }
 
             ResourceInfoXml = xmlDoc.OuterXml;

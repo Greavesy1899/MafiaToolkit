@@ -16,7 +16,7 @@ namespace Mafia2Tool
         {
             InitializeComponent();
             materials = MaterialsManager.ReadMatFile(file.FullName).ToList();
-            name = file.Name;
+            name = file.FullName;
             FetchMaterials();
             ShowDialog();
             ToolkitSettings.UpdateRichPresence("Using the Material Library editor.");
@@ -24,8 +24,11 @@ namespace Mafia2Tool
 
         public void FetchMaterials()
         {
+            MaterialListBox.Items.Clear();
+            Dictionary<ulong, string> hashes = new Dictionary<ulong, string>();
             foreach (Material mat in materials)
             {
+                hashes.Add(mat.MaterialHash, mat.MaterialName);
                 MaterialListBox.Items.Add(mat);
             }
         }
@@ -48,17 +51,16 @@ namespace Mafia2Tool
 
         private void OnKeyPressed(object sender, KeyPressEventArgs e)
         {
+            ulong result;
             MaterialListBox.Items.Clear();
             foreach (Material mat in materials)
             {
-                if (mat.MaterialNumStr.Contains(MaterialSearch.Text))
-                {
+                ulong.TryParse(MaterialSearch.Text, out result);
+
+                if (mat.MaterialName.Contains(MaterialSearch.Text))
                     MaterialListBox.Items.Add(mat);
-                }
-                else if (mat.MaterialName.Contains(MaterialSearch.Text))
-                {
+                else if (mat.MaterialHash == result)
                     MaterialListBox.Items.Add(mat);
-                }
             }
         }
 
@@ -71,6 +73,13 @@ namespace Mafia2Tool
         {
             MaterialsManager.WriteMatFile(name, materials.ToArray());
             MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void AddMaterial(object sender, EventArgs e)
+        {
+            Material mat = new Material();
+            materials.Add(mat);
+            FetchMaterials();
         }
     }
 }

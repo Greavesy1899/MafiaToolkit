@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using Gibbed.Illusion.FileFormats.Hashing;
 using Gibbed.IO;
+using Mafia2;
 
 namespace Gibbed.Mafia2.ResourceFormats
 {
@@ -60,6 +61,7 @@ namespace Gibbed.Mafia2.ResourceFormats
                 output.WriteValueU8(this.Unknown9);
             }
             output.WriteBytes(this.Data);
+            Log.WriteLine("Packing: " + ToString());
         }
 
         public void SerializeMIP(ushort version, Stream output, Endian endian)
@@ -67,6 +69,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             output.WriteValueU64(this.NameHash, endian);
             output.WriteValueU8(this.Unknown9);
             output.WriteBytes(this.Data);
+            Log.WriteLine("Packing: " + ToString());
         }
 
         public void Deserialize(ushort version, Stream input, Endian endian)
@@ -81,6 +84,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             }
 
             this.Data = input.ReadBytes((int)(input.Length - input.Position));
+            Log.WriteLine("Unpacking: " + ToString());
         }
 
         public void DeserializeMIP(ushort version, Stream input, Endian endian)
@@ -94,6 +98,12 @@ namespace Gibbed.Mafia2.ResourceFormats
             }
 
             this.Data = input.ReadBytes((int)(input.Length - input.Position));
+            Log.WriteLine("Unpacking: " + ToString());
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Hash: {0}, Unk1: {1}, Unk2: {2}", NameHash, Unknown8, Unknown9);
         }
     }
 }

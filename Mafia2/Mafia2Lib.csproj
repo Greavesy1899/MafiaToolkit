@@ -60,6 +60,7 @@
     <Compile Include="Gibbed.Illusion.ResourceFormats\XmlResource0.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\XmlResource1.cs" />
     <Compile Include="Utils\Bounds.cs" />
+    <Compile Include="Utils\Logger.cs" />
     <Compile Include="Utils\Matrix33.cs" />
     <Compile Include="Utils\TransformMatrix.cs" />
     <Compile Include="Utils\Vertex.cs" />

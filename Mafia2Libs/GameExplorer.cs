@@ -10,6 +10,7 @@ using Gibbed.IO;
 using Gibbed.Mafia2.FileFormats;
 using Gibbed.Mafia2.FileFormats.Archive;
 using Gibbed.Mafia2.ResourceFormats;
+using Mafia2;
 
 namespace Mafia2Tool
 {
@@ -211,6 +212,8 @@ namespace Mafia2Tool
         /// <param name="file">location of SDS.</param>
         private void OpenSDS(FileInfo file)
         {
+            Log.WriteLine("Opening SDS: " + file.Name);
+
             infoText.Text = "Opening SDS..";
             fileListView.Items.Clear();
             ArchiveFile archiveFile;
@@ -222,6 +225,8 @@ namespace Mafia2Tool
                     archiveFile.Deserialize(data ?? input);
                 }
             }
+
+            Log.WriteLine("Succesfully unwrapped compressed data");
 
             List<string> itemNames = new List<string>();
             if (string.IsNullOrEmpty(archiveFile.ResourceInfoXml) == false)
@@ -235,11 +240,13 @@ namespace Mafia2Tool
                     {
                         itemNames.Add(nodes.Current.Value);
                     }
+                    Log.WriteLine("Found all items; count is " + nodes.Count);
                 }
             }
             else
             {
                 MessageBox.Show("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Log.WriteLine("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", LoggingTypes.WARNING);
                 for (int i = 0; i != archiveFile.ResourceEntries.Count; i++)
                 {
                     itemNames.Add("unk_"+i);
@@ -258,6 +265,8 @@ namespace Mafia2Tool
 
             Directory.CreateDirectory(extractedPath + file.Name);
 
+            Log.WriteLine("Begin unpacking and saving files..");
+
             XmlWriter resourceXML = XmlWriter.Create(extractedPath + file.Name + "/SDSContent.xml", settings);
             resourceXML.WriteStartElement("SDSResource");
 
@@ -268,7 +277,7 @@ namespace Mafia2Tool
                 resourceXML.WriteStartElement("ResourceEntry");
                 resourceXML.WriteElementString("Type", archiveFile.ResourceTypes[(int)entry.TypeId].Name);
                 string saveName = "";
-
+                Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
                 if (archiveFile.ResourceTypes[(int) entry.TypeId].Name == "Texture")
                 {
                     saveName = itemNames[i];

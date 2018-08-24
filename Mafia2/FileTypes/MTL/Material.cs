@@ -1,14 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.ComponentModel;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2
 {
     public class Material
     {
 
-        ulong materialNumID;
-        string materialNumStr;
+        ulong materialHash;
         string materialName;
 
         byte ufo1;
@@ -19,7 +19,6 @@ namespace Mafia2
         int ufo6;
 
         ulong shaderID;
-        string shaderName;
 
         uint flags;
 
@@ -30,19 +29,15 @@ namespace Mafia2
         ShaderParameterSampler[] sps;
 
         [Category("Material IDs"), ReadOnly(true)]
-        public ulong MaterialNumID {
-            get { return materialNumID; }
-            set { materialNumID = value; }
+        public ulong MaterialHash {
+            get { return materialHash; }
+            set { materialHash = value; }
         }
-        [Category("Material IDs")]
-        public string MaterialNumStr {
-            get { return materialNumStr; }
-            set { materialNumStr = value; }
-        }
+
         [Category("Material IDs")]
         public string MaterialName {
             get { return materialName; }
-            set { materialName = value; }
+            set { SetName(value); }
         }
 
         [Category("UFOs")]
@@ -87,12 +82,6 @@ namespace Mafia2
             set { shaderID = value; }
         }
 
-        [Category("Shaders")]
-        public string ShaderName {
-            get { return shaderName; }
-            set { shaderName = value; }
-        }
-
         [Category("Flags")]
         public uint Flags {
             get { return flags; }
@@ -117,21 +106,50 @@ namespace Mafia2
             }
         }
 
+        /// <summary>
+        /// Construct material and read data.
+        /// </summary>
+        /// <param name="reader"></param>
         public Material(BinaryReader reader)
         {
             ReadFromFile(reader);
         }
 
-        public override string ToString()
+        /// <summary>
+        /// Construct material based on basic material.
+        /// </summary>
+        public Material()
         {
-            return string.Format("{0}\t{1}", materialNumStr, materialName);
+            materialName = "NEW_MATERIAL";
+            materialHash = 1;
+            flags = 3388704532;
+            shaderID = 4894707398632176459;
+            ufo1 = 128;
+            ufo2 = 0;
+            ufo3 = 31461376;
+            ufo4 = 0;
+            ufo5 = 0;
+            ufo6 = 0;
+            sp_count = 0;
+            sp = new ShaderParameter[0];
+            sps_count = 1;
+            sps = new ShaderParameterSampler[1];
+            sps[0] = new ShaderParameterSampler();
         }
 
+        public override string ToString()
+        {
+            return string.Format("{0}\t{1}", materialHash, materialName);
+        }
+
+        /// <summary>
+        /// Read material from library.
+        /// </summary>
+        /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
 
-            materialNumID = reader.ReadUInt64();
-            materialNumStr = string.Format("{0:X16}", materialNumID.Swap());
+            materialHash = reader.ReadUInt64();
 
             int nameLength = reader.ReadInt32();
             materialName = new string(reader.ReadChars(nameLength));
@@ -143,8 +161,7 @@ namespace Mafia2
             ufo5 = reader.ReadInt32();
             ufo6 = reader.ReadInt32();
 
-            shaderID = reader.ReadUInt64().Swap();
-            shaderName = string.Format("{0:X16}", shaderID);
+            shaderID = reader.ReadUInt64();
 
             flags = reader.ReadUInt32();
 
@@ -164,10 +181,14 @@ namespace Mafia2
 
         }
 
+        /// <summary>
+        /// Write material to library.
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             ////material hash code and name.
-            writer.Write(materialNumID);
+            writer.Write(materialHash);
             writer.Write(materialName.Length);
             writer.Write(materialName.ToCharArray());
 
@@ -180,7 +201,7 @@ namespace Mafia2
             writer.Write(ufo6);
 
             ////Shader and flags
-            writer.Write(shaderID.Swap());
+            writer.Write(shaderID);
             writer.Write((uint)flags);
 
             ////Shader Parameter
@@ -198,6 +219,15 @@ namespace Mafia2
             }
         }
 
+        /// <summary>
+        /// Set shader sampler name
+        /// </summary>
+        /// <param name="name"></param>
+        public void SetName(string name)
+        {
+            materialName = name;
+            materialHash = FNV64.Hash(name);
+        }
     }
 
     public struct ShaderParameter
@@ -249,7 +279,7 @@ namespace Mafia2
         }
     }
 
-    public struct ShaderParameterSampler
+    public class ShaderParameterSampler
     {
 
         string id;
@@ -291,10 +321,40 @@ namespace Mafia2
         }
         public string File {
             get { return file; }
-            set { file = value; }
+            set { SetName(value); }
         }
 
+        /// <summary>
+        /// Construct sampler data on read data.
+        /// </summary>
+        /// <param name="reader"></param>
         public ShaderParameterSampler(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+
+        public ShaderParameterSampler()
+        {
+            id = "S000";
+            file = "null.dds";
+            textureHash = 1;
+            ufo_x1 = new int[2];
+            ufo_x2 = new int[2];
+            samplerStates = new byte[6] { 3, 3, 2, 0, 0, 0 };
+            texType = 2;
+            UnkZero = 0;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}, {1}", id, file);
+        }
+
+        /// <summary>
+        /// Read data to library.
+        /// </summary>
+        /// <param name="reader"></param>
+        public void ReadFromFile(BinaryReader reader)
         {
             id = new string(reader.ReadChars(4));
             ufo_x1 = new int[2];
@@ -311,11 +371,10 @@ namespace Mafia2
             file = new string(reader.ReadChars(fileLength));
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0}, {1}", id, file);
-        }
-
+        /// <summary>
+        /// write data to library.
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(id.ToCharArray());
@@ -334,6 +393,16 @@ namespace Mafia2
             writer.Write(ufo_x2[1]);
             writer.Write(file.Length);
             writer.Write(file.ToCharArray());
+        }
+
+        /// <summary>
+        /// Set shader sampler name
+        /// </summary>
+        /// <param name="name"></param>
+        public void SetName(string name)
+        {
+            file = name;
+            textureHash = FNV64.Hash(name);
         }
     }
 }

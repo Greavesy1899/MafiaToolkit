@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Gibbed.IO;
 
 //THIS ISN'T GIBBED. BUT STILL USES GIBBED STUFF :)
