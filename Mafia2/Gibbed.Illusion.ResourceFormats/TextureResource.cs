@@ -25,9 +25,7 @@
 //https://github.com/gibbed/Gibbed.Illusion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using Gibbed.Illusion.FileFormats.Hashing;
 using Gibbed.IO;
 using Mafia2;
 

@@ -176,8 +176,11 @@ namespace Mafia2Tool
 
             if (fObject.GetType() == typeof(FrameObjectSingleMesh))
             {
-                node.Nodes.Add(CreateTreeNode("Material", SceneData.FrameResource.FrameMaterials[fObject.Refs["Material"]]));
-                node.Nodes.Add(CreateTreeNode("Geometry", SceneData.FrameResource.FrameGeometries[fObject.Refs["Mesh"]]));
+                if (fObject.Refs.Count != 0)
+                {
+                    node.Nodes.Add(CreateTreeNode("Material", SceneData.FrameResource.FrameMaterials[fObject.Refs["Material"]]));
+                    node.Nodes.Add(CreateTreeNode("Geometry", SceneData.FrameResource.FrameGeometries[fObject.Refs["Mesh"]]));
+                }
                 node.ContextMenuStrip = contextMenu;
             }
             else if (fObject.GetType() == typeof(FrameObjectModel))

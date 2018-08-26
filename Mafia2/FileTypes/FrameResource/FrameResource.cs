@@ -128,8 +128,12 @@ namespace Mafia2
                     {
                         newObject = new FrameObjectSingleMesh(reader);
                         FrameObjectSingleMesh mesh = newObject as FrameObjectSingleMesh;
-                        mesh.AddRef(FrameEntryRefTypes.Mesh, frameBlocks[mesh.MeshIndex]);
-                        mesh.AddRef(FrameEntryRefTypes.Material, frameBlocks[mesh.MaterialIndex]);
+
+                        if(mesh.MeshIndex != -1)
+                            mesh.AddRef(FrameEntryRefTypes.Mesh, frameBlocks[mesh.MeshIndex]);
+
+                        if(mesh.MaterialIndex != -1)
+                            mesh.AddRef(FrameEntryRefTypes.Material, frameBlocks[mesh.MaterialIndex]);
                     }
                     else if (objectTypes[i] == (int)ObjectType.Frame)
                         newObject = new FrameObjectFrame(reader);

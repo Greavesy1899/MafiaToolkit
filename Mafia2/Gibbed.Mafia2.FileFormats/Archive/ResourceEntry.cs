@@ -20,6 +20,8 @@
  *    distribution.
  */
 
+using Gibbed.Mafia2.ResourceFormats;
+
 namespace Gibbed.Mafia2.FileFormats.Archive
 {
     public class ResourceEntry
@@ -31,6 +33,7 @@ namespace Gibbed.Mafia2.FileFormats.Archive
         public uint SlotVramRequired;
         public uint OtherRamRequired;
         public uint OtherVramRequired;
+        public IResourceType resourceData;
 
         public override string ToString()
         {

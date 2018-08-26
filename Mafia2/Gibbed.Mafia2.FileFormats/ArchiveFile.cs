@@ -32,9 +32,11 @@ using System.Xml;
 using System.Xml.XPath;
 using Gibbed.Illusion.FileFormats;
 using Gibbed.Illusion.FileFormats.Hashing;
+using Gibbed.Illusion.ResourceFormats;
 using Gibbed.IO;
 using Gibbed.Mafia2.FileFormats.Archive;
 using Gibbed.Mafia2.ResourceFormats;
+using Mafia2;
 
 namespace Gibbed.Mafia2.FileFormats
 {
@@ -162,7 +164,6 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceHeader.SlotVramRequired = resourceEntry.SlotVramRequired;
                 resourceHeader.OtherRamRequired = resourceEntry.OtherRamRequired;
                 resourceHeader.OtherVramRequired = resourceEntry.OtherVramRequired;
-                //SlotRamRequired += resourceHeader.SlotRamRequired;
 
                 using (var data = new MemoryStream())
                 {
@@ -298,7 +299,7 @@ namespace Gibbed.Mafia2.FileFormats
         }
 
         /// <summary>
-        /// Build Resource types from given XML.
+        /// Save resource data from given sds data.
         /// </summary>
         /// <param name="xml"></param>
         public void BuildResources(string folder)
@@ -608,10 +609,323 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherVramRequired", (int)resourceEntry.OtherVramRequired));
                 rootNode.AppendChild(resourceNode);
                 ResourceEntries.Add(resourceEntry);
-                _SlotVramRequired += resourceEntry.SlotVramRequired;
+                SlotVramRequired += resourceEntry.SlotVramRequired;
             }
 
             ResourceInfoXml = xmlDoc.OuterXml;
+        }
+
+        public void SaveResources(FileInfo file)
+        {
+            //get resources names...
+            List<string> itemNames = new List<string>();
+            if (string.IsNullOrEmpty(ResourceInfoXml) == false)
+            {
+                using (var reader = new StringReader(ResourceInfoXml))
+                {
+                    var doc = new XPathDocument(reader);
+                    var nav = doc.CreateNavigator();
+                    var nodes = nav.Select("/xml/ResourceInfo/SourceDataDescription");
+                    while (nodes.MoveNext() == true)
+                    {
+                        itemNames.Add(nodes.Current.Value);
+                    }
+                    Log.WriteLine("Found all items; count is " + nodes.Count);
+                }
+            }
+            else
+            {
+                //Fix for friends for life SDS files.
+                MessageBox.Show("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Log.WriteLine("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", LoggingTypes.WARNING);
+                for (int i = 0; i != ResourceEntries.Count; i++)
+                {
+                    itemNames.Add("unk_" + i);
+                }
+            }
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = ("\t");
+            settings.OmitXmlDeclaration = true;
+
+            string extractedPath = file.Directory.FullName + "/extracted/";
+
+            if (!Directory.Exists(extractedPath))
+                Directory.CreateDirectory(extractedPath);
+
+            Directory.CreateDirectory(extractedPath + file.Name);
+
+            Log.WriteLine("Begin unpacking and saving files..");
+
+            XmlWriter resourceXML = XmlWriter.Create(extractedPath + file.Name + "/SDSContent.xml", settings);
+            resourceXML.WriteStartElement("SDSResource");
+
+            //TODO Cleanup this code. It's awful.
+            for (int i = 0; i != ResourceEntries.Count; i++)
+            {
+                ResourceEntry entry = ResourceEntries[i];
+                resourceXML.WriteStartElement("ResourceEntry");
+                resourceXML.WriteElementString("Type", ResourceTypes[(int)entry.TypeId].Name);
+                string saveName = "";
+                Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
+                if (ResourceTypes[(int)entry.TypeId].Name == "Texture")
+                {
+                    saveName = itemNames[i];
+                    TextureResource resource = new TextureResource();
+                    resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+                    resourceXML.WriteElementString("File", saveName);
+                    resourceXML.WriteElementString("Unknown9", resource.Unknown9.ToString());
+                    entry.Data = resource.Data;
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "Mipmap")
+                {
+                    saveName = "MIP_" + itemNames[i];
+                    TextureResource resource = new TextureResource();
+                    resource.DeserializeMIP(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+                    resourceXML.WriteElementString("File", saveName);
+                    resourceXML.WriteElementString("Unknown9", resource.Unknown9.ToString());
+                    entry.Data = resource.Data;
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "IndexBufferPool")
+                {
+                    saveName = "IndexBufferPool_" + i + ".ibp";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "VertexBufferPool")
+                {
+                    saveName = "VertexBufferPool_" + i + ".vbp";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "AnimalTrafficPaths")
+                {
+                    saveName = "AnimalTrafficPaths" + i + ".atp";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "FrameResource")
+                {
+                    saveName = "FrameResource_" + i + ".fr";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "Effects")
+                {
+                    saveName = "Effects_" + i + ".eff";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "FrameNameTable")
+                {
+                    saveName = "FrameNameTable_" + i + ".fnt";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "EntityDataStorage")
+                {
+                    saveName = "EntityDataStorage_" + i + ".eds";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "PREFAB")
+                {
+                    saveName = "PREFAB_" + i + ".prf";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "ItemDesc")
+                {
+                    saveName = "ItemDesc_" + i + ".ids";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "Actors")
+                {
+                    saveName = "Actors_" + i + ".act";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "Collisions")
+                {
+                    saveName = "Collisions_" + i + ".col";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "AudioSectors")
+                {
+                    saveName = "AudioSectors_" + i + ".aus";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "Script")
+                {
+                    ScriptResource resource = new ScriptResource();
+                    resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+                    resourceXML.WriteElementString("File", resource.Path);
+                    resourceXML.WriteElementString("ScriptNum", resource.Scripts.Count.ToString());
+                    for (int x = 0; x != resource.Scripts.Count; x++)
+                    {
+                        string scrdir = extractedPath + file.Name;
+                        string[] dirs = resource.Scripts[x].Name.Split('/');
+                        for (int z = 0; z != dirs.Length - 1; z++)
+                        {
+                            scrdir += "/" + dirs[z];
+                            Directory.CreateDirectory(scrdir);
+                        }
+
+                        using (BinaryWriter writer = new BinaryWriter(
+                            File.Open(extractedPath + file.Name + "/" + resource.Scripts[x].Name, FileMode.Create)))
+                        {
+                            writer.Write(resource.Scripts[x].Data);
+                        }
+                        resourceXML.WriteElementString("Name", resource.Scripts[x].Name);
+                    }
+                    resourceXML.WriteElementString("Version", entry.Version.ToString());
+                    resourceXML.WriteEndElement(); //finish early.
+                    continue;
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "XML")
+                {
+                    saveName = itemNames[i];
+                    resourceXML.WriteElementString("File", saveName);
+                    XmlResource resource = new XmlResource();
+                    try
+                    {
+                        saveName = itemNames[i];
+                        string[] dirs = itemNames[i].Split('/');
+                        resource = new XmlResource();
+                        resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+                        string xmldir = extractedPath + file.Name;
+                        for (int z = 0; z != dirs.Length - 1; z++)
+                        {
+                            xmldir += "/" + dirs[z];
+                            Directory.CreateDirectory(xmldir);
+                        }
+                        if (!resource.Unk3)
+                            File.WriteAllText(extractedPath + file.Name + "/" + saveName + ".xml", resource.Content);
+                        else
+                        {
+                            using (BinaryWriter writer =
+                                new BinaryWriter(
+                                    File.Open(extractedPath + file.Name + "/" + saveName + ".xml", FileMode.Create)))
+                            {
+                                writer.Write(entry.Data);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("ERROR CONVERTING XML: " + ex.Message);
+                    }
+                    resourceXML.WriteElementString("XMLTag", resource.Tag);
+                    resourceXML.WriteElementString("Unk1", Convert.ToByte(resource.Unk1).ToString());
+                    resourceXML.WriteElementString("Unk3", Convert.ToByte(resource.Unk3).ToString());
+                    resourceXML.WriteElementString("Version", entry.Version.ToString());
+                    resourceXML.WriteEndElement(); //finish early.
+                    continue;
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "Sound")
+                {
+                    //Do resource first..
+                    SoundResource resource = new SoundResource();
+                    resource.Deserialize(entry.Data);
+                    entry.Data = resource.Data;
+
+                    saveName = itemNames[i] + ".fsb";
+                    string[] dirs = itemNames[i].Split('/');
+
+                    string sounddir = extractedPath + file.Name;
+                    for (int z = 0; z != dirs.Length - 1; z++)
+                    {
+                        sounddir += "/" + dirs[z];
+                        Directory.CreateDirectory(sounddir);
+                    }
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "MemFile")
+                {
+                    MemFileResource resource = new MemFileResource();
+                    resource.Deserialize(entry.Data);
+                    entry.Data = resource.Data;
+
+                    saveName = itemNames[i];
+                    string[] dirs = itemNames[i].Split('/');
+
+                    string memdir = extractedPath + file.Name;
+                    for (int z = 0; z != dirs.Length - 1; z++)
+                    {
+                        memdir += "/" + dirs[z];
+                        Directory.CreateDirectory(memdir);
+                    }
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "SoundTable")
+                {
+                    saveName = "SoundTable_" + i + ".stbl";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "Speech")
+                {
+                    saveName = "Speech_" + i + ".spe";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "FxAnimSet")
+                {
+                    saveName = "FxAnimSet_" + i + ".fas";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "FxActor")
+                {
+                    saveName = "FxActor_" + i + ".fxa";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "Cutscene")
+                {
+                    saveName = "Cutscene_" + i + ".cut";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "Translokator")
+                {
+                    saveName = "Translokator_" + i + ".tra";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "Animation2")
+                {
+                    saveName = itemNames[i] + ".an2";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "NAV_AIWORLD_DATA")
+                {
+                    saveName = "NAV_AIWORLD_DATA_" + i + ".nav";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "NAV_OBJ_DATA")
+                {
+                    saveName = "NAV_OBJ_DATA_" + i + ".nov";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "NAV_HPD_DATA")
+                {
+                    saveName = "NAV_HPD_DATA_" + i + ".nhv";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else if (ResourceTypes[entry.TypeId].Name == "Table")
+                {
+                    TableResource resource = new TableResource();
+                    resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+                    //todo extract individual tables.
+                    saveName = "Tables_" + ".tbl";
+                    resourceXML.WriteElementString("File", saveName);
+                }
+                else
+                {
+                    MessageBox.Show("Found unknown type: " + ResourceTypes[(int)entry.TypeId].Name);
+                    saveName = "unknown.bin";
+                }
+                resourceXML.WriteElementString("Version", entry.Version.ToString());
+                using (BinaryWriter writer =
+                    new BinaryWriter(
+                        File.Open(extractedPath + file.Name + "/" + saveName, FileMode.Create)))
+                {
+                    writer.Write(entry.Data);
+                }
+
+                resourceXML.WriteEndElement();
+            }
+
+            resourceXML.WriteEndElement();
+            resourceXML.Flush();
+            resourceXML.Dispose();
         }
 
         private XmlNode AddRamElement(XmlDocument xmlDoc, string name, int num)

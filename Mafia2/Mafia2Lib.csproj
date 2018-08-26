@@ -100,7 +100,6 @@
     <Compile Include="FileTypes\FrameResource\ObjectTypes\FrameObjectSingleMesh.cs" />
     <Compile Include="GeometryExporters\CustomEDC.cs" />
     <Compile Include="GeometryExporters\CustomEDD.cs" />
-    <Compile Include="GeometryExporters\CustomEDM.cs" />
     <Compile Include="Gibbed.Illusion.FileFormats\FNV32.cs" />
     <Compile Include="Gibbed.Illusion.FileFormats\FNV64.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\ArchiveEncryption.cs" />

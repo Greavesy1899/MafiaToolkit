@@ -15,7 +15,6 @@ namespace Mafia2
         IndexBuffer[] indexBuffers; //Holds the buffer which will then be saved/replaced later
         VertexBuffer[] vertexBuffers; //Holds the buffers which will then be saved/replaced later
         private bool useSingleMesh; //False means ModelMesh, True means SingleMesh;
-        CustomEDM edm; //mesh stored here. Doesn't store all LODs, just the most recent.
 
         public Lod[] Lods
         {
@@ -57,12 +56,6 @@ namespace Mafia2
         {
             get { return vertexBuffers; }
             set { vertexBuffers = value; }
-        }
-
-        public CustomEDM EDM
-        {
-            get { return edm; }
-            set { edm = value; }
         }
 
         /// <summary>

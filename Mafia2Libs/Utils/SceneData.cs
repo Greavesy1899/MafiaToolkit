@@ -62,8 +62,8 @@ namespace Mafia2Tool
                 //    act.Add(new Actor(name));
                 //else if (type == "AudioSectors")
                 //    SoundSector = new SoundSector(name);
-                else if ((type == "MemFile") && (name.Contains("cityareas")))
-                    CityAreas = new CityAreas(name);
+                //else if ((type == "MemFile") && (name.Contains("cityareas")))
+                //    CityAreas = new CityAreas(name);
             }
 
             IndexBufferPool = new IndexBufferManager(ibps);
