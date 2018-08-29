@@ -22,8 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -44,6 +42,7 @@ namespace Gibbed.Mafia2.FileFormats
     {
         public const uint Signature = 0x53445300; // 'SDS\0'
 
+        #region Fields
         private Endian _Endian;
         private Archive.Platform _Platform;
         private uint _SlotRamRequired;
@@ -54,71 +53,56 @@ namespace Gibbed.Mafia2.FileFormats
         private readonly List<Archive.ResourceType> _ResourceTypes;
         private string _ResourceInfoXml;
         private readonly List<Archive.ResourceEntry> _ResourceEntries;
-
+        private Dictionary<ulong, TextureResource> _TextureEntries;
+        #endregion
+        #region Properties
+        public Endian Endian {
+            get { return this._Endian; }
+            set { this._Endian = value; }
+        }
+        public Archive.Platform Platform {
+            get { return this._Platform; }
+            set { this._Platform = value; }
+        }
+        public uint SlotRamRequired {
+            get { return this._SlotRamRequired; }
+            set { this._SlotRamRequired = value; }
+        }
+        public uint SlotVramRequired {
+            get { return this._SlotVramRequired; }
+            set { this._SlotVramRequired = value; }
+        }
+        public uint OtherRamRequired {
+            get { return this._OtherRamRequired; }
+            set { this._OtherRamRequired = value; }
+        }
+        public uint OtherVramRequired {
+            get { return this._OtherVramRequired; }
+            set { this._OtherVramRequired = value; }
+        }
+        public byte[] Unknown20 {
+            get { return this._Unknown20; }
+            set { this._Unknown20 = value; }
+        }
+        public List<Archive.ResourceType> ResourceTypes {
+            get { return this._ResourceTypes; }
+        }
+        public string ResourceInfoXml {
+            get { return this._ResourceInfoXml; }
+            set { this._ResourceInfoXml = value; }
+        }
+        public List<Archive.ResourceEntry> ResourceEntries {
+            get { return this._ResourceEntries; }
+        }
+        #endregion
+        #region Constructors
         public ArchiveFile()
         {
             this._ResourceTypes = new List<Archive.ResourceType>();
             this._ResourceEntries = new List<Archive.ResourceEntry>();
         }
-
-        public Endian Endian
-        {
-            get { return this._Endian; }
-            set { this._Endian = value; }
-        }
-
-        public Archive.Platform Platform
-        {
-            get { return this._Platform; }
-            set { this._Platform = value; }
-        }
-
-        public uint SlotRamRequired
-        {
-            get { return this._SlotRamRequired; }
-            set { this._SlotRamRequired = value; }
-        }
-
-        public uint SlotVramRequired
-        {
-            get { return this._SlotVramRequired; }
-            set { this._SlotVramRequired = value; }
-        }
-
-        public uint OtherRamRequired
-        {
-            get { return this._OtherRamRequired; }
-            set { this._OtherRamRequired = value; }
-        }
-
-        public uint OtherVramRequired
-        {
-            get { return this._OtherVramRequired; }
-            set { this._OtherVramRequired = value; }
-        }
-
-        public byte[] Unknown20
-        {
-            get { return this._Unknown20; }
-            set { this._Unknown20 = value; }
-        }
-
-        public List<Archive.ResourceType> ResourceTypes
-        {
-            get { return this._ResourceTypes; }
-        }
-
-        public string ResourceInfoXml
-        {
-            get { return this._ResourceInfoXml; }
-            set { this._ResourceInfoXml = value; }
-        }
-
-        public List<Archive.ResourceEntry> ResourceEntries
-        {
-            get { return this._ResourceEntries; }
-        }
-
+        #endregion
+        #region Functions
         public void Serialize(Stream output, ArchiveSerializeOptions options)
         {
             var compress = (options & ArchiveSerializeOptions.Compress) != 0;
@@ -130,7 +114,7 @@ namespace Gibbed.Mafia2.FileFormats
             {
                 data.WriteValueU32(Signature, Endian.Big);
                 data.WriteValueU32(19, endian);
-                data.WriteValueU32((uint) this._Platform, Endian.Big);
+                data.WriteValueU32((uint)this._Platform, Endian.Big);
                 data.Flush();
                 output.WriteFromMemoryStreamSafe(data, endian);
             }
@@ -140,7 +124,7 @@ namespace Gibbed.Mafia2.FileFormats
             Archive.FileHeader fileHeader;
             output.Seek(56, SeekOrigin.Current);
 
-            fileHeader.ResourceTypeTableOffset = (uint) (output.Position - basePosition);
+            fileHeader.ResourceTypeTableOffset = (uint)(output.Position - basePosition);
             output.WriteValueS32(this._ResourceTypes.Count, endian);
             foreach (var resourceType in this._ResourceTypes)
             {
@@ -148,17 +132,17 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != 0
-                ? (uint) this._ResourceEntries.Sum(re => 30 + (re.Data == null ? 0 : re.Data.Length))
+                ? (uint)this._ResourceEntries.Sum(re => 30 + (re.Data == null ? 0 : re.Data.Length))
                 : 0x4000;
 
-            fileHeader.BlockTableOffset = (uint) (output.Position - basePosition);
+            fileHeader.BlockTableOffset = (uint)(output.Position - basePosition);
             fileHeader.ResourceCount = 0;
             var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress);
             foreach (var resourceEntry in this._ResourceEntries)
             {
                 Archive.ResourceHeader resourceHeader;
                 resourceHeader.TypeId = (uint)resourceEntry.TypeId;
-                resourceHeader.Size = 30 + (uint) (resourceEntry.Data == null ? 0 : resourceEntry.Data.Length);
+                resourceHeader.Size = 30 + (uint)(resourceEntry.Data == null ? 0 : resourceEntry.Data.Length);
                 resourceHeader.Version = resourceEntry.Version;
                 resourceHeader.SlotRamRequired = resourceEntry.SlotRamRequired;
                 resourceHeader.SlotVramRequired = resourceEntry.SlotVramRequired;
@@ -179,7 +163,7 @@ namespace Gibbed.Mafia2.FileFormats
             blockStream.Flush();
             blockStream.Finish();
 
-            fileHeader.XmlOffset = (uint) (output.Position - basePosition);
+            fileHeader.XmlOffset = (uint)(output.Position - basePosition);
             if (string.IsNullOrEmpty(this._ResourceInfoXml) == false)
             {
                 output.WriteString(this._ResourceInfoXml, Encoding.ASCII);
@@ -200,7 +184,6 @@ namespace Gibbed.Mafia2.FileFormats
                 output.WriteFromMemoryStreamSafe(data, endian);
             }
         }
-
         public void Deserialize(Stream input)
         {
             var basePosition = input.Position;
@@ -212,7 +195,7 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             input.Position += 4; // skip version
-            var platform = (Archive.Platform) input.ReadValueU32(Endian.Big);
+            var platform = (Archive.Platform)input.ReadValueU32(Endian.Big);
             if (platform != Archive.Platform.PC &&
                 platform != Archive.Platform.Xbox360 &&
                 platform != Archive.Platform.PS3)
@@ -272,7 +255,7 @@ namespace Gibbed.Mafia2.FileFormats
                 {
                     TypeId = (int)resourceHeader.TypeId,
                     Version = resourceHeader.Version,
-                    Data = blockStream.ReadBytes((int) resourceHeader.Size - 30),
+                    Data = blockStream.ReadBytes((int)resourceHeader.Size - 30),
                     SlotRamRequired = resourceHeader.SlotRamRequired,
                     SlotVramRequired = resourceHeader.SlotVramRequired,
                     OtherRamRequired = resourceHeader.OtherRamRequired,
@@ -281,7 +264,7 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             input.Position = basePosition + fileHeader.XmlOffset;
-            var xml = input.ReadString((int) (input.Length - input.Position), Encoding.ASCII);
+            var xml = input.ReadString((int)(input.Length - input.Position), Encoding.ASCII);
 
             this._ResourceTypes.Clear();
             this._ResourceEntries.Clear();
@@ -292,16 +275,16 @@ namespace Gibbed.Mafia2.FileFormats
             this._SlotVramRequired = fileHeader.SlotVramRequired;
             this._OtherRamRequired = fileHeader.OtherRamRequired;
             this._OtherVramRequired = fileHeader.OtherVramRequired;
-            this._Unknown20 = (byte[]) fileHeader.Unknown20.Clone();
+            this._Unknown20 = (byte[])fileHeader.Unknown20.Clone();
             this._ResourceTypes.AddRange(resourceTypes);
             this._ResourceInfoXml = xml;
             this._ResourceEntries.AddRange(resources);
         }
 
         /// <summary>
-        /// Save resource data from given sds data.
+        /// Build resources from given folder.
         /// </summary>
-        /// <param name="xml"></param>
+        /// <param name="folder"></param>
         public void BuildResources(string folder)
         {
             //TODO: MAKE THIS CLEANER
@@ -355,6 +338,7 @@ namespace Gibbed.Mafia2.FileFormats
                     resource.Id = (uint)addedTypes.Count;
                     exists = addedTypes.Count;
 
+                    //TODO
                     if (resource.Name == "IndexBufferPool" || resource.Name == "PREFAB")
                         resource.Parent = 3;
                     else if (resource.Name == "VertexBufferPool" || resource.Name == "NAV_OBJ_DATA")
@@ -374,9 +358,7 @@ namespace Gibbed.Mafia2.FileFormats
                 ResourceEntry resourceEntry = new ResourceEntry();
                 resourceEntry.TypeId = exists;
 
-                if (resourceType == "IndexBufferPool" ||
-                    resourceType == "VertexBufferPool" ||
-                    resourceType == "FrameResource" ||
+                if (resourceType == "FrameResource" ||
                     resourceType == "Effects" ||
                     resourceType == "PREFAB" ||
                     resourceType == "ItemDesc" ||
@@ -393,8 +375,7 @@ namespace Gibbed.Mafia2.FileFormats
                     resourceType == "AudioSectors" ||
                     resourceType == "Speech" ||
                     resourceType == "SoundTable" ||
-                    resourceType == "AnimalTrafficPaths" ||
-                    resourceType == "EntityDataStorage")
+                    resourceType == "AnimalTrafficPaths")
                 {
                     nodes.Current.MoveToNext();
                     string file = nodes.Current.Value;
@@ -408,14 +389,48 @@ namespace Gibbed.Mafia2.FileFormats
 
                     sddescNode.InnerText = "not available";
                 }
-                else if (resourceType == "Texture" || resourceType == "Mipmap")
+                else if(resourceType == "IndexBufferPool" || resourceType == "VertexBufferPool")
+                {
+                    nodes.Current.MoveToNext();
+                    string file = nodes.Current.Value;
+                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                    {
+                        reader.BaseStream.Position = 5;
+                        resourceEntry.SlotVramRequired = (uint)reader.ReadInt32();
+                        reader.BaseStream.Position = 0;
+                        resourceEntry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+                    }
+
+                    nodes.Current.MoveToNext();
+                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+                    sddescNode.InnerText = "not available";
+                }
+                else if(resourceType == "EntityDataStorage")
+                {
+                    nodes.Current.MoveToNext();
+                    string file = nodes.Current.Value;
+                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                    {
+                        resourceEntry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+                        resourceEntry.SlotRamRequired = (uint)reader.BaseStream.Length + 30;
+                    }
+
+                    nodes.Current.MoveToNext();
+                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+                    sddescNode.InnerText = "not available";
+                }
+                else if (resourceType == "Texture")
                 {
                     MemoryStream data = new MemoryStream();
+                    TextureResource resource;
+
                     byte[] texData;
                     nodes.Current.MoveToNext();
                     string file = nodes.Current.Value;
                     nodes.Current.MoveToNext();
-                    byte unk09 = Convert.ToByte(nodes.Current.Value);
+                    byte hasMIP = Convert.ToByte(nodes.Current.Value);
                     nodes.Current.MoveToNext();
                     resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
 
@@ -424,24 +439,39 @@ namespace Gibbed.Mafia2.FileFormats
                         texData = reader.ReadBytes((int)reader.BaseStream.Length);
                     }
 
+                    resource = new TextureResource(FNV64.Hash(file), hasMIP, texData);
+                    //resourceEntry.SlotVramRequired = (uint)texData.Length - 128;
+
+                    if (hasMIP == 1)
+                    {
+                        using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/MIP_" + file, FileMode.Open)))
+                        {
+                            //resourceEntry.SlotVramRequired += (uint)(reader.BaseStream.Length-128);
+                        }
+                    }
+
+                    resource.Serialize(resourceEntry.Version, data, Endian.Little);                
+                    sddescNode.InnerText = file;
+                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
+                    resourceEntry.Data = data.GetBuffer();
+                }
+                else if (resourceType == "Mipmap")
+                {
+                    MemoryStream data = new MemoryStream();
                     TextureResource resource;
+                    byte[] texData;
 
-                    if (addedTypes[addedTypes.Count - 1] == "Mipmap")
-                    {
-                        resource = new TextureResource(FNV64.Hash(file.Remove(0, 4)), unk09, texData);
-                        resource.SerializeMIP(resourceEntry.Version, data, Endian.Little);
-                        sddescNode.InnerText = file.Remove(0, 4);
-                    }
-                    else
-                    {
-                        resource = new TextureResource(FNV64.Hash(file), unk09, texData);
-                        resource.Serialize(resourceEntry.Version, data, Endian.Little);
-                        resourceEntry.SlotVramRequired = (uint)texData.Length - 128;
-                        sddescNode.InnerText = file;
-                    }
+                    nodes.Current.MoveToNext();
+                    string file = nodes.Current.Value;
+                    nodes.Current.MoveToNext();
+                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
 
+                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                        texData = reader.ReadBytes((int)reader.BaseStream.Length);
 
-
+                    resource = new TextureResource(FNV64.Hash(file.Remove(0, 4)), 0, texData);
+                    resource.SerializeMIP(resourceEntry.Version, data, Endian.Little);
+                    sddescNode.InnerText = file.Remove(0, 4);
                     resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
                     resourceEntry.Data = data.GetBuffer();
                 }
@@ -459,7 +489,7 @@ namespace Gibbed.Mafia2.FileFormats
                     {
                         resourceEntry.SlotRamRequired = 40;
                         resourceEntry.SlotVramRequired = (uint)reader.BaseStream.Length;
-                        data.AddRange(BitConverter.GetBytes((int)reader.BaseStream.Length));
+                        data.AddRange(BitConverter.GetBytes((int)reader.BaseStream.Length)); //?? WHAT DOES THIS DO?? CHECK LATER.
                         data.AddRange(reader.ReadBytes((int)reader.BaseStream.Length));
                     }
                     nodes.Current.MoveToNext();
@@ -603,18 +633,29 @@ namespace Gibbed.Mafia2.FileFormats
                 }
                 resourceNode.AppendChild(typeNameNode);
                 resourceNode.AppendChild(sddescNode);
+                //resourceEntry.OtherRamRequired = 0;
+                //resourceEntry.OtherVramRequired = 0;
+                //resourceEntry.SlotRamRequired = 0;
+                //resourceEntry.SlotVramRequired = 0;
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotRamRequired", (int)resourceEntry.SlotRamRequired));
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotVRamRequired", (int)resourceEntry.SlotVramRequired));
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherRamRequired", (int)resourceEntry.OtherRamRequired));
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherVramRequired", (int)resourceEntry.OtherVramRequired));
                 rootNode.AppendChild(resourceNode);
                 ResourceEntries.Add(resourceEntry);
+                SlotRamRequired += resourceEntry.SlotRamRequired;
                 SlotVramRequired += resourceEntry.SlotVramRequired;
+                OtherRamRequired += resourceEntry.OtherRamRequired;
+                OtherVramRequired += resourceEntry.OtherVramRequired;
             }
 
             ResourceInfoXml = xmlDoc.OuterXml;
         }
 
+        /// <summary>
+        /// Save resource data from given sds data.
+        /// </summary>
+        /// <param name="xml"></param>
         public void SaveResources(FileInfo file)
         {
             //get resources names...
@@ -661,261 +702,111 @@ namespace Gibbed.Mafia2.FileFormats
             XmlWriter resourceXML = XmlWriter.Create(extractedPath + file.Name + "/SDSContent.xml", settings);
             resourceXML.WriteStartElement("SDSResource");
 
-            //TODO Cleanup this code. It's awful.
+            //TODO Cleanup this code. It's awful. (V2 26/08/18, improved to use switch)
             for (int i = 0; i != ResourceEntries.Count; i++)
             {
                 ResourceEntry entry = ResourceEntries[i];
                 resourceXML.WriteStartElement("ResourceEntry");
-                resourceXML.WriteElementString("Type", ResourceTypes[(int)entry.TypeId].Name);
+                resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
                 string saveName = "";
                 Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
-                if (ResourceTypes[(int)entry.TypeId].Name == "Texture")
-                {
-                    saveName = itemNames[i];
-                    TextureResource resource = new TextureResource();
-                    resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
-                    resourceXML.WriteElementString("File", saveName);
-                    resourceXML.WriteElementString("Unknown9", resource.Unknown9.ToString());
-                    entry.Data = resource.Data;
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "Mipmap")
-                {
-                    saveName = "MIP_" + itemNames[i];
-                    TextureResource resource = new TextureResource();
-                    resource.DeserializeMIP(entry.Version, new MemoryStream(entry.Data), Endian.Little);
-                    resourceXML.WriteElementString("File", saveName);
-                    resourceXML.WriteElementString("Unknown9", resource.Unknown9.ToString());
-                    entry.Data = resource.Data;
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "IndexBufferPool")
-                {
-                    saveName = "IndexBufferPool_" + i + ".ibp";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "VertexBufferPool")
-                {
-                    saveName = "VertexBufferPool_" + i + ".vbp";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "AnimalTrafficPaths")
-                {
-                    saveName = "AnimalTrafficPaths" + i + ".atp";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "FrameResource")
-                {
-                    saveName = "FrameResource_" + i + ".fr";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "Effects")
-                {
-                    saveName = "Effects_" + i + ".eff";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "FrameNameTable")
-                {
-                    saveName = "FrameNameTable_" + i + ".fnt";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "EntityDataStorage")
-                {
-                    saveName = "EntityDataStorage_" + i + ".eds";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "PREFAB")
-                {
-                    saveName = "PREFAB_" + i + ".prf";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "ItemDesc")
-                {
-                    saveName = "ItemDesc_" + i + ".ids";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "Actors")
-                {
-                    saveName = "Actors_" + i + ".act";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "Collisions")
-                {
-                    saveName = "Collisions_" + i + ".col";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "AudioSectors")
-                {
-                    saveName = "AudioSectors_" + i + ".aus";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "Script")
-                {
-                    ScriptResource resource = new ScriptResource();
-                    resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
-                    resourceXML.WriteElementString("File", resource.Path);
-                    resourceXML.WriteElementString("ScriptNum", resource.Scripts.Count.ToString());
-                    for (int x = 0; x != resource.Scripts.Count; x++)
-                    {
-                        string scrdir = extractedPath + file.Name;
-                        string[] dirs = resource.Scripts[x].Name.Split('/');
-                        for (int z = 0; z != dirs.Length - 1; z++)
-                        {
-                            scrdir += "/" + dirs[z];
-                            Directory.CreateDirectory(scrdir);
-                        }
 
-                        using (BinaryWriter writer = new BinaryWriter(
-                            File.Open(extractedPath + file.Name + "/" + resource.Scripts[x].Name, FileMode.Create)))
-                        {
-                            writer.Write(resource.Scripts[x].Data);
-                        }
-                        resourceXML.WriteElementString("Name", resource.Scripts[x].Name);
-                    }
-                    resourceXML.WriteElementString("Version", entry.Version.ToString());
-                    resourceXML.WriteEndElement(); //finish early.
-                    continue;
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "XML")
+                switch (ResourceTypes[entry.TypeId].Name)
                 {
-                    saveName = itemNames[i];
-                    resourceXML.WriteElementString("File", saveName);
-                    XmlResource resource = new XmlResource();
-                    try
-                    {
+                    case "Texture":
+                        ReadTextureEntry(entry, resourceXML, itemNames[i]);
                         saveName = itemNames[i];
-                        string[] dirs = itemNames[i].Split('/');
-                        resource = new XmlResource();
-                        resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
-                        string xmldir = extractedPath + file.Name;
-                        for (int z = 0; z != dirs.Length - 1; z++)
-                        {
-                            xmldir += "/" + dirs[z];
-                            Directory.CreateDirectory(xmldir);
-                        }
-                        if (!resource.Unk3)
-                            File.WriteAllText(extractedPath + file.Name + "/" + saveName + ".xml", resource.Content);
-                        else
-                        {
-                            using (BinaryWriter writer =
-                                new BinaryWriter(
-                                    File.Open(extractedPath + file.Name + "/" + saveName + ".xml", FileMode.Create)))
-                            {
-                                writer.Write(entry.Data);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("ERROR CONVERTING XML: " + ex.Message);
-                    }
-                    resourceXML.WriteElementString("XMLTag", resource.Tag);
-                    resourceXML.WriteElementString("Unk1", Convert.ToByte(resource.Unk1).ToString());
-                    resourceXML.WriteElementString("Unk3", Convert.ToByte(resource.Unk3).ToString());
-                    resourceXML.WriteElementString("Version", entry.Version.ToString());
-                    resourceXML.WriteEndElement(); //finish early.
-                    continue;
+                        break;
+                    case "Mipmap":
+                        ReadMipmapEntry(entry, resourceXML, itemNames[i]);
+                        saveName = "MIP_" + itemNames[i];
+                        break;
+                    case "IndexBufferPool":
+                        saveName = ReadBasicEntry(resourceXML, "IndexBufferPool_" + i + ".ibp");
+                        break;
+                    case "VertexBufferPool":
+                        saveName = ReadBasicEntry(resourceXML, "VertexBufferPool_" + i + ".vbp");
+                        break;
+                    case "AnimalTrafficPaths":
+                        saveName = ReadBasicEntry(resourceXML, "AnimalTrafficPaths" + i + ".atp");
+                        break;
+                    case "FrameResource":
+                        saveName = ReadBasicEntry(resourceXML, "FrameResource_" + i + ".fr");
+                        break;
+                    case "Effects":
+                        saveName = ReadBasicEntry(resourceXML, "Effects_" + i + ".eff");
+                        break;
+                    case "FrameNameTable":
+                        saveName = ReadBasicEntry(resourceXML, "FrameNameTable_" + i + ".fnt");
+                        break;
+                    case "EntityDataStorage":
+                        saveName = ReadBasicEntry(resourceXML, "EntityDataStorage_" + i + ".eds");
+                        break;
+                    case "PREFAB":
+                        saveName = ReadBasicEntry(resourceXML, "PREFAB_" + i + ".prf");
+                        break;
+                    case "ItemDesc":
+                        saveName = ReadBasicEntry(resourceXML, "ItemDesc_" + i + ".ids");
+                        break;
+                    case "Actors":
+                        saveName = ReadBasicEntry(resourceXML, "Actors_" + i + ".act");
+                        break;
+                    case "Collisions":
+                        saveName = ReadBasicEntry(resourceXML, "Collisions_" + i + ".col");
+                        break;
+                    case "AudioSectors":
+                        saveName = ReadBasicEntry(resourceXML, "AudioSectors_" + i + ".aus");
+                        break;
+                    case "SoundTable":
+                        saveName = ReadBasicEntry(resourceXML, "SoundTable_" + i + ".stbl");
+                        break;
+                    case "Speech":
+                        saveName = ReadBasicEntry(resourceXML, "Speech_" + i + ".spe");
+                        break;
+                    case "FxAnimSet":
+                        saveName = ReadBasicEntry(resourceXML, "FxAnimSet_" + i + ".fas");
+                        break;
+                    case "FxActor":
+                        saveName = ReadBasicEntry(resourceXML, "FxActor_" + i + ".fxa");
+                        break;
+                    case "Cutscene":
+                        saveName = ReadBasicEntry(resourceXML, "Cutscene_" + i + ".cut");
+                        break;
+                    case "Translokator":
+                        saveName = ReadBasicEntry(resourceXML, "Translokator_" + i + ".tra");
+                        break;
+                    case "Animation2":
+                        saveName = ReadBasicEntry(resourceXML, "FxAnimSet_" + i + ".fas");
+                        break;
+                    case "NAV_AIWORLD_DATA":
+                        saveName = ReadBasicEntry(resourceXML, "NAV_AIWORLD_DATA_" + i + ".nav");
+                        break;
+                    case "NAV_OBJ_DATA":
+                        saveName = ReadBasicEntry(resourceXML, "NAV_OBJ_DATA_" + i + ".nov");
+                        break;
+                    case "NAV_HPD_DATA":
+                        saveName = ReadBasicEntry(resourceXML, "NAV_HPD_DATA_" + i + ".nhv");
+                        break;
+                    case "Script":
+                        ReadScriptEntry(entry, resourceXML, extractedPath + file.Name);
+                        continue;
+                    case "XML":
+                        ReadXMLEntry(entry, resourceXML, itemNames[i], extractedPath + file.Name);
+                        continue;
+                    case "Sound":
+                        ReadSoundEntry(entry, resourceXML, itemNames[i], extractedPath + file.Name);
+                        saveName = itemNames[i] + ".fsb";
+                        break;
+                    case "MemFile":
+                        ReadMemEntry(entry, resourceXML, itemNames[i], extractedPath + file.Name);
+                        break;
+                    default:
+                        MessageBox.Show("Found unknown type: " + ResourceTypes[(int)entry.TypeId].Name);
+                        break;
                 }
-                else if (ResourceTypes[entry.TypeId].Name == "Sound")
-                {
-                    //Do resource first..
-                    SoundResource resource = new SoundResource();
-                    resource.Deserialize(entry.Data);
-                    entry.Data = resource.Data;
 
-                    saveName = itemNames[i] + ".fsb";
-                    string[] dirs = itemNames[i].Split('/');
-
-                    string sounddir = extractedPath + file.Name;
-                    for (int z = 0; z != dirs.Length - 1; z++)
-                    {
-                        sounddir += "/" + dirs[z];
-                        Directory.CreateDirectory(sounddir);
-                    }
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "MemFile")
-                {
-                    MemFileResource resource = new MemFileResource();
-                    resource.Deserialize(entry.Data);
-                    entry.Data = resource.Data;
-
-                    saveName = itemNames[i];
-                    string[] dirs = itemNames[i].Split('/');
-
-                    string memdir = extractedPath + file.Name;
-                    for (int z = 0; z != dirs.Length - 1; z++)
-                    {
-                        memdir += "/" + dirs[z];
-                        Directory.CreateDirectory(memdir);
-                    }
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "SoundTable")
-                {
-                    saveName = "SoundTable_" + i + ".stbl";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "Speech")
-                {
-                    saveName = "Speech_" + i + ".spe";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "FxAnimSet")
-                {
-                    saveName = "FxAnimSet_" + i + ".fas";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "FxActor")
-                {
-                    saveName = "FxActor_" + i + ".fxa";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "Cutscene")
-                {
-                    saveName = "Cutscene_" + i + ".cut";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "Translokator")
-                {
-                    saveName = "Translokator_" + i + ".tra";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "Animation2")
-                {
-                    saveName = itemNames[i] + ".an2";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "NAV_AIWORLD_DATA")
-                {
-                    saveName = "NAV_AIWORLD_DATA_" + i + ".nav";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "NAV_OBJ_DATA")
-                {
-                    saveName = "NAV_OBJ_DATA_" + i + ".nov";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "NAV_HPD_DATA")
-                {
-                    saveName = "NAV_HPD_DATA_" + i + ".nhv";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else if (ResourceTypes[entry.TypeId].Name == "Table")
-                {
-                    TableResource resource = new TableResource();
-                    resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
-                    //todo extract individual tables.
-                    saveName = "Tables_" + ".tbl";
-                    resourceXML.WriteElementString("File", saveName);
-                }
-                else
-                {
-                    MessageBox.Show("Found unknown type: " + ResourceTypes[(int)entry.TypeId].Name);
-                    saveName = "unknown.bin";
-                }
                 resourceXML.WriteElementString("Version", entry.Version.ToString());
-                using (BinaryWriter writer =
-                    new BinaryWriter(
-                        File.Open(extractedPath + file.Name + "/" + saveName, FileMode.Create)))
+                using (BinaryWriter writer = new BinaryWriter(File.Open(extractedPath + file.Name + "/" + saveName, FileMode.Create)))
                 {
                     writer.Write(entry.Data);
                 }
@@ -926,6 +817,134 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteEndElement();
             resourceXML.Flush();
             resourceXML.Dispose();
+        }
+
+        public ResourceEntry ReadTextureEntry(ResourceEntry entry, XmlWriter resourceXML, string name)
+        {
+            TextureResource resource = new TextureResource();
+            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+            resourceXML.WriteElementString("File", name);
+            resourceXML.WriteElementString("HasMIP", resource.HasMIP.ToString());
+            entry.Data = resource.Data;
+            return entry;
+        }
+        public ResourceEntry ReadMipmapEntry(ResourceEntry entry, XmlWriter resourceXML, string name)
+        {
+            TextureResource resource = new TextureResource();
+            resource.DeserializeMIP(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+            resourceXML.WriteElementString("File", "MIP_" + name);
+            entry.Data = resource.Data;
+            return entry;
+        }
+        public string ReadBasicEntry(XmlWriter resourceXML, string name)
+        {
+            resourceXML.WriteElementString("File", name);
+            return name;
+        }
+        public void ReadScriptEntry(ResourceEntry entry, XmlWriter resourceXML, string scriptDir)
+        {
+            ScriptResource resource = new ScriptResource();
+            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+            resourceXML.WriteElementString("File", resource.Path);
+            resourceXML.WriteElementString("ScriptNum", resource.Scripts.Count.ToString());
+            for (int x = 0; x != resource.Scripts.Count; x++)
+            {
+                string scrdir = scriptDir;
+                string[] dirs = resource.Scripts[x].Name.Split('/');
+                for (int z = 0; z != dirs.Length - 1; z++)
+                {
+                    scrdir += "/" + dirs[z];
+                    Directory.CreateDirectory(scrdir);
+                }
+
+                using (BinaryWriter writer = new BinaryWriter(
+                    File.Open(scriptDir + "/" + resource.Scripts[x].Name, FileMode.Create)))
+                {
+                    writer.Write(resource.Scripts[x].Data);
+                }
+                resourceXML.WriteElementString("Name", resource.Scripts[x].Name);
+            }
+            resourceXML.WriteElementString("Version", entry.Version.ToString());
+            resourceXML.WriteEndElement(); //finish early.
+        }
+        public void ReadXMLEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string xmlDir)
+        {
+            resourceXML.WriteElementString("File", name);
+            XmlResource resource = new XmlResource();
+
+            try
+            {
+                string[] dirs = name.Split('/');
+                resource = new XmlResource();
+                resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+                string xmldir = xmlDir;
+                for (int z = 0; z != dirs.Length - 1; z++)
+                {
+                    xmldir += "/" + dirs[z];
+                    Directory.CreateDirectory(xmldir);
+                }
+                if (!resource.Unk3)
+                    File.WriteAllText(xmlDir + "/" + name + ".xml", resource.Content);
+                else
+                {
+                    using (BinaryWriter writer = new BinaryWriter(File.Open(xmlDir + "/" + name + ".xml", FileMode.Create)))
+                    {
+                        writer.Write(entry.Data);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR CONVERTING XML: " + ex.Message);
+            }
+            resourceXML.WriteElementString("XMLTag", resource.Tag);
+            resourceXML.WriteElementString("Unk1", Convert.ToByte(resource.Unk1).ToString());
+            resourceXML.WriteElementString("Unk3", Convert.ToByte(resource.Unk3).ToString());
+            resourceXML.WriteElementString("Version", entry.Version.ToString());
+            resourceXML.WriteEndElement(); //finish early.
+        }
+        public void ReadSoundEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string soundDir)
+        {
+            //Do resource first..
+            SoundResource resource = new SoundResource();
+            resource.Deserialize(entry.Data);
+            entry.Data = resource.Data;
+
+            string fileName = name + ".fsb";
+            string[] dirs = name.Split('/');
+
+            string sounddir = soundDir;
+            for (int z = 0; z != dirs.Length - 1; z++)
+            {
+                sounddir += "/" + dirs[z];
+                Directory.CreateDirectory(sounddir);
+            }
+            resourceXML.WriteElementString("File", fileName);
+        }
+        public void ReadMemEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string memDIR)
+        {
+            MemFileResource resource = new MemFileResource();
+            resource.Deserialize(entry.Data);
+            entry.Data = resource.Data;
+
+            string[] dirs = name.Split('/');
+
+            string memdir = memDIR;
+            for (int z = 0; z != dirs.Length - 1; z++)
+            {
+                memdir += "/" + dirs[z];
+                Directory.CreateDirectory(memdir);
+            }
+            resourceXML.WriteElementString("File", name);
+        }
+        public ResourceEntry ReadTableEntry(ResourceEntry entry, XmlWriter resourceXML, string name)
+        {
+            TableResource resource = new TableResource();
+            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+            //todo extract individual tables.
+            name = "Tables_" + ".tbl";
+            resourceXML.WriteElementString("File", name);
+            return entry;
         }
 
         private XmlNode AddRamElement(XmlDocument xmlDoc, string name, int num)
@@ -939,4 +958,5 @@ namespace Gibbed.Mafia2.FileFormats
             return node;
         }
     }
+    #endregion
 }

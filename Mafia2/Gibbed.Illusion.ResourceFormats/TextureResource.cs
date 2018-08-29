@@ -35,18 +35,18 @@ namespace Gibbed.Mafia2.ResourceFormats
     {
         public ulong NameHash;
         public byte Unknown8;
-        public byte Unknown9;
+        public byte HasMIP;
         public byte[] Data;
 
         public TextureResource()
         {
         }
 
-        public TextureResource(ulong hash, byte unk09, byte[] data)
+        public TextureResource(ulong hash, byte hasMIP, byte[] data)
         {
             NameHash = hash;
             Unknown8 = 0;
-            Unknown9 = unk09;
+            HasMIP = hasMIP;
             Data = data;
         }
 
@@ -56,7 +56,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             output.WriteValueU8(this.Unknown8);
             if (version == 2)
             {
-                output.WriteValueU8(this.Unknown9);
+                output.WriteValueU8(this.HasMIP);
             }
             output.WriteBytes(this.Data);
             Log.WriteLine("Packing: " + ToString());
@@ -65,7 +65,7 @@ namespace Gibbed.Mafia2.ResourceFormats
         public void SerializeMIP(ushort version, Stream output, Endian endian)
         {
             output.WriteValueU64(this.NameHash, endian);
-            output.WriteValueU8(this.Unknown9);
+            output.WriteValueU8(this.HasMIP);
             output.WriteBytes(this.Data);
             Log.WriteLine("Packing: " + ToString());
         }
@@ -74,9 +74,9 @@ namespace Gibbed.Mafia2.ResourceFormats
         {
             this.NameHash = input.ReadValueU64(endian);
             this.Unknown8 = input.ReadValueU8();
-            this.Unknown9 = input.ReadValueU8();
+            this.HasMIP = input.ReadValueU8();
 
-            if (this.Unknown9 != 0 && this.Unknown9 != 1)
+            if (this.HasMIP != 0 && this.HasMIP != 1)
             {
                 throw new InvalidOperationException();
             }
@@ -90,7 +90,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             this.NameHash = input.ReadValueU64(endian);
             this.Unknown8 = input.ReadValueU8();
 
-            if (this.Unknown9 != 0 && this.Unknown9 != 1)
+            if (this.HasMIP != 0 && this.HasMIP != 1)
             {
                 throw new InvalidOperationException();
             }
@@ -101,7 +101,7 @@ namespace Gibbed.Mafia2.ResourceFormats
 
         public override string ToString()
         {
-            return string.Format("Hash: {0}, Unk1: {1}, Unk2: {2}", NameHash, Unknown8, Unknown9);
+            return string.Format("Hash: {0}, Unk1: {1}, HasMIP: {2}", NameHash, Unknown8, HasMIP);
         }
     }
 }
