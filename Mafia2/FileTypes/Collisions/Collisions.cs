@@ -404,50 +404,41 @@ namespace Mafia2
                 if (num2 == 3)
                 {
                     num5 = reader.ReadInt32();
-                    if (num5 != nTriangles - 1)
+
+                    if (nTriangles < 256)
                     {
-                        if (nTriangles < 256)
-                        {
-                            unkData = new byte[nTriangles];
-                            for (int i = 0; i != nTriangles; i++)
-                                unkData[i] = reader.ReadByte();
-                        }
-                        else
-                        {
-                            unkBytes = new short[nTriangles];
-                            for (int i = 0; i != nTriangles; i++)
-                                unkBytes[i] = reader.ReadInt16();
-                        }
-                        overTri1 = true;
+                        unkData = new byte[nTriangles];
+                        for (int i = 0; i != nTriangles; i++)
+                            unkData[i] = reader.ReadByte();
                     }
                     else
                     {
-                        if (nTriangles < 256)
-                        {
-                            unkData = new byte[nTriangles];
-                            for (int i = 0; i != nTriangles; i++)
-                                unkData[i] = reader.ReadByte();
-                        }
-                        else
-                        {
-                            unkBytes = new short[nTriangles];
-                            for (int i = 0; i != nTriangles; i++)
-                                unkBytes[i] = reader.ReadInt16();
-                        }
+                        unkBytes = new short[nTriangles];
+                        for (int i = 0; i != nTriangles; i++)
+                            unkBytes[i] = reader.ReadInt16();
+                    }
+
+                    if(num5 != nTriangles - 1)
+                    {
+                        overTri1 = true;
                     }
                 }
+
 
                 unk0 = reader.ReadInt32();
                 unk1 = reader.ReadInt32();
 
-                for (int i = 0; i != sections.Length; i++)
-                    sections[i].EdgeData = reader.ReadBytes(sections[i].NumEdges);
-
-                if(overTri1)
+                if (overTri1)
                 {
-                    int count = num5 - nTriangles;
-                    count *= 3;
-                    reader.BaseStream.Position -= count;
+                    reader.BaseStream.Position += (nTriangles * 3);
+                    //int count = num5 - nTriangles;
+                    //count *= 3;
+                    //reader.BaseStream.Position -= count;
+                }
+                else
+                {
+                    for (int i = 0; i != sections.Length; i++)
+                        sections[i].EdgeData = reader.ReadBytes(sections[i].NumEdges);
                 }
 
                 opcSize = reader.ReadInt32();
@@ -486,7 +477,7 @@ namespace Mafia2
                 if (hbmOffset > 1)
                 {
                     if (hbmMaxOffset > 256)
-                        hbmOffsetData = reader.ReadBytes(hbmOffset * 2);
+                        hbmOffsetData = reader.ReadBytes(hbmOffset * 4);
                     else
                         hbmOffsetData = reader.ReadBytes(hbmOffset);
 

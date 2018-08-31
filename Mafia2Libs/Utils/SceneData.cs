@@ -19,6 +19,7 @@ namespace Mafia2Tool
         public static ItemDesc[] ItemDescs;
         public static Collision Collisions;
         public static CityAreas CityAreas;
+        public static CityShops CityShops;
         public static string ScenePath;
 
         public static void BuildData()
@@ -58,6 +59,8 @@ namespace Mafia2Tool
                     ids.Add(new ItemDesc(name));
                 else if (type == "FrameNameTable")
                     FrameNameTable = new FrameNameTable(name);
+                //else if ((type == "MemFile") && (name.Contains("cityshops")))
+                //    CityShops = new CityShops(name);
                 //else if (type == "Actors")
                 //    act.Add(new Actor(name));
                 //else if (type == "AudioSectors")

@@ -229,6 +229,24 @@ namespace Mafia2Tool
         }
 
         /// <summary>
+        /// Open a PATCH file from the FileInfo given.
+        /// </summary>
+        /// <param name="file"></param>
+        private void OpenPATCH(FileInfo file)
+        {
+            Log.WriteLine("Opening PATCH: " + file.Name);
+
+            infoText.Text = "Opening PATCH..";
+
+            PatchFile patch;
+            using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+            {
+                patch = new PatchFile();
+                patch.Deserialize(reader, Gibbed.IO.Endian.Little);
+            }
+        }
+
+        /// <summary>
         /// Check extension and return file type string.
         /// </summary>
         /// <param name="extension">extension of file.</param>
@@ -239,6 +257,8 @@ namespace Mafia2Tool
             {
                 case ".sds":
                     return "SDS Archive";
+                case ".patch":
+                    return "PATCH Archive";
                 case ".dds":
                     return "Direct-Draw Surface";
                 case ".exe":
@@ -309,10 +329,12 @@ namespace Mafia2Tool
                 mTool = new MaterialTool((FileInfo)item.Tag);
             else if (item.SubItems[1].Text == "SDS Archive")
                 OpenSDS((FileInfo)item.Tag);
+            //else if (item.SubItems[1].Text == "PATCH Archive")
+            //    OpenPATCH((FileInfo)item.Tag);
             else if (item.SubItems[1].Text == "FR")
                 fTool = new FrameResourceTool((FileInfo)item.Tag);
-            //else if (item.SubItems[1].Text == "COL")
-            //    cTool = new CollisionEditor((FileInfo)item.Tag);
+            else if (item.SubItems[1].Text == "COL")
+                cTool = new CollisionEditor((FileInfo)item.Tag);
         }
         private void ContextSDSPack_Click(object sender, EventArgs e)
         {

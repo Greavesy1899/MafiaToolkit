@@ -440,13 +440,13 @@ namespace Gibbed.Mafia2.FileFormats
                     }
 
                     resource = new TextureResource(FNV64.Hash(file), hasMIP, texData);
-                    //resourceEntry.SlotVramRequired = (uint)texData.Length - 128;
+                    resourceEntry.SlotVramRequired = (uint)texData.Length - 128;
 
                     if (hasMIP == 1)
                     {
                         using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/MIP_" + file, FileMode.Open)))
                         {
-                            //resourceEntry.SlotVramRequired += (uint)(reader.BaseStream.Length-128);
+                            resourceEntry.SlotVramRequired += (uint)(reader.BaseStream.Length-128);
                         }
                     }
 
@@ -799,7 +799,11 @@ namespace Gibbed.Mafia2.FileFormats
                         break;
                     case "MemFile":
                         ReadMemEntry(entry, resourceXML, itemNames[i], extractedPath + file.Name);
+                        saveName = itemNames[i];
                         break;
+                    case "Table":
+                        ReadTableEntry(entry, resourceXML, "");
+                        continue;
                     default:
                         MessageBox.Show("Found unknown type: " + ResourceTypes[(int)entry.TypeId].Name);
                         break;
