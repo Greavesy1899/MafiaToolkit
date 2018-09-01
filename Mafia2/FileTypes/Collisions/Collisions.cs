@@ -272,7 +272,6 @@ namespace Mafia2
             byte[] unkData;
 
             int unk1;
-            int unk2;
 
             private int opcSize; //possible.
             private int opcVersion; //1
@@ -288,74 +287,122 @@ namespace Mafia2
             private int hbmMaxRefValue;
             private short[] hbmRefs;
             private float[] hbmUnkFloats;
-            private float[] hbmUnkFloats2;
             private int unkSize;
             private byte[] unkSizeData;
 
             public Section[] sections;
 
-
-            public float UnkSmall
-            {
+            public float UnkSmall {
                 get { return unkSmall; }
                 set { unkSmall = value; }
             }
-
-            public int Num1
-            {
+            public int Num1 {
                 get { return num1; }
                 set { num1 = value; }
             }
-
-            public int Num2
-            {
+            public int Num2 {
                 get { return num2; }
                 set { num2 = value; }
             }
-
-            public int Num3
-            {
+            public int Num3 {
                 get { return num3; }
                 set { num3 = value; }
             }
-
-            public int Num4
-            {
+            public int Num4 {
                 get { return num4; }
                 set { num4 = value; }
             }
-
-            public Vector3[] Vertices
-            {
+            public Vector3[] Vertices {
                 get { return points; }
                 set { points = value; }
             }
-
-            public Int3[] Triangles
-            {
+            public Int3[] Triangles {
                 get { return triangles; }
                 set { triangles = value; }
             }
+            public CollisionMaterials[] Materials {
+                get { return unkShorts; }
+                set { unkShorts = value; }
+            }
 
             //TEST
-            public int Num5
-            {
+            public int Num5 {
                 get { return num5; }
                 set { num5 = value; }
             }
-
-            public byte[] UnkData
-            {
+            public byte[] UnkData {
                 get { return unkData; }
                 set { unkData = value; }
             }
-
-            public short[] UnkBytes
-            {
+            public short[] UnkBytes {
                 get { return unkBytes; }
                 set { unkBytes = value; }
             }
+            public int OPCSize {
+                get { return opcSize; }
+                set { opcSize = value; }
+            }
+            public int OPCVersion {
+                get { return opcVersion; }
+                set { opcVersion = value; }
+            }
+            public int OPCType {
+                get { return opcType; }
+                set { opcType = value; }
+            }
+            public int OPCCount {
+                get { return opcCount; }
+                set { opcCount = value; }
+            }
+            public UnkOPCData[] OPCData {
+                get { return opcData; }
+                set { opcData = value; }
+            }
+            public float[] OPCFloats {
+                get { return opcFloats; }
+                set { opcFloats = value; }
+            }
+            public int HBMVersion {
+                get { return hbmVersion; }
+                set { hbmVersion = value; }
+            }
+            public int HBMOffset {
+                get { return hbmOffset; }
+                set { hbmOffset = value; }
+            }
+            public int HBMMaxOffset {
+                get { return hbmMaxOffset; }
+                set { hbmMaxOffset = value; }
+            }
+            public byte[] HBMOffsetData {
+                get { return hbmOffsetData; }
+                set { hbmOffsetData = value; }
+            }
+            public int HBMNumRefs {
+                get { return hbmNumRefs; }
+                set { hbmNumRefs = value; }
+            }
+            public int HBMMaxRefValue {
+                get { return hbmMaxRefValue; }
+                set { hbmMaxRefValue = value; }
+            }
 
+            public short[] HBMRefs {
+                get { return hbmRefs; }
+                set { hbmRefs = value; }
+            }
+            public float[] HBMUnkFloats {
+                get { return hbmUnkFloats; }
+                set { hbmUnkFloats = value; }
+            }
+            public int UnkSize {
+                get { return unkSize; }
+                set { unkSize = value; }
+            }
+            public byte[] UnkSizeData {
+                get { return unkSizeData; }
+                set { unkSizeData = value; }
+            }
 
             public MeshData(BinaryReader reader, Section[] sections)
             {
@@ -364,7 +411,7 @@ namespace Mafia2
             }
             public MeshData()
             {
-                
+
             }
 
             public void ReadFromFile(BinaryReader reader)
@@ -405,7 +452,7 @@ namespace Mafia2
                 {
                     num5 = reader.ReadInt32();
 
-                    if (nTriangles < 256)
+                    if (nTriangles <= 256)
                     {
                         unkData = new byte[nTriangles];
                         for (int i = 0; i != nTriangles; i++)
@@ -418,7 +465,7 @@ namespace Mafia2
                             unkBytes[i] = reader.ReadInt16();
                     }
 
-                    if(num5 != nTriangles - 1)
+                    if (num5 != nTriangles - 1)
                     {
                         overTri1 = true;
                     }
@@ -471,12 +518,11 @@ namespace Mafia2
                 hbmOffset = reader.ReadInt32();
                 hbmMaxOffset = reader.ReadInt32(); //max num in offset;
 
-                if (hbmMaxOffset > 256)
-                    Console.WriteLine("HBM MAXOFFSET IS ABOVE 256");
-
                 if (hbmOffset > 1)
                 {
-                    if (hbmMaxOffset > 256)
+                    if (hbmMaxOffset > byte.MaxValue && hbmMaxOffset < ushort.MaxValue)
+                        hbmOffsetData = reader.ReadBytes(hbmOffset * 2);
+                    else if (hbmMaxOffset > ushort.MaxValue)
                         hbmOffsetData = reader.ReadBytes(hbmOffset * 4);
                     else
                         hbmOffsetData = reader.ReadBytes(hbmOffset);
@@ -525,14 +571,14 @@ namespace Mafia2
                     triangles[i].WriteToFile(writer);
 
                 for (int i = 0; i != unkShorts.Length; i++)
-                    writer.Write((short) CollisionMaterials.Plaster);
+                    writer.Write((short)CollisionMaterials.Plaster);
 
                 if (num2 == 3)
                 {
                     writer.Write(num5);
                     if (num5 != nTriangles - 1)
                     {
-                        if (nTriangles < 256)
+                        if (nTriangles <= 256)
                         {
                             writer.Write(unkData);
                         }
@@ -544,15 +590,7 @@ namespace Mafia2
                     }
                     else
                     {
-                        if (nTriangles < 256)
-                        {
-                            writer.Write(unkData);
-                        }
-                        else
-                        {
-                            for (int i = 0; i != nTriangles; i++)
-                                writer.Write(unkBytes[i]);
-                        }
+                        throw new NotImplementedException("Does not support unique collision");
                     }
                 }
 
@@ -589,6 +627,19 @@ namespace Mafia2
                 if (hbmOffset > 1)
                 {
                     writer.Write(hbmOffsetData);
+
+                    //if (hbmMaxOffset > byte.MaxValue && hbmMaxOffset < ushort.MaxValue)
+                    //{
+                    //    writer.Write(hbmOffsetData);
+                    //}
+                    //else if (hbmMaxOffset > ushort.MaxValue)
+                    //{
+                    //    hbmOffsetData = reader.ReadBytes(hbmOffset * 4);
+                    //}
+                    //else
+                    //{
+                    //    hbmOffsetData = reader.ReadBytes(hbmOffset);
+                    //}
 
                     writer.Write(hbmNumRefs);
                     if (hbmNumRefs != 0)
@@ -771,7 +822,7 @@ namespace Mafia2
                     unkSizeData[i] = 26;
             }
 
-            private struct UnkOPCData
+            public struct UnkOPCData
             {
                 private short[] unkHalfs;
                 private int unkInt;

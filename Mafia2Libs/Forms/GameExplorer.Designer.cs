@@ -58,11 +58,11 @@ namespace Mafia2Tool
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dropdownView = new System.Windows.Forms.ToolStripDropDownButton();
             this.dropdownTools = new System.Windows.Forms.ToolStripDropDownButton();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bottomContainer = new System.Windows.Forms.ToolStripContainer();
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -184,11 +184,11 @@ namespace Mafia2Tool
             // textStripSearch
             // 
             this.textStripSearch.AutoSize = false;
-            this.textStripSearch.Enabled = false;
             this.textStripSearch.Name = "textStripSearch";
             this.textStripSearch.Size = new System.Drawing.Size(200, 23);
             this.textStripSearch.Text = "Search..";
             this.textStripSearch.ToolTipText = "Search";
+            this.textStripSearch.TextChanged += new System.EventHandler(this.SearchBarOnTextChanged);
             // 
             // fileListView
             // 
@@ -347,6 +347,13 @@ namespace Mafia2Tool
             this.dropdownTools.Size = new System.Drawing.Size(48, 19);
             this.dropdownTools.Text = "Tools";
             // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.optionsToolStripMenuItem.Text = "Options";
+            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
+            // 
             // bottomContainer
             // 
             this.bottomContainer.BottomToolStripPanelVisible = false;
@@ -384,13 +391,6 @@ namespace Mafia2Tool
             // MafiaIIBrowser
             // 
             this.MafiaIIBrowser.Description = "Select your MafiaII folder. The folder should contain \"launcher.exe\"";
-            // 
-            // optionsToolStripMenuItem
-            // 
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.optionsToolStripMenuItem.Text = "Options";
-            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
             // GameExplorer
             // 

@@ -114,10 +114,10 @@ namespace Mafia2Tool
 
         private void OnClose(object sender, FormClosingEventArgs e)
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Create(SceneData.Collisions.name)))
-            {
-                SceneData.Collisions.WriteToFile(writer);
-            }
+            //using (BinaryWriter writer = new BinaryWriter(File.Create(SceneData.Collisions.name)))
+            //{
+            //    SceneData.Collisions.WriteToFile(writer);
+            //}
             SceneData.CleanData();
         }
     }

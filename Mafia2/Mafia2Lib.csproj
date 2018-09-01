@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="FileTypes\Animations\Animation2.cs" />
     <Compile Include="FileTypes\FrameResource\FrameEntry.cs" />
+    <Compile Include="FileTypes\MiscTypes\AnimatedTexture.cs" />
     <Compile Include="FileTypes\MiscTypes\CityShops.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\IResourceType.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\MemFileResource.cs" />

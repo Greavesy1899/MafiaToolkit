@@ -110,7 +110,7 @@ namespace Mafia2Tool
         /// Clears listView1 and displays the current directory.
         /// </summary>
         /// <param name="directory">directory to show</param>
-        private void OpenDirectory(DirectoryInfo directory)
+        private void OpenDirectory(DirectoryInfo directory, bool searchMode = false, string filename = null)
         {
             infoText.Text = "Loading Directory..";
             fileListView.Items.Clear();
@@ -119,6 +119,12 @@ namespace Mafia2Tool
 
             foreach (DirectoryInfo dir in directory.GetDirectories())
             {
+                if (searchMode && !string.IsNullOrEmpty(filename))
+                {
+                    if (!dir.Name.Contains(filename))
+                        continue;
+                }
+
                 item = new ListViewItem(dir.Name, 0);
                 item.Tag = dir;
                 subItems = new ListViewItem.ListViewSubItem[]
@@ -134,6 +140,12 @@ namespace Mafia2Tool
 
             foreach (FileInfo file in directory.GetFiles())
             {
+                if(searchMode && !string.IsNullOrEmpty(filename))
+                {
+                    if (!file.Name.Contains(filename))
+                        continue;
+                }
+
                 item = new ListViewItem(file.Name, DetermineFileIcon(file.Extension));
                 item.Tag = file;
 
@@ -422,6 +434,11 @@ namespace Mafia2Tool
         {
             OptionsForm options = new OptionsForm();
             options.ShowDialog();
+        }
+
+        private void SearchBarOnTextChanged(object sender, EventArgs e)
+        {
+            OpenDirectory(currentDirectory, true, textStripSearch.Text);
         }
     }
 }

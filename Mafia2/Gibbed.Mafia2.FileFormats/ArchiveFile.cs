@@ -804,6 +804,9 @@ namespace Gibbed.Mafia2.FileFormats
                     case "Table":
                         ReadTableEntry(entry, resourceXML, "");
                         continue;
+                    case "Animated Texture":
+                        saveName = ReadBasicEntry(resourceXML, itemNames[i]);
+                        break;
                     default:
                         MessageBox.Show("Found unknown type: " + ResourceTypes[(int)entry.TypeId].Name);
                         break;
