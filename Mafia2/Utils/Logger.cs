@@ -18,6 +18,9 @@ namespace Mafia2
 
         public static void CreateFile(bool append = false)
         {
+            if (!LoggingEnabled)
+                return;
+
             if (!File.Exists(LogPath))
             {
                 WriteLine("Debugging has started.");
@@ -30,6 +33,9 @@ namespace Mafia2
         }
         public static void WriteLine(string text, LoggingTypes type = LoggingTypes.MESSAGE, bool append = true)
         {
+            if (!LoggingEnabled)
+                return;
+
             using (StreamWriter Writer = new StreamWriter(LogPath, append, Encoding.UTF8))
             {
 

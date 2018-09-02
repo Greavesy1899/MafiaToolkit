@@ -33,18 +33,21 @@ namespace Mafia2
             bonePos[0] = Half.ToHalf(reader.ReadBytes(2), 0);
             bonePos[1] = Half.ToHalf(reader.ReadBytes(2), 0);
             bonePos[2] = Half.ToHalf(reader.ReadBytes(2), 0);
-            unk1 = reader.ReadByte();
+            unk1 = reader.ReadByte(); //usually 3
             traceBone = reader.ReadInt64();
 
             //if (traceBone != 0 || traceBone != 1000)
             //    throw new FormatException("Error, traceBone isn't 0 or 1000");
 
             unkS1 = reader.ReadInt16();
-
+            reader.ReadBytes(3); //usually 1 0 0;
             //if unkS2 and unkS3 is 0, then thats EOF.
-            unkS2 = reader.ReadInt16();
-            unkS3 = reader.ReadInt16();
-            boneMatrix = new TransformMatrix(reader);
+            unkS2 = reader.ReadInt16(); //must be counts
+            unkS3 = reader.ReadInt16(); //must be counts
+            //boneMatrix = new TransformMatrix(reader);
+
+            long boneID = reader.ReadInt64();
+
         }
     }
 }

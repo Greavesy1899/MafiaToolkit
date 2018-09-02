@@ -1,4 +1,5 @@
 ﻿using System;
+using Mafia2;
 using System.Windows.Forms;
 
 namespace Mafia2Tool
@@ -32,6 +33,7 @@ namespace Mafia2Tool
         private static long ElapsedTime;
         private static DiscordController controller;
         public const string DiscordLibLocation = "libs/discord-rpc";
+        public static bool LoggingEnabled;
 
         /// <summary>
         /// Read and store settings.
@@ -53,11 +55,12 @@ namespace Mafia2Tool
             float.TryParse(ReadKey("ScreenNear", "ModelViewer", "10"), out ScreenNear);
             int.TryParse(ReadKey("Width", "ModelViewer", "1024"), out Width);
             int.TryParse(ReadKey("Height", "ModelViewer", "768"), out Height);
+            bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
 
             BorderStyle = 1; //FixedSingle
             ShaderPath = @"Shaders\";
             DataPath = @"Data\";
-
+            Log.LoggingEnabled = LoggingEnabled;
 
             if (DiscordEnabled)
                 InitRichPresence();

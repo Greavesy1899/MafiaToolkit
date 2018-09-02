@@ -22,14 +22,22 @@ namespace Mafia2Tool
             ToolkitSettings.UpdateRichPresence("Using the Material Library editor.");
         }
 
-        public void FetchMaterials()
+        public void FetchMaterials(bool searchMode = false, string text = null)
         {
             MaterialListBox.Items.Clear();
-            Dictionary<ulong, string> hashes = new Dictionary<ulong, string>();
             foreach (Material mat in materials)
             {
-                hashes.Add(mat.MaterialHash, mat.MaterialName);
-                MaterialListBox.Items.Add(mat);
+                if (!string.IsNullOrEmpty(text) && searchMode)
+                {
+                    if (mat.MaterialName.Contains(text) || mat.MaterialHash.ToString().Contains(text))
+                        MaterialListBox.Items.Add(mat);
+                    else
+                        continue;
+                }
+                else
+                {
+                    MaterialListBox.Items.Add(mat);
+                }
             }
         }
 
@@ -72,7 +80,6 @@ namespace Mafia2Tool
         private void SaveButton_Click(object sender, EventArgs e)
         {
             MaterialsManager.WriteMatFile(name, materials.ToArray());
-            MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void AddMaterial(object sender, EventArgs e)
@@ -80,6 +87,11 @@ namespace Mafia2Tool
             Material mat = new Material();
             materials.Add(mat);
             FetchMaterials();
+        }
+
+        private void MaterialSearch_TextChanged(object sender, EventArgs e)
+        {
+            FetchMaterials(true, MaterialSearch.Text);
         }
     }
 }

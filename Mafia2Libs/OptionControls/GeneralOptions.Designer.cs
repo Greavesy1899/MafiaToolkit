@@ -35,10 +35,11 @@
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.groupBoxSplitter = new System.Windows.Forms.SplitContainer();
             this.groupDiscordRPC = new System.Windows.Forms.GroupBox();
-            this.DiscordEnabledCheckBox = new System.Windows.Forms.CheckBox();
-            this.DiscordDetailsCheckBox = new System.Windows.Forms.CheckBox();
-            this.DiscordStateCheckBox = new System.Windows.Forms.CheckBox();
             this.DiscordElapsedCheckBox = new System.Windows.Forms.CheckBox();
+            this.DiscordStateCheckBox = new System.Windows.Forms.CheckBox();
+            this.DiscordDetailsCheckBox = new System.Windows.Forms.CheckBox();
+            this.DiscordEnabledCheckBox = new System.Windows.Forms.CheckBox();
+            this.debugLoggingCheckbox = new System.Windows.Forms.CheckBox();
             this.groupGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.groupBoxSplitter)).BeginInit();
             this.groupBoxSplitter.Panel1.SuspendLayout();
@@ -49,6 +50,7 @@
             // 
             // groupGeneral
             // 
+            this.groupGeneral.Controls.Add(this.debugLoggingCheckbox);
             this.groupGeneral.Controls.Add(this.browseButton);
             this.groupGeneral.Controls.Add(this.M2DirectoryBox);
             this.groupGeneral.Controls.Add(this.M2Label);
@@ -123,27 +125,16 @@
             this.groupDiscordRPC.TabStop = false;
             this.groupDiscordRPC.Text = "Discord Rich Presence";
             // 
-            // DiscordEnabledCheckBox
+            // DiscordElapsedCheckBox
             // 
-            this.DiscordEnabledCheckBox.AutoSize = true;
-            this.DiscordEnabledCheckBox.Location = new System.Drawing.Point(7, 19);
-            this.DiscordEnabledCheckBox.Name = "DiscordEnabledCheckBox";
-            this.DiscordEnabledCheckBox.Size = new System.Drawing.Size(138, 17);
-            this.DiscordEnabledCheckBox.TabIndex = 0;
-            this.DiscordEnabledCheckBox.Text = "Rich Presence Enabled";
-            this.DiscordEnabledCheckBox.UseVisualStyleBackColor = true;
-            this.DiscordEnabledCheckBox.CheckedChanged += new System.EventHandler(this.DiscordEnabledCheckBox_CheckedChanged);
-            // 
-            // DiscordDetailsCheckBox
-            // 
-            this.DiscordDetailsCheckBox.AutoSize = true;
-            this.DiscordDetailsCheckBox.Location = new System.Drawing.Point(7, 42);
-            this.DiscordDetailsCheckBox.Name = "DiscordDetailsCheckBox";
-            this.DiscordDetailsCheckBox.Size = new System.Drawing.Size(100, 17);
-            this.DiscordDetailsCheckBox.TabIndex = 1;
-            this.DiscordDetailsCheckBox.Text = "Details Enabled";
-            this.DiscordDetailsCheckBox.UseVisualStyleBackColor = true;
-            this.DiscordDetailsCheckBox.CheckedChanged += new System.EventHandler(this.DiscordDetailsCheckBox_CheckedChanged);
+            this.DiscordElapsedCheckBox.AutoSize = true;
+            this.DiscordElapsedCheckBox.Location = new System.Drawing.Point(6, 88);
+            this.DiscordElapsedCheckBox.Name = "DiscordElapsedCheckBox";
+            this.DiscordElapsedCheckBox.Size = new System.Drawing.Size(132, 17);
+            this.DiscordElapsedCheckBox.TabIndex = 3;
+            this.DiscordElapsedCheckBox.Text = "Elapsed Time Enabled";
+            this.DiscordElapsedCheckBox.UseVisualStyleBackColor = true;
+            this.DiscordElapsedCheckBox.CheckedChanged += new System.EventHandler(this.DiscordElapsedCheckBox_CheckedChanged);
             // 
             // DiscordStateCheckBox
             // 
@@ -156,16 +147,38 @@
             this.DiscordStateCheckBox.UseVisualStyleBackColor = true;
             this.DiscordStateCheckBox.CheckedChanged += new System.EventHandler(this.DiscordStateCheckBox_CheckedChanged);
             // 
-            // DiscordElapsedCheckBox
+            // DiscordDetailsCheckBox
             // 
-            this.DiscordElapsedCheckBox.AutoSize = true;
-            this.DiscordElapsedCheckBox.Location = new System.Drawing.Point(6, 88);
-            this.DiscordElapsedCheckBox.Name = "DiscordElapsedCheckBox";
-            this.DiscordElapsedCheckBox.Size = new System.Drawing.Size(132, 17);
-            this.DiscordElapsedCheckBox.TabIndex = 3;
-            this.DiscordElapsedCheckBox.Text = "Elapsed Time Enabled";
-            this.DiscordElapsedCheckBox.UseVisualStyleBackColor = true;
-            this.DiscordElapsedCheckBox.CheckedChanged += new System.EventHandler(this.DiscordElapsedCheckBox_CheckedChanged);
+            this.DiscordDetailsCheckBox.AutoSize = true;
+            this.DiscordDetailsCheckBox.Location = new System.Drawing.Point(7, 42);
+            this.DiscordDetailsCheckBox.Name = "DiscordDetailsCheckBox";
+            this.DiscordDetailsCheckBox.Size = new System.Drawing.Size(100, 17);
+            this.DiscordDetailsCheckBox.TabIndex = 1;
+            this.DiscordDetailsCheckBox.Text = "Details Enabled";
+            this.DiscordDetailsCheckBox.UseVisualStyleBackColor = true;
+            this.DiscordDetailsCheckBox.CheckedChanged += new System.EventHandler(this.DiscordDetailsCheckBox_CheckedChanged);
+            // 
+            // DiscordEnabledCheckBox
+            // 
+            this.DiscordEnabledCheckBox.AutoSize = true;
+            this.DiscordEnabledCheckBox.Location = new System.Drawing.Point(7, 19);
+            this.DiscordEnabledCheckBox.Name = "DiscordEnabledCheckBox";
+            this.DiscordEnabledCheckBox.Size = new System.Drawing.Size(138, 17);
+            this.DiscordEnabledCheckBox.TabIndex = 0;
+            this.DiscordEnabledCheckBox.Text = "Rich Presence Enabled";
+            this.DiscordEnabledCheckBox.UseVisualStyleBackColor = true;
+            this.DiscordEnabledCheckBox.CheckedChanged += new System.EventHandler(this.DiscordEnabledCheckBox_CheckedChanged);
+            // 
+            // debugLoggingCheckbox
+            // 
+            this.debugLoggingCheckbox.AutoSize = true;
+            this.debugLoggingCheckbox.Location = new System.Drawing.Point(7, 63);
+            this.debugLoggingCheckbox.Name = "debugLoggingCheckbox";
+            this.debugLoggingCheckbox.Size = new System.Drawing.Size(129, 17);
+            this.debugLoggingCheckbox.TabIndex = 4;
+            this.debugLoggingCheckbox.Text = "Enable debug logging";
+            this.debugLoggingCheckbox.UseVisualStyleBackColor = true;
+            this.debugLoggingCheckbox.CheckedChanged += new System.EventHandler(this.DebugLoggingCheckBox_CheckedChanged);
             // 
             // GeneralOptions
             // 
@@ -199,5 +212,6 @@
         private System.Windows.Forms.CheckBox DiscordElapsedCheckBox;
         private System.Windows.Forms.CheckBox DiscordStateCheckBox;
         private System.Windows.Forms.CheckBox DiscordDetailsCheckBox;
+        private System.Windows.Forms.CheckBox debugLoggingCheckbox;
     }
 }

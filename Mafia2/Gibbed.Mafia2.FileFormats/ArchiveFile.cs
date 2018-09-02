@@ -776,7 +776,7 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = ReadBasicEntry(resourceXML, "Translokator_" + i + ".tra");
                         break;
                     case "Animation2":
-                        saveName = ReadBasicEntry(resourceXML, "FxAnimSet_" + i + ".fas");
+                        saveName = ReadBasicEntry(resourceXML, itemNames[i] + ".an2");
                         break;
                     case "NAV_AIWORLD_DATA":
                         saveName = ReadBasicEntry(resourceXML, "NAV_AIWORLD_DATA_" + i + ".nav");

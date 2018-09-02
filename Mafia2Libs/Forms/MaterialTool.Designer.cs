@@ -45,6 +45,7 @@
             this.MaterialSearch.Name = "MaterialSearch";
             this.MaterialSearch.Size = new System.Drawing.Size(207, 20);
             this.MaterialSearch.TabIndex = 0;
+            this.MaterialSearch.TextChanged += new System.EventHandler(this.MaterialSearch_TextChanged);
             this.MaterialSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
             // 
             // MaterialListBox

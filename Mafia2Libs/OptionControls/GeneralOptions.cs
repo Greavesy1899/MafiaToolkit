@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mafia2;
+using System;
 using System.Windows.Forms;
 
 namespace Mafia2Tool.OptionControls
@@ -21,6 +22,7 @@ namespace Mafia2Tool.OptionControls
             DiscordDetailsCheckBox.Checked = ToolkitSettings.DiscordDetailsEnabled;
             DiscordStateCheckBox.Checked = ToolkitSettings.DiscordStateEnabled;
             DiscordElapsedCheckBox.Checked = ToolkitSettings.DiscordElapsedTimeEnabled;
+            debugLoggingCheckbox.Checked = ToolkitSettings.LoggingEnabled;
         }
 
         private void BrowseButton_Click(object sender, EventArgs e)
@@ -70,6 +72,13 @@ namespace Mafia2Tool.OptionControls
             ToolkitSettings.DiscordElapsedTimeEnabled = DiscordElapsedCheckBox.Checked;
             ToolkitSettings.WriteKey("ElapsedTimeEnabled", "Discord", DiscordElapsedCheckBox.Checked.ToString());
             ToolkitSettings.UpdateRichPresence();
+        }
+
+        private void DebugLoggingCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.LoggingEnabled = debugLoggingCheckbox.Checked;
+            ToolkitSettings.WriteKey("Logging", "Misc", debugLoggingCheckbox.Checked.ToString());
+            Log.LoggingEnabled = debugLoggingCheckbox.Checked;
         }
     }
 }

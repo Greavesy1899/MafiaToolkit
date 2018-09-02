@@ -10,14 +10,8 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
-            using (BinaryReader reader = new BinaryReader(File.Open("D:/Users/Connor/Desktop/SteamLibrary/steamapps/common/Mafia II/pc/sds/city/extracted/midtown.sds/08mid_neon02e.ifl", FileMode.Open)))
-            {
-                AnimatedTexture texture = new AnimatedTexture(reader);
-            }
-
-                //setup logger.
-                Log.DeleteOldLog();
-            Log.WriteLine("Toolkit has launched.");
+            //setup logger.
+            Log.DeleteOldLog();
 
             //do vital inits;
             CheckINIExists();
