@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using Assimp;
 using System.IO;
 
 namespace Mafia2
@@ -484,15 +484,19 @@ namespace Mafia2
         /// </summary>
         public void CalculateDecompression()
         {
-            Bounds bounds = frameMesh.Boundings;
-
             float minFloatf = 0.000016f;
-            Vector3 minFloat = new Vector3(minFloatf);
-            bounds.Min -= minFloat;
-            bounds.Max += minFloat;
+            Vector3 minFloat = new Vector3(0.000016f);
+
+            Bounds bounds = new Bounds();
+            bounds.Min = frameMesh.Boundings.Min/* - minFloat*/;
+            bounds.Max = frameMesh.Boundings.Max/* + minFloat*/;
 
             frameGeometry.DecompressionOffset = bounds.Min;
-            float fMaxSize = Math.Max(bounds.Max.X - bounds.Min.X + minFloatf, Math.Max(bounds.Max.Y - bounds.Min.Y + minFloatf, (bounds.Max.Z - bounds.Min.Y + minFloatf) * 2.0f));
+            float MaxX = bounds.Max.X - bounds.Min.X;
+            float MaxY = bounds.Max.Y - bounds.Min.Y;
+            float MaxZ = bounds.Max.Z - bounds.Min.Z;
+
+            float fMaxSize = Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
 
             frameGeometry.DecompressionFactor = fMaxSize / 0x10000;
             //frameGeometry.DecompressionFactor = (float)256 / 0x10000;

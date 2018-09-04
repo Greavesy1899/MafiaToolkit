@@ -10,6 +10,7 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
+
             //setup logger.
             Log.DeleteOldLog();
 

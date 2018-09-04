@@ -24,9 +24,14 @@ namespace Mafia2
             }
             return index;
         }
-        public static string ReadStringShort(BinaryReader reader)
+        public static string ReadString16(BinaryReader reader)
         {
             short size = reader.ReadInt16();
+            return new string(reader.ReadChars(size));
+        }
+        public static string ReadString32(BinaryReader reader)
+        {
+            int size = reader.ReadInt32();
             return new string(reader.ReadChars(size));
         }
     }

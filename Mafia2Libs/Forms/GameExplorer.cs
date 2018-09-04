@@ -273,6 +273,8 @@ namespace Mafia2Tool
                     return "PATCH Archive";
                 case ".dds":
                     return "Direct-Draw Surface";
+                case ".spe":
+                    return "Speech Data";
                 case ".exe":
                     return "Executable";
                 case ".dll":
@@ -334,11 +336,15 @@ namespace Mafia2Tool
             MaterialTool mTool;
             FrameResourceTool fTool;
             CollisionEditor cTool;
+            //TODO: Build editor for speech.
+            Speech speech;
 
             if (item.SubItems[1].Text == "Directory")
                 OpenDirectory((DirectoryInfo)item.Tag);
             else if (item.SubItems[1].Text == "Material Library")
                 mTool = new MaterialTool((FileInfo)item.Tag);
+            else if (item.SubItems[1].Text == "Speech Data")
+                speech = new Speech((FileInfo)item.Tag);
             else if (item.SubItems[1].Text == "SDS Archive")
                 OpenSDS((FileInfo)item.Tag);
             //else if (item.SubItems[1].Text == "PATCH Archive")

@@ -18,7 +18,7 @@ namespace Mafia2
         public void ReadFromFile(BinaryReader reader)
         {
             fileHash = reader.ReadUInt64();
-            fileName = Functions.ReadStringShort(reader);
+            fileName = Functions.ReadString16(reader);
             unk0 = reader.ReadInt32();
             textureCount = reader.ReadInt32();
 
@@ -57,7 +57,7 @@ namespace Mafia2
             public void ReadFromFile(BinaryReader reader)
             {
                 hash = reader.ReadUInt64();
-                name = Functions.ReadStringShort(reader);
+                name = Functions.ReadString16(reader);
                 flag = reader.ReadInt16();
             }
 
