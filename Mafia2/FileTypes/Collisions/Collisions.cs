@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Security.Permissions;
+using System.Linq;
 
 namespace Mafia2
 {
@@ -15,11 +15,11 @@ namespace Mafia2
        List<Placement> placementData;
 
         int count2;
-        List<NXSStruct> nxsData;
+        Dictionary<ulong, NXSStruct> nxsData;
 
         public string name;
 
-        public List<NXSStruct> NXSData
+        public Dictionary<ulong, NXSStruct> NXSData
         {
             get { return nxsData; }
             set { nxsData = value; }
@@ -57,11 +57,12 @@ namespace Mafia2
             }
 
             count2 = reader.ReadInt32();
-            nxsData = new List<NXSStruct>(count2);
+            nxsData = new Dictionary<ulong, NXSStruct>();
 
             for (int i = 0; i != count2; i++)
             {
-                nxsData.Add(new NXSStruct(reader));
+                NXSStruct data = new NXSStruct(reader);
+                nxsData.Add(data.Hash, data);
             }
 
         }
@@ -76,7 +77,7 @@ namespace Mafia2
 
             writer.Write(nxsData.Count);
             for (int i = 0; i != nxsData.Count; i++)
-                nxsData[i].WriteToFile(writer);
+                nxsData.ElementAt(i).Value.WriteToFile(writer);
         }
 
         public override string ToString()
@@ -561,6 +562,7 @@ namespace Mafia2
                 writer.Write(unkSmall);
                 writer.Write(num3);
                 writer.Write(num4);
+
                 writer.Write(nPoints);
                 writer.Write(nTriangles);
 
@@ -573,33 +575,41 @@ namespace Mafia2
                 for (int i = 0; i != unkShorts.Length; i++)
                     writer.Write((short)CollisionMaterials.Plaster);
 
+                bool overTri1 = false;
+
                 if (num2 == 3)
                 {
                     writer.Write(num5);
-                    if (num5 != nTriangles - 1)
+                    if(nTriangles <= 256)
                     {
-                        if (nTriangles <= 256)
-                        {
-                            writer.Write(unkData);
-                        }
-                        else
-                        {
-                            for (int i = 0; i != nTriangles; i++)
-                                writer.Write(unkBytes[i]);
-                        }
+                        writer.Write(unkData);
                     }
                     else
                     {
-                        throw new NotImplementedException("Does not support unique collision");
+                        foreach (short s in UnkData)
+                            writer.Write(s);
+                    }
+
+                    if (num5 != nTriangles - 1)
+                    {
+                        overTri1 = true;
                     }
                 }
 
                 writer.Write(unk0);
                 writer.Write(unk1);
 
-                //sections for 2 is 186811
-                for (int i = 0; i != sections.Length; i++)
-                    writer.Write(sections[i].EdgeData);
+                if(overTri1)
+                {
+                    byte[] junkbytes = new byte[nTriangles * 3];
+                    writer.Write(junkbytes);
+                }
+                else
+                {
+                    //sections for 2 is 186811
+                    for (int i = 0; i != sections.Length; i++)
+                        writer.Write(sections[i].EdgeData);
+                }
 
                 writer.Write(opcSize);
 
@@ -627,21 +637,8 @@ namespace Mafia2
                 if (hbmOffset > 1)
                 {
                     writer.Write(hbmOffsetData);
-
-                    //if (hbmMaxOffset > byte.MaxValue && hbmMaxOffset < ushort.MaxValue)
-                    //{
-                    //    writer.Write(hbmOffsetData);
-                    //}
-                    //else if (hbmMaxOffset > ushort.MaxValue)
-                    //{
-                    //    hbmOffsetData = reader.ReadBytes(hbmOffset * 4);
-                    //}
-                    //else
-                    //{
-                    //    hbmOffsetData = reader.ReadBytes(hbmOffset);
-                    //}
-
                     writer.Write(hbmNumRefs);
+
                     if (hbmNumRefs != 0)
                         throw new NotImplementedException();
                 }
@@ -656,15 +653,9 @@ namespace Mafia2
             public int GetMeshSize()
             {
                 int size = 0;
-                size += 4;
-                size += 4;
-                size += 4;
-                size += 4;
-                size += 4;
-                size += 4;
-                size += 4;
-                size += 4;
-                size += 4;
+
+                //header data is 32 bytes long;
+                size += 36;
 
                 for (int i = 0; i != points.Length; i++)
                     size += 12;
@@ -675,48 +666,44 @@ namespace Mafia2
                 for (int i = 0; i != unkShorts.Length; i++)
                     size += 2;
 
+                bool overTri1 = false;
+
                 if (num2 == 3)
                 {
                     size += 4;
                     if (num5 != nTriangles - 1)
                     {
-                        if (nTriangles < 256)
+                        if (nTriangles <= 256)
                         {
                             size += unkData.Length;
                         }
                         else
                         {
-                            for (int i = 0; i != nTriangles; i++)
-                                size += 2;
+                            size += (unkBytes.Length*2); //unkbytes is 'short' array;
                         }
-                    }
-                    else
-                    {
-                        if (nTriangles < 256)
+
+                        if (num5 != nTriangles - 1)
                         {
-                            size += unkData.Length;
-                        }
-                        else
-                        {
-                            for (int i = 0; i != nTriangles; i++)
-                                size += 2;
+                            overTri1 = true;
                         }
                     }
                 }
 
-                size += 4;
-                size += 4;
+                //unk0 and unk1;
+                size += 8;
 
-                for (int i = 0; i != sections.Length; i++)
-                    size += sections[i].NumEdges;
+                if (overTri1)
+                {
+                    size += (nTriangles * 3);
+                }
+                else
+                {
+                    for (int i = 0; i != sections.Length; i++)
+                        size += sections[i].NumEdges;
+                }
 
-                size += 4;
-
-                //BEGIN OPC/HBM SECTION.
-                size += 4;
-
-                size += 4;
-                size += 4;
+                //size, opc header, opc version and type.
+                size += 16;
 
                 if (opcType == 3)
                 {
@@ -729,10 +716,8 @@ namespace Mafia2
                         size += 4;
                 }
 
-                size += 4;
-                size += 4;
-                size += 4;
-                size += 4;
+                //HBM header, version, offset and maxoffset;
+                size += 16;
 
                 if (hbmOffset > 1)
                 {

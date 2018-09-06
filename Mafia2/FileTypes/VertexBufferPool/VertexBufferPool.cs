@@ -65,6 +65,19 @@ namespace Mafia2
         }
 
         /// <summary>
+        /// Remove buffer if found.
+        /// </summary>
+        /// <param name="buffer"></param>
+        public void RemoveBuffer(VertexBuffer buffer)
+        {
+            for (int i = 0; i != bufferPools.Length; i++)
+            {
+                if (bufferPools[i].Buffers.Remove(buffer.Hash))
+                    return;
+            }
+        }
+
+        /// <summary>
         /// Read files which are passed through constructor.
         /// </summary>
         public void ReadFiles()

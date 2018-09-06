@@ -44,6 +44,7 @@ namespace Mafia2
             Rows[2, 0] = 0;
             Rows[2, 1] = 0;
             Rows[2, 2] = 1;
+            Euler = ToEuler();
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using Mafia2;
 
@@ -6,25 +8,35 @@ namespace Mafia2Tool
 {
     public partial class CollisionEditor : Form
     {
+        private FileInfo collisionFile;
+
         public CollisionEditor(FileInfo file)
         {
             InitializeComponent();
-            CheckCollision(file);
+            collisionFile = file;
+            CheckCollision();
             ShowDialog();
             ToolkitSettings.UpdateRichPresence("Using the Collision editor.");
         }
 
-        public void CheckCollision(FileInfo file)
+        /// <summary>
+        /// make sure collisions can load; and then proceed.
+        /// </summary>
+        public void CheckCollision()
         {
-            SceneData.Collisions = new Collision(file.FullName);
+            SceneData.Collisions = new Collision(collisionFile.FullName);
             LoadInCollision();
         }
 
+        /// <summary>
+        /// Insert all collisions into the editor.
+        /// </summary>
         public void LoadInCollision()
         {
+            treeView1.Nodes.Clear();
             for (int i = 0; i != SceneData.Collisions.NXSData.Count; i++)
             {
-                Collision.NXSStruct nxsData = SceneData.Collisions.NXSData[i];
+                Collision.NXSStruct nxsData = SceneData.Collisions.NXSData.ElementAt(i).Value;
 
                 TreeNode node = new TreeNode(nxsData.Hash.ToString());
                 node.Tag = nxsData;
@@ -73,52 +85,165 @@ namespace Mafia2Tool
             }
         }
 
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        /// <summary>
+        /// Update property grid with latest selected  item.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnClickNode(object sender, System.EventArgs e)
         {
+            if (treeView1.SelectedNode == null)
+                return;
+
             FrameResourceGrid.SelectedObject = treeView1.SelectedNode.Tag;
         }
 
-        private void buttonLoadMesh_Click(object sender, System.EventArgs e)
+
+        /// <summary>
+        /// Insert new mesh into the collision data.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddCollisionModel(object sender, System.EventArgs e)
         {
-            if (openM2T.ShowDialog() == DialogResult.OK)
+            //make sure an actual model has been selected.
+            if (openM2T.ShowDialog() != DialogResult.OK)
             {
-                Model colModel = new Model();
+                MessageBox.Show("Failed to select an M2T model.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-                using (BinaryReader reader = new BinaryReader(File.Open(openM2T.FileName, FileMode.Open)))
-                    colModel.ReadFromM2T(reader);
+            Model colModel = new Model();
 
-                Collision.NXSStruct nxsData = new Collision.NXSStruct();
-                nxsData.Hash = 5214193213415322;
-                nxsData.Data.BuildBasicCollision(colModel.Lods[0].Vertices, colModel.Lods[0].Parts[0].Indices);
-                nxsData.Sections = new Collision.Section[1];
-                nxsData.Sections[0] = new Collision.Section();
-                nxsData.Sections[0].Unk2 = 13;
-                nxsData.Sections[0].NumEdges = nxsData.Data.Triangles.Length * 3;
-                nxsData.Sections[0].EdgeData = new byte[nxsData.Sections[0].NumEdges];
-                nxsData.Data.sections = nxsData.Sections;
+            using (BinaryReader reader = new BinaryReader(File.Open(openM2T.FileName, FileMode.Open)))
+                colModel.ReadFromM2T(reader);
 
-                Collision.Placement placement = new Collision.Placement();
-                placement.Hash = 5214193213415322;
-                placement.Unk5 = 128;
-                placement.Unk4 = -1;
-                placement.Position = new Vector3(-1567.367f, -269.247f, -20.333f);
-                placement.Rotation = new Vector3(0);
+            Collision.NXSStruct nxsData = new Collision.NXSStruct();
+            nxsData.Hash = 5214193213415322;
+            nxsData.Data.BuildBasicCollision(colModel.Lods[0].Vertices, colModel.Lods[0].Parts[0].Indices);
+            nxsData.Sections = new Collision.Section[1];
+            nxsData.Sections[0] = new Collision.Section();
+            nxsData.Sections[0].Unk2 = 13;
+            nxsData.Sections[0].NumEdges = nxsData.Data.Triangles.Length * 3;
+            nxsData.Sections[0].EdgeData = new byte[nxsData.Sections[0].NumEdges];
+            nxsData.Data.sections = nxsData.Sections;
+
+            Collision.Placement placement = new Collision.Placement();
+            placement.Hash = 5214193213415322;
+            placement.Unk5 = 128;
+            placement.Unk4 = -1;
+            placement.Position = new Vector3(-1567.367f, -269.247f, -20.333f);
+            placement.Rotation = new Vector3(0);
 
 
-                SceneData.Collisions.NXSData.Add(nxsData);
-                SceneData.Collisions.Placements.Add(placement);
-                treeView1.Nodes.Clear();
-                LoadInCollision();
+            SceneData.Collisions.NXSData.Add(nxsData.Hash, nxsData);
+            SceneData.Collisions.Placements.Add(placement);
+            treeView1.Nodes.Clear();
+            LoadInCollision();
+        }
+
+        /// <summary>
+        /// Close and clean data.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnClose(object sender, FormClosingEventArgs e)
+        {
+            SceneData.CleanData();
+        }
+
+        /// <summary>
+        /// Save collision file to system.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Create(SceneData.Collisions.name+"2")))
+            {
+                SceneData.Collisions.WriteToFile(writer);
             }
         }
 
-        private void OnClose(object sender, FormClosingEventArgs e)
+        /// <summary>
+        /// Reload collision file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void reloadToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
-            //using (BinaryWriter writer = new BinaryWriter(File.Create(SceneData.Collisions.name)))
-            //{
-            //    SceneData.Collisions.WriteToFile(writer);
-            //}
-            SceneData.CleanData();
+            CheckCollision();
+        }
+
+
+        /// <summary>
+        /// Exit editor.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            Close();
+        }
+
+        /// <summary>
+        /// Delete collision and placements.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnDeleteCollision(object sender, System.EventArgs e)
+        {
+            if (treeView1.SelectedNode == null)
+                return;
+
+            Collision.NXSStruct col = treeView1.SelectedNode.Tag as Collision.NXSStruct;
+            SceneData.Collisions.NXSData.Remove(col.Hash);
+
+            for(int i = 0; i != SceneData.Collisions.Placements.Count; i++)
+            {
+                Collision.Placement placement = SceneData.Collisions.Placements[i];
+                if(placement.Hash == col.Hash)
+                {
+                    SceneData.Collisions.Placements.Remove(placement);
+
+                    TreeNode[] nodes = treeView1.Nodes.Find(placement.Hash.ToString(), true);
+
+                    if (nodes.Length != 0)
+                    {
+                        for(int x = 0; x != nodes.Length; x++)
+                        {
+                            nodes[x].Remove();
+                        }
+                    }
+                    i--;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sort our context. TODO: NEED TO REDO. DOESN'T WORK VERY WELL..
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnOpening(object sender, CancelEventArgs e)
+        {
+            if (treeView1.SelectedNode == null)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            CollisionContext.Items[0].Visible = false;
+            CollisionContext.Items[1].Visible = false;
+
+            if (treeView1.SelectedNode.Tag.GetType() == typeof(Collision.NXSStruct))
+            {
+                CollisionContext.Items[0].Visible = true;
+            }
+            else if (treeView1.SelectedNode.Tag.GetType() == typeof(Collision.Placement))
+            {
+                CollisionContext.Items[1].Visible = true;
+            }
         }
     }
 }

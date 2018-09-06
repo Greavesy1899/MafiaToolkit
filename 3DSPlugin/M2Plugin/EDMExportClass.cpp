@@ -168,7 +168,7 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 				verts[c] = mesh.getVert(c);
 
 			if (parts[i].GetHasNormals())
-				normals[c] = mesh.getNormal(c);
+				normals[c] = verts[c].Normalize();
 
 			if(parts[i].GetHasTangents())
 				tangents[c] = ComputeTangent(&map.tv[c], &verts[c]);

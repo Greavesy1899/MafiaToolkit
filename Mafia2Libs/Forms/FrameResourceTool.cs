@@ -557,8 +557,18 @@ namespace Mafia2Tool
                 SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
                 FrameResourceListBox.Items.Add(model.FrameMaterial);
                 FrameResourceListBox.Items.Add(model.FrameGeometry);
+
+                //Check for existing buffer; if it exists, remove so we can add one later.
+                if(SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[0].Hash) != null)
+                    SceneData.IndexBufferPool.RemoveBuffer(model.IndexBuffers[0]);
+
+                //do the same for vertexbuffer pools.
+                if (SceneData.VertexBufferPool.SearchBuffer(model.VertexBuffers[0].Hash) != null)
+                    SceneData.VertexBufferPool.RemoveBuffer(model.VertexBuffers[0]);
+
                 SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[0]);
                 SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[0]);
+
                 mesh.UpdateNode();
                 treeView1.Nodes.Add(CreateTreeNode(mesh));
             }
