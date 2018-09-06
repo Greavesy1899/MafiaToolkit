@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Mafia2
@@ -14,6 +15,7 @@ namespace Mafia2
             set { refID = value; }
             get { return refID; }
         }
+        [ReadOnly(true)]
         public Dictionary<string, int> Refs {
             get { return refs; }
         }
@@ -49,6 +51,12 @@ namespace Mafia2
                 case FrameEntryRefTypes.SkeletonHierachy:
                     refs.Add("SkeletonHierachy", objRef);
                     break;
+                case FrameEntryRefTypes.Parent1:
+                    refs.Add("Parent1", objRef);
+                    break;
+                case FrameEntryRefTypes.Parent2:
+                    refs.Add("Parent2", objRef);
+                    break;
                 default:
                     refs.Add("UnknownType" + objRef, objRef);
                     break;
@@ -66,6 +74,47 @@ namespace Mafia2
                 if (entry.Value == objRef)
                     refs.Remove(entry.Key);
             }
+        }
+
+        /// <summary>
+        /// Remove reference from this object using the type of ref.
+        /// </summary>
+        /// <param name="objRef"></param>
+        public void SubRef(FrameEntryRefTypes refType)
+        {
+            switch (refType)
+            {
+                case FrameEntryRefTypes.Mesh:
+                    removeRef("Mesh");
+                    break;
+                case FrameEntryRefTypes.Material:
+                    removeRef("Material");
+                    break;
+                case FrameEntryRefTypes.BlendInfo:
+                    removeRef("BlendInfo");
+                    break;
+                case FrameEntryRefTypes.Skeleton:
+                    removeRef("Skeleton");
+                    break;
+                case FrameEntryRefTypes.SkeletonHierachy:
+                    removeRef("SkeletonHierachy");
+                    break;
+                case FrameEntryRefTypes.Parent1:
+                    removeRef("Parent1");
+                    break;
+                case FrameEntryRefTypes.Parent2:
+                    removeRef("Parent2");
+                    break;
+                default:
+                    Console.WriteLine("Unknown type: " + refType);
+                    break;
+            }
+        }
+
+        private void removeRef(string refName)
+        {
+            if(refs.ContainsKey(refName))
+                refs.Remove(refName);
         }
     }
 }

@@ -11,7 +11,11 @@ public class TransformMatrix
     /// <summary>
     /// Construct empty TransformMatrix.
     /// </summary>
-    public TransformMatrix() { }
+    public TransformMatrix()
+    {
+        Position = new Vector3(0);
+        Rotation = new Matrix33();
+    }
 
     /// <summary>
     /// Construct TransformMatrix from parsed data.

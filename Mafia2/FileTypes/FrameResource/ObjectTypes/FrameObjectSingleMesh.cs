@@ -69,17 +69,12 @@ namespace Mafia2
         /// </summary>
         public FrameObjectSingleMesh() : base()
         {
-            
-        }
-
-        public override void CreateBasic()
-        {
-            base.CreateBasic();
-            flags = 0;
+            flags = SingleMeshFlags.Unk14_Flag | SingleMeshFlags.flag_32 | SingleMeshFlags.flag_67108864;
             bounds = new Bounds();
             unk_14_byte = 255;
             meshIndex = 0;
             materialIndex = 0;
+            transformMatrix = new TransformMatrix();
             unk_17_textureHash = new Hash();
             unk_18_byte1 = 0;
             unk_18_byte2 = 0;

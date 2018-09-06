@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
@@ -210,6 +211,7 @@ namespace Mafia2Tool
             {
                 archiveFile.Serialize(output, ArchiveSerializeOptions.Compress);
             }
+            infoText.Text = "Saved SDS.";
         }
 
         /// <summary>
@@ -219,7 +221,6 @@ namespace Mafia2Tool
         private void OpenSDS(FileInfo file)
         {
             Log.WriteLine("Opening SDS: " + file.Name);
-
             infoText.Text = "Opening SDS..";
             fileListView.Items.Clear();
             ArchiveFile archiveFile;
@@ -414,7 +415,7 @@ namespace Mafia2Tool
         {
             Process.Start(currentDirectory.FullName);
         }
-        private void OnOpening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void OnOpening(object sender, CancelEventArgs e)
         {
             if (fileListView.SelectedItems.Count == 0)
             {

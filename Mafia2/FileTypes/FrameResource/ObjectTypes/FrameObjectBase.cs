@@ -69,13 +69,6 @@ namespace Mafia2
 
         public FrameObjectBase() : base()
         {
-        }
-
-        /// <summary>
-        /// Construct basic FrameObject.
-        /// </summary>
-        public virtual void CreateBasic()
-        {
             //do example name.
             name = new Hash();
             name.Set("NewObject");
@@ -109,6 +102,11 @@ namespace Mafia2
             writer.Write(parentIndex1.Index);
             writer.Write(parentIndex2.Index);
             writer.Write(unk6);
+        }
+
+        public void UpdateNode()
+        {
+            node = new Node(name.String, refID.ToString(), this);
         }
     }
 

@@ -49,6 +49,22 @@ namespace Mafia2
         }
 
         /// <summary>
+        /// Add new buffer to first non-full pool.
+        /// </summary>
+        /// <param name="buffer"></param>
+        public void AddBuffer(IndexBuffer buffer)
+        {
+            for (int i = 0; i != bufferPools.Length; i++)
+            {
+                if (bufferPools[i].Buffers.Count != 128)
+                {
+                    bufferPools[i].Buffers.Add(buffer.Hash, buffer);
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
         /// Read files which are passed through constructor.
         /// </summary>
         public void ReadFiles()
@@ -137,8 +153,18 @@ namespace Mafia2
         /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
+            size = 0;
+
             writer.Write((byte)version);
-            writer.Write(numBuffers);
+            writer.Write(buffers.Count);
+
+            //need to make sure we update total size of buffers.
+            for (int i = 0; i != buffers.Count; i++)
+            {
+                int usage = buffers.ElementAt(i).Value.Data.Length*2;
+                size += usage;
+            }
+            size += 128;
             writer.Write(size);
 
             for (int i = 0; i != buffers.Count; i++)

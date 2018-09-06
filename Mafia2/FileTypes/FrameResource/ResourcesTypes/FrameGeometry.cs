@@ -37,11 +37,27 @@ namespace Mafia2
             set { unk02_int = value; }
         }
 
+        /// <summary>
+        /// Construct FrameGeometry from stream data.
+        /// </summary>
+        /// <param name="reader"></param>
         public FrameGeometry(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
         }
 
+        /// <summary>
+        /// Construct FrameGeometry with default data.
+        /// </summary>
+        public FrameGeometry() : base()
+        {
+
+        }
+
+        /// <summary>
+        /// Read data from stream.
+        /// </summary>
+        /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
             numLods = reader.ReadByte();
@@ -59,6 +75,11 @@ namespace Mafia2
             }
         }
 
+
+        /// <summary>
+        /// Write data to stream.
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(numLods);

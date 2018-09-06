@@ -419,7 +419,9 @@ namespace Mafia2
         Material,
         BlendInfo,
         Skeleton,
-        SkeletonHierachy
+        SkeletonHierachy,
+        Parent1,
+        Parent2
     }
 
     public enum CollisionMaterials

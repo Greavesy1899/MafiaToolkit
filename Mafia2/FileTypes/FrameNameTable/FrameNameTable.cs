@@ -52,9 +52,10 @@ namespace Mafia2
 
             if (resource.Header.IsScene)
             {
-                scenePos = new int[resource.Header.NumFolderNames];
-                sceneNames = new string[resource.Header.NumFolderNames];
+                scenePos = new int[resource.Header.NumFolderNames+1];
+                sceneNames = new string[resource.Header.NumFolderNames+1];
 
+                //add the actual scenes from the header, and then the <scenes> one.
                 for(int i = 0; i != resource.Header.NumFolderNames; i++)
                 {
                     names += resource.Header.SceneFolders[i].Name.String;
@@ -62,6 +63,10 @@ namespace Mafia2
                     scenePos[i] = names.Length - resource.Header.SceneFolders[i].Name.String.Length-1;
                     sceneNames[i] = resource.Header.SceneFolders[i].Name.String;
                 }
+
+                names += "<scene>\0";
+                scenePos[scenePos.Length-1] = names.Length - "<scene>\0".Length - 1;
+                sceneNames[sceneNames.Length-1] = "<scene>\0";
             }
             else
             {
@@ -93,9 +98,7 @@ namespace Mafia2
                     if (fBase.ParentIndex1.Index == -1)
                     {
                         Data data = new Data();
-
-                        if (block.GetType() == typeof(FrameObjectBase))
-                            data.Flags = fBase.FrameNameTableFlags;
+                        data.Flags = fBase.FrameNameTableFlags;
 
                         int sceneIndex = 0;
 
@@ -253,9 +256,6 @@ namespace Mafia2
                 writer.Write(namepos1);
                 writer.Write(namepos2);
                 writer.Write(frameIndex);
-
-                if (flags == 0)
-                    flags = (NameTableFlags)2049;
 
                 writer.Write((short)flags);
             }

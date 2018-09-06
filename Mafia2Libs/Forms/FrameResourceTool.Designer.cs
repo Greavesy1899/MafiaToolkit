@@ -47,6 +47,7 @@
             this.contextExtract3D = new System.Windows.Forms.ToolStripMenuItem();
             this.contextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.contextUpdateParents = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -149,7 +150,7 @@
             this.modelsToolStripMenuItem,
             this.allToolStripMenuItem});
             this.exportAllSubButton.Name = "exportAllSubButton";
-            this.exportAllSubButton.Size = new System.Drawing.Size(180, 22);
+            this.exportAllSubButton.Size = new System.Drawing.Size(160, 22);
             this.exportAllSubButton.Text = "Export All";
             this.exportAllSubButton.Click += new System.EventHandler(this.OnClickLoadAll);
             // 
@@ -174,14 +175,14 @@
             // overwriteBufferSubButton
             // 
             this.overwriteBufferSubButton.Name = "overwriteBufferSubButton";
-            this.overwriteBufferSubButton.Size = new System.Drawing.Size(180, 22);
+            this.overwriteBufferSubButton.Size = new System.Drawing.Size(160, 22);
             this.overwriteBufferSubButton.Text = "Overwrite Buffer";
             this.overwriteBufferSubButton.Click += new System.EventHandler(this.OverwriteBuffer_Click);
             // 
             // addButton
             // 
             this.addButton.Name = "addButton";
-            this.addButton.Size = new System.Drawing.Size(180, 22);
+            this.addButton.Size = new System.Drawing.Size(160, 22);
             this.addButton.Text = "Adding Test";
             this.addButton.Click += new System.EventHandler(this.AddFrameSingleMesh_Click);
             // 
@@ -216,14 +217,14 @@
             // contextExtract3D
             // 
             this.contextExtract3D.Name = "contextExtract3D";
-            this.contextExtract3D.Size = new System.Drawing.Size(106, 22);
+            this.contextExtract3D.Size = new System.Drawing.Size(155, 22);
             this.contextExtract3D.Text = "Extract 3D";
             // 
             // contextDelete
             // 
             this.contextDelete.Name = "contextDelete";
             this.contextDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.contextDelete.Size = new System.Drawing.Size(106, 22);
+            this.contextDelete.Size = new System.Drawing.Size(155, 22);
             this.contextDelete.Text = "Delete";
             this.contextDelete.Click += new System.EventHandler(this.OnDelete);
             // 
@@ -231,11 +232,19 @@
             // 
             this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.contextExtract3D,
-            this.contextDelete});
+            this.contextDelete,
+            this.contextUpdateParents});
             this.contextMenu.Name = "contextMenuStrip1";
             this.contextMenu.ShowImageMargin = false;
-            this.contextMenu.Size = new System.Drawing.Size(107, 48);
+            this.contextMenu.Size = new System.Drawing.Size(156, 92);
             this.contextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ItemClicked);
+            // 
+            // contextUpdateParents
+            // 
+            this.contextUpdateParents.Name = "contextUpdateParents";
+            this.contextUpdateParents.Size = new System.Drawing.Size(155, 22);
+            this.contextUpdateParents.Text = "Update Parents";
+            this.contextUpdateParents.ToolTipText = "Add a scene as a parent.";
             // 
             // FrameResourceTool
             // 
@@ -280,5 +289,6 @@
         private System.Windows.Forms.ToolStripMenuItem contextDelete;
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem addButton;
+        private System.Windows.Forms.ToolStripMenuItem contextUpdateParents;
     }
 }

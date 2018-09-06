@@ -28,10 +28,30 @@ namespace Mafia2
             set { materials = value; }
         }
 
+        /// <summary>
+        /// Construct FrameMaterial by reading the stream.
+        /// </summary>
+        /// <param name="reader"></param>
         public FrameMaterial(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
         }
+
+        /// <summary>
+        /// Construct FrameMaterial with basic settings.
+        /// </summary>
+        public FrameMaterial() : base()
+        {
+            numLods = 0;
+            lodMatCount = new int[0];
+            materials = new List<MaterialStruct[]>();
+            bounds = new Bounds();
+        }
+
+        /// <summary>
+        /// Read data from stream.
+        /// </summary>
+        /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
             numLods = reader.ReadByte();
@@ -53,6 +73,11 @@ namespace Mafia2
                 materials.Add(array);
             }
         }
+
+        /// <summary>
+        /// Write data to stream.
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write((byte)numLods);
@@ -75,7 +100,7 @@ namespace Mafia2
         }
     }
 
-    public struct MaterialStruct
+    public class MaterialStruct
     {
         int numFaces;
         int startIndex;
@@ -104,7 +129,32 @@ namespace Mafia2
             set { unk3 = value; }
         }
 
+        /// <summary>
+        /// Construct Material data from stream.
+        /// </summary>
+        /// <param name="reader"></param>
         public MaterialStruct(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+
+        /// <summary>
+        /// Constructs Material with default data.
+        /// </summary>
+        public MaterialStruct()
+        {
+            numFaces = 0;
+            startIndex = 0;
+            materialHash = 0;
+            materialName = "";
+            unk3 = 0;
+        }
+
+        /// <summary>
+        /// Read data from stream.
+        /// </summary>
+        /// <param name="reader"></param>
+        public void ReadFromFile(BinaryReader reader)
         {
             numFaces = reader.ReadInt32();
             startIndex = reader.ReadInt32();
@@ -114,6 +164,10 @@ namespace Mafia2
             materialName = MaterialsManager.GetMatName(materialName);
         }
 
+        /// <summary>
+        /// Write data to stream.
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(numFaces);

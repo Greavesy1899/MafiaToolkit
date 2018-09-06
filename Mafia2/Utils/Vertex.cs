@@ -84,7 +84,7 @@ namespace Mafia2
 
             position -= offset;
             position /= factor;
-
+            
             posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.X)));
             posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.Y)));
             posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.Z)));

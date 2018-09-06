@@ -6,18 +6,19 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2Tool
 {
     public partial class FrameResourceTool : Form
     {
         private List<TreeNode> unadded = new List<TreeNode>();
+        private FileInfo fileLocation;
 
         public FrameResourceTool(FileInfo info)
         {
             InitializeComponent();
             SceneData.ScenePath = info.DirectoryName;
+            fileLocation = info;
             SceneData.BuildData();
             PopulateForm();
             ShowDialog();
@@ -25,6 +26,17 @@ namespace Mafia2Tool
 
         public void PopulateForm()
         {
+            foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
+            {
+                FrameResourceListBox.Items.Add(entry.Value);
+                TreeNode node = new TreeNode
+                {
+                    Text = entry.Value.Name.String,
+                    Name = entry.Value.Name.String,
+                    Tag = entry.Value
+                };
+                treeView1.Nodes.Add(node);
+            }
             foreach (KeyValuePair<int, FrameGeometry> entry in SceneData.FrameResource.FrameGeometries)
             {
                 FrameResourceListBox.Items.Add(entry.Value);
@@ -51,36 +63,40 @@ namespace Mafia2Tool
             }
 
             //TODO: Modify this when I implement scenes. I want to add REFIDs to them too.
-            foreach (FrameNameTable.Data data in SceneData.FrameNameTable.FrameData)
+
+            if (SceneData.FrameNameTable != null)
             {
-                int index = treeView1.Nodes.IndexOfKey(data.ParentName);
-
-                if (index == -1)
-                    treeView1.Nodes.Add(data.ParentName, data.ParentName);
-
-                index = treeView1.Nodes.IndexOfKey(data.ParentName);
-                TreeNode root = treeView1.Nodes[index];
-
-                if (data.FrameIndex != -1)
+                foreach (FrameNameTable.Data data in SceneData.FrameNameTable.FrameData)
                 {
-                    int total = SceneData.FrameResource.Header.SceneFolders.Length +
-                        SceneData.FrameResource.Header.NumGeometries +
-                        SceneData.FrameResource.Header.NumMaterialResources +
-                        SceneData.FrameResource.Header.NumBlendInfos +
-                        SceneData.FrameResource.Header.NumSkeletons +
-                        SceneData.FrameResource.Header.NumSkelHierachies;
+                    int index = treeView1.Nodes.IndexOfKey(data.ParentName);
 
-                    FrameObjectBase block = (SceneData.FrameResource.FrameObjects.ElementAt(data.FrameIndex).Value as FrameObjectBase);
+                    if (index == -1)
+                        treeView1.Nodes.Add(data.ParentName, data.ParentName);
 
-                    block.FrameNameTableFlags = data.Flags;
-                    block.IsOnFrameTable = true;
+                    index = treeView1.Nodes.IndexOfKey(data.ParentName);
+                    TreeNode root = treeView1.Nodes[index];
 
-                    TreeNode node = CreateTreeNode(block);
+                    if (data.FrameIndex != -1)
+                    {
+                        int total = SceneData.FrameResource.Header.SceneFolders.Length +
+                            SceneData.FrameResource.Header.NumGeometries +
+                            SceneData.FrameResource.Header.NumMaterialResources +
+                            SceneData.FrameResource.Header.NumBlendInfos +
+                            SceneData.FrameResource.Header.NumSkeletons +
+                            SceneData.FrameResource.Header.NumSkelHierachies;
 
-                    if (node == null)
-                        continue;
+                        FrameObjectBase block = (SceneData.FrameResource.FrameObjects.ElementAt(data.FrameIndex).Value as FrameObjectBase);
 
-                    root.Nodes.Add(node);
+                        block.FrameNameTableFlags = data.Flags;
+                        block.IsOnFrameTable = true;
+
+                        TreeNode node = CreateTreeNode(block);
+
+                        if (node == null)
+                            continue;
+
+                        root.Nodes.Add(node);
+                    }
                 }
             }
 
@@ -130,7 +146,10 @@ namespace Mafia2Tool
                 else if ((treeView1.Nodes.Find((obj.Tag as FrameObjectBase).RefID.ToString(), true).Length != 0))
                     Debug.WriteLine("Unadded node was found");
                 else
+                {
                     Debug.WriteLine(string.Format("WARNING: node: {0} was not added properly", obj.Text));
+                    treeView1.Nodes.Add(obj);
+                }
             }
             ToolkitSettings.UpdateRichPresence("Using the Frame Resource editor");
         }
@@ -405,8 +424,6 @@ namespace Mafia2Tool
                 SceneData.FrameResource.FrameMaterials[model.FrameMesh.Refs["Material"]] = model.FrameMaterial;
                 SceneData.IndexBufferPool.BufferPools[iIndexes[0].PoolLocation].Buffers[indexRefs[0]] = model.IndexBuffers[0];
                 SceneData.VertexBufferPool.BufferPools[iVertexes[0].PoolLocation].Buffers[vertexRefs[0]] = model.VertexBuffers[0];
-                SceneData.IndexBufferPool.WriteToFile();
-                SceneData.VertexBufferPool.WriteToFile();
             }
             else
             {
@@ -437,7 +454,7 @@ namespace Mafia2Tool
 
             if (result == DialogResult.Yes)
             {
-                using (BinaryWriter writer = new BinaryWriter(File.Open("FrameResource_0.bin", FileMode.Create)))
+                using (BinaryWriter writer = new BinaryWriter(File.Open(fileLocation.FullName, FileMode.Create)))
                 {
                     SceneData.FrameResource.WriteToFile(writer);
                 }
@@ -448,6 +465,8 @@ namespace Mafia2Tool
                     nameTable.AddNames();
                     nameTable.WriteToFile(writer);
                 }
+                SceneData.IndexBufferPool.WriteToFile();
+                SceneData.VertexBufferPool.WriteToFile();
                 MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ReloadClick(null, null);
             }
@@ -481,6 +500,19 @@ namespace Mafia2Tool
                 Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
                 newModel.ExportToM2T();
             }
+            else if(e.ClickedItem.Name == "contextUpdateParents")
+            {
+                FrameObjectBase obj = treeView1.SelectedNode.Tag as FrameObjectBase;
+                ListWindow window = new ListWindow();
+                window.PopulateForm(true);
+                window.ShowDialog();
+                if (window.type == -1)
+                    return;
+
+                int refID = (window.chosenObject as FrameEntry).RefID;
+                obj.SubRef(FrameEntryRefTypes.Parent2);
+                obj.AddRef(FrameEntryRefTypes.Parent2, refID);
+            }
         }
 
         private void OnDelete(object sender, EventArgs e)
@@ -496,27 +528,63 @@ namespace Mafia2Tool
 
         private void AddFrameSingleMesh_Click(object sender, EventArgs e)
         {
-            ListWindow window = new ListWindow();
-            window.PopulateForm();
-            window.ShowDialog();
-            if (window.type == -1)
+            bool createNewResource = false;
+            DialogResult result = MessageBox.Show("Do you want to import a new model?", "Toolkit", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+                createNewResource = true;
+            else if (result == DialogResult.Cancel)
                 return;
 
-            FrameObjectSingleMesh copy = (window.chosenObject as FrameObjectSingleMesh);
             FrameObjectSingleMesh mesh = new FrameObjectSingleMesh();
-            mesh.CreateBasic();
-            mesh.Name.Set("domek2");
-            mesh.MaterialIndex = copy.MaterialIndex;
-            mesh.MeshIndex = copy.MeshIndex;
-            mesh.Boundings = copy.Boundings;
-            mesh.ParentIndex1 = copy.ParentIndex1;
-            mesh.ParentIndex2 = copy.ParentIndex2;
-            mesh.Matrix = copy.Matrix;
-            mesh.Flags = copy.Flags;
-            mesh.FrameNameTableFlags = copy.FrameNameTableFlags;
-            mesh.IsOnFrameTable = copy.IsOnFrameTable;
+
+            if (createNewResource)
+            {
+                Model model = new Model();
+                model.FrameMesh = mesh;
+
+                if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
+                    return;
+
+                using (BinaryReader reader = new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)))
+                    model.ReadFromM2T(reader);
+
+                mesh.Name.Set(model.Name);
+                model.CreateObjectsFromModel();
+                mesh.AddRef(FrameEntryRefTypes.Mesh, model.FrameGeometry.RefID);
+                mesh.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
+                SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
+                SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
+                FrameResourceListBox.Items.Add(model.FrameMaterial);
+                FrameResourceListBox.Items.Add(model.FrameGeometry);
+                SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[0]);
+                SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[0]);
+                mesh.UpdateNode();
+                treeView1.Nodes.Add(CreateTreeNode(mesh));
+            }
+            else
+            {
+                ListWindow window = new ListWindow();
+                window.PopulateForm();
+                window.ShowDialog();
+                if (window.type == -1)
+                    return;
+
+                FrameObjectSingleMesh copy = window.chosenObject as FrameObjectSingleMesh;
+                mesh = new FrameObjectSingleMesh();
+                mesh.Name.Set("domek2");
+                mesh.Boundings = copy.Boundings;
+                mesh.ParentIndex1 = copy.ParentIndex1;
+                mesh.ParentIndex2 = copy.ParentIndex2;
+                mesh.Matrix = copy.Matrix;
+                mesh.Flags = copy.Flags;
+                mesh.FrameNameTableFlags = copy.FrameNameTableFlags;
+                mesh.IsOnFrameTable = copy.IsOnFrameTable;
+            }
+
             SceneData.FrameResource.FrameObjects.Add(mesh.RefID, mesh);
-            SaveChanges();
+            FrameResourceListBox.Items.Add(mesh);
+            //SaveChanges();
         }
     }
 }

@@ -17,12 +17,19 @@ namespace Mafia2
             get { return hash; }
             set { hash = value; }
         }
-        [ReadOnly(true)]
         public string String {
             get { return _string; }
             set { Set(value); }
         }
-        public Hash() { }
+        public Hash()
+        {
+            _string = "";
+            hash = 0;
+        }
+        public Hash(string name)
+        {
+            Set(name);
+        }
         public Hash(BinaryReader reader)
         {
             ReadFromFile(reader);

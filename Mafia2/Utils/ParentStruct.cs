@@ -1,5 +1,8 @@
-﻿namespace Mafia2
+﻿using System.ComponentModel;
+
+namespace Mafia2
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class ParentStruct
     {
         int index;

@@ -16,7 +16,6 @@ namespace Mafia2
         Dictionary<int, FrameSkeleton> frameSkeletons = new Dictionary<int, FrameSkeleton>();
         Dictionary<int, FrameSkeletonHierachy> frameSkeletonHierachies = new Dictionary<int, FrameSkeletonHierachy>();
         Dictionary<int, object> frameObjects = new Dictionary<int, object>();
-        Dictionary<int, object> entireFrame = new Dictionary<int, object>();
 
         int[] frameBlocks;
         int[] objectTypes;
@@ -277,7 +276,7 @@ namespace Mafia2
 
         /// <summary>
         /// Adds names onto ParentIndex1 and ParentIndex2. Called after the file has been read.
-        /// This won't be required later, so expect it to be removed.
+        /// Adds Refs also. These are needed to save a Frame file.
         /// </summary>
         public void DefineFrameBlockParents()
         {
@@ -290,21 +289,26 @@ namespace Mafia2
                 if (obj == null)
                     continue;
 
-
                 if (obj.ParentIndex1.Index > -1)
                 {
-                    if (obj.ParentIndex1.Index > numBlocks)
-                        obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index - numBlocks).Value as FrameObjectBase).RefID;
+                    if (obj.ParentIndex1.Index <= (frameScenes.Count - 1) && (frameScenes.Count - 1) != -1)
+                        obj.ParentIndex1.RefID = (frameScenes.ElementAt(obj.ParentIndex1.Index).Value as FrameHeaderScene).RefID;
+                    else if (obj.ParentIndex1.Index > numBlocks)
+                        obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index-numBlocks).Value as FrameObjectBase).RefID;
                     else
                         obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index).Value as FrameObjectBase).RefID;
+                    obj.AddRef(FrameEntryRefTypes.Parent1, obj.ParentIndex1.RefID);
                 }
 
                 if (obj.ParentIndex2.Index > -1)
                 {
-                    if (obj.ParentIndex2.Index > numBlocks)
-                        obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index - numBlocks).Value as FrameObjectBase).RefID;
+                    if (obj.ParentIndex2.Index <= (frameScenes.Count - 1) && (frameScenes.Count - 1) != -1)
+                        obj.ParentIndex2.RefID = (frameScenes.ElementAt(obj.ParentIndex2.Index).Value as FrameHeaderScene).RefID;
+                    else if (obj.ParentIndex2.Index > numBlocks)
+                        obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index-numBlocks).Value as FrameObjectBase).RefID;
                     else
                         obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index).Value as FrameObjectBase).RefID;
+                    obj.AddRef(FrameEntryRefTypes.Parent2, obj.ParentIndex2.RefID);
                 }
             }
         }
@@ -342,30 +346,49 @@ namespace Mafia2
             {
                 newFrame.Add(entry.Key, entry.Value);
             }
+
+            //We have to add the objects to the new frame AND THEN update refs. This is kind of odd, and I think i've done something wrong.
+            int objectPosStart = newFrame.Count;
             for (int i = 0; i != frameObjects.Count; i++)
             {
                 FrameObjectBase block = (frameObjects.ElementAt(i).Value as FrameObjectBase);
+                newFrame.Add(block.RefID, block);
+            }
+            for (int i = objectPosStart; i != newFrame.Count; i++)
+            {
+                FrameObjectBase block = (newFrame.ElementAt(i).Value as FrameObjectBase);
+                Console.WriteLine("Working on block " + block.Name.String);
 
-                if (block.GetType() == typeof(FrameObjectSingleMesh))
+                if (block.Refs.ContainsKey("Parent1"))
+                    block.ParentIndex1.Index = newFrame.IndexOfValue(block.Refs["Parent1"]);
+                else
+                    block.ParentIndex1.Index = -1;
+
+                if (block.Refs.ContainsKey("Parent2"))
+                    block.ParentIndex2.Index = newFrame.IndexOfValue(block.Refs["Parent2"]);
+                else
+                    block.ParentIndex2.Index = -1;
+
+                if (block.Type == typeof(FrameObjectSingleMesh).ToString())
                 {
                     FrameObjectSingleMesh mesh = (block as FrameObjectSingleMesh);
-                    mesh.MaterialIndex = newFrame.IndexOfValue(frameBlocks[mesh.MaterialIndex]);
-                    mesh.MeshIndex = newFrame.IndexOfValue(frameBlocks[mesh.MeshIndex]);
-                    newFrame.Add(mesh.RefID, mesh);
+                    Console.WriteLine(string.Format("Updating: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
+                    mesh.MaterialIndex = newFrame.IndexOfValue(mesh.Refs["Material"]);
+                    mesh.MeshIndex = newFrame.IndexOfValue(mesh.Refs["Mesh"]);
+                    block = mesh;
+                    Console.WriteLine(string.Format("Updated: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
                 }
-                else if (block.GetType() == typeof(FrameObjectModel))
+                if (block.Type == typeof(FrameObjectModel).ToString())
                 {
                     FrameObjectModel mesh = (block as FrameObjectModel);
-                    mesh.MaterialIndex = newFrame.IndexOfValue(frameBlocks[mesh.MaterialIndex]);
-                    mesh.MeshIndex = newFrame.IndexOfValue(frameBlocks[mesh.MeshIndex]);
-                    mesh.BlendInfoIndex = newFrame.IndexOfValue(frameBlocks[mesh.BlendInfoIndex]);
-                    mesh.SkeletonIndex = newFrame.IndexOfValue(frameBlocks[mesh.SkeletonIndex]);
-                    mesh.SkeletonHierachyIndex = newFrame.IndexOfValue(frameBlocks[mesh.SkeletonHierachyIndex]);
-                    newFrame.Add(mesh.RefID, mesh);
-                }
-                else
-                {
-                    newFrame.Add(block.RefID, block);
+                    Console.WriteLine(string.Format("Updating: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
+                    mesh.MaterialIndex = newFrame.IndexOfValue(mesh.Refs["Material"]);
+                    mesh.MeshIndex = newFrame.IndexOfValue(mesh.Refs["Mesh"]);
+                    mesh.BlendInfoIndex = newFrame.IndexOfValue(mesh.Refs["BlendInfo"]);
+                    mesh.SkeletonIndex = newFrame.IndexOfValue(mesh.Refs["Skeleton"]);
+                    mesh.SkeletonHierachyIndex = newFrame.IndexOfValue(mesh.Refs["SkeletonHierachy"]);
+                    block = mesh;
+                    Console.WriteLine(string.Format("Updated: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
                 }
             }
 

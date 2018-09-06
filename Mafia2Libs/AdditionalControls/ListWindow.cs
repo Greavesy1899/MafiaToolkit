@@ -15,11 +15,22 @@ namespace Mafia2Tool
             InitializeComponent();
         }
 
-        public void PopulateForm()
+        //sort this shit out.
+        public void PopulateForm(bool scenes = false)
         {
-            foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
+            if (scenes)
             {
-                listBox1.Items.Add(entry.Value);
+                foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
+                {
+                    listBox1.Items.Add(entry.Value);
+                }
+            }
+            else
+            {
+                foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
+                {
+                    listBox1.Items.Add(entry.Value);
+                }
             }
         }
 

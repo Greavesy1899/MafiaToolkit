@@ -23,7 +23,7 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return $"Scene Block";
+            return Name.String;
         }
     }
 }

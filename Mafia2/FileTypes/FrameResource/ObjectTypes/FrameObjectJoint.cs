@@ -19,12 +19,6 @@ namespace Mafia2
 
         public FrameObjectJoint() : base()
         {
-
-        }
-
-        public override void CreateBasic()
-        {
-            base.CreateBasic();
             dataSize = 0;
             nodeData = new NodeStruct[dataSize];
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Assimp;
 using System.IO;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2
 {
@@ -15,47 +16,47 @@ namespace Mafia2
         IndexBuffer[] indexBuffers; //Holds the buffer which will then be saved/replaced later
         VertexBuffer[] vertexBuffers; //Holds the buffers which will then be saved/replaced later
         private bool useSingleMesh; //False means ModelMesh, True means SingleMesh;
+        private string name; //name of model.
 
-        public Lod[] Lods
-        {
+        public Lod[] Lods {
             get { return lods; }
             set { lods = value; }
         }
 
-        public FrameObjectSingleMesh FrameMesh
-        {
+        public FrameObjectSingleMesh FrameMesh {
             get { return frameMesh; }
             set { frameMesh = value; }
         }
 
-        public FrameObjectModel FrameModel
-        {
+        public FrameObjectModel FrameModel {
             get { return frameModel; }
             set { frameModel = value; }
         }
 
-        public FrameGeometry FrameGeometry
-        {
+        public FrameGeometry FrameGeometry {
             get { return frameGeometry; }
             set { frameGeometry = value; }
         }
 
-        public FrameMaterial FrameMaterial
-        {
+        public FrameMaterial FrameMaterial {
             get { return frameMaterial; }
             set { frameMaterial = value; }
         }
 
-        public IndexBuffer[] IndexBuffers
-        {
+        public IndexBuffer[] IndexBuffers {
             get { return indexBuffers; }
             set { indexBuffers = value; }
         }
 
-        public VertexBuffer[] VertexBuffers
-        {
+        public VertexBuffer[] VertexBuffers {
             get { return vertexBuffers; }
             set { vertexBuffers = value; }
+        }
+
+        public string Name
+        {
+            get { return name; }
+            set { name = value; }
         }
 
         /// <summary>
@@ -369,7 +370,7 @@ namespace Mafia2
                 return;
 
             //mesh name
-            reader.ReadString();
+            name = reader.ReadString();
 
             //Number of Lods
             Lods = new Lod[reader.ReadByte()];
@@ -485,27 +486,28 @@ namespace Mafia2
         public void CalculateDecompression()
         {
             float minFloatf = 0.000016f;
-            Vector3 minFloat = new Vector3(0.000016f);
+            Vector3 minFloat = new Vector3(minFloatf);
 
             Bounds bounds = new Bounds();
             bounds.Min = frameMesh.Boundings.Min/* - minFloat*/;
             bounds.Max = frameMesh.Boundings.Max/* + minFloat*/;
 
             frameGeometry.DecompressionOffset = bounds.Min;
-            float MaxX = bounds.Max.X - bounds.Min.X;
-            float MaxY = bounds.Max.Y - bounds.Min.Y;
-            float MaxZ = bounds.Max.Z - bounds.Min.Z;
+            float MaxX = bounds.Max.X - bounds.Min.X + minFloatf;
+            float MaxY = bounds.Max.Y - bounds.Min.Y + minFloatf;
+            float MaxZ = bounds.Max.Z - bounds.Min.Z + minFloatf;
 
             float fMaxSize = Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
 
-            frameGeometry.DecompressionFactor = fMaxSize / 0x10000;
-            //frameGeometry.DecompressionFactor = (float)256 / 0x10000;
+            //frameGeometry.DecompressionFactor = fMaxSize / 0x10000;
+            frameGeometry.DecompressionFactor = (float)256 / 0x10000;
+            //frameGeometry.DecompressionFactor = (float)16 / 0x10000;
         }
 
         /// <summary>
         /// Builds Index buffer from the mesh data.
         /// </summary>
-        public void BuildIndexBuffer()
+        public void BuildIndexBuffer(string name = null)
         {
             if(Lods == null)
                 return;
@@ -523,14 +525,18 @@ namespace Mafia2
                 }
             }
 
-            IndexBuffers[0] = new IndexBuffer(frameGeometry.LOD[0].IndexBufferRef.uHash);
+            if(name != null)
+                IndexBuffers[0] = new IndexBuffer(FNV64.Hash(name));
+            else
+                IndexBuffers[0] = new IndexBuffer(frameGeometry.LOD[0].IndexBufferRef.uHash);
+
             indexBuffers[0].Data = idata.ToArray();
         }
 
         /// <summary>
         /// Builds vertex buffer from the mesh data.
         /// </summary>
-        public void BuildVertexBuffer()
+        public void BuildVertexBuffer(string name = null)
         {
             if (Lods == null)
                 return;
@@ -554,10 +560,17 @@ namespace Mafia2
                     vdata.AddRange(vert.WriteUvData(0));
             }
 
-            VertexBuffers[0] = new VertexBuffer(frameGeometry.LOD[0].VertexBufferRef.uHash);
+            if (name != null)
+                VertexBuffers[0] = new VertexBuffer(FNV64.Hash(name));
+            else
+                VertexBuffers[0] = new VertexBuffer(frameGeometry.LOD[0].VertexBufferRef.uHash);
+
             VertexBuffers[0].Data = vdata.ToArray();
         }
 
+        /// <summary>
+        /// Update all objects from loaded model.
+        /// </summary>
         public void UpdateObjectsFromModel()
         {
             int totalFaces = 0;
@@ -565,11 +578,21 @@ namespace Mafia2
             for (int i = 0; i != Lods[0].Parts.Length; i++)
                 totalFaces += Lods[0].Parts[i].Indices.Length;
 
+            frameGeometry.NumLods = 1;
+
+            if (frameGeometry.LOD == null)
+            {
+                frameGeometry.LOD = new FrameLOD[lods.Length];
+                frameGeometry.LOD[0] = new FrameLOD();
+            }
+
+            frameGeometry.LOD[0].Distance = 1E+12f;
             frameGeometry.LOD[0].BuildNewPartition();
             frameGeometry.LOD[0].BuildNewMaterialSplit();
             frameGeometry.LOD[0].SplitInfo.NumVerts = Lods[0].Vertices.Length;
             frameGeometry.LOD[0].NumVertsPr = Lods[0].Vertices.Length;
             frameGeometry.LOD[0].SplitInfo.NumFaces = totalFaces;
+            frameGeometry.LOD[0].VertexDeclaration = lods[0].VertexDeclaration;
 
             //burst split info.
             frameGeometry.LOD[0].SplitInfo.NumMatSplit = Lods[0].Parts.Length;
@@ -580,14 +603,19 @@ namespace Mafia2
             int faceIndex = 0;
             int baseIndex = 0;
             frameMaterial.NumLods = 1;
+            frameMaterial.LodMatCount = new int[lods.Length];
+            frameMaterial.Materials = new List<MaterialStruct[]>();
+            FrameMaterial.Materials.Add(new MaterialStruct[frameMaterial.LodMatCount[0]]);
             frameMaterial.LodMatCount[0] = Lods[0].Parts.Length;
             frameMaterial.Materials[0] = new MaterialStruct[Lods[0].Parts.Length];
             for (int i = 0; i != Lods[0].Parts.Length; i++)
             {
+                frameMaterial.Materials[0][i] = new MaterialStruct();
                 frameMaterial.Materials[0][i].StartIndex = faceIndex;
                 frameMaterial.Materials[0][i].NumFaces = Lods[0].Parts[i].Indices.Length;
                 frameMaterial.Materials[0][i].Unk3 = 0;
-                frameMaterial.Materials[0][i].MaterialHash = 7973993770688595535;
+                frameMaterial.Materials[0][i].MaterialHash = Lods[0].Parts[i].Hash;
+                frameMaterial.Materials[0][i].MaterialName = Lods[0].Parts[i].Material;
                 faceIndex += Lods[0].Parts[i].Indices.Length * 3;
 
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].Bounds = new short[6]
@@ -611,7 +639,34 @@ namespace Mafia2
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].NumBurst = 1;
                 baseIndex += faceIndex;
             }
+        }
 
+        /// <summary>
+        /// Create objects from model. Requires FrameMesh/FrameModel to be already set and a model already read into the data.
+        /// </summary>
+        public void CreateObjectsFromModel()
+        {
+            frameGeometry = new FrameGeometry();
+            frameMaterial = new FrameMaterial();
+          
+
+            //set lods for all data.
+            indexBuffers = new IndexBuffer[lods.Length];
+            vertexBuffers = new VertexBuffer[lods.Length];
+
+            List<Vertex[]> vertData = new List<Vertex[]>();
+            for (int i = 0; i != Lods.Length; i++)
+                vertData.Add(Lods[i].Vertices);
+
+            frameMesh.Boundings = new Bounds();
+            frameMesh.Boundings.CalculateBounds(vertData);
+            frameMaterial.Bounds = FrameMesh.Boundings;
+            CalculateDecompression();
+            BuildIndexBuffer("M2TK." + name + ".IB0");
+            BuildVertexBuffer("M2TK." + name + ".VB0");
+            UpdateObjectsFromModel();
+            frameGeometry.LOD[0].IndexBufferRef = new Hash("M2TK." + name + ".IB0");
+            frameGeometry.LOD[0].VertexBufferRef = new Hash("M2TK." + name + ".VB0");
         }
     }
 
@@ -659,13 +714,21 @@ namespace Mafia2
     public class ModelPart
     {
         string material;
+        ulong hash;
         Short3[] indices;
         Bounds bounds;
 
         public string Material
         {
             get { return material; }
-            set { material = value; }
+            set {
+                material = value;
+                hash = FNV64.Hash(value);
+            }
+        }
+
+        public ulong Hash {
+            get { return hash; }
         }
 
         public Short3[] Indices
