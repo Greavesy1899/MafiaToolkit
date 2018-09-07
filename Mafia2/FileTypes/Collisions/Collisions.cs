@@ -654,7 +654,7 @@ namespace Mafia2
             {
                 int size = 0;
 
-                //header data is 32 bytes long;
+                //header data is 36 bytes long;
                 size += 36;
 
                 for (int i = 0; i != points.Length; i++)
@@ -671,21 +671,18 @@ namespace Mafia2
                 if (num2 == 3)
                 {
                     size += 4;
+                    if (nTriangles <= 256)
+                    {
+                        size += unkData.Length;
+                    }
+                    else
+                    {
+                        size += (unkBytes.Length * 2); //unkbytes is 'short' array;
+                    }
+
                     if (num5 != nTriangles - 1)
                     {
-                        if (nTriangles <= 256)
-                        {
-                            size += unkData.Length;
-                        }
-                        else
-                        {
-                            size += (unkBytes.Length*2); //unkbytes is 'short' array;
-                        }
-
-                        if (num5 != nTriangles - 1)
-                        {
-                            overTri1 = true;
-                        }
+                        overTri1 = true;
                     }
                 }
 

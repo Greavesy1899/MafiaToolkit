@@ -294,8 +294,8 @@ namespace Mafia2Tool
                 IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
                 VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
 
-                if (mesh.IsOnFrameTable && mesh.FrameNameTableFlags == 0)
-                {
+                //if (mesh.IsOnFrameTable && mesh.FrameNameTableFlags == 0)
+                //{
 
                     //we need to retrieve buffers first.
                     for (int c = 0; c != geom.LOD.Length; c++)
@@ -344,7 +344,7 @@ namespace Mafia2Tool
                     entry.Rotation = mesh.Matrix.Rotation;
 
                     frameEDD.Entries.Add(entry);
-                }
+                //}
             });
             frameEDD.EntryCount = frameEDD.Entries.Count;
             using (BinaryWriter writer = new BinaryWriter(File.Create("exported/frame.edd")))
