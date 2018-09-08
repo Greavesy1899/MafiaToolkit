@@ -50,6 +50,17 @@ namespace Mafia2
         }
 
         /// <summary>
+        /// Copy from passing vector.
+        /// </summary>
+        /// <param name="vector"></param>
+        public Vector3(Vector3 vector)
+        {
+            this.x = vector.x;
+            this.y = vector.y;
+            this.z = vector.z;
+        }
+
+        /// <summary>
         /// Construct Vector3 from file data.
         /// </summary>
         /// <param name="reader"></param>

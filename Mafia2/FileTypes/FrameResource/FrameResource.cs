@@ -293,7 +293,7 @@ namespace Mafia2
                 {
                     if (obj.ParentIndex1.Index <= (frameScenes.Count - 1) && (frameScenes.Count - 1) != -1)
                         obj.ParentIndex1.RefID = (frameScenes.ElementAt(obj.ParentIndex1.Index).Value as FrameHeaderScene).RefID;
-                    else if (obj.ParentIndex1.Index > numBlocks)
+                    else if (obj.ParentIndex1.Index >= numBlocks)
                         obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index-numBlocks).Value as FrameObjectBase).RefID;
                     else
                         obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index).Value as FrameObjectBase).RefID;
@@ -304,7 +304,7 @@ namespace Mafia2
                 {
                     if (obj.ParentIndex2.Index <= (frameScenes.Count - 1) && (frameScenes.Count - 1) != -1)
                         obj.ParentIndex2.RefID = (frameScenes.ElementAt(obj.ParentIndex2.Index).Value as FrameHeaderScene).RefID;
-                    else if (obj.ParentIndex2.Index > numBlocks)
+                    else if (obj.ParentIndex2.Index >= numBlocks)
                         obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index-numBlocks).Value as FrameObjectBase).RefID;
                     else
                         obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index).Value as FrameObjectBase).RefID;

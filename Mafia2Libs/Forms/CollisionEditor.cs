@@ -60,7 +60,9 @@ namespace Mafia2Tool
 
 
                 for (int x = 0; x != model.Lods[0].Parts[0].Indices.Length; x++)
+                {
                     model.Lods[0].Parts[0].Indices[x] = new Short3(nxsData.Data.Triangles[x]);
+                }
 
 
                 model.ExportCollisionToM2T(node.Name);

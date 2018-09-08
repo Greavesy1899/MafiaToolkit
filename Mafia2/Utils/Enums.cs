@@ -424,6 +424,18 @@ namespace Mafia2
         Parent2
     }
 
+    //sand is grass;
+    //plaster is some kind of concrete.
+//car = concrete again?
+//heads_of_cats = concrete; tarmac?; roads use this material.
+//ground_loam = usually used as stone paths; found in hillwood close to the observatory
+//railing = barriers; metal; etc
+//road_ky = Like a dirt; but it reduces you to walking speeds...cars drive slow too.
+//glassbreak_bulletproof = stone walls.
+//glass_break1 = top of stone walls.
+//tiles_ky = tarmac; found on driveways
+//person_leg = edge of sidewalk.
+//sheet_metal = water, puddle sounds.
     public enum CollisionMaterials
     {
         Road,

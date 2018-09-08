@@ -499,9 +499,16 @@ namespace Mafia2
 
             float fMaxSize = Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
 
-            //frameGeometry.DecompressionFactor = fMaxSize / 0x10000;
-            frameGeometry.DecompressionFactor = (float)256 / 0x10000;
-            //frameGeometry.DecompressionFactor = (float)16 / 0x10000;
+            Console.WriteLine("Decompress value before: " + fMaxSize);
+
+            if (fMaxSize <= 16)
+                frameGeometry.DecompressionFactor = (float)16 / 0x10000;
+            else if (fMaxSize <= 256)
+                frameGeometry.DecompressionFactor = (float)256 / 0x10000;
+            else
+                frameGeometry.DecompressionFactor = fMaxSize / 0x10000;
+
+            Console.WriteLine("Using decompression value from: " + fMaxSize + " result is: " + frameGeometry.DecompressionFactor);
         }
 
         /// <summary>
@@ -509,7 +516,7 @@ namespace Mafia2
         /// </summary>
         public void BuildIndexBuffer(string name = null)
         {
-            if(Lods == null)
+            if (Lods == null)
                 return;
 
             List<ushort> idata = new List<ushort>();
@@ -525,7 +532,7 @@ namespace Mafia2
                 }
             }
 
-            if(name != null)
+            if (name != null)
                 IndexBuffers[0] = new IndexBuffer(FNV64.Hash(name));
             else
                 IndexBuffers[0] = new IndexBuffer(frameGeometry.LOD[0].IndexBufferRef.uHash);

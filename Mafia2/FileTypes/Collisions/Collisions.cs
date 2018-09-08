@@ -573,7 +573,7 @@ namespace Mafia2
                     triangles[i].WriteToFile(writer);
 
                 for (int i = 0; i != unkShorts.Length; i++)
-                    writer.Write((short)CollisionMaterials.Plaster);
+                    writer.Write((short)unkShorts[i]);
 
                 bool overTri1 = false;
 
@@ -586,7 +586,7 @@ namespace Mafia2
                     }
                     else
                     {
-                        foreach (short s in UnkData)
+                        foreach (short s in unkBytes)
                             writer.Write(s);
                     }
 
@@ -647,7 +647,7 @@ namespace Mafia2
                     writer.Write(hbmUnkFloats[i]);
 
                 writer.Write(unkSize);
-                writer.Write(unkSizeData);
+                writer.Write(new byte[unkSize]);
             }
 
             public int GetMeshSize()
