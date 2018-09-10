@@ -358,285 +358,67 @@ namespace Gibbed.Mafia2.FileFormats
                 ResourceEntry resourceEntry = new ResourceEntry();
                 resourceEntry.TypeId = exists;
 
-                if (resourceType == "FrameResource" ||
-                    resourceType == "Effects" ||
-                    resourceType == "PREFAB" ||
-                    resourceType == "ItemDesc" ||
-                    resourceType == "FrameNameTable" ||
-                    resourceType == "Actors" ||
-                    resourceType == "Collisions" ||
-                    resourceType == "NAV_AIWORLD_DATA" ||
-                    resourceType == "NAV_OBJ_DATA" ||
-                    resourceType == "NAV_HPD_DATA" ||
-                    resourceType == "Cutscene" ||
-                    resourceType == "FxActor" ||
-                    resourceType == "FxAnimSet" ||
-                    resourceType == "Translokator" ||
-                    resourceType == "AudioSectors" ||
-                    resourceType == "Speech" ||
-                    resourceType == "SoundTable" ||
-                    resourceType == "AnimalTrafficPaths")
+                switch(resourceType)
                 {
-                    nodes.Current.MoveToNext();
-                    string file = nodes.Current.Value;
-                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                    {
-                        resourceEntry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-                    }
-
-                    nodes.Current.MoveToNext();
-                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-                    sddescNode.InnerText = "not available";
+                    case "FrameResource":
+                    case "Effects":
+                    case "PREFAB":
+                    case "ItemDesc":
+                    case "FrameNameTable":
+                    case "Actors":
+                    case "Collisions":
+                    case "NAV_AIWORLD_DATA":
+                    case "NAV_OBJ_DATA":
+                    case "NAV_HPD_DATA":
+                    case "Cutscene":
+                    case "FxActor":
+                    case "FxAnimSet":
+                    case "Translokator":
+                    case "AudioSectors":
+                    case "Speech":
+                    case "SoundTable":
+                    case "AnimalTrafficPaths":
+                    case "AnimatedTexture":
+                        resourceEntry = WriteBasicEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "IndexBufferPool":
+                    case "VertexBufferPool":
+                        resourceEntry = WriteBufferEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "EntityDataStorage":
+                        resourceEntry = WriteEntityDataEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Animation2":
+                        resourceEntry = WriteAnimationEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Texture":
+                        resourceEntry = WriteTextureEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Mipmap":
+                        resourceEntry = WriteMipmapEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Sound":
+                        resourceEntry = WriteSoundEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "XML":
+                        resourceEntry = WriteXMLEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "MemFile":
+                        resourceEntry = WriteMemFileEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Script":
+                        resourceEntry = WriteScriptEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Table":
+                        resourceEntry = WriteTableEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    default:
+                        MessageBox.Show("Did not pack type: " + resourceType, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        break;
                 }
-                else if(resourceType == "IndexBufferPool" || resourceType == "VertexBufferPool")
-                {
-                    nodes.Current.MoveToNext();
-                    string file = nodes.Current.Value;
-                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                    {
-                        reader.BaseStream.Position = 5;
-                        resourceEntry.SlotVramRequired = (uint)reader.ReadInt32();
-                        reader.BaseStream.Position = 0;
-                        resourceEntry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-                    }
 
-                    nodes.Current.MoveToNext();
-                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-                    sddescNode.InnerText = "not available";
-                }
-                else if(resourceType == "EntityDataStorage")
-                {
-                    nodes.Current.MoveToNext();
-                    string file = nodes.Current.Value;
-                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                    {
-                        resourceEntry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-                        resourceEntry.SlotRamRequired = (uint)reader.BaseStream.Length + 30;
-                    }
-
-                    nodes.Current.MoveToNext();
-                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-                    sddescNode.InnerText = "not available";
-                }
-                else if (resourceType == "Texture")
-                {
-                    MemoryStream data = new MemoryStream();
-                    TextureResource resource;
-
-                    byte[] texData;
-                    nodes.Current.MoveToNext();
-                    string file = nodes.Current.Value;
-                    nodes.Current.MoveToNext();
-                    byte hasMIP = Convert.ToByte(nodes.Current.Value);
-                    nodes.Current.MoveToNext();
-                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                    {
-                        texData = reader.ReadBytes((int)reader.BaseStream.Length);
-                    }
-
-                    resource = new TextureResource(FNV64.Hash(file), hasMIP, texData);
-                    resourceEntry.SlotVramRequired = (uint)texData.Length - 128;
-
-                    if (hasMIP == 1)
-                    {
-                        using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/MIP_" + file, FileMode.Open)))
-                        {
-                            resourceEntry.SlotVramRequired += (uint)(reader.BaseStream.Length-128);
-                        }
-                    }
-
-                    resource.Serialize(resourceEntry.Version, data, Endian.Little);                
-                    sddescNode.InnerText = file;
-                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-                    resourceEntry.Data = data.GetBuffer();
-                }
-                else if (resourceType == "Mipmap")
-                {
-                    MemoryStream data = new MemoryStream();
-                    TextureResource resource;
-                    byte[] texData;
-
-                    nodes.Current.MoveToNext();
-                    string file = nodes.Current.Value;
-                    nodes.Current.MoveToNext();
-                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                        texData = reader.ReadBytes((int)reader.BaseStream.Length);
-
-                    resource = new TextureResource(FNV64.Hash(file.Remove(0, 4)), 0, texData);
-                    resource.SerializeMIP(resourceEntry.Version, data, Endian.Little);
-                    sddescNode.InnerText = file.Remove(0, 4);
-                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-                    resourceEntry.Data = data.GetBuffer();
-                }
-                else if (resourceType == "Sound")
-                {
-                    List<byte> data = new List<byte>();
-                    string file;
-                    nodes.Current.MoveToNext();
-                    file = nodes.Current.Value.Remove(nodes.Current.Value.Length - 4, 4);
-                    data.Add((byte)file.Length);
-                    for (int i = 0; i != file.Length; i++)
-                        data.Add((byte)file[i]);
-
-                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file + ".fsb", FileMode.Open)))
-                    {
-                        resourceEntry.SlotRamRequired = 40;
-                        resourceEntry.SlotVramRequired = (uint)reader.BaseStream.Length;
-                        data.AddRange(BitConverter.GetBytes((int)reader.BaseStream.Length)); //?? WHAT DOES THIS DO?? CHECK LATER.
-                        data.AddRange(reader.ReadBytes((int)reader.BaseStream.Length));
-                    }
-                    nodes.Current.MoveToNext();
-                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-                    resourceEntry.Data = data.ToArray();
-                    sddescNode.InnerText = file;
-                }
-                else if (resourceType == "MemFile")
-                {
-                    //get file name from XML.
-                    nodes.Current.MoveToNext();
-                    string file = nodes.Current.Value;
-
-                    //construct MemResource.
-                    MemFileResource resource = new MemFileResource
-                    {
-                        Name = file,
-                        Unk1 = 1
-                    };
-                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                    {
-                        resource.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-                        //resourceEntry.SlotRamRequired = (uint)reader.BaseStream.Length;
-                    }
-
-                    //Get version.
-                    nodes.Current.MoveToNext();
-                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-                    //serialize.
-                    MemoryStream stream = new MemoryStream();
-                    resource.Serialize(resourceEntry.Version, stream, Endian.Little);
-
-                    //set the data.
-                    resourceEntry.Data = stream.GetBuffer();
-                    sddescNode.InnerText = file;
-                }
-                else if (resourceType == "Script")
-                {
-                    nodes.Current.MoveToNext();
-                    string path = nodes.Current.Value;
-                    nodes.Current.MoveToNext();
-                    int numScripts = Convert.ToInt32(nodes.Current.Value);
-
-                    ScriptResource resource = new ScriptResource();
-                    resource.Path = path;
-
-                    for (int i = 0; i != numScripts; i++)
-                    {
-                        ScriptData data = new ScriptData();
-                        nodes.Current.MoveToNext();
-                        data.Name = nodes.Current.Value;
-                        using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + data.Name, FileMode.Open)))
-                        {
-                            data.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-                        }
-                        resource.Scripts.Add(data);
-                    }
-                    nodes.Current.MoveToNext();
-                    ushort version = Convert.ToUInt16(nodes.Current.Value);
-
-                    MemoryStream stream = new MemoryStream();
-                    resource.Serialize(version, stream, Endian.Little);
-                    resourceEntry.Version = version;
-                    resourceEntry.Data = stream.GetBuffer();
-                    sddescNode.InnerText = path;
-                }
-                else if (resourceType == "Animation2")
-                {
-                    nodes.Current.MoveToNext();
-                    string file = nodes.Current.Value;
-                    nodes.Current.MoveToNext();
-                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                    {
-                        resourceEntry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-                    }
-                    sddescNode.InnerText = file.Remove(file.Length - 4, 4);
-                }
-                else if (resourceType == "Table")
-                {
-                    nodes.Current.MoveToNext();
-                    string file = nodes.Current.Value;
-                    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                    {
-                        resourceEntry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-                    }
-
-                    nodes.Current.MoveToNext();
-                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-                    sddescNode.InnerText = file.Remove(file.Length - 4, 4);
-                }
-                else if (resourceType == "XML")
-                {
-                    nodes.Current.MoveToNext();
-                    string file = nodes.Current.Value;
-
-                    nodes.Current.MoveToNext();
-                    string tag = nodes.Current.Value;
-
-                    nodes.Current.MoveToNext();
-                    bool unk1 = nodes.Current.ValueAsBoolean;
-
-                    nodes.Current.MoveToNext();
-                    bool unk3 = nodes.Current.ValueAsBoolean;
-
-                    //need to do version early.
-                    nodes.Current.MoveToNext();
-                    resourceEntry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-                    XmlResource resource = new XmlResource
-                    {
-                        Name = file,
-                        Content = sdsFolder + "/" + file + ".xml",
-                        Tag = tag,
-                        Unk1 = unk1,
-                        Unk3 = unk3
-                    };
-                    MemoryStream stream = new MemoryStream();
-                    resource.Serialize(resourceEntry.Version, stream, Endian.Little);
-
-                    sddescNode.InnerText = file;
-
-                    if (resource.Unk3)
-                    {
-                        using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file + ".xml", FileMode.Open)))
-                        {
-                            resource.SerializeVersion3(resourceEntry.Version, stream, reader.ReadBytes((int)reader.BaseStream.Length));
-                        }
-                    }
-                    resourceEntry.Data = stream.GetBuffer();
-                }
-                else
-                {
-                    if (resourceType == "")
-                        continue;
-
-                    MessageBox.Show("Did not pack type: " + resourceType, "Toolkit",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
                 resourceNode.AppendChild(typeNameNode);
                 resourceNode.AppendChild(sddescNode);
-                //resourceEntry.OtherRamRequired = 0;
-                //resourceEntry.OtherVramRequired = 0;
-                //resourceEntry.SlotRamRequired = 0;
-                //resourceEntry.SlotVramRequired = 0;
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotRamRequired", (int)resourceEntry.SlotRamRequired));
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotVRamRequired", (int)resourceEntry.SlotVramRequired));
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherRamRequired", (int)resourceEntry.OtherRamRequired));
@@ -803,7 +585,8 @@ namespace Gibbed.Mafia2.FileFormats
                         break;
                     case "Table":
                         ReadTableEntry(entry, resourceXML, "");
-                        continue;
+                        saveName = "Tables.tbl";
+                        break;
                     case "Animated Texture":
                         saveName = ReadBasicEntry(resourceXML, itemNames[i]);
                         break;
@@ -825,7 +608,7 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.Flush();
             resourceXML.Dispose();
         }
-
+        
         public ResourceEntry ReadTextureEntry(ResourceEntry entry, XmlWriter resourceXML, string name)
         {
             TextureResource resource = new TextureResource();
@@ -833,6 +616,40 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteElementString("File", name);
             resourceXML.WriteElementString("HasMIP", resource.HasMIP.ToString());
             entry.Data = resource.Data;
+            return entry;
+        }
+        public ResourceEntry WriteTextureEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            //texture data storage.
+            MemoryStream data = new MemoryStream();
+            TextureResource resource;
+            byte[] texData;
+
+            //read from xml.
+            nodes.Current.MoveToNext();
+            string file = nodes.Current.Value;
+            nodes.Current.MoveToNext();
+            byte hasMIP = Convert.ToByte(nodes.Current.Value);
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+            //do main stuff
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                texData = reader.ReadBytes((int)reader.BaseStream.Length);
+
+            resource = new TextureResource(FNV64.Hash(file), hasMIP, texData);
+            entry.SlotVramRequired = (uint)texData.Length - 128;
+
+            if (hasMIP == 1)
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/MIP_" + file, FileMode.Open)))
+                    entry.SlotVramRequired += (uint)(reader.BaseStream.Length - 128);
+            }
+
+            resource.Serialize(entry.Version, data, Endian.Little);
+            descNode.InnerText = file;
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+            entry.Data = data.GetBuffer();
             return entry;
         }
         public ResourceEntry ReadMipmapEntry(ResourceEntry entry, XmlWriter resourceXML, string name)
@@ -843,10 +660,51 @@ namespace Gibbed.Mafia2.FileFormats
             entry.Data = resource.Data;
             return entry;
         }
+        public ResourceEntry WriteMipmapEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            //texture data storage.
+            MemoryStream data = new MemoryStream();
+            TextureResource resource;
+            byte[] texData;
+
+            //get xml stuff
+            nodes.Current.MoveToNext();
+            string file = nodes.Current.Value;
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+            //read file data.
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                texData = reader.ReadBytes((int)reader.BaseStream.Length);
+
+            resource = new TextureResource(FNV64.Hash(file.Remove(0, 4)), 0, texData);
+            resource.SerializeMIP(entry.Version, data, Endian.Little);
+
+            //finish.
+            descNode.InnerText = file.Remove(0, 4);
+            entry.Data = data.GetBuffer();
+            return entry;
+        }
         public string ReadBasicEntry(XmlWriter resourceXML, string name)
         {
             resourceXML.WriteElementString("File", name);
             return name;
+        }
+        public ResourceEntry WriteBasicEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            //get data from xml
+            nodes.Current.MoveToNext();
+            string file = nodes.Current.Value;
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+            //set up data.
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+
+            //finish
+            descNode.InnerText = "not available";
+            return entry;
         }
         public void ReadScriptEntry(ResourceEntry entry, XmlWriter resourceXML, string scriptDir)
         {
@@ -873,6 +731,39 @@ namespace Gibbed.Mafia2.FileFormats
             }
             resourceXML.WriteElementString("Version", entry.Version.ToString());
             resourceXML.WriteEndElement(); //finish early.
+        }
+        public ResourceEntry WriteScriptEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            //get xml data.
+            nodes.Current.MoveToNext();
+            string path = nodes.Current.Value;
+            nodes.Current.MoveToNext();
+            int numScripts = Convert.ToInt32(nodes.Current.Value);
+            nodes.Current.MoveToNext();
+            ushort version = Convert.ToUInt16(nodes.Current.Value);
+
+            //main stuff
+            ScriptResource resource = new ScriptResource();
+            resource.Path = path;
+
+            for (int i = 0; i != numScripts; i++)
+            {
+                ScriptData data = new ScriptData();
+                nodes.Current.MoveToNext();
+                data.Name = nodes.Current.Value;
+                using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + data.Name, FileMode.Open)))
+                    data.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+
+                resource.Scripts.Add(data);
+            }
+
+            //finish
+            MemoryStream stream = new MemoryStream();
+            resource.Serialize(version, stream, Endian.Little);
+            entry.Version = version;
+            entry.Data = stream.GetBuffer();
+            descNode.InnerText = path;
+            return entry;
         }
         public void ReadXMLEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string xmlDir)
         {
@@ -910,6 +801,49 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteElementString("Version", entry.Version.ToString());
             resourceXML.WriteEndElement(); //finish early.
         }
+        public ResourceEntry WriteXMLEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            nodes.Current.MoveToNext();
+            string file = nodes.Current.Value;
+            descNode.InnerText = file;
+
+            nodes.Current.MoveToNext();
+            string tag = nodes.Current.Value;
+
+            nodes.Current.MoveToNext();
+            bool unk1 = nodes.Current.ValueAsBoolean;
+
+            nodes.Current.MoveToNext();
+            bool unk3 = nodes.Current.ValueAsBoolean;
+
+            //need to do version early.
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+            MemoryStream stream = new MemoryStream();
+
+            XmlResource resource = new XmlResource
+            {
+                Name = file,
+                Content = sdsFolder + "/" + file + ".xml",
+                Tag = tag,
+                Unk1 = unk1,
+                Unk3 = unk3
+            };
+            resource.Serialize(entry.Version, stream, Endian.Little);
+
+            if (resource.Unk3)
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file + ".xml", FileMode.Open)))
+                    entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+            }
+            else
+            {
+                entry.Data = stream.GetBuffer();
+            }
+
+            return entry;
+        }
         public void ReadSoundEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string soundDir)
         {
             //Do resource first..
@@ -928,6 +862,29 @@ namespace Gibbed.Mafia2.FileFormats
             }
             resourceXML.WriteElementString("File", fileName);
         }
+        public ResourceEntry WriteSoundEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            List<byte> data = new List<byte>();
+            string file;
+            nodes.Current.MoveToNext();
+            file = nodes.Current.Value.Remove(nodes.Current.Value.Length - 4, 4);
+            data.Add((byte)file.Length);
+            for (int i = 0; i != file.Length; i++)
+                data.Add((byte)file[i]);
+
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file + ".fsb", FileMode.Open)))
+            {
+                entry.SlotRamRequired = 40;
+                entry.SlotVramRequired = (uint)reader.BaseStream.Length;
+                data.AddRange(BitConverter.GetBytes((int)reader.BaseStream.Length)); //?? WHAT DOES THIS DO?? CHECK LATER.
+                data.AddRange(reader.ReadBytes((int)reader.BaseStream.Length));
+            }
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+            entry.Data = data.ToArray();
+            descNode.InnerText = file;
+            return entry;
+        }
         public void ReadMemEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string memDIR)
         {
             MemFileResource resource = new MemFileResource();
@@ -944,13 +901,114 @@ namespace Gibbed.Mafia2.FileFormats
             }
             resourceXML.WriteElementString("File", name);
         }
+        public ResourceEntry WriteMemFileEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            //get file name from XML.
+            nodes.Current.MoveToNext();
+            string file = nodes.Current.Value;
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+            //construct MemResource.
+            MemFileResource resource = new MemFileResource
+            {
+                Name = file,
+                Unk1 = 1
+            };
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+            {
+                resource.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+                entry.SlotRamRequired = (uint)reader.BaseStream.Length;
+            }
+
+            //serialize.
+            MemoryStream stream = new MemoryStream();
+            resource.Serialize(entry.Version, stream, Endian.Little);
+
+            //set the data.
+            entry.Data = stream.GetBuffer();
+            descNode.InnerText = file;
+            return entry;
+        }
         public ResourceEntry ReadTableEntry(ResourceEntry entry, XmlWriter resourceXML, string name)
         {
             TableResource resource = new TableResource();
             resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
             //todo extract individual tables.
-            name = "Tables_" + ".tbl";
+            name = "Tables" + ".tbl";
             resourceXML.WriteElementString("File", name);
+            return entry;
+        }
+        public ResourceEntry WriteTableEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            nodes.Current.MoveToNext();
+            string file = nodes.Current.Value;
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+            {
+                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+                entry.SlotRamRequired = ((uint)reader.BaseStream.Length + 128);
+            }
+
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+            descNode.InnerText = file.Remove(file.Length - 4, 4);
+            return entry;
+        }
+        public ResourceEntry WriteBufferEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            //get data from xml:
+            nodes.Current.MoveToNext();
+            string file = nodes.Current.Value;
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+            //read buffers
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+            {
+                reader.BaseStream.Position = 5;
+                entry.SlotVramRequired = (uint)reader.ReadInt32();
+                reader.BaseStream.Position = 0;
+                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+            }
+
+            //finish
+            descNode.InnerText = "not available";
+            return entry;
+        }
+        public ResourceEntry WriteEntityDataEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            //get data from XML
+            nodes.Current.MoveToNext();
+            string file = nodes.Current.Value;
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+            //read into data.
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+            {
+                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+                entry.SlotRamRequired = (uint)reader.BaseStream.Length + 30;
+            }
+
+            //finish
+            descNode.InnerText = "not available";
+            return entry;
+        }
+        public ResourceEntry WriteAnimationEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            //get data from xml:
+            nodes.Current.MoveToNext();
+            string file = nodes.Current.Value;
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+            //do file data.
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+
+            //finish
+            descNode.InnerText = file.Remove(file.Length - 4, 4);
             return entry;
         }
 

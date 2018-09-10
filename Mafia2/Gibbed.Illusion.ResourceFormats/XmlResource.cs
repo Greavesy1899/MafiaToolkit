@@ -82,23 +82,5 @@ namespace Gibbed.Mafia2.ResourceFormats
                 //this.Content = XmlResource1.Deserialize(input, endian);
             }
         }
-
-        public void SerializeVersion3(ushort version, MemoryStream stream, byte[] data)
-        {
-            stream = new MemoryStream();
-            stream.WriteStringU32(this.Tag, Endian.Little);
-            if (version >= 3)
-            {
-                stream.WriteValueU8((byte)(this.Unk1 ? 1 : 0));
-            }
-
-            stream.WriteStringU32(this.Name, Endian.Little);
-
-            if (version >= 2)
-            {
-                stream.WriteValueU8((byte)(this.Unk3 ? 1 : 0));
-            }
-            stream.WriteBytes(data);
-        }
     }
 }

@@ -160,7 +160,11 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 		std::vector<Point3> tangents = std::vector<Point3>(mesh.numVerts);
 		std::vector<Point3> uvs = std::vector<Point3>(mesh.numVerts);
 
+		if (!mesh.GetSpecifiedNormals())
+			mesh.SpecifyNormals();
+
 		MeshNormalSpec* normalSpec = mesh.GetSpecifiedNormals();
+		normalSpec->CheckNormals();
 		MeshMap &map = mesh.Map(1);
 
 		for (int c = 0; c != mesh.numVerts; c++) {
@@ -168,7 +172,7 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 				verts[c] = mesh.getVert(c);
 
 			if (parts[i].GetHasNormals())
-				normals[c] = verts[c].Normalize();
+				normals[c] = normalSpec->Normal(c);
 
 			if(parts[i].GetHasTangents())
 				tangents[c] = ComputeTangent(&map.tv[c], &verts[c]);

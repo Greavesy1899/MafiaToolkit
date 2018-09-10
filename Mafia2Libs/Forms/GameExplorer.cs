@@ -177,13 +177,13 @@ namespace Mafia2Tool
             if (file == null)
                 MessageBox.Show("File is null");
 
-            if (file.Name == "ingame.sds" || file.Name == "tables.sds")
-            {
-                MessageBox.Show("Packing " + file.Name + " is temporarily disabled due to game crashing.", "Toolkit",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-                return;
-            }
+            //if (file.Name == "ingame.sds" || file.Name == "tables.sds")
+            //{
+            //    MessageBox.Show("Packing " + file.Name + " is temporarily disabled due to game crashing.", "Toolkit",
+            //        MessageBoxButtons.OK,
+            //        MessageBoxIcon.Information);
+            //    return;
+            //}
 
             //backup file before repacking..
             if (!Directory.Exists(file.Directory.FullName + "/BackupSDS"))
