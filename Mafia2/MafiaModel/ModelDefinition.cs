@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assimp;
 using System.IO;
 using Gibbed.Illusion.FileFormats.Hashing;
 

@@ -32,6 +32,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CollisionEditor));
             this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.CollisionContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
+            this.deletePlacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openM2T = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
@@ -41,11 +44,8 @@
             this.toolsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.addButton = new System.Windows.Forms.ToolStripMenuItem();
             this.addNewPlacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.CollisionContext = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.deletePlacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStrip1.SuspendLayout();
             this.CollisionContext.SuspendLayout();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // FrameResourceGrid
@@ -69,6 +69,28 @@
             this.treeView1.Size = new System.Drawing.Size(368, 410);
             this.treeView1.TabIndex = 11;
             this.treeView1.Click += new System.EventHandler(this.OnClickNode);
+            // 
+            // CollisionContext
+            // 
+            this.CollisionContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ContextDelete,
+            this.deletePlacementToolStripMenuItem});
+            this.CollisionContext.Name = "SDSContext";
+            this.CollisionContext.Size = new System.Drawing.Size(167, 48);
+            this.CollisionContext.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpening);
+            // 
+            // ContextDelete
+            // 
+            this.ContextDelete.Name = "ContextDelete";
+            this.ContextDelete.Size = new System.Drawing.Size(166, 22);
+            this.ContextDelete.Text = "Delete Collision";
+            this.ContextDelete.Click += new System.EventHandler(this.OnDeleteCollision);
+            // 
+            // deletePlacementToolStripMenuItem
+            // 
+            this.deletePlacementToolStripMenuItem.Name = "deletePlacementToolStripMenuItem";
+            this.deletePlacementToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.deletePlacementToolStripMenuItem.Text = "Delete Placement";
             // 
             // openM2T
             // 
@@ -127,6 +149,7 @@
             this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addButton,
             this.addNewPlacementToolStripMenuItem});
+            this.toolsButton.Enabled = false;
             this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
             this.toolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolsButton.Name = "toolsButton";
@@ -146,28 +169,6 @@
             this.addNewPlacementToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.addNewPlacementToolStripMenuItem.Text = "Add New Placement";
             // 
-            // CollisionContext
-            // 
-            this.CollisionContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ContextDelete,
-            this.deletePlacementToolStripMenuItem});
-            this.CollisionContext.Name = "SDSContext";
-            this.CollisionContext.Size = new System.Drawing.Size(181, 70);
-            this.CollisionContext.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpening);
-            // 
-            // ContextDelete
-            // 
-            this.ContextDelete.Name = "ContextDelete";
-            this.ContextDelete.Size = new System.Drawing.Size(156, 22);
-            this.ContextDelete.Text = "Delete Collision";
-            this.ContextDelete.Click += new System.EventHandler(this.OnDeleteCollision);
-            // 
-            // deletePlacementToolStripMenuItem
-            // 
-            this.deletePlacementToolStripMenuItem.Name = "deletePlacementToolStripMenuItem";
-            this.deletePlacementToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.deletePlacementToolStripMenuItem.Text = "Delete Placement";
-            // 
             // CollisionEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -179,9 +180,9 @@
             this.Name = "CollisionEditor";
             this.Text = "Collision Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnClose);
+            this.CollisionContext.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            this.CollisionContext.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

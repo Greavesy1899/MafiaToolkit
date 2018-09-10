@@ -177,14 +177,6 @@ namespace Mafia2Tool
             if (file == null)
                 MessageBox.Show("File is null");
 
-            //if (file.Name == "ingame.sds" || file.Name == "tables.sds")
-            //{
-            //    MessageBox.Show("Packing " + file.Name + " is temporarily disabled due to game crashing.", "Toolkit",
-            //        MessageBoxButtons.OK,
-            //        MessageBoxIcon.Information);
-            //    return;
-            //}
-
             //backup file before repacking..
             if (!Directory.Exists(file.Directory.FullName + "/BackupSDS"))
                 Directory.CreateDirectory(file.Directory.FullName + "/BackupSDS");
@@ -349,8 +341,8 @@ namespace Mafia2Tool
                 speech = new Speech((FileInfo)item.Tag);
             else if (item.SubItems[1].Text == "SDS Archive")
                 OpenSDS((FileInfo)item.Tag);
-            else if (item.SubItems[1].Text == "PATCH Archive")
-                OpenPATCH((FileInfo)item.Tag);
+            //else if (item.SubItems[1].Text == "PATCH Archive")
+            //    OpenPATCH((FileInfo)item.Tag);
             else if (item.SubItems[1].Text == "FR")
                 fTool = new FrameResourceTool((FileInfo)item.Tag);
             else if (item.SubItems[1].Text == "COL")

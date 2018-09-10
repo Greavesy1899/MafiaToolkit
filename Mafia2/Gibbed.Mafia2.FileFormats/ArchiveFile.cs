@@ -739,8 +739,6 @@ namespace Gibbed.Mafia2.FileFormats
             string path = nodes.Current.Value;
             nodes.Current.MoveToNext();
             int numScripts = Convert.ToInt32(nodes.Current.Value);
-            nodes.Current.MoveToNext();
-            ushort version = Convert.ToUInt16(nodes.Current.Value);
 
             //main stuff
             ScriptResource resource = new ScriptResource();
@@ -758,6 +756,8 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             //finish
+            nodes.Current.MoveToNext();
+            ushort version = Convert.ToUInt16(nodes.Current.Value);
             MemoryStream stream = new MemoryStream();
             resource.Serialize(version, stream, Endian.Little);
             entry.Version = version;

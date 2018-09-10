@@ -85,6 +85,10 @@ namespace Gibbed.Mafia2.FileFormats
                     OtherRamRequired = resourceHeader.OtherRamRequired,
                     OtherVramRequired = resourceHeader.OtherVramRequired,
                 };
+
+                if (!Directory.Exists("patches/"))
+                    Directory.CreateDirectory("patches/");
+
                 using (BinaryWriter writer = new BinaryWriter(File.Open("patches/"+file.Name + "_" + i + ".bin", FileMode.Create)))
                 {
                     writer.Write(resources[i].Data);

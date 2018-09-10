@@ -137,6 +137,7 @@
             this.exportAllSubButton,
             this.overwriteBufferSubButton,
             this.addButton});
+            this.toolsButton.Enabled = false;
             this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
             this.toolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolsButton.Name = "toolsButton";
@@ -150,39 +151,39 @@
             this.modelsToolStripMenuItem,
             this.allToolStripMenuItem});
             this.exportAllSubButton.Name = "exportAllSubButton";
-            this.exportAllSubButton.Size = new System.Drawing.Size(160, 22);
+            this.exportAllSubButton.Size = new System.Drawing.Size(180, 22);
             this.exportAllSubButton.Text = "Export All";
             this.exportAllSubButton.Click += new System.EventHandler(this.OnClickLoadAll);
             // 
             // farLodsToolStripMenuItem
             // 
             this.farLodsToolStripMenuItem.Name = "farLodsToolStripMenuItem";
-            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.farLodsToolStripMenuItem.Text = "Far Lods";
             // 
             // modelsToolStripMenuItem
             // 
             this.modelsToolStripMenuItem.Name = "modelsToolStripMenuItem";
-            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.modelsToolStripMenuItem.Text = "Models";
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.allToolStripMenuItem.Text = "All";
             // 
             // overwriteBufferSubButton
             // 
             this.overwriteBufferSubButton.Name = "overwriteBufferSubButton";
-            this.overwriteBufferSubButton.Size = new System.Drawing.Size(160, 22);
+            this.overwriteBufferSubButton.Size = new System.Drawing.Size(180, 22);
             this.overwriteBufferSubButton.Text = "Overwrite Buffer";
             this.overwriteBufferSubButton.Click += new System.EventHandler(this.OverwriteBuffer_Click);
             // 
             // addButton
             // 
             this.addButton.Name = "addButton";
-            this.addButton.Size = new System.Drawing.Size(160, 22);
+            this.addButton.Size = new System.Drawing.Size(180, 22);
             this.addButton.Text = "Adding Test";
             this.addButton.Click += new System.EventHandler(this.AddFrameSingleMesh_Click);
             // 
@@ -200,7 +201,7 @@
             // switchViewSubButton
             // 
             this.switchViewSubButton.Name = "switchViewSubButton";
-            this.switchViewSubButton.Size = new System.Drawing.Size(137, 22);
+            this.switchViewSubButton.Size = new System.Drawing.Size(180, 22);
             this.switchViewSubButton.Text = "Switch View";
             this.switchViewSubButton.Click += new System.EventHandler(this.SwitchView);
             // 
@@ -217,14 +218,14 @@
             // contextExtract3D
             // 
             this.contextExtract3D.Name = "contextExtract3D";
-            this.contextExtract3D.Size = new System.Drawing.Size(155, 22);
+            this.contextExtract3D.Size = new System.Drawing.Size(129, 22);
             this.contextExtract3D.Text = "Extract 3D";
             // 
             // contextDelete
             // 
             this.contextDelete.Name = "contextDelete";
             this.contextDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.contextDelete.Size = new System.Drawing.Size(155, 22);
+            this.contextDelete.Size = new System.Drawing.Size(129, 22);
             this.contextDelete.Text = "Delete";
             this.contextDelete.Click += new System.EventHandler(this.OnDelete);
             // 
@@ -236,13 +237,13 @@
             this.contextUpdateParents});
             this.contextMenu.Name = "contextMenuStrip1";
             this.contextMenu.ShowImageMargin = false;
-            this.contextMenu.Size = new System.Drawing.Size(156, 92);
+            this.contextMenu.Size = new System.Drawing.Size(130, 70);
             this.contextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ItemClicked);
             // 
             // contextUpdateParents
             // 
             this.contextUpdateParents.Name = "contextUpdateParents";
-            this.contextUpdateParents.Size = new System.Drawing.Size(155, 22);
+            this.contextUpdateParents.Size = new System.Drawing.Size(129, 22);
             this.contextUpdateParents.Text = "Update Parents";
             this.contextUpdateParents.ToolTipText = "Add a scene as a parent.";
             // 
