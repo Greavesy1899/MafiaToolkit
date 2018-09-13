@@ -310,7 +310,7 @@ namespace Mafia2
         TexCoords0 = 256, // 0x00000100
         TexCoords1 = 512, // 0x00000200
         TexCoords2 = 1024, // 0x00000400
-        TexCoords7 = 32768, // 0x00008000
+        TexCoords7 = 32768, // 0x00008000 //OM Texture coords.
         flag_0x20000 = 131072, // 0x00020000
         flag_0x40000 = 262144, // 0x00040000
         DamageGroup = 1048576, // 0x00100000

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Fbx;
 using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2
@@ -148,6 +149,11 @@ namespace Mafia2
                             vertex.ReadBlendData(vertexBuffer.Data, startIndex);
                         }
 
+                        if(frameLod.VertexDeclaration.HasFlag(VertexFlags.flag_0x80))
+                        {
+                            Console.WriteLine("Skip vertex with flag_0x80");
+                        }
+
                         if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                         {
                             int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords0].Offset;
@@ -170,6 +176,21 @@ namespace Mafia2
                         {
                             int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords7].Offset;
                             vertex.ReadUvData(vertexBuffer.Data, startIndex, 3);
+                        }
+
+                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.flag_0x20000))
+                        {
+                            Console.WriteLine("Skip vertex with flag_0x20000");
+                        }
+
+                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.flag_0x40000))
+                        {
+                            Console.WriteLine("Skip vertex with flag_0x40000");
+                        }
+
+                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
+                        {
+                            Console.WriteLine("Skip vertex with DamageGroup");
                         }
 
                         if (lods[i].NormalMapInfoPresent)
@@ -297,15 +318,23 @@ namespace Mafia2
             }
         }
 
+        public void ExportToFbx()
+        {
+            if (!Directory.Exists("FBX"))
+                Directory.CreateDirectory("FBX");
+
+            FbxWrangler.BuildFBXFromModel(this);
+        }
+
         public void ExportCollisionToM2T(string name)
         {
             if (!Directory.Exists("Collisions"))
                 Directory.CreateDirectory("Collisions");
 
-            if (File.Exists("Collisions/ " + name + ".m2t"))
+            if (File.Exists("Collisions/" + name + ".m2t"))
                 return;
 
-            using (BinaryWriter writer = new BinaryWriter(File.Create("Collisions/ " + name + ".m2t")))
+            using (BinaryWriter writer = new BinaryWriter(File.Create("Collisions/" + name + ".m2t")))
             {
                 //An absolute overhaul on the mesh exportation.
                 //file header; M2T\0

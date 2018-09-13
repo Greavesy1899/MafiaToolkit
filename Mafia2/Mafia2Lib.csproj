@@ -37,6 +37,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Fbx, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Downloads\FbxIO\Fbx\bin\Debug\Fbx.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
@@ -67,7 +71,9 @@
     <Compile Include="Gibbed.Illusion.ResourceFormats\XmlResource0.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\XmlResource1.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\PatchFile.cs" />
+    <Compile Include="MafiaModel\FbxWrangler.cs" />
     <Compile Include="Utils\Bounds.cs" />
+    <Compile Include="Utils\FbxIOExtender.cs" />
     <Compile Include="Utils\Logger.cs" />
     <Compile Include="Utils\Matrix33.cs" />
     <Compile Include="Utils\TransformMatrix.cs" />
@@ -153,6 +159,11 @@
       <Project>{047857ba-daa3-4ca7-afb8-a1b082b28c6a}</Project>
       <Name>Gibbed.IO</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="libs\Fbx.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

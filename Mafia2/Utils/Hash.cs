@@ -70,7 +70,10 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return _string;
+            if (string.IsNullOrEmpty(_string))
+                return hash.ToString();
+            else
+                return _string;
         }
     }
 }

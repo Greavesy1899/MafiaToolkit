@@ -18,7 +18,10 @@ namespace Mafia2
             set { entries = value; }
         }
 
-        public CustomEDD() { }
+        public CustomEDD()
+        {
+            entries = new List<Entry>();
+        }
 
         public void WriteToFile(BinaryWriter writer)
         {

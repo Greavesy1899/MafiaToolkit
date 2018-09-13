@@ -267,13 +267,16 @@ namespace Mafia2Tool
             {
                 object fObject = SceneData.FrameResource.FrameObjects.ElementAt(i).Value;
 
-                if (fObject.GetType() == typeof(FrameObjectSingleMesh))
+                if ((fObject as FrameObjectBase).IsOnFrameTable && (fObject as FrameObjectBase).FrameNameTableFlags == 0)
                 {
-                    meshes.Add(fObject);
-                }
-                if (fObject.GetType() == typeof(FrameObjectModel))
-                {
-                    meshes.Add(fObject);
+                    if (fObject.GetType() == typeof(FrameObjectSingleMesh))
+                    {
+                        meshes.Add(fObject);
+                    }
+                    if (fObject.GetType() == typeof(FrameObjectModel))
+                    {
+                        meshes.Add(fObject);
+                    }
                 }
             }
 
@@ -499,6 +502,7 @@ namespace Mafia2Tool
 
                 Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
                 newModel.ExportToM2T();
+                newModel.ExportToFbx();
             }
             else if(e.ClickedItem.Name == "contextUpdateParents")
             {

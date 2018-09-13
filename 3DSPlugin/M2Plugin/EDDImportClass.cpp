@@ -113,25 +113,35 @@ int EDDImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 			parent->Reference(parentDummy);
 			parent->SetName(entry.GetLodNames()[0].c_str());
 
+			MtlBaseLib &mlib = ip->GetMaterialLibrary();
+
 			for (int x = 0; x != edmStructure.GetPartSize(); x++) {
 				EDMPart part = edmStructure.GetParts()[x];
 
-				//BitmapTex *texture = NewDefaultBitmapTex();
-				//std::wstring path = _T("C:/Users/Connor/Desktop/textures/");
-				//path += part.GetName();
-				//texture->SetMapName(path.c_str());
-				//texture->SetName(part.GetName().c_str());
+				BitmapTex *texture = NewDefaultBitmapTex();
+				std::wstring path = _T("C:/Users/Connor/Desktop/textures/");
 
-				//StdMat2 *collMat = NewDefaultStdMat();
+				MultiMtl *multiMat = NewDefaultMultiMtl();
+				multiMat->SetNumSubMtls(part.GetMatNames().size());
+				for (int x = 0; x != part.GetMatNames().size(); x++)
+				{
+					BitmapTex *texture = NewDefaultBitmapTex();
+					path += part.GetMatNames()[x];
+					texture->SetMapName(path.c_str());
+					texture->SetName(part.GetMatNames()[x].c_str());
 
-				//collMat->SetSubTexmap(1, texture);
-				//collMat->SetFaceted(TRUE);
-				//collMat->SetName(part.GetName().c_str());
+					Mtl* mtl;
+					mtl = multiMat->GetSubMtl(x);
+					mtl->SetName(part.GetMatNames()[x].c_str());
+					mtl->SetSubTexmap(1, texture);
 
-				////add to material library ONLY if it doesn't exist.
-				//int index = ip->GetMaterialLibrary().FindMtlByName(collMat->GetName());
-				//if (index == -1)
-				//	ip->GetMaterialLibrary().Add(collMat);
+					path = _T("C:/Users/Connor/Desktop/textures/");
+				}
+
+				//add to material library ONLY if it doesn't exist.
+				int index = mlib.FindMtlByName(multiMat->GetName());
+				if (index == -1)
+					ip->GetMaterialLibrary().Add(multiMat);
 
 				TriObject* triObject = CreateNewTriObject();
 				Mesh &mesh = triObject->GetMesh();
@@ -139,12 +149,12 @@ int EDDImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 				ImpNode *node = importerInt->CreateNode();
 				INode *inode = node->GetINode();
 				node->Reference(triObject);
-				//node->SetName(part.GetName().c_str());
-				//inode->SetMtl(collMat);
+				node->SetName(_T("Model"));
+				inode->SetMtl(multiMat);
 
 				importerInt->AddNodeToScene(node);
 				parent->GetINode()->AttachChild(inode, 0);
-				//parent->GetINode()->SetMtl(collMat);
+				parent->GetINode()->SetMtl(multiMat);
 
 				Matrix3 tm = entry.GetMatrix();
 				parent->SetTransform(0, tm);

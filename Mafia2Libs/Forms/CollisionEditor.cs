@@ -69,9 +69,17 @@ namespace Mafia2Tool
                 treeView1.Nodes.Add(node);
             }
 
+            CustomEDD frame = new CustomEDD();
             for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
             {
                 Collision.Placement data = SceneData.Collisions.Placements[i];
+                CustomEDD.Entry entry = new CustomEDD.Entry();
+
+                entry.LodCount = 1;
+                entry.LODNames = new string[1];
+                entry.LODNames[0] = data.Hash.ToString();
+                entry.Position = data.Position;
+                entry.Rotation = new Matrix33();
 
                 for (int x = 0; x != treeView1.Nodes.Count; x++)
                 {
@@ -84,6 +92,12 @@ namespace Mafia2Tool
                         treeView1.Nodes[x].Nodes.Add(node);
                     }
                 }
+                frame.Entries.Add(entry);
+            }
+            frame.EntryCount = frame.Entries.Count;
+            using (BinaryWriter writer = new BinaryWriter(File.Create("collisions/frame.edd")))
+            {
+                frame.WriteToFile(writer);
             }
         }
 

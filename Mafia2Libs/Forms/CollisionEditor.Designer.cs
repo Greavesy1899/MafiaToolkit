@@ -149,7 +149,6 @@
             this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addButton,
             this.addNewPlacementToolStripMenuItem});
-            this.toolsButton.Enabled = false;
             this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
             this.toolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolsButton.Name = "toolsButton";
