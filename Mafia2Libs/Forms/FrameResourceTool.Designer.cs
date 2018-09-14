@@ -152,25 +152,27 @@
             this.exportAllSubButton.Name = "exportAllSubButton";
             this.exportAllSubButton.Size = new System.Drawing.Size(180, 22);
             this.exportAllSubButton.Text = "Export All";
-            this.exportAllSubButton.Click += new System.EventHandler(this.OnClickLoadAll);
             // 
             // farLodsToolStripMenuItem
             // 
             this.farLodsToolStripMenuItem.Name = "farLodsToolStripMenuItem";
-            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.farLodsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.farLodsToolStripMenuItem.Text = "Far Lods";
+            this.farLodsToolStripMenuItem.Click += new System.EventHandler(this.OnExportFarLods);
             // 
             // modelsToolStripMenuItem
             // 
             this.modelsToolStripMenuItem.Name = "modelsToolStripMenuItem";
-            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.modelsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.modelsToolStripMenuItem.Text = "Models";
+            this.modelsToolStripMenuItem.Click += new System.EventHandler(this.OnExportModels);
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.allToolStripMenuItem.Text = "All";
+            this.allToolStripMenuItem.Click += new System.EventHandler(this.OnExportAll);
             // 
             // overwriteBufferSubButton
             // 

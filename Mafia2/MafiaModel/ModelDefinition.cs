@@ -71,7 +71,7 @@ namespace Mafia2
             this.frameGeometry = frameGeometry;
             this.frameMaterial = frameMaterial;
             this.useSingleMesh = true;
-
+            name = FrameMesh.Name.String;
             BuildLods();
         }
 
@@ -87,7 +87,7 @@ namespace Mafia2
             this.frameGeometry = frameGeometry;
             this.frameMaterial = frameMaterial;
             this.useSingleMesh = false;
-
+            name = frameModel.Name.String;
             BuildLods();
         }
 
@@ -234,8 +234,6 @@ namespace Mafia2
         {
             if (!Directory.Exists("exported"))
                 Directory.CreateDirectory("Exported");
-
-            string name = frameMesh.Name.String;
 
             if (frameMesh.Name.String == "")
                 name = frameGeometry.LOD[0].VertexBufferRef.String;

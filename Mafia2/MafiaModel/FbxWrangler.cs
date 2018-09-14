@@ -314,18 +314,20 @@ namespace Mafia2
             doc.Nodes.Add(FbxPresetNodes.BuildDefinitionsNode(true, false, true));
             doc.Nodes.Add(BuildObjectNode(model));
             doc.Nodes.Add(BuildConnections());
-            FbxIO.WriteAscii(doc, "file.fbx");
+            FbxIO.WriteAscii(doc, "FBX/"+model.FrameMesh.Name+".fbx");
         }
 
         private static FbxNode BuildObjectNode(Model model)
         {
             FbxNode node = new FbxNode().CreateNode("Objects", null);
-            node.Nodes.Add(new FbxNode().CreateNode("Geometry", 6325820608));
-            node["Geometry"].Properties.Add("Geometry::");
-            node["Geometry"].Properties.Add("Mesh");
+
+            //do geom stuff
+            FbxNode geom = new FbxNode().CreateNode("Geometry", 6325820608);
+            geom.Properties.Add("Geometry::");
+            geom.Properties.Add("Mesh");
             FbxNode properties = new FbxNode().CreateNode("Properties70", null);
             properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Color", "ColorRGB", "Color", "", 0.603921568627451, 0.603921568627451, 0.898039215686275 }));
-            node["Geometry"].Nodes.Add(properties);
+            geom.Nodes.Add(properties);
 
             double[] verts = new double[model.Lods[0].Vertices.Length*3];
             int verticesPos = 0;
@@ -350,30 +352,78 @@ namespace Mafia2
 
             FbxNode vertNode = new FbxNode().CreateNode("Vertices", verts);
             FbxNode polyVertIndex = new FbxNode().CreateNode("PolygonVertexIndex", triangles.ToArray());
-            node["Geometry"].Nodes.Add(vertNode);
-            node["Geometry"].Nodes.Add(polyVertIndex);
-            node["Geometry"].Nodes.Add(new FbxNode().CreateNode("GeometryVersion", 124));
+            geom.Nodes.Add(vertNode);
+            geom.Nodes.Add(polyVertIndex);
+            geom.Nodes.Add(new FbxNode().CreateNode("GeometryVersion", 124));
 
+            //Do normal (layer stuff)
+            geom.Nodes.Add(new FbxNode().CreateNode("LayerElementNormal", 0));
+            geom["LayerElementNormal"].Nodes.Add(new FbxNode().CreateNode("Version", 102));
+            geom["LayerElementNormal"].Nodes.Add(new FbxNode().CreateNode("Name", ""));
+            geom["LayerElementNormal"].Nodes.Add(new FbxNode().CreateNode("MappingInformationType", "ByVertice"));
+            geom["LayerElementNormal"].Nodes.Add(new FbxNode().CreateNode("ReferenceInformationType", "Direct"));
+
+            double[] normals = new double[model.Lods[0].Vertices.Length * 3];
+            int normalPos = 0;
+            for (int i = 0; i < model.Lods[0].Vertices.Length * 3; i += 3)
+            {
+                normals[i] = model.Lods[0].Vertices[normalPos].Normal.X;
+                normals[i + 1] = model.Lods[0].Vertices[normalPos].Normal.Y;
+                normals[i + 2] = model.Lods[0].Vertices[normalPos].Normal.Z;
+                normalPos++;
+            }
+            geom["LayerElementNormal"].Nodes.Add(new FbxNode().CreateNode("Normals", normals));
+            geom["LayerElementNormal"].Nodes.Add(new FbxNode().CreateNode("NormalsW", new double[triangles.Count]));
+
+            geom.Nodes.Add(new FbxNode().CreateNode("LayerElementUV", 0));
+            geom["LayerElementUV"].Nodes.Add(new FbxNode().CreateNode("Version", 101));
+            geom["LayerElementUV"].Nodes.Add(new FbxNode().CreateNode("Name", "UVChannel_1"));
+            geom["LayerElementUV"].Nodes.Add(new FbxNode().CreateNode("MappingInformationType", "ByVertice"));
+            geom["LayerElementUV"].Nodes.Add(new FbxNode().CreateNode("ReferenceInformationType", "Direct"));
+
+            double[] uvs = new double[model.Lods[0].Vertices.Length * 2];
+            int uvPos = 0;
+            for (int i = 0; i < model.Lods[0].Vertices.Length * 2; i += 2)
+            {
+                uvs[i] = model.Lods[0].Vertices[uvPos].UVs[0].X;
+                uvs[i + 1] = 1f-model.Lods[0].Vertices[uvPos].UVs[0].Y;
+                uvPos++;
+            }
+            geom["LayerElementUV"].Nodes.Add(new FbxNode().CreateNode("UV", uvs));
+
+            geom.Nodes.Add(new FbxNode().CreateNode("Layer", 0));
+            geom["Layer"].Nodes.Add(new FbxNode().CreateNode("Version", 100));
+            FbxNode layerelement = new FbxNode().CreateNode("LayerElement", null);
+            layerelement.Nodes.Add(new FbxNode().CreateNode("Type", "LayerElementNormal"));
+            layerelement.Nodes.Add(new FbxNode().CreateNode("TypedIndex", 0));
+            geom["Layer"].Nodes.Add(layerelement);
+            layerelement = new FbxNode().CreateNode("LayerElement", null);
+            layerelement.Nodes.Add(new FbxNode().CreateNode("Type", "LayerElementUV"));
+            layerelement.Nodes.Add(new FbxNode().CreateNode("TypedIndex", 0));
+            geom["Layer"].Nodes.Add(layerelement);
+            node.Nodes.Add(geom);
+
+            //Do model stuff.
             node.Nodes.Add(new FbxNode().CreateNode("Model", 2064104752));
             node["Model"].Properties.Add("Model::"+model.FrameMesh.Name.String);
             node["Model"].Properties.Add("Model");
             node["Model"].Nodes.Add(new FbxNode().CreateNode("Version", 232));
             FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PreRotation", "Vector3D", "Vector", "", -90, -0, 0 }));
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationActive", "bool", "", "", 1 }));
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "InheritType", "enum", "", "", 1 }));
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMax", "Vector3D", "Vector", "", 0, 0, 0 }));
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "DefaultAttributeIndex", "int", "Integer", "", 0 }));
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement use global settings", "Bool", "", "AU", 1 }));
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement view dependent", "Bool", "", "AU", 1 }));
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement method", "Integer", "", "AU", 6, 6, 6 }));
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement smoothing on", "Bool", "", "AU", 1 }));
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement edge length", "Number", "", "AU", 2, 2, 2 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PreRotation", "Vector3D", "Vector", "", -90, -0, 0 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationActive", "bool", "", "", 1 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "InheritType", "enum", "", "", 1 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMax", "Vector3D", "Vector", "", 0, 0, 0 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "DefaultAttributeIndex", "int", "Integer", "", 0 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement use global settings", "Bool", "", "AU", 1 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement view dependent", "Bool", "", "AU", 1 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement method", "Integer", "", "AU", 6, 6, 6 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement smoothing on", "Bool", "", "AU", 1 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement edge length", "Number", "", "AU", 2, 2, 2 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement max displace", "Number", "", "AU", 20, 20, 20 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement parametric subdivision level", "Integer", "", "AU", 5, 5, 5 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxHandle", "int", "Integer", "UH", 2 }));
 
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement max displace", "Number", "", "AU", 20, 20, 20 }));
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "mr displacement parametric subdivision level", "Integer", "", "AU", 5, 5, 5 }));
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxHandle", "int", "Integer", "UH", 2 }));
-            node["Model"].Nodes.Add(properties);
+            node["Model"].Nodes.Add(properties70);
             node["Model"].Nodes.Add(new FbxNode().CreateNode("Shading", 'T'));
             node["Model"].Nodes.Add(new FbxNode().CreateNode("Culling", "CullingOff"));
             return node;

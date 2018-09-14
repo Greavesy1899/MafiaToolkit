@@ -259,28 +259,8 @@ namespace Mafia2Tool
             FrameResourceGrid.SelectedObject = FrameResourceListBox.SelectedItem;
         }
 
-        private void OnClickLoadAll(object sender, EventArgs e)
+        private void ExportModels(List<object> meshes)
         {
-            List<object> meshes = new List<object>();
-
-            for (int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
-            {
-                object fObject = SceneData.FrameResource.FrameObjects.ElementAt(i).Value;
-
-                if ((fObject as FrameObjectBase).IsOnFrameTable && (fObject as FrameObjectBase).FrameNameTableFlags == 0)
-                {
-                    if (fObject.GetType() == typeof(FrameObjectSingleMesh))
-                    {
-                        meshes.Add(fObject);
-                    }
-                    if (fObject.GetType() == typeof(FrameObjectModel))
-                    {
-                        meshes.Add(fObject);
-                    }
-                }
-            }
-
-
             string[] fileNames = new string[meshes.Count];
             Vector3[] filePos = new Vector3[meshes.Count];
             Matrix33[] rotPos = new Matrix33[meshes.Count];
@@ -297,57 +277,48 @@ namespace Mafia2Tool
                 IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
                 VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
 
-                //if (mesh.IsOnFrameTable && mesh.FrameNameTableFlags == 0)
+                //we need to retrieve buffers first.
+                for (int c = 0; c != geom.LOD.Length; c++)
+                {
+                    indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
+                    vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
+                }
+
+                Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
+
+                //if (mesh.ParentIndex1.Index != -1)
                 //{
-
-                    //we need to retrieve buffers first.
-                    for (int c = 0; c != geom.LOD.Length; c++)
-                    {
-                        indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
-                        vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
-                    }
-
-                    Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
-
-                    //if (mesh.ParentIndex1.Index != -1)
-                    //{
-                    //    FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
-                    //    filePos[i] = RetrieveParent1Position(mesh);
-                    //}
-
-                    //if (((mesh.ParentIndex1.Index != -1)) && ((mesh.ParentIndex1.Index == mesh.ParentIndex2.Index)))
-                    //{
-                    //    FrameObjectFrame frame = SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectFrame;
-                    //    if (frame.Item != null)
-                    //    {
-                    //        filePos[i] = frame.Item.Position;
-                    //    }
-                    //}
-
-                    entry.LodCount = newModel.Lods.Length;
-                    entry.LODNames = new string[entry.LodCount];
-
-                    for (int c = 0; c != newModel.Lods.Length; c++)
-                    {
-                        string edmName;
-                        FrameGeometry meshGeom;
-
-                        if (mesh.Name.String != "")
-                        {
-                            edmName = mesh.Name.String;
-                        }
-                        newModel.ExportToM2T();
-                        Console.WriteLine(newModel.FrameMesh.Name.String);
-                        if (newModel.FrameMesh.Name.String == "")
-                            entry.LODNames[c] = newModel.FrameGeometry.LOD[c].VertexBufferRef.String;
-                        else
-                            entry.LODNames[c] = newModel.FrameMesh.Name.String;
-                    }
-                    entry.Position = mesh.Matrix.Position;
-                    entry.Rotation = mesh.Matrix.Rotation;
-
-                    frameEDD.Entries.Add(entry);
+                //    FrameObjectBase parent = (SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectBase);
+                //    filePos[i] = RetrieveParent1Position(mesh);
                 //}
+
+                //if (((mesh.ParentIndex1.Index != -1)) && ((mesh.ParentIndex1.Index == mesh.ParentIndex2.Index)))
+                //{
+                //    FrameObjectFrame frame = SceneData.FrameResource.EntireFrame[mesh.ParentIndex1.Index] as FrameObjectFrame;
+                //    if (frame.Item != null)
+                //    {
+                //        filePos[i] = frame.Item.Position;
+                //    }
+                //}
+
+                entry.LodCount = newModel.Lods.Length;
+                entry.LODNames = new string[entry.LodCount];
+
+                for (int c = 0; c != newModel.Lods.Length; c++)
+                {
+                    newModel.ExportToM2T();
+                    newModel.ExportToFbx();
+                    Console.WriteLine(newModel.FrameMesh.Name.String);
+                    if (newModel.FrameMesh.Name.String == "")
+                        entry.LODNames[c] = newModel.FrameGeometry.LOD[c].VertexBufferRef.String;
+                    else
+                        entry.LODNames[c] = newModel.FrameMesh.Name.String;
+                }
+                entry.Position = mesh.Matrix.Position;
+                entry.Rotation = mesh.Matrix.Rotation;
+
+                frameEDD.Entries.Add(entry);
+
             });
             frameEDD.EntryCount = frameEDD.Entries.Count;
             using (BinaryWriter writer = new BinaryWriter(File.Create("exported/frame.edd")))
@@ -599,6 +570,60 @@ namespace Mafia2Tool
             SceneData.FrameResource.FrameObjects.Add(mesh.RefID, mesh);
             FrameResourceListBox.Items.Add(mesh);
             //SaveChanges();
+        }
+
+        private void OnExportFarLods(object sender, EventArgs e)
+        {
+            List<object> meshes = new List<object>();
+
+            for (int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
+            {
+                object fObject = SceneData.FrameResource.FrameObjects.ElementAt(i).Value;
+
+                if ((fObject as FrameObjectBase).IsOnFrameTable && (fObject as FrameObjectBase).FrameNameTableFlags != 0)
+                {
+                    if (fObject.GetType() == typeof(FrameObjectSingleMesh) || fObject.GetType() == typeof(FrameObjectModel))
+                    {
+                        meshes.Add(fObject);
+                    }
+                }
+            }
+            ExportModels(meshes);
+        }
+
+        private void OnExportModels(object sender, EventArgs e)
+        {
+            List<object> meshes = new List<object>();
+
+            for (int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
+            {
+                object fObject = SceneData.FrameResource.FrameObjects.ElementAt(i).Value;
+
+                if ((fObject as FrameObjectBase).IsOnFrameTable && (fObject as FrameObjectBase).FrameNameTableFlags == 0)
+                {
+                    if (fObject.GetType() == typeof(FrameObjectSingleMesh) || fObject.GetType() == typeof(FrameObjectModel))
+                    {
+                        meshes.Add(fObject);
+                    }
+                }
+            }
+            ExportModels(meshes);
+        }
+
+        private void OnExportAll(object sender, EventArgs e)
+        {
+            List<object> meshes = new List<object>();
+
+            for (int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
+            {
+                object fObject = SceneData.FrameResource.FrameObjects.ElementAt(i).Value;
+
+                if (fObject.GetType() == typeof(FrameObjectSingleMesh) || fObject.GetType() == typeof(FrameObjectModel))
+                {
+                    meshes.Add(fObject);
+                }
+            }
+            ExportModels(meshes);
         }
     }
 }
