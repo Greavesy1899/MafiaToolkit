@@ -109,6 +109,7 @@ namespace Mafia2
             {
                 FrameLOD frameLod = frameGeometry.LOD[i];
                 lods[i] = new Lod();
+                lods[i].VertexDeclaration = frameGeometry.LOD[i].VertexDeclaration;
                 IndexBuffer indexBuffer = indexBuffers[i];
                 VertexBuffer vertexBuffer = vertexBuffers[i];
 
@@ -124,71 +125,71 @@ namespace Mafia2
                     {
                         Vertex vertex = new Vertex();
                         vertex.UVs = new UVVector2[lods[i].NumUVChannels];
-                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Position))
+                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                         {
                             int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
                             vertex.ReadPositionData(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor,
                                 frameGeometry.DecompressionOffset);
                         }
 
-                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
                         {
                             int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
                             vertex.ReadTangentData(vertexBuffer.Data, startIndex);
                         }
 
-                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Normals))
+                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
                         {
                             int startIndex = v * stride + vertexOffsets[VertexFlags.Normals].Offset;
                             vertex.ReadNormalData(vertexBuffer.Data, startIndex);
                         }
 
-                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.BlendData))
+                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.BlendData))
                         {
                             int startIndex = v * stride + vertexOffsets[VertexFlags.BlendData].Offset;
                             vertex.ReadBlendData(vertexBuffer.Data, startIndex);
                         }
 
-                        if(frameLod.VertexDeclaration.HasFlag(VertexFlags.flag_0x80))
+                        if(lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x80))
                         {
                             Console.WriteLine("Skip vertex with flag_0x80");
                         }
 
-                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                         {
                             int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords0].Offset;
                             vertex.ReadUvData(vertexBuffer.Data, startIndex, 0);
                         }
 
-                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
                         {
                             int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords1].Offset;
                             vertex.ReadUvData(vertexBuffer.Data, startIndex, 1);
                         }
 
-                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
                         {
                             int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords2].Offset;
                             vertex.ReadUvData(vertexBuffer.Data, startIndex, 2);
                         }
 
-                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
                         {
                             int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords7].Offset;
                             vertex.ReadUvData(vertexBuffer.Data, startIndex, 3);
                         }
 
-                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.flag_0x20000))
+                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x20000))
                         {
                             Console.WriteLine("Skip vertex with flag_0x20000");
                         }
 
-                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.flag_0x40000))
+                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x40000))
                         {
                             Console.WriteLine("Skip vertex with flag_0x40000");
                         }
 
-                        if (frameLod.VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
+                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
                         {
                             Console.WriteLine("Skip vertex with DamageGroup");
                         }

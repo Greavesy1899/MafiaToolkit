@@ -55,7 +55,7 @@ namespace Mafia2
                 properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "DocumentUrl", "KString", "Url", "", "C:\\URL.FBX" }));
                 properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "SrcDocumentUrl", "KString", "Url", "", "C:\\URL.FBX" }));
                 properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[4] { "Original", "Compound", "", "" }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "Original|ApplicationVendor", "KString", "", "", "Autodesk"}));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "Original|ApplicationVendor", "KString", "", "", "Autodesk" }));
                 properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "Original|ApplicationName", "KString", "", "", "3ds Max" }));
                 properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "Original|ApplicationVersion", "KString", "", "", "2017" }));
                 properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "Original|DateTime_GMT", "DateTime", "", "", DateTime.Now.ToString() }));
@@ -78,7 +78,7 @@ namespace Mafia2
             {
                 FbxNode node = new FbxNode();
                 node.Name = "FileId";
-                node.Value = new byte[] {43, 182, 47, 230, 186, 41, 192, 205, 184, 207, 180, 39, 162, 40, 255, 247};
+                node.Value = new byte[] { 43, 182, 47, 230, 186, 41, 192, 205, 184, 207, 180, 39, 162, 40, 255, 247 };
                 node.Properties.Add(node.Value);
             }
 
@@ -183,14 +183,14 @@ namespace Mafia2
                 node.Nodes.Add(new FbxNode().CreateNode("Version", 100));
                 node.Nodes.Add(new FbxNode().CreateNode("Count", count));
 
-                if(doGlobal)
+                if (doGlobal)
                 {
                     FbxNode global = new FbxNode().CreateNode("ObjectType", "GlobalSettings");
                     global.Nodes.Add(new FbxNode().CreateNode("Count", 1));
                     node.Nodes.Add(global);
                 }
 
-                if(doModels)
+                if (doModels)
                 {
                     FbxNode model = new FbxNode().CreateNode("ObjectType", "Model");
                     model.Nodes.Add(new FbxNode().CreateNode("Count", 1));
@@ -314,7 +314,7 @@ namespace Mafia2
             doc.Nodes.Add(FbxPresetNodes.BuildDefinitionsNode(true, false, true));
             doc.Nodes.Add(BuildObjectNode(model));
             doc.Nodes.Add(BuildConnections());
-            FbxIO.WriteAscii(doc, "FBX/"+model.FrameMesh.Name+".fbx");
+            FbxIO.WriteAscii(doc, "FBX/" + model.FrameMesh.Name + ".fbx");
         }
 
         private static FbxNode BuildObjectNode(Model model)
@@ -329,20 +329,20 @@ namespace Mafia2
             properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Color", "ColorRGB", "Color", "", 0.603921568627451, 0.603921568627451, 0.898039215686275 }));
             geom.Nodes.Add(properties);
 
-            double[] verts = new double[model.Lods[0].Vertices.Length*3];
+            double[] verts = new double[model.Lods[0].Vertices.Length * 3];
             int verticesPos = 0;
-            for(int i = 0;  i < model.Lods[0].Vertices.Length*3; i+=3)
+            for (int i = 0; i < model.Lods[0].Vertices.Length * 3; i += 3)
             {
                 verts[i] = model.Lods[0].Vertices[verticesPos].Position.X;
-                verts[i+1] = model.Lods[0].Vertices[verticesPos].Position.Y;
-                verts[i+2] = model.Lods[0].Vertices[verticesPos].Position.Z;
+                verts[i + 1] = model.Lods[0].Vertices[verticesPos].Position.Y;
+                verts[i + 2] = model.Lods[0].Vertices[verticesPos].Position.Z;
                 verticesPos++;
             }
 
             List<int> triangles = new List<int>();
-            for(int i = 0; i < model.Lods[0].Parts.Length; i++)
+            for (int i = 0; i < model.Lods[0].Parts.Length; i++)
             {
-                for(int x = 0; x < model.Lods[0].Parts[i].Indices.Length; x++)
+                for (int x = 0; x < model.Lods[0].Parts[i].Indices.Length; x++)
                 {
                     triangles.Add(model.Lods[0].Parts[i].Indices[x].S1);
                     triangles.Add(model.Lods[0].Parts[i].Indices[x].S2);
@@ -356,56 +356,30 @@ namespace Mafia2
             geom.Nodes.Add(polyVertIndex);
             geom.Nodes.Add(new FbxNode().CreateNode("GeometryVersion", 124));
 
-            //Do normal (layer stuff)
-            geom.Nodes.Add(new FbxNode().CreateNode("LayerElementNormal", 0));
-            geom["LayerElementNormal"].Nodes.Add(new FbxNode().CreateNode("Version", 102));
-            geom["LayerElementNormal"].Nodes.Add(new FbxNode().CreateNode("Name", ""));
-            geom["LayerElementNormal"].Nodes.Add(new FbxNode().CreateNode("MappingInformationType", "ByVertice"));
-            geom["LayerElementNormal"].Nodes.Add(new FbxNode().CreateNode("ReferenceInformationType", "Direct"));
+            //check for normals before exporting.
+            if (model.Lods[0].VertexDeclaration.HasFlag(VertexFlags.Normals))
+                geom.Nodes.Add(BuildLayerElementNormalNode(model, triangles.Count));
 
-            double[] normals = new double[model.Lods[0].Vertices.Length * 3];
-            int normalPos = 0;
-            for (int i = 0; i < model.Lods[0].Vertices.Length * 3; i += 3)
-            {
-                normals[i] = model.Lods[0].Vertices[normalPos].Normal.X;
-                normals[i + 1] = model.Lods[0].Vertices[normalPos].Normal.Y;
-                normals[i + 2] = model.Lods[0].Vertices[normalPos].Normal.Z;
-                normalPos++;
-            }
-            geom["LayerElementNormal"].Nodes.Add(new FbxNode().CreateNode("Normals", normals));
-            geom["LayerElementNormal"].Nodes.Add(new FbxNode().CreateNode("NormalsW", new double[triangles.Count]));
-
-            geom.Nodes.Add(new FbxNode().CreateNode("LayerElementUV", 0));
-            geom["LayerElementUV"].Nodes.Add(new FbxNode().CreateNode("Version", 101));
-            geom["LayerElementUV"].Nodes.Add(new FbxNode().CreateNode("Name", "UVChannel_1"));
-            geom["LayerElementUV"].Nodes.Add(new FbxNode().CreateNode("MappingInformationType", "ByVertice"));
-            geom["LayerElementUV"].Nodes.Add(new FbxNode().CreateNode("ReferenceInformationType", "Direct"));
-
-            double[] uvs = new double[model.Lods[0].Vertices.Length * 2];
-            int uvPos = 0;
-            for (int i = 0; i < model.Lods[0].Vertices.Length * 2; i += 2)
-            {
-                uvs[i] = model.Lods[0].Vertices[uvPos].UVs[0].X;
-                uvs[i + 1] = 1f-model.Lods[0].Vertices[uvPos].UVs[0].Y;
-                uvPos++;
-            }
-            geom["LayerElementUV"].Nodes.Add(new FbxNode().CreateNode("UV", uvs));
+            //check for UV before exporting.
+            if (model.Lods[0].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                geom.Nodes.Add(BuildLayerElementUVNode(model));
 
             geom.Nodes.Add(new FbxNode().CreateNode("Layer", 0));
             geom["Layer"].Nodes.Add(new FbxNode().CreateNode("Version", 100));
-            FbxNode layerelement = new FbxNode().CreateNode("LayerElement", null);
-            layerelement.Nodes.Add(new FbxNode().CreateNode("Type", "LayerElementNormal"));
-            layerelement.Nodes.Add(new FbxNode().CreateNode("TypedIndex", 0));
-            geom["Layer"].Nodes.Add(layerelement);
-            layerelement = new FbxNode().CreateNode("LayerElement", null);
-            layerelement.Nodes.Add(new FbxNode().CreateNode("Type", "LayerElementUV"));
-            layerelement.Nodes.Add(new FbxNode().CreateNode("TypedIndex", 0));
-            geom["Layer"].Nodes.Add(layerelement);
+
+            //make sure normals exist before adding the layer.
+            if (model.Lods[0].VertexDeclaration.HasFlag(VertexFlags.Normals))
+                geom["Layer"].Nodes.Add(BuildNamedLayer("LayerElementNormal"));
+
+            //make sure UVs exist before adding the layer.
+            if (model.Lods[0].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                geom["Layer"].Nodes.Add(BuildNamedLayer("LayerElementUV"));
+
             node.Nodes.Add(geom);
 
             //Do model stuff.
             node.Nodes.Add(new FbxNode().CreateNode("Model", 2064104752));
-            node["Model"].Properties.Add("Model::"+model.FrameMesh.Name.String);
+            node["Model"].Properties.Add("Model::" + model.FrameMesh.Name.String);
             node["Model"].Properties.Add("Model");
             node["Model"].Nodes.Add(new FbxNode().CreateNode("Version", 232));
             FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
@@ -429,6 +403,10 @@ namespace Mafia2
             return node;
         }
 
+        /// <summary>
+        /// Build Connections.
+        /// </summary>
+        /// <returns></returns>
         private static FbxNode BuildConnections()
         {
             FbxNode node = new FbxNode().CreateNode("Connections", null);
@@ -440,6 +418,75 @@ namespace Mafia2
             node.Nodes[1].Properties.Add("OO");
             node.Nodes[1].Properties.Add(6325820608);
             node.Nodes[1].Properties.Add(2064104752);
+            return node;
+        }
+
+        /// <summary>
+        /// Build LayerElementNormal.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="trianglesCount"></param>
+        /// <returns></returns>
+        private static FbxNode BuildLayerElementNormalNode(Model model, int trianglesCount)
+        {
+            FbxNode node;
+            //Do normal (layer stuff)
+            node = new FbxNode().CreateNode("LayerElementNormal", 0);
+            node.Nodes.Add(new FbxNode().CreateNode("Version", 102));
+            node.Nodes.Add(new FbxNode().CreateNode("Name", ""));
+            node.Nodes.Add(new FbxNode().CreateNode("MappingInformationType", "ByVertice"));
+            node.Nodes.Add(new FbxNode().CreateNode("ReferenceInformationType", "Direct"));
+
+            double[] normals = new double[model.Lods[0].Vertices.Length * 3];
+            int normalPos = 0;
+            for (int i = 0; i < model.Lods[0].Vertices.Length * 3; i += 3)
+            {
+                normals[i] = model.Lods[0].Vertices[normalPos].Normal.X;
+                normals[i + 1] = model.Lods[0].Vertices[normalPos].Normal.Y;
+                normals[i + 2] = model.Lods[0].Vertices[normalPos].Normal.Z;
+                normalPos++;
+            }
+            node.Nodes.Add(new FbxNode().CreateNode("Normals", normals));
+            node.Nodes.Add(new FbxNode().CreateNode("NormalsW", new double[trianglesCount]));
+            return node;
+        }
+
+        /// <summary>
+        /// Build LayerElementUV.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="trianglesCount"></param>
+        /// <returns></returns>
+        private static FbxNode BuildLayerElementUVNode(Model model)
+        {
+            FbxNode node = new FbxNode().CreateNode("LayerElementUV", 0);
+            node.Nodes.Add(new FbxNode().CreateNode("Version", 101));
+            node.Nodes.Add(new FbxNode().CreateNode("Name", "UVChannel_1"));
+            node.Nodes.Add(new FbxNode().CreateNode("MappingInformationType", "ByVertice"));
+            node.Nodes.Add(new FbxNode().CreateNode("ReferenceInformationType", "Direct"));
+
+            double[] uvs = new double[model.Lods[0].Vertices.Length * 2];
+            int uvPos = 0;
+            for (int i = 0; i < model.Lods[0].Vertices.Length * 2; i += 2)
+            {
+                uvs[i] = model.Lods[0].Vertices[uvPos].UVs[0].X;
+                uvs[i + 1] = 1f - model.Lods[0].Vertices[uvPos].UVs[0].Y;
+                uvPos++;
+            }
+            node.Nodes.Add(new FbxNode().CreateNode("UV", uvs));
+            return node;
+        }
+
+        /// <summary>
+        /// Build layer with specified name.
+        /// </summary>
+        /// <param name="layerName"></param>
+        /// <returns></returns>
+        private static FbxNode BuildNamedLayer(string layerName)
+        {
+            FbxNode node = new FbxNode().CreateNode("LayerElement", null);
+            node.Nodes.Add(new FbxNode().CreateNode("Type", layerName));
+            node.Nodes.Add(new FbxNode().CreateNode("TypedIndex", 0));
             return node;
         }
     }

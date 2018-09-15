@@ -475,7 +475,7 @@ namespace Mafia2Tool
                 newModel.ExportToM2T();
                 newModel.ExportToFbx();
             }
-            else if(e.ClickedItem.Name == "contextUpdateParents")
+            else if (e.ClickedItem.Name == "contextUpdateParents")
             {
                 FrameObjectBase obj = treeView1.SelectedNode.Tag as FrameObjectBase;
                 ListWindow window = new ListWindow();
@@ -534,7 +534,7 @@ namespace Mafia2Tool
                 FrameResourceListBox.Items.Add(model.FrameGeometry);
 
                 //Check for existing buffer; if it exists, remove so we can add one later.
-                if(SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[0].Hash) != null)
+                if (SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[0].Hash) != null)
                     SceneData.IndexBufferPool.RemoveBuffer(model.IndexBuffers[0]);
 
                 //do the same for vertexbuffer pools.
