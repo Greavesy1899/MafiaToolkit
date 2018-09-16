@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using Mafia2;
+using ModelViewer.Programming.SystemClasses;
 
 namespace Mafia2Tool
 {

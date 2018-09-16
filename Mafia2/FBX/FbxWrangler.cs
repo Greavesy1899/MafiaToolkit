@@ -177,7 +177,7 @@ namespace Mafia2
                 if (doAnims)
                     count += 2;
                 if (doModels)
-                    count += 2;
+                    count += 5;
 
                 FbxNode node = new FbxNode().CreateNode("Definitions", null);
                 node.Nodes.Add(new FbxNode().CreateNode("Version", 100));
@@ -192,103 +192,224 @@ namespace Mafia2
 
                 if (doModels)
                 {
-                    FbxNode model = new FbxNode().CreateNode("ObjectType", "Model");
-                    model.Nodes.Add(new FbxNode().CreateNode("Count", 1));
-
-                    FbxNode propTemplate = new FbxNode().CreateNode("PropertyTemplate", "FbxNode");
-                    FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "QuaternionInterpolate", "enum", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationOffset", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationPivot", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingOffset", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingPivot", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationActive", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMin", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMax", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMinX", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMinY", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMinZ", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMaxX", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMaxY", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMaxZ", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationOrder", "enum", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationSpaceForLimitOnly", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationStiffnessX", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationStiffnessY", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationStiffnessZ", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "AxisLen", "double", "Number", "", 10 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PreRotation", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PostRotation", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationActive", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMin", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMax", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMinX", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMinY", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMinZ", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMaxX", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMaxY", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMaxZ", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "InheritType", "enum", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingActive", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMin", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMax", "Vector3D", "Vector", "", 1, 1, 1 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMinX", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMinY", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMinZ", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMaxX", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMaxY", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMaxZ", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "GeometricTranslation", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "GeometricRotation", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "GeometricScaling", "Vector3D", "Vector", "", 1, 1, 1 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MinDampRangeX", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MinDampRangeY", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MinDampRangeZ", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxDampRangeX", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxDampRangeY", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxDampRangeZ", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MinDampStrengthX", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MinDampStrengthY", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MinDampStrengthZ", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxDampStrengthX", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxDampStrengthY", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxDampStrengthZ", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PreferedAngleX", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PreferedAngleY", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PreferedAngleZ", "double", "Number", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "LookAtProperty", "object", "", "" }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "UpVectorProperty", "object", "", "" }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Show", "bool", "", "", 1 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "NegativePercentShapeSupport", "bool", "", "", 1 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "DefaultAttributeIndex", "int", "Integer", "", -1 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Freeze", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "LODBox", "bool", "", "", 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Lcl Translation", "Lcl Translation", "", "A", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Lcl Rotation", "Lcl Rotation", "", "A", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Lcl Scaling", "Lcl Scaling", "", "A", 1, 1, 1 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Visibility", "Visibility", "", "A", 1 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Visibility Inheritance", "Visibility Inheritance", "", "", 1 }));
-                    propTemplate.Nodes.Add(properties70);
-                    model.Nodes.Add(propTemplate);
-                    node.Nodes.Add(model);
-
-                    model = new FbxNode().CreateNode("ObjectType", "Geometry");
-                    model.Nodes.Add(new FbxNode().CreateNode("Count", 1));
-
-                    propTemplate = new FbxNode().CreateNode("PropertyTemplate", "FbxMesh");
-                    properties70 = new FbxNode().CreateNode("Properties70", null);
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Color", "ColorRGB", "Color", "", 0.8, 0.8, 0.8 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "BBoxMin", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "BBoxMax", "Vector3D", "Vector", "", 0, 0, 0 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Primary Visibility", "bool", "", "", 1 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Casts Shadows", "bool", "", "", 1 }));
-                    properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Receive Shadows", "bool", "", "", 1 }));
-
-                    propTemplate.Nodes.Add(properties70);
-                    model.Nodes.Add(propTemplate);
-                    node.Nodes.Add(model);
+                    node.Nodes.Add(BuildModelDefinitionNode());
+                    node.Nodes.Add(BuildGeometryDefinitionNode());
+                    node.Nodes.Add(BuildMaterialDefinitionNode());
+                    node.Nodes.Add(BuildTextureDefinitionNode());
+                    node.Nodes.Add(BuildVideoDefinitionNode());
                 }
 
+                return node;
+            }
+
+            /// <summary>
+            /// Build 'Model' Definition Node.
+            /// </summary>
+            /// <returns></returns>
+            private static FbxNode BuildModelDefinitionNode()
+            {
+                FbxNode node = new FbxNode().CreateNode("ObjectType", "Model");
+                node.Nodes.Add(new FbxNode().CreateNode("Count", 1));
+
+                FbxNode propTemplate = new FbxNode().CreateNode("PropertyTemplate", "FbxNode");
+                FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "QuaternionInterpolate", "enum", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationOffset", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationPivot", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingOffset", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingPivot", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationActive", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMin", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMax", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMinX", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMinY", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMinZ", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMaxX", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMaxY", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TranslationMaxZ", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationOrder", "enum", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationSpaceForLimitOnly", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationStiffnessX", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationStiffnessY", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationStiffnessZ", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "AxisLen", "double", "Number", "", 10 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PreRotation", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PostRotation", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationActive", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMin", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMax", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMinX", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMinY", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMinZ", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMaxX", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMaxY", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "RotationMaxZ", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "InheritType", "enum", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingActive", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMin", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMax", "Vector3D", "Vector", "", 1, 1, 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMinX", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMinY", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMinZ", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMaxX", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMaxY", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ScalingMaxZ", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "GeometricTranslation", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "GeometricRotation", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "GeometricScaling", "Vector3D", "Vector", "", 1, 1, 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MinDampRangeX", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MinDampRangeY", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MinDampRangeZ", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxDampRangeX", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxDampRangeY", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxDampRangeZ", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MinDampStrengthX", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MinDampStrengthY", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MinDampStrengthZ", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxDampStrengthX", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxDampStrengthY", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxDampStrengthZ", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PreferedAngleX", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PreferedAngleY", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PreferedAngleZ", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "LookAtProperty", "object", "", "" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "UpVectorProperty", "object", "", "" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Show", "bool", "", "", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "NegativePercentShapeSupport", "bool", "", "", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "DefaultAttributeIndex", "int", "Integer", "", -1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Freeze", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "LODBox", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Lcl Translation", "Lcl Translation", "", "A", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Lcl Rotation", "Lcl Rotation", "", "A", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Lcl Scaling", "Lcl Scaling", "", "A", 1, 1, 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Visibility", "Visibility", "", "A", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Visibility Inheritance", "Visibility Inheritance", "", "", 1 }));
+                propTemplate.Nodes.Add(properties70);
+                node.Nodes.Add(propTemplate);
+                return node;
+            }
+
+            /// <summary>
+            /// Build 'Geometry' Definition Node.
+            /// </summary>
+            /// <returns></returns>
+            private static FbxNode BuildGeometryDefinitionNode()
+            {
+                FbxNode node = new FbxNode().CreateNode("ObjectType", "Geometry");
+                node.Nodes.Add(new FbxNode().CreateNode("Count", 1));
+
+                FbxNode propTemplate = new FbxNode().CreateNode("PropertyTemplate", "FbxMesh");
+                FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Color", "ColorRGB", "Color", "", 0.8, 0.8, 0.8 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "BBoxMin", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "BBoxMax", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Primary Visibility", "bool", "", "", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Casts Shadows", "bool", "", "", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Receive Shadows", "bool", "", "", 1 }));
+
+                propTemplate.Nodes.Add(properties70);
+                node.Nodes.Add(propTemplate);
+                return node;
+            }
+
+            /// <summary>
+            /// Build 'Material' Definition Node.
+            /// </summary>
+            /// <returns></returns>
+            private static FbxNode BuildMaterialDefinitionNode()
+            {
+                FbxNode node = new FbxNode().CreateNode("ObjectType", "Material");
+                node.Nodes.Add(new FbxNode().CreateNode("Count", 1));
+
+                FbxNode propTemplate = new FbxNode().CreateNode("PropertyTemplate", "FbxSurfacePhong");
+                FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ShadingModel", "KString", "", "", "Phong" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MultiLayer", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "EmissiveColor", "Color", "", "A", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "EmissiveFactor", "Number", "", "A", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "AmbientColor", "Color", "", "A", 0.2, 0.2, 0.2 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "AmbientFactor", "Number", "", "A", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "DiffuseColor", "Color", "", "A", 0.8, 0.8, 0.8 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "DiffuseFactor", "Number", "", "A", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Bump", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "NormalMap", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "BumpFactor", "double", "Number", "", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TransparentColor", "Color", "", "A", 0, 0, 0 }));      
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TransparencyFactor", "Number", "", "A", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "DisplacementColor", "ColorRGB", "Color", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "DisplacementFactor", "double", "Number", "", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "VectorDisplacementColor", "ColorRGB", "Color", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "VectorDisplacementFactor", "double", "Number", "", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "SpecularColor", "Color", "", "A", 0.2, 0.2, 0.2 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "SpecularFactor", "Number", "", "A", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ShininessExponent", "Number", "", "A", 20 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ReflectionColor", "Color", "", "A", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ReflectionFactor", "Number", "", "A", 1 }));
+                propTemplate.Nodes.Add(properties70);
+                node.Nodes.Add(propTemplate);
+                return node;
+            }
+
+            /// <summary>
+            /// Build 'Texture' Definition Node.
+            /// </summary>
+            /// <returns></returns>
+            private static FbxNode BuildTextureDefinitionNode()
+            {
+                FbxNode node = new FbxNode().CreateNode("ObjectType", "Texture");
+                node.Nodes.Add(new FbxNode().CreateNode("Count", 1));
+
+                FbxNode propTemplate = new FbxNode().CreateNode("PropertyTemplate", "FbxFileTexture");
+                FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TextureTypeUse", "enum", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Texture alpha", "Number", "", "A", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "CurrentMappingType", "enum", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "WrapModeU", "enum", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "WrapModeV", "enum", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "UVSwap", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PremultiplyAlpha", "bool", "", "", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Translation", "Vector", "", "A", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Rotation", "Vector", "", "A", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Scaling", "Vector", "", "A", 1, 1, 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TextureRotationPivot", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TextureScalingPivot", "Vector3D", "Vector", "", 0, 0, 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "CurrentTextureBlendMode", "enum", "", "", 1 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "UVSet", "KString", "", "", "default" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "UseMaterial", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "UseMipMap", "bool", "", "", 0 }));
+                propTemplate.Nodes.Add(properties70);
+                node.Nodes.Add(propTemplate);
+                return node;
+            }
+
+            /// <summary>
+            /// Build 'Video' Definition Node.
+            /// </summary>
+            /// <returns></returns>
+            private static FbxNode BuildVideoDefinitionNode()
+            {
+                FbxNode node = new FbxNode().CreateNode("ObjectType", "Video");
+                node.Nodes.Add(new FbxNode().CreateNode("Count", 1));
+
+                FbxNode propTemplate = new FbxNode().CreateNode("PropertyTemplate", "FbxVideo");
+                FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ImageSequence", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ImageSequenceOffset", "int", "Integer", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "FrameRate", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "LastFrame", "int", "Integer", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Width", "int", "Integer", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Height", "int", "Integer", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Path", "KString", "XRefUrl", "", "" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "StartFrame", "int", "Integer", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "StopFrame", "int", "Integer", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "PlaySpeed", "double", "Number", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Offset", "KTime", "Time", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "InterlaceMode", "enum", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "FreeRunning", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Loop", "bool", "", "", 0 }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "AccessMode", "enum", "", "", 0 }));
+                propTemplate.Nodes.Add(properties70);
+                node.Nodes.Add(propTemplate);
                 return node;
             }
         }
