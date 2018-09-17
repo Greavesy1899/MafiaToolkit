@@ -52,34 +52,23 @@ namespace Mafia2
                 sceneInfo.Nodes.Add(metaData);
                 //Properties70 CHILD of SceneInfo
                 FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "DocumentUrl", "KString", "Url", "", "C:\\URL.FBX" }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "SrcDocumentUrl", "KString", "Url", "", "C:\\URL.FBX" }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[4] { "Original", "Compound", "", "" }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "Original|ApplicationVendor", "KString", "", "", "Autodesk" }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "Original|ApplicationName", "KString", "", "", "3ds Max" }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "Original|ApplicationVersion", "KString", "", "", "2017" }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "Original|DateTime_GMT", "DateTime", "", "", DateTime.Now.ToString() }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "Original|FileName", "KString", "", "", "C:\\URL.FBX" }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[4] { "LastSaved", "Compound", "", "" }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "LastSaved|ApplicationVendor", "KString", "", "", "Autodesk" }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "LastSaved|ApplicationName", "KString", "", "", "3ds Max" }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "LastSaved|ApplicationVersion", "KString", "", "", "2017" }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "LastSaved|DateTime_GMT", "DateTime", "", "", DateTime.Now.ToString() }));
-                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[5] { "Original|ApplicationActiveProject", "KString", "", "", "C:\\URL.FBX" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "DocumentUrl", "KString", "Url", "", "C:\\URL.FBX" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "SrcDocumentUrl", "KString", "Url", "", "C:\\URL.FBX" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Original", "Compound", "", "" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Original|ApplicationVendor", "KString", "", "", "Autodesk" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Original|ApplicationName", "KString", "", "", "3ds Max" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Original|ApplicationVersion", "KString", "", "", "2017" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Original|DateTime_GMT", "DateTime", "", "", DateTime.Now.ToString() }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Original|FileName", "KString", "", "", "C:\\URL.FBX" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "LastSaved", "Compound", "", "" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "LastSaved|ApplicationVendor", "KString", "", "", "Autodesk" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "LastSaved|ApplicationName", "KString", "", "", "3ds Max" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "LastSaved|ApplicationVersion", "KString", "", "", "2017" }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "LastSaved|DateTime_GMT", "DateTime", "", "", DateTime.Now.ToString() }));
+                properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Original|ApplicationActiveProject", "KString", "", "", "C:\\URL.FBX" }));
                 sceneInfo.Nodes.Add(properties70);
                 node.Nodes.Add(sceneInfo);
                 return node;
-            }
-
-            /// <summary>
-            /// Builds 'FileID' for new FBX.
-            /// </summary>
-            public static void BuildFileIDNode()
-            {
-                FbxNode node = new FbxNode();
-                node.Name = "FileId";
-                node.Value = new byte[] { 43, 182, 47, 230, 186, 41, 192, 205, 184, 207, 180, 39, 162, 40, 255, 247 };
-                node.Properties.Add(node.Value);
             }
 
             /// <summary>
@@ -422,7 +411,6 @@ namespace Mafia2
             doc.Nodes.Add(FbxPresetNodes.BuildGlobalSettingsNode());
             doc.Nodes.Add(FbxPresetNodes.BuildDocumentsNode());
             doc.Nodes.Add(FbxPresetNodes.BuildDefinitionsNode(true, false, true));
-            FbxIO.WriteAscii(doc, "file.fbx");
         }
 
         public static void BuildFBXFromModel(Model model)
@@ -485,12 +473,16 @@ namespace Mafia2
             if (model.Lods[0].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                 geom.Nodes.Add(BuildLayerElementUVNode(model));
 
+            geom.Nodes.Add(BuildLayerElementMaterial(model));
+
             geom.Nodes.Add(new FbxNode().CreateNode("Layer", 0));
             geom["Layer"].Nodes.Add(new FbxNode().CreateNode("Version", 100));
 
             //make sure normals exist before adding the layer.
             if (model.Lods[0].VertexDeclaration.HasFlag(VertexFlags.Normals))
                 geom["Layer"].Nodes.Add(BuildNamedLayer("LayerElementNormal"));
+
+            geom["Layer"].Nodes.Add(BuildNamedLayer("LayerElementMaterial"));
 
             //make sure UVs exist before adding the layer.
             if (model.Lods[0].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
@@ -521,6 +513,11 @@ namespace Mafia2
             node["Model"].Nodes.Add(properties70);
             node["Model"].Nodes.Add(new FbxNode().CreateNode("Shading", 'T'));
             node["Model"].Nodes.Add(new FbxNode().CreateNode("Culling", "CullingOff"));
+
+            foreach(ModelPart part in model.Lods[0].Parts)
+            {
+                node.Nodes.Add(BuildMaterialNode(part.Material));
+            }
             return node;
         }
 
@@ -598,6 +595,26 @@ namespace Mafia2
             return node;
         }
 
+        private static FbxNode BuildLayerElementMaterial(Model model)
+        {
+            FbxNode node = new FbxNode().CreateNode("LayerElementMaterial", 0);
+            node.Nodes.Add(new FbxNode().CreateNode("Version", 101));
+            node.Nodes.Add(new FbxNode().CreateNode("Name", ""));
+            node.Nodes.Add(new FbxNode().CreateNode("MappingInformationType", "ByPolygon"));
+            node.Nodes.Add(new FbxNode().CreateNode("ReferenceInformationType", "IndexToDirect"));
+
+            List<int> matIDs = new List<int>();
+            for (int i = 0; i < model.Lods[0].Parts.Length; i++)
+            {
+                for (int x = 0; x < model.Lods[0].Parts[i].Indices.Length; x++)
+                {
+                    matIDs.Add(i);
+                }                
+            }
+            node.Nodes.Add(new FbxNode().CreateNode("Materials", matIDs.ToArray()));
+            return node;
+        }
+
         /// <summary>
         /// Build layer with specified name.
         /// </summary>
@@ -608,6 +625,34 @@ namespace Mafia2
             FbxNode node = new FbxNode().CreateNode("LayerElement", null);
             node.Nodes.Add(new FbxNode().CreateNode("Type", layerName));
             node.Nodes.Add(new FbxNode().CreateNode("TypedIndex", 0));
+            return node;
+        }
+
+        private static FbxNode BuildMaterialNode(string material)
+        {
+            FbxNode node = new FbxNode().CreateNode("Material", Functions.RandomGenerator.Next());
+            node.Properties.Add("Material::" + material);
+            node.Properties.Add("");
+            node.Nodes.Add(new FbxNode().CreateNode("Version", 102));
+            node.Nodes.Add(new FbxNode().CreateNode("ShadingModel", "phong"));
+            node.Nodes.Add(new FbxNode().CreateNode("MultiLayer", 0));
+            FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ShadingModel", "KString", "", "", "phong" }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "EmissiveFactor", "Number", "", "A", 0 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "AmbientColor", "Color", "", "A", 0.6, 0.6, 0.6 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "DiffuseColor", "Color", "", "A", 0.6, 0.6, 0.6 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "TransparentColor", "Color", "", "A", 1, 1, 1 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "SpecularColor", "Color", "", "A", 0.9, 0.9, 0.9 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "SpecularFactor", "Number", "", "A", 0 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "ShininessExponent", "Number", "", "A", 2 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Emissive", "Vector3D", "Vector", "", 0, 0, 0 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Ambient", "Vector3D", "Vector", "", 0.6, 0.6, 0.6 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Diffuse", "Vector3D", "Vector", "", 0.6, 0.6, 0.6 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Specular", "Vector3D", "Vector", "", 0, 0, 0 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Shininess", "double", "Number", "", 2 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Opacity", "double", "Number", "", 1 }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Reflectivity", "double", "Number", "", 0 }));
+            node.Nodes.Add(properties70);
             return node;
         }
     }

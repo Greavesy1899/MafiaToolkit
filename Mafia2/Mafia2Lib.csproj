@@ -52,6 +52,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FBX\FbxScene.cs" />
     <Compile Include="FileTypes\Animations\Animation2.cs" />
     <Compile Include="FileTypes\Cutscene\FXAnimSet.cs" />
     <Compile Include="FileTypes\Cutscene\Speech.cs" />
