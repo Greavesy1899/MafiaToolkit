@@ -6,6 +6,9 @@ namespace Mafia2
 {
     public class FbxWrangler
     {
+        //not the best idea, but hey ho, it works.
+        private static List<ConnectionStruct> connections = new List<ConnectionStruct>();
+
         public class FbxPresetNodes
         {
             /// <summary>
@@ -158,7 +161,7 @@ namespace Mafia2
             /// <param name="doAnims"></param>
             /// <param name="doModels"></param>
             /// <returns></returns>
-            public static FbxNode BuildDefinitionsNode(bool doGlobal, bool doAnims, bool doModels)
+            public static FbxNode BuildDefinitionsNode(bool doGlobal, bool doAnims, bool doModels, int numMats = 0)
             {
                 int count = 0;
                 if (doGlobal)
@@ -166,7 +169,7 @@ namespace Mafia2
                 if (doAnims)
                     count += 2;
                 if (doModels)
-                    count += 5;
+                    count += numMats*4;
 
                 FbxNode node = new FbxNode().CreateNode("Definitions", null);
                 node.Nodes.Add(new FbxNode().CreateNode("Version", 100));
@@ -183,9 +186,9 @@ namespace Mafia2
                 {
                     node.Nodes.Add(BuildModelDefinitionNode());
                     node.Nodes.Add(BuildGeometryDefinitionNode());
-                    node.Nodes.Add(BuildMaterialDefinitionNode());
-                    node.Nodes.Add(BuildTextureDefinitionNode());
-                    node.Nodes.Add(BuildVideoDefinitionNode());
+                    node.Nodes.Add(BuildMaterialDefinitionNode(numMats));
+                    node.Nodes.Add(BuildTextureDefinitionNode(numMats));
+                    node.Nodes.Add(BuildVideoDefinitionNode(numMats));
                 }
 
                 return node;
@@ -305,10 +308,10 @@ namespace Mafia2
             /// Build 'Material' Definition Node.
             /// </summary>
             /// <returns></returns>
-            private static FbxNode BuildMaterialDefinitionNode()
+            private static FbxNode BuildMaterialDefinitionNode(int count)
             {
                 FbxNode node = new FbxNode().CreateNode("ObjectType", "Material");
-                node.Nodes.Add(new FbxNode().CreateNode("Count", 1));
+                node.Nodes.Add(new FbxNode().CreateNode("Count", count));
 
                 FbxNode propTemplate = new FbxNode().CreateNode("PropertyTemplate", "FbxSurfacePhong");
                 FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
@@ -343,10 +346,10 @@ namespace Mafia2
             /// Build 'Texture' Definition Node.
             /// </summary>
             /// <returns></returns>
-            private static FbxNode BuildTextureDefinitionNode()
+            private static FbxNode BuildTextureDefinitionNode(int count)
             {
                 FbxNode node = new FbxNode().CreateNode("ObjectType", "Texture");
-                node.Nodes.Add(new FbxNode().CreateNode("Count", 1));
+                node.Nodes.Add(new FbxNode().CreateNode("Count", count));
 
                 FbxNode propTemplate = new FbxNode().CreateNode("PropertyTemplate", "FbxFileTexture");
                 FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
@@ -375,10 +378,10 @@ namespace Mafia2
             /// Build 'Video' Definition Node.
             /// </summary>
             /// <returns></returns>
-            private static FbxNode BuildVideoDefinitionNode()
+            private static FbxNode BuildVideoDefinitionNode(int count)
             {
                 FbxNode node = new FbxNode().CreateNode("ObjectType", "Video");
-                node.Nodes.Add(new FbxNode().CreateNode("Count", 1));
+                node.Nodes.Add(new FbxNode().CreateNode("Count", count));
 
                 FbxNode propTemplate = new FbxNode().CreateNode("PropertyTemplate", "FbxVideo");
                 FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
@@ -415,12 +418,15 @@ namespace Mafia2
 
         public static void BuildFBXFromModel(Model model)
         {
+            connections = new List<ConnectionStruct>();
+            int numMats = model.Lods[0].Parts.Length;
+
             FbxDocument doc = new FbxDocument();
-            doc.Version = FbxVersion.v7_2;
+            doc.Version = FbxVersion.v7_4;
             doc.Nodes.Add(FbxPresetNodes.BuildHeaderExtensionNode());
             doc.Nodes.Add(FbxPresetNodes.BuildGlobalSettingsNode());
             doc.Nodes.Add(FbxPresetNodes.BuildDocumentsNode());
-            doc.Nodes.Add(FbxPresetNodes.BuildDefinitionsNode(true, false, true));
+            doc.Nodes.Add(FbxPresetNodes.BuildDefinitionsNode(true, false, true, numMats));
             doc.Nodes.Add(BuildObjectNode(model));
             doc.Nodes.Add(BuildConnections());
             FbxIO.WriteAscii(doc, "FBX/" + model.FrameMesh.Name + ".fbx");
@@ -428,14 +434,17 @@ namespace Mafia2
 
         private static FbxNode BuildObjectNode(Model model)
         {
+            int geomID = Functions.RandomGenerator.Next();
+            int modelID = Functions.RandomGenerator.Next();
+
             FbxNode node = new FbxNode().CreateNode("Objects", null);
 
             //do geom stuff
-            FbxNode geom = new FbxNode().CreateNode("Geometry", 6325820608);
+            FbxNode geom = new FbxNode().CreateNode("Geometry", geomID);
             geom.Properties.Add("Geometry::");
             geom.Properties.Add("Mesh");
             FbxNode properties = new FbxNode().CreateNode("Properties70", null);
-            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Color", "ColorRGB", "Color", "", 0.603921568627451, 0.603921568627451, 0.898039215686275 }));
+            properties.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Color", "ColorRGB", "Color", "", 0.6, 0.6, 0.9 }));
             geom.Nodes.Add(properties);
 
             double[] verts = new double[model.Lods[0].Vertices.Length * 3];
@@ -491,7 +500,7 @@ namespace Mafia2
             node.Nodes.Add(geom);
 
             //Do model stuff.
-            node.Nodes.Add(new FbxNode().CreateNode("Model", 2064104752));
+            node.Nodes.Add(new FbxNode().CreateNode("Model", modelID));
             node["Model"].Properties.Add("Model::" + model.FrameMesh.Name.String);
             node["Model"].Properties.Add("Model");
             node["Model"].Nodes.Add(new FbxNode().CreateNode("Version", 232));
@@ -514,10 +523,28 @@ namespace Mafia2
             node["Model"].Nodes.Add(new FbxNode().CreateNode("Shading", 'T'));
             node["Model"].Nodes.Add(new FbxNode().CreateNode("Culling", "CullingOff"));
 
-            foreach(ModelPart part in model.Lods[0].Parts)
+            connections.Add(new ConnectionStruct("OO", modelID, 0));
+            connections.Add(new ConnectionStruct("OO", geomID, modelID));
+
+            int[] matIDs = new int[model.Lods[0].Parts.Length];
+
+            for(int i = 0; i != model.Lods[0].Parts.Length; i++)
             {
-                node.Nodes.Add(BuildMaterialNode(part.Material));
+                matIDs[i] = Functions.RandomGenerator.Next();
+                node.Nodes.Add(BuildMaterialNode(model.Lods[0].Parts[i].Material, matIDs[i]));
+                connections.Add(new ConnectionStruct("OO", matIDs[i], modelID));
             }
+
+            for (int i = 0; i != model.Lods[0].Parts.Length; i++)
+            {
+                int vidID = Functions.RandomGenerator.Next();
+                int texID = Functions.RandomGenerator.Next();
+                node.Nodes.Add(BuildVideoNode(model.Lods[0].Parts[i].Material, vidID));
+                node.Nodes.Add(BuildTextureNode(model.Lods[0].Parts[i].Material, texID));
+                connections.Add(new ConnectionStruct("OP", texID, matIDs[i], "DiffuseColor"));
+                connections.Add(new ConnectionStruct("OO", vidID, texID));
+            }
+
             return node;
         }
 
@@ -528,14 +555,12 @@ namespace Mafia2
         private static FbxNode BuildConnections()
         {
             FbxNode node = new FbxNode().CreateNode("Connections", null);
-            node.Nodes.Add(new FbxNode().CreateNode("C", null));
-            node.Nodes[0].Properties.Add("OO");
-            node.Nodes[0].Properties.Add(2064104752);
-            node.Nodes[0].Properties.Add(0);
-            node.Nodes.Add(new FbxNode().CreateNode("C", null));
-            node.Nodes[1].Properties.Add("OO");
-            node.Nodes[1].Properties.Add(6325820608);
-            node.Nodes[1].Properties.Add(2064104752);
+
+            for(int i = 0; i != connections.Count; i++)
+            {
+                node.Nodes.Add(BuildConnection(connections[i]));
+            }
+
             return node;
         }
 
@@ -595,6 +620,11 @@ namespace Mafia2
             return node;
         }
 
+        /// <summary>
+        /// Build LayerElementMaterial
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         private static FbxNode BuildLayerElementMaterial(Model model)
         {
             FbxNode node = new FbxNode().CreateNode("LayerElementMaterial", 0);
@@ -628,9 +658,14 @@ namespace Mafia2
             return node;
         }
 
-        private static FbxNode BuildMaterialNode(string material)
+        /// <summary>
+        /// Build named 'Material' Node
+        /// </summary>
+        /// <param name="material"></param>
+        /// <returns></returns>
+        private static FbxNode BuildMaterialNode(string material, int matID)
         {
-            FbxNode node = new FbxNode().CreateNode("Material", Functions.RandomGenerator.Next());
+            FbxNode node = new FbxNode().CreateNode("Material", matID);
             node.Properties.Add("Material::" + material);
             node.Properties.Add("");
             node.Nodes.Add(new FbxNode().CreateNode("Version", 102));
@@ -654,6 +689,99 @@ namespace Mafia2
             properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Reflectivity", "double", "Number", "", 0 }));
             node.Nodes.Add(properties70);
             return node;
+        }
+
+        /// <summary>
+        /// Build named 'Video' Node
+        /// </summary>
+        /// <param name="video"></param>
+        /// <returns></returns>
+        private static FbxNode BuildVideoNode(string video, int vidID)
+        {
+            string fileName = "C:\\" + video;
+            string relative = "textures\\" + video;
+
+            FbxNode node = new FbxNode().CreateNode("Video", vidID);
+            node.Properties.Add("Video::" + video);
+            node.Properties.Add("Clip");
+            node.Nodes.Add(new FbxNode().CreateNode("Type", "Clip"));
+            FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "Path", "KString", "XRefUrl", "", fileName }));
+            node.Nodes.Add(properties70);
+            node.Nodes.Add(new FbxNode().CreateNode("UseMipMap", 0));
+            node.Nodes.Add(new FbxNode().CreateNode("Filename", fileName));
+            node.Nodes.Add(new FbxNode().CreateNode("RelativeFilename", relative));
+            return node;
+        }
+
+        /// <summary>
+        /// Build named 'Texture' Node
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <returns></returns>
+        private static FbxNode BuildTextureNode(string texture, int texID)
+        {
+            string textureName = "Texture::" + texture;
+            string fileName = "C:\\" + texture;
+            string relative = "textures\\" + texture;
+
+            FbxNode node = new FbxNode().CreateNode("Texture", texID);
+            node.Properties.Add(textureName);
+            node.Properties.Add("");
+            node.Nodes.Add(new FbxNode().CreateNode("Type", "TextureVideoClip"));
+            node.Nodes.Add(new FbxNode().CreateNode("Version", 202));
+            node.Nodes.Add(new FbxNode().CreateNode("TextureName", textureName));
+            FbxNode properties70 = new FbxNode().CreateNode("Properties70", null);
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "UVSet", "KString", "", "", "UVChannel_1" }));
+            properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "UseMaterial", "bool", "", "", 1 }));
+            node.Nodes.Add(properties70);
+            node.Nodes.Add(new FbxNode().CreateNode("Media", "Video::"+texture));
+            node.Nodes.Add(new FbxNode().CreateNode("FileName", fileName));
+            node.Nodes.Add(new FbxNode().CreateNode("RelativeFilename", relative));
+            node.Nodes.Add(new FbxNode().CreateNode("ModelUVTranslation", 0));
+            node["ModelUVTranslation"].Properties.Add(0);
+            node.Nodes.Add(new FbxNode().CreateNode("ModelUVScaling", 1));
+            node["ModelUVScaling"].Properties.Add(1);
+            node.Nodes.Add(new FbxNode().CreateNode("Texture_Alpha_Source", "Alpha_Black"));
+            node.Nodes.Add(new FbxNode().CreateNode("Cropping", 1));
+            node["Cropping"].Properties.Add(1);
+            node["Cropping"].Properties.Add(1);
+            node["Cropping"].Properties.Add(1);
+            return node;
+        }
+
+        private static FbxNode BuildConnection(ConnectionStruct connection)
+        {
+            FbxNode node = new FbxNode().CreateNode("C", null);
+            node.Properties.Add(connection.Type);
+            node.Properties.Add(connection.ID1);
+            node.Properties.Add(connection.ID2);
+
+            if (connection.ExtraMat != null)
+                node.Properties.Add(connection.ExtraMat);
+
+            return node;
+        }
+
+        private struct ConnectionStruct
+        {
+            string type;
+            int id1;
+            int id2;
+            object extraMat;
+
+            public string Type { get { return type; } set { type = value; } }
+            public int ID1 { get { return id1; } set { id1 = value; } }
+            public int ID2 { get { return id2; } set { id2 = value; } }
+            public object ExtraMat { get { return extraMat; } set { extraMat = value; } }
+
+            public ConnectionStruct(string type, int id1, int id2, object extraMat = null)
+            {
+                this.type = type;
+                this.id1 = id1;
+                this.id2 = id2;
+                this.extraMat = extraMat;
+            }
         }
     }
 }
