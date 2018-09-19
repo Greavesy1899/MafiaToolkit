@@ -30,6 +30,7 @@
         {
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("General");
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("SDS Options");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Model/Exporting");
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -47,9 +48,12 @@
             treeNode1.Text = "General";
             treeNode2.Name = "SDS Options";
             treeNode2.Text = "SDS Options";
+            treeNode3.Name = "Model/Exporting";
+            treeNode3.Text = "Model/Exporting";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1,
-            treeNode2});
+            treeNode2,
+            treeNode3});
             this.treeView1.Size = new System.Drawing.Size(211, 310);
             this.treeView1.TabIndex = 0;
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.NodeMouseClick);

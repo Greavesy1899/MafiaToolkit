@@ -29,6 +29,10 @@ namespace Mafia2Tool
         public static int Width;
         public static int Height;
 
+        //Model Exporting keys;
+        public static int Format;
+        public static string ExportPath;
+
         //Misc vars;
         private static long ElapsedTime;
         private static DiscordController controller;
@@ -41,7 +45,7 @@ namespace Mafia2Tool
         public static void ReadINI()
         {
             ini = new IniFile();
-            ElapsedTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            ElapsedTime = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
             M2Directory = ReadKey("MafiaII", "Directories");
             MaterialDirectory = ReadKey("MaterialPath", "Directories");
@@ -56,6 +60,8 @@ namespace Mafia2Tool
             int.TryParse(ReadKey("Width", "ModelViewer", "1024"), out Width);
             int.TryParse(ReadKey("Height", "ModelViewer", "768"), out Height);
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
+            int.TryParse(ReadKey("Format, Exporting", "0"), out Format);
+            ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
 
             BorderStyle = 1; //FixedSingle
             ShaderPath = @"Shaders\";

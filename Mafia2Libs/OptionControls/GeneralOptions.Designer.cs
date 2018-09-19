@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupGeneral = new System.Windows.Forms.GroupBox();
+            this.debugLoggingCheckbox = new System.Windows.Forms.CheckBox();
             this.browseButton = new System.Windows.Forms.Button();
             this.M2DirectoryBox = new System.Windows.Forms.TextBox();
             this.M2Label = new System.Windows.Forms.Label();
@@ -39,7 +40,6 @@
             this.DiscordStateCheckBox = new System.Windows.Forms.CheckBox();
             this.DiscordDetailsCheckBox = new System.Windows.Forms.CheckBox();
             this.DiscordEnabledCheckBox = new System.Windows.Forms.CheckBox();
-            this.debugLoggingCheckbox = new System.Windows.Forms.CheckBox();
             this.groupGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.groupBoxSplitter)).BeginInit();
             this.groupBoxSplitter.Panel1.SuspendLayout();
@@ -62,13 +62,24 @@
             this.groupGeneral.TabStop = false;
             this.groupGeneral.Text = "General Options";
             // 
+            // debugLoggingCheckbox
+            // 
+            this.debugLoggingCheckbox.AutoSize = true;
+            this.debugLoggingCheckbox.Location = new System.Drawing.Point(7, 63);
+            this.debugLoggingCheckbox.Name = "debugLoggingCheckbox";
+            this.debugLoggingCheckbox.Size = new System.Drawing.Size(129, 17);
+            this.debugLoggingCheckbox.TabIndex = 4;
+            this.debugLoggingCheckbox.Text = "Enable debug logging";
+            this.debugLoggingCheckbox.UseVisualStyleBackColor = true;
+            this.debugLoggingCheckbox.CheckedChanged += new System.EventHandler(this.DebugLoggingCheckBox_CheckedChanged);
+            // 
             // browseButton
             // 
             this.browseButton.Location = new System.Drawing.Point(345, 37);
             this.browseButton.Name = "browseButton";
-            this.browseButton.Size = new System.Drawing.Size(71, 20);
+            this.browseButton.Size = new System.Drawing.Size(26, 20);
             this.browseButton.TabIndex = 2;
-            this.browseButton.Text = "Browse";
+            this.browseButton.Text = "...";
             this.browseButton.UseVisualStyleBackColor = true;
             this.browseButton.Click += new System.EventHandler(this.BrowseButton_Click);
             // 
@@ -168,17 +179,6 @@
             this.DiscordEnabledCheckBox.Text = "Rich Presence Enabled";
             this.DiscordEnabledCheckBox.UseVisualStyleBackColor = true;
             this.DiscordEnabledCheckBox.CheckedChanged += new System.EventHandler(this.DiscordEnabledCheckBox_CheckedChanged);
-            // 
-            // debugLoggingCheckbox
-            // 
-            this.debugLoggingCheckbox.AutoSize = true;
-            this.debugLoggingCheckbox.Location = new System.Drawing.Point(7, 63);
-            this.debugLoggingCheckbox.Name = "debugLoggingCheckbox";
-            this.debugLoggingCheckbox.Size = new System.Drawing.Size(129, 17);
-            this.debugLoggingCheckbox.TabIndex = 4;
-            this.debugLoggingCheckbox.Text = "Enable debug logging";
-            this.debugLoggingCheckbox.UseVisualStyleBackColor = true;
-            this.debugLoggingCheckbox.CheckedChanged += new System.EventHandler(this.DebugLoggingCheckBox_CheckedChanged);
             // 
             // GeneralOptions
             // 

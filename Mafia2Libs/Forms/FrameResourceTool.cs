@@ -306,8 +306,18 @@ namespace Mafia2Tool
 
                 for (int c = 0; c != newModel.Lods.Length; c++)
                 {
-                    newModel.ExportToM2T();
-                    newModel.ExportToFbx();
+                    switch(ToolkitSettings.Format)
+                    {
+                        case 0:
+                            newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\");
+                            break;
+                        case 1:
+                            newModel.ExportToM2T(ToolkitSettings.ExportPath + "\\");
+                            break;
+                        default:
+                            Log.WriteLine("Error! Unknown value set for ToolkitSettings.Format!", LoggingTypes.ERROR);
+                            break;
+                    }
                     Console.WriteLine(newModel.FrameMesh.Name.String);
                     if (newModel.FrameMesh.Name.String == "")
                         entry.LODNames[c] = newModel.FrameGeometry.LOD[c].VertexBufferRef.String;
@@ -321,10 +331,10 @@ namespace Mafia2Tool
 
             });
             frameEDD.EntryCount = frameEDD.Entries.Count;
-            using (BinaryWriter writer = new BinaryWriter(File.Create("exported/frame.edd")))
-            {
-                frameEDD.WriteToFile(writer);
-            }
+            //using (BinaryWriter writer = new BinaryWriter(File.Create("exported/frame.edd")))
+            //{
+            //    frameEDD.WriteToFile(writer);
+            //}
         }
 
         private void OnNodeSelect(object sender, TreeViewEventArgs e)
@@ -472,8 +482,19 @@ namespace Mafia2Tool
                 }
 
                 Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
-                newModel.ExportToM2T();
-                newModel.ExportToFbx();
+
+                switch (ToolkitSettings.Format)
+                {
+                    case 0:
+                        newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\");
+                        break;
+                    case 1:
+                        newModel.ExportToM2T(ToolkitSettings.ExportPath + "\\");
+                        break;
+                    default:
+                        Log.WriteLine("Error! Unknown value set for ToolkitSettings.Format!", LoggingTypes.ERROR);
+                        break;
+                }
             }
             else if (e.ClickedItem.Name == "contextUpdateParents")
             {

@@ -416,7 +416,7 @@ namespace Mafia2
             doc.Nodes.Add(FbxPresetNodes.BuildDefinitionsNode(true, false, true));
         }
 
-        public static void BuildFBXFromModel(Model model)
+        public static void BuildFBXFromModel(Model model, string path)
         {
             connections = new List<ConnectionStruct>();
             int numMats = model.Lods[0].Parts.Length;
@@ -429,7 +429,7 @@ namespace Mafia2
             doc.Nodes.Add(FbxPresetNodes.BuildDefinitionsNode(true, false, true, numMats));
             doc.Nodes.Add(BuildObjectNode(model));
             doc.Nodes.Add(BuildConnections());
-            FbxIO.WriteAscii(doc, "FBX/" + model.FrameMesh.Name + ".fbx");
+            FbxIO.WriteAscii(doc, path + model.FrameMesh.Name + ".fbx");
         }
 
         private static FbxNode BuildObjectNode(Model model)

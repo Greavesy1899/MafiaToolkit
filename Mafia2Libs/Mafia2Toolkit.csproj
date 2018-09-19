@@ -129,6 +129,12 @@
     <Compile Include="Forms\GameExplorer.Designer.cs">
       <DependentUpon>GameExplorer.cs</DependentUpon>
     </Compile>
+    <Compile Include="OptionControls\ModelOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OptionControls\ModelOptions.Designer.cs">
+      <DependentUpon>ModelOptions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utils\IniFile.cs" />
     <Compile Include="Forms\MaterialTool.cs">
       <SubType>Form</SubType>
@@ -232,6 +238,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="OptionControls\GeneralOptions.resx">
       <DependentUpon>GeneralOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionControls\ModelOptions.resx">
+      <DependentUpon>ModelOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OptionControls\SDSOptions.resx">
       <DependentUpon>SDSOptions.cs</DependentUpon>

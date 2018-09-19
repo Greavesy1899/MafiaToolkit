@@ -231,18 +231,15 @@ namespace Mafia2
             }
         }
 
-        public void ExportToM2T()
+        public void ExportToM2T(string exportPath)
         {
-            if (!Directory.Exists("exported"))
-                Directory.CreateDirectory("Exported");
-
             if (frameMesh.Name.String == "")
                 name = frameGeometry.LOD[0].VertexBufferRef.String;
 
-            if (File.Exists("exported/" + name + ".m2t"))
+            if (File.Exists(exportPath + name + ".m2t"))
                 return;
 
-            using (BinaryWriter writer = new BinaryWriter(File.Create("exported/" + name + ".m2t")))
+            using (BinaryWriter writer = new BinaryWriter(File.Create(exportPath + name + ".m2t")))
             {
                 //An absolute overhaul on the mesh exportation.
                 //file header; M2T\0
@@ -317,12 +314,9 @@ namespace Mafia2
             }
         }
 
-        public void ExportToFbx()
+        public void ExportToFbx(string path)
         {
-            if (!Directory.Exists("FBX"))
-                Directory.CreateDirectory("FBX");
-
-            FbxWrangler.BuildFBXFromModel(this);
+            FbxWrangler.BuildFBXFromModel(this, path);
         }
 
         public void ExportCollisionToM2T(string name)
