@@ -9,14 +9,13 @@ namespace Mafia2Tool
 {
     public partial class MaterialTool : Form
     {
-        private List<Material> materials;
-        private string name;
+        private MaterialLibrary mtl;
 
         public MaterialTool(FileInfo file)
         {
             InitializeComponent();
-            materials = MaterialsManager.ReadMatFile(file.FullName).ToList();
-            name = file.FullName;
+            mtl = new MaterialLibrary();
+            mtl.ReadMatFile(file.FullName);
             FetchMaterials();
             ShowDialog();
             ToolkitSettings.UpdateRichPresence("Using the Material Library editor.");
@@ -25,11 +24,11 @@ namespace Mafia2Tool
         public void FetchMaterials(bool searchMode = false, string text = null)
         {
             MaterialListBox.Items.Clear();
-            foreach (Material mat in materials)
+            foreach (KeyValuePair<ulong, Material> mat in mtl.Materials)
             {
                 if (!string.IsNullOrEmpty(text) && searchMode)
                 {
-                    if (mat.MaterialName.Contains(text) || mat.MaterialHash.ToString().Contains(text))
+                    if (mat.Value.MaterialName.Contains(text) || mat.Value.MaterialHash.ToString().Contains(text))
                         MaterialListBox.Items.Add(mat);
                     else
                         continue;
@@ -47,7 +46,7 @@ namespace Mafia2Tool
 
             if (result == DialogResult.Yes)
             {
-                MaterialsManager.WriteMatFile(name, materials.ToArray());
+                //MaterialsManager.WriteMatFile(name, materials.ToArray());
                 MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -61,13 +60,13 @@ namespace Mafia2Tool
         {
             ulong result;
             MaterialListBox.Items.Clear();
-            foreach (Material mat in materials)
+            foreach (KeyValuePair<ulong, Material> mat in mtl.Materials)
             {
                 ulong.TryParse(MaterialSearch.Text, out result);
 
-                if (mat.MaterialName.Contains(MaterialSearch.Text))
+                if (mat.Value.MaterialName.Contains(MaterialSearch.Text))
                     MaterialListBox.Items.Add(mat);
-                else if (mat.MaterialHash == result)
+                else if (mat.Value.MaterialHash == result)
                     MaterialListBox.Items.Add(mat);
             }
         }
@@ -79,13 +78,14 @@ namespace Mafia2Tool
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            MaterialsManager.WriteMatFile(name, materials.ToArray());
+            mtl.WriteMatFile(mtl.Name);
         }
 
         private void AddMaterial(object sender, EventArgs e)
         {
             Material mat = new Material();
-            materials.Add(mat);
+            //erm, temporary lol.
+            mtl.Materials.Add((ulong)Functions.RandomGenerator.Next(), mat);
             FetchMaterials();
         }
 

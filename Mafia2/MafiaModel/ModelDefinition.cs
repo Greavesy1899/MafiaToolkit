@@ -205,7 +205,8 @@ namespace Mafia2
                         {
 
                             ModelPart modelPart = new ModelPart();
-                            modelPart.Material = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
+                            Material mat = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);                          
+                            modelPart.Material = mat.SPS[0].File;
                             int num = materials[x].StartIndex + materials[x].NumFaces * 3;
                             List<Short3> intList = new List<Short3>(materials[x].NumFaces);
                             int startIndex = materials[x].StartIndex;

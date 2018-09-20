@@ -159,9 +159,14 @@ namespace Mafia2
             numFaces = reader.ReadInt32();
             startIndex = reader.ReadInt32();
             materialHash = reader.ReadUInt64();
-            materialName = string.Format("{0:X16}", materialHash.Swap());
             unk3 = reader.ReadInt32();
-            materialName = MaterialsManager.GetMatName(materialName);
+
+            Material mat = MaterialsManager.LookupMaterialByHash(materialHash);
+
+            if(mat != null)
+                materialName = mat.MaterialName;
+            else
+                materialName = "UNABLE TO GET FROM MTLs";
         }
 
         /// <summary>

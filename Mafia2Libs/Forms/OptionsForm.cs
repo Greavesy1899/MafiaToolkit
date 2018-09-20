@@ -35,6 +35,9 @@ namespace Mafia2Tool
                 case 2:
                     SwapOptionControls(new ModelOptions());
                     break;
+                case 3:
+                    SwapOptionControls(new MTLOptions());
+                    break;
             }
         }
     }

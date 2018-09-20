@@ -1,106 +1,40 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 
 namespace Mafia2
 {
     public class MaterialsManager
     {
-        private static Material[] mats;
+        public static Dictionary<string, MaterialLibrary> MTLs = new Dictionary<string, MaterialLibrary>();
 
-        public static Material[] ReadMatFile(string name)
+        /// <summary>
+        /// Read all mat files in an array and add to dictionary.
+        /// </summary>
+        /// <param name="names"></param>
+        public static void ReadMatFiles(string[] names)
         {
-            Material[] materials;
-
-            using (BinaryReader reader = new BinaryReader(File.Open(name, FileMode.Open)))
+            for (int i = 0; i != names.Length; i++)
             {
-                string header = new string(reader.ReadChars(4));
-                reader.ReadInt32();
-                int num2 = reader.ReadInt32();
-                reader.ReadInt32();
-
-                materials = new Material[num2];
-
-                for (int i = 0; i != materials.Length; i++)
-                    materials[i] = new Material(reader);
-            }
-
-            mats = materials;
-
-            return materials;
-        }
-
-        public static void WriteMatFile(string name)
-        {
-            using (BinaryWriter writer = new BinaryWriter(File.Open(name, FileMode.Create)))
-            {
-                writer.Write("MTLB".ToCharArray());
-                writer.Write(57);
-                writer.Write(mats.Length);
-                writer.Write(0);
-                for (int i = 0; i != mats.Length; i++)
-                    mats[i].WriteToFile(writer);
+                MaterialLibrary mtl = new MaterialLibrary();
+                mtl.ReadMatFile(names[i]);
+                MTLs.Add(mtl.Name, mtl);
+                Log.WriteLine("Succesfully read MTL: " + names[i]);
             }
         }
 
         /// <summary>
-        /// Used to save from external material source. 
+        /// Searches through all currently loaded material libraries.
         /// </summary>
-        /// <param name="name">name of material library.</param>
-        /// <param name="materials">set of materials to save.</param>
-        public static void WriteMatFile(string name, Material[] materials)
+        /// <param name="hash"></param>
+        /// <returns></returns>
+        public static Material LookupMaterialByHash(ulong hash)
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Open(name, FileMode.Create)))
-            {
-                writer.Write("MTLB".ToCharArray());
-                writer.Write(57);
-                writer.Write(materials.Length);
-                writer.Write(0);
-                for (int i = 0; i != materials.Length; i++)
-                    materials[i].WriteToFile(writer);
-            }
-        }
+            Material mat = null;
 
-        public static string GetMatName(string text)
-        {
-            if (mats == null)
-                return "NULL";
+            for (int i = 0; i != MTLs.Count; i++)
+                mat = MTLs.ElementAt(i).Value.LookupMaterialByHash(hash);
 
-            for (int i = 0; i != mats.Length; i++)
-            {
-                if (mats[i].MaterialName == text)
-                {
-                    return mats[i].MaterialName;
-                }
-            }
-            return "NULL";
-        }
-
-        public static Material[] GetMaterials()
-        {
-            return mats;
-        }
-
-        public static void SetMaterials(Material[] materials)
-        {
-            mats = materials;
-        }
-
-        public static string LookupMaterialByHash(ulong hash)
-        {
-            if (mats == null)
-                ReadMatFile("default.mtl");
-
-            for (int i = 0; i != mats.Length; i++)
-            {
-                if (hash == mats[i].MaterialHash)
-                {
-                    if (mats[i].SPS.Length == 0)
-                        return mats[i].MaterialName;
-
-                    return mats[i].SPS[0].File;
-                }
-            }
-            return "UNKNOWN";
+            return mat;
         }
     }
 }

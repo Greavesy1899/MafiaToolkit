@@ -120,16 +120,11 @@ namespace Mafia2Tool
             ItemDescs = null;
             Collisions = null;
             CityAreas = null;
-            GC.Collect();
         }
     }
 
     public static class MaterialData
     {
-        public static Material[] Default;
-        public static Material[] Default50;
-        public static Material[] Default60;
-        public static string MaterialPath = ToolkitSettings.MaterialDirectory;
         public static bool HasLoaded = false;
 
         /// <summary>
@@ -139,11 +134,8 @@ namespace Mafia2Tool
         {
             try
             {
-                Default = MaterialsManager.ReadMatFile(MaterialPath + "/default.mtl");
-                Default50 = MaterialsManager.ReadMatFile(MaterialPath + "/default50.mtl");
-                Default60 = MaterialsManager.ReadMatFile(MaterialPath + "/default60.mtl");
+                MaterialsManager.ReadMatFiles(ToolkitSettings.MaterialLibs.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
                 HasLoaded = true;
-                MaterialsManager.SetMaterials(Default);
             }
             catch (Exception ex)
             {

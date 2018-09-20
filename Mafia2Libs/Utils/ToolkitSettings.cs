@@ -10,6 +10,7 @@ namespace Mafia2Tool
 
         //Directories keys;
         public static string M2Directory;
+        [Obsolete]
         public static string MaterialDirectory;
 
         //Discord keys;
@@ -33,6 +34,9 @@ namespace Mafia2Tool
         public static int Format;
         public static string ExportPath;
 
+        //Material Library Keys:
+        public static string MaterialLibs;
+
         //Misc vars;
         private static long ElapsedTime;
         private static DiscordController controller;
@@ -48,7 +52,6 @@ namespace Mafia2Tool
             ElapsedTime = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
             M2Directory = ReadKey("MafiaII", "Directories");
-            MaterialDirectory = ReadKey("MaterialPath", "Directories");
             bool.TryParse(ReadKey("Enabled", "Discord", "True"), out DiscordEnabled);
             bool.TryParse(ReadKey("ElapsedTimeEnabled", "Discord", "True"), out DiscordElapsedTimeEnabled);
             bool.TryParse(ReadKey("StateEmabled", "Discord", "True"), out DiscordStateEnabled);
@@ -62,6 +65,8 @@ namespace Mafia2Tool
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
             int.TryParse(ReadKey("Format, Exporting", "0"), out Format);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
+            MaterialLibs = ReadKey("MaterialLibs", "Materials", "");
+
 
             BorderStyle = 1; //FixedSingle
             ShaderPath = @"Shaders\";

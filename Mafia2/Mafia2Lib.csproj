@@ -60,6 +60,7 @@
     <Compile Include="FileTypes\MiscTypes\AnimatedTexture.cs" />
     <Compile Include="FileTypes\MiscTypes\CityShops.cs" />
     <Compile Include="FileTypes\MiscTypes\TAPIndices.cs" />
+    <Compile Include="FileTypes\MTL\MaterialLibrary.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\IResourceType.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\MemFileResource.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\ScriptData.cs" />

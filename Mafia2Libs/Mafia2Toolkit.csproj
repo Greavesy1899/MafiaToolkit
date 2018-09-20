@@ -135,6 +135,12 @@
     <Compile Include="OptionControls\ModelOptions.Designer.cs">
       <DependentUpon>ModelOptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="OptionControls\MTLOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OptionControls\MTLOptions.Designer.cs">
+      <DependentUpon>MTLOptions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utils\IniFile.cs" />
     <Compile Include="Forms\MaterialTool.cs">
       <SubType>Form</SubType>
@@ -241,6 +247,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="OptionControls\ModelOptions.resx">
       <DependentUpon>ModelOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionControls\MTLOptions.resx">
+      <DependentUpon>MTLOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OptionControls\SDSOptions.resx">
       <DependentUpon>SDSOptions.cs</DependentUpon>

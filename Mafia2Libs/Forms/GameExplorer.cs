@@ -56,6 +56,7 @@ namespace Mafia2Tool
             {
                 MessageBox.Show("Could not find MafiaII 'launcher.exe', please correct the path!", "Error!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Log.WriteLine("Could not find MafiaII 'launcher.exe', please correct the path!", LoggingTypes.ERROR);
                 return;
             }
 

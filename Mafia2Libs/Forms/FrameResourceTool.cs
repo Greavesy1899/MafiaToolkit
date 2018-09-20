@@ -419,6 +419,7 @@ namespace Mafia2Tool
         {
             SaveChanges();
             SceneData.CleanData();
+            Dispose();
         }
 
         private void SaveClick(object sender, EventArgs e)
