@@ -53,6 +53,10 @@ namespace Mafia2
             position = new Vector3(0);
             normal = new Vector3(0);
             tangent = new Vector3(0);
+            uvs = new UVVector2[4];
+
+            for (int i = 0; i != uvs.Length; i++)
+                uvs[i] = new UVVector2();
         }
 
         /// <summary>

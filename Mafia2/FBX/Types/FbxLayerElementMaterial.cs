@@ -6,6 +6,10 @@ namespace Mafia2.FBX
     {
         byte[] materials;
 
+        public byte[] Materials {
+            get { return materials; }
+            set { materials = value; }
+        }
         /// <summary>
         /// Fill LayerElementNormal data from node.
         /// </summary>

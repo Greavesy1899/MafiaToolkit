@@ -572,6 +572,15 @@ namespace Mafia2
                             else if (obj.GetType() == typeof(FbxMaterial) && !element.Materials.ContainsKey(id1))
                                 element.Materials.Add(id1, obj as FbxMaterial);
                         }
+                        if (objects.TryGetValue(id2, out obj))
+                        {
+                            if (obj.GetType() == typeof(FbxModel) && element.Model == null)
+                                element.Model = obj as FbxModel;
+                            else if (obj.GetType() == typeof(FbxGeometry) && element.Geometry == null)
+                                element.Geometry = obj as FbxGeometry;
+                            else if (obj.GetType() == typeof(FbxMaterial) && !element.Materials.ContainsKey(id2))
+                                element.Materials.Add(id2, obj as FbxMaterial);
+                        }
                         break;
                     case "OP":
                         //TODO ADD SUPPORT FOR DIFFERENT MATERIAL TYPES; EG DIFFUSECOLOR, NORMALCOLOR etc.
@@ -586,12 +595,24 @@ namespace Mafia2
                             else if (obj.GetType() == typeof(FbxMaterial) && !element.Materials.ContainsKey(id1))
                                 element.Materials.Add(id1, obj as FbxMaterial);
                         }
+                        if (objects.TryGetValue(id2, out obj))
+                        {
+                            if (obj.GetType() == typeof(FbxModel) && element.Model == null)
+                                element.Model = obj as FbxModel;
+                            else if (obj.GetType() == typeof(FbxGeometry) && element.Geometry == null)
+                                element.Geometry = obj as FbxGeometry;
+                            else if (obj.GetType() == typeof(FbxMaterial) && !element.Materials.ContainsKey(id2))
+                                element.Materials.Add(id2, obj as FbxMaterial);
+                        }
                         break;
                     default:
                         Console.WriteLine("Unknown value: " + n.Value);
                         break;
                 }
             }
+            lods = new Lod[1];
+            lods[0] = element.BuildM2ModelFromElement();
+
         }
 
         /// <summary>
@@ -827,6 +848,12 @@ namespace Mafia2
         {
             get { return parts; }
             set { parts = value; }
+        }
+
+        public Lod()
+        {
+            vertexDeclaration = 0;
+            numUVChannels = 4;
         }
 
         //ADD SKELETON

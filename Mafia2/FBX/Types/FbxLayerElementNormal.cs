@@ -7,6 +7,11 @@ namespace Mafia2.FBX
         double[] normals;
         byte[] normalsW;
 
+        public double[] Normals {
+            get { return normals; }
+            set { normals = value; }
+        }
+
         /// <summary>
         /// Fill LayerElementNormal data from node.
         /// </summary>

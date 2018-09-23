@@ -13,6 +13,10 @@ namespace Mafia2.FBX
         byte multiLayer;
         object[] properties;
 
+        public string Name {
+            get { return name; }
+            set { name = value; }
+        }
         public void ConvertFromNode(FbxNode node)
         {
             id = (int)node.Properties[0];

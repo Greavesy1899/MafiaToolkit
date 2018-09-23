@@ -6,6 +6,11 @@ namespace Mafia2.FBX
     {
         double[] uvs;
 
+        public double[] UVs {
+            get { return uvs; }
+            set { uvs = value; }
+        }
+
         /// <summary>
         /// Fill LayerElementNormal data from node.
         /// </summary>

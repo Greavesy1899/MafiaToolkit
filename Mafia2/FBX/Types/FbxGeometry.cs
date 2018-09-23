@@ -16,6 +16,26 @@ namespace Mafia2.FBX
         FbxLayerElementUV uvs;
         FbxLayerElementMaterial materials;
 
+        public double[] Vertices {
+            get { return vertices; }
+            set { vertices = value; }
+        }
+        public int[] Triangles {
+            get { return triangles; }
+            set { triangles = value; }
+        }
+        public FbxLayerElementNormal LayerNormal {
+            get { return normals; }
+            set { normals = value; }
+        }
+        public FbxLayerElementUV LayerUV {
+            get { return uvs; }
+            set { uvs = value; }
+        }
+        public FbxLayerElementMaterial LayerMaterial {
+            get { return materials; }
+            set { materials = value; }
+        }
         public void ConvertFromNode(FbxNode node)
         {
             id = (int)node.Properties[0];
