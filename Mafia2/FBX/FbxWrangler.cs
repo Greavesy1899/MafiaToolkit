@@ -419,7 +419,6 @@ namespace Mafia2.FBX
 
         public static void BuildFBXFromModel(Model model, string path)
         {
-            connections = new List<ConnectionStruct>();
             int numMats = model.Lods[0].Parts.Length;
 
             FbxDocument doc = new FbxDocument();
@@ -523,7 +522,7 @@ namespace Mafia2.FBX
             node["Model"].Nodes.Add(properties70);
             node["Model"].Nodes.Add(new FbxNode().CreateNode("Shading", 'T'));
             node["Model"].Nodes.Add(new FbxNode().CreateNode("Culling", "CullingOff"));
-
+            connections = new List<ConnectionStruct>();
             connections.Add(new ConnectionStruct("OO", modelID, 0));
             connections.Add(new ConnectionStruct("OO", geomID, modelID));
 

@@ -47,6 +47,9 @@ namespace Mafia2.FBX
                     case "LayerElementMaterial":
                         materials = new FbxLayerElementMaterial(n);
                         break;
+                    case "Layer":
+                        Console.WriteLine("Need to work on this!!: LAYER");
+                        break;
                     default:
                         Console.WriteLine("Non-Implemented or unknown node was passed: " + n.Name);
                         break;

@@ -519,14 +519,79 @@ namespace Mafia2
 
             foreach (FbxNode n in node.Nodes)
             {
-                if (n.Name == "Geometry")
+                switch(n.Name)
                 {
-                    FbxGeometry geom = new FbxGeometry();
-                    geom.ConvertFromNode(n);
-                    objects.Add((int)n.Value, geom);
+                    case "Geometry":
+                        FbxGeometry geom = new FbxGeometry();
+                        geom.ConvertFromNode(n);
+                        objects.Add((int)n.Value, geom);
+                        break;
+                    case "Model":
+                        FbxModel model = new FbxModel();
+                        model.ConvertFromNode(n);
+                        objects.Add((int)n.Value, model);
+                        break;
+                    case "Video":
+                        FbxVideo video = new FbxVideo();
+                        video.ConvertFromNode(n);
+                        objects.Add((int)n.Value, video);
+                        break;
+                    case "Material":
+                        FbxMaterial material = new FbxMaterial();
+                        material.ConvertFromNode(n);
+                        objects.Add((int)n.Value, material);
+                        break;
+                    case "Texture":
+                        FbxTexture texture = new FbxTexture();
+                        texture.ConvertFromNode(n);
+                        objects.Add((int)n.Value, texture);
+                        break;
                 }
             }
 
+            node = doc.GetRelative("Connections");
+            FbxElement element = new FbxElement();
+            int id1;
+            int id2;
+            object obj;
+
+            //Very WIP.
+            foreach (FbxNode n in node.Nodes)
+            {
+                switch(n.Value)
+                {
+                    case "OO":
+                        id1 = Convert.ToInt32(n.Properties[1]);
+                        id2 = Convert.ToInt32(n.Properties[2]);
+                        if (objects.TryGetValue(id1, out obj))
+                        {
+                            if (obj.GetType() == typeof(FbxModel) && element.Model == null)
+                                element.Model = obj as FbxModel;
+                            else if (obj.GetType() == typeof(FbxGeometry) && element.Geometry == null)
+                                element.Geometry = obj as FbxGeometry;
+                            else if (obj.GetType() == typeof(FbxMaterial) && !element.Materials.ContainsKey(id1))
+                                element.Materials.Add(id1, obj as FbxMaterial);
+                        }
+                        break;
+                    case "OP":
+                        //TODO ADD SUPPORT FOR DIFFERENT MATERIAL TYPES; EG DIFFUSECOLOR, NORMALCOLOR etc.
+                        id1 = Convert.ToInt32(n.Properties[1]);
+                        id2 = Convert.ToInt32(n.Properties[2]);
+                        if (objects.TryGetValue(id1, out obj))
+                        {
+                            if (obj.GetType() == typeof(FbxModel) && element.Model == null)
+                                element.Model = obj as FbxModel;
+                            else if (obj.GetType() == typeof(FbxGeometry) && element.Geometry == null)
+                                element.Geometry = obj as FbxGeometry;
+                            else if (obj.GetType() == typeof(FbxMaterial) && !element.Materials.ContainsKey(id1))
+                                element.Materials.Add(id1, obj as FbxMaterial);
+                        }
+                        break;
+                    default:
+                        Console.WriteLine("Unknown value: " + n.Value);
+                        break;
+                }
+            }
         }
 
         /// <summary>
