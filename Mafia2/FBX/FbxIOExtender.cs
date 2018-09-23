@@ -1,6 +1,6 @@
 ﻿using Fbx;
 
-namespace Mafia2
+namespace Mafia2.FBX
 {
     public static partial class FbxIOExtender
     {

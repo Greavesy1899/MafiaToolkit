@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Fbx;
+using Mafia2.FBX;
 using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2
@@ -119,116 +120,121 @@ namespace Mafia2
                 lods[i].NumUVChannels = 4;
                 lods[i].Vertices = new Vertex[frameLod.NumVertsPr];
 
-                try
+                //try
+                //{
+                for (int v = 0; v != lods[i].Vertices.Length; v++)
                 {
-                    for (int v = 0; v != lods[i].Vertices.Length; v++)
+                    Vertex vertex = new Vertex();
+                    vertex.UVs = new UVVector2[lods[i].NumUVChannels];
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
-                        Vertex vertex = new Vertex();
-                        vertex.UVs = new UVVector2[lods[i].NumUVChannels];
-                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
-                        {
-                            int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
-                            vertex.ReadPositionData(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor,
-                                frameGeometry.DecompressionOffset);
-                        }
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
+                        vertex.ReadPositionData(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor,
+                            frameGeometry.DecompressionOffset);
+                    }
 
-                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
-                        {
-                            int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
-                            vertex.ReadTangentData(vertexBuffer.Data, startIndex);
-                        }
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                    {
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
+                        vertex.ReadTangentData(vertexBuffer.Data, startIndex);
+                    }
 
-                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
-                        {
-                            int startIndex = v * stride + vertexOffsets[VertexFlags.Normals].Offset;
-                            vertex.ReadNormalData(vertexBuffer.Data, startIndex);
-                        }
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
+                    {
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.Normals].Offset;
+                        vertex.ReadNormalData(vertexBuffer.Data, startIndex);
+                    }
 
-                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.BlendData))
-                        {
-                            int startIndex = v * stride + vertexOffsets[VertexFlags.BlendData].Offset;
-                            vertex.ReadBlendData(vertexBuffer.Data, startIndex);
-                        }
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.BlendData))
+                    {
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.BlendData].Offset;
+                        vertex.ReadBlendData(vertexBuffer.Data, startIndex);
+                    }
 
-                        if(lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x80))
-                        {
-                            Console.WriteLine("Skip vertex with flag_0x80");
-                        }
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x80))
+                    {
+                        Console.WriteLine("Skip vertex with flag_0x80");
+                    }
 
-                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
-                        {
-                            int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords0].Offset;
-                            vertex.ReadUvData(vertexBuffer.Data, startIndex, 0);
-                        }
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                    {
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords0].Offset;
+                        vertex.ReadUvData(vertexBuffer.Data, startIndex, 0);
+                    }
 
-                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
-                        {
-                            int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords1].Offset;
-                            vertex.ReadUvData(vertexBuffer.Data, startIndex, 1);
-                        }
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                    {
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords1].Offset;
+                        vertex.ReadUvData(vertexBuffer.Data, startIndex, 1);
+                    }
 
-                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
-                        {
-                            int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords2].Offset;
-                            vertex.ReadUvData(vertexBuffer.Data, startIndex, 2);
-                        }
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                    {
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords2].Offset;
+                        vertex.ReadUvData(vertexBuffer.Data, startIndex, 2);
+                    }
 
-                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
-                        {
-                            int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords7].Offset;
-                            vertex.ReadUvData(vertexBuffer.Data, startIndex, 3);
-                        }
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                    {
+                        int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords7].Offset;
+                        vertex.ReadUvData(vertexBuffer.Data, startIndex, 3);
+                    }
 
-                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x20000))
-                        {
-                            Console.WriteLine("Skip vertex with flag_0x20000");
-                        }
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x20000))
+                    {
+                        Console.WriteLine("Skip vertex with flag_0x20000");
+                    }
 
-                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x40000))
-                        {
-                            Console.WriteLine("Skip vertex with flag_0x40000");
-                        }
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x40000))
+                    {
+                        Console.WriteLine("Skip vertex with flag_0x40000");
+                    }
 
-                        if (lods[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
-                        {
-                            Console.WriteLine("Skip vertex with DamageGroup");
-                        }
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
+                    {
+                        Console.WriteLine("Skip vertex with DamageGroup");
+                    }
 
-                        if (lods[i].NormalMapInfoPresent)
-                            vertex.BuildBinormals();
+                    if (lods[i].NormalMapInfoPresent)
+                        vertex.BuildBinormals();
 
-                        lods[i].Vertices[v] = vertex;
+                    lods[i].Vertices[v] = vertex;
 
-                        MaterialStruct[] materials = frameMaterial.Materials[i];
-                        lods[i].Parts = new ModelPart[materials.Length];
-                        for (int x = 0; x != materials.Length; x++)
-                        {
+                    MaterialStruct[] materials = frameMaterial.Materials[i];
+                    lods[i].Parts = new ModelPart[materials.Length];
+                    for (int x = 0; x != materials.Length; x++)
+                    {
 
-                            ModelPart modelPart = new ModelPart();
-                            Material mat = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);                          
+                        ModelPart modelPart = new ModelPart();
+                        Material mat = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
+
+                        if (mat == null)
+                            modelPart.Material = "null";
+                        else
                             modelPart.Material = mat.SPS[0].File;
-                            int num = materials[x].StartIndex + materials[x].NumFaces * 3;
-                            List<Short3> intList = new List<Short3>(materials[x].NumFaces);
-                            int startIndex = materials[x].StartIndex;
-                            while (startIndex < num)
-                            {
-                                Short3 indice = new Short3();
-                                indice.S1 = (short) indexBuffer.Data[startIndex + 0];
-                                indice.S2 = (short) indexBuffer.Data[startIndex + 1];
-                                indice.S3 = (short) indexBuffer.Data[startIndex + 2];
-                                intList.Add(indice);
-                                startIndex += 3;
-                            }
 
-                            modelPart.Indices = intList.ToArray();
-                            lods[i].Parts[x] = modelPart;
+                        int num = materials[x].StartIndex + materials[x].NumFaces * 3;
+                        List<Short3> intList = new List<Short3>(materials[x].NumFaces);
+                        int startIndex = materials[x].StartIndex;
+                        while (startIndex < num)
+                        {
+                            Short3 indice = new Short3();
+                            indice.S1 = (short)indexBuffer.Data[startIndex + 0];
+                            indice.S2 = (short)indexBuffer.Data[startIndex + 1];
+                            indice.S3 = (short)indexBuffer.Data[startIndex + 2];
+                            intList.Add(indice);
+                            startIndex += 3;
                         }
+
+                        modelPart.Indices = intList.ToArray();
+                        lods[i].Parts[x] = modelPart;
                     }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                //}
+                //catch (Exception ex)
+                //{
+                //    Console.WriteLine(ex.Message);
+                //}
             }
         }
 
@@ -500,6 +506,27 @@ namespace Mafia2
                     Lods[i].Parts[x].CalculatePartBounds(lods[i].Vertices);
                 }
             }
+        }
+
+        public void ReadFromFbx(string file)
+        {
+            var reader = new FbxAsciiReader(new FileStream(file, FileMode.Open));
+            var doc = reader.Read();
+
+            Dictionary<int, object> objects = new Dictionary<int, object>();
+            FbxScene scene = new FbxScene();
+            FbxNode node = doc.GetRelative("Objects");
+
+            foreach (FbxNode n in node.Nodes)
+            {
+                if (n.Name == "Geometry")
+                {
+                    FbxGeometry geom = new FbxGeometry();
+                    geom.ConvertFromNode(n);
+                    objects.Add((int)n.Value, geom);
+                }
+            }
+
         }
 
         /// <summary>

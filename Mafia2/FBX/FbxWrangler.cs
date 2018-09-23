@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Mafia2
+namespace Mafia2.FBX
 {
     public class FbxWrangler
     {
@@ -408,6 +408,7 @@ namespace Mafia2
 
         public static void BuildEmptyFBX()
         {
+            connections = new List<ConnectionStruct>();
             FbxDocument doc = new FbxDocument();
             doc.Version = FbxVersion.v7_4;
             doc.Nodes.Add(FbxPresetNodes.BuildHeaderExtensionNode());

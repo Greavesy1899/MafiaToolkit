@@ -29,13 +29,13 @@ namespace Mafia2Tool
                 if (!string.IsNullOrEmpty(text) && searchMode)
                 {
                     if (mat.Value.MaterialName.Contains(text) || mat.Value.MaterialHash.ToString().Contains(text))
-                        MaterialListBox.Items.Add(mat);
+                        MaterialListBox.Items.Add(mat.Value);
                     else
                         continue;
                 }
                 else
                 {
-                    MaterialListBox.Items.Add(mat);
+                    MaterialListBox.Items.Add(mat.Value);
                 }
             }
         }
@@ -65,9 +65,9 @@ namespace Mafia2Tool
                 ulong.TryParse(MaterialSearch.Text, out result);
 
                 if (mat.Value.MaterialName.Contains(MaterialSearch.Text))
-                    MaterialListBox.Items.Add(mat);
+                    MaterialListBox.Items.Add(mat.Value);
                 else if (mat.Value.MaterialHash == result)
-                    MaterialListBox.Items.Add(mat);
+                    MaterialListBox.Items.Add(mat.Value);
             }
         }
 

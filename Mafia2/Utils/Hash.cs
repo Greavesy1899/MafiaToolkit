@@ -71,7 +71,7 @@ namespace Mafia2
         public override string ToString()
         {
             if (string.IsNullOrEmpty(_string))
-                return hash.ToString();
+                return ((SkeletonBoneIDs)hash).ToString();
             else
                 return _string;
         }

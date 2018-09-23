@@ -53,6 +53,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FBX\FbxScene.cs" />
+    <Compile Include="FBX\Types\FbxGeometry.cs" />
+    <Compile Include="FBX\Types\FbxLayer.cs" />
+    <Compile Include="FBX\Types\FbxLayerElementMaterial.cs" />
+    <Compile Include="FBX\Types\FbxLayerElementUV.cs" />
+    <Compile Include="FBX\Types\FbxLayerElementNormal.cs" />
     <Compile Include="FileTypes\Animations\Animation2.cs" />
     <Compile Include="FileTypes\Cutscene\FXAnimSet.cs" />
     <Compile Include="FileTypes\Cutscene\Speech.cs" />

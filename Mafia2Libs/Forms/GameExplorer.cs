@@ -333,6 +333,7 @@ namespace Mafia2Tool
             CollisionEditor cTool;
             //TODO: Build editor for speech.
             Speech speech;
+            CutsceneFile cutscene;
 
             if (item.SubItems[1].Text == "Directory")
                 OpenDirectory((DirectoryInfo)item.Tag);
@@ -340,6 +341,8 @@ namespace Mafia2Tool
                 mTool = new MaterialTool((FileInfo)item.Tag);
             else if (item.SubItems[1].Text == "Speech Data")
                 speech = new Speech((FileInfo)item.Tag);
+            //else if (item.SubItems[1].Text == "CUT")
+            //    cutscene = new CutsceneFile((FileInfo)item.Tag);
             else if (item.SubItems[1].Text == "SDS Archive")
                 OpenSDS((FileInfo)item.Tag);
             //else if (item.SubItems[1].Text == "PATCH Archive")

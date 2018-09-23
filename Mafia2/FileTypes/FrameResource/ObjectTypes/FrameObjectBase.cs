@@ -90,7 +90,7 @@ namespace Mafia2
             parentIndex1 = new ParentStruct(reader.ReadInt32());
             parentIndex2 = new ParentStruct(reader.ReadInt32());
             unk6 = reader.ReadInt16();
-            node = new Node(name.String, refID.ToString(), this);
+            UpdateNode();
         }
 
         public virtual void WriteToFile(BinaryWriter writer)
@@ -106,7 +106,7 @@ namespace Mafia2
 
         public void UpdateNode()
         {
-            node = new Node(name.String, refID.ToString(), this);
+            node = new Node(name.ToString(), refID.ToString(), this);
         }
     }
 

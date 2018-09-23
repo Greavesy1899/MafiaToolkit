@@ -331,10 +331,10 @@ namespace Mafia2Tool
 
             });
             frameEDD.EntryCount = frameEDD.Entries.Count;
-            //using (BinaryWriter writer = new BinaryWriter(File.Create("exported/frame.edd")))
-            //{
-            //    frameEDD.WriteToFile(writer);
-            //}
+            using (BinaryWriter writer = new BinaryWriter(File.Create(ToolkitSettings.ExportPath + "\\" + "frame.edd")))
+            {
+                frameEDD.WriteToFile(writer);
+            }
         }
 
         private void OnNodeSelect(object sender, TreeViewEventArgs e)
@@ -386,21 +386,21 @@ namespace Mafia2Tool
                 if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
                     return;
 
-                using (BinaryReader reader = new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)))
-                {
-                    model.ReadFromM2T(reader);
+                if (m2tBrowser.FileName.EndsWith(".m2t"))
+                    model.ReadFromM2T(new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)));
+                else if (m2tBrowser.FileName.EndsWith(".fbx"))
+                    model.ReadFromFbx(m2tBrowser.FileName);
 
-                    List<Vertex[]> vertData = new List<Vertex[]>();
-                    for (int i = 0; i != model.Lods.Length; i++)
-                        vertData.Add(model.Lods[i].Vertices);
+                List<Vertex[]> vertData = new List<Vertex[]>();
+                for (int i = 0; i != model.Lods.Length; i++)
+                    vertData.Add(model.Lods[i].Vertices);
 
-                    model.FrameMesh.Boundings = new Bounds();
-                    model.FrameMesh.Boundings.CalculateBounds(vertData);
-                    model.FrameMaterial.Bounds = model.FrameMesh.Boundings;
-                    model.CalculateDecompression();
-                    model.BuildIndexBuffer();
-                    model.BuildVertexBuffer();
-                }
+                model.FrameMesh.Boundings = new Bounds();
+                model.FrameMesh.Boundings.CalculateBounds(vertData);
+                model.FrameMaterial.Bounds = model.FrameMesh.Boundings;
+                model.CalculateDecompression();
+                model.BuildIndexBuffer();
+                model.BuildVertexBuffer();
                 model.UpdateObjectsFromModel();
 
                 treeView1.SelectedNode.Tag = model.FrameMesh;

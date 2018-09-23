@@ -4,24 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mafia2
+namespace Mafia2.FBX
 {
     public class FbxScene
     {
-        private bool hasAnimations;
-        private bool hasGlobalSettings;
-        private bool hasNormals;
-        private bool hasTangents;
-        private bool hasUV;
-        private bool hasModels;
-        private bool hasMaterials;
+        public bool hasAnimations;
+        public bool hasGlobalSettings;
+        public bool hasNormals;
+        public bool hasTangents;
+        public bool hasUV;
+        public bool hasModels;
+        public bool hasMaterials;
 
-        private int numModels;
-        private int numMaterials;
+        public int numModels;
+        public int numMaterials;
 
-        public FbxScene(Model model)
-        {
 
-        }
     }
 }
