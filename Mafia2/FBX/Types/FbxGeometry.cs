@@ -3,11 +3,8 @@ using System;
 
 namespace Mafia2.FBX
 {
-    public class FbxGeometry
+    public class FbxGeometry : FbxObject
     {
-        int id;
-        string name;
-        string type;
         FbxNode[] properties;
         double[] vertices;
         int[] triangles;
@@ -36,11 +33,9 @@ namespace Mafia2.FBX
             get { return materials; }
             set { materials = value; }
         }
-        public void ConvertFromNode(FbxNode node)
+        public override void ConvertFromNode(FbxNode node)
         {
-            id = (int)node.Properties[0];
-            name = (string)node.Properties[1];
-            type = (string)node.Properties[2];
+            base.ConvertFromNode(node);
 
             foreach (FbxNode n in node.Nodes)
             {

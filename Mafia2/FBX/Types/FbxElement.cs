@@ -9,9 +9,9 @@ namespace Mafia2.FBX
     {
         FbxModel model;
         FbxGeometry geometry;
-        Dictionary<int, FbxVideo> videos = new Dictionary<int, FbxVideo>();
-        Dictionary<int, FbxMaterial> materials = new Dictionary<int, FbxMaterial>();
-        Dictionary<int, FbxTexture> textures = new Dictionary<int, FbxTexture>();
+        Dictionary<long, FbxVideo> videos = new Dictionary<long, FbxVideo>();
+        Dictionary<long, FbxMaterial> materials = new Dictionary<long, FbxMaterial>();
+        Dictionary<long, FbxTexture> textures = new Dictionary<long, FbxTexture>();
         Lod lod;
 
         public FbxModel Model {
@@ -22,15 +22,15 @@ namespace Mafia2.FBX
             get { return geometry; }
             set { geometry = value; }
         }
-        public Dictionary<int, FbxVideo> Videos {
+        public Dictionary<long, FbxVideo> Videos {
             get { return videos; }
             set { videos = value; }
         }
-        public Dictionary<int, FbxMaterial> Materials {
+        public Dictionary<long, FbxMaterial> Materials {
             get { return materials; }
             set { materials = value; }
         }
-        public Dictionary<int, FbxTexture> Textures {
+        public Dictionary<long, FbxTexture> Textures {
             get { return textures; }
             set { textures = value; }
         }
@@ -60,8 +60,9 @@ namespace Mafia2.FBX
 
             for (int i = 0; i != lod.Parts.Length; i++)
             {
+                string name = materials.ElementAt(i).Value.Name.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries)[1];
                 lod.Parts[i] = new ModelPart();
-                lod.Parts[i].Material = materials.ElementAt(i).Value.Name.Split(new char[] {':' }, StringSplitOptions.None)[1];
+                lod.Parts[i].Material = name.Remove(name.Length - 4, 4);
                 lod.Parts[i].Indices = partTriangles[i].ToArray();
                 lod.Parts[i].CalculatePartBounds(lod.Vertices);
             }

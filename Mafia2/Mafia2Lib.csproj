@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="FBX\FbxScene.cs" />
     <Compile Include="FBX\Types\FbxElement.cs" />
+    <Compile Include="FBX\Types\FbxObject.cs" />
     <Compile Include="FBX\Types\FbxTexture.cs" />
     <Compile Include="FBX\Types\FbxMaterial.cs" />
     <Compile Include="FBX\Types\FbxVideo.cs" />

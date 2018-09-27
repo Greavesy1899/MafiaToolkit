@@ -3,22 +3,17 @@ using System;
 
 namespace Mafia2.FBX
 {
-    public class FbxVideo
+    public class FbxVideo : FbxObject
     {
-        int id;
-        string name;
-        string type;
         string videoType;
         object[] properties;
         byte useMipMap;
         string fileName;
         string relativeFileName;
 
-        public void ConvertFromNode(FbxNode node)
+        public override void ConvertFromNode(FbxNode node)
         {
-            id = (int)node.Properties[0];
-            name = (string)node.Properties[1];
-            type = (string)node.Properties[2];
+            base.ConvertFromNode(node);
 
             foreach (FbxNode n in node.Nodes)
             {

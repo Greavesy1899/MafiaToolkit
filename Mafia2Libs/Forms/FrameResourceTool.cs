@@ -543,8 +543,10 @@ namespace Mafia2Tool
                 if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
                     return;
 
-                using (BinaryReader reader = new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)))
-                    model.ReadFromM2T(reader);
+                if (m2tBrowser.FileName.ToLower().EndsWith(".m2t"))
+                    model.ReadFromM2T(new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)));
+                else if (m2tBrowser.FileName.ToLower().EndsWith(".fbx"))
+                    model.ReadFromFbx(m2tBrowser.FileName);
 
                 mesh.Name.Set(model.Name);
                 model.CreateObjectsFromModel();

@@ -3,25 +3,16 @@ using System;
 
 namespace Mafia2.FBX
 {
-    public class FbxMaterial
+    public class FbxMaterial : FbxObject
     {
-        int id;
-        string name;
-        string type;
         byte version;
         string shadingModel;
         byte multiLayer;
         object[] properties;
 
-        public string Name {
-            get { return name; }
-            set { name = value; }
-        }
-        public void ConvertFromNode(FbxNode node)
+        public override void ConvertFromNode(FbxNode node)
         {
-            id = (int)node.Properties[0];
-            name = (string)node.Properties[1];
-            type = (string)node.Properties[2];
+            base.ConvertFromNode(node);
 
             foreach (FbxNode n in node.Nodes)
             {

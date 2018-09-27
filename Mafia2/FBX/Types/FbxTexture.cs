@@ -3,11 +3,8 @@ using System;
 
 namespace Mafia2.FBX
 {
-    public class FbxTexture
+    public class FbxTexture : FbxObject
     {
-        int id;
-        string name;
-        string type;
         string textureType;
         byte version;
         string textureName;
@@ -20,11 +17,9 @@ namespace Mafia2.FBX
         string textureAlphaSource;
         object[] cropping;
 
-        public void ConvertFromNode(FbxNode node)
+        public override void ConvertFromNode(FbxNode node)
         {
-            id = (int)node.Properties[0];
-            name = (string)node.Properties[1];
-            type = (string)node.Properties[2];
+            base.ConvertFromNode(node);
 
             foreach (FbxNode n in node.Nodes)
             {
