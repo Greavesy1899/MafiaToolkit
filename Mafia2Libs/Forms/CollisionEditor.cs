@@ -102,20 +102,6 @@ namespace Mafia2Tool
         }
 
         /// <summary>
-        /// Update property grid with latest selected  item.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnClickNode(object sender, System.EventArgs e)
-        {
-            if (treeView1.SelectedNode == null)
-                return;
-
-            FrameResourceGrid.SelectedObject = treeView1.SelectedNode.Tag;
-        }
-
-
-        /// <summary>
         /// Insert new mesh into the collision data.
         /// </summary>
         /// <param name="sender"></param>
@@ -262,6 +248,12 @@ namespace Mafia2Tool
             {
                 CollisionContext.Items[1].Visible = true;
             }
+        }
+
+        private void OnClickNode(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            treeView1.SelectedNode = e.Node;
+            FrameResourceGrid.SelectedObject = treeView1.SelectedNode.Tag;
         }
     }
 }

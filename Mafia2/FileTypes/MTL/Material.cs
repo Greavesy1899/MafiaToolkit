@@ -7,20 +7,18 @@ namespace Mafia2
 {
     public class Material
     {
-
         ulong materialHash;
         string materialName;
 
         byte ufo1;
         byte ufo2;
-        int ufo3;
+        MaterialFlags flags;
         byte ufo4;
         int ufo5;
         int ufo6;
 
         ulong shaderID;
-
-        uint flags;
+        uint shaderHash;
 
         int sp_count;
         ShaderParameter[] sp;
@@ -52,10 +50,10 @@ namespace Mafia2
             set { ufo2 = value; }
         }
 
-        [Category("UFOs")]
-        public int UFO3 {
-            get { return ufo3; }
-            set { ufo3 = value; }
+        [Category("Flags"), Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public MaterialFlags Flags {
+            get { return flags; }
+            set { flags = value; }
         }
 
         [Category("UFOs")]
@@ -76,16 +74,16 @@ namespace Mafia2
             set { ufo6 = value; }
         }
 
-        [Category("Shaders")]
+        [Category("Shader")]
         public ulong ShaderID {
             get { return shaderID; }
             set { shaderID = value; }
         }
 
-        [Category("Flags")]
-        public uint Flags {
-            get { return flags; }
-            set { flags = value; }
+        [Category("Shader")]
+        public uint ShaderHash {
+            get { return shaderHash; }
+            set { shaderHash = value; }
         }
 
         [Category("SP")]
@@ -122,11 +120,11 @@ namespace Mafia2
         {
             materialName = "NEW_MATERIAL";
             materialHash = 1;
-            flags = 3388704532;
+            shaderHash = 3388704532;
             shaderID = 4894707398632176459;
             ufo1 = 128;
             ufo2 = 0;
-            ufo3 = 31461376;
+            flags = (MaterialFlags)31461376;
             ufo4 = 0;
             ufo5 = 0;
             ufo6 = 0;
@@ -150,20 +148,17 @@ namespace Mafia2
         {
 
             materialHash = reader.ReadUInt64();
-
-            int nameLength = reader.ReadInt32();
-            materialName = new string(reader.ReadChars(nameLength));
+            materialName = Functions.ReadString32(reader);
 
             ufo1 = reader.ReadByte();
             ufo2 = reader.ReadByte();
-            ufo3 = reader.ReadInt32();
+            flags = (MaterialFlags)reader.ReadInt32();
             ufo4 = reader.ReadByte();
             ufo5 = reader.ReadInt32();
             ufo6 = reader.ReadInt32();
 
             shaderID = reader.ReadUInt64();
-
-            flags = reader.ReadUInt32();
+            shaderHash = reader.ReadUInt32();
 
             sp_count = reader.ReadInt32();
             sp = new ShaderParameter[sp_count];
@@ -195,14 +190,14 @@ namespace Mafia2
             ////UFO values
             writer.Write(ufo1);
             writer.Write(ufo2);
-            writer.Write(ufo3);
+            writer.Write((int)flags);
             writer.Write(ufo4);
             writer.Write(ufo5);
             writer.Write(ufo6);
 
             ////Shader and flags
             writer.Write(shaderID);
-            writer.Write((uint)flags);
+            writer.Write(shaderHash);
 
             ////Shader Parameter
             writer.Write(sp_count);

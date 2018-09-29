@@ -71,6 +71,7 @@ namespace Mafia2Tool
 
         private void ExitButton_Click(object sender, EventArgs e)
         {
+            MaterialData.Load();
             this.Dispose();
         }
 

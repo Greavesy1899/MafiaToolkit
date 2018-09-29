@@ -68,7 +68,7 @@
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(368, 410);
             this.treeView1.TabIndex = 11;
-            this.treeView1.Click += new System.EventHandler(this.OnClickNode);
+            this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.OnClickNode);
             // 
             // CollisionContext
             // 
