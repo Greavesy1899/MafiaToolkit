@@ -386,9 +386,9 @@ namespace Mafia2Tool
                 if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
                     return;
 
-                if (m2tBrowser.FileName.EndsWith(".m2t"))
+                if (m2tBrowser.FileName.ToLower().EndsWith(".m2t"))
                     model.ReadFromM2T(new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)));
-                else if (m2tBrowser.FileName.EndsWith(".fbx"))
+                else if (m2tBrowser.FileName.ToLower().EndsWith(".fbx"))
                     model.ReadFromFbx(m2tBrowser.FileName);
 
                 List<Vertex[]> vertData = new List<Vertex[]>();
@@ -443,12 +443,13 @@ namespace Mafia2Tool
                 {
                     SceneData.FrameResource.WriteToFile(writer);
                 }
-                using (BinaryWriter writer = new BinaryWriter(File.Open("FrameNameTable_0.bin", FileMode.Create)))
+                using (BinaryWriter writer = new BinaryWriter(File.Open(SceneData.FrameNameTable.FileName, FileMode.Create)))
                 {
                     FrameNameTable nameTable = new FrameNameTable();
                     nameTable.BuildDataFromResource(SceneData.FrameResource);
                     nameTable.AddNames();
                     nameTable.WriteToFile(writer);
+                    SceneData.FrameNameTable = nameTable;
                 }
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
@@ -466,6 +467,9 @@ namespace Mafia2Tool
 
         private void ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
+            if (treeView1.SelectedNode == null)
+                return;
+
             if (e.ClickedItem.Name == "contextExtract3D")
             {
                 FrameObjectSingleMesh mesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
@@ -514,6 +518,9 @@ namespace Mafia2Tool
 
         private void OnDelete(object sender, EventArgs e)
         {
+            if (treeView1.SelectedNode == null)
+                return;
+
             SceneData.FrameResource.FrameObjects.Remove((treeView1.SelectedNode.Tag as FrameObjectBase).RefID);
             treeView1.SelectedNode.Remove();
         }

@@ -131,12 +131,14 @@ namespace Mafia2Tool
 
             Model colModel = new Model();
 
-            using (BinaryReader reader = new BinaryReader(File.Open(openM2T.FileName, FileMode.Open)))
-                colModel.ReadFromM2T(reader);
+            if (openM2T.FileName.ToLower().EndsWith(".m2t"))
+                colModel.ReadFromM2T(new BinaryReader(File.Open(openM2T.FileName, FileMode.Open)));
+            else if (openM2T.FileName.ToLower().EndsWith(".fbx"))
+                colModel.ReadFromFbx(openM2T.FileName);
 
             Collision.NXSStruct nxsData = new Collision.NXSStruct();
-            nxsData.Hash = 5214193213415322;
-            nxsData.Data.BuildBasicCollision(colModel.Lods[0].Vertices, colModel.Lods[0].Parts[0].Indices);
+            nxsData.Hash = (ulong)(Functions.RandomGenerator.Next() + Functions.RandomGenerator.Next());
+            nxsData.Data.BuildBasicCollision(colModel.Lods[0]);
             nxsData.Sections = new Collision.Section[1];
             nxsData.Sections[0] = new Collision.Section();
             nxsData.Sections[0].Unk2 = 13;
@@ -145,7 +147,7 @@ namespace Mafia2Tool
             nxsData.Data.sections = nxsData.Sections;
 
             Collision.Placement placement = new Collision.Placement();
-            placement.Hash = 5214193213415322;
+            placement.Hash = nxsData.Hash;
             placement.Unk5 = 128;
             placement.Unk4 = -1;
             placement.Position = new Vector3(-1567.367f, -269.247f, -20.333f);

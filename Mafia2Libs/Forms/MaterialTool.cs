@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 using Mafia2;
 
@@ -10,6 +9,7 @@ namespace Mafia2Tool
     public partial class MaterialTool : Form
     {
         private MaterialLibrary mtl;
+        private int previousMatIndex = -1;
 
         public MaterialTool(FileInfo file)
         {
@@ -45,14 +45,12 @@ namespace Mafia2Tool
             DialogResult result = MessageBox.Show("Do you want to save your changes?", "Save Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (result == DialogResult.Yes)
-            {
-                //MaterialsManager.WriteMatFile(name, materials.ToArray());
-                MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+                SaveButton_Click(null, null);
         }
 
         private void OnMaterialSelected(object sender, EventArgs e)
         {
+            previousMatIndex = MaterialListBox.SelectedIndex;
             MaterialGrid.SelectedObject = MaterialListBox.SelectedItem;
         }
 
@@ -92,6 +90,11 @@ namespace Mafia2Tool
         private void MaterialSearch_TextChanged(object sender, EventArgs e)
         {
             FetchMaterials(true, MaterialSearch.Text);
+        }
+
+        private void UpdateList(object sender, EventArgs e)
+        {
+            FetchMaterials(false, null);
         }
     }
 }

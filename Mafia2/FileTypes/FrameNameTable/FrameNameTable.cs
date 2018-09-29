@@ -11,6 +11,7 @@ namespace Mafia2
         int dataSize;
         string names;
         Data[] frameData;
+        string fileName;
 
         public string Names {
             get { return names; }
@@ -19,6 +20,10 @@ namespace Mafia2
         public Data[] FrameData {
             get { return frameData; }
             set { frameData = value; }
+        }
+        public string FileName {
+            get { return fileName; }
+            set { fileName = value; }
         }
 
 
@@ -33,6 +38,7 @@ namespace Mafia2
         /// <param name="file">filepath</param>
         public FrameNameTable(string file)
         {
+            fileName = file;
             using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
             {
                 ReadFromFile(reader);

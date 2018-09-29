@@ -53,8 +53,6 @@ namespace Mafia2Tool
                     vbps.Add(new FileInfo(name));
                 else if (type == "FrameResource")
                     FrameResource = new FrameResource(name);
-                else if (type == "FrameNameTable")
-                    FrameNameTable = new FrameNameTable(name);
                 else if (type == "ItemDesc")
                     ids.Add(new ItemDesc(name));
                 else if (type == "FrameNameTable")

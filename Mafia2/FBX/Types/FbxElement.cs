@@ -39,13 +39,12 @@ namespace Mafia2.FBX
         {
             lod = new Lod();
             lod.VertexDeclaration = VertexFlags.Position;
-            lod.Vertices = ConvertFBXVertices();
-
             if (geometry.LayerNormal != null)
                 lod.VertexDeclaration |= VertexFlags.Normals;
 
             if (geometry.LayerUV != null)
                 lod.VertexDeclaration |= VertexFlags.TexCoords0;
+            lod.Vertices = ConvertFBXVertices();
 
             lod.Parts = new ModelPart[materials.Count];
 
@@ -62,7 +61,12 @@ namespace Mafia2.FBX
             {
                 string name = materials.ElementAt(i).Value.Name.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries)[1];
                 lod.Parts[i] = new ModelPart();
-                lod.Parts[i].Material = name.Remove(name.Length - 4, 4);
+
+                //quick fix if .dds exists.
+                if(name.EndsWith(".dds"))
+                    name.Remove(name.Length - 4, 4);
+
+                lod.Parts[i].Material = name;
                 lod.Parts[i].Indices = partTriangles[i].ToArray();
                 lod.Parts[i].CalculatePartBounds(lod.Vertices);
             }
@@ -82,11 +86,17 @@ namespace Mafia2.FBX
                 vertices[i].Position.X = Convert.ToSingle(geometry.Vertices[vertIndex]);
                 vertices[i].Position.Y = Convert.ToSingle(geometry.Vertices[++vertIndex]);
                 vertices[i].Position.Z = Convert.ToSingle(geometry.Vertices[++vertIndex]);
-                vertices[i].Normal.X = Convert.ToSingle(geometry.LayerNormal.Normals[normalIndex]);
-                vertices[i].Normal.Y = Convert.ToSingle(geometry.LayerNormal.Normals[++normalIndex]);
-                vertices[i].Normal.Z = Convert.ToSingle(geometry.LayerNormal.Normals[++normalIndex]);
-                vertices[i].UVs[0].X = HalfHelper.SingleToHalf(Convert.ToSingle(geometry.LayerUV.UVs[uvIndex]));
-                vertices[i].UVs[0].Y = HalfHelper.SingleToHalf(Convert.ToSingle(geometry.LayerUV.UVs[++uvIndex]));
+                if (lod.VertexDeclaration.HasFlag(VertexFlags.Normals))
+                {
+                    vertices[i].Normal.X = Convert.ToSingle(geometry.LayerNormal.Normals[normalIndex]);
+                    vertices[i].Normal.Y = Convert.ToSingle(geometry.LayerNormal.Normals[++normalIndex]);
+                    vertices[i].Normal.Z = Convert.ToSingle(geometry.LayerNormal.Normals[++normalIndex]);
+                }
+                if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                {
+                    vertices[i].UVs[0].X = HalfHelper.SingleToHalf(Convert.ToSingle(geometry.LayerUV.UVs[uvIndex]));
+                    vertices[i].UVs[0].Y = HalfHelper.SingleToHalf(Convert.ToSingle(geometry.LayerUV.UVs[++uvIndex]));
+                }
                 vertIndex++;
                 normalIndex++;
                 uvIndex++;

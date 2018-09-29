@@ -95,7 +95,7 @@
             // openM2T
             // 
             this.openM2T.FileName = "Select M2T file.";
-            this.openM2T.Filter = "\"Model File|*.m2t|All Files|*.*\"";
+            this.openM2T.Filter = "Model File|*.m2t|All Files|*.*|FBX Model|*.fbx";
             this.openM2T.Tag = "";
             // 
             // toolStrip1

@@ -643,6 +643,8 @@ namespace Mafia2
                 frameGeometry.DecompressionFactor = (float)16 / 0x10000;
             else if (fMaxSize <= 256)
                 frameGeometry.DecompressionFactor = (float)256 / 0x10000;
+            else if(fMaxSize <= 512) //experiment
+                frameGeometry.DecompressionFactor = (float)512 / 0x10000;
             else
                 frameGeometry.DecompressionFactor = fMaxSize / 0x10000;
 

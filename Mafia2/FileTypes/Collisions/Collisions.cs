@@ -734,7 +734,7 @@ namespace Mafia2
 
             }
 
-            public void BuildBasicCollision(Vertex[] vertices, Short3[] trianglesData)
+            public void BuildBasicCollision(Lod model)
             {
                 nxs = Convert.ToString(22239310);
                 mesh = Convert.ToString(1213416781);
@@ -746,21 +746,28 @@ namespace Mafia2
                 num3 = 255;
                 num4 = 0;
 
-                nPoints = vertices.Length;
-                nTriangles = trianglesData.Length;
+                List<Int3> ltriangles = new List<Int3>();
+                List<CollisionMaterials> lmatTypes = new List<CollisionMaterials>();
+
+                for(int i = 0; i != model.Parts.Length; i++)
+                {
+                    for (int x = 0; x != model.Parts[i].Indices.Length; x++)
+                    {
+                        ltriangles.Add(new Int3(model.Parts[i].Indices[x]));
+                        lmatTypes.Add(ConvertCollisionMats(model.Parts[i].Material));
+                    }
+                }
+
+                nPoints = model.Vertices.Length;
+                nTriangles = ltriangles.Count;
 
                 points = new Vector3[nPoints];
-                triangles = new Int3[nTriangles];
-                unkShorts = new CollisionMaterials[nTriangles];
 
                 for (int i = 0; i != points.Length; i++)
-                    points[i] = vertices[i].Position;
+                    points[i] = model.Vertices[i].Position;
 
-                for (int i = 0; i != triangles.Length; i++)
-                    triangles[i] = new Int3(trianglesData[i]);
-
-                for (int i = 0; i != unkShorts.Length; i++)
-                    unkShorts[i] = CollisionMaterials.Plaster;
+                triangles = ltriangles.ToArray();
+                unkShorts = lmatTypes.ToArray();
 
                 unk0 = 1;
                 unk1 = 1;
@@ -787,7 +794,7 @@ namespace Mafia2
                 hbmUnkFloats[4] = 0.0f; //bound centre radius.
 
                 List<Vertex[]> data = new List<Vertex[]>();
-                data.Add(vertices);
+                data.Add(model.Vertices);
                 Bounds bounds = new Bounds();
                 bounds.CalculateBounds(data);
 
@@ -802,6 +809,30 @@ namespace Mafia2
                 unkSizeData = new byte[unkSize];
                 for (int i = 0; i != unkSizeData.Length; i++)
                     unkSizeData[i] = 26;
+            }
+
+            private CollisionMaterials ConvertCollisionMats(string name)
+            {
+                name = name.ToLower();
+
+                switch (name)
+                {
+                    case "rock":
+                        return CollisionMaterials.Carpet;
+                    case "grass":
+                        return CollisionMaterials.Sand;
+                    case "invis_col":
+                        return CollisionMaterials.No_Shot_Coll;
+                    case "road":
+                        return CollisionMaterials.Heads_Of_Cats_UNK;
+                    case "soil":
+                    case "gravel":
+                    case "dirt":
+                        return CollisionMaterials.Water;
+                    default:
+                        Console.WriteLine("ERROR! Unknown col type: {0}", name);
+                        return CollisionMaterials.Plaster;
+                }
             }
 
             public struct UnkOPCData

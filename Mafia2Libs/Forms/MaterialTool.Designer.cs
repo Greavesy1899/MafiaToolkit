@@ -34,6 +34,7 @@
             this.contextExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.addMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.UpdateListButton = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,11 +53,13 @@
             // 
             this.MaterialListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.MaterialListBox.DisplayMember = "MaterialName";
             this.MaterialListBox.FormattingEnabled = true;
             this.MaterialListBox.Location = new System.Drawing.Point(13, 53);
             this.MaterialListBox.Name = "MaterialListBox";
             this.MaterialListBox.Size = new System.Drawing.Size(368, 368);
             this.MaterialListBox.TabIndex = 1;
+            this.MaterialListBox.ValueMember = "MaterialName";
             this.MaterialListBox.SelectedIndexChanged += new System.EventHandler(this.OnMaterialSelected);
             // 
             // MaterialGrid
@@ -74,7 +77,8 @@
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.contextFileButton,
-            this.toolButton});
+            this.toolButton,
+            this.UpdateListButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(785, 25);
@@ -98,20 +102,20 @@
             // 
             this.contextOpenButton.Enabled = false;
             this.contextOpenButton.Name = "contextOpenButton";
-            this.contextOpenButton.Size = new System.Drawing.Size(180, 22);
+            this.contextOpenButton.Size = new System.Drawing.Size(103, 22);
             this.contextOpenButton.Text = "Open";
             // 
             // contextSaveButton
             // 
             this.contextSaveButton.Name = "contextSaveButton";
-            this.contextSaveButton.Size = new System.Drawing.Size(180, 22);
+            this.contextSaveButton.Size = new System.Drawing.Size(103, 22);
             this.contextSaveButton.Text = "Save";
             this.contextSaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // contextExitButton
             // 
             this.contextExitButton.Name = "contextExitButton";
-            this.contextExitButton.Size = new System.Drawing.Size(180, 22);
+            this.contextExitButton.Size = new System.Drawing.Size(103, 22);
             this.contextExitButton.Text = "Exit";
             this.contextExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -129,9 +133,19 @@
             // addMaterialToolStripMenuItem
             // 
             this.addMaterialToolStripMenuItem.Name = "addMaterialToolStripMenuItem";
-            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.addMaterialToolStripMenuItem.Text = "Add Material";
             this.addMaterialToolStripMenuItem.Click += new System.EventHandler(this.AddMaterial);
+            // 
+            // UpdateListButton
+            // 
+            this.UpdateListButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.UpdateListButton.Image = ((System.Drawing.Image)(resources.GetObject("UpdateListButton.Image")));
+            this.UpdateListButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.UpdateListButton.Name = "UpdateListButton";
+            this.UpdateListButton.Size = new System.Drawing.Size(70, 22);
+            this.UpdateListButton.Text = "Update List";
+            this.UpdateListButton.Click += new System.EventHandler(this.UpdateList);
             // 
             // MaterialTool
             // 
@@ -163,5 +177,6 @@
         private System.Windows.Forms.ToolStripMenuItem contextExitButton;
         private System.Windows.Forms.ToolStripDropDownButton toolButton;
         private System.Windows.Forms.ToolStripMenuItem addMaterialToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton UpdateListButton;
     }
 }
