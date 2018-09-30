@@ -343,8 +343,8 @@ namespace Mafia2Tool
         }
         private void SwitchView(object sender, EventArgs e)
         {
-            treeView1.Visible = (!treeView1.Visible) ? true : false;
-            FrameResourceListBox.Visible = (!FrameResourceListBox.Visible) ? true : false;
+            treeView1.Visible = !treeView1.Visible;
+            FrameResourceListBox.Visible = !FrameResourceListBox.Visible;
         }
 
         private void OverwriteBuffer_Click(object sender, EventArgs e)

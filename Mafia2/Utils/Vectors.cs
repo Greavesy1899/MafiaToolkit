@@ -7,9 +7,9 @@ namespace Mafia2
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Vector3
     {
-        protected float x;
-        protected float y;
-        protected float z;
+        private float x;
+        private float y;
+        private float z;
 
         public float X
         {
@@ -66,6 +66,7 @@ namespace Mafia2
         /// <param name="reader"></param>
         public Vector3(BinaryReader reader)
         {
+            x = y = z = 0;
             ReadfromFile(reader);
         }
 

@@ -24,6 +24,83 @@ namespace Mafia2
         Vector3 unkVector5;
         Vector3 unkVector6;
 
+        public int Flags {
+            get { return flags; }
+            set { flags = value; }
+        }
+        public float[] UnkFloats1 {
+            get { return unkFloat1; }
+            set { unkFloat1 = value; }
+        }
+        public int UnkInt1 {
+            get { return unk_int; }
+            set { unk_int = value; }
+        }
+        public float[] UnkFloats2 {
+            get { return unkFloat2; }
+            set { unkFloat2 = value; }
+        }
+        public byte UnkByte1 {
+            get { return unk_byte1; }
+            set { unk_byte1 = value; }
+        }
+        public float[] UnkFloats3 {
+            get { return unkFloat3; }
+            set { unkFloat3 = value; }
+        }
+        public byte UnkByte2 {
+            get { return unk_byte2; }
+            set { unk_byte2 = value; }
+        }
+        public float[] UnkFloats4 {
+            get { return unkFloat4; }
+            set { unkFloat4 = value; }
+        }
+        public Hash NameLight {
+            get { return nameLight; }
+            set { nameLight = value; }
+        }
+        public int UnkInt2 {
+            get { return unk_int2; }
+            set { unk_int2 = value; }
+        }
+        public float[] UnkFloats5 {
+            get { return unkFloat5; }
+            set { unkFloat5 = value; }
+        }
+        public Hash[] UnkHashes {
+            get { return names; }
+            set { names = value; }
+        }
+        public Vector3 OnkVector1 {
+            get { return unkVector1; }
+            set { unkVector1 = value; }
+        }
+        public Vector3 OnkVector2 {
+            get { return unkVector2; }
+            set { unkVector2 = value; }
+        }
+        public byte UnkByte3 {
+            get { return unk_byte3; }
+            set { unk_byte3 = value; }
+        }
+        public Vector3 UnkVector3 {
+            get { return unkVector3; }
+            set { unkVector3 = value; }
+        }
+        public Vector3 UnkVector4 {
+            get { return unkVector4; }
+            set { unkVector4 = value; }
+        }
+        public Vector3 UnkVector5 {
+            get { return unkVector5; }
+            set { unkVector5 = value; }
+        }
+        public Vector3 UnkVector6 {
+            get { return unkVector6; }
+            set { unkVector6 = value; }
+        }
+
         public FrameObjectLight(BinaryReader reader) : base()
         {
             ReadFromFile(reader);

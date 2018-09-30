@@ -76,12 +76,12 @@ namespace Mafia2
 
             if(Math.Abs(Rows[0,2]) < 0.99999)
             {
-                x = Math.Atan2(Rows[1, 1], Rows[2, 2]);
-                z = Math.Atan2(Rows[0, 1], Rows[0, 2]);
+                x = Math.Atan2(Rows[1, 2], Rows[2, 2]);
+                z = Math.Atan2(Rows[0, 1], Rows[0, 0]);
             }
             else
             {
-                x = Math.Atan2(Rows[2, 1], Rows[2, 1]);
+                x = Math.Atan2(Rows[2, 1], Rows[1, 1]);
                 z = 0;
             }
 

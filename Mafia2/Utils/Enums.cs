@@ -374,7 +374,7 @@ namespace Mafia2
     public enum MaterialFlags : uint //No idea which ones are used.
     {
         flag_1 = 1,
-        flag_2 = 2,
+        Alpha = 2,
         flag_4 = 4,
         flag_8 = 8,
         flag_16 = 16,
@@ -385,7 +385,7 @@ namespace Mafia2
         flag_512 = 512,
         flag_1024 = 1024,
         flag_2048 = 2048,
-        flag_4096 = 4096,
+        CastShadows = 4096,
         flag_8192 = 8192,
         flag_16384 = 16384,
         flag_32768 = 32768,
@@ -403,8 +403,8 @@ namespace Mafia2
         flag_134217728 = 134217728,
         flag_268435456 = 268435456,
         flag_536870912 = 536870912,
-        flag_1073741824 = 1073741824,
-        flag_2147483648 = 2147483648
+        flag_1073741824 = 1073741824
+        //flag_2147483648 = 2147483648
     }
 
     public enum BufferType
