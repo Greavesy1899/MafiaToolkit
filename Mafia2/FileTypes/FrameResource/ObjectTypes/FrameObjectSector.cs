@@ -9,7 +9,7 @@ namespace Mafia2
         int unk_08_int;
         int unk_09_int;
         float[] unk_10_floats;
-        Bounds unk_11_bounds;
+        BoundingBox unk_11_bounds;
         Vector3 unk_13_vector3;
         Vector3 unk_14_vector3;
         Hash unk_15_hash;
@@ -26,7 +26,7 @@ namespace Mafia2
             get { return unk_10_floats; }
             set { unk_10_floats = value; }
         }
-        public Bounds Unk11 {
+        public BoundingBox Unk11 {
             get { return unk_11_bounds ; }
             set { unk_11_bounds = value; }
         }
@@ -60,7 +60,7 @@ namespace Mafia2
                 unk_10_floats[i] = reader.ReadSingle();
             }
 
-            unk_11_bounds = new Bounds(reader);
+            unk_11_bounds = new BoundingBox(reader);
             unk_13_vector3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             unk_14_vector3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             unk_15_hash = new Hash(reader);

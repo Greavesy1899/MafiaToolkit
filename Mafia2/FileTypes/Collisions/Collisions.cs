@@ -287,6 +287,8 @@ namespace Mafia2
             private int hbmNumRefs;
             private int hbmMaxRefValue;
             private short[] hbmRefs;
+            private BoundingBox boundingBox;
+            private BoundingSphere boundingSphere;
             private float[] hbmUnkFloats;
             private int unkSize;
             private byte[] unkSizeData;
@@ -395,6 +397,14 @@ namespace Mafia2
             public float[] HBMUnkFloats {
                 get { return hbmUnkFloats; }
                 set { hbmUnkFloats = value; }
+            }
+            public BoundingBox BoundingBox {
+                get { return boundingBox; }
+                set { boundingBox = value; }
+            }
+            public BoundingSphere BoundingSphere {
+                get { return boundingSphere; }
+                set { boundingSphere = value; }
             }
             public int UnkSize {
                 get { return unkSize; }
@@ -539,8 +549,16 @@ namespace Mafia2
                     //reader.ReadInt32(); //0?
                 }
 
-                hbmUnkFloats = new float[24];
-                for (int i = 0; i != 24; i++)
+                hbmUnkFloats = new float[14];
+                hbmUnkFloats[0] = reader.ReadSingle();
+
+                boundingSphere = new BoundingSphere();
+                boundingSphere.ReadToFile(reader);
+
+                boundingBox = new BoundingBox();
+                boundingBox.ReadToFile(reader);
+
+                for (int i = 1; i != hbmUnkFloats.Length; i++)
                     hbmUnkFloats[i] = reader.ReadSingle();
 
                 unkSize = reader.ReadInt32();
@@ -643,7 +661,12 @@ namespace Mafia2
                         throw new NotImplementedException();
                 }
 
-                for (int i = 0; i != 24; i++)
+                writer.Write(hbmUnkFloats[0]);
+
+                boundingSphere.WriteToFile(writer);
+                boundingBox.WriteToFile(writer);
+
+                for (int i = 1; i != hbmUnkFloats.Length; i++)
                     writer.Write(hbmUnkFloats[i]);
 
                 writer.Write(unkSize);
@@ -786,24 +809,13 @@ namespace Mafia2
                 hbmOffset = 1;
                 hbmMaxOffset = 0;
 
-                hbmUnkFloats = new float[24];
-                hbmUnkFloats[0] = 0.0f; //usually really low float or 0.0f;
-                hbmUnkFloats[1] = 0.0f; //bound centre X.
-                hbmUnkFloats[2] = 0.0f; //bound centre Y.
-                hbmUnkFloats[3] = 0.0f; //bound centre Z.
-                hbmUnkFloats[4] = 0.0f; //bound centre radius.
-
+                //handle bounding data..
                 List<Vertex[]> data = new List<Vertex[]>();
                 data.Add(model.Vertices);
-                Bounds bounds = new Bounds();
-                bounds.CalculateBounds(data);
+                boundingBox.CalculateBounds(data);
+                boundingSphere.CreateFromBoundingBox(boundingBox);
 
-                hbmUnkFloats[5] = bounds.Min.X;
-                hbmUnkFloats[6] = bounds.Min.Y;
-                hbmUnkFloats[7] = bounds.Min.Z;
-                hbmUnkFloats[8] = bounds.Max.X;
-                hbmUnkFloats[9] = bounds.Max.Y;
-                hbmUnkFloats[10] = bounds.Max.Z;
+                hbmUnkFloats = new float[14];
 
                 unkSize = nTriangles;
                 unkSizeData = new byte[unkSize];
@@ -839,6 +851,15 @@ namespace Mafia2
             {
                 private short[] unkHalfs;
                 private int unkInt;
+
+                public short[] UnkHalfs {
+                    get { return unkHalfs; }
+                    set { unkHalfs = value; }
+                }
+                public int UnkInt {
+                    get { return unkInt; }
+                    set { unkInt = value; }
+                }
 
                 public UnkOPCData(BinaryReader reader)
                 {

@@ -135,6 +135,12 @@ namespace Mafia2
             Z *= num2;
         }
 
+        public static float Distance(Vector3 a, Vector3 b)
+        {
+            Vector3 vec = new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
+            return (float)Math.Sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+        }
+
         public static Vector3 operator +(Vector3 a, Vector3 b)
         {
             return new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);

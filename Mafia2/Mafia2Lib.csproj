@@ -65,6 +65,7 @@
     <Compile Include="FBX\Types\FbxLayerElementUV.cs" />
     <Compile Include="FBX\Types\FbxLayerElementNormal.cs" />
     <Compile Include="FileTypes\Animations\Animation2.cs" />
+    <Compile Include="FileTypes\ApexIOFX.cs" />
     <Compile Include="FileTypes\Cutscene\FXAnimSet.cs" />
     <Compile Include="FileTypes\Cutscene\Speech.cs" />
     <Compile Include="FileTypes\FrameResource\FrameEntry.cs" />

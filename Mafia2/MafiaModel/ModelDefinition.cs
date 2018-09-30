@@ -626,7 +626,7 @@ namespace Mafia2
             float minFloatf = 0.000016f;
             Vector3 minFloat = new Vector3(minFloatf);
 
-            Bounds bounds = new Bounds();
+            BoundingBox bounds = new BoundingBox();
             bounds.Min = frameMesh.Boundings.Min/* - minFloat*/;
             bounds.Max = frameMesh.Boundings.Max/* + minFloat*/;
 
@@ -805,7 +805,7 @@ namespace Mafia2
             for (int i = 0; i != Lods.Length; i++)
                 vertData.Add(Lods[i].Vertices);
 
-            frameMesh.Boundings = new Bounds();
+            frameMesh.Boundings = new BoundingBox();
             frameMesh.Boundings.CalculateBounds(vertData);
             frameMaterial.Bounds = FrameMesh.Boundings;
             CalculateDecompression();
@@ -869,7 +869,7 @@ namespace Mafia2
         string material;
         ulong hash;
         Short3[] indices;
-        Bounds bounds;
+        BoundingBox bounds;
 
         public string Material
         {
@@ -890,14 +890,14 @@ namespace Mafia2
             set { indices = value; }
         }
 
-        public Bounds Bounds {
+        public BoundingBox Bounds {
             get { return bounds; }
             set { bounds = value; }
         }
 
         public void CalculatePartBounds(Vertex[] verts)
         {
-            bounds = new Bounds();
+            bounds = new BoundingBox();
             List<Vector3> partVerts = new List<Vector3>();
             for(int i = 0; i != indices.Length; i++)
             {

@@ -79,7 +79,7 @@ namespace Mafia2
                 scenePos = new int[1];
                 sceneNames = new string[1];
                 names += "<scene>\0";
-                scenePos[0] = names.Length - "<scene>\0".Length-1;
+                scenePos[0] = 0;
                 sceneNames[0] = "<scene>\0";
             }
 

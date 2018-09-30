@@ -8,7 +8,7 @@ namespace Mafia2
     public class FrameObjectSingleMesh : FrameObjectJoint
     {
         SingleMeshFlags flags;
-        Bounds bounds;
+        BoundingBox bounds;
         byte unk_14_byte;
         int meshIndex;
         int materialIndex;
@@ -22,7 +22,7 @@ namespace Mafia2
             get { return flags; }
             set { flags = value; }
         }
-        public Bounds Boundings {
+        public BoundingBox Boundings {
             get { return bounds; }
             set { bounds = value; }
         }
@@ -70,7 +70,7 @@ namespace Mafia2
         public FrameObjectSingleMesh() : base()
         {
             flags = SingleMeshFlags.Unk14_Flag | SingleMeshFlags.flag_32 | SingleMeshFlags.flag_67108864;
-            bounds = new Bounds();
+            bounds = new BoundingBox();
             unk_14_byte = 255;
             meshIndex = 0;
             materialIndex = 0;
@@ -85,7 +85,7 @@ namespace Mafia2
         {
             base.ReadFromFile(reader);
             flags = (SingleMeshFlags)reader.ReadInt32();
-            bounds = new Bounds(reader);
+            bounds = new BoundingBox(reader);
             unk_14_byte = reader.ReadByte();
             meshIndex = reader.ReadInt32();
             materialIndex = reader.ReadInt32();

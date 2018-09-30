@@ -9,7 +9,7 @@ namespace Mafia2
         int unk01;
         int unk02;
         Float4[] unkFloats;
-        Bounds unkBounds;
+        BoundingBox unkBounds;
 
         //-1 means invert the float, eg: 25.459 would be -25.459
         //data[0] = top face			 1
@@ -31,7 +31,7 @@ namespace Mafia2
             get { return unkFloats; }
             set { unkFloats = value; }
         }
-        public Bounds Bounds {
+        public BoundingBox Bounds {
             get { return unkBounds; }
             set { unkBounds = value; }
         }
@@ -50,7 +50,7 @@ namespace Mafia2
             for (int i = 0; i != unkFloats.Length; i++)
                 unkFloats[i] = new Float4(reader);
 
-            unkBounds = new Bounds(reader);
+            unkBounds = new BoundingBox(reader);
         }
 
         public override void WriteToFile(BinaryWriter writer)

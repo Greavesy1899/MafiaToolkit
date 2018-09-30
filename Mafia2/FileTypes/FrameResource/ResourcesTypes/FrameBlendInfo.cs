@@ -7,8 +7,8 @@ namespace Mafia2
     {
         BlendDataToBoneIndexInfo[] blendDataToBoneIndexInfos;
         BlendDataToBoneIndexMap[] blendDataToBoneIndexMaps;
-        BoundingBox[] boundingBoxes;
-        Bounds bounds;
+        BlendInfoBounds[] boundingBoxes;
+        BoundingBox bounds;
 
         public BlendDataToBoneIndexMap[] BlendDataToBoneIndexMaps {
             get { return blendDataToBoneIndexMaps; }
@@ -18,11 +18,11 @@ namespace Mafia2
             get { return blendDataToBoneIndexInfos; }
             set { blendDataToBoneIndexInfos = value; }
         }
-        public BoundingBox[] BoundingBoxes {
+        public BlendInfoBounds[] BoundingBoxes {
             get { return boundingBoxes; }
             set { boundingBoxes = value; }
         }
-        public Bounds Bound {
+        public BoundingBox Bound {
             get { return bounds; }
             set { bounds = value; }
         }
@@ -41,11 +41,11 @@ namespace Mafia2
             for (int i = 0; i != num; i++)
                 blendDataToBoneIndexInfos[i] = new BlendDataToBoneIndexInfo(reader);
 
-            bounds = new Bounds(reader);
-            boundingBoxes = new BoundingBox[length];
+            bounds = new BoundingBox(reader);
+            boundingBoxes = new BlendInfoBounds[length];
 
             for (int i = 0; i != length; i++)
-                boundingBoxes[i] = new BoundingBox(reader);
+                boundingBoxes[i] = new BlendInfoBounds(reader);
 
             blendDataToBoneIndexMaps = new BlendDataToBoneIndexMap[num];
 
@@ -153,17 +153,17 @@ namespace Mafia2
         }
     }
 
-    public class BoundingBox
+    public class BlendInfoBounds
     {
         TransformMatrix transform;
-        Bounds bounds;
+        BoundingBox bounds;
         bool isValid;
 
         public TransformMatrix Transform {
             get { return transform; }
             set { transform = value; }
         }
-        public Bounds Bounds {
+        public BoundingBox Bounds {
             get { return bounds; }
             set { bounds = value; }
         }
@@ -172,7 +172,7 @@ namespace Mafia2
             set { isValid = value; }
         }
 
-        public BoundingBox(BinaryReader reader)
+        public BlendInfoBounds(BinaryReader reader)
         {
             ReadFromFile(reader);
         }
@@ -180,7 +180,7 @@ namespace Mafia2
         public void ReadFromFile(BinaryReader reader)
         {
             transform = new TransformMatrix(reader);
-            bounds = new Bounds(reader);
+            bounds = new BoundingBox(reader);
             isValid = reader.ReadBoolean();
         }
 

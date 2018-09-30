@@ -76,7 +76,7 @@ namespace Mafia2
                 return mat;
             else
             {
-               // Log.WriteLine("Unable to find material with key: " + hash, LoggingTypes.WARNING);
+                Log.WriteLine("Unable to find material with key: " + hash, LoggingTypes.WARNING);
                 return null;
             }
         }

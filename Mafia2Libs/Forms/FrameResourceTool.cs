@@ -68,6 +68,9 @@ namespace Mafia2Tool
             {
                 foreach (FrameNameTable.Data data in SceneData.FrameNameTable.FrameData)
                 {
+                    if (data.ParentName == null)
+                        data.ParentName = "<scene>";
+
                     int index = treeView1.Nodes.IndexOfKey(data.ParentName);
 
                     if (index == -1)
@@ -395,7 +398,7 @@ namespace Mafia2Tool
                 for (int i = 0; i != model.Lods.Length; i++)
                     vertData.Add(model.Lods[i].Vertices);
 
-                model.FrameMesh.Boundings = new Bounds();
+                model.FrameMesh.Boundings = new BoundingBox();
                 model.FrameMesh.Boundings.CalculateBounds(vertData);
                 model.FrameMaterial.Bounds = model.FrameMesh.Boundings;
                 model.CalculateDecompression();

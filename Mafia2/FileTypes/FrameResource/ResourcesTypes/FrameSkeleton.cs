@@ -119,11 +119,11 @@ namespace Mafia2
 
     public class SkeletonLodInfo
     {
-        Bounds[] bounds;
+        BoundingBox[] bounds;
         byte[] indexMap;
         byte[] lodBlendIndexMap;
 
-        public Bounds[] Bounds {
+        public BoundingBox[] Bounds {
             get { return bounds; }
             set { bounds = value; }
         }
@@ -144,10 +144,10 @@ namespace Mafia2
         public void ReadFromFile(BinaryReader reader, FrameSkeleton curFrame)
         {
             int count4 = curFrame.Count4;
-            bounds = new Bounds[count4];
+            bounds = new BoundingBox[count4];
 
             for (int i = 0; i != count4; i++)
-                bounds[i] = new Bounds(reader);
+                bounds[i] = new BoundingBox(reader);
 
             indexMap = reader.ReadBytes(count4);
             byte num = reader.ReadByte();

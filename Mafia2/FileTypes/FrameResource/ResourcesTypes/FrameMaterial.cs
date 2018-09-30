@@ -8,7 +8,7 @@ namespace Mafia2
 
         uint numLods = 0;
         int[] lodMatCount;
-        Bounds bounds;
+        BoundingBox bounds;
         List<MaterialStruct[]> materials;
 
         public uint NumLods {
@@ -19,7 +19,7 @@ namespace Mafia2
             get { return lodMatCount; }
             set { lodMatCount = value; }
         }
-        public Bounds Bounds {
+        public BoundingBox Bounds {
             get { return bounds; }
             set { bounds = value; }
         }
@@ -45,7 +45,7 @@ namespace Mafia2
             numLods = 0;
             lodMatCount = new int[0];
             materials = new List<MaterialStruct[]>();
-            bounds = new Bounds();
+            bounds = new BoundingBox();
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Mafia2
 
             materials = new List<MaterialStruct[]>();
 
-            bounds = new Bounds(reader);
+            bounds = new BoundingBox(reader);
 
             for (int i = 0; i != numLods; i++)
             {

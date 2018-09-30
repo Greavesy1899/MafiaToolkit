@@ -32,7 +32,12 @@ namespace Mafia2
             Material mat = null;
 
             for (int i = 0; i != MTLs.Count; i++)
+            {
+                if (mat != null)
+                    return mat;
+
                 mat = MTLs.ElementAt(i).Value.LookupMaterialByHash(hash);
+            }
 
             return mat;
         }
