@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using Mafia2;
-using ModelViewer.Programming.SystemClasses;
+using ApexSDK;
 
 namespace Mafia2Tool
 {
@@ -11,7 +11,6 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
-
             //setup logger.
             Log.DeleteOldLog();
 

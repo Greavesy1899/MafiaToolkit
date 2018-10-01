@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Gibbed.Mafia2.FileFormats;
 using Gibbed.Mafia2.FileFormats.Archive;
 using Mafia2;
+using ApexSDK;
 
 namespace Mafia2Tool
 {
@@ -334,6 +335,8 @@ namespace Mafia2Tool
             //TODO: Build editor for speech.
             Speech speech;
             CutsceneFile cutscene;
+            IOFxFile iofx;
+
 
             if (item.SubItems[1].Text == "Directory")
                 OpenDirectory((DirectoryInfo)item.Tag);
@@ -351,6 +354,8 @@ namespace Mafia2Tool
                 fTool = new FrameResourceTool((FileInfo)item.Tag);
             else if (item.SubItems[1].Text == "COL")
                 cTool = new CollisionEditor((FileInfo)item.Tag);
+            else if (item.SubItems[1].Text == "IOFX")
+                iofx = new IOFxFile((FileInfo)item.Tag);
         }
         private void ContextSDSPack_Click(object sender, EventArgs e)
         {

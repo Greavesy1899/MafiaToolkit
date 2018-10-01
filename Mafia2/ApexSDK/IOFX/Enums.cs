@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ApexSDK
+﻿namespace ApexSDK
 {
     public enum ModifierType
     {
@@ -29,5 +23,34 @@ namespace ApexSDK
         ModifierType_ScaleByMass = 18,
         ModifierType_ColorVsVelocity = 19,
         ModifierType_Count = 20
+    }
+
+    public enum ApexMeshParticleRollType
+    {
+        SPHERICAL = 0,
+        CUBIC,
+        FLAT_X,
+        FLAT_Y,
+        FLAT_Z,
+        LONG_X,
+        LONG_Y,
+        LONG_Z,
+        SPRITE,
+        COUNT
+    }
+
+    public enum ColorChannel
+    {
+        red,
+        green,
+        blue,
+        alpha
+    }
+
+    public enum ScaleAxis
+    {
+        xAxis,
+        yAxis,
+        zAxis
     }
 }
