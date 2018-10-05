@@ -84,7 +84,8 @@
             // 
             this.modelFormatDropdownBox.FormattingEnabled = true;
             this.modelFormatDropdownBox.Items.AddRange(new object[] {
-            "FBX",
+            "FBX Ascii",
+            "FBX Binary",
             "M2T"});
             this.modelFormatDropdownBox.Location = new System.Drawing.Point(7, 37);
             this.modelFormatDropdownBox.Name = "modelFormatDropdownBox";

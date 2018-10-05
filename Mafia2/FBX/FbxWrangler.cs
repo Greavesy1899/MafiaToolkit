@@ -37,7 +37,7 @@ namespace Mafia2.FBX
                 node.Nodes.Add(creationTimeStamp);
 
                 //Creator
-                node.Nodes.Add(new FbxNode().CreateNode("Creator", "Toolkit Model Wrangler"));
+                node.Nodes.Add(new FbxNode().CreateNode("Creator", "FBX SDK/FBX Plugins version 2017.0.1"));
 
                 //SceneInfo
                 FbxNode sceneInfo = new FbxNode().CreateNode("SceneInfo", "SceneInfo::GlobalInfo");
@@ -417,7 +417,7 @@ namespace Mafia2.FBX
             doc.Nodes.Add(FbxPresetNodes.BuildDefinitionsNode(true, false, true));
         }
 
-        public static void BuildFBXFromModel(Model model, string path)
+        public static void BuildFBXFromModel(Model model, string path, bool saveBinary)
         {
             int numMats = model.Lods[0].Parts.Length;
 
@@ -429,7 +429,11 @@ namespace Mafia2.FBX
             doc.Nodes.Add(FbxPresetNodes.BuildDefinitionsNode(true, false, true, numMats));
             doc.Nodes.Add(BuildObjectNode(model));
             doc.Nodes.Add(BuildConnections());
-            FbxIO.WriteAscii(doc, path + model.FrameMesh.Name + ".fbx");
+
+            if (saveBinary)
+                FbxIO.WriteBinary(doc, path + model.FrameMesh.Name + ".fbx");
+            else
+                FbxIO.WriteAscii(doc, path + model.FrameMesh.Name + ".fbx");
         }
 
         private static FbxNode BuildObjectNode(Model model)
@@ -520,7 +524,7 @@ namespace Mafia2.FBX
             properties70.Nodes.Add(new FbxNode().CreatePropertyNode("P", new object[] { "MaxHandle", "int", "Integer", "UH", 2 }));
 
             node["Model"].Nodes.Add(properties70);
-            node["Model"].Nodes.Add(new FbxNode().CreateNode("Shading", 'T'));
+            //node["Model"].Nodes.Add(new FbxNode().CreateNode("Shading", 'T'));
             node["Model"].Nodes.Add(new FbxNode().CreateNode("Culling", "CullingOff"));
             connections = new List<ConnectionStruct>();
             connections.Add(new ConnectionStruct("OO", modelID, 0));

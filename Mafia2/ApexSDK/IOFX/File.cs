@@ -19,7 +19,10 @@ namespace ApexSDK
         public IOFxFile(FileInfo file)
         {
             this.file = file;
-            ReadFromFile(new BinaryReader(File.Open(file.FullName, FileMode.Open)));
+            using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }            
         }
 
         public void ReadFromFile(BinaryReader reader)

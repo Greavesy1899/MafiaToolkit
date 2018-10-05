@@ -63,7 +63,7 @@ namespace Mafia2Tool
             int.TryParse(ReadKey("Width", "ModelViewer", "1024"), out Width);
             int.TryParse(ReadKey("Height", "ModelViewer", "768"), out Height);
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
-            int.TryParse(ReadKey("Format, Exporting", "0"), out Format);
+            int.TryParse(ReadKey("Format", "Exporting", "0"), out Format);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
             MaterialLibs = ReadKey("MaterialLibs", "Materials", "");
 

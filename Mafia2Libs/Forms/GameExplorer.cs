@@ -7,6 +7,7 @@ using Gibbed.Mafia2.FileFormats;
 using Gibbed.Mafia2.FileFormats.Archive;
 using Mafia2;
 using ApexSDK;
+using System.Threading;
 
 namespace Mafia2Tool
 {
@@ -31,7 +32,7 @@ namespace Mafia2Tool
             TreeNode rootTreeNode;
 
 
-            if(string.IsNullOrEmpty(ToolkitSettings.M2Directory))
+            if (string.IsNullOrEmpty(ToolkitSettings.M2Directory))
                 GetPath();
 
             originalPath = new DirectoryInfo(ToolkitSettings.M2Directory);
@@ -143,7 +144,7 @@ namespace Mafia2Tool
 
             foreach (FileInfo file in directory.GetFiles())
             {
-                if(searchMode && !string.IsNullOrEmpty(filename))
+                if (searchMode && !string.IsNullOrEmpty(filename))
                 {
                     if (!file.Name.Contains(filename))
                         continue;
@@ -184,20 +185,20 @@ namespace Mafia2Tool
                 Directory.CreateDirectory(file.Directory.FullName + "/BackupSDS");
 
             //place copy in new folder.
-            File.Copy(file.FullName, file.Directory.FullName + "/BackupSDS/"+file.Name, true);
+            File.Copy(file.FullName, file.Directory.FullName + "/BackupSDS/" + file.Name, true);
 
             //begin..
             infoText.Text = "Saving SDS..";
             ArchiveFile archiveFile = new ArchiveFile
             {
                 Platform = Platform.PC,
-                Unknown20 = new byte[16] {55, 51, 57, 55, 57, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+                Unknown20 = new byte[16] { 55, 51, 57, 55, 57, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
             };
             archiveFile.BuildResources(file.Directory.FullName + "/extracted/" + file.Name);
 
             foreach (ResourceEntry entry in archiveFile.ResourceEntries)
             {
-                if(entry.Data == null)
+                if (entry.Data == null)
                     throw new FormatException();
             }
 
@@ -215,7 +216,7 @@ namespace Mafia2Tool
         private void OpenSDS(FileInfo file)
         {
             Log.WriteLine("Opening SDS: " + file.Name);
-            infoText.Text = "Opening SDS..";
+            tools.Invoke(new Action(() => infoText.Text = "new text"));
             fileListView.Items.Clear();
             ArchiveFile archiveFile;
             using (var input = File.OpenRead(file.FullName))
@@ -324,11 +325,15 @@ namespace Mafia2Tool
         void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             TreeNode selectedNode = e.Node;
-            OpenDirectory((DirectoryInfo) selectedNode.Tag);
+            OpenDirectory((DirectoryInfo)selectedNode.Tag);
         }
         private void listView1_ItemActivate(object sender, EventArgs e)
         {
-            ListViewItem item = fileListView.SelectedItems[0];
+            HandleFile(fileListView.SelectedItems[0]);
+        }
+
+        private void HandleFile(ListViewItem item)
+        {
             MaterialTool mTool;
             FrameResourceTool fTool;
             CollisionEditor cTool;
@@ -337,26 +342,39 @@ namespace Mafia2Tool
             CutsceneFile cutscene;
             IOFxFile iofx;
 
+            switch (item.SubItems[1].Text)
+            {
+                case "Directory":
+                    OpenDirectory((DirectoryInfo)item.Tag);
+                    return;
+                case "Material Library":
+                    mTool = new MaterialTool((FileInfo)item.Tag);
+                    return;
+                case "Speech Data":
+                    speech = new Speech((FileInfo)item.Tag);
+                    return;
+                case "CUT":
+                    //cutscene = new CutsceneFile((FileInfo)item.Tag);
+                    return;
+                case "SDS Archive":
+                    OpenSDS((FileInfo)item.Tag);
+                    break;
+                case "PATCH Archive":
+                    OpenPATCH((FileInfo)item.Tag);
+                    break;
+                case "FR":
+                    fTool = new FrameResourceTool((FileInfo)item.Tag);
+                    return;
+                case "COL":
+                    cTool = new CollisionEditor((FileInfo)item.Tag);
+                    return;
+                case "IOFX":
+                    iofx = new IOFxFile((FileInfo)item.Tag);
+                    return;
 
-            if (item.SubItems[1].Text == "Directory")
-                OpenDirectory((DirectoryInfo)item.Tag);
-            else if (item.SubItems[1].Text == "Material Library")
-                mTool = new MaterialTool((FileInfo)item.Tag);
-            else if (item.SubItems[1].Text == "Speech Data")
-                speech = new Speech((FileInfo)item.Tag);
-            //else if (item.SubItems[1].Text == "CUT")
-            //    cutscene = new CutsceneFile((FileInfo)item.Tag);
-            else if (item.SubItems[1].Text == "SDS Archive")
-                OpenSDS((FileInfo)item.Tag);
-            //else if (item.SubItems[1].Text == "PATCH Archive")
-            //    OpenPATCH((FileInfo)item.Tag);
-            else if (item.SubItems[1].Text == "FR")
-                fTool = new FrameResourceTool((FileInfo)item.Tag);
-            else if (item.SubItems[1].Text == "COL")
-                cTool = new CollisionEditor((FileInfo)item.Tag);
-            else if (item.SubItems[1].Text == "IOFX")
-                iofx = new IOFxFile((FileInfo)item.Tag);
+            }
         }
+
         private void ContextSDSPack_Click(object sender, EventArgs e)
         {
             if (fileListView.SelectedItems.Count == 0)
@@ -369,7 +387,11 @@ namespace Mafia2Tool
         }
         private void ContextSDSUnpack_Click(object sender, EventArgs e)
         {
-            OpenSDS(fileListView.SelectedItems[0].Tag as FileInfo);
+            foreach(ListViewItem item in fileListView.SelectedItems)
+            {
+                if(item.SubItems[1].Text == "SDS Archive")
+                    HandleFile(item);
+            }
         }
         private void openMafiaIIToolStripMenuItem_Click(object sender, EventArgs e)
         {

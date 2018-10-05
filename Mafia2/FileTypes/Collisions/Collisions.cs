@@ -237,6 +237,20 @@ namespace Mafia2
 
             public void WriteToFile(BinaryWriter writer)
             {
+                //quick check for bugs
+                if (data.Num2 == 3)
+                {
+                    data.Num5 = data.Triangles.Length - 1;
+                    if (data.Triangles.Length <= 256)
+                    {
+                        data.UnkData = new byte[data.Triangles.Length];
+                    }
+                    else
+                    {
+                        data.UnkBytes = new short[data.Triangles.Length];
+                    }
+                }
+
                 writer.Write(hash);
                 writer.Write(data.GetMeshSize());
                 data.WriteToFile(writer);

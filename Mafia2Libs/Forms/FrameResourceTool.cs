@@ -312,9 +312,12 @@ namespace Mafia2Tool
                     switch(ToolkitSettings.Format)
                     {
                         case 0:
-                            newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\");
+                            newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\", false);
                             break;
                         case 1:
+                            newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\", true);
+                            break;
+                        case 2:
                             newModel.ExportToM2T(ToolkitSettings.ExportPath + "\\");
                             break;
                         default:
@@ -494,9 +497,12 @@ namespace Mafia2Tool
                 switch (ToolkitSettings.Format)
                 {
                     case 0:
-                        newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\");
+                        newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\", false);
                         break;
                     case 1:
+                        newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\", true);
+                        break;
+                    case 2:
                         newModel.ExportToM2T(ToolkitSettings.ExportPath + "\\");
                         break;
                     default:

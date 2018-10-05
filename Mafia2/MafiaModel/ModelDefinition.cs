@@ -321,9 +321,9 @@ namespace Mafia2
             }
         }
 
-        public void ExportToFbx(string path)
+        public void ExportToFbx(string path, bool saveBinary)
         {
-            FbxWrangler.BuildFBXFromModel(this, path);
+            FbxWrangler.BuildFBXFromModel(this, path, saveBinary);
         }
 
         public void ExportCollisionToM2T(string name)
