@@ -863,21 +863,25 @@ namespace Gibbed.Mafia2.FileFormats
         }
         public ResourceEntry WriteSoundEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
         {
+            List<byte> data = new List<byte>();
+            string file;
             nodes.Current.MoveToNext();
+            file = nodes.Current.Value.Remove(nodes.Current.Value.Length - 4, 4);
+            data.Add((byte)file.Length);
+            for (int i = 0; i != file.Length; i++)
+                data.Add((byte)file[i]);
 
-            SoundResource resource = new SoundResource();
-            resource.Name = nodes.Current.Value;
-
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + resource.Name, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file + ".fsb", FileMode.Open)))
             {
                 entry.SlotRamRequired = 40;
                 entry.SlotVramRequired = (uint)reader.BaseStream.Length;
-                entry.Data = resource.Data = reader.BaseStream.ReadBytes((int)reader.BaseStream.Length);
+                data.AddRange(BitConverter.GetBytes((int)reader.BaseStream.Length)); //?? WHAT DOES THIS DO?? CHECK LATER.
+                data.AddRange(reader.ReadBytes((int)reader.BaseStream.Length));
             }
-
             nodes.Current.MoveToNext();
-            entry.Version = Convert.ToUInt16(nodes.Current.Value);         
-            descNode.InnerText = resource.Name;
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+            entry.Data = data.ToArray();
+            descNode.InnerText = file;
             return entry;
         }
         public void ReadMemEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string memDIR)

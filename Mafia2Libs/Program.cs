@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using Mafia2;
 using ApexSDK;
+//using ModelViewer.Programming.SystemClasses;
 
 namespace Mafia2Tool
 {
@@ -13,6 +14,9 @@ namespace Mafia2Tool
         {
             //setup logger.
             Log.DeleteOldLog();
+
+            //setup Language
+            Language.ReadLanguageXML();
 
             //do vital inits;
             CheckINIExists();

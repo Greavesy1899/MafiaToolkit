@@ -8,6 +8,7 @@ using Gibbed.Mafia2.FileFormats.Archive;
 using Mafia2;
 using ApexSDK;
 using System.Threading;
+using System.Drawing;
 
 namespace Mafia2Tool
 {
@@ -128,8 +129,7 @@ namespace Mafia2Tool
                     if (!dir.Name.Contains(filename))
                         continue;
                 }
-
-                item = new ListViewItem(dir.Name, 0);
+                item = new ListViewItem(dir.Name, imageBank.Images.IndexOfKey("folderIcon"));
                 item.Tag = dir;
                 subItems = new ListViewItem.ListViewSubItem[]
                 {
@@ -144,15 +144,17 @@ namespace Mafia2Tool
 
             foreach (FileInfo file in directory.GetFiles())
             {
+                if(!imageBank.Images.ContainsKey(file.Extension))
+                    imageBank.Images.Add(file.Extension, Icon.ExtractAssociatedIcon(file.FullName));
+
                 if (searchMode && !string.IsNullOrEmpty(filename))
                 {
                     if (!file.Name.Contains(filename))
                         continue;
                 }
 
-                item = new ListViewItem(file.Name, DetermineFileIcon(file.Extension));
+                item = new ListViewItem(file.Name, imageBank.Images.IndexOfKey(file.Extension));
                 item.Tag = file;
-
                 subItems = new ListViewItem.ListViewSubItem[]
                 {
                     new ListViewItem.ListViewSubItem(item, DetermineFileType(file.Extension)),
@@ -216,7 +218,6 @@ namespace Mafia2Tool
         private void OpenSDS(FileInfo file)
         {
             Log.WriteLine("Opening SDS: " + file.Name);
-            tools.Invoke(new Action(() => infoText.Text = "new text"));
             fileListView.Items.Clear();
             ArchiveFile archiveFile;
             using (var input = File.OpenRead(file.FullName))
@@ -282,24 +283,6 @@ namespace Mafia2Tool
                     return "File";
                 default:
                     return extension.Remove(0, 1).ToUpper();
-            }
-        }
-
-        /// <summary>
-        /// Use the file extension to determine to file icon.
-        /// </summary>
-        /// <param name="extension">file extension</param>
-        /// <returns></returns>
-        private int DetermineFileIcon(string extension)
-        {
-            switch (extension)
-            {
-                case ".exe":
-                    return 3;
-                case ".dll":
-                    return 2;
-                default:
-                    return 1;
             }
         }
 
@@ -441,14 +424,11 @@ namespace Mafia2Tool
         }
         private void OnOpening(object sender, CancelEventArgs e)
         {
-            if (fileListView.SelectedItems.Count == 0)
-            {
-                e.Cancel = true;
-                return;
-            }
-
             SDSContext.Items[0].Visible = false;
             SDSContext.Items[1].Visible = false;
+
+            if (fileListView.SelectedItems.Count == 0)
+                return;
 
             if (fileListView.SelectedItems[0].Tag.GetType() == typeof(FileInfo))
             {
@@ -470,6 +450,50 @@ namespace Mafia2Tool
         private void SearchBarOnTextChanged(object sender, EventArgs e)
         {
             OpenDirectory(currentDirectory, true, textStripSearch.Text);
+        }
+
+        private void ContextSDSUnpackAll_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in fileListView.Items)
+            {
+                if (item.SubItems[1].Text == "SDS Archive")
+                    HandleFile(item);
+            }
+        }
+
+        private void ContextViewBtn_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+
+            ContextViewIcon.Checked = false;
+            ContextViewDetails.Checked = false;
+            ContextViewSmallIcon.Checked = false;
+            ContextViewList.Checked = false;
+            ContextViewTile.Checked = false;
+
+            switch(item.Name)
+            {
+                case "ContextViewIcon":
+                    ContextViewIcon.Checked = true;
+                    fileListView.View = View.LargeIcon;
+                    break;
+                case "ContextViewDetails":
+                    ContextViewDetails.Checked = true;
+                    fileListView.View = View.Details;
+                    break;
+                case "ContextViewSmallIcon":
+                    ContextViewSmallIcon.Checked = true;
+                    fileListView.View = View.SmallIcon;
+                    break;
+                case "ContextViewList":
+                    ContextViewList.Checked = true;
+                    fileListView.View = View.List;
+                    break;
+                case "ContextViewTile":
+                    ContextViewTile.Checked = true;
+                    fileListView.View = View.Tile;
+                    break;
+            }
         }
     }
 }

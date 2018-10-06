@@ -1,0 +1,8 @@
+<Localisation lANG="EN_GB">
+  <string ID="$VIEW">View</string>
+  <string ID="$FILE">File</string>
+  <string ID="$TOOLS">Tools</string>
+  <string ID="$BTN_OPEN_MII">Open Mafia II</string>
+  <string ID="$BTN_RUN_MII">Run Mafia II</string>
+  <string ID="$EXIT">Exit</string>
+</Localisation>
