@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("General");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("SDS Options");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Model/Exporting");
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Material Libraries");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("$GENERAL");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("$SDS_OPTIONS");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("$MODEL_EXPORTING");
+            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("$MATERIAL_LIBS");
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -44,15 +44,14 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            treeNode1.Name = "General";
-            treeNode1.Tag = "";
-            treeNode1.Text = "General";
-            treeNode2.Name = "SDS Options";
-            treeNode2.Text = "SDS Options";
-            treeNode3.Name = "Model/Exporting";
-            treeNode3.Text = "Model/Exporting";
-            treeNode4.Name = "Material Libraries";
-            treeNode4.Text = "Material Libraries";
+            treeNode1.Name = "$GENERAL";
+            treeNode1.Text = "$GENERAL";
+            treeNode2.Name = "$SDS_OPTIONS";
+            treeNode2.Text = "$SDS_OPTIONS";
+            treeNode3.Name = "$MODEL_EXPORTING";
+            treeNode3.Text = "$MODEL_EXPORTING";
+            treeNode4.Name = "$MATERIAL_LIBS";
+            treeNode4.Text = "$MATERIAL_LIBS";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1,
             treeNode2,
@@ -86,7 +85,7 @@
             this.MinimizeBox = false;
             this.Name = "OptionsForm";
             this.Padding = new System.Windows.Forms.Padding(5);
-            this.Text = "Toolkit Options";
+            this.Text = "$OPTIONS";
             this.splitContainer1.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);

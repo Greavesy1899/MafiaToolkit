@@ -51,7 +51,7 @@
             this.groupMTL.Size = new System.Drawing.Size(443, 357);
             this.groupMTL.TabIndex = 0;
             this.groupMTL.TabStop = false;
-            this.groupMTL.Text = "Material Library Options";
+            this.groupMTL.Text = "$MATERIAL_LIBS";
             // 
             // removeSelectedButton
             // 
@@ -59,7 +59,7 @@
             this.removeSelectedButton.Name = "removeSelectedButton";
             this.removeSelectedButton.Size = new System.Drawing.Size(103, 23);
             this.removeSelectedButton.TabIndex = 3;
-            this.removeSelectedButton.Text = "Remove selected Library";
+            this.removeSelectedButton.Text = "$MATERIAL_LIB_REMOVE";
             this.removeSelectedButton.UseVisualStyleBackColor = true;
             this.removeSelectedButton.Click += new System.EventHandler(this.removeSelected_Click);
             // 
@@ -69,7 +69,7 @@
             this.addLibraryButton.Name = "addLibraryButton";
             this.addLibraryButton.Size = new System.Drawing.Size(83, 23);
             this.addLibraryButton.TabIndex = 2;
-            this.addLibraryButton.Text = "Add a Library";
+            this.addLibraryButton.Text = "$MATERIAL_LIB_ADD";
             this.addLibraryButton.UseVisualStyleBackColor = true;
             this.addLibraryButton.Click += new System.EventHandler(this.addLibrary_Click);
             // 
@@ -87,9 +87,9 @@
             this.MTLsToLoadText.AutoSize = true;
             this.MTLsToLoadText.Location = new System.Drawing.Point(7, 20);
             this.MTLsToLoadText.Name = "MTLsToLoadText";
-            this.MTLsToLoadText.Size = new System.Drawing.Size(124, 13);
+            this.MTLsToLoadText.Size = new System.Drawing.Size(151, 13);
             this.MTLsToLoadText.TabIndex = 0;
-            this.MTLsToLoadText.Text = "Material Libraries to load:";
+            this.MTLsToLoadText.Text = "$MATERIAL_LIB_SELECTED";
             // 
             // MTLBrowser
             // 

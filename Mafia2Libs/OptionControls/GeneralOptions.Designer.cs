@@ -40,6 +40,8 @@
             this.DiscordStateCheckBox = new System.Windows.Forms.CheckBox();
             this.DiscordDetailsCheckBox = new System.Windows.Forms.CheckBox();
             this.DiscordEnabledCheckBox = new System.Windows.Forms.CheckBox();
+            this.languageComboBox = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.groupBoxSplitter)).BeginInit();
             this.groupBoxSplitter.Panel1.SuspendLayout();
@@ -50,6 +52,8 @@
             // 
             // groupGeneral
             // 
+            this.groupGeneral.Controls.Add(this.label1);
+            this.groupGeneral.Controls.Add(this.languageComboBox);
             this.groupGeneral.Controls.Add(this.debugLoggingCheckbox);
             this.groupGeneral.Controls.Add(this.browseButton);
             this.groupGeneral.Controls.Add(this.M2DirectoryBox);
@@ -60,16 +64,16 @@
             this.groupGeneral.Size = new System.Drawing.Size(506, 157);
             this.groupGeneral.TabIndex = 1;
             this.groupGeneral.TabStop = false;
-            this.groupGeneral.Text = "General Options";
+            this.groupGeneral.Text = Language.GetString("$GENERAL");
             // 
             // debugLoggingCheckbox
             // 
             this.debugLoggingCheckbox.AutoSize = true;
-            this.debugLoggingCheckbox.Location = new System.Drawing.Point(7, 63);
+            this.debugLoggingCheckbox.Location = new System.Drawing.Point(6, 103);
             this.debugLoggingCheckbox.Name = "debugLoggingCheckbox";
             this.debugLoggingCheckbox.Size = new System.Drawing.Size(129, 17);
             this.debugLoggingCheckbox.TabIndex = 4;
-            this.debugLoggingCheckbox.Text = "Enable debug logging";
+            this.debugLoggingCheckbox.Text = Language.GetString("$ENABLE_DEBUG_LOGGING");
             this.debugLoggingCheckbox.UseVisualStyleBackColor = true;
             this.debugLoggingCheckbox.CheckedChanged += new System.EventHandler(this.DebugLoggingCheckBox_CheckedChanged);
             // 
@@ -98,11 +102,11 @@
             this.M2Label.Name = "M2Label";
             this.M2Label.Size = new System.Drawing.Size(90, 13);
             this.M2Label.TabIndex = 0;
-            this.M2Label.Text = "Mafia II Directory:";
+            this.M2Label.Text = Language.GetString("$MII_DIRECTORY");
             // 
             // MafiaIIBrowser
             // 
-            this.MafiaIIBrowser.Description = "Select your MafiaII folder. The folder should contain \"launcher.exe\"";
+            this.MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
             // 
             // groupBoxSplitter
             // 
@@ -134,7 +138,7 @@
             this.groupDiscordRPC.Size = new System.Drawing.Size(506, 149);
             this.groupDiscordRPC.TabIndex = 0;
             this.groupDiscordRPC.TabStop = false;
-            this.groupDiscordRPC.Text = "Discord Rich Presence";
+            this.groupDiscordRPC.Text = Language.GetString("$DISCORD_RICH_PRESENCE");
             // 
             // DiscordElapsedCheckBox
             // 
@@ -143,7 +147,7 @@
             this.DiscordElapsedCheckBox.Name = "DiscordElapsedCheckBox";
             this.DiscordElapsedCheckBox.Size = new System.Drawing.Size(132, 17);
             this.DiscordElapsedCheckBox.TabIndex = 3;
-            this.DiscordElapsedCheckBox.Text = "Elapsed Time Enabled";
+            this.DiscordElapsedCheckBox.Text = Language.GetString("$DISCORD_TOGGLE_ELAPSED_TIME");
             this.DiscordElapsedCheckBox.UseVisualStyleBackColor = true;
             this.DiscordElapsedCheckBox.CheckedChanged += new System.EventHandler(this.DiscordElapsedCheckBox_CheckedChanged);
             // 
@@ -154,7 +158,7 @@
             this.DiscordStateCheckBox.Name = "DiscordStateCheckBox";
             this.DiscordStateCheckBox.Size = new System.Drawing.Size(93, 17);
             this.DiscordStateCheckBox.TabIndex = 2;
-            this.DiscordStateCheckBox.Text = "State Enabled";
+            this.DiscordStateCheckBox.Text = Language.GetString("$DISCORD_TOGGLE_STATE");
             this.DiscordStateCheckBox.UseVisualStyleBackColor = true;
             this.DiscordStateCheckBox.CheckedChanged += new System.EventHandler(this.DiscordStateCheckBox_CheckedChanged);
             // 
@@ -165,7 +169,7 @@
             this.DiscordDetailsCheckBox.Name = "DiscordDetailsCheckBox";
             this.DiscordDetailsCheckBox.Size = new System.Drawing.Size(100, 17);
             this.DiscordDetailsCheckBox.TabIndex = 1;
-            this.DiscordDetailsCheckBox.Text = "Details Enabled";
+            this.DiscordDetailsCheckBox.Text = Language.GetString("$DISCORD_TOGGLE_DETAILS");
             this.DiscordDetailsCheckBox.UseVisualStyleBackColor = true;
             this.DiscordDetailsCheckBox.CheckedChanged += new System.EventHandler(this.DiscordDetailsCheckBox_CheckedChanged);
             // 
@@ -176,9 +180,31 @@
             this.DiscordEnabledCheckBox.Name = "DiscordEnabledCheckBox";
             this.DiscordEnabledCheckBox.Size = new System.Drawing.Size(138, 17);
             this.DiscordEnabledCheckBox.TabIndex = 0;
-            this.DiscordEnabledCheckBox.Text = "Rich Presence Enabled";
+            this.DiscordEnabledCheckBox.Text = Language.GetString("$DISCORD_TOGGLE_RICH_PRESENCE");
             this.DiscordEnabledCheckBox.UseVisualStyleBackColor = true;
             this.DiscordEnabledCheckBox.CheckedChanged += new System.EventHandler(this.DiscordEnabledCheckBox_CheckedChanged);
+            // 
+            // languageComboBox
+            // 
+            this.languageComboBox.FormattingEnabled = true;
+            this.languageComboBox.Items.AddRange(new object[] {
+            Language.GetString("$LANGUAGE_ENGLISH"),
+            Language.GetString("$LANGUAGE_RUSSIAN"),
+            Language.GetString("$LANGUAGE_CZECH")});
+            this.languageComboBox.Location = new System.Drawing.Point(7, 76);
+            this.languageComboBox.Name = "languageComboBox";
+            this.languageComboBox.Size = new System.Drawing.Size(121, 21);
+            this.languageComboBox.TabIndex = 5;
+            this.languageComboBox.SelectedIndexChanged += new System.EventHandler(this.IndexChange);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 60);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(103, 13);
+            this.label1.TabIndex = 6;
+            this.label1.Text = Language.GetString("$LANGUAGE_OPTION");
             // 
             // GeneralOptions
             // 
@@ -213,5 +239,7 @@
         private System.Windows.Forms.CheckBox DiscordStateCheckBox;
         private System.Windows.Forms.CheckBox DiscordDetailsCheckBox;
         private System.Windows.Forms.CheckBox debugLoggingCheckbox;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox languageComboBox;
     }
 }

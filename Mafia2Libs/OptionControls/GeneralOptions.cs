@@ -9,7 +9,25 @@ namespace Mafia2Tool.OptionControls
         public GeneralOptions()
         {
             InitializeComponent();
+            Localise();
             LoadSettings();
+        }
+
+        private void Localise()
+        {
+            groupGeneral.Text = Language.GetString("$GENERAL");
+            debugLoggingCheckbox.Text = Language.GetString("$ENABLE_DEBUG_LOGGING");
+            M2Label.Text = Language.GetString("$MII_DIRECTORY");
+            MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
+            groupDiscordRPC.Text = Language.GetString("$DISCORD_RICH_PRESENCE");
+            DiscordElapsedCheckBox.Text = Language.GetString("$DISCORD_TOGGLE_ELAPSED_TIME");
+            DiscordStateCheckBox.Text = Language.GetString("$DISCORD_TOGGLE_STATE");
+            DiscordDetailsCheckBox.Text = Language.GetString("$DISCORD_TOGGLE_DETAILS");
+            DiscordEnabledCheckBox.Text = Language.GetString("$DISCORD_TOGGLE_RICH_PRESENCE");
+            languageComboBox.Items[0] = Language.GetString("$LANGUAGE_ENGLISH");
+            languageComboBox.Items[1] = Language.GetString("$LANGUAGE_RUSSIAN");
+            languageComboBox.Items[2] = Language.GetString("$LANGUAGE_CZECH");
+            label1.Text = Language.GetString("$LANGUAGE_OPTION");
         }
 
         /// <summary>
@@ -23,6 +41,7 @@ namespace Mafia2Tool.OptionControls
             DiscordStateCheckBox.Checked = ToolkitSettings.DiscordStateEnabled;
             DiscordElapsedCheckBox.Checked = ToolkitSettings.DiscordElapsedTimeEnabled;
             debugLoggingCheckbox.Checked = ToolkitSettings.LoggingEnabled;
+            languageComboBox.SelectedIndex = ToolkitSettings.Language;
         }
 
         private void BrowseButton_Click(object sender, EventArgs e)
@@ -79,6 +98,13 @@ namespace Mafia2Tool.OptionControls
             ToolkitSettings.LoggingEnabled = debugLoggingCheckbox.Checked;
             ToolkitSettings.WriteKey("Logging", "Misc", debugLoggingCheckbox.Checked.ToString());
             Log.LoggingEnabled = debugLoggingCheckbox.Checked;
+        }
+
+        private void IndexChange(object sender, EventArgs e)
+        {
+            ToolkitSettings.Language = languageComboBox.SelectedIndex;
+            ToolkitSettings.WriteKey("Language", "Misc", ToolkitSettings.Language.ToString());
+            Language.ReadLanguageXML();
         }
     }
 }

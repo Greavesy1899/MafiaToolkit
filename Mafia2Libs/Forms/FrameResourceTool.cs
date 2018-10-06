@@ -24,6 +24,26 @@ namespace Mafia2Tool
             ShowDialog();
         }
 
+        private void Localise()
+        {
+            fileToolButton.Text = Language.GetString("$FILE");
+            saveToolStripMenuItem.Text = Language.GetString("$SAVE");
+            reloadToolStripMenuItem.Text = Language.GetString("$RELOAD");
+            exitToolStripMenuItem.Text = Language.GetString("$EXIT");
+            toolsButton.Text = Language.GetString("$TOOLS");
+            exportAllSubButton.Text = Language.GetString("$FRAME_EDITOR_EXPORT_BTN");
+            modelsToolStripMenuItem.Text = Language.GetString("$FRAME_EDITOR_MODELS");
+            allToolStripMenuItem.Text = Language.GetString("$FRAME_EDITOR_ALL");
+            overwriteBufferSubButton.Text = Language.GetString("$FRAME_EDITOR_OVERWRITE_BUFFER");
+            addButton.Text = Language.GetString("$FRAME_EDITOR_ADD_SINGLEMODEL");
+            viewToolButton.Text = Language.GetString("$VIEW");
+            switchViewSubButton.Text = Language.GetString("$FRAME_EDITOR_SWITCH_VIEW");
+            contextExtract3D.Text = Language.GetString("$FRAME_EDITOR_EXTRACT3D");
+            contextDelete.Text = Language.GetString("$DELETE");
+            contextUpdateParents.Text = Language.GetString("$FRAME_EDITOR_UPDATE_PARENTS");
+            Text = Language.GetString("$FRAME_EDITOR_TITLE");
+        }
+
         public void PopulateForm()
         {
             foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)

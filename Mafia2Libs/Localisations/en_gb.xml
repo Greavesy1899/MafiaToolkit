@@ -1,8 +1,88 @@
 <Localisation lANG="EN_GB">
-  <string ID="$VIEW">View</string>
-  <string ID="$FILE">File</string>
-  <string ID="$TOOLS">Tools</string>
-  <string ID="$BTN_OPEN_MII">Open Mafia II</string>
-  <string ID="$BTN_RUN_MII">Run Mafia II</string>
-  <string ID="$EXIT">Exit</string>
+  <!-- Game Explorer Strings -->
+  <String ID="$VIEW">View</String>
+  <String ID="$FILE">File</String>
+  <String ID="$TOOLS">Tools</String>
+  <String ID="$BTN_OPEN_MII">Open Mafia II</String>
+  <String ID="$BTN_RUN_MII">Run Mafia II</String>
+  <String ID="$EXIT">Exit</String>
+  <String ID="$OPTIONS">Options</String>
+  <String ID="$SELECT_MII_FOLDER">Select your MafiaII folder. The folder should contain "launcher.exe"</String>
+  <String ID="$ICON">Icon</String>
+  <String ID="$DETAILS">Details</String>
+  <String ID="$SMALL_ICON">Small Icon</String>
+  <String ID="$LIST">List</String>
+  <String ID="$TILE">Tile</String>
+  <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Game Explorer</String>
+  <String ID="$UNPACK_ALL_SDS">Unpack All SDS</String>
+  <String ID="$OPEN_FOLDER_EXPLORER">Open Folder in Explorer</String>
+  <String ID="$PACK">Pack</String>
+  <String ID="$UNPACK">Unpack</String>
+  <String ID="$LAST_MODIFIED">Last Modified</String>
+  <String ID="$NAME">Name</String>
+  <String ID="$SIZE">Size</String>
+  <String ID="$TYPE">Type</String>
+  <String ID="$SEARCH_TOOLTIP">Search</String>
+  <String ID="$SEARCH_DOTS">Search...</String>
+  <String ID="$REFRESH">Refresh</String>
+  <String ID="$FOLDER_PATH_TOOLTIP">Folder Path</String>
+  <String ID="$UP_TOOLTIP">Up</String>
+  
+  <!-- Main Options Strings-->
+  <String ID="$GENERAL">General</String>
+  <String ID="$SDS_OPTIONS">SDS Options</String>
+  <String ID="$MODEL_EXPORTING">Models/Exporting</String>
+  <String ID="$MATERIAL_LIBS">Material Libraries</String>
+
+  <!-- General Options Strings-->
+  <String ID="$ENABLE_DEBUG_LOGGING">Enable Logger</String>
+  <String ID="$MII_DIRECTORY">Mafia II Directory</String>
+  <String ID="$DISCORD_RICH_PRESENCE">Discord Rich Presence</String>
+  <String ID="$DISCORD_TOGGLE_ELAPSED_TIME">Elapsed Time Enabled</String>
+  <String ID="$DISCORD_TOGGLE_STATE">State Enabled</String>
+  <String ID="$DISCORD_TOGGLE_DETAILS">Details Enabled</String>
+  <String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Rich Presence Enabled</String>
+  <String ID="$LANGUAGE_ENGLISH">English</String>
+  <String ID="$LANGUAGE_RUSSIAN">русский</String>
+  <String ID="$LANGUAGE_CZECH">Чешский</String>
+  <String ID="$LANGUAGE_OPTION">Interface Language</String>
+  
+  <!-- Model/Exporting Option Strings-->
+  <String ID="$EXPORT_PATH_TITLE">Export Path:</String>
+  <String ID="$EXPORT_PATH_DESC">Select the destination of exported models.</String>
+  <String ID="$EXPORT_MODELTYPE_TITLE">Export Model Format:</String>
+  
+  <!-- Material Libs Option Strings-->
+  <String ID="$MATERIAL_LIB_REMOVE">Remove Selected Library</String>
+  <String ID="$MATERIAL_LIB_ADD">Add Library</String>
+  <String ID="$MATERIAL_LIB_SELECTED">Selected Libraries</String>
+  
+  <!-- Collision Editor Form Strings-->
+  <String ID="$SAVE">Save</String>
+  <String ID="$RELOAD">Reload</String>
+  <String ID="$COLLISION_DELETE">Delete Collision</String>
+  <String ID="$COLLISION_ADD">Add Collision</String>
+  <String ID="$PLACEMENT_DELETE">Delete Instance</String>
+  <String ID="$PLACEMENT_ADD">Add Instance</String>
+  <String ID="$SELECT_MODEL_FILE">Select Model.</String>
+  <String ID="$COLLISION_EDITOR_TITLE">Collision Editor</String>
+  
+  <!-- Material Editor Form Strings-->
+  <String ID="$MATERIAL_ADD">Add Material</String>
+  <String ID="$MATERIAL_UPDATE_LIST">Update Material List</String>
+  <String ID="$MATERIAL_EDITOR_TITLE">Material Library Editor</String>
+  <String ID="$OPEN">Open</String>
+  
+  <!-- FrameResource Editor Form Strings-->
+  <String ID="$FRAME_EDITOR_EXPORT_BTN">Export Models..</String>
+  <String ID="$FRAME_EDITOR_MODELS">FrameNameTable Models</String>
+  <String ID="$FRAME_EDITOR_ALL">All Models</String>
+  <String ID="$FRAME_EDITOR_OVERWRITE_BUFFER">Overwrite Buffer</String>
+  <String ID="$FRAME_EDITOR_ADD_SINGLEMODEL">Add SingleModel</String>
+  <String ID="$FRAME_EDITOR_SWITCH_VIEW">Switch View</String>
+  <String ID="$FRAME_EDITOR_EXTRACT3D">Extract Model</String>
+  <String ID="$DELETE">Delete</String>
+  <String ID="$FRAME_EDITOR_UPDATE_PARENTS">Update Parent</String>
+  <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Choose a scene to add as a parent.</String>
+  <String ID="$FRAME_EDITOR_TITLE">FrameResource Editor</String>
 </Localisation>

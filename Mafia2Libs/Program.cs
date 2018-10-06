@@ -15,12 +15,10 @@ namespace Mafia2Tool
             //setup logger.
             Log.DeleteOldLog();
 
-            //setup Language
-            Language.ReadLanguageXML();
-
             //do vital inits;
             CheckINIExists();
             ToolkitSettings.ReadINI();
+            Language.ReadLanguageXML();
 
             //begin form inits;
             Application.EnableVisualStyles();

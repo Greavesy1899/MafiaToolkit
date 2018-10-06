@@ -7,7 +7,6 @@ using Gibbed.Mafia2.FileFormats;
 using Gibbed.Mafia2.FileFormats.Archive;
 using Mafia2;
 using ApexSDK;
-using System.Threading;
 using System.Drawing;
 
 namespace Mafia2Tool
@@ -20,9 +19,48 @@ namespace Mafia2Tool
         public GameExplorer()
         {
             InitializeComponent();
+        }
+
+        public void LoadForm()
+        {
+            toolStrip1_Resize(this, null);
+            Localise();
             infoText.Text = "Loading..";
             BuildTreeView();
             infoText.Text = "Ready..";
+        }
+
+        private bool Localise()
+        {
+            Text = Language.GetString("$MII_TK_GAME_EXPLORER");
+            buttonStripUp.ToolTipText = Language.GetString("$UP_TOOLTIP");
+            textStripFolderPath.ToolTipText = Language.GetString("$FOLDER_PATH_TOOLTIP");
+            buttonStripRefresh.Text = Language.GetString("$REFRESH");
+            textStripSearch.ToolTipText = Language.GetString("$SEARCH_TOOLTIP");
+            columnName.Text = Language.GetString("$NAME");
+            columnType.Text = Language.GetString("$TYPE");
+            columnSize.Text = Language.GetString("$SIZE");
+            columnLastModified.Text = Language.GetString("$LAST_MODIFIED");
+            SDSContext.Text = Language.GetString("$VIEW");
+            ContextSDSUnpack.Text = Language.GetString("$UNPACK");
+            ContextSDSPack.Text = Language.GetString("$PACK");
+            ContextOpenFolder.Text = Language.GetString("$OPEN_FOLDER_EXPLORER");
+            ContextSDSUnpackAll.Text = Language.GetString("$UNPACK_ALL_SDS");
+            ContextView.Text = Language.GetString("$VIEW");
+            ContextViewIcon.Text = Language.GetString("$ICON");
+            ContextViewDetails.Text = Language.GetString("$DETAILS");
+            ContextViewSmallIcon.Text = Language.GetString("$SMALL_ICON");
+            ContextViewList.Text = Language.GetString("$LIST");
+            ContextViewTile.Text = Language.GetString("$TILE");
+            dropdownFile.Text = Language.GetString("$FILE");
+            openMafiaIIToolStripMenuItem.Text = Language.GetString("$BTN_OPEN_MII");
+            runMafiaIIToolStripMenuItem.Text = Language.GetString("$BTN_RUN_MII");
+            exitToolStripMenuItem.Text = Language.GetString("$EXIT");
+            dropdownView.Text = Language.GetString("$VIEW");
+            dropdownTools.Text = Language.GetString("$TOOLS");
+            optionsToolStripMenuItem.Text = Language.GetString("$OPTIONS");
+            MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
+            return true;
         }
 
         /// <summary>
@@ -144,7 +182,7 @@ namespace Mafia2Tool
 
             foreach (FileInfo file in directory.GetFiles())
             {
-                if(!imageBank.Images.ContainsKey(file.Extension))
+                if (!imageBank.Images.ContainsKey(file.Extension))
                     imageBank.Images.Add(file.Extension, Icon.ExtractAssociatedIcon(file.FullName));
 
                 if (searchMode && !string.IsNullOrEmpty(filename))
@@ -303,7 +341,7 @@ namespace Mafia2Tool
         }
         protected override void OnLoad(EventArgs e)
         {
-            toolStrip1_Resize(this, e);
+            LoadForm();
         }
         void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
@@ -370,16 +408,16 @@ namespace Mafia2Tool
         }
         private void ContextSDSUnpack_Click(object sender, EventArgs e)
         {
-            foreach(ListViewItem item in fileListView.SelectedItems)
+            foreach (ListViewItem item in fileListView.SelectedItems)
             {
-                if(item.SubItems[1].Text == "SDS Archive")
+                if (item.SubItems[1].Text == "SDS Archive")
                     HandleFile(item);
             }
         }
         private void openMafiaIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           folderView.Nodes.Clear();
-           BuildTreeView();
+            folderView.Nodes.Clear();
+            BuildTreeView();
         }
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -410,9 +448,9 @@ namespace Mafia2Tool
         }
         private void onPathChange(object sender, KeyPressEventArgs e)
         {
-            if(e.KeyChar == '\r')
+            if (e.KeyChar == '\r')
             {
-                if(Directory.Exists(textStripFolderPath.Text) && textStripFolderPath.Text.Contains(currentDirectory.Name))
+                if (Directory.Exists(textStripFolderPath.Text) && textStripFolderPath.Text.Contains(currentDirectory.Name))
                     OpenDirectory(new DirectoryInfo(textStripFolderPath.Text));
                 else
                     MessageBox.Show("Game Explorer cannot find path '" + textStripFolderPath + "'. Make sure the path exists and try again.", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -445,6 +483,9 @@ namespace Mafia2Tool
         {
             OptionsForm options = new OptionsForm();
             options.ShowDialog();
+            Controls.Clear();
+            InitializeComponent();
+            LoadForm();
         }
 
         private void SearchBarOnTextChanged(object sender, EventArgs e)
@@ -471,7 +512,7 @@ namespace Mafia2Tool
             ContextViewList.Checked = false;
             ContextViewTile.Checked = false;
 
-            switch(item.Name)
+            switch (item.Name)
             {
                 case "ContextViewIcon":
                     ContextViewIcon.Checked = true;

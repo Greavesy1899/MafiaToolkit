@@ -13,10 +13,26 @@ namespace Mafia2Tool
         public CollisionEditor(FileInfo file)
         {
             InitializeComponent();
+            Localise();
             collisionFile = file;
             CheckCollision();
             ShowDialog();
             ToolkitSettings.UpdateRichPresence("Using the Collision editor.");
+        }
+
+        private void Localise()
+        {
+            ContextDelete.Text = Language.GetString("$COLLISION_DELETE");
+            deletePlacementToolStripMenuItem.Text = Language.GetString("$PLACEMENT_DELETE");
+            openM2T.FileName = Language.GetString("$SELECT_MODEL_FILE");
+            fileToolButton.Text = Language.GetString("$FILE");
+            saveToolStripMenuItem.Text = Language.GetString("$SAVE");
+            reloadToolStripMenuItem.Text = Language.GetString("$RELOAD");
+            exitToolStripMenuItem.Text = Language.GetString("$EXIT");
+            toolsButton.Text = Language.GetString("$TOOLS");
+            addButton.Text = Language.GetString("$COLLISION_ADD");
+            addNewPlacementToolStripMenuItem.Text = Language.GetString("$PLACEMENT_ADD");
+            Text = Language.GetString("$COLLISION_EDITOR_TITLE");
         }
 
         /// <summary>

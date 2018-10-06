@@ -10,7 +10,18 @@ namespace Mafia2Tool
         public OptionsForm()
         {
             InitializeComponent();
+            Localise();
             SwapOptionControls(new GeneralOptions());
+        }
+
+        private void Localise()
+        {
+            foreach(TreeNode node in treeView1.Nodes)
+            {
+                node.Name = Language.GetString(node.Name);
+                node.Text = Language.GetString(node.Text);
+            }
+            Text = Language.GetString("$OPTIONS");
         }
 
         private void SwapOptionControls(UserControl control)

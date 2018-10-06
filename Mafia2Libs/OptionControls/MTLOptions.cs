@@ -8,7 +8,16 @@ namespace Mafia2Tool.OptionControls
         public MTLOptions()
         {
             InitializeComponent();
+            Localise();
             LoadSettings();
+        }
+
+        private void Localise()
+        {
+            groupMTL.Text = Language.GetString("$MATERIAL_LIBS");
+            removeSelectedButton.Text = Language.GetString("$MATERIAL_LIB_REMOVE");
+            addLibraryButton.Text = Language.GetString("$MATERIAL_LIB_ADD");
+            MTLsToLoadText.Text = Language.GetString("$MATERIAL_LIB_SELECTED");
         }
 
         private void LoadSettings()

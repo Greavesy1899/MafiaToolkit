@@ -9,7 +9,16 @@ namespace Mafia2Tool.OptionControls
         public ModelOptions()
         {
             InitializeComponent();
+            Localise();
             LoadSettings();
+        }
+
+        private void Localise()
+        {
+            groupGeneral.Text = Language.GetString("$MODEL_EXPORTING");
+            exportPathLabel.Text = Language.GetString("$EXPORT_PATH_TITLE");
+            M2Label.Text = Language.GetString("$EXPORT_MODELTYPE_TITLE");
+            ExportPathButton.Description = Language.GetString("$EXPORT_PATH_DESC");
         }
 
         /// <summary>

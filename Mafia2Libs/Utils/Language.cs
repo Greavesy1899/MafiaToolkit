@@ -10,10 +10,29 @@ namespace Mafia2Tool
 
         public static void ReadLanguageXML()
         {
-            Log.WriteLine("Reading Localisation EN_GB");
+            Localisation.Clear();
+            string xmlToLoad;
+
+            switch(ToolkitSettings.Language)
+            {
+                case 0:
+                    xmlToLoad = "Localisations/en_GB.xml";
+                    break;
+                case 1:
+                    xmlToLoad = "Localisations/ru_RU.xml";
+                    break;
+                case 2:
+                    xmlToLoad = "Localisations/cz_CZ.xml";
+                    break;
+                default:
+                    xmlToLoad = "Localisations/en_GB.xml";
+                    break;
+            }
+
+            Log.WriteLine("Reading Localisation file: " + xmlToLoad);
 
             XmlDocument document = new XmlDocument();
-            document.Load("Localisations/en_gb.xml");
+            document.Load(xmlToLoad);
             var nav = document.CreateNavigator();
             var nodes = nav.Select("/Localisation/String");
             while (nodes.MoveNext() == true)

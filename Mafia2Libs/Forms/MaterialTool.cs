@@ -14,11 +14,24 @@ namespace Mafia2Tool
         public MaterialTool(FileInfo file)
         {
             InitializeComponent();
+            Localise();
             mtl = new MaterialLibrary();
             mtl.ReadMatFile(file.FullName);
             FetchMaterials();
             ShowDialog();
             ToolkitSettings.UpdateRichPresence("Using the Material Library editor.");
+        }
+
+        private void Localise()
+        {
+            contextFileButton.Text = Language.GetString("$FILE");
+            contextOpenButton.Text = Language.GetString("$OPEN");
+            contextSaveButton.Text = Language.GetString("$SAVE");
+            contextExitButton.Text = Language.GetString("$EXIT");
+            toolButton.Text = Language.GetString("$TOOLS");
+            addMaterialToolStripMenuItem.Text = Language.GetString("$MATERIAL_ADD");
+            UpdateListButton.Text = Language.GetString("$MATERIAL_UPDATE_LIST");
+            Text = Language.GetString("$MATERIAL_EDITOR_TITLE");
         }
 
         public void FetchMaterials(bool searchMode = false, string text = null)

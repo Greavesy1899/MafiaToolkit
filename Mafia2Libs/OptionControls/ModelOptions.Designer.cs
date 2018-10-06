@@ -51,7 +51,7 @@
             this.groupGeneral.Size = new System.Drawing.Size(390, 193);
             this.groupGeneral.TabIndex = 2;
             this.groupGeneral.TabStop = false;
-            this.groupGeneral.Text = "General Options";
+            this.groupGeneral.Text = Language.GetString("$MODEL_EXPORTING");
             // 
             // exportPathBrowser
             // 
@@ -78,7 +78,7 @@
             this.exportPathLabel.Name = "exportPathLabel";
             this.exportPathLabel.Size = new System.Drawing.Size(65, 13);
             this.exportPathLabel.TabIndex = 2;
-            this.exportPathLabel.Text = "Export Path:";
+            this.exportPathLabel.Text = Language.GetString("$EXPORT_PATH_TITLE");
             // 
             // modelFormatDropdownBox
             // 
@@ -100,11 +100,11 @@
             this.M2Label.Name = "M2Label";
             this.M2Label.Size = new System.Drawing.Size(107, 13);
             this.M2Label.TabIndex = 0;
-            this.M2Label.Text = "Export Model Format:";
+            this.M2Label.Text = Language.GetString("$EXPORT_MODELTYPE_TITLE");
             // 
             // ExportPathButton
             // 
-            this.ExportPathButton.Description = "Select the destination of exported models.";
+            this.ExportPathButton.Description = Language.GetString("$EXPORT_PATH_DESC");
             // 
             // ModelOptions
             // 

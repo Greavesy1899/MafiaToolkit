@@ -1,0 +1,88 @@
+﻿<Localisation lANG="EN_GB">
+  <!-- Game Explorer Strings -->
+  <String ID="$VIEW">Вид</String>
+  <String ID="$FILE">Файл</String>
+  <String ID="$TOOLS">Инструменты</String>
+  <String ID="$BTN_OPEN_MII">Открыть Mafia II</String>
+  <String ID="$BTN_RUN_MII">Запустить Mafia II</String>
+  <String ID="$EXIT">Выход</String>
+  <String ID="$OPTIONS">Настройки</String>
+  <String ID="$SELECT_MII_FOLDER">Выберите папку с Mafia II. Папка должна содержать "launcher.exe"</String>
+  <String ID="$ICON">Значки</String>
+  <String ID="$DETAILS">Таблица</String>
+  <String ID="$SMALL_ICON">Мелкие значки</String>
+  <String ID="$LIST">Список</String>
+  <String ID="$TILE">Плитка</String>
+  <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Game Explorer</String>
+  <String ID="$UNPACK_ALL_SDS">Распаковать все SDS</String>
+  <String ID="$OPEN_FOLDER_EXPLORER">Открыть папку в проводнике</String>
+  <String ID="$PACK">Упаковать</String>
+  <String ID="$UNPACK">Распаковать</String>
+  <String ID="$LAST_MODIFIED">Последнее изменение</String>
+  <String ID="$NAME">Имя</String>
+  <String ID="$SIZE">Размер</String>
+  <String ID="$TYPE">Тип</String>
+  <String ID="$SEARCH_TOOLTIP">Поиск</String>
+  <String ID="$SEARCH_DOTS">Поиск...</String>
+  <String ID="$REFRESH">Обновить</String>
+  <String ID="$FOLDER_PATH_TOOLTIP">Путь к папке</String>
+  <String ID="$UP_TOOLTIP">Вверх</String>
+  
+  <!-- Main Options Strings-->
+  <String ID="$GENERAL">Основные</String>
+  <String ID="$SDS_OPTIONS">Настройки SDS</String>
+  <String ID="$MODEL_EXPORTING">Модели/Экспорт</String>
+  <String ID="$MATERIAL_LIBS">Библиотека материалов</String>
+
+  <!-- General Options Strings-->
+  <String ID="$ENABLE_DEBUG_LOGGING">Включить Логгирование</String>
+  <String ID="$MII_DIRECTORY">Директория Mafia II</String>
+  <String ID="$DISCORD_RICH_PRESENCE">Discord Rich Presence</String>
+  <String ID="$DISCORD_TOGGLE_ELAPSED_TIME">Elapsed Time Enabled</String>
+  <String ID="$DISCORD_TOGGLE_STATE">State Enabled</String>
+  <String ID="$DISCORD_TOGGLE_DETAILS">Details Enabled</String>
+  <String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Rich Presence Enabled</String>
+  <String ID="$LANGUAGE_ENGLISH">Английский</String>
+  <String ID="$LANGUAGE_RUSSIAN">Русский</String>
+  <String ID="$LANGUAGE_CZECH">Чешский</String>
+  <String ID="$LANGUAGE_OPTION">Язык интерфейса</String>
+  
+  <!-- Model/Exporting Option Strings-->
+  <String ID="$EXPORT_PATH_TITLE">Путь экспорта:</String>
+  <String ID="$EXPORT_PATH_DESC">Выберите назначение экспортируемых моделей.</String>
+  <String ID="$EXPORT_MODELTYPE_TITLE">Формат экпортируемых моделей:</String>
+  
+  <!-- Material Libs Option Strings-->
+  <String ID="$MATERIAL_LIB_REMOVE">Удалить выбранную библиотеку</String>
+  <String ID="$MATERIAL_LIB_ADD">Добавить библиотеку</String>
+  <String ID="$MATERIAL_LIB_SELECTED">Выбранные библиотеки</String>
+  
+  <!-- Collision Editor Form Strings-->
+  <String ID="$SAVE">Сохранить</String>
+  <String ID="$RELOAD">Обновить</String>
+  <String ID="$COLLISION_DELETE">Удалить коллизию</String>
+  <String ID="$COLLISION_ADD">Добавить коллизию</String>
+  <String ID="$PLACEMENT_DELETE">Удалить пример</String>
+  <String ID="$PLACEMENT_ADD">Добавить пример</String>
+  <String ID="$SELECT_MODEL_FILE">Выбрать модель.</String>
+  <String ID="$COLLISION_EDITOR_TITLE">Редактор коллизии</String>
+  
+  <!-- Material Editor Form Strings-->
+  <String ID="$MATERIAL_ADD">Добавить материал</String>
+  <String ID="$MATERIAL_UPDATE_LIST">Обновить список материалов</String>
+  <String ID="$MATERIAL_EDITOR_TITLE">Редактор материалов</String>
+  <String ID="$OPEN">Открыть</String>
+  
+  <!-- FrameResource Editor Form Strings-->
+  <String ID="$FRAME_EDITOR_EXPORT_BTN">Экспортировать модели..</String>
+  <String ID="$FRAME_EDITOR_MODELS">FrameNameTable Models</String>
+  <String ID="$FRAME_EDITOR_ALL">Все модели</String>
+  <String ID="$FRAME_EDITOR_OVERWRITE_BUFFER">Перезаписать буфер</String>
+  <String ID="$FRAME_EDITOR_ADD_SINGLEMODEL">Добавить SingleModel</String>
+  <String ID="$FRAME_EDITOR_SWITCH_VIEW">Переключить вид</String>
+  <String ID="$FRAME_EDITOR_EXTRACT3D">Извлечь модель</String>
+  <String ID="$DELETE">Удалить</String>
+  <String ID="$FRAME_EDITOR_UPDATE_PARENTS">Обновить родителя</String>
+  <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Выберите сцену для добавления в качестве родителя.</String>
+  <String ID="$FRAME_EDITOR_TITLE">Редактор FrameResource</String>
+</Localisation>
