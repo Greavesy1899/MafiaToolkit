@@ -176,6 +176,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.FrameResourceGrid);
             this.Controls.Add(this.treeView1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "CollisionEditor";
             this.Text = "Collision Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnClose);

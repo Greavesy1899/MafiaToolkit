@@ -257,6 +257,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.FrameResourceGrid);
             this.Controls.Add(this.FrameResourceListBox);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrameResourceTool";
             this.Text = "Frame Resource Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnExit);

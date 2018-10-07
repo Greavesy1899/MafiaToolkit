@@ -32,6 +32,7 @@
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("$SDS_OPTIONS");
             System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("$MODEL_EXPORTING");
             System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("$MATERIAL_LIBS");
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionsForm));
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -81,6 +82,7 @@
             this.ClientSize = new System.Drawing.Size(650, 320);
             this.Controls.Add(this.splitContainer1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "OptionsForm";

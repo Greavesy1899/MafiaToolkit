@@ -463,6 +463,7 @@ namespace Mafia2Tool
             this.Controls.Add(this.mainContainer);
             this.Controls.Add(this.bottomContainer);
             this.Controls.Add(this.topContainer);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GameExplorer";
             this.Text = "$MII_TK_GAME_EXPLORER";
             this.Load += new System.EventHandler(this.toolStrip1_Resize);

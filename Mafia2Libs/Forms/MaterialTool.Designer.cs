@@ -156,6 +156,7 @@
             this.Controls.Add(this.MaterialGrid);
             this.Controls.Add(this.MaterialListBox);
             this.Controls.Add(this.MaterialSearch);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MaterialTool";
             this.Text = "Material Library Editor";
             this.toolStrip1.ResumeLayout(false);
