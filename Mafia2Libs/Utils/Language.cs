@@ -24,6 +24,9 @@ namespace Mafia2Tool
                 case 2:
                     xmlToLoad = "Localisations/cz_CZ.xml";
                     break;
+                case 3:
+                    xmlToLoad = "Localisations/pl_PL.xml";
+                    break;
                 default:
                     xmlToLoad = "Localisations/en_GB.xml";
                     break;

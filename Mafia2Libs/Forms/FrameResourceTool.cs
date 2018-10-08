@@ -17,6 +17,7 @@ namespace Mafia2Tool
         public FrameResourceTool(FileInfo info)
         {
             InitializeComponent();
+            Localise();
             SceneData.ScenePath = info.DirectoryName;
             fileLocation = info;
             SceneData.BuildData();

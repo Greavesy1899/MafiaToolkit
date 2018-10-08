@@ -1,6 +1,6 @@
 ﻿<Localisation lANG="CZ_cs">
   <!-- Game Explorer Strings -->
-  <String ID="$VIEW">Pohled</String>
+  <String ID="$VIEW">Zobrazení</String>
   <String ID="$FILE">Soubor</String>
   <String ID="$TOOLS">Nástroje</String>
   <String ID="$BTN_OPEN_MII">Otevřít soubory Mafie II</String>
@@ -16,8 +16,8 @@
   <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Herní Prohlížeč</String>
   <String ID="$UNPACK_ALL_SDS">Extrahovat všechny SDS</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Otevřít složku v průzkumníku souborů</String>
-  <String ID="$PACK">Importovat</String>
-  <String ID="$UNPACK">Exportovat</String>
+  <String ID="$PACK">Zabalit</String>
+  <String ID="$UNPACK">Extrahovat</String>
   <String ID="$LAST_MODIFIED">Naposledy upraveno</String>
   <String ID="$NAME">Jméno</String>
   <String ID="$SIZE">Velikost</String>
@@ -29,7 +29,7 @@
   <String ID="$UP_TOOLTIP">Nahoru</String>
   
   <!-- Main Options Strings-->
-  <String ID="$GENERAL">Výchozí</String>
+  <String ID="$GENERAL">Obecné</String>
   <String ID="$SDS_OPTIONS">SDS Nastavení</String>
   <String ID="$MODEL_EXPORTING">Modely/Exportovaní</String>
   <String ID="$MATERIAL_LIBS">Knihovny Materiálů</String>
@@ -38,10 +38,10 @@
   <String ID="$ENABLE_DEBUG_LOGGING">Povolit Logger</String>
   <String ID="$MII_DIRECTORY">Mafia II Umístění</String>
   <String ID="$DISCORD_RICH_PRESENCE">Discord Rich Presence</String>
-  <String ID="$DISCORD_TOGGLE_ELAPSED_TIME">Uplynulý čas povolen</String>
-  <String ID="$DISCORD_TOGGLE_STATE">Stav povolen</String>
-  <String ID="$DISCORD_TOGGLE_DETAILS">Detaily povoleny</String>
-  <String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Rich Presence povolen</String>
+  <String ID="$DISCORD_TOGGLE_ELAPSED_TIME">Povolit Uplynulý čas</String>
+  <String ID="$DISCORD_TOGGLE_STATE">Povolit Stav</String>
+  <String ID="$DISCORD_TOGGLE_DETAILS">Povolit Detaily</String>
+  <String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Povolit Rich Presence</String>
   <String ID="$LANGUAGE_ENGLISH">English</String>
   <String ID="$LANGUAGE_RUSSIAN">русский</String>
   <String ID="$LANGUAGE_CZECH">Česky</String>

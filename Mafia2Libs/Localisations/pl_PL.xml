@@ -1,0 +1,89 @@
+<Localisation lANG="EN_GB">
+  <!-- Game Explorer Strings -->
+  <String ID="$VIEW">Widok</String>
+  <String ID="$FILE">Plik</String>
+  <String ID="$TOOLS">Narzędzia</String>
+  <String ID="$BTN_OPEN_MII">Otwórz folder Mafii II</String>
+  <String ID="$BTN_RUN_MII">Uruchom grę Mafia II</String>
+  <String ID="$EXIT">Wyjdź</String>
+  <String ID="$OPTIONS">Opcje</String>
+  <String ID="$SELECT_MII_FOLDER">Wybierz folder z Mafią II. Folder ten powinien zawierać plik "launcher.exe"</String>
+  <String ID="$ICON">Ikony</String>
+  <String ID="$DETAILS">Szczegóły</String>
+  <String ID="$SMALL_ICON">Małe ikony</String>
+  <String ID="$LIST">Lista</String>
+  <String ID="$TILE">Kafelki</String>
+  <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Eksplorator gry</String>
+  <String ID="$UNPACK_ALL_SDS">Wypakuj wszystkie archiwa SDS</String>
+  <String ID="$OPEN_FOLDER_EXPLORER">Otwórz folder w Eksploratorze Windows</String>
+  <String ID="$PACK">Pakuj</String>
+  <String ID="$UNPACK">Wypakuj</String>
+  <String ID="$LAST_MODIFIED">Data modyfikacji</String>
+  <String ID="$NAME">Nazwa</String>
+  <String ID="$SIZE">Rozmiar</String>
+  <String ID="$TYPE">Typ</String>
+  <String ID="$SEARCH_TOOLTIP">Szukaj</String>
+  <String ID="$SEARCH_DOTS">Szukaj...</String>
+  <String ID="$REFRESH">Odśwież</String>
+  <String ID="$FOLDER_PATH_TOOLTIP">Ścieżka do folderu</String>
+  <String ID="$UP_TOOLTIP">W górę</String>
+  
+  <!-- Main Options Strings-->
+  <String ID="$GENERAL">Głowna</String>
+  <String ID="$SDS_OPTIONS">Opcje archiwum SDS</String>
+  <String ID="$MODEL_EXPORTING">Modele/Eksportowanie</String>
+  <String ID="$MATERIAL_LIBS">Biblioteki materiałów</String>
+
+  <!-- General Options Strings-->
+  <String ID="$ENABLE_DEBUG_LOGGING">Włącz rejestrator programu</String>
+  <String ID="$MII_DIRECTORY">Katalog gry Mafia II</String>
+  <String ID="$DISCORD_RICH_PRESENCE">Discord Rich Presence</String>
+  <String ID="$DISCORD_TOGGLE_ELAPSED_TIME">Włącz licznik czasu</String>
+  <String ID="$DISCORD_TOGGLE_STATE">Włącz stan programu</String>
+  <String ID="$DISCORD_TOGGLE_DETAILS">Włącz detale programu</String>
+  <String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Włącz Rich Presence</String>
+  <String ID="$LANGUAGE_ENGLISH">angielski</String>
+  <String ID="$LANGUAGE_RUSSIAN">rosyjski</String>
+  <String ID="$LANGUAGE_CZECH">czeski</String>
+  <String ID="$LANGUAGE_POLISH">polski</String>
+  <String ID="$LANGUAGE_OPTION">Język interfejsu</String>
+  
+  <!-- Model/Exporting Option Strings-->
+  <String ID="$EXPORT_PATH_TITLE">Ścieżka do folderu eksportu:</String>
+  <String ID="$EXPORT_PATH_DESC">Wybierz ścieżkę dla eksportowanych modeli.</String>
+  <String ID="$EXPORT_MODELTYPE_TITLE">Format eksportowanego modelu:</String>
+  
+  <!-- Material Libs Option Strings-->
+  <String ID="$MATERIAL_LIB_REMOVE">Usuń</String>
+  <String ID="$MATERIAL_LIB_ADD">Dodaj</String>
+  <String ID="$MATERIAL_LIB_SELECTED">Wybrane biblioteki</String>
+  
+  <!-- Collision Editor Form Strings-->
+  <String ID="$SAVE">Zapisz</String>
+  <String ID="$RELOAD">Odśwież</String>
+  <String ID="$COLLISION_DELETE">Usuń kolizję</String>
+  <String ID="$COLLISION_ADD">Dodaj kolizję</String>
+  <String ID="$PLACEMENT_DELETE">Usuń instance</String>
+  <String ID="$PLACEMENT_ADD">Dodaj instance</String>
+  <String ID="$SELECT_MODEL_FILE">Wybierz model.</String>
+  <String ID="$COLLISION_EDITOR_TITLE">Edytor kolizji</String>
+  
+  <!-- Material Editor Form Strings-->
+  <String ID="$MATERIAL_ADD">Dodaj materiał</String>
+  <String ID="$MATERIAL_UPDATE_LIST">Aktualizuj listę materiałów</String>
+  <String ID="$MATERIAL_EDITOR_TITLE">Edytor bibliotek materiałów</String>
+  <String ID="$OPEN">Otwórz</String>
+  
+  <!-- FrameResource Editor Form Strings-->
+  <String ID="$FRAME_EDITOR_EXPORT_BTN">Eksportuj modele...</String>
+  <String ID="$FRAME_EDITOR_MODELS">Modele FrameNameTable</String>
+  <String ID="$FRAME_EDITOR_ALL">Wszystkie modele</String>
+  <String ID="$FRAME_EDITOR_OVERWRITE_BUFFER">Nadpisz bufor</String>
+  <String ID="$FRAME_EDITOR_ADD_SINGLEMODEL">Dodaj pojedyńczy model</String>
+  <String ID="$FRAME_EDITOR_SWITCH_VIEW">Zmień widok</String>
+  <String ID="$FRAME_EDITOR_EXTRACT3D">Wyodrębnij model</String>
+  <String ID="$DELETE">Usuń</String>
+  <String ID="$FRAME_EDITOR_UPDATE_PARENTS">Aktualizuj rodzica</String>
+  <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Wybierz scenę do dodania jako rodzica.</String>
+  <String ID="$FRAME_EDITOR_TITLE">Edytor FrameResource</String>
+</Localisation>

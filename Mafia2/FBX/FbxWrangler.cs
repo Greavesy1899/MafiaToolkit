@@ -1,6 +1,7 @@
 ﻿using Fbx;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Mafia2.FBX
 {
@@ -419,6 +420,10 @@ namespace Mafia2.FBX
 
         public static void BuildFBXFromModel(Model model, string path, bool saveBinary)
         {
+            //quickly swap the culture. 
+            System.Globalization.CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-GB");
+
             int numMats = model.Lods[0].Parts.Length;
 
             FbxDocument doc = new FbxDocument();
@@ -434,6 +439,9 @@ namespace Mafia2.FBX
                 FbxIO.WriteBinary(doc, path + model.FrameMesh.Name + ".fbx");
             else
                 FbxIO.WriteAscii(doc, path + model.FrameMesh.Name + ".fbx");
+
+            //set the culture back
+            Thread.CurrentThread.CurrentCulture = cultureInfo;
         }
 
         private static FbxNode BuildObjectNode(Model model)

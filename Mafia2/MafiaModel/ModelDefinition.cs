@@ -4,6 +4,7 @@ using System.IO;
 using Fbx;
 using Mafia2.FBX;
 using Gibbed.Illusion.FileFormats.Hashing;
+using System.Threading;
 
 namespace Mafia2
 {
@@ -510,9 +511,12 @@ namespace Mafia2
 
         public void ReadFromFbx(string file)
         {
+            //quickly swap the culture. 
+            System.Globalization.CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-GB");
             var reader = new FbxAsciiReader(new FileStream(file, FileMode.Open));
             var doc = reader.Read();
-
+            Thread.CurrentThread.CurrentCulture = cultureInfo;
             Dictionary<long, object> objects = new Dictionary<long, object>();
             FbxScene scene = new FbxScene();
             FbxNode node = doc.GetRelative("Objects");

@@ -5,7 +5,7 @@ using System.IO;
 namespace Mafia2
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public struct BoundingBox
+    public class BoundingBox
     {
         private Vector3 min;
         private Vector3 max;
@@ -39,6 +39,12 @@ namespace Mafia2
         {
             this.min = min;
             this.max = max;
+        }
+
+        public BoundingBox()
+        {
+            this.min = new Vector3(0);
+            this.max = new Vector3(0);
         }
 
         /// <summary>

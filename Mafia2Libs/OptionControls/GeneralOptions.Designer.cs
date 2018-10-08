@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.groupGeneral = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.languageComboBox = new System.Windows.Forms.ComboBox();
             this.debugLoggingCheckbox = new System.Windows.Forms.CheckBox();
             this.browseButton = new System.Windows.Forms.Button();
             this.M2DirectoryBox = new System.Windows.Forms.TextBox();
@@ -40,8 +42,6 @@
             this.DiscordStateCheckBox = new System.Windows.Forms.CheckBox();
             this.DiscordDetailsCheckBox = new System.Windows.Forms.CheckBox();
             this.DiscordEnabledCheckBox = new System.Windows.Forms.CheckBox();
-            this.languageComboBox = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.groupGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.groupBoxSplitter)).BeginInit();
             this.groupBoxSplitter.Panel1.SuspendLayout();
@@ -64,16 +64,39 @@
             this.groupGeneral.Size = new System.Drawing.Size(506, 157);
             this.groupGeneral.TabIndex = 1;
             this.groupGeneral.TabStop = false;
-            this.groupGeneral.Text = Language.GetString("$GENERAL");
+            this.groupGeneral.Text = "$GENERAL";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 60);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(119, 13);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "$LANGUAGE_OPTION";
+            // 
+            // languageComboBox
+            // 
+            this.languageComboBox.FormattingEnabled = true;
+            this.languageComboBox.Items.AddRange(new object[] {
+            "$LANGUAGE_ENGLISH",
+            "$LANGUAGE_RUSSIAN",
+            "$LANGUAGE_CZECH",
+            "$LANGUAGE_POLISH"});
+            this.languageComboBox.Location = new System.Drawing.Point(7, 76);
+            this.languageComboBox.Name = "languageComboBox";
+            this.languageComboBox.Size = new System.Drawing.Size(121, 21);
+            this.languageComboBox.TabIndex = 5;
+            this.languageComboBox.SelectedIndexChanged += new System.EventHandler(this.IndexChange);
             // 
             // debugLoggingCheckbox
             // 
             this.debugLoggingCheckbox.AutoSize = true;
             this.debugLoggingCheckbox.Location = new System.Drawing.Point(6, 103);
             this.debugLoggingCheckbox.Name = "debugLoggingCheckbox";
-            this.debugLoggingCheckbox.Size = new System.Drawing.Size(129, 17);
+            this.debugLoggingCheckbox.Size = new System.Drawing.Size(173, 17);
             this.debugLoggingCheckbox.TabIndex = 4;
-            this.debugLoggingCheckbox.Text = Language.GetString("$ENABLE_DEBUG_LOGGING");
+            this.debugLoggingCheckbox.Text = "$ENABLE_DEBUG_LOGGING";
             this.debugLoggingCheckbox.UseVisualStyleBackColor = true;
             this.debugLoggingCheckbox.CheckedChanged += new System.EventHandler(this.DebugLoggingCheckBox_CheckedChanged);
             // 
@@ -100,13 +123,13 @@
             this.M2Label.AutoSize = true;
             this.M2Label.Location = new System.Drawing.Point(4, 21);
             this.M2Label.Name = "M2Label";
-            this.M2Label.Size = new System.Drawing.Size(90, 13);
+            this.M2Label.Size = new System.Drawing.Size(97, 13);
             this.M2Label.TabIndex = 0;
-            this.M2Label.Text = Language.GetString("$MII_DIRECTORY");
+            this.M2Label.Text = "$MII_DIRECTORY";
             // 
             // MafiaIIBrowser
             // 
-            this.MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
+            this.MafiaIIBrowser.Description = "$SELECT_MII_FOLDER";
             // 
             // groupBoxSplitter
             // 
@@ -138,16 +161,16 @@
             this.groupDiscordRPC.Size = new System.Drawing.Size(506, 149);
             this.groupDiscordRPC.TabIndex = 0;
             this.groupDiscordRPC.TabStop = false;
-            this.groupDiscordRPC.Text = Language.GetString("$DISCORD_RICH_PRESENCE");
+            this.groupDiscordRPC.Text = "$DISCORD_RICH_PRESENCE";
             // 
             // DiscordElapsedCheckBox
             // 
             this.DiscordElapsedCheckBox.AutoSize = true;
             this.DiscordElapsedCheckBox.Location = new System.Drawing.Point(6, 88);
             this.DiscordElapsedCheckBox.Name = "DiscordElapsedCheckBox";
-            this.DiscordElapsedCheckBox.Size = new System.Drawing.Size(132, 17);
+            this.DiscordElapsedCheckBox.Size = new System.Drawing.Size(218, 17);
             this.DiscordElapsedCheckBox.TabIndex = 3;
-            this.DiscordElapsedCheckBox.Text = Language.GetString("$DISCORD_TOGGLE_ELAPSED_TIME");
+            this.DiscordElapsedCheckBox.Text = "$DISCORD_TOGGLE_ELAPSED_TIME";
             this.DiscordElapsedCheckBox.UseVisualStyleBackColor = true;
             this.DiscordElapsedCheckBox.CheckedChanged += new System.EventHandler(this.DiscordElapsedCheckBox_CheckedChanged);
             // 
@@ -156,9 +179,9 @@
             this.DiscordStateCheckBox.AutoSize = true;
             this.DiscordStateCheckBox.Location = new System.Drawing.Point(7, 65);
             this.DiscordStateCheckBox.Name = "DiscordStateCheckBox";
-            this.DiscordStateCheckBox.Size = new System.Drawing.Size(93, 17);
+            this.DiscordStateCheckBox.Size = new System.Drawing.Size(172, 17);
             this.DiscordStateCheckBox.TabIndex = 2;
-            this.DiscordStateCheckBox.Text = Language.GetString("$DISCORD_TOGGLE_STATE");
+            this.DiscordStateCheckBox.Text = "$DISCORD_TOGGLE_STATE";
             this.DiscordStateCheckBox.UseVisualStyleBackColor = true;
             this.DiscordStateCheckBox.CheckedChanged += new System.EventHandler(this.DiscordStateCheckBox_CheckedChanged);
             // 
@@ -167,9 +190,9 @@
             this.DiscordDetailsCheckBox.AutoSize = true;
             this.DiscordDetailsCheckBox.Location = new System.Drawing.Point(7, 42);
             this.DiscordDetailsCheckBox.Name = "DiscordDetailsCheckBox";
-            this.DiscordDetailsCheckBox.Size = new System.Drawing.Size(100, 17);
+            this.DiscordDetailsCheckBox.Size = new System.Drawing.Size(182, 17);
             this.DiscordDetailsCheckBox.TabIndex = 1;
-            this.DiscordDetailsCheckBox.Text = Language.GetString("$DISCORD_TOGGLE_DETAILS");
+            this.DiscordDetailsCheckBox.Text = "$DISCORD_TOGGLE_DETAILS";
             this.DiscordDetailsCheckBox.UseVisualStyleBackColor = true;
             this.DiscordDetailsCheckBox.CheckedChanged += new System.EventHandler(this.DiscordDetailsCheckBox_CheckedChanged);
             // 
@@ -178,33 +201,11 @@
             this.DiscordEnabledCheckBox.AutoSize = true;
             this.DiscordEnabledCheckBox.Location = new System.Drawing.Point(7, 19);
             this.DiscordEnabledCheckBox.Name = "DiscordEnabledCheckBox";
-            this.DiscordEnabledCheckBox.Size = new System.Drawing.Size(138, 17);
+            this.DiscordEnabledCheckBox.Size = new System.Drawing.Size(227, 17);
             this.DiscordEnabledCheckBox.TabIndex = 0;
-            this.DiscordEnabledCheckBox.Text = Language.GetString("$DISCORD_TOGGLE_RICH_PRESENCE");
+            this.DiscordEnabledCheckBox.Text = "$DISCORD_TOGGLE_RICH_PRESENCE";
             this.DiscordEnabledCheckBox.UseVisualStyleBackColor = true;
             this.DiscordEnabledCheckBox.CheckedChanged += new System.EventHandler(this.DiscordEnabledCheckBox_CheckedChanged);
-            // 
-            // languageComboBox
-            // 
-            this.languageComboBox.FormattingEnabled = true;
-            this.languageComboBox.Items.AddRange(new object[] {
-            Language.GetString("$LANGUAGE_ENGLISH"),
-            Language.GetString("$LANGUAGE_RUSSIAN"),
-            Language.GetString("$LANGUAGE_CZECH")});
-            this.languageComboBox.Location = new System.Drawing.Point(7, 76);
-            this.languageComboBox.Name = "languageComboBox";
-            this.languageComboBox.Size = new System.Drawing.Size(121, 21);
-            this.languageComboBox.TabIndex = 5;
-            this.languageComboBox.SelectedIndexChanged += new System.EventHandler(this.IndexChange);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 60);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(103, 13);
-            this.label1.TabIndex = 6;
-            this.label1.Text = Language.GetString("$LANGUAGE_OPTION");
             // 
             // GeneralOptions
             // 

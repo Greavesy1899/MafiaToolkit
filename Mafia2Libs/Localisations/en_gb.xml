@@ -44,7 +44,8 @@
   <String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Rich Presence Enabled</String>
   <String ID="$LANGUAGE_ENGLISH">English</String>
   <String ID="$LANGUAGE_RUSSIAN">русский</String>
-  <String ID="$LANGUAGE_CZECH">Чешский</String>
+  <String ID="$LANGUAGE_CZECH">čeština</String>
+  <String ID="$LANGUAGE_POLISH">Polish</String>
   <String ID="$LANGUAGE_OPTION">Interface Language</String>
   
   <!-- Model/Exporting Option Strings-->

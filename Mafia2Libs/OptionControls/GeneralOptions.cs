@@ -27,6 +27,7 @@ namespace Mafia2Tool.OptionControls
             languageComboBox.Items[0] = Language.GetString("$LANGUAGE_ENGLISH");
             languageComboBox.Items[1] = Language.GetString("$LANGUAGE_RUSSIAN");
             languageComboBox.Items[2] = Language.GetString("$LANGUAGE_CZECH");
+            languageComboBox.Items[3] = Language.GetString("$LANGUAGE_POLISH");
             label1.Text = Language.GetString("$LANGUAGE_OPTION");
         }
 
