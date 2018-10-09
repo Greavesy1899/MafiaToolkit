@@ -49,13 +49,21 @@ namespace Mafia2.FBX
             lod.Parts = new ModelPart[materials.Count];
 
             Short3[] allTriangles = ConvertFBXTriangles();
+
             List<List<Short3>> partTriangles = new List<List<Short3>>();
 
             for (int i = 0; i != lod.Parts.Length; i++)
                 partTriangles.Add(new List<Short3>());
 
-            for (int i = 0; i != allTriangles.Length; i++)
-                partTriangles[geometry.LayerMaterial.Materials[i]].Add(allTriangles[i]);
+            if (geometry.LayerMaterial.MappingInformationType == "AllSame")
+            {
+                partTriangles[0].AddRange(allTriangles.ToList());
+            }
+            else
+            {
+                for (int i = 0; i != allTriangles.Length; i++)
+                    partTriangles[geometry.LayerMaterial.Materials[i]].Add(allTriangles[i]);
+            }
 
             for (int i = 0; i != lod.Parts.Length; i++)
             {
@@ -63,13 +71,14 @@ namespace Mafia2.FBX
                 lod.Parts[i] = new ModelPart();
 
                 //quick fix if .dds exists.
-                if(name.EndsWith(".dds"))
+                if (name.EndsWith(".dds"))
                     name.Remove(name.Length - 4, 4);
 
                 lod.Parts[i].Material = name;
                 lod.Parts[i].Indices = partTriangles[i].ToArray();
                 lod.Parts[i].CalculatePartBounds(lod.Vertices);
             }
+            
             return lod;
         }
 

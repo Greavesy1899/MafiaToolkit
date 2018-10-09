@@ -9,6 +9,15 @@ namespace Mafia2.FBX
         string mappingInformationType;
         string referenceInformationType;
 
+        public string MappingInformationType {
+            get { return mappingInformationType; }
+            set { mappingInformationType = value; }
+        }
+        public string ReferenceInformationType {
+            get { return referenceInformationType; }
+            set { referenceInformationType = value; }
+        }
+
         /// <summary>
         /// Fills data with passed Fbx node.
         /// </summary>

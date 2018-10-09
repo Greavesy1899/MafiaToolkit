@@ -40,8 +40,8 @@ namespace Gibbed.Mafia2.FileFormats
 
             UnkTotal = reader.ReadInt32();
 
-            if (UnkCount1 + UnkCount2 != UnkTotal)
-                throw new FormatException();
+            //if (UnkCount1 + UnkCount2 != UnkTotal)
+                //throw new FormatException();
 
             if (UnkTotal == 0)          
                 return;
@@ -50,6 +50,8 @@ namespace Gibbed.Mafia2.FileFormats
 
             var blockStream = BlockReaderStream.FromStream(reader.BaseStream, endian);
 
+            if (!Directory.Exists("patches/"))
+                Directory.CreateDirectory("patches/");
 
             using (BinaryWriter writer = new BinaryWriter(File.Open("patches/patch_of_" + file.Name + ".bin", FileMode.Create)))
             {
@@ -85,9 +87,6 @@ namespace Gibbed.Mafia2.FileFormats
                     OtherRamRequired = resourceHeader.OtherRamRequired,
                     OtherVramRequired = resourceHeader.OtherVramRequired,
                 };
-
-                if (!Directory.Exists("patches/"))
-                    Directory.CreateDirectory("patches/");
 
                 using (BinaryWriter writer = new BinaryWriter(File.Open("patches/"+file.Name + "_" + i + ".bin", FileMode.Create)))
                 {
