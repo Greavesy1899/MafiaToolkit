@@ -35,10 +35,10 @@
 
 #define SAMPLE_FILENAME "ExportDocument.fbx"
 
-bool CreateDocument(FbxManager* pManager, FbxScene* pScene);
+bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model);
 void CreateMatDocument(FbxManager* pManager, FbxDocument* pMatDocument);
 void CreateLightDocument(FbxManager* pManager, FbxDocument* pLightDocument);
-FbxNode* CreatePlane(FbxManager* pManager, const char* pName);
+FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure model);
 FbxSurfacePhong* CreateMaterial(FbxManager* pManager);
 FbxTexture*  CreateTexture(FbxManager* pManager);
 FbxNode* CreateLight(FbxManager* pManager, FbxLight::EType pType);
@@ -138,6 +138,18 @@ int main(int argc, char** argv)
     FbxScene* lScene = NULL;
     bool lResult = false;
 
+	//Open stream.
+	FILE* stream;
+	fopen_s(&stream, "E://MafiaII Exported Models//15_OM_187.m2t", "rb");
+
+	if (!stream)
+		return 0;
+
+	// Load Model data, and close stream.
+	ModelStructure file = ModelStructure();
+	file.ReadFromStream(stream);
+	fclose(stream);
+
     // Prepare the FBX SDK.
     InitializeSdkObjects(lSdkManager);
 
@@ -154,7 +166,7 @@ int main(int argc, char** argv)
 	if( !lSampleFileName ) lSampleFileName = SAMPLE_FILENAME;
 
     // Create the scene.
-	lResult = CreateDocument(lSdkManager, lScene);
+	lResult = CreateDocument(lSdkManager, lScene, file);
 	if( lResult )
 	{
 		//Save the document
@@ -169,7 +181,7 @@ int main(int argc, char** argv)
     return 0;
 }
 
-bool CreateDocument(FbxManager* pManager, FbxScene* pScene)
+bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model)
 {
     int lCount;
 
@@ -190,7 +202,7 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene)
     // during the creation of objects so they are automatically connected and become visible
     // to the disk save routines.
 
-    FbxNode* lPlane = CreatePlane(pManager, "Plane");
+    FbxNode* lPlane = CreatePlane(pManager, "Plane", model);
 	
     // add the geometry to the main document.
 	
@@ -266,122 +278,95 @@ void CreateLightDocument(FbxManager* pManager, FbxDocument* pLightDocument)
 }
 
 // Create a plane mesh. 
-FbxNode* CreatePlane(FbxManager* pManager, const char* pName)
+FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure model)
 {
-    int i;
-    FbxMesh* lMesh = FbxMesh::Create(pManager,pName);
+	int i;
+	FbxMesh* lMesh = FbxMesh::Create(pManager, pName);
 
-    FbxVector4 lControlPoint0(-50, 0,   50);
-    FbxVector4 lControlPoint1(50,  0,   50);
-    FbxVector4 lControlPoint2(50,  100, 50);
-    FbxVector4 lControlPoint3(-50, 100, 50);
+	ModelPart part = model.GetParts()[0];
+	std::vector<Point3> vertices = part.GetVertices();
+	std::vector<Int3> triangles = part.GetIndices();
+	std::vector<Point3> normals = part.GetNormals();
+	std::vector<UVVert> uvs = part.GetUVs();
+	std::vector<char> matIDs = part.GetMatIDs();
 
-    FbxVector4 lNormalZPos(0, 0, 1);
+	lMesh->InitControlPoints(vertices.size());
+	FbxVector4* lControlPoints = lMesh->GetControlPoints();
 
-    // Create control points.
-    lMesh->InitControlPoints(4);
-    FbxVector4* lControlPoints = lMesh->GetControlPoints();
+	for (int i = 0; i < vertices.size(); i++)
+		lControlPoints[i] = FbxVector4(vertices[i].x, vertices[i].y, vertices[i].z);
 
-    lControlPoints[0]  = lControlPoint0;
-    lControlPoints[1]  = lControlPoint1;
-    lControlPoints[2]  = lControlPoint2;
-    lControlPoints[3]  = lControlPoint3;
+	// We want to have one normal for each vertex (or control point),
+	// so we set the mapping mode to eByControlPoint.
+	FbxGeometryElementNormal* lElementNormal = lMesh->CreateElementNormal();
 
+	lElementNormal->SetMappingMode(FbxGeometryElement::eByControlPoint);
+	lElementNormal->SetReferenceMode(FbxGeometryElement::eDirect);
 
-    // We want to have one normal for each vertex (or control point),
-    // so we set the mapping mode to eByControlPoint.
-    FbxGeometryElementNormal* lElementNormal= lMesh->CreateElementNormal();
+	for (int i = 0; i < vertices.size(); i++)
+		lElementNormal->GetDirectArray().Add(FbxVector4(normals[i].x, normals[i].y, normals[i].z));
 
-    lElementNormal->SetMappingMode(FbxGeometryElement::eByControlPoint);
+	// Create UV for Diffuse channel.
+	FbxGeometryElementUV* lUVDiffuseElement = lMesh->CreateElementUV("DiffuseUV");
+	FBX_ASSERT(lUVDiffuseElement != NULL);
+	lUVDiffuseElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
+	lUVDiffuseElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-    // Set the normal values for every control point.
-    lElementNormal->SetReferenceMode(FbxGeometryElement::eDirect);
+	for (int i = 0; i < vertices.size(); i++)
+		lUVDiffuseElement->GetDirectArray().Add(FbxVector2(uvs[i].x, uvs[i].y));
 
-    lElementNormal->GetDirectArray().Add(lNormalZPos);
-    lElementNormal->GetDirectArray().Add(lNormalZPos);
-    lElementNormal->GetDirectArray().Add(lNormalZPos);
-    lElementNormal->GetDirectArray().Add(lNormalZPos);
+	//Now we have set the UVs as eIndexToDirect reference and in eByPolygonVertex  mapping mode
+	//we must update the size of the index array.
+	lUVDiffuseElement->GetIndexArray().SetCount(triangles.size() * 3);
 
+	// Create polygons. Assign texture and texture UV indices.
+	// all faces of the cube have the same texture
+	lMesh->BeginPolygon(-1, -1, -1, false);
 
-    // Array of polygon vertices.
-    int lPolygonVertices[] = { 0, 1, 2, 3 };
+	for (int i = 0; i < triangles.size(); i++)
+	{
+		// Control point index
+		lMesh->AddPolygon(triangles[i].i1);
+		lMesh->AddPolygon(triangles[i].i2);
+		lMesh->AddPolygon(~triangles[i].i3);
 
-    // Create UV for Diffuse channel.
-    FbxGeometryElementUV* lUVDiffuseElement = lMesh->CreateElementUV( "DiffuseUV");
-	FBX_ASSERT( lUVDiffuseElement != NULL);
-    lUVDiffuseElement->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
-    lUVDiffuseElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
+		// update the index array of the UVs that map the texture to the face
+		lUVDiffuseElement->GetIndexArray().SetAt(i, matIDs[i]);
+	}
 
-    FbxVector2 lVectors0(0, 0);
-    FbxVector2 lVectors1(1, 0);
-    FbxVector2 lVectors2(1, 1);
-    FbxVector2 lVectors3(0, 1);
-
-    lUVDiffuseElement->GetDirectArray().Add(lVectors0);
-    lUVDiffuseElement->GetDirectArray().Add(lVectors1);
-    lUVDiffuseElement->GetDirectArray().Add(lVectors2);
-    lUVDiffuseElement->GetDirectArray().Add(lVectors3);
-
-    //Now we have set the UVs as eIndexToDirect reference and in eByPolygonVertex  mapping mode
-    //we must update the size of the index array.
-    lUVDiffuseElement->GetIndexArray().SetCount(4);
-
-    // Create polygons. Assign texture and texture UV indices.
-    // all faces of the cube have the same texture
-    lMesh->BeginPolygon(-1, -1, -1, false);
-
-    for(i = 0; i < 4; i++)
-    {
-        // Control point index
-        lMesh->AddPolygon(lPolygonVertices[i]);  
-
-        // update the index array of the UVs that map the texture to the face
-        lUVDiffuseElement->GetIndexArray().SetAt(i, i);
-    }
-
-    lMesh->EndPolygon ();
-
-    // create a FbxNode
-    FbxNode* lNode = FbxNode::Create(pManager,pName);
-
-    // set the node attribute
-    lNode->SetNodeAttribute(lMesh);
-
-    // set the shading mode to view texture
-    lNode->SetShadingMode(FbxNode::eTextureShading);
-
-    // rotate the plane
-    lNode->LclRotation.Set(FbxVector4(90, 0, 0));
+	lMesh->EndPolygon();
 
 
-    // Set material mapping.
-    FbxGeometryElementMaterial* lMaterialElement = lMesh->CreateElementMaterial();
-    lMaterialElement->SetMappingMode(FbxGeometryElement::eByPolygon);
-    lMaterialElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
-    if( !lMesh->GetElementMaterial( 0))
-        return NULL;
+	// create a FbxNode
+	FbxNode* lNode = FbxNode::Create(pManager, pName);
 
-    // add material to the node. 
-    // the material can't in different document with the geometry node or in sub-document
-    // we create a simple material here which belong to main document
-    FbxString lMaterialName = "material_for_plane";
-    FbxString lShadingName  = "Phong";
-    FbxSurfacePhong* lMaterial = FbxSurfacePhong::Create(pManager, lMaterialName.Buffer());
+	// set the node attribute
+	lNode->SetNodeAttribute(lMesh);
 
-    lMaterial->Diffuse.Set(FbxDouble3(1.0, 1.0, 0));
-    lMaterial->DiffuseFactor.Set(1.);
+	// set the shading mode to view texture
+	lNode->SetShadingMode(FbxNode::eTextureShading);
 
-    lNode->AddMaterial(lMaterial);
+	// rotate the plane
+	lNode->LclRotation.Set(FbxVector4(0, 0, 0));
 
-    // We are in eByPolygon, so there's only need for index (a plane has 1 polygon).
-    lMaterialElement->GetIndexArray().SetCount(lMesh->GetPolygonCount());
 
-    // Set the Index to the material
-    for(i=0; i<lMesh->GetPolygonCount(); ++i)
-        lMaterialElement->GetIndexArray().SetAt(i,0);
+	// Set material mapping.
+	FbxGeometryElementMaterial* lMaterialElement = lMesh->CreateElementMaterial();
+	lMaterialElement->SetMappingMode(FbxGeometryElement::eByPolygon);
+	lMaterialElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
+	if (!lMesh->GetElementMaterial(0))
+		return NULL;
 
-    // return the FbxNode
-    return lNode;
+	// We are in eByPolygon, so there's only need for index (a plane has 1 polygon).
+	lMaterialElement->GetIndexArray().SetCount(lMesh->GetPolygonSize(0) / 3);
+
+	// Set the Index to the material
+	for (i = 0; i < lMesh->GetPolygonSize(0) / 3; ++i)
+		lMaterialElement->GetIndexArray().SetAt(i, matIDs[i]);
+
+	lNode->AddMaterial(CreateMaterial(pManager));
+	// return the FbxNode
+	return lNode;
 }
 
 
