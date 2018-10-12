@@ -121,9 +121,9 @@ namespace Mafia2.FBX
             for (int i = 0; i != triangles.Length; i++)
             {
                 triangles[i] = new Short3();
-                triangles[i].S1 = Convert.ToInt16(geometry.Triangles[triangleIndex]);
-                triangles[i].S2 = Convert.ToInt16(geometry.Triangles[++triangleIndex]);
-                triangles[i].S3 = Convert.ToInt16(~geometry.Triangles[++triangleIndex]);
+                triangles[i].S1 = Convert.ToUInt16(geometry.Triangles[triangleIndex]);
+                triangles[i].S2 = Convert.ToUInt16(geometry.Triangles[++triangleIndex]);
+                triangles[i].S3 = Convert.ToUInt16(~geometry.Triangles[++triangleIndex]);
                 triangleIndex++;
             }
 

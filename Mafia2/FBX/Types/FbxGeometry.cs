@@ -7,7 +7,7 @@ namespace Mafia2.FBX
     {
         FbxNode[] properties;
         double[] vertices;
-        int[] triangles;
+        uint[] triangles;
         byte version;
         FbxLayerElementNormal normals;
         FbxLayerElementUV uvs;
@@ -17,7 +17,7 @@ namespace Mafia2.FBX
             get { return vertices; }
             set { vertices = value; }
         }
-        public int[] Triangles {
+        public uint[] Triangles {
             get { return triangles; }
             set { triangles = value; }
         }
@@ -48,7 +48,7 @@ namespace Mafia2.FBX
                         vertices = (double[])n.Value;
                         break;
                     case "PolygonVertexIndex":
-                        triangles = (int[])n.Value;
+                        triangles = (uint[])n.Value;
                         break;
                     case "GeometryVersion":
                         version = (byte)n.Value;

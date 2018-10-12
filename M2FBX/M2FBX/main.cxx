@@ -361,10 +361,12 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	lMaterialElement->GetIndexArray().SetCount(lMesh->GetPolygonSize(0) / 3);
 
 	// Set the Index to the material
-	for (i = 0; i < lMesh->GetPolygonSize(0) / 3; ++i)
+	for (int i = 0; i < lMesh->GetPolygonSize(0) / 3; ++i)
 		lMaterialElement->GetIndexArray().SetAt(i, matIDs[i]);
 
-	lNode->AddMaterial(CreateMaterial(pManager));
+	for (int i = 0; i < part.GetSubMeshCount(); i++)
+		lNode->AddMaterial(CreateMaterial(pManager));
+
 	// return the FbxNode
 	return lNode;
 }
@@ -399,7 +401,7 @@ FbxTexture*  CreateTexture(FbxManager* pManager)
 // FBX document don't need connect materials to FbxNode, it can export standalone materials.
 FbxSurfacePhong* CreateMaterial(FbxManager* pManager)
 {
-    FbxString lMaterialName = "material";
+    FbxString lMaterialName = string;
     FbxString lShadingName  = "Phong";
     FbxDouble3 lBlack(0.0, 0.0, 0.0);
     FbxDouble3 lRed(1.0, 0.0, 0.0);

@@ -220,9 +220,9 @@ namespace Mafia2
                         while (startIndex < num)
                         {
                             Short3 indice = new Short3();
-                            indice.S1 = (short)indexBuffer.Data[startIndex + 0];
-                            indice.S2 = (short)indexBuffer.Data[startIndex + 1];
-                            indice.S3 = (short)indexBuffer.Data[startIndex + 2];
+                            indice.S1 = indexBuffer.Data[startIndex + 0];
+                            indice.S2 = indexBuffer.Data[startIndex + 1];
+                            indice.S3 = indexBuffer.Data[startIndex + 2];
                             intList.Add(indice);
                             startIndex += 3;
                         }

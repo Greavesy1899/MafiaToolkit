@@ -294,18 +294,18 @@ namespace Mafia2
 
     public class Short3
     {
-        public short S1 { get; set; }
-        public short S2 { get; set; }
-        public short S3 { get; set; }
+        public ushort S1 { get; set; }
+        public ushort S2 { get; set; }
+        public ushort S3 { get; set; }
 
         /// <summary>
         /// SET all values to -100
         /// </summary>
         public Short3()
         {
-            S1 = -100;
-            S2 = -100;
-            S3 = -100;
+            S1 = ushort.MaxValue;
+            S2 = ushort.MaxValue;
+            S3 = ushort.MaxValue;
         }
 
         /// <summary>
@@ -314,9 +314,9 @@ namespace Mafia2
         /// <param name="reader"></param>
         public Short3(BinaryReader reader)
         {
-            S1 = reader.ReadInt16();
-            S2 = reader.ReadInt16();
-            S3 = reader.ReadInt16();
+            S1 = reader.ReadUInt16();
+            S2 = reader.ReadUInt16();
+            S3 = reader.ReadUInt16();
         }
 
         /// <summary>
@@ -325,9 +325,9 @@ namespace Mafia2
         /// <param name="ints"></param>
         public Short3(Int3 ints)
         {
-            S1 = (short)ints.I1;
-            S2 = (short)ints.I2;
-            S3 = (short)ints.I3;
+            S1 = (ushort)ints.I1;
+            S2 = (ushort)ints.I2;
+            S3 = (ushort)ints.I3;
         }
 
         /// <summary>
@@ -338,9 +338,9 @@ namespace Mafia2
         /// <param name="i3"></param>
         public Short3(int i1, int i2, int i3)
         {
-            S1 = (short)i1;
-            S2 = (short)i2;
-            S3 = (short)i3;
+            S1 = (ushort)i1;
+            S2 = (ushort)i2;
+            S3 = (ushort)i3;
         }
 
         /// <summary>
