@@ -124,11 +124,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FBXWrangler.cpp" />
     <ClCompile Include="M2Model.cpp" />
     <ClCompile Include="main.cxx" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FbxWrangler.h" />
     <ClInclude Include="M2Model.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
