@@ -36,11 +36,10 @@
 #define SAMPLE_FILENAME "ExportDocument.fbx"
 
 bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model);
-void CreateMatDocument(FbxManager* pManager, FbxDocument* pMatDocument);
 void CreateLightDocument(FbxManager* pManager, FbxDocument* pLightDocument);
 FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure model);
-FbxSurfacePhong* CreateMaterial(FbxManager* pManager);
-FbxTexture*  CreateTexture(FbxManager* pManager);
+FbxSurfacePhong* CreateMaterial(FbxManager* pManager, const char* pName);
+FbxTexture*  CreateTexture(FbxManager* pManager, const char* pName);
 FbxNode* CreateLight(FbxManager* pManager, FbxLight::EType pType);
 
 
@@ -204,8 +203,7 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 
     FbxNode* lPlane = CreatePlane(pManager, "Plane", model);
 	
-    // add the geometry to the main document.
-	
+    // add the geometry to the main document.	
 	FbxNode* node = pScene->GetRootNode();
 	node->AddChild(lPlane);
 	pScene->AddRootMember(lPlane);
@@ -213,48 +211,21 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
     lCount = pScene->GetRootMemberCount();  // lCount = 1: only the lPlane
     lCount = pScene->GetMemberCount();      // lCount = 3: the FbxNode - lPlane; FbxMesh belongs to lPlane; Material that connect to lPlane
 
-    // Create sub document to contain materials.
-    FbxDocument* lMatDocument = FbxDocument::Create(pManager,"Material");
-
-    CreateMatDocument(pManager, lMatDocument);
-    // Connect the light sub document to main document
-	pScene->AddMember(lMatDocument);
-
-    // Create sub document to contain lights
-    FbxDocument* lLightDocument = FbxDocument::Create(pManager,"Light");
-    CreateLightDocument(pManager, lLightDocument);
-    // Connect the light sub document to main document
-	pScene->AddMember(lLightDocument);
+    //Create sub document to contain lights
+    //FbxDocument* lLightDocument = FbxDocument::Create(pManager,"Light");
+    //CreateLightDocument(pManager, lLightDocument);
+    //Connect the light sub document to main document
+	//pScene->AddMember(lLightDocument);
 
     lCount = pScene->GetMemberCount();       // lCount = 5 : 3 add two sub document
 
-    // document can contain animation. Please refer to other sample about how to set animation
-	pScene->CreateAnimStack("PlanAnim");
-
-    lCount = pScene->GetRootMemberCount();  // lCount = 1: only the lPlane
-    lCount = pScene->GetMemberCount();      // lCount = 7: 5 add AnimStack and AnimLayer
-    lCount = pScene->GetMemberCount<FbxDocument>();    // lCount = 2
+    //document can contain animation. Please refer to other sample about how to set animation
+	//pScene->CreateAnimStack("PlanAnim");
+	//lCount = pScene->GetRootMemberCount();  // lCount = 1: only the lPlane
+	//lCount = pScene->GetMemberCount();      // lCount = 7: 5 add AnimStack and AnimLayer
+	//lCount = pScene->GetMemberCount<FbxDocument>();    // lCount = 2
 
     return true;
-}
-
-// Create material sub document
-void CreateMatDocument(FbxManager* pManager, FbxDocument* pMatDocument)
-{
-    // create document info
-    FbxDocumentInfo* lDocInfo = FbxDocumentInfo::Create(pManager,"DocInfo");
-    lDocInfo->mTitle = "Sub document for materials";
-    lDocInfo->mSubject = "Illustrates the creation of sub-FbxDocument with materials.";
-    lDocInfo->mAuthor = "ExportDocument.exe sample program.";
-    lDocInfo->mRevision = "rev. 1.0";
-    lDocInfo->mKeywords = "Fbx material document";
-    lDocInfo->mComment = "no particular comments required.";
-
-    // add the documentInfo
-    pMatDocument->SetDocumentInfo(lDocInfo);
-
-    // add material object to the sub document
-    pMatDocument->AddMember(CreateMaterial(pManager));
 }
 
 // Create light sub document
@@ -347,7 +318,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	lNode->SetShadingMode(FbxNode::eTextureShading);
 
 	// rotate the plane
-	lNode->LclRotation.Set(FbxVector4(0, 0, 0));
+	lNode->LclRotation.Set(FbxVector4(-90, 0, 0));
 
 
 	// Set material mapping.
@@ -365,7 +336,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 		lMaterialElement->GetIndexArray().SetAt(i, matIDs[i]);
 
 	for (int i = 0; i < part.GetSubMeshCount(); i++)
-		lNode->AddMaterial(CreateMaterial(pManager));
+		lNode->AddMaterial(CreateMaterial(pManager, part.GetMatNames().at(i).c_str()));
 
 	// return the FbxNode
 	return lNode;
@@ -373,17 +344,17 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 
 
 // Create a texture
-FbxTexture*  CreateTexture(FbxManager* pManager)
+FbxTexture*  CreateTexture(FbxManager* pManager, const char* pName)
 {
-    FbxFileTexture* lTexture = FbxFileTexture::Create(pManager,"");
+    FbxFileTexture* lTexture = FbxFileTexture::Create(pManager, pName);
 
     // Resource file must be in the application's directory.
     FbxString lPath = FbxGetApplicationDirectory();
-    FbxString lTexPath = lPath + "\\Crate.jpg";
+	FbxString lTexPath = pName;
 
     // Set texture properties.
     lTexture->SetFileName(lTexPath.Buffer());
-    lTexture->SetName("Diffuse Texture");
+    lTexture->SetName(pName);
     lTexture->SetTextureUse(FbxTexture::eStandard);
     lTexture->SetMappingType(FbxTexture::eUV);
     lTexture->SetMaterialUse(FbxFileTexture::eModelMaterial);
@@ -399,9 +370,9 @@ FbxTexture*  CreateTexture(FbxManager* pManager)
 // Create material.
 // FBX scene must connect materials FbxNode, otherwise materials will not be exported.
 // FBX document don't need connect materials to FbxNode, it can export standalone materials.
-FbxSurfacePhong* CreateMaterial(FbxManager* pManager)
+FbxSurfacePhong* CreateMaterial(FbxManager* pManager, const char* pName)
 {
-    FbxString lMaterialName = string;
+    FbxString lMaterialName = pName;
     FbxString lShadingName  = "Phong";
     FbxDouble3 lBlack(0.0, 0.0, 0.0);
     FbxDouble3 lRed(1.0, 0.0, 0.0);
@@ -413,7 +384,7 @@ FbxSurfacePhong* CreateMaterial(FbxManager* pManager)
     lMaterial->Ambient       .Set(lRed);
     lMaterial->AmbientFactor .Set(1.);
     // Add texture for diffuse channel
-    lMaterial->Diffuse       .ConnectSrcObject(CreateTexture(pManager));
+    lMaterial->Diffuse       .ConnectSrcObject(CreateTexture(pManager, pName));
     lMaterial->DiffuseFactor .Set(1.);
     lMaterial->TransparencyFactor  .Set(0.4);
     lMaterial->ShadingModel        .Set(lShadingName);

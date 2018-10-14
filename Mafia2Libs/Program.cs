@@ -12,6 +12,7 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
+            //Prefab prefab = new Prefab("D://Users//Connor//Desktop//SteamLibrary//steamapps//common//Mafia II//pc//sds//cars//extracted//cars_universal.sds//PREFAB_55.prf");
             //setup logger.
             Log.DeleteOldLog();
 

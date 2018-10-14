@@ -76,7 +76,7 @@ void ModelPart::SetSubMeshCount(int count) {
 	ModelPart::subMeshCount = count;
 }
 
-void ModelPart::SetMatNames(std::vector<std::wstring> names) {
+void ModelPart::SetMatNames(std::vector<std::string> names) {
 	ModelPart::matNames = names;
 }
 
@@ -172,7 +172,7 @@ std::vector<Int3> ModelPart::GetIndices() {
 	return ModelPart::indices;
 }
 
-std::vector<std::wstring> ModelPart::GetMatNames() {
+std::vector<std::string> ModelPart::GetMatNames() {
 	return ModelPart::matNames;
 }
 
@@ -220,9 +220,9 @@ void ModelPart::ReadFromStream(FILE * stream) {
 		}
 	}
 	fread(&subMeshCount, sizeof(int), 1, stream);
-	matNames = std::vector<std::wstring>(subMeshCount);
+	matNames = std::vector<std::string>(subMeshCount);
 	for (int i = 0; i != subMeshCount; i++) {
-		std::wstring edmName = std::wstring();
+		std::string edmName = std::string();
 		edmName = ReadString(stream, edmName);
 		matNames[i] = edmName;
 	}
@@ -296,7 +296,7 @@ ModelPart::~ModelPart() {}
 //===================================================
 //		ModelStructure
 //===================================================
-void ModelStructure::SetName(std::wstring name) {
+void ModelStructure::SetName(std::string name) {
 	ModelStructure::name = name;
 }
 
@@ -308,7 +308,7 @@ void ModelStructure::SetParts(std::vector<ModelPart> parts) {
 	ModelStructure::parts = parts;
 }
 
-std::wstring ModelStructure::GetName() {
+std::string ModelStructure::GetName() {
 	return name;
 }
 
@@ -323,7 +323,7 @@ std::vector<ModelPart> ModelStructure::GetParts() {
 void ModelStructure::ReadFromStream(FILE * stream) {
 	int header;
 	fread(&header, sizeof(int), 1, stream); //header
-	std::wstring edmName = std::wstring();
+	std::string edmName = std::string();
 	edmName = ReadString(stream, edmName);
 	name = edmName;
 	fread(&partSize, 1, 1, stream);

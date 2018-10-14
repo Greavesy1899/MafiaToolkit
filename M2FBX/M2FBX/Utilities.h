@@ -2,7 +2,7 @@
 #define M2_HELPERS_HEADER
 #include <iostream>
 
-std::wstring ReadString(FILE* stream, std::wstring &string);
-void WriteString(FILE* stream, std::wstring &string);
+std::string ReadString(FILE* stream, std::string &string);
+void WriteString(FILE* stream, std::string &string);
 
 #endif

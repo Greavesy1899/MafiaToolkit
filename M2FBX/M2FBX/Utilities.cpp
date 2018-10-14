@@ -1,6 +1,6 @@
 #include "Utilities.h"
 
-std::wstring ReadString(FILE* stream, std::wstring &string)
+std::string ReadString(FILE* stream, std::string &string)
 {
 	char numBytes;
 
@@ -14,7 +14,7 @@ std::wstring ReadString(FILE* stream, std::wstring &string)
 	return string;
 }
 
-void WriteString(FILE* stream, std::wstring &string)
+void WriteString(FILE* stream, std::string &string)
 {
 	char numBytes = string.size();
 

@@ -37,7 +37,7 @@ private:
 	std::vector<Point3> tangents;
 	std::vector<UVVert> uvs;
 	int subMeshCount;
-	std::vector<std::wstring> matNames;
+	std::vector<std::string> matNames;
 	int indicesSize;
 	std::vector<Int3> indices;
 	std::vector<char> matIDs;
@@ -63,7 +63,7 @@ public:
 	void SetUVs(std::vector<UVVert> uvs);
 	void SetSubMeshCount(int count);
 	void SetIndicesSize(int count);
-	void SetMatNames(std::vector<std::wstring> matNames);
+	void SetMatNames(std::vector<std::string> matNames);
 	void SetIndices(std::vector<Int3> indices);
 	void SetMatIDs(std::vector<char> matIDs);
 	bool GetHasPositions();
@@ -85,7 +85,7 @@ public:
 	std::vector<UVVert> GetUVs();
 	int GetSubMeshCount();
 	int GetIndicesSize();
-	std::vector<std::wstring> GetMatNames();
+	std::vector<std::string> GetMatNames();
 	std::vector<Int3> GetIndices();
 	std::vector<char> GetMatIDs();
 
@@ -95,16 +95,16 @@ public:
 
 class ModelStructure {
 private:
-	std::wstring name;
+	std::string name;
 	char partSize;
 	std::vector<ModelPart> parts;
 public:
 	ModelStructure();
 	~ModelStructure();
-	void SetName(std::wstring name);
+	void SetName(std::string name);
 	void SetPartSize(char count);
 	void SetParts(std::vector<ModelPart> parts);
-	std::wstring GetName();
+	std::string GetName();
 	char GetPartSize();
 	std::vector<ModelPart> GetParts();
 
