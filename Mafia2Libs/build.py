@@ -40,9 +40,11 @@ remove_dll("SharpDX.DirectInput.dll")
 remove_dll("SharpDX.dll")
 remove_dll("SharpDX.DXGI.dll")
 remove_dll("SharpDX.Mathematics.dll")
+remove_dll("Gibbed.IO.Dll");
 
 #remove files
 remove_file("Mafia2Libs.pdb")
+remove_file("Mafia2Toolkit.pdb")
 remove_file("SharpDX.D3DCompiler.pdb")
 remove_file("SharpDX.D3DCompiler.xml")
 remove_file("SharpDX.Desktop.pdb")
@@ -57,3 +59,4 @@ remove_file("SharpDX.DXGI.xml")
 remove_file("SharpDX.Mathematics.pdb")
 remove_file("SharpDX.Mathematics.xml")
 remove_file("SharpDX.pdb")
+remove_file("Gibbed.IO.pdb");
