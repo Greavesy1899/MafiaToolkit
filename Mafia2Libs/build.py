@@ -29,7 +29,6 @@ print("Building Toolkit for release..")
 
 #remove libs
 remove_dll("Gibbed.IO.dll")
-remove_dll("Fbx.dll")
 remove_dll("ICSharpCode.SharpZipLib.dll")
 remove_dll("Mafia2Libs.dll")
 remove_dll("SharpDX.D3DCompiler.dll")

@@ -52,18 +52,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FBX\FbxScene.cs" />
-    <Compile Include="FBX\Types\FbxElement.cs" />
-    <Compile Include="FBX\Types\FbxObject.cs" />
-    <Compile Include="FBX\Types\FbxTexture.cs" />
-    <Compile Include="FBX\Types\FbxMaterial.cs" />
-    <Compile Include="FBX\Types\FbxVideo.cs" />
-    <Compile Include="FBX\Types\FbxModel.cs" />
-    <Compile Include="FBX\Types\FbxGeometry.cs" />
-    <Compile Include="FBX\Types\FbxLayer.cs" />
-    <Compile Include="FBX\Types\FbxLayerElementMaterial.cs" />
-    <Compile Include="FBX\Types\FbxLayerElementUV.cs" />
-    <Compile Include="FBX\Types\FbxLayerElementNormal.cs" />
     <Compile Include="FileTypes\Animations\Animation2.cs" />
     <Compile Include="ApexSDK\IOFX\ColorVsDensityModifier.cs" />
     <Compile Include="ApexSDK\IOFX\ScaleVsLifeModifier.cs" />
@@ -97,9 +85,7 @@
     <Compile Include="Gibbed.Illusion.ResourceFormats\XmlResource0.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\XmlResource1.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\PatchFile.cs" />
-    <Compile Include="FBX\FbxWrangler.cs" />
     <Compile Include="Utils\Bounds.cs" />
-    <Compile Include="FBX\FbxIOExtender.cs" />
     <Compile Include="Utils\Logger.cs" />
     <Compile Include="Utils\Matrix33.cs" />
     <Compile Include="Utils\TransformMatrix.cs" />
@@ -185,11 +171,6 @@
       <Project>{047857ba-daa3-4ca7-afb8-a1b082b28c6a}</Project>
       <Name>Gibbed.IO</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="libs\Fbx.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

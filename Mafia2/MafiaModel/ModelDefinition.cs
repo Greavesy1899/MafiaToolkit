@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Fbx;
-using Mafia2.FBX;
 using Gibbed.Illusion.FileFormats.Hashing;
-using System.Threading;
 using System.Diagnostics;
 
 namespace Mafia2
@@ -521,115 +518,21 @@ namespace Mafia2
 
         public void ReadFromFbx(string file)
         {
-            //quickly swap the culture. 
-            System.Globalization.CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
-            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-GB");
-            var reader = new FbxAsciiReader(new FileStream(file, FileMode.Open));
-            var doc = reader.Read();
-            Thread.CurrentThread.CurrentCulture = cultureInfo;
-            Dictionary<long, object> objects = new Dictionary<long, object>();
-            FbxScene scene = new FbxScene();
-            FbxNode node = doc.GetRelative("Objects");
-
-            foreach (FbxNode n in node.Nodes)
+            string args = "-ConvertToM2T ";
+            string m2tFile = file.Remove(file.Length - 4, 4) + ".m2t";
+            args += ("\"" + file + "\" ");
+            args += ("\"" + m2tFile + "\" ");
+            ProcessStartInfo processStartInfo = new ProcessStartInfo("M2FBX.exe", args)
             {
-                switch(n.Name)
-                {
-                    case "Geometry":
-                        FbxGeometry geom = new FbxGeometry();
-                        geom.ConvertFromNode(n);
-                        objects.Add(Convert.ToInt64(n.Value), geom);
-                        break;
-                    case "Model":
-                        FbxModel model = new FbxModel();
-                        model.ConvertFromNode(n);
-                        objects.Add(Convert.ToInt64(n.Value), model);
-                        break;
-                    case "Video":
-                        FbxVideo video = new FbxVideo();
-                        video.ConvertFromNode(n);
-                        objects.Add(Convert.ToInt64(n.Value), video);
-                        break;
-                    case "Material":
-                        FbxMaterial material = new FbxMaterial();
-                        material.ConvertFromNode(n);
-                        objects.Add(Convert.ToInt64(n.Value), material);
-                        break;
-                    case "Texture":
-                        FbxTexture texture = new FbxTexture();
-                        texture.ConvertFromNode(n);
-                        objects.Add(Convert.ToInt64(n.Value), texture);
-                        break;
-                }
-            }
+                CreateNoWindow = true,
+                UseShellExecute = false
+            };
+            Process FbxTool = Process.Start(processStartInfo);
+            FbxTool.Dispose();
+            using (BinaryReader reader = new BinaryReader(File.Open(m2tFile, FileMode.Open)))
+                ReadFromM2T(reader);
 
-            node = doc.GetRelative("Connections");
-            FbxElement element = new FbxElement();
-            long id1;
-            long id2;
-            object obj;
-
-            //Very WIP.
-            foreach (FbxNode n in node.Nodes)
-            {
-                switch (n.Value)
-                {
-                    case "OO":
-                        id1 = Convert.ToInt64(n.Properties[1]);
-                        id2 = Convert.ToInt64(n.Properties[2]);
-                        if (objects.TryGetValue(id1, out obj))
-                        {
-                            if (obj.GetType() == typeof(FbxModel) && element.Model == null)
-                                element.Model = obj as FbxModel;
-                            else if (obj.GetType() == typeof(FbxGeometry) && element.Geometry == null)
-                                element.Geometry = obj as FbxGeometry;
-                            else if (obj.GetType() == typeof(FbxMaterial) && !element.Materials.ContainsKey(id1))
-                                element.Materials.Add(id1, obj as FbxMaterial);
-                        }
-                        if (objects.TryGetValue(id2, out obj))
-                        {
-                            if (obj.GetType() == typeof(FbxModel) && element.Model == null)
-                                element.Model = obj as FbxModel;
-                            else if (obj.GetType() == typeof(FbxGeometry) && element.Geometry == null)
-                                element.Geometry = obj as FbxGeometry;
-                            else if (obj.GetType() == typeof(FbxMaterial) && !element.Materials.ContainsKey(id2))
-                                element.Materials.Add(id2, obj as FbxMaterial);
-                        }
-                        break;
-                    case "OP":
-                        //TODO ADD SUPPORT FOR DIFFERENT MATERIAL TYPES; EG DIFFUSECOLOR, NORMALCOLOR etc.
-                        id1 = Convert.ToInt64(n.Properties[1]);
-                        id2 = Convert.ToInt64(n.Properties[2]);
-                        if (objects.TryGetValue(id1, out obj))
-                        {
-                            if (obj.GetType() == typeof(FbxModel) && element.Model == null)
-                                element.Model = obj as FbxModel;
-                            else if (obj.GetType() == typeof(FbxGeometry) && element.Geometry == null)
-                                element.Geometry = obj as FbxGeometry;
-                            else if (obj.GetType() == typeof(FbxMaterial) && !element.Materials.ContainsKey(id1))
-                                element.Materials.Add(id1, obj as FbxMaterial);
-                        }
-                        if (objects.TryGetValue(id2, out obj))
-                        {
-                            if (obj.GetType() == typeof(FbxModel) && element.Model == null)
-                                element.Model = obj as FbxModel;
-                            else if (obj.GetType() == typeof(FbxGeometry) && element.Geometry == null)
-                                element.Geometry = obj as FbxGeometry;
-                            else if (obj.GetType() == typeof(FbxMaterial) && !element.Materials.ContainsKey(id2))
-                                element.Materials.Add(id2, obj as FbxMaterial);
-                        }
-                        break;
-                    default:
-                        Console.WriteLine("Unknown value: " + n.Value);
-                        break;
-                }
-            }
-            if (element.Model.Name.Contains("::"))
-                name = element.Model.Name.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries)[1];
-
-            lods = new Lod[1];
-            lods[0] = element.BuildM2ModelFromElement();
-
+            File.Delete(m2tFile);
         }
 
         /// <summary>
