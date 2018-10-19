@@ -826,6 +826,7 @@ namespace Mafia2
                 //handle bounding data..
                 List<Vertex[]> data = new List<Vertex[]>();
                 data.Add(model.Vertices);
+                boundingBox = new BoundingBox();
                 boundingBox.CalculateBounds(data);
                 boundingSphere.CreateFromBoundingBox(boundingBox);
 

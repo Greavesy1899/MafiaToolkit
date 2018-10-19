@@ -27,6 +27,12 @@
     <ClCompile Include="FBXWrangler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="M2TWrangler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FbxUtilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="M2Model.h">
@@ -36,6 +42,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FbxWrangler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="M2TWrangler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FbxUtilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

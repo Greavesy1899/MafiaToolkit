@@ -124,14 +124,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FbxUtilities.cpp" />
     <ClCompile Include="FBXWrangler.cpp" />
     <ClCompile Include="M2Model.cpp" />
+    <ClCompile Include="M2TWrangler.cpp" />
     <ClCompile Include="main.cxx" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FbxUtilities.h" />
     <ClInclude Include="FbxWrangler.h" />
     <ClInclude Include="M2Model.h" />
+    <ClInclude Include="M2TWrangler.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

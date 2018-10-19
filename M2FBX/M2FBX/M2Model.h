@@ -57,14 +57,14 @@ public:
 	void SetHasFlag0x40000(bool b);
 	void SetHasDamage(bool b);
 	void SetVertSize(int count);
-	void SetVertices(std::vector<Point3> vertices);
+	void SetVertices(std::vector<Point3> vertices, bool updateCount = false);
 	void SetNormals(std::vector<Point3> normals);
 	void SetTangents(std::vector<Point3> tangents);
 	void SetUVs(std::vector<UVVert> uvs);
 	void SetSubMeshCount(int count);
 	void SetIndicesSize(int count);
-	void SetMatNames(std::vector<std::string> matNames);
-	void SetIndices(std::vector<Int3> indices);
+	void SetMatNames(std::vector<std::string> matNames, bool updateCount = false);
+	void SetIndices(std::vector<Int3> indices, bool updateCount = false);
 	void SetMatIDs(std::vector<char> matIDs);
 	bool GetHasPositions();
 	bool GetHasNormals();;
@@ -103,7 +103,7 @@ public:
 	~ModelStructure();
 	void SetName(std::string name);
 	void SetPartSize(char count);
-	void SetParts(std::vector<ModelPart> parts);
+	void SetParts(std::vector<ModelPart> parts, bool updateCount = false);
 	std::string GetName();
 	char GetPartSize();
 	std::vector<ModelPart> GetParts();

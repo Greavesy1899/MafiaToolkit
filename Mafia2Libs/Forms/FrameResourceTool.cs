@@ -330,7 +330,8 @@ namespace Mafia2Tool
 
                 for (int c = 0; c != newModel.Lods.Length; c++)
                 {
-                    switch(ToolkitSettings.Format)
+                    newModel.ExportToM2T(ToolkitSettings.ExportPath + "\\");
+                    switch (ToolkitSettings.Format)
                     {
                         case 0:
                             newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\", false);
@@ -514,7 +515,7 @@ namespace Mafia2Tool
                 }
 
                 Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
-
+                newModel.ExportToM2T(ToolkitSettings.ExportPath + "\\");
                 switch (ToolkitSettings.Format)
                 {
                     case 0:

@@ -1,28 +1,6 @@
 #include "FbxWrangler.h"
+#include "FbxUtilities.h"
 
-void InitializeSdkObjects(FbxManager*& pManager)
-{
-	//The first thing to do is to create the FBX Manager which is the object allocator for almost all the classes in the SDK
-	pManager = FbxManager::Create();
-	if (!pManager)
-	{
-		FBXSDK_printf("Error: Unable to create FBX Manager!\n");
-		exit(1);
-	}
-	else FBXSDK_printf("Autodesk FBX SDK version %s\n", pManager->GetVersion());
-
-	//Create an IOSettings object. This object holds all import/export settings.
-	FbxIOSettings* ios = FbxIOSettings::Create(pManager, IOSROOT);
-	pManager->SetIOSettings(ios);
-}
-void DestroySdkObjects(FbxManager* pManager, bool pExitStatus)
-{
-#if _DEBUG
-	//Delete the FBX Manager. All the objects that have been allocated using the FBX Manager and that haven't been explicitly destroyed are also automatically destroyed.
-	if (pManager) pManager->Destroy();
-	if (pExitStatus) FBXSDK_printf("Program Success!\n");
-#endif _DEBUG
-}
 bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFilename, int pFileFormat = -1, bool pEmbedMedia = false)
 {
 	int lMajor, lMinor, lRevision;
@@ -85,7 +63,7 @@ bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFil
 	return lStatus;
 }
 
-int Convert(const char* pSource, const char* pDest)
+int ConvertM2T(const char* pSource, const char* pDest)
 {
 	FBXSDK_printf("Converting M2T to FBX.\n");
 
@@ -203,6 +181,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	std::vector<Point3> vertices = part.GetVertices();
 	std::vector<Int3> triangles = part.GetIndices();
 	std::vector<Point3> normals = part.GetNormals();
+	std::vector<Point3> tangents = part.GetTangents();
 	std::vector<UVVert> uvs = part.GetUVs();
 	std::vector<char> matIDs = part.GetMatIDs();
 
@@ -214,14 +193,23 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 
 	// We want to have one normal for each vertex (or control point),
 	// so we set the mapping mode to eByControlPoint.
-	FbxGeometryElementNormal* lElementNormal = lMesh->CreateElementNormal();
-
-	lElementNormal->SetMappingMode(FbxGeometryElement::eByControlPoint);
-	lElementNormal->SetReferenceMode(FbxGeometryElement::eDirect);
-
-	for (int i = 0; i < vertices.size(); i++)
-		lElementNormal->GetDirectArray().Add(FbxVector4(normals[i].x, normals[i].y, normals[i].z));
-
+	if(part.GetHasNormals())
+	{ 
+		FbxGeometryElementNormal* lElementNormal = lMesh->CreateElementNormal();
+		lElementNormal->SetMappingMode(FbxGeometryElement::eByControlPoint);
+		lElementNormal->SetReferenceMode(FbxGeometryElement::eDirect);
+		for (int i = 0; i < vertices.size(); i++)
+			lElementNormal->GetDirectArray().Add(FbxVector4(normals[i].x, normals[i].y, normals[i].z));
+	}
+	if (part.GetHasTangents())
+	{
+		FbxGeometryElementTangent* lElementTangent = lMesh->CreateElementTangent();
+		lElementTangent->SetMappingMode(FbxGeometryElement::eByControlPoint);
+		lElementTangent->SetReferenceMode(FbxGeometryElement::eDirect);
+		for (int i = 0; i < vertices.size(); i++)
+			lElementTangent->GetDirectArray().Add(FbxVector4(tangents[i].x, tangents[i].y, tangents[i].z));
+	}
+	
 	// Create UV for Diffuse channel.
 	FbxGeometryElementUV* lUVDiffuseElement = lMesh->CreateElementUV("DiffuseUV");
 	FBX_ASSERT(lUVDiffuseElement != NULL);

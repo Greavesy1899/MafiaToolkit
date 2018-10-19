@@ -5,6 +5,7 @@ using Fbx;
 using Mafia2.FBX;
 using Gibbed.Illusion.FileFormats.Hashing;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Mafia2
 {
@@ -324,7 +325,16 @@ namespace Mafia2
 
         public void ExportToFbx(string path, bool saveBinary)
         {
-            FbxWrangler.BuildFBXFromModel(this, path, saveBinary);
+            string args = "-ConvertToFBX ";
+            args += ("\"" + path + name + ".m2t\" ");
+            args += ("\"" + path + name + ".fbx\"");
+            ProcessStartInfo processStartInfo = new ProcessStartInfo("M2FBX.exe", args)
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false
+            };
+            Process FbxTool = Process.Start(processStartInfo);
+            FbxTool.Dispose();
         }
 
         public void ExportCollisionToM2T(string name)

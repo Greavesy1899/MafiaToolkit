@@ -89,9 +89,9 @@ namespace Mafia2
         /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(x);
-            writer.Write(y);
-            writer.Write(z);
+            writer.Write((float)x);
+            writer.Write((float)y);
+            writer.Write((float)z);
         }
 
         /// <summary>
@@ -292,8 +292,9 @@ namespace Mafia2
         /// </summary>
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(X);
-            writer.Write(1f - Y);
+            
+            writer.Write(HalfHelper.HalfToSingle(X));
+            writer.Write(1f-Y);
         }
 
         /// <summary>

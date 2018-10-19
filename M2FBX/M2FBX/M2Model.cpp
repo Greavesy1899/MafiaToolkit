@@ -56,8 +56,11 @@ void ModelPart::SetVertSize(int count) {
 	ModelPart::vertSize = count;
 }
 
-void ModelPart::SetVertices(std::vector<Point3> vertices) {
+void ModelPart::SetVertices(std::vector<Point3> vertices, bool updateCount) {
 	ModelPart::vertices = vertices;
+
+	if(updateCount)
+		ModelPart::vertSize = vertices.size();
 }
 
 void ModelPart::SetNormals(std::vector<Point3> normals) {
@@ -76,16 +79,22 @@ void ModelPart::SetSubMeshCount(int count) {
 	ModelPart::subMeshCount = count;
 }
 
-void ModelPart::SetMatNames(std::vector<std::string> names) {
+void ModelPart::SetMatNames(std::vector<std::string> names, bool updateCount) {
 	ModelPart::matNames = names;
+
+	if (updateCount)
+		ModelPart::subMeshCount = names.size();
 }
 
 void ModelPart::SetIndicesSize(int count) {
 	ModelPart::indicesSize = count;
 }
 
-void ModelPart::SetIndices(std::vector<Int3> indices) {
+void ModelPart::SetIndices(std::vector<Int3> indices, bool updateCount) {
 	ModelPart::indices = indices;
+
+	if (updateCount)
+		ModelPart::indicesSize = indices.size();
 }
 
 void ModelPart::SetMatIDs(std::vector<char> ids) {
@@ -195,9 +204,16 @@ void ModelPart::ReadFromStream(FILE * stream) {
 	fread(&hasDamageGroup, sizeof(bool), 1, stream);
 	fread(&vertSize, sizeof(int), 1, stream);
 	vertices = std::vector<Point3>(vertSize);
-	normals = std::vector<Point3>(vertSize);
-	tangents = std::vector<Point3>(vertSize);
-	uvs = std::vector<UVVert>(vertSize);
+
+	if(hasNormals)
+		normals = std::vector<Point3>(vertSize);
+
+	if(hasTangents)
+		tangents = std::vector<Point3>(vertSize);
+
+	if(hasUV0)
+		uvs = std::vector<UVVert>(vertSize);
+
 	for (int i = 0; i != vertSize; i++) {
 		if (hasPosition) {
 			fread(&vertices[i].x, sizeof(float), 1, stream);
@@ -304,8 +320,11 @@ void ModelStructure::SetPartSize(char count) {
 	ModelStructure::partSize = count;
 }
 
-void ModelStructure::SetParts(std::vector<ModelPart> parts) {
+void ModelStructure::SetParts(std::vector<ModelPart> parts, bool updateCount) {
 	ModelStructure::parts = parts;
+
+	if (updateCount)
+		ModelStructure::partSize = parts.size();
 }
 
 std::string ModelStructure::GetName() {
