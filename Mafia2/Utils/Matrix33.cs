@@ -7,7 +7,7 @@ namespace Mafia2
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Matrix33
     {
-        public float[,] Rows { get; set; } = new float[3, 3];
+        public double[,] Rows { get; set; } = new double[3, 3];
         public Vector3 Euler { get; set; }
 
         /// <summary>

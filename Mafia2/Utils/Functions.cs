@@ -34,6 +34,11 @@ namespace Mafia2
             int size = reader.ReadInt32();
             return new string(reader.ReadChars(size));
         }
+        public static void WriteStirng32(BinaryWriter writer, string text)
+        {
+            writer.Write(text.Length);
+            writer.Write(text.ToCharArray());
+        }
     }
     public static class Extensions
     {

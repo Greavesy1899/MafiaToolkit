@@ -85,9 +85,9 @@ namespace Mafia2
         public byte[] WritePositionData(float factor, Vector3 offset)
         {
             List<byte> posData = new List<byte>();
-
+            double decomp = factor;
             position -= offset;
-            position /= factor;
+            position /= decomp+0.1f;
             
             posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.X)));
             posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.Y)));
@@ -123,13 +123,13 @@ namespace Mafia2
             List<byte> tanData = new List<byte>();
 
             //X..
-            if (float.IsNaN(Tangent.X * 127.0f + 127.0f))
+            if (float.IsNaN((float)Tangent.X * (127.0f + 127.0f)))
                 tanData.Add(0);
             else
                 tanData.Add(Convert.ToByte(Tangent.X * 127.0f + 127.0f));
 
             //Y..
-            if (float.IsNaN(Tangent.Y * 127.0f + 127.0f))
+            if (float.IsNaN((float)Tangent.Y * (127.0f + 127.0f)))
                 tanData.Add(0);
             else
                 tanData.Add(Convert.ToByte(Tangent.Y * 127.0f + 127.0f));
@@ -162,21 +162,21 @@ namespace Mafia2
             List<byte> normData = new List<byte>();
 
             //X..
-            if (float.IsNaN(Normal.X * 127.0f + 127.0f))
+            if (float.IsNaN((float)Normal.X * 127.0f + 127.0f))
                 normData.Add(127);
             else
                 normData.Add(Convert.ToByte(Normal.X * 127.0f + 127.0f));
 
 
             //Y..
-            if (float.IsNaN(Normal.Y * 127.0f + 127.0f))
+            if (float.IsNaN((float)Normal.Y * 127.0f + 127.0f))
                 normData.Add(127);
             else
                 normData.Add(Convert.ToByte(Normal.Y * 127.0f + 127.0f));
 
 
             //Z..
-            if (float.IsNaN(Normal.Z * 127.0f + 127.0f))
+            if (float.IsNaN((float)Normal.Z * 127.0f + 127.0f))
                 normData.Add(255);
             else
                 normData.Add(Convert.ToByte(Normal.Z * 127.0f + 127.0f));

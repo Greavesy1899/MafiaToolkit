@@ -7,20 +7,20 @@ namespace Mafia2
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Vector3
     {
-        private float x;
-        private float y;
-        private float z;
+        private double x;
+        private double y;
+        private double z;
 
-        public float X
+        public double X
         {
             get { return x;}
             set { x = value; }
         }
-        public float Y {
+        public double Y {
             get { return y; }
             set { y = value; }
         }
-        public float Z {
+        public double Z {
             get { return z; }
             set { z = value; }
         }
@@ -32,6 +32,19 @@ namespace Mafia2
         /// <param name="y"></param>
         /// <param name="z"></param>
         public Vector3(float x, float y, float z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        /// <summary>
+        /// Construct a Vector3 from three doubles.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        public Vector3(double x, double y, double z)
         {
             this.x = x;
             this.y = y;
@@ -154,6 +167,14 @@ namespace Mafia2
             return new Vector3(a.X * scale, a.Y * scale, a.Z * scale);
         }
         public static Vector3 operator /(Vector3 a, float scale)
+        {
+            return new Vector3(a.X / scale, a.Y / scale, a.Z / scale);
+        }
+        public static Vector3 operator *(Vector3 a, double scale)
+        {
+            return new Vector3(a.X * scale, a.Y * scale, a.Z * scale);
+        }
+        public static Vector3 operator /(Vector3 a, double scale)
         {
             return new Vector3(a.X / scale, a.Y / scale, a.Z / scale);
         }

@@ -635,11 +635,11 @@ namespace Mafia2
             bounds.Max = frameMesh.Boundings.Max/* + minFloat*/;
 
             frameGeometry.DecompressionOffset = bounds.Min;
-            float MaxX = bounds.Max.X - bounds.Min.X + minFloatf;
-            float MaxY = bounds.Max.Y - bounds.Min.Y + minFloatf;
-            float MaxZ = bounds.Max.Z - bounds.Min.Z + minFloatf;
+            double MaxX = bounds.Max.X - bounds.Min.X + minFloatf;
+            double MaxY = bounds.Max.Y - bounds.Min.Y + minFloatf;
+            double MaxZ = bounds.Max.Z - bounds.Min.Z + minFloatf;
 
-            float fMaxSize = Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
+            double fMaxSize = Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
 
             Console.WriteLine("Decompress value before: " + fMaxSize);
 
@@ -650,7 +650,7 @@ namespace Mafia2
             else if(fMaxSize <= 512) //experiment
                 frameGeometry.DecompressionFactor = (float)512 / 0x10000;
             else
-                frameGeometry.DecompressionFactor = fMaxSize / 0x10000;
+                frameGeometry.DecompressionFactor = (float)fMaxSize / 0x10000;
 
             Console.WriteLine("Using decompression value from: " + fMaxSize + " result is: " + frameGeometry.DecompressionFactor);
         }

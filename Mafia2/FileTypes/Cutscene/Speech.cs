@@ -66,6 +66,15 @@ namespace Mafia2
                 unkBytes = reader.ReadBytes(20);
             }
 
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(unk0);
+                Functions.WriteStirng32(writer, entityType);
+                Functions.WriteStirng32(writer, speechType);
+                Functions.WriteStirng32(writer, folder);
+                writer.Write(unkBytes);
+            }
+
             public override string ToString()
             {
                 return string.Format("{0}, {1}, {2}. {3}", unk0, entityType, speechType, folder);
@@ -94,6 +103,16 @@ namespace Mafia2
                 itemName = Functions.ReadString32(reader);
                 unk3 = reader.ReadInt32();
                 unkBytes = reader.ReadBytes(12);
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(unk0);
+                writer.Write(unk1);
+                writer.Write(unk2);
+                Functions.WriteStirng32(writer, itemName);
+                writer.Write(unk3);
+                writer.Write(unkBytes);
             }
 
             public override string ToString()
