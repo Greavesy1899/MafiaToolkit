@@ -583,7 +583,7 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = itemNames[i];
                         break;
                     case "Table":
-                        ReadTableEntry(entry, resourceXML, "");
+                        ReadTableEntry(entry, resourceXML, "", extractedPath + file.Name);
                         saveName = "Tables.tbl";
                         break;
                     case "Animated Texture":
@@ -929,10 +929,16 @@ namespace Gibbed.Mafia2.FileFormats
             descNode.InnerText = file;
             return entry;
         }
-        public ResourceEntry ReadTableEntry(ResourceEntry entry, XmlWriter resourceXML, string name)
+        public ResourceEntry ReadTableEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string tableDIR)
         {
             TableResource resource = new TableResource();
             resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+            if (!Directory.Exists(tableDIR + "/tables"))
+                Directory.CreateDirectory(tableDIR + "/tables");
+
+            foreach (TableData data in resource.Tables)
+                data.Serialize(entry.Version, File.Open(tableDIR + data.Name, FileMode.Create), Endian.Little);
+
             //todo extract individual tables.
             name = "Tables" + ".tbl";
             resourceXML.WriteElementString("File", name);

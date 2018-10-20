@@ -33,6 +33,11 @@ namespace Gibbed.Mafia2.ResourceFormats
     {
         public ulong NameHash;
         public string Name;
+        public uint Unk1;
+        public uint Unk2;
+        private uint rowSize;
+        private uint rowCount;
+        public byte[] Data;
 
         public List<Row> Rows = new List<Row>();
         public List<Column> Columns = new List<Column>();
@@ -44,7 +49,23 @@ namespace Gibbed.Mafia2.ResourceFormats
 
         public void Serialize(ushort version, Stream input, Endian endian)
         {
-            throw new NotImplementedException();
+            input.WriteValueU64(NameHash, endian);
+            input.WriteStringU16(Name, endian);
+
+            if (version >= 2)
+            {
+                throw new NotSupportedException();
+            }
+            else
+            {
+                input.WriteValueU16((ushort)Columns.Count, endian);
+                input.WriteValueU32(Unk1, endian);
+                input.WriteValueU32(Unk2, endian);
+                input.WriteValueU32(rowSize, endian);
+                input.WriteValueU32(rowCount, endian);
+                input.WriteBytes(Data);
+                input = null;
+            }
         }
 
         public void Deserialize(ushort version, Stream input, Endian endian)
@@ -60,12 +81,13 @@ namespace Gibbed.Mafia2.ResourceFormats
             {
                 var columnCount = input.ReadValueU16(endian);
 
-                var unk1 = input.ReadValueU32(endian);
-                var unk2 = input.ReadValueU32(endian);
+                Unk1 = input.ReadValueU32(endian);
+                Unk2 = input.ReadValueU32(endian);
 
-                var rowSize = input.ReadValueU32(endian);
-                var rowCount = input.ReadValueU32(endian);
+                rowSize = input.ReadValueU32(endian);
+                rowCount = input.ReadValueU32(endian);
                 var data = input.ReadToMemoryStream((int)(rowSize * rowCount));
+                Data = data.ReadBytes((int)data.Length);
 
                 this.Columns = new List<Column>();
                 for (uint i = 0; i < columnCount; i++)
