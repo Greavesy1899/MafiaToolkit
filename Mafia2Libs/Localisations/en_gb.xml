@@ -1,4 +1,8 @@
 <Localisation lANG="EN_GB">
+  <!-- Generic String -->
+  <String ID="$CONTINUE">Continue</String>
+  <String ID="$CANCEL">Cancel</String>
+  
   <!-- Game Explorer Strings -->
   <String ID="$VIEW">View</String>
   <String ID="$FILE">File</String>
@@ -70,9 +74,11 @@
   
   <!-- Material Editor Form Strings-->
   <String ID="$MATERIAL_ADD">Add Material</String>
+  <String ID="$MATERIAL_DELETE">Delete Material</String>
   <String ID="$MATERIAL_UPDATE_LIST">Update Material List</String>
   <String ID="$MATERIAL_EDITOR_TITLE">Material Library Editor</String>
   <String ID="$OPEN">Open</String>
+  <String ID="$QUESTION_NAME_OF_MAT">Please enter the material name:</String>
   
   <!-- FrameResource Editor Form Strings-->
   <String ID="$FRAME_EDITOR_EXPORT_BTN">Export Models..</String>
@@ -86,4 +92,8 @@
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS">Update Parent</String>
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Choose a scene to add as a parent.</String>
   <String ID="$FRAME_EDITOR_TITLE">FrameResource Editor</String>
+  
+   <!-- NewObjForm Form Strings-->
+   <String ID="$NEWOBJFORM_TITLE">Input Name</String>
+   
 </Localisation>

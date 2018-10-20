@@ -30,8 +30,8 @@ namespace Mafia2Tool
             contextExitButton.Text = Language.GetString("$EXIT");
             toolButton.Text = Language.GetString("$TOOLS");
             addMaterialToolStripMenuItem.Text = Language.GetString("$MATERIAL_ADD");
-            UpdateListButton.Text = Language.GetString("$MATERIAL_UPDATE_LIST");
             Text = Language.GetString("$MATERIAL_EDITOR_TITLE");
+            DeleteSelectedMaterialButton.Text = Language.GetString("$MATERIAL_DELETE");
         }
 
         public void FetchMaterials(bool searchMode = false, string text = null)
@@ -95,9 +95,29 @@ namespace Mafia2Tool
 
         private void AddMaterial(object sender, EventArgs e)
         {
+            //ask user for material name.
+            NewObjectForm form = new NewObjectForm();
+            form.SetLabel(Language.GetString("$QUESTION_NAME_OF_MAT"));
+            form.ShowDialog();
+            if (form.type == -1)
+                return;
+
+            //create material with new name.
             Material mat = new Material();
-            //erm, temporary lol.
-            mtl.Materials.Add((ulong)Functions.RandomGenerator.Next(), mat);
+            mat.SetName(form.GetInputText());
+            mtl.Materials.Add(mat.MaterialHash, mat);
+
+            //cleanup and reload.
+            form.Dispose();
+            FetchMaterials();
+        }
+
+        private void DeleteMaterial(object sender, EventArgs e)
+        {
+            if (MaterialListBox.SelectedItem == null)
+                return;
+
+            mtl.Materials.Remove((MaterialListBox.SelectedItem as Material).MaterialHash);
             FetchMaterials();
         }
 

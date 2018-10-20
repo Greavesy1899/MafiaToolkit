@@ -133,6 +133,12 @@
     <Compile Include="AdditionalControls\ListWindow.Designer.cs">
       <DependentUpon>ListWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="AdditionalControls\NewObjectWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AdditionalControls\NewObjectWindow.Designer.cs">
+      <DependentUpon>NewObjectWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\CollisionEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -277,6 +283,9 @@
   <ItemGroup>
     <EmbeddedResource Include="AdditionalControls\ListWindow.resx">
       <DependentUpon>ListWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AdditionalControls\NewObjectWindow.resx">
+      <DependentUpon>NewObjectWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CollisionEditor.resx">
       <DependentUpon>CollisionEditor.cs</DependentUpon>

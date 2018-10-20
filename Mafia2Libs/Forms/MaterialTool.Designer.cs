@@ -34,7 +34,8 @@
             this.contextExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.addMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.UpdateListButton = new System.Windows.Forms.ToolStripButton();
+            this.DeleteSelectedMaterialButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextReloadButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -44,7 +45,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.MaterialSearch.Location = new System.Drawing.Point(13, 28);
             this.MaterialSearch.Name = "MaterialSearch";
-            this.MaterialSearch.Size = new System.Drawing.Size(207, 20);
+            this.MaterialSearch.Size = new System.Drawing.Size(368, 20);
             this.MaterialSearch.TabIndex = 0;
             this.MaterialSearch.TextChanged += new System.EventHandler(this.MaterialSearch_TextChanged);
             this.MaterialSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
@@ -77,8 +78,7 @@
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.contextFileButton,
-            this.toolButton,
-            this.UpdateListButton});
+            this.toolButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(785, 25);
@@ -90,6 +90,7 @@
             this.contextFileButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.contextFileButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.contextOpenButton,
+            this.contextReloadButton,
             this.contextSaveButton,
             this.contextExitButton});
             this.contextFileButton.Image = ((System.Drawing.Image)(resources.GetObject("contextFileButton.Image")));
@@ -102,20 +103,20 @@
             // 
             this.contextOpenButton.Enabled = false;
             this.contextOpenButton.Name = "contextOpenButton";
-            this.contextOpenButton.Size = new System.Drawing.Size(103, 22);
+            this.contextOpenButton.Size = new System.Drawing.Size(180, 22);
             this.contextOpenButton.Text = "Open";
             // 
             // contextSaveButton
             // 
             this.contextSaveButton.Name = "contextSaveButton";
-            this.contextSaveButton.Size = new System.Drawing.Size(103, 22);
+            this.contextSaveButton.Size = new System.Drawing.Size(180, 22);
             this.contextSaveButton.Text = "Save";
             this.contextSaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // contextExitButton
             // 
             this.contextExitButton.Name = "contextExitButton";
-            this.contextExitButton.Size = new System.Drawing.Size(103, 22);
+            this.contextExitButton.Size = new System.Drawing.Size(180, 22);
             this.contextExitButton.Text = "Exit";
             this.contextExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -123,7 +124,8 @@
             // 
             this.toolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addMaterialToolStripMenuItem});
+            this.addMaterialToolStripMenuItem,
+            this.DeleteSelectedMaterialButton});
             this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
             this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolButton.Name = "toolButton";
@@ -133,19 +135,23 @@
             // addMaterialToolStripMenuItem
             // 
             this.addMaterialToolStripMenuItem.Name = "addMaterialToolStripMenuItem";
-            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addMaterialToolStripMenuItem.Text = "Add Material";
             this.addMaterialToolStripMenuItem.Click += new System.EventHandler(this.AddMaterial);
             // 
-            // UpdateListButton
+            // DeleteSelectedMaterialButton
             // 
-            this.UpdateListButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.UpdateListButton.Image = ((System.Drawing.Image)(resources.GetObject("UpdateListButton.Image")));
-            this.UpdateListButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.UpdateListButton.Name = "UpdateListButton";
-            this.UpdateListButton.Size = new System.Drawing.Size(70, 22);
-            this.UpdateListButton.Text = "Update List";
-            this.UpdateListButton.Click += new System.EventHandler(this.UpdateList);
+            this.DeleteSelectedMaterialButton.Name = "DeleteSelectedMaterialButton";
+            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(180, 22);
+            this.DeleteSelectedMaterialButton.Text = "$DELETE_SEL_MAT";
+            this.DeleteSelectedMaterialButton.Click += new System.EventHandler(this.DeleteMaterial);
+            // 
+            // contextReloadButton
+            // 
+            this.contextReloadButton.Name = "contextReloadButton";
+            this.contextReloadButton.Size = new System.Drawing.Size(180, 22);
+            this.contextReloadButton.Text = "Reload";
+            this.contextReloadButton.Click += new System.EventHandler(this.UpdateList);
             // 
             // MaterialTool
             // 
@@ -178,6 +184,7 @@
         private System.Windows.Forms.ToolStripMenuItem contextExitButton;
         private System.Windows.Forms.ToolStripDropDownButton toolButton;
         private System.Windows.Forms.ToolStripMenuItem addMaterialToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton UpdateListButton;
+        private System.Windows.Forms.ToolStripMenuItem DeleteSelectedMaterialButton;
+        private System.Windows.Forms.ToolStripMenuItem contextReloadButton;
     }
 }
