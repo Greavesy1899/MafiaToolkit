@@ -3,9 +3,9 @@
 #include <vector>
 
 typedef struct {
-	short i1;
-	short i2;
-	short i3;
+	unsigned short i1;
+	unsigned short i2;
+	unsigned short i3;
 } Int3;
 typedef struct {
 	float x;
@@ -40,7 +40,7 @@ private:
 	std::vector<std::string> matNames;
 	int indicesSize;
 	std::vector<Int3> indices;
-	std::vector<char> matIDs;
+	std::vector<short> matIDs;
 public:
 	ModelPart();
 	~ModelPart();
@@ -65,7 +65,7 @@ public:
 	void SetIndicesSize(int count);
 	void SetMatNames(std::vector<std::string> matNames, bool updateCount = false);
 	void SetIndices(std::vector<Int3> indices, bool updateCount = false);
-	void SetMatIDs(std::vector<char> matIDs);
+	void SetMatIDs(std::vector<short> matIDs);
 	bool GetHasPositions();
 	bool GetHasNormals();;
 	bool GetHasTangents();
@@ -87,7 +87,7 @@ public:
 	int GetIndicesSize();
 	std::vector<std::string> GetMatNames();
 	std::vector<Int3> GetIndices();
-	std::vector<char> GetMatIDs();
+	std::vector<short> GetMatIDs();
 
 	void ReadFromStream(FILE* stream);
 	void WriteToStream(FILE * stream);

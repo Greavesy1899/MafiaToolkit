@@ -97,7 +97,7 @@ void ModelPart::SetIndices(std::vector<Int3> indices, bool updateCount) {
 		ModelPart::indicesSize = indices.size();
 }
 
-void ModelPart::SetMatIDs(std::vector<char> ids) {
+void ModelPart::SetMatIDs(std::vector<short> ids) {
 	ModelPart::matIDs = ids;
 }
 
@@ -185,7 +185,7 @@ std::vector<std::string> ModelPart::GetMatNames() {
 	return ModelPart::matNames;
 }
 
-std::vector<char> ModelPart::GetMatIDs() {
+std::vector<short> ModelPart::GetMatIDs() {
 	return ModelPart::matIDs;
 }
 
@@ -244,14 +244,14 @@ void ModelPart::ReadFromStream(FILE * stream) {
 	}
 	fread(&indicesSize, sizeof(int), 1, stream);
 	indices = std::vector<Int3>(indicesSize);
-	matIDs = std::vector<char>(indicesSize);
+	matIDs = std::vector<short>(indicesSize);
 	for (int x = 0; x != indicesSize; x++) {
 		Int3 tri;
 		char matID;
-		fread(&tri.i1, sizeof(short), 1, stream);
-		fread(&tri.i2, sizeof(short), 1, stream);
-		fread(&tri.i3, sizeof(short), 1, stream);
-		fread(&matIDs[x], sizeof(char), 1, stream);
+		fread(&tri.i1, sizeof(unsigned short), 1, stream);
+		fread(&tri.i2, sizeof(unsigned short), 1, stream);
+		fread(&tri.i3, sizeof(unsigned short), 1, stream);
+		fread(&matIDs[x], sizeof(short), 1, stream);
 		indices[x] = tri;
 	}
 }
@@ -299,10 +299,10 @@ void ModelPart::WriteToStream(FILE * stream) {
 
 	fwrite(&indicesSize, sizeof(int), 1, stream);
 	for (int i = 0; i != indices.size(); i++) {
-		fwrite(&indices[i].i1, sizeof(short), 1, stream);
-		fwrite(&indices[i].i2, sizeof(short), 1, stream);
-		fwrite(&indices[i].i3, sizeof(short), 1, stream);
-		fwrite(&matIDs[i], sizeof(char), 1, stream);
+		fwrite(&indices[i].i1, sizeof(unsigned short), 1, stream);
+		fwrite(&indices[i].i2, sizeof(unsigned short), 1, stream);
+		fwrite(&indices[i].i3, sizeof(unsigned short), 1, stream);
+		fwrite(&matIDs[i], sizeof(short), 1, stream);
 	}
 }
 

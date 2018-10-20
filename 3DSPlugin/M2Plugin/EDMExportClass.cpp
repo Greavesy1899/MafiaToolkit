@@ -191,7 +191,7 @@ int EDMExport::DoExport(const MCHAR *name, ExpInterface *ei, Interface *i, BOOL 
 		}
 
 		std::vector<Int3> indices = std::vector<Int3>(mesh.numFaces);
-		std::vector<byte> matids = std::vector<byte>(mesh.numFaces);
+		std::vector<short> matids = std::vector<short>(mesh.numFaces);
 
 		for (int c = 0; c != indices.size(); c++)
 		{

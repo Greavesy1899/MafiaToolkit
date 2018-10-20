@@ -183,7 +183,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	std::vector<Point3> normals = part.GetNormals();
 	std::vector<Point3> tangents = part.GetTangents();
 	std::vector<UVVert> uvs = part.GetUVs();
-	std::vector<char> matIDs = part.GetMatIDs();
+	std::vector<short> matIDs = part.GetMatIDs();
 
 	lMesh->InitControlPoints(vertices.size());
 	FbxVector4* lControlPoints = lMesh->GetControlPoints();

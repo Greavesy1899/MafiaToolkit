@@ -313,7 +313,7 @@ namespace Mafia2
                         {
                             //write triangle, and then material
                             lods[i].Parts[x].Indices[z].WriteToFile(writer);
-                            writer.Write((byte) x);
+                            writer.Write((short) x);
                         }
                     }
                 }
@@ -394,7 +394,7 @@ namespace Mafia2
                     {
                         //write triangle, and then material
                         lods[i].Parts[0].Indices[z].WriteToFile(writer);
-                        writer.Write((byte)0);
+                        writer.Write((short)0);
                     }
                 }
             }
@@ -496,7 +496,7 @@ namespace Mafia2
                 for (int x = 0; x != totalFaces; x++)
                 {
                     Short3 tri = new Short3(reader);
-                    byte matId = reader.ReadByte();
+                    short matId = reader.ReadInt16();
                     partTriangles[matId].Add(tri);
                 }
 
@@ -528,6 +528,7 @@ namespace Mafia2
                 UseShellExecute = false
             };
             Process FbxTool = Process.Start(processStartInfo);
+            while (!FbxTool.HasExited) { }
             FbxTool.Dispose();
             using (BinaryReader reader = new BinaryReader(File.Open(m2tFile, FileMode.Open)))
                 ReadFromM2T(reader);
@@ -583,9 +584,9 @@ namespace Mafia2
             {
                 for (int x = 0; x != Lods[0].Parts[i].Indices.Length; x++)
                 {
-                    idata.Add((ushort)Lods[0].Parts[i].Indices[x].S1);
-                    idata.Add((ushort)Lods[0].Parts[i].Indices[x].S2);
-                    idata.Add((ushort)Lods[0].Parts[i].Indices[x].S3);
+                    idata.Add(Lods[0].Parts[i].Indices[x].S1);
+                    idata.Add(Lods[0].Parts[i].Indices[x].S2);
+                    idata.Add(Lods[0].Parts[i].Indices[x].S3);
                 }
             }
 

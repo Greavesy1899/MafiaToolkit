@@ -88,7 +88,7 @@ void EDMPart::SetIndices(std::vector<Int3> indices) {
 	EDMPart::indices = indices;
 }
 
-void EDMPart::SetMatIDs(std::vector<byte> ids) {
+void EDMPart::SetMatIDs(std::vector<short> ids) {
 	EDMPart::matIDs = ids;
 }
 
@@ -180,7 +180,7 @@ std::vector<std::wstring> EDMPart::GetMatNames() {
 	return EDMPart::matNames;
 }
 
-std::vector<byte> EDMPart::GetMatIDs() {
+std::vector<short> EDMPart::GetMatIDs() {
 	return EDMPart::matIDs;
 }
 
@@ -236,14 +236,14 @@ void EDMPart::ReadFromStream(FILE * stream) {
 	}
 	fread(&indicesSize, sizeof(int), 1, stream);
 	indices = std::vector<Int3>(indicesSize);
-	matIDs = std::vector<byte>(indicesSize);
+	matIDs = std::vector<short>(indicesSize);
 	for (int x = 0; x != indicesSize; x++) {
 		Int3 tri;
-		byte matID;
-		fread(&tri.i1, sizeof(short), 1, stream);
-		fread(&tri.i2, sizeof(short), 1, stream);
-		fread(&tri.i3, sizeof(short), 1, stream);
-		fread(&matIDs[x], sizeof(byte), 1, stream);
+		short matID;
+		fread(&tri.i1, sizeof(unsigned short), 1, stream);
+		fread(&tri.i2, sizeof(unsigned short), 1, stream);
+		fread(&tri.i3, sizeof(unsigned short), 1, stream);
+		fread(&matIDs[x], sizeof(short), 1, stream);
 		indices[x] = tri;
 	}
 
@@ -347,10 +347,10 @@ void EDMPart::WriteToStream(FILE * stream) {
 
 	fwrite(&indicesSize, sizeof(int), 1, stream);
 	for (int i = 0; i != indices.size(); i++) {
-		fwrite(&indices[i].i1, sizeof(short), 1, stream);
-		fwrite(&indices[i].i2, sizeof(short), 1, stream);
-		fwrite(&indices[i].i3, sizeof(short), 1, stream);
-		fwrite(&matIDs[i], sizeof(byte), 1, stream);
+		fwrite(&indices[i].i1, sizeof(unsigned short), 1, stream);
+		fwrite(&indices[i].i2, sizeof(unsigned short), 1, stream);
+		fwrite(&indices[i].i3, sizeof(unsigned short), 1, stream);
+		fwrite(&matIDs[i], sizeof(short), 1, stream);
 	}
 }
 

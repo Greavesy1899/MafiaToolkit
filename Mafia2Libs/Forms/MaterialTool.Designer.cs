@@ -25,18 +25,21 @@
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MaterialTool));
             this.MaterialSearch = new System.Windows.Forms.TextBox();
-            this.MaterialListBox = new System.Windows.Forms.ListBox();
             this.MaterialGrid = new System.Windows.Forms.PropertyGrid();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.contextFileButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.contextOpenButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextReloadButton = new System.Windows.Forms.ToolStripMenuItem();
             this.contextSaveButton = new System.Windows.Forms.ToolStripMenuItem();
             this.contextExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.addMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteSelectedMaterialButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextReloadButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.columnHash = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.toolStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // MaterialSearch
@@ -49,19 +52,6 @@
             this.MaterialSearch.TabIndex = 0;
             this.MaterialSearch.TextChanged += new System.EventHandler(this.MaterialSearch_TextChanged);
             this.MaterialSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
-            // 
-            // MaterialListBox
-            // 
-            this.MaterialListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.MaterialListBox.DisplayMember = "MaterialName";
-            this.MaterialListBox.FormattingEnabled = true;
-            this.MaterialListBox.Location = new System.Drawing.Point(13, 53);
-            this.MaterialListBox.Name = "MaterialListBox";
-            this.MaterialListBox.Size = new System.Drawing.Size(368, 368);
-            this.MaterialListBox.TabIndex = 1;
-            this.MaterialListBox.ValueMember = "MaterialName";
-            this.MaterialListBox.SelectedIndexChanged += new System.EventHandler(this.OnMaterialSelected);
             // 
             // MaterialGrid
             // 
@@ -103,20 +93,27 @@
             // 
             this.contextOpenButton.Enabled = false;
             this.contextOpenButton.Name = "contextOpenButton";
-            this.contextOpenButton.Size = new System.Drawing.Size(180, 22);
+            this.contextOpenButton.Size = new System.Drawing.Size(110, 22);
             this.contextOpenButton.Text = "Open";
+            // 
+            // contextReloadButton
+            // 
+            this.contextReloadButton.Name = "contextReloadButton";
+            this.contextReloadButton.Size = new System.Drawing.Size(110, 22);
+            this.contextReloadButton.Text = "Reload";
+            this.contextReloadButton.Click += new System.EventHandler(this.UpdateList);
             // 
             // contextSaveButton
             // 
             this.contextSaveButton.Name = "contextSaveButton";
-            this.contextSaveButton.Size = new System.Drawing.Size(180, 22);
+            this.contextSaveButton.Size = new System.Drawing.Size(110, 22);
             this.contextSaveButton.Text = "Save";
             this.contextSaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // contextExitButton
             // 
             this.contextExitButton.Name = "contextExitButton";
-            this.contextExitButton.Size = new System.Drawing.Size(180, 22);
+            this.contextExitButton.Size = new System.Drawing.Size(110, 22);
             this.contextExitButton.Text = "Exit";
             this.contextExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -135,38 +132,62 @@
             // addMaterialToolStripMenuItem
             // 
             this.addMaterialToolStripMenuItem.Name = "addMaterialToolStripMenuItem";
-            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.addMaterialToolStripMenuItem.Text = "Add Material";
             this.addMaterialToolStripMenuItem.Click += new System.EventHandler(this.AddMaterial);
             // 
             // DeleteSelectedMaterialButton
             // 
             this.DeleteSelectedMaterialButton.Name = "DeleteSelectedMaterialButton";
-            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(180, 22);
+            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(172, 22);
             this.DeleteSelectedMaterialButton.Text = "$DELETE_SEL_MAT";
             this.DeleteSelectedMaterialButton.Click += new System.EventHandler(this.DeleteMaterial);
             // 
-            // contextReloadButton
+            // dataGridView1
             // 
-            this.contextReloadButton.Name = "contextReloadButton";
-            this.contextReloadButton.Size = new System.Drawing.Size(180, 22);
-            this.contextReloadButton.Text = "Reload";
-            this.contextReloadButton.Click += new System.EventHandler(this.UpdateList);
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.columnName,
+            this.columnHash});
+            this.dataGridView1.Location = new System.Drawing.Point(12, 54);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
+            this.dataGridView1.Size = new System.Drawing.Size(369, 367);
+            this.dataGridView1.TabIndex = 3;
+            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnMaterialSelected);
+            // 
+            // columnName
+            // 
+            this.columnName.HeaderText = "Name";
+            this.columnName.Name = "columnName";
+            this.columnName.ReadOnly = true;
+            // 
+            // columnHash
+            // 
+            this.columnHash.HeaderText = "Hash";
+            this.columnHash.Name = "columnHash";
+            this.columnHash.ReadOnly = true;
             // 
             // MaterialTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 431);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.MaterialGrid);
-            this.Controls.Add(this.MaterialListBox);
             this.Controls.Add(this.MaterialSearch);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MaterialTool";
             this.Text = "Material Library Editor";
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -175,7 +196,6 @@
         #endregion
 
         private System.Windows.Forms.TextBox MaterialSearch;
-        private System.Windows.Forms.ListBox MaterialListBox;
         private System.Windows.Forms.PropertyGrid MaterialGrid;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton contextFileButton;
@@ -186,5 +206,8 @@
         private System.Windows.Forms.ToolStripMenuItem addMaterialToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem DeleteSelectedMaterialButton;
         private System.Windows.Forms.ToolStripMenuItem contextReloadButton;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn columnName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn columnHash;
     }
 }

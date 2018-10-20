@@ -85,12 +85,12 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	//begin getting triangles
 	FbxGeometryElementMaterial* pElementMaterial = pMesh->GetElementMaterial(0);
 	std::vector<Int3> indices = std::vector<Int3>();
-	std::vector<char> matIDs = std::vector<char>();
+	std::vector<short> matIDs = std::vector<short>();
 
 	for (int i = 0; i != pMesh->GetPolygonCount(); i++)
 	{
 		Int3 triangle;
-		char matID;
+		short matID;
 		triangle.i1 = pMesh->GetPolygonVertex(i, 0);
 		triangle.i2 = pMesh->GetPolygonVertex(i, 1);
 		triangle.i3 = pMesh->GetPolygonVertex(i, 2);

@@ -9,7 +9,6 @@ namespace Mafia2Tool
     public partial class MaterialTool : Form
     {
         private MaterialLibrary mtl;
-        private int previousMatIndex = -1;
 
         public MaterialTool(FileInfo file)
         {
@@ -36,19 +35,19 @@ namespace Mafia2Tool
 
         public void FetchMaterials(bool searchMode = false, string text = null)
         {
-            MaterialListBox.Items.Clear();
+            dataGridView1.Rows.Clear();
             foreach (KeyValuePair<ulong, Material> mat in mtl.Materials)
             {
                 if (!string.IsNullOrEmpty(text) && searchMode)
                 {
                     if (mat.Value.MaterialName.Contains(text) || mat.Value.MaterialHash.ToString().Contains(text))
-                        MaterialListBox.Items.Add(mat.Value);
+                        dataGridView1.Rows.Add(BuildRowData(mat));
                     else
                         continue;
                 }
                 else
                 {
-                    MaterialListBox.Items.Add(mat.Value);
+                    dataGridView1.Rows.Add(BuildRowData(mat));
                 }
             }
         }
@@ -61,25 +60,9 @@ namespace Mafia2Tool
                 SaveButton_Click(null, null);
         }
 
-        private void OnMaterialSelected(object sender, EventArgs e)
-        {
-            previousMatIndex = MaterialListBox.SelectedIndex;
-            MaterialGrid.SelectedObject = MaterialListBox.SelectedItem;
-        }
-
         private void OnKeyPressed(object sender, KeyPressEventArgs e)
         {
-            ulong result;
-            MaterialListBox.Items.Clear();
-            foreach (KeyValuePair<ulong, Material> mat in mtl.Materials)
-            {
-                ulong.TryParse(MaterialSearch.Text, out result);
-
-                if (mat.Value.MaterialName.Contains(MaterialSearch.Text))
-                    MaterialListBox.Items.Add(mat.Value);
-                else if (mat.Value.MaterialHash == result)
-                    MaterialListBox.Items.Add(mat.Value);
-            }
+            FetchMaterials(true, MaterialSearch.Text);
         }
 
         private void ExitButton_Click(object sender, EventArgs e)
@@ -106,19 +89,20 @@ namespace Mafia2Tool
             Material mat = new Material();
             mat.SetName(form.GetInputText());
             mtl.Materials.Add(mat.MaterialHash, mat);
-
+            dataGridView1.Rows.Add(BuildRowData(mat));
             //cleanup and reload.
             form.Dispose();
-            FetchMaterials();
         }
 
         private void DeleteMaterial(object sender, EventArgs e)
         {
-            if (MaterialListBox.SelectedItem == null)
+
+            if (dataGridView1.SelectedCells[0] == null)
                 return;
 
-            mtl.Materials.Remove((MaterialListBox.SelectedItem as Material).MaterialHash);
-            FetchMaterials();
+            int index = dataGridView1.SelectedCells[0].RowIndex;
+            mtl.Materials.Remove((dataGridView1.Rows[index].Tag as Material).MaterialHash);
+            dataGridView1.Rows.RemoveAt(index);
         }
 
         private void MaterialSearch_TextChanged(object sender, EventArgs e)
@@ -129,6 +113,28 @@ namespace Mafia2Tool
         private void UpdateList(object sender, EventArgs e)
         {
             FetchMaterials(false, null);
+        }
+
+        private void OnMaterialSelected(object sender, DataGridViewCellEventArgs e)
+        {
+            if((e.RowIndex > -1) && (e.ColumnIndex > -1))
+                MaterialGrid.SelectedObject = dataGridView1.Rows[e.RowIndex].Tag;
+        }
+
+        private DataGridViewRow BuildRowData(KeyValuePair<ulong, Material> mat)
+        {
+            DataGridViewRow row = new DataGridViewRow();
+            row.Tag = mat.Value;
+            row.CreateCells(dataGridView1, new object[] { mat.Value.MaterialName, mat.Key });
+            return row;
+        }
+
+        private DataGridViewRow BuildRowData(Material mat)
+        {
+            DataGridViewRow row = new DataGridViewRow();
+            row.Tag = mat;
+            row.CreateCells(dataGridView1, new object[] { mat.MaterialName, mat.MaterialHash });
+            return row;
         }
     }
 }

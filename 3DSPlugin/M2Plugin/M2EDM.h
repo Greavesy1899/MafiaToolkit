@@ -7,9 +7,9 @@
 #include <stdmat.h>
 
 typedef struct {
-	short i1;
-	short i2;
-	short i3;
+	unsigned short i1;
+	unsigned short i2;
+	unsigned short i3;
 } Int3;
 
 class EDMPart {
@@ -35,7 +35,7 @@ private:
 	std::vector<std::wstring> matNames;
 	int indicesSize;
 	std::vector<Int3> indices;
-	std::vector<byte> matIDs;
+	std::vector<short> matIDs;
 	Mesh mesh;
 public:
 	EDMPart();
@@ -61,7 +61,7 @@ public:
 	void SetIndicesSize(int count);
 	void SetMatNames(std::vector<std::wstring> matNames);
 	void SetIndices(std::vector<Int3> indices);
-	void SetMatIDs(std::vector<byte> matIDs);
+	void SetMatIDs(std::vector<short> matIDs);
 	void SetMesh(Mesh mesh);
 	bool GetHasPositions();
 	bool GetHasNormals();;
@@ -84,7 +84,7 @@ public:
 	int GetIndicesSize();
 	std::vector<std::wstring> GetMatNames();
 	std::vector<Int3> GetIndices();
-	std::vector<byte> GetMatIDs();
+	std::vector<short> GetMatIDs();
 	Mesh GetMesh();
 
 	void ReadFromStream(FILE* stream);
