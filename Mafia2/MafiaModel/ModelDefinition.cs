@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Gibbed.Illusion.FileFormats.Hashing;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace Mafia2
 {
@@ -528,12 +529,13 @@ namespace Mafia2
                 UseShellExecute = false
             };
             Process FbxTool = Process.Start(processStartInfo);
-            while (!FbxTool.HasExited) { }
+            while (!FbxTool.HasExited) ;
             FbxTool.Dispose();
             using (BinaryReader reader = new BinaryReader(File.Open(m2tFile, FileMode.Open)))
                 ReadFromM2T(reader);
 
-            File.Delete(m2tFile);
+            if(File.Exists(m2tFile))
+                File.Delete(m2tFile);
         }
 
         /// <summary>
