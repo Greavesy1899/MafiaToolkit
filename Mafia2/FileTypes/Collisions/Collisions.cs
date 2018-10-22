@@ -845,31 +845,41 @@ namespace Mafia2
                 switch (name)
                 {
                     case "rock":
-                        return CollisionMaterials.Carpet;
+                        return CollisionMaterials.OBSOLETE_Carpet;
                     case "grass":
-                        return CollisionMaterials.Sand;
+                        return CollisionMaterials.GrassAndSnow;
                     case "invis_col":
-                        return CollisionMaterials.No_Shot_Coll;
+                        return CollisionMaterials.PlayerCollision;
                     case "road":
-                        return CollisionMaterials.Heads_Of_Cats_UNK;
+                        return CollisionMaterials.Tarmac;
                     case "soil":
                     case "gravel":
                     case "dirt":
                         return CollisionMaterials.Water;
                     default:
                         Console.WriteLine("ERROR! Unknown col type: {0}", name);
-                        return CollisionMaterials.Plaster;
+                        return CollisionMaterials.OBSOLETE_Plaster;
                 }
             }
 
             public struct UnkOPCData
             {
                 private short[] unkHalfs;
+                private float[] unkFloats1;
+                private float[] unkFloats2;
                 private int unkInt;
 
                 public short[] UnkHalfs {
                     get { return unkHalfs; }
                     set { unkHalfs = value; }
+                }
+                public float[] UnkFloats1 {
+                    get { return unkFloats1; }
+                    set { unkFloats1 = value; }
+                }
+                public float[] UnkFloats2 {
+                    get { return unkFloats2; }
+                    set { unkFloats2 = value; }
                 }
                 public int UnkInt {
                     get { return unkInt; }
@@ -879,10 +889,24 @@ namespace Mafia2
                 public UnkOPCData(BinaryReader reader)
                 {
                     unkHalfs = new short[8];
+                    unkFloats1 = new float[8];
+                    unkFloats2 = new float[8];
+
                     for (int i = 0; i != unkHalfs.Length; i++)
+                    {
                         unkHalfs[i] = reader.ReadInt16();
+                    }
 
                     unkInt = reader.ReadInt32();
+
+                    for(int i = 0; i != unkHalfs.Length; i++)
+                    {
+                        if (unkInt != 0 && unkHalfs[i] != 0)
+                        {
+                            unkFloats1[i] = unkHalfs[i] / unkInt;
+                            unkFloats2[i] = unkInt / unkHalfs[i];
+                        }
+                    }
                 }
 
                 public void WriteToFile(BinaryWriter writer)

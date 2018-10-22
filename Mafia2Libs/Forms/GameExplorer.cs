@@ -362,6 +362,7 @@ namespace Mafia2Tool
             Speech speech;
             CutsceneFile cutscene;
             IOFxFile iofx;
+            EmitterFile emitterFile;
 
             switch (item.SubItems[1].Text)
             {
@@ -392,7 +393,9 @@ namespace Mafia2Tool
                 case "IOFX":
                     iofx = new IOFxFile((FileInfo)item.Tag);
                     return;
-
+                case "AEA":
+                    emitterFile = new EmitterFile((FileInfo)item.Tag);
+                    return;
             }
         }
 

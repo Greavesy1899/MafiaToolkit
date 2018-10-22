@@ -85,9 +85,8 @@ namespace Mafia2
         public byte[] WritePositionData(float factor, Vector3 offset)
         {
             List<byte> posData = new List<byte>();
-            double decomp = factor;
             position -= offset;
-            position /= decomp+0.1f;
+            position /= factor;
             
             posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.X)));
             posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.Y)));

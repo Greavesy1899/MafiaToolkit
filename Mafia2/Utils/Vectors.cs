@@ -7,20 +7,20 @@ namespace Mafia2
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Vector3
     {
-        private double x;
-        private double y;
-        private double z;
+        private float x;
+        private float y;
+        private float z;
 
-        public double X
+        public float X
         {
             get { return x;}
             set { x = value; }
         }
-        public double Y {
+        public float Y {
             get { return y; }
             set { y = value; }
         }
-        public double Z {
+        public float Z {
             get { return z; }
             set { z = value; }
         }
@@ -32,19 +32,6 @@ namespace Mafia2
         /// <param name="y"></param>
         /// <param name="z"></param>
         public Vector3(float x, float y, float z)
-        {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
-        /// <summary>
-        /// Construct a Vector3 from three doubles.
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        public Vector3(double x, double y, double z)
         {
             this.x = x;
             this.y = y;
@@ -89,9 +76,9 @@ namespace Mafia2
         /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write((float)x);
-            writer.Write((float)y);
-            writer.Write((float)z);
+            writer.Write(x);
+            writer.Write(y);
+            writer.Write(z);
         }
 
         /// <summary>
@@ -167,14 +154,6 @@ namespace Mafia2
             return new Vector3(a.X * scale, a.Y * scale, a.Z * scale);
         }
         public static Vector3 operator /(Vector3 a, float scale)
-        {
-            return new Vector3(a.X / scale, a.Y / scale, a.Z / scale);
-        }
-        public static Vector3 operator *(Vector3 a, double scale)
-        {
-            return new Vector3(a.X * scale, a.Y * scale, a.Z * scale);
-        }
-        public static Vector3 operator /(Vector3 a, double scale)
         {
             return new Vector3(a.X / scale, a.Y / scale, a.Z / scale);
         }

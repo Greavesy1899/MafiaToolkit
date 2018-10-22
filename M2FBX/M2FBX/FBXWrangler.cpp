@@ -124,7 +124,7 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 	// during the creation of objects so they are automatically connected and become visible
 	// to the disk save routines.
 
-	FbxNode* lPlane = CreatePlane(pManager, "Plane", model);
+	FbxNode* lPlane = CreatePlane(pManager, model.GetName().c_str(), model);
 
 	// add the geometry to the main document.	
 	FbxNode* node = pScene->GetRootNode();

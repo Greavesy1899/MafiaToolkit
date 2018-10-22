@@ -8,11 +8,12 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	FbxGeometryElementNormal* pElementNormal = pMesh->GetElementNormal(0);
 	FbxGeometryElementTangent* pElementTangent = pMesh->GetElementTangent(0);
 	FbxGeometryElementUV* pElementUV = pMesh->GetElementUV(0);
+	FbxGeometryElementMaterial* pElementMaterial = pMesh->GetElementMaterial(0);
 
 	pPart->SetHasPositions(true);
 	pPart->SetHasNormals(pElementNormal);
 	pPart->SetHasTangents(pElementTangent);
-	pPart->SetHasUV0(pElementUV);
+	pPart->SetHasUV0(pElementUV && pElementMaterial);
 
 	//Gotta make sure the normals are correctly set up.
 	if (pElementNormal->GetReferenceMode() != FbxGeometryElement::eDirect) {
@@ -83,18 +84,20 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	}
 
 	//begin getting triangles
-	FbxGeometryElementMaterial* pElementMaterial = pMesh->GetElementMaterial(0);
 	std::vector<Int3> indices = std::vector<Int3>();
 	std::vector<short> matIDs = std::vector<short>();
 
 	for (int i = 0; i != pMesh->GetPolygonCount(); i++)
 	{
 		Int3 triangle;
-		short matID;
+		short matID = 0;
 		triangle.i1 = pMesh->GetPolygonVertex(i, 0);
 		triangle.i2 = pMesh->GetPolygonVertex(i, 1);
 		triangle.i3 = pMesh->GetPolygonVertex(i, 2);
-		matID = pElementMaterial->GetIndexArray().GetAt(i);
+
+		if (pPart->GetHasUV0())
+			matID = pElementMaterial->GetIndexArray().GetAt(i);
+
 		indices.push_back(triangle);
 		matIDs.push_back(matID);
 	}
@@ -118,13 +121,12 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 
 int DetermineNodeAttribute(FbxNode* node)
 {
-	FbxNodeAttribute::EType lAttributeType;
-	int i;
-
 	if (node->GetNodeAttribute() == NULL)
 		FBXSDK_printf("NULL Node Attribute\n\n");
 	else
 		return node->GetNodeAttribute()->GetAttributeType();
+
+	return NULL;
 }
 
 int ConvertFBX(const char* pSource, const char* pDest)
@@ -171,6 +173,7 @@ int ConvertFBX(const char* pSource, const char* pDest)
 		for (int i = 0; i != Root->GetChildCount(); i++) {
 			FbxNode* pNode = Root->GetChild(i);
 			if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
+				Structure.SetName(pNode->GetName());
 				FBXSDK_printf("Converting Mesh..\n");
 				ModelPart Part = ModelPart();
 				ModelPart* pPart = &Part;
@@ -187,4 +190,6 @@ int ConvertFBX(const char* pSource, const char* pDest)
 	fopen_s(&stream, pDest, "wb");
 	Structure.WriteToStream(stream);
 	fclose(stream);
+
+	return 0;
 }

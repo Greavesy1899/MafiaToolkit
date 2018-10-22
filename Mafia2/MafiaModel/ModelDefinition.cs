@@ -525,12 +525,19 @@ namespace Mafia2
             args += ("\"" + m2tFile + "\" ");
             ProcessStartInfo processStartInfo = new ProcessStartInfo("M2FBX.exe", args)
             {
-                CreateNoWindow = true,
+                CreateNoWindow = false,
                 UseShellExecute = false
             };
             Process FbxTool = Process.Start(processStartInfo);
             while (!FbxTool.HasExited) ;
             FbxTool.Dispose();
+
+            if(!File.Exists(m2tFile))
+            {
+                MessageBox.Show("Error Occured. Not importing.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             using (BinaryReader reader = new BinaryReader(File.Open(m2tFile, FileMode.Open)))
                 ReadFromM2T(reader);
 
@@ -547,24 +554,35 @@ namespace Mafia2
             Vector3 minFloat = new Vector3(minFloatf);
 
             BoundingBox bounds = new BoundingBox();
-            bounds.Min = frameMesh.Boundings.Min/* - minFloat*/;
-            bounds.Max = frameMesh.Boundings.Max/* + minFloat*/;
-
+            bounds.Min = frameMesh.Boundings.Min - minFloat;
+            bounds.Max = frameMesh.Boundings.Max + minFloat;
             frameGeometry.DecompressionOffset = bounds.Min;
+
             double MaxX = bounds.Max.X - bounds.Min.X + minFloatf;
             double MaxY = bounds.Max.Y - bounds.Min.Y + minFloatf;
             double MaxZ = bounds.Max.Z - bounds.Min.Z + minFloatf;
 
             double fMaxSize = Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
 
+            //todo fix decompression factors.
             Console.WriteLine("Decompress value before: " + fMaxSize);
 
             if (fMaxSize <= 16)
                 frameGeometry.DecompressionFactor = (float)16 / 0x10000;
             else if (fMaxSize <= 256)
                 frameGeometry.DecompressionFactor = (float)256 / 0x10000;
-            else if(fMaxSize <= 512) //experiment
+            else if(fMaxSize <= 512)
                 frameGeometry.DecompressionFactor = (float)512 / 0x10000;
+            else if(fMaxSize <= 1024)
+                frameGeometry.DecompressionFactor = (float)1024 / 0x10000;
+            else if (fMaxSize <= 2048)
+                frameGeometry.DecompressionFactor = (float)2048 / 0x10000;
+            else if (fMaxSize <= 4196)
+                frameGeometry.DecompressionFactor = (float)4196 / 0x10000;
+            else if (fMaxSize <= 8392)
+                frameGeometry.DecompressionFactor = (float)8392 / 0x10000;
+            else if (fMaxSize <= 16784)
+                frameGeometry.DecompressionFactor = (float)16784 / 0x10000;
             else
                 frameGeometry.DecompressionFactor = (float)fMaxSize / 0x10000;
 

@@ -48,6 +48,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApexSDK\EmitterGeomExplicit.cs" />
+    <Compile Include="ApexSDK\EmitterGeomSphere.cs" />
+    <Compile Include="ApexSDK\Enums.cs" />
+    <Compile Include="ApexSDK\File.cs" />
     <Compile Include="FileTypes\Animations\Animation2.cs" />
     <Compile Include="ApexSDK\IOFX\ColorVsDensityModifier.cs" />
     <Compile Include="ApexSDK\IOFX\ScaleVsLifeModifier.cs" />
