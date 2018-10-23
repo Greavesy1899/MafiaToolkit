@@ -307,6 +307,9 @@ namespace Mafia2
             private int unkSize;
             private byte[] unkSizeData;
 
+            private short[] unkShortSectorData;
+            private byte[] unkByteSectorData;
+
             public Section[] sections;
 
             public float UnkSmall {
@@ -428,6 +431,14 @@ namespace Mafia2
                 get { return unkSizeData; }
                 set { unkSizeData = value; }
             }
+            public short[] UnkShortSectorData {
+                get { return unkShortSectorData; }
+                set { unkShortSectorData = value; }
+            }
+            public byte[] UnkByteSectorData {
+                get { return unkByteSectorData; }
+                set { unkByteSectorData = value; }
+            }
 
             public MeshData(BinaryReader reader, Section[] sections)
             {
@@ -502,10 +513,12 @@ namespace Mafia2
 
                 if (overTri1)
                 {
-                    reader.BaseStream.Position += (nTriangles * 3);
-                    //int count = num5 - nTriangles;
-                    //count *= 3;
-                    //reader.BaseStream.Position -= count;
+                    unkShortSectorData = new short[nTriangles];
+
+                    for (int i = 0; i != nTriangles; i++)
+                        unkShortSectorData[i] = reader.ReadInt16();
+
+                    unkByteSectorData = reader.ReadBytes(nTriangles);
                 }
                 else
                 {
@@ -633,8 +646,10 @@ namespace Mafia2
 
                 if(overTri1)
                 {
-                    byte[] junkbytes = new byte[nTriangles * 3];
-                    writer.Write(junkbytes);
+                    for (int i = 0; i != nTriangles; i++)
+                        writer.Write(unkShortSectorData[i]);
+
+                    writer.Write(UnkByteSectorData);
                 }
                 else
                 {
