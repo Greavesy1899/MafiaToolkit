@@ -12,6 +12,7 @@ namespace Mafia2Tool
         {
             InitializeComponent();
             this.file = file;
+            Localise();
             Initialise();
         }
 
@@ -25,8 +26,23 @@ namespace Mafia2Tool
             TableData data = new TableData();
             using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
             {
-                data.Deserialize(reader);
+                data.Deserialize(0, reader.BaseStream, Gibbed.IO.Endian.Little);
             }
+
+            foreach(TableData.Column column in data.Columns)
+            {
+                DataGridViewColumn newCol = new DataGridViewColumn();
+                newCol.HeaderText = column.NameHash.ToString();
+                newCol.CellTemplate = new DataGridViewTextBoxCell();
+                DataGrid.Columns.Add(newCol);
+            }
+
+            foreach(TableData.Row row in data.Rows)
+            {
+                DataGrid.Rows.Add(row.Values.ToArray());
+            }
+
+            ShowDialog();
         }
     }
 }
