@@ -145,7 +145,7 @@ namespace Mafia2Tool
             nxsData.Sections[0] = new Collision.Section();
             nxsData.Sections[0].Unk2 = 13;
             nxsData.Sections[0].NumEdges = nxsData.Data.Triangles.Length * 3;
-            nxsData.Sections[0].EdgeData = new byte[nxsData.Sections[0].NumEdges];
+            //nxsData.Sections[0].EdgeData = new byte[nxsData.Sections[0].NumEdges];
             nxsData.Data.sections = nxsData.Sections;
 
             Collision.Placement placement = new Collision.Placement();

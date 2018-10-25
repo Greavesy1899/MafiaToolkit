@@ -471,7 +471,7 @@ namespace Mafia2
         Concrete,
         OBSOLETE_Glass_Break2,
         OBSOLETE_Glass_BulletProof,
-        OBSOLETE_Bushes_Trees,
+        Glass,
         OBSOLETE_Universal_Hard,
         OBSOLETE_Universal_Squashy,
         OBSOLETE_Person,

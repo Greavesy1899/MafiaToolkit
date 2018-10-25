@@ -21,8 +21,8 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		_getch();
 		exit(-1);
 	}
-	if (pElementNormal->GetMappingMode() != FbxGeometryElement::eByControlPoint) {
-		FBXSDK_printf("pElementNormal->GetMappingMode() did not equal eByControlPoint.. Cannot continue.\n");
+	if ((pElementNormal->GetMappingMode() <= FbxGeometryElement::eByControlPoint) && (pElementNormal->GetMappingMode() >= FbxGeometryElement::eByPolygonVertex)) {
+		FBXSDK_printf("pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex.. Cannot continue.\n");
 		_getch();
 		exit(-1);
 	}

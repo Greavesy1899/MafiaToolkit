@@ -317,6 +317,8 @@ namespace Mafia2Tool
                     return "Dynamic-Link Library";
                 case ".mtl":
                     return "Material Library";
+                case ".tbl":
+                    return "Table";
                 case "": //fix for content files.
                     return "File";
                 default:
@@ -363,6 +365,7 @@ namespace Mafia2Tool
             CutsceneFile cutscene;
             IOFxFile iofx;
             EmitterFile emitterFile;
+            TableEditor tTool;
 
             switch (item.SubItems[1].Text)
             {
@@ -395,6 +398,9 @@ namespace Mafia2Tool
                     return;
                 case "AEA":
                     emitterFile = new EmitterFile((FileInfo)item.Tag);
+                    return;
+                case "Table":
+                    tTool = new TableEditor((FileInfo)item.Tag);
                     return;
             }
         }

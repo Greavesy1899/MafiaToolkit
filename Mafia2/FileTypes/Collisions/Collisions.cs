@@ -224,19 +224,14 @@ namespace Mafia2
                 long pos2 = reader.BaseStream.Position;
 
                 reader.BaseStream.Position = pos;
-                //try
-                //{
-                    data = new MeshData(reader, sections);
-                //}
-                //catch(Exception ex)
-                //{
-                //    Console.WriteLine(ex.Message);
-                //}
+                data = new MeshData(reader, sections);
                 reader.BaseStream.Position = pos2;
+                Console.WriteLine("Passed Collision: {0}", hash);
             }
 
             public void WriteToFile(BinaryWriter writer)
             {
+                Console.WriteLine("saving :" + hash);
                 //quick check for bugs
                 if (data.Num2 == 3)
                 {
@@ -309,6 +304,7 @@ namespace Mafia2
 
             private short[] unkShortSectorData;
             private byte[] unkByteSectorData;
+            private byte[] unkByteAfterSectorData;
 
             public Section[] sections;
 
@@ -439,6 +435,14 @@ namespace Mafia2
                 get { return unkByteSectorData; }
                 set { unkByteSectorData = value; }
             }
+            public int Unk0 {
+                get { return unk0; }
+                set { unk0 = value; }
+            }
+            public int Unk1 {
+                get { return unk1; }
+                set { unk1 = value; }
+            }
 
             public MeshData(BinaryReader reader, Section[] sections)
             {
@@ -482,7 +486,7 @@ namespace Mafia2
                     unkShorts[i] = (CollisionMaterials)reader.ReadInt16();
                 }
 
-                bool overTri1 = false;
+                //bool overTri1 = false;
 
                 if (num2 == 3)
                 {
@@ -501,30 +505,57 @@ namespace Mafia2
                             unkBytes[i] = reader.ReadInt16();
                     }
 
-                    if (num5 != nTriangles - 1)
-                    {
-                        overTri1 = true;
-                    }
+                    //OLD METHOD::
+                    //if (num5 != nTriangles - 1)
+                    //{
+                    //    overTri1 = true;
+                    //}
                 }
 
 
                 unk0 = reader.ReadInt32();
                 unk1 = reader.ReadInt32();
+                long curPosition = reader.BaseStream.Position;
+                unkShortSectorData = new short[nTriangles];
 
-                if (overTri1)
+                for (int i = 0; i != nTriangles; i++)
+                    unkShortSectorData[i] = reader.ReadInt16();
+
+                unkByteSectorData = reader.ReadBytes(nTriangles);
+                long finalPosition = reader.BaseStream.Position;
+
+                int total = 0;
+
+                for(int i = 0; i != sections.Length; i++)
                 {
-                    unkShortSectorData = new short[nTriangles];
-
-                    for (int i = 0; i != nTriangles; i++)
-                        unkShortSectorData[i] = reader.ReadInt16();
-
-                    unkByteSectorData = reader.ReadBytes(nTriangles);
+                    total += sections[i].NumEdges;
                 }
-                else
+
+                if (total != nTriangles * 3)
                 {
-                    for (int i = 0; i != sections.Length; i++)
-                        sections[i].EdgeData = reader.ReadBytes(sections[i].NumEdges);
+                    Console.WriteLine("ERROR! total = {0} nTriangles*3 = {1}", total, nTriangles*3);
+
+                    if (total == num5 * 3)
+                        Console.WriteLine("But num5 would: total = {0} num5*3 = {1}", total, num5 * 3);
+                    else
+                        Console.WriteLine("ERROR! total = {0} num5*3 = {1}", total, num5 * 3);
                 }
+
+                //OLD METHOD:
+                //if (overTri1)
+                //{
+                //    unkShortSectorData = new short[nTriangles];
+
+                //    for (int i = 0; i != nTriangles; i++)
+                //        unkShortSectorData[i] = reader.ReadInt16();
+
+                //    unkByteSectorData = reader.ReadBytes(nTriangles);
+                //}
+                //else
+                //{
+                //    for (int i = 0; i != sections.Length; i++)
+                //        sections[i].EdgeData = reader.ReadBytes(sections[i].NumEdges);
+                //}
 
                 opcSize = reader.ReadInt32();
 
@@ -566,14 +597,6 @@ namespace Mafia2
                         hbmOffsetData = reader.ReadBytes(hbmOffset);
 
                     hbmNumRefs = reader.ReadInt32();
-                    //if (hbmNumRefs > 0)
-                    //{
-                    //    hbmMaxRefValue = reader.ReadInt32();
-                    //    hbmRefs = new short[hbmOffset];
-                    //    for (int i = 0; i != hbmRefs.Length; i++)
-                    //        hbmRefs[i] = reader.ReadInt16();
-                    //}
-                    //reader.ReadInt32(); //0?
                 }
 
                 hbmUnkFloats = new float[14];
@@ -594,7 +617,6 @@ namespace Mafia2
                 if (unkSize != nTriangles)
                     throw new FormatException("UnkSize does not equal nTriangles:");
 
-                Console.WriteLine("Passed Collision");
                 this.sections = sections;
             }
 
@@ -620,7 +642,7 @@ namespace Mafia2
                 for (int i = 0; i != unkShorts.Length; i++)
                     writer.Write((short)unkShorts[i]);
 
-                bool overTri1 = false;
+                //bool overTri1 = false;
 
                 if (num2 == 3)
                 {
@@ -635,28 +657,35 @@ namespace Mafia2
                             writer.Write(s);
                     }
 
-                    if (num5 != nTriangles - 1)
-                    {
-                        overTri1 = true;
-                    }
+                    //OLD METHOD::
+                    //if (num5 != nTriangles - 1)
+                    //{
+                    //    overTri1 = true;
+                    //}
                 }
 
                 writer.Write(unk0);
                 writer.Write(unk1);
 
-                if(overTri1)
-                {
-                    for (int i = 0; i != nTriangles; i++)
-                        writer.Write(unkShortSectorData[i]);
+                for (int i = 0; i != nTriangles; i++)
+                    writer.Write(unkShortSectorData[i]);
 
-                    writer.Write(UnkByteSectorData);
-                }
-                else
-                {
-                    //sections for 2 is 186811
-                    for (int i = 0; i != sections.Length; i++)
-                        writer.Write(sections[i].EdgeData);
-                }
+                writer.Write(UnkByteSectorData);
+
+                //OLD METHOD::
+                //if (overTri1)
+                //{
+                //    for (int i = 0; i != nTriangles; i++)
+                //        writer.Write(unkShortSectorData[i]);
+
+                //    writer.Write(UnkByteSectorData);
+                //}
+                //else
+                //{
+                //    //sections for 2 is 186811
+                //    for (int i = 0; i != sections.Length; i++)
+                //        writer.Write(sections[i].EdgeData);
+                //}
 
                 writer.Write(opcSize);
 
@@ -741,15 +770,18 @@ namespace Mafia2
                 //unk0 and unk1;
                 size += 8;
 
-                if (overTri1)
-                {
-                    size += (nTriangles * 3);
-                }
-                else
-                {
-                    for (int i = 0; i != sections.Length; i++)
-                        size += sections[i].NumEdges;
-                }
+                size += (nTriangles * 3);
+
+                //OLD
+                //if (overTri1)
+                //{
+                //    size += (nTriangles * 3);
+                //}
+                //else
+                //{
+                //    for (int i = 0; i != sections.Length; i++)
+                //        size += sections[i].NumEdges;
+                //}
 
                 //size, opc header, opc version and type.
                 size += 16;
