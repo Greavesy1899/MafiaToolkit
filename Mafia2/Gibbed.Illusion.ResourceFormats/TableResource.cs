@@ -33,7 +33,9 @@ namespace Gibbed.Mafia2.ResourceFormats
 
         public void Serialize(ushort version, Stream input, Endian endian)
         {
-            throw new NotImplementedException();
+            input.WriteValueU32((uint)Tables.Count);
+            for (int i = 0; i < Tables.Count; i++)
+                Tables[i].Serialize(version, input, endian);
         }
 
         public void Deserialize(ushort version, Stream input, Endian endian)

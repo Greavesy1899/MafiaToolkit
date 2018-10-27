@@ -936,28 +936,57 @@ namespace Gibbed.Mafia2.FileFormats
             if (!Directory.Exists(tableDIR + "/tables"))
                 Directory.CreateDirectory(tableDIR + "/tables");
 
-            foreach (TableData data in resource.Tables)
-                data.Serialize(entry.Version, File.Open(tableDIR + data.Name, FileMode.Create), Endian.Little);
+            resourceXML.WriteElementString("NumTables", resource.Tables.Count.ToString());
 
-            //todo extract individual tables.
-            name = "Tables" + ".tbl";
-            resourceXML.WriteElementString("File", name);
+            foreach (TableData data in resource.Tables)
+            {
+                data.Serialize(entry.Version, File.Open(tableDIR + data.Name, FileMode.Create), Endian.Little);
+                resourceXML.WriteElementString("Table", data.Name);
+            }
+
             return entry;
         }
         public ResourceEntry WriteTableEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
         {
+            TableResource resource = new TableResource();
+
+            //number of tables
             nodes.Current.MoveToNext();
-            string file = nodes.Current.Value;
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+            int count = int.Parse(nodes.Current.Value);
+
+            //read tables and add to resource.
+            for(int i = 0; i != count; i++)
             {
-                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-                entry.SlotRamRequired = ((uint)reader.BaseStream.Length + 128);
+                //goto next and read file name.
+                nodes.Current.MoveToNext();
+                string file = nodes.Current.Value;
+
+                //create file data.
+                TableData data = new TableData();
+
+                //now read..
+                using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + file, FileMode.Open)))
+                    data.Deserialize(0, reader.BaseStream, Endian.Little);
+
+                resource.Tables.Add(data);
             }
 
+            //create a temporary memory stream, merge all data and then fill entry data.
+            using (MemoryStream stream = new MemoryStream())
+            {
+                resource.Serialize(1, stream, Endian.Little);
+                entry.Data = stream.ToArray();
+                entry.SlotRamRequired = (uint)entry.Data.Length + 128;
+
+                using (BinaryWriter writer = new BinaryWriter(File.Open(sdsFolder + "/table.tbl", FileMode.Create)))
+                    writer.Write(entry.Data);
+            }
+
+            //get version, always 1?
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
 
-            descNode.InnerText = file.Remove(file.Length - 4, 4);
+            //fin.
             return entry;
         }
         public ResourceEntry WriteBufferEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)

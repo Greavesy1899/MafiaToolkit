@@ -22,7 +22,7 @@
 
 using System;
 using System.Collections.Generic;
-//using System.Drawing;
+using System.Drawing;
 using System.IO;
 using Gibbed.Illusion.FileFormats;
 using Gibbed.IO;
@@ -189,8 +189,9 @@ namespace Gibbed.Mafia2.ResourceFormats
                                     float r = data.ReadValueF32(endian);
                                     float g = data.ReadValueF32(endian);
                                     float b = data.ReadValueF32(endian);
+                                    Color color = Color.FromArgb((int)r, (int)g, (int)b);
                                     // TODO: de-stupidize this
-                                    row.Values.Add(string.Format("{0}, {1}, {2}", r, g, b));
+                                    row.Values.Add(color.ToString());
                                     break;
                                 }
 

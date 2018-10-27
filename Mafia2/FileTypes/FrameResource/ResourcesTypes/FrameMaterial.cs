@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Mafia2
@@ -122,7 +123,7 @@ namespace Mafia2
         }
         public string MaterialName {
             get { return materialName; }
-            set { materialName = value; }
+            set { SetName(value); }
         }
         public int Unk3 {
             get { return unk3; }
@@ -179,6 +180,16 @@ namespace Mafia2
             writer.Write(startIndex);
             writer.Write(materialHash);
             writer.Write(unk3);
+        }
+
+        /// <summary>
+        /// Set shader sampler name
+        /// </summary>
+        /// <param name="name"></param>
+        public void SetName(string name)
+        {
+            materialName = name;
+            materialHash = FNV64.Hash(name);
         }
 
         public override string ToString()

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Gibbed.Mafia2.ResourceFormats;
 using System.Windows.Forms;
+using System;
 
 namespace Mafia2Tool
 {
@@ -32,8 +33,23 @@ namespace Mafia2Tool
             foreach(TableData.Column column in data.Columns)
             {
                 DataGridViewColumn newCol = new DataGridViewColumn();
-                newCol.HeaderText = column.NameHash.ToString();
-                newCol.CellTemplate = new DataGridViewTextBoxCell();
+                newCol.HeaderText = column.NameHash.ToString("X8");
+
+                switch(column.Type)
+                {
+                    case TableData.ColumnType.Boolean:
+                        newCol.CellTemplate = new DataGridViewCheckBoxCell();
+                        break;
+                    case TableData.ColumnType.String16:
+                    case TableData.ColumnType.String32:
+                    case TableData.ColumnType.String64:
+                        newCol.CellTemplate = new DataGridViewTextBoxCell();
+                        break;
+                    default:
+                        newCol.CellTemplate = new DataGridViewTextBoxCell();
+                        break;
+                }
+                //newCol.CellTemplate = new DataGridViewTextBoxCell();
                 DataGrid.Columns.Add(newCol);
             }
 

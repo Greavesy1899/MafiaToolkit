@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -138,6 +139,10 @@ namespace Mafia2Tool
             else if (openM2T.FileName.ToLower().EndsWith(".fbx"))
                 colModel.ReadFromFbx(openM2T.FileName);
 
+            //crash happened/
+            if (colModel.Lods[0] == null)
+                return;
+
             Collision.NXSStruct nxsData = new Collision.NXSStruct();
             nxsData.Hash = (ulong)(Functions.RandomGenerator.Next() + Functions.RandomGenerator.Next());
             nxsData.Data.BuildBasicCollision(colModel.Lods[0]);
@@ -160,6 +165,33 @@ namespace Mafia2Tool
             SceneData.Collisions.Placements.Add(placement);
             treeView1.Nodes.Clear();
             LoadInCollision();
+        }
+
+        private void CollisionMaterialTest(object sender, System.EventArgs e)
+        {
+            if (treeView1.SelectedNode.Tag == null)
+                return;
+
+            if (treeView1.SelectedNode.Tag.GetType() != typeof(Collision.NXSStruct))
+                return;
+
+            Collision.NXSStruct data = (Collision.NXSStruct)treeView1.SelectedNode.Tag;
+            CollisionMaterials[] mats = data.Data.Materials;
+            List<CollisionMaterials> typeList = new List<CollisionMaterials>();
+            List<int> values = new List<int>();
+
+            for (int x = 0; x != mats.Length; x++)
+            {
+                if (!typeList.Contains(mats[x]))
+                {
+                    typeList.Add(mats[x]);
+                    values.Add(3);
+                }
+                else
+                {
+                    values[typeList.IndexOf(mats[x])] += 3;
+                }
+            }
         }
 
         /// <summary>
@@ -266,10 +298,10 @@ namespace Mafia2Tool
             }
         }
 
-        private void OnClickNode(object sender, TreeNodeMouseClickEventArgs e)
+        private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
         {
-            treeView1.SelectedNode = e.Node;
-            FrameResourceGrid.SelectedObject = treeView1.SelectedNode.Tag;
+            //treeView1.SelectedNode = e.Node;
+            FrameResourceGrid.SelectedObject = e.Node.Tag;
         }
     }
 }

@@ -141,7 +141,7 @@ namespace Mafia2
             {
                 position = new Vector3(reader);
                 rotation = new Vector3(reader);
-                //rotation.ConvertToDegrees();
+                rotation.ConvertToDegrees();
                 hash = reader.ReadUInt64();
                 unk4 = reader.ReadInt32();
                 unk5 = reader.ReadByte();
@@ -155,7 +155,7 @@ namespace Mafia2
             public void WriteToFile(BinaryWriter writer)
             {
                 position.WriteToFile(writer);
-                //rotation.ConvertToRadians();
+                rotation.ConvertToRadians();
                 rotation.WriteToFile(writer);
                 writer.Write(hash);
                 writer.Write(unk4);
@@ -283,28 +283,14 @@ namespace Mafia2
 
             int unk1;
 
-            private int opcSize; //possible.
-            private int opcVersion; //1
-            private int opcType; //if this is 4; there is no data. If 3, data is here.
-            private int opcCount; //only available if type is 3.
-            private UnkOPCData[] opcData; //8 halfs, with a long value.
-            private float[] opcFloats; //6 floats.
-            private int hbmVersion; //0
-            private int hbmOffset; //potentially opcCount+1;
-            private int hbmMaxOffset;
-            private byte[] hbmOffsetData;
-            private int hbmNumRefs;
-            private int hbmMaxRefValue;
-            private short[] hbmRefs;
-            private BoundingBox boundingBox;
-            private BoundingSphere boundingSphere;
-            private float[] hbmUnkFloats;
+            OPCDataClass opcData;
+            HBMDataClass hbmData;
+
             private int unkSize;
             private byte[] unkSizeData;
 
             private short[] unkShortSectorData;
             private byte[] unkByteSectorData;
-            private byte[] unkByteAfterSectorData;
 
             public Section[] sections;
 
@@ -354,70 +340,13 @@ namespace Mafia2
                 get { return unkBytes; }
                 set { unkBytes = value; }
             }
-            public int OPCSize {
-                get { return opcSize; }
-                set { opcSize = value; }
-            }
-            public int OPCVersion {
-                get { return opcVersion; }
-                set { opcVersion = value; }
-            }
-            public int OPCType {
-                get { return opcType; }
-                set { opcType = value; }
-            }
-            public int OPCCount {
-                get { return opcCount; }
-                set { opcCount = value; }
-            }
-            public UnkOPCData[] OPCData {
+            public OPCDataClass OPCData {
                 get { return opcData; }
                 set { opcData = value; }
             }
-            public float[] OPCFloats {
-                get { return opcFloats; }
-                set { opcFloats = value; }
-            }
-            public int HBMVersion {
-                get { return hbmVersion; }
-                set { hbmVersion = value; }
-            }
-            public int HBMOffset {
-                get { return hbmOffset; }
-                set { hbmOffset = value; }
-            }
-            public int HBMMaxOffset {
-                get { return hbmMaxOffset; }
-                set { hbmMaxOffset = value; }
-            }
-            public byte[] HBMOffsetData {
-                get { return hbmOffsetData; }
-                set { hbmOffsetData = value; }
-            }
-            public int HBMNumRefs {
-                get { return hbmNumRefs; }
-                set { hbmNumRefs = value; }
-            }
-            public int HBMMaxRefValue {
-                get { return hbmMaxRefValue; }
-                set { hbmMaxRefValue = value; }
-            }
-
-            public short[] HBMRefs {
-                get { return hbmRefs; }
-                set { hbmRefs = value; }
-            }
-            public float[] HBMUnkFloats {
-                get { return hbmUnkFloats; }
-                set { hbmUnkFloats = value; }
-            }
-            public BoundingBox BoundingBox {
-                get { return boundingBox; }
-                set { boundingBox = value; }
-            }
-            public BoundingSphere BoundingSphere {
-                get { return boundingSphere; }
-                set { boundingSphere = value; }
+            public HBMDataClass HBMData {
+                get { return hbmData; }
+                set { hbmData = value; }
             }
             public int UnkSize {
                 get { return unkSize; }
@@ -557,60 +486,9 @@ namespace Mafia2
                 //        sections[i].EdgeData = reader.ReadBytes(sections[i].NumEdges);
                 //}
 
-                opcSize = reader.ReadInt32();
-
-                //BEGIN OPC/HBM SECTION.
-                int opc = reader.ReadInt32();
-                if (opc != 21188687)
-                    throw new FormatException("Did not reach OPC correctly");
-
-                opcVersion = reader.ReadInt32();
-                opcType = reader.ReadInt32();
-
-                if (opcType == 3)
-                {
-                    opcCount = reader.ReadInt32();
-                    opcData = new UnkOPCData[opcCount];
-                    for (int i = 0; i != opcData.Length; i++)
-                        opcData[i] = new UnkOPCData(reader);
-
-                    opcFloats = new float[6];
-                    for (int i = 0; i != 6; i++)
-                        opcFloats[i] = reader.ReadSingle();
-                }
-
-                int hbm = reader.ReadInt32();
-                if (hbm != 21840456)
-                    throw new FormatException("Did not reach HBM correctly");
-
-                hbmVersion = reader.ReadInt32();
-                hbmOffset = reader.ReadInt32();
-                hbmMaxOffset = reader.ReadInt32(); //max num in offset;
-
-                if (hbmOffset > 1)
-                {
-                    if (hbmMaxOffset > byte.MaxValue && hbmMaxOffset < ushort.MaxValue)
-                        hbmOffsetData = reader.ReadBytes(hbmOffset * 2);
-                    else if (hbmMaxOffset > ushort.MaxValue)
-                        hbmOffsetData = reader.ReadBytes(hbmOffset * 4);
-                    else
-                        hbmOffsetData = reader.ReadBytes(hbmOffset);
-
-                    hbmNumRefs = reader.ReadInt32();
-                }
-
-                hbmUnkFloats = new float[14];
-                hbmUnkFloats[0] = reader.ReadSingle();
-
-                boundingSphere = new BoundingSphere();
-                boundingSphere.ReadToFile(reader);
-
-                boundingBox = new BoundingBox();
-                boundingBox.ReadToFile(reader);
-
-                for (int i = 1; i != hbmUnkFloats.Length; i++)
-                    hbmUnkFloats[i] = reader.ReadSingle();
-
+                opcData = new OPCDataClass(reader);
+                hbmData = new HBMDataClass(reader);
+ 
                 unkSize = reader.ReadInt32();
                 unkSizeData = reader.ReadBytes(unkSize);
 
@@ -619,7 +497,6 @@ namespace Mafia2
 
                 this.sections = sections;
             }
-
             public void WriteToFile(BinaryWriter writer)
             {
                 writer.Write(22239310);
@@ -687,50 +564,12 @@ namespace Mafia2
                 //        writer.Write(sections[i].EdgeData);
                 //}
 
-                writer.Write(opcSize);
-
-                //BEGIN OPC/HBM SECTION.
-                writer.Write(21188687);
-
-                writer.Write(opcVersion);
-                writer.Write(opcType);
-
-                if (opcType == 3)
-                {
-                    writer.Write(opcCount);
-                    for (int i = 0; i != opcData.Length; i++)
-                        opcData[i].WriteToFile(writer);
-
-                    for (int i = 0; i != 6; i++)
-                        writer.Write(opcFloats[i]);
-                }
-                writer.Write(21840456);
-
-                writer.Write(hbmVersion);
-                writer.Write(hbmOffset);
-                writer.Write(hbmMaxOffset);
-
-                if (hbmOffset > 1)
-                {
-                    writer.Write(hbmOffsetData);
-                    writer.Write(hbmNumRefs);
-
-                    if (hbmNumRefs != 0)
-                        throw new NotImplementedException();
-                }
-
-                writer.Write(hbmUnkFloats[0]);
-
-                boundingSphere.WriteToFile(writer);
-                boundingBox.WriteToFile(writer);
-
-                for (int i = 1; i != hbmUnkFloats.Length; i++)
-                    writer.Write(hbmUnkFloats[i]);
+                opcData.WriteToFile(writer);
+                hbmData.WriteToFile(writer);
 
                 writer.Write(unkSize);
-                writer.Write(new byte[unkSize]);
+                writer.Write(unkSizeData);
             }
-
             public int GetMeshSize()
             {
                 int size = 0;
@@ -783,41 +622,13 @@ namespace Mafia2
                 //        size += sections[i].NumEdges;
                 //}
 
-                //size, opc header, opc version and type.
-                size += 16;
-
-                if (opcType == 3)
-                {
-                    size += 4;
-
-                    for (int i = 0; i != opcData.Length; i++)
-                        size += 20;
-
-                    for (int i = 0; i != 6; i++)
-                        size += 4;
-                }
-
-                //HBM header, version, offset and maxoffset;
-                size += 16;
-
-                if (hbmOffset > 1)
-                {
-                    size += hbmOffsetData.Length;
-
-                    size += 4;
-                    if (hbmNumRefs != 0)
-                        throw new NotImplementedException();
-                }
-
-                for (int i = 0; i != 24; i++)
-                    size += 4;
+                opcData.GetSize(ref size);
+                hbmData.GetSize(ref size);
 
                 size += 4;
                 size += unkSize;
                 return size;
-
             }
-
             public void BuildBasicCollision(Lod model)
             {
                 nxs = Convert.ToString(22239310);
@@ -856,35 +667,27 @@ namespace Mafia2
                 unk0 = 1;
                 unk1 = 1;
 
-                opcSize = 28;
+                unkShortSectorData = new short[nTriangles];
+                unkByteSectorData = new byte[nTriangles];
 
-                //BEGIN OPC/HBM SECTION.
-                string opc = Convert.ToString(21188687);
+                opcData = new OPCDataClass();
+                opcData.BuildBasicOPC();
+                hbmData = new HBMDataClass();
+                hbmData.BuildBasicHBM();
 
-                opcVersion = 1;
-                opcType = 4;
-
-                string hbm = Convert.ToString(21840456);
-
-                hbmVersion = 0;
-                hbmOffset = 1;
-                hbmMaxOffset = 0;
-
-                //handle bounding data..
+                //sort out bounding box/sphere
                 List<Vertex[]> data = new List<Vertex[]>();
                 data.Add(model.Vertices);
-                boundingBox = new BoundingBox();
-                boundingBox.CalculateBounds(data);
-                boundingSphere.CreateFromBoundingBox(boundingBox);
-
-                hbmUnkFloats = new float[14];
+                hbmData.BoundingBox = new BoundingBox();
+                hbmData.BoundingSphere = new BoundingSphere(new Vector3(0), 0);
+                hbmData.BoundingBox.CalculateBounds(data);
+                hbmData.UpdateSphereBounds();
 
                 unkSize = nTriangles;
                 unkSizeData = new byte[unkSize];
                 for (int i = 0; i != unkSizeData.Length; i++)
                     unkSizeData[i] = 26;
             }
-
             private CollisionMaterials ConvertCollisionMats(string name)
             {
                 name = name.ToLower();
@@ -909,59 +712,344 @@ namespace Mafia2
                 }
             }
 
-            public struct UnkOPCData
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class OPCDataClass
             {
-                private short[] unkHalfs;
-                private float[] unkFloats1;
-                private float[] unkFloats2;
-                private int unkInt;
+                private int opcSize; //possible.
+                private int opcVersion; //1
+                private int opcType; //if this is 4; there is no data. If 3, data is here.
+                private int opcCount; //only available if type is 3.
+                private UnkOPCData[] opcData; //8 halfs, with a long value.
+                private float[] opcFloats; //6 floats.
 
-                public short[] UnkHalfs {
-                    get { return unkHalfs; }
-                    set { unkHalfs = value; }
+                public int OPCSize {
+                    get { return opcSize; }
+                    set { opcSize = value; }
                 }
-                public float[] UnkFloats1 {
-                    get { return unkFloats1; }
-                    set { unkFloats1 = value; }
+                public int OPCVersion {
+                    get { return opcVersion; }
+                    set { opcVersion = value; }
                 }
-                public float[] UnkFloats2 {
-                    get { return unkFloats2; }
-                    set { unkFloats2 = value; }
+                public int OPCType {
+                    get { return opcType; }
+                    set { opcType = value; }
                 }
-                public int UnkInt {
-                    get { return unkInt; }
-                    set { unkInt = value; }
+                public int OPCCount {
+                    get { return opcCount; }
+                    set { opcCount = value; }
+                }
+                public UnkOPCData[] unkOPCData {
+                    get { return opcData; }
+                    set { opcData = value; }
+                }
+                public float[] OPCFloats {
+                    get { return opcFloats; }
+                    set { opcFloats = value; }
                 }
 
-                public UnkOPCData(BinaryReader reader)
+                public OPCDataClass(BinaryReader reader)
                 {
-                    unkHalfs = new short[8];
-                    unkFloats1 = new float[8];
-                    unkFloats2 = new float[8];
-
-                    for (int i = 0; i != unkHalfs.Length; i++)
-                    {
-                        unkHalfs[i] = reader.ReadInt16();
-                    }
-
-                    unkInt = reader.ReadInt32();
-
-                    for(int i = 0; i != unkHalfs.Length; i++)
-                    {
-                        if (unkInt != 0 && unkHalfs[i] != 0)
-                        {
-                            unkFloats1[i] = unkHalfs[i] / unkInt;
-                            unkFloats2[i] = unkInt / unkHalfs[i];
-                        }
-                    }
+                    ReadFromFile(reader);
                 }
 
+                public OPCDataClass()
+                {
+                }
+
+                public void ReadFromFile(BinaryReader reader)
+                {
+                    opcSize = reader.ReadInt32();
+
+                    //BEGIN OPC/HBM SECTION.
+                    int opc = reader.ReadInt32();
+                    if (opc != 21188687)
+                        throw new FormatException("Did not reach OPC correctly");
+
+                    opcVersion = reader.ReadInt32();
+                    opcType = reader.ReadInt32();
+
+                    if (opcType == 3)
+                    {
+                        opcCount = reader.ReadInt32();
+                        opcData = new UnkOPCData[opcCount];
+                        for (int i = 0; i != opcData.Length; i++)
+                            opcData[i] = new UnkOPCData(reader);
+
+                        opcFloats = new float[6];
+                        for (int i = 0; i != 6; i++)
+                            opcFloats[i] = reader.ReadSingle();
+                    }
+                }
                 public void WriteToFile(BinaryWriter writer)
                 {
-                    for (int i = 0; i != unkHalfs.Length; i++)
-                        writer.Write(unkHalfs[i]);
+                    writer.Write(opcSize);
 
-                    writer.Write(unkInt);
+                    //BEGIN OPC/HBM SECTION.
+                    writer.Write(21188687);
+
+                    writer.Write(opcVersion);
+                    writer.Write(opcType);
+
+                    if (opcType == 3)
+                    {
+                        writer.Write(opcCount);
+                        for (int i = 0; i != opcData.Length; i++)
+                            opcData[i].WriteToFile(writer);
+
+                        for (int i = 0; i != 6; i++)
+                            writer.Write(opcFloats[i]);
+                    }
+                }
+                public void BuildBasicOPC()
+                {
+                    opcSize = 28;
+
+                    //BEGIN OPC/HBM SECTION.
+                    string opc = Convert.ToString(21188687);
+
+                    opcVersion = 1;
+                    opcType = 4;
+                }
+                public void GetSize(ref int size)
+                {
+                    //size, opc header, opc version and type.
+                    size += 16;
+
+                    if (opcType == 3)
+                    {
+                        size += 4;
+
+                        for (int i = 0; i != opcData.Length; i++)
+                            size += 20;
+
+                        for (int i = 0; i != 6; i++)
+                            size += 4;
+                    }
+                }
+                public override string ToString()
+                {
+                    return "OPC Data";
+                }
+
+                public struct UnkOPCData
+                {
+                    private short[] unkHalfs;
+                    private float[] unkFloats1;
+                    private float[] unkFloats2;
+                    private int unkInt;
+
+                    public short[] UnkHalfs {
+                        get { return unkHalfs; }
+                        set { unkHalfs = value; }
+                    }
+                    public float[] UnkFloats1 {
+                        get { return unkFloats1; }
+                        set { unkFloats1 = value; }
+                    }
+                    public float[] UnkFloats2 {
+                        get { return unkFloats2; }
+                        set { unkFloats2 = value; }
+                    }
+                    public int UnkInt {
+                        get { return unkInt; }
+                        set { unkInt = value; }
+                    }
+
+                    public UnkOPCData(BinaryReader reader)
+                    {
+                        unkHalfs = new short[8];
+                        unkFloats1 = new float[8];
+                        unkFloats2 = new float[8];
+
+                        for (int i = 0; i != unkHalfs.Length; i++)
+                        {
+                            unkHalfs[i] = reader.ReadInt16();
+                        }
+
+                        unkInt = reader.ReadInt32();
+
+                        for (int i = 0; i != unkHalfs.Length; i++)
+                        {
+                            if (unkInt != 0 && unkHalfs[i] != 0)
+                            {
+                                unkFloats1[i] = unkHalfs[i] / unkInt;
+                                unkFloats2[i] = unkInt / unkHalfs[i];
+                            }
+                        }
+                    }
+                    public void WriteToFile(BinaryWriter writer)
+                    {
+                        for (int i = 0; i != unkHalfs.Length; i++)
+                            writer.Write(unkHalfs[i]);
+
+                        writer.Write(unkInt);
+                    }
+                    public override string ToString()
+                    {
+                        return "UnkOPCData";
+                    }
+                }
+            }
+
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class HBMDataClass
+            {
+                private int hbmVersion; //0
+                private int hbmOffset; //potentially opcCount+1;
+                private int hbmMaxOffset;
+                private byte[] hbmOffsetData;
+                private int hbmNumRefs;
+                private int hbmMaxRefValue;
+                private short[] hbmRefs;
+                private BoundingBox boundingBox;
+                private BoundingSphere boundingSphere;
+                private float[] hbmUnkFloats;
+
+                public int HBMVersion {
+                    get { return hbmVersion; }
+                    set { hbmVersion = value; }
+                }
+                public int HBMOffset {
+                    get { return hbmOffset; }
+                    set { hbmOffset = value; }
+                }
+                public int HBMMaxOffset {
+                    get { return hbmMaxOffset; }
+                    set { hbmMaxOffset = value; }
+                }
+                public byte[] HBMOffsetData {
+                    get { return hbmOffsetData; }
+                    set { hbmOffsetData = value; }
+                }
+                public int HBMNumRefs {
+                    get { return hbmNumRefs; }
+                    set { hbmNumRefs = value; }
+                }
+                public int HBMMaxRefValue {
+                    get { return hbmMaxRefValue; }
+                    set { hbmMaxRefValue = value; }
+                }
+                public short[] HBMRefs {
+                    get { return hbmRefs; }
+                    set { hbmRefs = value; }
+                }
+                public float[] HBMUnkFloats {
+                    get { return hbmUnkFloats; }
+                    set { hbmUnkFloats = value; }
+                }
+                public BoundingBox BoundingBox {
+                    get { return boundingBox; }
+                    set { boundingBox = value; }
+                }
+                public BoundingSphere BoundingSphere {
+                    get { return boundingSphere; }
+                    set { boundingSphere = value; }
+                }
+
+                public HBMDataClass(BinaryReader reader)
+                {
+                    ReadFromFile(reader);
+                }
+
+                public HBMDataClass()
+                {
+                }
+
+                public void ReadFromFile(BinaryReader reader)
+                {
+                    int hbm = reader.ReadInt32();
+                    if (hbm != 21840456)
+                        throw new FormatException("Did not reach HBM correctly");
+
+                    hbmVersion = reader.ReadInt32();
+                    hbmOffset = reader.ReadInt32();
+                    hbmMaxOffset = reader.ReadInt32(); //max num in offset;
+
+                    if (hbmOffset > 1)
+                    {
+                        if (hbmMaxOffset > byte.MaxValue && hbmMaxOffset < ushort.MaxValue)
+                            hbmOffsetData = reader.ReadBytes(hbmOffset * 2);
+                        else if (hbmMaxOffset > ushort.MaxValue)
+                            hbmOffsetData = reader.ReadBytes(hbmOffset * 4);
+                        else
+                            hbmOffsetData = reader.ReadBytes(hbmOffset);
+
+                        hbmNumRefs = reader.ReadInt32();
+                    }
+
+                    hbmUnkFloats = new float[14];
+                    hbmUnkFloats[0] = reader.ReadSingle();
+
+                    boundingSphere = new BoundingSphere();
+                    boundingSphere.ReadToFile(reader);
+
+                    boundingBox = new BoundingBox();
+                    boundingBox.ReadToFile(reader);
+
+                    for (int i = 1; i != hbmUnkFloats.Length; i++)
+                        hbmUnkFloats[i] = reader.ReadSingle();
+                }
+                public void WriteToFile(BinaryWriter writer)
+                {
+                    writer.Write(21840456);
+
+                    writer.Write(hbmVersion);
+                    writer.Write(hbmOffset);
+                    writer.Write(hbmMaxOffset);
+
+                    if (hbmOffset > 1)
+                    {
+                        writer.Write(hbmOffsetData);
+                        writer.Write(hbmNumRefs);
+
+                        if (hbmNumRefs != 0)
+                            throw new NotImplementedException();
+                    }
+
+                    writer.Write(hbmUnkFloats[0]);
+
+                    boundingSphere.WriteToFile(writer);
+                    boundingBox.WriteToFile(writer);
+
+                    for (int i = 1; i != hbmUnkFloats.Length; i++)
+                        writer.Write(hbmUnkFloats[i]);
+                }
+                public void BuildBasicHBM()
+                {
+                    string hbm = Convert.ToString(21840456);
+
+                    hbmVersion = 0;
+                    hbmOffset = 1;
+                    hbmMaxOffset = 0;
+
+                    boundingBox = new BoundingBox();
+
+                    hbmUnkFloats = new float[14];
+                }
+                public void UpdateSphereBounds()
+                {
+                    boundingSphere.CreateFromBoundingBox(boundingBox);
+                }
+                public void GetSize(ref int size)
+                {
+                    //HBM header, version, offset and maxoffset;
+                    size += 16;
+
+                    if (hbmOffset > 1)
+                    {
+                        size += hbmOffsetData.Length;
+
+                        size += 4;
+                        if (hbmNumRefs != 0)
+                            throw new NotImplementedException();
+                    }
+
+                    for (int i = 0; i != 24; i++)
+                        size += 4;
+                }
+                public override string ToString()
+                {
+                    return "HBM Data";
                 }
             }
         }

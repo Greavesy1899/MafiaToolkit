@@ -7,12 +7,12 @@ This toolkit is a group of programs a plugin for 3DS max and the library, which 
 - Open, edit and save 'FrameResource_X' files.
 - Open, edit and save 'FrameNameTable_X' data.
 - Open, edit and save 'defaultXX.mtl'. (Material Libraries)
-- WIP program to open 'Collision_X.bin' data.
+- WIP program to open and save 'Collision_X.bin' data.
 - WIP parsing of 'Actor_X.bin' files.
-- WIP model exporting and re-importing into the game.
+- WIP parsing of "Prefab_X.bin" files.
+- WIP model conversion to FBX, allowing importing and exporting.
 - WIP 'ItemDesc_X' parser, editor and saving.
 - WIP 'Navigation' data parsing.
-- WIP 'PREFAB' data parsing.
 - WIP 'SoundSector' data parsing.
 - WIP 3DS plugin to hopefully help modding the 3D data of Mafia.
 - WIP XML Parsing and saving.

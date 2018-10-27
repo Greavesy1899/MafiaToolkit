@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -9,7 +8,18 @@ using System.Windows.Forms.Design;
 
 namespace Mafia2
 {
-
+    public class DataGridViewRGBBox : DataGridViewButtonCell
+    {
+        protected override bool SetValue(int rowIndex, object value)
+        {
+            return base.SetValue(rowIndex, value);
+        }
+        protected override void Paint(Graphics graphics, Rectangle clipBounds, Rectangle cellBounds, int rowIndex, DataGridViewElementStates cellState, object value, object formattedValue, string errorText, DataGridViewCellStyle cellStyle, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewPaintParts paintParts)
+        {
+            base.Paint(graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
+            
+        }
+    }
     public class FlagCheckedListBox : CheckedListBox
     {
         private System.ComponentModel.Container components = null;

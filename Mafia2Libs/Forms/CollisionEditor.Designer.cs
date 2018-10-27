@@ -44,6 +44,7 @@
             this.toolsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.addButton = new System.Windows.Forms.ToolStripMenuItem();
             this.addNewPlacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dEBUGCOLLISIONREPORTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CollisionContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -68,7 +69,7 @@
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(368, 410);
             this.treeView1.TabIndex = 11;
-            this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.OnClickNode);
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
             // 
             // CollisionContext
             // 
@@ -148,7 +149,8 @@
             this.toolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addButton,
-            this.addNewPlacementToolStripMenuItem});
+            this.addNewPlacementToolStripMenuItem,
+            this.dEBUGCOLLISIONREPORTToolStripMenuItem});
             this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
             this.toolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolsButton.Name = "toolsButton";
@@ -158,15 +160,22 @@
             // addButton
             // 
             this.addButton.Name = "addButton";
-            this.addButton.Size = new System.Drawing.Size(182, 22);
+            this.addButton.Size = new System.Drawing.Size(218, 22);
             this.addButton.Text = "Add Collision Model";
             this.addButton.Click += new System.EventHandler(this.AddCollisionModel);
             // 
             // addNewPlacementToolStripMenuItem
             // 
             this.addNewPlacementToolStripMenuItem.Name = "addNewPlacementToolStripMenuItem";
-            this.addNewPlacementToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.addNewPlacementToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
             this.addNewPlacementToolStripMenuItem.Text = "Add New Placement";
+            // 
+            // dEBUGCOLLISIONREPORTToolStripMenuItem
+            // 
+            this.dEBUGCOLLISIONREPORTToolStripMenuItem.Name = "dEBUGCOLLISIONREPORTToolStripMenuItem";
+            this.dEBUGCOLLISIONREPORTToolStripMenuItem.Size = new System.Drawing.Size(218, 22);
+            this.dEBUGCOLLISIONREPORTToolStripMenuItem.Text = "DEBUG COLLISION REPORT";
+            this.dEBUGCOLLISIONREPORTToolStripMenuItem.Click += new System.EventHandler(this.CollisionMaterialTest);
             // 
             // CollisionEditor
             // 
@@ -204,5 +213,6 @@
         private System.Windows.Forms.ContextMenuStrip CollisionContext;
         private System.Windows.Forms.ToolStripMenuItem ContextDelete;
         private System.Windows.Forms.ToolStripMenuItem deletePlacementToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dEBUGCOLLISIONREPORTToolStripMenuItem;
     }
 }
