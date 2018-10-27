@@ -60,17 +60,17 @@ namespace Gibbed.Mafia2.ResourceFormats
         /// Deserialize resource using passed bytes.
         /// </summary>
         /// <param name="data"></param>
-        public void Deserialize(byte[] data)
+        public void Deserialize(byte[] data, Endian endian)
         {
             MemoryStream input = new MemoryStream(data);
 
-            this.Name = input.ReadStringU32(Endian.Little);
-            this.Unk1 = input.ReadValueU32();
+            this.Name = input.ReadStringU32(endian);
+            this.Unk1 = input.ReadValueU32(endian);
             if (this.Unk1 != 1)
             {
                 throw new InvalidOperationException();
             }
-            uint size = input.ReadValueU32();
+            uint size = input.ReadValueU32(endian);
             this.Data = input.ReadBytes((int)size);
         }
     }

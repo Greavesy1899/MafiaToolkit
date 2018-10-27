@@ -22,6 +22,10 @@ namespace Mafia2Tool
         private void Localise()
         {
             Text = Language.GetString("$SPEECH_EDITOR_TITLE");
+            fileToolButton.Text = Language.GetString("$FILE");
+            saveToolStripMenuItem.Text = Language.GetString("$SAVE");
+            reloadToolStripMenuItem.Text = Language.GetString("$RELOAD");
+            exitToolStripMenuItem.Text = Language.GetString("$EXIT");
         }
 
         private void BuildData()

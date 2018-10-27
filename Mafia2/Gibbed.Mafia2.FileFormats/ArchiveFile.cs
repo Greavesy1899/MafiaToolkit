@@ -735,7 +735,7 @@ namespace Gibbed.Mafia2.FileFormats
         public void ReadScriptEntry(ResourceEntry entry, XmlWriter resourceXML, string scriptDir)
         {
             ScriptResource resource = new ScriptResource();
-            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), _Endian);
             resourceXML.WriteElementString("File", resource.Path);
             resourceXML.WriteElementString("ScriptNum", resource.Scripts.Count.ToString());
             for (int x = 0; x != resource.Scripts.Count; x++)
@@ -914,7 +914,7 @@ namespace Gibbed.Mafia2.FileFormats
         public void ReadMemEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string memDIR)
         {
             MemFileResource resource = new MemFileResource();
-            resource.Deserialize(entry.Data);
+            resource.Deserialize(entry.Data, _Endian);
             entry.Data = resource.Data;
 
             string[] dirs = name.Split('/');

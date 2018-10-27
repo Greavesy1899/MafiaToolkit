@@ -100,6 +100,7 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.DataGrid);
             this.Controls.Add(this.toolStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TableEditor";
             this.Text = "TableEditor";
             this.toolStrip1.ResumeLayout(false);
