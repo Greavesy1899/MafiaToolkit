@@ -139,6 +139,12 @@
     <Compile Include="AdditionalControls\NewObjectWindow.Designer.cs">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\SpeechEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SpeechEditor.Designer.cs">
+      <DependentUpon>SpeechEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\CollisionEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -292,6 +298,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AdditionalControls\NewObjectWindow.resx">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SpeechEditor.resx">
+      <DependentUpon>SpeechEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CollisionEditor.resx">
       <DependentUpon>CollisionEditor.cs</DependentUpon>

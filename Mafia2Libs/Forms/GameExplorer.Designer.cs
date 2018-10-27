@@ -413,7 +413,7 @@ namespace Mafia2Tool
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
             this.optionsToolStripMenuItem.Text = "$OPTIONS";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 
@@ -466,6 +466,7 @@ namespace Mafia2Tool
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GameExplorer";
             this.Text = "$MII_TK_GAME_EXPLORER";
+            this.Activated += new System.EventHandler(this.OnActivate);
             this.Load += new System.EventHandler(this.toolStrip1_Resize);
             this.mainContainer.Panel1.ResumeLayout(false);
             this.mainContainer.Panel2.ResumeLayout(false);

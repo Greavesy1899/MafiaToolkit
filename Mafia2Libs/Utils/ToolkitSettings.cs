@@ -10,8 +10,6 @@ namespace Mafia2Tool
 
         //Directories keys;
         public static string M2Directory;
-        [Obsolete]
-        public static string MaterialDirectory;
 
         //Discord keys;
         public static bool DiscordEnabled;

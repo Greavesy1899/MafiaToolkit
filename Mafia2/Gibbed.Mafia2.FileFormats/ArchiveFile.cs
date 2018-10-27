@@ -441,21 +441,47 @@ namespace Gibbed.Mafia2.FileFormats
         {
             //get resources names...
             List<string> itemNames = new List<string>();
+            XPathDocument doc = null;
+
             if (string.IsNullOrEmpty(ResourceInfoXml) == false)
             {
                 using (var reader = new StringReader(ResourceInfoXml))
-                {
-                    var doc = new XPathDocument(reader);
-                    var nav = doc.CreateNavigator();
-                    var nodes = nav.Select("/xml/ResourceInfo/SourceDataDescription");
-                    while (nodes.MoveNext() == true)
-                    {
-                        itemNames.Add(nodes.Current.Value);
-                    }
-                    Log.WriteLine("Found all items; count is " + nodes.Count);
-                }
+                    doc = new XPathDocument(reader);
             }
             else
+            {
+                int type = 0;
+                for(int i = 0; i != ResourceTypes.Count; i++)
+                {
+                    if (ResourceTypes[i].Name == "")
+                        type = (int)ResourceTypes[i].Id;                   
+                }
+
+                for(int i = 0; i < ResourceEntries.Count; i++)
+                {
+                    if(ResourceEntries[i].TypeId == type)
+                    {
+                        using (var reader = new StringReader(Encoding.UTF8.GetString(ResourceEntries[i].Data).Remove(0, 27)))
+                        {
+                            doc = new XPathDocument(reader);
+                        }
+
+                        ResourceEntries.RemoveAt(i);
+                        ResourceTypes.RemoveAt(type);
+                    }
+                }
+            }
+
+            var nav = doc.CreateNavigator();
+            var nodes = nav.Select("/xml/ResourceInfo/SourceDataDescription");
+            while (nodes.MoveNext() == true)
+            {
+                itemNames.Add(nodes.Current.Value);
+            }
+            Log.WriteLine("Found all items; count is " + nodes.Count);
+
+
+            if (itemNames.Count == 0)
             {
                 //Fix for friends for life SDS files.
                 MessageBox.Show("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -487,6 +513,7 @@ namespace Gibbed.Mafia2.FileFormats
             for (int i = 0; i != ResourceEntries.Count; i++)
             {
                 ResourceEntry entry = ResourceEntries[i];
+
                 resourceXML.WriteStartElement("ResourceEntry");
                 resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
                 string saveName = "";

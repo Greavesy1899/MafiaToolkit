@@ -24,7 +24,7 @@ namespace Mafia2Tool
         public void LoadForm()
         {
             toolStrip1_Resize(this, null);
-            Localise();
+            Localise();            
             infoText.Text = "Loading..";
             BuildTreeView();
             infoText.Text = "Ready..";
@@ -361,7 +361,7 @@ namespace Mafia2Tool
             FrameResourceTool fTool;
             CollisionEditor cTool;
             //TODO: Build editor for speech.
-            Speech speech;
+            SpeechEditor sTool;
             CutsceneFile cutscene;
             IOFxFile iofx;
             EmitterFile emitterFile;
@@ -376,7 +376,7 @@ namespace Mafia2Tool
                     mTool = new MaterialTool((FileInfo)item.Tag);
                     return;
                 case "Speech Data":
-                    speech = new Speech((FileInfo)item.Tag);
+                    sTool = new SpeechEditor((FileInfo)item.Tag);
                     return;
                 case "CUT":
                     //cutscene = new CutsceneFile((FileInfo)item.Tag);
@@ -544,6 +544,11 @@ namespace Mafia2Tool
                     fileListView.View = View.Tile;
                     break;
             }
+        }
+
+        private void OnActivate(object sender, EventArgs e)
+        {
+            //not doing anything for now.
         }
     }
 }

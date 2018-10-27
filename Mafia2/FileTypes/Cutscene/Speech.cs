@@ -8,9 +8,18 @@ namespace Mafia2
         int fileversion = 2; //probably a reference to file version; xml is also 2;
         int fileversion2 = 2; //another one though?
         int numSpeechTypes; //num of first set of data.
-        SpeechType[] speechTypes;
+        SpeechTypeData[] speechTypes;
         int numSpeechItems; //num of second set of data.
-        SpeechItem[] speechItems;
+        SpeechItemData[] speechItems;
+
+        public SpeechTypeData[] SpeechTypes {
+            get { return speechTypes; }
+            set { speechTypes = value; }
+        }
+        public SpeechItemData[] SpeechItems {
+            get { return speechItems; }
+            set { speechItems = value; }
+        }
 
         public Speech(BinaryReader reader)
         {
@@ -21,7 +30,7 @@ namespace Mafia2
         {
             using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
             {
-                Speech speech = new Speech(reader);
+                ReadFromFile(reader);
             }
         }
 
@@ -34,17 +43,17 @@ namespace Mafia2
                 throw new Exception("Error: Int 2 did not equal 2.");
 
             numSpeechTypes = reader.ReadInt32();
-            speechTypes = new SpeechType[numSpeechTypes];
+            speechTypes = new SpeechTypeData[numSpeechTypes];
             numSpeechItems = reader.ReadInt32();
-            speechItems = new SpeechItem[numSpeechItems];
+            speechItems = new SpeechItemData[numSpeechItems];
 
             for (int i = 0; i != speechTypes.Length; i++)
-                speechTypes[i] = new SpeechType(reader);
+                speechTypes[i] = new SpeechTypeData(reader);
             for (int i = 0; i != speechItems.Length; i++)
-                speechItems[i] = new SpeechItem(reader);
+                speechItems[i] = new SpeechItemData(reader);
         }
 
-        public class SpeechType
+        public class SpeechTypeData
         {
             int unk0; //possible hash in int32.
             string entityType; //int32 for string size;
@@ -52,7 +61,28 @@ namespace Mafia2
             string folder; //int32 for string size;
             byte[] unkBytes; //20 bytes; sometimes all empty or sometimes used.
 
-            public SpeechType(BinaryReader reader)
+            public int Unk0 {
+                get { return unk0; }
+                set { unk0 = value; }
+            }
+            public string EntityType {
+                get { return entityType; }
+                set { entityType = value; }
+            }
+            public string SpeechType {
+                get { return speechType; }
+                set { speechType = value; }
+            }
+            public string Folder {
+                get { return folder; }
+                set { folder = value; }
+            }
+            public byte[] UnkBytes {
+                get { return unkBytes; }
+                set { unkBytes = value; }
+            }
+
+            public SpeechTypeData(BinaryReader reader)
             {
                 ReadFromFile(reader);
             }
@@ -81,7 +111,7 @@ namespace Mafia2
             }
         }
 
-        public class SpeechItem
+        public class SpeechItemData
         {
             int unk0; //another hash maybe; int32;
             long unk1; //8 bytes; possible padding or flags.
@@ -90,7 +120,32 @@ namespace Mafia2
             int unk3;
             byte[] unkBytes; //12 empty bytes in spvito;
 
-            public SpeechItem(BinaryReader reader)
+            public int Unk0 {
+                get { return unk0; }
+                set { unk0 = value; }
+            }
+            public long Unk1 {
+                get { return unk1; }
+                set { unk1 = value; }
+            }
+            public int Unk2 {
+                get { return unk2; }
+                set { unk2 = value; }
+            }
+            public string ItemName {
+                get { return itemName; }
+                set { itemName = value; }
+            }
+            public int Unk3 {
+                get { return unk3; }
+                set { unk3 = value; }
+            }
+            public byte[] UnkBytes {
+                get { return unkBytes; }
+                set { unkBytes = value; }
+            }
+
+            public SpeechItemData(BinaryReader reader)
             {
                 ReadFromFile(reader);
             }

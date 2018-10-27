@@ -22,7 +22,7 @@ namespace Mafia2Tool.OptionControls
 
         private void LoadSettings()
         {
-            string[] files = ToolkitSettings.MaterialLibs.Split(',');
+            string[] files = ToolkitSettings.MaterialLibs.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach(string file in files)
             {
                 MTLListBox.Items.Add(file);
