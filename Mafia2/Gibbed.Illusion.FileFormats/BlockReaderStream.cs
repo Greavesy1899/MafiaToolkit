@@ -403,7 +403,7 @@ namespace Gibbed.Illusion.FileFormats
                     var compressedBlockHeader = CompressedBlockHeader.Read(baseStream, endian);
                     if (compressedBlockHeader.Unknown04 != 32 ||
                         compressedBlockHeader.Unknown08 != 16384 ||
-                        compressedBlockHeader.Unknown0A != 4 ||
+                        compressedBlockHeader.Unknown0A != 1 ||
                         compressedBlockHeader.Unknown0C != 1 ||
                         compressedBlockHeader.Unknown0E != 15 ||
                         compressedBlockHeader.Unknown0F != 8 ||

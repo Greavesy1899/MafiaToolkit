@@ -360,6 +360,7 @@ namespace Mafia2Tool
             MaterialTool mTool;
             FrameResourceTool fTool;
             CollisionEditor cTool;
+            ActorEditor aTool;
             //TODO: Build editor for speech.
             SpeechEditor sTool;
             CutsceneFile cutscene;
@@ -402,6 +403,9 @@ namespace Mafia2Tool
                 case "Table":
                     tTool = new TableEditor((FileInfo)item.Tag);
                     return;
+                case "ACT":
+                    aTool = new ActorEditor((FileInfo)item.Tag);
+                    break;
             }
         }
 

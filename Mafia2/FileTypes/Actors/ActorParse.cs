@@ -9,7 +9,7 @@ namespace Mafia2
     {
         ActorDefinition[] definitions;
         ActorItem[] items;
-        UnkSector1 unkSector;
+        ActorExtraData unkSector;
         int unk16;
 
         public ActorDefinition[] Definitions {
@@ -17,6 +17,9 @@ namespace Mafia2
         }
         public ActorItem[] Items {
             get { return items; }
+        }
+        public ActorExtraData UnkSector {
+            get { return unkSector; }
         }
 
         public Actor(string file)
@@ -43,7 +46,7 @@ namespace Mafia2
                 definitions[i].name = pool.Substring(pos, pool.IndexOf('\0', pos) - pos);
             }
 
-            unkSector = new UnkSector1(reader);
+            unkSector = new ActorExtraData(reader);
 
             items = new ActorItem[unkSector.ItemCount];
 
@@ -81,14 +84,29 @@ namespace Mafia2
 
             public ActorDefinition (BinaryReader reader)
             {
+                hash = 0;
+                unk01 = 0;
+                namePos = 0;
+                frameIndex = 0;
+                name = "";
+                ReadFromFile(reader);
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
                 hash = reader.ReadUInt64();
                 unk01 = reader.ReadInt16();
                 namePos = reader.ReadInt16();
                 frameIndex = reader.ReadInt32();
                 name = "";
+            }
 
-                if (unk01 != 0)
-                    throw new Exception("Not ZERO!");
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(hash);
+                writer.Write(unk01);
+                writer.Write(namePos);
+                writer.Write(frameIndex);
             }
 
             public override string ToString()
@@ -97,7 +115,7 @@ namespace Mafia2
             }
         }
 
-        public class UnkSector1
+        public class ActorExtraData
         {
             int filesize; //size of sector in bits. After this integer (so filesize - 4)
             short const_6; //always 6
@@ -114,15 +132,18 @@ namespace Mafia2
 
             int itemCount;
 
+            List<temp_unk> temp_Unks = new List<temp_unk>();
+
             public int ItemCount {
                 get { return itemCount; }
                 set { itemCount = value; }
             }
-            
+            public List<temp_unk> TempUnks {
+                get { return temp_Unks; }
+                set { temp_Unks = value; }
+            }
 
-            List<temp_unk> temp_Unks = new List<temp_unk>();
-
-            public UnkSector1(BinaryReader reader)
+            public ActorExtraData(BinaryReader reader)
             {
                 filesize = reader.ReadInt32(); 
                 const_6 = reader.ReadInt16();
@@ -154,8 +175,21 @@ namespace Mafia2
             public struct temp_unk
             {
                 ActorTypes bufferType;
-                object data;
+                IActorExtraDataInterface data;
                 byte[] buffer;
+
+                public ActorTypes BufferType {
+                    get { return bufferType; }
+                    set { bufferType = value; }
+                }
+                public IActorExtraDataInterface Data {
+                    get { return data; }
+                    set { data = value; }
+                }
+                public byte[] Buffer {
+                    get { return buffer; }
+                    set { buffer = value; }
+                }
 
                 public temp_unk(BinaryReader reader, int num)
                 {
@@ -219,12 +253,39 @@ namespace Mafia2
             Vector2 rotation;
             Vector2 direction;
             Vector3 scale;
-            bool unkBool;
+            ushort unk3;
             ushort propID;
 
+            public int Size {
+                get { return size; }
+            }
+            public string EntityType {
+                get { return entityType; }
+                set { entityType = value; }
+            }
             public string ItemType {
                 get { return itemType; }
                 set { itemType = value; }
+            }
+            public string UnkString {
+                get { return unkString; }
+                set { unkString = value; }
+            }
+            public string Unk2String {
+                get { return unk2String; }
+                set { unk2String = value; }
+            }
+            public string FrameName {
+                get { return frameName; }
+                set { frameName = value; }
+            }
+            public string FrameUnk {
+                get { return frameUnk; }
+                set { frameUnk = value; }
+            }
+            public int ActorType {
+                get { return actortype; }
+                set { actortype = value; }
             }
             public ulong Hash1 {
                 get { return hash1; }
@@ -242,16 +303,37 @@ namespace Mafia2
                 get { return rotation; }
                 set { rotation = value; }
             }
+            public Vector2 Direction {
+                get { return direction; }
+                set { direction = value; }
+            }
+            public Vector3 Scale {
+                get { return scale; }
+                set { scale = value; }
+            }
+            public ushort Unk3 {
+                get { return unk3; }
+                set { unk3 = value; }
+            }
+            public ushort PropID {
+                get { return propID; }
+                set { propID = value; }
+            }
+
             public ActorItem(BinaryReader reader)
             {
-                size = reader.ReadInt32();
+                ReadFromFile(reader);
+            }
 
-                itemType = readString(itemType, reader);
-                entityType = readString(entityType, reader);
-                unkString = readString(unkString, reader);
-                unk2String = readString(unk2String, reader);
-                frameName = readString(frameName, reader);
-                frameUnk = readString(frameUnk, reader);
+            public void ReadFromFile(BinaryReader reader)
+            {
+                size = reader.ReadInt32();
+                itemType = readString(reader);
+                entityType = readString(reader);
+                unkString = readString(reader);
+                unk2String = readString(reader);
+                frameName = readString(reader);
+                frameUnk = readString(reader);
                 actortype = reader.ReadInt32();
                 hash1 = reader.ReadUInt64();
                 hash2 = reader.ReadUInt64();
@@ -259,22 +341,76 @@ namespace Mafia2
                 rotation = new Vector2(reader);
                 direction = new Vector2(reader);
                 scale = new Vector3(reader);
-                unkBool = reader.ReadBoolean();
+                unk3 = reader.ReadUInt16();
                 propID = reader.ReadUInt16();
-                reader.ReadByte();
             }
 
-            private string readString(string text, BinaryReader reader)
+            public void WriteToFile(BinaryWriter writer)
+            {
+                size = 0;
+
+                long pos = writer.BaseStream.Position;
+                writer.Write(0);
+
+                //item type
+                writeString(itemType, writer);
+                size += (itemType.Length+2);
+
+                //entity type
+                writeString(entityType, writer);
+                size += (entityType.Length + 2);
+
+                //unk string
+                writeString(unkString, writer);
+                size += (unkString.Length + 2);
+
+                //unk2 string
+                writeString(unk2String, writer);
+                size += (unk2String.Length + 2);
+
+                //frame name
+                writeString(frameName, writer);
+                size += (frameName.Length + 2);
+
+                //frame unk
+                writeString(frameUnk, writer);
+                size += (frameUnk.Length + 2);
+
+                writer.Write(actortype);
+                writer.Write(hash1);
+                writer.Write(hash2);
+                position.WriteToFile(writer);
+                rotation.WriteToFile(writer);
+                direction.WriteToFile(writer);
+                scale.WriteToFile(writer);
+                writer.Write(unk3);
+                writer.Write(propID);
+                size += 68;
+
+                long pos2 = writer.BaseStream.Position;
+                writer.BaseStream.Position = pos;
+                writer.Write(size);
+                writer.BaseStream.Position = pos2;
+            }
+
+            private string readString(BinaryReader reader)
             {
                 byte length = reader.ReadByte();
-                text = new string(reader.ReadChars(length - 2));
+                string text = new string(reader.ReadChars(length - 2));
                 reader.ReadByte();
                 return text;
             }
 
+            private void writeString(string text, BinaryWriter writer)
+            {
+                writer.Write((byte)text.Length+2);
+                writer.Write(text.ToCharArray());
+                writer.Write((byte)0);
+            }
+
             public override string ToString()
             {
-                return string.Format("{0}, {1}, {2}", entityType, actortype, itemType);
+                return string.Format("{0}, {1}, {2}, {3}", entityType, actortype, itemType, propID);
             }
         }
     }

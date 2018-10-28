@@ -188,8 +188,19 @@ namespace Mafia2
         /// <param name="reader"></param>
         public Vector2(BinaryReader reader)
         {
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
             X = reader.ReadSingle();
             Y = reader.ReadSingle();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(X);
+            writer.Write(Y);
         }
 
         public override string ToString()

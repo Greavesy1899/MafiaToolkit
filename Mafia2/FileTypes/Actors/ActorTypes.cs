@@ -1,9 +1,14 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Mafia2
 {
-    public class ActorPinup
+    public interface IActorExtraDataInterface
+    {
+        void ReadFromFile(BinaryReader reader);
+        void WriteToFile(BinaryWriter writer);
+    }
+
+    public class ActorPinup : IActorExtraDataInterface
     {
         int pinupNum;
 
@@ -14,7 +19,17 @@ namespace Mafia2
 
         public ActorPinup(BinaryReader reader)
         {
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
             pinupNum = reader.ReadInt32();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(pinupNum);
         }
 
         public override string ToString()
@@ -23,7 +38,7 @@ namespace Mafia2
         }
     }
 
-    public class ActorScriptEntity
+    public class ActorScriptEntity : IActorExtraDataInterface
     {
         string scriptName;
         int unk01;
@@ -39,8 +54,21 @@ namespace Mafia2
 
         public ActorScriptEntity(BinaryReader reader)
         {
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
             scriptName = new string(reader.ReadChars(96)).TrimEnd('\0');
             unk01 = reader.ReadInt32();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(scriptName.ToCharArray());
+            for (int i = 0; i != 96 - scriptName.Length; i++)
+                writer.Write('\0');
+            writer.Write(unk01);
         }
 
         public override string ToString()
