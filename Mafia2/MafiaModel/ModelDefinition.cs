@@ -391,11 +391,13 @@ namespace Mafia2
                         totalFaces += part.Indices.Length;
 
                     writer.Write(totalFaces);
-                    for (int z = 0; z != lods[i].Parts[0].Indices.Length; z++)
+                    for (int x = 0; x != lods[i].Parts.Length; x++)
                     {
-                        //write triangle, and then material
-                        lods[i].Parts[0].Indices[z].WriteToFile(writer);
-                        writer.Write((short)0);
+                        for (int z = 0; z != lods[i].Parts[x].Indices.Length; z++)
+                        {
+                            lods[i].Parts[x].Indices[z].WriteToFile(writer);
+                            writer.Write((short)x);
+                        }
                     }
                 }
             }

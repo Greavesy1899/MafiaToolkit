@@ -95,8 +95,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		triangle.i2 = pMesh->GetPolygonVertex(i, 1);
 		triangle.i3 = pMesh->GetPolygonVertex(i, 2);
 
-		if (pPart->GetHasUV0())
-			matID = pElementMaterial->GetIndexArray().GetAt(i);
+		matID = pElementMaterial->GetIndexArray().GetAt(i);
 
 		indices.push_back(triangle);
 		matIDs.push_back(matID);
