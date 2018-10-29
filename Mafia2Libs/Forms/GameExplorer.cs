@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Gibbed.Mafia2.FileFormats;
 using Gibbed.Mafia2.FileFormats.Archive;
 using Mafia2;
+using Extensions.TreeViewCollection;
 using ApexSDK;
 using System.Drawing;
 
@@ -167,14 +168,13 @@ namespace Mafia2Tool
                     if (!dir.Name.Contains(filename))
                         continue;
                 }
-                item = new ListViewItem(dir.Name, imageBank.Images.IndexOfKey("folderIcon"));
+                item = new ListViewItem(dir.Name, 0);
                 item.Tag = dir;
                 subItems = new ListViewItem.ListViewSubItem[]
                 {
                     new ListViewItem.ListViewSubItem(item, "Directory"),
-                    new ListViewItem.ListViewSubItem(item, ""),
-                    new ListViewItem.ListViewSubItem(item,
-                        dir.LastAccessTime.ToShortDateString())
+                    new ListViewItem.ListViewSubItem(item, (dir.GetDirectories().Length + dir.GetFiles().Length).ToString() + " items"),
+                    new ListViewItem.ListViewSubItem(item, dir.LastWriteTime.ToShortDateString()),
                 };
                 item.SubItems.AddRange(subItems);
                 fileListView.Items.Add(item);
@@ -196,18 +196,22 @@ namespace Mafia2Tool
                 subItems = new ListViewItem.ListViewSubItem[]
                 {
                     new ListViewItem.ListViewSubItem(item, DetermineFileType(file.Extension)),
-                    new ListViewItem.ListViewSubItem(item, file.Length.ToString()),
-                    new ListViewItem.ListViewSubItem(item,
-                        file.LastAccessTime.ToShortDateString())
+                    new ListViewItem.ListViewSubItem(item, file.CalculateFileSize()),
+                    new ListViewItem.ListViewSubItem(item, file.LastAccessTime.ToShortDateString()),
                 };
 
                 item.SubItems.AddRange(subItems);
                 fileListView.Items.Add(item);
             }
-            fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
             infoText.Text = "Done loading directory.";
             textStripFolderPath.Text = directory.FullName;
+            fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
+            //sort out treeview stuff.
             currentDirectory = directory;
+            string directoryPath = directory.FullName.Remove(0, directory.FullName.IndexOf(originalPath.Name)).TrimEnd('\\');
+            folderView.Nodes.FindTreeNodeByFullPath(directoryPath).Expand();
         }
 
         /// <summary>
@@ -452,6 +456,10 @@ namespace Mafia2Tool
         {
             if (currentDirectory.Name == originalPath.Name)
                 return;
+
+            string directoryPath = currentDirectory.FullName.Remove(0, currentDirectory.FullName.IndexOf(originalPath.Name)).TrimEnd('\\');
+            folderView.Nodes.FindTreeNodeByFullPath(directoryPath).Collapse();
+
             OpenDirectory(currentDirectory.Parent);
         }
         private void buttonStripRefresh_Click(object sender, EventArgs e)

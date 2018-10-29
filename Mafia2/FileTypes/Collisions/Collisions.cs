@@ -632,9 +632,8 @@ namespace Mafia2
                 nxs = Convert.ToString(22239310);
                 mesh = Convert.ToString(1213416781);
 
-
                 num1 = 1;
-                num2 = 1;
+                num2 = 3;
                 unkSmall = 0.001f;
                 num3 = 255;
                 num4 = 0;
@@ -654,6 +653,19 @@ namespace Mafia2
 
                 nPoints = model.Vertices.Length;
                 nTriangles = ltriangles.Count;
+
+                if (num2 == 3)
+                {
+                    num5 = nTriangles - 1;
+                    if (nTriangles <= 256)
+                    {
+                        UnkData = new byte[nTriangles];
+                    }
+                    else
+                    {
+                        unkBytes = new short[nTriangles];
+                    }
+                }
 
                 points = new Vector3[nPoints];
 
@@ -686,7 +698,7 @@ namespace Mafia2
                 unkSize = nTriangles;
                 unkSizeData = new byte[unkSize];
                 for (int i = 0; i != unkSizeData.Length; i++)
-                    unkSizeData[i] = 26;
+                    unkSizeData[i] = 0;
             }
             private CollisionMaterials ConvertCollisionMats(string name)
             {

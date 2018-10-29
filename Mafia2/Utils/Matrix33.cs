@@ -7,7 +7,53 @@ namespace Mafia2
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class Matrix33
     {
-        public float[,] Rows { get; set; } = new float[3, 3];
+        private float m00;
+        private float m01;
+        private float m02;
+        private float m10;
+        private float m11;
+        private float m12;
+        private float m20;
+        private float m21;
+        private float m22;
+
+        public float M00 {
+            get { return m00; }
+            set { m00 = value; }
+        }
+        public float M01 {
+            get { return m01; }
+            set { m01 = value; }
+        }
+        public float M02 {
+            get { return m02; }
+            set { m02 = value; }
+        }
+        public float M10 {
+            get { return m10; }
+            set { m10 = value; }
+        }
+        public float M11 {
+            get { return m11; }
+            set { m11 = value; }
+        }
+        public float M12 {
+            get { return m12; }
+            set { m12 = value; }
+        }
+        public float M20 {
+            get { return m20; }
+            set { m20 = value; }
+        }
+        public float M21 {
+            get { return m21; }
+            set { m21 = value; }
+        }
+        public float M22 {
+            get { return m22; }
+            set { m22 = value; }
+        }
+
         public Vector3 Euler { get; set; }
 
         /// <summary>
@@ -18,15 +64,15 @@ namespace Mafia2
         /// <param name="m3"></param>
         public Matrix33(Vector3 m1, Vector3 m2, Vector3 m3)
         {
-            Rows[0, 0] = m1.X;
-            Rows[0, 1] = m2.X;
-            Rows[0, 2] = m3.X;
-            Rows[1, 0] = m1.Y;
-            Rows[1, 1] = m2.Y;
-            Rows[1, 2] = m3.Y;
-            Rows[2, 0] = m1.Z;
-            Rows[2, 1] = m2.Z;
-            Rows[2, 2] = m3.Z;
+            m00 = m1.X;
+            m01 = m2.X;
+            m02 = m3.X;
+            m10 = m1.Y;
+            m11 = m2.Y;
+            m12 = m3.Y;
+            m20 = m1.Z;
+            m21 = m2.Z;
+            m22 = m3.Z;
             Euler = ToEuler();
         }
 
@@ -35,15 +81,15 @@ namespace Mafia2
         /// </summary>
         public Matrix33()
         {
-            Rows[0, 0] = 1;
-            Rows[0, 1] = 0;
-            Rows[0, 2] = 0;
-            Rows[1, 0] = 0;
-            Rows[1, 1] = 1;
-            Rows[1, 2] = 0;
-            Rows[2, 0] = 0;
-            Rows[2, 1] = 0;
-            Rows[2, 2] = 1;
+            m00 = 1;
+            m01 = 0;
+            m02 = 0;
+            m10 = 0;
+            m11 = 1;
+            m12 = 0;
+            m20 = 0;
+            m21 = 0;
+            m22 = 1;
             Euler = ToEuler();
         }
 
@@ -53,15 +99,15 @@ namespace Mafia2
         /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(Rows[0, 0]);
-            writer.Write(Rows[0, 1]);
-            writer.Write(Rows[0, 2]);
-            writer.Write(Rows[1, 0]);
-            writer.Write(Rows[1, 1]);
-            writer.Write(Rows[1, 2]);
-            writer.Write(Rows[2, 0]);
-            writer.Write(Rows[2, 1]);
-            writer.Write(Rows[2, 2]);
+            writer.Write(m00);
+            writer.Write(m01);
+            writer.Write(m02);
+            writer.Write(m10);
+            writer.Write(m11);
+            writer.Write(m12);
+            writer.Write(m20);
+            writer.Write(m21);
+            writer.Write(m22);
         }
 
         /// <summary>
@@ -72,16 +118,16 @@ namespace Mafia2
         {
             double x;
             double z;
-            double y = Math.Asin(Rows[0,2]);
+            double y = Math.Asin(m02);
 
-            if(Math.Abs(Rows[0,2]) < 0.99999)
+            if(Math.Abs(m02) < 0.99999)
             {
-                x = Math.Atan2(Rows[1, 2], Rows[2, 2]);
-                z = Math.Atan2(Rows[0, 1], Rows[0, 0]);
+                x = Math.Atan2(m12, m22);
+                z = Math.Atan2(m01, m00);
             }
             else
             {
-                x = Math.Atan2(Rows[2, 1], Rows[1, 1]);
+                x = Math.Atan2(m21, m11);
                 z = 0;
             }
 

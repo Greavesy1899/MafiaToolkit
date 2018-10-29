@@ -49,17 +49,17 @@ public class TransformMatrix
     /// <param name="writer"></param>
     public void WriteToFile(BinaryWriter writer)
     {
-        writer.Write(Rotation.Rows[0, 0]);
-        writer.Write(Rotation.Rows[0, 1]);
-        writer.Write(Rotation.Rows[0, 2]);
+        writer.Write(Rotation.M00);
+        writer.Write(Rotation.M01);
+        writer.Write(Rotation.M02);
         writer.Write(Position.X);
-        writer.Write(Rotation.Rows[1, 0]);
-        writer.Write(Rotation.Rows[1, 1]);
-        writer.Write(Rotation.Rows[1, 2]);
+        writer.Write(Rotation.M10);
+        writer.Write(Rotation.M11);
+        writer.Write(Rotation.M12);
         writer.Write(Position.Y);
-        writer.Write(Rotation.Rows[2, 0]);
-        writer.Write(Rotation.Rows[2, 1]);
-        writer.Write(Rotation.Rows[2, 2]);
+        writer.Write(Rotation.M20);
+        writer.Write(Rotation.M21);
+        writer.Write(Rotation.M22);
         writer.Write(Position.Z);
     }
 
@@ -69,17 +69,17 @@ public class TransformMatrix
     /// <param name="writer"></param>
     public void WriteToFrame(BinaryWriter writer)
     {
-        writer.Write(Rotation.Rows[0, 0]);
-        writer.Write(Rotation.Rows[1, 0]);
-        writer.Write(Rotation.Rows[2, 0]);
+        writer.Write(Rotation.M00);
+        writer.Write(Rotation.M10);
+        writer.Write(Rotation.M20);
         writer.Write(Position.X);
-        writer.Write(Rotation.Rows[0, 1]);
-        writer.Write(Rotation.Rows[1, 1]);
-        writer.Write(Rotation.Rows[2, 1]);
+        writer.Write(Rotation.M01);
+        writer.Write(Rotation.M11);
+        writer.Write(Rotation.M21);
         writer.Write(Position.Y);
-        writer.Write(Rotation.Rows[0, 2]);
-        writer.Write(Rotation.Rows[1, 2]);
-        writer.Write(Rotation.Rows[2, 2]);
+        writer.Write(Rotation.M02);
+        writer.Write(Rotation.M12);
+        writer.Write(Rotation.M22);
         writer.Write(Position.Z);
     }
 

@@ -110,13 +110,7 @@ namespace Mafia2
 
                         //check if this is a scene. If it is, then we get the index for the scene names and pos.
                         if (resource.Header.IsScene)
-                        {
-                            for (int c = 0; c != sceneNames.Length; c++)
-                            {
-                                if (fBase.ParentIndex2.Name == sceneNames[c])
-                                    sceneIndex = c;
-                            }
-                        }
+                            sceneIndex = fBase.ParentIndex2.Index;
 
                         //set parent index.
                         data.Parent = (short)scenePos[sceneIndex];

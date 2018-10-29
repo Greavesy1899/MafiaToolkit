@@ -79,6 +79,10 @@
     <ApplicationIcon>launcher_129.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Gibbed.IO, Version=1.1.6802.1783, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\Gibbed.IO.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
     </Reference>
@@ -189,6 +193,7 @@
     <Compile Include="OptionControls\MTLOptions.Designer.cs">
       <DependentUpon>MTLOptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\IniFile.cs" />
     <Compile Include="Forms\MaterialTool.cs">
       <SubType>Form</SubType>
@@ -244,6 +249,7 @@
     <Content Include="libs\Gibbed.IO.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="libs\ICSharpCode.SharpZipLib.dll" />
     <Content Include="Localisations\cz_CZ.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -277,10 +283,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Gibbed.IO\Gibbed.IO.csproj">
-      <Project>{047857BA-DAA3-4CA7-AFB8-A1B082B28C6A}</Project>
-      <Name>Gibbed.IO</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Mafia2\Mafia2Lib.csproj">
       <Project>{f8d4e99d-10e6-457e-8b87-80d675686f90}</Project>
       <Name>Mafia2Lib</Name>

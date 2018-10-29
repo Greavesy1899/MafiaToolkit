@@ -34,6 +34,7 @@ namespace Mafia2Tool
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameExplorer));
             this.mainContainer = new System.Windows.Forms.SplitContainer();
             this.folderView = new System.Windows.Forms.TreeView();
+            this.imageBank = new System.Windows.Forms.ImageList(this.components);
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.buttonStripUp = new System.Windows.Forms.ToolStripButton();
@@ -56,7 +57,6 @@ namespace Mafia2Tool
             this.ContextViewSmallIcon = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextViewList = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextViewTile = new System.Windows.Forms.ToolStripMenuItem();
-            this.imageBank = new System.Windows.Forms.ImageList(this.components);
             this.topContainer = new System.Windows.Forms.ToolStripContainer();
             this.tools = new System.Windows.Forms.ToolStrip();
             this.dropdownFile = new System.Windows.Forms.ToolStripDropDownButton();
@@ -107,11 +107,20 @@ namespace Mafia2Tool
             // folderView
             // 
             this.folderView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.folderView.ImageIndex = 0;
+            this.folderView.ImageList = this.imageBank;
             this.folderView.Location = new System.Drawing.Point(0, 0);
             this.folderView.Name = "folderView";
+            this.folderView.SelectedImageIndex = 0;
             this.folderView.Size = new System.Drawing.Size(266, 401);
             this.folderView.TabIndex = 0;
             this.folderView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            // 
+            // imageBank
+            // 
+            this.imageBank.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageBank.ImageStream")));
+            this.imageBank.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageBank.Images.SetKeyName(0, "folderIcon");
             // 
             // toolStripContainer1
             // 
@@ -221,6 +230,7 @@ namespace Mafia2Tool
             // 
             // columnLastModified
             // 
+            this.columnLastModified.DisplayIndex = 3;
             this.columnLastModified.Text = "$LAST_MODIFIED";
             this.columnLastModified.Width = 281;
             // 
@@ -319,12 +329,6 @@ namespace Mafia2Tool
             this.ContextViewTile.Text = "$TILE";
             this.ContextViewTile.Click += new System.EventHandler(this.ContextViewBtn_Click);
             // 
-            // imageBank
-            // 
-            this.imageBank.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageBank.ImageStream")));
-            this.imageBank.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageBank.Images.SetKeyName(0, "folderIcon");
-            // 
             // topContainer
             // 
             this.topContainer.BottomToolStripPanelVisible = false;
@@ -413,7 +417,7 @@ namespace Mafia2Tool
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(176, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.optionsToolStripMenuItem.Text = "$OPTIONS";
             this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
             // 

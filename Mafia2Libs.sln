@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mafia2Toolkit", "Mafia2Libs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mafia2Lib", "Mafia2\Mafia2Lib.csproj", "{F8D4E99D-10E6-457E-8B87-80D675686F90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gibbed.IO", "Gibbed.IO\Gibbed.IO.csproj", "{047857BA-DAA3-4CA7-AFB8-A1B082B28C6A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolkitUpdater", "ToolkitUpdater\ToolkitUpdater.csproj", "{6AE7172A-B4DC-4588-890F-881AF2B31431}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{F8D4E99D-10E6-457E-8B87-80D675686F90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8D4E99D-10E6-457E-8B87-80D675686F90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8D4E99D-10E6-457E-8B87-80D675686F90}.Release|Any CPU.Build.0 = Release|Any CPU
-		{047857BA-DAA3-4CA7-AFB8-A1B082B28C6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{047857BA-DAA3-4CA7-AFB8-A1B082B28C6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{047857BA-DAA3-4CA7-AFB8-A1B082B28C6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{047857BA-DAA3-4CA7-AFB8-A1B082B28C6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AE7172A-B4DC-4588-890F-881AF2B31431}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AE7172A-B4DC-4588-890F-881AF2B31431}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AE7172A-B4DC-4588-890F-881AF2B31431}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AE7172A-B4DC-4588-890F-881AF2B31431}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
