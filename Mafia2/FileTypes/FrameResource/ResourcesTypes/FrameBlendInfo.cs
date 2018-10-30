@@ -64,6 +64,43 @@ namespace Mafia2
             }
         }
 
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(boneTransforms.Length);
+            writer.Write((byte)boneIndexInfos.Length);
+
+            //index infos
+            for (int i = 0; i != boneIndexInfos.Length; i++)
+            {
+                writer.Write(boneIndexInfos[i].NumIDs);
+                writer.Write(boneIndexInfos[i].NumMaterials);
+            }
+
+            //bounds for all bones together?
+            bounds.WriteToFile(writer);
+
+            //Bone Transforms
+            for (int i = 0; i != boneTransforms.Length; i++)
+            {
+                boneTransforms[i].Transform.WriteToFile(writer);
+                boneTransforms[i].Bounds.WriteToFile(writer);
+                writer.Write(boneTransforms[i].IsValid);
+            }
+
+            for (int i = 0; i != boneIndexInfos.Length; i++)
+            {
+                writer.Write(boneIndexInfos[i].BonesPerPool);
+
+                //IDs..
+                writer.Write(boneIndexInfos[i].IDs);
+                writer.Write(0);
+
+                //Material blendings..
+                for (int x = 0; x != boneIndexInfos[i].NumMaterials; x++)
+                    writer.Write(boneIndexInfos[i].MatBlends[x]);
+            }
+        }
+
         public struct BoneIndexInfo
         {
             int numIDs;
@@ -92,11 +129,6 @@ namespace Mafia2
                 get { return matBlends; }
                 set { matBlends = value; }
             }
-        }
-
-        public struct BoneBounds
-        {
-
         }
 
         public struct BoneTransform

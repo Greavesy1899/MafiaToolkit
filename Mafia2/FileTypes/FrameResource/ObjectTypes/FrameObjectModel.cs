@@ -114,29 +114,36 @@ namespace Mafia2
         public override void WriteToFile(BinaryWriter writer)
         {
             base.WriteToFile(writer);
-            //writer.Write(blendInfoIndex);
-            //writer.Write(skeletonIndex);
-            //writer.Write(skeletonHierachyIndex);
+            writer.Write(blendInfoIndex);
+            writer.Write(skeletonIndex);
+            writer.Write(skeletonHierachyIndex);
 
-            //for (int i = 0; i != restPose.Length; i++)
-            //    restPose[i].WriteToFrame(writer);
+            //do rest matrices.
+            for (int i = 0; i != restPose.Length; i++)
+                restPose[i].WriteToFrame(writer);
 
-            //unkTrasform.WriteToFrame(writer);
-            //writer.Write(attachmentReferences.Length);
+            //unknown transform.
+            unkTrasform.WriteToFrame(writer);
 
-            //for (int i = 0; i != attachmentReferences.Length; i++)
-            //    attachmentReferences[i].WriteToFile(writer);
+            //attachments.
+            writer.Write(attachmentReferences.Length);
 
-            //writer.Write(unk_28_int);
-            //writer.Write(unk_29_int);
+            for (int i = 0; i != attachmentReferences.Length; i++)
+                attachmentReferences[i].WriteToFile(writer);
 
-            //writer.Write(unkData.Length);
-            //writer.Write((short)unk_30_list.Length);
+            //unknwon.
+            writer.Write(unkFlags);
+            writer.Write(physSplitSize);
+            writer.Write(hitBoxSize);
 
-            //for (int i = 0; i != unk_30_list.Length; i++)
-            //    unk_30_list[i].WriteToFile(writer);
+            if (physSplitSize > 0)
+                writer.Write(nPhysSplits);
 
-            //writer.Write(unkData);
+            for (int i = 0; i != nPhysSplits; i++)
+                blendMeshSplits[i].WriteToFile(writer);
+
+            for (int i = 0; i != hitBoxInfo.Length; i++)
+                hitBoxInfo[i].WriteToFile(writer);
         }
 
         public override string ToString()

@@ -118,6 +118,48 @@ namespace Mafia2
             }
         }
 
+        public void WriteToFile(BinaryWriter writer)
+        {
+            //all the same values?
+            for (int i = 0; i != numBones.Length; i++)
+                writer.Write(numBones[i]);
+
+            writer.Write(numBlendIDs);
+            writer.Write(numLods);
+
+            //unknown lod data; 
+            for (int i = 0; i != unkLodData.Length; i++)
+                writer.Write(unkLodData[i]);
+
+            writer.Write(idType);
+
+            //Bone Names and LOD data.
+            for (int i = 0; i != boneNames.Length; i++)
+                boneNames[i].WriteToFile(writer);
+
+            for (int i = 0; i != matrices1.Length; i++)
+                matrices1[i].WriteToFrame(writer);
+
+            writer.Write(numUnkCount2);
+            writer.Write(boneLODUsage);
+
+            for (int i = 0; i != matrices2.Length; i++)
+                matrices2[i].WriteToFrame(writer);
+
+            //BoneMappings.
+            for (int i = 0; i != mappingForBlendingInfos.Length; i++)
+            {
+                for (int x = 0; x != mappingForBlendingInfos[i].Bounds.Length; x++)
+                {
+                    mappingForBlendingInfos[i].Bounds[x].WriteToFile(writer);
+                }
+                writer.Write((byte)0);
+
+                writer.Write(mappingForBlendingInfos[i].RefToUsageArray);
+                writer.Write(mappingForBlendingInfos[i].UsageArray);
+            }
+        }
+
         public struct MappingForBlendingInfo
         {
             BoundingBox[] bounds;
