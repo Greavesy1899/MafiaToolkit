@@ -15,10 +15,12 @@ namespace Mafia2
         TransformMatrix[] restPose;
         TransformMatrix unkTrasform;
         AttachmentReference[] attachmentReferences;
-        int unk_28_int;
-        int unk_29_int;
-        unk_struct2[] unk_30_list;
-        byte[] unkData;
+        uint unkFlags;
+        int physSplitSize;
+        int hitBoxSize;
+        short nPhysSplits;
+        WeightedByMeshSplit[] blendMeshSplits;
+        HitBoxInfo[] hitBoxInfo;
 
         public int BlendInfoIndex {
             get { return blendInfoIndex; }
@@ -32,9 +34,25 @@ namespace Mafia2
             get { return skeletonHierachyIndex; }
             set { skeletonHierachyIndex = value; }
         }
-        public unk_struct2[] Unk_30 {
-            get { return unk_30_list; }
-            set { unk_30_list = value; }
+        public WeightedByMeshSplit[] BlendMeshSplits {
+            get { return blendMeshSplits; }
+            set { blendMeshSplits = value; }
+        }
+        public TransformMatrix[] RestPose {
+            get { return restPose; }
+            set { restPose = value; }
+        }
+        public TransformMatrix UnkTrasform {
+            get { return unkTrasform; }
+            set { unkTrasform = value; }
+        }
+        public AttachmentReference[] AttachmentReferences {
+            get { return attachmentReferences; }
+            set { attachmentReferences = value; }
+        }
+        public uint UnkFlags {
+            get { return unkFlags; }
+            set { unkFlags = value; }
         }
 
         public FrameObjectModel (BinaryReader reader)
@@ -55,258 +73,297 @@ namespace Mafia2
             this.skeleton = skeleton;
             this.blendInfo = blendInfo;
 
-            restPose = new TransformMatrix[skeleton.Count1];
+            //do rest matrices.
+            restPose = new TransformMatrix[skeleton.NumBones[0]];
             for (int i = 0; i != restPose.Length; i++)
                 restPose[i] = new TransformMatrix(reader);
 
+            //unknown transform.
             unkTrasform = new TransformMatrix(reader);
 
+            //attachments.
             int length1 = reader.ReadInt32();
             attachmentReferences = new AttachmentReference[length1];
 
             for (int i = 0; i != length1; i++)
                 attachmentReferences[i] = new AttachmentReference(reader);
 
-            unk_28_int = reader.ReadInt32();
-            unk_29_int = reader.ReadInt32();
+            //unknwon.
+            unkFlags = reader.ReadUInt32();
+            physSplitSize = reader.ReadInt32();
+            hitBoxSize = reader.ReadInt32();
 
-            int count = reader.ReadInt32();
-            short length2 = reader.ReadInt16();
+            if (physSplitSize > 0)
+                nPhysSplits = reader.ReadInt16();
+            else
+                nPhysSplits = 0;
 
-            unk_30_list = new unk_struct2[length2];
-            for (int i = 0; i != length2; i++)
-                unk_30_list[i] = new unk_struct2(reader);
-
-            byte[] numArray = new byte[skeleton.LodInfo[0].LodBlendIndexMap.Length];
-
-            int destIndex = 0;
-            foreach (byte[] blendIndex in blendInfo.BlendDataToBoneIndexMaps[0].BlendIndices)
+            int totalSplits = 0;
+            blendMeshSplits = new WeightedByMeshSplit[nPhysSplits];
+            for (int i = 0; i != nPhysSplits; i++)
             {
-                Array.Copy(blendIndex, 0, numArray, destIndex, blendIndex.Length);
-                destIndex += blendIndex.Length;
+                blendMeshSplits[i] = new WeightedByMeshSplit(reader);
+                totalSplits += blendMeshSplits[i].Data.Length;
             }
-            for (int i = 0; i != unk_30_list.Length; i++)
-            {
-                int index2 = numArray[unk_30_list[i].BlendIndex];
-                unk_30_list[i].JointName = (SkeletonBoneIDs)skeleton.BoneIDs[index2].uHash;
-            }
-            unkData = reader.ReadBytes(count);
+
+            hitBoxInfo = new HitBoxInfo[totalSplits];
+            for (int i = 0; i != hitBoxInfo.Length; i++)
+                hitBoxInfo[i] = new HitBoxInfo(reader);
         }
 
         public override void WriteToFile(BinaryWriter writer)
         {
             base.WriteToFile(writer);
-            writer.Write(blendInfoIndex);
-            writer.Write(skeletonIndex);
-            writer.Write(skeletonHierachyIndex);
+            //writer.Write(blendInfoIndex);
+            //writer.Write(skeletonIndex);
+            //writer.Write(skeletonHierachyIndex);
 
-            for (int i = 0; i != restPose.Length; i++)
-                restPose[i].WriteToFrame(writer);
+            //for (int i = 0; i != restPose.Length; i++)
+            //    restPose[i].WriteToFrame(writer);
 
-            unkTrasform.WriteToFrame(writer);
-            writer.Write(attachmentReferences.Length);
+            //unkTrasform.WriteToFrame(writer);
+            //writer.Write(attachmentReferences.Length);
 
-            for (int i = 0; i != attachmentReferences.Length; i++)
-                attachmentReferences[i].WriteToFile(writer);
+            //for (int i = 0; i != attachmentReferences.Length; i++)
+            //    attachmentReferences[i].WriteToFile(writer);
 
-            writer.Write(unk_28_int);
-            writer.Write(unk_29_int);
+            //writer.Write(unk_28_int);
+            //writer.Write(unk_29_int);
 
-            writer.Write(unkData.Length);
-            writer.Write((short)unk_30_list.Length);
+            //writer.Write(unkData.Length);
+            //writer.Write((short)unk_30_list.Length);
 
-            for (int i = 0; i != unk_30_list.Length; i++)
-                unk_30_list[i].WriteToFile(writer);
+            //for (int i = 0; i != unk_30_list.Length; i++)
+            //    unk_30_list[i].WriteToFile(writer);
 
-            writer.Write(unkData);
+            //writer.Write(unkData);
         }
 
         public override string ToString()
         {
             return string.Format("{0}", Name.String);
         }
+
+        public class AttachmentReference
+        {
+            int attachmentIndex;
+            byte jointIndex;
+
+            public int AttachmentIndex {
+                get { return attachmentIndex; }
+                set { attachmentIndex = value; }
+            }
+            public byte JointIndex {
+                get { return jointIndex; }
+                set { jointIndex = value; }
+            }
+
+            public AttachmentReference(BinaryReader reader)
+            {
+                ReadFromFile(reader);
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                attachmentIndex = reader.ReadInt32();
+                jointIndex = reader.ReadByte();
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(attachmentIndex);
+                writer.Write(jointIndex);
+            }
+        }
+
+
+        public class HitBoxInfo
+        {
+            uint unk;
+            Short3 pos;
+            Short3 size;
+
+            public uint Unk {
+                get { return unk; }
+                set { unk = value; }
+            }
+            public Short3 Position {
+                get { return pos; }
+                set { pos = value; }
+            }
+            public Short3 Size {
+                get { return size; }
+                set { size = value; }
+            }
+
+            public HitBoxInfo(BinaryReader reader)
+            {
+                ReadFromFile(reader);
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                unk = reader.ReadUInt32();
+                pos = new Short3(reader);
+                size = new Short3(reader);
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(unk);
+                pos.WriteToFile(writer);
+                size.WriteToFile(writer);
+            }
+        }
+        public class WeightedByMeshSplit
+        {
+            ushort blendIndex;
+            BlendMeshSplitInfo[] data;
+            SkeletonBoneIDs jointName;
+
+            public ushort BlendIndex {
+                get { return blendIndex; }
+                set { blendIndex = value; }
+            }
+            public BlendMeshSplitInfo[] Data {
+                get { return data; }
+                set { data = value; }
+            }
+            public SkeletonBoneIDs JointName {
+                get { return jointName; }
+                set { jointName = value; }
+            }
+
+            public WeightedByMeshSplit(BinaryReader reader)
+            {
+                ReadFromFile(reader);
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                blendIndex = reader.ReadUInt16();
+
+                ushort num = reader.ReadUInt16();
+                data = new BlendMeshSplitInfo[num];
+
+                for (int i = 0; i != num; i++)
+                    data[i] = new BlendMeshSplitInfo(reader);
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(blendIndex);
+                writer.Write((short)data.Length);
+
+                for (int i = 0; i != data.Length; i++)
+                    data[i].WriteToFile(writer);
+            }
+
+            public override string ToString()
+            {
+                return jointName.ToString();
+            }
+        }
+
+        public class BlendMeshSplitInfo
+        {
+            MiniMaterialBurst[] data;
+
+            public MiniMaterialBurst[] Data {
+                get { return data; }
+                set { data = value; }
+            }
+
+            public BlendMeshSplitInfo(BinaryReader reader)
+            {
+                ReadFromFile(reader);
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                short num = reader.ReadInt16();
+                data = new MiniMaterialBurst[num];
+
+                for (int i = 0; i != num; i++)
+                    data[i] = new MiniMaterialBurst(reader);
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write((short)data.Length);
+                for (int i = 0; i != data.Length; i++)
+                    data[i].WriteToFile(writer);
+            }
+        }
+
+        public class MiniMaterialBurst
+        {
+            ushort materialIndex;
+            FacesBurst[] data;
+
+            public ushort MaterialIndex {
+                get { return materialIndex; }
+                set { materialIndex = value; }
+            }
+            public FacesBurst[] Data {
+                get { return data; }
+                set { data = value; }
+            }
+
+            public MiniMaterialBurst(BinaryReader reader)
+            {
+                ReadFromFile(reader);
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                materialIndex = reader.ReadUInt16();
+
+                ushort num = reader.ReadUInt16();
+                data = new FacesBurst[num];
+
+                for (int i = 0; i != num; i++)
+                    data[i] = new FacesBurst(reader);
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(materialIndex);
+                writer.Write((ushort)data.Length);
+                for (int i = 0; i != data.Length; i++)
+                    data[i].WriteToFile(writer);
+            }
+        }
+
+        public class FacesBurst
+        {
+            ushort startIndex;
+            ushort numFaces;
+
+            public ushort StartIndex {
+                get { return startIndex; }
+                set { startIndex = value; }
+            }
+            public ushort NumFaces {
+                get { return numFaces; }
+                set { numFaces = value; }
+            }
+
+            public FacesBurst(BinaryReader reader)
+            {
+                ReadFromFile(reader);
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                startIndex = reader.ReadUInt16();
+                numFaces = reader.ReadUInt16();
+            }
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(startIndex);
+                writer.Write(numFaces);
+            }
+        }
     }
-    public class AttachmentReference
-    {
-        int attachmentIndex;
-        byte jointIndex;
-
-        public int AttachmentIndex {
-            get { return attachmentIndex; }
-            set { attachmentIndex = value; }
-        }
-        public byte JointIndex {
-            get { return jointIndex; }
-            set { jointIndex = value; }
-        }
-
-        public AttachmentReference(BinaryReader reader)
-        {
-            ReadFromFile(reader);
-        }
-
-        public void ReadFromFile(BinaryReader reader)
-        {
-            attachmentIndex = reader.ReadInt32();
-            jointIndex = reader.ReadByte();
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(attachmentIndex);
-            writer.Write(jointIndex);
-        }
-    }
-
-    public class unk_struct2
-    {
-        short blendIndex;
-        unk_struct2_1[] data;
-        SkeletonBoneIDs jointName;
-
-        public short BlendIndex {
-            get { return blendIndex; }
-            set { blendIndex = value; }
-        }
-        public unk_struct2_1[] Data {
-            get { return data; }
-            set { data = value; }
-        }
-        public SkeletonBoneIDs JointName {
-            get { return jointName; }
-            set { jointName = value; }
-        }
-
-        public unk_struct2(BinaryReader reader)
-        {
-            ReadFromFile(reader);
-        }
-
-        public void ReadFromFile(BinaryReader reader)
-        {
-            blendIndex = reader.ReadInt16();
-
-            short num = reader.ReadInt16();
-            data = new unk_struct2_1[num];
-
-            for (int i = 0; i != num; i++)
-                data[i] = new unk_struct2_1(reader);
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(blendIndex);
-            writer.Write((short)data.Length);
-
-            for (int i = 0; i != data.Length; i++)
-                data[i].WriteToFile(writer);
-        }
-
-        public override string ToString()
-        {
-            return jointName.ToString();
-        }
-    }
-
-    public class unk_struct2_1
-    {
-        unk_struct2_1_1[] data;
-
-        public unk_struct2_1_1[] Data {
-            get { return data; }
-            set { data = value; }
-        }
-
-        public unk_struct2_1(BinaryReader reader)
-        {
-            ReadFromFile(reader);
-        }
-
-        public void ReadFromFile(BinaryReader reader)
-        {
-            short num = reader.ReadInt16();
-            data = new unk_struct2_1_1[num];
-
-            for (int i = 0; i != num; i++)
-                data[i] = new unk_struct2_1_1(reader);
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write((short)data.Length);
-            for (int i = 0; i != data.Length; i++)
-                data[i].WriteToFile(writer);
-        }
-    }
-
-    public class unk_struct2_1_1
-    {
-        short materialIndex;
-        unk_struct2_1_1_1[] data;
-        
-        public short MaterialIndex {
-            get { return materialIndex; }
-            set { materialIndex = value; }
-        }
-        public unk_struct2_1_1_1[] Data {
-            get { return data; }
-            set { data = value; }
-        }
-
-        public unk_struct2_1_1(BinaryReader reader)
-        {
-            ReadFromFile(reader);
-        }
-
-        public void ReadFromFile(BinaryReader reader)
-        {
-            materialIndex = reader.ReadInt16();
-
-            short num = reader.ReadInt16();
-            data = new unk_struct2_1_1_1[num];
-
-            for (int i = 0; i != num; i++)
-                data[i] = new unk_struct2_1_1_1(reader);
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(materialIndex);
-            writer.Write((short)data.Length);
-            for (int i = 0; i != data.Length; i++)
-                data[i].WriteToFile(writer);
-        }
-    }
-
-    public class unk_struct2_1_1_1
-    {
-        short startIndex;
-        short numFaces;
-
-        public short StartIndex {
-            get { return startIndex; }
-            set { startIndex = value; }
-        }
-        public short NumFaces {
-            get { return numFaces; }
-            set { numFaces = value; }
-        }
-
-        public unk_struct2_1_1_1(BinaryReader reader)
-        {
-            ReadFromFile(reader);
-        }
-
-        public void ReadFromFile(BinaryReader reader)
-        {
-            startIndex = reader.ReadInt16();
-            numFaces = reader.ReadInt16();
-        }
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(startIndex);
-            writer.Write(numFaces);
-        }
-    }
-
 }

@@ -4,34 +4,61 @@ namespace Mafia2
 {
     public class FrameSkeleton : FrameEntry
     {
-        int count1;
-        int count2;
-        int count3;
-        int count4;
-        int numBlendIndices;
-        byte lodFlag;
-        Hash[] boneIDs;
-        TransformMatrix[] mats1;
-        byte[] lodFlags;
-        TransformMatrix[] worldTransforms;
-        SkeletonLodInfo[] lodInfo;
-        int[] numArray;
+        int[] numBones = new int[4];
+        int numBlendIDs;
+        int numLods;
+        int[] unkLodData;
+        byte idType;
+        Hash[] boneNames;
+        TransformMatrix[] matrices1;
+        int numUnkCount2;
+        byte[] boneLODUsage;
+        TransformMatrix[] matrices2;
+        MappingForBlendingInfo[] mappingForBlendingInfos;
 
-        public int Count1 {
-            get { return count1; }
-            set { count1 = value; }
+        public int[] NumBones {
+            get { return numBones; }
+            set { numBones = value; }
         }
-        public int Count4 {
-            get { return count4; }
-            set { count4 = value; }
+        public int NumBlendIDs {
+            get { return numBlendIDs; }
+            set { numBlendIDs = value; }
         }
-        public SkeletonLodInfo[] LodInfo {
-            get { return lodInfo; }
-            set { lodInfo = value; }
+        public int NumLods {
+            get { return numLods; }
+            set { numLods = value; }
         }
-        public Hash[] BoneIDs {
-            get { return boneIDs; }
-            set { boneIDs = value; }
+        public int[] UnkLodData {
+            get { return unkLodData; }
+            set { unkLodData = value; }
+        }
+        public byte IDType {
+            get { return idType; }
+            set { idType = value; }
+        }
+        public Hash[] BoneNames {
+            get { return boneNames; }
+            set { boneNames = value; }
+        }
+        public TransformMatrix[] Matrices1 {
+            get { return matrices1; }
+            set { matrices1 = value; }
+        }
+        public int NumUnkCount2 {
+            get { return numUnkCount2; }
+            set { numUnkCount2 = value; }
+        }
+        public byte[] BoneLODUsage {
+            get { return boneLODUsage; }
+            set { boneLODUsage = value; }
+        }
+        public TransformMatrix[] Matrices2 {
+            get { return matrices2; }
+            set { matrices2 = value; }
+        }
+        public MappingForBlendingInfo[] MappingForBlendingInfos {
+            get { return mappingForBlendingInfos; }
+            set { mappingForBlendingInfos = value; }
         }
 
         public FrameSkeleton(BinaryReader reader) : base()
@@ -41,127 +68,74 @@ namespace Mafia2
 
         public void ReadFromFile(BinaryReader reader)
         {
-            count1 = reader.ReadInt32();
-            count2 = reader.ReadInt32();
-            count3 = reader.ReadInt32();
-            count4 = reader.ReadInt32();
+            //all the same values?
+            for (int i = 0; i != numBones.Length; i++)
+                numBones[i] = reader.ReadInt32();
 
-            numBlendIndices = reader.ReadInt32();
+            numBlendIDs = reader.ReadInt32();
+            numLods = reader.ReadInt32();
 
-            int length = reader.ReadInt32();
-             numArray = new int[length];
+            //unknown lod data; 
+            unkLodData = new int[numLods];
+            for (int i = 0; i != unkLodData.Length; i++)
+                unkLodData[i] = reader.ReadInt32();
 
-            for (int i = 0; i != length; i++)
-                numArray[i] = reader.ReadInt32();
+            idType = reader.ReadByte();
 
-            lodFlag = reader.ReadByte();
+            //Bone Names and LOD data.
+            boneNames = new Hash[numBones[0]];
+            for (int i = 0; i != boneNames.Length; i++)
+                boneNames[i] = new Hash(reader);
 
-            boneIDs = new Hash[count1];
+            //Matrices;
+            matrices1 = new TransformMatrix[numBones[1]];
+            matrices2 = new TransformMatrix[numBones[3]];
 
-            for (int i = 0; i != count1; i++)
-                boneIDs[i] = new Hash(reader);
+            for (int i = 0; i != matrices1.Length; i++)
+                matrices1[i] = new TransformMatrix(reader);
 
-            mats1 = new TransformMatrix[count2];
+            numUnkCount2 = reader.ReadInt32();
+            boneLODUsage = reader.ReadBytes(numUnkCount2);
 
-            for (int i = 0; i != count2; i++)
-                mats1[i] = new TransformMatrix(reader);
+            for (int i = 0; i != matrices2.Length; i++)
+                matrices2[i] = new TransformMatrix(reader);
 
-            int count = reader.ReadInt32();
-            lodFlags = reader.ReadBytes(count);
+            //BoneMappings.
+            mappingForBlendingInfos = new MappingForBlendingInfo[numLods];
+            for (int i = 0; i != mappingForBlendingInfos.Length; i++)
+            {
+                mappingForBlendingInfos[i].Bounds = new BoundingBox[numBones[2]];
 
-            worldTransforms = new TransformMatrix[count3];
+                for (int x = 0; x != mappingForBlendingInfos[i].Bounds.Length; x++)
+                {
+                    mappingForBlendingInfos[i].Bounds[x] = new BoundingBox(reader);
+                }
+                if (reader.ReadByte() != 0)
+                    throw new System.Exception("oops");
 
-            for (int i = 0; i != count3; i++)
-                worldTransforms[i] = new TransformMatrix(reader);
-
-            lodInfo = new SkeletonLodInfo[length];
-
-            for (int i = 0; i != length; i++)
-                lodInfo[i] = new SkeletonLodInfo(reader, this);
+                mappingForBlendingInfos[i].RefToUsageArray = reader.ReadBytes(numBones[2]);
+                mappingForBlendingInfos[i].UsageArray = reader.ReadBytes(unkLodData[i]);
+            }
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public struct MappingForBlendingInfo
         {
-            writer.Write(count1);
-            writer.Write(count2);
-            writer.Write(count3);
-            writer.Write(count4);
+            BoundingBox[] bounds;
+            byte[] refToUsageArray;
+            byte[] usageArray;
 
-            writer.Write(numBlendIndices);
-            writer.Write(numArray.Length);
-
-            for (int i = 0; i != numArray.Length; i++)
-                writer.Write(numArray[i]);
-
-            writer.Write(lodFlag);
-
-            for (int i = 0; i != count1; i++)
-                boneIDs[i].WriteToFile(writer);
-
-            for (int i = 0; i != count2; i++)
-                mats1[i].WriteToFrame(writer);
-
-            writer.Write(lodFlags.Length);
-            writer.Write(lodFlags);
-
-            for (int i = 0; i != count3; i++)
-                worldTransforms[i].WriteToFrame(writer);
-
-            for (int i = 0; i != lodInfo.Length; i++)
-                lodInfo[i].WriteToFile(writer);
-        }
-
-        public override string ToString()
-        {
-            return $"Skeleton Block";
-        }
-    }
-
-    public class SkeletonLodInfo
-    {
-        BoundingBox[] bounds;
-        byte[] indexMap;
-        byte[] lodBlendIndexMap;
-
-        public BoundingBox[] Bounds {
-            get { return bounds; }
-            set { bounds = value; }
-        }
-        public byte[] IndexMap {
-            get { return indexMap; }
-            set { indexMap = value; }
-        }
-        public byte[] LodBlendIndexMap {
-            get { return lodBlendIndexMap; }
-            set { lodBlendIndexMap = value; }
-        }
-
-        public SkeletonLodInfo(BinaryReader reader, FrameSkeleton curFrame)
-        {
-            ReadFromFile(reader, curFrame);
-        }
-
-        public void ReadFromFile(BinaryReader reader, FrameSkeleton curFrame)
-        {
-            int count4 = curFrame.Count4;
-            bounds = new BoundingBox[count4];
-
-            for (int i = 0; i != count4; i++)
-                bounds[i] = new BoundingBox(reader);
-
-            indexMap = reader.ReadBytes(count4);
-            byte num = reader.ReadByte();
-            lodBlendIndexMap = reader.ReadBytes(num);
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            for (int i = 0; i != bounds.Length; i++)
-                bounds[i].WriteToFile(writer);
-
-            writer.Write(indexMap);
-            writer.Write((byte)lodBlendIndexMap.Length);
-            writer.Write(lodBlendIndexMap);
+            public BoundingBox[] Bounds {
+                get { return bounds; }
+                set { bounds = value; }
+            }
+            public byte[] RefToUsageArray {
+                get { return refToUsageArray; }
+                set { refToUsageArray = value; }
+            }
+            public byte[] UsageArray {
+                get { return usageArray; }
+                set { usageArray = value; }
+            }
         }
     }
 }

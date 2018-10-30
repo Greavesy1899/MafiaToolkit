@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 namespace Mafia2
 {
     public class FrameBlendInfo : FrameEntry
     {
-        BlendDataToBoneIndexInfo[] blendDataToBoneIndexInfos;
-        BlendDataToBoneIndexMap[] blendDataToBoneIndexMaps;
-        BlendInfoBounds[] boundingBoxes;
+        BoneIndexInfo[] boneIndexInfos;
         BoundingBox bounds;
+        BoneTransform[] boneTransforms;
 
-        public BlendDataToBoneIndexMap[] BlendDataToBoneIndexMaps {
-            get { return blendDataToBoneIndexMaps; }
-            set { blendDataToBoneIndexMaps = value; }
+        public BoneIndexInfo[] BoneIndexInfos {
+            get { return boneIndexInfos; }
+            set { boneIndexInfos = value; }
         }
-        public BlendDataToBoneIndexInfo[] BlendDataToBoneIndexInfos {
-            get { return blendDataToBoneIndexInfos; }
-            set { blendDataToBoneIndexInfos = value; }
-        }
-        public BlendInfoBounds[] BoundingBoxes {
-            get { return boundingBoxes; }
-            set { boundingBoxes = value; }
+        public BoneTransform[] BoneTransforms {
+            get { return boneTransforms; }
+            set { boneTransforms = value; }
         }
         public BoundingBox Bound {
             get { return bounds; }
@@ -34,165 +27,96 @@ namespace Mafia2
 
         public void ReadFromFile(BinaryReader reader)
         {
-            int length = reader.ReadInt32();
-            byte num = reader.ReadByte();
-            blendDataToBoneIndexInfos = new BlendDataToBoneIndexInfo[num];
+            int numBones = reader.ReadInt32();
+            byte numLods = reader.ReadByte();
 
-            for (int i = 0; i != num; i++)
-                blendDataToBoneIndexInfos[i] = new BlendDataToBoneIndexInfo(reader);
-
-            bounds = new BoundingBox(reader);
-            boundingBoxes = new BlendInfoBounds[length];
-
-            for (int i = 0; i != length; i++)
-                boundingBoxes[i] = new BlendInfoBounds(reader);
-
-            blendDataToBoneIndexMaps = new BlendDataToBoneIndexMap[num];
-
-            for (int i = 0; i != num; i++)
-                blendDataToBoneIndexMaps[i] = new BlendDataToBoneIndexMap(reader, blendDataToBoneIndexInfos[i]);
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(boundingBoxes.Length);
-            writer.Write((byte)blendDataToBoneIndexInfos.Length);
-
-            for (int i = 0; i != blendDataToBoneIndexInfos.Length; i++)
-                blendDataToBoneIndexInfos[i].WriteToFile(writer);
-
-            bounds.WriteToFile(writer);
-
-            for (int i = 0; i != boundingBoxes.Length; i++)
-                boundingBoxes[i].WriteToFile(writer);
-
-            for (int i = 0; i != blendDataToBoneIndexMaps.Length; i++)
-                blendDataToBoneIndexMaps[i].WriteToFile(writer);
-        }
-
-        public override string ToString()
-        {
-            return $"BlendInfo Block";
-        }
-    }
-
-    public class BlendDataToBoneIndexInfo
-    {
-        int numBoneIndices;
-        int numBlendIndexRanges;
-
-        public int NumBoneIndices 
-        {
-            get { return numBoneIndices; }
-            set { numBoneIndices = value; }
-        }
-        public int NumBlendIndexRanges {
-            get { return numBlendIndexRanges; }
-            set { numBlendIndexRanges = value; }
-        }
-
-        public BlendDataToBoneIndexInfo(BinaryReader reader)
-        {
-            numBoneIndices = reader.ReadInt32();
-            NumBlendIndexRanges = reader.ReadInt32();
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(numBoneIndices);
-            writer.Write(numBlendIndexRanges);
-        }
-    }
-
-    public class BlendDataToBoneIndexMap
-    {
-        private byte[] numData;
-        List<byte[]> blendIndices;
-        byte[] blendIndexRanges;
-
-        public List<byte[]> BlendIndices {
-            get { return blendIndices; }
-            set { blendIndices = value; }
-        }
-        public byte[] BlendIndexRanges {
-            get { return blendIndexRanges; }
-            set { blendIndexRanges = value; }
-        }
-
-        public BlendDataToBoneIndexMap(BinaryReader reader, BlendDataToBoneIndexInfo info)
-        {
-            ReadFromFile(reader, info);
-        }
-
-        public void ReadFromFile(BinaryReader reader, BlendDataToBoneIndexInfo info)
-        {
-            numData = reader.ReadBytes(8);
-
-            blendIndices = new List<byte[]>();
-
-            for (int i = 0; i != 8; i++)
+            //index infos
+            boneIndexInfos = new BoneIndexInfo[numLods];
+            for (int i = 0; i != boneIndexInfos.Length; i++)
             {
-                if (numData[i] != 0)
-                    blendIndices.Add(reader.ReadBytes(numData[i]));
+                boneIndexInfos[i].NumIDs = reader.ReadInt32();
+                boneIndexInfos[i].NumMaterials = reader.ReadInt32();
             }
 
-            blendIndexRanges = reader.ReadBytes(info.NumBlendIndexRanges * 2);
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            for (int i = 0; i != numData.Length; i++)
-                writer.Write(numData[i]);
-
-            for (int i = 0; i != blendIndices.Count; i++)
-                writer.Write(blendIndices[i]);
-
-            writer.Write(blendIndexRanges);
-
-
-        }
-    }
-
-    public class BlendInfoBounds
-    {
-        TransformMatrix transform;
-        BoundingBox bounds;
-        bool isValid;
-
-        public TransformMatrix Transform {
-            get { return transform; }
-            set { transform = value; }
-        }
-        public BoundingBox Bounds {
-            get { return bounds; }
-            set { bounds = value; }
-        }
-        public bool IsValid {
-            get { return isValid; }
-            set { isValid = value; }
-        }
-
-        public BlendInfoBounds(BinaryReader reader)
-        {
-            ReadFromFile(reader);
-        }
-
-        public void ReadFromFile(BinaryReader reader)
-        {
-            transform = new TransformMatrix(reader);
+            //bounds for all bones together?
             bounds = new BoundingBox(reader);
-            isValid = reader.ReadBoolean();
+
+            //Bone Transforms
+            boneTransforms = new BoneTransform[numBones];
+            for (int i = 0; i != boneTransforms.Length; i++)
+            {
+                boneTransforms[i].Transform = new TransformMatrix(reader);
+                boneTransforms[i].Bounds = new BoundingBox(reader);
+                boneTransforms[i].IsValid = reader.ReadBoolean();
+            }
+
+            for (int i = 0; i != boneIndexInfos.Length; i++)
+            {
+                boneIndexInfos[i].BonesPerPool = reader.ReadBytes(4);
+
+                //IDs..
+                boneIndexInfos[i].IDs = reader.ReadBytes(boneIndexInfos[i].NumIDs);
+                reader.ReadInt32(); //zero;
+                //Material blendings..
+                boneIndexInfos[i].MatBlends = new ushort[boneIndexInfos[i].NumMaterials];
+                for (int x = 0; x != boneIndexInfos[i].NumMaterials; x++)
+                    boneIndexInfos[i].MatBlends[x] = reader.ReadUInt16();
+            }
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public struct BoneIndexInfo
         {
-            transform.WriteToFrame(writer);
-            bounds.WriteToFile(writer);
+            int numIDs;
+            int numMaterials;
+            byte[] bonesPerPool;
+            byte[] ids;
+            ushort[] matBlends;
 
-            if (isValid)
-                writer.Write((byte)0xFF);
-            else
-                writer.Write((byte)0x00);
+            public int NumIDs {
+                get { return numIDs; }
+                set { numIDs = value; }
+            }
+            public int NumMaterials {
+                get { return numMaterials; }
+                set { numMaterials = value; }
+            }
+            public byte[] BonesPerPool {
+                get { return bonesPerPool; }
+                set { bonesPerPool = value; }
+            }
+            public byte[] IDs {
+                get { return ids; }
+                set { ids = value; }
+            }
+            public ushort[] MatBlends {
+                get { return matBlends; }
+                set { matBlends = value; }
+            }
+        }
+
+        public struct BoneBounds
+        {
+
+        }
+
+        public struct BoneTransform
+        {
+            TransformMatrix transform;
+            BoundingBox bounds;
+            bool isValid;
+
+            public TransformMatrix Transform {
+                get { return transform; }
+                set { transform = value; }
+            }
+            public BoundingBox Bounds {
+                get { return bounds; }
+                set { bounds = value; }
+            }
+            public bool IsValid {
+                get { return isValid; }
+                set { isValid = value; }
+            }
         }
     }
 }

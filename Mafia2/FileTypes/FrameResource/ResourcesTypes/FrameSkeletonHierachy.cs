@@ -34,11 +34,11 @@ namespace Mafia2
 
         public void ReadFromFile(BinaryReader reader)
         {
-            int count = reader.ReadInt32();
-            parentIndices = reader.ReadBytes(count);
-            unkNum = reader.ReadByte();
-            lastChildIndices = reader.ReadBytes(count);
-            unkData = reader.ReadBytes(count + 1);
+            int count = reader.ReadInt32(); //usually matches amount of nodes
+            parentIndices = reader.ReadBytes(count); //[m_numRefs]; 0xFF == root;
+            unkNum = reader.ReadByte(); //always 0?
+            lastChildIndices = reader.ReadBytes(count); //[m_numRefs]; last child index. If respective item has no child, the previouse value is copied [n-1], so the array is sorted in increase;
+            unkData = reader.ReadBytes(count + 1); //[m_numRefs+1]; always [num+1, 1,2,3,...,num,0]
         }
 
         public void WriteToFile(BinaryWriter writer)

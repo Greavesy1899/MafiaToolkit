@@ -384,7 +384,7 @@ namespace Mafia2Tool
                     mTool = new MaterialTool((FileInfo)item.Tag);
                     return;
                 case "Speech Data":
-                    sTool = new SpeechEditor((FileInfo)item.Tag);
+                   // sTool = new SpeechEditor((FileInfo)item.Tag);
                     return;
                 case "CUT":
                     //cutscene = new CutsceneFile((FileInfo)item.Tag);
@@ -402,16 +402,16 @@ namespace Mafia2Tool
                     cTool = new CollisionEditor((FileInfo)item.Tag);
                     return;
                 case "IOFX":
-                    iofx = new IOFxFile((FileInfo)item.Tag);
+                    //iofx = new IOFxFile((FileInfo)item.Tag);
                     return;
                 case "AEA":
-                    emitterFile = new EmitterFile((FileInfo)item.Tag);
+                    //emitterFile = new EmitterFile((FileInfo)item.Tag);
                     return;
                 case "Table":
-                    tTool = new TableEditor((FileInfo)item.Tag);
+                    //tTool = new TableEditor((FileInfo)item.Tag);
                     return;
                 case "ACT":
-                    aTool = new ActorEditor((FileInfo)item.Tag);
+                   // aTool = new ActorEditor((FileInfo)item.Tag);
                     break;
             }
         }

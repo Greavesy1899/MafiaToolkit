@@ -59,6 +59,10 @@ namespace ToolkitUpdater
             {
                 var releases = await client.Repository.Release.GetAll("Greavesy1899", "Mafia2Toolkit");
                 release = releases[0];
+
+                if (release.TagName.Contains("v1"))
+                    throw new Exception("Found an update but cannot download it. Please manually go to the github page to update. Thanks!");
+
                 Console.WriteLine("");
                 Console.WriteLine("Found the latest release:");
                 Console.WriteLine("Name: {0}", release.Name);
@@ -107,6 +111,9 @@ namespace ToolkitUpdater
 
             foreach (FileInfo file in releaseInfo.GetFiles())
             {
+                if (file.Name == "ToolkitUpdater.exe") //skip updater, if needed i'll just do version checking later.
+                    continue;
+
                 if (File.Exists(Path.Combine(toolkitInfo.FullName, file.Name)))
                     File.Delete(Path.Combine(toolkitInfo.FullName, file.Name));
 

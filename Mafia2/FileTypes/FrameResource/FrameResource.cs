@@ -204,11 +204,11 @@ namespace Mafia2
             }
             foreach (KeyValuePair<int, FrameBlendInfo> entry in frameBlendInfos)
             {
-                entry.Value.WriteToFile(writer);
+                throw new NotImplementedException();
             }
             foreach (KeyValuePair<int, FrameSkeleton> entry in frameSkeletons)
             {
-                entry.Value.WriteToFile(writer);
+                throw new NotImplementedException();
             }
             foreach (KeyValuePair<int, FrameSkeletonHierachy> entry in frameSkeletonHierachies)
             {
