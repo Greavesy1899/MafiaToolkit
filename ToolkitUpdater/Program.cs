@@ -14,17 +14,21 @@ namespace ToolkitUpdater
 
         static void Main(string[] args)
         {
-            
-            if(args.Length >= 1)
+            //check for MafiaIIToolkit.exe
+            if (args.Length >= 1)
                 toolkitFolder = args[0];
-
+            else
+                Console.WriteLine("WARNING: Did not find folder in arguments[0]. Checking parent directory.");
             if (toolkitFolder == null)
             {
                 if (!File.Exists("Mafia2Toolkit.exe"))
                     return;
 
-                Console.WriteLine("Found Mafia2Toolkit.exe");
+                Console.WriteLine("Found Mafia2Toolkit.exe!");
             }
+
+            //checks complete.. now to get the actual download package...
+            Console.WriteLine("Fetching Latest Package...");
 
             GitHubClient client = new GitHubClient(new ProductHeaderValue("ToolkitUpdater", "1"));
             GetLatest(client).Wait();
@@ -34,6 +38,14 @@ namespace ToolkitUpdater
                 Console.WriteLine("Succesfully downloaded the latest release.");
 
             Update();
+
+            File.Delete("latest.zip");
+            Directory.Delete("release");
+
+            //finish up..
+            Console.WriteLine("");
+            Console.WriteLine("Completed update. Press any key to close this window.");
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -47,10 +59,12 @@ namespace ToolkitUpdater
             {
                 var releases = await client.Repository.Release.GetAll("Greavesy1899", "Mafia2Toolkit");
                 release = releases[0];
+                Console.WriteLine("");
                 Console.WriteLine("Found the latest release:");
                 Console.WriteLine("Name: {0}", release.Name);
                 Console.WriteLine("Tag: {0}", release.TagName);
                 Console.WriteLine("Data: {0}", release.CreatedAt);
+                Console.WriteLine("");
             }
             catch
             {
@@ -91,31 +105,22 @@ namespace ToolkitUpdater
             DirectoryInfo releaseInfo = new DirectoryInfo("release");
             DirectoryInfo toolkitInfo = new DirectoryInfo(Directory.GetCurrentDirectory());
 
-            UpdateFiles(releaseInfo, toolkitInfo);
+            foreach (FileInfo file in releaseInfo.GetFiles())
+            {
+                if (File.Exists(Path.Combine(toolkitInfo.FullName, file.Name)))
+                    File.Delete(Path.Combine(toolkitInfo.FullName, file.Name));
+
+                File.Move(file.FullName, Path.Combine(toolkitInfo.FullName, file.Name));
+                Console.WriteLine("Succesfully moved file: {0}", file.Name);
+            }
 
             foreach (DirectoryInfo directory in releaseInfo.GetDirectories())
             {
-                UpdateFiles(directory, toolkitInfo);
-            }
-        }
+                if (Directory.Exists(Path.Combine(toolkitInfo.FullName, directory.Name + @"\")))
+                    Directory.Delete(Path.Combine(toolkitInfo.FullName, directory.Name + @"\"), true);
 
-        static void UpdateFiles(DirectoryInfo fromDirectory, DirectoryInfo toDirectory)
-        {
-            string rootName = Directory.GetCurrentDirectory();
-
-            foreach (FileInfo file in fromDirectory.GetFiles())
-            {
-                string filepath = Path.Combine(toDirectory.FullName, file.Name);
-
-                if (File.Exists(Path.Combine(toDirectory.FullName, file.Name)))
-                    File.Delete(Path.Combine(toDirectory.FullName, file.Name));
-
-                if (rootName == toDirectory.FullName)
-                    File.Move(file.FullName, filepath);
-                else
-                    File.Move(file.FullName, Path.Combine(filepath, fromDirectory.Name));
-
-                Console.WriteLine("Succesfully Updated {0}", file.Name);
+                Directory.Move(directory.FullName, Path.Combine(toolkitInfo.FullName, directory.Name + @"\"));
+                Console.WriteLine("Succesfully moved folder: {0}", directory.Name);
             }
         }
     }

@@ -39,9 +39,13 @@ remove_dll("SharpDX.DirectInput.dll")
 remove_dll("SharpDX.dll")
 remove_dll("SharpDX.DXGI.dll")
 remove_dll("SharpDX.Mathematics.dll")
-remove_dll("Gibbed.IO.Dll");
+remove_dll("Gibbed.IO.dll");
+remove_dll("Octokit.dll");
 
 #remove files
+remove_file("ToolkitUpdater.pdb")
+remove_file("Octokit.pdb")
+remove_file("Octokit.xml")
 remove_file("Mafia2Libs.pdb")
 remove_file("Mafia2Toolkit.pdb")
 remove_file("SharpDX.D3DCompiler.pdb")

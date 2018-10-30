@@ -211,7 +211,10 @@ namespace Mafia2Tool
             //sort out treeview stuff.
             currentDirectory = directory;
             string directoryPath = directory.FullName.Remove(0, directory.FullName.IndexOf(originalPath.Name)).TrimEnd('\\');
-            folderView.Nodes.FindTreeNodeByFullPath(directoryPath).Expand();
+
+            TreeNode nodeToExpand = folderView.Nodes.FindTreeNodeByFullPath(directoryPath);
+            if (nodeToExpand != null)
+                nodeToExpand.Expand();
         }
 
         /// <summary>
@@ -458,7 +461,10 @@ namespace Mafia2Tool
                 return;
 
             string directoryPath = currentDirectory.FullName.Remove(0, currentDirectory.FullName.IndexOf(originalPath.Name)).TrimEnd('\\');
-            folderView.Nodes.FindTreeNodeByFullPath(directoryPath).Collapse();
+
+            TreeNode nodeToCollapse = folderView.Nodes.FindTreeNodeByFullPath(directoryPath);
+            if (nodeToCollapse != null)
+                nodeToCollapse.Collapse();
 
             OpenDirectory(currentDirectory.Parent);
         }

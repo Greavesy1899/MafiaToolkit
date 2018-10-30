@@ -12,6 +12,7 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
+            FXAnimSet set = new FXAnimSet(new BinaryReader(File.Open("D://Users//Connor//Desktop//SteamLibrary//steamapps//common//Mafia II//pc//sds//fmv//extracted//fmv0107.sds//FxAnimSet_61.fas", FileMode.Open)));
             //FrameProps props = new FrameProps(new BinaryReader(File.Open("C://Program Files (x86)//Steam//steamapps//common//Mafia II//edit//tables//FrameProps.bin", FileMode.Open)));
             //Prefab prefab = new Prefab("D://Users//Connor//Desktop//SteamLibrary//steamapps//common//Mafia II//pc//sds//cars//extracted//cars_universal.sds//PREFAB_55.prf");
             //setup logger.
