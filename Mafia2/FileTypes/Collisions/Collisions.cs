@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using static Mafia2.M2TStructure;
 
 namespace Mafia2
 {

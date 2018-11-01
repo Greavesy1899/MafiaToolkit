@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Gibbed.Illusion.FileFormats.Hashing;
 using Mafia2;
+using static Mafia2.M2TStructure;
 
 namespace Mafia2Tool
 {
@@ -62,7 +63,7 @@ namespace Mafia2Tool
                 node.Name = nxsData.Hash.ToString();
 
 
-                Model model = new Model();
+                M2TStructure model = new M2TStructure();
                 model.Lods = new Lod[1];
                 model.Lods[0] = new Lod();
 
@@ -158,7 +159,7 @@ namespace Mafia2Tool
                 return;
             }
 
-            Model colModel = new Model();
+            M2TStructure colModel = new M2TStructure();
 
             if (openM2T.FileName.ToLower().EndsWith(".m2t"))
                 colModel.ReadFromM2T(new BinaryReader(File.Open(openM2T.FileName, FileMode.Open)));

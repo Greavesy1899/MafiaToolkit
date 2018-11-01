@@ -325,22 +325,22 @@ namespace Mafia2Tool
                 //    }
                 //}
 
-                entry.LodCount = newModel.Lods.Length;
+                entry.LodCount = newModel.ModelStructure.Lods.Length;
                 entry.LODNames = new string[entry.LodCount];
 
-                for (int c = 0; c != newModel.Lods.Length; c++)
+                for (int c = 0; c != newModel.ModelStructure.Lods.Length; c++)
                 {
-                    newModel.ExportToM2T(ToolkitSettings.ExportPath + "\\");
+                    newModel.ModelStructure.ExportToM2T(ToolkitSettings.ExportPath + "\\");
                     switch (ToolkitSettings.Format)
                     {
                         case 0:
-                            newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\", false);
+                            newModel.ModelStructure.ExportToFbx(ToolkitSettings.ExportPath + "\\", false);
                             break;
                         case 1:
-                            newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\", true);
+                            newModel.ModelStructure.ExportToFbx(ToolkitSettings.ExportPath + "\\", true);
                             break;
                         case 2:
-                            newModel.ExportToM2T(ToolkitSettings.ExportPath + "\\");
+                            newModel.ModelStructure.ExportToM2T(ToolkitSettings.ExportPath + "\\");
                             break;
                         default:
                             Log.WriteLine("Error! Unknown value set for ToolkitSettings.Format!", LoggingTypes.ERROR);
@@ -415,13 +415,13 @@ namespace Mafia2Tool
                     return;
 
                 if (m2tBrowser.FileName.ToLower().EndsWith(".m2t"))
-                    model.ReadFromM2T(new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)));
+                    model.ModelStructure.ReadFromM2T(new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)));
                 else if (m2tBrowser.FileName.ToLower().EndsWith(".fbx"))
-                    model.ReadFromFbx(m2tBrowser.FileName);
+                    model.ModelStructure.ReadFromFbx(m2tBrowser.FileName);
 
                 List<Vertex[]> vertData = new List<Vertex[]>();
-                for (int i = 0; i != model.Lods.Length; i++)
-                    vertData.Add(model.Lods[i].Vertices);
+                for (int i = 0; i != model.ModelStructure.Lods.Length; i++)
+                    vertData.Add(model.ModelStructure.Lods[i].Vertices);
 
                 model.FrameMesh.Boundings = new BoundingBox();
                 model.FrameMesh.Boundings.CalculateBounds(vertData);
@@ -515,17 +515,17 @@ namespace Mafia2Tool
                 }
 
                 Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
-                newModel.ExportToM2T(ToolkitSettings.ExportPath + "\\");
+                newModel.ModelStructure.ExportToM2T(ToolkitSettings.ExportPath + "\\");
                 switch (ToolkitSettings.Format)
                 {
                     case 0:
-                        newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\", false);
+                        newModel.ModelStructure.ExportToFbx(ToolkitSettings.ExportPath + "\\", false);
                         break;
                     case 1:
-                        newModel.ExportToFbx(ToolkitSettings.ExportPath + "\\", true);
+                        newModel.ModelStructure.ExportToFbx(ToolkitSettings.ExportPath + "\\", true);
                         break;
                     case 2:
-                        newModel.ExportToM2T(ToolkitSettings.ExportPath + "\\");
+                        newModel.ModelStructure.ExportToM2T(ToolkitSettings.ExportPath + "\\");
                         break;
                     default:
                         Log.WriteLine("Error! Unknown value set for ToolkitSettings.Format!", LoggingTypes.ERROR);
@@ -582,11 +582,11 @@ namespace Mafia2Tool
                     return;
 
                 if (m2tBrowser.FileName.ToLower().EndsWith(".m2t"))
-                    model.ReadFromM2T(new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)));
+                    model.ModelStructure.ReadFromM2T(new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)));
                 else if (m2tBrowser.FileName.ToLower().EndsWith(".fbx"))
-                    model.ReadFromFbx(m2tBrowser.FileName);
+                    model.ModelStructure.ReadFromFbx(m2tBrowser.FileName);
 
-                mesh.Name.Set(model.Name);
+                mesh.Name.Set(model.ModelStructure.Name);
                 model.CreateObjectsFromModel();
                 mesh.AddRef(FrameEntryRefTypes.Mesh, model.FrameGeometry.RefID);
                 mesh.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
