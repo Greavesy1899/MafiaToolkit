@@ -76,7 +76,12 @@
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
-    <ApplicationIcon>launcher_129.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Toolkit.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Gibbed.IO, Version=1.1.6802.1783, Culture=neutral, processorArchitecture=MSIL">
@@ -175,6 +180,12 @@
     <Compile Include="Forms\GameExplorer.Designer.cs">
       <DependentUpon>GameExplorer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\SplashForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SplashForm.Designer.cs">
+      <DependentUpon>SplashForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\TableEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -242,7 +253,6 @@
     <Content Include="build.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="launcher_129.ico" />
     <Content Include="libs\discord-rpc.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -263,6 +273,8 @@
     <Content Include="Localisations\ru_RU.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\Splash.png" />
+    <None Include="Resources\Toolkit.ico" />
     <Content Include="Shaders\LightPS.hlsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -324,6 +336,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MaterialTool.resx">
       <DependentUpon>MaterialTool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SplashForm.resx">
+      <DependentUpon>SplashForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TableEditor.resx">
       <DependentUpon>TableEditor.cs</DependentUpon>

@@ -20,6 +20,14 @@ namespace Mafia2Tool
         public GameExplorer()
         {
             InitializeComponent();
+            LoadForm();
+        }
+
+        public void PreloadData()
+        {
+            SplashForm splash = new SplashForm();
+            splash.Show();
+            splash.Refresh();
         }
 
         public void LoadForm()

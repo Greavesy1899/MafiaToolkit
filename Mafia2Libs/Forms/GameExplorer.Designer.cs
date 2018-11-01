@@ -230,7 +230,6 @@ namespace Mafia2Tool
             // 
             // columnLastModified
             // 
-            this.columnLastModified.DisplayIndex = 3;
             this.columnLastModified.Text = "$LAST_MODIFIED";
             this.columnLastModified.Width = 281;
             // 
