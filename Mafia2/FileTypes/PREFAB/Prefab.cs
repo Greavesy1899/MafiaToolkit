@@ -13,12 +13,16 @@ namespace Mafia2
         PrefabStruct[] prefabs;
 
 
+        public Prefab(FileInfo file)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+                ReadFromFile(reader);
+        }
+
         public Prefab(string fileName)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
-            {
                 ReadFromFile(reader);
-            }
         }
 
         public void ReadFromFile(BinaryReader reader)

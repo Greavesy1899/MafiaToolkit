@@ -71,8 +71,20 @@ void ModelPart::SetTangents(std::vector<Point3> tangents) {
 	ModelPart::tangents = tangents;
 }
 
-void ModelPart::SetUVs(std::vector<UVVert> uvs) {
-	ModelPart::uvs = uvs;
+void ModelPart::SetUV0s(std::vector<UVVert> uvs) {
+	ModelPart::uvs0 = uvs;
+}
+
+void ModelPart::SetUV1s(std::vector<UVVert> uvs) {
+	ModelPart::uvs1 = uvs;
+}
+
+void ModelPart::SetUV2s(std::vector<UVVert> uvs) {
+	ModelPart::uvs2 = uvs;
+}
+
+void ModelPart::SetUV7s(std::vector<UVVert> uvs) {
+	ModelPart::uvs7 = uvs;
 }
 
 void ModelPart::SetSubMeshCount(int count) {
@@ -165,8 +177,20 @@ std::vector<Point3> ModelPart::GetTangents() {
 	return ModelPart::tangents;
 }
 
-std::vector<UVVert> ModelPart::GetUVs() {
-	return ModelPart::uvs;
+std::vector<UVVert> ModelPart::GetUV0s() {
+	return ModelPart::uvs0;
+}
+
+std::vector<UVVert> ModelPart::GetUV1s() {
+	return ModelPart::uvs1;
+}
+
+std::vector<UVVert> ModelPart::GetUV2s() {
+	return ModelPart::uvs2;
+}
+
+std::vector<UVVert> ModelPart::GetUV7s() {
+	return ModelPart::uvs7;
 }
 
 int ModelPart::GetSubMeshCount() {
@@ -212,7 +236,16 @@ void ModelPart::ReadFromStream(FILE * stream) {
 		tangents = std::vector<Point3>(vertSize);
 
 	if(hasUV0)
-		uvs = std::vector<UVVert>(vertSize);
+		uvs0 = std::vector<UVVert>(vertSize);
+
+	if(hasUV1)
+		uvs1 = std::vector<UVVert>(vertSize);
+
+	if (hasUV2)
+		uvs2 = std::vector<UVVert>(vertSize);
+
+	if (hasUV7)
+		uvs7 = std::vector<UVVert>(vertSize);
 
 	for (int i = 0; i != vertSize; i++) {
 		if (hasPosition) {
@@ -231,8 +264,20 @@ void ModelPart::ReadFromStream(FILE * stream) {
 			fread(&tangents[i].z, sizeof(float), 1, stream);
 		}
 		if (hasUV0) {
-			fread(&uvs[i].x, sizeof(float), 1, stream);
-			fread(&uvs[i].y, sizeof(float), 1, stream);
+			fread(&uvs0[i].x, sizeof(float), 1, stream);
+			fread(&uvs0[i].y, sizeof(float), 1, stream);
+		}
+		if (hasUV1) {
+			fread(&uvs1[i].x, sizeof(float), 1, stream);
+			fread(&uvs1[i].y, sizeof(float), 1, stream);
+		}
+		if (hasUV2) {
+			fread(&uvs2[i].x, sizeof(float), 1, stream);
+			fread(&uvs2[i].y, sizeof(float), 1, stream);
+		}
+		if (hasUV7) {
+			fread(&uvs7[i].x, sizeof(float), 1, stream);
+			fread(&uvs7[i].y, sizeof(float), 1, stream);
 		}
 	}
 	fread(&subMeshCount, sizeof(int), 1, stream);
@@ -288,8 +333,20 @@ void ModelPart::WriteToStream(FILE * stream) {
 			fwrite(&tangents[i].z, sizeof(float), 1, stream);
 		}
 		if (hasUV0) {
-			fwrite(&uvs[i].x, sizeof(float), 1, stream);
-			fwrite(&uvs[i].y, sizeof(float), 1, stream);
+			fwrite(&uvs0[i].x, sizeof(float), 1, stream);
+			fwrite(&uvs0[i].y, sizeof(float), 1, stream);
+		}
+		if (hasUV1) {
+			fwrite(&uvs1[i].x, sizeof(float), 1, stream);
+			fwrite(&uvs1[i].y, sizeof(float), 1, stream);
+		}
+		if (hasUV2) {
+			fwrite(&uvs2[i].x, sizeof(float), 1, stream);
+			fwrite(&uvs2[i].y, sizeof(float), 1, stream);
+		}
+		if (hasUV7) {
+			fwrite(&uvs7[i].x, sizeof(float), 1, stream);
+			fwrite(&uvs7[i].y, sizeof(float), 1, stream);
 		}
 	}
 	fwrite(&subMeshCount, sizeof(int), 1, stream);
@@ -342,6 +399,10 @@ std::vector<ModelPart> ModelStructure::GetParts() {
 void ModelStructure::ReadFromStream(FILE * stream) {
 	int header;
 	fread(&header, sizeof(int), 1, stream); //header
+
+	if (header != 22295117)
+		exit(0);
+
 	std::string edmName = std::string();
 	edmName = ReadString(stream, edmName);
 	name = edmName;
@@ -355,7 +416,7 @@ void ModelStructure::ReadFromStream(FILE * stream) {
 }
 
 void ModelStructure::WriteToStream(FILE * stream) {
-	int header = 542388813;
+	int header = 22295117;
 	fwrite(&header, sizeof(int), 1, stream);
 	WriteString(stream, name);
 	fwrite(&partSize, sizeof(char), 1, stream);

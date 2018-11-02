@@ -76,10 +76,10 @@ namespace Gibbed.Mafia2.ResourceFormats
             this.Unknown8 = input.ReadValueU8();
             this.HasMIP = input.ReadValueU8();
 
-            if (this.HasMIP != 0 && this.HasMIP != 1)
-            {
-                throw new InvalidOperationException();
-            }
+            //if (this.HasMIP != 0 && this.HasMIP != 1)
+            //{
+            //    throw new InvalidOperationException();
+            //}
 
             this.Data = input.ReadBytes((int)(input.Length - input.Position));
             Log.WriteLine("Unpacking: " + ToString());

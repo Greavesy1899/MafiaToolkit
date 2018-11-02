@@ -182,7 +182,9 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	std::vector<Int3> triangles = part.GetIndices();
 	std::vector<Point3> normals = part.GetNormals();
 	std::vector<Point3> tangents = part.GetTangents();
-	std::vector<UVVert> uvs = part.GetUVs();
+	std::vector<UVVert> uvs0 = part.GetUV0s();
+	std::vector<UVVert> uvs1 = part.GetUV1s();
+	std::vector<UVVert> uvs2 = part.GetUV2s();
 	std::vector<short> matIDs = part.GetMatIDs();
 
 	lMesh->InitControlPoints(vertices.size());
@@ -217,11 +219,24 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	lUVDiffuseElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
 	for (int i = 0; i < vertices.size(); i++)
-		lUVDiffuseElement->GetDirectArray().Add(FbxVector2(uvs[i].x, uvs[i].y));
+		lUVDiffuseElement->GetDirectArray().Add(FbxVector2(uvs0[i].x, uvs0[i].y));
 
 	//Now we have set the UVs as eIndexToDirect reference and in eByPolygonVertex  mapping mode
 	//we must update the size of the index array.
 	lUVDiffuseElement->GetIndexArray().SetCount(triangles.size() * 3);
+
+	//Create VC in channels;
+	FbxGeometryElementVertexColor* lUVVCElement = lMesh->CreateElementVertexColor();
+	FBX_ASSERT(lUVVCElement != NULL);
+	lUVVCElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
+	lUVVCElement->SetReferenceMode(FbxGeometryElement::eDirect);
+
+	for (int i = 0; i < vertices.size(); i++)
+		lUVVCElement->GetDirectArray().Add(FbxColor(uvs1[i].x, uvs1[i].y, uvs2[i].x, uvs2[i].y));
+
+	//Now we have set the UVs as eIndexToDirect reference and in eByPolygonVertex  mapping mode
+	//we must update the size of the index array.
+	//lUVVCElement->GetIndexArray().SetCount(triangles.size() * 3);
 
 	// Create polygons. Assign texture and texture UV indices.
 	// all faces of the cube have the same texture
@@ -236,6 +251,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 
 		// update the index array of the UVs that map the texture to the face
 		lUVDiffuseElement->GetIndexArray().SetAt(i, matIDs[i]);
+		lUVVCElement->GetIndexArray().SetAt(i, i);
 	}
 
 	lMesh->EndPolygon();

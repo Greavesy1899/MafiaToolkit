@@ -174,7 +174,7 @@ namespace Mafia2
                 writer.Write(name);
 
                 //Number of Lods
-                writer.Write(lods.Length);
+                writer.Write((byte)lods.Length);
 
                 for (int i = 0; i != lods.Length; i++)
                 {
@@ -210,6 +210,12 @@ namespace Mafia2
 
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                             vert.UVs[0].WriteToFile(writer);
+
+                        if(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                            vert.UVs[1].WriteToFile(writer);
+
+                        if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                            vert.UVs[2].WriteToFile(writer);
                     }
 
                     //write mesh count and texture names.
@@ -328,6 +334,18 @@ namespace Mafia2
                     {
                         vert.UVs[0] = new UVVector2();
                         vert.UVs[0].ReadFromFile(reader);
+                    }
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                    {
+                        vert.UVs[1] = new UVVector2();
+                        vert.UVs[1].ReadFromFile(reader);
+                    }
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                    {
+                        vert.UVs[2] = new UVVector2();
+                        vert.UVs[2].ReadFromFile(reader);
                     }
 
                     lods[i].Vertices[x] = vert;

@@ -63,6 +63,7 @@ namespace Mafia2
             this.vertexBuffers = vertexBuffers;
             this.frameGeometry = frameGeometry;
             this.frameMaterial = frameMaterial;
+            model = new M2TStructure();
             model.IsSkinned = false;
             model.Name = frameMesh.Name.String;
             model.BuildLods(frameGeometry, frameMaterial, vertexBuffers, indexBuffers);
@@ -79,6 +80,7 @@ namespace Mafia2
             this.vertexBuffers = vertexBuffers;
             this.frameGeometry = frameGeometry;
             this.frameMaterial = frameMaterial;
+            model = new M2TStructure();
             model.IsSkinned = true;
             model.Name = frameMesh.Name.String;
             model.BuildLods(frameGeometry, frameMaterial, vertexBuffers, indexBuffers);

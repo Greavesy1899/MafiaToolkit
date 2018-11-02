@@ -35,7 +35,10 @@ private:
 	std::vector<Point3> vertices;
 	std::vector<Point3> normals;
 	std::vector<Point3> tangents;
-	std::vector<UVVert> uvs;
+	std::vector<UVVert> uvs0;
+	std::vector<UVVert> uvs1;
+	std::vector<UVVert> uvs2;
+	std::vector<UVVert> uvs7;
 	int subMeshCount;
 	std::vector<std::string> matNames;
 	int indicesSize;
@@ -60,7 +63,10 @@ public:
 	void SetVertices(std::vector<Point3> vertices, bool updateCount = false);
 	void SetNormals(std::vector<Point3> normals);
 	void SetTangents(std::vector<Point3> tangents);
-	void SetUVs(std::vector<UVVert> uvs);
+	void SetUV0s(std::vector<UVVert> uvs);
+	void SetUV1s(std::vector<UVVert> uvs);
+	void SetUV2s(std::vector<UVVert> uvs);
+	void SetUV7s(std::vector<UVVert> uvs);
 	void SetSubMeshCount(int count);
 	void SetIndicesSize(int count);
 	void SetMatNames(std::vector<std::string> matNames, bool updateCount = false);
@@ -82,7 +88,10 @@ public:
 	std::vector<Point3> GetVertices();
 	std::vector<Point3> GetNormals();
 	std::vector<Point3> GetTangents();
-	std::vector<UVVert> GetUVs();
+	std::vector<UVVert> GetUV0s();
+	std::vector<UVVert> GetUV1s();
+	std::vector<UVVert> GetUV2s();
+	std::vector<UVVert> GetUV7s();
 	int GetSubMeshCount();
 	int GetIndicesSize();
 	std::vector<std::string> GetMatNames();

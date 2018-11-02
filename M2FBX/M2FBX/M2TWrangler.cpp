@@ -9,11 +9,14 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	FbxGeometryElementTangent* pElementTangent = pMesh->GetElementTangent(0);
 	FbxGeometryElementUV* pElementUV = pMesh->GetElementUV(0);
 	FbxGeometryElementMaterial* pElementMaterial = pMesh->GetElementMaterial(0);
+	FbxGeometryElementVertexColor* pElementVC = pMesh->GetElementVertexColor(0);
 
 	pPart->SetHasPositions(true);
 	pPart->SetHasNormals(pElementNormal);
 	pPart->SetHasTangents(pElementTangent);
 	pPart->SetHasUV0(pElementUV && pElementMaterial);
+	pPart->SetHasUV1(pElementVC);
+	pPart->SetHasUV2(pElementVC);
 
 	//Gotta make sure the normals are correctly set up.
 	if (pElementNormal->GetReferenceMode() != FbxGeometryElement::eDirect) {
@@ -31,11 +34,14 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	std::vector<Point3> normals = std::vector<Point3>();
 	std::vector<Point3> tangents = std::vector<Point3>();
 	std::vector<UVVert> uvs = std::vector<UVVert>();
+	std::vector<UVVert> uvs1 = std::vector<UVVert>();
+	std::vector<UVVert> uvs2 = std::vector<UVVert>();
 
 	for (int i = 0; i != pMesh->GetControlPointsCount(); i++) {
 		Point3 vert;
 		UVVert uvCoords;
 		FbxVector4 vec4 = pMesh->GetControlPointAt(i);
+		FbxColor color;
 
 		//do vert stuff.
 		vert.x = vec4.mData[0];
@@ -68,13 +74,29 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 			uvCoords.y = vec4.mData[1];
 			uvs.push_back(uvCoords);
 		}
+
+		//Colours
+		if (pPart->GetHasUV1()) {
+			color = pElementVC->GetDirectArray().GetAt(i);
+			uvCoords.x = color.mRed;
+			uvCoords.y = color.mBlue;
+			uvs.push_back(uvCoords);
+		}
+		if (pPart->GetHasUV2()) {
+			color = pElementVC->GetDirectArray().GetAt(i);
+			uvCoords.x = color.mBlue;
+			uvCoords.y = color.mAlpha;
+			uvs.push_back(uvCoords);
+		}
 	}
 
 	//update the part with the latest data.
 	pPart->SetVertices(vertices, true);
 	pPart->SetNormals(normals);
 	pPart->SetTangents(tangents);
-	pPart->SetUVs(uvs);
+	pPart->SetUV0s(uvs);
+	pPart->SetUV1s(uvs1);
+	pPart->SetUV2s(uvs2);
 
 	//Gotta be triangulated.
 	if (!pMesh->IsTriangleMesh()) {

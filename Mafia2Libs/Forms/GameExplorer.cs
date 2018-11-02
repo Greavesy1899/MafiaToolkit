@@ -376,7 +376,7 @@ namespace Mafia2Tool
             FrameResourceTool fTool;
             CollisionEditor cTool;
             ActorEditor aTool;
-            //TODO: Build editor for speech.
+            Prefab prefabs;
             SpeechEditor sTool;
             CutsceneFile cutscene;
             IOFxFile iofx;
@@ -421,6 +421,9 @@ namespace Mafia2Tool
                 case "ACT":
                    // aTool = new ActorEditor((FileInfo)item.Tag);
                     break;
+                case "PRF":
+                    prefabs = new Prefab((FileInfo)item.Tag);
+                    return;
             }
         }
 
