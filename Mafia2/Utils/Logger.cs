@@ -6,7 +6,7 @@ namespace Mafia2
 {
     public class Log
     {
-        public static string LogPath = "log.txt";
+        public static string LogPath = "Logging/log.txt";
         public static bool LoggingEnabled = true;
         public static bool ExtensiveLogging = false; //Doesnt fully work.
 
@@ -18,8 +18,11 @@ namespace Mafia2
 
         public static void CreateFile(bool append = false)
         {
-            if (!LoggingEnabled)
+            //if (!LoggingEnabled)
                 return;
+
+            if (!Directory.Exists("Logging"))
+                Directory.CreateDirectory("Logging");
 
             if (!File.Exists(LogPath))
             {
@@ -28,19 +31,21 @@ namespace Mafia2
             else
             {
                 if (!append)
-                    WriteLine("Debugging has started.", LoggingTypes.MESSAGE, false);
+                    WriteLine("Debugging has started.", LoggingTypes.MESSAGE, LogCategoryTypes.APPLICATION, false);
             }
         }
-        public static void WriteLine(string text, LoggingTypes type = LoggingTypes.MESSAGE, bool append = true)
+        public static void WriteLine(string text, LoggingTypes logType = LoggingTypes.MESSAGE, LogCategoryTypes catType = LogCategoryTypes.FUNCTION, bool append = true)
         {
-            if (!LoggingEnabled)
+            //if (!LoggingEnabled)
                 return;
 
-            using (StreamWriter Writer = new StreamWriter(LogPath, append, Encoding.UTF8))
+            string logfile = "Logging/LOG_" + LogCategoryTypes.APPLICATION + ".txt";
+
+            using (StreamWriter Writer = new StreamWriter(logfile, append, Encoding.UTF8))
             {
 
                 if (text != "")
-                    Writer.WriteLine(string.Format("[{0}] {1}: {2}", DateTime.Now.TimeOfDay, type, text));
+                    Writer.WriteLine(string.Format("[{0}] {1}: {2}", DateTime.Now.TimeOfDay, logType, text));
             }
         }
     }
@@ -50,5 +55,12 @@ namespace Mafia2
         ERROR,
         MESSAGE,
         FATAL,
+    }
+
+    public enum LogCategoryTypes
+    {
+        APPLICATION,
+        FUNCTION,
+        IO
     }
 }

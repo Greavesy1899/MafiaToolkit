@@ -18,6 +18,7 @@ namespace Mafia2Tool
             Application.SetCompatibleTextRenderingDefault(false);
 
             Log.DeleteOldLog();
+            Log.CreateFile();
 
             //do vital inits;
             CheckINIExists();

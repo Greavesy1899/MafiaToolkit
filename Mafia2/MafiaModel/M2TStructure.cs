@@ -371,14 +371,6 @@ namespace Mafia2
                     partTriangles[matId].Add(tri);
                 }
 
-                //byte[] matIDs = new byte[totalFaces];
-                //Short3[] triangles = new Short3[totalFaces];
-                //for (int x = 0; x != totalFaces; x++)
-                //{
-                //    triangles[x] = new Short3(reader);
-                //    matIDs[x] = reader.ReadByte();
-                //}
-
                 for (int x = 0; x != Lods[i].Parts.Length; x++)
                 {
                     Lods[i].Parts[x].Indices = partTriangles[x].ToArray();
@@ -387,7 +379,7 @@ namespace Mafia2
             }
         }
 
-        public void ReadFromFbx(string file)
+        public int ReadFromFbx(string file)
         {
             string args = "-ConvertToM2T ";
             string m2tFile = file.Remove(file.Length - 4, 4) + ".m2t";
@@ -395,17 +387,38 @@ namespace Mafia2
             args += ("\"" + m2tFile + "\" ");
             ProcessStartInfo processStartInfo = new ProcessStartInfo("M2FBX.exe", args)
             {
-                CreateNoWindow = false,
+                CreateNoWindow = true,
                 UseShellExecute = false
             };
             Process FbxTool = Process.Start(processStartInfo);
             while (!FbxTool.HasExited) ;
+
+            string errorMessage = "";
+            int exitCode = FbxTool.ExitCode;
             FbxTool.Dispose();
 
-            if (!File.Exists(m2tFile))
+            switch (exitCode)
             {
-                MessageBox.Show("Error Occured. Not importing.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                case -100:
+                    errorMessage = "An error ocurred: Boundary Box exceeds Mafia II's limits!";
+                    break;
+                case -99:
+                    errorMessage = "An error ocurred: pElementNormal->GetReferenceMode() did not equal eDirect!";
+                    break;
+                case -98:
+                    errorMessage = "An error ocurred: pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex!";
+                    break;
+                case -97:
+                    errorMessage = "An error ocurred: An error ocurred: Boundary Box exceeds Mafia II's limits!";
+                    break;
+                default:
+                    break;
+            }
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                MessageBox.Show(errorMessage, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return -1;
             }
 
             using (BinaryReader reader = new BinaryReader(File.Open(m2tFile, FileMode.Open)))
@@ -413,6 +426,8 @@ namespace Mafia2
 
             if (File.Exists(m2tFile))
                 File.Delete(m2tFile);
+
+            return 0;
         }
 
         public void ExportCollisionToM2T(string name)

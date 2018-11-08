@@ -1,5 +1,6 @@
 #include "M2TWrangler.h"
 #include "FbxUtilities.h"
+#include "Utilities.h"
 #include <conio.h>
 
 void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
@@ -11,6 +12,26 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	FbxGeometryElementMaterial* pElementMaterial = pMesh->GetElementMaterial(0);
 	FbxGeometryElementVertexColor* pElementVC = pMesh->GetElementVertexColor(0);
 
+	pMesh->ComputeBBox();
+
+	for (int i = 0; i != 3; i++)
+	{
+		double val = pMesh->BBoxMin.Get()[i];
+
+		if (val < -32768 || val > 32768) {
+			FBXSDK_printf("Boundary Box exceeds Mafia II's limits! Cannot continue!\n");
+			exit(-100);
+		}
+
+		val = pMesh->BBoxMax.Get()[i];
+
+		if (val < -32768 || val > 32768) {
+			FBXSDK_printf("Boundary Box exceeds Mafia II's limits! Cannot continue!\n");
+			exit(-100);
+		}
+	}
+	
+
 	pPart->SetHasPositions(true);
 	pPart->SetHasNormals(pElementNormal);
 	pPart->SetHasTangents(pElementTangent);
@@ -21,13 +42,11 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	//Gotta make sure the normals are correctly set up.
 	if (pElementNormal->GetReferenceMode() != FbxGeometryElement::eDirect) {
 		FBXSDK_printf("pElementNormal->GetReferenceMode() did not equal eDirect.. Cannot continue.\n");
-		_getch();
-		exit(-1);
+		exit(-99);
 	}
 	if ((pElementNormal->GetMappingMode() <= FbxGeometryElement::eByControlPoint) && (pElementNormal->GetMappingMode() >= FbxGeometryElement::eByPolygonVertex)) {
 		FBXSDK_printf("pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex.. Cannot continue.\n");
-		_getch();
-		exit(-1);
+		exit(-98);
 	}
 
 	std::vector<Point3> vertices = std::vector<Point3>();
@@ -101,8 +120,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	//Gotta be triangulated.
 	if (!pMesh->IsTriangleMesh()) {
 		FBXSDK_printf("pMesh->IsTriangleMesh() did not equal true.. Cannot continue.\n");
-		_getch();
-		exit(-1);
+		exit(-97);
 	}
 
 	//begin getting triangles
@@ -117,7 +135,8 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		triangle.i2 = pMesh->GetPolygonVertex(i, 1);
 		triangle.i3 = pMesh->GetPolygonVertex(i, 2);
 
-		matID = pElementMaterial->GetIndexArray().GetAt(i);
+		if(pElementMaterial != NULL)
+			matID = pElementMaterial->GetIndexArray().GetAt(i);
 
 		indices.push_back(triangle);
 		matIDs.push_back(matID);
@@ -129,11 +148,18 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 
 	std::vector<std::string> names = std::vector<std::string>();
 
-	//Get Material Names.
-	for (int i = 0; i != pNode->GetMaterialCount(); i++)
+	if (pNode->GetMaterialCount() != 0)
 	{
-		FbxSurfaceMaterial* mat = pNode->GetMaterial(i);
-		names.push_back(mat->GetName());
+		//Get Material Names.
+		for (int i = 0; i != pNode->GetMaterialCount(); i++)
+		{
+			FbxSurfaceMaterial* mat = pNode->GetMaterial(i);
+			names.push_back(mat->GetName());
+		}
+	}
+	else
+	{
+		names.push_back("_test_gray");
 	}
 
 	pPart->SetMatNames(names, true);
@@ -198,7 +224,7 @@ int ConvertFBX(const char* pSource, const char* pDest)
 				FBXSDK_printf("Converting Mesh..\n");
 				ModelPart Part = ModelPart();
 				ModelPart* pPart = &Part;
-				BuildModelPart(pNode, pPart);
+				BuildModelPart(pNode, pPart); 
 				parts.push_back(Part);
 				FBXSDK_printf("Built Part..\n");
 			}

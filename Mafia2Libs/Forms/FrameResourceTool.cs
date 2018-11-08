@@ -417,7 +417,10 @@ namespace Mafia2Tool
                 if (m2tBrowser.FileName.ToLower().EndsWith(".m2t"))
                     model.ModelStructure.ReadFromM2T(new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)));
                 else if (m2tBrowser.FileName.ToLower().EndsWith(".fbx"))
-                    model.ModelStructure.ReadFromFbx(m2tBrowser.FileName);
+                {
+                    if (model.ModelStructure.ReadFromFbx(m2tBrowser.FileName) == -1)
+                        return;
+                }
 
                 List<Vertex[]> vertData = new List<Vertex[]>();
                 for (int i = 0; i != model.ModelStructure.Lods.Length; i++)
@@ -576,6 +579,7 @@ namespace Mafia2Tool
             if (createNewResource)
             {
                 Model model = new Model();
+                model.ModelStructure = new M2TStructure();
                 model.FrameMesh = mesh;
 
                 if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
@@ -584,7 +588,10 @@ namespace Mafia2Tool
                 if (m2tBrowser.FileName.ToLower().EndsWith(".m2t"))
                     model.ModelStructure.ReadFromM2T(new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)));
                 else if (m2tBrowser.FileName.ToLower().EndsWith(".fbx"))
-                    model.ModelStructure.ReadFromFbx(m2tBrowser.FileName);
+                {
+                    if (model.ModelStructure.ReadFromFbx(m2tBrowser.FileName) == -1)
+                        return;
+                }
 
                 mesh.Name.Set(model.ModelStructure.Name);
                 model.CreateObjectsFromModel();

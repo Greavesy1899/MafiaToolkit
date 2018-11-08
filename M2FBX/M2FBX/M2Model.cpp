@@ -292,7 +292,7 @@ void ModelPart::ReadFromStream(FILE * stream) {
 	matIDs = std::vector<short>(indicesSize);
 	for (int x = 0; x != indicesSize; x++) {
 		Int3 tri;
-		char matID;
+		char matID = 0;
 		fread(&tri.i1, sizeof(unsigned short), 1, stream);
 		fread(&tri.i2, sizeof(unsigned short), 1, stream);
 		fread(&tri.i3, sizeof(unsigned short), 1, stream);
