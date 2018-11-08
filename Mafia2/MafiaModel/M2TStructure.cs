@@ -216,6 +216,9 @@ namespace Mafia2
 
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
                             vert.UVs[2].WriteToFile(writer);
+
+                        if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                            vert.UVs[3].WriteToFile(writer);
                     }
 
                     //write mesh count and texture names.
@@ -249,7 +252,7 @@ namespace Mafia2
             args += ("\"" + path + name + ".fbx\"");
             ProcessStartInfo processStartInfo = new ProcessStartInfo("M2FBX.exe", args)
             {
-                CreateNoWindow = true,
+                CreateNoWindow = false,
                 UseShellExecute = false
             };
             Process FbxTool = Process.Start(processStartInfo);
@@ -346,6 +349,12 @@ namespace Mafia2
                     {
                         vert.UVs[2] = new UVVector2();
                         vert.UVs[2].ReadFromFile(reader);
+                    }
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                    {
+                        vert.UVs[3] = new UVVector2();
+                        vert.UVs[3].ReadFromFile(reader);
                     }
 
                     lods[i].Vertices[x] = vert;

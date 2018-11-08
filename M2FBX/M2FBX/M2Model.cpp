@@ -281,6 +281,7 @@ void ModelPart::ReadFromStream(FILE * stream) {
 		}
 	}
 	fread(&subMeshCount, sizeof(int), 1, stream);
+	long pos = ftell(stream);
 	matNames = std::vector<std::string>(subMeshCount);
 	for (int i = 0; i != subMeshCount; i++) {
 		std::string edmName = std::string();

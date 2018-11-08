@@ -155,7 +155,7 @@ namespace Mafia2
         {
             short[] bounds;
             ushort firstIndex;
-            ushort secondIndex;
+            short secondIndex;
             short nleftIndex;
             short nrightIndex;
 
@@ -167,7 +167,7 @@ namespace Mafia2
                 get { return firstIndex; }
                 set { firstIndex = value; }
             }
-            public ushort SecondIndex {
+            public short SecondIndex {
                 get { return secondIndex; }
                 set { secondIndex = value; }
             }
@@ -188,7 +188,7 @@ namespace Mafia2
                     bounds[i] = reader.ReadInt16();
 
                 firstIndex = reader.ReadUInt16();
-                secondIndex = reader.ReadUInt16();
+                secondIndex = reader.ReadInt16();
                 nleftIndex = reader.ReadInt16();
                 nrightIndex = reader.ReadInt16();
             }
