@@ -381,6 +381,7 @@ namespace Mafia2Tool
             IOFxFile iofx;
             EmitterFile emitterFile;
             TableEditor tTool;
+            NAVData nav;
 
             switch (item.SubItems[1].Text)
             {
@@ -389,6 +390,9 @@ namespace Mafia2Tool
                     return;
                 case "Material Library":
                     mTool = new MaterialTool((FileInfo)item.Tag);
+                    return;
+                case "NAV":
+                    nav = new NAVData((FileInfo)item.Tag);
                     return;
                 case "Speech Data":
                    // sTool = new SpeechEditor((FileInfo)item.Tag);

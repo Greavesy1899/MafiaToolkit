@@ -6,7 +6,7 @@ namespace Mafia2
     public class NAVData
     {
         //unk01_flags could be types; AIWORLDS seem to have 1005, while OBJDATA is 3604410608.
-
+        FileInfo file;
 
         int fileSize; //size - 4;
         uint unk01_flags; //possibly flags?
@@ -17,6 +17,15 @@ namespace Mafia2
         public NAVData(BinaryReader reader)
         {
             ReadFromFile(reader);
+        }
+        public NAVData(FileInfo info)
+        {
+            file = info;
+
+            using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -49,7 +58,10 @@ namespace Mafia2
             string unkString1; //these both seem to be for their Kynapse.
             string unkString2; //sometimes it can be 1, or 2.
             string typeName; //always AIWORLDPART.
-            byte unk06; //potential bool.
+            long unk06; //between the AIWorldPart and the struct.
+            AISegment[] segments;
+            string originFile;
+            byte[] trailingBytes;
 
             public AIWorld(BinaryReader reader)
             {
@@ -72,11 +84,66 @@ namespace Mafia2
                 typeName = new string(reader.ReadChars(nameSize));
 
                 unk06 = reader.ReadByte();
-                if (unk06 != 1)
-                    throw new Exception("unk06 WAS NOT 1");
 
+                if(unk06 != 1)
+                    throw new Exception("unk06 was not 1");
 
+                int unkCount = reader.ReadInt32();
+                segments = new AISegment[unkCount];
+                for(int i = 0; i != unkCount; i++)
+                {
+                    segments[i] = new AISegment(reader);
+                }
+
+                originFile = Functions.ReadString(reader);
+                trailingBytes = reader.ReadBytes(8);
             }
+
+            private class AISegment
+            {
+                short unk0;
+                byte unk1;
+                AIChunk[] chunks;
+
+                public AISegment(BinaryReader reader)
+                {
+                    unk0 = reader.ReadInt16();
+                    unk1 = reader.ReadByte();
+                    int unkCount = reader.ReadInt32();
+                    chunks = new AIChunk[unkCount];
+                    for (int i = 0; i != unkCount; i++)
+                    {
+                        chunks[i] = new AIChunk(reader);
+                    }
+                }
+
+                private class AIChunk
+                {
+                    private short type;
+                    private short unk0;
+                    private Vector3 position;
+                    private Vector3 rotation;
+                    private byte[] data;
+
+                    public AIChunk(BinaryReader reader)
+                    {
+                        type = reader.ReadInt16();
+
+                        if (type != 7)
+                            throw new Exception("Unknown type");
+
+                        unk0 = reader.ReadInt16();
+                        position = new Vector3(reader);
+                        rotation = new Vector3(reader);
+                        data = reader.ReadBytes(16);
+                    }
+
+                    public override string ToString()
+                    {
+                        return string.Format("Chunk: {0}, {1}, {2}, {3}", type, unk0, position.ToString(), rotation.ToString());
+                    }
+                }
+            }         
         }
 
         public class OBJData

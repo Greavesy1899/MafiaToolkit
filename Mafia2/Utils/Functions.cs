@@ -44,6 +44,17 @@ namespace Mafia2
             long size = reader.ReadInt64();
             return new string(reader.ReadChars((int)size));
         }
+        public static string ReadString(BinaryReader reader)
+        {
+            string newString = "";
+
+            while (reader.PeekChar() != '\0')
+            {
+                newString += reader.ReadChar();
+            }
+            reader.ReadByte();
+            return newString;
+        }
         public static void WriteStirng32(BinaryWriter writer, string text)
         {
             writer.Write(text.Length);
