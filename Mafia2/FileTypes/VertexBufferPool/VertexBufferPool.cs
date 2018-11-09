@@ -173,7 +173,7 @@ namespace Mafia2
 
             //need to make sure we update total size of buffers.
             for (int i = 0; i != buffers.Count; i++)
-                size += buffers.ElementAt(i).Value.Data.Length;
+                size += (buffers.ElementAt(i).Value.Data.Length + 256);
 
             writer.Write(size);
 

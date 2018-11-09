@@ -72,6 +72,18 @@ void EDMPart::SetUVs(std::vector<UVVert> uvs) {
 	EDMPart::uvs = uvs;
 }
 
+void EDMPart::SetUV1s(std::vector<UVVert> uvs) {
+	EDMPart::uvs1 = uvs;
+}
+
+void EDMPart::SetUV2s(std::vector<UVVert> uvs) {
+	EDMPart::uvs2 = uvs;
+}
+
+void EDMPart::SetUV7s(std::vector<UVVert> uvs) {
+	EDMPart::uvs7 = uvs;
+}
+
 void EDMPart::SetSubMeshCount(int count) {
 	EDMPart::subMeshCount = count;
 }
@@ -164,6 +176,18 @@ std::vector<UVVert> EDMPart::GetUVs() {
 	return EDMPart::uvs;
 }
 
+std::vector<UVVert> EDMPart::GetUV1s() {
+	return EDMPart::uvs1;
+}
+
+std::vector<UVVert> EDMPart::GetUV2s() {
+	return EDMPart::uvs2;
+}
+
+std::vector<UVVert> EDMPart::GetUV7s() {
+	return EDMPart::uvs7;
+}
+
 int EDMPart::GetSubMeshCount() {
 	return EDMPart::subMeshCount;
 }
@@ -206,6 +230,9 @@ void EDMPart::ReadFromStream(FILE * stream) {
 	normals = std::vector<Point3>(vertSize);
 	tangents = std::vector<Point3>(vertSize);
 	uvs = std::vector<Point3>(vertSize);
+	uvs1 = std::vector<UVVert>(vertSize);
+	uvs2 = std::vector<UVVert>(vertSize);
+	uvs7 = std::vector<UVVert>(vertSize);
 	for (int i = 0; i != vertSize; i++) {
 		if (hasPosition) {
 			fread(&vertices[i].x, sizeof(float), 1, stream);
@@ -225,6 +252,18 @@ void EDMPart::ReadFromStream(FILE * stream) {
 		if (hasUV0) {
 			fread(&uvs[i].x, sizeof(float), 1, stream);
 			fread(&uvs[i].y, sizeof(float), 1, stream);
+		}
+		if (hasUV1) {
+			fread(&uvs1[i].x, sizeof(float), 1, stream);
+			fread(&uvs1[i].y, sizeof(float), 1, stream);
+		}
+		if (hasUV2) {
+			fread(&uvs2[i].x, sizeof(float), 1, stream);
+			fread(&uvs2[i].y, sizeof(float), 1, stream);
+		}
+		if (hasUV7) {
+			fread(&uvs7[i].x, sizeof(float), 1, stream);
+			fread(&uvs7[i].y, sizeof(float), 1, stream);
 		}
 	}
 	fread(&subMeshCount, sizeof(int), 1, stream);
@@ -339,6 +378,18 @@ void EDMPart::WriteToStream(FILE * stream) {
 			fwrite(&uvs[i].x, sizeof(float), 1, stream);
 			fwrite(&uvs[i].y, sizeof(float), 1, stream);
 		}
+		if (hasUV1) {
+			fwrite(&uvs1[i].x, sizeof(float), 1, stream);
+			fwrite(&uvs1[i].y, sizeof(float), 1, stream);
+		}
+		if (hasUV2) {
+			fwrite(&uvs2[i].x, sizeof(float), 1, stream);
+			fwrite(&uvs2[i].y, sizeof(float), 1, stream);
+		}
+		if (hasUV7) {
+			fwrite(&uvs7[i].x, sizeof(float), 1, stream);
+			fwrite(&uvs7[i].y, sizeof(float), 1, stream);
+		}
 	}
 	fwrite(&subMeshCount, sizeof(int), 1, stream);
 
@@ -400,7 +451,7 @@ void EDMStructure::ReadFromStream(FILE * stream) {
 }
 
 void EDMStructure::WriteToStream(FILE * stream) {
-	int header = 542388813;
+	int header = 22295117;
 	fwrite(&header, sizeof(int), 1, stream);
 	WriteString(stream, name);
 	fwrite(&partSize, sizeof(byte), 1, stream);

@@ -386,6 +386,7 @@ namespace Mafia2Tool
                     return;
 
                 Model model = new Model();
+                model.ModelStructure = new M2TStructure();
                 model.FrameMesh = treeView1.SelectedNode.Tag as FrameObjectSingleMesh;
                 model.FrameGeometry = SceneData.FrameResource.FrameGeometries[model.FrameMesh.Refs["Mesh"]];
                 model.FrameMaterial = SceneData.FrameResource.FrameMaterials[model.FrameMesh.Refs["Material"]];
@@ -668,7 +669,7 @@ namespace Mafia2Tool
             {
                 object fObject = SceneData.FrameResource.FrameObjects.ElementAt(i).Value;
 
-                if ((fObject as FrameObjectBase).IsOnFrameTable && (fObject as FrameObjectBase).FrameNameTableFlags == 0)
+                if ((fObject as FrameObjectBase).IsOnFrameTable && (fObject as FrameObjectBase).FrameNameTableFlags != 0)
                 {
                     if (fObject.GetType() == typeof(FrameObjectSingleMesh) || fObject.GetType() == typeof(FrameObjectModel))
                     {

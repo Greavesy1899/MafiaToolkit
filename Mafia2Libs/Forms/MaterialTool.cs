@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using Gibbed.Illusion.FileFormats.Hashing;
 using Mafia2;
 
 namespace Mafia2Tool
@@ -85,9 +86,16 @@ namespace Mafia2Tool
             if (form.type == -1)
                 return;
 
+            if (mtl.Materials.ContainsKey(FNV64.Hash(form.GetInputText())))
+            {
+                MessageBox.Show("Found duplicate material. Will not be adding new material!");
+                return;
+            }
+
             //create material with new name.
             Material mat = new Material();
             mat.SetName(form.GetInputText());
+
             mtl.Materials.Add(mat.MaterialHash, mat);
             dataGridView1.Rows.Add(BuildRowData(mat));
             //cleanup and reload.

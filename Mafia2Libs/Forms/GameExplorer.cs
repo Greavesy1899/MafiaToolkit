@@ -20,7 +20,6 @@ namespace Mafia2Tool
         public GameExplorer()
         {
             InitializeComponent();
-            LoadForm();
         }
 
         public void PreloadData()

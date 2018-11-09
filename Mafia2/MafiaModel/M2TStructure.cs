@@ -123,7 +123,7 @@ namespace Mafia2
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
                     {
-                        Console.WriteLine("Skip vertex with DamageGroup");
+                        //Console.WriteLine("Skip vertex with DamageGroup");
                     }
 
                     if (lods[i].NormalMapInfoPresent)
@@ -138,7 +138,15 @@ namespace Mafia2
 
                         ModelPart modelPart = new ModelPart();
                         Material mat = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
-                        modelPart.Material = (mat == null) ? "null" : mat.SPS[0].File;
+                        
+                       if (mat.SPS.Length == 0)
+                        {
+                            modelPart.Material = "_test_gray";
+                        }
+                       else
+                        {
+                            modelPart.Material = (mat == null) ? "null" : mat.SPS[0].File;
+                        }
 
                         int num = materials[x].StartIndex + materials[x].NumFaces * 3;
                         List<Short3> intList = new List<Short3>(materials[x].NumFaces);
@@ -252,7 +260,7 @@ namespace Mafia2
             args += ("\"" + path + name + ".fbx\"");
             ProcessStartInfo processStartInfo = new ProcessStartInfo("M2FBX.exe", args)
             {
-                CreateNoWindow = false,
+                CreateNoWindow = true,
                 UseShellExecute = false
             };
             Process FbxTool = Process.Start(processStartInfo);
