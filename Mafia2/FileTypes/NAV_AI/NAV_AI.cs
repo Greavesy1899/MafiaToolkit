@@ -120,27 +120,81 @@ namespace Mafia2
                 private class AIChunk
                 {
                     private short type;
-                    private short unk0;
-                    private Vector3 position;
-                    private Vector3 rotation;
-                    private byte[] data;
+                    private Type4 type4Data;
+                    private Type7 type7Data;
 
                     public AIChunk(BinaryReader reader)
                     {
                         type = reader.ReadInt16();
 
-                        if (type != 7)
-                            throw new Exception("Unknown type");
+                        switch(type)
+                        {
+                            case 4:
+                                type4Data = new Type4();
+                                type4Data.ReadFromFile(reader);
+                                break;
+                            case 7:
+                                type7Data = new Type7();
+                                type7Data.ReadFromFile(reader);
+                                break;
+                            default:
+                                throw new Exception("Unknown type");
+                        }
+                    }
 
-                        unk0 = reader.ReadInt16();
-                        position = new Vector3(reader);
-                        rotation = new Vector3(reader);
-                        data = reader.ReadBytes(16);
+                    private struct Type4
+                    {
+                        private byte unk0;
+                        private Vector3 position;
+                        private Vector3 rotation;
+                        private short[] unks1;
+                        private Vector3 unkVector;
+                        private byte[] unkHalfs; //ACTUALLY HALF DATA.
+                        private int[] unkData;
+                        private int trailingUnk;
+
+                        public void ReadFromFile(BinaryReader reader)
+                        {
+                            unk0 = reader.ReadByte();
+                            position = new Vector3(reader);
+                            rotation = new Vector3(reader);
+
+                            unks1 = new short[6];
+                            for (int i = 0; i != 6; i++)
+                                unks1[i] = reader.ReadInt16();
+
+                            unkVector = new Vector3(reader);
+                            unkHalfs = reader.ReadBytes(6);
+
+                            short unkCount = reader.ReadInt16();
+
+                            unkData = new int[unkCount];
+                            for (int i = 0; i != unkCount; i++)
+                                unkData[i] = reader.ReadInt32();
+
+                            trailingUnk = reader.ReadInt32();
+                        }
+                    }
+
+                    private struct Type7
+                    {
+                        private short unk0;
+                        private Vector3 position;
+                        private Vector3 rotation;
+                        private byte[] data;
+
+                        public void ReadFromFile(BinaryReader reader)
+                        {
+                            unk0 = reader.ReadInt16();
+                            position = new Vector3(reader);
+                            rotation = new Vector3(reader);
+                            data = reader.ReadBytes(16);
+                        }
                     }
 
                     public override string ToString()
                     {
-                        return string.Format("Chunk: {0}, {1}, {2}, {3}", type, unk0, position.ToString(), rotation.ToString());
+                        return string.Format("Chunk: {0}", type);
                     }
                 }
             }         
