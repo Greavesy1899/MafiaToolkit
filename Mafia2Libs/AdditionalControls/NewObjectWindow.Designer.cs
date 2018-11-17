@@ -32,6 +32,7 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.buttonContinue = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // label
@@ -52,7 +53,7 @@
             // 
             // buttonContinue
             // 
-            this.buttonContinue.Location = new System.Drawing.Point(259, 57);
+            this.buttonContinue.Location = new System.Drawing.Point(259, 163);
             this.buttonContinue.Name = "buttonContinue";
             this.buttonContinue.Size = new System.Drawing.Size(93, 23);
             this.buttonContinue.TabIndex = 2;
@@ -63,7 +64,7 @@
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(16, 57);
+            this.buttonCancel.Location = new System.Drawing.Point(16, 163);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(93, 23);
             this.buttonCancel.TabIndex = 3;
@@ -71,14 +72,22 @@
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.OnButtonClickCancel);
             // 
+            // panel1
+            // 
+            this.panel1.Location = new System.Drawing.Point(16, 57);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(340, 100);
+            this.panel1.TabIndex = 4;
+            // 
             // NewObjectForm
             // 
             this.AcceptButton = this.buttonContinue;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(364, 91);
+            this.ClientSize = new System.Drawing.Size(364, 193);
             this.ControlBox = false;
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonContinue);
             this.Controls.Add(this.textBox1);
@@ -98,5 +107,6 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button buttonContinue;
         private System.Windows.Forms.Button buttonCancel;
+        private System.Windows.Forms.Panel panel1;
     }
 }

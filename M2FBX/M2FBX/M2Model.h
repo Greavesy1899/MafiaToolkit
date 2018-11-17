@@ -1,5 +1,6 @@
 #ifndef M2_EDM_HEADER
 #define M2_EDM_HEADER
+#include <fbxsdk.h>
 #include <vector>
 
 typedef struct {
@@ -16,6 +17,17 @@ typedef struct {
 	float x;
 	float y;
 } UVVert;
+typedef struct {
+	float m00;
+	float m01;
+	float m02;
+	float m10;
+	float m11;
+	float m12;
+	float m20;
+	float m21;
+	float m22;
+} Matrix3;
 
 class ModelPart {
 private:
@@ -104,6 +116,7 @@ public:
 
 class ModelStructure {
 private:
+	const int magic = 22295117;
 	std::string name;
 	char partSize;
 	std::vector<ModelPart> parts;
@@ -119,5 +132,38 @@ public:
 
 	void ReadFromStream(FILE* stream);
 	void WriteToStream(FILE * stream);
+};
+
+class FrameEntry {
+private:
+	int lodCount;
+	std::vector<std::string> lodNames;
+	Matrix3 matrix;
+	Point3 position;
+public:
+	FrameEntry();
+	~FrameEntry();
+	void SetLodCount(int count);
+	void SetMatrix(Matrix3 matrix);
+	void SetLodNames(std::vector<std::string> lodNames);
+	int GetLodCount();
+	Matrix3 GetMatrix();
+	std::vector<std::string> GetLodNames();
+
+	void ReadFromStream(FILE* stream);
+	void WriteToStream(FILE* stream);
+};
+
+class FrameClass {
+private:
+	int entryCount;
+	std::vector<FrameEntry> entries;
+public:
+	FrameClass();
+	~FrameClass();
+	int GetNumEntries();
+	void SetNumEntries(int num);
+	std::vector<FrameEntry> GetEntries();
+	void SetEntries(std::vector<FrameEntry> entries);
 };
 #endif

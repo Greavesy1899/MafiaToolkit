@@ -176,7 +176,22 @@ int DetermineNodeAttribute(FbxNode* node)
 	return NULL;
 }
 
-int ConvertFBX(const char* pSource, const char* pDest)
+void BuildModel(ModelStructure& structure, FbxNode* node)
+{
+	structure.SetPartSize(1);
+	structure.SetName("Model");
+	std::vector<ModelPart> parts = std::vector<ModelPart>();
+	structure.SetName(node->GetName());
+	FBXSDK_printf("Converting Mesh..\n");
+	ModelPart Part = ModelPart();
+	ModelPart* pPart = &Part;
+	BuildModelPart(node, pPart);
+	parts.push_back(Part);
+	structure.SetParts(parts, true);
+	FBXSDK_printf("Built Model..\n");
+}
+
+int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 {
 	FBXSDK_printf("Converting FBX to M2T.\n");
 
@@ -206,12 +221,6 @@ int ConvertFBX(const char* pSource, const char* pDest)
 	FBXSDK_printf("Geometry Count: %i\n", lScene->GetGeometryCount());
 	FBXSDK_printf("Material Count: %i\n", lScene->GetMaterialCount());
 	FBXSDK_printf("Node Count: %i\n", lScene->GetNodeCount());
-	 
-	//Create Model..
-	ModelStructure Structure = ModelStructure();
-	Structure.SetPartSize(1);
-	Structure.SetName("Model");
-	std::vector<ModelPart> parts = std::vector<ModelPart>();
 
 	//Get Geometry..
 	FbxNode* Root = lScene->GetRootNode();
@@ -220,23 +229,22 @@ int ConvertFBX(const char* pSource, const char* pDest)
 		for (int i = 0; i != Root->GetChildCount(); i++) {
 			FbxNode* pNode = Root->GetChild(i);
 			if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
-				Structure.SetName(pNode->GetName());
-				FBXSDK_printf("Converting Mesh..\n");
-				ModelPart Part = ModelPart();
-				ModelPart* pPart = &Part;
-				BuildModelPart(pNode, pPart); 
-				parts.push_back(Part);
-				FBXSDK_printf("Built Part..\n");
+				ModelStructure Structure = ModelStructure();
+				BuildModel(Structure, pNode);
+				
+				FILE* stream;
+				
+				std::string dest = pDest;
+				dest += Structure.GetName() += ".m2t";
+
+				fopen_s(&stream, dest.c_str(), "wb");
+				Structure.WriteToStream(stream);
+				fclose(stream);
+
+				FBXSDK_printf("Exported %s\n", Structure.GetName().c_str());
 			}
 		}
 	}
-
-	Structure.SetParts(parts, true);
-
-	FILE* stream;
-	fopen_s(&stream, pDest, "wb");
-	Structure.WriteToStream(stream);
-	fclose(stream);
 
 	return 0;
 }

@@ -20,6 +20,11 @@ namespace Mafia2Tool
             Text = Language.GetString("$NEWOBJFORM_TITLE");
         }
 
+        public void LoadOption(Control desiredControl)
+        {
+            panel1.Controls.Add(desiredControl);
+        }
+
         public void SetLabel(string text)
         {
             label.Text = text;

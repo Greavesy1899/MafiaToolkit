@@ -5,6 +5,6 @@
 #include <iostream>
 #include "M2Model.h"
 
-int ConvertFBX(const char* pSource, const char* pDest);
+int ConvertFBX(const char* pSource, const char* pDest, const char* doScene);
 
 #endif

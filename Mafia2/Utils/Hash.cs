@@ -9,6 +9,7 @@ namespace Mafia2
     public class Hash
     {
         ulong hash;
+        string _hex;
         string _string;
         short size;
 
@@ -20,6 +21,11 @@ namespace Mafia2
         public string String {
             get { return _string; }
             set { Set(value); }
+        }
+
+        [ReadOnly(true)]
+        public string Hex {
+            get { return _hex; }
         }
         public Hash()
         {
@@ -44,6 +50,7 @@ namespace Mafia2
             hash = reader.ReadUInt64();
             size = reader.ReadInt16();
             _string = Encoding.ASCII.GetString(reader.ReadBytes(size));
+            _hex = string.Format("{0:X8}", hash);
         }
 
         /// <summary>
@@ -66,6 +73,7 @@ namespace Mafia2
             _string = name;
             size = (short)name.Length;
             hash = FNV64.Hash(name);
+            _hex = string.Format("{0:X}", hash);
         }
 
         public override string ToString()

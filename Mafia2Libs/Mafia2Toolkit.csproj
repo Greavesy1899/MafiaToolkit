@@ -148,6 +148,12 @@
     <Compile Include="AdditionalControls\NewObjectWindow.Designer.cs">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditorControls\MaterialAddOption.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="EditorControls\MaterialAddOption.Designer.cs">
+      <DependentUpon>MaterialAddOption.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ActorEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -318,6 +324,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AdditionalControls\NewObjectWindow.resx">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditorControls\MaterialAddOption.resx">
+      <DependentUpon>MaterialAddOption.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ActorEditor.resx">
       <DependentUpon>ActorEditor.cs</DependentUpon>

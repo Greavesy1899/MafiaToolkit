@@ -295,7 +295,7 @@ namespace Mafia2
         {
             X = HalfHelper.SingleToHalf(reader.ReadSingle());
             Y = HalfHelper.SingleToHalf(reader.ReadSingle());
-            Y -= (Half)1.0f;
+            //Y -= (Half)1.0f;
         }
 
         public override string ToString()

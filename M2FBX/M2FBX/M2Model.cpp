@@ -401,7 +401,7 @@ void ModelStructure::ReadFromStream(FILE * stream) {
 	int header;
 	fread(&header, sizeof(int), 1, stream); //header
 
-	if (header != 22295117)
+	if (header != magic)
 		exit(0);
 
 	std::string edmName = std::string();
@@ -417,8 +417,7 @@ void ModelStructure::ReadFromStream(FILE * stream) {
 }
 
 void ModelStructure::WriteToStream(FILE * stream) {
-	int header = 22295117;
-	fwrite(&header, sizeof(int), 1, stream);
+	fwrite(&magic, sizeof(int), 1, stream);
 	WriteString(stream, name);
 	fwrite(&partSize, sizeof(char), 1, stream);
 
@@ -426,8 +425,121 @@ void ModelStructure::WriteToStream(FILE * stream) {
 		parts[x].WriteToStream(stream);
 
 	fclose(stream);
-
 }
 
 ModelStructure::ModelStructure() {}
 ModelStructure::~ModelStructure() {}
+
+//===================================================
+//		FrameEntry
+//===================================================
+FrameEntry::FrameEntry() {}
+FrameEntry::~FrameEntry() {}
+
+void FrameEntry::SetLodCount(int count)
+{
+	this->lodCount = count;
+}
+
+void FrameEntry::SetMatrix(Matrix3 matrix)
+{
+	this->matrix = matrix;
+}
+
+void FrameEntry::SetLodNames(std::vector<std::string> lodNames)
+{
+	this->lodNames = lodNames;
+}
+
+int FrameEntry::GetLodCount()
+{
+	return this->lodCount;
+}
+
+Matrix3 FrameEntry::GetMatrix()
+{
+	return this->matrix;
+}
+
+std::vector<std::string> FrameEntry::GetLodNames()
+{
+	return this->lodNames;
+}
+
+void FrameEntry::ReadFromStream(FILE * stream)
+{
+	fread(&lodCount, sizeof(int), 1, stream);
+
+	fread(&position.x, sizeof(float), 1, stream);
+	fread(&position.y, sizeof(float), 1, stream);
+	fread(&position.z, sizeof(float), 1, stream);
+
+	fread(&matrix.m00, sizeof(float), 1, stream);
+	fread(&matrix.m01, sizeof(float), 1, stream);
+	fread(&matrix.m02, sizeof(float), 1, stream);
+	fread(&matrix.m10, sizeof(float), 1, stream);
+	fread(&matrix.m11, sizeof(float), 1, stream);
+	fread(&matrix.m12, sizeof(float), 1, stream);
+	fread(&matrix.m20, sizeof(float), 1, stream);
+	fread(&matrix.m21, sizeof(float), 1, stream);
+	fread(&matrix.m22, sizeof(float), 1, stream);
+
+	lodNames = std::vector<std::string>(lodCount);
+	for (int c = 0; c != lodNames.size(); c++) {
+		lodNames[c] = std::string();
+		lodNames[c] = ReadString(stream, lodNames[c]);
+		lodNames[c] += ".m2t";
+	}
+}
+
+void FrameEntry::WriteToStream(FILE * stream)
+{
+	fwrite(&lodCount, sizeof(int), 1, stream);
+
+	fwrite(&position.x, sizeof(float), 1, stream);
+	fwrite(&position.y, sizeof(float), 1, stream);
+	fwrite(&position.z, sizeof(float), 1, stream);
+
+	fwrite(&matrix.m00, sizeof(float), 1, stream);
+	fwrite(&matrix.m01, sizeof(float), 1, stream);
+	fwrite(&matrix.m02, sizeof(float), 1, stream);
+	fwrite(&matrix.m10, sizeof(float), 1, stream);
+	fwrite(&matrix.m11, sizeof(float), 1, stream);
+	fwrite(&matrix.m12, sizeof(float), 1, stream);
+	fwrite(&matrix.m20, sizeof(float), 1, stream);
+	fwrite(&matrix.m21, sizeof(float), 1, stream);
+	fwrite(&matrix.m22, sizeof(float), 1, stream);
+
+	lodNames = std::vector<std::string>(lodCount);
+	for (int c = 0; c != lodNames.size(); c++) {
+		WriteString(stream, lodNames[c]);
+	}
+}
+
+FrameClass::~FrameClass()
+{
+}
+
+int FrameClass::GetNumEntries()
+{
+	return this->entryCount;
+}
+
+void FrameClass::SetNumEntries(int num)
+{
+	this->entryCount = num;
+}
+
+std::vector<FrameEntry> FrameClass::GetEntries()
+{
+	return this->entries;
+}
+
+void FrameClass::SetEntries(std::vector<FrameEntry> entries)
+{
+	this->entries = entries;
+}
+
+FrameClass::FrameClass()
+{
+}

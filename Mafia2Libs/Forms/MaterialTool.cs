@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using Gibbed.Illusion.FileFormats.Hashing;
 using Mafia2;
+using Mafia2Tool.EditorControls;
 
 namespace Mafia2Tool
 {
@@ -82,6 +83,7 @@ namespace Mafia2Tool
             //ask user for material name.
             NewObjectForm form = new NewObjectForm();
             form.SetLabel(Language.GetString("$QUESTION_NAME_OF_MAT"));
+            form.LoadOption(new MaterialAddOption());
             form.ShowDialog();
             if (form.type == -1)
                 return;
