@@ -433,7 +433,13 @@ ModelStructure::~ModelStructure() {}
 //===================================================
 //		FrameEntry
 //===================================================
-FrameEntry::FrameEntry() {}
+FrameEntry::FrameEntry() 
+{ 
+	lodCount = 0; 
+	matrix.m00 = 1.0f;
+	matrix.m11 = 1.0f;
+	matrix.m22 = 1.0f;
+}
 FrameEntry::~FrameEntry() {}
 
 void FrameEntry::SetLodCount(int count)
@@ -449,6 +455,7 @@ void FrameEntry::SetMatrix(Matrix3 matrix)
 void FrameEntry::SetLodNames(std::vector<std::string> lodNames)
 {
 	this->lodNames = lodNames;
+	this->lodCount = lodNames.size();
 }
 
 int FrameEntry::GetLodCount()
@@ -464,6 +471,16 @@ Matrix3 FrameEntry::GetMatrix()
 std::vector<std::string> FrameEntry::GetLodNames()
 {
 	return this->lodNames;
+}
+
+void FrameEntry::SetPosition(Point3 pos)
+{
+	this->position = pos;
+}
+
+Point3 FrameEntry::GetPosition()
+{
+	return this->position;
 }
 
 void FrameEntry::ReadFromStream(FILE * stream)
@@ -510,7 +527,6 @@ void FrameEntry::WriteToStream(FILE * stream)
 	fwrite(&matrix.m21, sizeof(float), 1, stream);
 	fwrite(&matrix.m22, sizeof(float), 1, stream);
 
-	lodNames = std::vector<std::string>(lodCount);
 	for (int c = 0; c != lodNames.size(); c++) {
 		WriteString(stream, lodNames[c]);
 	}
@@ -538,8 +554,39 @@ std::vector<FrameEntry> FrameClass::GetEntries()
 void FrameClass::SetEntries(std::vector<FrameEntry> entries)
 {
 	this->entries = entries;
+	this->entryCount = entries.size();
+}
+
+void FrameClass::ReadFromStream(FILE * stream)
+{
+	int tempHeader;
+	fread(&tempHeader, sizeof(int), 1, stream);
+
+	if (tempHeader != magic)
+		return;
+
+	fread(&entryCount, sizeof(int), 1, stream);
+	entries = std::vector<FrameEntry>(entryCount);
+	for (int i = 0; i != entryCount; i++)
+	{
+		FrameEntry entry = FrameEntry();
+		entry.ReadFromStream(stream);
+		entries.push_back(entry);
+	}
+}
+
+void FrameClass::WriteToStream(FILE * stream)
+{
+	fwrite(&magic, sizeof(int), 1, stream);
+
+	fwrite(&entryCount, sizeof(int), 1, stream);
+	for (int i = 0; i != entryCount; i++)
+	{
+		entries.at(i).WriteToStream(stream);
+	}
 }
 
 FrameClass::FrameClass()
 {
+
 }

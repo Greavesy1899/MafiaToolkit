@@ -183,10 +183,9 @@ void BuildModel(ModelStructure& structure, FbxNode* node)
 	std::vector<ModelPart> parts = std::vector<ModelPart>();
 	structure.SetName(node->GetName());
 	FBXSDK_printf("Converting Mesh..\n");
-	ModelPart Part = ModelPart();
-	ModelPart* pPart = &Part;
-	BuildModelPart(node, pPart);
-	parts.push_back(Part);
+	ModelPart* Part = new ModelPart();
+	BuildModelPart(node, Part);
+	parts.push_back(*Part);
 	structure.SetParts(parts, true);
 	FBXSDK_printf("Built Model..\n");
 }
@@ -226,24 +225,45 @@ int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 	FbxNode* Root = lScene->GetRootNode();
 
 	if (Root) {
+		FrameClass frame = FrameClass();
+		std::vector<FrameEntry> entries = std::vector<FrameEntry>();
+		
 		for (int i = 0; i != Root->GetChildCount(); i++) {
 			FbxNode* pNode = Root->GetChild(i);
+			FrameEntry entry = FrameEntry();
 			if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
 				ModelStructure Structure = ModelStructure();
 				BuildModel(Structure, pNode);
-				
-				FILE* stream;
-				
-				std::string dest = pDest;
-				dest += Structure.GetName() += ".m2t";
 
+				std::vector<std::string> names = std::vector<std::string>();
+				Point3 pos = Point3();
+				pos.x = pNode->LclTranslation.Get().mData[0];
+				pos.y = pNode->LclTranslation.Get().mData[1];
+				pos.z = pNode->LclTranslation.Get().mData[2];
+				entry.SetPosition(pos);
+				names.push_back(Structure.GetName());
+
+				FILE* stream;
+				std::string dest = pDest;
+				dest += Structure.GetName();
+				dest += ".m2t";
 				fopen_s(&stream, dest.c_str(), "wb");
 				Structure.WriteToStream(stream);
 				fclose(stream);
 
+				entry.SetLodNames(names);
+				entries.push_back(entry);
 				FBXSDK_printf("Exported %s\n", Structure.GetName().c_str());
 			}
 		}
+		frame.SetEntries(entries);
+		FILE* frameStream;
+		std::string frameDest = pDest;
+		frameDest += "frame.edd";
+		fopen_s(&frameStream, frameDest.c_str(), "wb");
+		frame.WriteToStream(frameStream);
+		fclose(frameStream);
+		FBXSDK_printf("Saved frame..");
 	}
 
 	return 0;

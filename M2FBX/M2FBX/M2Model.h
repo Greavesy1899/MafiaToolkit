@@ -149,13 +149,15 @@ public:
 	int GetLodCount();
 	Matrix3 GetMatrix();
 	std::vector<std::string> GetLodNames();
-
+	void SetPosition(Point3 pos);
+	Point3 GetPosition();
 	void ReadFromStream(FILE* stream);
 	void WriteToStream(FILE* stream);
 };
 
 class FrameClass {
 private:
+	const int magic = 808535109;
 	int entryCount;
 	std::vector<FrameEntry> entries;
 public:
@@ -165,5 +167,7 @@ public:
 	void SetNumEntries(int num);
 	std::vector<FrameEntry> GetEntries();
 	void SetEntries(std::vector<FrameEntry> entries);
+	void ReadFromStream(FILE* stream);
+	void WriteToStream(FILE* stream);
 };
 #endif
