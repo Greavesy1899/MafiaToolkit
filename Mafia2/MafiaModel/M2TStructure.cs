@@ -139,7 +139,7 @@ namespace Mafia2
                         ModelPart modelPart = new ModelPart();
                         Material mat = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
                         
-                       if (mat.SPS.Length == 0)
+                       if (mat == null || mat.SPS.Length == 0)
                         {
                             modelPart.Material = "_test_gray";
                         }

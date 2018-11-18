@@ -238,9 +238,11 @@ int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 				std::vector<std::string> names = std::vector<std::string>();
 				Point3 pos = Point3();
 				pos.x = pNode->LclTranslation.Get().mData[0];
-				pos.y = pNode->LclTranslation.Get().mData[1];
-				pos.z = pNode->LclTranslation.Get().mData[2];
+				pos.z = pNode->LclTranslation.Get().mData[1];
+				pos.y = -pNode->LclTranslation.Get().mData[2];
 				entry.SetPosition(pos);
+				FBXSDK_printf("Position is: %f, %f, %f\n", pos.x, pos.y, pos.z);
+
 				names.push_back(Structure.GetName());
 
 				FILE* stream;

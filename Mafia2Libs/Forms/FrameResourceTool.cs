@@ -580,7 +580,6 @@ namespace Mafia2Tool
             if (createNewResource)
             {
                 Model model = new Model();
-                model.ModelStructure = new M2TStructure();
                 model.FrameMesh = mesh;
 
                 if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
@@ -694,6 +693,88 @@ namespace Mafia2Tool
                 }
             }
             ExportModels(meshes);
+        }
+
+        private void importFrameEDDButton_Click(object sender, EventArgs e)
+        {
+            //check if the user cancels.
+            if (eddBrowser.ShowDialog() == DialogResult.Cancel)
+                return;
+
+            CustomEDD frameData = new CustomEDD();
+            string frameParentDirectory = "";
+
+            //check if the filename is correct.
+            if (eddBrowser.FileName.ToLower().EndsWith(".edd"))
+            {
+                FileInfo file = new FileInfo(eddBrowser.FileName);
+
+                //check if the file actually exists.
+                if (!file.Exists)
+                    return;
+
+                frameParentDirectory = file.Directory.FullName;
+
+                using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+                {
+                    frameData.ReadFromFile(reader);
+                }
+            }
+
+            int done = 0;
+            foreach(CustomEDD.Entry entry in frameData.Entries)
+            {
+                FrameObjectSingleMesh mesh = new FrameObjectSingleMesh();
+                Model model = new Model();
+                model.FrameMesh = mesh;
+               
+                string path = frameParentDirectory + "//" + entry.LODNames[0] + ".m2t";
+         
+                using (BinaryReader reader = new BinaryReader(File.Open(path, FileMode.Open)))
+                {
+                    model.ModelStructure.ReadFromM2T(reader);
+                }
+
+                mesh.Name.Set(model.ModelStructure.Name);
+                model.CreateObjectsFromModel();
+                mesh.AddRef(FrameEntryRefTypes.Mesh, model.FrameGeometry.RefID);
+                mesh.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
+                SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
+                SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
+                FrameResourceListBox.Items.Add(model.FrameMaterial);
+                FrameResourceListBox.Items.Add(model.FrameGeometry);
+
+                //Check for existing buffer; if it exists, remove so we can add one later.
+                if (SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[0].Hash) != null)
+                    SceneData.IndexBufferPool.RemoveBuffer(model.IndexBuffers[0]);
+
+                //do the same for vertexbuffer pools.
+                if (SceneData.VertexBufferPool.SearchBuffer(model.VertexBuffers[0].Hash) != null)
+                    SceneData.VertexBufferPool.RemoveBuffer(model.VertexBuffers[0]);
+
+                SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[0]);
+                SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[0]);
+
+                mesh.UpdateNode();
+
+                FrameHeaderScene scene = SceneData.FrameResource.FrameScenes.ElementAt(0).Value;
+                mesh.SubRef(FrameEntryRefTypes.Parent2);
+                mesh.AddRef(FrameEntryRefTypes.Parent2, scene.RefID);
+                mesh.ParentIndex2.Index = 0;
+                mesh.ParentIndex2.RefID = scene.RefID;
+                mesh.ParentIndex2.Name = scene.Name.String;
+                mesh.IsOnFrameTable = true;
+                mesh.FrameNameTableFlags = 0;
+
+                mesh.Matrix.Position = entry.Position;
+                mesh.Matrix.Position.X += 5000;
+                mesh.Matrix.Rotation = entry.Rotation;
+                treeView1.Nodes.Add(CreateTreeNode(mesh));
+                SceneData.FrameResource.FrameObjects.Add(mesh.RefID, mesh);
+                FrameResourceListBox.Items.Add(mesh);
+                done++;
+                Console.WriteLine("Done number {0}/{1} {2}", done, frameData.EntryCount, mesh.Name.String);
+            }
         }
     }
 }

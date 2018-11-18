@@ -41,6 +41,7 @@
             this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.overwriteBufferSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.addButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.importFrameEDDButton = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.switchViewSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -48,6 +49,7 @@
             this.contextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextUpdateParents = new System.Windows.Forms.ToolStripMenuItem();
+            this.eddBrowser = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -136,7 +138,8 @@
             this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportAllSubButton,
             this.overwriteBufferSubButton,
-            this.addButton});
+            this.addButton,
+            this.importFrameEDDButton});
             this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
             this.toolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolsButton.Name = "toolsButton";
@@ -150,7 +153,7 @@
             this.modelsToolStripMenuItem,
             this.allToolStripMenuItem});
             this.exportAllSubButton.Name = "exportAllSubButton";
-            this.exportAllSubButton.Size = new System.Drawing.Size(160, 22);
+            this.exportAllSubButton.Size = new System.Drawing.Size(198, 22);
             this.exportAllSubButton.Text = "Export All";
             // 
             // farLodsToolStripMenuItem
@@ -177,16 +180,23 @@
             // overwriteBufferSubButton
             // 
             this.overwriteBufferSubButton.Name = "overwriteBufferSubButton";
-            this.overwriteBufferSubButton.Size = new System.Drawing.Size(160, 22);
+            this.overwriteBufferSubButton.Size = new System.Drawing.Size(198, 22);
             this.overwriteBufferSubButton.Text = "Overwrite Buffer";
             this.overwriteBufferSubButton.Click += new System.EventHandler(this.OverwriteBuffer_Click);
             // 
             // addButton
             // 
             this.addButton.Name = "addButton";
-            this.addButton.Size = new System.Drawing.Size(160, 22);
+            this.addButton.Size = new System.Drawing.Size(198, 22);
             this.addButton.Text = "Adding Test";
             this.addButton.Click += new System.EventHandler(this.AddFrameSingleMesh_Click);
+            // 
+            // importFrameEDDButton
+            // 
+            this.importFrameEDDButton.Name = "importFrameEDDButton";
+            this.importFrameEDDButton.Size = new System.Drawing.Size(198, 22);
+            this.importFrameEDDButton.Text = "D_ Import Frame (.EDD)";
+            this.importFrameEDDButton.Click += new System.EventHandler(this.importFrameEDDButton_Click);
             // 
             // viewToolButton
             // 
@@ -248,6 +258,11 @@
             this.contextUpdateParents.Text = "Update Parents";
             this.contextUpdateParents.ToolTipText = "Add a scene as a parent.";
             // 
+            // eddBrowser
+            // 
+            this.eddBrowser.FileName = "m2tBrowser";
+            this.eddBrowser.Filter = "Scene|*.edd";
+            // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -293,5 +308,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem addButton;
         private System.Windows.Forms.ToolStripMenuItem contextUpdateParents;
+        private System.Windows.Forms.ToolStripMenuItem importFrameEDDButton;
+        private System.Windows.Forms.OpenFileDialog eddBrowser;
     }
 }

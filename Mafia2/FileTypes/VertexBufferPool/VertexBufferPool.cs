@@ -6,10 +6,10 @@ namespace Mafia2
 {
     public class VertexBufferManager
     {
-        VertexBufferPool[] bufferPools;
+        List<VertexBufferPool> bufferPools;
         List<FileInfo> loadedPoolNames;
 
-        public VertexBufferPool[] BufferPools {
+        public List<VertexBufferPool> BufferPools {
             get { return bufferPools; }
             set { bufferPools = value; }
         }
@@ -35,7 +35,7 @@ namespace Mafia2
         /// <returns></returns>
         public BufferLocationStruct SearchBuffer(ulong indexRef)
         {
-            for (int i = 0; i != bufferPools.Length; i++)
+            for (int i = 0; i != bufferPools.Count; i++)
             {
                 int c = 0;
                 foreach (KeyValuePair<ulong, VertexBuffer> entry in bufferPools[i].Buffers)
@@ -54,13 +54,24 @@ namespace Mafia2
         /// <param name="buffer"></param>
         public void AddBuffer(VertexBuffer buffer)
         {
-            for (int i = 0; i != bufferPools.Length; i++)
+            int poolToInput = -1;
+
+            for (int i = 0; i != bufferPools.Count; i++)
             {
                 if (bufferPools[i].Buffers.Count != 128)
                 {
-                    bufferPools[i].Buffers.Add(buffer.Hash, buffer);
-                    return;
+                    poolToInput = i;
                 }
+            }
+
+            if (poolToInput == -1)
+            {
+                bufferPools.Add(new VertexBufferPool());
+                bufferPools[bufferPools.Count - 1].Buffers.Add(buffer.Hash, buffer);
+            }
+            else
+            {
+                bufferPools[poolToInput].Buffers.Add(buffer.Hash, buffer);
             }
         }
 
@@ -70,7 +81,7 @@ namespace Mafia2
         /// <param name="buffer"></param>
         public void RemoveBuffer(VertexBuffer buffer)
         {
-            for (int i = 0; i != bufferPools.Length; i++)
+            for (int i = 0; i != bufferPools.Count; i++)
             {
                 if (bufferPools[i].Buffers.Remove(buffer.Hash))
                     return;
@@ -82,11 +93,11 @@ namespace Mafia2
         /// </summary>
         public void ReadFiles()
         {
-            bufferPools = new VertexBufferPool[loadedPoolNames.Count];
-            for (int i = 0; i != bufferPools.Length; i++)
+            bufferPools = new List<VertexBufferPool>();
+            for (int i = 0; i != loadedPoolNames.Count; i++)
             {
                 using (BinaryReader reader = new BinaryReader(File.Open(loadedPoolNames[i].FullName, FileMode.Open)))
-                    bufferPools[i] = new VertexBufferPool(reader);
+                    bufferPools.Add(new VertexBufferPool(reader));
             }
         }
 
@@ -97,7 +108,7 @@ namespace Mafia2
         /// <returns></returns>
         public VertexBuffer GetBuffer(ulong vertexRef)
         {
-            for (int i = 0; i != bufferPools.Length; i++)
+            for (int i = 0; i != bufferPools.Count; i++)
             {
                 foreach (KeyValuePair<ulong, VertexBuffer> entry in bufferPools[i].Buffers)
                 {
@@ -113,10 +124,19 @@ namespace Mafia2
         /// </summary>
         public void WriteToFile()
         {
-            for (int i = 0; i != bufferPools.Length; i++)
+            for (int i = 0; i != bufferPools.Count; i++)
             {
-                using (BinaryWriter writer = new BinaryWriter(File.Open(loadedPoolNames[i].FullName, FileMode.Create)))
-                    bufferPools[i].WriteToFile(writer);
+                if (loadedPoolNames.Count > i)
+                {
+                    using (BinaryWriter writer = new BinaryWriter(File.Open(loadedPoolNames[i].FullName, FileMode.Create)))
+                        bufferPools[i].WriteToFile(writer);
+                }
+                else
+                {
+                    int offset = 20 + i;
+                    using (BinaryWriter writer = new BinaryWriter(File.Open(loadedPoolNames[0].DirectoryName + "/VertexBufferPool_" + offset + ".vbp", FileMode.Create)))
+                        bufferPools[i].WriteToFile(writer);
+                }
             }
         }
     }
@@ -141,6 +161,14 @@ namespace Mafia2
         public VertexBufferPool(BinaryReader reader)
         {
             ReadFromFile(reader);
+        }
+
+        public VertexBufferPool()
+        {
+            version = BufferType.Vertex;
+            numBuffers = 0;
+            size = 0;
+            buffers = new Dictionary<ulong, VertexBuffer>();
         }
 
         /// <summary>

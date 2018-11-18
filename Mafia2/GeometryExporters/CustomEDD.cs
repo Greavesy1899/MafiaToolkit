@@ -23,12 +23,31 @@ namespace Mafia2
             entries = new List<Entry>();
         }
 
+        public CustomEDD(FileInfo info)
+        {
+            entries = new List<Entry>();
+
+            using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
+        }
+
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(header.ToCharArray());
             writer.Write(entryCount);
             for (int i = 0; i != entryCount; i++)
                 entries[i].WriteToFile(writer);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
+            reader.BaseStream.Position += 4;
+            entryCount = reader.ReadInt32();
+
+            for (int i = 0; i != entryCount; i++)
+                entries.Add(new Entry(reader));
         }
 
         public class Entry
@@ -63,6 +82,11 @@ namespace Mafia2
                 lodNames = new string[lodCount];
             }
 
+            public Entry(BinaryReader reader)
+            {
+                ReadFromFile(reader);
+            }
+
             public void WriteToFile(BinaryWriter writer)
             {
                 writer.Write(lodCount);
@@ -70,6 +94,21 @@ namespace Mafia2
                 rotation.WriteToFile(writer);
                 for (int i = 0; i != lodCount; i++)
                     writer.Write(lodNames[i]);
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                lodCount = reader.ReadInt32();
+                position = new Vector3(reader);
+
+                Vector3 vec1 = new Vector3(reader);
+                Vector3 vec2 = new Vector3(reader);
+                Vector3 vec3 = new Vector3(reader);
+                rotation = new Matrix33(vec1, vec2, vec3);
+
+                lodNames = new string[lodCount];
+                for (int i = 0; i != lodCount; i++)
+                    lodNames[i] = reader.ReadString();
             }
         }
 

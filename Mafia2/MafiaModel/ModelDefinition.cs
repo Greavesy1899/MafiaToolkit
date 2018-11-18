@@ -91,7 +91,7 @@ namespace Mafia2
         /// </summary>
         public Model()
         {
-
+            ModelStructure = new M2TStructure();
         }
 
         /// <summary>
