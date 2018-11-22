@@ -382,9 +382,14 @@ namespace Mafia2Tool
             EmitterFile emitterFile;
             TableEditor tTool;
             NAVData nav;
+            ApexRenderMesh mesh;
 
             switch (item.SubItems[1].Text)
             {
+
+                case "ARM":
+                    mesh = new ApexRenderMesh((FileInfo)item.Tag);
+                    return;
                 case "Directory":
                     OpenDirectory((DirectoryInfo)item.Tag);
                     return;
@@ -398,7 +403,7 @@ namespace Mafia2Tool
                    // sTool = new SpeechEditor((FileInfo)item.Tag);
                     return;
                 case "CUT":
-                    //cutscene = new CutsceneFile((FileInfo)item.Tag);
+                    cutscene = new CutsceneFile((FileInfo)item.Tag);
                     return;
                 case "SDS Archive":
                     OpenSDS((FileInfo)item.Tag);

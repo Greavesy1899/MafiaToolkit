@@ -52,6 +52,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApexSDK\ApexRenderMesh.cs" />
     <Compile Include="ApexSDK\EmitterGeomExplicit.cs" />
     <Compile Include="ApexSDK\EmitterGeomSphere.cs" />
     <Compile Include="ApexSDK\Enums.cs" />

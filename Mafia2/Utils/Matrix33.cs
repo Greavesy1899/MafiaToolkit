@@ -144,6 +144,12 @@ namespace Mafia2
             return $"{Euler}";
         }
 
+        // Returns a matrix with all elements set to zero (RO).
+        public static Matrix33 identity { get { return identityMatrix; } }
 
+        static readonly Matrix33 identityMatrix = new Matrix33(
+            new Vector3(1, 0, 0),
+            new Vector3(0, 1, 0),
+            new Vector3(0, 0, 1));
     }
 }
