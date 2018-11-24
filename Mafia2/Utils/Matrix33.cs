@@ -62,17 +62,32 @@ namespace Mafia2
         /// <param name="m1"></param>
         /// <param name="m2"></param>
         /// <param name="m3"></param>
-        public Matrix33(Vector3 m1, Vector3 m2, Vector3 m3)
+        public Matrix33(Vector3 m1, Vector3 m2, Vector3 m3, bool rowMajor)
         {
-            m00 = m1.X;
-            m01 = m2.X;
-            m02 = m3.X;
-            m10 = m1.Y;
-            m11 = m2.Y;
-            m12 = m3.Y;
-            m20 = m1.Z;
-            m21 = m2.Z;
-            m22 = m3.Z;
+            if (rowMajor)
+            {
+                m00 = m1.X;
+                m01 = m2.X;
+                m02 = m3.X;
+                m10 = m1.Y;
+                m11 = m2.Y;
+                m12 = m3.Y;
+                m20 = m1.Z;
+                m21 = m2.Z;
+                m22 = m3.Z;
+            }
+            else
+            {
+                m00 = m1.X;
+                m10 = m2.X;
+                m20 = m3.X;
+                m01 = m1.Y;
+                m11 = m2.Y;
+                m21 = m3.Y;
+                m02 = m1.Z;
+                m12 = m2.Z;
+                m22 = m3.Z;
+            }
             Euler = ToEuler();
         }
 
@@ -120,7 +135,7 @@ namespace Mafia2
             double z;
             double y = Math.Asin(m02);
 
-            if(Math.Abs(m02) < 0.99999)
+            if (Math.Abs(m02) < 0.99999)
             {
                 x = Math.Atan2(m12, m22);
                 z = Math.Atan2(m01, m00);
@@ -139,17 +154,32 @@ namespace Mafia2
             return new Vector3((float)x, (float)y, (float)z);
         }
 
+        public Matrix33 ChangeHandedness()
+        {
+            Matrix33 temp = this;
+            m00 = temp.m00;
+            m01 = temp.m10;
+            m02 = temp.m20;
+            m10 = temp.m01;
+            m11 = temp.m11;
+            m12 = temp.m21;
+            m20 = temp.m02;
+            m21 = temp.m12;
+            m22 = temp.m22;
+
+            return this;
+        }
+
         public override string ToString()
         {
             return $"{Euler}";
         }
 
         // Returns a matrix with all elements set to zero (RO).
-        public static Matrix33 identity { get { return identityMatrix; } }
-
-        static readonly Matrix33 identityMatrix = new Matrix33(
-            new Vector3(1, 0, 0),
-            new Vector3(0, 1, 0),
-            new Vector3(0, 0, 1));
+        public static Matrix33 identity { get; } = new Matrix33(
+           new Vector3(1, 0, 0),
+           new Vector3(0, 1, 0),
+           new Vector3(0, 0, 1),
+           true);
     }
 }

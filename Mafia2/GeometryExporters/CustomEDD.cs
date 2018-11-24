@@ -104,7 +104,7 @@ namespace Mafia2
                 Vector3 vec1 = new Vector3(reader);
                 Vector3 vec2 = new Vector3(reader);
                 Vector3 vec3 = new Vector3(reader);
-                rotation = new Matrix33(vec1, vec2, vec3);
+                rotation = new Matrix33(vec1, vec2, vec3, false);
 
                 lodNames = new string[lodCount];
                 for (int i = 0; i != lodCount; i++)

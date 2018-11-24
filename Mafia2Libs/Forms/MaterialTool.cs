@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using Gibbed.Illusion.FileFormats.Hashing;
 using Mafia2;
@@ -11,6 +12,7 @@ namespace Mafia2Tool
     public partial class MaterialTool : Form
     {
         private MaterialLibrary mtl;
+        private List<string> debugShader = new List<string>();
 
         public MaterialTool(FileInfo file)
         {
@@ -38,8 +40,24 @@ namespace Mafia2Tool
         public void FetchMaterials(bool searchMode = false, string text = null)
         {
             dataGridView1.Rows.Clear();
+
             foreach (KeyValuePair<ulong, Material> mat in mtl.Materials)
             {
+                string data = "HASH: " + mat.Value.ShaderHash + "\t" + "ID: " + mat.Value.ShaderID;
+                string paramData = "\tPARAM: ";
+
+                for (int i = 0; i != mat.Value.SP.Length; i++)
+                    paramData += mat.Value.SP[i].Chunk += " ";
+
+                paramData += "\tSAMPLERS: ";
+                for (int i = 0; i != mat.Value.SPS.Length; i++)
+                    paramData += mat.Value.SPS[i].ID += " ";
+
+                data += ("\t" + paramData);
+
+                if (!debugShader.Contains(data))
+                    debugShader.Add(data);
+
                 if (!string.IsNullOrEmpty(text) && searchMode)
                 {
                     if (mat.Value.MaterialName.Contains(text) || mat.Value.MaterialHash.ToString().Contains(text))
@@ -52,6 +70,8 @@ namespace Mafia2Tool
                     dataGridView1.Rows.Add(BuildRowData(mat));
                 }
             }
+
+            File.WriteAllLines("DebugShaderData.txt", debugShader);
         }
 
         public void WriteMaterialsFile()

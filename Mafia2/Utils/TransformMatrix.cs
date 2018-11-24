@@ -39,7 +39,7 @@ public class TransformMatrix
         Vector3 m3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         float z = reader.ReadSingle();
 
-        Rotation = new Matrix33(m1, m2, m3);
+        Rotation = new Matrix33(m1, m2, m3, true);
         Position = new Vector3(x, y, z);
     }
 

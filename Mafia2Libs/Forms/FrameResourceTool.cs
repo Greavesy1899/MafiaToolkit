@@ -767,8 +767,11 @@ namespace Mafia2Tool
                 mesh.FrameNameTableFlags = 0;
 
                 mesh.Matrix.Position = entry.Position;
-                mesh.Matrix.Position.X += 5000;
+                mesh.Matrix.Position.X += 0;
+                mesh.Matrix.Position.Y -= 5000;
+                //entry.Rotation.ChangeHandedness();
                 mesh.Matrix.Rotation = entry.Rotation;
+
                 treeView1.Nodes.Add(CreateTreeNode(mesh));
                 SceneData.FrameResource.FrameObjects.Add(mesh.RefID, mesh);
                 FrameResourceListBox.Items.Add(mesh);

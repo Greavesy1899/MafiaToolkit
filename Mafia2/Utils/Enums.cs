@@ -377,7 +377,7 @@ namespace Mafia2
         Alpha = 2,
         flag_4 = 4,
         flag_8 = 8,
-        flag_16 = 16,
+        Disable_ZWriting = 16,
         flag_32 = 32,
         flag_64 = 64,
         flag_128 = 128,
