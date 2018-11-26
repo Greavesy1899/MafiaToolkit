@@ -196,7 +196,7 @@ namespace Mafia2Tool
             this.SearchEntryText.Name = "SearchEntryText";
             this.SearchEntryText.Size = new System.Drawing.Size(200, 23);
             this.SearchEntryText.ToolTipText = "$SEARCH_TOOLTIP";
-            this.SearchEntryText.TextChanged += new System.EventHandler(this.SearchBarOnTextChanged);
+            this.SearchEntryText.TextChanged += new System.EventHandler(this.OnRefreshButtonClicked);
             // 
             // fileListView
             // 
@@ -379,21 +379,21 @@ namespace Mafia2Tool
             // 
             // openMafiaIIToolStripMenuItem
             // 
-            this.openMafiaIIToolStripMenuItem.Name = "OpenMafiaIIButton";
+            this.openMafiaIIToolStripMenuItem.Name = "openMafiaIIToolStripMenuItem";
             this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.openMafiaIIToolStripMenuItem.Text = "$BTN_OPEN_MII";
             this.openMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.OpenMafiaIIClicked);
             // 
             // runMafiaIIToolStripMenuItem
             // 
-            this.runMafiaIIToolStripMenuItem.Name = "RunMafiaIIButton";
+            this.runMafiaIIToolStripMenuItem.Name = "runMafiaIIToolStripMenuItem";
             this.runMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.runMafiaIIToolStripMenuItem.Text = "$BTN_RUN_MII";
             this.runMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.RunMafiaIIClicked);
             // 
             // exitToolStripMenuItem
             // 
-            this.exitToolStripMenuItem.Name = "ExitToolkitButton";
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exitToolStripMenuItem.Text = "$EXIT";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolkitClicked);

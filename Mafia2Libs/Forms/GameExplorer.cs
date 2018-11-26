@@ -16,6 +16,7 @@ namespace Mafia2Tool
     {
         private DirectoryInfo currentDirectory;
         private DirectoryInfo originalPath;
+        private FileInfo launcher;
 
         public GameExplorer()
         {
@@ -106,11 +107,11 @@ namespace Mafia2Tool
             foreach (FileInfo file in originalPath.GetFiles())
             {
                 //check for either steam or gog version.
-                if ((file.Name.ToLower() == "launcher") ||
-                    (file.Name.ToLower() == "launcher.exe") ||
-                    (file.Name.ToLower() == "launch mafia ii") ||
-                    (file.Name.ToLower() == "launch mafia ii.lnk"))
+                if ((file.Name.ToLower() == "launcher") || (file.Name.ToLower() == "launcher.exe") || (file.Name.ToLower() == "launch mafia ii") || (file.Name.ToLower() == "launch mafia ii.lnk"))
+                {
                     hasLauncher = true;
+                    launcher = file;
+                }
 
                 //stop early if needed
                 if (hasLauncher)
@@ -227,7 +228,7 @@ namespace Mafia2Tool
 
             infoText.Text = "Done loading directory.";
             FolderPath.Text = directory.FullName;
-            fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
 
             //sort out treeview stuff.
             currentDirectory = directory;
@@ -533,15 +534,7 @@ namespace Mafia2Tool
         }
         private void RunMafiaIIClicked(object sender, EventArgs e)
         {
-            string exe = Path.Combine(ToolkitSettings.M2Directory + "launcher.exe");
-
-            if (!File.Exists(exe))
-            {
-                MessageBox.Show("Launcher.exe was not found.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            Process.Start(exe);
+            Process.Start(launcher.FullName);
         }
 
         //FileListViewStrip events.
