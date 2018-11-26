@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Mafia2Tool.EditorControls;
 
 namespace Mafia2Tool
 {
@@ -567,6 +568,11 @@ namespace Mafia2Tool
 
         private void AddFrameSingleMesh_Click(object sender, EventArgs e)
         {
+            //NewObjectForm form = new NewObjectForm();
+            //form.SetLabel(Language.GetString("$QUESTION_NAME_OF_MAT"));
+            //form.LoadOption(new FrameResourceAddOption());
+            //form.ShowDialog();
+
             bool createNewResource = false;
             DialogResult result = MessageBox.Show("Do you want to import a new model?", "Toolkit", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 

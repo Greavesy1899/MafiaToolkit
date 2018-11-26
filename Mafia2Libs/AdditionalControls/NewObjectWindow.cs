@@ -22,7 +22,7 @@ namespace Mafia2Tool
 
         public void LoadOption(Control desiredControl)
         {
-            panel1.Controls.Add(desiredControl);
+            panel1.Controls.Add(desiredControl);          
         }
 
         public void SetLabel(string text)

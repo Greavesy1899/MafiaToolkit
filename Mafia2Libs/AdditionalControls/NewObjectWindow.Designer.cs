@@ -74,6 +74,7 @@
             // 
             // panel1
             // 
+            this.panel1.AutoSize = true;
             this.panel1.Location = new System.Drawing.Point(16, 57);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(340, 100);
@@ -84,6 +85,7 @@
             this.AcceptButton = this.buttonContinue;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(364, 193);
             this.ControlBox = false;

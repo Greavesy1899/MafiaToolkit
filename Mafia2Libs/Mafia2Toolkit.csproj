@@ -148,6 +148,18 @@
     <Compile Include="AdditionalControls\NewObjectWindow.Designer.cs">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditorControls\FrameResourceAddSceneOption.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="EditorControls\FrameResourceAddSceneOption.Designer.cs">
+      <DependentUpon>FrameResourceAddSceneOption.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditorControls\FrameResourceAddOption.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="EditorControls\FrameResourceAddOption.Designer.cs">
+      <DependentUpon>FrameResourceAddOption.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditorControls\MaterialAddOption.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -324,6 +336,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AdditionalControls\NewObjectWindow.resx">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditorControls\FrameResourceAddSceneOption.resx">
+      <DependentUpon>FrameResourceAddSceneOption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditorControls\FrameResourceAddOption.resx">
+      <DependentUpon>FrameResourceAddOption.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorControls\MaterialAddOption.resx">
       <DependentUpon>MaterialAddOption.cs</DependentUpon>
