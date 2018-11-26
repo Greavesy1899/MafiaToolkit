@@ -41,5 +41,10 @@ namespace Mafia2
 
             return mat;
         }
+
+        public static void ClearLoadedMTLs()
+        {
+            MTLs.Clear();
+        }
     }
 }

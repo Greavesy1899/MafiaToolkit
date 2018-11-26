@@ -35,16 +35,17 @@ namespace Mafia2Tool
             Localise();            
             infoText.Text = "Loading..";
             BuildTreeView();
+            FileListViewTypeController(1);
             infoText.Text = "Ready..";
         }
 
         private bool Localise()
         {
             Text = Language.GetString("$MII_TK_GAME_EXPLORER");
-            buttonStripUp.ToolTipText = Language.GetString("$UP_TOOLTIP");
-            textStripFolderPath.ToolTipText = Language.GetString("$FOLDER_PATH_TOOLTIP");
+            UpButton.ToolTipText = Language.GetString("$UP_TOOLTIP");
+            FolderPath.ToolTipText = Language.GetString("$FOLDER_PATH_TOOLTIP");
             buttonStripRefresh.Text = Language.GetString("$REFRESH");
-            textStripSearch.ToolTipText = Language.GetString("$SEARCH_TOOLTIP");
+            SearchEntryText.ToolTipText = Language.GetString("$SEARCH_TOOLTIP");
             columnName.Text = Language.GetString("$NAME");
             columnType.Text = Language.GetString("$TYPE");
             columnSize.Text = Language.GetString("$SIZE");
@@ -60,15 +61,26 @@ namespace Mafia2Tool
             ContextViewSmallIcon.Text = Language.GetString("$SMALL_ICON");
             ContextViewList.Text = Language.GetString("$LIST");
             ContextViewTile.Text = Language.GetString("$TILE");
+            ViewStripMenuIcon.Text = Language.GetString("$ICON");
+            ViewStripMenuDetails.Text = Language.GetString("$DETAILS");
+            ViewStripMenuSmallIcon.Text = Language.GetString("$SMALL_ICON");
+            ViewStripMenuList.Text = Language.GetString("$LIST");
+            ViewStripMenuTile.Text = Language.GetString("$TILE");
             dropdownFile.Text = Language.GetString("$FILE");
             openMafiaIIToolStripMenuItem.Text = Language.GetString("$BTN_OPEN_MII");
             runMafiaIIToolStripMenuItem.Text = Language.GetString("$BTN_RUN_MII");
             exitToolStripMenuItem.Text = Language.GetString("$EXIT");
             dropdownView.Text = Language.GetString("$VIEW");
             dropdownTools.Text = Language.GetString("$TOOLS");
-            optionsToolStripMenuItem.Text = Language.GetString("$OPTIONS");
+            OptionsItem.Text = Language.GetString("$OPTIONS");
             MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
             return true;
+        }
+
+        private void PrintErrorLauncher()
+        {
+            MessageBox.Show(Language.GetString("$ERROR_DID_NOT_FIND_LAUNCHER"), Language.GetString("$ERROR_TITLE"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Log.WriteLine("$ERROR_DID_NOT_FIND_LAUNCHER", LoggingTypes.ERROR);
         }
 
         /// <summary>
@@ -78,7 +90,6 @@ namespace Mafia2Tool
         {
             TreeNode rootTreeNode;
 
-
             if (string.IsNullOrEmpty(ToolkitSettings.M2Directory))
                 GetPath();
 
@@ -87,25 +98,28 @@ namespace Mafia2Tool
             //check if directory exists.
             if (!originalPath.Exists)
             {
-                MessageBox.Show("Could not find MafiaII 'launcher.exe', please correct the path!", "Error!",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                PrintErrorLauncher();
                 return;
             }
 
-
-            //check if launcher.exe exists.
             bool hasLauncher = false;
             foreach (FileInfo file in originalPath.GetFiles())
             {
-                if (file.Name == "launcher.exe" || file.Name == "launcher")
+                //check for either steam or gog version.
+                if ((file.Name.ToLower() == "launcher") ||
+                    (file.Name.ToLower() == "launcher.exe") ||
+                    (file.Name.ToLower() == "launch mafia ii") ||
+                    (file.Name.ToLower() == "launch mafia ii.lnk"))
                     hasLauncher = true;
+
+                //stop early if needed
+                if (hasLauncher)
+                    break;
             }
 
             if (!hasLauncher)
             {
-                MessageBox.Show("Could not find MafiaII 'launcher.exe', please correct the path!", "Error!",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Log.WriteLine("Could not find MafiaII 'launcher.exe', please correct the path!", LoggingTypes.ERROR);
+                PrintErrorLauncher();
                 return;
             }
 
@@ -212,7 +226,7 @@ namespace Mafia2Tool
             }
 
             infoText.Text = "Done loading directory.";
-            textStripFolderPath.Text = directory.FullName;
+            FolderPath.Text = directory.FullName;
             fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
             //sort out treeview stuff.
@@ -346,14 +360,14 @@ namespace Mafia2Tool
 
             foreach (ToolStripItem tsi in toolStrip2.Items)
             {
-                if (!(tsi == textStripFolderPath))
+                if (!(tsi == FolderPath))
                 {
                     width -= tsi.Width;
                     width -= tsi.Margin.Horizontal;
                 }
             }
 
-            textStripFolderPath.Width = Math.Max(0, width - textStripFolderPath.Margin.Horizontal);
+            FolderPath.Width = Math.Max(0, width - FolderPath.Margin.Horizontal);
         }
         protected override void OnLoad(EventArgs e)
         {
@@ -432,6 +446,9 @@ namespace Mafia2Tool
                 case "PRF":
                     prefabs = new Prefab((FileInfo)item.Tag);
                     return;
+                default:
+                    Process.Start(((FileInfo)item.Tag).FullName);
+                    break;
             }
         }
 
@@ -439,7 +456,7 @@ namespace Mafia2Tool
         {
             if (fileListView.SelectedItems.Count == 0)
             {
-                MessageBox.Show("Select an item.", "Toolkit", MessageBoxButtons.OK);
+                MessageBox.Show(Language.GetString("$ERROR_SELECT_ITEM"), "Toolkit", MessageBoxButtons.OK);
                 return;
             }
 
@@ -453,53 +470,15 @@ namespace Mafia2Tool
                     HandleFile(item);
             }
         }
-        private void openMafiaIIToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            folderView.Nodes.Clear();
-            BuildTreeView();
-        }
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-        private void runMafiaIIToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string exe = Path.Combine(ToolkitSettings.M2Directory + "launcher.exe");
 
-            if (!File.Exists(exe))
-            {
-                MessageBox.Show("Launcher.exe was not found.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            Process.Start(exe);
-        }
-        private void buttonStripUp_Click(object sender, EventArgs e)
-        {
-            if (currentDirectory.Name == originalPath.Name)
-                return;
-
-            string directoryPath = currentDirectory.FullName.Remove(0, currentDirectory.FullName.IndexOf(originalPath.Name)).TrimEnd('\\');
-
-            TreeNode nodeToCollapse = folderView.Nodes.FindTreeNodeByFullPath(directoryPath);
-            if (nodeToCollapse != null)
-                nodeToCollapse.Collapse();
-
-            OpenDirectory(currentDirectory.Parent);
-        }
-        private void buttonStripRefresh_Click(object sender, EventArgs e)
-        {
-            currentDirectory.Refresh();
-            OpenDirectory(currentDirectory);
-        }
         private void onPathChange(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == '\r')
             {
-                if (Directory.Exists(textStripFolderPath.Text) && textStripFolderPath.Text.Contains(currentDirectory.Name))
-                    OpenDirectory(new DirectoryInfo(textStripFolderPath.Text));
+                if (Directory.Exists(FolderPath.Text) && FolderPath.Text.Contains(currentDirectory.Name))
+                    OpenDirectory(new DirectoryInfo(FolderPath.Text));
                 else
-                    MessageBox.Show("Game Explorer cannot find path '" + textStripFolderPath + "'. Make sure the path exists and try again.", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Game Explorer cannot find path '" + FolderPath + "'. Make sure the path exists and try again.", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void ContextOpenFolder_Click(object sender, EventArgs e)
@@ -525,18 +504,12 @@ namespace Mafia2Tool
                 }
             }
         }
-        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnOptionsItem_Clicked(object sender, EventArgs e)
         {
             OptionsForm options = new OptionsForm();
             options.ShowDialog();
-            Controls.Clear();
-            InitializeComponent();
-            LoadForm();
-        }
-
-        private void SearchBarOnTextChanged(object sender, EventArgs e)
-        {
-            OpenDirectory(currentDirectory, true, textStripSearch.Text);
+            Localise();
+            MaterialData.Load();
         }
 
         private void ContextSDSUnpackAll_Click(object sender, EventArgs e)
@@ -548,44 +521,115 @@ namespace Mafia2Tool
             }
         }
 
-        private void ContextViewBtn_Click(object sender, EventArgs e)
+        //'File' Button dropdown events.
+        private void OpenMafiaIIClicked(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            folderView.Nodes.Clear();
+            BuildTreeView();
+        }
+        private void ExitToolkitClicked(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+        private void RunMafiaIIClicked(object sender, EventArgs e)
+        {
+            string exe = Path.Combine(ToolkitSettings.M2Directory + "launcher.exe");
 
+            if (!File.Exists(exe))
+            {
+                MessageBox.Show("Launcher.exe was not found.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            Process.Start(exe);
+        }
+
+        //FileListViewStrip events.
+        private void OnUpButtonClicked(object sender, EventArgs e)
+        {
+            if (currentDirectory.Name == originalPath.Name)
+                return;
+
+            string directoryPath = currentDirectory.FullName.Remove(0, currentDirectory.FullName.IndexOf(originalPath.Name)).TrimEnd('\\');
+
+            TreeNode nodeToCollapse = folderView.Nodes.FindTreeNodeByFullPath(directoryPath);
+            if (nodeToCollapse != null)
+                nodeToCollapse.Collapse();
+
+            OpenDirectory(currentDirectory.Parent);
+        }
+        private void OnRefreshButtonClicked(object sender, EventArgs e)
+        {
+            currentDirectory.Refresh();
+            OpenDirectory(currentDirectory);
+        }
+        private void SearchBarOnTextChanged(object sender, EventArgs e)
+        {
+            OpenDirectory(currentDirectory, true, SearchEntryText.Text);
+        }
+
+        //View FileList handling.
+        private void FileListViewTypeController(int type)
+        {
             ContextViewIcon.Checked = false;
             ContextViewDetails.Checked = false;
             ContextViewSmallIcon.Checked = false;
             ContextViewList.Checked = false;
             ContextViewTile.Checked = false;
+            ViewStripMenuIcon.Checked = false;
+            ViewStripMenuDetails.Checked = false;
+            ViewStripMenuSmallIcon.Checked = false;
+            ViewStripMenuList.Checked = false;
+            ViewStripMenuTile.Checked = false;
 
-            switch (item.Name)
+            switch (type)
             {
-                case "ContextViewIcon":
+                case 0:
                     ContextViewIcon.Checked = true;
+                    ViewStripMenuIcon.Checked = true;
                     fileListView.View = View.LargeIcon;
                     break;
-                case "ContextViewDetails":
+                case 1:
                     ContextViewDetails.Checked = true;
+                    ViewStripMenuDetails.Checked = true;
                     fileListView.View = View.Details;
                     break;
-                case "ContextViewSmallIcon":
+                case 2:
                     ContextViewSmallIcon.Checked = true;
+                    ViewStripMenuSmallIcon.Checked = true;
                     fileListView.View = View.SmallIcon;
                     break;
-                case "ContextViewList":
+                case 3:
                     ContextViewList.Checked = true;
+                    ViewStripMenuList.Checked = true;
                     fileListView.View = View.List;
                     break;
-                case "ContextViewTile":
+                case 4:
                     ContextViewTile.Checked = true;
+                    ViewStripMenuTile.Checked = true;
                     fileListView.View = View.Tile;
                     break;
             }
         }
-
-        private void OnActivate(object sender, EventArgs e)
+        private void OnViewIconClicked(object sender, EventArgs e)
         {
-            //not doing anything for now.
+            FileListViewTypeController(0);
+        }
+        private void OnViewDetailsClicked(object sender, EventArgs e)
+        {
+            FileListViewTypeController(1);
+        }
+        private void OnViewSmallIconClicked(object sender, EventArgs e)
+        {
+            FileListViewTypeController(2);
+        }
+        private void OnViewListClicked(object sender, EventArgs e)
+        {
+            FileListViewTypeController(3);
+        }
+        private void OnViewTileClicked(object sender, EventArgs e)
+        {
+            FileListViewTypeController(4);
         }
     }
 }

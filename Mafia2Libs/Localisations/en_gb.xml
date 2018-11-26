@@ -95,5 +95,11 @@
   
    <!-- NewObjForm Form Strings-->
    <String ID="$NEWOBJFORM_TITLE">Input Name</String>
+
+  <!-- Error strings -->
+  <String ID="$ERROR_DID_NOT_FIND_LAUNCHER">Could not find MafiaII 'launcher.exe', please correct the path!</String>
+  <String ID="$ERROR_TITLE">Error!</String>
+  <String ID="$ERROR_SELECT_ITEM">Select an Item!</String>
+  <String ID="$ERROR_DIDNT_FIND_MTL">Unable to load materials. Error occured: \n\n</String>
    
 </Localisation>

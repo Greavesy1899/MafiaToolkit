@@ -124,6 +124,17 @@ namespace Mafia2
         }
 
         /// <summary>
+        /// Returns the Dot Product of two vectors.
+        /// </summary>
+        /// <param name="lhs"></param>
+        /// <param name="rhs"></param>
+        /// <returns></returns>
+        public float DotProduct(Vector3 lhs, Vector3 rhs)
+        {
+            return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z);
+        }
+
+        /// <summary>
         /// Normalize the vector3.
         /// </summary>
         public void Normalize()

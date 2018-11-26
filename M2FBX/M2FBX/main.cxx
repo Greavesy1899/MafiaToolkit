@@ -1,7 +1,6 @@
 #include <fbxsdk.h>
 #include "FbxWrangler.h"
 #include "M2TWrangler.h"
-#include "Utilities.h"
 #include "M2Model.h"
 #include <conio.h>
 

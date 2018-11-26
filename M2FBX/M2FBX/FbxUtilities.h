@@ -2,7 +2,6 @@
 #define FBX_UTILS_HEADER
 #include <fbxsdk.h>
 #include <iomanip>
-#include <iostream>
 
 #ifdef IOS_REF
 #undef  IOS_REF

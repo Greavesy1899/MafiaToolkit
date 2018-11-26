@@ -1,6 +1,6 @@
 #include "M2TWrangler.h"
 #include "FbxUtilities.h"
-#include "Utilities.h"
+#include "M2Model.h"
 #include <conio.h>
 
 void BuildModelPart(FbxNode* pNode, ModelPart* pPart)

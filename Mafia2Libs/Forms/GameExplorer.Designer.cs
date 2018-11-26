@@ -37,10 +37,10 @@ namespace Mafia2Tool
             this.imageBank = new System.Windows.Forms.ImageList(this.components);
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
-            this.buttonStripUp = new System.Windows.Forms.ToolStripButton();
-            this.textStripFolderPath = new System.Windows.Forms.ToolStripTextBox();
+            this.UpButton = new System.Windows.Forms.ToolStripButton();
+            this.FolderPath = new System.Windows.Forms.ToolStripTextBox();
             this.buttonStripRefresh = new System.Windows.Forms.ToolStripButton();
-            this.textStripSearch = new System.Windows.Forms.ToolStripTextBox();
+            this.SearchEntryText = new System.Windows.Forms.ToolStripTextBox();
             this.fileListView = new System.Windows.Forms.ListView();
             this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -64,8 +64,13 @@ namespace Mafia2Tool
             this.runMafiaIIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dropdownView = new System.Windows.Forms.ToolStripDropDownButton();
+            this.ViewStripMenuIcon = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewStripMenuDetails = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewStripMenuSmallIcon = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewStripMenuList = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewStripMenuTile = new System.Windows.Forms.ToolStripMenuItem();
             this.dropdownTools = new System.Windows.Forms.ToolStripDropDownButton();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.OptionsItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bottomContainer = new System.Windows.Forms.ToolStripContainer();
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
@@ -144,10 +149,10 @@ namespace Mafia2Tool
             // 
             this.toolStrip2.CanOverflow = false;
             this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.buttonStripUp,
-            this.textStripFolderPath,
+            this.UpButton,
+            this.FolderPath,
             this.buttonStripRefresh,
-            this.textStripSearch});
+            this.SearchEntryText});
             this.toolStrip2.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
             this.toolStrip2.Location = new System.Drawing.Point(0, 0);
             this.toolStrip2.Name = "toolStrip2";
@@ -156,24 +161,24 @@ namespace Mafia2Tool
             this.toolStrip2.Text = "toolStrip1";
             this.toolStrip2.Resize += new System.EventHandler(this.toolStrip1_Resize);
             // 
-            // buttonStripUp
+            // UpButton
             // 
-            this.buttonStripUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonStripUp.Image = ((System.Drawing.Image)(resources.GetObject("buttonStripUp.Image")));
-            this.buttonStripUp.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonStripUp.Name = "buttonStripUp";
-            this.buttonStripUp.Size = new System.Drawing.Size(23, 20);
-            this.buttonStripUp.Text = "buttonStripUp";
-            this.buttonStripUp.ToolTipText = "$UP_TOOLTIP";
-            this.buttonStripUp.Click += new System.EventHandler(this.buttonStripUp_Click);
+            this.UpButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.UpButton.Image = ((System.Drawing.Image)(resources.GetObject("UpButton.Image")));
+            this.UpButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.UpButton.Name = "UpButton";
+            this.UpButton.Size = new System.Drawing.Size(23, 20);
+            this.UpButton.Text = "Up a Folder";
+            this.UpButton.ToolTipText = "$UP_TOOLTIP";
+            this.UpButton.Click += new System.EventHandler(this.OnUpButtonClicked);
             // 
-            // textStripFolderPath
+            // FolderPath
             // 
-            this.textStripFolderPath.AutoSize = false;
-            this.textStripFolderPath.Name = "textStripFolderPath";
-            this.textStripFolderPath.Size = new System.Drawing.Size(200, 23);
-            this.textStripFolderPath.ToolTipText = "$FOLDER_PATH_TOOLTIP";
-            this.textStripFolderPath.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onPathChange);
+            this.FolderPath.AutoSize = false;
+            this.FolderPath.Name = "FolderPath";
+            this.FolderPath.Size = new System.Drawing.Size(200, 23);
+            this.FolderPath.ToolTipText = "$FOLDER_PATH_TOOLTIP";
+            this.FolderPath.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.onPathChange);
             // 
             // buttonStripRefresh
             // 
@@ -183,15 +188,15 @@ namespace Mafia2Tool
             this.buttonStripRefresh.Name = "buttonStripRefresh";
             this.buttonStripRefresh.Size = new System.Drawing.Size(23, 20);
             this.buttonStripRefresh.Text = "$REFRESH";
-            this.buttonStripRefresh.Click += new System.EventHandler(this.buttonStripRefresh_Click);
+            this.buttonStripRefresh.Click += new System.EventHandler(this.OnRefreshButtonClicked);
             // 
-            // textStripSearch
+            // SearchEntryText
             // 
-            this.textStripSearch.AutoSize = false;
-            this.textStripSearch.Name = "textStripSearch";
-            this.textStripSearch.Size = new System.Drawing.Size(200, 23);
-            this.textStripSearch.ToolTipText = "$SEARCH_TOOLTIP";
-            this.textStripSearch.TextChanged += new System.EventHandler(this.SearchBarOnTextChanged);
+            this.SearchEntryText.AutoSize = false;
+            this.SearchEntryText.Name = "SearchEntryText";
+            this.SearchEntryText.Size = new System.Drawing.Size(200, 23);
+            this.SearchEntryText.ToolTipText = "$SEARCH_TOOLTIP";
+            this.SearchEntryText.TextChanged += new System.EventHandler(this.SearchBarOnTextChanged);
             // 
             // fileListView
             // 
@@ -294,7 +299,7 @@ namespace Mafia2Tool
             this.ContextViewIcon.Name = "ContextViewIcon";
             this.ContextViewIcon.Size = new System.Drawing.Size(151, 22);
             this.ContextViewIcon.Text = "$ICON";
-            this.ContextViewIcon.Click += new System.EventHandler(this.ContextViewBtn_Click);
+            this.ContextViewIcon.Click += new System.EventHandler(this.OnViewIconClicked);
             // 
             // ContextViewDetails
             // 
@@ -302,7 +307,7 @@ namespace Mafia2Tool
             this.ContextViewDetails.Name = "ContextViewDetails";
             this.ContextViewDetails.Size = new System.Drawing.Size(151, 22);
             this.ContextViewDetails.Text = "$DETAILS";
-            this.ContextViewDetails.Click += new System.EventHandler(this.ContextViewBtn_Click);
+            this.ContextViewDetails.Click += new System.EventHandler(this.OnViewDetailsClicked);
             // 
             // ContextViewSmallIcon
             // 
@@ -310,7 +315,7 @@ namespace Mafia2Tool
             this.ContextViewSmallIcon.Name = "ContextViewSmallIcon";
             this.ContextViewSmallIcon.Size = new System.Drawing.Size(151, 22);
             this.ContextViewSmallIcon.Text = "$SMALL_ICON";
-            this.ContextViewSmallIcon.Click += new System.EventHandler(this.ContextViewBtn_Click);
+            this.ContextViewSmallIcon.Click += new System.EventHandler(this.OnViewSmallIconClicked);
             // 
             // ContextViewList
             // 
@@ -318,7 +323,7 @@ namespace Mafia2Tool
             this.ContextViewList.Name = "ContextViewList";
             this.ContextViewList.Size = new System.Drawing.Size(151, 22);
             this.ContextViewList.Text = "$LIST";
-            this.ContextViewList.Click += new System.EventHandler(this.ContextViewBtn_Click);
+            this.ContextViewList.Click += new System.EventHandler(this.OnViewListClicked);
             // 
             // ContextViewTile
             // 
@@ -326,7 +331,7 @@ namespace Mafia2Tool
             this.ContextViewTile.Name = "ContextViewTile";
             this.ContextViewTile.Size = new System.Drawing.Size(151, 22);
             this.ContextViewTile.Text = "$TILE";
-            this.ContextViewTile.Click += new System.EventHandler(this.ContextViewBtn_Click);
+            this.ContextViewTile.Click += new System.EventHandler(this.OnViewTileClicked);
             // 
             // topContainer
             // 
@@ -374,51 +379,97 @@ namespace Mafia2Tool
             // 
             // openMafiaIIToolStripMenuItem
             // 
-            this.openMafiaIIToolStripMenuItem.Name = "openMafiaIIToolStripMenuItem";
+            this.openMafiaIIToolStripMenuItem.Name = "OpenMafiaIIButton";
             this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.openMafiaIIToolStripMenuItem.Text = "$BTN_OPEN_MII";
-            this.openMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.openMafiaIIToolStripMenuItem_Click);
+            this.openMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.OpenMafiaIIClicked);
             // 
             // runMafiaIIToolStripMenuItem
             // 
-            this.runMafiaIIToolStripMenuItem.Name = "runMafiaIIToolStripMenuItem";
+            this.runMafiaIIToolStripMenuItem.Name = "RunMafiaIIButton";
             this.runMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.runMafiaIIToolStripMenuItem.Text = "$BTN_RUN_MII";
-            this.runMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.runMafiaIIToolStripMenuItem_Click);
+            this.runMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.RunMafiaIIClicked);
             // 
             // exitToolStripMenuItem
             // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Name = "ExitToolkitButton";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exitToolStripMenuItem.Text = "$EXIT";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolkitClicked);
             // 
             // dropdownView
             // 
             this.dropdownView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.dropdownView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ViewStripMenuIcon,
+            this.ViewStripMenuDetails,
+            this.ViewStripMenuSmallIcon,
+            this.ViewStripMenuList,
+            this.ViewStripMenuTile});
             this.dropdownView.Image = ((System.Drawing.Image)(resources.GetObject("dropdownView.Image")));
             this.dropdownView.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.dropdownView.Name = "dropdownView";
             this.dropdownView.Size = new System.Drawing.Size(53, 19);
             this.dropdownView.Text = "$VIEW";
             // 
+            // ViewStripMenuIcon
+            // 
+            this.ViewStripMenuIcon.CheckOnClick = true;
+            this.ViewStripMenuIcon.Name = "ViewStripMenuIcon";
+            this.ViewStripMenuIcon.Size = new System.Drawing.Size(151, 22);
+            this.ViewStripMenuIcon.Text = "$ICON";
+            this.ViewStripMenuIcon.Click += new System.EventHandler(this.OnViewIconClicked);
+            // 
+            // ViewStripMenuDetails
+            // 
+            this.ViewStripMenuDetails.CheckOnClick = true;
+            this.ViewStripMenuDetails.Name = "ViewStripMenuDetails";
+            this.ViewStripMenuDetails.Size = new System.Drawing.Size(151, 22);
+            this.ViewStripMenuDetails.Text = "$DETAILS";
+            this.ViewStripMenuDetails.Click += new System.EventHandler(this.OnViewDetailsClicked);
+            // 
+            // ViewStripMenuSmallIcon
+            // 
+            this.ViewStripMenuSmallIcon.CheckOnClick = true;
+            this.ViewStripMenuSmallIcon.Name = "ViewStripMenuSmallIcon";
+            this.ViewStripMenuSmallIcon.Size = new System.Drawing.Size(151, 22);
+            this.ViewStripMenuSmallIcon.Text = "$SMALL_ICON";
+            this.ViewStripMenuSmallIcon.Click += new System.EventHandler(this.OnViewSmallIconClicked);
+            // 
+            // ViewStripMenuList
+            // 
+            this.ViewStripMenuList.CheckOnClick = true;
+            this.ViewStripMenuList.Name = "ViewStripMenuList";
+            this.ViewStripMenuList.Size = new System.Drawing.Size(151, 22);
+            this.ViewStripMenuList.Text = "$LIST";
+            this.ViewStripMenuList.Click += new System.EventHandler(this.OnViewListClicked);
+            // 
+            // ViewStripMenuTile
+            // 
+            this.ViewStripMenuTile.CheckOnClick = true;
+            this.ViewStripMenuTile.Name = "ViewStripMenuTile";
+            this.ViewStripMenuTile.Size = new System.Drawing.Size(151, 22);
+            this.ViewStripMenuTile.Text = "$TILE";
+            this.ViewStripMenuTile.Click += new System.EventHandler(this.OnViewTileClicked);
+            // 
             // dropdownTools
             // 
             this.dropdownTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.dropdownTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.optionsToolStripMenuItem});
+            this.OptionsItem});
             this.dropdownTools.Image = ((System.Drawing.Image)(resources.GetObject("dropdownTools.Image")));
             this.dropdownTools.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.dropdownTools.Name = "dropdownTools";
             this.dropdownTools.Size = new System.Drawing.Size(62, 19);
             this.dropdownTools.Text = "$TOOLS";
             // 
-            // optionsToolStripMenuItem
+            // OptionsItem
             // 
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
-            this.optionsToolStripMenuItem.Text = "$OPTIONS";
-            this.optionsToolStripMenuItem.Click += new System.EventHandler(this.optionsToolStripMenuItem_Click);
+            this.OptionsItem.Name = "OptionsItem";
+            this.OptionsItem.Size = new System.Drawing.Size(130, 22);
+            this.OptionsItem.Text = "$OPTIONS";
+            this.OptionsItem.Click += new System.EventHandler(this.OnOptionsItem_Clicked);
             // 
             // bottomContainer
             // 
@@ -469,7 +520,6 @@ namespace Mafia2Tool
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GameExplorer";
             this.Text = "$MII_TK_GAME_EXPLORER";
-            this.Activated += new System.EventHandler(this.OnActivate);
             this.Load += new System.EventHandler(this.toolStrip1_Resize);
             this.mainContainer.Panel1.ResumeLayout(false);
             this.mainContainer.Panel2.ResumeLayout(false);
@@ -523,12 +573,12 @@ namespace Mafia2Tool
         private ToolStripMenuItem runMafiaIIToolStripMenuItem;
         private ToolStripContainer toolStripContainer1;
         private ToolStrip toolStrip2;
-        private ToolStripButton buttonStripUp;
-        private ToolStripTextBox textStripFolderPath;
+        private ToolStripButton UpButton;
+        private ToolStripTextBox FolderPath;
         private ToolStripButton buttonStripRefresh;
-        private ToolStripTextBox textStripSearch;
+        private ToolStripTextBox SearchEntryText;
         private ToolStripMenuItem ContextOpenFolder;
-        private ToolStripMenuItem optionsToolStripMenuItem;
+        private ToolStripMenuItem OptionsItem;
         private ToolStripMenuItem ContextSDSUnpackAll;
         private ImageList imageBank;
         private ToolStripMenuItem ContextView;
@@ -538,5 +588,10 @@ namespace Mafia2Tool
         private ToolStripMenuItem ContextViewList;
         private ToolStripMenuItem ContextViewTile;
         private ToolStripDropDownButton dropdownView;
+        private ToolStripMenuItem ViewStripMenuIcon;
+        private ToolStripMenuItem ViewStripMenuDetails;
+        private ToolStripMenuItem ViewStripMenuSmallIcon;
+        private ToolStripMenuItem ViewStripMenuList;
+        private ToolStripMenuItem ViewStripMenuTile;
     }
 }

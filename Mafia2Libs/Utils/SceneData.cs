@@ -130,6 +130,8 @@ namespace Mafia2Tool
         /// </summary>
         public static void Load()
         {
+            MaterialsManager.ClearLoadedMTLs();
+
             try
             {
                 MaterialsManager.ReadMatFiles(ToolkitSettings.MaterialLibs.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
@@ -137,7 +139,7 @@ namespace Mafia2Tool
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Unable to load materials. Error occured: \n\n" + ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Language.GetString("$ERROR_DIDNT_FIND_MTL") + ex.Message, Language.GetString("$ERROR_TITLE"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
