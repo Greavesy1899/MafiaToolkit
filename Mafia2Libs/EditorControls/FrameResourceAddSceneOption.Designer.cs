@@ -30,10 +30,10 @@
         {
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.groupGeneral = new System.Windows.Forms.GroupBox();
+            this.OffsetZBox = new System.Windows.Forms.TextBox();
+            this.OffsetYBox = new System.Windows.Forms.TextBox();
+            this.OffsetXBox = new System.Windows.Forms.TextBox();
             this.FSceneOffsetLabel = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
             this.groupGeneral.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -44,16 +44,43 @@
             // groupGeneral
             // 
             this.groupGeneral.AutoSize = true;
-            this.groupGeneral.Controls.Add(this.textBox3);
-            this.groupGeneral.Controls.Add(this.textBox2);
-            this.groupGeneral.Controls.Add(this.textBox1);
+            this.groupGeneral.Controls.Add(this.OffsetZBox);
+            this.groupGeneral.Controls.Add(this.OffsetYBox);
+            this.groupGeneral.Controls.Add(this.OffsetXBox);
             this.groupGeneral.Controls.Add(this.FSceneOffsetLabel);
             this.groupGeneral.Location = new System.Drawing.Point(0, 0);
             this.groupGeneral.Name = "groupGeneral";
-            this.groupGeneral.Size = new System.Drawing.Size(340, 70);
+            this.groupGeneral.Size = new System.Drawing.Size(340, 65);
             this.groupGeneral.TabIndex = 2;
             this.groupGeneral.TabStop = false;
             this.groupGeneral.Text = "$GENERAL";
+            // 
+            // OffsetZBox
+            // 
+            this.OffsetZBox.Location = new System.Drawing.Point(269, 24);
+            this.OffsetZBox.Name = "OffsetZBox";
+            this.OffsetZBox.Size = new System.Drawing.Size(61, 20);
+            this.OffsetZBox.TabIndex = 4;
+            this.OffsetZBox.Text = "0";
+            this.OffsetZBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // OffsetYBox
+            // 
+            this.OffsetYBox.Location = new System.Drawing.Point(202, 24);
+            this.OffsetYBox.Name = "OffsetYBox";
+            this.OffsetYBox.Size = new System.Drawing.Size(61, 20);
+            this.OffsetYBox.TabIndex = 3;
+            this.OffsetYBox.Text = "0";
+            this.OffsetYBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // OffsetXBox
+            // 
+            this.OffsetXBox.Location = new System.Drawing.Point(135, 24);
+            this.OffsetXBox.Name = "OffsetXBox";
+            this.OffsetXBox.Size = new System.Drawing.Size(61, 20);
+            this.OffsetXBox.TabIndex = 2;
+            this.OffsetXBox.Text = "0";
+            this.OffsetXBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // FSceneOffsetLabel
             // 
@@ -64,34 +91,13 @@
             this.FSceneOffsetLabel.TabIndex = 1;
             this.FSceneOffsetLabel.Text = "$FRSCENE_OFFSET";
             // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(135, 24);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(61, 20);
-            this.textBox1.TabIndex = 2;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(202, 24);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(61, 20);
-            this.textBox2.TabIndex = 3;
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(269, 24);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(61, 20);
-            this.textBox3.TabIndex = 4;
-            // 
             // FrameResourceSceneOption
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupGeneral);
             this.Name = "FrameResourceSceneOption";
-            this.Size = new System.Drawing.Size(340, 70);
+            this.Size = new System.Drawing.Size(340, 65);
             this.groupGeneral.ResumeLayout(false);
             this.groupGeneral.PerformLayout();
             this.ResumeLayout(false);
@@ -103,8 +109,8 @@
         private System.Windows.Forms.FolderBrowserDialog MafiaIIBrowser;
         private System.Windows.Forms.GroupBox groupGeneral;
         private System.Windows.Forms.Label FSceneOffsetLabel;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox OffsetZBox;
+        private System.Windows.Forms.TextBox OffsetYBox;
+        private System.Windows.Forms.TextBox OffsetXBox;
     }
 }

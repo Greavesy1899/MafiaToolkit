@@ -93,8 +93,11 @@
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Choose a scene to add as a parent.</String>
   <String ID="$FRAME_EDITOR_TITLE">FrameResource Editor</String>
   
-   <!-- NewObjForm Form Strings-->
-   <String ID="$NEWOBJFORM_TITLE">Input Name</String>
+  <!-- NewObjForm Form Strings-->
+  <String ID="$NEWOBJFORM_TITLE">Input Name</String>
+  <String ID="$QUESTION_NOT_NEEDED">This option does not need a name.</String>
+  <String ID="$SCENE_OPTIONS">Scene Options</String>
+  <String ID="$FSCENE_OFFSET">Position Offset</String>
 
   <!-- Error strings -->
   <String ID="$ERROR_DID_NOT_FIND_LAUNCHER">Could not find MafiaII 'launcher.exe', please correct the path!</String>

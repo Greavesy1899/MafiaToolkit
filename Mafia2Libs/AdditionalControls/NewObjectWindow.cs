@@ -6,11 +6,15 @@ namespace Mafia2Tool
     public partial class NewObjectForm : Form
     {
         public int type = -1;
+        public object[] data;
+        public Control control;
 
-        public NewObjectForm()
+        public NewObjectForm(bool nameEnabled)
         {
             InitializeComponent();
             Localise();
+
+           textBox1.Enabled = nameEnabled;
         }
 
         private void Localise()
@@ -22,7 +26,8 @@ namespace Mafia2Tool
 
         public void LoadOption(Control desiredControl)
         {
-            panel1.Controls.Add(desiredControl);          
+            control = desiredControl;
+            panel1.Controls.Add(control);          
         }
 
         public void SetLabel(string text)

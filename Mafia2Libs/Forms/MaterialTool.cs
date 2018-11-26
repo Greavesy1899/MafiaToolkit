@@ -101,7 +101,7 @@ namespace Mafia2Tool
         private void AddMaterial(object sender, EventArgs e)
         {
             //ask user for material name.
-            NewObjectForm form = new NewObjectForm();
+            NewObjectForm form = new NewObjectForm(true);
             form.SetLabel(Language.GetString("$QUESTION_NAME_OF_MAT"));
             form.LoadOption(new MaterialAddOption());
             form.ShowDialog();

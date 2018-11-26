@@ -703,6 +703,20 @@ namespace Mafia2Tool
 
         private void importFrameEDDButton_Click(object sender, EventArgs e)
         {
+            MessageBox.Show("Warning! This is a very WIP feature and has not been tested. \n\nIf you want to use it, select an FBX file with multiple objects. They will be converted and added into the Frame Resource as objects. \n\n");
+            NewObjectForm form = new NewObjectForm(false);
+            form.SetLabel(Language.GetString("$QUESTION_NOT_NEEDED"));
+            form.LoadOption(new FrameResourceSceneOption());
+            form.ShowDialog();
+
+            if (form.type == -1)
+                return;
+
+            FrameResourceSceneOption control = form.control as FrameResourceSceneOption;
+            Vector3 offsetVector = control.GetOffset();
+            control.Dispose();
+            form.Dispose();
+
             //check if the user cancels.
             if (eddBrowser.ShowDialog() == DialogResult.Cancel)
                 return;
@@ -773,8 +787,7 @@ namespace Mafia2Tool
                 mesh.FrameNameTableFlags = 0;
 
                 mesh.Matrix.Position = entry.Position;
-                mesh.Matrix.Position.X += 0;
-                mesh.Matrix.Position.Y -= 5000;
+                mesh.Matrix.Position += offsetVector;
                 //entry.Rotation.ChangeHandedness();
                 mesh.Matrix.Rotation = entry.Rotation;
 
