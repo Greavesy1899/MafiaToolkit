@@ -40,11 +40,12 @@ int main(int argc, char** argv)
 		return 0;
 	}
 
+	printf("%s", argv[4]);
 	//check arguments.
 	if (FBXSDK_stricmp(argv[1], "-ConvertToFBX") == 0)
 		ConvertM2T(argv[2], argv[3]);
 	else if (FBXSDK_stricmp(argv[1], "-ConvertToM2T") == 0)
-		ConvertFBX(argv[2], argv[3], (argv[4] != NULL ? argv[4] : 0));
+		ConvertFBX(argv[2], argv[3], argv[4]);
 	else
 	{
 		PrintError(1);

@@ -2,8 +2,6 @@
 using System.IO;
 using System.Windows.Forms;
 using Mafia2;
-using ApexSDK;
-using System.Threading;
 //using ModelViewer.Programming.SystemClasses;
 
 namespace Mafia2Tool

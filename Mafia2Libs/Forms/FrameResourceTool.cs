@@ -703,7 +703,7 @@ namespace Mafia2Tool
 
         private void importFrameEDDButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Warning! This is a very WIP feature and has not been tested. \n\nIf you want to use it, select an FBX file with multiple objects. They will be converted and added into the Frame Resource as objects. \n\n");
+            MessageBox.Show("Warning! This is a very WIP feature and has not been tested. \n\nIf you want to use it, select an FBX file with multiple objects. They will be converted and added into the Frame Resource as objects. \n The M2FBX tool will export each model into seperate files, so you'll have to manually delete them afterwards. \n");
             NewObjectForm form = new NewObjectForm(false);
             form.SetLabel(Language.GetString("$QUESTION_NOT_NEEDED"));
             form.LoadOption(new FrameResourceSceneOption());
@@ -739,6 +739,17 @@ namespace Mafia2Tool
                 {
                     frameData.ReadFromFile(reader);
                 }
+            }
+            else if (eddBrowser.FileName.ToLower().EndsWith(".fbx"))
+            {
+                FileInfo file = new FileInfo(eddBrowser.FileName);
+
+                //check if the file actually exists.
+                if (!file.Exists)
+                    return;
+
+                frameParentDirectory = file.Directory.FullName;
+                frameData.ReadFromFbx(file);
             }
 
             int done = 0;

@@ -262,10 +262,13 @@ int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 		FILE* frameStream;
 		std::string frameDest = pDest;
 		frameDest += "frame.edd";
-		fopen_s(&frameStream, frameDest.c_str(), "wb");
-		frame.WriteToStream(frameStream);
-		fclose(frameStream);
-		FBXSDK_printf("Saved frame..");
+
+		if (strcmp(doScene, "1") == 0) {
+			fopen_s(&frameStream, frameDest.c_str(), "wb");
+			frame.WriteToStream(frameStream);
+			fclose(frameStream);
+			FBXSDK_printf("Saved frame..");
+		}
 	}
 
 	return 0;

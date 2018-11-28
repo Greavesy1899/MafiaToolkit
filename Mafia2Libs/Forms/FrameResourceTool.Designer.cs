@@ -261,7 +261,7 @@
             // eddBrowser
             // 
             this.eddBrowser.FileName = "m2tBrowser";
-            this.eddBrowser.Filter = "Scene|*.edd";
+            this.eddBrowser.Filter = "Scene|*.edd|Scene FBX|*.fbx";
             // 
             // FrameResourceTool
             // 

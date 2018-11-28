@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Mafia2
 {
@@ -43,11 +45,62 @@ namespace Mafia2
 
         public void ReadFromFile(BinaryReader reader)
         {
-            reader.BaseStream.Position += 4;
+            if (reader.ReadInt32() != 808535109)
+                return;
+
             entryCount = reader.ReadInt32();
 
             for (int i = 0; i != entryCount; i++)
                 entries.Add(new Entry(reader));
+        }
+
+        public int ReadFromFbx(FileInfo file)
+        {
+            string args = "-ConvertToM2T ";
+            args += ("\"" + file.FullName + "\" ");
+            args += ("\"" + file.Directory.FullName +"/" + "\" ");
+            args += ("\"" + 1 + "\" ");
+            string arg = "-ConvertToM2T \"" + file.FullName + "\" \"" + file.Directory.FullName + "/" + "\" " + 1;
+            ProcessStartInfo processStartInfo = new ProcessStartInfo("M2FBX.exe", arg)
+            {
+                CreateNoWindow = false,
+                UseShellExecute = false
+            };
+            Process FbxTool = Process.Start(processStartInfo);
+            while (!FbxTool.HasExited) ;
+
+            string errorMessage = "";
+            int exitCode = FbxTool.ExitCode;
+            FbxTool.Dispose();
+
+            switch (exitCode)
+            {
+                case -100:
+                    errorMessage = "An error ocurred: Boundary Box exceeds Mafia II's limits!";
+                    break;
+                case -99:
+                    errorMessage = "An error ocurred: pElementNormal->GetReferenceMode() did not equal eDirect!";
+                    break;
+                case -98:
+                    errorMessage = "An error ocurred: pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex!";
+                    break;
+                case -97:
+                    errorMessage = "An error ocurred: An error ocurred: Boundary Box exceeds Mafia II's limits!";
+                    break;
+                default:
+                    break;
+            }
+
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                MessageBox.Show(errorMessage, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return -1;
+            }
+
+            using (BinaryReader reader = new BinaryReader(File.Open(file.Directory.FullName + "/frame.edd", FileMode.Open)))
+                ReadFromFile(reader);
+
+            return 0;
         }
 
         public class Entry
