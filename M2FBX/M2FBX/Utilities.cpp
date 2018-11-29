@@ -1,4 +1,5 @@
 #include "Utilities.h"
+#include <algorithm>
 
 std::string ReadString(FILE* stream, std::string &string)
 {
@@ -11,6 +12,8 @@ std::string ReadString(FILE* stream, std::string &string)
 		fread(&nChar, sizeof(char), 1, stream);
 		string += nChar;
 	}
+	//remove illegal character.
+	string.erase(std::remove(string.begin(), string.end(), '?'), string.end());
 	return string;
 }
 

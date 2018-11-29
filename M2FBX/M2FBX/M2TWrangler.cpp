@@ -201,7 +201,7 @@ int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 	//Prepare SDK..
 	InitializeSdkObjects(lSdkManager);
 	lImporter = FbxImporter::Create(lSdkManager, "");
-
+	printf("Loading FBX File.. \n");
 	//Init importer. if it fails, it will print error code.
 	if (!lImporter->Initialize(pSource, -1, lSdkManager->GetIOSettings())) {
 		FBXSDK_printf("Error occured while initializing importer:\n");

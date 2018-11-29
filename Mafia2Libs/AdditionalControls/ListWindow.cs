@@ -9,6 +9,7 @@ namespace Mafia2Tool
         private bool searchMode = false;
         public int type = -1;
         public object chosenObject = null;
+        public int chosenObjectIndex = -1;
 
         public ListWindow()
         {
@@ -67,6 +68,7 @@ namespace Mafia2Tool
         private void OnItemSelect(object sender, System.EventArgs e)
         {
             chosenObject = listBox1.SelectedItem;
+            chosenObjectIndex = listBox1.SelectedIndex;
             type = 1;
             Close();
         }

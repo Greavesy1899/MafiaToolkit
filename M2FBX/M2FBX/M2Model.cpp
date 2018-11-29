@@ -1,5 +1,6 @@
 #include "M2Model.h"
 #include "Utilities.h"
+#include <algorithm>
 
 //===================================================
 //		ModelPart
@@ -371,6 +372,7 @@ ModelPart::~ModelPart() {}
 //		ModelStructure
 //===================================================
 void ModelStructure::SetName(std::string name) {
+	name.erase(std::remove(name.begin(), name.end(), '?'), name.end());
 	ModelStructure::name = name;
 }
 
@@ -428,7 +430,9 @@ void ModelStructure::WriteToStream(FILE * stream) {
 }
 
 ModelStructure::ModelStructure() {}
-ModelStructure::~ModelStructure() {}
+ModelStructure::~ModelStructure()
+{
+}
 
 //===================================================
 //		FrameEntry

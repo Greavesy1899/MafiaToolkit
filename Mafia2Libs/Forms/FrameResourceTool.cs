@@ -48,6 +48,8 @@ namespace Mafia2Tool
 
         public void PopulateForm()
         {
+            treeView1.Nodes.Clear();
+            FrameResourceListBox.Items.Clear();
             foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
             {
                 FrameResourceListBox.Items.Add(entry.Value);
@@ -493,8 +495,6 @@ namespace Mafia2Tool
         private void ReloadClick(object sender, EventArgs e)
         {
             SceneData.Reload();
-            treeView1.Nodes.Clear();
-            FrameResourceListBox.Items.Clear();
             PopulateForm();
         }
 
@@ -547,8 +547,16 @@ namespace Mafia2Tool
                     return;
 
                 int refID = (window.chosenObject as FrameEntry).RefID;
+                obj.IsOnFrameTable = true;
+                obj.ParentIndex2.Index = window.chosenObjectIndex;
+                obj.ParentIndex2.RefID = refID;
                 obj.SubRef(FrameEntryRefTypes.Parent2);
                 obj.AddRef(FrameEntryRefTypes.Parent2, refID);
+                obj.UpdateNode();
+
+                treeView1.Nodes.Remove(treeView1.SelectedNode);
+                TreeNode newNode = CreateTreeNode(obj);
+                treeView1.Nodes[window.chosenObjectIndex].Nodes.Add(newNode);
             }
         }
 
@@ -644,6 +652,7 @@ namespace Mafia2Tool
 
             SceneData.FrameResource.FrameObjects.Add(mesh.RefID, mesh);
             FrameResourceListBox.Items.Add(mesh);
+            PopulateForm();
             //SaveChanges();
         }
 
@@ -808,6 +817,7 @@ namespace Mafia2Tool
                 done++;
                 Console.WriteLine("Done number {0}/{1} {2}", done, frameData.EntryCount, mesh.Name.String);
             }
+            PopulateForm();
         }
     }
 }

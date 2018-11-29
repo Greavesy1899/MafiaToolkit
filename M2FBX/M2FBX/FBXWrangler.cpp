@@ -45,7 +45,7 @@ bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFil
 	IOS_REF.SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
 
 	// Initialize the exporter by providing a filename.
-	if (lExporter->Initialize(pFilename, pFileFormat, pManager->GetIOSettings()) == false)
+	if (!lExporter->Initialize(pFilename, pFileFormat, pManager->GetIOSettings()))
 	{
 		FBXSDK_printf("Call to FbxExporter::Initialize() failed.\n");
 		FBXSDK_printf("Error returned: %s\n\n", lExporter->GetStatus().GetErrorString());
@@ -66,8 +66,8 @@ int ConvertM2T(const char* pSource, const char* pDest)
 {
 	FBXSDK_printf("Converting M2T to FBX.\n");
 
-	FbxManager* lSdkManager = NULL;
-	FbxScene* lScene = NULL;
+	FbxManager* lSdkManager = nullptr;
+	FbxScene* lScene = nullptr;
 	bool lResult = false;
 
 	//Open stream.
@@ -168,7 +168,6 @@ void CreateLightDocument(FbxManager* pManager, FbxDocument* pLightDocument)
 }
 FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure model)
 {
-	int i;
 	FbxMesh* lMesh = FbxMesh::Create(pManager, pName);
 
 	ModelPart part = model.GetParts()[0];
@@ -185,10 +184,10 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	lMesh->InitControlPoints(vertices.size());
 	FbxVector4* lControlPoints = lMesh->GetControlPoints();
 
-	FbxGeometryElementVertexColor* lUVVCElement = NULL;
-	FbxGeometryElementUV* lUVOMElement = NULL;
+	FbxGeometryElementVertexColor* lUVVCElement = nullptr;
+	FbxGeometryElementUV* lUVOMElement = nullptr;
 
-	for (int i = 0; i < vertices.size(); i++)
+	for (size_t i = 0; i < vertices.size(); i++)
 		lControlPoints[i] = FbxVector4(vertices[i].x, vertices[i].y, vertices[i].z);
 
 	// We want to have one normal for each vertex (or control point),
@@ -198,7 +197,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 		FbxGeometryElementNormal* lElementNormal = lMesh->CreateElementNormal();
 		lElementNormal->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lElementNormal->SetReferenceMode(FbxGeometryElement::eDirect);
-		for (int i = 0; i < vertices.size(); i++)
+		for (size_t i = 0; i < vertices.size(); i++)
 			lElementNormal->GetDirectArray().Add(FbxVector4(normals[i].x, normals[i].y, normals[i].z));
 	}
 	if (part.GetHasTangents())
@@ -206,17 +205,17 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 		FbxGeometryElementTangent* lElementTangent = lMesh->CreateElementTangent();
 		lElementTangent->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lElementTangent->SetReferenceMode(FbxGeometryElement::eDirect);
-		for (int i = 0; i < vertices.size(); i++)
+		for (size_t i = 0; i < vertices.size(); i++)
 			lElementTangent->GetDirectArray().Add(FbxVector4(tangents[i].x, tangents[i].y, tangents[i].z));
 	}
 
 	// Create UV for Diffuse channel.
 	FbxGeometryElementUV* lUVDiffuseElement = lMesh->CreateElementUV("DiffuseUV");
-	FBX_ASSERT(lUVDiffuseElement != NULL);
+	FBX_ASSERT(lUVDiffuseElement != nullptr);
 	lUVDiffuseElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
 	lUVDiffuseElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-	for (int i = 0; i < vertices.size(); i++)
+	for (size_t i = 0; i < vertices.size(); i++)
 	{
 		if(part.GetHasUV0())
 			lUVDiffuseElement->GetDirectArray().Add(FbxVector2(uvs0[i].x, uvs0[i].y));
@@ -232,11 +231,11 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	{
 		//Create VC in channels;
 		lUVVCElement = lMesh->CreateElementVertexColor();
-		FBX_ASSERT(lUVVCElement != NULL);
+		FBX_ASSERT(lUVVCElement != nullptr);
 		lUVVCElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lUVVCElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-		for (int i = 0; i < vertices.size(); i++)
+		for (size_t i = 0; i < vertices.size(); i++)
 			lUVVCElement->GetDirectArray().Add(FbxColor(uvs1[i].x, uvs1[i].y, uvs2[i].x, uvs2[i].y));
 	}
 
@@ -244,11 +243,11 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	{
 		// Create UV for OM channel.
 		lUVOMElement = lMesh->CreateElementUV("OMUV", FbxLayerElement::eTextureAmbient);
-		FBX_ASSERT(lUVOMElement != NULL);
+		FBX_ASSERT(lUVOMElement != nullptr);
 		lUVOMElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lUVOMElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-		for (int i = 0; i < vertices.size(); i++)
+		for (size_t i = 0; i < vertices.size(); i++)
 			lUVOMElement->GetDirectArray().Add(FbxVector2(uvs7[i].x, uvs7[i].y));
 
 		//Now we have set the UVs as eIndexToDirect reference and in eByPolygonVertex  mapping mode
@@ -264,7 +263,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	// all faces of the cube have the same texture
 	lMesh->BeginPolygon(-1, -1, -1, false);
 
-	for (int i = 0; i < triangles.size(); i++)
+	for (size_t i = 0; i < triangles.size(); i++)
 	{
 		// Control point index
 		lMesh->AddPolygon(triangles[i].i1);
@@ -293,8 +292,8 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	// rotate the plane
 	lNode->LclRotation.Set(FbxVector4(-90, 0, 0));
 
-	FbxGeometryElementMaterial* lMaterialElement = NULL;
-	FbxGeometryElementMaterial* lOMElement = NULL;
+	FbxGeometryElementMaterial* lMaterialElement = nullptr;
+	FbxGeometryElementMaterial* lOMElement = nullptr;
 
 	// Set material mapping.
 	lMaterialElement = lMesh->CreateElementMaterial();
@@ -302,7 +301,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	lMaterialElement->SetMappingMode(FbxGeometryElement::eByPolygon);
 	lMaterialElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
 	if (!lMesh->GetElementMaterial(0))
-		return NULL;
+		return nullptr;
 
 	// We are in eByPolygon, so there's only need for index (a plane has 1 polygon).
 	lMaterialElement->GetIndexArray().SetCount(lMesh->GetPolygonSize(0) / 3);
@@ -314,7 +313,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 		lOMElement->SetMappingMode(FbxGeometryElement::eByPolygon);
 		lOMElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
 		if (!lMesh->GetElementMaterial(1))
-			return NULL;
+			return nullptr;
 
 		// We are in eByPolygon, so there's only need for index (a plane has 1 polygon).
 		lOMElement->GetIndexArray().SetCount(lMesh->GetPolygonSize(0) / 3);
