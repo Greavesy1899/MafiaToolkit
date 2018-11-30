@@ -52,11 +52,15 @@
             System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Sound");
             System.Windows.Forms.TreeNode treeNode23 = new System.Windows.Forms.TreeNode("AudioSectors");
             System.Windows.Forms.TreeNode treeNode24 = new System.Windows.Forms.TreeNode("Animation2");
-            System.Windows.Forms.TreeNode treeNode25 = new System.Windows.Forms.TreeNode("AnimalTraffic");
+            System.Windows.Forms.TreeNode treeNode25 = new System.Windows.Forms.TreeNode("AnimalTrafficPaths");
             System.Windows.Forms.TreeNode treeNode26 = new System.Windows.Forms.TreeNode("FrameNameTable");
             System.Windows.Forms.TreeNode treeNode27 = new System.Windows.Forms.TreeNode("EntityDataStorage");
             System.Windows.Forms.TreeNode treeNode28 = new System.Windows.Forms.TreeNode("Actors");
             System.Windows.Forms.TreeNode treeNode29 = new System.Windows.Forms.TreeNode("Speech");
+            System.Windows.Forms.TreeNode treeNode30 = new System.Windows.Forms.TreeNode("PREFAB");
+            System.Windows.Forms.TreeNode treeNode31 = new System.Windows.Forms.TreeNode("NAV_AIWORLD_DATA");
+            System.Windows.Forms.TreeNode treeNode32 = new System.Windows.Forms.TreeNode("NAV_OBJ_DATA");
+            System.Windows.Forms.TreeNode treeNode33 = new System.Windows.Forms.TreeNode("NAV_HPD_DATA");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SDSContentEditor));
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -72,6 +76,8 @@
             // 
             // treeView1
             // 
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView1.Location = new System.Drawing.Point(12, 28);
             this.treeView1.Name = "treeView1";
             treeNode1.Name = "VideoNode";
@@ -123,7 +129,7 @@
             treeNode24.Name = "Animation2Node";
             treeNode24.Text = "Animation2";
             treeNode25.Name = "AnimalTrafficNode";
-            treeNode25.Text = "AnimalTraffic";
+            treeNode25.Text = "AnimalTrafficPaths";
             treeNode26.Name = "FrameNameTableNode";
             treeNode26.Text = "FrameNameTable";
             treeNode27.Name = "EntityDataStorageNode";
@@ -132,6 +138,14 @@
             treeNode28.Text = "Actors";
             treeNode29.Name = "SpeechNode";
             treeNode29.Text = "Speech";
+            treeNode30.Name = "PREFABNode";
+            treeNode30.Text = "PREFAB";
+            treeNode31.Name = "NAV_AIWORLD_DATANode";
+            treeNode31.Text = "NAV_AIWORLD_DATA";
+            treeNode32.Name = "NAV_OBJ_DATA_Node";
+            treeNode32.Text = "NAV_OBJ_DATA";
+            treeNode33.Name = "NAV_HPD_DATA_Node";
+            treeNode33.Text = "NAV_HPD_DATA";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1,
             treeNode2,
@@ -161,7 +175,11 @@
             treeNode26,
             treeNode27,
             treeNode28,
-            treeNode29});
+            treeNode29,
+            treeNode30,
+            treeNode31,
+            treeNode32,
+            treeNode33});
             this.treeView1.Size = new System.Drawing.Size(184, 410);
             this.treeView1.TabIndex = 0;
             // 
@@ -192,19 +210,19 @@
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.saveToolStripMenuItem.Text = "Save";
             // 
             // reloadToolStripMenuItem
             // 
             this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.reloadToolStripMenuItem.Text = "Reload";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // toolsButton
@@ -227,6 +245,8 @@
             // 
             // panel1
             // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.panel1.Location = new System.Drawing.Point(203, 28);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(585, 410);
