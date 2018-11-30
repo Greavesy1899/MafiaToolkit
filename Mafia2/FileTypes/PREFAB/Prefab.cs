@@ -3,6 +3,14 @@ using System.IO;
 
 namespace Mafia2
 {
+//S_DeformationInitData
+//S_VehicleInitData
+//S_ActorDeformData
+//S_WheelInitData
+//S_PhThingActorInitData
+//S_BoatInitData
+//S_WagonInitData
+//S_BrainInitData
     public class Prefab
     {
         int sizeOfFile; //-4 bytes

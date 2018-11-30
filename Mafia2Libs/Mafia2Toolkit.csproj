@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{38DB9B9C-5E78-4E92-B4A8-96A219924F5E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Mafia2Toolkit</RootNamespace>
+    <RootNamespace>Mafia2Tool</RootNamespace>
     <AssemblyName>Mafia2Toolkit</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -171,6 +171,12 @@
     </Compile>
     <Compile Include="Forms\ActorEditor.Designer.cs">
       <DependentUpon>ActorEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SDSContentEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SDSContentEditor.Designer.cs">
+      <DependentUpon>SDSContentEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\SpeechEditor.cs">
       <SubType>Form</SubType>
@@ -348,6 +354,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ActorEditor.resx">
       <DependentUpon>ActorEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SDSContentEditor.resx">
+      <DependentUpon>SDSContentEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SpeechEditor.resx">
       <DependentUpon>SpeechEditor.cs</DependentUpon>

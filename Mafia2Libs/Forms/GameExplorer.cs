@@ -399,6 +399,13 @@ namespace Mafia2Tool
             NAVData nav;
             ApexRenderMesh mesh;
 
+            //special case:
+            if (item.SubItems[0].Text.Contains("SDSContent") && item.SubItems[1].Text == "XML")
+            {
+                new SDSContentEditor((FileInfo)item.Tag);
+                return;
+            }
+
             switch (item.SubItems[1].Text)
             {
 
