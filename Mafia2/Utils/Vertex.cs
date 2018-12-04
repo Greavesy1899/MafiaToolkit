@@ -11,7 +11,6 @@ namespace Mafia2
         Vector3 normal;
         Vector3 tangent;
         Vector3 binormal;
-
         float blendWeight;
         int boneID;
         UVVector2[] uvs;
@@ -68,10 +67,10 @@ namespace Mafia2
         /// <param name="offset">Decompression Offset</param>
         public void ReadPositionData(byte[] data, int i, float factor, Vector3 offset)
         {
-            ushort uint16_1 = BitConverter.ToUInt16(data, i);
-            ushort uint16_2 = BitConverter.ToUInt16(data, i + 2);
-            ushort num3 = (ushort)(BitConverter.ToUInt16(data, i + 4) & short.MaxValue);
-            position = new Vector3(uint16_1 * factor, uint16_2 * factor, num3 * factor);
+            ushort x = BitConverter.ToUInt16(data, i);
+            ushort y = BitConverter.ToUInt16(data, i + 2);
+            ushort z = (ushort)(BitConverter.ToUInt16(data, i + 4) & short.MaxValue);
+            position = new Vector3(x * factor, y * factor, z * factor);
             position += offset;
             
         }
@@ -82,21 +81,27 @@ namespace Mafia2
         /// <param name="factor"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        public byte[] WritePositionData(float factor, Vector3 offset)
+        public void WritePositionData(byte[] data, int i, float factor, Vector3 offset)
         {
-            List<byte> posData = new List<byte>();
             position -= offset;
             position /= factor;
-            
-            posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.X)));
-            posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.Y)));
-            posData.AddRange(BitConverter.GetBytes(Convert.ToUInt16(position.Z)));
-            //posData.Add(Convert.ToByte(Tangent.X * 127.0f + 127.0f));
-            //posData.Add(Convert.ToByte(Tangent.X * 127.0f + 127.0f));
-            posData.Add(0);
-            posData.Add(0);
+            byte[] tempPosData;
 
-            return posData.ToArray();
+            //Do X
+            tempPosData = BitConverter.GetBytes(Convert.ToUInt16(position.X));
+            Array.Copy(tempPosData, 0, data, i, 2);
+
+            //Do Y
+            tempPosData = BitConverter.GetBytes(Convert.ToUInt16(position.Y));
+            Array.Copy(tempPosData, 0, data, i+2, 2);
+
+            //Do Z
+            tempPosData = BitConverter.GetBytes(Convert.ToUInt16(position.Z));
+            Array.Copy(tempPosData, 0, data, i+4, 2);
+
+            //Do W
+            tempPosData = new byte[2];
+            Array.Copy(tempPosData, 0, data, i+6, 2);
         }
 
         /// <summary>
@@ -117,25 +122,25 @@ namespace Mafia2
         /// Write tangent data from buffer.
         /// </summary>
         /// <returns></returns>
-        public byte[] WriteTangentData()
+        public void WriteTangentData(byte[] data, int i)
         {
-            List<byte> tanData = new List<byte>();
+            byte tempByte = 0;
+            float tempNormal = 0f;
 
             //X..
-            if (float.IsNaN((float)Tangent.X * (127.0f + 127.0f)))
-                tanData.Add(0);
-            else
-                tanData.Add(Convert.ToByte(Tangent.X * 127.0f + 127.0f));
+            tempNormal = Tangent.X * 127.0f + 127.0f;
+            tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
+            data[i] = tempByte;
 
             //Y..
-            if (float.IsNaN((float)Tangent.Y * (127.0f + 127.0f)))
-                tanData.Add(0);
-            else
-                tanData.Add(Convert.ToByte(Tangent.Y * 127.0f + 127.0f));
+            tempNormal = Tangent.X * 127.0f + 127.0f;
+            tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
+            data[i + 1] = tempByte;
 
-            //Z is done in normal data.
-
-            return tanData.ToArray();
+            //Z..
+            tempNormal = Tangent.X * 127.0f + 127.0f;
+            tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)255;
+            data[i + 5] = tempByte;
         }
 
         /// <summary>
@@ -156,42 +161,25 @@ namespace Mafia2
         /// Write tangent data from buffer.
         /// </summary>
         /// <returns></returns>
-        public byte[] WriteNormalData(bool hasTangents)
+        public void WriteNormalData(byte[] data, int i)
         {
-            List<byte> normData = new List<byte>();
+            byte tempByte = 0;
+            float tempNormal = 0f;
 
             //X..
-            if (float.IsNaN((float)Normal.X * 127.0f + 127.0f))
-                normData.Add(127);
-            else
-                normData.Add(Convert.ToByte(Normal.X * 127.0f + 127.0f));
-
+            tempNormal = Normal.X * 127.0f + 127.0f;
+            tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
+            data[i] = tempByte;
 
             //Y..
-            if (float.IsNaN((float)Normal.Y * 127.0f + 127.0f))
-                normData.Add(127);
-            else
-                normData.Add(Convert.ToByte(Normal.Y * 127.0f + 127.0f));
-
+            tempNormal = Normal.X * 127.0f + 127.0f;
+            tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
+            data[i + 1] = tempByte;
 
             //Z..
-            if (float.IsNaN((float)Normal.Z * 127.0f + 127.0f))
-                normData.Add(255);
-            else
-                normData.Add(Convert.ToByte(Normal.Z * 127.0f + 127.0f));
-
-
-            if (hasTangents)
-            {
-                //Tangent Z..
-                //if (float.IsNaN(Tangent.Z * 127.0f + 127.0f))
-                //    normData.Add(0);
-                //else
-                //    normData.Add(Convert.ToByte(Tangent.Z * 127.0f + 127.0f));
-                
-            }
-            normData.Add(0);
-            return normData.ToArray();
+            tempNormal = Normal.X * 127.0f + 127.0f;
+            tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)255;
+            data[i + 2] = tempByte;
         }
 
         /// <summary>
@@ -224,16 +212,17 @@ namespace Mafia2
         /// </summary>
         /// <param name="uvNum"></param>
         /// <returns></returns>
-        public byte[] WriteUvData(int uvNum)
+        public void WriteUvData(byte[] data, int i, int uvNum)
         {
-            List<byte> uvData = new List<byte>();
+            byte[] tempPosData;
 
-            byte[] x = Half.GetBytes(UVs[uvNum].X);
-            byte[] y = Half.GetBytes(UVs[uvNum].Y);
+            //Do X
+            tempPosData = Half.GetBytes(UVs[uvNum].X);
+            Array.Copy(tempPosData, 0, data, i, 2);
 
-            uvData.AddRange(x);
-            uvData.AddRange(y);
-            return uvData.ToArray();
+            //Do Y
+            tempPosData = Half.GetBytes(UVs[uvNum].Y);
+            Array.Copy(tempPosData, 0, data, i + 2, 2);
         }
 
         /// <summary>

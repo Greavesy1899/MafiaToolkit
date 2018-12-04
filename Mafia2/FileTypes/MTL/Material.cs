@@ -246,11 +246,8 @@ namespace Mafia2
 
         public ShaderParameter(BinaryReader reader)
         {
-
             chunk = new string(reader.ReadChars(4));
-
             floatCount = reader.ReadInt32() / 4;
-
             floats = new float[floatCount];
             for (int i = 0; i != floatCount; i++)
             {
@@ -267,9 +264,9 @@ namespace Mafia2
         {
             writer.Write(chunk.ToCharArray());
             writer.Write(floatCount * 4);
-            foreach (float f in floats)
+            for (int i = 0; i != floatCount; i++)
             {
-                writer.Write(f);
+                writer.Write(floats[i]);
             }
         }
     }

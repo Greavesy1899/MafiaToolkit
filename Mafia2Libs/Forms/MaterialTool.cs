@@ -43,21 +43,6 @@ namespace Mafia2Tool
 
             foreach (KeyValuePair<ulong, Material> mat in mtl.Materials)
             {
-                string data = "HASH: " + mat.Value.ShaderHash + "\t" + "ID: " + mat.Value.ShaderID;
-                string paramData = "\tPARAM: ";
-
-                for (int i = 0; i != mat.Value.SP.Length; i++)
-                    paramData += mat.Value.SP[i].Chunk += " ";
-
-                paramData += "\tSAMPLERS: ";
-                for (int i = 0; i != mat.Value.SPS.Length; i++)
-                    paramData += mat.Value.SPS[i].ID += " ";
-
-                data += ("\t" + paramData);
-
-                if (!debugShader.Contains(data))
-                    debugShader.Add(data);
-
                 if (!string.IsNullOrEmpty(text) && searchMode)
                 {
                     if (mat.Value.MaterialName.Contains(text) || mat.Value.MaterialHash.ToString().Contains(text))

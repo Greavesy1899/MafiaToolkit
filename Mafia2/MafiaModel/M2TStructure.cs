@@ -47,8 +47,8 @@ namespace Mafia2
                 IndexBuffer indexBuffer = indexBuffers[i];
                 VertexBuffer vertexBuffer = vertexBuffers[i];
 
-                int stride;
-                Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = frameLod.GetVertexOffsets(out stride);
+                int vertexSize;
+                Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = frameLod.GetVertexOffsets(out vertexSize);
 
                 lods[i].NumUVChannels = 4;
                 lods[i].Vertices = new Vertex[frameLod.NumVertsPr];
@@ -59,26 +59,25 @@ namespace Mafia2
                     vertex.UVs = new UVVector2[lods[i].NumUVChannels];
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
-                        int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
-                        vertex.ReadPositionData(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor,
-                            frameGeometry.DecompressionOffset);
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
+                        vertex.ReadPositionData(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
                     {
-                        int startIndex = v * stride + vertexOffsets[VertexFlags.Position].Offset;
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
                         vertex.ReadTangentData(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
                     {
-                        int startIndex = v * stride + vertexOffsets[VertexFlags.Normals].Offset;
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Normals].Offset;
                         vertex.ReadNormalData(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.BlendData))
                     {
-                        int startIndex = v * stride + vertexOffsets[VertexFlags.BlendData].Offset;
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.BlendData].Offset;
                         vertex.ReadBlendData(vertexBuffer.Data, startIndex);
                     }
 
@@ -89,25 +88,25 @@ namespace Mafia2
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                     {
-                        int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords0].Offset;
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords0].Offset;
                         vertex.ReadUvData(vertexBuffer.Data, startIndex, 0);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
                     {
-                        int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords1].Offset;
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords1].Offset;
                         vertex.ReadUvData(vertexBuffer.Data, startIndex, 1);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
                     {
-                        int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords2].Offset;
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords2].Offset;
                         vertex.ReadUvData(vertexBuffer.Data, startIndex, 2);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
                     {
-                        int startIndex = v * stride + vertexOffsets[VertexFlags.TexCoords7].Offset;
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords7].Offset;
                         vertex.ReadUvData(vertexBuffer.Data, startIndex, 3);
                     }
 

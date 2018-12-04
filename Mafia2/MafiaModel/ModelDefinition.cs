@@ -175,31 +175,44 @@ namespace Mafia2
             if (model.Lods == null)
                 return;
 
-            List<byte> vdata = new List<byte>();
-
-            for (int i = 0; i != model.Lods[0].Vertices.Length; i++)
+            for (int i = 0; i != model.Lods.Length; i++)
             {
-                Vertex vert = model.Lods[0].Vertices[i];
+                FrameLOD frameLod = frameGeometry.LOD[i];
+                int vertexSize;
+                Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = frameLod.GetVertexOffsets(out vertexSize);
+                byte[] vBuffer = new byte[vertexSize * frameLod.NumVertsPr];
 
-                if (model.Lods[0].VertexDeclaration.HasFlag(VertexFlags.Position))
-                    vdata.AddRange(vert.WritePositionData(frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset));
+                for (int v = 0; v != model.Lods[0].Vertices.Length; v++)
+                {
+                    Vertex vert = model.Lods[0].Vertices[v];
 
-                if(model.Lods[0].VertexDeclaration.HasFlag(VertexFlags.Tangent))
-                    vdata.AddRange(vert.WriteTangentData());
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Position))
+                    {
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
+                        vert.WritePositionData(vBuffer, startIndex, frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset);
+                    }
 
-                if (model.Lods[0].VertexDeclaration.HasFlag(VertexFlags.Normals))
-                    vdata.AddRange(vert.WriteNormalData(model.Lods[0].VertexDeclaration.HasFlag(VertexFlags.Tangent)));
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                    {
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Tangent].Offset;
+                        vert.WriteTangentData(vBuffer, startIndex);
+                    }
 
-                if(model.Lods[0].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
-                    vdata.AddRange(vert.WriteUvData(0));
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Normals))
+                    {
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Normals].Offset;
+                        vert.WriteNormalData(vBuffer, startIndex);
+                    }
+
+                }
+
+                if (name != null)
+                    VertexBuffers[0] = new VertexBuffer(FNV64.Hash(name));
+                else
+                    VertexBuffers[0] = new VertexBuffer(frameLod.VertexBufferRef.uHash);
+
+                VertexBuffers[0].Data = vBuffer;
             }
-
-            if (name != null)
-                VertexBuffers[0] = new VertexBuffer(FNV64.Hash(name));
-            else
-                VertexBuffers[0] = new VertexBuffer(frameGeometry.LOD[0].VertexBufferRef.uHash);
-
-            VertexBuffers[0].Data = vdata.ToArray();
         }
 
         /// <summary>
