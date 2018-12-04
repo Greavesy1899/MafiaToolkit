@@ -182,9 +182,9 @@ namespace Mafia2
                 Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = frameLod.GetVertexOffsets(out vertexSize);
                 byte[] vBuffer = new byte[vertexSize * frameLod.NumVertsPr];
 
-                for (int v = 0; v != model.Lods[0].Vertices.Length; v++)
+                for (int v = 0; v != model.Lods[i].Vertices.Length; v++)
                 {
-                    Vertex vert = model.Lods[0].Vertices[v];
+                    Vertex vert = model.Lods[i].Vertices[v];
 
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
@@ -194,7 +194,7 @@ namespace Mafia2
 
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Tangent))
                     {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Tangent].Offset;
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
                         vert.WriteTangentData(vBuffer, startIndex);
                     }
 
@@ -202,6 +202,30 @@ namespace Mafia2
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Normals].Offset;
                         vert.WriteNormalData(vBuffer, startIndex);
+                    }
+
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                    {
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords0].Offset;
+                        vert.WriteUvData(vBuffer, startIndex, 0);
+                    }
+
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                    {
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords1].Offset;
+                        vert.WriteUvData(vBuffer, startIndex, 1);
+                    }
+
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                    {
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords2].Offset;
+                        vert.WriteUvData(vBuffer, startIndex, 2);
+                    }
+
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                    {
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords7].Offset;
+                        vert.WriteUvData(vBuffer, startIndex, 3);
                     }
 
                 }

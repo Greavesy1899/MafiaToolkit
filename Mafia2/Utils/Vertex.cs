@@ -130,17 +130,17 @@ namespace Mafia2
             //X..
             tempNormal = Tangent.X * 127.0f + 127.0f;
             tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
-            data[i] = tempByte;
+            data[i + 6] = tempByte;
 
             //Y..
-            tempNormal = Tangent.X * 127.0f + 127.0f;
+            tempNormal = Tangent.Y * 127.0f + 127.0f;
             tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
-            data[i + 1] = tempByte;
+            data[i + 7] = tempByte;
 
             //Z..
-            tempNormal = Tangent.X * 127.0f + 127.0f;
+            tempNormal = Tangent.Z * 127.0f + 127.0f;
             tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)255;
-            data[i + 5] = tempByte;
+            data[i + 11] = tempByte;
         }
 
         /// <summary>
@@ -172,12 +172,12 @@ namespace Mafia2
             data[i] = tempByte;
 
             //Y..
-            tempNormal = Normal.X * 127.0f + 127.0f;
+            tempNormal = Normal.Y * 127.0f + 127.0f;
             tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
             data[i + 1] = tempByte;
 
             //Z..
-            tempNormal = Normal.X * 127.0f + 127.0f;
+            tempNormal = Normal.Z * 127.0f + 127.0f;
             tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)255;
             data[i + 2] = tempByte;
         }
