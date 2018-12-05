@@ -129,7 +129,6 @@ namespace Mafia2
                         vertex.BuildBinormals();
 
                     lods[i].Vertices[v] = vertex;
-
                     MaterialStruct[] materials = frameMaterial.Materials[i];
                     lods[i].Parts = new ModelPart[materials.Length];
                     for (int x = 0; x != materials.Length; x++)

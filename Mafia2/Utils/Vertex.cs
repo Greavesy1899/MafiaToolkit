@@ -99,9 +99,8 @@ namespace Mafia2
             tempPosData = BitConverter.GetBytes(Convert.ToUInt16(position.Z));
             Array.Copy(tempPosData, 0, data, i+4, 2);
 
-            //Do W
-            tempPosData = new byte[2];
-            Array.Copy(tempPosData, 0, data, i+6, 2);
+            data[i + 6] = 0x27;
+            data[i + 7] = 0xDB;
         }
 
         /// <summary>
@@ -111,9 +110,9 @@ namespace Mafia2
         /// <param name="i">current position to read from</param>
         public void ReadTangentData(byte[] data, int i)
         {
-            float x = (data[i] - sbyte.MaxValue) * 0.007874f;
-            float y = (data[i + 1] - sbyte.MaxValue) * 0.007874f;
-            float z = (data[i + 5] - sbyte.MaxValue) * 0.007874f;
+            float x = (data[i + 6] - sbyte.MaxValue) * 0.007874f;
+            float y = (data[i + 7] - sbyte.MaxValue) * 0.007874f;
+            float z = (data[i + 11] - sbyte.MaxValue) * 0.007874f;
             tangent = new Vector3(x, y, z);
             tangent.Normalize();
         }
@@ -129,17 +128,17 @@ namespace Mafia2
 
             //X..
             tempNormal = Tangent.X * 127.0f + 127.0f;
-            tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
+            tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
             data[i + 6] = tempByte;
 
             //Y..
             tempNormal = Tangent.Y * 127.0f + 127.0f;
-            tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
+            tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
             data[i + 7] = tempByte;
 
             //Z..
             tempNormal = Tangent.Z * 127.0f + 127.0f;
-            tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)255;
+            tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)255;
             data[i + 11] = tempByte;
         }
 
@@ -168,17 +167,17 @@ namespace Mafia2
 
             //X..
             tempNormal = Normal.X * 127.0f + 127.0f;
-            tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
+            tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
             data[i] = tempByte;
 
             //Y..
             tempNormal = Normal.Y * 127.0f + 127.0f;
-            tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
+            tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
             data[i + 1] = tempByte;
 
             //Z..
             tempNormal = Normal.Z * 127.0f + 127.0f;
-            tempByte = float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)255;
+            tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)255;
             data[i + 2] = tempByte;
         }
 
@@ -204,6 +203,7 @@ namespace Mafia2
         {
             Half x = Half.ToHalf(data, i);
             Half y = Half.ToHalf(data, i + 2);
+            y = -y;
             uvs[uvpos] = new UVVector2(x, y);
         }
 
@@ -221,6 +221,7 @@ namespace Mafia2
             Array.Copy(tempPosData, 0, data, i, 2);
 
             //Do Y
+            UVs[uvNum].Y = -uvs[uvNum].Y;
             tempPosData = Half.GetBytes(UVs[uvNum].Y);
             Array.Copy(tempPosData, 0, data, i + 2, 2);
         }

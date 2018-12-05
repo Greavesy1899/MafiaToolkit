@@ -449,7 +449,7 @@ namespace Mafia2Tool
                     //tTool = new TableEditor((FileInfo)item.Tag);
                     return;
                 case "ACT":
-                   // aTool = new ActorEditor((FileInfo)item.Tag);
+                    aTool = new ActorEditor((FileInfo)item.Tag);
                     break;
                 case "PRF":
                     prefabs = new Prefab((FileInfo)item.Tag);

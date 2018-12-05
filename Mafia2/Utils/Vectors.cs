@@ -292,10 +292,10 @@ namespace Mafia2
         /// Write UVVector2 as floats.
         /// </summary>
         public void WriteToFile(BinaryWriter writer)
-        {
-            
+        {       
             writer.Write(HalfHelper.HalfToSingle(X));
-            writer.Write(1f-Y);
+            writer.Write(HalfHelper.HalfToSingle(Y));
+           // writer.Write((Half)1f-Y);
         }
 
         /// <summary>
@@ -306,7 +306,6 @@ namespace Mafia2
         {
             X = HalfHelper.SingleToHalf(reader.ReadSingle());
             Y = HalfHelper.SingleToHalf(reader.ReadSingle());
-            //Y -= (Half)1.0f;
         }
 
         public override string ToString()
