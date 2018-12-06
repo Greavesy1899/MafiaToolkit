@@ -398,11 +398,17 @@ namespace Mafia2Tool
             TableEditor tTool;
             NAVData nav;
             ApexRenderMesh mesh;
+            CityAreaEditor caEditor;
 
             //special case:
             if (item.SubItems[0].Text.Contains("SDSContent") && item.SubItems[1].Text == "XML")
             {
                 new SDSContentEditor((FileInfo)item.Tag);
+                return;
+            }
+            else if (item.SubItems[0].Text.Contains("cityareas") && item.SubItems[1].Text == "BIN")
+            {
+                caEditor = new CityAreaEditor((FileInfo)item.Tag);
                 return;
             }
 

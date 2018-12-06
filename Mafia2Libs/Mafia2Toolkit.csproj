@@ -166,6 +166,12 @@
     <Compile Include="EditorControls\MaterialAddOption.Designer.cs">
       <DependentUpon>MaterialAddOption.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\CityAreaEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CityAreaEditor.Designer.cs">
+      <DependentUpon>CityAreaEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ActorEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -351,6 +357,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditorControls\MaterialAddOption.resx">
       <DependentUpon>MaterialAddOption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CityAreaEditor.resx">
+      <DependentUpon>CityAreaEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ActorEditor.resx">
       <DependentUpon>ActorEditor.cs</DependentUpon>

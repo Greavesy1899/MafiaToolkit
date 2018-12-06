@@ -4,7 +4,6 @@ namespace Mafia2
 {
     public class CityAreas
     {
-        public string header;
         public int unk0_int;
         public int areaCount;
         public int namesLength;
@@ -22,15 +21,13 @@ namespace Mafia2
             {
                 ReadFromFile(reader);
             }
-            using (BinaryWriter writer = new BinaryWriter(File.Open(fileName+"2", FileMode.Create)))
-            {
-                WriteToFile(writer);
-            }
         }
 
         public void ReadFromFile(BinaryReader reader)
         {
-            header = new string(reader.ReadChars(4));
+            if (reader.ReadInt32() != 1668571506)
+                return;
+
             unk0_int = reader.ReadInt32();
             areaCount = reader.ReadInt32();
             namesLength = reader.ReadInt32();
@@ -51,7 +48,7 @@ namespace Mafia2
 
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write("ratc".ToCharArray());
+            writer.Write(1668571506);
             writer.Write(unk0_int);
             writer.Write(areaCount);
             writer.Write(namesLength);
@@ -103,7 +100,7 @@ namespace Mafia2
             public AreaData(BinaryReader reader)
             {
                 name = ReadString(reader);
-                reader.ReadByte();
+                unkByte0 = reader.ReadByte();
                 index1 = reader.ReadUInt16();
                 index2 = reader.ReadUInt16();
                 unkByte1 = reader.ReadByte();
@@ -114,7 +111,7 @@ namespace Mafia2
                 WriteString(writer, name);
                 writer.Write(index1);
                 writer.Write(index2);
-                writer.Write(unkByte1);
+                writer.Write((byte)1);
             }
 
             private string ReadString(BinaryReader reader)
