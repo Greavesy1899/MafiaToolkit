@@ -28,6 +28,15 @@ namespace Mafia2Tool
             SaveButton.Text = Language.GetString("$SAVE");
             ReloadButton.Text = Language.GetString("$RELOAD");
             ExitButton.Text = Language.GetString("$EXIT");
+            toolButton.Text = Language.GetString("$TOOLS");
+            AddAreaButton.Text = Language.GetString("$ADD_AREA");
+            AreaGroupBox.Text = Language.GetString("$AREA_DATA");
+            Area1Label.Text = Language.GetString("$AREA1");
+            Area2Label.Text = Language.GetString("$AREA2");
+            AreaNameLabel.Text = Language.GetString("$AREA_NAME");
+            UnkByteLabel.Text = Language.GetString("$UNK_BYTE");
+            SaveButton.Text = Language.GetString("$SAVE");
+            ReloadButton.Text = Language.GetString("$RELOAD");
         }
 
         private void BuildData()
