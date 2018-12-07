@@ -1,16 +1,16 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Mafia2
 {
     public class CityAreas
     {
-        public int unk0_int;
         public int areaCount;
         public int namesLength;
         public string names;
-        AreaData[] areaCollection;
+        List<AreaData> areaCollection;
 
-        public AreaData[] AreaCollection {
+        public List<AreaData> AreaCollection {
             get { return areaCollection; }
             set { areaCollection = value; }
         }
@@ -28,53 +28,114 @@ namespace Mafia2
             if (reader.ReadInt32() != 1668571506)
                 return;
 
-            unk0_int = reader.ReadInt32();
+            if (reader.ReadInt32() != 1)
+                return;
+
             areaCount = reader.ReadInt32();
             namesLength = reader.ReadInt32();
             names = new string(reader.ReadChars(namesLength));
-            areaCollection = new AreaData[areaCount];
+            areaCollection = new List<AreaData>();
 
-            for(int i = 0; i != areaCollection.Length; i++)
+            for(int i = 0; i != areaCount; i++)
             {
-                areaCollection[i] = new AreaData(reader);
-                int pos = areaCollection[i].Index1;
-                areaCollection[i].IndexedString = names.Substring(pos, names.IndexOf('\0', pos) - pos);
-                pos = areaCollection[i].Index2;
+                AreaData areaData = new AreaData();
+                areaData.ReadFromFile(reader);
+                int pos = areaData.Index1;
+
+                areaData.IndexedString = names.Substring(pos, names.IndexOf('\0', pos) - pos);
+                pos = areaData.Index2;
 
                 if(pos != 65535)
-                    areaCollection[i].IndexedString2 = names.Substring(pos, names.IndexOf('\0', pos) - pos);
+                    areaData.IndexedString2 = names.Substring(pos, names.IndexOf('\0', pos) - pos);
+
+                areaCollection.Add(areaData);
             }         
+        }
+
+        public void RebuildNames()
+        {
+            List<string> addedNames = new List<string>();
+            List<ushort> addedNamesPos = new List<ushort>();
+            string namePool = "";
+
+            foreach(AreaData area in areaCollection)
+            {
+                int index = -1;
+                if (area.Index1 != 65535 || area.IndexedString == "")
+                {
+                    index = addedNames.IndexOf(area.IndexedString);
+                    if (index == -1)
+                    {
+                        //update city area data first.
+                        area.Index1 = (ushort)namePool.Length;
+                        namePool += area.IndexedString;
+                        namePool += '\0';
+
+                        //make sure it doesn't happen again.
+                        addedNames.Add(area.IndexedString);
+                        addedNamesPos.Add(area.Index1);
+                    }
+                    else
+                    {
+                        area.Index1 = addedNamesPos[index];
+                        area.IndexedString = addedNames[index];
+                    }
+                }
+                if (area.Index2 != 65535 || area.IndexedString2 == "")
+                {
+                    index = addedNames.IndexOf(area.IndexedString2);
+                    if (index == -1)
+                    {
+                        //update city area data first.
+                        area.Index2 = (ushort)namePool.Length;
+                        namePool += area.IndexedString2;
+                        namePool += '\0';
+
+                        //make sure it doesn't happen again.
+                        addedNames.Add(area.IndexedString2);
+                        addedNamesPos.Add(area.Index2);
+                    }
+                    else
+                    {
+                        area.Index2 = addedNamesPos[index];
+                        area.IndexedString2 = addedNames[index];
+                    }
+                }
+            }
+
+            names = namePool;
+            namesLength = names.Length;
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
+            //update DB data.
+            RebuildNames();
+            areaCount = areaCollection.Count;
+
+            //now we shall write.
             writer.Write(1668571506);
-            writer.Write(unk0_int);
+            writer.Write(1);
             writer.Write(areaCount);
             writer.Write(namesLength);
             writer.Write(names.ToCharArray());
 
-            for (int i = 0; i != areaCollection.Length; i++)
+            for (int i = 0; i != areaCollection.Count; i++)
                 areaCollection[i].WriteToFile(writer);
         }
 
         public class AreaData
         {
             string name;
-            byte unkByte0;
             ushort index1;
             string indexedString1;
             ushort index2;
             string indexedString2;
-            byte unkByte1;
+            byte unkByte;
 
             public string Name {
                 get { return name; }
                 set { name = value; }
-            }
-            public byte UnkByte0 {
-                get { return unkByte0; }
-                set { unkByte0 = value; }
             }
             public ushort Index1 {
                 get { return index1; }
@@ -92,18 +153,23 @@ namespace Mafia2
                 get { return indexedString2; }
                 set { indexedString2 = value; }
             }
-            public byte UnkByte1 {
-                get { return unkByte1; }
-                set { unkByte1 = value; }
+            public byte UnkByte {
+                get { return unkByte; }
+                set { unkByte = value; }
             }
 
-            public AreaData(BinaryReader reader)
+            public void Create()
+            {
+                name = "NEW_AREA";
+            }
+
+            public void ReadFromFile(BinaryReader reader)
             {
                 name = ReadString(reader);
-                unkByte0 = reader.ReadByte();
+                reader.ReadByte();
                 index1 = reader.ReadUInt16();
                 index2 = reader.ReadUInt16();
-                unkByte1 = reader.ReadByte();
+                unkByte = reader.ReadByte();
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -111,7 +177,7 @@ namespace Mafia2
                 WriteString(writer, name);
                 writer.Write(index1);
                 writer.Write(index2);
-                writer.Write((byte)1);
+                writer.Write(unkByte);
             }
 
             private string ReadString(BinaryReader reader)

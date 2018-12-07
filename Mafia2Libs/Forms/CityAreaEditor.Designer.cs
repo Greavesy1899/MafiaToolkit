@@ -29,43 +29,34 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ActorEditor));
-            this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CityAreaEditor));
             this.CollisionContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.deletePlacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openM2T = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.AddAreaButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.AreaNameLabel = new System.Windows.Forms.Label();
+            this.AreaNameBox = new System.Windows.Forms.TextBox();
+            this.Area1Label = new System.Windows.Forms.Label();
+            this.Area2Label = new System.Windows.Forms.Label();
+            this.UnkByteLabel = new System.Windows.Forms.Label();
+            this.UnkByteBox = new System.Windows.Forms.CheckBox();
+            this.AreaGroupBox = new System.Windows.Forms.GroupBox();
+            this.Area1Box = new System.Windows.Forms.TextBox();
+            this.Area2Box = new System.Windows.Forms.TextBox();
+            this.ReloadAreaButton = new System.Windows.Forms.Button();
+            this.SaveAreaButton = new System.Windows.Forms.Button();
             this.CollisionContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            this.AreaGroupBox.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // FrameResourceGrid
-            // 
-            this.FrameResourceGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.FrameResourceGrid.Location = new System.Drawing.Point(402, 28);
-            this.FrameResourceGrid.Name = "FrameResourceGrid";
-            this.FrameResourceGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.FrameResourceGrid.Size = new System.Drawing.Size(386, 410);
-            this.FrameResourceGrid.TabIndex = 10;
-            // 
-            // treeView1
-            // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.treeView1.ContextMenuStrip = this.CollisionContext;
-            this.treeView1.Location = new System.Drawing.Point(12, 28);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(368, 410);
-            this.treeView1.TabIndex = 11;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
             // 
             // CollisionContext
             // 
@@ -96,7 +87,8 @@
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolButton});
+            this.fileToolButton,
+            this.toolButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(800, 25);
@@ -107,67 +99,214 @@
             // 
             this.fileToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.fileToolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem,
-            this.reloadToolStripMenuItem,
-            this.exitToolStripMenuItem});
+            this.SaveButton,
+            this.ReloadButton,
+            this.ExitButton});
             this.fileToolButton.Image = ((System.Drawing.Image)(resources.GetObject("fileToolButton.Image")));
             this.fileToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.fileToolButton.Name = "fileToolButton";
             this.fileToolButton.Size = new System.Drawing.Size(47, 22);
             this.fileToolButton.Text = "$FILE";
             // 
-            // saveToolStripMenuItem
+            // SaveButton
             // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.saveToolStripMenuItem.Text = "$SAVE";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            this.SaveButton.Name = "SaveButton";
+            this.SaveButton.Size = new System.Drawing.Size(124, 22);
+            this.SaveButton.Text = "$SAVE";
+            this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
-            // reloadToolStripMenuItem
+            // ReloadButton
             // 
-            this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.reloadToolStripMenuItem.Text = "$RELOAD";
-            this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
+            this.ReloadButton.Name = "ReloadButton";
+            this.ReloadButton.Size = new System.Drawing.Size(124, 22);
+            this.ReloadButton.Text = "$RELOAD";
+            this.ReloadButton.Click += new System.EventHandler(this.ReloadButton_Click);
             // 
-            // exitToolStripMenuItem
+            // ExitButton
             // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.exitToolStripMenuItem.Text = "$EXIT";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.ExitButton.Name = "ExitButton";
+            this.ExitButton.Size = new System.Drawing.Size(124, 22);
+            this.ExitButton.Text = "$EXIT";
+            this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
-            // ActorEditor
+            // toolButton
+            // 
+            this.toolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.AddAreaButton});
+            this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
+            this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolButton.Name = "toolButton";
+            this.toolButton.Size = new System.Drawing.Size(62, 22);
+            this.toolButton.Text = "$TOOLS";
+            // 
+            // AddAreaButton
+            // 
+            this.AddAreaButton.Name = "AddAreaButton";
+            this.AddAreaButton.Size = new System.Drawing.Size(138, 22);
+            this.AddAreaButton.Text = "$ADD_AREA";
+            this.AddAreaButton.Click += new System.EventHandler(this.AddAreaButton_Click);
+            // 
+            // listBox1
+            // 
+            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(12, 28);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(384, 407);
+            this.listBox1.TabIndex = 16;
+            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.UpdateAreaData);
+            // 
+            // AreaNameLabel
+            // 
+            this.AreaNameLabel.AutoSize = true;
+            this.AreaNameLabel.Location = new System.Drawing.Point(15, 25);
+            this.AreaNameLabel.Name = "AreaNameLabel";
+            this.AreaNameLabel.Size = new System.Drawing.Size(79, 13);
+            this.AreaNameLabel.TabIndex = 17;
+            this.AreaNameLabel.Text = "$AREA_NAME";
+            // 
+            // AreaNameBox
+            // 
+            this.AreaNameBox.Location = new System.Drawing.Point(142, 22);
+            this.AreaNameBox.Name = "AreaNameBox";
+            this.AreaNameBox.Size = new System.Drawing.Size(229, 20);
+            this.AreaNameBox.TabIndex = 18;
+            // 
+            // Area1Label
+            // 
+            this.Area1Label.AutoSize = true;
+            this.Area1Label.Location = new System.Drawing.Point(15, 51);
+            this.Area1Label.Name = "Area1Label";
+            this.Area1Label.Size = new System.Drawing.Size(54, 13);
+            this.Area1Label.TabIndex = 21;
+            this.Area1Label.Text = "$AREA_1";
+            // 
+            // Area2Label
+            // 
+            this.Area2Label.AutoSize = true;
+            this.Area2Label.Location = new System.Drawing.Point(15, 78);
+            this.Area2Label.Name = "Area2Label";
+            this.Area2Label.Size = new System.Drawing.Size(54, 13);
+            this.Area2Label.TabIndex = 22;
+            this.Area2Label.Text = "$AREA_2";
+            // 
+            // UnkByteLabel
+            // 
+            this.UnkByteLabel.AutoSize = true;
+            this.UnkByteLabel.Location = new System.Drawing.Point(15, 105);
+            this.UnkByteLabel.Name = "UnkByteLabel";
+            this.UnkByteLabel.Size = new System.Drawing.Size(70, 13);
+            this.UnkByteLabel.TabIndex = 24;
+            this.UnkByteLabel.Text = "$UNK_BYTE";
+            // 
+            // UnkByteBox
+            // 
+            this.UnkByteBox.AutoSize = true;
+            this.UnkByteBox.Location = new System.Drawing.Point(142, 105);
+            this.UnkByteBox.Name = "UnkByteBox";
+            this.UnkByteBox.Size = new System.Drawing.Size(15, 14);
+            this.UnkByteBox.TabIndex = 25;
+            this.UnkByteBox.UseVisualStyleBackColor = true;
+            // 
+            // AreaGroupBox
+            // 
+            this.AreaGroupBox.Controls.Add(this.SaveAreaButton);
+            this.AreaGroupBox.Controls.Add(this.ReloadAreaButton);
+            this.AreaGroupBox.Controls.Add(this.Area2Box);
+            this.AreaGroupBox.Controls.Add(this.Area1Box);
+            this.AreaGroupBox.Controls.Add(this.AreaNameLabel);
+            this.AreaGroupBox.Controls.Add(this.UnkByteBox);
+            this.AreaGroupBox.Controls.Add(this.AreaNameBox);
+            this.AreaGroupBox.Controls.Add(this.UnkByteLabel);
+            this.AreaGroupBox.Controls.Add(this.Area2Label);
+            this.AreaGroupBox.Controls.Add(this.Area1Label);
+            this.AreaGroupBox.Location = new System.Drawing.Point(402, 28);
+            this.AreaGroupBox.Name = "AreaGroupBox";
+            this.AreaGroupBox.Size = new System.Drawing.Size(386, 407);
+            this.AreaGroupBox.TabIndex = 26;
+            this.AreaGroupBox.TabStop = false;
+            this.AreaGroupBox.Text = "$AREA_DATA";
+            // 
+            // Area1Box
+            // 
+            this.Area1Box.Location = new System.Drawing.Point(142, 48);
+            this.Area1Box.Name = "Area1Box";
+            this.Area1Box.Size = new System.Drawing.Size(229, 20);
+            this.Area1Box.TabIndex = 26;
+            // 
+            // Area2Box
+            // 
+            this.Area2Box.Location = new System.Drawing.Point(142, 74);
+            this.Area2Box.Name = "Area2Box";
+            this.Area2Box.Size = new System.Drawing.Size(229, 20);
+            this.Area2Box.TabIndex = 27;
+            // 
+            // ReloadAreaButton
+            // 
+            this.ReloadAreaButton.Location = new System.Drawing.Point(271, 147);
+            this.ReloadAreaButton.Name = "ReloadAreaButton";
+            this.ReloadAreaButton.Size = new System.Drawing.Size(100, 23);
+            this.ReloadAreaButton.TabIndex = 28;
+            this.ReloadAreaButton.Text = "$RELOAD_AREA";
+            this.ReloadAreaButton.UseVisualStyleBackColor = true;
+            this.ReloadAreaButton.Click += new System.EventHandler(this.ReloadArea_Click);
+            // 
+            // SaveAreaButton
+            // 
+            this.SaveAreaButton.Location = new System.Drawing.Point(18, 147);
+            this.SaveAreaButton.Name = "SaveAreaButton";
+            this.SaveAreaButton.Size = new System.Drawing.Size(91, 23);
+            this.SaveAreaButton.TabIndex = 29;
+            this.SaveAreaButton.Text = "$SAVE_AREA";
+            this.SaveAreaButton.UseVisualStyleBackColor = true;
+            this.SaveAreaButton.Click += new System.EventHandler(this.SaveArea_Clicked);
+            // 
+            // CityAreaEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.AreaGroupBox);
+            this.Controls.Add(this.listBox1);
             this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.FrameResourceGrid);
-            this.Controls.Add(this.treeView1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "ActorEditor";
+            this.Name = "CityAreaEditor";
             this.Text = "$ACTOR_EDITOR_TITLE";
             this.CollisionContext.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.AreaGroupBox.ResumeLayout(false);
+            this.AreaGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.PropertyGrid FrameResourceGrid;
-        private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.OpenFileDialog openM2T;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton fileToolButton;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SaveButton;
+        private System.Windows.Forms.ToolStripMenuItem ReloadButton;
+        private System.Windows.Forms.ToolStripMenuItem ExitButton;
         private System.Windows.Forms.ContextMenuStrip CollisionContext;
         private System.Windows.Forms.ToolStripMenuItem ContextDelete;
         private System.Windows.Forms.ToolStripMenuItem deletePlacementToolStripMenuItem;
+        private System.Windows.Forms.ToolStripDropDownButton toolButton;
+        private System.Windows.Forms.ToolStripMenuItem AddAreaButton;
+        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Label AreaNameLabel;
+        private System.Windows.Forms.TextBox AreaNameBox;
+        private System.Windows.Forms.Label Area1Label;
+        private System.Windows.Forms.Label Area2Label;
+        private System.Windows.Forms.Label UnkByteLabel;
+        private System.Windows.Forms.CheckBox UnkByteBox;
+        private System.Windows.Forms.GroupBox AreaGroupBox;
+        private System.Windows.Forms.TextBox Area1Box;
+        private System.Windows.Forms.TextBox Area2Box;
+        private System.Windows.Forms.Button SaveAreaButton;
+        private System.Windows.Forms.Button ReloadAreaButton;
     }
 }

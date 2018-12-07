@@ -211,17 +211,6 @@ namespace Mafia2
                     else
                     {
                         buffer = reader.ReadBytes((int)bufferLength);
-                        
-                        string folder = "actors_unks/" + bufferType + "/";
-                        string filename = folder + num + ".dat";
-
-                        if (!Directory.Exists(folder))
-                            Directory.CreateDirectory(folder);
-
-                        using (BinaryWriter writer = new BinaryWriter(File.Open(filename, FileMode.Create)))
-                        {
-                            writer.Write(buffer);
-                        }
                     }
                 }
 

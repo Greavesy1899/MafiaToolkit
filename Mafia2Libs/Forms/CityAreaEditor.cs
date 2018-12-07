@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using Mafia2;
 
@@ -8,6 +9,7 @@ namespace Mafia2Tool
     {
         private FileInfo cityAreasFile;
         private CityAreas areas;
+        private int curIndex = -1;
 
         public CityAreaEditor(FileInfo file)
         {
@@ -23,44 +25,68 @@ namespace Mafia2Tool
         {
             Text = Language.GetString("$CITY_AREA_EDITOR_TITLE");
             fileToolButton.Text = Language.GetString("$FILE");
-            saveToolStripMenuItem.Text = Language.GetString("$SAVE");
-            reloadToolStripMenuItem.Text = Language.GetString("$RELOAD");
-            exitToolStripMenuItem.Text = Language.GetString("$EXIT");
+            SaveButton.Text = Language.GetString("$SAVE");
+            ReloadButton.Text = Language.GetString("$RELOAD");
+            ExitButton.Text = Language.GetString("$EXIT");
         }
 
         private void BuildData()
         {
             areas = new CityAreas(cityAreasFile.FullName);
 
-            for(int i = 0; i != areas.AreaCollection.Length; i++)
-            {
-                TreeNode node = new TreeNode(areas.AreaCollection[i].Name);
-                node.Name = areas.AreaCollection[i].Name.ToString();
-                node.Tag = areas.AreaCollection[i];
-                treeView1.Nodes.Add(node);
-            }
+            for(int i = 0; i != areas.AreaCollection.Count; i++)
+                listBox1.Items.Add(areas.AreaCollection[i].Name);
         }
 
-        private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
+        private void AddAreaButton_Click(object sender, EventArgs e)
         {
-            FrameResourceGrid.SelectedObject = e.Node.Tag;
+            CityAreas.AreaData area = new CityAreas.AreaData();
+            area.Create();
+            areas.AreaCollection.Add(area);
+            listBox1.Items.Add(area.Name);
+            listBox1.SelectedIndex = areas.AreaCollection.Count - 1;
         }
 
-        private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)
+        private void SaveButton_Click(object sender, EventArgs e)
         {
-            Close();
+            using (BinaryWriter writer = new BinaryWriter(File.Open(cityAreasFile.FullName, FileMode.Create)))
+                areas.WriteToFile(writer);
         }
 
-        private void reloadToolStripMenuItem_Click(object sender, System.EventArgs e)
+        private void ReloadButton_Click(object sender, EventArgs e)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(cityAreasFile.FullName, FileMode.Open)))
                 areas.ReadFromFile(reader);
         }
 
-        private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
+        private void ExitButton_Click(object sender, EventArgs e)
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Open(cityAreasFile.FullName, FileMode.Create)))
-                areas.WriteToFile(writer);
+            Close();
+        }
+
+        private void UpdateAreaData(object sender, EventArgs e)
+        {
+            if(listBox1.SelectedIndex != -1)
+                curIndex = listBox1.SelectedIndex;
+
+            AreaNameBox.Text = areas.AreaCollection[curIndex].Name;
+            Area1Box.Text = areas.AreaCollection[curIndex].IndexedString;
+            Area2Box.Text = areas.AreaCollection[curIndex].IndexedString2;
+            UnkByteBox.Checked = Convert.ToBoolean(areas.AreaCollection[curIndex].UnkByte);
+        }
+
+        private void SaveArea_Clicked(object sender, EventArgs e)
+        {
+            areas.AreaCollection[curIndex].Name = AreaNameBox.Text;
+            areas.AreaCollection[curIndex].IndexedString = Area1Box.Text;
+            areas.AreaCollection[curIndex].IndexedString2 = Area2Box.Text;
+            areas.AreaCollection[curIndex].UnkByte = Convert.ToByte(UnkByteBox.Checked);
+            listBox1.Items[curIndex] = AreaNameBox.Text;
+        }
+
+        private void ReloadArea_Click(object sender, EventArgs e)
+        {
+            UpdateAreaData(null, null);
         }
     }
 }

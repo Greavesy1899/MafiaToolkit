@@ -56,6 +56,20 @@ namespace Mafia2Tool
                 else
                     nodes[0].Nodes.Add(node);
 
+
+                string folder = "actors_unks/" + (ActorTypes)actors.Items[i].ActorType + "/";
+                string filename = actors.Items[i].FrameUnk + ".dat";
+
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+
+                using (BinaryWriter writer = new BinaryWriter(File.Open(Path.Combine(folder, filename), FileMode.Create)))
+                {
+                    if (actors.UnkSector.TempUnks[actors.Items[i].PropID].Data == null)
+                        writer.Write(actors.UnkSector.TempUnks[actors.Items[i].PropID].Buffer);
+                    else
+                        actors.UnkSector.TempUnks[actors.Items[i].PropID].Data.WriteToFile(writer);
+                }
             }
         }
 
