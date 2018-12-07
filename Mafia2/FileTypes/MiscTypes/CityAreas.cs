@@ -60,8 +60,11 @@ namespace Mafia2
 
             foreach(AreaData area in areaCollection)
             {
+                area.Index1 = 0;
+                area.Index2 = 0;
                 int index = -1;
-                if (area.Index1 != 65535 || area.IndexedString == "")
+                //do area1 stuff.
+                if (!string.IsNullOrEmpty(area.IndexedString))
                 {
                     index = addedNames.IndexOf(area.IndexedString);
                     if (index == -1)
@@ -81,7 +84,13 @@ namespace Mafia2
                         area.IndexedString = addedNames[index];
                     }
                 }
-                if (area.Index2 != 65535 || area.IndexedString2 == "")
+                else if (string.IsNullOrEmpty(area.IndexedString))
+                {
+                    area.Index1 = 65535;
+                }
+
+                //do area 2 stuff.
+                if (!string.IsNullOrEmpty(area.IndexedString2))
                 {
                     index = addedNames.IndexOf(area.IndexedString2);
                     if (index == -1)
@@ -100,6 +109,10 @@ namespace Mafia2
                         area.Index2 = addedNamesPos[index];
                         area.IndexedString2 = addedNames[index];
                     }
+                }
+                else if(string.IsNullOrEmpty(area.IndexedString2))
+                {
+                    area.Index2 = 65535;
                 }
             }
 
