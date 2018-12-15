@@ -1,0 +1,5 @@
+version: 1.{build}
+configuration: Debug
+platform: x86
+build:
+  verbosity: detailed
