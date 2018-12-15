@@ -2,4 +2,5 @@ version: 1.{build}
 configuration: Debug
 platform: x86
 build:
+  project: Mafia2Libs.sln
   verbosity: detailed
