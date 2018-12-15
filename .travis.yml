@@ -1,0 +1,4 @@
+language: csharp
+solution: Mafia2Libs.sln
+install:
+  - nuget restore Mafia2Libs.sln
