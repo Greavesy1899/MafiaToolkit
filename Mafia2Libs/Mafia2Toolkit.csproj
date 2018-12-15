@@ -272,6 +272,7 @@
     <Compile Include="Utils\ToolkitSettings.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="build.cmd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
