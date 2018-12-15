@@ -1,5 +1,9 @@
 # Mafia 2: Toolkit
 
+![Build status (AppVeyor)](https://ci.appveyor.com/api/projects/status/62dtija7vekn7htn/branch/master?svg=true)
+![Build status (Travis)](https://travis-ci.org/Greavesy1899/Mafia2Toolkit.svg?branch=master)
+![Discord](https://discordapp.com/api/guilds/464158725079564289/embed.png)
+
 This toolkit is a group of programs a plugin for 3DS max and the library, which allows modders to build their own programs. 
 
 ## Features:
