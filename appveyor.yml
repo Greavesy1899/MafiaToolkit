@@ -1,4 +1,6 @@
 version: 1.{build}
+before_build:
+- cmd: nuget restore
 build:
   project: Mafia2Libs.sln
   verbosity: detailed
