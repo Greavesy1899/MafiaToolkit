@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
@@ -15,6 +9,8 @@ namespace Mafia2Tool
 {
     public partial class SDSContentEditor : Form
     {
+        DirectoryInfo parent;
+
         public SDSContentEditor()
         {
             InitializeComponent();
@@ -24,6 +20,7 @@ namespace Mafia2Tool
         public SDSContentEditor(FileInfo info)
         {
             InitializeComponent();
+            parent = info.Directory;
             Localise();
             LoadSDSContent(info);
             ShowDialog();
@@ -169,9 +166,47 @@ namespace Mafia2Tool
             }
         }
 
-        private void autoAddFilesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AutoAddFilesButton_Click(object sender, EventArgs e)
         {
+            List<string> newBuffers = new List<string>();
+            foreach(FileInfo info in parent.GetFiles())
+            {
+                if (info.Extension.Contains("vbp"))
+                    newBuffers.Add(info.Name);
 
+                if (info.Extension.Contains("ibp"))
+                    newBuffers.Add(info.Name);
+            }
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = ("\t");
+            settings.OmitXmlDeclaration = true;
+
+            XmlWriter resourceXML = XmlWriter.Create(parent.FullName + "/SDSContent_BUFFERS.xml", settings);
+            resourceXML.WriteStartElement("SDSResource");
+            for (int i = 0; i != newBuffers.Count; i++)
+            {
+                resourceXML.WriteStartElement("ResourceEntry");
+                
+
+                if (newBuffers[i].Contains(".ibp"))
+                {
+                    resourceXML.WriteElementString("Type", "IndexBufferPool");
+                    resourceXML.WriteElementString("File", newBuffers[i]);
+                    resourceXML.WriteElementString ("Version", "2");
+                }
+                else if(newBuffers[i].Contains(".vbp"))
+                {
+                    resourceXML.WriteElementString("Type", "VertexBufferPool");
+                    resourceXML.WriteElementString("File", newBuffers[i]);
+                    resourceXML.WriteElementString("Version", "2");
+                }
+                resourceXML.WriteEndElement();
+            }
+            resourceXML.WriteEndElement();
+            resourceXML.Flush();
+            resourceXML.Dispose();
         }
     }
 }

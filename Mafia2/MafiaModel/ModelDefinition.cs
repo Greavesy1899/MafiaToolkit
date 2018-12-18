@@ -333,9 +333,9 @@ namespace Mafia2
             frameMesh.Boundings.CalculateBounds(vertData);
             frameMaterial.Bounds = FrameMesh.Boundings;
             CalculateDecompression();
+            UpdateObjectsFromModel();
             BuildIndexBuffer("M2TK." + model.Name + ".IB0");
             BuildVertexBuffer("M2TK." + model.Name + ".VB0");
-            UpdateObjectsFromModel();
             frameGeometry.LOD[0].IndexBufferRef = new Hash("M2TK." + model.Name + ".IB0");
             frameGeometry.LOD[0].VertexBufferRef = new Hash("M2TK." + model.Name + ".VB0");
         }
