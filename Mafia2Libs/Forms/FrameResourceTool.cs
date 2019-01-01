@@ -174,8 +174,18 @@ namespace Mafia2Tool
                     Debug.WriteLine("Unadded node was found");
                 else
                 {
-                    Debug.WriteLine(string.Format("WARNING: node: {0} was not added properly", obj.Text));
-                    treeView1.Nodes.Add(obj);
+                    //buggy backup:
+                    nodes = treeView1.Nodes.Find((obj.Tag as FrameObjectBase).ParentIndex2.RefID.ToString(), true);
+                    if (nodes.Length > 0)
+                    {
+                        nodes[0].Nodes.Add(obj);
+                        Debug.WriteLine("Added: " + obj.Text);
+                    }
+                    else
+                    {
+                        Debug.WriteLine(string.Format("WARNING: node: {0} was not added properly", obj.Text));
+                        treeView1.Nodes.Add(obj);
+                    }
                 }
             }
             ToolkitSettings.UpdateRichPresence("Using the Frame Resource editor");
@@ -495,6 +505,7 @@ namespace Mafia2Tool
         private void ReloadClick(object sender, EventArgs e)
         {
             SceneData.Reload();
+            unadded = new List<TreeNode>();
             PopulateForm();
         }
 

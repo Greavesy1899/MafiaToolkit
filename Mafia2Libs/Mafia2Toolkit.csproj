@@ -88,29 +88,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>libs\Gibbed.IO.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.D3DCompiler, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.D3DCompiler.4.2.0\lib\net45\SharpDX.D3DCompiler.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Desktop, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Desktop.4.2.0\lib\net45\SharpDX.Desktop.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct2D1, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Direct2D1.4.2.0\lib\net45\SharpDX.Direct2D1.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Direct3D11.4.2.0\lib\net45\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX.DirectInput, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.DirectInput.4.1.0\lib\net45\SharpDX.DirectInput.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.DXGI.4.2.0\lib\net45\SharpDX.DXGI.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.Mathematics.4.2.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -124,18 +103,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="3DGraphics\Graphics\Camera.cs" />
-    <Compile Include="3DGraphics\Graphics\ColorShaderClass.cs" />
-    <Compile Include="3DGraphics\Graphics\DirectX11Class.cs" />
-    <Compile Include="3DGraphics\Graphics\GraphicsClass.cs" />
-    <Compile Include="3DGraphics\Input\InputClass.cs" />
-    <Compile Include="3DGraphics\Graphics\LightClass.cs" />
-    <Compile Include="3DGraphics\Graphics\LightShaderClass.cs" />
-    <Compile Include="3DGraphics\Graphics\ModelClass.cs" />
-    <Compile Include="3DGraphics\System\SystemClass.cs" />
-    <Compile Include="3DGraphics\System\TimerClass.cs" />
-    <Compile Include="3DGraphics\Graphics\TextureClass.cs" />
-    <Compile Include="3DGraphics\Graphics\TextureShaderClass.cs" />
     <Compile Include="AdditionalControls\ListWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -278,7 +245,6 @@
     </None>
     <None Include="Configs\App.config" />
     <None Include="Configs\packages.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="build.py">
@@ -306,24 +272,6 @@
     </Content>
     <None Include="Resources\Splash.png" />
     <None Include="Resources\Toolkit.ico" />
-    <Content Include="Shaders\LightPS.hlsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\LightVS.hlsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\PixelColor.hlsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\TexturePS.hlsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\TextureVS.hlsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\VertexColor.hlsl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mafia2\Mafia2Lib.csproj">

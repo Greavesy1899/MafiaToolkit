@@ -208,6 +208,10 @@ namespace Mafia2
                     {
                         data = new ActorScriptEntity(reader);
                     }
+                    else if(bufferType == ActorTypes.Radio && bufferLength == 1028)
+                    {
+                        data = new ActorRadio(reader);
+                    }
                     else
                     {
                         buffer = reader.ReadBytes((int)bufferLength);

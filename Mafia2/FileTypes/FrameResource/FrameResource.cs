@@ -292,22 +292,40 @@ namespace Mafia2
                 if (obj.ParentIndex1.Index > -1)
                 {
                     if (obj.ParentIndex1.Index <= (frameScenes.Count - 1) && (frameScenes.Count - 1) != -1)
+                    {
                         obj.ParentIndex1.RefID = (frameScenes.ElementAt(obj.ParentIndex1.Index).Value as FrameHeaderScene).RefID;
+                        obj.ParentIndex1.Name = (frameScenes.ElementAt(obj.ParentIndex1.Index).Value as FrameHeaderScene).Name.String;
+                    }
                     else if (obj.ParentIndex1.Index >= numBlocks)
-                        obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index-numBlocks).Value as FrameObjectBase).RefID;
-                    else
-                        obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index).Value as FrameObjectBase).RefID;
+                    {
+                        obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index - numBlocks).Value as FrameObjectBase).RefID;
+                        obj.ParentIndex1.Name = (frameObjects.ElementAt(obj.ParentIndex1.Index - numBlocks).Value as FrameObjectBase).Name.String;
+                    }
+                    //else
+                    //{
+                    //    obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index).Value as FrameObjectBase).RefID;
+                    //    obj.ParentIndex1.Name = (frameObjects.ElementAt(obj.ParentIndex1.Index).Value as FrameObjectBase).Name.String;
+                    //}
                     obj.AddRef(FrameEntryRefTypes.Parent1, obj.ParentIndex1.RefID);
                 }
 
                 if (obj.ParentIndex2.Index > -1)
                 {
                     if (obj.ParentIndex2.Index <= (frameScenes.Count - 1) && (frameScenes.Count - 1) != -1)
+                    {
                         obj.ParentIndex2.RefID = (frameScenes.ElementAt(obj.ParentIndex2.Index).Value as FrameHeaderScene).RefID;
+                        obj.ParentIndex2.Name = (frameScenes.ElementAt(obj.ParentIndex2.Index).Value as FrameHeaderScene).Name.String;
+                    }
                     else if (obj.ParentIndex2.Index >= numBlocks)
-                        obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index-numBlocks).Value as FrameObjectBase).RefID;
-                    else
-                        obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index).Value as FrameObjectBase).RefID;
+                    {
+                        obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index - numBlocks).Value as FrameObjectBase).RefID;
+                        obj.ParentIndex2.Name = (frameObjects.ElementAt(obj.ParentIndex2.Index - numBlocks).Value as FrameObjectBase).Name.String;
+                    }
+                    //else
+                    //{
+                    //    obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index).Value as FrameObjectBase).RefID;
+                    //    obj.ParentIndex1.Name = (frameObjects.ElementAt(obj.ParentIndex2.Index).Value as FrameObjectBase).Name.String;
+                    //}
                     obj.AddRef(FrameEntryRefTypes.Parent2, obj.ParentIndex2.RefID);
                 }
             }
