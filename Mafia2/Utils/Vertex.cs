@@ -14,6 +14,7 @@ namespace Mafia2
         float blendWeight;
         int boneID;
         UVVector2[] uvs;
+        int damageGroup;
 
         public Vector3 Position {
             get { return position; }
@@ -42,6 +43,10 @@ namespace Mafia2
         public int BoneID {
             get { return boneID; }
             set { boneID = value; }
+        }
+        public int DamageGroup {
+            get { return damageGroup; }
+            set { damageGroup = value; }
         }
 
         /// <summary>
@@ -224,6 +229,29 @@ namespace Mafia2
             UVs[uvNum].Y = -uvs[uvNum].Y;
             tempPosData = Half.GetBytes(UVs[uvNum].Y);
             Array.Copy(tempPosData, 0, data, i + 2, 2);
+        }
+
+        /// <summary>
+        /// Write Damage group to buffer
+        /// </summary>
+        /// <param name="uvNum"></param>
+        /// <returns></returns>
+        public void WriteDamageGroup(byte[] data, int i)
+        {
+            byte[] tempDamageIDData = BitConverter.GetBytes(damageGroup);
+            Array.Copy(tempDamageIDData, 0, data, i, 4);
+        }
+
+        /// <summary>
+        /// Read Damage Group from buffer
+        /// </summary>
+        /// <param name="data">vertex buffer data</param>
+        /// <param name="i">current position to read from</param>
+        public void ReadDamageGroup(byte[] data, int i)
+        {
+            //todo; work on skeleton models.
+            damageGroup = BitConverter.ToInt32(data, i);
+            Console.WriteLine(damageGroup);
         }
 
         /// <summary>

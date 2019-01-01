@@ -204,6 +204,12 @@ namespace Mafia2
                         vert.WriteNormalData(vBuffer, startIndex);
                     }
 
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
+                    {
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.DamageGroup].Offset;
+                        vert.WriteDamageGroup(vBuffer, startIndex);
+                    }
+
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords0].Offset;

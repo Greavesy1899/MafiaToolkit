@@ -122,7 +122,8 @@ namespace Mafia2
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
                     {
-                        //Console.WriteLine("Skip vertex with DamageGroup");
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.DamageGroup].Offset;
+                        vertex.ReadDamageGroup(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].NormalMapInfoPresent)
