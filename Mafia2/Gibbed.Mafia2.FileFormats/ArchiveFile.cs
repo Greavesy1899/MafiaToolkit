@@ -365,7 +365,6 @@ namespace Gibbed.Mafia2.FileFormats
                     case "ItemDesc":
                     case "FrameNameTable":
                     case "Actors":
-                    case "Collisions":
                     case "NAV_AIWORLD_DATA":
                     case "NAV_OBJ_DATA":
                     case "NAV_HPD_DATA":
@@ -377,8 +376,11 @@ namespace Gibbed.Mafia2.FileFormats
                     case "Speech":
                     case "SoundTable":
                     case "AnimalTrafficPaths":
-                    case "AnimatedTexture":
+                    case "Animated Texture":
                         resourceEntry = WriteBasicEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Collisions":
+                        resourceEntry = WriteCollisionEntry(resourceEntry, nodes, sdsFolder, sddescNode);
                         break;
                     case "IndexBufferPool":
                     case "VertexBufferPool":
@@ -418,16 +420,16 @@ namespace Gibbed.Mafia2.FileFormats
 
                 resourceNode.AppendChild(typeNameNode);
                 resourceNode.AppendChild(sddescNode);
-                resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotRamRequired", (int)resourceEntry.SlotRamRequired));
-                resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotVRamRequired", (int)resourceEntry.SlotVramRequired));
-                resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherRamRequired", (int)resourceEntry.OtherRamRequired));
-                resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherVramRequired", (int)resourceEntry.OtherVramRequired));
+                resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotRamRequired", 0)); //(int)resourceEntry.SlotRamRequired));
+                resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotVRamRequired", 0)); //(int)resourceEntry.SlotVramRequired));
+                resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherRamRequired", 0)); //(int)resourceEntry.OtherRamRequired));
+                resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherVramRequired", 0));//(int)resourceEntry.OtherVramRequired));
                 rootNode.AppendChild(resourceNode);
                 ResourceEntries.Add(resourceEntry);
-                SlotRamRequired += resourceEntry.SlotRamRequired;
-                SlotVramRequired += resourceEntry.SlotVramRequired;
-                OtherRamRequired += resourceEntry.OtherRamRequired;
-                OtherVramRequired += resourceEntry.OtherVramRequired;
+                //SlotRamRequired += resourceEntry.SlotRamRequired;
+                //SlotVramRequired += resourceEntry.SlotVramRequired;
+                //OtherRamRequired += resourceEntry.OtherRamRequired;
+                //OtherVramRequired += resourceEntry.OtherVramRequired;
             }
 
             ResourceInfoXml = xmlDoc.OuterXml;
@@ -729,6 +731,23 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
 
             //finish
+            descNode.InnerText = "not available";
+            return entry;
+        }
+        public ResourceEntry WriteCollisionEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            //get data from xml
+            nodes.Current.MoveToNext();
+            string file = nodes.Current.Value;
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+            //set up data.
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+
+            //finish
+            entry.SlotRamRequired = (uint)entry.Data.Length + 1;
             descNode.InnerText = "not available";
             return entry;
         }

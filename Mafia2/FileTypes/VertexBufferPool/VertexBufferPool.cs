@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -177,6 +178,8 @@ namespace Mafia2
         /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
+            int expectedSize = 0;
+
             version = (BufferType)reader.ReadByte();
             numBuffers = reader.ReadInt32();
             size = reader.ReadInt32();
@@ -184,8 +187,11 @@ namespace Mafia2
             for (int i = 0; i != numBuffers; i++)
             {
                 VertexBuffer buffer = new VertexBuffer(reader);
+                expectedSize += buffer.Data.Length;
                 buffers.Add(buffer.Hash, buffer);
             }
+
+            Console.WriteLine("{0} AGAINST {1}", expectedSize, size);
         }
 
         /// <summary>
@@ -201,7 +207,7 @@ namespace Mafia2
 
             //need to make sure we update total size of buffers.
             for (int i = 0; i != buffers.Count; i++)
-                size += (buffers.ElementAt(i).Value.Data.Length + 256);
+                size += (buffers.ElementAt(i).Value.Data.Length);
 
             writer.Write(size);
 
