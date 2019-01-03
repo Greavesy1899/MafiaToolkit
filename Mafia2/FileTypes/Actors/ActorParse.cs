@@ -212,6 +212,13 @@ namespace Mafia2
                     {
                         data = new ActorRadio(reader);
                     }
+                    else if(bufferType == ActorTypes.Sound && bufferLength == 592)
+                    {
+                        //long pos = reader.BaseStream.Position;
+                        //data = new ActorSoundEntity(reader);
+                        //reader.BaseStream.Position = pos;
+                        buffer = reader.ReadBytes((int)bufferLength);
+                    }
                     else
                     {
                         buffer = reader.ReadBytes((int)bufferLength);

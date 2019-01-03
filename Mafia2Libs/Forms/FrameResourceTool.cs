@@ -48,46 +48,66 @@ namespace Mafia2Tool
 
         public void PopulateForm()
         {
+            //TODO: IMPROVE GRIDVIEW POPULATION:
             treeView1.Nodes.Clear();
-            FrameResourceListBox.Items.Clear();
+            dataGridView1.Rows.Clear();
             foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
             {
-                FrameResourceListBox.Items.Add(entry.Value);
+                DataGridViewRow row = new DataGridViewRow();
+                row.Tag = entry.Value;
+                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count-1, entry.Value.Name });
+                dataGridView1.Rows.Add(row);
+
                 TreeNode node = new TreeNode
                 {
                     Text = entry.Value.Name.String,
-                    Name = entry.Value.Name.String,
+                    Name = entry.Value.RefID.ToString(),
                     Tag = entry.Value
                 };
                 treeView1.Nodes.Add(node);
             }
             foreach (KeyValuePair<int, FrameGeometry> entry in SceneData.FrameResource.FrameGeometries)
             {
-                FrameResourceListBox.Items.Add(entry.Value);
+                DataGridViewRow row = new DataGridViewRow();
+                row.Tag = entry.Value;
+                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, entry.Value.ToString() });
+                dataGridView1.Rows.Add(row);
             }
             foreach (KeyValuePair<int, FrameMaterial> entry in SceneData.FrameResource.FrameMaterials)
             {
-                FrameResourceListBox.Items.Add(entry.Value);
+                DataGridViewRow row = new DataGridViewRow();
+                row.Tag = entry.Value;
+                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, entry.Value.ToString() });
+                dataGridView1.Rows.Add(row);
             }
             foreach (KeyValuePair<int, FrameBlendInfo> entry in SceneData.FrameResource.FrameBlendInfos)
             {
-                FrameResourceListBox.Items.Add(entry.Value);
+                DataGridViewRow row = new DataGridViewRow();
+                row.Tag = entry.Value;
+                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, entry.Value.ToString() });
+                dataGridView1.Rows.Add(row);
             }
             foreach (KeyValuePair<int, FrameSkeleton> entry in SceneData.FrameResource.FrameSkeletons)
             {
-                FrameResourceListBox.Items.Add(entry.Value);
+                DataGridViewRow row = new DataGridViewRow();
+                row.Tag = entry.Value;
+                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, entry.Value.ToString() });
+                dataGridView1.Rows.Add(row);
             }
             foreach (KeyValuePair<int, FrameSkeletonHierachy> entry in SceneData.FrameResource.FrameSkeletonHierachies)
             {
-                FrameResourceListBox.Items.Add(entry.Value);
+                DataGridViewRow row = new DataGridViewRow();
+                row.Tag = entry.Value;
+                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, entry.Value.ToString() });
+                dataGridView1.Rows.Add(row);
             }
             foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
             {
-                FrameResourceListBox.Items.Add(entry.Value);
+                DataGridViewRow row = new DataGridViewRow();
+                row.Tag = entry.Value;
+                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, (entry.Value as FrameObjectBase).Name.String });
+                dataGridView1.Rows.Add(row);
             }
-
-            //TODO: Modify this when I implement scenes. I want to add REFIDs to them too.
-
             if (SceneData.FrameNameTable != null)
             {
                 foreach (FrameNameTable.Data data in SceneData.FrameNameTable.FrameData)
@@ -95,12 +115,21 @@ namespace Mafia2Tool
                     if (data.ParentName == null)
                         data.ParentName = "<scene>";
 
-                    int index = treeView1.Nodes.IndexOfKey(data.ParentName);
+                    //this is more spaghetti code. but right now, this codebase is like Fallout 76.
+                    int sceneKey = -1;
+                    foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
+                    {
+                        if (entry.Value.Name.String == data.ParentName)
+                        {
+                            sceneKey = entry.Key;
+                        }
+                    }
+                    int index = treeView1.Nodes.IndexOfKey(sceneKey.ToString());
 
                     if (index == -1)
                         treeView1.Nodes.Add(data.ParentName, data.ParentName);
 
-                    index = treeView1.Nodes.IndexOfKey(data.ParentName);
+                    index = treeView1.Nodes.IndexOfKey(sceneKey.ToString());
                     TreeNode root = treeView1.Nodes[index];
 
                     if (data.FrameIndex != -1)
@@ -126,6 +155,8 @@ namespace Mafia2Tool
                     }
                 }
             }
+
+            dataGridView1.AutoResizeColumns();
 
             foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
             {
@@ -291,9 +322,10 @@ namespace Mafia2Tool
         //    return curPos;
         //}
 
-        private void OnSelectedChanged(object sender, EventArgs e)
+        private void OnSelectedChanged(object sender, DataGridViewCellEventArgs e)
         {
-            FrameResourceGrid.SelectedObject = FrameResourceListBox.SelectedItem;
+            if ((e.RowIndex > -1) && (e.ColumnIndex > -1))
+                FrameResourceGrid.SelectedObject = dataGridView1.Rows[e.RowIndex].Tag;
         }
 
         private void ExportModels(List<object> meshes)
@@ -385,7 +417,7 @@ namespace Mafia2Tool
         private void SwitchView(object sender, EventArgs e)
         {
             treeView1.Visible = !treeView1.Visible;
-            FrameResourceListBox.Visible = !FrameResourceListBox.Visible;
+            dataGridView1.Visible = !dataGridView1.Visible;
         }
 
         private void OverwriteBuffer_Click(object sender, EventArgs e)
@@ -624,8 +656,15 @@ namespace Mafia2Tool
                 mesh.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
                 SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
                 SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
-                FrameResourceListBox.Items.Add(model.FrameMaterial);
-                FrameResourceListBox.Items.Add(model.FrameGeometry);
+
+                DataGridViewRow row = new DataGridViewRow();
+                row.Tag = model.FrameMaterial;
+                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, model.FrameMaterial.ToString() });
+                dataGridView1.Rows.Add(row);
+                row = new DataGridViewRow();
+                row.Tag = model.FrameGeometry;
+                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, model.FrameGeometry.ToString() });
+                dataGridView1.Rows.Add(row);
 
                 //Check for existing buffer; if it exists, remove so we can add one later.
                 if (SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[0].Hash) != null)
@@ -662,9 +701,11 @@ namespace Mafia2Tool
             }
 
             SceneData.FrameResource.FrameObjects.Add(mesh.RefID, mesh);
-            FrameResourceListBox.Items.Add(mesh);
+            DataGridViewRow row1 = new DataGridViewRow();
+            row1.Tag = mesh;
+            row1.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, mesh.Name.String });
+            dataGridView1.Rows.Add(row1);
             PopulateForm();
-            //SaveChanges();
         }
 
         private void OnExportFarLods(object sender, EventArgs e)
@@ -792,8 +833,14 @@ namespace Mafia2Tool
                 mesh.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
                 SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
                 SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
-                FrameResourceListBox.Items.Add(model.FrameMaterial);
-                FrameResourceListBox.Items.Add(model.FrameGeometry);
+                DataGridViewRow row = new DataGridViewRow();
+                row.Tag = mesh;
+                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, model.FrameMaterial.ToString() });
+                dataGridView1.Rows.Add(row);
+                row = new DataGridViewRow();
+                row.Tag = mesh;
+                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, model.FrameGeometry.ToString() });
+                dataGridView1.Rows.Add(row);
 
                 //Check for existing buffer; if it exists, remove so we can add one later.
                 if (SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[0].Hash) != null)
@@ -824,11 +871,57 @@ namespace Mafia2Tool
 
                 treeView1.Nodes.Add(CreateTreeNode(mesh));
                 SceneData.FrameResource.FrameObjects.Add(mesh.RefID, mesh);
-                FrameResourceListBox.Items.Add(mesh);
+                row = new DataGridViewRow();
+                row.Tag = mesh;
+                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, mesh.Name.String });
+                dataGridView1.Rows.Add(row);
                 done++;
                 Console.WriteLine("Done number {0}/{1} {2}", done, frameData.EntryCount, mesh.Name.String);
             }
             PopulateForm();
+        }
+
+        private void OnPropertyChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            if (e.ChangedItem.Label == "RefID")
+            {
+                TreeNode[] nodes = treeView1.Nodes.Find(e.ChangedItem.Value.ToString(), true);
+                
+                if(nodes.Length > 0)
+                {
+                    int newValue = (int)e.ChangedItem.Value;
+                    FrameObjectBase obj = (treeView1.SelectedNode.Tag as FrameObjectBase);
+                    int newIndex = SceneData.FrameResource.FrameObjects.IndexOfValue(newValue);
+
+                    if(newIndex == -1)
+                    {
+                        //check if user didn't try setting it as a scene:
+                        newIndex = SceneData.FrameResource.FrameScenes.IndexOfValue(newValue);
+                    }
+
+                    string name = (SceneData.FrameResource.FrameObjects.ElementAt(newIndex).Value as FrameObjectBase).Name.String;
+
+                    //because C# doesn't allow me to get this data for some odd reason, im going to check for it in obj. Why does C# not allow me to see FullLabel in the e var?      
+                    if (obj.ParentIndex1.RefID == newValue)
+                    {
+                        obj.ParentIndex1.Index = newIndex;
+                        obj.ParentIndex1.Name = name;
+                        obj.SubRef(FrameEntryRefTypes.Parent1);
+                        obj.AddRef(FrameEntryRefTypes.Parent1, newValue);
+                    }
+                    else if (obj.ParentIndex2.RefID == newValue)
+                    {
+                        obj.ParentIndex2.Index = newIndex;
+                        obj.ParentIndex2.Name = name;
+                        obj.SubRef(FrameEntryRefTypes.Parent2);
+                        obj.AddRef(FrameEntryRefTypes.Parent2, newValue);
+                    }
+                    obj.UpdateNode();
+                    treeView1.Nodes.Remove(treeView1.SelectedNode);
+                    TreeNode newNode = CreateTreeNode(obj);
+                    nodes[0].Nodes.Add(newNode);
+                }
+            }
         }
     }
 }

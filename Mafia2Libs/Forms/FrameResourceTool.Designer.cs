@@ -26,7 +26,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrameResourceTool));
             this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
-            this.FrameResourceListBox = new System.Windows.Forms.ListBox();
             this.folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.m2tBrowser = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -50,8 +49,12 @@
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextUpdateParents = new System.Windows.Forms.ToolStripMenuItem();
             this.eddBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.EntryName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.toolStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // FrameResourceGrid
@@ -64,18 +67,7 @@
             this.FrameResourceGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
             this.FrameResourceGrid.Size = new System.Drawing.Size(386, 393);
             this.FrameResourceGrid.TabIndex = 6;
-            // 
-            // FrameResourceListBox
-            // 
-            this.FrameResourceListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.FrameResourceListBox.FormattingEnabled = true;
-            this.FrameResourceListBox.Location = new System.Drawing.Point(12, 27);
-            this.FrameResourceListBox.Name = "FrameResourceListBox";
-            this.FrameResourceListBox.Size = new System.Drawing.Size(368, 394);
-            this.FrameResourceListBox.TabIndex = 5;
-            this.FrameResourceListBox.Visible = false;
-            this.FrameResourceListBox.SelectedIndexChanged += new System.EventHandler(this.OnSelectedChanged);
+            this.FrameResourceGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.OnPropertyChanged);
             // 
             // folderBrowser
             // 
@@ -263,15 +255,42 @@
             this.eddBrowser.FileName = "m2tBrowser";
             this.eddBrowser.Filter = "Scene|*.edd|Scene FBX|*.fbx";
             // 
+            // dataGridView1
+            // 
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Index,
+            this.EntryName});
+            this.dataGridView1.Location = new System.Drawing.Point(13, 28);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(367, 393);
+            this.dataGridView1.TabIndex = 17;
+            this.dataGridView1.Visible = false;
+            this.dataGridView1.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnSelectedChanged);
+            // 
+            // Index
+            // 
+            this.Index.HeaderText = "$INDEX";
+            this.Index.Name = "Index";
+            this.Index.ReadOnly = true;
+            // 
+            // EntryName
+            // 
+            this.EntryName.HeaderText = "$ENTRYNAME";
+            this.EntryName.Name = "EntryName";
+            this.EntryName.ReadOnly = true;
+            // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 431);
-            this.Controls.Add(this.treeView1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.FrameResourceGrid);
-            this.Controls.Add(this.FrameResourceListBox);
+            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.treeView1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrameResourceTool";
             this.Text = "Frame Resource Editor";
@@ -279,6 +298,7 @@
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.contextMenu.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -286,7 +306,6 @@
 
         #endregion
         private System.Windows.Forms.PropertyGrid FrameResourceGrid;
-        private System.Windows.Forms.ListBox FrameResourceListBox;
         private System.Windows.Forms.FolderBrowserDialog folderBrowser;
         private System.Windows.Forms.OpenFileDialog m2tBrowser;
         private System.Windows.Forms.ToolStrip toolStrip1;
@@ -310,5 +329,8 @@
         private System.Windows.Forms.ToolStripMenuItem contextUpdateParents;
         private System.Windows.Forms.ToolStripMenuItem importFrameEDDButton;
         private System.Windows.Forms.OpenFileDialog eddBrowser;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Index;
+        private System.Windows.Forms.DataGridViewTextBoxColumn EntryName;
     }
 }

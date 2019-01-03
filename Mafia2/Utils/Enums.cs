@@ -64,6 +64,19 @@ namespace Mafia2
         CleanEntity = 114
     }
 
+    [Flags]
+    public enum ActorSoundEntityFlags
+    {
+        PlayInWinter = 1,
+        Loop =  2,
+        UseAdvancedScene = 4,
+        SectorRestricted = 8,
+        PlayInDay = 16,
+        PlayInNight = 32,
+        PlayInRain = 64,
+        PlayInSummer = 128
+    }
+
     public enum SkeletonBoneIDs
     {
         //BASE

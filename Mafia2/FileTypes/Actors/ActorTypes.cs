@@ -175,6 +175,69 @@ namespace Mafia2
         }
     }
 
+    public class ActorSoundEntity : IActorExtraDataInterface
+    {
+        int type;
+        int behaviourType;
+        float volume;
+        float pitch;
+        string file;
+
+        public ActorSoundEntity(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+        public void ReadFromFile(BinaryReader reader)
+        {
+            type = reader.ReadInt32();
+            behaviourType = reader.ReadInt32();
+            volume = reader.ReadSingle();
+            pitch = reader.ReadSingle();  
+            file = Functions.ReadString(reader);
+            ActorSoundEntityFlags tempType = (ActorSoundEntityFlags)type;
+
+            Console.WriteLine("Sound: Name {0}", file);
+            Console.WriteLine("Sound: Has Flag PlayInWinter {0}", tempType.HasFlag(ActorSoundEntityFlags.PlayInWinter));
+            Console.WriteLine("Sound: Has Flag Loop {0}", tempType.HasFlag(ActorSoundEntityFlags.Loop));
+            Console.WriteLine("Sound: Has Flag UseAdvancedScene {0}", tempType.HasFlag(ActorSoundEntityFlags.UseAdvancedScene));
+            Console.WriteLine("Sound: Has Flag SectorRestricted {0}", tempType.HasFlag(ActorSoundEntityFlags.SectorRestricted));
+            Console.WriteLine("Sound: Has Flag PlayInDay {0}", tempType.HasFlag(ActorSoundEntityFlags.PlayInDay));
+            Console.WriteLine("Sound: Has Flag PlayInNight {0}", tempType.HasFlag(ActorSoundEntityFlags.PlayInNight));
+            Console.WriteLine("Sound: Has Flag PlayInRain {0}", tempType.HasFlag(ActorSoundEntityFlags.PlayInRain));
+            Console.WriteLine("Sound: Has Flag PlayInSummer {0}", tempType.HasFlag(ActorSoundEntityFlags.PlayInSummer));
+            //if(behaviourType == 20)
+            //{
+            //    throw new NotImplementedException();
+            //}
+
+            //if(behaviourType > 19)
+            //{
+            //    if(behaviourType == 30)
+            //    {
+            //        throw new NotImplementedException();
+            //    }
+
+            //    if(behaviourType == 20)
+            //    {
+            //        throw new NotImplementedException();
+            //    }
+            //}
+
+            //if(behaviourType != 10)
+            //{
+            //    if(behaviourType == 15)
+            //    {
+            //        throw new NotImplementedException();
+            //    }
+            //}
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class ActorPinup : IActorExtraDataInterface
     {
         int pinupNum;
