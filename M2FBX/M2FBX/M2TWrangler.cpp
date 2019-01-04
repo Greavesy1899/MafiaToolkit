@@ -194,6 +194,11 @@ int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 {
 	FBXSDK_printf("Converting FBX to M2T.\n");
 
+	if (strcmp(doScene, "1") == 0)
+		FBXSDK_printf("Converting to a scene!\n");
+	else
+		FBXSDK_printf("Converting a single model!\n");
+
 	FbxManager* lSdkManager = NULL;
 	FbxImporter* lImporter = NULL;
 	FbxScene* lScene = NULL;
@@ -247,8 +252,10 @@ int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 
 				FILE* stream;
 				std::string dest = pDest;
-				dest += Structure.GetName();
-				dest += ".m2t";
+				if (strcmp(doScene, "1") == 0) {
+					dest += Structure.GetName();
+					dest += ".m2t";
+				}
 				fopen_s(&stream, dest.c_str(), "wb");
 				Structure.WriteToStream(stream);
 				fclose(stream);

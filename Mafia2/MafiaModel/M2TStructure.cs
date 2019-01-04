@@ -401,6 +401,7 @@ namespace Mafia2
             string m2tFile = file.Remove(file.Length - 4, 4) + ".m2t";
             args += ("\"" + file + "\" ");
             args += ("\"" + m2tFile + "\" ");
+            args += "0";
             ProcessStartInfo processStartInfo = new ProcessStartInfo("M2FBX.exe", args)
             {
                 CreateNoWindow = true,
