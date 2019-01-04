@@ -110,27 +110,40 @@ namespace Mafia2Tool
             }
             if (SceneData.FrameNameTable != null)
             {
+                TreeNode looseSceneNode = null;
+                looseSceneNode = new TreeNode("<scene>");
+                looseSceneNode.Name = "<scene>";
+
                 foreach (FrameNameTable.Data data in SceneData.FrameNameTable.FrameData)
                 {
                     if (data.ParentName == null)
                         data.ParentName = "<scene>";
 
-                    //this is more spaghetti code. but right now, this codebase is like Fallout 76.
-                    int sceneKey = -1;
-                    foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
+                    TreeNode root = null;
+
+                    if (!data.ParentName.Equals("<scene>"))
                     {
-                        if (entry.Value.Name.String == data.ParentName)
+                        //this is more spaghetti code. but right now, this codebase is like Fallout 76.
+                        int sceneKey = -1;
+                        foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
                         {
-                            sceneKey = entry.Key;
+                            if (entry.Value.Name.String == data.ParentName)
+                            {
+                                sceneKey = entry.Key;
+                            }
                         }
+                        int index = treeView1.Nodes.IndexOfKey(sceneKey.ToString());
+
+                        if (index == -1)
+                            treeView1.Nodes.Add(data.ParentName, data.ParentName);
+
+                        index = treeView1.Nodes.IndexOfKey(sceneKey.ToString());
+                        root = treeView1.Nodes[index];
                     }
-                    int index = treeView1.Nodes.IndexOfKey(sceneKey.ToString());
-
-                    if (index == -1)
-                        treeView1.Nodes.Add(data.ParentName, data.ParentName);
-
-                    index = treeView1.Nodes.IndexOfKey(sceneKey.ToString());
-                    TreeNode root = treeView1.Nodes[index];
+                    else
+                    {
+                        root = looseSceneNode;
+                    }
 
                     if (data.FrameIndex != -1)
                     {
@@ -154,6 +167,9 @@ namespace Mafia2Tool
                         root.Nodes.Add(node);
                     }
                 }
+
+                if (looseSceneNode.Nodes.Count > 0)
+                    treeView1.Nodes.Add(looseSceneNode);
             }
 
             dataGridView1.AutoResizeColumns();
