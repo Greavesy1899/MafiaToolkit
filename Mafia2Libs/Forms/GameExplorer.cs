@@ -399,6 +399,7 @@ namespace Mafia2Tool
             NAVData nav;
             ApexRenderMesh mesh;
             CityAreaEditor caEditor;
+            CityShopEditor csEditor;
 
             //special case:
             if (item.SubItems[0].Text.Contains("SDSContent") && item.SubItems[1].Text == "XML")
@@ -409,6 +410,11 @@ namespace Mafia2Tool
             else if (item.SubItems[0].Text.Contains("cityareas") && item.SubItems[1].Text == "BIN")
             {
                 caEditor = new CityAreaEditor((FileInfo)item.Tag);
+                return;
+            }
+            else if(item.SubItems[0].Text.Contains("cityshop") && item.SubItems[1].Text == "BIN")
+            {
+                csEditor = new CityShopEditor((FileInfo)item.Tag);
                 return;
             }
 

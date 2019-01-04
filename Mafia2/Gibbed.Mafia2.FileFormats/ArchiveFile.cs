@@ -376,8 +376,10 @@ namespace Gibbed.Mafia2.FileFormats
                     case "Speech":
                     case "SoundTable":
                     case "AnimalTrafficPaths":
-                    case "Animated Texture":
                         resourceEntry = WriteBasicEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Animated Texture":
+                        resourceEntry = WriteAnimatedTextureEntry(resourceEntry, nodes, sdsFolder, sddescNode);
                         break;
                     case "Collisions":
                         resourceEntry = WriteCollisionEntry(resourceEntry, nodes, sdsFolder, sddescNode);
@@ -732,6 +734,22 @@ namespace Gibbed.Mafia2.FileFormats
 
             //finish
             descNode.InnerText = "not available";
+            return entry;
+        }
+        public ResourceEntry WriteAnimatedTextureEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            //get data from xml
+            nodes.Current.MoveToNext();
+            string file = nodes.Current.Value;
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
+            //set up data.
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+
+            //finish
+            descNode.InnerText = file;
             return entry;
         }
         public ResourceEntry WriteCollisionEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)

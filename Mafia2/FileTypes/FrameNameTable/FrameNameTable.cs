@@ -106,10 +106,11 @@ namespace Mafia2
                         Data data = new Data();
                         data.Flags = fBase.FrameNameTableFlags;
 
-                        int sceneIndex = 0;
+                        //auto <scene>
+                        int sceneIndex = scenePos.Length-1;
 
                         //check if this is a scene. If it is, then we get the index for the scene names and pos.
-                        if (resource.Header.IsScene)
+                        if (resource.Header.IsScene && fBase.ParentIndex2.Index != -1)
                             sceneIndex = fBase.ParentIndex2.Index;
 
                         //set parent index.
@@ -170,7 +171,7 @@ namespace Mafia2
                 frameData[i] = new Data(reader);
             }
             AddNames();
-        }
+         }
 
         /// <summary>
         /// write the data to the file and save the data.

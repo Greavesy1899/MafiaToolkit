@@ -115,6 +115,12 @@
     <Compile Include="AdditionalControls\NewObjectWindow.Designer.cs">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\CityShopEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CityShopEditor.Designer.cs">
+      <DependentUpon>CityShopEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditorControls\FrameResourceAddSceneOption.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -297,6 +303,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AdditionalControls\NewObjectWindow.resx">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CityShopEditor.resx">
+      <DependentUpon>CityShopEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EditorControls\FrameResourceAddSceneOption.resx">
       <DependentUpon>FrameResourceAddSceneOption.cs</DependentUpon>
