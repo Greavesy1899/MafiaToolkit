@@ -97,13 +97,18 @@ int EDDImport::DoImport(const TCHAR* filename, ImpInterface* importerInt, Interf
 			fs::path edmPath = parentPath / entry.GetLodNames()[0];
 
 			if (!fs::exists(edmPath))
-				return FALSE;
+			{
+				continue;
+			}
 
 			const wchar_t* wedmPath = edmPath.c_str();
 			edmStream = _tfopen(wedmPath, _T("rb"));
 
 			if (edmStream == NULL)
-				return FALSE;
+			{
+				continue;
+			}
+				
 
 			EDMStructure edmStructure = EDMStructure();
 			edmStructure.ReadFromStream(edmStream);
