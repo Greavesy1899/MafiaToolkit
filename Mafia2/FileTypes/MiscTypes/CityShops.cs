@@ -69,12 +69,14 @@ namespace Mafia2
 
             for (int i = 0; i != numAreas; i++)
             {
-                areas[i] = new Area(reader);
+                areas[i] = new Area();
+                areas[i].ReadFromFile(reader, fileVersion);
                 areas[i].Name = names[areas[i].NameKey];
             }
             for (int i = 0; i != numDatas; i++)
             {
-                areaDatas[i] = new AreaData(reader);
+                areaDatas[i] = new AreaData();
+                areaDatas[i].ReadFromFile(reader, fileVersion);
                 areaDatas[i].TranslokatorName = names[areaDatas[i].TranslokatorNameKey];
 
                 for (int y = 0; y != areaDatas[i].Translokators.Length; y++)
@@ -98,10 +100,10 @@ namespace Mafia2
             writer.Write(m_buffer.ToCharArray());
 
             for (int i = 0; i != areas.Length; i++)
-                areas[i].WriteToFile(writer);
+                areas[i].WriteToFile(writer, fileVersion);
 
             for (int i = 0; i != areaDatas.Length; i++)
-                areaDatas[i].WriteToFile(writer);
+                areaDatas[i].WriteToFile(writer, fileVersion);
         }
 
         private void buildUpdateKeyStringBuffer()
@@ -184,22 +186,29 @@ namespace Mafia2
                 set { nameKey = value; }
             }
 
-            public Area(BinaryReader reader)
+            public Area()
             {
-                ReadFromFile(reader);
             }
 
-            public void ReadFromFile(BinaryReader reader)
+            public void ReadFromFile(BinaryReader reader, int version)
             {
                 string1 = Functions.ReadString(reader);
                 string2 = Functions.ReadString(reader);
+
+                if (version == 9)
+                    reader.ReadByte();
+
                 nameKey = reader.ReadUInt16();
             }
 
-            public void WriteToFile(BinaryWriter writer)
+            public void WriteToFile(BinaryWriter writer, int version)
             {
                 Functions.WriteString(writer, string1);
                 Functions.WriteString(writer, string2);
+
+                if (version == 9)
+                    writer.Write((byte)0);
+
                 writer.Write(nameKey);
             }
         }
@@ -261,12 +270,7 @@ namespace Mafia2
                 set { translokators = value; }
             }
 
-            public AreaData(BinaryReader reader)
-            {
-                ReadFromFile(reader);
-            }
-
-            public void ReadFromFile(BinaryReader reader)
+            public void ReadFromFile(BinaryReader reader, int fileVersion)
             {
                 name = Functions.ReadString(reader);
                 translokatorNameKey = reader.ReadUInt16();
@@ -289,11 +293,11 @@ namespace Mafia2
                 for (int i = 0; i != numTranslokators; i++)
                 {
                     translokators[i] = new TranslokatorData();
-                    translokators[i].ReadFromFile(reader, numEntities);
+                    translokators[i].ReadFromFile(reader, numEntities, fileVersion);
                 }
             }
 
-            public void WriteToFile(BinaryWriter writer)
+            public void WriteToFile(BinaryWriter writer, int fileVersion)
             {
                 Functions.WriteString(writer, name);
                 writer.Write(translokatorNameKey);
@@ -310,7 +314,7 @@ namespace Mafia2
                 writer.Write(translokators.Length);
                 for (int i = 0; i != translokators.Length; i++)
                 {
-                    translokators[i].WriteToFile(writer);
+                    translokators[i].WriteToFile(writer, fileVersion);
                 }
             }
 
@@ -356,7 +360,7 @@ namespace Mafia2
                     set { unkData = value; }
                 }
 
-                public void ReadFromFile(BinaryReader reader, int numEntities)
+                public void ReadFromFile(BinaryReader reader, int numEntities, int fileVersion)
                 {
                     nameKey = reader.ReadUInt16();
                     positionX = reader.ReadSingle();
@@ -364,18 +368,25 @@ namespace Mafia2
                     mapMarkerIconID = reader.ReadInt32();
                     mapMarkerStringID = reader.ReadInt32();
 
+                    if(fileVersion == 9)
+                        reader.ReadByte();
+
                     unkData = new short[numEntities];
                     for (int i = 0; i != numEntities; i++)
                         unkData[i] = reader.ReadInt16();
                 }
 
-                public void WriteToFile(BinaryWriter writer)
+                public void WriteToFile(BinaryWriter writer, int fileVersion)
                 {
                     writer.Write(nameKey);
                     writer.Write(positionX);
                     writer.Write(positionY);
                     writer.Write(mapMarkerIconID);
                     writer.Write(mapMarkerStringID);
+
+                    if (fileVersion == 9)
+                        writer.Write((byte)0);
+
                     for (int i = 0; i != UnkData.Length; i++)
                         writer.Write(unkData[i]);
                 }
