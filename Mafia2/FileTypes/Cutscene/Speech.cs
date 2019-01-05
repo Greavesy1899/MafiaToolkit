@@ -99,9 +99,9 @@ namespace Mafia2
             public void WriteToFile(BinaryWriter writer)
             {
                 writer.Write(unk0);
-                Functions.WriteStirng32(writer, entityType);
-                Functions.WriteStirng32(writer, speechType);
-                Functions.WriteStirng32(writer, folder);
+                Functions.WriteString32(writer, entityType);
+                Functions.WriteString32(writer, speechType);
+                Functions.WriteString32(writer, folder);
                 writer.Write(unkBytes);
             }
 
@@ -165,7 +165,7 @@ namespace Mafia2
                 writer.Write(unk0);
                 writer.Write(unk1);
                 writer.Write(unk2);
-                Functions.WriteStirng32(writer, itemName);
+                Functions.WriteString32(writer, itemName);
                 writer.Write(unk3);
                 writer.Write(unkBytes);
             }

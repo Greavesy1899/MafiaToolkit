@@ -66,14 +66,16 @@ namespace Mafia2Tool
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            //using (BinaryWriter writer = new BinaryWriter(File.Open(cityAreasFile.FullName, FileMode.Create)))
-            //    areas.WriteToFile(writer);
+            using (BinaryWriter writer = new BinaryWriter(File.Open(cityShopsFile.FullName, FileMode.Create)))
+                shopsData.WriteToFile(writer);
         }
 
         private void ReloadButton_Click(object sender, EventArgs e)
         {
-            //using (BinaryReader reader = new BinaryReader(File.Open(cityAreasFile.FullName, FileMode.Open)))
-            //    areas.ReadFromFile(reader);
+            using (BinaryReader reader = new BinaryReader(File.Open(cityShopsFile.FullName, FileMode.Open)))
+                shopsData.ReadFromFile(reader);
+
+            BuildData();
         }
 
         private void ExitButton_Click(object sender, EventArgs e)

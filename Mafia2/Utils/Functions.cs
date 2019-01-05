@@ -55,7 +55,12 @@ namespace Mafia2
             reader.ReadByte();
             return newString;
         }
-        public static void WriteStirng32(BinaryWriter writer, string text)
+        public static void WriteString(BinaryWriter writer, string text)
+        {
+            writer.Write(text.ToCharArray());
+            writer.Write('\0');
+        }
+        public static void WriteString32(BinaryWriter writer, string text)
         {
             writer.Write(text.Length);
             writer.Write(text.ToCharArray());

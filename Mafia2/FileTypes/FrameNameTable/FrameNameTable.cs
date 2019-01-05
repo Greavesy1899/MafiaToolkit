@@ -70,9 +70,10 @@ namespace Mafia2
                     sceneNames[i] = resource.Header.SceneFolders[i].Name.String;
                 }
 
-                names += "<scene>\0";
-                scenePos[scenePos.Length-1] = names.Length - "<scene>\0".Length - 1;
-                sceneNames[sceneNames.Length-1] = "<scene>\0";
+                string scene = "<scene>\0";
+                names += scene;
+                scenePos[scenePos.Length-1] = names.Length - scene.Length;
+                sceneNames[sceneNames.Length-1] = scene;
             }
             else
             {

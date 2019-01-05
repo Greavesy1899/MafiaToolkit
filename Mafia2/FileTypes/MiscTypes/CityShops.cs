@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 
 namespace Mafia2
@@ -13,7 +14,8 @@ namespace Mafia2
         public int unk2;
         public int unk3;
         public Dictionary<int, string> names;
-        public Dictionary<int, string> newNames;
+
+        private string m_buffer;
 
         Area[] areas;
         AreaData[] areaDatas;
@@ -85,7 +87,76 @@ namespace Mafia2
             writer.Write(1668576104);
             writer.Write(fileVersion);
             writer.Write(areas.Length);
+            //gotta fix the buffer!
+            buildUpdateKeyStringBuffer();
+            //now we can continue;
+            writer.Write(m_buffer.Length);
+            writer.Write(areaDatas.Length);
+            writer.Write(unk1);
+            writer.Write(unk2);
+            writer.Write(unk3);
+            writer.Write(m_buffer.ToCharArray());
 
+            for (int i = 0; i != areas.Length; i++)
+                areas[i].WriteToFile(writer);
+
+            for (int i = 0; i != areaDatas.Length; i++)
+                areaDatas[i].WriteToFile(writer);
+        }
+
+        private void buildUpdateKeyStringBuffer()
+        {
+            //fix this
+            List<string> addedNames = new List<string>();
+            List<ushort> addedPos = new List<ushort>();
+            m_buffer = "";
+
+            for (int i = 0; i != numAreas; i++)
+            {
+                int index = addedNames.IndexOf(areas[i].Name);
+                if (index == -1)
+                {
+                    addedNames.Add(areas[i].Name);
+                    addedPos.Add((ushort)m_buffer.Length);
+                    areas[i].NameKey = (ushort)m_buffer.Length;
+                    m_buffer += areas[i].Name + "\0";
+                }
+                else
+                {
+                    areas[i].NameKey = addedPos[index];
+                }
+            }
+            for (int i = 0; i != numDatas; i++)
+            {
+                int index = addedNames.IndexOf(areaDatas[i].TranslokatorName);
+                if (index == -1)
+                {
+                    addedNames.Add(areaDatas[i].TranslokatorName);
+                    addedPos.Add((ushort)m_buffer.Length);
+                    areaDatas[i].TranslokatorNameKey = (ushort)m_buffer.Length;
+                    m_buffer += areaDatas[i].TranslokatorName + "\0";
+                }
+                else
+                {
+                    areaDatas[i].TranslokatorNameKey = addedPos[index];
+                }
+
+                for (int y = 0; y != areaDatas[i].Translokators.Length; y++)
+                {
+                    index = addedNames.IndexOf(areaDatas[i].Translokators[y].Name);
+                    if (index == -1)
+                    {
+                        addedNames.Add(areaDatas[i].Translokators[y].Name);
+                        addedPos.Add((ushort)m_buffer.Length);
+                        areaDatas[i].Translokators[y].NameKey = (ushort)m_buffer.Length;
+                        m_buffer += areaDatas[i].Translokators[y].Name + "\0";
+                    }
+                    else
+                    {
+                        areaDatas[i].Translokators[y].NameKey = addedPos[index];
+                    }
+                }
+            }
         }
 
         public class Area
@@ -93,7 +164,7 @@ namespace Mafia2
             string string1;
             string string2;
             string name;
-            short nameKey;
+            ushort nameKey;
 
             public string String1 {
                 get { return string1; }
@@ -107,8 +178,10 @@ namespace Mafia2
                 get { return name; }
                 set { name = value; }
             }
-            public short NameKey {
+            [ReadOnly(true)]
+            public ushort NameKey {
                 get { return nameKey; }
+                set { nameKey = value; }
             }
 
             public Area(BinaryReader reader)
@@ -118,38 +191,23 @@ namespace Mafia2
 
             public void ReadFromFile(BinaryReader reader)
             {
-                string1 = ReadString(reader);
-                string2 = ReadString(reader);
-                nameKey = reader.ReadInt16();
+                string1 = Functions.ReadString(reader);
+                string2 = Functions.ReadString(reader);
+                nameKey = reader.ReadUInt16();
             }
 
             public void WriteToFile(BinaryWriter writer)
             {
-            }
-
-            private string ReadString(BinaryReader reader)
-            {
-                string newString = "";
-
-                while (reader.PeekChar() != '\0')
-                {
-                    newString += reader.ReadChar();
-                }
-                reader.ReadByte();
-                return newString;
-            }
-
-            private void WriteString(BinaryWriter writer, string text)
-            {
-                writer.Write(text.ToCharArray());
-                writer.Write('\0');
+                Functions.WriteString(writer, string1);
+                Functions.WriteString(writer, string2);
+                writer.Write(nameKey);
             }
         }
 
         public class AreaData
         {
             string name;
-            short translokatorNameKey;
+            ushort translokatorNameKey;
             string translokatorName;
             string actorFile;
             string description;
@@ -165,8 +223,10 @@ namespace Mafia2
                 get { return name; }
                 set { name = value; }
             }
-            public short TranslokatorNameKey {
+            [ReadOnly(true)]
+            public ushort TranslokatorNameKey {
                 get { return translokatorNameKey; }
+               set { translokatorNameKey = value; }
             }
             public string TranslokatorName {
                 get { return translokatorName; }
@@ -209,7 +269,7 @@ namespace Mafia2
             public void ReadFromFile(BinaryReader reader)
             {
                 name = Functions.ReadString(reader);
-                translokatorNameKey = reader.ReadInt16();
+                translokatorNameKey = reader.ReadUInt16();
                 actorFile = Functions.ReadString(reader);
                 description = Functions.ReadString(reader);
                 unk1 = reader.ReadInt16();
@@ -233,38 +293,63 @@ namespace Mafia2
                 }
             }
 
+            public void WriteToFile(BinaryWriter writer)
+            {
+                Functions.WriteString(writer, name);
+                writer.Write(translokatorNameKey);
+                Functions.WriteString(writer, actorFile);
+                Functions.WriteString(writer, description);
+                writer.Write(unk1);
+                writer.Write(unk2);
+                writer.Write(unk3);
+                writer.Write(entries.Length);
+
+                for (int i = 0; i != numEntities; i++)
+                    Functions.WriteString(writer, entries[i]);
+
+                writer.Write(translokators.Length);
+                for (int i = 0; i != translokators.Length; i++)
+                {
+                    translokators[i].WriteToFile(writer);
+                }
+            }
+
+            
+
             public class TranslokatorData
             {
-                short nameKey;
+                ushort nameKey;
                 string name;
-                float unk0;
-                float unk1;
-                int unk2;
-                int unk3;
+                float positionX;
+                float positionY;
+                int mapMarkerIconID;
+                int mapMarkerStringID;
                 short[] unkData;
 
-                public short NameKey {
+                [ReadOnly(true)]
+                public ushort NameKey {
                     get { return nameKey; }
+                    set { nameKey = value; }
                 }
                 public string Name {
                     get { return name; }
                     set { name = value; }
                 }
-                public float Unk0 {
-                    get { return unk0; }
-                    set { unk0 = value; }
+                public float PositionX {
+                    get { return positionX; }
+                    set { positionX = value; }
                 }
-                public float Unk1 {
-                    get { return unk1; }
-                    set { unk1 = value; }
+                public float PositionY {
+                    get { return positionY; }
+                    set { positionY = value; }
                 }
-                public int Unk2 {
-                    get { return unk2; }
-                    set { unk2 = value; }
+                public int MapMarkerIconID {
+                    get { return mapMarkerIconID; }
+                    set { mapMarkerIconID = value; }
                 }
-                public int Unk3 {
-                    get { return unk3; }
-                    set { unk3 = value; }
+                public int MapMarkerStringID {
+                    get { return mapMarkerStringID; }
+                    set { mapMarkerStringID = value; }
                 }
                 public short[] UnkData {
                     get { return unkData; }
@@ -273,15 +358,26 @@ namespace Mafia2
 
                 public void ReadFromFile(BinaryReader reader, int numEntities)
                 {
-                    nameKey = reader.ReadInt16();
-                    unk0 = reader.ReadSingle();
-                    unk1 = reader.ReadSingle();
-                    unk2 = reader.ReadInt32();
-                    unk3 = reader.ReadInt32();
+                    nameKey = reader.ReadUInt16();
+                    positionX = reader.ReadSingle();
+                    positionY = reader.ReadSingle();
+                    mapMarkerIconID = reader.ReadInt32();
+                    mapMarkerStringID = reader.ReadInt32();
 
                     unkData = new short[numEntities];
                     for (int i = 0; i != numEntities; i++)
                         unkData[i] = reader.ReadInt16();
+                }
+
+                public void WriteToFile(BinaryWriter writer)
+                {
+                    writer.Write(nameKey);
+                    writer.Write(positionX);
+                    writer.Write(positionY);
+                    writer.Write(mapMarkerIconID);
+                    writer.Write(mapMarkerStringID);
+                    for (int i = 0; i != UnkData.Length; i++)
+                        writer.Write(unkData[i]);
                 }
             }
         }
