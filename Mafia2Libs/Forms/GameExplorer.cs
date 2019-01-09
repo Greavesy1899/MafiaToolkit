@@ -228,7 +228,7 @@ namespace Mafia2Tool
 
             infoText.Text = "Done loading directory.";
             FolderPath.Text = directory.FullName;
-            fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
             //sort out treeview stuff.
             currentDirectory = directory;
@@ -434,7 +434,7 @@ namespace Mafia2Tool
                     nav = new NAVData((FileInfo)item.Tag);
                     return;
                 case "Speech Data":
-                   // sTool = new SpeechEditor((FileInfo)item.Tag);
+                    sTool = new SpeechEditor((FileInfo)item.Tag);
                     return;
                 case "CUT":
                     cutscene = new CutsceneFile((FileInfo)item.Tag);

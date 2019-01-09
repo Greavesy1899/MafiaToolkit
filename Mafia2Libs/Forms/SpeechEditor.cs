@@ -44,10 +44,11 @@ namespace Mafia2Tool
                 {
                     num++;
                     Speech.SpeechItemData itemData = speechData.SpeechItems[x];
+                    TreeNode node1 = new TreeNode(typeData.SpeechType.ToString());
+                    node1.Tag = itemData;
+
                     if (typeData.Unk0+num == itemData.Unk0)
                     {
-                        TreeNode node1 = new TreeNode(typeData.SpeechType.ToString());
-                        node1.Tag = itemData;
                         node.Nodes.Add(node1);
                     }
                     else
@@ -61,7 +62,6 @@ namespace Mafia2Tool
 
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
         {
-            //treeView1.SelectedNode = e.Node;
             FrameResourceGrid.SelectedObject = e.Node.Tag;
         }
 

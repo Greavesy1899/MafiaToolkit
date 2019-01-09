@@ -13,7 +13,7 @@ namespace Mafia2
 
         public override void ReadFromFile(BinaryReader reader)
         {
-            throw new NotImplementedException();
+            base.ReadFromFile(reader);
         }
 
         public override void WriteToFile(BinaryWriter writer)

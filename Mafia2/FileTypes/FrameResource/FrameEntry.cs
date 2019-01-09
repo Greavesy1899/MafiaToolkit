@@ -116,5 +116,10 @@ namespace Mafia2
             if(refs.ContainsKey(refName))
                 refs.Remove(refName);
         }
+
+        public override string ToString()
+        {
+            return "Frame Entry";
+        }
     }
 }

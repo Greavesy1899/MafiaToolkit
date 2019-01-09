@@ -5,11 +5,11 @@ namespace Mafia2
 {
     public class FrameObjectDummy : FrameObjectJoint
     {
-        BoundingBox unk19;
+        BoundingBox bounds;
 
-        public BoundingBox Unk19 {
-            get { return unk19; }
-            set { unk19 = value; }
+        public BoundingBox Bounds {
+            get { return bounds; }
+            set { bounds = value; }
         }
 
         public FrameObjectDummy(BinaryReader reader) : base()
@@ -20,13 +20,13 @@ namespace Mafia2
         public override void ReadFromFile(BinaryReader reader)
         {
             base.ReadFromFile(reader);
-            unk19 = new BoundingBox(reader);
+            bounds = new BoundingBox(reader);
         }
 
         public override void WriteToFile(BinaryWriter writer)
         {
             base.WriteToFile(writer);
-            unk19.WriteToFile(writer);
+            bounds.WriteToFile(writer);
         }
 
         public override string ToString()

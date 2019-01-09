@@ -214,6 +214,17 @@ namespace Mafia2
             writer.Write(Y);
         }
 
+        /// <summary>
+        /// Returns the Dot Product of two vectors.
+        /// </summary>
+        /// <param name="lhs"></param>
+        /// <param name="rhs"></param>
+        /// <returns></returns>
+        public static float DotProduct(Vector2 lhs, Vector2 rhs)
+        {
+            return (lhs.X * rhs.X) + (lhs.Y * rhs.Y);
+        }
+
         public override string ToString()
         {
             return $"X: {X}, Y: {Y}";

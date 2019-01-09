@@ -76,8 +76,7 @@ namespace Mafia2
             ushort y = BitConverter.ToUInt16(data, i + 2);
             ushort z = (ushort)(BitConverter.ToUInt16(data, i + 4) & short.MaxValue);
             position = new Vector3(x * factor, y * factor, z * factor);
-            position += offset;
-            
+            position += offset;         
         }
 
         /// <summary>

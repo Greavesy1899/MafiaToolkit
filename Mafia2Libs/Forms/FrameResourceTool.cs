@@ -53,10 +53,7 @@ namespace Mafia2Tool
             dataGridView1.Rows.Clear();
             foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
             {
-                DataGridViewRow row = new DataGridViewRow();
-                row.Tag = entry.Value;
-                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count-1, entry.Value.Name });
-                dataGridView1.Rows.Add(row);
+                dataGridView1.Rows.Add(ConvertEntryToDataGridView(entry.Value));
 
                 TreeNode node = new TreeNode
                 {
@@ -68,45 +65,27 @@ namespace Mafia2Tool
             }
             foreach (KeyValuePair<int, FrameGeometry> entry in SceneData.FrameResource.FrameGeometries)
             {
-                DataGridViewRow row = new DataGridViewRow();
-                row.Tag = entry.Value;
-                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, entry.Value.ToString() });
-                dataGridView1.Rows.Add(row);
+                dataGridView1.Rows.Add(ConvertEntryToDataGridView(entry.Value));
             }
             foreach (KeyValuePair<int, FrameMaterial> entry in SceneData.FrameResource.FrameMaterials)
             {
-                DataGridViewRow row = new DataGridViewRow();
-                row.Tag = entry.Value;
-                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, entry.Value.ToString() });
-                dataGridView1.Rows.Add(row);
+                dataGridView1.Rows.Add(ConvertEntryToDataGridView(entry.Value));
             }
             foreach (KeyValuePair<int, FrameBlendInfo> entry in SceneData.FrameResource.FrameBlendInfos)
             {
-                DataGridViewRow row = new DataGridViewRow();
-                row.Tag = entry.Value;
-                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, entry.Value.ToString() });
-                dataGridView1.Rows.Add(row);
+                dataGridView1.Rows.Add(ConvertEntryToDataGridView(entry.Value));
             }
             foreach (KeyValuePair<int, FrameSkeleton> entry in SceneData.FrameResource.FrameSkeletons)
             {
-                DataGridViewRow row = new DataGridViewRow();
-                row.Tag = entry.Value;
-                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, entry.Value.ToString() });
-                dataGridView1.Rows.Add(row);
+                dataGridView1.Rows.Add(ConvertEntryToDataGridView(entry.Value));
             }
             foreach (KeyValuePair<int, FrameSkeletonHierachy> entry in SceneData.FrameResource.FrameSkeletonHierachies)
             {
-                DataGridViewRow row = new DataGridViewRow();
-                row.Tag = entry.Value;
-                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, entry.Value.ToString() });
-                dataGridView1.Rows.Add(row);
+                dataGridView1.Rows.Add(ConvertEntryToDataGridView(entry.Value));
             }
             foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
             {
-                DataGridViewRow row = new DataGridViewRow();
-                row.Tag = entry.Value;
-                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, (entry.Value as FrameObjectBase).Name.String });
-                dataGridView1.Rows.Add(row);
+                dataGridView1.Rows.Add(ConvertEntryToDataGridView(entry.Value));
             }
             if (SceneData.FrameNameTable != null)
             {
@@ -172,7 +151,7 @@ namespace Mafia2Tool
                     treeView1.Nodes.Add(looseSceneNode);
             }
 
-            dataGridView1.AutoResizeColumns();
+            dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
 
             foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
             {
@@ -236,6 +215,14 @@ namespace Mafia2Tool
                 }
             }
             ToolkitSettings.UpdateRichPresence("Using the Frame Resource editor");
+        }
+
+        private DataGridViewRow ConvertEntryToDataGridView(object obj)
+        {
+            DataGridViewRow row = new DataGridViewRow();
+            row.Tag = obj;
+            row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, obj.ToString() });
+            return row;
         }
 
         private TreeNode AddChildren(TreeNode node, FrameObjectBase fObject)

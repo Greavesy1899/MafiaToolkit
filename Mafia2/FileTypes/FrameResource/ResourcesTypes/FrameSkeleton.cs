@@ -160,6 +160,11 @@ namespace Mafia2
             }
         }
 
+        public override string ToString()
+        {
+            return string.Format("Skeleton");
+        }
+
         public struct MappingForBlendingInfo
         {
             BoundingBox[] bounds;
