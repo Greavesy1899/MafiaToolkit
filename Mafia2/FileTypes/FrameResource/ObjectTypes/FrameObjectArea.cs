@@ -40,6 +40,10 @@ namespace Mafia2
             ReadFromFile(reader);
         }
 
+        public FrameObjectArea()
+        {
+        }
+
         public override void ReadFromFile(BinaryReader reader)
         {
             base.ReadFromFile(reader);

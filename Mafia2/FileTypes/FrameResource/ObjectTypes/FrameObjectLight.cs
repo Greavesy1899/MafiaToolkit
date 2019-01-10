@@ -101,6 +101,11 @@ namespace Mafia2
             set { unkVector6 = value; }
         }
 
+        public FrameObjectLight() : base()
+        {
+
+        }
+
         public FrameObjectLight(BinaryReader reader) : base()
         {
             ReadFromFile(reader);

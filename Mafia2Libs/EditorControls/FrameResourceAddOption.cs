@@ -16,5 +16,10 @@ namespace Mafia2Tool.EditorControls
             groupGeneral.Text = Language.GetString("$GENERAL");
             MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
         }
+
+        public int GetSelectedType()
+        {
+            return FraddTypeCombo.SelectedIndex;
+        }
     }
 }

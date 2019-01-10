@@ -43,6 +43,11 @@ namespace Mafia2
             set { unk_15_hash = value; }
         }
 
+        public FrameObjectSector() : base()
+        {
+
+        }
+
         public FrameObjectSector(BinaryReader reader) : base()
         {
             ReadFromFile(reader);

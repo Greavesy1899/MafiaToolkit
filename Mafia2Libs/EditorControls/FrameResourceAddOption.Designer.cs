@@ -30,7 +30,7 @@
         {
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.groupGeneral = new System.Windows.Forms.GroupBox();
-            this.FraddTypeLabel = new System.Windows.Forms.Label();
+            this.FrAddTypeLabel = new System.Windows.Forms.Label();
             this.FraddTypeCombo = new System.Windows.Forms.ComboBox();
             this.groupGeneral.SuspendLayout();
             this.SuspendLayout();
@@ -42,23 +42,23 @@
             // groupGeneral
             // 
             this.groupGeneral.AutoSize = true;
-            this.groupGeneral.Controls.Add(this.FraddTypeLabel);
+            this.groupGeneral.Controls.Add(this.FrAddTypeLabel);
             this.groupGeneral.Controls.Add(this.FraddTypeCombo);
             this.groupGeneral.Location = new System.Drawing.Point(0, 0);
             this.groupGeneral.Name = "groupGeneral";
-            this.groupGeneral.Size = new System.Drawing.Size(340, 70);
+            this.groupGeneral.Size = new System.Drawing.Size(340, 90);
             this.groupGeneral.TabIndex = 2;
             this.groupGeneral.TabStop = false;
             this.groupGeneral.Text = "$GENERAL";
             // 
-            // FraddTypeLabel
+            // FrAddTypeLabel
             // 
-            this.FraddTypeLabel.AutoSize = true;
-            this.FraddTypeLabel.Location = new System.Drawing.Point(6, 27);
-            this.FraddTypeLabel.Name = "FraddTypeLabel";
-            this.FraddTypeLabel.Size = new System.Drawing.Size(84, 13);
-            this.FraddTypeLabel.TabIndex = 1;
-            this.FraddTypeLabel.Text = "$FRADD_TYPE";
+            this.FrAddTypeLabel.AutoSize = true;
+            this.FrAddTypeLabel.Location = new System.Drawing.Point(6, 27);
+            this.FrAddTypeLabel.Name = "FrAddTypeLabel";
+            this.FrAddTypeLabel.Size = new System.Drawing.Size(84, 13);
+            this.FrAddTypeLabel.TabIndex = 1;
+            this.FrAddTypeLabel.Text = "$FRADD_TYPE";
             // 
             // FraddTypeCombo
             // 
@@ -87,7 +87,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupGeneral);
             this.Name = "FrameResourceAddOption";
-            this.Size = new System.Drawing.Size(340, 70);
+            this.Size = new System.Drawing.Size(340, 78);
             this.groupGeneral.ResumeLayout(false);
             this.groupGeneral.PerformLayout();
             this.ResumeLayout(false);
@@ -98,7 +98,7 @@
         #endregion
         private System.Windows.Forms.FolderBrowserDialog MafiaIIBrowser;
         private System.Windows.Forms.GroupBox groupGeneral;
-        private System.Windows.Forms.Label FraddTypeLabel;
+        private System.Windows.Forms.Label FrAddTypeLabel;
         private System.Windows.Forms.ComboBox FraddTypeCombo;
     }
 }

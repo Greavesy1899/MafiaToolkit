@@ -620,12 +620,85 @@ namespace Mafia2Tool
             FrameResourceGrid.SelectedObject = treeView1.SelectedNode.Tag;
         }
 
+        private void CreateNewEntry(int selected, string name)
+        {
+            FrameObjectBase frame;
+            if (selected == 0)
+            {
+                throw new NotImplementedException();
+            }
+            else if (selected == 1)
+            {
+                frame = new FrameObjectFrame();
+            }
+            else if (selected == 2)
+            {
+                frame = new FrameObjectLight();
+            }
+            else if (selected == 3)
+            {
+                frame = new FrameObjectCamera();
+            }
+            else if (selected == 4)
+            {
+                frame = new FrameObjectComponent_U005();
+            }
+            else if (selected == 5)
+            {
+                frame = new FrameObjectSector();
+            }
+            else if (selected == 6)
+            {
+                frame = new FrameObjectDummy();
+            }
+            else if (selected == 7)
+            {
+                frame = new FrameObjectDeflector();
+            }
+            else if (selected == 8)
+            {
+                frame = new FrameObjectArea();
+            }
+            else if (selected == 9)
+            {
+                frame = new FrameObjectTarget();
+            }
+            else if (selected == 10)
+            {
+                throw new NotImplementedException();
+            }
+            else if (selected == 11)
+            {
+                frame = new FrameObjectCollision();
+            }
+            else
+            {
+                Console.WriteLine("Unknown selection");
+                return;
+            }
+
+            frame.Name.Set(name);
+            frame.UpdateNode();
+            SceneData.FrameResource.FrameObjects.Add(frame.RefID, frame);
+            dataGridView1.Rows.Add(ConvertEntryToDataGridView(frame));
+            treeView1.Nodes.Add(CreateTreeNode(frame));
+
+        }
+
         private void AddFrameSingleMesh_Click(object sender, EventArgs e)
         {
-            //NewObjectForm form = new NewObjectForm();
-            //form.SetLabel(Language.GetString("$QUESTION_NAME_OF_MAT"));
-            //form.LoadOption(new FrameResourceAddOption());
-            //form.ShowDialog();
+            NewObjectForm form = new NewObjectForm(true);
+            form.SetLabel(Language.GetString("$QUESTION_FRADD"));
+            form.LoadOption(new FrameResourceAddOption());
+            form.ShowDialog();
+
+            int selection;
+
+            if (form.type != -1)
+                selection = (form.control as FrameResourceAddOption).GetSelectedType();
+            else return;
+
+            CreateNewEntry(selection, form.GetInputText());
 
             bool createNewResource = false;
             DialogResult result = MessageBox.Show("Do you want to import a new model?", "Toolkit", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);

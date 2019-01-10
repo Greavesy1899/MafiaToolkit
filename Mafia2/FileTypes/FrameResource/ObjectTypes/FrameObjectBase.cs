@@ -78,7 +78,7 @@ namespace Mafia2
             parentIndex1 = new ParentStruct(-1);
             parentIndex2 = new ParentStruct(-1);
             unk6 = -1;
-            node = new Node(name.String, refID.ToString(), this);
+            UpdateNode();
         }
 
         public virtual void ReadFromFile(BinaryReader reader)

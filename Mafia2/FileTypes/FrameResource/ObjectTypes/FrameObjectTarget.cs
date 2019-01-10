@@ -5,6 +5,9 @@ namespace Mafia2
 {
     public class FrameObjectTarget : FrameObjectJoint
     {
+        public FrameObjectTarget()
+        {
+        }
 
         public FrameObjectTarget(BinaryReader reader) : base()
         {

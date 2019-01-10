@@ -16,6 +16,10 @@ namespace Mafia2
             set { unkData = value; }
         }
 
+        public FrameObjectCamera() : base()
+        {
+
+        }
         public FrameObjectCamera(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
