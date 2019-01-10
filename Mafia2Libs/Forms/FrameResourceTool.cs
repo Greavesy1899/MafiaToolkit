@@ -926,5 +926,10 @@ namespace Mafia2Tool
                 }
             }
         }
+
+        private void modifyHeaderDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FrameResourceGrid.SelectedObject = SceneData.FrameResource.Header;
+        }
     }
 }

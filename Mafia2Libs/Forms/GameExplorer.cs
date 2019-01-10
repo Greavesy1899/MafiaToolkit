@@ -458,7 +458,7 @@ namespace Mafia2Tool
                     //emitterFile = new EmitterFile((FileInfo)item.Tag);
                     return;
                 case "Table":
-                    //tTool = new TableEditor((FileInfo)item.Tag);
+                    tTool = new TableEditor((FileInfo)item.Tag);
                     return;
                 case "ACT":
                     aTool = new ActorEditor((FileInfo)item.Tag);

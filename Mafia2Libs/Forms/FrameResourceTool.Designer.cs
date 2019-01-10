@@ -52,6 +52,7 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EntryName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.modifyHeaderDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -128,6 +129,7 @@
             // 
             this.toolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.modifyHeaderDataToolStripMenuItem,
             this.exportAllSubButton,
             this.overwriteBufferSubButton,
             this.addButton,
@@ -282,6 +284,13 @@
             this.EntryName.Name = "EntryName";
             this.EntryName.ReadOnly = true;
             // 
+            // modifyHeaderDataToolStripMenuItem
+            // 
+            this.modifyHeaderDataToolStripMenuItem.Name = "modifyHeaderDataToolStripMenuItem";
+            this.modifyHeaderDataToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.modifyHeaderDataToolStripMenuItem.Text = "$MODIFY_HEADER";
+            this.modifyHeaderDataToolStripMenuItem.Click += new System.EventHandler(this.modifyHeaderDataToolStripMenuItem_Click);
+            // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -332,5 +341,6 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Index;
         private System.Windows.Forms.DataGridViewTextBoxColumn EntryName;
+        private System.Windows.Forms.ToolStripMenuItem modifyHeaderDataToolStripMenuItem;
     }
 }
