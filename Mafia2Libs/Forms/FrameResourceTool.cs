@@ -716,14 +716,8 @@ namespace Mafia2Tool
             SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
             SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
 
-            DataGridViewRow row = new DataGridViewRow();
-            row.Tag = model.FrameMaterial;
-            row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, model.FrameMaterial.ToString() });
-            dataGridView1.Rows.Add(row);
-            row = new DataGridViewRow();
-            row.Tag = model.FrameGeometry;
-            row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, model.FrameGeometry.ToString() });
-            dataGridView1.Rows.Add(row);
+            dataGridView1.Rows.Add(ConvertEntryToDataGridView(model.FrameMaterial));
+            dataGridView1.Rows.Add(ConvertEntryToDataGridView(model.FrameGeometry));
 
             //Check for existing buffer; if it exists, remove so we can add one later.
             if (SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[0].Hash) != null)
