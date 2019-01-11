@@ -34,6 +34,7 @@
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.modifyHeaderButton = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAllSubButton = new System.Windows.Forms.ToolStripMenuItem();
             this.farLodsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,7 +53,6 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.EntryName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.modifyHeaderDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -129,9 +129,9 @@
             // 
             this.toolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.modifyHeaderDataToolStripMenuItem,
             this.exportAllSubButton,
             this.overwriteBufferSubButton,
+            this.modifyHeaderButton,
             this.addButton,
             this.importFrameEDDButton});
             this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
@@ -139,6 +139,13 @@
             this.toolsButton.Name = "toolsButton";
             this.toolsButton.Size = new System.Drawing.Size(48, 22);
             this.toolsButton.Text = "Tools";
+            // 
+            // modifyHeaderButton
+            // 
+            this.modifyHeaderButton.Name = "modifyHeaderButton";
+            this.modifyHeaderButton.Size = new System.Drawing.Size(198, 22);
+            this.modifyHeaderButton.Text = "$MODIFY_HEADER";
+            this.modifyHeaderButton.Click += new System.EventHandler(this.modifyHeaderDataToolStripMenuItem_Click);
             // 
             // exportAllSubButton
             // 
@@ -182,7 +189,7 @@
             // 
             this.addButton.Name = "addButton";
             this.addButton.Size = new System.Drawing.Size(198, 22);
-            this.addButton.Text = "Adding Test";
+            this.addButton.Text = "$FRADD_ADDBUTTON";
             this.addButton.Click += new System.EventHandler(this.AddFrameSingleMesh_Click);
             // 
             // importFrameEDDButton
@@ -284,13 +291,6 @@
             this.EntryName.Name = "EntryName";
             this.EntryName.ReadOnly = true;
             // 
-            // modifyHeaderDataToolStripMenuItem
-            // 
-            this.modifyHeaderDataToolStripMenuItem.Name = "modifyHeaderDataToolStripMenuItem";
-            this.modifyHeaderDataToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.modifyHeaderDataToolStripMenuItem.Text = "$MODIFY_HEADER";
-            this.modifyHeaderDataToolStripMenuItem.Click += new System.EventHandler(this.modifyHeaderDataToolStripMenuItem_Click);
-            // 
             // FrameResourceTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -341,6 +341,6 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Index;
         private System.Windows.Forms.DataGridViewTextBoxColumn EntryName;
-        private System.Windows.Forms.ToolStripMenuItem modifyHeaderDataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem modifyHeaderButton;
     }
 }

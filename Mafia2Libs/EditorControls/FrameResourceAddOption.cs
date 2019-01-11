@@ -9,6 +9,7 @@ namespace Mafia2Tool.EditorControls
         {
             InitializeComponent();
             Localise();
+            FraddTypeCombo.SelectedIndex = 0;
         }
 
         private void Localise()

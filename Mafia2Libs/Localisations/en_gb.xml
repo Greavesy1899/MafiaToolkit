@@ -2,6 +2,8 @@
   <!-- Generic String -->
   <String ID="$CONTINUE">Continue</String>
   <String ID="$CANCEL">Cancel</String>
+  <String ID="$INDEX">Index</String>
+  <String ID="$ENTRY_NAME">Entry Name</String>
   
   <!-- Game Explorer Strings -->
   <String ID="$VIEW">View</String>
@@ -85,7 +87,8 @@
   <String ID="$FRAME_EDITOR_MODELS">FrameNameTable Models</String>
   <String ID="$FRAME_EDITOR_ALL">All Models</String>
   <String ID="$FRAME_EDITOR_OVERWRITE_BUFFER">Overwrite Buffer</String>
-  <String ID="$FRAME_EDITOR_ADD_SINGLEMODEL">Add SingleModel</String>
+  <String ID="$FRAME_EDITOR_ADD_BUTTON">Add New Entry</String>
+  <String ID="$FRAME_EDITOR_MODIFY_HEADER">Modify Header</String>
   <String ID="$FRAME_EDITOR_SWITCH_VIEW">Switch View</String>
   <String ID="$FRAME_EDITOR_EXTRACT3D">Extract Model</String>
   <String ID="$DELETE">Delete</String>

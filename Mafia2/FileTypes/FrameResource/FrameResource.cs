@@ -391,8 +391,13 @@ namespace Mafia2
                 {
                     FrameObjectSingleMesh mesh = (block as FrameObjectSingleMesh);
                     Console.WriteLine(string.Format("Updating: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
-                    mesh.MaterialIndex = newFrame.IndexOfValue(mesh.Refs["Material"]);
-                    mesh.MeshIndex = newFrame.IndexOfValue(mesh.Refs["Mesh"]);
+
+                    if(mesh.MaterialIndex != -1)
+                        mesh.MaterialIndex = newFrame.IndexOfValue(mesh.Refs["Material"]);
+
+                    if (mesh.MeshIndex != -1)
+                        mesh.MeshIndex = newFrame.IndexOfValue(mesh.Refs["Mesh"]);
+
                     block = mesh;
                     Console.WriteLine(string.Format("Updated: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
                 }

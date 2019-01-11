@@ -37,12 +37,15 @@ namespace Mafia2Tool
             modelsToolStripMenuItem.Text = Language.GetString("$FRAME_EDITOR_MODELS");
             allToolStripMenuItem.Text = Language.GetString("$FRAME_EDITOR_ALL");
             overwriteBufferSubButton.Text = Language.GetString("$FRAME_EDITOR_OVERWRITE_BUFFER");
-            addButton.Text = Language.GetString("$FRAME_EDITOR_ADD_SINGLEMODEL");
+            addButton.Text = Language.GetString("$FRAME_EDITOR_ADD_BUTTON");
+            modifyHeaderButton.Text = Language.GetString("$FRAME_EDITOR_MODIFY_HEADER");
             viewToolButton.Text = Language.GetString("$VIEW");
             switchViewSubButton.Text = Language.GetString("$FRAME_EDITOR_SWITCH_VIEW");
             contextExtract3D.Text = Language.GetString("$FRAME_EDITOR_EXTRACT3D");
             contextDelete.Text = Language.GetString("$DELETE");
             contextUpdateParents.Text = Language.GetString("$FRAME_EDITOR_UPDATE_PARENTS");
+            dataGridView1.Columns[0].HeaderText = Language.GetString("$INDEX");
+            dataGridView1.Columns[1].HeaderText = Language.GetString("$ENTRY_NAME");
             Text = Language.GetString("$FRAME_EDITOR_TITLE");
         }
 
@@ -733,32 +736,6 @@ namespace Mafia2Tool
             SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[0]);
             SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[0]);
 
-            mesh.UpdateNode();
-            treeView1.Nodes.Add(CreateTreeNode(mesh));
-            //ListWindow window = new ListWindow();
-            //window.PopulateForm();
-            //window.ShowDialog();
-            //if (window.type == -1)
-            //    return;
-
-            //FrameObjectSingleMesh copy = window.chosenObject as FrameObjectSingleMesh;
-            //mesh = new FrameObjectSingleMesh();
-            //mesh.Name.Set("domek2");
-            //mesh.Boundings = copy.Boundings;
-            //mesh.ParentIndex1 = copy.ParentIndex1;
-            //mesh.ParentIndex2 = copy.ParentIndex2;
-            //mesh.Matrix = copy.Matrix;
-            //mesh.Flags = copy.Flags;
-            //mesh.FrameNameTableFlags = copy.FrameNameTableFlags;
-            //mesh.IsOnFrameTable = copy.IsOnFrameTable;
-
-
-            SceneData.FrameResource.FrameObjects.Add(mesh.RefID, mesh);
-            DataGridViewRow row1 = new DataGridViewRow();
-            row1.Tag = mesh;
-            row1.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, mesh.Name.String });
-            dataGridView1.Rows.Add(row1);
-            PopulateForm();
             return mesh;
         }
 
