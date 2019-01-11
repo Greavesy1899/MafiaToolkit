@@ -625,7 +625,10 @@ namespace Mafia2Tool
             FrameObjectBase frame;
             if (selected == 0)
             {
-                throw new NotImplementedException();
+                frame = CreateSingleMesh();
+
+                if (frame == null)
+                    return;
             }
             else if (selected == 1)
             {
@@ -685,6 +688,80 @@ namespace Mafia2Tool
 
         }
 
+        private FrameObjectBase CreateSingleMesh()
+        {
+            FrameObjectBase mesh = new FrameObjectSingleMesh();
+
+            Model model = new Model();
+            model.FrameMesh = (mesh as FrameObjectSingleMesh);
+
+            if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
+                return null;
+
+            if (m2tBrowser.FileName.ToLower().EndsWith(".m2t"))
+                model.ModelStructure.ReadFromM2T(new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)));
+            else if (m2tBrowser.FileName.ToLower().EndsWith(".fbx"))
+            {
+                if (model.ModelStructure.ReadFromFbx(m2tBrowser.FileName) == -1)
+                    return null;
+            }
+
+            mesh.Name.Set(model.ModelStructure.Name);
+            model.CreateObjectsFromModel();
+            mesh.AddRef(FrameEntryRefTypes.Mesh, model.FrameGeometry.RefID);
+            mesh.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
+            SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
+            SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
+
+            DataGridViewRow row = new DataGridViewRow();
+            row.Tag = model.FrameMaterial;
+            row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, model.FrameMaterial.ToString() });
+            dataGridView1.Rows.Add(row);
+            row = new DataGridViewRow();
+            row.Tag = model.FrameGeometry;
+            row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, model.FrameGeometry.ToString() });
+            dataGridView1.Rows.Add(row);
+
+            //Check for existing buffer; if it exists, remove so we can add one later.
+            if (SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[0].Hash) != null)
+                SceneData.IndexBufferPool.RemoveBuffer(model.IndexBuffers[0]);
+
+            //do the same for vertexbuffer pools.
+            if (SceneData.VertexBufferPool.SearchBuffer(model.VertexBuffers[0].Hash) != null)
+                SceneData.VertexBufferPool.RemoveBuffer(model.VertexBuffers[0]);
+
+            SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[0]);
+            SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[0]);
+
+            mesh.UpdateNode();
+            treeView1.Nodes.Add(CreateTreeNode(mesh));
+            //ListWindow window = new ListWindow();
+            //window.PopulateForm();
+            //window.ShowDialog();
+            //if (window.type == -1)
+            //    return;
+
+            //FrameObjectSingleMesh copy = window.chosenObject as FrameObjectSingleMesh;
+            //mesh = new FrameObjectSingleMesh();
+            //mesh.Name.Set("domek2");
+            //mesh.Boundings = copy.Boundings;
+            //mesh.ParentIndex1 = copy.ParentIndex1;
+            //mesh.ParentIndex2 = copy.ParentIndex2;
+            //mesh.Matrix = copy.Matrix;
+            //mesh.Flags = copy.Flags;
+            //mesh.FrameNameTableFlags = copy.FrameNameTableFlags;
+            //mesh.IsOnFrameTable = copy.IsOnFrameTable;
+
+
+            SceneData.FrameResource.FrameObjects.Add(mesh.RefID, mesh);
+            DataGridViewRow row1 = new DataGridViewRow();
+            row1.Tag = mesh;
+            row1.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, mesh.Name.String });
+            dataGridView1.Rows.Add(row1);
+            PopulateForm();
+            return mesh;
+        }
+
         private void AddFrameSingleMesh_Click(object sender, EventArgs e)
         {
             NewObjectForm form = new NewObjectForm(true);
@@ -699,89 +776,6 @@ namespace Mafia2Tool
             else return;
 
             CreateNewEntry(selection, form.GetInputText());
-
-            bool createNewResource = false;
-            DialogResult result = MessageBox.Show("Do you want to import a new model?", "Toolkit", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-
-            if (result == DialogResult.Yes)
-                createNewResource = true;
-            else if (result == DialogResult.Cancel)
-                return;
-
-            FrameObjectSingleMesh mesh = new FrameObjectSingleMesh();
-
-            if (createNewResource)
-            {
-                Model model = new Model();
-                model.FrameMesh = mesh;
-
-                if (m2tBrowser.ShowDialog() == DialogResult.Cancel)
-                    return;
-
-                if (m2tBrowser.FileName.ToLower().EndsWith(".m2t"))
-                    model.ModelStructure.ReadFromM2T(new BinaryReader(File.Open(m2tBrowser.FileName, FileMode.Open)));
-                else if (m2tBrowser.FileName.ToLower().EndsWith(".fbx"))
-                {
-                    if (model.ModelStructure.ReadFromFbx(m2tBrowser.FileName) == -1)
-                        return;
-                }
-
-                mesh.Name.Set(model.ModelStructure.Name);
-                model.CreateObjectsFromModel();
-                mesh.AddRef(FrameEntryRefTypes.Mesh, model.FrameGeometry.RefID);
-                mesh.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
-                SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
-                SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
-
-                DataGridViewRow row = new DataGridViewRow();
-                row.Tag = model.FrameMaterial;
-                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, model.FrameMaterial.ToString() });
-                dataGridView1.Rows.Add(row);
-                row = new DataGridViewRow();
-                row.Tag = model.FrameGeometry;
-                row.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, model.FrameGeometry.ToString() });
-                dataGridView1.Rows.Add(row);
-
-                //Check for existing buffer; if it exists, remove so we can add one later.
-                if (SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[0].Hash) != null)
-                    SceneData.IndexBufferPool.RemoveBuffer(model.IndexBuffers[0]);
-
-                //do the same for vertexbuffer pools.
-                if (SceneData.VertexBufferPool.SearchBuffer(model.VertexBuffers[0].Hash) != null)
-                    SceneData.VertexBufferPool.RemoveBuffer(model.VertexBuffers[0]);
-
-                SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[0]);
-                SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[0]);
-
-                mesh.UpdateNode();
-                treeView1.Nodes.Add(CreateTreeNode(mesh));
-            }
-            else
-            {
-                ListWindow window = new ListWindow();
-                window.PopulateForm();
-                window.ShowDialog();
-                if (window.type == -1)
-                    return;
-
-                FrameObjectSingleMesh copy = window.chosenObject as FrameObjectSingleMesh;
-                mesh = new FrameObjectSingleMesh();
-                mesh.Name.Set("domek2");
-                mesh.Boundings = copy.Boundings;
-                mesh.ParentIndex1 = copy.ParentIndex1;
-                mesh.ParentIndex2 = copy.ParentIndex2;
-                mesh.Matrix = copy.Matrix;
-                mesh.Flags = copy.Flags;
-                mesh.FrameNameTableFlags = copy.FrameNameTableFlags;
-                mesh.IsOnFrameTable = copy.IsOnFrameTable;
-            }
-
-            SceneData.FrameResource.FrameObjects.Add(mesh.RefID, mesh);
-            DataGridViewRow row1 = new DataGridViewRow();
-            row1.Tag = mesh;
-            row1.CreateCells(dataGridView1, new object[] { dataGridView1.Rows.Count - 1, mesh.Name.String });
-            dataGridView1.Rows.Add(row1);
-            PopulateForm();
         }
 
         private void OnExportFarLods(object sender, EventArgs e)
