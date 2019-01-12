@@ -1,0 +1,127 @@
+<Localisation lANG="FR_FR">
+  <!-- Generic String -->
+  <String ID="$CONTINUE">Continuer</String>
+  <String ID="$CANCEL">Annuler</String>
+  <String ID="$INDEX">Index</String>
+  <String ID="$ENTRY_NAME">Nom</String>
+  
+  <!-- Game Explorer Strings -->
+  <String ID="$VIEW">Vue</String>
+  <String ID="$FILE">Fichier</String>
+  <String ID="$TOOLS">Outils</String>
+  <String ID="$BTN_OPEN_MII">Ouvrir Mafia II</String>
+  <String ID="$BTN_RUN_MII">Lancer Mafia II</String>
+  <String ID="$EXIT">Quitter</String>
+  <String ID="$OPTIONS">Options</String>
+  <String ID="$SELECT_MII_FOLDER">Sélectionnez votre dossier Mafia II. Il doit contenir le fichier "launcher.exe"</String>
+  <String ID="$ICON">Icone</String>
+  <String ID="$DETAILS">Détails</String>
+  <String ID="$SMALL_ICON">Petit icon</String>
+  <String ID="$LIST">Liste</String>
+  <String ID="$TILE">Tile</String>
+  <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Explorateur de jeu</String>
+  <String ID="$UNPACK_ALL_SDS">Unpacker tous les SDS</String>
+  <String ID="$OPEN_FOLDER_EXPLORER">Ouvrir le dossier dans l'explorateur</String>
+  <String ID="$PACK">Pack</String>
+  <String ID="$UNPACK">Unpack</String>
+  <String ID="$LAST_MODIFIED">Dernière modification</String>
+  <String ID="$NAME">Nom</String>
+  <String ID="$SIZE">Taille</String>
+  <String ID="$TYPE">Type</String>
+  <String ID="$SEARCH_TOOLTIP">Recherche</String>
+  <String ID="$SEARCH_DOTS">Recherche...</String>
+  <String ID="$REFRESH">Actualiser</String>
+  <String ID="$FOLDER_PATH_TOOLTIP">Chemin du dossier</String>
+  <String ID="$UP_TOOLTIP">Up</String>
+  
+  <!-- Main Options Strings-->
+  <String ID="$GENERAL">Général</String>
+  <String ID="$SDS_OPTIONS">Options SDS</String>
+  <String ID="$MODEL_EXPORTING">Modèles/Export</String>
+  <String ID="$MATERIAL_LIBS">Librairies Material</String>
+
+  <!-- General Options Strings-->
+  <String ID="$ENABLE_DEBUG_LOGGING">Activer logger</String>
+  <String ID="$MII_DIRECTORY">Dossier Mafia II</String>
+  <String ID="$DISCORD_RICH_PRESENCE">Discord Rich Presence</String>
+  <String ID="$DISCORD_TOGGLE_ELAPSED_TIME">Temps passé activé</String>
+  <String ID="$DISCORD_TOGGLE_STATE">Etat activé</String>
+  <String ID="$DISCORD_TOGGLE_DETAILS">Détails activé</String>
+  <String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Rich Presence activé</String>
+  <String ID="$LANGUAGE_ENGLISH">English</String>
+  <String ID="$LANGUAGE_RUSSIAN">русский</String>
+  <String ID="$LANGUAGE_CZECH">čeština</String>
+  <String ID="$LANGUAGE_POLISH">Polish</String>
+  <String ID="$LANGUAGE_FRENCH">Français</String>
+  <String ID="$LANGUAGE_OPTION">Langue de l'interface</String>
+  
+  <!-- Model/Exporting Option Strings-->
+  <String ID="$EXPORT_PATH_TITLE">Chemin d'export:</String>
+  <String ID="$EXPORT_PATH_DESC">Sélectionnez la destination d'export.</String>
+  <String ID="$EXPORT_MODELTYPE_TITLE">Format d'export du modèle:</String>
+  
+  <!-- Material Libs Option Strings-->
+  <String ID="$MATERIAL_LIB_REMOVE">Supprimer la librairie sélectionnée</String>
+  <String ID="$MATERIAL_LIB_ADD">Ajouter librairie</String>
+  <String ID="$MATERIAL_LIB_SELECTED">Librairies sélectionnées</String>
+  
+  <!-- Collision Editor Form Strings-->
+  <String ID="$SAVE">Sauvegarder</String>
+  <String ID="$RELOAD">Recharger</String>
+  <String ID="$COLLISION_DELETE">Supprimer collision</String>
+  <String ID="$COLLISION_ADD">Ajouter collision</String>
+  <String ID="$PLACEMENT_DELETE">Supprimer instance</String>
+  <String ID="$PLACEMENT_ADD">Ajouter instance</String>
+  <String ID="$SELECT_MODEL_FILE">Sélectionner un modèle.</String>
+  <String ID="$COLLISION_EDITOR_TITLE">Editeur de collision</String>
+  
+  <!-- Material Editor Form Strings-->
+  <String ID="$MATERIAL_ADD">Ajouter material</String>
+  <String ID="$MATERIAL_DELETE">Supprimer material</String>
+  <String ID="$MATERIAL_UPDATE_LIST">Rafraichir la liste de materials</String>
+  <String ID="$MATERIAL_EDITOR_TITLE">Editeur de librairie material</String>
+  <String ID="$OPEN">Ouvrir</String>
+  <String ID="$QUESTION_NAME_OF_MAT">Merci d'entrer le nom du material:</String>
+  
+  <!-- FrameResource Editor Form Strings-->
+  <String ID="$FRAME_EDITOR_EXPORT_BTN">Exporter les modèles..</String>
+  <String ID="$FRAME_EDITOR_MODELS">Modèles FrameNameTable</String>
+  <String ID="$FRAME_EDITOR_ALL">Tous les modèles</String>
+  <String ID="$FRAME_EDITOR_OVERWRITE_BUFFER">Ecrire par dessus le buffer</String>
+  <String ID="$FRAME_EDITOR_ADD_BUTTON">Ajouter une nouvelle entrée</String>
+  <String ID="$FRAME_EDITOR_MODIFY_HEADER">Modifier le header</String>
+  <String ID="$FRAME_EDITOR_SWITCH_VIEW">Switcher la vue</String>
+  <String ID="$FRAME_EDITOR_EXTRACT3D">Extraire modèle</String>
+  <String ID="$DELETE">Supprimer</String>
+  <String ID="$FRAME_EDITOR_UPDATE_PARENTS">Mettre à jour le parent</String>
+  <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Choisissez une scène à ajouter en parent.</String>
+  <String ID="$FRAME_EDITOR_TITLE">Editeur de FrameResource</String>
+  
+  <!-- NewObjForm Form Strings-->
+  <String ID="$NEWOBJFORM_TITLE">No;</String>
+  <String ID="$QUESTION_NOT_NEEDED">Cette option n'a pas besoin de nom.</String>
+  <String ID="$SCENE_OPTIONS">Options scène</String>
+  <String ID="$FSCENE_OFFSET">Offset position</String>
+
+  <!-- Error strings -->
+  <String ID="$ERROR_DID_NOT_FIND_LAUNCHER">Could not find MafiaII 'launcher.exe', please correct the path!</String>
+  <String ID="$ERROR_TITLE">Erreur!</String>
+  <String ID="$ERROR_SELECT_ITEM">Sélectionnez un item!</String>
+  <String ID="$ERROR_DIDNT_FIND_MTL">Impossible de charger le material. Erreur : \n\n</String>
+
+  <!-- CityArea Strings -->
+  <String ID="$CITY_AREA_EDITOR_TITLE">Editeur de zones</String>
+  <String ID="$AREA_DATA">Données zone</String>
+  <String ID="$AREA_1">Zone 1</String>
+  <String ID="$AREA_NAME">Nom Zone</String>
+  <String ID="$AREA_2">Zone 2</String>
+  <String ID="$UNK_BYTE">Byte inconnu</String>
+  <String ID="$SAVE_AREA">Sauvegarder zone</String>
+  <String ID="$RELOAD_AREA">Recharger zone</String>
+
+  <!-- CityShop Strings -->
+  <String ID="$CITY_SHOP_EDITOR_TITLE">Editeur de shop</String>
+  <String ID="$ADD_AREA">Ajouter zone</String>
+  <String ID="$POPULATE_TRANSLOKATORS">Ajouter nouveaux translocators</String>
+   
+</Localisation>
