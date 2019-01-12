@@ -82,7 +82,8 @@
             "$LANGUAGE_ENGLISH",
             "$LANGUAGE_RUSSIAN",
             "$LANGUAGE_CZECH",
-            "$LANGUAGE_POLISH"});
+            "$LANGUAGE_POLISH",
+            "French"});
             this.languageComboBox.Location = new System.Drawing.Point(7, 76);
             this.languageComboBox.Name = "languageComboBox";
             this.languageComboBox.Size = new System.Drawing.Size(121, 21);

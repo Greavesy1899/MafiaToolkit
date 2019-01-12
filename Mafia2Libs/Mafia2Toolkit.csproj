@@ -263,12 +263,13 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="libs\ICSharpCode.SharpZipLib.dll" />
-    <Content Include="Localisations\cz_CZ.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Localisations\cz_CZ.xml" />
     <Content Include="Localisations\en_gb.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Localisations\fr_FR.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Localisations\pl_PL.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
