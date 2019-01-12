@@ -1,4 +1,4 @@
-﻿<Localisation lANG="EN_GB">
+﻿<Localisation lANG="ru_RU">
   <!-- Generic String -->
   <String ID="$CONTINUE">Продолжить</String>
   <String ID="$CANCEL">Отмена</String>
@@ -13,10 +13,10 @@
   <String ID="$BTN_RUN_MII">Запустить Mafia II</String>
   <String ID="$EXIT">Выход</String>
   <String ID="$OPTIONS">Настройки</String>
-  <String ID="$SELECT_MII_FOLDER">Выберите папаку с MafiaII, содержащей "launcher.exe"</String>
-  <String ID="$ICON">Иконка</String>
+  <String ID="$SELECT_MII_FOLDER">Выберите папку с MafiaII, содержащей "launcher.exe"</String>
+  <String ID="$ICON">Значок</String>
   <String ID="$DETAILS">Подробнее</String>
-  <String ID="$SMALL_ICON">Маленькая иконка</String>
+  <String ID="$SMALL_ICON">Маленький значек</String>
   <String ID="$LIST">Список</String>
   <String ID="$TILE">Плитка</String>
   <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: проводник по игровым файлам</String>
@@ -24,14 +24,14 @@
   <String ID="$OPEN_FOLDER_EXPLORER">Открыть папку в Проводнике</String>
   <String ID="$PACK">Запаковать</String>
   <String ID="$UNPACK">Распаковать</String>
-  <String ID="$LAST_MODIFIED">Последние изменения</String>
+  <String ID="$LAST_MODIFIED">Последнее изменение</String>
   <String ID="$NAME">Имя</String>
   <String ID="$SIZE">Размер</String>
   <String ID="$TYPE">Тип</String>
   <String ID="$SEARCH_TOOLTIP">Поиск</String>
   <String ID="$SEARCH_DOTS">Поиск...</String>
   <String ID="$REFRESH">Обновить</String>
-  <String ID="$FOLDER_PATH_TOOLTIP">Пусть к папке</String>
+  <String ID="$FOLDER_PATH_TOOLTIP">Путь к папке</String>
   <String ID="$UP_TOOLTIP">Вверх</String>
 
   <!-- Main Options Strings-->
@@ -47,7 +47,7 @@
   <String ID="$DISCORD_TOGGLE_ELAPSED_TIME">Отображать затраченное время</String>
   <String ID="$DISCORD_TOGGLE_STATE">Отображать состояние</String>
   <String ID="$DISCORD_TOGGLE_DETAILS">Отображать подробную информацию</String>
-  <String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Rich Presence Enabled</String>
+  <String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Включить Rich Presence</String>
   <String ID="$LANGUAGE_ENGLISH">English</String>
   <String ID="$LANGUAGE_RUSSIAN">Русский</String>
   <String ID="$LANGUAGE_CZECH">čeština</String>
@@ -66,7 +66,7 @@
 
   <!-- Collision Editor Form Strings-->
   <String ID="$SAVE">Сохранить</String>
-  <String ID="$RELOAD">Перезагрузить</String>
+  <String ID="$RELOAD">Обновить</String>
   <String ID="$COLLISION_DELETE">Удалить коллизию</String>
   <String ID="$COLLISION_ADD">Добавить коллизию</String>
   <String ID="$PLACEMENT_DELETE">Удалить объект</String>
@@ -116,7 +116,7 @@
   <String ID="$AREA_2">Область 2</String>
   <String ID="$UNK_BYTE">Unk Byte</String>
   <String ID="$SAVE_AREA">Сохранить область</String>
-  <String ID="$RELOAD_AREA">Перезагрузить область</String>
+  <String ID="$RELOAD_AREA">Обновить область</String>
 
   <!-- CityShop Strings -->
   <String ID="$CITY_SHOP_EDITOR_TITLE">Редактор городских магазинов</String>
