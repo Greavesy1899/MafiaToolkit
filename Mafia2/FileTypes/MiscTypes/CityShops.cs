@@ -17,17 +17,25 @@ namespace Mafia2
 
         private string m_buffer;
 
-        Area[] areas;
-        AreaData[] areaDatas;
+        List<Area> areas;
+        List<AreaData> areaDatas;
 
 
-        public Area[] Areas {
+        public List<Area> Areas {
             get { return areas; }
-            set { areas = value; }
+            set
+            {
+                areas = value;
+                numAreas = areas.Count;
+            }
         }
-        public AreaData[] AreaDatas {
+        public List<AreaData> AreaDatas {
             get { return areaDatas; }
-            set { areaDatas = value; }
+            set 
+            {
+                areaDatas = value;
+                numDatas = areaDatas.Count;
+            }
         }
 
         public CityShops(string fileName)
@@ -64,23 +72,24 @@ namespace Mafia2
                 names.Add(offset, name); //add offset as unique key and string
             }
 
-            areas = new Area[numAreas];
-            areaDatas = new AreaData[numDatas];
+            areas = new List<Area>();
+            areaDatas = new List<AreaData>();
 
             for (int i = 0; i != numAreas; i++)
             {
-                areas[i] = new Area();
-                areas[i].ReadFromFile(reader, fileVersion);
-                areas[i].Name = names[areas[i].NameKey];
+                Area area = new Area();
+                area.ReadFromFile(reader, fileVersion);
+                area.Name = names[area.NameKey];
+                areas.Add(area);
             }
             for (int i = 0; i != numDatas; i++)
             {
-                areaDatas[i] = new AreaData();
-                areaDatas[i].ReadFromFile(reader, fileVersion);
-                areaDatas[i].TranslokatorName = names[areaDatas[i].TranslokatorNameKey];
-
-                for (int y = 0; y != areaDatas[i].Translokators.Length; y++)
-                    areaDatas[i].Translokators[y].Name = names[areaDatas[i].Translokators[y].NameKey];
+                AreaData areaData = new AreaData();
+                areaData.ReadFromFile(reader, fileVersion);
+                areaData.TranslokatorName = names[areaData.TranslokatorNameKey];
+                for (int y = 0; y != areaData.Translokators.Count; y++)
+                    areaData.Translokators[y].Name = names[areaData.Translokators[y].NameKey];
+                areaDatas.Add(areaData);
             }
         }
 
@@ -88,22 +97,45 @@ namespace Mafia2
         {
             writer.Write(1668576104);
             writer.Write(fileVersion);
-            writer.Write(areas.Length);
+            writer.Write(areas.Count);
             //gotta fix the buffer!
             buildUpdateKeyStringBuffer();
             //now we can continue;
             writer.Write(m_buffer.Length);
-            writer.Write(areaDatas.Length);
+            writer.Write(areaDatas.Count);
             writer.Write(unk1);
             writer.Write(unk2);
             writer.Write(unk3);
             writer.Write(m_buffer.ToCharArray());
 
-            for (int i = 0; i != areas.Length; i++)
+            for (int i = 0; i != areas.Count; i++)
                 areas[i].WriteToFile(writer, fileVersion);
 
-            for (int i = 0; i != areaDatas.Length; i++)
+            for (int i = 0; i != areaDatas.Count; i++)
                 areaDatas[i].WriteToFile(writer, fileVersion);
+        }
+
+        public void PopulateTranslokatorEntities()
+        {
+            for (int i = 0; i != areaDatas.Count; i++)
+            {
+                for (int y = 0; y != areaDatas[i].Translokators.Count; y++)
+                {
+                    bool fix = false;
+                    if(areaDatas[i].Translokators[y].EntityProperties == null)
+                        fix = true;
+                    else if(areaDatas[i].Translokators[y].EntityProperties.Count != areaDatas[i].Entries.Count)
+                        fix = true;
+
+                    if(fix)
+                    {
+                        areaDatas[i].Translokators[y].EntityProperties = new List<short>();
+
+                        for (int z = 0; z != areaDatas[i].Entries.Count; z++)
+                            areaDatas[i].Translokators[y].EntityProperties.Add(1023);
+                    }
+                }
+            }
         }
 
         private void buildUpdateKeyStringBuffer()
@@ -143,7 +175,7 @@ namespace Mafia2
                     areaDatas[i].TranslokatorNameKey = addedPos[index];
                 }
 
-                for (int y = 0; y != areaDatas[i].Translokators.Length; y++)
+                for (int y = 0; y != areaDatas[i].Translokators.Count; y++)
                 {
                     index = addedNames.IndexOf(areaDatas[i].Translokators[y].Name);
                     if (index == -1)
@@ -224,9 +256,9 @@ namespace Mafia2
             int unk2;
             int unk3;
             int numEntities;
-            string[] entries;
+            List<string> entries;
             int numTranslokators;
-            TranslokatorData[] translokators;
+            List<TranslokatorData> translokators;
 
             public string Name {
                 get { return name; }
@@ -261,11 +293,11 @@ namespace Mafia2
                 get { return unk3; }
                 set { unk3 = value; }
             }
-            public string[] Entries {
+            public List<string> Entries {
                 get { return entries; }
                 set { entries = value; }
             }
-            public TranslokatorData[] Translokators {
+            public List<TranslokatorData> Translokators {
                 get { return translokators; }
                 set { translokators = value; }
             }
@@ -280,20 +312,21 @@ namespace Mafia2
                 unk2 = reader.ReadInt32();
                 unk3 = reader.ReadInt32();
                 numEntities = reader.ReadInt32();
-                entries = new string[numEntities];
+                entries = new List<string>();
                 
                 for(int i = 0; i != numEntities; i++)
                 {
-                    entries[i] = Functions.ReadString(reader);
+                    entries.Add(Functions.ReadString(reader));
                 }
 
                 numTranslokators = reader.ReadInt32();
-                translokators = new TranslokatorData[numTranslokators];
+                translokators = new List<TranslokatorData>();
 
                 for (int i = 0; i != numTranslokators; i++)
                 {
-                    translokators[i] = new TranslokatorData();
-                    translokators[i].ReadFromFile(reader, numEntities, fileVersion);
+                    TranslokatorData translokator = new TranslokatorData();
+                    translokator.ReadFromFile(reader, numEntities, fileVersion);
+                    translokators.Add(translokator);
                 }
             }
 
@@ -306,13 +339,13 @@ namespace Mafia2
                 writer.Write(unk1);
                 writer.Write(unk2);
                 writer.Write(unk3);
-                writer.Write(entries.Length);
+                writer.Write(entries.Count);
 
                 for (int i = 0; i != numEntities; i++)
                     Functions.WriteString(writer, entries[i]);
 
-                writer.Write(translokators.Length);
-                for (int i = 0; i != translokators.Length; i++)
+                writer.Write(translokators.Count);
+                for (int i = 0; i != translokators.Count; i++)
                 {
                     translokators[i].WriteToFile(writer, fileVersion);
                 }
@@ -328,7 +361,7 @@ namespace Mafia2
                 float positionY;
                 int mapMarkerIconID;
                 int mapMarkerStringID;
-                short[] unkData;
+                List<short> entityProperties;
 
                 [ReadOnly(true)]
                 public ushort NameKey {
@@ -355,9 +388,9 @@ namespace Mafia2
                     get { return mapMarkerStringID; }
                     set { mapMarkerStringID = value; }
                 }
-                public short[] UnkData {
-                    get { return unkData; }
-                    set { unkData = value; }
+                public List<short> EntityProperties {
+                    get { return entityProperties; }
+                    set { entityProperties = value; }
                 }
 
                 public void ReadFromFile(BinaryReader reader, int numEntities, int fileVersion)
@@ -371,9 +404,9 @@ namespace Mafia2
                     if(fileVersion == 9)
                         reader.ReadByte();
 
-                    unkData = new short[numEntities];
+                    entityProperties = new List<short>();
                     for (int i = 0; i != numEntities; i++)
-                        unkData[i] = reader.ReadInt16();
+                        entityProperties.Add(reader.ReadInt16());
                 }
 
                 public void WriteToFile(BinaryWriter writer, int fileVersion)
@@ -387,8 +420,8 @@ namespace Mafia2
                     if (fileVersion == 9)
                         writer.Write((byte)0);
 
-                    for (int i = 0; i != UnkData.Length; i++)
-                        writer.Write(unkData[i]);
+                    for (int i = 0; i != entityProperties.Count; i++)
+                        writer.Write(entityProperties[i]);
                 }
             }
         }

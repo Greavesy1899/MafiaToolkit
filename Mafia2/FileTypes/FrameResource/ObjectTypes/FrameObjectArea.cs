@@ -40,8 +40,12 @@ namespace Mafia2
             ReadFromFile(reader);
         }
 
-        public FrameObjectArea()
+        public FrameObjectArea() : base()
         {
+            unk01 = 0;
+            unk02 = 0;
+            unkFloats = new Float4[unk02];
+            unkBounds = new BoundingBox();
         }
 
         public override void ReadFromFile(BinaryReader reader)

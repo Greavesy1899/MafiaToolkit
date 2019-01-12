@@ -25,7 +25,7 @@ namespace Mafia2
 
         public FrameObjectFrame() : base()
         {
-            
+            actorHash = new Hash();
         }
 
         public override void ReadFromFile(BinaryReader reader)

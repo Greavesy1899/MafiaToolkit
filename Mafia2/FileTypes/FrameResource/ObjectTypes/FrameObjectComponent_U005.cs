@@ -12,7 +12,7 @@ namespace Mafia2
         }
         public FrameObjectComponent_U005() : base()
         {
-
+            unk01 = 0;
         }
 
         public FrameObjectComponent_U005(BinaryReader reader) : base()

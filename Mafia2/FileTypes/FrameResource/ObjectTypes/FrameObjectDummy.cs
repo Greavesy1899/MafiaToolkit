@@ -17,8 +17,9 @@ namespace Mafia2
             ReadFromFile(reader);
         }
 
-        public FrameObjectDummy()
+        public FrameObjectDummy() : base()
         {
+            bounds = new BoundingBox();
         }
 
         public override void ReadFromFile(BinaryReader reader)

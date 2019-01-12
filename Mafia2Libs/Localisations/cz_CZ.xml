@@ -1,4 +1,10 @@
-﻿<Localisation lANG="CZ_cs">
+﻿<Localisation lANG="cs_CZ">
+  <!-- Generic String -->
+  <String ID="$CONTINUE">Pokračovat</String>
+  <String ID="$CANCEL">Zrušit</String>
+  <String ID="$INDEX">Index</String>
+  <String ID="$ENTRY_NAME">Entry Name</String>
+  
   <!-- Game Explorer Strings -->
   <String ID="$VIEW">Zobrazení</String>
   <String ID="$FILE">Soubor</String>
@@ -56,7 +62,7 @@
   <String ID="$MATERIAL_LIB_REMOVE">Odstranit vybranou knihovnu</String>
   <String ID="$MATERIAL_LIB_ADD">Přidat knihovu</String>
   <String ID="$MATERIAL_LIB_SELECTED">Vybrané knihovny</String>
-  
+
   <!-- Collision Editor Form Strings-->
   <String ID="$SAVE">Uložit</String>
   <String ID="$RELOAD">Obnovit</String>
@@ -69,20 +75,36 @@
   
   <!-- Material Editor Form Strings-->
   <String ID="$MATERIAL_ADD">Přidat materiál</String>
+  <String ID="$MATERIAL_DELETE">Odstranit materiál</String>
   <String ID="$MATERIAL_UPDATE_LIST">Aktualizovat list materiálů</String>
-  <String ID="$MATERIAL_EDITOR_TITLE">Uprava knihovny materiálů</String>
+  <String ID="$MATERIAL_EDITOR_TITLE">Editor knihovny materiálů</String>
   <String ID="$OPEN">Otevřít</String>
+  <String ID="$QUESTION_NAME_OF_MAT">Prosím zadejte jméno materiálu</String>
   
   <!-- FrameResource Editor Form Strings-->
   <String ID="$FRAME_EDITOR_EXPORT_BTN">Extrahovat modely..</String>
-  <String ID="$FRAME_EDITOR_MODELS">FrameNameTable Modely</String>
+  <String ID="$FRAME_EDITOR_MODELS">FrameNameTable modely</String>
   <String ID="$FRAME_EDITOR_ALL">Všechny modely</String>
   <String ID="$FRAME_EDITOR_OVERWRITE_BUFFER">Přepsat Buffer</String>
-  <String ID="$FRAME_EDITOR_ADD_SINGLEMODEL">Přidat samostatný model</String>
-  <String ID="$FRAME_EDITOR_SWITCH_VIEW">Přepnout pohled</String>
+  <String ID="$FRAME_EDITOR_ADD_BUTTON">Přidat nový vstup</String>
+  <String ID="$FRAME_EDITOR_MODIFY_HEADER">Úprava Headeru</String>
+  <String ID="$FRAME_EDITOR_SWITCH_VIEW">Změnit pohled</String>
   <String ID="$FRAME_EDITOR_EXTRACT3D">Extrahovat model</String>
   <String ID="$DELETE">Odstranit</String>
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS">Aktualizovat Parent</String>
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Vyberte scénu kterou chcete přidat jako parent.</String>
   <String ID="$FRAME_EDITOR_TITLE">FrameResource Editor</String>
+  
+  <!-- NewObjForm Form Strings-->
+  <String ID="$NEWOBJFORM_TITLE">Jméno</String>
+  <String ID="$QUESTION_NOT_NEEDED">Tahle možnost nepotřebuje jméno</String>
+  <String ID="$SCENE_OPTIONS">Možnosti Scény</String>
+  <String ID="$FSCENE_OFFSET">Offset pozice</String>
+
+  <!-- Error strings -->
+  <String ID="$ERROR_DID_NOT_FIND_LAUNCHER">Nebyl nalezen Mafia II 'launcher.exe', prosím vyberte správné umístění.</String>
+  <String ID="$ERROR_TITLE">Error!</String>
+  <String ID="$ERROR_SELECT_ITEM">Vyberte předmět!</String>
+  <String ID="$ERROR_DIDNT_FIND_MTL">Nebylo možné načíst materiály. Error: \n\n</String>
+   
 </Localisation>

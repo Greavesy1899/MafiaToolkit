@@ -42,14 +42,14 @@ namespace Mafia2Tool
             TreeNode areaNode = new TreeNode("Areas");
             TreeNode dataNode = new TreeNode("Data");
 
-            for (int i = 0; i != shopsData.AreaDatas.Length; i++)
+            for (int i = 0; i != shopsData.AreaDatas.Count; i++)
             {
                 TreeNode node = new TreeNode(shopsData.AreaDatas[i].Name);
                 node.Tag = shopsData.AreaDatas[i];
                 dataNode.Nodes.Add(node);
             }
 
-            for (int i = 0; i != shopsData.Areas.Length; i++)
+            for (int i = 0; i != shopsData.Areas.Count; i++)
             {
                 TreeNode node = new TreeNode(shopsData.Areas[i].Name);
                 node.Tag = shopsData.Areas[i];
@@ -62,6 +62,11 @@ namespace Mafia2Tool
 
         private void AddAreaButton_Click(object sender, EventArgs e)
         {
+            CityShops.Area area = new CityShops.Area();
+            shopsData.Areas.Add(area);
+            TreeNode node = new TreeNode("New Area");
+            node.Tag = area;
+            treeView1.Nodes[0].Nodes.Add(node);
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
@@ -99,6 +104,11 @@ namespace Mafia2Tool
         private void OnSelect(object sender, TreeViewEventArgs e)
         {
             propertyGrid1.SelectedObject = e.Node.Tag;
+        }
+
+        private void PopulateTranslokatorButton_Click(object sender, EventArgs e)
+        {
+            shopsData.PopulateTranslokatorEntities();
         }
     }
 }

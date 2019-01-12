@@ -41,6 +41,7 @@
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AddAreaButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.PopulateTranslokatorButton = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.CollisionContext.SuspendLayout();
@@ -122,7 +123,8 @@
             // 
             this.toolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AddAreaButton});
+            this.AddAreaButton,
+            this.PopulateTranslokatorButton});
             this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
             this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolButton.Name = "toolButton";
@@ -132,9 +134,16 @@
             // AddAreaButton
             // 
             this.AddAreaButton.Name = "AddAreaButton";
-            this.AddAreaButton.Size = new System.Drawing.Size(138, 22);
+            this.AddAreaButton.Size = new System.Drawing.Size(236, 22);
             this.AddAreaButton.Text = "$ADD_AREA";
             this.AddAreaButton.Click += new System.EventHandler(this.AddAreaButton_Click);
+            // 
+            // PopulateTranslokatorButton
+            // 
+            this.PopulateTranslokatorButton.Name = "PopulateTranslokatorButton";
+            this.PopulateTranslokatorButton.Size = new System.Drawing.Size(236, 22);
+            this.PopulateTranslokatorButton.Text = "$POPULATE_TRANSLOKATORS";
+            this.PopulateTranslokatorButton.Click += new System.EventHandler(this.PopulateTranslokatorButton_Click);
             // 
             // treeView1
             // 
@@ -189,5 +198,6 @@
         private System.Windows.Forms.ToolStripMenuItem AddAreaButton;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.ToolStripMenuItem PopulateTranslokatorButton;
     }
 }

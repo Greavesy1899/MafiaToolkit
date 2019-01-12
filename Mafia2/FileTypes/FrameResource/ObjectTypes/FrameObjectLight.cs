@@ -103,7 +103,29 @@ namespace Mafia2
 
         public FrameObjectLight() : base()
         {
+            flags = 0;
+            unkFloat1 = new float[7];
+            unk_int = 0;
+            unkFloat2 = new float[5];
+            unk_byte1 = 0;
+            unkFloat3 = new float[17];
+            unk_byte2 = 0;
+            unkFloat4 = new float[5];
+            nameLight = new Hash();
+            unk_int2 = 0;
+            unkFloat5 = new float[20];
+            names = new Hash[4];
 
+            for (int i = 0; i != 4; i++)
+                names[i] = new Hash();
+
+            unkVector1 = new Vector3(0);
+            unkVector2 = new Vector3(0);
+            unk_byte3 = 0;
+            unkVector3 = new Vector3(0);
+            unkVector4 = new Vector3(0);
+            unkVector5 = new Vector3(0);
+            unkVector6 = new Vector3(0);
         }
 
         public FrameObjectLight(BinaryReader reader) : base()

@@ -18,7 +18,7 @@ namespace Mafia2
 
         public FrameObjectCamera() : base()
         {
-
+            unk01 = 0;
         }
         public FrameObjectCamera(BinaryReader reader) : base()
         {

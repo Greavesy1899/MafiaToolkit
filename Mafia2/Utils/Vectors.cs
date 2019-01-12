@@ -245,6 +245,11 @@ namespace Mafia2
             ReadFromFile(reader);
         }
 
+        public Float4()
+        {
+            Data = new float[4];
+        }
+
         /// <summary>
         /// Read data from file.
         /// </summary>

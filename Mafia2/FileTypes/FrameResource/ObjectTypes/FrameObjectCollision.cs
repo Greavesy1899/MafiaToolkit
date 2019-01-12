@@ -17,8 +17,9 @@ namespace Mafia2
             ReadFromFile(reader);
         }
 
-        public FrameObjectCollision()
+        public FrameObjectCollision() : base()
         {
+            hash = 0;
         }
 
         public override void ReadFromFile(BinaryReader reader)

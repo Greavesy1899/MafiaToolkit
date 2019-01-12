@@ -45,7 +45,10 @@ namespace Mafia2
 
         public FrameObjectSector() : base()
         {
-
+            unk_11_bounds = new BoundingBox();
+            unk_13_vector3 = new Vector3(0);
+            unk_14_vector3 = new Vector3(0);
+            unk_15_hash = new Hash();
         }
 
         public FrameObjectSector(BinaryReader reader) : base()
