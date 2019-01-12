@@ -23,7 +23,7 @@ namespace Mafia2Tool
 
         private void Localise()
         {
-            Text = Language.GetString("$CITY_AREA_EDITOR_TITLE");
+            Text = Language.GetString("$CITY_SHOP_EDITOR_TITLE");
             fileToolButton.Text = Language.GetString("$FILE");
             SaveButton.Text = Language.GetString("$SAVE");
             ReloadButton.Text = Language.GetString("$RELOAD");
@@ -32,6 +32,8 @@ namespace Mafia2Tool
             AddAreaButton.Text = Language.GetString("$ADD_AREA");
             SaveButton.Text = Language.GetString("$SAVE");
             ReloadButton.Text = Language.GetString("$RELOAD");
+            PopulateTranslokatorButton.Text = Language.GetString("$POPULATE_TRANSLOKATORS");
+
         }
 
         private void BuildData()
@@ -67,6 +69,7 @@ namespace Mafia2Tool
             TreeNode node = new TreeNode("New Area");
             node.Tag = area;
             treeView1.Nodes[0].Nodes.Add(node);
+            shopsData.PopulateTranslokatorEntities();
         }
 
         private void SaveButton_Click(object sender, EventArgs e)

@@ -212,7 +212,7 @@ namespace Mafia2
                 get { return name; }
                 set { name = value; }
             }
-            [ReadOnly(true)]
+            [ReadOnly(true), Browsable(false)]
             public ushort NameKey {
                 get { return nameKey; }
                 set { nameKey = value; }
@@ -264,7 +264,7 @@ namespace Mafia2
                 get { return name; }
                 set { name = value; }
             }
-            [ReadOnly(true)]
+            [ReadOnly(true), Browsable(false)]
             public ushort TranslokatorNameKey {
                 get { return translokatorNameKey; }
                set { translokatorNameKey = value; }
@@ -363,7 +363,7 @@ namespace Mafia2
                 int mapMarkerStringID;
                 List<short> entityProperties;
 
-                [ReadOnly(true)]
+                [ReadOnly(true), Browsable(false)]
                 public ushort NameKey {
                     get { return nameKey; }
                     set { nameKey = value; }

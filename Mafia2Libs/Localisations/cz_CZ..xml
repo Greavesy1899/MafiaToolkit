@@ -106,5 +106,20 @@
   <String ID="$ERROR_TITLE">Error!</String>
   <String ID="$ERROR_SELECT_ITEM">Vyberte předmět!</String>
   <String ID="$ERROR_DIDNT_FIND_MTL">Nebylo možné načíst materiály. Error: \n\n</String>
+
+  <!-- CityArea Strings -->
+  <String ID="$CITY_AREA_EDITOR_TITLE">CityArea Editor</String>
+  <String ID="$AREA_DATA">Area Data</String>
+  <String ID="$AREA_1">Area 1</String>
+  <String ID="$AREA_NAME">Jméno Area</String>
+  <String ID="$AREA_2">Area 2</String>
+  <String ID="$UNK_BYTE">Neznámý bajt</String>
+  <String ID="$SAVE_AREA">Uložit Area</String>
+  <String ID="$RELOAD_AREA">Obnovit Area</String>
+
+  <!-- CityShop Strings -->
+  <String ID="$CITY_SHOP_EDITOR_TITLE">CityShop Editor</String>
+  <String ID="$ADD_AREA">Přidat Area</String>
+  <String ID="$POPULATE_TRANSLOKATORS">Oživit nové Translocatory (potřebné pro nové Translocatory)</String>
    
 </Localisation>

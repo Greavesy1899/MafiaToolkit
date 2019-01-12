@@ -107,5 +107,20 @@
   <String ID="$ERROR_TITLE">Error!</String>
   <String ID="$ERROR_SELECT_ITEM">Select an Item!</String>
   <String ID="$ERROR_DIDNT_FIND_MTL">Unable to load materials. Error occured: \n\n</String>
+
+  <!-- CityArea Strings -->
+  <String ID="$CITY_AREA_EDITOR_TITLE">CityArea Editor</String>
+  <String ID="$AREA_DATA">Area Data</String>
+  <String ID="$AREA_1">Area 1</String>
+  <String ID="$AREA_NAME">Area Name</String>
+  <String ID="$AREA_2">Area 2</String>
+  <String ID="$UNK_BYTE">Unk Byte</String>
+  <String ID="$SAVE_AREA">Save Area</String>
+  <String ID="$RELOAD_AREA">Reload Area</String>
+
+  <!-- CityShop Strings -->
+  <String ID="$CITY_SHOP_EDITOR_TITLE">CityShop Editor</String>
+  <String ID="$ADD_AREA">Add Area</String>
+  <String ID="$POPULATE_TRANSLOKATORS">Populate New Translocators</String>
    
 </Localisation>
