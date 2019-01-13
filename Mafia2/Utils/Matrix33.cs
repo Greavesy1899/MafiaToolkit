@@ -16,6 +16,7 @@ namespace Mafia2
         private float m20;
         private float m21;
         private float m22;
+        private Vector3 eulerRotation;
 
         public float M00 {
             get { return m00; }
@@ -53,8 +54,10 @@ namespace Mafia2
             get { return m22; }
             set { m22 = value; }
         }
-
-        public Vector3 Euler { get; set; }
+        public Vector3 EulerRotation {
+            get { return eulerRotation; }
+            set { eulerRotation = value; }
+        }
 
         /// <summary>
         /// Construct Matrix33 from three vectors.
@@ -88,7 +91,7 @@ namespace Mafia2
                 m12 = m2.Z;
                 m22 = m3.Z;
             }
-            Euler = ToEuler();
+            eulerRotation = ToEuler();
         }
 
         /// <summary>
@@ -105,7 +108,7 @@ namespace Mafia2
             m20 = 0;
             m21 = 0;
             m22 = 1;
-            Euler = ToEuler();
+            eulerRotation = ToEuler();
         }
 
         /// <summary>
@@ -154,6 +157,57 @@ namespace Mafia2
             return new Vector3((float)x, (float)y, (float)z);
         }
 
+        public void UpdateMatrixFromEuler()
+        {
+            float x = eulerRotation.X * (float)Math.PI / 180;
+            float y = eulerRotation.Y * (float)Math.PI / 180;
+            float z = eulerRotation.Z * (float)Math.PI / 180;
+
+            float ch = (float)Math.Cos(z);
+            float sh = (float)Math.Sin(z);
+            float ca = (float)Math.Cos(y);
+            float sa = (float)Math.Sin(y);
+            float cb = (float)Math.Cos(x);
+            float sb = (float)Math.Sin(x);
+            m00 = ch * ca;
+            m01 = sh * sb - ch * sa * cb;
+            m02 = ch * sa * sb + sh * cb;
+            m10 = sa;
+            m11 = ca * cb;
+            m12 = -ca * sb;
+            m20 = -sh * ca;
+            m21 = sh * sa * cb + ch * sb;
+            m22 = -sh * sa * sb + ch * cb;
+
+            //Remove exponents.
+            if (m00 > -0.01f && m00 < 0.01f)
+                m00 = 0.0f;
+
+            if (m01 > -0.01f && m01 < 0.01f)
+                m01 = 0.0f;
+
+            if (m02 > -0.01f && m02 < 0.01f)
+                m02 = 0.0f;
+
+            if (m10 > -0.01f && m10 < 0.01f)
+                m10 = 0.0f;
+
+            if (m11 > -0.01f && m11 < 0.01f)
+                m11 = 0.0f;
+
+            if (m12 > -0.01f && m12 < 0.01f)
+                m12 = 0.0f;
+
+            if (m20 > -0.01f && m20 < 0.01f)
+                m20 = 0.0f;
+
+            if (m21 > -0.01f && m21 < 0.01f)
+                m21 = 0.0f;
+
+            if (m22 > -0.01f && m22 < 0.01f)
+                m22 = 0.0f;
+        }
+
         public Matrix33 ChangeHandedness()
         {
             Matrix33 temp = this;
@@ -172,7 +226,7 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return $"{Euler}";
+            return $"Matrix";
         }
 
         // Returns a matrix with all elements set to zero (RO).

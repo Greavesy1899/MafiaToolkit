@@ -70,6 +70,7 @@ namespace Mafia2Tool
             node.Tag = area;
             treeView1.Nodes[0].Nodes.Add(node);
             shopsData.PopulateTranslokatorEntities();
+            MessageBox.Show("A new area was added succesfully! Check under the 'Areas' node.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
@@ -91,19 +92,6 @@ namespace Mafia2Tool
             Close();
         }
 
-        private void UpdateAreaData(object sender, EventArgs e)
-        {
-        }
-
-        private void SaveArea_Clicked(object sender, EventArgs e)
-        {
-        }
-
-        private void ReloadArea_Click(object sender, EventArgs e)
-        {
-            UpdateAreaData(null, null);
-        }
-
         private void OnSelect(object sender, TreeViewEventArgs e)
         {
             propertyGrid1.SelectedObject = e.Node.Tag;
@@ -112,6 +100,7 @@ namespace Mafia2Tool
         private void PopulateTranslokatorButton_Click(object sender, EventArgs e)
         {
             shopsData.PopulateTranslokatorEntities();
+            MessageBox.Show("All translokators were checked for errors.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

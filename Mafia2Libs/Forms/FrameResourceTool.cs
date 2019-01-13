@@ -927,14 +927,14 @@ namespace Mafia2Tool
             if (e.ChangedItem.Label == "RefID")
             {
                 TreeNode[] nodes = treeView1.Nodes.Find(e.ChangedItem.Value.ToString(), true);
-                
-                if(nodes.Length > 0)
+
+                if (nodes.Length > 0)
                 {
                     int newValue = (int)e.ChangedItem.Value;
                     FrameObjectBase obj = (treeView1.SelectedNode.Tag as FrameObjectBase);
                     int newIndex = SceneData.FrameResource.FrameObjects.IndexOfValue(newValue);
 
-                    if(newIndex == -1)
+                    if (newIndex == -1)
                     {
                         //check if user didn't try setting it as a scene:
                         newIndex = SceneData.FrameResource.FrameScenes.IndexOfValue(newValue);
@@ -962,6 +962,12 @@ namespace Mafia2Tool
                     TreeNode newNode = CreateTreeNode(obj);
                     nodes[0].Nodes.Add(newNode);
                 }
+            }
+            else if (e.ChangedItem.Parent.Label == "EulerRotation")
+            {
+                FrameObjectBase obj = (FrameResourceGrid.SelectedObject as FrameObjectBase);
+                obj.Matrix.Rotation.UpdateMatrixFromEuler();
+                FrameResourceGrid.Refresh();
             }
         }
 
