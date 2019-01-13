@@ -709,6 +709,35 @@ namespace Mafia2Tool
                     return null;
             }
 
+            FrameResourceModelOptions options = new FrameResourceModelOptions();
+            options.Show();
+
+            if (options.type == -1)
+                return null;
+
+            bool[] data = options.data;
+            options.Dispose();
+
+            for (int i = 0; i != model.ModelStructure.Lods.Length; i++)
+            {
+                if (data[0])
+                {
+                    model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.Normals;
+                    model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.Tangent;
+                }
+                if (data[1])
+                    model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.TexCoords0;
+                if (data[2])
+                    model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.TexCoords1;
+                if (data[3])
+                    model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.TexCoords2;
+                if (data[4])
+                    model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.TexCoords7;
+
+                if(data[5])
+                    model.ModelStructure.FlipUVs();
+            }
+
             mesh.Name.Set(model.ModelStructure.Name);
             model.CreateObjectsFromModel();
             mesh.AddRef(FrameEntryRefTypes.Mesh, model.FrameGeometry.RefID);

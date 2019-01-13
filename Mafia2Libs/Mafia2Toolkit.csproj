@@ -109,6 +109,12 @@
     <Compile Include="AdditionalControls\ListWindow.Designer.cs">
       <DependentUpon>ListWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="AdditionalControls\FrameResourceModelOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AdditionalControls\FrameResourceModelOptions.Designer.cs">
+      <DependentUpon>FrameResourceModelOptions.cs</DependentUpon>
+    </Compile>
     <Compile Include="AdditionalControls\NewObjectWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -303,6 +309,9 @@
   <ItemGroup>
     <EmbeddedResource Include="AdditionalControls\ListWindow.resx">
       <DependentUpon>ListWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AdditionalControls\FrameResourceModelOptions.resx">
+      <DependentUpon>FrameResourceModelOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="AdditionalControls\NewObjectWindow.resx">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>

@@ -167,6 +167,28 @@ namespace Mafia2
             }
         }
 
+        public void FlipUVs()
+        {
+            for (int i = 0; i != lods.Length; i++)
+            {
+                for (int x = 0; x != lods[i].Vertices.Length; x++)
+                {
+                    Vertex vert = lods[i].Vertices[x];
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                        vert.UVs[0].Y = (Half)(1f - vert.UVs[0].Y);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                        vert.UVs[1].Y = (Half)(1f - vert.UVs[0].Y);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                        vert.UVs[2].Y = (Half)(1f - vert.UVs[0].Y);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                        vert.UVs[3].Y = (Half)(1f - vert.UVs[0].Y);
+                }
+            }
+        }
+
         public void ExportToM2T(string exportPath)
         {
             if (File.Exists(exportPath + name + ".m2t"))
