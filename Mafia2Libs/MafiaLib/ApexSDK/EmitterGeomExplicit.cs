@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using SharpDX;
 using Mafia2;
 
 namespace ApexSDK
@@ -20,17 +21,13 @@ namespace ApexSDK
             position = new Vector3[size];
 
             for(int i = 0; i != size; i++)
-            {
-                position[i] = new Vector3(reader);
-            }
+                position[i] = Vector3Extenders.ReadFromFile(reader);
 
             size = reader.ReadInt32();
             sphere = new Vector3[size];
 
             for (int i = 0; i != size; i++)
-            {
-                sphere[i] = new Vector3(reader);
-            }
+                sphere[i] = Vector3Extenders.ReadFromFile(reader);
         }
 
         public void WriteToFile(BinaryWriter writer)

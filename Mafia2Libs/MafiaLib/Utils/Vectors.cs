@@ -1,333 +1,90 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using SharpDX;
 
 namespace Mafia2
 {
-    [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class Vector3
+    public static class Vector3Extenders
     {
-        private float x;
-        private float y;
-        private float z;
-
-        public float X
+        public static Vector3 ReadFromFile(BinaryReader reader)
         {
-            get { return x;}
-            set { x = value; }
-        }
-        public float Y {
-            get { return y; }
-            set { y = value; }
-        }
-        public float Z {
-            get { return z; }
-            set { z = value; }
+            Vector3 vec = new Vector3();
+            vec.X = reader.ReadSingle();
+            vec.Y = reader.ReadSingle();
+            vec.Z = reader.ReadSingle();
+            return vec;
         }
 
-        /// <summary>
-        /// Construct a Vector3 from three floats.
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        public Vector3(float x, float y, float z)
+        public static void WriteToFile(this Vector3 vec, BinaryWriter writer)
         {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
-        /// <summary>
-        /// Construct a Vector3 and set all three values to the passed value.
-        /// </summary>
-        /// <param name="value"></param>
-        public Vector3(float value)
-        {
-            this.x = value;
-            this.y = value;
-            this.z = value;
-        }
-
-        /// <summary>
-        /// Copy from passing vector.
-        /// </summary>
-        /// <param name="vector"></param>
-        public Vector3(Vector3 vector)
-        {
-            this.x = vector.x;
-            this.y = vector.y;
-            this.z = vector.z;
-        }
-
-        /// <summary>
-        /// Construct Vector3 from file data.
-        /// </summary>
-        /// <param name="reader"></param>
-        public Vector3(BinaryReader reader)
-        {
-            x = y = z = 0;
-            ReadfromFile(reader);
-        }
-
-        /// <summary>
-        /// Write vector3 to file.
-        /// </summary>
-        /// <param name="writer"></param>
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(x);
-            writer.Write(y);
-            writer.Write(z);
-        }
-
-        /// <summary>
-        /// Read Vector3 data from file.
-        /// </summary>
-        /// <param name="reader"></param>
-        public void ReadfromFile(BinaryReader reader)
-        {
-            x = reader.ReadSingle();
-            y = reader.ReadSingle();
-            z = reader.ReadSingle();
-        }
-
-        /// <summary>
-        /// Convert vector3 radians to degrees.
-        /// </summary>
-        public void ConvertToDegrees()
-        {
-            x = -(float)(X * 180 / Math.PI);
-            y = -(float)(Y * 180 / Math.PI);
-            z = -(float)(Z * 180 / Math.PI);
-        }
-
-        /// <summary>
-        /// Convert vector3 degrees to radians
-        /// </summary>
-        public void ConvertToRadians()
-        {
-            x = -(float)(X * Math.PI / 180);
-            y = -(float)(Y * Math.PI / 180);
-            z = -(float)(Z * Math.PI / 180);
-        }
-
-        /// <summary>
-        /// Find the cross product between two vectors.
-        /// </summary>
-        /// <param name="vector2"></param>
-        public void CrossProduct(Vector3 vector2)
-        {
-            X = Y * vector2.Z - Z * vector2.Y;
-            Y = Z * vector2.X - X * vector2.Z;
-            Z = X * vector2.Y - Y * vector2.X;
-        }
-
-        /// <summary>
-        /// Returns the Dot Product of two vectors.
-        /// </summary>
-        /// <param name="lhs"></param>
-        /// <param name="rhs"></param>
-        /// <returns></returns>
-        public float DotProduct(Vector3 lhs, Vector3 rhs)
-        {
-            return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z);
-        }
-
-        /// <summary>
-        /// Normalize the vector3.
-        /// </summary>
-        public void Normalize()
-        {
-            float num1 = (float)(X * (double)X + Y * Y + Z * (double)Z);
-            float num2 = num1 == 0.0 ? float.MaxValue : (float)(1.0 / Math.Sqrt(num1));
-            X *= num2;
-            Y *= num2;
-            Z *= num2;
-        }
-
-        public static float Distance(Vector3 a, Vector3 b)
-        {
-            Vector3 vec = new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
-            return (float)Math.Sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-        }
-
-        public static Vector3 operator +(Vector3 a, Vector3 b)
-        {
-            return new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
-        }
-        public static Vector3 operator -(Vector3 a, Vector3 b)
-        {
-            return new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
-        }
-        public static Vector3 operator *(Vector3 a, float scale)
-        {
-            return new Vector3(a.X * scale, a.Y * scale, a.Z * scale);
-        }
-        public static Vector3 operator /(Vector3 a, float scale)
-        {
-            return new Vector3(a.X / scale, a.Y / scale, a.Z / scale);
-        }
-
-        public override string ToString()
-        {
-            return $"X: {X}, Y: {Y}, Z: {Z}";
-        }
-
-    }
-
-    [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class Vector2
-    {
-        public float X { get; set; }
-        public float Y { get; set; }
-
-        /// <summary>
-        /// Construct Vector2 from two floats.
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        public Vector2(float x, float y)
-        {
-            X = x;
-            Y = y;
-        }
-
-        /// <summary>
-        /// Construct Vector2 from file data.
-        /// </summary>
-        /// <param name="reader"></param>
-        public Vector2(BinaryReader reader)
-        {
-            ReadFromFile(reader);
-        }
-
-        public void ReadFromFile(BinaryReader reader)
-        {
-            X = reader.ReadSingle();
-            Y = reader.ReadSingle();
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(X);
-            writer.Write(Y);
-        }
-
-        /// <summary>
-        /// Returns the Dot Product of two vectors.
-        /// </summary>
-        /// <param name="lhs"></param>
-        /// <param name="rhs"></param>
-        /// <returns></returns>
-        public static float DotProduct(Vector2 lhs, Vector2 rhs)
-        {
-            return (lhs.X * rhs.X) + (lhs.Y * rhs.Y);
-        }
-
-        public override string ToString()
-        {
-            return $"X: {X}, Y: {Y}";
+            writer.Write(vec.X);
+            writer.Write(vec.Y);
+            writer.Write(vec.Z);
         }
     }
 
-    [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class Float4
+    public static class Vector2Extenders
     {
-        public float[] Data { get; set; }
-
-        /// <summary>
-        /// Construct Float4 from parsed data.
-        /// </summary>
-        /// <param name="reader"></param>
-        public Float4(BinaryReader reader)
+        public static Vector2 ReadFromFile(BinaryReader reader)
         {
-            ReadFromFile(reader);
+            Vector2 vec = new Vector2();
+            vec.X = reader.ReadSingle();
+            vec.Y = reader.ReadSingle();
+            return vec;
         }
 
-        public Float4()
+        public static void WriteToFile(this Vector2 vec, BinaryWriter writer)
         {
-            Data = new float[4];
-        }
-
-        /// <summary>
-        /// Read data from file.
-        /// </summary>
-        /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader)
-        {
-            Data = new float[4];
-
-            for (int i = 0; i != 4; i++)
-                Data[i] = reader.ReadSingle();
-        }
-
-        /// <summary>
-        /// Write data to file.
-        /// </summary>
-        /// <param name="writer"></param>
-        public void WriteToFile(BinaryWriter writer)
-        {
-            for (int i = 0; i != 4; i++)
-                writer.Write(Data[i]);
-        }
-
-        public override string ToString()
-        {
-            return $"{Data[0]}, {Data[1]}, {Data[2]}, {Data[3]}";
+            writer.Write(vec.X);
+            writer.Write(vec.Y);
         }
     }
 
-    [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class UVVector2
+    public static class Vector4Extenders
     {
-        public Half X { get; set; }
-        public Half Y { get; set; }
-
-        /// <summary>
-        /// Construct UV Vector from two halfs.
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        public UVVector2(Half x, Half y)
+        public static Vector4 ReadFromFile(BinaryReader reader)
         {
-            X = x;
-            Y = y;
+            Vector4 vec = new Vector4();
+            vec.X = reader.ReadSingle();
+            vec.Y = reader.ReadSingle();
+            vec.Z = reader.ReadSingle();
+            vec.W = reader.ReadSingle();
+            return vec;
         }
 
-        /// <summary>
-        /// Construct empty vector
-        /// </summary>
-        public UVVector2()
+        public static void WriteToFile(this Vector4 vec, BinaryWriter writer)
         {
-            X = 0;
-            Y = 0;
+            writer.Write(vec.X);
+            writer.Write(vec.Y);
+            writer.Write(vec.Z);
+            writer.Write(vec.W);
         }
+    }
 
-        /// <summary>
-        /// Write UVVector2 as floats.
-        /// </summary>
-        public void WriteToFile(BinaryWriter writer)
-        {       
-            writer.Write(HalfHelper.HalfToSingle(X));
-            writer.Write(HalfHelper.HalfToSingle(Y));
-           // writer.Write((Half)1f-Y);
-        }
-
-        /// <summary>
-        /// Read UVVector2 from file as floats.
-        /// </summary>
-        /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader)
+    public static class HalfExtenders
+    {
+        public static byte[] GetBytes(this SharpDX.Half value)
         {
-            X = HalfHelper.SingleToHalf(reader.ReadSingle());
-            Y = HalfHelper.SingleToHalf(reader.ReadSingle());
+            return BitConverter.GetBytes(value.RawValue);
+        }
+    }
+    public static class Half2Extenders
+    {
+        public static Half2 ReadFromFile(BinaryReader reader)
+        {
+            Half2 half = new Half2();
+            half.X = reader.ReadSingle();
+            half.Y = reader.ReadSingle();
+            return half;
         }
 
-        public override string ToString()
+        public static void WriteToFile(this Half2 half, BinaryWriter writer)
         {
-            return $"X: {X}, Y: {Y}";
+            writer.Write(half.X);
+            writer.Write(half.Y);
         }
+
     }
 
     public class Short3
@@ -487,7 +244,7 @@ namespace Mafia2
             numPoints = reader.ReadInt32();
             firstVertIndex = reader.ReadInt32();
             firstUnkIndex = reader.ReadInt32();
-            normal = new Vector3(reader);
+            normal = Vector3Extenders.ReadFromFile(reader);
             floats = new float[]{ reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle() };
         }
     }

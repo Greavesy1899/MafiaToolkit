@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using Mafia2;
+using SharpDX;
 
 namespace Mafia2Tool.EditorControls
 {

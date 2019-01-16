@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using SharpDX;
 
 namespace Mafia2
 {
@@ -66,9 +67,7 @@ namespace Mafia2
 
             points = new Vector3[nPoints];
             for (int i = 0; i != points.Length; i++)
-            {
-                points[i] = new Vector3(reader);
-            }
+                points[i] = Vector3Extenders.ReadFromFile(reader);
 
             maxPointIndex = reader.ReadInt32();
 
@@ -86,7 +85,7 @@ namespace Mafia2
                 vertDef[i] = reader.ReadInt16();
             }
 
-            centerOfMass = new Vector3(reader);
+            centerOfMass = Vector3Extenders.ReadFromFile(reader);
 
             polygons = new Polygon[nPolygons];
             for (int i = 0; i != polygons.Length; i++)

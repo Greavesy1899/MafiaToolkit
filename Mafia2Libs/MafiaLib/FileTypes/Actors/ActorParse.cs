@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using SharpDX;
 
 namespace Mafia2
 {
@@ -337,10 +338,10 @@ namespace Mafia2
                 actortype = reader.ReadInt32();
                 hash1 = reader.ReadUInt64();
                 hash2 = reader.ReadUInt64();
-                position = new Vector3(reader);
-                rotation = new Vector2(reader);
-                direction = new Vector2(reader);
-                scale = new Vector3(reader);
+                position = Vector3Extenders.ReadFromFile(reader);
+                rotation = Vector2Extenders.ReadFromFile(reader);
+                direction = Vector2Extenders.ReadFromFile(reader);
+                scale = Vector3Extenders.ReadFromFile(reader);
                 unk3 = reader.ReadUInt16();
                 propID = reader.ReadUInt16();
             }

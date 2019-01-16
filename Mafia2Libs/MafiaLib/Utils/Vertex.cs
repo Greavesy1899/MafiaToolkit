@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using SharpDX;
 
 namespace Mafia2
 {
@@ -13,7 +14,7 @@ namespace Mafia2
         Vector3 binormal;
         float blendWeight;
         int boneID;
-        UVVector2[] uvs;
+        Half2[] uvs;
         int damageGroup;
 
         public Vector3 Position {
@@ -32,7 +33,7 @@ namespace Mafia2
             get { return binormal; }
             set { binormal = value; }
         }
-        public UVVector2[] UVs {
+        public Half2[] UVs {
             get { return uvs; }
             set { uvs = value; }
         }
@@ -57,10 +58,10 @@ namespace Mafia2
             position = new Vector3(0);
             normal = new Vector3(0);
             tangent = new Vector3(0);
-            uvs = new UVVector2[4];
+            uvs = new Half2[4];
 
             for (int i = 0; i != uvs.Length; i++)
-                uvs[i] = new UVVector2();
+                uvs[i] = new Half2();
         }
 
         /// <summary>
@@ -205,10 +206,10 @@ namespace Mafia2
         /// <param name="uvpos">numuvs</param>
         public void ReadUvData(byte[] data, int i, int uvpos)
         {
-            Half x = Half.ToHalf(data, i);
-            Half y = Half.ToHalf(data, i + 2);
+            System.Half x = System.Half.ToHalf(data, i);
+            System.Half y = System.Half.ToHalf(data, i + 2);
             y = -y;
-            uvs[uvpos] = new UVVector2(x, y);
+            uvs[uvpos] = new Half2(x, y);
         }
 
         /// <summary>
@@ -218,15 +219,13 @@ namespace Mafia2
         /// <returns></returns>
         public void WriteUvData(byte[] data, int i, int uvNum)
         {
-            byte[] tempPosData;
-
             //Do X
-            tempPosData = Half.GetBytes(UVs[uvNum].X);
+            byte[] tempPosData = HalfExtenders.GetBytes(UVs[uvNum].X);
             Array.Copy(tempPosData, 0, data, i, 2);
 
             //Do Y
             UVs[uvNum].Y = -uvs[uvNum].Y;
-            tempPosData = Half.GetBytes(UVs[uvNum].Y);
+            tempPosData = HalfExtenders.GetBytes(UVs[uvNum].Y);
             Array.Copy(tempPosData, 0, data, i + 2, 2);
         }
 
@@ -257,8 +256,8 @@ namespace Mafia2
         /// </summary>
         public void BuildBinormals()
         {
-            binormal = normal;
-            binormal.CrossProduct(tangent);
+            binormal = normal;           
+            binormal = Vector3.Cross(binormal, tangent);
             binormal *= 2;
             binormal.Normalize();
         }

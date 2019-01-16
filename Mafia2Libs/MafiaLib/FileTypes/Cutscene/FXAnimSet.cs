@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using SharpDX;
 
 namespace Mafia2
 {
@@ -99,7 +100,7 @@ namespace Mafia2
                 for (int i = 0; i != unkCount3; i++)
                     unkNums2[i] = reader.ReadInt32();
 
-                unkVector1 = new Vector3(reader);
+                unkVector1 = Vector3Extenders.ReadFromFile(reader);
                 reader.ReadInt64();
                 if (reader.ReadInt32() == -1)
                     Console.WriteLine("Reached 0xFFFF");
@@ -112,7 +113,7 @@ namespace Mafia2
 
                 public void ReadFromFile(BinaryReader reader)
                 {
-                    vector = new Vector3(reader);
+                    vector = Vector3Extenders.ReadFromFile(reader);
                     unk1 = reader.ReadInt32();
                 }
             }

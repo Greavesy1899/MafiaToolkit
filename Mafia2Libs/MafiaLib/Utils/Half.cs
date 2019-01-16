@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.InteropServices;
+using SharpDX;
 
 namespace System
 {
@@ -498,6 +498,15 @@ namespace System
         public static byte[] GetBytes(Half value)
         {
             return BitConverter.GetBytes(value.value);
+        }
+        /// <summary>
+        /// Returns the specified half-precision floating point value as an array of bytes.
+        /// </summary>
+        /// <param name="value">The number to convert.</param>
+        /// <returns>An array of bytes with length 2.</returns>
+        public static byte[] GetBytes(SharpDX.Half value)
+        {
+            return BitConverter.GetBytes(value.RawValue);
         }
         /// <summary>
         /// Converts the value of a specified instance of System.Half to its equivalent binary representation.

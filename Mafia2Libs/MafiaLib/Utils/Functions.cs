@@ -8,10 +8,6 @@ namespace Mafia2
     {
         public static Random RandomGenerator = new Random();
 
-        public static Vector3 ReadBound(BinaryReader reader)
-        {
-            return new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-        }
         public static int IndexOfValue(Dictionary<int, object> dic, int key)
         {
             int index = -1;

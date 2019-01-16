@@ -6,7 +6,10 @@ using System.Linq;
 using System.Windows.Forms;
 using Gibbed.Illusion.FileFormats.Hashing;
 using Mafia2;
+using SharpDX;
+
 using static Mafia2.M2TStructure;
+using Collision = Mafia2.Collision;
 
 namespace Mafia2Tool
 {
@@ -77,40 +80,40 @@ namespace Mafia2Tool
                 }
 
                 List<CollisionMaterials> typeList = new List<CollisionMaterials>();
-                List<List<Short3>> values = new List<List<Short3>>();
+                List<List<ushort>> values = new List<List<ushort>>();
+                throw new NotImplementedException("Needs to be rearranged for restructure!!!");
+                //for (int x = 0; x != nxsData.Data.Materials.Length; x++)
+                //{
+                //    CollisionMaterials[] mats = nxsData.Data.Materials;
+                //    Mafia2.Int3[] triangles = nxsData.Data.Triangles;
 
-                for (int x = 0; x != nxsData.Data.Materials.Length; x++)
-                {
-                    CollisionMaterials[] mats = nxsData.Data.Materials;
-                    Int3[] triangles = nxsData.Data.Triangles;
+                //    if (!typeList.Contains(mats[x]))
+                //    {
+                //        typeList.Add(mats[x]);
+                //        values.Add(new List<ushort>());
+                //        values[typeList.Count-1].Add(triangles[x]));
+                //    }
+                //    else
+                //    {
+                //        for(int y = 0; y != typeList.Count; y++)
+                //        {
+                //            if(typeList[y] == mats[x])
+                //                values[y].Add(new Short3(triangles[x]));
+                //        }
+                //    }
+                //}
 
-                    if (!typeList.Contains(mats[x]))
-                    {
-                        typeList.Add(mats[x]);
-                        values.Add(new List<Short3>());
-                        values[typeList.Count-1].Add(new Short3(triangles[x]));
-                    }
-                    else
-                    {
-                        for(int y = 0; y != typeList.Count; y++)
-                        {
-                            if(typeList[y] == mats[x])
-                                values[y].Add(new Short3(triangles[x]));
-                        }
-                    }
-                }
+                //model.Lods[0].Parts = new ModelPart[typeList.Count];
 
-                model.Lods[0].Parts = new ModelPart[typeList.Count];
+                //for(int x = 0; x != typeList.Count; x++)
+                //{
+                //    model.Lods[0].Parts[x] = new ModelPart();
+                //    model.Lods[0].Parts[x].Indices = values[x].ToArray();
+                //    model.Lods[0].Parts[x].Material = typeList[x].ToString();
+                //}
 
-                for(int x = 0; x != typeList.Count; x++)
-                {
-                    model.Lods[0].Parts[x] = new ModelPart();
-                    model.Lods[0].Parts[x].Indices = values[x].ToArray();
-                    model.Lods[0].Parts[x].Material = typeList[x].ToString();
-                }
-
-                model.ExportCollisionToM2T(node.Name);
-                treeView1.Nodes.Add(node);
+                //model.ExportCollisionToM2T(node.Name);
+                //treeView1.Nodes.Add(node);
             }
 
             CustomEDD frame = new CustomEDD();

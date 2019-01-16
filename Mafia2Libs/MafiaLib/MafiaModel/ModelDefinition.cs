@@ -151,11 +151,9 @@ namespace Mafia2
             //todo; allow more LODS.
             for (int i = 0; i != model.Lods[0].Parts.Length; i++)
             {
-                for (int x = 0; x != model.Lods[0].Parts[i].Indices.Length; x++)
+                for (int x = 0; x != model.Lods[0].Parts[i].Indices.Length*3; x++)
                 {
-                    idata.Add(model.Lods[0].Parts[i].Indices[x].S1);
-                    idata.Add(model.Lods[0].Parts[i].Indices[x].S2);
-                    idata.Add(model.Lods[0].Parts[i].Indices[x].S3);
+                    idata.Add(model.Lods[0].Parts[i].Indices[x]);
                 }
             }
 

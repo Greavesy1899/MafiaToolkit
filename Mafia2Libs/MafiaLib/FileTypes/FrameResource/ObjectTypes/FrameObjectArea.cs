@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using SharpDX;
 
 namespace Mafia2
@@ -9,7 +7,7 @@ namespace Mafia2
     {
         int unk01;
         int unk02;
-        Float4[] unkFloats;
+        Vector4[] unkFloats;
         BoundingBox unkBounds;
 
         //-1 means invert the float, eg: 25.459 would be -25.459
@@ -28,7 +26,7 @@ namespace Mafia2
             get { return unk02; }
             set { unk02 = value; }
         }
-        public Float4[] UnkFloats {
+        public Vector4[] UnkFloats {
             get { return unkFloats; }
             set { unkFloats = value; }
         }
@@ -45,7 +43,7 @@ namespace Mafia2
         {
             unk01 = 0;
             unk02 = 0;
-            unkFloats = new Float4[unk02];
+            unkFloats = new Vector4[unk02];
             unkBounds = new BoundingBox();
         }
 
@@ -54,10 +52,10 @@ namespace Mafia2
             base.ReadFromFile(reader);
             unk01 = reader.ReadInt32();
             unk02 = reader.ReadInt32();
-            unkFloats = new Float4[unk02];
+            unkFloats = new Vector4[unk02];
 
             for (int i = 0; i != unkFloats.Length; i++)
-                unkFloats[i] = new Float4(reader);
+                unkFloats[i] = Vector4Extenders.ReadFromFile(reader);
 
             unkBounds = BoundingBoxExtenders.ReadFromFile(reader);
         }
@@ -72,43 +70,6 @@ namespace Mafia2
                 unkFloats[i].WriteToFile(writer);
 
             unkBounds.WriteToFile(writer);
-        }
-
-        public void WriteARAFile(BinaryWriter writer)
-        {
-            Vector3[] verts = new Vector3[8];
-            try
-            {
-                if (unkFloats.Length != 6)
-                    throw new Exception("UnkFloats doesn't equal 6");
-
-                verts[0] = new Vector3(unkFloats[5].Data[3], -unkFloats[3].Data[3], unkFloats[4].Data[3]);
-                verts[1] = new Vector3(-unkFloats[1].Data[3], -unkFloats[3].Data[3], unkFloats[4].Data[3]);
-                verts[2] = new Vector3(unkFloats[5].Data[3], unkFloats[2].Data[3], unkFloats[4].Data[3]);
-                verts[3] = new Vector3(-unkFloats[1].Data[3], unkFloats[2].Data[3], unkFloats[4].Data[3]);
-                verts[4] = new Vector3(unkFloats[5].Data[3], -unkFloats[3].Data[3], -unkFloats[0].Data[3]);
-                verts[5] = new Vector3(-unkFloats[1].Data[3], -unkFloats[3].Data[3], -unkFloats[0].Data[3]);
-                verts[6] = new Vector3(unkFloats[5].Data[3], unkFloats[2].Data[3], -unkFloats[0].Data[3]);
-                verts[7] = new Vector3(-unkFloats[1].Data[3], unkFloats[2].Data[3], -unkFloats[0].Data[3]);
-
-                for (int i = 0; i != verts.Length; i++)
-                    verts[i].WriteToFile(writer);
-
-                writer.Write(Name.String);
-                Matrix.Position.WriteToFile(writer);
-                Matrix.Rotation.WriteToFile(writer);
-            }
-            catch(Exception ex)
-            {
-                Debug.WriteLine(string.Format("ERROR WRITING ARA: {0}, {1}", Name.String, ex.Message));
-
-                for (int i = 0; i != verts.Length; i++)
-                    verts[i].WriteToFile(writer);
-
-                writer.Write(Name.String);
-                Matrix.Position.WriteToFile(writer);
-                Matrix.Rotation.WriteToFile(writer);
-            }
         }
 
         public override string ToString()

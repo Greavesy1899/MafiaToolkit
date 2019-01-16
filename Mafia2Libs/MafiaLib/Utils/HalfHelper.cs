@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using SharpDX;
 
 namespace System
 {
@@ -156,14 +157,14 @@ namespace System
             return shiftTable;
         }
 
-        public static float HalfToSingle(Half half)
+        public static unsafe float HalfToSingle(Half half)
         {
             uint result = mantissaTable[offsetTable[half.value >> 10] + (half.value & 0x3ff)] + exponentTable[half.value >> 10];
-            return 0.0f;//*((float*)&result);
+            return *((float*)&result);
         }
-        public static Half SingleToHalf(float single)
+        public static unsafe Half SingleToHalf(float single)
         {
-            uint value = 0;//*((uint*)&single);
+            uint value = *((uint*)&single);
 
             ushort result = (ushort)(baseTable[(value >> 23) & 0x1ff] + ((value & 0x007fffff) >> shiftTable[value >> 23]));
             return Half.ToHalf(result);

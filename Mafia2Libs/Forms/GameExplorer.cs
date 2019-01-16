@@ -449,8 +449,8 @@ namespace Mafia2Tool
                     OpenPATCH((FileInfo)item.Tag);
                     break;
                 case "FR":
-                    fTool = new FrameResourceTool((FileInfo)item.Tag);
-                    //d3dForm = new D3DForm((FileInfo)item.Tag);
+                    //fTool = new FrameResourceTool((FileInfo)item.Tag);
+                    d3dForm = new D3DForm((FileInfo)item.Tag);
                     return;
                 case "COL":
                     cTool = new CollisionEditor((FileInfo)item.Tag);

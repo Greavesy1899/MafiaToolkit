@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using SharpDX;
-using Half = System.Half;
 
 namespace Mafia2
 {
@@ -58,7 +57,7 @@ namespace Mafia2
                 for (int v = 0; v != lods[i].Vertices.Length; v++)
                 {
                     Vertex vertex = new Vertex();
-                    vertex.UVs = new UVVector2[lods[i].NumUVChannels];
+                    vertex.UVs = new Half2[lods[i].NumUVChannels];
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
@@ -146,20 +145,15 @@ namespace Mafia2
                             modelPart.Material = (mat == null) ? "null" : mat.SPS[0].File;
                         }
 
-                        int num = materials[x].StartIndex + materials[x].NumFaces * 3;
-                        List<Short3> intList = new List<Short3>(materials[x].NumFaces);
+                        modelPart.Indices = new ushort[materials[x].StartIndex + materials[x].NumFaces * 3];
                         int startIndex = materials[x].StartIndex;
-                        while (startIndex < num)
+                        int num = 0;
+                        while (startIndex < modelPart.Indices.Length)
                         {
-                            Short3 indice = new Short3();
-                            indice.S1 = indexBuffer.Data[startIndex + 0];
-                            indice.S2 = indexBuffer.Data[startIndex + 1];
-                            indice.S3 = indexBuffer.Data[startIndex + 2];
-                            intList.Add(indice);
-                            startIndex += 3;
+                            modelPart.Indices[num] = indexBuffer.Data[startIndex];
+                            num++;
+                            startIndex++;
                         }
-
-                        modelPart.Indices = intList.ToArray();
                         lods[i].Parts[x] = modelPart;
                     }
                 }
@@ -174,16 +168,16 @@ namespace Mafia2
                 {
                     Vertex vert = lods[i].Vertices[x];
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
-                        vert.UVs[0].Y = (Half)(1f - vert.UVs[0].Y);
+                        vert.UVs[0].Y = (1f - vert.UVs[0].Y);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
-                        vert.UVs[1].Y = (Half)(1f - vert.UVs[1].Y);
+                        vert.UVs[1].Y = (1f - vert.UVs[1].Y);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
-                        vert.UVs[2].Y = (Half)(1f - vert.UVs[2].Y);
+                        vert.UVs[2].Y = (1f - vert.UVs[2].Y);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
-                        vert.UVs[3].Y = (Half)(1f - vert.UVs[3].Y);
+                        vert.UVs[3].Y = (1f - vert.UVs[3].Y);
                 }
             }
         }
@@ -262,10 +256,11 @@ namespace Mafia2
                     writer.Write(totalFaces);
                     for (int x = 0; x != lod.Parts.Length; x++)
                     {
-                        for (int z = 0; z != lods[i].Parts[x].Indices.Length; z++)
+                        for (int z = 0; z <= lods[i].Parts[x].Indices.Length; z+=2)
                         {
-                            //write triangle, and then material
-                            lods[i].Parts[x].Indices[z].WriteToFile(writer);
+                            writer.Write(lods[i].Parts[x].Indices[z]);
+                            writer.Write(lods[i].Parts[x].Indices[z+1]);
+                            writer.Write(lods[i].Parts[x].Indices[z+2]);
                             writer.Write((ushort)x);
                         }
                     }
@@ -350,40 +345,27 @@ namespace Mafia2
                 for (int x = 0; x != lods[i].Vertices.Length; x++)
                 {
                     Vertex vert = new Vertex();
-                    vert.UVs = new UVVector2[lods[i].NumUVChannels];
+                    vert.UVs = new Half2[lods[i].NumUVChannels];
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
-                        vert.Position.ReadfromFile(reader);
+                        vert.Position = Vector3Extenders.ReadFromFile(reader);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
-                        vert.Normal.ReadfromFile(reader);
+                        vert.Normal = Vector3Extenders.ReadFromFile(reader);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
-                        vert.Tangent.ReadfromFile(reader);
+                        vert.Tangent = Vector3Extenders.ReadFromFile(reader);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
-                    {
-                        vert.UVs[0] = new UVVector2();
-                        vert.UVs[0].ReadFromFile(reader);
-                    }
+                        vert.UVs[0] = Half2Extenders.ReadFromFile(reader);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
-                    {
-                        vert.UVs[1] = new UVVector2();
-                        vert.UVs[1].ReadFromFile(reader);
-                    }
+                        vert.UVs[1] = Half2Extenders.ReadFromFile(reader);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
-                    {
-                        vert.UVs[2] = new UVVector2();
-                        vert.UVs[2].ReadFromFile(reader);
-                    }
+                        vert.UVs[2] = Half2Extenders.ReadFromFile(reader);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
-                    {
-                        vert.UVs[3] = new UVVector2();
-                        vert.UVs[3].ReadFromFile(reader);
-                    }
 
                     lods[i].Vertices[x] = vert;
                 }
@@ -396,16 +378,20 @@ namespace Mafia2
                     Lods[i].Parts[x].Material = reader.ReadString();
                 }
 
-                List<List<Short3>> partTriangles = new List<List<Short3>>(Lods[i].Parts.Length);
+                List<List<ushort>> partTriangles = new List<List<ushort>>(Lods[i].Parts.Length);
                 for (int x = 0; x != partTriangles.Capacity; x++)
-                    partTriangles.Add(new List<Short3>());
+                    partTriangles.Add(new List<ushort>());
 
                 int totalFaces = reader.ReadInt32();
                 for (int x = 0; x != totalFaces; x++)
                 {
-                    Short3 tri = new Short3(reader);
+                    ushort s1 = reader.ReadUInt16();
+                    ushort s2 = reader.ReadUInt16();
+                    ushort s3 = reader.ReadUInt16();
                     short matId = reader.ReadInt16();
-                    partTriangles[matId].Add(tri);
+                    partTriangles[matId].Add(s1);
+                    partTriangles[matId].Add(s2);
+                    partTriangles[matId].Add(s3);
                 }
 
                 for (int x = 0; x != Lods[i].Parts.Length; x++)
@@ -524,9 +510,11 @@ namespace Mafia2
                     writer.Write(totalFaces);
                     for (int x = 0; x != lods[i].Parts.Length; x++)
                     {
-                        for (int z = 0; z != lods[i].Parts[x].Indices.Length; z++)
+                        for (int z = 0; z <= lods[i].Parts[x].Indices.Length; z+=2)
                         {
-                            lods[i].Parts[x].Indices[z].WriteToFile(writer);
+                            writer.Write(lods[i].Parts[x].Indices[z]);
+                            writer.Write(lods[i].Parts[x].Indices[z+1]);
+                            writer.Write(lods[i].Parts[x].Indices[z+2]);
                             writer.Write((short)x);
                         }
                     }
@@ -580,7 +568,7 @@ namespace Mafia2
         {
             string material;
             ulong hash;
-            Short3[] indices;
+            ushort[] indices;
             BoundingBox bounds;
 
             public string Material {
@@ -595,7 +583,7 @@ namespace Mafia2
                 get { return hash; }
             }
 
-            public Short3[] Indices {
+            public ushort[] Indices {
                 get { return indices; }
                 set { indices = value; }
             }
@@ -610,11 +598,7 @@ namespace Mafia2
                 bounds = new BoundingBox();
                 List<Vector3> partVerts = new List<Vector3>();
                 for (int i = 0; i != indices.Length; i++)
-                {
-                    partVerts.Add(verts[indices[i].S1].Position);
-                    partVerts.Add(verts[indices[i].S2].Position);
-                    partVerts.Add(verts[indices[i].S3].Position);
-                }
+                    partVerts.Add(verts[indices[i]].Position);
                 bounds = BoundingBoxExtenders.CalculateBounds(partVerts.ToArray());
             }
         }

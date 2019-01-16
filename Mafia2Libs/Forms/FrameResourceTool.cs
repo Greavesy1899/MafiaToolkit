@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mafia2Tool.EditorControls;
+using SharpDX;
 
 namespace Mafia2Tool
 {

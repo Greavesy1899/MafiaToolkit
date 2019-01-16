@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Mafia2;
+using SharpDX;
 
 namespace ApexSDK
 {
@@ -51,17 +52,17 @@ namespace ApexSDK
 
             vertices = new Vector3[numVerts2];
             for (int i = 0; i != numVerts2; i++)
-                vertices[i] = new Vector3(reader);
+                vertices[i] = Vector3Extenders.ReadFromFile(reader);
 
             numVerts3 = reader.ReadInt32();
             unkVectors1 = new Vector3[numVerts3];
             for (int i = 0; i != numVerts3; i++)
-                unkVectors1[i] = new Vector3(reader);
+                unkVectors1[i] = Vector3Extenders.ReadFromFile(reader);
 
             numVerts4 = reader.ReadInt32();
             unkVectors2 = new Vector3[numVerts4];
             for (int i = 0; i != numVerts4; i++)
-                unkVectors2[i] = new Vector3(reader);
+                unkVectors2[i] = Vector3Extenders.ReadFromFile(reader);
         }
     }
 }

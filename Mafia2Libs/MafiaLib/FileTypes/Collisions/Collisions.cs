@@ -142,8 +142,8 @@ namespace Mafia2
             /// <param name="reader">stream</param>
             public void ReadFromFile(BinaryReader reader)
             {
-                position = new Vector3(reader);
-                rotation = new Vector3(reader);
+                position = Vector3Extenders.ReadFromFile(reader);
+                rotation = Vector3Extenders.ReadFromFile(reader);
                 //rotation.ConvertToDegrees();
                 hash = reader.ReadUInt64();
                 unk4 = reader.ReadInt32();
@@ -400,7 +400,7 @@ namespace Mafia2
 
                 for (int i = 0; i != points.Length; i++)
                 {
-                    points[i] = new Vector3(reader);
+                    points[i] = Vector3Extenders.ReadFromFile(reader);
                 }
 
                 for (int i = 0; i != triangles.Length; i++)
@@ -629,30 +629,31 @@ namespace Mafia2
             }
             public void BuildBasicCollision(Lod model)
             {
-                nxs = Convert.ToString(22239310);
-                mesh = Convert.ToString(1213416781);
+                throw new NotImplementedException("NEEDS TO BE FIXED AFTER RESTRUCTURE!!!");
+                //nxs = Convert.ToString(22239310);
+                //mesh = Convert.ToString(1213416781);
 
-                num1 = 1;
-                num2 = 3;
-                unkSmall = 0.001f;
-                num3 = 255;
-                num4 = 0;
+                //num1 = 1;
+                //num2 = 3;
+                //unkSmall = 0.001f;
+                //num3 = 255;
+                //num4 = 0;
 
-                List<Int3> ltriangles = new List<Int3>();
-                List<CollisionMaterials> lmatTypes = new List<CollisionMaterials>();
+                //List<Int3> ltriangles = new List<Int3>();
+                //List<CollisionMaterials> lmatTypes = new List<CollisionMaterials>();
 
-                for(int i = 0; i != model.Parts.Length; i++)
-                {
-                    model.Parts[i].Material = ConvertCollisionMats(model.Parts[i].Material).ToString();
-                    for (int x = 0; x != model.Parts[i].Indices.Length; x++)
-                    {
-                        ltriangles.Add(new Int3(model.Parts[i].Indices[x]));
-                        lmatTypes.Add((CollisionMaterials)Enum.Parse(typeof(CollisionMaterials), model.Parts[i].Material));
-                    }
-                }
+                //for(int i = 0; i != model.Parts.Length; i++)
+                //{
+                //    model.Parts[i].Material = ConvertCollisionMats(model.Parts[i].Material).ToString();
+                //    for (int x = 0; x != model.Parts[i].Indices.Length; x++)
+                //    {
+                //        ltriangles.Add(new Int3(model.Parts[i].Indices[x]));
+                //        lmatTypes.Add((CollisionMaterials)Enum.Parse(typeof(CollisionMaterials), model.Parts[i].Material));
+                //    }
+                //}
 
-                nPoints = model.Vertices.Length;
-                nTriangles = ltriangles.Count;
+                //nPoints = model.Vertices.Length;
+                //nTriangles = ltriangles.Count;
 
                 if (num2 == 3)
                 {
@@ -672,8 +673,8 @@ namespace Mafia2
                 for (int i = 0; i != points.Length; i++)
                     points[i] = model.Vertices[i].Position;
 
-                triangles = ltriangles.ToArray();
-                unkShorts = lmatTypes.ToArray();
+               // triangles = ltriangles.ToArray();
+                //unkShorts = lmatTypes.ToArray();
 
                 unk0 = 1;
                 unk1 = 1;

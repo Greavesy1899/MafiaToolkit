@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using SharpDX;
 
 namespace Mafia2
 {
@@ -152,11 +153,11 @@ namespace Mafia2
             public void ReadFromFile(BinaryReader reader)
             {
                 lodCount = reader.ReadInt32();
-                position = new Vector3(reader);
+                position = Vector3Extenders.ReadFromFile(reader);
 
-                Vector3 vec1 = new Vector3(reader);
-                Vector3 vec2 = new Vector3(reader);
-                Vector3 vec3 = new Vector3(reader);
+                Vector3 vec1 = Vector3Extenders.ReadFromFile(reader);
+                Vector3 vec2 = Vector3Extenders.ReadFromFile(reader);
+                Vector3 vec3 = Vector3Extenders.ReadFromFile(reader);
                 rotation = new Matrix33(vec1, vec2, vec3, false);
 
                 lodNames = new string[lodCount];

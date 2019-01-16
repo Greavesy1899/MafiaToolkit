@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using SharpDX;
 
 namespace Mafia2
 {
@@ -156,14 +157,14 @@ namespace Mafia2
                         public void ReadFromFile(BinaryReader reader)
                         {
                             unk0 = reader.ReadByte();
-                            position = new Vector3(reader);
-                            rotation = new Vector3(reader);
+                            position = Vector3Extenders.ReadFromFile(reader);
+                            rotation = Vector3Extenders.ReadFromFile(reader);
 
                             unks1 = new short[6];
                             for (int i = 0; i != 6; i++)
                                 unks1[i] = reader.ReadInt16();
 
-                            unkVector = new Vector3(reader);
+                            unkVector = Vector3Extenders.ReadFromFile(reader);
                             unkHalfs = reader.ReadBytes(6);
 
                             short unkCount = reader.ReadInt16();
@@ -186,8 +187,8 @@ namespace Mafia2
                         public void ReadFromFile(BinaryReader reader)
                         {
                             unk0 = reader.ReadInt16();
-                            position = new Vector3(reader);
-                            rotation = new Vector3(reader);
+                            position = Vector3Extenders.ReadFromFile(reader);
+                            rotation = Vector3Extenders.ReadFromFile(reader);
                             data = reader.ReadBytes(16);
                         }
                     }

@@ -1,6 +1,7 @@
 ﻿using Mafia2;
 using System;
 using System.IO;
+using SharpDX;
 
 namespace ApexSDK
 {
@@ -26,7 +27,7 @@ namespace ApexSDK
 
         public override void ReadFromFile(BinaryReader reader)
         {
-            scaleFactor = new Vector3(reader);
+            scaleFactor = Vector3Extenders.ReadFromFile(reader);
         }
 
         public override void WriteToFile(BinaryWriter writer)

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Mafia2;
-using ModelViewer.Programming.SystemClasses;
+using SharpDX;
+using System.ComponentModel;
 
 namespace Mafia2Tool
 {
@@ -25,6 +25,9 @@ namespace Mafia2Tool
             Language.ReadLanguageXML();
 
             MaterialData.Load();
+
+            TypeDescriptor.AddAttributes(typeof(BoundingBox), new TypeConverterAttribute(typeof(ExpandableObjectConverter)));
+            TypeDescriptor.AddAttributes(typeof(BoundingSphere), new TypeConverterAttribute(typeof(ExpandableObjectConverter)));
 
             Application.Run(new GameExplorer());
         }

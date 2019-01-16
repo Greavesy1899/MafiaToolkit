@@ -1,4 +1,4 @@
-﻿using System;
+﻿using SharpDX;
 using System.IO;
 
 namespace Mafia2

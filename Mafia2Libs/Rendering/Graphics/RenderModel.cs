@@ -80,13 +80,13 @@ namespace ModelViewer.Programming.GraphicClasses
                 ShaderClass.Vertex newVertex = new ShaderClass.Vertex();
                 Vertex oldVertex = structure.Lods[0].Vertices[i];
 
-                newVertex.position = new SharpDX.Vector3(oldVertex.Position.X, oldVertex.Position.Y, oldVertex.Position.Z);
-                newVertex.normal = new SharpDX.Vector3(oldVertex.Normal.X, oldVertex.Normal.Y, oldVertex.Normal.Z);
+                newVertex.position = oldVertex.Position;
+                newVertex.normal = oldVertex.Normal;
 
                 if (oldVertex.UVs[0] == null)
-                    newVertex.texture = new SharpDX.Vector2(0.0f, 1.0f);
+                    newVertex.texture = new Vector2(0.0f, 1.0f);
                 else
-                    newVertex.texture = new SharpDX.Vector2(oldVertex.UVs[0].X, oldVertex.UVs[0].Y);
+                    newVertex.texture = oldVertex.UVs[0];
 
                 Vertices[i] = newVertex;
             }
@@ -95,15 +95,7 @@ namespace ModelViewer.Programming.GraphicClasses
             {
                 ModelPart part = new ModelPart();
                 part.TextureName = structure.Lods[0].Parts[i].Material;
-                List<ushort> inds = new List<ushort>();
-
-                for (int x = 0; x != structure.Lods[0].Parts[i].Indices.Length; x++)
-                {
-                    inds.Add(structure.Lods[0].Parts[i].Indices[x].S1);
-                    inds.Add(structure.Lods[0].Parts[i].Indices[x].S2);
-                    inds.Add(structure.Lods[0].Parts[i].Indices[x].S3);
-                }
-                part.Indices = inds.ToArray();
+                part.Indices = structure.Lods[0].Parts[i].Indices;
                 ModelParts[i] = part;
             }
 

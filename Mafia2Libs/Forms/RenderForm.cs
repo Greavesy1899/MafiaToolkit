@@ -210,12 +210,8 @@ namespace Mafia2Tool
         private void EntryApplyChanges_OnClick(object sender, EventArgs e)
         {
             FrameObjectBase fObject = (SceneData.FrameResource.FrameObjects.ElementAt(listBox1.SelectedIndex).Value as FrameObjectBase);
-            fObject.Matrix.Position.X = float.Parse(PositionXBox.Text);
-            fObject.Matrix.Position.Y = float.Parse(PositionYBox.Text);
-            fObject.Matrix.Position.Z = float.Parse(PositionZBox.Text);
-            fObject.Matrix.Rotation.EulerRotation.X = float.Parse(RotationXBox.Text);
-            fObject.Matrix.Rotation.EulerRotation.Y = float.Parse(RotationYBox.Text);
-            fObject.Matrix.Rotation.EulerRotation.Z = float.Parse(RotationZBox.Text);
+            fObject.Matrix.Position = new Vector3(float.Parse(PositionXBox.Text), float.Parse(PositionYBox.Text), float.Parse(PositionZBox.Text));
+            fObject.Matrix.Rotation.EulerRotation = new Vector3(float.Parse(RotationXBox.Text), float.Parse(RotationYBox.Text), float.Parse(RotationZBox.Text));
             fObject.Matrix.Rotation.UpdateMatrixFromEuler();
             Graphics.Models[fObject.RefID].DoRender = HideInViewerCheckBox.Checked;
             Graphics.Models[fObject.RefID].SetTransform(fObject.Matrix.Position.X, fObject.Matrix.Position.Y, fObject.Matrix.Position.Z, fObject.Matrix.Rotation);

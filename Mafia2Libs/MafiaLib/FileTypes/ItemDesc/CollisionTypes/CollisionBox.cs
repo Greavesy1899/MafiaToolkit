@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using SharpDX;
 
 namespace Mafia2
 {
@@ -13,7 +14,7 @@ namespace Mafia2
 
         public void ReadFromFile(BinaryReader reader)
         {
-            vector = new Vector3(reader);
+            vector = Vector3Extenders.ReadFromFile(reader);
         }
 
         public void WriteToFile(BinaryWriter writer)

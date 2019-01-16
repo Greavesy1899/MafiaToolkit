@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using SharpDX;
 
 namespace Mafia2
 {
@@ -166,13 +167,13 @@ namespace Mafia2
             for (int i = 0; i < 4; i++)
                 names[i] = new Hash(reader);
 
-            unkVector1 = new Vector3(reader);
-            unkVector2 = new Vector3(reader);
+            unkVector1 = Vector3Extenders.ReadFromFile(reader);
+            unkVector2 = Vector3Extenders.ReadFromFile(reader);
             unk_byte3 = reader.ReadByte();
-            unkVector3 = new Vector3(reader);
-            unkVector4 = new Vector3(reader);
-            unkVector5 = new Vector3(reader);
-            unkVector6 = new Vector3(reader);
+            unkVector3 = Vector3Extenders.ReadFromFile(reader);
+            unkVector4 = Vector3Extenders.ReadFromFile(reader);
+            unkVector5 = Vector3Extenders.ReadFromFile(reader);
+            unkVector6 = Vector3Extenders.ReadFromFile(reader);
         }
         public override void WriteToFile(BinaryWriter writer)
         {
