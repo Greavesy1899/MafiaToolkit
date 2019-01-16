@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using Mafia2;
+using ModelViewer.Programming.SystemClasses;
 
 namespace Mafia2Tool
 {
@@ -14,10 +15,10 @@ namespace Mafia2Tool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Log.DeleteOldLog();
-            Log.CreateFile();
+            //Log.DeleteOldLog();
+            //Log.CreateFile();
 
-            //do vital inits;
+            ////do vital inits;
             CheckINIExists();
             ToolkitSettings.ReadINI();
 

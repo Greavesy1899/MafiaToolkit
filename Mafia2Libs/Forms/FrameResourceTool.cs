@@ -478,8 +478,9 @@ namespace Mafia2Tool
                 for (int i = 0; i != model.ModelStructure.Lods.Length; i++)
                     vertData.Add(model.ModelStructure.Lods[i].Vertices);
 
-                model.FrameMesh.Boundings = new BoundingBox();
-                model.FrameMesh.Boundings.CalculateBounds(vertData);
+                model.FrameMesh.Boundings = new SharpDX.BoundingBox();
+
+                model.FrameMesh.Boundings = BoundingBoxExtenders.CalculateBounds(vertData);
                 model.FrameMaterial.Bounds = model.FrameMesh.Boundings;
                 model.CalculateDecompression();
                 model.BuildIndexBuffer();
@@ -536,7 +537,6 @@ namespace Mafia2Tool
                 }
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
-                MessageBox.Show("Your saved file has been stored in the same folder as the executable.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ReloadClick(null, null);
             }
         }
@@ -710,7 +710,7 @@ namespace Mafia2Tool
             }
 
             FrameResourceModelOptions options = new FrameResourceModelOptions();
-            options.Show();
+            options.ShowDialog();
 
             if (options.type == -1)
                 return null;
@@ -725,14 +725,6 @@ namespace Mafia2Tool
                     model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.Normals;
                     model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.Tangent;
                 }
-                if (data[1])
-                    model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.TexCoords0;
-                if (data[2])
-                    model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.TexCoords1;
-                if (data[3])
-                    model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.TexCoords2;
-                if (data[4])
-                    model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.TexCoords7;
 
                 if(data[5])
                     model.ModelStructure.FlipUVs();

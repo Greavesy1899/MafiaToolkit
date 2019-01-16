@@ -401,6 +401,9 @@ namespace Mafia2Tool
             CityAreaEditor caEditor;
             CityShopEditor csEditor;
 
+            //DEBUG
+            D3DForm d3dForm;
+
             //special case:
             if (item.SubItems[0].Text.Contains("SDSContent") && item.SubItems[1].Text == "XML")
             {
@@ -447,6 +450,7 @@ namespace Mafia2Tool
                     break;
                 case "FR":
                     fTool = new FrameResourceTool((FileInfo)item.Tag);
+                    //d3dForm = new D3DForm((FileInfo)item.Tag);
                     return;
                 case "COL":
                     cTool = new CollisionEditor((FileInfo)item.Tag);

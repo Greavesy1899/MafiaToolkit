@@ -83,7 +83,6 @@ namespace Mafia2
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x80))
                     {
-                        Console.WriteLine("Skip vertex with flag_0x80");
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
@@ -112,12 +111,10 @@ namespace Mafia2
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x20000))
                     {
-                        Console.WriteLine("Skip vertex with flag_0x20000");
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x40000))
                     {
-                        Console.WriteLine("Skip vertex with flag_0x40000");
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
@@ -178,13 +175,13 @@ namespace Mafia2
                         vert.UVs[0].Y = (Half)(1f - vert.UVs[0].Y);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
-                        vert.UVs[1].Y = (Half)(1f - vert.UVs[0].Y);
+                        vert.UVs[1].Y = (Half)(1f - vert.UVs[1].Y);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
-                        vert.UVs[2].Y = (Half)(1f - vert.UVs[0].Y);
+                        vert.UVs[2].Y = (Half)(1f - vert.UVs[2].Y);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
-                        vert.UVs[3].Y = (Half)(1f - vert.UVs[0].Y);
+                        vert.UVs[3].Y = (Half)(1f - vert.UVs[3].Y);
                 }
             }
         }

@@ -43,6 +43,8 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -88,8 +90,29 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>libs\Gibbed.IO.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.1.0.145, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.1.1.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.D3DCompiler.4.2.0\lib\net45\SharpDX.D3DCompiler.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Desktop, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Desktop.4.2.0\lib\net45\SharpDX.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct3D11.4.2.0\lib\net45\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX.DirectInput, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.DirectInput.4.1.0\lib\net45\SharpDX.DirectInput.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DXGI.4.2.0\lib\net45\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Mathematics.4.2.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -121,6 +144,129 @@
     <Compile Include="AdditionalControls\NewObjectWindow.Designer.cs">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\RenderForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RenderForm.Designer.cs">
+      <DependentUpon>RenderForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MafiaLib\ApexSDK\ApexRenderMesh.cs" />
+    <Compile Include="MafiaLib\ApexSDK\EmitterGeomExplicit.cs" />
+    <Compile Include="MafiaLib\ApexSDK\EmitterGeomSphere.cs" />
+    <Compile Include="MafiaLib\ApexSDK\Enums.cs" />
+    <Compile Include="MafiaLib\ApexSDK\File.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\ColorVsDensityModifier.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\ColorVsLifeModifier.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\Enums.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\File.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\IModifier.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\Modifier.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\RandomRotationModifier.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\RandomScaleModifier.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\RandomSubtextureModifier.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\RotationModifier.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\ScaleVsLifeModifier.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\SimpleScaleModifier.cs" />
+    <Compile Include="MafiaLib\ApexSDK\IOFX\SubtextureVsLifeModifier.cs" />
+    <Compile Include="MafiaLib\FileTypes\Actors\ActorParse.cs" />
+    <Compile Include="MafiaLib\FileTypes\Actors\ActorTypes.cs" />
+    <Compile Include="MafiaLib\FileTypes\Animations\Animation2.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\Collisions.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\Cutscene.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\FXAnimSet.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\Speech.cs" />
+    <Compile Include="MafiaLib\FileTypes\EntityDataStorage\EntityDataStorage.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameNameTable\FrameNameTable.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameEntry.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameHeader.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResource.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectArea.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectBase.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectCamera.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectCollision.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectComponent_U005.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectDeflector.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectDummy.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectFrame.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectJoint.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectLight.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectModel.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectSector.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectSingleMesh.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectTarget.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameBlendInfo.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameGeometry.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameHeaderScene.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameLOD.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameMaterial.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameSkeleton.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameSkeletonHierachy.cs" />
+    <Compile Include="MafiaLib\FileTypes\IndexBufferPool\IndexBufferPool.cs" />
+    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionBase.cs" />
+    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionBox.cs" />
+    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionCapsule.cs" />
+    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionSphere.cs" />
+    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionUnk7.cs" />
+    <Compile Include="MafiaLib\FileTypes\ItemDesc\ItemDescParse.cs" />
+    <Compile Include="MafiaLib\FileTypes\MiscTypes\AnimatedTexture.cs" />
+    <Compile Include="MafiaLib\FileTypes\MiscTypes\CityAreas.cs" />
+    <Compile Include="MafiaLib\FileTypes\MiscTypes\CityShops.cs" />
+    <Compile Include="MafiaLib\FileTypes\MiscTypes\FrameProps.cs" />
+    <Compile Include="MafiaLib\FileTypes\MiscTypes\RPMG.cs" />
+    <Compile Include="MafiaLib\FileTypes\MiscTypes\TAPIndices.cs" />
+    <Compile Include="MafiaLib\FileTypes\MTL\Material.cs" />
+    <Compile Include="MafiaLib\FileTypes\MTL\MaterialLibrary.cs" />
+    <Compile Include="MafiaLib\FileTypes\MTL\MaterialManager.cs" />
+    <Compile Include="MafiaLib\FileTypes\NAV_AI\NAV_AI.cs" />
+    <Compile Include="MafiaLib\FileTypes\PREFAB\Prefab.cs" />
+    <Compile Include="MafiaLib\FileTypes\SoundSectors\SoundSector.cs" />
+    <Compile Include="MafiaLib\FileTypes\VertexBufferPool\VertexBufferPool.cs" />
+    <Compile Include="MafiaLib\FormExtenders\UITypeEditors.cs" />
+    <Compile Include="MafiaLib\GeometryExporters\CustomEDC.cs" />
+    <Compile Include="MafiaLib\GeometryExporters\CustomEDD.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.FileFormats\BlockReaderStream.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.FileFormats\BlockWriterStream.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.FileFormats\FNV32.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.FileFormats\FNV64.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.FileFormats\StreamHelpers.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.ResourceFormats\IResourceType.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.ResourceFormats\MemFileResource.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.ResourceFormats\ScriptData.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.ResourceFormats\ScriptResource.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.ResourceFormats\SoundResource.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.ResourceFormats\TableData.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.ResourceFormats\TableResource.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.ResourceFormats\TextureResource.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.ResourceFormats\XmlResource.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.ResourceFormats\XmlResource0.cs" />
+    <Compile Include="MafiaLib\Gibbed.Illusion.ResourceFormats\XmlResource1.cs" />
+    <Compile Include="MafiaLib\Gibbed.Mafia2.FileFormats\ArchiveEncryption.cs" />
+    <Compile Include="MafiaLib\Gibbed.Mafia2.FileFormats\ArchiveFile.cs" />
+    <Compile Include="MafiaLib\Gibbed.Mafia2.FileFormats\ArchiveSerializeOptions.cs" />
+    <Compile Include="MafiaLib\Gibbed.Mafia2.FileFormats\Archive\FileHeader.cs" />
+    <Compile Include="MafiaLib\Gibbed.Mafia2.FileFormats\Archive\Platform.cs" />
+    <Compile Include="MafiaLib\Gibbed.Mafia2.FileFormats\Archive\ResourceEntry.cs" />
+    <Compile Include="MafiaLib\Gibbed.Mafia2.FileFormats\Archive\ResourceHeader.cs" />
+    <Compile Include="MafiaLib\Gibbed.Mafia2.FileFormats\Archive\ResourceType.cs" />
+    <Compile Include="MafiaLib\Gibbed.Mafia2.FileFormats\PatchFile.cs" />
+    <Compile Include="MafiaLib\Gibbed.Mafia2.FileFormats\TEA.cs" />
+    <Compile Include="MafiaLib\MafiaModel\M2TStructure.cs" />
+    <Compile Include="MafiaLib\MafiaModel\ModelDefinition.cs" />
+    <Compile Include="MafiaLib\Utils\Bounds.cs" />
+    <Compile Include="MafiaLib\Utils\Enums.cs" />
+    <Compile Include="MafiaLib\Utils\Functions.cs" />
+    <Compile Include="MafiaLib\Utils\Half.cs" />
+    <Compile Include="MafiaLib\Utils\HalfHelper.cs" />
+    <Compile Include="MafiaLib\Utils\Hash.cs" />
+    <Compile Include="MafiaLib\Utils\Logger.cs" />
+    <Compile Include="MafiaLib\Utils\Matrix33.cs" />
+    <Compile Include="MafiaLib\Utils\ParentStruct.cs" />
+    <Compile Include="MafiaLib\Utils\TransformMatrix.cs" />
+    <Compile Include="MafiaLib\Utils\Vectors.cs" />
+    <Compile Include="MafiaLib\Utils\Vertex.cs" />
+    <Compile Include="Rendering\Graphics\Camera.cs" />
+    <Compile Include="Rendering\Graphics\DDSTexLoader.cs" />
+    <Compile Include="Rendering\Graphics\DirectX11Class.cs" />
     <Compile Include="Forms\CityShopEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -201,6 +347,11 @@
     <Compile Include="Forms\TableEditor.Designer.cs">
       <DependentUpon>TableEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Graphics\GraphicsClass.cs" />
+    <Compile Include="Rendering\Graphics\LightClass.cs" />
+    <Compile Include="Rendering\Graphics\RenderBoundingBox.cs" />
+    <Compile Include="Rendering\Graphics\ShaderClass.cs" />
+    <Compile Include="Rendering\Graphics\RenderModel.cs" />
     <Compile Include="OptionControls\ModelOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -213,6 +364,11 @@
     <Compile Include="OptionControls\MTLOptions.Designer.cs">
       <DependentUpon>MTLOptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Graphics\TextureClass.cs" />
+    <Compile Include="Rendering\Input\InputClass.cs" />
+    <Compile Include="Rendering\System\SystemClass.cs" />
+    <Compile Include="Rendering\System\SystemConfigClass.cs" />
+    <Compile Include="Rendering\System\TimerClass.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\IniFile.cs" />
     <Compile Include="Forms\MaterialTool.cs">
@@ -285,14 +441,15 @@
     <Content Include="Localisations\ru_RU.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Shaders\LightPS.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\LightVS.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="packages.config" />
     <None Include="Resources\Splash.png" />
     <None Include="Resources\Toolkit.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Mafia2\Mafia2Lib.csproj">
-      <Project>{f8d4e99d-10e6-457e-8b87-80d675686f90}</Project>
-      <Name>Mafia2Lib</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
@@ -357,6 +514,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TableEditor.resx">
       <DependentUpon>TableEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RenderForm.resx">
+      <DependentUpon>RenderForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OptionControls\GeneralOptions.resx">
       <DependentUpon>GeneralOptions.cs</DependentUpon>

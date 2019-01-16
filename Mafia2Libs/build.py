@@ -33,6 +33,13 @@ remove_dll("ICSharpCode.SharpZipLib.dll")
 remove_dll("Mafia2Libs.dll")
 remove_dll("Gibbed.IO.dll");
 remove_dll("Octokit.dll");
+remove_dll("SharpDX.D3DCompiler.dll");
+remove_dll("SharpDX.Desktop.dll");
+remove_dll("SharpDX.Direct3D11.dll");
+remove_dll("SharpDX.dll");
+remove_dll("SharpDX.DirectInput.dll");
+remove_dll("SharpDX.Mathematics.dll");
+remove_dll("SharpDX.DXGI.dll");
 
 #remove files
 remove_file("ToolkitUpdater.pdb")
@@ -41,3 +48,17 @@ remove_file("Octokit.xml")
 remove_file("Mafia2Libs.pdb")
 remove_file("Mafia2Toolkit.pdb")
 remove_file("Gibbed.IO.pdb");
+remove_file("SharpDX.D3DCompiler.pdb");
+remove_file("SharpDX.D3DCompiler.xml");
+remove_file("SharpDX.Desktop.pdb");
+remove_file("SharpDX.Desktop.xml");
+remove_file("SharpDX.Direct3D11.pdb");
+remove_file("SharpDX.Direct3D11.xml");
+remove_file("SharpDX.pdb");
+remove_file("SharpDX.xml");
+remove_file("SharpDX.DirectInput.pdb");
+remove_file("SharpDX.DirectInput.xml");
+remove_file("SharpDX.Mathematics.pdb");
+remove_file("SharpDX.Mathematics.xml");
+remove_file("SharpDX.DXGI.pdb");
+remove_file("SharpDX.DXGI.xml");
