@@ -252,8 +252,9 @@ namespace Mafia2
                         while(offset != lod.Parts[x].StartIndex+(lod.Parts[x].NumFaces*3))
                         {
                             writer.Write(lods[i].Indices[offset]);
-                            writer.Write(lods[i].Indices[offset++]);
-                            writer.Write(lods[i].Indices[offset++]);
+                            writer.Write(lods[i].Indices[offset+1]);
+                            writer.Write(lods[i].Indices[offset+2]);
+                            offset += 3;
                             writer.Write((ushort)x);
                         }
                     }
@@ -359,8 +360,9 @@ namespace Mafia2
                         vert.UVs[2] = Half2Extenders.ReadFromFile(reader);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                        vert.UVs[3] = Half2Extenders.ReadFromFile(reader);
 
-                        lods[i].Vertices[x] = vert;
+                    lods[i].Vertices[x] = vert;
                 }
 
                 //write mesh count and texture names.
@@ -374,17 +376,21 @@ namespace Mafia2
                 int totalFaces = reader.ReadInt32();
                 Lods[i].Indices = new ushort[totalFaces*3];
                 short curPart = 0;
-                for (int x = 0; x != Lods[i].Indices.Length; x+=2)
+                uint startIndex = 0;
+                for (int x = 0; x != Lods[i].Indices.Length; x+=3)
                 {
                     Lods[i].Indices[x] = reader.ReadUInt16();
                     Lods[i].Indices[x+1] = reader.ReadUInt16();
                     Lods[i].Indices[x+2] = reader.ReadUInt16();
                     short matId = reader.ReadInt16();
 
-                    if(curPart != matId)
+                    if(curPart != matId || x+3 == Lods[i].Indices.Length)
                     {
-                        Lods[i].Parts[curPart].StartIndex = (uint)x;
-                        Lods[i].Parts[curPart].NumFaces = (uint)Math.Abs(x - Lods[i].Parts[curPart].StartIndex) / 3;
+                        Lods[i].Parts[curPart].StartIndex = startIndex;
+                        uint val = (uint)Math.Abs(x+3 - Lods[i].Parts[curPart].StartIndex) / 3;
+                        Lods[i].Parts[curPart].NumFaces = val;
+
+                        startIndex = (uint)x;
                         curPart = matId;
                     }
                 }
@@ -493,17 +499,17 @@ namespace Mafia2
 
                     //write mesh count and texture names.
                     writer.Write(0);
-
                     writer.Write(lods[i].Indices.Length);
                     for (int x = 0; x != lods[i].Parts.Length; x++)
                     {
-                        uint idx = lods[i].Parts[x].StartIndex;
-                        for (int z = 0; z <= lods[i].Indices.Length; z+=2)
+                        uint offset = lods[i].Parts[x].StartIndex;
+                        while (offset != lods[i].Parts[x].StartIndex + (lods[i].Parts[x].NumFaces * 3))
                         {
-                            writer.Write(lods[i].Indices[z]);
-                            writer.Write(lods[i].Indices[z+1]);
-                            writer.Write(lods[i].Indices[z+2]);
-                            writer.Write((short)x);
+                            writer.Write(lods[i].Indices[offset]);
+                            writer.Write(lods[i].Indices[offset + 1]);
+                            writer.Write(lods[i].Indices[offset + 2]);
+                            offset += 3;
+                            writer.Write((ushort)x);
                         }
                     }
                 }

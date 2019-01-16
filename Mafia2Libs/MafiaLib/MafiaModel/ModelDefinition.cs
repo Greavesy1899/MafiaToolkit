@@ -294,7 +294,7 @@ namespace Mafia2
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].LeftIndex = -1;
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].RightIndex = -1;
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].SecondIndex =
-                    Convert.ToInt16(model.Lods[0].Parts[i].NumFaces*3 - 1);
+                    Convert.ToInt16(model.Lods[0].Parts[i].NumFaces - 1);
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].BaseIndex = baseIndex;
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].FirstBurst = i;
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].NumBurst = 1;
