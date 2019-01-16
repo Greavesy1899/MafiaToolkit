@@ -234,13 +234,13 @@ namespace ModelViewer.Programming.GraphicClasses
 
             return true;
         }
-        public void Render(DeviceContext deviceContext, int indexCount)
+        public void Render(DeviceContext deviceContext, int indexCount, int startIndex)
         {
             deviceContext.InputAssembler.InputLayout = Layout;
             deviceContext.VertexShader.Set(VertexShader);
             deviceContext.PixelShader.Set(PixelShader);
             deviceContext.PixelShader.SetSampler(0, SamplerState);
-            deviceContext.DrawIndexed(indexCount, 0, 0);
+            deviceContext.DrawIndexed(indexCount, startIndex, 0);
         }
     }
 }

@@ -2,10 +2,7 @@
 using ModelViewer.Programming.InputClasses;
 using System;
 using System.Windows.Forms;
-using Mafia2;
-using System.IO;
 using SharpDX;
-using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace ModelViewer.Programming.GraphicClasses
@@ -39,27 +36,6 @@ namespace ModelViewer.Programming.GraphicClasses
             Camera = new Camera();
             Camera.Position = new SharpDX.Vector3(0, 0, 15);
 
-            //CustomEDD frame = new CustomEDD();
-            //using (BinaryReader reader = new BinaryReader(File.Open("F:/MafiaII Exported Models/frame.edd", FileMode.Open)))
-            //    frame.ReadFromFile(reader);
-
-            //int max = frame.EntryCount;
-            //Model = new ModelClass[max];
-            //isVisible = new bool[max];
-
-            //for (int i = 0; i != max; i++)
-            //{
-            //    Model[i] = new ModelClass();
-            //    Model[i].SetTransform(frame.Entries[i].Position.X, frame.Entries[i].Position.Y, frame.Entries[i].Position.Z, frame.Entries[i].Rotation);
-            //    Model[i].DoRender = (frame.Entries[i].LODNames[0] == "proxy_11_Italy") ? false : true;
-
-            //    if (!Model[i].Init(D3D.Device, "F:/MafiaII Exported Models/"+frame.Entries[i].LODNames[0]+".m2t"))
-            //    {
-            //        MessageBox.Show("Unable to init model. Error from GraphicsClass.");
-            //        return false;
-            //    }
-            //}
-
             foreach (KeyValuePair<int, RenderModel> model in Models)
                 model.Value.Init(D3D.Device);
 
@@ -70,7 +46,7 @@ namespace ModelViewer.Programming.GraphicClasses
                 return false;
             }
             Light = new LightClass();
-            Light.SetAmbientColor(0.15f, 0.15f, 0.15f, 1f);
+            Light.SetAmbientColor(0.75f, 0.75f, 0.75f, 1f);
             Light.SetDiffuseColour(1f, 1f, 1f, 1);
             Light.Direction = Camera.Position;
             Light.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -121,8 +97,7 @@ namespace ModelViewer.Programming.GraphicClasses
                     for (int i = 0; i != model.ModelParts.Length; i++)
                     {
                         D3D.DeviceContext.PixelShader.SetShaderResource(0, model.ModelParts[i].Texture);
-                        D3D.DeviceContext.InputAssembler.SetIndexBuffer(model.ModelParts[i].IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
-                        Shader.Render(D3D.DeviceContext, model.ModelParts[i].Indices.Length);
+                        Shader.Render(D3D.DeviceContext, (int)model.ModelParts[i].NumFaces*3, (int)model.ModelParts[i].StartIndex);
                     }
 
                     //D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Wireframe);

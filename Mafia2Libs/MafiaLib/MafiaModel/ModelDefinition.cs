@@ -148,21 +148,12 @@ namespace Mafia2
 
             List<ushort> idata = new List<ushort>();
 
-            //todo; allow more LODS.
-            for (int i = 0; i != model.Lods[0].Parts.Length; i++)
-            {
-                for (int x = 0; x != model.Lods[0].Parts[i].Indices.Length*3; x++)
-                {
-                    idata.Add(model.Lods[0].Parts[i].Indices[x]);
-                }
-            }
-
             if (name != null)
                 IndexBuffers[0] = new IndexBuffer(FNV64.Hash(name));
             else
                 IndexBuffers[0] = new IndexBuffer(frameGeometry.LOD[0].IndexBufferRef.uHash);
 
-            indexBuffers[0].Data = idata.ToArray();
+            indexBuffers[0].Data = model.Lods[0].Indices;
         }
 
         /// <summary>
@@ -244,15 +235,10 @@ namespace Mafia2
         }
 
         /// <summary>
-        /// Update all objects from loaded model.
+        /// Update all objects from loaded model. (FIX THIS)
         /// </summary>
         public void UpdateObjectsFromModel()
         {
-            int totalFaces = 0;
-
-            for (int i = 0; i != model.Lods[0].Parts.Length; i++)
-                totalFaces += model.Lods[0].Parts[i].Indices.Length;
-
             frameGeometry.NumLods = 1;
 
             if (frameGeometry.LOD == null)
@@ -266,7 +252,7 @@ namespace Mafia2
             frameGeometry.LOD[0].BuildNewMaterialSplit();
             frameGeometry.LOD[0].SplitInfo.NumVerts = model.Lods[0].Vertices.Length;
             frameGeometry.LOD[0].NumVertsPr = model.Lods[0].Vertices.Length;
-            frameGeometry.LOD[0].SplitInfo.NumFaces = totalFaces;
+            frameGeometry.LOD[0].SplitInfo.NumFaces = model.Lods[0].Indices.Length/3;
             frameGeometry.LOD[0].VertexDeclaration = model.Lods[0].VertexDeclaration;
 
             //burst split info.
@@ -286,12 +272,12 @@ namespace Mafia2
             for (int i = 0; i != model.Lods[0].Parts.Length; i++)
             {
                 frameMaterial.Materials[0][i] = new MaterialStruct();
-                frameMaterial.Materials[0][i].StartIndex = faceIndex;
-                frameMaterial.Materials[0][i].NumFaces = model.Lods[0].Parts[i].Indices.Length;
+                frameMaterial.Materials[0][i].StartIndex = (int)model.Lods[0].Parts[i].StartIndex;
+                frameMaterial.Materials[0][i].NumFaces = (int)model.Lods[0].Parts[i].NumFaces;
                 frameMaterial.Materials[0][i].Unk3 = 0;
                 frameMaterial.Materials[0][i].MaterialHash = model.Lods[0].Parts[i].Hash;
                 frameMaterial.Materials[0][i].MaterialName = model.Lods[0].Parts[i].Material;
-                faceIndex += model.Lods[0].Parts[i].Indices.Length * 3;
+                faceIndex += (int)model.Lods[0].Parts[i].NumFaces;
 
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].Bounds = new short[6]
                 {
@@ -308,7 +294,7 @@ namespace Mafia2
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].LeftIndex = -1;
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].RightIndex = -1;
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].SecondIndex =
-                    Convert.ToInt16(model.Lods[0].Parts[i].Indices.Length - 1);
+                    Convert.ToInt16(model.Lods[0].Parts[i].NumFaces*3 - 1);
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].BaseIndex = baseIndex;
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].FirstBurst = i;
                 frameGeometry.LOD[0].SplitInfo.MaterialSplits[i].NumBurst = 1;

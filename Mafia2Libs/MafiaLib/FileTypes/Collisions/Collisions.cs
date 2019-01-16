@@ -266,7 +266,7 @@ namespace Mafia2
             int nTriangles;
 
             protected Vector3[] points;
-            protected Int3[] triangles; //or some linking thing
+            protected uint[] indices; //or some linking thing
             protected CollisionMaterials[] unkShorts; //COULD be materialIDs
 
             int num5;
@@ -311,9 +311,9 @@ namespace Mafia2
                 get { return points; }
                 set { points = value; }
             }
-            public Int3[] Triangles {
-                get { return triangles; }
-                set { triangles = value; }
+            public uint[] Indices {
+                get { return indices; }
+                set { indices = value; }
             }
             public CollisionMaterials[] Materials {
                 get { return unkShorts; }
@@ -395,23 +395,17 @@ namespace Mafia2
                 nTriangles = reader.ReadInt32();
 
                 points = new Vector3[nPoints];
-                triangles = new Int3[nTriangles];
+                indices = new uint[nTriangles*3];
                 unkShorts = new CollisionMaterials[nTriangles];
 
                 for (int i = 0; i != points.Length; i++)
-                {
                     points[i] = Vector3Extenders.ReadFromFile(reader);
-                }
 
-                for (int i = 0; i != triangles.Length; i++)
-                {
-                    triangles[i] = new Int3(reader);
-                }
+                for (int i = 0; i != indices.Length; i++)
+                    indices[i] = reader.ReadUInt32();
 
                 for (int i = 0; i != unkShorts.Length; i++)
-                {
                     unkShorts[i] = (CollisionMaterials)reader.ReadInt16();
-                }
 
                 //bool overTri1 = false;
 
@@ -502,8 +496,8 @@ namespace Mafia2
                 for (int i = 0; i != points.Length; i++)
                     points[i].WriteToFile(writer);
 
-                for (int i = 0; i != triangles.Length; i++)
-                    triangles[i].WriteToFile(writer);
+                for (int i = 0; i != indices.Length * 3; i++)
+                    writer.Write(indices[i]);
 
                 for (int i = 0; i != unkShorts.Length; i++)
                     writer.Write((short)unkShorts[i]);
@@ -519,7 +513,7 @@ namespace Mafia2
                     }
                     else
                     {
-                        for(int i = 0; i != triangles.Length; i++)
+                        for(int i = 0; i != indices.Length; i++)
                             writer.Write(UnkBytes[i]);
                     }
 
@@ -576,7 +570,7 @@ namespace Mafia2
                 for (int i = 0; i != points.Length; i++)
                     size += 12;
 
-                for (int i = 0; i != triangles.Length; i++)
+                for (int i = 0; i != indices.Length; i++)
                     size += 12;
 
                 for (int i = 0; i != unkShorts.Length; i++)
@@ -629,31 +623,30 @@ namespace Mafia2
             }
             public void BuildBasicCollision(Lod model)
             {
-                throw new NotImplementedException("NEEDS TO BE FIXED AFTER RESTRUCTURE!!!");
-                //nxs = Convert.ToString(22239310);
-                //mesh = Convert.ToString(1213416781);
+                nxs = Convert.ToString(22239310);
+                mesh = Convert.ToString(1213416781);
 
-                //num1 = 1;
-                //num2 = 3;
-                //unkSmall = 0.001f;
-                //num3 = 255;
-                //num4 = 0;
+                num1 = 1;
+                num2 = 3;
+                unkSmall = 0.001f;
+                num3 = 255;
+                num4 = 0;
 
-                //List<Int3> ltriangles = new List<Int3>();
-                //List<CollisionMaterials> lmatTypes = new List<CollisionMaterials>();
+                List<uint> ltriangles = new List<uint>();
+                List<CollisionMaterials> lmatTypes = new List<CollisionMaterials>();
 
-                //for(int i = 0; i != model.Parts.Length; i++)
-                //{
-                //    model.Parts[i].Material = ConvertCollisionMats(model.Parts[i].Material).ToString();
-                //    for (int x = 0; x != model.Parts[i].Indices.Length; x++)
-                //    {
-                //        ltriangles.Add(new Int3(model.Parts[i].Indices[x]));
-                //        lmatTypes.Add((CollisionMaterials)Enum.Parse(typeof(CollisionMaterials), model.Parts[i].Material));
-                //    }
-                //}
+                for (int i = 0; i != model.Parts.Length; i++)
+                {
+                    model.Parts[i].Material = ConvertCollisionMats(model.Parts[i].Material).ToString();
+                    //for (int x = 0; x != model.Parts[i].Indices.Length; x++)
+                    //{
+                    //    ltriangles.Add(model.Parts[i].Indices[x]);
+                    //    lmatTypes.Add((CollisionMaterials)Enum.Parse(typeof(CollisionMaterials), model.Parts[i].Material));
+                    //}
+                }
 
-                //nPoints = model.Vertices.Length;
-                //nTriangles = ltriangles.Count;
+                nPoints = model.Vertices.Length;
+                nTriangles = ltriangles.Count;
 
                 if (num2 == 3)
                 {
@@ -673,8 +666,8 @@ namespace Mafia2
                 for (int i = 0; i != points.Length; i++)
                     points[i] = model.Vertices[i].Position;
 
-               // triangles = ltriangles.ToArray();
-                //unkShorts = lmatTypes.ToArray();
+                indices = ltriangles.ToArray();
+                unkShorts = lmatTypes.ToArray();
 
                 unk0 = 1;
                 unk1 = 1;

@@ -69,7 +69,11 @@ namespace Mafia2Tool
             if (Graphics == null)
             {
                 Graphics = new GraphicsClass();
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
                 BuildRenderObjects();
+                watch.Stop();
+                Console.WriteLine("It took {0} to build objects", watch.Elapsed);
                 result = Graphics.Init(Config, handle, meshName);
             }
             return result;

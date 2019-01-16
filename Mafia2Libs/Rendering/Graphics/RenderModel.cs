@@ -2,7 +2,6 @@
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using System.Windows.Forms;
-using System.Collections.Generic;
 using Mafia2;
 
 namespace ModelViewer.Programming.GraphicClasses
@@ -11,10 +10,11 @@ namespace ModelViewer.Programming.GraphicClasses
     {
         public struct ModelPart
         {
-            public ushort[] Indices;
             public string TextureName;
             public ShaderResourceView Texture;
             public Buffer IndexBuffer;
+            public uint StartIndex;
+            public uint NumFaces;
         }
 
         private Buffer VertexBuffer { get; set; }
@@ -23,6 +23,7 @@ namespace ModelViewer.Programming.GraphicClasses
         public RenderBoundingBox BoundingBox { get; private set; }
         public ModelPart[] ModelParts { get; set; }
         public Matrix Transform { get; private set; }
+        public ushort[] Indices { get; private set; }
         public bool DoRender { get; set; }
 
         public RenderModel()
@@ -33,11 +34,6 @@ namespace ModelViewer.Programming.GraphicClasses
 
         public bool Init(Device device)
         {
-            //if (!LoadModel(new FileInfo(modelFormatFilename)))
-            //{
-            //    MessageBox.Show("unable to load model " + modelFormatFilename);
-            //    return false;
-            //}
             if (!InitBuffer(device))
             {
                 MessageBox.Show("unable to init buffer");
@@ -91,11 +87,13 @@ namespace ModelViewer.Programming.GraphicClasses
                 Vertices[i] = newVertex;
             }
 
+            Indices = structure.Lods[0].Indices;
             for (int i = 0; i != ModelParts.Length; i++)
             {
                 ModelPart part = new ModelPart();
                 part.TextureName = structure.Lods[0].Parts[i].Material;
-                part.Indices = structure.Lods[0].Parts[i].Indices;
+                part.StartIndex = structure.Lods[0].Parts[i].StartIndex;
+                part.NumFaces = structure.Lods[0].Parts[i].NumFaces;
                 ModelParts[i] = part;
             }
 
@@ -113,9 +111,7 @@ namespace ModelViewer.Programming.GraphicClasses
         private bool InitBuffer(Device device)
         {
             VertexBuffer = Buffer.Create(device, BindFlags.VertexBuffer, Vertices);
-
-            for (int x = 0; x != ModelParts.Length; x++)
-                ModelParts[x].IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, ModelParts[x].Indices);
+            IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, Indices);
 
             BoundingBox.InitBuffer(device);
             return true;
@@ -146,24 +142,21 @@ namespace ModelViewer.Programming.GraphicClasses
         private void ReleaseModel()
         {
             Vertices = null;
-            for (int x = 0; x != ModelParts.Length; x++)
-                ModelParts[x].Indices = null;
+            Indices = null;
             BoundingBox.ReleaseModel();
         }
         private void ShutdownBuffers()
         {
-            for (int x = 0; x != ModelParts.Length; x++)
-            {
-                ModelParts[x].IndexBuffer?.Dispose();
-                ModelParts[x].IndexBuffer = null;
-            }
             BoundingBox.ShutdownBuffers();
             VertexBuffer?.Dispose();
             VertexBuffer = null;
+            IndexBuffer?.Dispose();
+            IndexBuffer = null;
         }
         private void RenderBuffers(DeviceContext deviceContext)
         {
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<ShaderClass.Vertex>(), 0));
+            deviceContext.InputAssembler.SetIndexBuffer(IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
         }
     }

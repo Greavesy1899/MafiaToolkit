@@ -66,54 +66,52 @@ namespace Mafia2Tool
                 node.Name = nxsData.Hash.ToString();
 
 
-                M2TStructure model = new M2TStructure();
-                model.Lods = new Lod[1];
-                model.Lods[0] = new Lod();
+                //M2TStructure model = new M2TStructure();
+                //model.Lods = new Lod[1];
+                //model.Lods[0] = new Lod();
 
-                ;
-                model.Lods[0].Vertices = new Vertex[nxsData.Data.Vertices.Length];
+                //model.Lods[0].Vertices = new Vertex[nxsData.Data.Vertices.Length];
 
-                for (int x = 0; x != model.Lods[0].Vertices.Length; x++)
-                {
-                    model.Lods[0].Vertices[x] = new Vertex();
-                    model.Lods[0].Vertices[x].Position = nxsData.Data.Vertices[x];
-                }
+                //for (int x = 0; x != model.Lods[0].Vertices.Length; x++)
+                //{
+                //    model.Lods[0].Vertices[x] = new Vertex();
+                //    model.Lods[0].Vertices[x].Position = nxsData.Data.Vertices[x];
+                //}
 
-                List<CollisionMaterials> typeList = new List<CollisionMaterials>();
-                List<List<ushort>> values = new List<List<ushort>>();
-                throw new NotImplementedException("Needs to be rearranged for restructure!!!");
+                //List<CollisionMaterials> typeList = new List<CollisionMaterials>();
+                //List<List<uint>> values = new List<List<uint>>();
+
                 //for (int x = 0; x != nxsData.Data.Materials.Length; x++)
                 //{
                 //    CollisionMaterials[] mats = nxsData.Data.Materials;
-                //    Mafia2.Int3[] triangles = nxsData.Data.Triangles;
+                //    uint[] triangles = nxsData.Data.Indices;
 
                 //    if (!typeList.Contains(mats[x]))
                 //    {
                 //        typeList.Add(mats[x]);
-                //        values.Add(new List<ushort>());
-                //        values[typeList.Count-1].Add(triangles[x]));
+                //        values.Add(new List<uint>());
+                //        values[typeList.Count - 1].Add(triangles[x]);
                 //    }
                 //    else
                 //    {
-                //        for(int y = 0; y != typeList.Count; y++)
+                //        for (int y = 0; y != typeList.Count; y++)
                 //        {
-                //            if(typeList[y] == mats[x])
+                //            if (typeList[y] == mats[x])
                 //                values[y].Add(new Short3(triangles[x]));
                 //        }
                 //    }
-                //}
 
-                //model.Lods[0].Parts = new ModelPart[typeList.Count];
+                //    model.Lods[0].Parts = new ModelPart[typeList.Count];
 
-                //for(int x = 0; x != typeList.Count; x++)
-                //{
-                //    model.Lods[0].Parts[x] = new ModelPart();
-                //    model.Lods[0].Parts[x].Indices = values[x].ToArray();
-                //    model.Lods[0].Parts[x].Material = typeList[x].ToString();
-                //}
+                //    for (int x = 0; x != typeList.Count; x++)
+                //    {
+                //        model.Lods[0].Parts[x] = new ModelPart();
+                //        model.Lods[0].Parts[x].Indices = values[x].ToArray();
+                //        model.Lods[0].Parts[x].Material = typeList[x].ToString();
+                //    }
 
-                //model.ExportCollisionToM2T(node.Name);
-                //treeView1.Nodes.Add(node);
+                //    model.ExportCollisionToM2T(node.Name);
+                treeView1.Nodes.Add(node);
             }
 
             CustomEDD frame = new CustomEDD();
@@ -184,8 +182,8 @@ namespace Mafia2Tool
                 nxsData.Sections[i] = new Collision.Section();
                 nxsData.Sections[i].Unk1 = (int)Enum.Parse(typeof(CollisionMaterials), colModel.Lods[0].Parts[i].Material)-2;
                 nxsData.Sections[i].Start = curEdges;
-                nxsData.Sections[i].NumEdges = colModel.Lods[0].Parts[i].Indices.Length*3;
-                curEdges += colModel.Lods[0].Parts[i].Indices.Length * 3;
+                //nxsData.Sections[i].NumEdges = colModel.Lods[0].Parts[i].Indices.Length*3;
+                //curEdges += colModel.Lods[0].Parts[i].Indices.Length * 3;
             }
 
             Collision.Placement placement = new Collision.Placement();

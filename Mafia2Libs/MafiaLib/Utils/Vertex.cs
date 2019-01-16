@@ -158,7 +158,7 @@ namespace Mafia2
             float y = (data[i + 1] - 127.0f) * 0.007874f;
             float z = (data[i + 2] - 127.0f) * 0.007874f;
             normal = new Vector3(x, y, z);
-            normal.Normalize();
+            //normal.Normalize();
         }
 
         /// <summary>
