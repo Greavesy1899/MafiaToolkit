@@ -111,11 +111,9 @@ namespace Mafia2
         {
             for (int i = 0; i != bufferPools.Count; i++)
             {
-                foreach (KeyValuePair<ulong, VertexBuffer> entry in bufferPools[i].Buffers)
-                {
-                    if (entry.Key == vertexRef)
-                        return entry.Value;
-                }
+                VertexBuffer buff;
+                if (bufferPools[i].Buffers.TryGetValue(vertexRef, out buff))
+                    return buff;
             }
             return null;
         }

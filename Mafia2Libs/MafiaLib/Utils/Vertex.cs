@@ -154,9 +154,15 @@ namespace Mafia2
         /// <param name="i">current position to read from</param>
         public void ReadNormalData(byte[] data, int i)
         {
-            float x = (data[i] - 127.0f) * 0.007874f;
-            float y = (data[i + 1] - 127.0f) * 0.007874f;
-            float z = (data[i + 2] - 127.0f) * 0.007874f;
+            //byte bx = data[i];
+            //byte by = data[i+1];
+            //byte bz = data[i+2];
+            //float x = (data[i] - 127.0f) * 0.007874f;
+            //float y = (data[i + 1] - 127.0f) * 0.007874f;
+            //float z = (data[i + 2] - 127.0f) * 0.007874f;
+            float x = data[i] / 255 * 2 - 1;
+            float y = data[i+1] / 255 * 2 - 1;
+            float z = data[i+2] / 255 * 2 - 1;
             normal = new Vector3(x, y, z);
             //normal.Normalize();
         }

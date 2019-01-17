@@ -94,9 +94,13 @@ namespace ModelViewer.Programming.GraphicClasses
                         return false;
                     }
 
+                    SharpDX.Direct3D11.ShaderResourceView[] resources = new SharpDX.Direct3D11.ShaderResourceView[2];
+                    resources[1] = model.AOTexture;
+
                     for (int i = 0; i != model.ModelParts.Length; i++)
                     {
-                        D3D.DeviceContext.PixelShader.SetShaderResource(0, model.ModelParts[i].Texture);
+                        resources[0] = model.ModelParts[i].Texture;
+                        D3D.DeviceContext.PixelShader.SetShaderResources(0, 2, resources);
                         Shader.Render(D3D.DeviceContext, (int)model.ModelParts[i].NumFaces*3, (int)model.ModelParts[i].StartIndex);
                     }
 

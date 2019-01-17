@@ -66,6 +66,7 @@ namespace Mafia2
             model = new M2TStructure();
             model.IsSkinned = false;
             model.Name = frameMesh.Name.String;
+            model.AOTexture = frameMesh.Unk17.String;
             model.BuildLods(frameGeometry, frameMaterial, vertexBuffers, indexBuffers);
         }
 
@@ -83,6 +84,7 @@ namespace Mafia2
             model = new M2TStructure();
             model.IsSkinned = true;
             model.Name = frameMesh.Name.String;
+            model.AOTexture = frameMesh.Unk17.String;
             model.BuildLods(frameGeometry, frameMaterial, vertexBuffers, indexBuffers);
         }
 

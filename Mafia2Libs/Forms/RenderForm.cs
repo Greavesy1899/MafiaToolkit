@@ -154,22 +154,22 @@ namespace Mafia2Tool
                 }
 
                 if (Input.IsKeyDown(Keys.A))
-                    Graphics.Camera.Position.X += 1f;
+                    Graphics.Camera.Position.X += 0.25f;
 
                 if (Input.IsKeyDown(Keys.D))
-                    Graphics.Camera.Position.X -= 1f;
+                    Graphics.Camera.Position.X -= 0.25f;
 
                 if (Input.IsKeyDown(Keys.W))
-                    Graphics.Camera.Position.Y += 1f;
+                    Graphics.Camera.Position.Y += 0.25f;
 
                 if (Input.IsKeyDown(Keys.S))
-                    Graphics.Camera.Position.Y -= 1f;
+                    Graphics.Camera.Position.Y -= 0.25f;
 
                 if (Input.IsKeyDown(Keys.Q))
-                    Graphics.Camera.Position.Z += 1f;
+                    Graphics.Camera.Position.Z += 0.25f;
 
                 if (Input.IsKeyDown(Keys.E))
-                    Graphics.Camera.Position.Z -= 1f;
+                    Graphics.Camera.Position.Z -= 0.25f;
             }
             lastMousePos = mousePos;
             Graphics.Timer.Frame2();

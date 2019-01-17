@@ -13,7 +13,8 @@ namespace ModelViewer.Programming.GraphicClasses
         public struct Vertex
         {
             public Vector3 position;
-            public Vector2 texture;
+            public Vector2 tex0;
+            public Vector2 tex7;
             public Vector3 normal;
         }
         [StructLayout(LayoutKind.Sequential)]
@@ -88,6 +89,16 @@ namespace ModelViewer.Programming.GraphicClasses
                     },
                     new InputElement()
                     {
+                        SemanticName = "TEXCOORD",
+                        SemanticIndex = 1,
+                        Format = SharpDX.DXGI.Format.R32G32_Float,
+                        Slot = 0,
+                        AlignedByteOffset = InputElement.AppendAligned,
+                        Classification = InputClassification.PerVertexData,
+                        InstanceDataStepRate = 0
+                    },
+                    new InputElement()
+                    {
                         SemanticName = "NORMAL",
                         SemanticIndex = 0,
                         Format = SharpDX.DXGI.Format.R32G32B32_Float,
@@ -105,7 +116,7 @@ namespace ModelViewer.Programming.GraphicClasses
 
             SamplerStateDescription samplerDesc = new SamplerStateDescription()
             {
-                Filter = Filter.MinMagMipLinear,
+                Filter = Filter.Anisotropic,
                 AddressU = TextureAddressMode.Wrap,
                 AddressV = TextureAddressMode.Wrap,
                 AddressW = TextureAddressMode.Wrap,

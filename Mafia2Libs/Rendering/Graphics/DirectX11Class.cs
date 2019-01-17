@@ -70,7 +70,7 @@ namespace ModelViewer.Programming.GraphicClasses
 
             SharpDX.Direct3D11.Device device;
             SwapChain swapChain;
-            SharpDX.Direct3D11.Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.None, swapChainDesc, out device, out swapChain);
+            SharpDX.Direct3D11.Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.Debug, swapChainDesc, out device, out swapChain);
             Device = device;
             SwapChain = swapChain;
             DeviceContext = device.ImmediateContext;
@@ -82,7 +82,7 @@ namespace ModelViewer.Programming.GraphicClasses
             {
                 Width = Config.Width,
                 Height = Config.Height,
-                MipLevels = 0,
+                MipLevels = 1,
                 ArraySize = 1,
                 Format = Format.D24_UNorm_S8_UInt,
                 SampleDescription = new SampleDescription(1, 0),

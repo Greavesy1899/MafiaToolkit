@@ -18,6 +18,8 @@ namespace Mafia2
         private string name; //name of model.
         private bool isSkinned;
         Lod[] lods; //Holds the models which can be exported, all EDM content is saved here.
+
+        private string aoTexture;
         
         public Lod[] Lods {
             get { return lods; }
@@ -30,6 +32,10 @@ namespace Mafia2
         public string Name {
             get { return name; }
             set { name = value; }
+        }
+        public string AOTexture {
+            get { return aoTexture; }
+            set { aoTexture = value; }
         }
 
         /// <summary>

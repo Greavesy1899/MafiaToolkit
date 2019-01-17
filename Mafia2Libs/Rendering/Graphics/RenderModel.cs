@@ -16,7 +16,8 @@ namespace ModelViewer.Programming.GraphicClasses
             public uint StartIndex;
             public uint NumFaces;
         }
-
+        private string AOTextureName { get; set; }
+        public ShaderResourceView AOTexture { get; set; }
         private Buffer VertexBuffer { get; set; }
         private Buffer IndexBuffer { get; set; }
         public ShaderClass.Vertex[] Vertices { get; private set; }
@@ -68,6 +69,7 @@ namespace ModelViewer.Programming.GraphicClasses
         //CLEANUP WHEN MERGED
         public bool ConvertM2ModelToRenderModel(M2TStructure structure)
         {
+            AOTextureName = structure.AOTexture;
             Vertices = new ShaderClass.Vertex[structure.Lods[0].Vertices.Length];
             ModelParts = new ModelPart[structure.Lods[0].Parts.Length];
 
@@ -80,9 +82,14 @@ namespace ModelViewer.Programming.GraphicClasses
                 newVertex.normal = oldVertex.Normal;
 
                 if (oldVertex.UVs[0] == null)
-                    newVertex.texture = new Vector2(0.0f, 1.0f);
+                    newVertex.tex0 = new Vector2(0.0f, 1.0f);
                 else
-                    newVertex.texture = oldVertex.UVs[0];
+                    newVertex.tex0 = oldVertex.UVs[0];
+
+                if (oldVertex.UVs[3] == null)
+                    newVertex.tex7 = new Vector2(0.0f, 1.0f);
+                else
+                    newVertex.tex7 = oldVertex.UVs[3];
 
                 Vertices[i] = newVertex;
             }
@@ -118,10 +125,17 @@ namespace ModelViewer.Programming.GraphicClasses
         }
         private bool LoadTexture(Device device)
         {
+            TextureClass AOTextureClass = new TextureClass();
+            bool result = AOTextureClass.Init(device, AOTextureName);
+            AOTexture = AOTextureClass.TextureResource;
+
+            if (!result)
+                return false;
+
             for (int x = 0; x != ModelParts.Length; x++)
             {
                 TextureClass Texture = new TextureClass();
-                bool result = Texture.Init(device, ModelParts[x].TextureName);
+                result = Texture.Init(device, ModelParts[x].TextureName);
                 ModelParts[x].Texture = Texture.TextureResource;
 
                 if (!result)
@@ -136,7 +150,8 @@ namespace ModelViewer.Programming.GraphicClasses
                 ModelParts[x].Texture?.Dispose();
                 ModelParts[x].Texture = null;
             }
-
+            AOTexture?.Dispose();
+            AOTexture = null;
             BoundingBox.ReleaseTextures();
         }
         private void ReleaseModel()

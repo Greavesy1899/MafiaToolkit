@@ -110,11 +110,9 @@ namespace Mafia2
         {
             for (int i = 0; i != bufferPools.Count; i++)
             {
-                foreach (KeyValuePair<ulong, IndexBuffer> entry in bufferPools[i].Buffers)
-                {
-                    if (entry.Key == indexRef)
-                        return entry.Value;
-                }
+                IndexBuffer buff;
+                if (bufferPools[i].Buffers.TryGetValue(indexRef, out buff))
+                    return buff;
             }
             return null;
         }
