@@ -16,6 +16,9 @@ namespace Mafia2
         int boneID;
         Half2[] uvs;
         int damageGroup;
+        byte[] color0;
+        byte[] color1;
+        Vector3 bbCoeffs;
 
         public Vector3 Position {
             get { return position; }
@@ -48,6 +51,18 @@ namespace Mafia2
         public int DamageGroup {
             get { return damageGroup; }
             set { damageGroup = value; }
+        }
+        public byte[] Color0 {
+            get { return color0; }
+            set { color0 = value; }
+        }
+        public byte[] Color1 {
+            get { return color1; }
+            set { color1 = value; }
+        }
+        public Vector3 BBCoeffs {
+            get { return bbCoeffs; }
+            set { bbCoeffs = value; }
         }
 
         /// <summary>
@@ -255,6 +270,32 @@ namespace Mafia2
         {
             //todo; work on skeleton models.
             damageGroup = BitConverter.ToInt32(data, i);
+        }
+
+        public void ReadColor0(byte[] data, int i)
+        {
+            color0 = new byte[4];
+            color0[0] = data[i];
+            color0[1] = data[i+1];
+            color0[2] = data[i+2];
+            color0[3] = data[i+3];
+        }
+
+        public void ReadColor1(byte[] data, int i)
+        {
+            color1 = new byte[4];
+            color1[0] = data[i];
+            color1[1] = data[i + 1];
+            color1[2] = data[i + 2];
+            color1[3] = data[i + 3];
+        }
+
+        public void ReadBBCoeffs(byte[] data, int i)
+        {
+            bbCoeffs = new Vector3();
+            bbCoeffs.X = BitConverter.ToSingle(data, i);
+            bbCoeffs.Y = BitConverter.ToSingle(data, i+4);
+            bbCoeffs.Z = BitConverter.ToSingle(data, i+8);
         }
 
         /// <summary>

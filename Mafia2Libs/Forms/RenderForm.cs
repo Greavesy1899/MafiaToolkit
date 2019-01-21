@@ -106,6 +106,10 @@ namespace Mafia2Tool
                 if (fObject.GetType() == typeof(FrameObjectSingleMesh) || fObject.GetType() == typeof(FrameObjectModel))
                 {
                     FrameObjectSingleMesh mesh = (fObject as FrameObjectSingleMesh);
+
+                    if (mesh.MaterialIndex == -1 && mesh.MeshIndex == -1)
+                        continue;
+
                     FrameGeometry geom = SceneData.FrameResource.FrameGeometries[mesh.Refs["Mesh"]];
                     FrameMaterial mat = SceneData.FrameResource.FrameMaterials[mesh.Refs["Material"]];
                     IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
@@ -154,22 +158,22 @@ namespace Mafia2Tool
                 }
 
                 if (Input.IsKeyDown(Keys.A))
-                    Graphics.Camera.Position.X += 0.25f;
+                    Graphics.Camera.Position.X += 5f;
 
                 if (Input.IsKeyDown(Keys.D))
-                    Graphics.Camera.Position.X -= 0.25f;
+                    Graphics.Camera.Position.X -= 5f;
 
                 if (Input.IsKeyDown(Keys.W))
-                    Graphics.Camera.Position.Y += 0.25f;
+                    Graphics.Camera.Position.Y += 5f;
 
                 if (Input.IsKeyDown(Keys.S))
-                    Graphics.Camera.Position.Y -= 0.25f;
+                    Graphics.Camera.Position.Y -= 5f;
 
                 if (Input.IsKeyDown(Keys.Q))
-                    Graphics.Camera.Position.Z += 0.25f;
+                    Graphics.Camera.Position.Z += 5f;
 
                 if (Input.IsKeyDown(Keys.E))
-                    Graphics.Camera.Position.Z -= 0.25f;
+                    Graphics.Camera.Position.Z -= 5f;
             }
             lastMousePos = mousePos;
             Graphics.Timer.Frame2();

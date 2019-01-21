@@ -7,13 +7,15 @@ namespace Mafia2
 {
     public class FrameNameTable
     {
-        int stringLength;
+        int bufferSize;
         int dataSize;
-        string names;
         Data[] frameData;
         string fileName;
+        Dictionary<int, string> names = new Dictionary<int, string>();
+        string m_buffer = "";
 
-        public string Names {
+        public Dictionary<int, string> Names 
+            {
             get { return names; }
             set { names = value; }
         }
@@ -58,28 +60,28 @@ namespace Mafia2
 
             if (resource.Header.IsScene)
             {
-                scenePos = new int[resource.Header.NumFolderNames+1];
-                sceneNames = new string[resource.Header.NumFolderNames+1];
+                scenePos = new int[resource.Header.NumFolderNames + 1];
+                sceneNames = new string[resource.Header.NumFolderNames + 1];
 
                 //add the actual scenes from the header, and then the <scenes> one.
-                for(int i = 0; i != resource.Header.NumFolderNames; i++)
+                for (int i = 0; i != resource.Header.NumFolderNames; i++)
                 {
-                    names += resource.Header.SceneFolders[i].Name.String;
-                    names += "\0";
-                    scenePos[i] = names.Length - resource.Header.SceneFolders[i].Name.String.Length-1;
+                    m_buffer += resource.Header.SceneFolders[i].Name.String;
+                    m_buffer += "\0";
+                    scenePos[i] = m_buffer.Length - resource.Header.SceneFolders[i].Name.String.Length - 1;
                     sceneNames[i] = resource.Header.SceneFolders[i].Name.String;
                 }
 
                 string scene = "<scene>\0";
-                names += scene;
-                scenePos[scenePos.Length-1] = names.Length - scene.Length;
-                sceneNames[sceneNames.Length-1] = scene;
+                m_buffer += scene;
+                scenePos[scenePos.Length - 1] = m_buffer.Length - scene.Length;
+                sceneNames[sceneNames.Length - 1] = scene;
             }
             else
             {
                 scenePos = new int[1];
                 sceneNames = new string[1];
-                names += "<scene>\0";
+                m_buffer += "<scene>\0";
                 scenePos[0] = 0;
                 sceneNames[0] = "<scene>\0";
             }
@@ -92,7 +94,7 @@ namespace Mafia2
                 //possible types to save? might change in the future however.
                 if (block.GetType().BaseType == typeof(FrameObjectBase) || block.GetType().BaseType == typeof(FrameObjectJoint) || block.GetType().BaseType == typeof(FrameObjectSingleMesh))
                 {
-                    if((block as FrameObjectBase).IsOnFrameTable)
+                    if ((block as FrameObjectBase).IsOnFrameTable)
                     {
                         addToTable = true;
                     }
@@ -108,7 +110,7 @@ namespace Mafia2
                         data.Flags = fBase.FrameNameTableFlags;
 
                         //auto <scene>
-                        int sceneIndex = scenePos.Length-1;
+                        int sceneIndex = scenePos.Length - 1;
 
                         //check if this is a scene. If it is, then we get the index for the scene names and pos.
                         if (resource.Header.IsScene && fBase.ParentIndex2.Index != -1)
@@ -118,9 +120,9 @@ namespace Mafia2
                         data.Parent = (short)scenePos[sceneIndex];
 
                         //add name to string and set namepos1 For namepos2, check if this is a scene. If so, then use 0xFFFF.
-                        data.NamePos1 = (ushort)names.Length;
-                        names += fBase.Name.String;
-                        names += "\0";
+                        data.NamePos1 = (ushort)m_buffer.Length;
+                        m_buffer += fBase.Name.String;
+                        m_buffer += "\0";
                         data.NamePos2 = (resource.Header.IsScene) ? (ushort)0xFFFF : data.NamePos1;
 
                         //set frameIndex. minus the blockID and then subtract it from the total number of blocks.
@@ -134,7 +136,7 @@ namespace Mafia2
 
             frameData = tableData.ToArray();
             dataSize = tableData.Count;
-            stringLength = names.Length;
+            bufferSize = m_buffer.Length;
         }
 
         /// <summary>
@@ -144,14 +146,10 @@ namespace Mafia2
         {
             for (int i = 0; i != frameData.Length; i++)
             {
-                int pos = frameData[i].NamePos1;
-                frameData[i].Name = names.Substring(pos, names.IndexOf('\0', pos) - pos);
+                frameData[i].Name = names[frameData[i].NamePos1];
 
-                if (frameData[i].Parent != -1)
-                {
-                    pos = frameData[i].Parent;
-                    frameData[i].ParentName = names.Substring(pos, names.IndexOf('\0', pos) - pos);
-                }
+                if (names.ContainsKey(frameData[i].Parent))
+                    frameData[i].ParentName = names[frameData[i].Parent];
             }
         }
 
@@ -161,8 +159,18 @@ namespace Mafia2
         /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
-            stringLength = reader.ReadInt32();
-            names = new string(reader.ReadChars(stringLength));
+            bufferSize = reader.ReadInt32();
+
+            while (true)
+            {
+                int offset = (int)reader.BaseStream.Position - 4; // header is 4 bytes.
+
+                if (offset == bufferSize)
+                    break;
+
+                string name = Functions.ReadString(reader); //read string
+                names.Add(offset, name); //add offset as unique key and string
+            }
 
             dataSize = reader.ReadInt32();
             frameData = new Data[dataSize];
@@ -180,14 +188,12 @@ namespace Mafia2
         /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(stringLength);
-            writer.Write(names.ToCharArray());
+            writer.Write(bufferSize);
+            writer.Write(m_buffer.ToCharArray());
             writer.Write(dataSize);
 
             for(int i = 0; i != frameData.Length; i++)
-            {
                 frameData[i].WriteToFile(writer);
-            }
         }
 
         public class Data

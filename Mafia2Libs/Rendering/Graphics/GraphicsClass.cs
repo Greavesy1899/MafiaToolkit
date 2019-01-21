@@ -19,8 +19,6 @@ namespace ModelViewer.Programming.GraphicClasses
         public static float Rotation { get; set; }
         public GraphicsClass() { }
 
-        private bool[] isVisible { get; set; }
-
         public bool Init(SystemConfigClass Config, IntPtr WindowHandle, string meshName)
         {
             D3D = new DirectX11Class();

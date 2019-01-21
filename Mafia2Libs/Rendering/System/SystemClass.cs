@@ -6,6 +6,7 @@ using SharpDX.Windows;
 using System.Drawing;
 using System.Windows.Forms;
 using System;
+using System.Diagnostics;
 
 namespace ModelViewer.Programming.SystemClasses
 {
