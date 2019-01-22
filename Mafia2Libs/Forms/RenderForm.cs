@@ -23,6 +23,7 @@ namespace Mafia2Tool
         private SharpDX.Point mousePos;
         private SharpDX.Point lastMousePos;
         private FileInfo fileLocation;
+        private FrameObjectBase entryObj;
 
         public D3DForm(FileInfo info)
         {
@@ -41,8 +42,8 @@ namespace Mafia2Tool
 
         public void PopulateList()
         {
-            foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
-                listBox1.Items.Add(entry.Value.ToString());
+            //foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
+            //    treeView1.Items.Add(entry.Value.ToString());
         }
 
         public void StartD3DPanel()

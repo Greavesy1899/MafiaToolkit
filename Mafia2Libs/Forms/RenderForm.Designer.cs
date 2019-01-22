@@ -35,7 +35,6 @@
             this.FillModeButton = new System.Windows.Forms.ToolStripButton();
             this.MainTabControl = new System.Windows.Forms.TabControl();
             this.SceneTab = new System.Windows.Forms.TabPage();
-            this.listBox1 = new System.Windows.Forms.ListBox();
             this.EditEntryTab = new System.Windows.Forms.TabPage();
             this.EntryApplyChanges = new System.Windows.Forms.Button();
             this.HideInViewerCheckBox = new System.Windows.Forms.CheckBox();
@@ -52,6 +51,7 @@
             this.PositionYLabel = new System.Windows.Forms.Label();
             this.PositionXBox = new System.Windows.Forms.TextBox();
             this.PositionXLabel = new System.Windows.Forms.Label();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.toolStrip1.SuspendLayout();
             this.MainTabControl.SuspendLayout();
             this.SceneTab.SuspendLayout();
@@ -113,7 +113,7 @@
             // 
             // SceneTab
             // 
-            this.SceneTab.Controls.Add(this.listBox1);
+            this.SceneTab.Controls.Add(this.treeView1);
             this.SceneTab.Location = new System.Drawing.Point(4, 22);
             this.SceneTab.Name = "SceneTab";
             this.SceneTab.Padding = new System.Windows.Forms.Padding(3);
@@ -121,16 +121,6 @@
             this.SceneTab.TabIndex = 0;
             this.SceneTab.Text = "Scene";
             this.SceneTab.UseVisualStyleBackColor = true;
-            // 
-            // listBox1
-            // 
-            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(3, 3);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(198, 378);
-            this.listBox1.TabIndex = 0;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.OnSelectedIndexChanged);
             // 
             // EditEntryTab
             // 
@@ -282,6 +272,14 @@
             this.PositionXLabel.TabIndex = 0;
             this.PositionXLabel.Text = "Position X";
             // 
+            // treeView1
+            // 
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.Location = new System.Drawing.Point(3, 3);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(198, 378);
+            this.treeView1.TabIndex = 0;
+            // 
             // D3DForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -312,7 +310,6 @@
         private System.Windows.Forms.TabControl MainTabControl;
         private System.Windows.Forms.TabPage SceneTab;
         private System.Windows.Forms.TabPage EditEntryTab;
-        private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Label PositionXLabel;
         private System.Windows.Forms.TextBox PositionXBox;
         private System.Windows.Forms.TextBox PositionZBox;
@@ -328,5 +325,6 @@
         private System.Windows.Forms.Label CurrentEntry;
         private System.Windows.Forms.CheckBox HideInViewerCheckBox;
         private System.Windows.Forms.Button EntryApplyChanges;
+        private System.Windows.Forms.TreeView treeView1;
     }
 }
