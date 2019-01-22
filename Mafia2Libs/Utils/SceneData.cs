@@ -1,4 +1,5 @@
 ﻿using Mafia2;
+using ResourceTypes.FrameResource;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,14 +58,6 @@ namespace Mafia2Tool
                     ids.Add(new ItemDesc(name));
                 else if (type == "FrameNameTable")
                     FrameNameTable = new FrameNameTable(name);
-                //else if ((type == "MemFile") && (name.Contains("cityshops")))
-                //    CityShops = new CityShops(name);
-                //else if (type == "Actors")
-                //    act.Add(new Actor(name));
-                //else if (type == "AudioSectors")
-                //    SoundSector = new SoundSector(name);
-                //else if ((type == "MemFile") && (name.Contains("cityareas")))
-                //    CityAreas = new CityAreas(name);
             }
 
             IndexBufferPool = new IndexBufferManager(ibps);

@@ -126,22 +126,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdditionalControls\ListWindow.cs">
+    <Compile Include="Controls\ListWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AdditionalControls\ListWindow.Designer.cs">
+    <Compile Include="Controls\ListWindow.Designer.cs">
       <DependentUpon>ListWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="AdditionalControls\FrameResourceModelOptions.cs">
+    <Compile Include="Controls\FrameResourceModelOptions.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AdditionalControls\FrameResourceModelOptions.Designer.cs">
+    <Compile Include="Controls\FrameResourceModelOptions.Designer.cs">
       <DependentUpon>FrameResourceModelOptions.cs</DependentUpon>
     </Compile>
-    <Compile Include="AdditionalControls\NewObjectWindow.cs">
+    <Compile Include="Controls\NewObjectWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AdditionalControls\NewObjectWindow.Designer.cs">
+    <Compile Include="Controls\NewObjectWindow.Designer.cs">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\RenderForm.cs">
@@ -179,6 +179,7 @@
     <Compile Include="MafiaLib\FileTypes\FrameNameTable\FrameNameTable.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameEntry.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameHeader.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameNode.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResource.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectArea.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectBase.cs" />
@@ -273,22 +274,22 @@
     <Compile Include="Forms\CityShopEditor.Designer.cs">
       <DependentUpon>CityShopEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditorControls\FrameResourceAddSceneOption.cs">
+    <Compile Include="Controls\FrameResourceAddSceneOption.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="EditorControls\FrameResourceAddSceneOption.Designer.cs">
+    <Compile Include="Controls\FrameResourceAddSceneOption.Designer.cs">
       <DependentUpon>FrameResourceAddSceneOption.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditorControls\FrameResourceAddOption.cs">
+    <Compile Include="Controls\FrameResourceAddOption.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="EditorControls\FrameResourceAddOption.Designer.cs">
+    <Compile Include="Controls\FrameResourceAddOption.Designer.cs">
       <DependentUpon>FrameResourceAddOption.cs</DependentUpon>
     </Compile>
-    <Compile Include="EditorControls\MaterialAddOption.cs">
+    <Compile Include="Controls\MaterialAddOption.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="EditorControls\MaterialAddOption.Designer.cs">
+    <Compile Include="Controls\MaterialAddOption.Designer.cs">
       <DependentUpon>MaterialAddOption.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\CityAreaEditor.cs">
@@ -352,16 +353,16 @@
     <Compile Include="Rendering\Graphics\RenderBoundingBox.cs" />
     <Compile Include="Rendering\Graphics\ShaderClass.cs" />
     <Compile Include="Rendering\Graphics\RenderModel.cs" />
-    <Compile Include="OptionControls\ModelOptions.cs">
+    <Compile Include="Controls\ModelOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OptionControls\ModelOptions.Designer.cs">
+    <Compile Include="Controls\ModelOptions.Designer.cs">
       <DependentUpon>ModelOptions.cs</DependentUpon>
     </Compile>
-    <Compile Include="OptionControls\MTLOptions.cs">
+    <Compile Include="Controls\MTLOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OptionControls\MTLOptions.Designer.cs">
+    <Compile Include="Controls\MTLOptions.Designer.cs">
       <DependentUpon>MTLOptions.cs</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
@@ -377,16 +378,16 @@
     <Compile Include="Forms\MaterialTool.Designer.cs">
       <DependentUpon>MaterialTool.cs</DependentUpon>
     </Compile>
-    <Compile Include="OptionControls\GeneralOptions.cs">
+    <Compile Include="Controls\GeneralOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OptionControls\GeneralOptions.Designer.cs">
+    <Compile Include="Controls\GeneralOptions.Designer.cs">
       <DependentUpon>GeneralOptions.cs</DependentUpon>
     </Compile>
-    <Compile Include="OptionControls\SDSOptions.cs">
+    <Compile Include="Controls\SDSOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OptionControls\SDSOptions.Designer.cs">
+    <Compile Include="Controls\SDSOptions.Designer.cs">
       <DependentUpon>SDSOptions.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\OptionsForm.cs">
@@ -464,25 +465,25 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AdditionalControls\ListWindow.resx">
+    <EmbeddedResource Include="Controls\ListWindow.resx">
       <DependentUpon>ListWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AdditionalControls\FrameResourceModelOptions.resx">
+    <EmbeddedResource Include="Controls\FrameResourceModelOptions.resx">
       <DependentUpon>FrameResourceModelOptions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="AdditionalControls\NewObjectWindow.resx">
+    <EmbeddedResource Include="Controls\NewObjectWindow.resx">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CityShopEditor.resx">
       <DependentUpon>CityShopEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditorControls\FrameResourceAddSceneOption.resx">
+    <EmbeddedResource Include="Controls\FrameResourceAddSceneOption.resx">
       <DependentUpon>FrameResourceAddSceneOption.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditorControls\FrameResourceAddOption.resx">
+    <EmbeddedResource Include="Controls\FrameResourceAddOption.resx">
       <DependentUpon>FrameResourceAddOption.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EditorControls\MaterialAddOption.resx">
+    <EmbeddedResource Include="Controls\MaterialAddOption.resx">
       <DependentUpon>MaterialAddOption.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CityAreaEditor.resx">
@@ -518,16 +519,16 @@
     <EmbeddedResource Include="Forms\RenderForm.resx">
       <DependentUpon>RenderForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OptionControls\GeneralOptions.resx">
+    <EmbeddedResource Include="Controls\GeneralOptions.resx">
       <DependentUpon>GeneralOptions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OptionControls\ModelOptions.resx">
+    <EmbeddedResource Include="Controls\ModelOptions.resx">
       <DependentUpon>ModelOptions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OptionControls\MTLOptions.resx">
+    <EmbeddedResource Include="Controls\MTLOptions.resx">
       <DependentUpon>MTLOptions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OptionControls\SDSOptions.resx">
+    <EmbeddedResource Include="Controls\SDSOptions.resx">
       <DependentUpon>SDSOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\OptionsForm.resx">

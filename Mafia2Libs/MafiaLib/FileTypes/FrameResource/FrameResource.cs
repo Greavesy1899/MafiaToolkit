@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mafia2;
 
-namespace Mafia2
+namespace ResourceTypes.FrameResource
 {
     public class FrameResource
     {
-
         FrameHeader header;
         Dictionary<int, FrameHeaderScene> frameScenes = new Dictionary<int, FrameHeaderScene>();
         Dictionary<int, FrameGeometry> frameGeometries = new Dictionary<int, FrameGeometry>();
@@ -16,6 +16,8 @@ namespace Mafia2
         Dictionary<int, FrameSkeleton> frameSkeletons = new Dictionary<int, FrameSkeleton>();
         Dictionary<int, FrameSkeletonHierachy> frameSkeletonHierachies = new Dictionary<int, FrameSkeletonHierachy>();
         Dictionary<int, object> frameObjects = new Dictionary<int, object>();
+        Dictionary<int, object> FrameEntries = new Dictionary<int, object>();
+        public FrameNode Frame;
 
         int[] frameBlocks;
         int[] objectTypes;
@@ -78,37 +80,43 @@ namespace Mafia2
             for (int i = 0; i != header.SceneFolders.Length; i++)
             {
                 frameScenes.Add(header.SceneFolders[i].RefID, header.SceneFolders[i]);
-                frameBlocks[j++] = header.SceneFolders[i].RefID;
+                frameBlocks[j] = header.SceneFolders[i].RefID;
+                FrameEntries.Add(j++, header.SceneFolders[i]);
             }
             for (int i = 0; i != header.NumGeometries; i++)
             {
                 FrameGeometry geo = new FrameGeometry(reader);
                 frameGeometries.Add(geo.RefID, geo);
-                frameBlocks[j++] = geo.RefID;
+                frameBlocks[j] = geo.RefID;
+                FrameEntries.Add(j++, geo);
             }
             for (int i = 0; i != header.NumMaterialResources; i++)
             {
                 FrameMaterial mat = new FrameMaterial(reader);
                 frameMaterials.Add(mat.RefID, mat);
-                frameBlocks[j++] = mat.RefID;
+                frameBlocks[j] = mat.RefID;
+                FrameEntries.Add(j++, mat);
             }
             for (int i = 0; i != header.NumBlendInfos; i++)
             {
                 FrameBlendInfo blendInfo = new FrameBlendInfo(reader);
                 frameBlendInfos.Add(blendInfo.RefID, blendInfo);
-                frameBlocks[j++] = blendInfo.RefID;
+                frameBlocks[j] = blendInfo.RefID;
+                FrameEntries.Add(j++, blendInfo);
             }
             for (int i = 0; i != header.NumSkeletons; i++)
             {
                 FrameSkeleton skeleton = new FrameSkeleton(reader);
                 frameSkeletons.Add(skeleton.RefID, skeleton);
-                frameBlocks[j++] = skeleton.RefID;
+                frameBlocks[j] = skeleton.RefID;
+                FrameEntries.Add(j++, skeleton);
             }
             for (int i = 0; i != header.NumSkelHierachies; i++)
             {
                 FrameSkeletonHierachy skeletonHierachy = new FrameSkeletonHierachy(reader);
                 frameSkeletonHierachies.Add(skeletonHierachy.RefID, skeletonHierachy);
-                frameBlocks[j++] = skeletonHierachy.RefID;
+                frameBlocks[j] = skeletonHierachy.RefID;
+                FrameEntries.Add(j++, skeletonHierachy);
             }
 
             if (header.NumObjects > 0)
@@ -128,10 +136,10 @@ namespace Mafia2
                         newObject = new FrameObjectSingleMesh(reader);
                         FrameObjectSingleMesh mesh = newObject as FrameObjectSingleMesh;
 
-                        if(mesh.MeshIndex != -1)
+                        if (mesh.MeshIndex != -1)
                             mesh.AddRef(FrameEntryRefTypes.Mesh, frameBlocks[mesh.MeshIndex]);
 
-                        if(mesh.MaterialIndex != -1)
+                        if (mesh.MaterialIndex != -1)
                             mesh.AddRef(FrameEntryRefTypes.Material, frameBlocks[mesh.MaterialIndex]);
                     }
                     else if (objectTypes[i] == (int)ObjectType.Frame)
@@ -165,7 +173,7 @@ namespace Mafia2
                     {
                         FrameObjectModel mesh = new FrameObjectModel(reader);
                         mesh.ReadFromFile(reader);
-                        mesh.ReadFromFilePart2(reader, frameSkeletons[frameBlocks[mesh.SkeletonIndex]], frameBlendInfos[frameBlocks[mesh.BlendInfoIndex]]);
+                        mesh.ReadFromFilePart2(reader, (FrameSkeleton)FrameEntries[mesh.SkeletonIndex], (FrameBlendInfo)FrameEntries[mesh.BlendInfoIndex]);
                         mesh.AddRef(FrameEntryRefTypes.Mesh, frameBlocks[mesh.MeshIndex]);
                         mesh.AddRef(FrameEntryRefTypes.Material, frameBlocks[mesh.MaterialIndex]);
                         mesh.AddRef(FrameEntryRefTypes.BlendInfo, frameBlocks[mesh.BlendInfoIndex]);
@@ -176,10 +184,11 @@ namespace Mafia2
                     else if (objectTypes[i] == (int)ObjectType.Collision)
                         newObject = new FrameObjectCollision(reader);
 
-                    frameObjects.Add(newObject.RefID, newObject);
+                    frameObjects.Add(i, newObject);
+                    FrameEntries.Add(frameBlocks.Length+i, newObject);
                 }
             }
-            DefineFrameBlockParents();
+            //DefineFrameBlockParents();
         }
 
         /// <summary>
@@ -274,6 +283,72 @@ namespace Mafia2
             }
         }
 
+        public void BuildFrameTree(FrameNameTable table)
+        {
+            int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
+            Dictionary<int, FrameNode> parsedNodes = new Dictionary<int, FrameNode>();
+            for (int i = 0; i != table.FrameData.Length; i++)
+            {
+                FrameObjectBase fObject = (FrameEntries[numBlocks+table.FrameData[i].FrameIndex] as FrameObjectBase);
+                int p1idx = fObject.ParentIndex1.Index;
+                int p2idx = fObject.ParentIndex2.Index;
+                int thisKey = numBlocks + numBlocks + table.FrameData[i].FrameIndex;
+
+                FrameNode node = (!parsedNodes.ContainsKey(thisKey)) ? new FrameNode(fObject) : parsedNodes[thisKey];
+
+                if (parsedNodes.ContainsKey(p2idx))
+                {
+                    node.SetParent1(parsedNodes[p2idx]);
+                    parsedNodes[p2idx].AddChild(node, thisKey);
+                }
+                else
+                {
+                    FrameNode pNode = new FrameNode(FrameEntries.ElementAt(p2idx).Value);
+                    pNode.AddChild(node, thisKey);
+                    parsedNodes.Add(p2idx, pNode);
+                }
+
+                if (!parsedNodes.ContainsKey(thisKey))
+                    parsedNodes.Add(thisKey, node);
+            }
+
+            foreach (KeyValuePair<int, object> entry in frameObjects)
+            {
+                FrameObjectBase fObject = (entry.Value as FrameObjectBase);
+                int p1idx = fObject.ParentIndex1.Index;
+                int p2idx = fObject.ParentIndex2.Index;
+                int thisKey = numBlocks + entry.Key;
+
+                FrameNode node = (!parsedNodes.ContainsKey(thisKey)) ? new FrameNode(fObject) : parsedNodes[thisKey];
+
+                if (p1idx == -1)
+                    continue;
+
+                if (p1idx != -1 && parsedNodes.ContainsKey(p1idx))
+                {
+                    node.SetParent1(parsedNodes[p1idx]);
+                    parsedNodes[p1idx].AddChild(node, thisKey);
+                }
+                else
+                {
+                    FrameNode pNode = new FrameNode(FrameEntries.ElementAt(p1idx).Value);
+                    pNode.AddChild(node, thisKey);
+                    parsedNodes.Add(p1idx, pNode);
+                }
+
+                if (!parsedNodes.ContainsKey(thisKey))
+                    parsedNodes.Add(thisKey, node);
+            }
+
+            FrameNode root = new FrameNode(new FrameHeaderScene(new Hash("<scene>")));
+            foreach(KeyValuePair<int, FrameNode> entry in parsedNodes)
+            {
+                if (entry.Value.Parent1 == null && entry.Value.Parent2 == null)
+                    root.AddChild(entry.Value, entry.Key);
+            }
+            Frame = root;
+        }
+
         /// <summary>
         /// Adds names onto ParentIndex1 and ParentIndex2. Called after the file has been read.
         /// Adds Refs also. These are needed to save a Frame file.
@@ -301,11 +376,6 @@ namespace Mafia2
                         obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index - numBlocks).Value as FrameObjectBase).RefID;
                         obj.ParentIndex1.Name = (frameObjects.ElementAt(obj.ParentIndex1.Index - numBlocks).Value as FrameObjectBase).Name.String;
                     }
-                    //else
-                    //{
-                    //    obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index).Value as FrameObjectBase).RefID;
-                    //    obj.ParentIndex1.Name = (frameObjects.ElementAt(obj.ParentIndex1.Index).Value as FrameObjectBase).Name.String;
-                    //}
                     obj.AddRef(FrameEntryRefTypes.Parent1, obj.ParentIndex1.RefID);
                 }
 
@@ -321,11 +391,6 @@ namespace Mafia2
                         obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index - numBlocks).Value as FrameObjectBase).RefID;
                         obj.ParentIndex2.Name = (frameObjects.ElementAt(obj.ParentIndex2.Index - numBlocks).Value as FrameObjectBase).Name.String;
                     }
-                    //else
-                    //{
-                    //    obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index).Value as FrameObjectBase).RefID;
-                    //    obj.ParentIndex1.Name = (frameObjects.ElementAt(obj.ParentIndex2.Index).Value as FrameObjectBase).Name.String;
-                    //}
                     obj.AddRef(FrameEntryRefTypes.Parent2, obj.ParentIndex2.RefID);
                 }
             }

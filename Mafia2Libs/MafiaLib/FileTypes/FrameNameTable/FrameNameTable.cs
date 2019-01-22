@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System;
+using ResourceTypes.FrameResource;
 using System.IO;
 using System.Linq;
 

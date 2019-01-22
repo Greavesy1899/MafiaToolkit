@@ -11,6 +11,12 @@ namespace Mafia2
             set { name = value; }
         }
 
+        public FrameHeaderScene() : base() { }
+        public FrameHeaderScene(Hash name) : base()
+        {
+            this.name = name;
+
+        }
         public void ReadFromFile(BinaryReader reader)
         {
             name = new Hash(reader);

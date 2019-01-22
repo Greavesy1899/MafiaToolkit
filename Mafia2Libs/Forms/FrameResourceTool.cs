@@ -1,7 +1,7 @@
 ﻿using Mafia2;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using ResourceTypes.FrameResource;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,13 +59,13 @@ namespace Mafia2Tool
             {
                 dataGridView1.Rows.Add(ConvertEntryToDataGridView(entry.Value));
 
-                TreeNode node = new TreeNode
-                {
-                    Text = entry.Value.Name.String,
-                    Name = entry.Value.RefID.ToString(),
-                    Tag = entry.Value
-                };
-                treeView1.Nodes.Add(node);
+                //TreeNode node = new TreeNode
+                //{
+                //    Text = entry.Value.Name.String,
+                //    Name = entry.Value.RefID.ToString(),
+                //    Tag = entry.Value
+                //};
+                //treeView1.Nodes.Add(node);
             }
             foreach (KeyValuePair<int, FrameGeometry> entry in SceneData.FrameResource.FrameGeometries)
             {
@@ -91,133 +91,14 @@ namespace Mafia2Tool
             {
                 dataGridView1.Rows.Add(ConvertEntryToDataGridView(entry.Value));
             }
-            if (SceneData.FrameNameTable != null)
-            {
-                TreeNode looseSceneNode = null;
-                looseSceneNode = new TreeNode("<scene>");
-                looseSceneNode.Name = "<scene>";
-
-                foreach (FrameNameTable.Data data in SceneData.FrameNameTable.FrameData)
-                {
-                    if (data.ParentName == null)
-                        data.ParentName = "<scene>";
-
-                    TreeNode root = null;
-
-                    if (!data.ParentName.Equals("<scene>"))
-                    {
-                        //this is more spaghetti code. but right now, this codebase is like Fallout 76.
-                        int sceneKey = -1;
-                        foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
-                        {
-                            if (entry.Value.Name.String == data.ParentName)
-                            {
-                                sceneKey = entry.Key;
-                            }
-                        }
-                        int index = treeView1.Nodes.IndexOfKey(sceneKey.ToString());
-
-                        if (index == -1)
-                            treeView1.Nodes.Add(data.ParentName, data.ParentName);
-
-                        index = treeView1.Nodes.IndexOfKey(sceneKey.ToString());
-                        root = treeView1.Nodes[index];
-                    }
-                    else
-                    {
-                        root = looseSceneNode;
-                    }
-
-                    if (data.FrameIndex != -1)
-                    {
-                        int total = SceneData.FrameResource.Header.SceneFolders.Length +
-                            SceneData.FrameResource.Header.NumGeometries +
-                            SceneData.FrameResource.Header.NumMaterialResources +
-                            SceneData.FrameResource.Header.NumBlendInfos +
-                            SceneData.FrameResource.Header.NumSkeletons +
-                            SceneData.FrameResource.Header.NumSkelHierachies;
-
-                        FrameObjectBase block = (SceneData.FrameResource.FrameObjects.ElementAt(data.FrameIndex).Value as FrameObjectBase);
-
-                        block.FrameNameTableFlags = data.Flags;
-                        block.IsOnFrameTable = true;
-
-                        TreeNode node = CreateTreeNode(block);
-
-                        if (node == null)
-                            continue;
-
-                        root.Nodes.Add(node);
-                    }
-                }
-
-                if (looseSceneNode.Nodes.Count > 0)
-                    treeView1.Nodes.Add(looseSceneNode);
-            }
+            SceneData.FrameResource.BuildFrameTree(SceneData.FrameNameTable);
+            TreeNode tree = new TreeNode("SceneManager");
+            SceneData.FrameResource.Frame.ConvertToTreeNode(ref tree);
+            treeView1.Nodes.Add(tree);
 
             dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
 
-            foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
-            {
-                FrameObjectBase fObject = (FrameObjectBase)entry.Value;
-                TreeNode node = CreateTreeNode(fObject);
 
-                if (node == null)
-                    continue;
-
-                //if ParentIndex1 && ParentIndex2 equals then its kind of like the root of the object.
-                //All subobjects of this 'root' should have ParentIndex2 set to the 'roots' parent.
-                //ParentIndex1 is the unique one. 
-                //Looks to me that the objects which have ParentIndex1 && ParentIndex2 having the same value is usually on the 'FrameNameTable'.
-
-                //all nodes found are dumped here.
-                TreeNode[] nodes = null;
-
-                //so first we check for 'root' objects.
-                if (fObject.ParentIndex1.Index == fObject.ParentIndex2.Index)
-                {
-                    nodes = treeView1.Nodes.Find(fObject.ParentIndex1.RefID.ToString(), true);
-                }
-                else if (fObject.ParentIndex1.Index != fObject.ParentIndex2.Index)
-                {
-                    //test, still trying to nail this fucker down.
-                    nodes = treeView1.Nodes.Find(fObject.ParentIndex2.RefID.ToString(), true);
-                }
-
-                if (nodes.Length > 0)
-                    nodes[0].Nodes.Add(node);
-                else if (fObject.ParentIndex1.Index == -1 && fObject.ParentIndex2.Index == -1)
-                    treeView1.Nodes.Add(node);
-                else
-                    unadded.Add(node);
-            }
-            foreach (TreeNode obj in unadded)
-            {
-                TreeNode[] nodes = treeView1.Nodes.Find((obj.Tag as FrameObjectBase).ParentIndex1.RefID.ToString(), true);
-
-                if (nodes.Length > 0)
-                {
-                    nodes[0].Nodes.Add(obj);
-                    Debug.WriteLine("Added: " + obj.Text);
-                }
-                else if ((treeView1.Nodes.Find((obj.Tag as FrameObjectBase).RefID.ToString(), true).Length != 0))
-                    Debug.WriteLine("Unadded node was found");
-                else
-                {
-                    //buggy backup:
-                    nodes = treeView1.Nodes.Find((obj.Tag as FrameObjectBase).ParentIndex2.RefID.ToString(), true);
-                    if (nodes.Length > 0)
-                    {
-                        nodes[0].Nodes.Add(obj);
-                        Debug.WriteLine("Added: " + obj.Text);
-                    }
-                    else
-                    {
-                        Debug.WriteLine(string.Format("WARNING: node: {0} was not added properly", obj.Text));
-                        treeView1.Nodes.Add(obj);
-                    }
-                }
-            }
             ToolkitSettings.UpdateRichPresence("Using the Frame Resource editor");
         }
 
