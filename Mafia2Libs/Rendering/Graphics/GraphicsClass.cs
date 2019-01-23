@@ -19,10 +19,10 @@ namespace ModelViewer.Programming.GraphicClasses
         public static float Rotation { get; set; }
         public GraphicsClass() { }
 
-        public bool Init(SystemConfigClass Config, IntPtr WindowHandle)
+        public bool Init(IntPtr WindowHandle)
         {
             D3D = new DirectX11Class();
-            if (!D3D.Init(Config, WindowHandle))
+            if (!D3D.Init(WindowHandle))
             {
                 return false;
             }

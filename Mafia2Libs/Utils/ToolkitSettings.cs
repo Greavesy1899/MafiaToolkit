@@ -18,15 +18,13 @@ namespace Mafia2Tool
         public static bool DiscordDetailsEnabled;
 
         //ModelViewer keys;
-        public static bool Fullscreen;
         public static bool VSync;
         public static float ScreenDepth;
         public static float ScreenNear;
         public static string ShaderPath;
         public static string DataPath;
-        public static int BorderStyle;
-        public static int Width;
-        public static int Height;
+        public const int Width = 1920;
+        public const int Height = 1080;
 
         //Model Exporting keys;
         public static int Format;
@@ -55,12 +53,9 @@ namespace Mafia2Tool
             bool.TryParse(ReadKey("ElapsedTimeEnabled", "Discord", "True"), out DiscordElapsedTimeEnabled);
             bool.TryParse(ReadKey("StateEmabled", "Discord", "True"), out DiscordStateEnabled);
             bool.TryParse(ReadKey("DetailsEnabled", "Discord", "True"), out DiscordDetailsEnabled);
-            bool.TryParse(ReadKey("Fullscreen", "ModelViewer", "False"), out Fullscreen);
             bool.TryParse(ReadKey("VSync", "ModelViewer", "True"), out VSync);
-            float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "1000"), out ScreenDepth);
-            float.TryParse(ReadKey("ScreenNear", "ModelViewer", "10"), out ScreenNear);
-            int.TryParse(ReadKey("Width", "ModelViewer", "1024"), out Width);
-            int.TryParse(ReadKey("Height", "ModelViewer", "768"), out Height);
+            float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "10000"), out ScreenDepth);
+            float.TryParse(ReadKey("ScreenNear", "ModelViewer", "1"), out ScreenNear);
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
             int.TryParse(ReadKey("Language", "Misc", "0"), out Language);
             int.TryParse(ReadKey("Format", "Exporting", "0"), out Format);
@@ -68,19 +63,12 @@ namespace Mafia2Tool
             MaterialLibs = ReadKey("MaterialLibs", "Materials", "");
 
 
-            BorderStyle = 1; //FixedSingle
             ShaderPath = @"Shaders\";
             DataPath = @"Data\";
             Log.LoggingEnabled = LoggingEnabled;
 
             if (DiscordEnabled)
                 InitRichPresence();
-
-            if (Fullscreen)
-            {
-                Width = Screen.PrimaryScreen.Bounds.Width;
-                Height = Screen.PrimaryScreen.Bounds.Height;
-            }
         }
 
         /// <summary>

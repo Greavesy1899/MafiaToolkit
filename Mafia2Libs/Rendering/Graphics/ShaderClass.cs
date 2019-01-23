@@ -4,6 +4,7 @@ using SharpDX.Direct3D11;
 using System;
 using System.Runtime.InteropServices;
 using ModelViewer.Programming.SystemClasses;
+using Mafia2Tool;
 
 namespace ModelViewer.Programming.GraphicClasses
 {
@@ -59,8 +60,8 @@ namespace ModelViewer.Programming.GraphicClasses
             ShaderBytecode vertexShaderByteCode;
             ShaderBytecode pixelShaderByteCode;
 
-            vsFileName = SystemConfigClass.ShaderFilePath + vsFileName;
-            psFileName = SystemConfigClass.ShaderFilePath + psFileName;
+            vsFileName = ToolkitSettings.ShaderPath + vsFileName;
+            psFileName = ToolkitSettings.ShaderPath + psFileName;
             pixelShaderByteCode = ShaderBytecode.CompileFromFile(psFileName, "LightPixelShader", "ps_5_0", ShaderFlags.None, EffectFlags.None);
             vertexShaderByteCode = ShaderBytecode.CompileFromFile(vsFileName, "LightVertexShader", "vs_5_0", ShaderFlags.None, EffectFlags.None);
             PixelShader = new PixelShader(device, pixelShaderByteCode);

@@ -15,30 +15,24 @@ namespace Mafia2
         public static BoundingBox ReadFromFile(BinaryReader reader)
         {
             BoundingBox bbox = new BoundingBox();
-            bbox.Minimum.X = reader.ReadSingle();
-            bbox.Minimum.Y = reader.ReadSingle();
-            bbox.Minimum.Z = reader.ReadSingle();
-            bbox.Maximum.X = reader.ReadSingle();
-            bbox.Maximum.Y = reader.ReadSingle();
-            bbox.Maximum.Z = reader.ReadSingle();
+            bbox.Minimum = Vector3Extenders.ReadFromFile(reader);
+            bbox.Maximum = Vector3Extenders.ReadFromFile(reader);
             return bbox;
         }
 
         public static void WriteToFile(this BoundingBox bbox, BinaryWriter writer)
         {
-            writer.Write(bbox.Minimum.X);
-            writer.Write(bbox.Minimum.Y);
-            writer.Write(bbox.Minimum.Z);
-            writer.Write(bbox.Maximum.X);
-            writer.Write(bbox.Maximum.Y);
-            writer.Write(bbox.Maximum.Z);
+            bbox.Minimum.WriteToFile(writer);
+            bbox.Maximum.WriteToFile(writer);
         }
 
         public static BoundingBox CalculateBounds(List<Vertex[]> data)
         {
-            BoundingBox bbox = new BoundingBox();
-            bbox.Minimum = new SharpDX.Vector3(0);
-            bbox.Maximum = new SharpDX.Vector3(0);
+            BoundingBox bbox = new BoundingBox
+            {
+                Minimum = new Vector3(0),
+                Maximum = new Vector3(0)
+            };
 
             for (int p = 0; p != data.Count; p++)
             {
@@ -73,9 +67,11 @@ namespace Mafia2
         /// </summary>
         public static BoundingBox CalculateBounds(Vector3[] data)
         {
-            BoundingBox bbox = new BoundingBox();
-            bbox.Minimum = new SharpDX.Vector3(0);
-            bbox.Maximum = new SharpDX.Vector3(0);
+            BoundingBox bbox = new BoundingBox
+            {
+                Minimum = new Vector3(0),
+                Maximum = new Vector3(0)
+            };
 
             for (int i = 0; i != data.Length; i++)
             {
@@ -107,30 +103,28 @@ namespace Mafia2
     {
         public static BoundingSphere ReadFromFile(BinaryReader reader)
         {
-            BoundingSphere bSphere = new BoundingSphere();
-            bSphere.Center.X = reader.ReadSingle();
-            bSphere.Center.Y = reader.ReadSingle();
-            bSphere.Center.Z = reader.ReadSingle();
-            bSphere.Radius = reader.ReadSingle();
+            BoundingSphere bSphere = new BoundingSphere
+            {
+                Center = Vector3Extenders.ReadFromFile(reader),
+                Radius = reader.ReadSingle()
+            };
             return bSphere;
         }
 
         public static void WriteToFile(this BoundingSphere bSphere, BinaryWriter writer)
         {
-            writer.Write(bSphere.Center.X);
-            writer.Write(bSphere.Center.Y);
-            writer.Write(bSphere.Center.Z);
+            bSphere.WriteToFile(writer);
             writer.Write(bSphere.Radius);
         }
 
         public static BoundingSphere CalculateFromBBox(BoundingBox bBox)
         {
             BoundingSphere bSphere = new BoundingSphere();
-            bSphere.Center = new SharpDX.Vector3((bBox.Minimum.X + bBox.Maximum.X) / 2.0f, (bBox.Minimum.Y + bBox.Maximum.Y) / 2.0f, (bBox.Minimum.Z + bBox.Maximum.Z) / 2.0f);
+            bSphere.Center = new Vector3((bBox.Minimum.X + bBox.Maximum.X) / 2.0f, (bBox.Minimum.Y + bBox.Maximum.Y) / 2.0f, (bBox.Minimum.Z + bBox.Maximum.Z) / 2.0f);
 
             //find radius
             float m_Radius = 0.0f;
-            SharpDX.Vector3.Distance(ref bSphere.Center, ref bBox.Maximum, out m_Radius);
+            Vector3.Distance(ref bSphere.Center, ref bBox.Maximum, out m_Radius);
             bSphere.Radius = m_Radius;
             return bSphere;
         }

@@ -3,7 +3,7 @@ using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
-using ModelViewer.Programming.SystemClasses;
+using Mafia2Tool;
 
 namespace ModelViewer.Programming.GraphicClasses
 {
@@ -28,20 +28,19 @@ namespace ModelViewer.Programming.GraphicClasses
         public DirectX11Class()
         { }
 
-        public bool Init(SystemConfigClass Config, IntPtr WindowHandle)
+        public bool Init(IntPtr WindowHandle)
         {
-            VerticalSyncEnabled = SystemConfigClass.VerticalSyncEnabled;
             var factory = new Factory1();
             var adapter = factory.GetAdapter1(0);
             var monitor = adapter.GetOutput(0);
             var modes = monitor.GetDisplayModeList(Format.R8G8B8A8_UNorm, DisplayModeEnumerationFlags.Interlaced);
             var rational = new Rational(0, 1);
 
-            if (VerticalSyncEnabled)
+            if (ToolkitSettings.VSync)
             {
                 foreach (var mode in modes)
                 {
-                    if (mode.Width == Config.Width && mode.Height == Config.Height)
+                    if (mode.Width == ToolkitSettings.Width && mode.Height == ToolkitSettings.Height)
                     {
                         rational = new Rational(mode.RefreshRate.Numerator, mode.RefreshRate.Denominator);
                         break;
@@ -59,11 +58,11 @@ namespace ModelViewer.Programming.GraphicClasses
             var swapChainDesc = new SwapChainDescription()
             {
                 BufferCount = 1,
-                ModeDescription = new ModeDescription(Config.Width, Config.Height, rational, Format.R8G8B8A8_UNorm),
+                ModeDescription = new ModeDescription(ToolkitSettings.Width, ToolkitSettings.Height, rational, Format.R8G8B8A8_UNorm),
                 Usage = Usage.RenderTargetOutput,
                 OutputHandle = WindowHandle,
                 SampleDescription = new SampleDescription(1, 0),
-                IsWindowed = !SystemConfigClass.FullScreen,
+                IsWindowed = true,
                 Flags = SwapChainFlags.None,
                 SwapEffect = SwapEffect.Discard
             };
@@ -80,8 +79,8 @@ namespace ModelViewer.Programming.GraphicClasses
 
             var depthBufferDesc = new Texture2DDescription()
             {
-                Width = Config.Width,
-                Height = Config.Height,
+                Width = ToolkitSettings.Width,
+                Height = ToolkitSettings.Height,
                 MipLevels = 1,
                 ArraySize = 1,
                 Format = Format.D24_UNorm_S8_UInt,
@@ -148,7 +147,7 @@ namespace ModelViewer.Programming.GraphicClasses
             };
 
             UpdateRasterizer();
-            ResizeWindow(Config.Width, Config.Height);
+            ResizeWindow(ToolkitSettings.Width, ToolkitSettings.Height);
             WorldMatrix = Matrix.Identity;
             return true;
         }
@@ -165,7 +164,7 @@ namespace ModelViewer.Programming.GraphicClasses
         public void ResizeWindow(int w, int h)
         {
             DeviceContext.Rasterizer.SetViewport(0, 0, w, h, 0, 1);
-            ProjectionMatrix = Matrix.PerspectiveFovRH((float)(Math.PI / 4), (w / h), SystemConfigClass.ScreenNear, SystemConfigClass.ScreenDepth);
+            ProjectionMatrix = Matrix.PerspectiveFovRH((float)(Math.PI / 4), (w / h), ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
         }
         private void UpdateRasterizer()
         {

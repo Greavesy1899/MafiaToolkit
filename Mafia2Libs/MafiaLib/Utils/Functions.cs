@@ -8,18 +8,6 @@ namespace Mafia2
     {
         public static Random RandomGenerator = new Random();
 
-        public static int IndexOfValue(Dictionary<int, object> dic, int key)
-        {
-            int index = -1;
-            foreach (KeyValuePair<int, object> entry in dic)
-            {
-                if (entry.Key == key)
-                    return index;
-                else
-                    index++;                 
-            }
-            return index;
-        }
         public static string ReadString8(BinaryReader reader)
         {
             byte size = reader.ReadByte();
@@ -75,21 +63,6 @@ namespace Mafia2
                     index++;
             }
             return -1;
-        }
-    }
-
-    public static partial class FunctionSwap
-    {
-        public static ulong Swap(this ulong value)
-        {
-            return ((0x00000000000000FFu) & (value >> 56) |
-                    (0x000000000000FF00u) & (value >> 40) |
-                    (0x0000000000FF0000u) & (value >> 24) |
-                    (0x00000000FF000000u) & (value >> 8) |
-                    (0x000000FF00000000u) & (value << 8) |
-                    (0x0000FF0000000000u) & (value << 24) |
-                    (0x00FF000000000000u) & (value << 40) |
-                    (0xFF00000000000000u) & (value << 56));
         }
     }
 }

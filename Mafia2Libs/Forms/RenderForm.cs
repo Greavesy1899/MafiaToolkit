@@ -15,7 +15,6 @@ namespace Mafia2Tool
 {
     public partial class D3DForm : Form
     {
-        private SystemConfigClass Config { get; set; }
         private InputClass Input { get; set; }
         private GraphicsClass Graphics { get; set; }
         private TimerClass Timer { get; set; }
@@ -57,11 +56,6 @@ namespace Mafia2Tool
         {
             bool result = false;
 
-            if (Config == null)
-            {
-                Config = new SystemConfigClass(title, width, height, fullscreen, Vsync);
-            }
-
             if (Input == null)
             {
                 Input = new InputClass();
@@ -72,7 +66,7 @@ namespace Mafia2Tool
             {
                 Graphics = new GraphicsClass();
                 BuildRenderObjects();
-                result = Graphics.Init(Config, handle);
+                result = Graphics.Init(handle);
             }
             return result;
         }
@@ -183,7 +177,6 @@ namespace Mafia2Tool
             Graphics?.Shutdown();
             Graphics = null;
             Input = null;
-            Config = null;
         }
         private void CullModeButton_Click(object sender, EventArgs e)
         {
@@ -228,7 +221,7 @@ namespace Mafia2Tool
         private void Pick(int sx, int sy)
         {
 
-            var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(Config.Width, Config.Height), Graphics.GetProjectionMatrix());
+            var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height), Graphics.GetProjectionMatrix());
 
             // transform the picking ray into the object space of the mesh
             var invWorld = Matrix.Invert(Graphics.GetWorldMatrix());

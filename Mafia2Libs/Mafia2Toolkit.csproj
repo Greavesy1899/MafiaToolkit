@@ -367,7 +367,6 @@
     </Compile>
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
-    <Compile Include="Rendering\System\SystemClass.cs" />
     <Compile Include="Rendering\System\SystemConfigClass.cs" />
     <Compile Include="Rendering\System\TimerClass.cs" />
     <Compile Include="Utils\Extensions.cs" />

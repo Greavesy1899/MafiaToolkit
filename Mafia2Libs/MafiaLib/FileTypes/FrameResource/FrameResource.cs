@@ -119,8 +119,7 @@ namespace ResourceTypes.FrameResource
                 frameBlocks[j] = skeletonHierachy.RefID;
                 FrameEntries.Add(j++, skeletonHierachy);
             }
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
+
             if (header.NumObjects > 0)
             {
                     for (int i = 0; i != header.NumObjects; i++)
@@ -189,8 +188,8 @@ namespace ResourceTypes.FrameResource
                     FrameEntries.Add(frameBlocks.Length+i, newObject);
                 }
             }
-            watch.Stop();
-            Console.WriteLine(watch.Elapsed);
+            objectTypes = null;
+            frameBlocks = null;
             DefineFrameBlockParents();
         }
 
