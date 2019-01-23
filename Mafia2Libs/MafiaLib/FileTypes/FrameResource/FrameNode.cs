@@ -28,6 +28,16 @@ namespace ResourceTypes.FrameResource
             return true;
         }
 
+        public bool RemoveChild(int idx)
+        {
+            if(Children.ContainsKey(idx))
+            {
+                Children.Remove(idx);
+                return true;
+            }
+            return false;
+        }
+
         public void SetParent1(FrameNode parent)
         {
             Parent1 = parent;

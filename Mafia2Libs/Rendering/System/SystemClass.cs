@@ -50,7 +50,7 @@ namespace ModelViewer.Programming.SystemClasses
             if (Graphics == null)
             {
                 Graphics = new GraphicsClass();
-                result = Graphics.Init(Config, handle, meshName);
+                result = Graphics.Init(Config, handle);
             }
             return result;
         

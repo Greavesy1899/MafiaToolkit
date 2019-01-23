@@ -20,10 +20,9 @@ namespace Mafia2Tool
         private GraphicsClass Graphics { get; set; }
         private TimerClass Timer { get; set; }
 
-        private SharpDX.Point mousePos;
-        private SharpDX.Point lastMousePos;
+        private Point mousePos;
+        private Point lastMousePos;
         private FileInfo fileLocation;
-        private FrameObjectBase entryObj;
 
         public D3DForm(FileInfo info)
         {
@@ -42,17 +41,19 @@ namespace Mafia2Tool
 
         public void PopulateList()
         {
-            //foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
-            //    treeView1.Items.Add(entry.Value.ToString());
+            SceneData.FrameResource.BuildFrameTree(SceneData.FrameNameTable);
+            TreeNode tree = new TreeNode("SceneManager");
+            SceneData.FrameResource.Frame.ConvertToTreeNode(ref tree);
+            treeView1.Nodes.Add(tree);
         }
 
         public void StartD3DPanel()
         {
-            Init("Model Viewer", 1920, 1080, true, "F:/MafiaII Exported Models/11_G_07.m2t", this.RenderPanel.Handle, false, 0);
+            Init("Model Viewer", 1920, 1080, true, RenderPanel.Handle, false, 0);
             Run();
         }
 
-        public bool Init(string title, int width, int height, bool Vsync, string meshName, IntPtr handle, bool fullscreen, int testTimeSeconds)
+        public bool Init(string title, int width, int height, bool Vsync, IntPtr handle, bool fullscreen, int testTimeSeconds)
         {
             bool result = false;
 
@@ -70,12 +71,8 @@ namespace Mafia2Tool
             if (Graphics == null)
             {
                 Graphics = new GraphicsClass();
-                Stopwatch watch = new Stopwatch();
-                watch.Start();
                 BuildRenderObjects();
-                watch.Stop();
-                Console.WriteLine("It took {0} to build objects", watch.Elapsed);
-                result = Graphics.Init(Config, handle, meshName);
+                result = Graphics.Init(Config, handle);
             }
             return result;
         }
@@ -128,7 +125,7 @@ namespace Mafia2Tool
                     model.BoundingBox.Init(mesh.Boundings);
                     model.ConvertM2ModelToRenderModel(newModel.ModelStructure);
                     model.DoRender = true;
-                    model.SetTransform(mesh.Matrix.Position.X, mesh.Matrix.Position.Y, mesh.Matrix.Position.Z, mesh.Matrix.Rotation);
+                    model.SetTransform(mesh.Matrix.Position, mesh.Matrix.Rotation);
                     meshes.Add(fObject.RefID, model);
                 }
             }
@@ -206,51 +203,54 @@ namespace Mafia2Tool
         //Improvement Idea: Sync updates values IF selected indexes is valid.
         private void UpdateCurrentEntryData()
         {
-            //FrameObjectBase fObject = (SceneData.FrameResource.FrameObjects.ElementAt(listBox1.SelectedIndex).Value as FrameObjectBase);
-            //CurrentEntry.Text = fObject.Name.String;
-            //PositionXBox.Text = fObject.Matrix.Position.X.ToString();
-            //PositionYBox.Text = fObject.Matrix.Position.Y.ToString();
-            //PositionZBox.Text = fObject.Matrix.Position.Z.ToString();
-            //RotationXBox.Text = fObject.Matrix.Rotation.EulerRotation.X.ToString();
-            //RotationYBox.Text = fObject.Matrix.Rotation.EulerRotation.Y.ToString();
-            //RotationZBox.Text = fObject.Matrix.Rotation.EulerRotation.Z.ToString();
+            if (treeView1.SelectedNode.Tag == null || treeView1.SelectedNode.Tag.GetType() == typeof(FrameHeaderScene))
+                return;
+
+            FrameObjectBase fObject = (treeView1.SelectedNode.Tag as FrameObjectBase);
+            CurrentEntry.Text = fObject.Name.String;
+            PositionXBox.Text = fObject.Matrix.Position.X.ToString();
+            PositionYBox.Text = fObject.Matrix.Position.Y.ToString();
+            PositionZBox.Text = fObject.Matrix.Position.Z.ToString();
+            RotationXBox.Text = fObject.Matrix.Rotation.EulerRotation.X.ToString();
+            RotationYBox.Text = fObject.Matrix.Rotation.EulerRotation.Y.ToString();
+            RotationZBox.Text = fObject.Matrix.Rotation.EulerRotation.Z.ToString();
         }
 
         private void EntryApplyChanges_OnClick(object sender, EventArgs e)
         {
-            //FrameObjectBase fObject = (SceneData.FrameResource.FrameObjects.ElementAt(listBox1.SelectedIndex).Value as FrameObjectBase);
-            //fObject.Matrix.Position = new Vector3(float.Parse(PositionXBox.Text), float.Parse(PositionYBox.Text), float.Parse(PositionZBox.Text));
-            //fObject.Matrix.Rotation.EulerRotation = new Vector3(float.Parse(RotationXBox.Text), float.Parse(RotationYBox.Text), float.Parse(RotationZBox.Text));
-            //fObject.Matrix.Rotation.UpdateMatrixFromEuler();
-            //Graphics.Models[fObject.RefID].DoRender = HideInViewerCheckBox.Checked;
-            //Graphics.Models[fObject.RefID].SetTransform(fObject.Matrix.Position.X, fObject.Matrix.Position.Y, fObject.Matrix.Position.Z, fObject.Matrix.Rotation);
+            FrameObjectBase fObject = (treeView1.SelectedNode.Tag as FrameObjectBase);
+            fObject.Matrix.Position = new Vector3(float.Parse(PositionXBox.Text), float.Parse(PositionYBox.Text), float.Parse(PositionZBox.Text));
+            fObject.Matrix.Rotation.EulerRotation = new Vector3(float.Parse(RotationXBox.Text), float.Parse(RotationYBox.Text), float.Parse(RotationZBox.Text));
+            fObject.Matrix.Rotation.UpdateMatrixFromEuler();
+            Graphics.Models[fObject.RefID].DoRender = !HideInViewerCheckBox.Checked;
+            Graphics.Models[fObject.RefID].SetTransform(fObject.Matrix.Position, fObject.Matrix.Rotation);
         }
         private void Pick(int sx, int sy)
         {
 
-            var ray = Graphics.Camera.GetPickingRay(new SharpDX.Vector2(sx, sy), new SharpDX.Vector2(Config.Width, Config.Height), Graphics.GetProjectionMatrix());
+            var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(Config.Width, Config.Height), Graphics.GetProjectionMatrix());
 
             // transform the picking ray into the object space of the mesh
             var invWorld = Matrix.Invert(Graphics.GetWorldMatrix());
-            ray.Direction = SharpDX.Vector3.TransformNormal(ray.Direction, invWorld);
-            ray.Position = SharpDX.Vector3.TransformCoordinate(ray.Position, invWorld);
+            ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
+            ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
             ray.Direction.Normalize();
 
             float tmin;
             string pickedModel = "";
             foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
             {
-                SharpDX.Vector3 minVector = new SharpDX.Vector3(
+                Vector3 minVector = new Vector3(
                     model.Value.Transform.Column1[3] + model.Value.BoundingBox.Boundings.Minimum.X,
                     model.Value.Transform.Column2[3] + model.Value.BoundingBox.Boundings.Minimum.Y,
                     model.Value.Transform.Column3[3] + model.Value.BoundingBox.Boundings.Minimum.Z
                     );
-                SharpDX.Vector3 maxVector = new SharpDX.Vector3(
+                Vector3 maxVector = new Vector3(
                     model.Value.Transform.Column1[3] + model.Value.BoundingBox.Boundings.Maximum.X,
                     model.Value.Transform.Column2[3] + model.Value.BoundingBox.Boundings.Maximum.Y,
                     model.Value.Transform.Column3[3] + model.Value.BoundingBox.Boundings.Maximum.Z
     );
-                SharpDX.BoundingBox tempBox = new SharpDX.BoundingBox(minVector, maxVector);
+                BoundingBox tempBox = new BoundingBox(minVector, maxVector);
                 if(ray.Intersects(ref tempBox, out tmin))
                 {
                     Console.WriteLine(string.Format("Name {0}, Distance {1}", (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase).Name.String, tmin));
@@ -260,7 +260,7 @@ namespace Mafia2Tool
                 {
 
                     float t = 0;
-                    SharpDX.Vector3 temp_vec3 = model.Value.Vertices[i].position;
+                    Vector3 temp_vec3 = model.Value.Vertices[i].position;
                     if (!ray.Intersects(ref temp_vec3)) continue;
                     // find the closest intersection, exclude intersections behind camera
                     if (!(t < tmin2 || t < 0)) continue;
@@ -271,6 +271,11 @@ namespace Mafia2Tool
             }
 
             Console.WriteLine(pickedModel);
+        }
+
+        private void OnAfterSelect(object sender, TreeViewEventArgs e)
+        {
+            UpdateCurrentEntryData();
         }
     }
 }

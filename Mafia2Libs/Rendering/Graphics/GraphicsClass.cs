@@ -19,7 +19,7 @@ namespace ModelViewer.Programming.GraphicClasses
         public static float Rotation { get; set; }
         public GraphicsClass() { }
 
-        public bool Init(SystemConfigClass Config, IntPtr WindowHandle, string meshName)
+        public bool Init(SystemConfigClass Config, IntPtr WindowHandle)
         {
             D3D = new DirectX11Class();
             if (!D3D.Init(Config, WindowHandle))
@@ -32,7 +32,7 @@ namespace ModelViewer.Programming.GraphicClasses
                 return false;
             }
             Camera = new Camera();
-            Camera.Position = new SharpDX.Vector3(0, 0, 15);
+            Camera.Position = new Vector3(0, 0, 15);
 
             foreach (KeyValuePair<int, RenderModel> model in Models)
                 model.Value.Init(D3D.Device);

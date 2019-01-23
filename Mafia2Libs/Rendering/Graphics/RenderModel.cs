@@ -48,7 +48,7 @@ namespace ModelViewer.Programming.GraphicClasses
             return true;
         }
 
-        public void SetTransform(float posX, float posY, float posZ, Matrix33 rotation)
+        public void SetTransform(Vector3 position, Matrix33 rotation)
         {
             Matrix m_trans = Matrix.Identity;
             m_trans[0, 0] = rotation.M00;
@@ -60,9 +60,9 @@ namespace ModelViewer.Programming.GraphicClasses
             m_trans[2, 0] = rotation.M20;
             m_trans[2, 1] = rotation.M21;
             m_trans[2, 2] = rotation.M22;
-            m_trans[3, 0] = posX;
-            m_trans[3, 1] = posY;
-            m_trans[3, 2] = posZ;
+            m_trans[3, 0] = position.X;
+            m_trans[3, 1] = position.Y;
+            m_trans[3, 2] = position.Z;
             Transform = m_trans;
         }
 

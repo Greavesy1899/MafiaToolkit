@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mafia2;
+using System.Diagnostics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -118,11 +119,11 @@ namespace ResourceTypes.FrameResource
                 frameBlocks[j] = skeletonHierachy.RefID;
                 FrameEntries.Add(j++, skeletonHierachy);
             }
-
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
             if (header.NumObjects > 0)
             {
-
-                for (int i = 0; i != header.NumObjects; i++)
+                    for (int i = 0; i != header.NumObjects; i++)
                     objectTypes[i] = reader.ReadInt32();
 
                 for (int i = 0; i != header.NumObjects; i++)
@@ -188,7 +189,9 @@ namespace ResourceTypes.FrameResource
                     FrameEntries.Add(frameBlocks.Length+i, newObject);
                 }
             }
-            //DefineFrameBlockParents();
+            watch.Stop();
+            Console.WriteLine(watch.Elapsed);
+            DefineFrameBlockParents();
         }
 
         /// <summary>
@@ -290,15 +293,22 @@ namespace ResourceTypes.FrameResource
             for (int i = 0; i != table.FrameData.Length; i++)
             {
                 FrameObjectBase fObject = (FrameEntries[numBlocks+table.FrameData[i].FrameIndex] as FrameObjectBase);
+                fObject.IsOnFrameTable = true;
+                fObject.FrameNameTableFlags = table.FrameData[i].Flags;
                 int p1idx = fObject.ParentIndex1.Index;
                 int p2idx = fObject.ParentIndex2.Index;
                 int thisKey = numBlocks + numBlocks + table.FrameData[i].FrameIndex;
 
                 FrameNode node = (!parsedNodes.ContainsKey(thisKey)) ? new FrameNode(fObject) : parsedNodes[thisKey];
 
-                if (parsedNodes.ContainsKey(p2idx))
+                if(p1idx == -1 && p2idx == -1)
                 {
-                    node.SetParent1(parsedNodes[p2idx]);
+                    //might be temp? it fixes cars loading in or non binded entries.
+                    continue;
+                }
+                else if (p2idx != -1 && parsedNodes.ContainsKey(p2idx))
+                {
+                    node.SetParent2(parsedNodes[p2idx]);
                     parsedNodes[p2idx].AddChild(node, thisKey);
                 }
                 else

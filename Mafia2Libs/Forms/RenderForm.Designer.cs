@@ -35,6 +35,7 @@
             this.FillModeButton = new System.Windows.Forms.ToolStripButton();
             this.MainTabControl = new System.Windows.Forms.TabControl();
             this.SceneTab = new System.Windows.Forms.TabPage();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.EditEntryTab = new System.Windows.Forms.TabPage();
             this.EntryApplyChanges = new System.Windows.Forms.Button();
             this.HideInViewerCheckBox = new System.Windows.Forms.CheckBox();
@@ -51,7 +52,6 @@
             this.PositionYLabel = new System.Windows.Forms.Label();
             this.PositionXBox = new System.Windows.Forms.TextBox();
             this.PositionXLabel = new System.Windows.Forms.Label();
-            this.treeView1 = new System.Windows.Forms.TreeView();
             this.toolStrip1.SuspendLayout();
             this.MainTabControl.SuspendLayout();
             this.SceneTab.SuspendLayout();
@@ -121,6 +121,15 @@
             this.SceneTab.TabIndex = 0;
             this.SceneTab.Text = "Scene";
             this.SceneTab.UseVisualStyleBackColor = true;
+            // 
+            // treeView1
+            // 
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.Location = new System.Drawing.Point(3, 3);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(198, 378);
+            this.treeView1.TabIndex = 0;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnAfterSelect);
             // 
             // EditEntryTab
             // 
@@ -238,7 +247,7 @@
             this.PositionZLabel.Name = "PositionZLabel";
             this.PositionZLabel.Size = new System.Drawing.Size(54, 13);
             this.PositionZLabel.TabIndex = 4;
-            this.PositionZLabel.Text = "Position X";
+            this.PositionZLabel.Text = "Position Z";
             // 
             // PositionYBox
             // 
@@ -271,14 +280,6 @@
             this.PositionXLabel.Size = new System.Drawing.Size(54, 13);
             this.PositionXLabel.TabIndex = 0;
             this.PositionXLabel.Text = "Position X";
-            // 
-            // treeView1
-            // 
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.Location = new System.Drawing.Point(3, 3);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(198, 378);
-            this.treeView1.TabIndex = 0;
             // 
             // D3DForm
             // 
