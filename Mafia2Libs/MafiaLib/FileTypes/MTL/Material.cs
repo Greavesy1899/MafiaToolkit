@@ -2,6 +2,7 @@
 using System.IO;
 using System.ComponentModel;
 using Gibbed.Illusion.FileFormats.Hashing;
+using System.Collections.Generic;
 
 namespace Mafia2
 {
@@ -24,7 +25,7 @@ namespace Mafia2
         ShaderParameter[] sp;
 
         int sps_count;
-        ShaderParameterSampler[] sps;
+        Dictionary<string, ShaderParameterSampler> sps;
 
         [Category("Material IDs"), ReadOnly(true)]
         public ulong MaterialHash {
@@ -96,11 +97,11 @@ namespace Mafia2
         }
 
         [Category("SPS")]
-        public ShaderParameterSampler[] SPS {
+        public Dictionary<string, ShaderParameterSampler> SPS {
             get { return sps; }
             set {
                 sps = value;
-                sps_count = value.Length;
+                sps_count = value.Count;
             }
         }
 
@@ -131,8 +132,9 @@ namespace Mafia2
             sp_count = 0;
             sp = new ShaderParameter[0];
             sps_count = 1;
-            sps = new ShaderParameterSampler[1];
-            sps[0] = new ShaderParameterSampler();
+            sps = new Dictionary<string, ShaderParameterSampler>();
+            var spp = new ShaderParameterSampler();
+            sps.Add(spp.ID, spp);
         }
 
         public override string ToString()
@@ -168,10 +170,11 @@ namespace Mafia2
             }
 
             sps_count = reader.ReadInt32();
-            sps = new ShaderParameterSampler[sps_count];
+            sps = new Dictionary<string, ShaderParameterSampler>();
             for (int i = 0; i != sps_count; i++)
             {
-                sps[i] = new ShaderParameterSampler(reader);
+                var shader = new ShaderParameterSampler(reader);
+                sps.Add(shader.ID, shader);
             }
 
         }
@@ -208,9 +211,9 @@ namespace Mafia2
 
             ////Shader Parameter Samplers
             writer.Write(sps_count);
-            foreach (ShaderParameterSampler sps in sps)
+            foreach (KeyValuePair<string, ShaderParameterSampler> shader in sps)
             {
-                sps.WriteToFile(writer);
+                shader.Value.WriteToFile(writer);
             }
         }
 
@@ -227,46 +230,45 @@ namespace Mafia2
 
     public struct ShaderParameter
     {
+        string name;
+        int paramCount;
+        float[] paramaters;
 
-        string chunk;
-        int floatCount;
-        float[] floats;
-
-        public string Chunk {
-            get { return chunk; }
-            set { chunk = value; }
+        public string Name {
+            get { return name; }
+            set { name = value; }
         }
-        public float[] Floats {
-            get { return floats; }
+        public float[] Paramaters {
+            get { return paramaters; }
             set {
-                floats = value;
-                floatCount = value.Length;
+                paramaters = value;
+                paramCount = value.Length;
             }
         }
 
         public ShaderParameter(BinaryReader reader)
         {
-            chunk = new string(reader.ReadChars(4));
-            floatCount = reader.ReadInt32() / 4;
-            floats = new float[floatCount];
-            for (int i = 0; i != floatCount; i++)
+            name = new string(reader.ReadChars(4));
+            paramCount = reader.ReadInt32() / 4;
+            paramaters = new float[paramCount];
+            for (int i = 0; i != paramCount; i++)
             {
-                floats[i] = reader.ReadSingle();
+                paramaters[i] = reader.ReadSingle();
             }
         }
 
         public override string ToString()
         {
-            return string.Format("{0}, {1}", chunk, floatCount);
+            return string.Format("{0}, {1}", name, paramCount);
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(chunk.ToCharArray());
-            writer.Write(floatCount * 4);
-            for (int i = 0; i != floatCount; i++)
+            writer.Write(name.ToCharArray());
+            writer.Write(paramCount * 4);
+            for (int i = 0; i != paramCount; i++)
             {
-                writer.Write(floats[i]);
+                writer.Write(paramaters[i]);
             }
         }
     }

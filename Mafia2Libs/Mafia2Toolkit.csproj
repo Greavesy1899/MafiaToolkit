@@ -367,7 +367,6 @@
     </Compile>
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
-    <Compile Include="Rendering\System\SystemConfigClass.cs" />
     <Compile Include="Rendering\System\TimerClass.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\IniFile.cs" />
@@ -481,6 +480,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\FrameResourceAddOption.resx">
       <DependentUpon>FrameResourceAddOption.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\MaterialAddOption.resx">
       <DependentUpon>MaterialAddOption.cs</DependentUpon>

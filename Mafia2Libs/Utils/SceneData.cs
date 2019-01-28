@@ -1,5 +1,6 @@
 ﻿using Mafia2;
 using ResourceTypes.FrameResource;
+using ResourceTypes.FrameNameTable;
 using System;
 using System.Collections.Generic;
 using System.IO;

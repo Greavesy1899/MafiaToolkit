@@ -55,8 +55,6 @@ namespace Mafia2Tool
                     dataGridView1.Rows.Add(BuildRowData(mat));
                 }
             }
-
-            File.WriteAllLines("DebugShaderData.txt", debugShader);
         }
 
         public void WriteMaterialsFile()
@@ -136,6 +134,36 @@ namespace Mafia2Tool
                 MaterialGrid.SelectedObject = dataGridView1.Rows[e.RowIndex].Tag;
         }
 
+        private void DumpSpecificMaterialNames()
+        {
+            int countForShaderID = 0;
+            int countForShaderHash = 0;
+            int countForBoth = 0;
+            foreach (KeyValuePair<ulong, Material> mat in mtl.Materials)
+            {
+                if (mat.Value.ShaderID == 3854590933660942049)
+                {
+                    Console.WriteLine("Material {0} has ShaderID", mat.Value.MaterialName);
+                    countForShaderID++;
+                }
+
+                if (mat.Value.ShaderHash == 601151254)
+                {
+                    Console.WriteLine("Material {0} has ShaderHash", mat.Value.MaterialName);
+                    countForShaderHash++;
+                }
+
+                if (mat.Value.ShaderID == 3854590933660942049 && mat.Value.ShaderHash == 601151254)
+                {
+                    Console.WriteLine("Material {0} has both ShaderID and ShaderHash", mat.Value.MaterialName);
+                    countForBoth++;
+                }
+            }
+            Console.WriteLine(countForShaderID);
+            Console.WriteLine(countForShaderHash);
+            Console.WriteLine(countForBoth);
+        }
+
         private DataGridViewRow BuildRowData(KeyValuePair<ulong, Material> mat)
         {
             DataGridViewRow row = new DataGridViewRow();
@@ -150,6 +178,11 @@ namespace Mafia2Tool
             row.Tag = mat;
             row.CreateCells(dataGridView1, new object[] { mat.MaterialName, mat.MaterialHash });
             return row;
+        }
+
+        private void DumpInfo_Clicked(object sender, EventArgs e)
+        {
+            DumpSpecificMaterialNames();
         }
     }
 }

@@ -10,9 +10,10 @@ namespace ModelViewer.Programming.GraphicClasses
     {
         public struct ModelPart
         {
+            public Material Material;
+            public ulong MaterialHash;
             public string TextureName;
             public ShaderResourceView Texture;
-            public Buffer IndexBuffer;
             public uint StartIndex;
             public uint NumFaces;
         }
@@ -23,8 +24,19 @@ namespace ModelViewer.Programming.GraphicClasses
         public ShaderClass.Vertex[] Vertices { get; private set; }
         public RenderBoundingBox BoundingBox { get; private set; }
         public ModelPart[] ModelParts { get; set; }
-        public Matrix Transform { get; private set; }
         public ushort[] Indices { get; private set; }
+
+        //new
+        public struct LOD
+        {
+            public Buffer IndexBuffer { get; private set; }
+            public Buffer VertexBuffer { get; private set; }
+            public ModelPart[] ModelParts { get; set; }
+            public ushort[] Indices { get; set; }
+        }
+
+        public LOD[] LODs { get; private set; }
+        public Matrix Transform { get; private set; }
         public bool DoRender { get; set; }
 
         public RenderModel()
@@ -102,6 +114,36 @@ namespace ModelViewer.Programming.GraphicClasses
                 part.StartIndex = structure.Lods[0].Parts[i].StartIndex;
                 part.NumFaces = structure.Lods[0].Parts[i].NumFaces;
                 ModelParts[i] = part;
+            }
+
+            return true;
+        }
+
+        public bool ConvertFrameToRenderModel(FrameObjectSingleMesh mesh, FrameGeometry geom, FrameMaterial mats, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
+        {
+            if (mesh == null || geom == null || mats == null || indexBuffers == null || vertexBuffers == null)
+                return false;
+
+            SetTransform(mesh.Matrix.Position, mesh.Matrix.Rotation);
+            DoRender = true;
+            BoundingBox = new RenderBoundingBox();
+            BoundingBox.Init(mesh.Boundings);
+            LODs = new LOD[geom.NumLods];
+
+            for(int i = 0; i != geom.NumLods; i++)
+            {
+                LOD lod = new LOD();
+                lod.Indices = indexBuffers[i].Data;
+                lod.ModelParts = new ModelPart[mats.LodMatCount[i]];
+
+                for (int z = 0; z != mats.Materials[i].Length; z++)
+                {
+                    lod.ModelParts[z] = new ModelPart();
+                    lod.ModelParts[z].NumFaces = (uint)mats.Materials[i][z].NumFaces;
+                    lod.ModelParts[z].StartIndex = (uint)mats.Materials[i][z].StartIndex;
+                    lod.ModelParts[z].MaterialHash = mats.Materials[i][z].MaterialHash;
+                }
+
             }
 
             return true;

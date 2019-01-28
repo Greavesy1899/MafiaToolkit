@@ -118,7 +118,7 @@ namespace Mafia2Tool
                     RenderModel model = new RenderModel();
                     model.BoundingBox.Init(mesh.Boundings);
                     model.ConvertM2ModelToRenderModel(newModel.ModelStructure);
-                    model.DoRender = true;
+                    model.DoRender = (mesh.FrameNameTableFlags == 0 ? true : false);
                     model.SetTransform(mesh.Matrix.Position, mesh.Matrix.Rotation);
                     meshes.Add(fObject.RefID, model);
                 }

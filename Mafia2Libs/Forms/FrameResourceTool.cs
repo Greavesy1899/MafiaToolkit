@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using ResourceTypes.FrameResource;
+using ResourceTypes.FrameNameTable;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -413,7 +414,6 @@ namespace Mafia2Tool
                 {
                     FrameNameTable nameTable = new FrameNameTable();
                     nameTable.BuildDataFromResource(SceneData.FrameResource);
-                    nameTable.AddNames();
                     nameTable.WriteToFile(writer);
                     SceneData.FrameNameTable = nameTable;
                 }

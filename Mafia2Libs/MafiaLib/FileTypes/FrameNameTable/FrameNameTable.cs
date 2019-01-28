@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using ResourceTypes.FrameResource;
+using Mafia2;
 using System.IO;
 using System.Linq;
 
-namespace Mafia2
+namespace ResourceTypes.FrameNameTable
 {
     public class FrameNameTable
     {
@@ -51,7 +52,7 @@ namespace Mafia2
         /// Builds the file from the FrameResource passed into this function.
         /// </summary>
         /// <param name="resource">the frame resource which the data is coming from.</param>
-        public void BuildDataFromResource(FrameResource resource)
+        public void BuildDataFromResource(FrameResource.FrameResource resource)
         {
             List<Data> tableData = new List<Data>();
             int[] scenePos;
@@ -180,7 +181,7 @@ namespace Mafia2
                 frameData[i] = new Data(reader);
             }
             AddNames();
-         }
+        }
 
         /// <summary>
         /// write the data to the file and save the data.

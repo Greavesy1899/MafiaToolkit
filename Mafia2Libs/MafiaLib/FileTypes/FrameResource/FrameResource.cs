@@ -285,7 +285,7 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        public void BuildFrameTree(FrameNameTable table)
+        public void BuildFrameTree(FrameNameTable.FrameNameTable table)
         {
             int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
             Dictionary<int, FrameNode> parsedNodes = new Dictionary<int, FrameNode>();
