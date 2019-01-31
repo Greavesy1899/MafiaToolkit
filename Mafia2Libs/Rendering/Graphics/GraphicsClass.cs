@@ -95,11 +95,11 @@ namespace Rendering.Graphics
                     SharpDX.Direct3D11.ShaderResourceView[] resources = new SharpDX.Direct3D11.ShaderResourceView[2];
                     resources[1] = model.AOTexture;
 
-                    for (int i = 0; i != model.ModelParts.Length; i++)
+                    for (int i = 0; i != model.LODs[0].ModelParts.Length; i++)
                     {
-                        resources[0] = model.ModelParts[i].Texture;
+                        resources[0] = model.LODs[0].ModelParts[i].Texture;
                         D3D.DeviceContext.PixelShader.SetShaderResources(0, 2, resources);
-                        Shader.Render(D3D.DeviceContext, (int)model.ModelParts[i].NumFaces*3, (int)model.ModelParts[i].StartIndex);
+                        Shader.Render(D3D.DeviceContext, (int)model.LODs[0].ModelParts[i].NumFaces*3, (int)model.LODs[0].ModelParts[i].StartIndex);
                     }
 
                     //D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Wireframe);

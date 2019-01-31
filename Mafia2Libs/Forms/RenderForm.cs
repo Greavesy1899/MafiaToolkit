@@ -113,12 +113,8 @@ namespace Mafia2Tool
                         vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
                     }
 
-                    Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
                     RenderModel model = new RenderModel();
-                    model.BoundingBox.Init(mesh.Boundings);
-                    model.ConvertM2ModelToRenderModel(newModel.ModelStructure);
-                    model.DoRender = (mesh.FrameNameTableFlags == 0 ? true : false);
-                    model.SetTransform(mesh.Matrix.Position, mesh.Matrix.Rotation);
+                    model.ConvertFrameToRenderModel(mesh, geom, mat, indexBuffers, vertexBuffers);
                     meshes.Add(fObject.RefID, model);
                 }
             }

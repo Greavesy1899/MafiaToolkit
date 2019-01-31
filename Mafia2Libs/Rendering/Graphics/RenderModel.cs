@@ -3,6 +3,7 @@ using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using System.Windows.Forms;
 using Mafia2;
+using System.Collections.Generic;
 
 namespace Rendering.Graphics
 {
@@ -17,21 +18,20 @@ namespace Rendering.Graphics
             public uint StartIndex;
             public uint NumFaces;
         }
-        private string AOTextureName { get; set; }
+        //private string AOTextureName { get; set; }
         public ShaderResourceView AOTexture { get; set; }
         private Buffer VertexBuffer { get; set; }
         private Buffer IndexBuffer { get; set; }
         public ShaderClass.Vertex[] Vertices { get; private set; }
         public RenderBoundingBox BoundingBox { get; private set; }
-        public ModelPart[] ModelParts { get; set; }
-        public ushort[] Indices { get; private set; }
+        //public ModelPart[] ModelParts { get; set; }
+        //public ushort[] Indices { get; private set; }
 
         //new
         public struct LOD
         {
-            public Buffer IndexBuffer { get; private set; }
-            public Buffer VertexBuffer { get; private set; }
             public ModelPart[] ModelParts { get; set; }
+            public ShaderClass.Vertex[] Vertices { get; set; }
             public ushort[] Indices { get; set; }
         }
 
@@ -78,47 +78,6 @@ namespace Rendering.Graphics
             Transform = m_trans;
         }
 
-        //CLEANUP WHEN MERGED
-        public bool ConvertM2ModelToRenderModel(M2TStructure structure)
-        {
-            AOTextureName = structure.AOTexture;
-            Vertices = new ShaderClass.Vertex[structure.Lods[0].Vertices.Length];
-            ModelParts = new ModelPart[structure.Lods[0].Parts.Length];
-
-            for (int i = 0; i != Vertices.Length; i++)
-            {
-                ShaderClass.Vertex newVertex = new ShaderClass.Vertex();
-                Vertex oldVertex = structure.Lods[0].Vertices[i];
-
-                newVertex.position = oldVertex.Position;
-                newVertex.normal = oldVertex.Normal;
-
-                if (oldVertex.UVs[0] == null)
-                    newVertex.tex0 = new Vector2(0.0f, 1.0f);
-                else
-                    newVertex.tex0 = oldVertex.UVs[0];
-
-                if (oldVertex.UVs[3] == null)
-                    newVertex.tex7 = new Vector2(0.0f, 1.0f);
-                else
-                    newVertex.tex7 = oldVertex.UVs[3];
-
-                Vertices[i] = newVertex;
-            }
-
-            Indices = structure.Lods[0].Indices;
-            for (int i = 0; i != ModelParts.Length; i++)
-            {
-                ModelPart part = new ModelPart();
-                part.TextureName = structure.Lods[0].Parts[i].Material;
-                part.StartIndex = structure.Lods[0].Parts[i].StartIndex;
-                part.NumFaces = structure.Lods[0].Parts[i].NumFaces;
-                ModelParts[i] = part;
-            }
-
-            return true;
-        }
-
         public bool ConvertFrameToRenderModel(FrameObjectSingleMesh mesh, FrameGeometry geom, FrameMaterial mats, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
             if (mesh == null || geom == null || mats == null || indexBuffers == null || vertexBuffers == null)
@@ -142,9 +101,92 @@ namespace Rendering.Graphics
                     lod.ModelParts[z].NumFaces = (uint)mats.Materials[i][z].NumFaces;
                     lod.ModelParts[z].StartIndex = (uint)mats.Materials[i][z].StartIndex;
                     lod.ModelParts[z].MaterialHash = mats.Materials[i][z].MaterialHash;
+                    //Material mat = MaterialsManager.LookupMaterialByHash(lod.ModelParts[z].MaterialHash);
                 }
 
+                lod.Vertices = new ShaderClass.Vertex[geom.LOD[i].NumVertsPr];
+                int vertexSize;
+                Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = geom.LOD[i].GetVertexOffsets(out vertexSize);
+
+                for (int x = 0; x != lod.Vertices.Length; x++)
+                {
+                    ShaderClass.Vertex vertex = new ShaderClass.Vertex();
+
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Position))
+                    {
+                        int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
+                        vertex.position = VertexTranslator.ReadPositionDataFromVB(vertexBuffers[i].Data, startIndex, geom.DecompressionFactor, geom.DecompressionOffset);
+                    }
+
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                    {
+                        //int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
+                       // vertex.Tangent = VertexTranslator.ReadTangentDataFromVB(vertexBuffers[i].Data, startIndex);
+                    }
+
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
+                    {
+                        int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Normals].Offset;
+                        vertex.normal = VertexTranslator.ReadNormalDataFromVB(vertexBuffers[i].Data, startIndex);
+                    }
+
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.BlendData))
+                    {
+                        //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.BlendData].Offset;
+                       // vertex.BlendWeight = VertexTranslator.ReadBlendWeightFromVB(vertexBuffer.Data, startIndex);
+                       // vertex.BoneID = VertexTranslator.ReadBlendIDFromVB(vertexBuffer.Data, startIndex);
+                    }
+
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x80))
+                    {
+                        //unknown
+                    }
+
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                    {
+                        int startIndex = x * vertexSize + vertexOffsets[VertexFlags.TexCoords0].Offset;
+                        vertex.tex0 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
+                    }
+
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                    {
+                        //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords1].Offset;
+                        //vertex.UVs[1] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
+                    }
+
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                    {
+                        //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords2].Offset;
+                        //vertex.UVs[2] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
+                    }
+
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                    {
+                        int startIndex = x * vertexSize + vertexOffsets[VertexFlags.TexCoords7].Offset;
+                        vertex.tex7 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
+                    }
+
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x20000))
+                    {
+                        //unknown
+                    }
+
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x40000))
+                    {
+                        //unknown
+                    }
+
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
+                    {
+                        //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.DamageGroup].Offset;
+                        //vertex.DamageGroup = VertexTranslator.ReadDamageGroupFromVB(vertexBuffer.Data, startIndex);
+                    }
+
+                    lod.Vertices[x] = vertex;
+                }
+                LODs[i] = lod;
             }
+
 
             return true;
         }
@@ -159,8 +201,8 @@ namespace Rendering.Graphics
         }
         private bool InitBuffer(Device device)
         {
-            VertexBuffer = Buffer.Create(device, BindFlags.VertexBuffer, Vertices);
-            IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, Indices);
+            VertexBuffer = Buffer.Create(device, BindFlags.VertexBuffer, LODs[0].Vertices);
+            IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, LODs[0].Indices);
 
             BoundingBox.InitBuffer(device);
             return true;
@@ -168,17 +210,17 @@ namespace Rendering.Graphics
         private bool LoadTexture(Device device)
         {
             TextureClass AOTextureClass = new TextureClass();
-            bool result = AOTextureClass.Init(device, AOTextureName);
+            bool result = AOTextureClass.Init(device, "texture.dds");
             AOTexture = AOTextureClass.TextureResource;
 
             if (!result)
                 return false;
 
-            for (int x = 0; x != ModelParts.Length; x++)
+            for (int x = 0; x != LODs[0].ModelParts.Length; x++)
             {
                 TextureClass Texture = new TextureClass();
-                result = Texture.Init(device, ModelParts[x].TextureName);
-                ModelParts[x].Texture = Texture.TextureResource;
+                result = Texture.Init(device, LODs[0].ModelParts[x].TextureName);
+                LODs[0].ModelParts[x].Texture = Texture.TextureResource;
 
                 if (!result)
                     return false;
@@ -187,10 +229,10 @@ namespace Rendering.Graphics
         }
         private void ReleaseTextures()
         {
-            for (int x = 0; x != ModelParts.Length; x++)
+            for (int x = 0; x != LODs[0].ModelParts.Length; x++)
             {
-                ModelParts[x].Texture?.Dispose();
-                ModelParts[x].Texture = null;
+                LODs[0].ModelParts[x].Texture?.Dispose();
+                LODs[0].ModelParts[x].Texture = null;
             }
             AOTexture?.Dispose();
             AOTexture = null;
@@ -198,8 +240,8 @@ namespace Rendering.Graphics
         }
         private void ReleaseModel()
         {
-            Vertices = null;
-            Indices = null;
+            LODs[0].Vertices = null;
+            LODs[0].Indices = null;
             BoundingBox.ReleaseModel();
         }
         private void ShutdownBuffers()
