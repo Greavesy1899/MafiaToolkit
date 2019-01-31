@@ -67,67 +67,71 @@ namespace Mafia2
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                        vertex.ReadPositionData(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset);
+                        vertex.Position = VertexTranslator.ReadPositionDataFromVB(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                        vertex.ReadTangentData(vertexBuffer.Data, startIndex);
+                        vertex.Tangent = VertexTranslator.ReadTangentDataFromVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Normals].Offset;
-                        vertex.ReadNormalData(vertexBuffer.Data, startIndex);
+                        vertex.Normal = VertexTranslator.ReadNormalDataFromVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.BlendData))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.BlendData].Offset;
-                        vertex.ReadBlendData(vertexBuffer.Data, startIndex);
+                        vertex.BlendWeight = VertexTranslator.ReadBlendWeightFromVB(vertexBuffer.Data, startIndex);
+                        vertex.BoneID = VertexTranslator.ReadBlendIDFromVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x80))
                     {
+                        //unknown
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords0].Offset;
-                        vertex.ReadUvData(vertexBuffer.Data, startIndex, 0);
+                        vertex.UVs[0] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords1].Offset;
-                        vertex.ReadUvData(vertexBuffer.Data, startIndex, 1);
+                        vertex.UVs[1] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords2].Offset;
-                        vertex.ReadUvData(vertexBuffer.Data, startIndex, 2);
+                        vertex.UVs[2] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords7].Offset;
-                        vertex.ReadUvData(vertexBuffer.Data, startIndex, 3);
+                        vertex.UVs[3] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x20000))
                     {
+                        //unknown
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x40000))
                     {
+                        //unknown
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.DamageGroup].Offset;
-                        vertex.ReadDamageGroup(vertexBuffer.Data, startIndex);
+                        vertex.DamageGroup = VertexTranslator.ReadDamageGroupFromVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].NormalMapInfoPresent)
@@ -143,13 +147,13 @@ namespace Mafia2
                         ModelPart modelPart = new ModelPart();
                         Material mat = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
 
-                        if (mat == null || mat.SPS.Length == 0)
+                        if (mat == null || mat.SPS.Count == 0)
                         {
                             modelPart.Material = "_test_gray";
                         }
                         else
                         {
-                            modelPart.Material = (mat == null) ? "null" : mat.SPS[0].File;
+                            modelPart.Material = (mat == null) ? "null" : mat.SPS["S000"].File;
                         }
 
                         modelPart.StartIndex = (uint)materials[x].StartIndex;

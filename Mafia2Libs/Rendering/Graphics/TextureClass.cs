@@ -1,8 +1,7 @@
 ﻿using SharpDX.Direct3D11;
-using ModelViewer.Programming.SystemClasses;
 using System.Diagnostics;
 
-namespace ModelViewer.Programming.GraphicClasses
+namespace Rendering.Graphics
 {
     public class TextureClass
     {

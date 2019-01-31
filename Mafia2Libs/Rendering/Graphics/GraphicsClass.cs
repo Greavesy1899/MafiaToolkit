@@ -1,11 +1,11 @@
-﻿using ModelViewer.Programming.SystemClasses;
-using ModelViewer.Programming.InputClasses;
+﻿using Rendering.Utils;
+using Rendering.Input;
 using System;
 using System.Windows.Forms;
 using SharpDX;
 using System.Collections.Generic;
 
-namespace ModelViewer.Programming.GraphicClasses
+namespace Rendering.Graphics
 {
     public class GraphicsClass
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace ModelViewer.Programming.InputClasses
+namespace Rendering.Input
 {
     public class InputClass
     {

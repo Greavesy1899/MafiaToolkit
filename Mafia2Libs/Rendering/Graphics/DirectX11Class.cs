@@ -5,7 +5,7 @@ using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using Mafia2Tool;
 
-namespace ModelViewer.Programming.GraphicClasses
+namespace Rendering.Graphics
 {
     public class DirectX11Class
     {

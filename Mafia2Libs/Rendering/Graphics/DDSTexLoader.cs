@@ -19,7 +19,6 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 //--------------------------------------------------------------------------------------
 
-using System;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Direct3D;
@@ -28,8 +27,9 @@ using System.Runtime.InteropServices;
 using Device = SharpDX.Direct3D11.Device;
 using Resource = SharpDX.Direct3D11.Resource;
 using System.IO;
+using System;
 
-namespace ModelViewer.Programming.GraphicClasses
+namespace Rendering.Graphics
 {
     public static class DDSTextureLoader
     {

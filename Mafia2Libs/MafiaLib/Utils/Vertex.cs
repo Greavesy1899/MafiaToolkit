@@ -80,22 +80,6 @@ namespace Mafia2
         }
 
         /// <summary>
-        /// Read position data using buffer data, datapos, decompFactor and the decompOffset
-        /// </summary>
-        /// <param name="data">vertex buffer data</param>
-        /// <param name="i">current position to read from</param>
-        /// <param name="factor">Decompression Factor</param>
-        /// <param name="offset">Decompression Offset</param>
-        public void ReadPositionData(byte[] data, int i, float factor, Vector3 offset)
-        {
-            ushort x = BitConverter.ToUInt16(data, i);
-            ushort y = BitConverter.ToUInt16(data, i + 2);
-            ushort z = (ushort)(BitConverter.ToUInt16(data, i + 4) & short.MaxValue);
-            position = new Vector3(x * factor, y * factor, z * factor);
-            position += offset;         
-        }
-
-        /// <summary>
         /// Write position data into buffer. Uses Decompression factor, and offset.
         /// </summary>
         /// <param name="factor"></param>
@@ -124,20 +108,6 @@ namespace Mafia2
         }
 
         /// <summary>
-        /// Read tangent data from buffer data, datapos.
-        /// </summary>
-        /// <param name="data">vertex buffer data</param>
-        /// <param name="i">current position to read from</param>
-        public void ReadTangentData(byte[] data, int i)
-        {
-            float x = (data[i + 6] - sbyte.MaxValue) * 0.007874f;
-            float y = (data[i + 7] - sbyte.MaxValue) * 0.007874f;
-            float z = (data[i + 11] - sbyte.MaxValue) * 0.007874f;
-            tangent = new Vector3(x, y, z);
-            tangent.Normalize();
-        }
-
-        /// <summary>
         /// Write tangent data from buffer.
         /// </summary>
         /// <returns></returns>
@@ -163,26 +133,6 @@ namespace Mafia2
         }
 
         /// <summary>
-        /// Read normal data from buffer data, datapos.
-        /// </summary>
-        /// <param name="data">vertex buffer data</param>
-        /// <param name="i">current position to read from</param>
-        public void ReadNormalData(byte[] data, int i)
-        {
-            Vector3 max255 = new Vector3(255);
-            SharpDX.Half x = new SharpDX.Half(data[i]);
-            SharpDX.Half y = new SharpDX.Half(data[i + 1]);
-            SharpDX.Half z = new SharpDX.Half(data[i + 2]);
-            Vector3 vec = new Vector3(x, y, z);
-            vec /= max255;
-            vec *= 2;
-            vec -= 1;
-
-            normal = vec;
-            //normal.Normalize();
-        }
-
-        /// <summary>
         /// Write tangent data from buffer.
         /// </summary>
         /// <returns></returns>
@@ -205,32 +155,6 @@ namespace Mafia2
             tempNormal = Normal.Z * 127.0f + 127.0f;
             tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)255;
             data[i + 2] = tempByte;
-        }
-
-        /// <summary>
-        /// This is WIP.
-        /// </summary>
-        /// <param name="data">vertex buffer data</param>
-        /// <param name="i">current position to read from</param>
-        public void ReadBlendData(byte[] data, int i)
-        {
-            //todo; work on skeleton models.
-            blendWeight = (BitConverter.ToSingle(data, i) / byte.MaxValue);
-            boneID = BitConverter.ToInt32(data, i + 4);
-        }
-
-        /// <summary>
-        /// Read UV data from buffer data, datapos, and numuvs.
-        /// </summary>
-        /// <param name="data">vertex buffer data</param>
-        /// <param name="i">current position to read from</param>
-        /// <param name="uvpos">numuvs</param>
-        public void ReadUvData(byte[] data, int i, int uvpos)
-        {
-            System.Half x = System.Half.ToHalf(data, i);
-            System.Half y = System.Half.ToHalf(data, i + 2);
-            y = -y;
-            uvs[uvpos] = new Half2(x, y);
         }
 
         /// <summary>
@@ -270,32 +194,6 @@ namespace Mafia2
         {
             //todo; work on skeleton models.
             damageGroup = BitConverter.ToInt32(data, i);
-        }
-
-        public void ReadColor0(byte[] data, int i)
-        {
-            color0 = new byte[4];
-            color0[0] = data[i];
-            color0[1] = data[i+1];
-            color0[2] = data[i+2];
-            color0[3] = data[i+3];
-        }
-
-        public void ReadColor1(byte[] data, int i)
-        {
-            color1 = new byte[4];
-            color1[0] = data[i];
-            color1[1] = data[i + 1];
-            color1[2] = data[i + 2];
-            color1[3] = data[i + 3];
-        }
-
-        public void ReadBBCoeffs(byte[] data, int i)
-        {
-            bbCoeffs = new Vector3();
-            bbCoeffs.X = BitConverter.ToSingle(data, i);
-            bbCoeffs.Y = BitConverter.ToSingle(data, i+4);
-            bbCoeffs.Z = BitConverter.ToSingle(data, i+8);
         }
 
         /// <summary>

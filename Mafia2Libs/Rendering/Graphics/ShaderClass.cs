@@ -3,10 +3,9 @@ using SharpDX.D3DCompiler;
 using SharpDX.Direct3D11;
 using System;
 using System.Runtime.InteropServices;
-using ModelViewer.Programming.SystemClasses;
 using Mafia2Tool;
 
-namespace ModelViewer.Programming.GraphicClasses
+namespace Rendering.Graphics
 {
     public class ShaderClass
     {

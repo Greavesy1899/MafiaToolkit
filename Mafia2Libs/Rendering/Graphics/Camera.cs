@@ -1,7 +1,7 @@
 ﻿using SharpDX;
 using System.Diagnostics;
 
-namespace ModelViewer.Programming.GraphicClasses
+namespace Rendering.Graphics
 {
     public class Camera
     {

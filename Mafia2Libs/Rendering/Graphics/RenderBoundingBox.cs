@@ -3,7 +3,7 @@ using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using System.Windows.Forms;
 
-namespace ModelViewer.Programming.GraphicClasses
+namespace Rendering.Graphics
 {
     public class RenderBoundingBox
     {

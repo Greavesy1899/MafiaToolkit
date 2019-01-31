@@ -265,6 +265,7 @@
     <Compile Include="MafiaLib\Utils\TransformMatrix.cs" />
     <Compile Include="MafiaLib\Utils\Vectors.cs" />
     <Compile Include="MafiaLib\Utils\Vertex.cs" />
+    <Compile Include="MafiaLib\Utils\VertexTranslator.cs" />
     <Compile Include="Rendering\Graphics\Camera.cs" />
     <Compile Include="Rendering\Graphics\DDSTexLoader.cs" />
     <Compile Include="Rendering\Graphics\DirectX11Class.cs" />
@@ -365,9 +366,10 @@
     <Compile Include="Controls\MTLOptions.Designer.cs">
       <DependentUpon>MTLOptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Graphics\ShaderManager.cs" />
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
-    <Compile Include="Rendering\System\TimerClass.cs" />
+    <Compile Include="Rendering\Input\TimerClass.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\IniFile.cs" />
     <Compile Include="Forms\MaterialTool.cs">

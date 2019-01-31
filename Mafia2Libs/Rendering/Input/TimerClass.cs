@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Threading;
 
-namespace ModelViewer.Programming.SystemClasses
+namespace Rendering.Utils
 {
     public class TimerClass
     {

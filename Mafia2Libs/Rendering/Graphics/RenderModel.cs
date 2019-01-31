@@ -4,7 +4,7 @@ using SharpDX.Direct3D11;
 using System.Windows.Forms;
 using Mafia2;
 
-namespace ModelViewer.Programming.GraphicClasses
+namespace Rendering.Graphics
 {
     public class RenderModel
     {

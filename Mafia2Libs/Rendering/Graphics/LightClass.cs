@@ -1,6 +1,6 @@
 ﻿using SharpDX;
 
-namespace ModelViewer.Programming.GraphicClasses
+namespace Rendering.Graphics
 {
     public class LightClass
     {

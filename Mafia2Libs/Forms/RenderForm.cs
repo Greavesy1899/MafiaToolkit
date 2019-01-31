@@ -1,6 +1,6 @@
-﻿using ModelViewer.Programming.GraphicClasses;
-using ModelViewer.Programming.InputClasses;
-using ModelViewer.Programming.SystemClasses;
+﻿using Rendering.Graphics;
+using Rendering.Utils;
+using Rendering.Input;
 using SharpDX.Windows;
 using System;
 using System.IO;
@@ -8,7 +8,6 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using Mafia2;
-using System.Diagnostics;
 using SharpDX;
 
 namespace Mafia2Tool
