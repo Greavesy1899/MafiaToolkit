@@ -449,6 +449,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
+    <Compile Include="Rendering\Graphics\VertexLayouts.cs" />
     <None Include="Resources\Splash.png" />
     <None Include="Resources\Toolkit.ico" />
   </ItemGroup>

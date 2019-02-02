@@ -13,6 +13,12 @@ cbuffer LightBuffer
 	float4 specularColor;
 };
 
+cbuffer ShaderParams
+{
+    int EnableTexture;
+    float4 C007MaterialColour;
+};
+
 //////////////////////
 ////   TYPES
 //////////////////////
@@ -38,9 +44,18 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
 	float3 reflection;
 	float4 specular;
 
-	// Sample the pixel color from the texture using the sampler at this texture coordinate location.
-	diffuseTextureColor = textures[0].Sample(SampleType, input.tex0);
-	aoTextureColor = textures[1].Sample(SampleType, input.tex7);
+    if(EnableTexture == 1)
+    {
+	    // Sample the pixel color from the texture using the sampler at this texture coordinate location.
+        diffuseTextureColor = textures[0].Sample(SampleType, input.tex0);
+        aoTextureColor = textures[1].Sample(SampleType, input.tex7);
+    }
+    else
+    {
+        diffuseTextureColor = C007MaterialColour;
+        aoTextureColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    }
+
 
 	// Set the default output color to the ambient light value for all pixels.
 	color = ambientColor;

@@ -18,20 +18,17 @@ namespace Rendering.Graphics
             public uint StartIndex;
             public uint NumFaces;
         }
-        //private string AOTextureName { get; set; }
         public ShaderResourceView AOTexture { get; set; }
         private Buffer VertexBuffer { get; set; }
         private Buffer IndexBuffer { get; set; }
-        public ShaderClass.Vertex[] Vertices { get; private set; }
         public RenderBoundingBox BoundingBox { get; private set; }
-        //public ModelPart[] ModelParts { get; set; }
-        //public ushort[] Indices { get; private set; }
+        public ShaderClass Shader { get; private set; }
 
         //new
         public struct LOD
         {
             public ModelPart[] ModelParts { get; set; }
-            public ShaderClass.Vertex[] Vertices { get; set; }
+            public VertexLayouts.NormalLayout.Vertex[] Vertices { get; set; }
             public ushort[] Indices { get; set; }
         }
 
@@ -101,16 +98,16 @@ namespace Rendering.Graphics
                     lod.ModelParts[z].NumFaces = (uint)mats.Materials[i][z].NumFaces;
                     lod.ModelParts[z].StartIndex = (uint)mats.Materials[i][z].StartIndex;
                     lod.ModelParts[z].MaterialHash = mats.Materials[i][z].MaterialHash;
-                    //Material mat = MaterialsManager.LookupMaterialByHash(lod.ModelParts[z].MaterialHash);
+                    lod.ModelParts[z].Material = MaterialsManager.LookupMaterialByHash(lod.ModelParts[z].MaterialHash);
                 }
 
-                lod.Vertices = new ShaderClass.Vertex[geom.LOD[i].NumVertsPr];
+                lod.Vertices = new VertexLayouts.NormalLayout.Vertex[geom.LOD[i].NumVertsPr];
                 int vertexSize;
                 Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = geom.LOD[i].GetVertexOffsets(out vertexSize);
 
                 for (int x = 0; x != lod.Vertices.Length; x++)
                 {
-                    ShaderClass.Vertex vertex = new ShaderClass.Vertex();
+                    VertexLayouts.NormalLayout.Vertex vertex = new VertexLayouts.NormalLayout.Vertex();
 
                     if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
@@ -254,7 +251,7 @@ namespace Rendering.Graphics
         }
         private void RenderBuffers(DeviceContext deviceContext)
         {
-            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<ShaderClass.Vertex>(), 0));
+            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
         }

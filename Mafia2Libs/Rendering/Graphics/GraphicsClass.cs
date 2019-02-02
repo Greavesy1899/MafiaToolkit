@@ -11,7 +11,7 @@ namespace Rendering.Graphics
     {
         private DirectX11Class D3D { get; set; }
         private LightClass Light { get; set; }
-        private ShaderClass Shader { get; set; }
+        private ShaderManager ShaderManager { get; set; }
         public TimerClass Timer { get; set; }
         public InputClass Input { get; private set; }
         public Camera Camera { get; set; }
@@ -37,15 +37,16 @@ namespace Rendering.Graphics
             foreach (KeyValuePair<int, RenderModel> model in Models)
                 model.Value.Init(D3D.Device);
 
-            Shader = new ShaderClass();
-            if (!Shader.Init(D3D.Device, WindowHandle))
+
+            ShaderManager = new ShaderManager();
+            if (!ShaderManager.Init(D3D.Device))
             {
-                MessageBox.Show("Could not initialize the texture shader object. Error from GraphicsClass.");
+                MessageBox.Show("Could not init ShaderManager!");
                 return false;
             }
             Light = new LightClass();
             Light.SetAmbientColor(0.75f, 0.75f, 0.75f, 1f);
-            Light.SetDiffuseColour(1f, 1f, 1f, 1);
+            Light.SetDiffuseColour(0f, 0f, 0f, 0);
             Light.Direction = Camera.Position;
             Light.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
             Light.SetSpecularPower(32.0f);
@@ -58,8 +59,8 @@ namespace Rendering.Graphics
             Camera = null;
             Timer = null;
             Light = null;
-            Shader?.Shutdown();
-            Shader = null;
+            ShaderManager.Shutdown();
+            ShaderManager = null;
 
             foreach (KeyValuePair<int, RenderModel> model in Models)
                 model.Value?.Shutdown();

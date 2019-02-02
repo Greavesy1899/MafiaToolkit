@@ -10,14 +10,6 @@ namespace Rendering.Graphics
     public class ShaderClass
     {
         [StructLayout(LayoutKind.Sequential)]
-        public struct Vertex
-        {
-            public Vector3 position;
-            public Vector2 tex0;
-            public Vector2 tex7;
-            public Vector3 normal;
-        }
-        [StructLayout(LayoutKind.Sequential)]
         internal struct MatrixBuffer
         {
             public Matrix world;
@@ -39,6 +31,12 @@ namespace Rendering.Graphics
             public float specularPower;
             public Vector4 specularColor;
         }
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct ShaderParams
+        {
+            public int EnableTexture;
+            public Vector4 C007MaterialColor;
+        }
 
         public VertexShader VertexShader { get; set; }
         public PixelShader PixelShader { get; set; }
@@ -46,70 +44,27 @@ namespace Rendering.Graphics
         public SharpDX.Direct3D11.Buffer ConstantMatrixBuffer { get; set; }
         public SharpDX.Direct3D11.Buffer ConstantLightBuffer { get; set; }
         public SharpDX.Direct3D11.Buffer ConstantCameraBuffer { get; set; }
+        public SharpDX.Direct3D11.Buffer ConstantShaderParamBuffer { get; set; }
         public SamplerState SamplerState { get; set; }
 
-        public ShaderClass() { }
-
-        public bool Init(Device device, IntPtr WindowsHandle)
+        public ShaderClass(Device device, string psPath, string vsPath, string entryPoint)
         {
-            return InitShader(device, WindowsHandle, "LightVS.hlsl", "LightPS.hlsl");
+            InitShader(device, vsPath, psPath, entryPoint);
         }
-        private bool InitShader(Device device, IntPtr WindowsHandle, string vsFileName, string psFileName)
+
+        private bool InitShader(Device device, string vsFileName, string psFileName, string entryPoint)
         {
             ShaderBytecode vertexShaderByteCode;
             ShaderBytecode pixelShaderByteCode;
 
             vsFileName = ToolkitSettings.ShaderPath + vsFileName;
             psFileName = ToolkitSettings.ShaderPath + psFileName;
-            pixelShaderByteCode = ShaderBytecode.CompileFromFile(psFileName, "LightPixelShader", "ps_5_0", ShaderFlags.None, EffectFlags.None);
-            vertexShaderByteCode = ShaderBytecode.CompileFromFile(vsFileName, "LightVertexShader", "vs_5_0", ShaderFlags.None, EffectFlags.None);
+
+            pixelShaderByteCode = ShaderBytecode.CompileFromFile(psFileName, entryPoint, "ps_5_0", ShaderFlags.None, EffectFlags.None);
+            vertexShaderByteCode = ShaderBytecode.CompileFromFile(vsFileName, entryPoint, "vs_5_0", ShaderFlags.None, EffectFlags.None);
             PixelShader = new PixelShader(device, pixelShaderByteCode);
             VertexShader = new VertexShader(device, vertexShaderByteCode);
-            InputElement[] inputElements = new InputElement[]
-            {
-                    new InputElement()
-                    {
-                        SemanticName = "POSITION",
-                        SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
-                        Slot = 0,
-                        AlignedByteOffset = 0,
-                        Classification = InputClassification.PerVertexData,
-                        InstanceDataStepRate = 0
-                    },
-                    new InputElement()
-                    {
-                        SemanticName = "TEXCOORD",
-                        SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32_Float,
-                        Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
-                        Classification = InputClassification.PerVertexData,
-                        InstanceDataStepRate = 0
-                    },
-                    new InputElement()
-                    {
-                        SemanticName = "TEXCOORD",
-                        SemanticIndex = 1,
-                        Format = SharpDX.DXGI.Format.R32G32_Float,
-                        Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
-                        Classification = InputClassification.PerVertexData,
-                        InstanceDataStepRate = 0
-                    },
-                    new InputElement()
-                    {
-                        SemanticName = "NORMAL",
-                        SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
-                        Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
-                        Classification = InputClassification.PerVertexData,
-                        InstanceDataStepRate = 0
-                    }
-            };
-
-            Layout = new InputLayout(device, ShaderSignature.GetInputSignature(vertexShaderByteCode), inputElements);
+            Layout = new InputLayout(device, ShaderSignature.GetInputSignature(vertexShaderByteCode), VertexLayouts.NormalLayout.GetLayout());
 
             vertexShaderByteCode.Dispose();
             pixelShaderByteCode.Dispose();
@@ -152,7 +107,7 @@ namespace Rendering.Graphics
             };
             ConstantCameraBuffer = new SharpDX.Direct3D11.Buffer(device, camaraBufferDesc);
 
-            BufferDescription LightBuffDesc = new BufferDescription()
+            var LightBuffDesc = new BufferDescription()
             {
                 Usage = ResourceUsage.Dynamic,
                 SizeInBytes = Utilities.SizeOf<LightBuffer>(),
@@ -163,6 +118,18 @@ namespace Rendering.Graphics
             };
 
             ConstantLightBuffer = new SharpDX.Direct3D11.Buffer(device, LightBuffDesc);
+
+            var shaderParamDesc = new BufferDescription()
+            {
+                Usage = ResourceUsage.Dynamic,
+                SizeInBytes = Utilities.SizeOf<LightBuffer>(),
+                BindFlags = BindFlags.ConstantBuffer,
+                CpuAccessFlags = CpuAccessFlags.Write,
+                OptionFlags = ResourceOptionFlags.None,
+                StructureByteStride = 0
+            };
+
+            ConstantShaderParamBuffer = new SharpDX.Direct3D11.Buffer(device, shaderParamDesc);
             return true;
         }
         public void Shutdown()
@@ -177,6 +144,8 @@ namespace Rendering.Graphics
             ConstantCameraBuffer = null;
             ConstantMatrixBuffer?.Dispose();
             ConstantMatrixBuffer = null;
+            ConstantShaderParamBuffer?.Dispose();
+            ConstantShaderParamBuffer = null;
             SamplerState?.Dispose();
             SamplerState = null;
             Layout?.Dispose();
@@ -242,6 +211,16 @@ namespace Rendering.Graphics
             bufferSlotNumber = 0;
             deviceContext.PixelShader.SetConstantBuffer(bufferSlotNumber, ConstantLightBuffer);
             #endregion
+            deviceContext.MapSubresource(ConstantShaderParamBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
+            ShaderParams shaderParams = new ShaderParams()
+            {
+                EnableTexture = 0,
+                C007MaterialColor = new Vector4(1.0f, 0.5f, 0.5f, 1.0f)
+            };
+            mappedResource.Write(shaderParams);
+            deviceContext.UnmapSubresource(ConstantShaderParamBuffer, 0);
+            bufferSlotNumber = 1;
+            deviceContext.PixelShader.SetConstantBuffer(bufferSlotNumber, ConstantShaderParamBuffer);
 
             return true;
         }

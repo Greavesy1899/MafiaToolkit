@@ -12,7 +12,7 @@ namespace Rendering.Graphics
 
         public Buffer VertexBuffer { get; private set; }
         public Buffer IndexBuffer { get; private set; }
-        private ShaderClass.Vertex[] Vertices { get; set; }
+        private VertexLayouts.NormalLayout.Vertex[] Vertices { get; set; }
         public  ushort[] Indices { get; private set; }
 
         public RenderBoundingBox()
@@ -24,7 +24,7 @@ namespace Rendering.Graphics
         {
             Boundings = bbox;
 
-            Vertices = new ShaderClass.Vertex[8];
+            Vertices = new VertexLayouts.NormalLayout.Vertex[8];
             //1
             Vertices[0].position = new Vector3(Boundings.Minimum.X, Boundings.Minimum.X, Boundings.Minimum.Z);
             Vertices[0].normal = new Vector3(0.0f, 0.0f, 0.0f);
@@ -145,7 +145,7 @@ namespace Rendering.Graphics
         }
         private void RenderBuffers(DeviceContext deviceContext)
         {
-            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<ShaderClass.Vertex>(), 0));
+            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
         }
 

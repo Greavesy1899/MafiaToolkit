@@ -216,49 +216,49 @@ namespace Mafia2Tool
         private void Pick(int sx, int sy)
         {
 
-            var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height), Graphics.GetProjectionMatrix());
+    //        var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height), Graphics.GetProjectionMatrix());
 
-            // transform the picking ray into the object space of the mesh
-            var invWorld = Matrix.Invert(Graphics.GetWorldMatrix());
-            ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
-            ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
-            ray.Direction.Normalize();
+    //        // transform the picking ray into the object space of the mesh
+    //        var invWorld = Matrix.Invert(Graphics.GetWorldMatrix());
+    //        ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
+    //        ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
+    //        ray.Direction.Normalize();
 
-            float tmin;
-            string pickedModel = "";
-            foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
-            {
-                Vector3 minVector = new Vector3(
-                    model.Value.Transform.Column1[3] + model.Value.BoundingBox.Boundings.Minimum.X,
-                    model.Value.Transform.Column2[3] + model.Value.BoundingBox.Boundings.Minimum.Y,
-                    model.Value.Transform.Column3[3] + model.Value.BoundingBox.Boundings.Minimum.Z
-                    );
-                Vector3 maxVector = new Vector3(
-                    model.Value.Transform.Column1[3] + model.Value.BoundingBox.Boundings.Maximum.X,
-                    model.Value.Transform.Column2[3] + model.Value.BoundingBox.Boundings.Maximum.Y,
-                    model.Value.Transform.Column3[3] + model.Value.BoundingBox.Boundings.Maximum.Z
-    );
-                BoundingBox tempBox = new BoundingBox(minVector, maxVector);
-                if(ray.Intersects(ref tempBox, out tmin))
-                {
-                    Console.WriteLine(string.Format("Name {0}, Distance {1}", (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase).Name.String, tmin));
-                }
-                float tmin2 = float.MaxValue;
-                for (var i = 0; i < model.Value.Vertices.Length; i++)
-                {
+    //        float tmin;
+    //        string pickedModel = "";
+    //        foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
+    //        {
+    //            Vector3 minVector = new Vector3(
+    //                model.Value.Transform.Column1[3] + model.Value.BoundingBox.Boundings.Minimum.X,
+    //                model.Value.Transform.Column2[3] + model.Value.BoundingBox.Boundings.Minimum.Y,
+    //                model.Value.Transform.Column3[3] + model.Value.BoundingBox.Boundings.Minimum.Z
+    //                );
+    //            Vector3 maxVector = new Vector3(
+    //                model.Value.Transform.Column1[3] + model.Value.BoundingBox.Boundings.Maximum.X,
+    //                model.Value.Transform.Column2[3] + model.Value.BoundingBox.Boundings.Maximum.Y,
+    //                model.Value.Transform.Column3[3] + model.Value.BoundingBox.Boundings.Maximum.Z
+    //);
+    //            BoundingBox tempBox = new BoundingBox(minVector, maxVector);
+    //            if(ray.Intersects(ref tempBox, out tmin))
+    //            {
+    //                Console.WriteLine(string.Format("Name {0}, Distance {1}", (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase).Name.String, tmin));
+    //            }
+    //            float tmin2 = float.MaxValue;
+    //            for (var i = 0; i < model.Value.Vertices.Length; i++)
+    //            {
 
-                    float t = 0;
-                    Vector3 temp_vec3 = model.Value.Vertices[i].position;
-                    if (!ray.Intersects(ref temp_vec3)) continue;
-                    // find the closest intersection, exclude intersections behind camera
-                    if (!(t < tmin2 || t < 0)) continue;
-                    tmin2 = t;
-                }
-                if (tmin < tmin2)
-                    pickedModel = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase).Name.String;
-            }
+    //                float t = 0;
+    //                Vector3 temp_vec3 = model.Value.Vertices[i].position;
+    //                if (!ray.Intersects(ref temp_vec3)) continue;
+    //                // find the closest intersection, exclude intersections behind camera
+    //                if (!(t < tmin2 || t < 0)) continue;
+    //                tmin2 = t;
+    //            }
+    //            if (tmin < tmin2)
+    //                pickedModel = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase).Name.String;
+    //        }
 
-            Console.WriteLine(pickedModel);
+    //        Console.WriteLine(pickedModel);
         }
 
         private void OnAfterSelect(object sender, TreeViewEventArgs e)
