@@ -44,16 +44,19 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
 	float3 reflection;
 	float4 specular;
 
+    diffuseTextureColor = textures[0].Sample(SampleType, input.tex0);
+    aoTextureColor = textures[1].Sample(SampleType, input.tex7);
+
     if(EnableTexture == 1)
     {
 	    // Sample the pixel color from the texture using the sampler at this texture coordinate location.
-        diffuseTextureColor = textures[0].Sample(SampleType, input.tex0);
-        aoTextureColor = textures[1].Sample(SampleType, input.tex7);
+        //diffuseTextureColor = textures[0].Sample(SampleType, input.tex0);
+        //aoTextureColor = textures[1].Sample(SampleType, input.tex7);
     }
     else
     {
-        diffuseTextureColor = C007MaterialColour;
-        aoTextureColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        //diffuseTextureColor = C007MaterialColour;
+        //aoTextureColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
 

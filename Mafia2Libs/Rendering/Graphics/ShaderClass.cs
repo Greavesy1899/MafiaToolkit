@@ -1,7 +1,6 @@
 ﻿using SharpDX;
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D11;
-using System;
 using System.Runtime.InteropServices;
 using Mafia2Tool;
 
@@ -41,18 +40,18 @@ namespace Rendering.Graphics
         public VertexShader VertexShader { get; set; }
         public PixelShader PixelShader { get; set; }
         public InputLayout Layout { get; set; }
-        public SharpDX.Direct3D11.Buffer ConstantMatrixBuffer { get; set; }
-        public SharpDX.Direct3D11.Buffer ConstantLightBuffer { get; set; }
-        public SharpDX.Direct3D11.Buffer ConstantCameraBuffer { get; set; }
-        public SharpDX.Direct3D11.Buffer ConstantShaderParamBuffer { get; set; }
+        public Buffer ConstantMatrixBuffer { get; set; }
+        public Buffer ConstantLightBuffer { get; set; }
+        public Buffer ConstantCameraBuffer { get; set; }
+        public Buffer ConstantShaderParamBuffer { get; set; }
         public SamplerState SamplerState { get; set; }
 
-        public ShaderClass(Device device, string psPath, string vsPath, string entryPoint)
+        public ShaderClass(Device device, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
         {
-            InitShader(device, vsPath, psPath, entryPoint);
+            InitShader(device, vsPath, psPath, vsEntryPoint, psEntryPoint);
         }
 
-        private bool InitShader(Device device, string vsFileName, string psFileName, string entryPoint)
+        private bool InitShader(Device device, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
         {
             ShaderBytecode vertexShaderByteCode;
             ShaderBytecode pixelShaderByteCode;
@@ -60,8 +59,8 @@ namespace Rendering.Graphics
             vsFileName = ToolkitSettings.ShaderPath + vsFileName;
             psFileName = ToolkitSettings.ShaderPath + psFileName;
 
-            pixelShaderByteCode = ShaderBytecode.CompileFromFile(psFileName, entryPoint, "ps_5_0", ShaderFlags.None, EffectFlags.None);
-            vertexShaderByteCode = ShaderBytecode.CompileFromFile(vsFileName, entryPoint, "vs_5_0", ShaderFlags.None, EffectFlags.None);
+            pixelShaderByteCode = ShaderBytecode.CompileFromFile(psFileName, psEntryPoint, "ps_5_0", ShaderFlags.None, EffectFlags.None);
+            vertexShaderByteCode = ShaderBytecode.CompileFromFile(vsFileName, vsEntryPoint, "vs_5_0", ShaderFlags.None, EffectFlags.None);
             PixelShader = new PixelShader(device, pixelShaderByteCode);
             VertexShader = new VertexShader(device, vertexShaderByteCode);
             Layout = new InputLayout(device, ShaderSignature.GetInputSignature(vertexShaderByteCode), VertexLayouts.NormalLayout.GetLayout());
@@ -95,7 +94,7 @@ namespace Rendering.Graphics
                 StructureByteStride = 0
             };
 
-            ConstantMatrixBuffer = new SharpDX.Direct3D11.Buffer(device, MatrixBuffDesc);
+            ConstantMatrixBuffer = new Buffer(device, MatrixBuffDesc);
             var camaraBufferDesc = new BufferDescription()
             {
                 Usage = ResourceUsage.Dynamic,
@@ -105,7 +104,7 @@ namespace Rendering.Graphics
                 OptionFlags = ResourceOptionFlags.None,
                 StructureByteStride = 0
             };
-            ConstantCameraBuffer = new SharpDX.Direct3D11.Buffer(device, camaraBufferDesc);
+            ConstantCameraBuffer = new Buffer(device, camaraBufferDesc);
 
             var LightBuffDesc = new BufferDescription()
             {
@@ -117,7 +116,7 @@ namespace Rendering.Graphics
                 StructureByteStride = 0
             };
 
-            ConstantLightBuffer = new SharpDX.Direct3D11.Buffer(device, LightBuffDesc);
+            ConstantLightBuffer = new Buffer(device, LightBuffDesc);
 
             var shaderParamDesc = new BufferDescription()
             {
@@ -129,7 +128,7 @@ namespace Rendering.Graphics
                 StructureByteStride = 0
             };
 
-            ConstantShaderParamBuffer = new SharpDX.Direct3D11.Buffer(device, shaderParamDesc);
+            ConstantShaderParamBuffer = new Buffer(device, shaderParamDesc);
             return true;
         }
         public void Shutdown()
@@ -155,29 +154,32 @@ namespace Rendering.Graphics
             VertexShader?.Dispose();
             VertexShader = null;
         }
-        public bool PrepareRender(DeviceContext deviceContext, Matrix WorldMatrix, Matrix ViewMatrix, Matrix ProjectionMatrix, Vector3 lightDirection, Vector4 ambientColor, Vector4 diffuseColor, Vector3 cameraPosition, Vector4 specularColor, float specularPower)
+        public bool PrepareRender(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera, LightClass light)
         {
-            if (!SetShaderParameters(deviceContext, WorldMatrix, ViewMatrix, ProjectionMatrix, lightDirection, ambientColor, diffuseColor, cameraPosition, specularColor, specularPower))
+            if (!SetShaderParameters(deviceContext, WorldMatrix, camera, light))
             {
                 return false;
             }
             return true;
         }
-        private bool SetShaderParameters(DeviceContext deviceContext, Matrix WorldMatrix, Matrix ViewMatrix, Matrix ProjectionMatrix, Vector3 lightDirection, Vector4 ambientColor, Vector4 diffuseColour, Vector3 cameraPosition, Vector4 specularColor, float specularPower)
+        private bool SetShaderParameters(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera, LightClass light)
         {
             DataStream mappedResource;
 
             #region Constant Matrix Buffer
-            WorldMatrix.Transpose();
-            ViewMatrix.Transpose();
-            ProjectionMatrix.Transpose();
-
+            Matrix tMatrix = WorldMatrix;
+            Matrix vMatrix = camera.ViewMatrix;
+            Matrix cMatrix = camera.ProjectionMatrix;
+            vMatrix.Transpose();
+            cMatrix.Transpose();
+            tMatrix.Transpose();
+           
             deviceContext.MapSubresource(ConstantMatrixBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
             MatrixBuffer matrixBuffer = new MatrixBuffer()
             {
-                world = WorldMatrix,
-                view = ViewMatrix,
-                projection = ProjectionMatrix
+                world = tMatrix,
+                view = vMatrix,
+                projection = cMatrix
             };
             mappedResource.Write(matrixBuffer);
             deviceContext.UnmapSubresource(ConstantMatrixBuffer, 0);
@@ -188,7 +190,7 @@ namespace Rendering.Graphics
             deviceContext.MapSubresource(ConstantCameraBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
             var cameraBuffer = new DCameraBuffer()
             {
-                cameraPosition = cameraPosition,
+                cameraPosition = camera.Position,
                 padding = 0.0f
             };
             mappedResource.Write(cameraBuffer);
@@ -200,11 +202,11 @@ namespace Rendering.Graphics
             deviceContext.MapSubresource(ConstantLightBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
             LightBuffer lightbuffer = new LightBuffer()
             {
-                ambientColor = ambientColor,
-                diffuseColor = diffuseColour,
-                LightDirection = lightDirection,
-                specularColor = specularColor,
-                specularPower = specularPower
+                ambientColor = light.AmbientColor,
+                diffuseColor = light.DiffuseColour,
+                LightDirection = light.Direction,
+                specularColor = light.SpecularColor,
+                specularPower = light.SpecularPower
             };
             mappedResource.Write(lightbuffer);
             deviceContext.UnmapSubresource(ConstantLightBuffer, 0);
@@ -214,7 +216,7 @@ namespace Rendering.Graphics
             deviceContext.MapSubresource(ConstantShaderParamBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
             ShaderParams shaderParams = new ShaderParams()
             {
-                EnableTexture = 0,
+                EnableTexture = 1,
                 C007MaterialColor = new Vector4(1.0f, 0.5f, 0.5f, 1.0f)
             };
             mappedResource.Write(shaderParams);

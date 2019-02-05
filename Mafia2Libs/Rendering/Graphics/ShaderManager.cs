@@ -5,13 +5,13 @@ namespace Rendering.Graphics
 {
     public class ShaderManager
     {
-        Dictionary<ulong, ShaderClass> shaders;
+        public Dictionary<ulong, ShaderClass> shaders;
 
         public ShaderManager() { }
         public bool Init(Device device)
         {
             shaders = new Dictionary<ulong, ShaderClass>();
-            shaders.Add(0, new ShaderClass(device, "LightPS.hlsl", "LightVS.hlsl", "LightPixelShader"));
+            shaders.Add(0, new ShaderClass(device, "LightPS.hlsl", "LightVS.hlsl", "LightVertexShader", "LightPixelShader"));
             return true;
         }
 

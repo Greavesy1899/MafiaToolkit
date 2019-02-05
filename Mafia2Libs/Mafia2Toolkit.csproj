@@ -266,6 +266,7 @@
     <Compile Include="MafiaLib\Utils\Vectors.cs" />
     <Compile Include="MafiaLib\Utils\Vertex.cs" />
     <Compile Include="MafiaLib\Utils\VertexTranslator.cs" />
+    <Compile Include="Rendering\Graphics\BaseShader.cs" />
     <Compile Include="Rendering\Graphics\Camera.cs" />
     <Compile Include="Rendering\Graphics\DDSTexLoader.cs" />
     <Compile Include="Rendering\Graphics\DirectX11Class.cs" />

@@ -22,7 +22,7 @@ namespace Rendering.Graphics
         private Buffer VertexBuffer { get; set; }
         private Buffer IndexBuffer { get; set; }
         public RenderBoundingBox BoundingBox { get; private set; }
-        public ShaderClass Shader { get; private set; }
+        public ShaderClass Shader { get; set; }
 
         //new
         public struct LOD
@@ -99,6 +99,9 @@ namespace Rendering.Graphics
                     lod.ModelParts[z].StartIndex = (uint)mats.Materials[i][z].StartIndex;
                     lod.ModelParts[z].MaterialHash = mats.Materials[i][z].MaterialHash;
                     lod.ModelParts[z].Material = MaterialsManager.LookupMaterialByHash(lod.ModelParts[z].MaterialHash);
+
+                    if(lod.ModelParts[z].Material != null)
+                        lod.ModelParts[z].TextureName = (lod.ModelParts[z].Material.SPS.ContainsKey("S000") == true ? lod.ModelParts[z].Material.SPS["S000"].File : "texture.dds");
                 }
 
                 lod.Vertices = new VertexLayouts.NormalLayout.Vertex[geom.LOD[i].NumVertsPr];
@@ -192,10 +195,6 @@ namespace Rendering.Graphics
             ReleaseTextures();
             ShutdownBuffers();
         }
-        public void Render(DeviceContext deviceContext)
-        {
-            RenderBuffers(deviceContext);
-        }
         private bool InitBuffer(Device device)
         {
             VertexBuffer = Buffer.Create(device, BindFlags.VertexBuffer, LODs[0].Vertices);
@@ -249,11 +248,24 @@ namespace Rendering.Graphics
             IndexBuffer?.Dispose();
             IndexBuffer = null;
         }
-        private void RenderBuffers(DeviceContext deviceContext)
-        {
+
+        public void Render(DeviceContext deviceContext, Camera camera, LightClass light)
+        { 
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+            
+            Shader.PrepareRender(deviceContext, Transform, camera, light);
+
+            ShaderResourceView[] resources = new ShaderResourceView[2];
+            resources[1] = AOTexture;
+
+            for (int i = 0; i != LODs[0].ModelParts.Length; i++)
+            {
+                resources[0] = LODs[0].ModelParts[i].Texture;
+                deviceContext.PixelShader.SetShaderResources(0, 2, resources);
+                Shader.Render(deviceContext, (int)LODs[0].ModelParts[i].NumFaces * 3, (int)LODs[0].ModelParts[i].StartIndex);
+            }
         }
     }
 }

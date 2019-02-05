@@ -31,19 +31,22 @@ namespace Rendering.Graphics
             {
                 return false;
             }
-            Camera = new Camera();
-            Camera.Position = new Vector3(0, 0, 15);
-
-            foreach (KeyValuePair<int, RenderModel> model in Models)
-                model.Value.Init(D3D.Device);
-
-
             ShaderManager = new ShaderManager();
             if (!ShaderManager.Init(D3D.Device))
             {
                 MessageBox.Show("Could not init ShaderManager!");
                 return false;
             }
+            Camera = new Camera();
+            Camera.Position = new Vector3(0, 0, 15);
+            Camera.SetProjectionMatrix();
+
+            foreach (KeyValuePair<int, RenderModel> model in Models)
+            {
+                model.Value.Init(D3D.Device);
+                model.Value.Shader = ShaderManager.shaders[0];
+            }
+
             Light = new LightClass();
             Light.SetAmbientColor(0.75f, 0.75f, 0.75f, 1f);
             Light.SetDiffuseColour(0f, 0f, 0f, 0);
@@ -77,7 +80,6 @@ namespace Rendering.Graphics
         {
             D3D.BeginScene(0f, 0f, 0f, 1.0f);
             Camera.Render();
-            Matrix ViewMatrix = Camera.ViewMatrix;
 
             foreach (KeyValuePair<int, RenderModel> entry in Models)
             {
@@ -85,24 +87,7 @@ namespace Rendering.Graphics
                 if (model.DoRender)
                 {
                     //D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Solid);
-                    Matrix ProjectionMatrix = D3D.ProjectionMatrix;
-                    Matrix WorldMatrix = model.Transform;
-                    model.Render(D3D.DeviceContext);
-                    if (!Shader.PrepareRender(D3D.DeviceContext, WorldMatrix, ViewMatrix, ProjectionMatrix, Light.Direction, Light.AmbientColor, Light.DiffuseColour, Camera.Position, Light.SpecularColor, Light.SpecularPower))
-                    {
-                        return false;
-                    }
-
-                    SharpDX.Direct3D11.ShaderResourceView[] resources = new SharpDX.Direct3D11.ShaderResourceView[2];
-                    resources[1] = model.AOTexture;
-
-                    for (int i = 0; i != model.LODs[0].ModelParts.Length; i++)
-                    {
-                        resources[0] = model.LODs[0].ModelParts[i].Texture;
-                        D3D.DeviceContext.PixelShader.SetShaderResources(0, 2, resources);
-                        Shader.Render(D3D.DeviceContext, (int)model.LODs[0].ModelParts[i].NumFaces*3, (int)model.LODs[0].ModelParts[i].StartIndex);
-                    }
-
+                    model.Render(D3D.DeviceContext, Camera, Light);
                     //D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Wireframe);
                     //model.BoundingBox.Render(D3D.DeviceContext);
                     //D3D.DeviceContext.PixelShader.SetShaderResource(0, model.BoundingBox.Texture);
@@ -124,16 +109,6 @@ namespace Rendering.Graphics
         public void ToggleD3DCullMode()
         {
             D3D.ToggleCullMode();
-        }
-
-        public Matrix GetProjectionMatrix()
-        {
-            return D3D.ProjectionMatrix;
-        }
-
-        public Matrix GetWorldMatrix()
-        {
-            return D3D.WorldMatrix;
         }
     }
 }

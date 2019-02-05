@@ -1,4 +1,6 @@
-﻿using SharpDX;
+﻿using Mafia2Tool;
+using SharpDX;
+using System;
 using System.Diagnostics;
 
 namespace Rendering.Graphics
@@ -7,6 +9,7 @@ namespace Rendering.Graphics
     {
         public Vector3 Position = new Vector3(0);
         public Matrix ViewMatrix { get; private set; }
+        public Matrix ProjectionMatrix { get; private set; }
         private float RotationX { get; set; }
         private float RotationY { get; set; }
         private float RotationZ { get; set; }
@@ -21,6 +24,7 @@ namespace Rendering.Graphics
             Up = new Vector3(0, 1, 0);
             Look = new Vector3(0, 0, 1);
             ViewMatrix = Matrix.Identity;
+            ProjectionMatrix = Matrix.Identity;
         }
 
         public void LookAt(Vector3 pos, Vector3 target, Vector3 up)
@@ -71,6 +75,11 @@ namespace Rendering.Graphics
             v[3, 3] = 1;
 
             ViewMatrix = v;
+        }
+
+        public void SetProjectionMatrix()
+        {
+            ProjectionMatrix = Matrix.PerspectiveFovRH((float)(Math.PI / 4), (ToolkitSettings.Width / ToolkitSettings.Height), ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth); ;
         }
 
         public Ray GetPickingRay(Vector2 sp, Vector2 screenDims, Matrix Proj)

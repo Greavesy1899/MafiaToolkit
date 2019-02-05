@@ -21,12 +21,47 @@ namespace Rendering.Graphics
             {
                 return new InputElement[]
                 {
-                    new InputElement("POSITION", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 0, InputClassification.PerVertexData, 0),
-                    new InputElement("TEXCOORD", 0, SharpDX.DXGI.Format.R32G32_Float, 0, 12, InputClassification.PerVertexData, 0),
-                    new InputElement("TEXCOORD", 1, SharpDX.DXGI.Format.R32G32_Float, 0, 20, InputClassification.PerVertexData, 0),
-                    new InputElement("NORMAL", 0, SharpDX.DXGI.Format.R32G32B32_Float, 0, 28, InputClassification.PerVertexData, 0),
+                    new InputElement()
+                    {
+                        SemanticName = "POSITION",
+                        SemanticIndex = 0,
+                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Slot = 0,
+                        AlignedByteOffset = 0,
+                        Classification = InputClassification.PerVertexData,
+                        InstanceDataStepRate = 0
+                    },
+                    new InputElement()
+                    {
+                        SemanticName = "TEXCOORD",
+                        SemanticIndex = 0,
+                        Format = SharpDX.DXGI.Format.R32G32_Float,
+                        Slot = 0,
+                        AlignedByteOffset = InputElement.AppendAligned,
+                        Classification = InputClassification.PerVertexData,
+                        InstanceDataStepRate = 0
+                    },
+                    new InputElement()
+                    {
+                        SemanticName = "TEXCOORD",
+                        SemanticIndex = 1,
+                        Format = SharpDX.DXGI.Format.R32G32_Float,
+                        Slot = 0,
+                        AlignedByteOffset = InputElement.AppendAligned,
+                        Classification = InputClassification.PerVertexData,
+                        InstanceDataStepRate = 0
+                    },
+                    new InputElement()
+                    {
+                        SemanticName = "NORMAL",
+                        SemanticIndex = 0,
+                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Slot = 0,
+                        AlignedByteOffset = InputElement.AppendAligned,
+                        Classification = InputClassification.PerVertexData,
+                        InstanceDataStepRate = 0
+                    }
                 };
-
             }
         }
     }

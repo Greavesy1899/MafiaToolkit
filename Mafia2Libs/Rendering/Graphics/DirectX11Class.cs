@@ -20,8 +20,6 @@ namespace Rendering.Graphics
         public DepthStencilState DepthStencilState { get; set; }
         private DepthStencilView DepthStencilView { get; set; }
         private RasterizerState RasterState { get; set; }
-        public Matrix ProjectionMatrix { get; private set; }
-        public Matrix WorldMatrix { get; private set; }
 
         private RasterizerStateDescription Rasterizer;
 
@@ -147,8 +145,6 @@ namespace Rendering.Graphics
             };
 
             UpdateRasterizer();
-            ResizeWindow(ToolkitSettings.Width, ToolkitSettings.Height);
-            WorldMatrix = Matrix.Identity;
             return true;
         }
         public void ToggleCullMode()
@@ -161,20 +157,16 @@ namespace Rendering.Graphics
             Rasterizer.FillMode = (Rasterizer.FillMode == FillMode.Solid ? FillMode.Wireframe : FillMode.Solid);
             UpdateRasterizer();
         }
-        public void ResizeWindow(int w, int h)
-        {
-            DeviceContext.Rasterizer.SetViewport(0, 0, w, h, 0, 1);
-            ProjectionMatrix = Matrix.PerspectiveFovRH((float)(Math.PI / 4), (w / h), ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
-        }
         private void UpdateRasterizer()
         {
             RasterState = new RasterizerState(Device, Rasterizer);
             DeviceContext.Rasterizer.State = RasterState;
+            DeviceContext.Rasterizer.SetViewport(0, 0, ToolkitSettings.Width, ToolkitSettings.Height, 0, 1);
         }
         public void SwapFillMode(FillMode mode)
         {
             Rasterizer.FillMode = mode;
-            UpdateRasterizer();
+            UpdateRasterizer(); 
         }
         public void Shutdown()
         {
