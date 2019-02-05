@@ -17,12 +17,12 @@ namespace Rendering.Graphics
             public ShaderResourceView Texture;
             public uint StartIndex;
             public uint NumFaces;
+            public BaseShader Shader;
         }
         public ShaderResourceView AOTexture { get; set; }
         private Buffer VertexBuffer { get; set; }
         private Buffer IndexBuffer { get; set; }
         public RenderBoundingBox BoundingBox { get; private set; }
-        public ShaderClass Shader { get; set; }
 
         //new
         public struct LOD
@@ -42,14 +42,14 @@ namespace Rendering.Graphics
             BoundingBox = new RenderBoundingBox();
         }
 
-        public bool Init(Device device)
+        public bool Init(Device device, ShaderManager manager)
         {
             if (!InitBuffer(device))
             {
                 MessageBox.Show("unable to init buffer");
                 return false;
             }
-            if (!LoadTexture(device))
+            if (!InitializePartShaders(device, manager))
             {
                 MessageBox.Show("unable to load texture");
                 return false;
@@ -101,7 +101,7 @@ namespace Rendering.Graphics
                     lod.ModelParts[z].Material = MaterialsManager.LookupMaterialByHash(lod.ModelParts[z].MaterialHash);
 
                     if(lod.ModelParts[z].Material != null)
-                        lod.ModelParts[z].TextureName = (lod.ModelParts[z].Material.SPS.ContainsKey("S000") == true ? lod.ModelParts[z].Material.SPS["S000"].File : "texture.dds");
+                        lod.ModelParts[z].TextureName = (lod.ModelParts[z].Material.Samplers.ContainsKey("S000") == true ? lod.ModelParts[z].Material.Samplers["S000"].File : "texture.dds");
                 }
 
                 lod.Vertices = new VertexLayouts.NormalLayout.Vertex[geom.LOD[i].NumVertsPr];
@@ -115,7 +115,7 @@ namespace Rendering.Graphics
                     if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
                         int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                        vertex.position = VertexTranslator.ReadPositionDataFromVB(vertexBuffers[i].Data, startIndex, geom.DecompressionFactor, geom.DecompressionOffset);
+                        vertex.Position = VertexTranslator.ReadPositionDataFromVB(vertexBuffers[i].Data, startIndex, geom.DecompressionFactor, geom.DecompressionOffset);
                     }
 
                     if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
@@ -127,7 +127,7 @@ namespace Rendering.Graphics
                     if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
                     {
                         int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Normals].Offset;
-                        vertex.normal = VertexTranslator.ReadNormalDataFromVB(vertexBuffers[i].Data, startIndex);
+                        vertex.Normal = VertexTranslator.ReadNormalDataFromVB(vertexBuffers[i].Data, startIndex);
                     }
 
                     if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.BlendData))
@@ -145,7 +145,7 @@ namespace Rendering.Graphics
                     if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                     {
                         int startIndex = x * vertexSize + vertexOffsets[VertexFlags.TexCoords0].Offset;
-                        vertex.tex0 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
+                        vertex.TexCoord0 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
                     }
 
                     if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
@@ -163,7 +163,7 @@ namespace Rendering.Graphics
                     if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
                     {
                         int startIndex = x * vertexSize + vertexOffsets[VertexFlags.TexCoords7].Offset;
-                        vertex.tex7 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
+                        vertex.TexCoord7 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
                     }
 
                     if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x20000))
@@ -203,7 +203,7 @@ namespace Rendering.Graphics
             BoundingBox.InitBuffer(device);
             return true;
         }
-        private bool LoadTexture(Device device)
+        private bool InitializePartShaders(Device device, ShaderManager manager)
         {
             TextureClass AOTextureClass = new TextureClass();
             bool result = AOTextureClass.Init(device, "texture.dds");
@@ -214,9 +214,16 @@ namespace Rendering.Graphics
 
             for (int x = 0; x != LODs[0].ModelParts.Length; x++)
             {
+                ModelPart part = LODs[0].ModelParts[x];
+                if (part.Material == null)
+                    part.Shader = manager.shaders[0];
+                else
+                    part.Shader = (manager.shaders.ContainsKey(LODs[0].ModelParts[x].Material.ShaderHash) ? manager.shaders[LODs[0].ModelParts[x].Material.ShaderHash] : manager.shaders[0]);
+
                 TextureClass Texture = new TextureClass();
                 result = Texture.Init(device, LODs[0].ModelParts[x].TextureName);
-                LODs[0].ModelParts[x].Texture = Texture.TextureResource;
+                part.Texture = Texture.TextureResource;
+                LODs[0].ModelParts[x] = part;
 
                 if (!result)
                     return false;
@@ -255,16 +262,17 @@ namespace Rendering.Graphics
             deviceContext.InputAssembler.SetIndexBuffer(IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             
-            Shader.PrepareRender(deviceContext, Transform, camera, light);
 
             ShaderResourceView[] resources = new ShaderResourceView[2];
             resources[1] = AOTexture;
 
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
-            {
+            {             
                 resources[0] = LODs[0].ModelParts[i].Texture;
+                LODs[0].ModelParts[i].Shader.SetShaderParamters(LODs[0].ModelParts[i].Material);
+                LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera, light);
                 deviceContext.PixelShader.SetShaderResources(0, 2, resources);
-                Shader.Render(deviceContext, (int)LODs[0].ModelParts[i].NumFaces * 3, (int)LODs[0].ModelParts[i].StartIndex);
+                LODs[0].ModelParts[i].Shader.Render(deviceContext, LODs[0].ModelParts[i].NumFaces * 3, LODs[0].ModelParts[i].StartIndex);
             }
         }
     }

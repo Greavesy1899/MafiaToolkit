@@ -147,13 +147,13 @@ namespace Mafia2
                         ModelPart modelPart = new ModelPart();
                         Material mat = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
 
-                        if (mat == null || mat.SPS.Count == 0)
+                        if (mat == null || mat.Samplers.Count == 0)
                         {
                             modelPart.Material = "_test_gray";
                         }
                         else
                         {
-                            modelPart.Material = (mat == null) ? "null" : mat.SPS["S000"].File;
+                            modelPart.Material = (mat == null) ? "null" : mat.Samplers["S000"].File;
                         }
 
                         modelPart.StartIndex = (uint)materials[x].StartIndex;

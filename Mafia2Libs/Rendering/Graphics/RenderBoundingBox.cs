@@ -26,52 +26,52 @@ namespace Rendering.Graphics
 
             Vertices = new VertexLayouts.NormalLayout.Vertex[8];
             //1
-            Vertices[0].position = new Vector3(Boundings.Minimum.X, Boundings.Minimum.X, Boundings.Minimum.Z);
-            Vertices[0].normal = new Vector3(0.0f, 0.0f, 0.0f);
-            Vertices[0].tex0 = new Vector2(0.0f, 1.0f);
-            Vertices[0].tex7 = new Vector2(0.0f, 1.0f);
+            Vertices[0].Position = new Vector3(Boundings.Minimum.X, Boundings.Minimum.X, Boundings.Minimum.Z);
+            Vertices[0].Normal = new Vector3(0.0f, 0.0f, 0.0f);
+            Vertices[0].TexCoord0 = new Vector2(0.0f, 1.0f);
+            Vertices[0].TexCoord7 = new Vector2(0.0f, 1.0f);
 
             //2
-            Vertices[1].position = new Vector3(Boundings.Maximum.X, Boundings.Minimum.X, Boundings.Minimum.Z);
-            Vertices[1].normal = new Vector3(0.0f, 0.0f, 0.0f);
-            Vertices[1].tex0 = new Vector2(0.0f, 1.0f);
-            Vertices[1].tex7 = new Vector2(0.0f, 1.0f);
+            Vertices[1].Position = new Vector3(Boundings.Maximum.X, Boundings.Minimum.X, Boundings.Minimum.Z);
+            Vertices[1].Normal = new Vector3(0.0f, 0.0f, 0.0f);
+            Vertices[1].TexCoord0 = new Vector2(0.0f, 1.0f);
+            Vertices[1].TexCoord7 = new Vector2(0.0f, 1.0f);
 
             //3
-            Vertices[2].position = new Vector3(Boundings.Minimum.X, Boundings.Minimum.X, Boundings.Maximum.Z);
-            Vertices[2].normal = new Vector3(0.0f, 0.0f, 0.0f);
-            Vertices[2].tex0 = new Vector2(0.0f, 1.0f);
-            Vertices[2].tex7 = new Vector2(0.0f, 1.0f);
+            Vertices[2].Position = new Vector3(Boundings.Minimum.X, Boundings.Minimum.X, Boundings.Maximum.Z);
+            Vertices[2].Normal = new Vector3(0.0f, 0.0f, 0.0f);
+            Vertices[2].TexCoord0 = new Vector2(0.0f, 1.0f);
+            Vertices[2].TexCoord7 = new Vector2(0.0f, 1.0f);
 
             //4
-            Vertices[3].position = new Vector3(Boundings.Maximum.X, Boundings.Minimum.X, Boundings.Maximum.Z);
-            Vertices[3].normal = new Vector3(0.0f, 0.0f, 0.0f);
-            Vertices[3].tex0 = new Vector2(0.0f, 1.0f);
-            Vertices[3].tex7 = new Vector2(0.0f, 1.0f);
+            Vertices[3].Position = new Vector3(Boundings.Maximum.X, Boundings.Minimum.X, Boundings.Maximum.Z);
+            Vertices[3].Normal = new Vector3(0.0f, 0.0f, 0.0f);
+            Vertices[3].TexCoord0 = new Vector2(0.0f, 1.0f);
+            Vertices[3].TexCoord7 = new Vector2(0.0f, 1.0f);
 
             //5
-            Vertices[4].position = new Vector3(Boundings.Minimum.X, Boundings.Maximum.Y, Boundings.Minimum.Z);
-            Vertices[4].normal = new Vector3(0.0f, 0.0f, 0.0f);
-            Vertices[4].tex0 = new Vector2(0.0f, 1.0f);
-            Vertices[4].tex7 = new Vector2(0.0f, 1.0f);
+            Vertices[4].Position = new Vector3(Boundings.Minimum.X, Boundings.Maximum.Y, Boundings.Minimum.Z);
+            Vertices[4].Normal = new Vector3(0.0f, 0.0f, 0.0f);
+            Vertices[4].TexCoord0 = new Vector2(0.0f, 1.0f);
+            Vertices[4].TexCoord7 = new Vector2(0.0f, 1.0f);
 
             //6
-            Vertices[5].position = new Vector3(Boundings.Maximum.X, Boundings.Maximum.Y, Boundings.Minimum.Z);
-            Vertices[5].normal = new Vector3(0.0f, 0.0f, 0.0f);
-            Vertices[5].tex0 = new Vector2(0.0f, 1.0f);
-            Vertices[5].tex7 = new Vector2(0.0f, 1.0f);
+            Vertices[5].Position = new Vector3(Boundings.Maximum.X, Boundings.Maximum.Y, Boundings.Minimum.Z);
+            Vertices[5].Normal = new Vector3(0.0f, 0.0f, 0.0f);
+            Vertices[5].TexCoord0 = new Vector2(0.0f, 1.0f);
+            Vertices[5].TexCoord7 = new Vector2(0.0f, 1.0f);
 
             //7
-            Vertices[6].position = new Vector3(Boundings.Minimum.X, Boundings.Maximum.Y, Boundings.Maximum.Z);
-            Vertices[6].normal = new Vector3(0.0f, 0.0f, 0.0f);
-            Vertices[6].tex0 = new Vector2(0.0f, 1.0f);
-            Vertices[6].tex7 = new Vector2(0.0f, 1.0f);
+            Vertices[6].Position = new Vector3(Boundings.Minimum.X, Boundings.Maximum.Y, Boundings.Maximum.Z);
+            Vertices[6].Normal = new Vector3(0.0f, 0.0f, 0.0f);
+            Vertices[6].TexCoord0 = new Vector2(0.0f, 1.0f);
+            Vertices[6].TexCoord7 = new Vector2(0.0f, 1.0f);
 
             //8
-            Vertices[7].position = new Vector3(Boundings.Maximum.X, Boundings.Maximum.Y, Boundings.Maximum.Z);
-            Vertices[7].normal = new Vector3(0.0f, 0.0f, 0.0f);
-            Vertices[7].tex0 = new Vector2(0.0f, 1.0f);
-            Vertices[7].tex7 = new Vector2(0.0f, 1.0f);
+            Vertices[7].Position = new Vector3(Boundings.Maximum.X, Boundings.Maximum.Y, Boundings.Maximum.Z);
+            Vertices[7].Normal = new Vector3(0.0f, 0.0f, 0.0f);
+            Vertices[7].TexCoord0 = new Vector2(0.0f, 1.0f);
+            Vertices[7].TexCoord7 = new Vector2(0.0f, 1.0f);
 
             Indices = new ushort[] {
                 // front

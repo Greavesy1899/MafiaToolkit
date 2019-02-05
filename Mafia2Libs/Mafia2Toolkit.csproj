@@ -266,7 +266,7 @@
     <Compile Include="MafiaLib\Utils\Vectors.cs" />
     <Compile Include="MafiaLib\Utils\Vertex.cs" />
     <Compile Include="MafiaLib\Utils\VertexTranslator.cs" />
-    <Compile Include="Rendering\Graphics\BaseShader.cs" />
+    <Compile Include="Rendering\Graphics\Shaders\BaseShader.cs" />
     <Compile Include="Rendering\Graphics\Camera.cs" />
     <Compile Include="Rendering\Graphics\DDSTexLoader.cs" />
     <Compile Include="Rendering\Graphics\DirectX11Class.cs" />
@@ -353,7 +353,7 @@
     <Compile Include="Rendering\Graphics\GraphicsClass.cs" />
     <Compile Include="Rendering\Graphics\LightClass.cs" />
     <Compile Include="Rendering\Graphics\RenderBoundingBox.cs" />
-    <Compile Include="Rendering\Graphics\ShaderClass.cs" />
+    <Compile Include="Rendering\Graphics\Shaders\DefaultShader.cs" />
     <Compile Include="Rendering\Graphics\RenderModel.cs" />
     <Compile Include="Controls\ModelOptions.cs">
       <SubType>UserControl</SubType>
@@ -368,6 +368,7 @@
       <DependentUpon>MTLOptions.cs</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Graphics\ShaderManager.cs" />
+    <Compile Include="Rendering\Graphics\Shaders\Shader_601151254.cs" />
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
     <Compile Include="Rendering\Input\TimerClass.cs" />

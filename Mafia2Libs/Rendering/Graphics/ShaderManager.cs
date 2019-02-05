@@ -5,19 +5,20 @@ namespace Rendering.Graphics
 {
     public class ShaderManager
     {
-        public Dictionary<ulong, ShaderClass> shaders;
+        public Dictionary<ulong, BaseShader> shaders;
 
         public ShaderManager() { }
         public bool Init(Device device)
         {
-            shaders = new Dictionary<ulong, ShaderClass>();
-            shaders.Add(0, new ShaderClass(device, "LightPS.hlsl", "LightVS.hlsl", "LightVertexShader", "LightPixelShader"));
+            shaders = new Dictionary<ulong, BaseShader>();
+            shaders.Add(0, new DefaultShader(device, "LightPS.hlsl", "LightVS.hlsl", "LightVertexShader", "LightPixelShader"));
+            shaders.Add(601151254, new Shader_601151254(device, "LightPS.hlsl", "LightVS.hlsl", "LightVertexShader", "PS_601151254"));
             return true;
         }
 
         public void Shutdown()
         {
-            foreach(KeyValuePair<ulong, ShaderClass> shader in shaders)
+            foreach(KeyValuePair<ulong, BaseShader> shader in shaders)
                 shader.Value.Shutdown();
 
             shaders.Clear();

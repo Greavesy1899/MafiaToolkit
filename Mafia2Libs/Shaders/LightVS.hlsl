@@ -14,17 +14,17 @@ cbuffer CameraBuffer
 struct VertexInputType
 {
 	float4 position : POSITION;
+    float3 normal : NORMAL;
 	float2 tex0 : TEXCOORD0;
 	float2 tex7 : TEXCOORD1;
-	float3 normal : NORMAL;
 };
 
 struct PixelInputType
 {
 	float4 position : SV_POSITION;
+    float3 normal : NORMAL;
 	float2 tex0 : TEXCOORD0;
 	float2 tex7 : TEXCOORD1;
-	float3 normal : NORMAL;
     float3 viewDirection : TEXCOORD2;
 };
 

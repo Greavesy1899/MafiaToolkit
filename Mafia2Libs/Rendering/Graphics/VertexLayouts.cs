@@ -11,10 +11,11 @@ namespace Rendering.Graphics
             [StructLayout(LayoutKind.Sequential)]
             public struct Vertex
             {
-                public Vector3 position;
-                public Vector2 tex0;
-                public Vector2 tex7;
-                public Vector3 normal;
+                public Vector3 Position;
+                public Vector3 Normal;
+                public Vector2 TexCoord0;
+                public Vector2 TexCoord7;
+                
             }
 
             public static InputElement[] GetLayout()
@@ -33,6 +34,16 @@ namespace Rendering.Graphics
                     },
                     new InputElement()
                     {
+                        SemanticName = "NORMAL",
+                        SemanticIndex = 0,
+                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Slot = 0,
+                        AlignedByteOffset = InputElement.AppendAligned,
+                        Classification = InputClassification.PerVertexData,
+                        InstanceDataStepRate = 0
+                    },
+                    new InputElement()
+                    {
                         SemanticName = "TEXCOORD",
                         SemanticIndex = 0,
                         Format = SharpDX.DXGI.Format.R32G32_Float,
@@ -46,16 +57,6 @@ namespace Rendering.Graphics
                         SemanticName = "TEXCOORD",
                         SemanticIndex = 1,
                         Format = SharpDX.DXGI.Format.R32G32_Float,
-                        Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
-                        Classification = InputClassification.PerVertexData,
-                        InstanceDataStepRate = 0
-                    },
-                    new InputElement()
-                    {
-                        SemanticName = "NORMAL",
-                        SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
                         Slot = 0,
                         AlignedByteOffset = InputElement.AppendAligned,
                         Classification = InputClassification.PerVertexData,

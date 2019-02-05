@@ -21,11 +21,8 @@ namespace Mafia2
         ulong shaderID;
         uint shaderHash;
 
-        int sp_count;
-        ShaderParameter[] sp;
-
-        int sps_count;
-        Dictionary<string, ShaderParameterSampler> sps;
+        Dictionary<string, ShaderParameter> parameters;
+        Dictionary<string, ShaderParameterSampler> samplers;
 
         [Category("Material IDs"), ReadOnly(true)]
         public ulong MaterialHash {
@@ -87,22 +84,16 @@ namespace Mafia2
             set { shaderHash = value; }
         }
 
-        [Category("SP")]
-        public ShaderParameter[] SP {
-            get { return sp; }
-            set {
-                sp = value;
-                sp_count = value.Length;
-            }
+        [Category("Shader")]
+        public Dictionary<string, ShaderParameter> Parameters {
+            get { return parameters; }
+            set { parameters = value; }
         }
 
-        [Category("SPS")]
-        public Dictionary<string, ShaderParameterSampler> SPS {
-            get { return sps; }
-            set {
-                sps = value;
-                sps_count = value.Count;
-            }
+        [Category("Shader")]
+        public Dictionary<string, ShaderParameterSampler> Samplers {
+            get { return samplers; }
+            set { samplers = value;}
         }
 
         /// <summary>
@@ -129,12 +120,10 @@ namespace Mafia2
             ufo4 = 0;
             ufo5 = 0;
             ufo6 = 0;
-            sp_count = 0;
-            sp = new ShaderParameter[0];
-            sps_count = 1;
-            sps = new Dictionary<string, ShaderParameterSampler>();
+            parameters = new Dictionary<string, ShaderParameter>();
+            samplers = new Dictionary<string, ShaderParameterSampler>();
             var spp = new ShaderParameterSampler();
-            sps.Add(spp.ID, spp);
+            samplers.Add(spp.ID, spp);
         }
 
         public override string ToString()
@@ -162,19 +151,20 @@ namespace Mafia2
             shaderID = reader.ReadUInt64();
             shaderHash = reader.ReadUInt32();
 
-            sp_count = reader.ReadInt32();
-            sp = new ShaderParameter[sp_count];
-            for (int i = 0; i != sp_count; i++)
+            int spCount = reader.ReadInt32();
+            parameters = new Dictionary<string, ShaderParameter>();
+            for (int i = 0; i != spCount; i++)
             {
-                sp[i] = new ShaderParameter(reader);
+                var param = new ShaderParameter(reader);
+                parameters.Add(param.ID, param);
             }
 
-            sps_count = reader.ReadInt32();
-            sps = new Dictionary<string, ShaderParameterSampler>();
-            for (int i = 0; i != sps_count; i++)
+            int spsCount = reader.ReadInt32();
+            samplers = new Dictionary<string, ShaderParameterSampler>();
+            for (int i = 0; i != spsCount; i++)
             {
                 var shader = new ShaderParameterSampler(reader);
-                sps.Add(shader.ID, shader);
+                samplers.Add(shader.ID, shader);
             }
 
         }
@@ -203,15 +193,15 @@ namespace Mafia2
             writer.Write(shaderHash);
 
             ////Shader Parameter
-            writer.Write(sp_count);
-            foreach (ShaderParameter sp in sp)
+            writer.Write(parameters.Count);
+            foreach (KeyValuePair<string, ShaderParameter> param in parameters)
             {
-                sp.WriteToFile(writer);
+                param.Value.WriteToFile(writer);
             }
 
             ////Shader Parameter Samplers
-            writer.Write(sps_count);
-            foreach (KeyValuePair<string, ShaderParameterSampler> shader in sps)
+            writer.Write(samplers.Count);
+            foreach (KeyValuePair<string, ShaderParameterSampler> shader in samplers)
             {
                 shader.Value.WriteToFile(writer);
             }
@@ -230,13 +220,13 @@ namespace Mafia2
 
     public struct ShaderParameter
     {
-        string name;
+        string id;
         int paramCount;
         float[] paramaters;
 
-        public string Name {
-            get { return name; }
-            set { name = value; }
+        public string ID {
+            get { return id; }
+            set { id = value; }
         }
         public float[] Paramaters {
             get { return paramaters; }
@@ -248,7 +238,7 @@ namespace Mafia2
 
         public ShaderParameter(BinaryReader reader)
         {
-            name = new string(reader.ReadChars(4));
+            id = new string(reader.ReadChars(4));
             paramCount = reader.ReadInt32() / 4;
             paramaters = new float[paramCount];
             for (int i = 0; i != paramCount; i++)
@@ -259,12 +249,12 @@ namespace Mafia2
 
         public override string ToString()
         {
-            return string.Format("{0}, {1}", name, paramCount);
+            return string.Format("{0}, {1}", id, paramCount);
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(name.ToCharArray());
+            writer.Write(id.ToCharArray());
             writer.Write(paramCount * 4);
             for (int i = 0; i != paramCount; i++)
             {

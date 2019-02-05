@@ -43,8 +43,7 @@ namespace Rendering.Graphics
 
             foreach (KeyValuePair<int, RenderModel> model in Models)
             {
-                model.Value.Init(D3D.Device);
-                model.Value.Shader = ShaderManager.shaders[0];
+                model.Value.Init(D3D.Device, ShaderManager);
             }
 
             Light = new LightClass();

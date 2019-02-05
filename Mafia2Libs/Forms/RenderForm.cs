@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mafia2;
 using SharpDX;
+using System.Threading;
 
 namespace Mafia2Tool
 {
@@ -16,7 +17,6 @@ namespace Mafia2Tool
     {
         private InputClass Input { get; set; }
         private GraphicsClass Graphics { get; set; }
-        private TimerClass Timer { get; set; }
 
         private Point mousePos;
         private Point lastMousePos;
@@ -145,30 +145,36 @@ namespace Mafia2Tool
                 }
 
                 if (Input.IsKeyDown(Keys.A))
-                    Graphics.Camera.Position.X += 5f;
+                    Graphics.Camera.Position.X += 1f;
 
                 if (Input.IsKeyDown(Keys.D))
-                    Graphics.Camera.Position.X -= 5f;
-
+                    Graphics.Camera.Position.X -= 1f;
+            
                 if (Input.IsKeyDown(Keys.W))
-                    Graphics.Camera.Position.Y += 5f;
+                    Graphics.Camera.Position.Y += 1f;
 
                 if (Input.IsKeyDown(Keys.S))
-                    Graphics.Camera.Position.Y -= 5f;
+                    Graphics.Camera.Position.Y -= 1f;
 
                 if (Input.IsKeyDown(Keys.Q))
-                    Graphics.Camera.Position.Z += 5f;
+                    Graphics.Camera.Position.Z += 1f;
 
                 if (Input.IsKeyDown(Keys.E))
-                    Graphics.Camera.Position.Z -= 5f;
+                    Graphics.Camera.Position.Z -= 1f;
             }
             lastMousePos = mousePos;
             Graphics.Timer.Frame2();
-            return Graphics.Frame();
+            Graphics.Frame();
+
+            //awful i know
+            if (Graphics.Timer.FrameTime < 1000/60)
+            {
+                Thread.Sleep((int)Math.Abs(Graphics.Timer.FrameTime - 1000 / 60));
+            }
+            return true;
         }
         public void Shutdown()
         {
-            Timer = null;
             Graphics?.Shutdown();
             Graphics = null;
             Input = null;

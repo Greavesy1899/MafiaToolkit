@@ -12,7 +12,7 @@ namespace Rendering.Graphics
         private bool VerticalSyncEnabled { get; set; }
         public int VideoCardMemory { get; private set; }
         public string VideoCardDescription { get; private set; }
-        private SwapChain SwapChain { get; set; }
+        public SwapChain SwapChain { get; private set; }
         public SharpDX.Direct3D11.Device Device { get; private set; }
         public DeviceContext DeviceContext { get; private set; }
         private RenderTargetView RenderTargetView { get; set; }
