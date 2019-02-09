@@ -200,12 +200,27 @@ namespace Rendering.Graphics
             deviceContext.DrawIndexed((int)numTriangles, (int)offset, 0);
         }
 
-        public override void SetShaderParamters(Material material)
+        public override void SetShaderParamters(Device device, DeviceContext context, Material material)
         {
             DefaultShaderParams parameters = new DefaultShaderParams();
 
             if (material != null && !string.IsNullOrEmpty(material.Samplers["S000"].File))
-                parameters.EnableTexture = 0;
+            {
+                ShaderParameterSampler sampler = material.Samplers["S000"];
+
+                ShaderResourceView texture;
+                RenderStorageSingleton.Instance.TextureCache.TryGetValue(sampler.TextureHash, out texture);
+
+                if(texture == null)
+                {
+                    TextureClass Texture = new TextureClass();
+                    Texture.Init(device, sampler.File);
+                    RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, Texture.TextureResource);
+                    texture = Texture.TextureResource;
+                }
+
+                context.PixelShader.SetShaderResource(0, texture);
+            }
 
             ShaderParams = parameters;
         }

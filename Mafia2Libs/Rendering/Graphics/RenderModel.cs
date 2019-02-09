@@ -99,9 +99,6 @@ namespace Rendering.Graphics
                     lod.ModelParts[z].StartIndex = (uint)mats.Materials[i][z].StartIndex;
                     lod.ModelParts[z].MaterialHash = mats.Materials[i][z].MaterialHash;
                     lod.ModelParts[z].Material = MaterialsManager.LookupMaterialByHash(lod.ModelParts[z].MaterialHash);
-
-                    if(lod.ModelParts[z].Material != null)
-                        lod.ModelParts[z].TextureName = (lod.ModelParts[z].Material.Samplers.ContainsKey("S000") == true ? lod.ModelParts[z].Material.Samplers["S000"].File : "texture.dds");
                 }
 
                 lod.Vertices = new VertexLayouts.NormalLayout.Vertex[geom.LOD[i].NumVertsPr];
@@ -206,11 +203,20 @@ namespace Rendering.Graphics
         private bool InitializePartShaders(Device device, ShaderManager manager)
         {
             TextureClass AOTextureClass = new TextureClass();
-            bool result = AOTextureClass.Init(device, "texture.dds");
-            AOTexture = AOTextureClass.TextureResource;
+            ShaderResourceView m_Temp;
+            bool result = true;
 
-            if (!result)
-                return false;
+            RenderStorageSingleton.Instance.TextureCache.TryGetValue(0, out m_Temp);
+            AOTexture = m_Temp;
+
+            if (m_Temp == null)
+            {
+                AOTextureClass.Init(device, "texture.dds");
+                RenderStorageSingleton.Instance.TextureCache.Add(0, AOTextureClass.TextureResource);
+                AOTexture = AOTextureClass.TextureResource;
+            }
+
+            //m_Temp = null;
 
             for (int x = 0; x != LODs[0].ModelParts.Length; x++)
             {
@@ -219,16 +225,43 @@ namespace Rendering.Graphics
                     part.Shader = manager.shaders[0];
                 else
                     part.Shader = (manager.shaders.ContainsKey(LODs[0].ModelParts[x].Material.ShaderHash) ? manager.shaders[LODs[0].ModelParts[x].Material.ShaderHash] : manager.shaders[0]);
-
-                TextureClass Texture = new TextureClass();
-                result = Texture.Init(device, LODs[0].ModelParts[x].TextureName);
-                part.Texture = Texture.TextureResource;
                 LODs[0].ModelParts[x] = part;
-
-                if (!result)
-                    return false;
             }
             return true;
+
+            //    if (part.Material != null)
+            //    {
+            //        ulong hash = part.Material.Samplers["S000"].TextureHash;
+            //        RenderStorageSingleton.Instance.TextureCache.TryGetValue(hash, out m_Temp);
+
+            //        if (m_Temp == null)
+            //        {
+            //            TextureClass Texture = new TextureClass();
+            //            result = Texture.Init(device, part.TextureName);
+            //            RenderStorageSingleton.Instance.TextureCache.Add(hash, Texture.TextureResource);
+            //            part.Texture = Texture.TextureResource;
+            //        }
+            //        part.Texture = m_Temp;
+            //    }
+            //    else
+            //    {
+            //        m_Temp = null;
+            //        RenderStorageSingleton.Instance.TextureCache.TryGetValue(0, out m_Temp);
+            //        part.Texture = m_Temp;
+
+            //        if (m_Temp == null)
+            //        {
+            //            TextureClass Texture = new TextureClass();
+            //            Texture.Init(device, "texture.dds");
+            //            RenderStorageSingleton.Instance.TextureCache.Add(0, AOTextureClass.TextureResource);
+            //            part.Texture = Texture.TextureResource;
+            //        }
+            //    }
+            //    LODs[0].ModelParts[x] = part;
+            //}
+            //if (!result)
+            //    return false;
+            //return true;
         }
         private void ReleaseTextures()
         {
@@ -256,22 +289,17 @@ namespace Rendering.Graphics
             IndexBuffer = null;
         }
 
-        public void Render(DeviceContext deviceContext, Camera camera, LightClass light)
+        public void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
         { 
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
-            
-
-            ShaderResourceView[] resources = new ShaderResourceView[2];
-            resources[1] = AOTexture;
 
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
             {             
-                resources[0] = LODs[0].ModelParts[i].Texture;
-                LODs[0].ModelParts[i].Shader.SetShaderParamters(LODs[0].ModelParts[i].Material);
+                LODs[0].ModelParts[i].Shader.SetShaderParamters(device, deviceContext, LODs[0].ModelParts[i].Material);
                 LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera, light);
-                deviceContext.PixelShader.SetShaderResources(0, 2, resources);
+                deviceContext.PixelShader.SetShaderResource(1, AOTexture);
                 LODs[0].ModelParts[i].Shader.Render(deviceContext, LODs[0].ModelParts[i].NumFaces * 3, LODs[0].ModelParts[i].StartIndex);
             }
         }

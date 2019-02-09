@@ -180,7 +180,7 @@ namespace Rendering.Graphics
             deviceContext.PixelShader.SetConstantBuffer(bufferSlotNumber, ConstantShaderParamBuffer);
         }
 
-        public override void SetShaderParamters(Material material)
+        public override void SetShaderParamters(Device device, DeviceContext deviceContext, Material material)
         {
             Shader_601151254Params parameters = new Shader_601151254Params();
 

@@ -77,7 +77,7 @@ namespace Rendering.Graphics
         }
         public bool Render()
         {
-            D3D.BeginScene(0f, 0f, 0f, 1.0f);
+            D3D.BeginScene(1.0f, 0f, 0f, 1.0f);
             Camera.Render();
 
             foreach (KeyValuePair<int, RenderModel> entry in Models)
@@ -86,7 +86,7 @@ namespace Rendering.Graphics
                 if (model.DoRender)
                 {
                     //D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Solid);
-                    model.Render(D3D.DeviceContext, Camera, Light);
+                    model.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
                     //D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Wireframe);
                     //model.BoundingBox.Render(D3D.DeviceContext);
                     //D3D.DeviceContext.PixelShader.SetShaderResource(0, model.BoundingBox.Texture);

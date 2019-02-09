@@ -32,7 +32,7 @@ namespace Mafia2Tool
 
             KeyPreview = true;
             RenderPanel.Focus();
-
+            Console.WriteLine(RenderStorageSingleton.Instance.TextureCache.Count);
             //do D3D stuff/
             StartD3DPanel();
         }
