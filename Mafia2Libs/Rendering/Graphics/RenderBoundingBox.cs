@@ -101,12 +101,6 @@ namespace Rendering.Graphics
         {
             VertexBuffer = Buffer.Create(device, BindFlags.VertexBuffer, Vertices);
             IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, Indices);
-            
-            if(!LoadTexture(device))
-            {
-                MessageBox.Show("unable to load texture");
-                return false;
-            }
             return true;
         }
 

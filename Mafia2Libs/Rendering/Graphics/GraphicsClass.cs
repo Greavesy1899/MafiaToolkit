@@ -4,6 +4,9 @@ using System;
 using System.Windows.Forms;
 using SharpDX;
 using System.Collections.Generic;
+using Mafia2Tool;
+using ResourceTypes.FrameResource;
+using Mafia2;
 
 namespace Rendering.Graphics
 {
@@ -24,6 +27,7 @@ namespace Rendering.Graphics
             D3D = new DirectX11Class();
             if (!D3D.Init(WindowHandle))
             {
+                MessageBox.Show("Failed to initialize DirectX11!");
                 return false;
             }
             Timer = new TimerClass();
@@ -34,7 +38,7 @@ namespace Rendering.Graphics
             ShaderManager = new ShaderManager();
             if (!ShaderManager.Init(D3D.Device))
             {
-                MessageBox.Show("Could not init ShaderManager!");
+                MessageBox.Show("Failed to initialize Shader Manager!");
                 return false;
             }
             Camera = new Camera();
@@ -47,7 +51,7 @@ namespace Rendering.Graphics
             }
 
             Light = new LightClass();
-            Light.SetAmbientColor(0.75f, 0.75f, 0.75f, 1f);
+            Light.SetAmbientColor(0.5f, 0.5f, 0.5f, 1f);
             Light.SetDiffuseColour(0f, 0f, 0f, 0);
             Light.Direction = Camera.Position;
             Light.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -77,25 +81,48 @@ namespace Rendering.Graphics
         }
         public bool Render()
         {
-            D3D.BeginScene(1.0f, 0f, 0f, 1.0f);
+            D3D.BeginScene(0.0f, 0f, 0f, 1.0f);
             Camera.Render();
 
-            foreach (KeyValuePair<int, RenderModel> entry in Models)
+            FrameObjectBase obj1;
+            FrameObjectBase obj2;
+
+            foreach (KeyValuePair<int, FrameNode> child in SceneData.FrameResource.Frame.Children)
             {
-                RenderModel model = entry.Value;
-                if (model.DoRender)
+                obj1 = (child.Value.Object as FrameObjectBase);
+
+                if(obj1 != null && Models.ContainsKey(obj1.RefID))
+                    Models[obj1.RefID].Render(D3D.Device, D3D.DeviceContext, Camera, Light);
+
+                foreach (KeyValuePair<int, FrameNode> child2 in child.Value.Children)
                 {
-                    //D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Solid);
-                    model.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
-                    //D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Wireframe);
-                    //model.BoundingBox.Render(D3D.DeviceContext);
-                    //D3D.DeviceContext.PixelShader.SetShaderResource(0, model.BoundingBox.Texture);
-                    //D3D.DeviceContext.InputAssembler.SetIndexBuffer(model.BoundingBox.IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
-                    //Shader.Render(D3D.DeviceContext, model.BoundingBox.Indices.Length);
+                    obj2 = (child2.Value.Object as FrameObjectBase);
 
-
+                    if (Models.ContainsKey(obj2.RefID))
+                    {
+                        TransformMatrix matrix = ((obj1 != null) ? obj1.Matrix : new TransformMatrix());
+                        Models[obj2.RefID].SetTransform(matrix.Position + obj2.Matrix.Position, obj2.Matrix.Rotation);
+                        Models[obj2.RefID].Render(D3D.Device, D3D.DeviceContext, Camera, Light);
+                    }
                 }
             }
+
+            //foreach (KeyValuePair<int, RenderModel> entry in Models)
+            //{
+            //    RenderModel model = entry.Value;
+            //    if (model.DoRender)
+            //    {
+            //        //D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Solid);
+            //        model.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
+            //        //D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Wireframe);
+            //        //model.BoundingBox.Render(D3D.DeviceContext);
+            //        //D3D.DeviceContext.PixelShader.SetShaderResource(0, model.BoundingBox.Texture);
+            //        //D3D.DeviceContext.InputAssembler.SetIndexBuffer(model.BoundingBox.IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
+            //        //Shader.Render(D3D.DeviceContext, model.BoundingBox.Indices.Length);
+
+
+            //    }
+            //}
             D3D.EndScene();
             return true;
         }

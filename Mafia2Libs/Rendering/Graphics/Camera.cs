@@ -10,9 +10,6 @@ namespace Rendering.Graphics
         public Vector3 Position = new Vector3(0);
         public Matrix ViewMatrix { get; private set; }
         public Matrix ProjectionMatrix { get; private set; }
-        private float RotationX { get; set; }
-        private float RotationY { get; set; }
-        private float RotationZ { get; set; }
 
         private Vector3 Look { get; set; }
         private Vector3 Right { get; set; }
@@ -82,12 +79,11 @@ namespace Rendering.Graphics
             ProjectionMatrix = Matrix.PerspectiveFovRH((float)(Math.PI / 4), (ToolkitSettings.Width / ToolkitSettings.Height), ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth); ;
         }
 
-        public Ray GetPickingRay(Vector2 sp, Vector2 screenDims, Matrix Proj)
+        public Ray GetPickingRay(Vector2 sp, Vector2 screenDims)
         {
-            var p = Proj;
             // convert screen pixel to view space
-            var vx = (2.0f * sp.X / screenDims.X - 1.0f) / p.M11;
-            var vy = (-2.0f * sp.Y / screenDims.Y + 1.0f) / p.M22;
+            var vx = (2.0f * sp.X / screenDims.X - 1.0f) / ProjectionMatrix.M11;
+            var vy = (-2.0f * sp.Y / screenDims.Y + 1.0f) / ProjectionMatrix.M22;
 
             var ray = new Ray(new Vector3(), new Vector3(vx, vy, 1.0f));
             var v = ViewMatrix;

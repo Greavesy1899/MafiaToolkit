@@ -10,6 +10,7 @@ using System.Linq;
 using Mafia2;
 using SharpDX;
 using System.Threading;
+using ResourceTypes.FrameNameTable;
 
 namespace Mafia2Tool
 {
@@ -28,7 +29,7 @@ namespace Mafia2Tool
             SceneData.ScenePath = info.DirectoryName;
             fileLocation = info;
             SceneData.BuildData();
-            PopulateList();
+            PopulateList(info);
 
             KeyPreview = true;
             RenderPanel.Focus();
@@ -37,10 +38,10 @@ namespace Mafia2Tool
             StartD3DPanel();
         }
 
-        public void PopulateList()
+        public void PopulateList(FileInfo info)
         {
             SceneData.FrameResource.BuildFrameTree(SceneData.FrameNameTable);
-            TreeNode tree = new TreeNode("SceneManager");
+            TreeNode tree = new TreeNode(info.Name);
             SceneData.FrameResource.Frame.ConvertToTreeNode(ref tree);
             treeView1.Nodes.Add(tree);
         }
@@ -86,6 +87,119 @@ namespace Mafia2Tool
             RenderPanel.Focus();
         }
 
+        private void RenderForm_MouseMove(object sender, MouseEventArgs e)
+        {
+            mousePos = new Point(e.Location.X, e.Location.Y);
+        }
+
+        private void CullModeButton_Click(object sender, EventArgs e)
+        {
+            Graphics.ToggleD3DCullMode();
+        }
+
+        private void FillModeButton_Click(object sender, EventArgs e)
+        {
+            Graphics.ToggleD3DFillMode();
+        }
+
+        private void OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateCurrentEntryData();
+        }
+
+        private void OnAfterSelect(object sender, TreeViewEventArgs e)
+        {
+            UpdateCurrentEntryData();
+        }
+
+        private void OnFormClosing(object sender, FormClosingEventArgs e)
+        {
+            RenderStorageSingleton.Instance.TextureCache.Clear();
+            Shutdown();
+        }
+
+        private void ExitButton_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            SaveChanges();
+        }
+
+        public bool Frame()
+        {
+            if (RenderPanel.Focused)
+            {
+                if (Input.IsButtonDown(MouseButtons.Right))
+                {
+                    var dx = 0.25f * (mousePos.X - lastMousePos.X);
+                    var dy = 0.25f * (mousePos.Y - lastMousePos.Y);
+
+                    Graphics.Camera.Pitch(dy);
+                    Graphics.Camera.Yaw(dx);
+                }
+                else if (Input.IsButtonDown(MouseButtons.Left))
+                {
+                    //broken. Lots of refactoring of the old code to get this working.
+                    Pick(mousePos.X, mousePos.Y);
+                }
+
+                if (Input.IsKeyDown(Keys.A))
+                    Graphics.Camera.Position.X += 1f;
+
+                if (Input.IsKeyDown(Keys.D))
+                    Graphics.Camera.Position.X -= 1f;
+
+                if (Input.IsKeyDown(Keys.W))
+                    Graphics.Camera.Position.Y += 1f;
+
+                if (Input.IsKeyDown(Keys.S))
+                    Graphics.Camera.Position.Y -= 1f;
+
+                if (Input.IsKeyDown(Keys.Q))
+                    Graphics.Camera.Position.Z += 1f;
+
+                if (Input.IsKeyDown(Keys.E))
+                    Graphics.Camera.Position.Z -= 1f;
+            }
+            lastMousePos = mousePos;
+            Graphics.Timer.Frame2();
+            Graphics.Frame();
+
+            //awful i know
+            if (Graphics.Timer.FrameTime < 1000 / 60)
+            {
+                Thread.Sleep((int)Math.Abs(Graphics.Timer.FrameTime - 1000 / 60));
+            }
+
+            return true;
+        }
+
+        private void SaveChanges()
+        {
+            DialogResult result = MessageBox.Show("Do you want to save your changes?", "Save Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                using (BinaryWriter writer = new BinaryWriter(File.Open(fileLocation.FullName, FileMode.Create)))
+                {
+                    SceneData.FrameResource.WriteToFile(writer);
+                }
+                using (BinaryWriter writer = new BinaryWriter(File.Open(SceneData.FrameNameTable.FileName, FileMode.Create)))
+                {
+                    FrameNameTable nameTable = new FrameNameTable();
+                    nameTable.BuildDataFromResource(SceneData.FrameResource);
+                    nameTable.WriteToFile(writer);
+                    SceneData.FrameNameTable = nameTable;
+                }
+                SceneData.IndexBufferPool.WriteToFile();
+                SceneData.VertexBufferPool.WriteToFile();
+                Console.WriteLine("Saved Changes Succesfully");
+            }
+        }
+
         private void BuildRenderObjects()
         {
             Dictionary<int, RenderModel> meshes = new Dictionary<int, RenderModel>();
@@ -121,79 +235,6 @@ namespace Mafia2Tool
             Graphics.Models = meshes;
         }
 
-        private void RenderForm_MouseMove(object sender, MouseEventArgs e)
-        {
-            mousePos = new Point(e.Location.X, e.Location.Y);
-        }
-
-        public bool Frame()
-        {
-            if (RenderPanel.Focused)
-            {
-                if (Input.IsButtonDown(MouseButtons.Right))
-                {
-                    var dx = 0.25f * (mousePos.X - lastMousePos.X);
-                    var dy = 0.25f * (mousePos.Y - lastMousePos.Y);
-
-                    Graphics.Camera.Pitch(dy);
-                    Graphics.Camera.Yaw(dx);
-                }
-                else if(Input.IsButtonDown(MouseButtons.Left))
-                {
-                    //broken. Lots of refactoring of the old code to get this working.
-                    //Pick(mousePos.X, mousePos.Y);
-                }
-
-                if (Input.IsKeyDown(Keys.A))
-                    Graphics.Camera.Position.X += 1f;
-
-                if (Input.IsKeyDown(Keys.D))
-                    Graphics.Camera.Position.X -= 1f;
-            
-                if (Input.IsKeyDown(Keys.W))
-                    Graphics.Camera.Position.Y += 1f;
-
-                if (Input.IsKeyDown(Keys.S))
-                    Graphics.Camera.Position.Y -= 1f;
-
-                if (Input.IsKeyDown(Keys.Q))
-                    Graphics.Camera.Position.Z += 1f;
-
-                if (Input.IsKeyDown(Keys.E))
-                    Graphics.Camera.Position.Z -= 1f;
-            }
-            lastMousePos = mousePos;
-            Graphics.Timer.Frame2();
-            Graphics.Frame();
-
-            //awful i know
-            if (Graphics.Timer.FrameTime < 1000/60)
-            {
-                Thread.Sleep((int)Math.Abs(Graphics.Timer.FrameTime - 1000 / 60));
-            }
-            return true;
-        }
-        public void Shutdown()
-        {
-            Graphics?.Shutdown();
-            Graphics = null;
-            Input = null;
-        }
-        private void CullModeButton_Click(object sender, EventArgs e)
-        {
-            Graphics.ToggleD3DCullMode();
-        }
-
-        private void FillModeButton_Click(object sender, EventArgs e)
-        {
-            Graphics.ToggleD3DFillMode();
-        }
-
-        private void OnSelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdateCurrentEntryData();
-        }
-
         //Improvement Idea: Sync updates values IF selected indexes is valid.
         private void UpdateCurrentEntryData()
         {
@@ -208,6 +249,7 @@ namespace Mafia2Tool
             RotationXBox.Text = fObject.Matrix.Rotation.EulerRotation.X.ToString();
             RotationYBox.Text = fObject.Matrix.Rotation.EulerRotation.Y.ToString();
             RotationZBox.Text = fObject.Matrix.Rotation.EulerRotation.Z.ToString();
+            CurrentEntryType.Text = fObject.GetType().Name;
         }
 
         private void EntryApplyChanges_OnClick(object sender, EventArgs e)
@@ -219,57 +261,71 @@ namespace Mafia2Tool
             Graphics.Models[fObject.RefID].DoRender = !HideInViewerCheckBox.Checked;
             Graphics.Models[fObject.RefID].SetTransform(fObject.Matrix.Position, fObject.Matrix.Rotation);
         }
+
         private void Pick(int sx, int sy)
         {
+            var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
+            string pickedModel = "No Object Found!";
+            foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
+            {
+                // transform the picking ray into the object space of the mesh
+                Matrix worldMat = model.Value.Transform;
+                var invWorld = Matrix.Invert(worldMat);
+                ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
+                ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
+                ray.Direction.Normalize();
 
-    //        var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height), Graphics.GetProjectionMatrix());
+                float tmin;
+                
 
-    //        // transform the picking ray into the object space of the mesh
-    //        var invWorld = Matrix.Invert(Graphics.GetWorldMatrix());
-    //        ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
-    //        ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
-    //        ray.Direction.Normalize();
+                FrameObjectBase objBase = null;
+                foreach (KeyValuePair<int, object> obj in SceneData.FrameResource.FrameObjects)
+                {
+                    if ((obj.Value as FrameObjectBase).RefID == model.Key)
+                        objBase = (obj.Value as FrameObjectBase);
 
-    //        float tmin;
-    //        string pickedModel = "";
-    //        foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
-    //        {
-    //            Vector3 minVector = new Vector3(
-    //                model.Value.Transform.Column1[3] + model.Value.BoundingBox.Boundings.Minimum.X,
-    //                model.Value.Transform.Column2[3] + model.Value.BoundingBox.Boundings.Minimum.Y,
-    //                model.Value.Transform.Column3[3] + model.Value.BoundingBox.Boundings.Minimum.Z
-    //                );
-    //            Vector3 maxVector = new Vector3(
-    //                model.Value.Transform.Column1[3] + model.Value.BoundingBox.Boundings.Maximum.X,
-    //                model.Value.Transform.Column2[3] + model.Value.BoundingBox.Boundings.Maximum.Y,
-    //                model.Value.Transform.Column3[3] + model.Value.BoundingBox.Boundings.Maximum.Z
-    //);
-    //            BoundingBox tempBox = new BoundingBox(minVector, maxVector);
-    //            if(ray.Intersects(ref tempBox, out tmin))
-    //            {
-    //                Console.WriteLine(string.Format("Name {0}, Distance {1}", (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase).Name.String, tmin));
-    //            }
-    //            float tmin2 = float.MaxValue;
-    //            for (var i = 0; i < model.Value.Vertices.Length; i++)
-    //            {
+                }
 
-    //                float t = 0;
-    //                Vector3 temp_vec3 = model.Value.Vertices[i].position;
-    //                if (!ray.Intersects(ref temp_vec3)) continue;
-    //                // find the closest intersection, exclude intersections behind camera
-    //                if (!(t < tmin2 || t < 0)) continue;
-    //                tmin2 = t;
-    //            }
-    //            if (tmin < tmin2)
-    //                pickedModel = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase).Name.String;
-    //        }
+                Vector3 minVector = new Vector3(
+                model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Minimum.X,
+                model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Minimum.Y,
+                model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Minimum.Z
+                );
+                Vector3 maxVector = new Vector3(
+                   model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Maximum.X,
+                   model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Maximum.Y,
+                   model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Maximum.Z
+                   );
+                BoundingBox tempBox = new BoundingBox(minVector, maxVector);
+                if (ray.Intersects(ref tempBox, out tmin))
+                    continue;
 
-    //        Console.WriteLine(pickedModel);
+                float tmin2 = float.MaxValue;
+                for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
+                {
+                    var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
+                    var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
+                    var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
+                    float t = 0;
+                    if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+                    // find the closest intersection, exclude intersections behind camera
+                    if (!(t < tmin2 || t < 0)) continue;
+                    tmin2 = t;
+                }
+                if (tmin < tmin2)
+                {
+                    pickedModel = objBase.ToString();
+                }
+            }
+
+            Console.WriteLine(pickedModel);
         }
 
-        private void OnAfterSelect(object sender, TreeViewEventArgs e)
+        public void Shutdown()
         {
-            UpdateCurrentEntryData();
+            Graphics?.Shutdown();
+            Graphics = null;
+            Input = null;
         }
     }
 }
