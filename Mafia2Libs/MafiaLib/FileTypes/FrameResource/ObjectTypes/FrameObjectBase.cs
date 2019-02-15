@@ -1,9 +1,8 @@
 ﻿using System.IO;
 using System.ComponentModel;
-using System;
-using Gibbed.Illusion.FileFormats.Hashing;
+using Mafia2;
 
-namespace Mafia2
+namespace ResourceTypes.FrameResource
 {
     public class FrameObjectBase : FrameEntry
     {

@@ -1,7 +1,8 @@
-﻿using SharpDX;
+﻿using Mafia2;
+using SharpDX;
 using System.IO;
 
-namespace Mafia2
+namespace ResourceTypes.FrameResource
 {
     public class FrameGeometry : FrameEntry
     {

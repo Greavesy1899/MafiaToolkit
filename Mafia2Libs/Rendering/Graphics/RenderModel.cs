@@ -4,6 +4,7 @@ using SharpDX.Direct3D11;
 using System.Windows.Forms;
 using Mafia2;
 using System.Collections.Generic;
+using ResourceTypes.FrameResource;
 
 namespace Rendering.Graphics
 {

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Mafia2;
 
-namespace Mafia2
+namespace ResourceTypes.FrameResource
 {
     public class FrameEntry
     {

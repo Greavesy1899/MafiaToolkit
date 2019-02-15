@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using SharpDX;
+using ResourceTypes.FrameResource;
 
 namespace Mafia2
 {

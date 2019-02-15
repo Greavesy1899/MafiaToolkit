@@ -1,7 +1,8 @@
 ﻿using System.IO;
 using SharpDX;
+using Mafia2;
 
-namespace Mafia2
+namespace ResourceTypes.FrameResource
 {
     public class FrameSkeleton : FrameEntry
     {

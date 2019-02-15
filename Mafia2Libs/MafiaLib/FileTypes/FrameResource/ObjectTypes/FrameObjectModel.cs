@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using Mafia2;
 using System.IO;
 
-namespace Mafia2
+namespace ResourceTypes.FrameResource
 {
     public class FrameObjectModel : FrameObjectSingleMesh
     {

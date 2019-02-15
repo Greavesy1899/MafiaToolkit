@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Mafia2
+namespace ResourceTypes.FrameResource
 {
     public class FrameObjectTarget : FrameObjectJoint
     {

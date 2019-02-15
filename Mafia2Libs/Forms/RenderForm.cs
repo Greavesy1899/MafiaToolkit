@@ -11,6 +11,7 @@ using Mafia2;
 using SharpDX;
 using System.Threading;
 using ResourceTypes.FrameNameTable;
+using ResourceTypes.FrameResource;
 
 namespace Mafia2Tool
 {
@@ -258,7 +259,6 @@ namespace Mafia2Tool
             fObject.Matrix.Position = new Vector3(float.Parse(PositionXBox.Text), float.Parse(PositionYBox.Text), float.Parse(PositionZBox.Text));
             fObject.Matrix.Rotation.EulerRotation = new Vector3(float.Parse(RotationXBox.Text), float.Parse(RotationYBox.Text), float.Parse(RotationZBox.Text));
             fObject.Matrix.Rotation.UpdateMatrixFromEuler();
-            Graphics.Models[fObject.RefID].DoRender = !HideInViewerCheckBox.Checked;
             Graphics.Models[fObject.RefID].SetTransform(fObject.Matrix.Position, fObject.Matrix.Rotation);
         }
 

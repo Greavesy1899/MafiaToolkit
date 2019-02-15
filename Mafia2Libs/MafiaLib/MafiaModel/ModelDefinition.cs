@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SharpDX;
 using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.FrameResource;
 
 namespace Mafia2
 {

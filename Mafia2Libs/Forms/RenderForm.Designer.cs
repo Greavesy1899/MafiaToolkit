@@ -30,17 +30,19 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(D3DForm));
             this.RenderPanel = new System.Windows.Forms.Panel();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.ToolbarStrip = new System.Windows.Forms.ToolStrip();
             this.FileButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.ToggleWireFrameButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToggleCullingBottle = new System.Windows.Forms.ToolStripMenuItem();
             this.MainTabControl = new System.Windows.Forms.TabControl();
             this.SceneTab = new System.Windows.Forms.TabPage();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.EditEntryTab = new System.Windows.Forms.TabPage();
             this.CurrentEntryType = new System.Windows.Forms.Label();
             this.EntryApplyChanges = new System.Windows.Forms.Button();
-            this.HideInViewerCheckBox = new System.Windows.Forms.CheckBox();
             this.CurrentEntry = new System.Windows.Forms.Label();
             this.RotationZBox = new System.Windows.Forms.TextBox();
             this.RotationZLabel = new System.Windows.Forms.Label();
@@ -54,10 +56,8 @@
             this.PositionYLabel = new System.Windows.Forms.Label();
             this.PositionXBox = new System.Windows.Forms.TextBox();
             this.PositionXLabel = new System.Windows.Forms.Label();
-            this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.ToggleWireFrameButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToggleCullingBottle = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStrip1.SuspendLayout();
+            this.StatusStrip = new System.Windows.Forms.StatusStrip();
+            this.ToolbarStrip.SuspendLayout();
             this.MainTabControl.SuspendLayout();
             this.SceneTab.SuspendLayout();
             this.EditEntryTab.SuspendLayout();
@@ -70,19 +70,19 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RenderPanel.Location = new System.Drawing.Point(224, 28);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(564, 410);
+            this.RenderPanel.Size = new System.Drawing.Size(564, 397);
             this.RenderPanel.TabIndex = 0;
             // 
-            // toolStrip1
+            // ToolbarStrip
             // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolbarStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileButton,
             this.ViewButton});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(800, 25);
-            this.toolStrip1.TabIndex = 1;
-            this.toolStrip1.Text = "toolStrip1";
+            this.ToolbarStrip.Location = new System.Drawing.Point(0, 0);
+            this.ToolbarStrip.Name = "ToolbarStrip";
+            this.ToolbarStrip.Size = new System.Drawing.Size(800, 25);
+            this.ToolbarStrip.TabIndex = 1;
+            this.ToolbarStrip.Text = "toolStrip1";
             // 
             // FileButton
             // 
@@ -99,16 +99,42 @@
             // SaveButton
             // 
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(180, 22);
+            this.SaveButton.Size = new System.Drawing.Size(98, 22);
             this.SaveButton.Text = "Save";
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // ExitButton
             // 
             this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(180, 22);
+            this.ExitButton.Size = new System.Drawing.Size(98, 22);
             this.ExitButton.Text = "Exit";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
+            // 
+            // ViewButton
+            // 
+            this.ViewButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.ViewButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToggleWireFrameButton,
+            this.ToggleCullingBottle});
+            this.ViewButton.Image = ((System.Drawing.Image)(resources.GetObject("ViewButton.Image")));
+            this.ViewButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ViewButton.Name = "ViewButton";
+            this.ViewButton.Size = new System.Drawing.Size(45, 22);
+            this.ViewButton.Text = "View";
+            // 
+            // ToggleWireFrameButton
+            // 
+            this.ToggleWireFrameButton.Name = "ToggleWireFrameButton";
+            this.ToggleWireFrameButton.Size = new System.Drawing.Size(180, 22);
+            this.ToggleWireFrameButton.Text = "Toggle Wireframe";
+            this.ToggleWireFrameButton.Click += new System.EventHandler(this.FillModeButton_Click);
+            // 
+            // ToggleCullingBottle
+            // 
+            this.ToggleCullingBottle.Name = "ToggleCullingBottle";
+            this.ToggleCullingBottle.Size = new System.Drawing.Size(180, 22);
+            this.ToggleCullingBottle.Text = "Toggle Culling";
+            this.ToggleCullingBottle.Click += new System.EventHandler(this.CullModeButton_Click);
             // 
             // MainTabControl
             // 
@@ -119,7 +145,7 @@
             this.MainTabControl.Location = new System.Drawing.Point(6, 28);
             this.MainTabControl.Name = "MainTabControl";
             this.MainTabControl.SelectedIndex = 0;
-            this.MainTabControl.Size = new System.Drawing.Size(212, 410);
+            this.MainTabControl.Size = new System.Drawing.Size(212, 397);
             this.MainTabControl.TabIndex = 5;
             // 
             // SceneTab
@@ -128,7 +154,7 @@
             this.SceneTab.Location = new System.Drawing.Point(4, 22);
             this.SceneTab.Name = "SceneTab";
             this.SceneTab.Padding = new System.Windows.Forms.Padding(3);
-            this.SceneTab.Size = new System.Drawing.Size(204, 384);
+            this.SceneTab.Size = new System.Drawing.Size(204, 371);
             this.SceneTab.TabIndex = 0;
             this.SceneTab.Text = "Scene";
             this.SceneTab.UseVisualStyleBackColor = true;
@@ -138,7 +164,7 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(3, 3);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(198, 378);
+            this.treeView1.Size = new System.Drawing.Size(198, 365);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnAfterSelect);
             // 
@@ -146,7 +172,6 @@
             // 
             this.EditEntryTab.Controls.Add(this.CurrentEntryType);
             this.EditEntryTab.Controls.Add(this.EntryApplyChanges);
-            this.EditEntryTab.Controls.Add(this.HideInViewerCheckBox);
             this.EditEntryTab.Controls.Add(this.CurrentEntry);
             this.EditEntryTab.Controls.Add(this.RotationZBox);
             this.EditEntryTab.Controls.Add(this.RotationZLabel);
@@ -186,16 +211,6 @@
             this.EntryApplyChanges.Text = "Apply Changes";
             this.EntryApplyChanges.UseVisualStyleBackColor = true;
             this.EntryApplyChanges.Click += new System.EventHandler(this.EntryApplyChanges_OnClick);
-            // 
-            // HideInViewerCheckBox
-            // 
-            this.HideInViewerCheckBox.AutoSize = true;
-            this.HideInViewerCheckBox.Location = new System.Drawing.Point(10, 204);
-            this.HideInViewerCheckBox.Name = "HideInViewerCheckBox";
-            this.HideInViewerCheckBox.Size = new System.Drawing.Size(135, 17);
-            this.HideInViewerCheckBox.TabIndex = 13;
-            this.HideInViewerCheckBox.Text = "Hide in Viewer (Debug)";
-            this.HideInViewerCheckBox.UseVisualStyleBackColor = true;
             // 
             // CurrentEntry
             // 
@@ -302,45 +317,28 @@
             this.PositionXLabel.TabIndex = 0;
             this.PositionXLabel.Text = "Position X";
             // 
-            // ViewButton
+            // StatusStrip
             // 
-            this.ViewButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.ViewButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ToggleWireFrameButton,
-            this.ToggleCullingBottle});
-            this.ViewButton.Image = ((System.Drawing.Image)(resources.GetObject("ViewButton.Image")));
-            this.ViewButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ViewButton.Name = "ViewButton";
-            this.ViewButton.Size = new System.Drawing.Size(45, 22);
-            this.ViewButton.Text = "View";
-            // 
-            // ToggleWireFrameButton
-            // 
-            this.ToggleWireFrameButton.Name = "ToggleWireFrameButton";
-            this.ToggleWireFrameButton.Size = new System.Drawing.Size(180, 22);
-            this.ToggleWireFrameButton.Text = "Toggle Wireframe";
-            this.ToggleWireFrameButton.Click += new System.EventHandler(this.FillModeButton_Click);
-            // 
-            // ToggleCullingBottle
-            // 
-            this.ToggleCullingBottle.Name = "ToggleCullingBottle";
-            this.ToggleCullingBottle.Size = new System.Drawing.Size(180, 22);
-            this.ToggleCullingBottle.Text = "Toggle Culling";
-            this.ToggleCullingBottle.Click += new System.EventHandler(this.CullModeButton_Click);
+            this.StatusStrip.Location = new System.Drawing.Point(0, 428);
+            this.StatusStrip.Name = "StatusStrip";
+            this.StatusStrip.Size = new System.Drawing.Size(800, 22);
+            this.StatusStrip.TabIndex = 6;
+            this.StatusStrip.Text = "statusStrip1";
             // 
             // D3DForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.StatusStrip);
             this.Controls.Add(this.MainTabControl);
-            this.Controls.Add(this.toolStrip1);
+            this.Controls.Add(this.ToolbarStrip);
             this.Controls.Add(this.RenderPanel);
             this.Name = "D3DForm";
             this.Text = "TestForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this.ToolbarStrip.ResumeLayout(false);
+            this.ToolbarStrip.PerformLayout();
             this.MainTabControl.ResumeLayout(false);
             this.SceneTab.ResumeLayout(false);
             this.EditEntryTab.ResumeLayout(false);
@@ -353,7 +351,7 @@
         #endregion
 
         private System.Windows.Forms.Panel RenderPanel;
-        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStrip ToolbarStrip;
         private System.Windows.Forms.TabControl MainTabControl;
         private System.Windows.Forms.TabPage SceneTab;
         private System.Windows.Forms.TabPage EditEntryTab;
@@ -370,7 +368,6 @@
         private System.Windows.Forms.TextBox RotationXBox;
         private System.Windows.Forms.Label RotationXLabel;
         private System.Windows.Forms.Label CurrentEntry;
-        private System.Windows.Forms.CheckBox HideInViewerCheckBox;
         private System.Windows.Forms.Button EntryApplyChanges;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.Label CurrentEntryType;
@@ -380,5 +377,6 @@
         private System.Windows.Forms.ToolStripDropDownButton ViewButton;
         private System.Windows.Forms.ToolStripMenuItem ToggleWireFrameButton;
         private System.Windows.Forms.ToolStripMenuItem ToggleCullingBottle;
+        private System.Windows.Forms.StatusStrip StatusStrip;
     }
 }

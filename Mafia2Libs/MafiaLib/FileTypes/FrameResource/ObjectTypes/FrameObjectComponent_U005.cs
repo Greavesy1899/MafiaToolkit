@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Mafia2
+namespace ResourceTypes.FrameResource
 {
     public class FrameObjectComponent_U005 : FrameObjectBase
     {

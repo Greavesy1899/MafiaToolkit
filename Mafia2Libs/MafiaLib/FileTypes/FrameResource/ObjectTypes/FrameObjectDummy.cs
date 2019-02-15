@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel;
 using System.IO;
+using Mafia2;
 using SharpDX;
 
-namespace Mafia2
+namespace ResourceTypes.FrameResource
 {
     public class FrameObjectDummy : FrameObjectJoint
     {
