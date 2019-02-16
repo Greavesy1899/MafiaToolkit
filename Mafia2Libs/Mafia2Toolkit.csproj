@@ -156,6 +156,12 @@
     <Compile Include="Forms\RenderForm.Designer.cs">
       <DependentUpon>RenderForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\RenderModelView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RenderModelView.Designer.cs">
+      <DependentUpon>RenderModelView.cs</DependentUpon>
+    </Compile>
     <Compile Include="MafiaLib\ApexSDK\ApexRenderMesh.cs" />
     <Compile Include="MafiaLib\ApexSDK\EmitterGeomExplicit.cs" />
     <Compile Include="MafiaLib\ApexSDK\EmitterGeomSphere.cs" />
@@ -505,6 +511,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ActorEditor.resx">
       <DependentUpon>ActorEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RenderModelView.resx">
+      <DependentUpon>RenderModelView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SDSContentEditor.resx">
       <DependentUpon>SDSContentEditor.cs</DependentUpon>

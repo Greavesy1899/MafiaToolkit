@@ -34,7 +34,6 @@ namespace Mafia2Tool
 
             KeyPreview = true;
             RenderPanel.Focus();
-            Console.WriteLine(RenderStorageSingleton.Instance.TextureCache.Count);
             //do D3D stuff/
             StartD3DPanel();
         }
@@ -49,11 +48,11 @@ namespace Mafia2Tool
 
         public void StartD3DPanel()
         {
-            Init("Model Viewer", 1920, 1080, true, RenderPanel.Handle, false, 0);
+            Init(RenderPanel.Handle);
             Run();
         }
 
-        public bool Init(string title, int width, int height, bool Vsync, IntPtr handle, bool fullscreen, int testTimeSeconds)
+        public bool Init(IntPtr handle)
         {
             bool result = false;
 
@@ -167,6 +166,29 @@ namespace Mafia2Tool
             }
             lastMousePos = mousePos;
             Graphics.Timer.Frame2();
+
+            FrameObjectBase obj1;
+            FrameObjectBase obj2;
+
+            foreach (KeyValuePair<int, FrameNode> child in SceneData.FrameResource.Frame.Children)
+            {
+                obj1 = (child.Value.Object as FrameObjectBase);
+
+                if(obj1 != null && Graphics.Models.ContainsKey(obj1.RefID))
+                    Graphics.Models[obj1.RefID].SetTransform(obj1.Matrix.Position, obj1.Matrix.Rotation);
+
+                foreach (KeyValuePair<int, FrameNode> child2 in child.Value.Children)
+                {
+                    obj2 = (child2.Value.Object as FrameObjectBase);
+
+                    if (Graphics.Models.ContainsKey(obj2.RefID))
+                    {
+                        TransformMatrix matrix = ((obj1 != null) ? obj1.Matrix : new TransformMatrix());
+                        Graphics.Models[obj2.RefID].SetTransform(matrix.Position + obj2.Matrix.Position, obj2.Matrix.Rotation);
+                    }
+                }
+            }
+
             Graphics.Frame();
 
             //awful i know
@@ -326,6 +348,12 @@ namespace Mafia2Tool
             Graphics?.Shutdown();
             Graphics = null;
             Input = null;
+        }
+
+        private void PreviewButton_Click(object sender, EventArgs e)
+        {
+            RenderModelView viewer = new RenderModelView();
+            viewer.ShowDialog();
         }
     }
 }

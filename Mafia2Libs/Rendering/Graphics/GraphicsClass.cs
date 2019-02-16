@@ -20,7 +20,10 @@ namespace Rendering.Graphics
         public Camera Camera { get; set; }
         public Dictionary<int, RenderModel> Models { get; set; }
         public static float Rotation { get; set; }
-        public GraphicsClass() { }
+        public GraphicsClass()
+        {
+            Models = new Dictionary<int, RenderModel>();
+        }
 
         public bool Init(IntPtr WindowHandle)
         {
@@ -84,27 +87,9 @@ namespace Rendering.Graphics
             D3D.BeginScene(0.0f, 0f, 0f, 1.0f);
             Camera.Render();
 
-            FrameObjectBase obj1;
-            FrameObjectBase obj2;
-
-            foreach (KeyValuePair<int, FrameNode> child in SceneData.FrameResource.Frame.Children)
+            foreach(KeyValuePair<int, RenderModel> entry in Models)
             {
-                obj1 = (child.Value.Object as FrameObjectBase);
-
-                if(obj1 != null && Models.ContainsKey(obj1.RefID))
-                    Models[obj1.RefID].Render(D3D.Device, D3D.DeviceContext, Camera, Light);
-
-                foreach (KeyValuePair<int, FrameNode> child2 in child.Value.Children)
-                {
-                    obj2 = (child2.Value.Object as FrameObjectBase);
-
-                    if (Models.ContainsKey(obj2.RefID))
-                    {
-                        TransformMatrix matrix = ((obj1 != null) ? obj1.Matrix : new TransformMatrix());
-                        Models[obj2.RefID].SetTransform(matrix.Position + obj2.Matrix.Position, obj2.Matrix.Rotation);
-                        Models[obj2.RefID].Render(D3D.Device, D3D.DeviceContext, Camera, Light);
-                    }
-                }
+                entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
             }
 
             //foreach (KeyValuePair<int, RenderModel> entry in Models)

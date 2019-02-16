@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(D3DForm));
             this.RenderPanel = new System.Windows.Forms.Panel();
             this.ToolbarStrip = new System.Windows.Forms.ToolStrip();
@@ -58,10 +59,13 @@
             this.PositionXBox = new System.Windows.Forms.TextBox();
             this.PositionXLabel = new System.Windows.Forms.Label();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
+            this.EntryMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolbarStrip.SuspendLayout();
             this.MainTabControl.SuspendLayout();
             this.SceneTab.SuspendLayout();
             this.EditEntryTab.SuspendLayout();
+            this.EntryMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // RenderPanel
@@ -172,6 +176,7 @@
             // 
             // treeView1
             // 
+            this.treeView1.ContextMenuStrip = this.EntryMenuStrip;
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(3, 3);
             this.treeView1.Name = "treeView1";
@@ -199,7 +204,7 @@
             this.EditEntryTab.Location = new System.Drawing.Point(4, 22);
             this.EditEntryTab.Name = "EditEntryTab";
             this.EditEntryTab.Padding = new System.Windows.Forms.Padding(3);
-            this.EditEntryTab.Size = new System.Drawing.Size(204, 337);
+            this.EditEntryTab.Size = new System.Drawing.Size(204, 371);
             this.EditEntryTab.TabIndex = 1;
             this.EditEntryTab.Text = "Edit Entry";
             this.EditEntryTab.UseVisualStyleBackColor = true;
@@ -336,6 +341,20 @@
             this.StatusStrip.TabIndex = 6;
             this.StatusStrip.Text = "statusStrip1";
             // 
+            // EntryMenuStrip
+            // 
+            this.EntryMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.PreviewButton});
+            this.EntryMenuStrip.Name = "EntryMenuStrip";
+            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 48);
+            // 
+            // PreviewButton
+            // 
+            this.PreviewButton.Name = "PreviewButton";
+            this.PreviewButton.Size = new System.Drawing.Size(180, 22);
+            this.PreviewButton.Text = "Preview";
+            this.PreviewButton.Click += new System.EventHandler(this.PreviewButton_Click);
+            // 
             // D3DForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -354,6 +373,7 @@
             this.SceneTab.ResumeLayout(false);
             this.EditEntryTab.ResumeLayout(false);
             this.EditEntryTab.PerformLayout();
+            this.EntryMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -390,5 +410,7 @@
         private System.Windows.Forms.ToolStripMenuItem ToggleCullingBottle;
         private System.Windows.Forms.StatusStrip StatusStrip;
         private System.Windows.Forms.ToolStripDropDownButton OptionsButton;
+        private System.Windows.Forms.ContextMenuStrip EntryMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem PreviewButton;
     }
 }
