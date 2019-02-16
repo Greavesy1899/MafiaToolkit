@@ -26,16 +26,18 @@ cbuffer Shader_601151254Params
 //////////////////////
 ////   TYPES
 //////////////////////
-struct PixelInputType
+struct VS_OUTPUT
 {
-	float4 position : SV_POSITION;
-    float3 normal : NORMAL;
-	float2 tex0 : TEXCOORD0;
-	float2 tex7 : TEXCOORD1;
+	float4 Position : SV_POSITION;
+    float3 Normal : NORMAL;
+	float3 Tangent : TANGENT;
+	float3 Binormal : BINORMAL;
+	float2 TexCoord0 : TEXCOORD0;
+	float2 TexCoord7 : TEXCOORD1;
 	float3 viewDirection : TEXCOORD2;
 };
 
-float4 CalculateColor(PixelInputType input, float4 color)
+float4 CalculateColor(VS_OUTPUT input, float4 color)
 {
     float3 lightDir;
     float lightIntensity;
@@ -52,7 +54,7 @@ float4 CalculateColor(PixelInputType input, float4 color)
     lightDir = -lightDirection;
 
 	// Calculate the amount of the light on this pixel.
-    lightIntensity = saturate(dot(input.normal, lightDir));
+    lightIntensity = saturate(dot(input.Normal, lightDir));
 
     if (lightIntensity > 0.0f)
     {
@@ -63,7 +65,7 @@ float4 CalculateColor(PixelInputType input, float4 color)
         color = saturate(color);
 
 		// Calculate the reflection vector based on the light intensity, normal vector, and light direction.
-        reflection = normalize(2 * lightIntensity * input.normal - lightDir);
+        reflection = normalize(2 * lightIntensity * input.Normal - lightDir);
 
 		// Determine the amount of the specular light based on the reflection vector, viewing direction, and specular power.
         specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
@@ -72,14 +74,14 @@ float4 CalculateColor(PixelInputType input, float4 color)
     return color;
 }
 
-float4 LightPixelShader(PixelInputType input) : SV_TARGET
+float4 LightPixelShader(VS_OUTPUT input) : SV_TARGET
 {
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 diffuseTextureColor;
 	float4 aoTextureColor;
 
-    diffuseTextureColor = textures[0].Sample(SampleType, input.tex0);
-    aoTextureColor = textures[1].Sample(SampleType, input.tex7);
+    diffuseTextureColor = textures[0].Sample(SampleType, input.TexCoord0);
+    aoTextureColor = textures[1].Sample(SampleType, input.TexCoord7);
 
     color = CalculateColor(input, color);
 	color = color * diffuseTextureColor;
@@ -87,7 +89,7 @@ float4 LightPixelShader(PixelInputType input) : SV_TARGET
 	return color;
 }
 
-float4 PS_601151254(PixelInputType input) : SV_TARGET
+float4 PS_601151254(VS_OUTPUT input) : SV_TARGET
 {
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 

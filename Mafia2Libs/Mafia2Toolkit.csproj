@@ -138,6 +138,12 @@
     <Compile Include="Controls\FrameResourceModelOptions.Designer.cs">
       <DependentUpon>FrameResourceModelOptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\RenderOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\RenderOptions.Designer.cs">
+      <DependentUpon>RenderOptions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NewObjectWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -474,6 +480,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\FrameResourceModelOptions.resx">
       <DependentUpon>FrameResourceModelOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\RenderOptions.resx">
+      <DependentUpon>RenderOptions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\NewObjectWindow.resx">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>

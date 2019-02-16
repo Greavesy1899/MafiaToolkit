@@ -37,6 +37,7 @@
             this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ToggleWireFrameButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToggleCullingBottle = new System.Windows.Forms.ToolStripMenuItem();
+            this.OptionsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.MainTabControl = new System.Windows.Forms.TabControl();
             this.SceneTab = new System.Windows.Forms.TabPage();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -70,14 +71,15 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.RenderPanel.Location = new System.Drawing.Point(224, 28);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(564, 397);
+            this.RenderPanel.Size = new System.Drawing.Size(564, 393);
             this.RenderPanel.TabIndex = 0;
             // 
             // ToolbarStrip
             // 
             this.ToolbarStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileButton,
-            this.ViewButton});
+            this.ViewButton,
+            this.OptionsButton});
             this.ToolbarStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolbarStrip.Name = "ToolbarStrip";
             this.ToolbarStrip.Size = new System.Drawing.Size(800, 25);
@@ -125,16 +127,25 @@
             // ToggleWireFrameButton
             // 
             this.ToggleWireFrameButton.Name = "ToggleWireFrameButton";
-            this.ToggleWireFrameButton.Size = new System.Drawing.Size(180, 22);
+            this.ToggleWireFrameButton.Size = new System.Drawing.Size(168, 22);
             this.ToggleWireFrameButton.Text = "Toggle Wireframe";
             this.ToggleWireFrameButton.Click += new System.EventHandler(this.FillModeButton_Click);
             // 
             // ToggleCullingBottle
             // 
             this.ToggleCullingBottle.Name = "ToggleCullingBottle";
-            this.ToggleCullingBottle.Size = new System.Drawing.Size(180, 22);
+            this.ToggleCullingBottle.Size = new System.Drawing.Size(168, 22);
             this.ToggleCullingBottle.Text = "Toggle Culling";
             this.ToggleCullingBottle.Click += new System.EventHandler(this.CullModeButton_Click);
+            // 
+            // OptionsButton
+            // 
+            this.OptionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.OptionsButton.Image = ((System.Drawing.Image)(resources.GetObject("OptionsButton.Image")));
+            this.OptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.OptionsButton.Name = "OptionsButton";
+            this.OptionsButton.Size = new System.Drawing.Size(62, 22);
+            this.OptionsButton.Text = "Options";
             // 
             // MainTabControl
             // 
@@ -188,7 +199,7 @@
             this.EditEntryTab.Location = new System.Drawing.Point(4, 22);
             this.EditEntryTab.Name = "EditEntryTab";
             this.EditEntryTab.Padding = new System.Windows.Forms.Padding(3);
-            this.EditEntryTab.Size = new System.Drawing.Size(204, 384);
+            this.EditEntryTab.Size = new System.Drawing.Size(204, 337);
             this.EditEntryTab.TabIndex = 1;
             this.EditEntryTab.Text = "Edit Entry";
             this.EditEntryTab.UseVisualStyleBackColor = true;
@@ -378,5 +389,6 @@
         private System.Windows.Forms.ToolStripMenuItem ToggleWireFrameButton;
         private System.Windows.Forms.ToolStripMenuItem ToggleCullingBottle;
         private System.Windows.Forms.StatusStrip StatusStrip;
+        private System.Windows.Forms.ToolStripDropDownButton OptionsButton;
     }
 }

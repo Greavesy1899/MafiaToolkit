@@ -3,6 +3,7 @@ using System.IO;
 using System.ComponentModel;
 using Gibbed.Illusion.FileFormats.Hashing;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Mafia2
 {
@@ -84,16 +85,26 @@ namespace Mafia2
             set { shaderHash = value; }
         }
 
-        [Category("Shader")]
+        [Browsable(false)]
         public Dictionary<string, ShaderParameter> Parameters {
             get { return parameters; }
             set { parameters = value; }
         }
 
-        [Category("Shader")]
+        [Browsable(false)]
         public Dictionary<string, ShaderParameterSampler> Samplers {
             get { return samplers; }
-            set { samplers = value;}
+            set { samplers = value; }
+        }
+
+        [Category("Shader")]
+        public List<ShaderParameter> ParametersList {
+            get { return parameters.Values.ToList(); }
+        }
+
+        [Category("Shader")]
+        public List<ShaderParameterSampler> SamplersList {
+            get { return samplers.Values.ToList(); }
         }
 
         /// <summary>

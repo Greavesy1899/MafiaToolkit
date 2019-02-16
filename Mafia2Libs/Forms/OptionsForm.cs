@@ -26,6 +26,7 @@ namespace Mafia2Tool
 
         private void SwapOptionControls(UserControl control)
         {
+            splitContainer1.Panel2.Controls.Clear();
             splitContainer1.Panel2.Controls.Add(control);
             control.Dock = DockStyle.Fill;
             control.AutoSize = true;
@@ -48,6 +49,9 @@ namespace Mafia2Tool
                     break;
                 case 3:
                     SwapOptionControls(new MTLOptions());
+                    break;
+                case 4:
+                    SwapOptionControls(new RenderOptions());
                     break;
             }
         }
