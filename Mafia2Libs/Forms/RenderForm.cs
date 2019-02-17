@@ -1,5 +1,4 @@
 ﻿using Rendering.Graphics;
-using Rendering.Utils;
 using Rendering.Input;
 using SharpDX.Windows;
 using System;
@@ -273,6 +272,9 @@ namespace Mafia2Tool
             RotationYBox.Text = fObject.Matrix.Rotation.EulerRotation.Y.ToString();
             RotationZBox.Text = fObject.Matrix.Rotation.EulerRotation.Z.ToString();
             CurrentEntryType.Text = fObject.GetType().Name;
+
+            OnFrameNameTable.Checked = fObject.IsOnFrameTable;
+            FrameNameTableFlags.EnumValue = (Enum)Convert.ChangeType(fObject.FrameNameTableFlags, typeof(NameTableFlags));
         }
 
         private void EntryApplyChanges_OnClick(object sender, EventArgs e)
@@ -281,6 +283,8 @@ namespace Mafia2Tool
             fObject.Matrix.Position = new Vector3(float.Parse(PositionXBox.Text), float.Parse(PositionYBox.Text), float.Parse(PositionZBox.Text));
             fObject.Matrix.Rotation.EulerRotation = new Vector3(float.Parse(RotationXBox.Text), float.Parse(RotationYBox.Text), float.Parse(RotationZBox.Text));
             fObject.Matrix.Rotation.UpdateMatrixFromEuler();
+            fObject.IsOnFrameTable = OnFrameNameTable.Checked;
+            fObject.FrameNameTableFlags = (NameTableFlags)FrameNameTableFlags.GetCurrentValue();
             Graphics.Models[fObject.RefID].SetTransform(fObject.Matrix.Position, fObject.Matrix.Rotation);
         }
 
@@ -352,8 +356,8 @@ namespace Mafia2Tool
 
         private void PreviewButton_Click(object sender, EventArgs e)
         {
-            RenderModelView viewer = new RenderModelView();
-            viewer.ShowDialog();
+            //FrameObjectBase obj = (treeView1.SelectedNode.Tag as FrameObjectBase);
+            //RenderModelView viewer = new RenderModelView(obj.RefID, Graphics.Models[obj.RefID]);
         }
     }
 }

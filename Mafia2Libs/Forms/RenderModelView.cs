@@ -5,6 +5,8 @@ using Rendering.Input;
 using System.Windows.Forms;
 using SharpDX.Windows;
 using System.Threading;
+using System.Collections.Generic;
+using ResourceTypes.FrameResource;
 
 namespace Mafia2Tool
 {
@@ -15,17 +17,24 @@ namespace Mafia2Tool
         private Point mousePos;
         private Point lastMousePos;
 
-        public RenderModelView()
+        public RenderModelView(int refID, RenderModel model)
         {
             InitializeComponent();
             RenderPanel.Focus();
             StartD3DPanel();
+            PopulateView(refID, model);
+            Run();
+        }
+
+        public void PopulateView(int refID, RenderModel model)
+        {
+            model.SetTransform(new SharpDX.Vector3(0), new Mafia2.Matrix33());
+            Graphics.Models.Add(refID, model);
         }
 
         public void StartD3DPanel()
         {
             Init(RenderPanel.Handle);
-            Run();
         }
 
         public bool Init(IntPtr handle)

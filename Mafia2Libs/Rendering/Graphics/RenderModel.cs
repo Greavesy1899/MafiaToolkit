@@ -14,7 +14,6 @@ namespace Rendering.Graphics
         {
             public Material Material;
             public ulong MaterialHash;
-            public string TextureName;
             public ShaderResourceView Texture;
             public uint StartIndex;
             public uint NumFaces;
@@ -229,40 +228,6 @@ namespace Rendering.Graphics
                 LODs[0].ModelParts[x] = part;
             }
             return true;
-
-            //    if (part.Material != null)
-            //    {
-            //        ulong hash = part.Material.Samplers["S000"].TextureHash;
-            //        RenderStorageSingleton.Instance.TextureCache.TryGetValue(hash, out m_Temp);
-
-            //        if (m_Temp == null)
-            //        {
-            //            TextureClass Texture = new TextureClass();
-            //            result = Texture.Init(device, part.TextureName);
-            //            RenderStorageSingleton.Instance.TextureCache.Add(hash, Texture.TextureResource);
-            //            part.Texture = Texture.TextureResource;
-            //        }
-            //        part.Texture = m_Temp;
-            //    }
-            //    else
-            //    {
-            //        m_Temp = null;
-            //        RenderStorageSingleton.Instance.TextureCache.TryGetValue(0, out m_Temp);
-            //        part.Texture = m_Temp;
-
-            //        if (m_Temp == null)
-            //        {
-            //            TextureClass Texture = new TextureClass();
-            //            Texture.Init(device, "texture.dds");
-            //            RenderStorageSingleton.Instance.TextureCache.Add(0, AOTextureClass.TextureResource);
-            //            part.Texture = Texture.TextureResource;
-            //        }
-            //    }
-            //    LODs[0].ModelParts[x] = part;
-            //}
-            //if (!result)
-            //    return false;
-            //return true;
         }
         private void ReleaseTextures()
         {

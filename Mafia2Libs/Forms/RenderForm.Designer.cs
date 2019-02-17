@@ -42,6 +42,8 @@
             this.MainTabControl = new System.Windows.Forms.TabControl();
             this.SceneTab = new System.Windows.Forms.TabPage();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.EntryMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
             this.EditEntryTab = new System.Windows.Forms.TabPage();
             this.CurrentEntryType = new System.Windows.Forms.Label();
             this.EntryApplyChanges = new System.Windows.Forms.Button();
@@ -59,13 +61,13 @@
             this.PositionXBox = new System.Windows.Forms.TextBox();
             this.PositionXLabel = new System.Windows.Forms.Label();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
-            this.EntryMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.FrameNameTableFlags = new Mafia2.FlagCheckedListBox();
+            this.OnFrameNameTable = new System.Windows.Forms.CheckBox();
             this.ToolbarStrip.SuspendLayout();
             this.MainTabControl.SuspendLayout();
             this.SceneTab.SuspendLayout();
-            this.EditEntryTab.SuspendLayout();
             this.EntryMenuStrip.SuspendLayout();
+            this.EditEntryTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // RenderPanel
@@ -184,8 +186,24 @@
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnAfterSelect);
             // 
+            // EntryMenuStrip
+            // 
+            this.EntryMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.PreviewButton});
+            this.EntryMenuStrip.Name = "EntryMenuStrip";
+            this.EntryMenuStrip.Size = new System.Drawing.Size(116, 26);
+            // 
+            // PreviewButton
+            // 
+            this.PreviewButton.Name = "PreviewButton";
+            this.PreviewButton.Size = new System.Drawing.Size(115, 22);
+            this.PreviewButton.Text = "Preview";
+            this.PreviewButton.Click += new System.EventHandler(this.PreviewButton_Click);
+            // 
             // EditEntryTab
             // 
+            this.EditEntryTab.Controls.Add(this.OnFrameNameTable);
+            this.EditEntryTab.Controls.Add(this.FrameNameTableFlags);
             this.EditEntryTab.Controls.Add(this.CurrentEntryType);
             this.EditEntryTab.Controls.Add(this.EntryApplyChanges);
             this.EditEntryTab.Controls.Add(this.CurrentEntry);
@@ -341,19 +359,24 @@
             this.StatusStrip.TabIndex = 6;
             this.StatusStrip.Text = "statusStrip1";
             // 
-            // EntryMenuStrip
+            // FrameNameTableFlags
             // 
-            this.EntryMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.PreviewButton});
-            this.EntryMenuStrip.Name = "EntryMenuStrip";
-            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 48);
+            this.FrameNameTableFlags.CheckOnClick = true;
+            this.FrameNameTableFlags.FormattingEnabled = true;
+            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
+            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
+            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
+            this.FrameNameTableFlags.TabIndex = 16;
             // 
-            // PreviewButton
+            // OnFrameNameTable
             // 
-            this.PreviewButton.Name = "PreviewButton";
-            this.PreviewButton.Size = new System.Drawing.Size(180, 22);
-            this.PreviewButton.Text = "Preview";
-            this.PreviewButton.Click += new System.EventHandler(this.PreviewButton_Click);
+            this.OnFrameNameTable.AutoSize = true;
+            this.OnFrameNameTable.Location = new System.Drawing.Point(13, 199);
+            this.OnFrameNameTable.Name = "OnFrameNameTable";
+            this.OnFrameNameTable.Size = new System.Drawing.Size(133, 17);
+            this.OnFrameNameTable.TabIndex = 17;
+            this.OnFrameNameTable.Text = "On FrameNameTable?";
+            this.OnFrameNameTable.UseVisualStyleBackColor = true;
             // 
             // D3DForm
             // 
@@ -371,9 +394,9 @@
             this.ToolbarStrip.PerformLayout();
             this.MainTabControl.ResumeLayout(false);
             this.SceneTab.ResumeLayout(false);
+            this.EntryMenuStrip.ResumeLayout(false);
             this.EditEntryTab.ResumeLayout(false);
             this.EditEntryTab.PerformLayout();
-            this.EntryMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -412,5 +435,7 @@
         private System.Windows.Forms.ToolStripDropDownButton OptionsButton;
         private System.Windows.Forms.ContextMenuStrip EntryMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem PreviewButton;
+        private Mafia2.FlagCheckedListBox FrameNameTableFlags;
+        private System.Windows.Forms.CheckBox OnFrameNameTable;
     }
 }
