@@ -6,6 +6,43 @@ namespace Rendering.Graphics
 {
     public class VertexLayouts
     {
+        public class BBoxLayout
+        {
+            [StructLayout(LayoutKind.Sequential)]
+            public struct Vertex
+            {
+                public Vector3 Position;
+                public Vector3 Colour;
+            }
+
+            public static InputElement[] GetLayout()
+            {
+                return new InputElement[]
+                {
+                    new InputElement()
+                    {
+                        SemanticName = "POSITION",
+                        SemanticIndex = 0,
+                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Slot = 0,
+                        AlignedByteOffset = 0,
+                        Classification = InputClassification.PerVertexData,
+                        InstanceDataStepRate = 0
+                    },
+                    new InputElement()
+                    {
+                        SemanticName = "COLOR",
+                        SemanticIndex = 0,
+                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Slot = 0,
+                        AlignedByteOffset = 0,
+                        Classification = InputClassification.PerVertexData,
+                        InstanceDataStepRate = 0
+                    },
+                };
+            }
+        }
+
         public class NormalLayout
         {
             [StructLayout(LayoutKind.Sequential)]

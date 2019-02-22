@@ -366,6 +366,7 @@
     <Compile Include="Rendering\Graphics\GraphicsClass.cs" />
     <Compile Include="Rendering\Graphics\LightClass.cs" />
     <Compile Include="Rendering\Graphics\RenderBoundingBox.cs" />
+    <Compile Include="Rendering\Graphics\Shaders\DebugShader.cs" />
     <Compile Include="Rendering\Graphics\Shaders\DefaultShader.cs" />
     <Compile Include="Rendering\Graphics\RenderModel.cs" />
     <Compile Include="Controls\ModelOptions.cs">
@@ -455,6 +456,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Localisations\ru_RU.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\DebugPS.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\DebugVS.hlsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\LightPS.hlsl">

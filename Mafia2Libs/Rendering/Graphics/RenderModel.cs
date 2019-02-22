@@ -227,6 +227,8 @@ namespace Rendering.Graphics
                     part.Shader = (manager.shaders.ContainsKey(LODs[0].ModelParts[x].Material.ShaderHash) ? manager.shaders[LODs[0].ModelParts[x].Material.ShaderHash] : manager.shaders[0]);
                 LODs[0].ModelParts[x] = part;
             }
+
+            BoundingBox.Shader = manager.shaders[1];
             return true;
         }
         private void ReleaseTextures()
@@ -238,7 +240,6 @@ namespace Rendering.Graphics
             }
             AOTexture?.Dispose();
             AOTexture = null;
-            BoundingBox.ReleaseTextures();
         }
         private void ReleaseModel()
         {
@@ -262,12 +263,14 @@ namespace Rendering.Graphics
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
-            {             
+            {
                 LODs[0].ModelParts[i].Shader.SetShaderParamters(device, deviceContext, LODs[0].ModelParts[i].Material);
                 LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera, light);
                 deviceContext.PixelShader.SetShaderResource(1, AOTexture);
                 LODs[0].ModelParts[i].Shader.Render(deviceContext, LODs[0].ModelParts[i].NumFaces * 3, LODs[0].ModelParts[i].StartIndex);
             }
+
+            BoundingBox.Render(device, deviceContext, Transform, camera, light);
         }
     }
 }
