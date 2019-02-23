@@ -204,7 +204,7 @@ namespace Rendering.Graphics
         {
             DefaultShaderParams parameters = new DefaultShaderParams();
 
-            if (material != null && !string.IsNullOrEmpty(material.Samplers["S000"].File))
+            if (material != null && material.Samplers.ContainsKey("S000") && !string.IsNullOrEmpty(material.Samplers["S000"].File))
             {
                 ShaderParameterSampler sampler = material.Samplers["S000"];
 

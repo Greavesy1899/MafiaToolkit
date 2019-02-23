@@ -45,6 +45,8 @@
             this.EntryMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
             this.EditEntryTab = new System.Windows.Forms.TabPage();
+            this.OnFrameNameTable = new System.Windows.Forms.CheckBox();
+            this.FrameNameTableFlags = new Mafia2.FlagCheckedListBox();
             this.CurrentEntryType = new System.Windows.Forms.Label();
             this.EntryApplyChanges = new System.Windows.Forms.Button();
             this.CurrentEntry = new System.Windows.Forms.Label();
@@ -61,23 +63,24 @@
             this.PositionXBox = new System.Windows.Forms.TextBox();
             this.PositionXLabel = new System.Windows.Forms.Label();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
-            this.FrameNameTableFlags = new Mafia2.FlagCheckedListBox();
-            this.OnFrameNameTable = new System.Windows.Forms.CheckBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.ToolbarStrip.SuspendLayout();
             this.MainTabControl.SuspendLayout();
             this.SceneTab.SuspendLayout();
             this.EntryMenuStrip.SuspendLayout();
             this.EditEntryTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // RenderPanel
             // 
-            this.RenderPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.RenderPanel.Location = new System.Drawing.Point(224, 28);
+            this.RenderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.RenderPanel.Location = new System.Drawing.Point(0, 0);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(564, 393);
+            this.RenderPanel.Size = new System.Drawing.Size(530, 403);
             this.RenderPanel.TabIndex = 0;
             // 
             // ToolbarStrip
@@ -155,14 +158,13 @@
             // 
             // MainTabControl
             // 
-            this.MainTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
             this.MainTabControl.Controls.Add(this.SceneTab);
             this.MainTabControl.Controls.Add(this.EditEntryTab);
-            this.MainTabControl.Location = new System.Drawing.Point(6, 28);
+            this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainTabControl.Location = new System.Drawing.Point(0, 0);
             this.MainTabControl.Name = "MainTabControl";
             this.MainTabControl.SelectedIndex = 0;
-            this.MainTabControl.Size = new System.Drawing.Size(212, 397);
+            this.MainTabControl.Size = new System.Drawing.Size(266, 403);
             this.MainTabControl.TabIndex = 5;
             // 
             // SceneTab
@@ -171,7 +173,7 @@
             this.SceneTab.Location = new System.Drawing.Point(4, 22);
             this.SceneTab.Name = "SceneTab";
             this.SceneTab.Padding = new System.Windows.Forms.Padding(3);
-            this.SceneTab.Size = new System.Drawing.Size(204, 371);
+            this.SceneTab.Size = new System.Drawing.Size(258, 377);
             this.SceneTab.TabIndex = 0;
             this.SceneTab.Text = "Scene";
             this.SceneTab.UseVisualStyleBackColor = true;
@@ -182,7 +184,7 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(3, 3);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(198, 365);
+            this.treeView1.Size = new System.Drawing.Size(252, 371);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnAfterSelect);
             // 
@@ -226,6 +228,25 @@
             this.EditEntryTab.TabIndex = 1;
             this.EditEntryTab.Text = "Edit Entry";
             this.EditEntryTab.UseVisualStyleBackColor = true;
+            // 
+            // OnFrameNameTable
+            // 
+            this.OnFrameNameTable.AutoSize = true;
+            this.OnFrameNameTable.Location = new System.Drawing.Point(13, 199);
+            this.OnFrameNameTable.Name = "OnFrameNameTable";
+            this.OnFrameNameTable.Size = new System.Drawing.Size(133, 17);
+            this.OnFrameNameTable.TabIndex = 17;
+            this.OnFrameNameTable.Text = "On FrameNameTable?";
+            this.OnFrameNameTable.UseVisualStyleBackColor = true;
+            // 
+            // FrameNameTableFlags
+            // 
+            this.FrameNameTableFlags.CheckOnClick = true;
+            this.FrameNameTableFlags.FormattingEnabled = true;
+            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
+            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
+            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
+            this.FrameNameTableFlags.TabIndex = 16;
             // 
             // CurrentEntryType
             // 
@@ -359,34 +380,31 @@
             this.StatusStrip.TabIndex = 6;
             this.StatusStrip.Text = "statusStrip1";
             // 
-            // FrameNameTableFlags
+            // splitContainer1
             // 
-            this.FrameNameTableFlags.CheckOnClick = true;
-            this.FrameNameTableFlags.FormattingEnabled = true;
-            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
-            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
-            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
-            this.FrameNameTableFlags.TabIndex = 16;
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 25);
+            this.splitContainer1.Name = "splitContainer1";
             // 
-            // OnFrameNameTable
+            // splitContainer1.Panel1
             // 
-            this.OnFrameNameTable.AutoSize = true;
-            this.OnFrameNameTable.Location = new System.Drawing.Point(13, 199);
-            this.OnFrameNameTable.Name = "OnFrameNameTable";
-            this.OnFrameNameTable.Size = new System.Drawing.Size(133, 17);
-            this.OnFrameNameTable.TabIndex = 17;
-            this.OnFrameNameTable.Text = "On FrameNameTable?";
-            this.OnFrameNameTable.UseVisualStyleBackColor = true;
+            this.splitContainer1.Panel1.Controls.Add(this.MainTabControl);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.RenderPanel);
+            this.splitContainer1.Size = new System.Drawing.Size(800, 403);
+            this.splitContainer1.SplitterDistance = 266;
+            this.splitContainer1.TabIndex = 7;
             // 
             // D3DForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.StatusStrip);
-            this.Controls.Add(this.MainTabControl);
             this.Controls.Add(this.ToolbarStrip);
-            this.Controls.Add(this.RenderPanel);
             this.Name = "D3DForm";
             this.Text = "TestForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
@@ -397,6 +415,10 @@
             this.EntryMenuStrip.ResumeLayout(false);
             this.EditEntryTab.ResumeLayout(false);
             this.EditEntryTab.PerformLayout();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -437,5 +459,6 @@
         private System.Windows.Forms.ToolStripMenuItem PreviewButton;
         private Mafia2.FlagCheckedListBox FrameNameTableFlags;
         private System.Windows.Forms.CheckBox OnFrameNameTable;
+        private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }

@@ -17,6 +17,7 @@ namespace Rendering.Graphics
         public Camera Camera { get; set; }
 
         public Dictionary<int, RenderModel> Models { get; set; }
+        public Dictionary<int, RenderBoundingBox> Areas { get; set; }
         public RenderBoundingBox SelectedEntryBBox { get; private set; }
 
         public GraphicsClass()
@@ -54,6 +55,9 @@ namespace Rendering.Graphics
             foreach (KeyValuePair<int, RenderModel> model in Models)
                 model.Value.Init(D3D.Device);
 
+            foreach (KeyValuePair<int, RenderBoundingBox> area in Areas)
+                area.Value.InitBuffer(D3D.Device);
+
             Light = new LightClass();
             Light.SetAmbientColor(0.5f, 0.5f, 0.5f, 1f);
             Light.SetDiffuseColour(0f, 0f, 0f, 0);
@@ -73,10 +77,14 @@ namespace Rendering.Graphics
             foreach (KeyValuePair<int, RenderModel> model in Models)
                 model.Value?.Shutdown();
 
+            foreach (KeyValuePair<int, RenderBoundingBox> area in Areas)
+                area.Value?.ShutdownBuffers();
+
             if (SelectedEntryBBox != null)
                 SelectedEntryBBox.ShutdownBuffers();
 
             Models = null;
+            Areas = null;
             D3D?.Shutdown();
             D3D = null;
         }
@@ -92,14 +100,12 @@ namespace Rendering.Graphics
             foreach(KeyValuePair<int, RenderModel> entry in Models)
                 entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
 
+            foreach (KeyValuePair<int, RenderBoundingBox> entry in Areas)
+                entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
+
             if (SelectedEntryBBox != null)
                 SelectedEntryBBox.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
 
-            //foreach(KeyValuePair<int, RenderModel> entry in Models)
-            //{
-            //    D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Wireframe);
-            //    entry.Value.BoundingBox.Render(D3D.Device, D3D.DeviceContext, entry.Value.Transform, Camera, Light);
-            //}
             D3D.EndScene();
             return true;
         }

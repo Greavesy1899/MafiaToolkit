@@ -226,6 +226,7 @@ namespace Mafia2Tool
         private void BuildRenderObjects()
         {
             Dictionary<int, RenderModel> meshes = new Dictionary<int, RenderModel>();
+            Dictionary<int, RenderBoundingBox> areas = new Dictionary<int, RenderBoundingBox>();
 
             for (int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
             {
@@ -254,8 +255,19 @@ namespace Mafia2Tool
                     model.ConvertFrameToRenderModel(mesh, geom, mat, indexBuffers, vertexBuffers);
                     meshes.Add(fObject.RefID, model);
                 }
+
+                if (fObject.GetType() == typeof(FrameObjectArea))
+                {
+                    FrameObjectArea area = (fObject as FrameObjectArea);
+                    RenderBoundingBox areaBBox = new RenderBoundingBox();
+                    areaBBox.SetTransform(area.Matrix.Position, area.Matrix.Rotation);
+                    areaBBox.Init(area.Bounds);
+                    areas.Add(fObject.RefID, areaBBox);
+
+                }
             }
             Graphics.Models = meshes;
+            Graphics.Areas = areas;
         }
 
         //Improvement Idea: Sync updates values IF selected indexes is valid.
