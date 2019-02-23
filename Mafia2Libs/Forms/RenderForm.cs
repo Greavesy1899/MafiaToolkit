@@ -64,8 +64,9 @@ namespace Mafia2Tool
             if (Graphics == null)
             {
                 Graphics = new GraphicsClass();
+                Graphics.PreInit(handle);
                 BuildRenderObjects();
-                result = Graphics.Init(handle);
+                result = Graphics.InitScene();
             }
             return result;
         }
@@ -272,6 +273,7 @@ namespace Mafia2Tool
             RotationYBox.Text = fObject.Matrix.Rotation.EulerRotation.Y.ToString();
             RotationZBox.Text = fObject.Matrix.Rotation.EulerRotation.Z.ToString();
             CurrentEntryType.Text = fObject.GetType().Name;
+            Graphics.BuildSelectedEntry(fObject);
 
             OnFrameNameTable.Checked = fObject.IsOnFrameTable;
             FrameNameTableFlags.EnumValue = (Enum)Convert.ChangeType(fObject.FrameNameTableFlags, typeof(NameTableFlags));
@@ -286,6 +288,7 @@ namespace Mafia2Tool
             fObject.IsOnFrameTable = OnFrameNameTable.Checked;
             fObject.FrameNameTableFlags = (NameTableFlags)FrameNameTableFlags.GetCurrentValue();
             Graphics.Models[fObject.RefID].SetTransform(fObject.Matrix.Position, fObject.Matrix.Rotation);
+            Graphics.BuildSelectedEntry(fObject);
         }
 
         private void Pick(int sx, int sy)
@@ -352,6 +355,7 @@ namespace Mafia2Tool
             Graphics?.Shutdown();
             Graphics = null;
             Input = null;
+            RenderStorageSingleton.Instance.Shutdown();
         }
 
         private void PreviewButton_Click(object sender, EventArgs e)

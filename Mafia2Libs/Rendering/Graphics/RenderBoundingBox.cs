@@ -1,6 +1,7 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
+using Mafia2;
 
 namespace Rendering.Graphics
 {
@@ -11,6 +12,7 @@ namespace Rendering.Graphics
         public Buffer IndexBuffer { get; private set; }
         private VertexLayouts.BBoxLayout.Vertex[] Vertices { get; set; }
         public  ushort[] Indices { get; private set; }
+        public Matrix Transform { get; private set; }
         public BaseShader Shader;
 
         public RenderBoundingBox()
@@ -71,6 +73,7 @@ namespace Rendering.Graphics
             4, 6, 2
             };
 
+            Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
             return true;
         }
 
@@ -79,6 +82,24 @@ namespace Rendering.Graphics
             VertexBuffer = Buffer.Create(device, BindFlags.VertexBuffer, Vertices);
             IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, Indices);
             return true;
+        }
+
+        public void SetTransform(Vector3 position, Matrix33 rotation)
+        {
+            Matrix m_trans = Matrix.Identity;
+            m_trans[0, 0] = rotation.M00;
+            m_trans[0, 1] = rotation.M01;
+            m_trans[0, 2] = rotation.M02;
+            m_trans[1, 0] = rotation.M10;
+            m_trans[1, 1] = rotation.M11;
+            m_trans[1, 2] = rotation.M12;
+            m_trans[2, 0] = rotation.M20;
+            m_trans[2, 1] = rotation.M21;
+            m_trans[2, 2] = rotation.M22;
+            m_trans[3, 0] = position.X;
+            m_trans[3, 1] = position.Y;
+            m_trans[3, 2] = position.Z;
+            Transform = m_trans;
         }
 
         public void ReleaseModel()
@@ -94,7 +115,7 @@ namespace Rendering.Graphics
             VertexBuffer?.Dispose();
             VertexBuffer = null;
         }
-        public bool Render(Device device, DeviceContext deviceContext, Matrix Transform, Camera camera, LightClass light)
+        public bool Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
         {
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<VertexLayouts.BBoxLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);

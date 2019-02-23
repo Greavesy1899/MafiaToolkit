@@ -50,7 +50,7 @@ namespace Mafia2Tool
             if (Graphics == null)
             {
                 Graphics = new GraphicsClass();
-                result = Graphics.Init(handle);
+                result = Graphics.PreInit(handle);
             }
             return result;
         }

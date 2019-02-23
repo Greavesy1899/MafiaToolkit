@@ -42,14 +42,14 @@ namespace Rendering.Graphics
             BoundingBox = new RenderBoundingBox();
         }
 
-        public bool Init(Device device, ShaderManager manager)
+        public bool Init(Device device)
         {
             if (!InitBuffer(device))
             {
                 MessageBox.Show("unable to init buffer");
                 return false;
             }
-            if (!InitializePartShaders(device, manager))
+            if (!InitializePartShaders(device))
             {
                 MessageBox.Show("unable to load texture");
                 return false;
@@ -200,11 +200,10 @@ namespace Rendering.Graphics
             BoundingBox.InitBuffer(device);
             return true;
         }
-        private bool InitializePartShaders(Device device, ShaderManager manager)
+        private bool InitializePartShaders(Device device)
         {
             TextureClass AOTextureClass = new TextureClass();
             ShaderResourceView m_Temp;
-            bool result = true;
 
             RenderStorageSingleton.Instance.TextureCache.TryGetValue(0, out m_Temp);
             AOTexture = m_Temp;
@@ -222,13 +221,15 @@ namespace Rendering.Graphics
             {
                 ModelPart part = LODs[0].ModelParts[x];
                 if (part.Material == null)
-                    part.Shader = manager.shaders[0];
+                    part.Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[0];
                 else
-                    part.Shader = (manager.shaders.ContainsKey(LODs[0].ModelParts[x].Material.ShaderHash) ? manager.shaders[LODs[0].ModelParts[x].Material.ShaderHash] : manager.shaders[0]);
-                LODs[0].ModelParts[x] = part;
+                {
+                    part.Shader = (RenderStorageSingleton.Instance.ShaderManager.shaders.ContainsKey(LODs[0].ModelParts[x].Material.ShaderHash) 
+                        ? RenderStorageSingleton.Instance.ShaderManager.shaders[LODs[0].ModelParts[x].Material.ShaderHash] 
+                        : RenderStorageSingleton.Instance.ShaderManager.shaders[0]);
+                }
+                    LODs[0].ModelParts[x] = part;
             }
-
-            BoundingBox.Shader = manager.shaders[1];
             return true;
         }
         private void ReleaseTextures()
@@ -269,8 +270,6 @@ namespace Rendering.Graphics
                 deviceContext.PixelShader.SetShaderResource(1, AOTexture);
                 LODs[0].ModelParts[i].Shader.Render(deviceContext, LODs[0].ModelParts[i].NumFaces * 3, LODs[0].ModelParts[i].StartIndex);
             }
-
-            BoundingBox.Render(device, deviceContext, Transform, camera, light);
         }
     }
 }

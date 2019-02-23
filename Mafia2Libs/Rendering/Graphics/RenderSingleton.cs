@@ -6,10 +6,22 @@ namespace Rendering.Graphics
     public sealed class RenderStorageSingleton
     {
         public Dictionary<ulong, ShaderResourceView> TextureCache;
+        public ShaderManager ShaderManager;
 
         RenderStorageSingleton()
         {
             TextureCache = new Dictionary<ulong, ShaderResourceView>();
+            ShaderManager = new ShaderManager();
+        }
+
+        public void Shutdown()
+        {
+           foreach(KeyValuePair<ulong, ShaderResourceView> texture in TextureCache)
+            {
+                texture.Value.Dispose();
+            }
+            TextureCache.Clear();
+            ShaderManager.Shutdown();
         }
 
         public static RenderStorageSingleton Instance {
