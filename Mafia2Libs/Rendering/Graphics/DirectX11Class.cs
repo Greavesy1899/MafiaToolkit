@@ -19,9 +19,10 @@ namespace Rendering.Graphics
         private Texture2D DepthStencilBuffer { get; set; }
         public DepthStencilState DepthStencilState { get; set; }
         private DepthStencilView DepthStencilView { get; set; }
-        private RasterizerState RasterState { get; set; }
-
-        private RasterizerStateDescription Rasterizer;
+        private RasterizerState RasterStateSolid { get; set; }
+        private RasterizerState RasterStateWireFrame { get; set; }
+        private RasterizerStateDescription rasterizerStateDescription;
+        private FillMode fillMode = FillMode.Solid;
 
         public DirectX11Class()
         { }
@@ -130,49 +131,62 @@ namespace Rendering.Graphics
 
             DepthStencilView = new DepthStencilView(Device, DepthStencilBuffer, depthStencilViewDesc);
             DeviceContext.OutputMerger.SetTargets(DepthStencilView, RenderTargetView);
-            Rasterizer = new RasterizerStateDescription()
+
+            rasterizerStateDescription = new RasterizerStateDescription()
             {
-                IsAntialiasedLineEnabled = true,
-                CullMode = CullMode.None,
+                IsAntialiasedLineEnabled = false,
+                CullMode = CullMode.Back,
                 DepthBias = 10,
                 DepthBiasClamp = .0f,
                 IsDepthClipEnabled = false,
                 FillMode = FillMode.Solid,
                 IsFrontCounterClockwise = true,
-                IsMultisampleEnabled = true,
+                IsMultisampleEnabled = false,
                 IsScissorEnabled = false,
                 SlopeScaledDepthBias = .0f
             };
 
-            UpdateRasterizer();
+            RasterStateSolid = new RasterizerState(Device, rasterizerStateDescription);
+            rasterizerStateDescription.FillMode = FillMode.Wireframe;
+            rasterizerStateDescription.CullMode = CullMode.None;
+            RasterStateWireFrame = new RasterizerState(Device, rasterizerStateDescription);
+
+            UpdateRasterizer(fillMode);
             return true;
         }
         public void ToggleCullMode()
         {
-            Rasterizer.CullMode = (Rasterizer.CullMode == CullMode.None ? CullMode.Back : CullMode.None);
-            UpdateRasterizer();
+            //Rasterizer.CullMode = (Rasterizer.CullMode == CullMode.None ? CullMode.Back : CullMode.None);
+            //UpdateRasterizer();
         }
         public void ToggleFillMode()
         {
-            Rasterizer.FillMode = (Rasterizer.FillMode == FillMode.Solid ? FillMode.Wireframe : FillMode.Solid);
-            UpdateRasterizer();
+            UpdateRasterizer(fillMode == FillMode.Solid ? FillMode.Wireframe : FillMode.Solid);
         }
-        private void UpdateRasterizer()
+        private void UpdateRasterizer(FillMode mode)
         {
-            RasterState = new RasterizerState(Device, Rasterizer);
-            DeviceContext.Rasterizer.State = RasterState;
+            fillMode = mode;
+
+            if (mode == FillMode.Solid)
+                DeviceContext.Rasterizer.State = RasterStateSolid;
+            else if (mode == FillMode.Wireframe)
+                DeviceContext.Rasterizer.State = RasterStateWireFrame;
+            else
+                DeviceContext.Rasterizer.State = RasterStateSolid;
+
             DeviceContext.Rasterizer.SetViewport(0, 0, ToolkitSettings.Width, ToolkitSettings.Height, 0, 1);
         }
         public void SwapFillMode(FillMode mode)
         {
-            Rasterizer.FillMode = mode;
-            UpdateRasterizer(); 
+            UpdateRasterizer(mode); 
         }
         public void Shutdown()
         {
             SwapChain?.SetFullscreenState(false, null);
-            RasterState?.Dispose();
-            RasterState = null;
+            RasterStateSolid?.Dispose();
+            RasterStateSolid = null;
+            RasterStateWireFrame?.Dispose();
+            RasterStateWireFrame = null;
             DepthStencilView?.Dispose();
             DepthStencilView = null;
             DepthStencilState?.Dispose();

@@ -89,25 +89,14 @@ namespace Rendering.Graphics
 
             foreach(KeyValuePair<int, RenderModel> entry in Models)
             {
+                D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Solid);
                 entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
             }
-
-            //foreach (KeyValuePair<int, RenderModel> entry in Models)
-            //{
-            //    RenderModel model = entry.Value;
-            //    if (model.DoRender)
-            //    {
-            //        //D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Solid);
-            //        model.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
-            //        //D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Wireframe);
-            //        //model.BoundingBox.Render(D3D.DeviceContext);
-            //        //D3D.DeviceContext.PixelShader.SetShaderResource(0, model.BoundingBox.Texture);
-            //        //D3D.DeviceContext.InputAssembler.SetIndexBuffer(model.BoundingBox.IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
-            //        //Shader.Render(D3D.DeviceContext, model.BoundingBox.Indices.Length);
-
-
-            //    }
-            //}
+            foreach(KeyValuePair<int, RenderModel> entry in Models)
+            {
+                D3D.SwapFillMode(SharpDX.Direct3D11.FillMode.Wireframe);
+                entry.Value.BoundingBox.Render(D3D.Device, D3D.DeviceContext, entry.Value.Transform, Camera, Light);
+            }
             D3D.EndScene();
             return true;
         }

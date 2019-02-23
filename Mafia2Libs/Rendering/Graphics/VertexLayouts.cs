@@ -35,7 +35,7 @@ namespace Rendering.Graphics
                         SemanticIndex = 0,
                         Format = SharpDX.DXGI.Format.R32G32B32_Float,
                         Slot = 0,
-                        AlignedByteOffset = 0,
+                        AlignedByteOffset = InputElement.AppendAligned,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
