@@ -4,6 +4,24 @@ namespace Mafia2
 {
     public class VertexTranslator
     {
+        /*
+         * Position.X = 2 Bytes / Half;
+         * Position.Y = 2 Bytes / Half;
+         * Position.Z = 2 Bytes / Half;
+         * Position.W = 2 Bytes / Half; 
+         *  Also 
+         *      Tangent.X = 1 Bytes (1st Bytes of Position.W)
+         *      Tangent.Y = 1 Bytes (2nd Bytes of Position.W)
+         * Normal.X = 1 Bytes / Byte.
+         * Normal.Y = 1 Bytes / Byte.
+         * Normal.Z = 1 Bytes / Byte.
+         * Normal.W = 1 Bytes / Bytes.
+         * 
+         *  Also
+         *      Tangent.W = 1 Bytes (1st Bytes of Normal.W)
+         * 
+         *
+         * */
         public static Vector3 ReadPositionDataFromVB(byte[] data, int i, float factor, Vector3 offset)
         {
             Vector3 vec = new Vector3();

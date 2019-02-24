@@ -15,7 +15,7 @@ namespace Rendering.Graphics
             string texturePath = "";
             if (!System.IO.File.Exists(Mafia2Tool.ToolkitSettings.DataPath + fileName))
             {
-                Debug.WriteLine("FAILED TO LOAD {0}", fileName);
+                Debug.WriteLine(string.Format("FAILED TO LOAD {0}", fileName));
                 texturePath = "texture.dds";
             }
             else
@@ -26,7 +26,7 @@ namespace Rendering.Graphics
                 else
                     texturePath = fileName;
             }
-            Debug.WriteLine(string.Format("Loading {0}\tDevice State {1}", fileName, device));
+            //Debug.WriteLine(string.Format("Loading {0}\tDevice State {1}", fileName, device));
             DDSTextureLoader.CreateDDSTextureFromFile(device, Mafia2Tool.ToolkitSettings.DataPath + texturePath, out ddsResource, out _temp, 4096, out mode);
             TextureResource = _temp;
             return true;

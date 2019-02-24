@@ -95,21 +95,23 @@ namespace Mafia2Tool
         private void CullModeButton_Click(object sender, EventArgs e)
         {
             Graphics.ToggleD3DCullMode();
+            AddToLog("Toggled Cull Mode");
         }
 
         private void FillModeButton_Click(object sender, EventArgs e)
         {
             Graphics.ToggleD3DFillMode();
+            AddToLog("Toggled Fill Mode");
         }
 
         private void OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateCurrentEntryData();
+            TreeViewUpdateSelected();
         }
 
         private void OnAfterSelect(object sender, TreeViewEventArgs e)
         {
-            UpdateCurrentEntryData();
+            TreeViewUpdateSelected();
         }
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
@@ -220,6 +222,7 @@ namespace Mafia2Tool
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
                 Console.WriteLine("Saved Changes Succesfully");
+                AddToLog("Saved Changes Succesfully!");
             }
         }
 
@@ -227,6 +230,7 @@ namespace Mafia2Tool
         {
             Dictionary<int, RenderModel> meshes = new Dictionary<int, RenderModel>();
             Dictionary<int, RenderBoundingBox> areas = new Dictionary<int, RenderBoundingBox>();
+            Dictionary<int, RenderBoundingBox> dummies = new Dictionary<int, RenderBoundingBox>();
 
             for (int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
             {
@@ -263,20 +267,34 @@ namespace Mafia2Tool
                     areaBBox.SetTransform(area.Matrix.Position, area.Matrix.Rotation);
                     areaBBox.Init(area.Bounds);
                     areas.Add(fObject.RefID, areaBBox);
+                }
+
+                if (fObject.GetType() == typeof(FrameObjectDummy))
+                {
+                    FrameObjectDummy dummy = (fObject as FrameObjectDummy);
+                    RenderBoundingBox dummyBBox = new RenderBoundingBox();
+                    dummyBBox.SetTransform(dummy.Matrix.Position, dummy.Matrix.Rotation);
+                    dummyBBox.Init(dummy.Bounds);
+                    dummies.Add(fObject.RefID, dummyBBox);
 
                 }
             }
             Graphics.Models = meshes;
             Graphics.Areas = areas;
+            Graphics.Dummies = dummies;
         }
 
-        //Improvement Idea: Sync updates values IF selected indexes is valid.
-        private void UpdateCurrentEntryData()
+        private void TreeViewUpdateSelected()
         {
             if (treeView1.SelectedNode.Tag == null || treeView1.SelectedNode.Tag.GetType() == typeof(FrameHeaderScene))
                 return;
 
-            FrameObjectBase fObject = (treeView1.SelectedNode.Tag as FrameObjectBase);
+            UpdateCurrentEntryData(treeView1.SelectedNode.Tag as FrameObjectBase);
+        }
+
+        //Improvement Idea: Sync updates values IF selected indexes is valid.
+        private void UpdateCurrentEntryData(FrameObjectBase fObject)
+        {
             CurrentEntry.Text = fObject.Name.String;
             PositionXBox.Text = fObject.Matrix.Position.X.ToString();
             PositionYBox.Text = fObject.Matrix.Position.Y.ToString();
@@ -286,9 +304,10 @@ namespace Mafia2Tool
             RotationZBox.Text = fObject.Matrix.Rotation.EulerRotation.Z.ToString();
             CurrentEntryType.Text = fObject.GetType().Name;
             Graphics.BuildSelectedEntry(fObject);
-
+            DebugPropertyGrid.SelectedObject = fObject;
             OnFrameNameTable.Checked = fObject.IsOnFrameTable;
             FrameNameTableFlags.EnumValue = (Enum)Convert.ChangeType(fObject.FrameNameTableFlags, typeof(NameTableFlags));
+            AddToLog(string.Format("New Current Entry", fObject.Name.String));
         }
 
         private void EntryApplyChanges_OnClick(object sender, EventArgs e)
@@ -301,31 +320,37 @@ namespace Mafia2Tool
             fObject.FrameNameTableFlags = (NameTableFlags)FrameNameTableFlags.GetCurrentValue();
             Graphics.Models[fObject.RefID].SetTransform(fObject.Matrix.Position, fObject.Matrix.Rotation);
             Graphics.BuildSelectedEntry(fObject);
+            AddToLog(string.Format("Modified Currently Entry", fObject.Name.String));
         }
 
         private void Pick(int sx, int sy)
         {
             var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
-            string pickedModel = "No Object Found!";
+            FrameObjectSingleMesh selected = null;
+
             foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
             {
                 // transform the picking ray into the object space of the mesh
+
                 Matrix worldMat = model.Value.Transform;
                 var invWorld = Matrix.Invert(worldMat);
                 ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
-                ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
+                //ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
                 ray.Direction.Normalize();
 
-                float tmin;
-                
+                float tmin0;
+                float tmin1;
 
-                FrameObjectBase objBase = null;
+
+                FrameObjectSingleMesh objBase = null;
                 foreach (KeyValuePair<int, object> obj in SceneData.FrameResource.FrameObjects)
                 {
                     if ((obj.Value as FrameObjectBase).RefID == model.Key)
-                        objBase = (obj.Value as FrameObjectBase);
-
+                        objBase = (obj.Value as FrameObjectSingleMesh);
                 }
+
+                if (objBase == null)
+                    continue;
 
                 Vector3 minVector = new Vector3(
                 model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Minimum.X,
@@ -337,11 +362,13 @@ namespace Mafia2Tool
                    model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Maximum.Y,
                    model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Maximum.Z
                    );
-                BoundingBox tempBox = new BoundingBox(minVector, maxVector);
-                if (ray.Intersects(ref tempBox, out tmin))
-                    continue;
+               BoundingBox tempBox0 = new BoundingBox(minVector, maxVector);
+                BoundingBox tempBox1 = objBase.Boundings;
+                float tmin;
 
-                float tmin2 = float.MaxValue;
+                if (!ray.Intersects(ref tempBox0, out tmin)) continue;
+                Console.WriteLine("intersect with " + objBase.Name.String);
+                float maxT = float.MaxValue;
                 for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
                 {
                     var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
@@ -349,17 +376,72 @@ namespace Mafia2Tool
                     var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
                     float t = 0;
                     if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-                    // find the closest intersection, exclude intersections behind camera
-                    if (!(t < tmin2 || t < 0)) continue;
-                    tmin2 = t;
+                    if (!(t < tmin || t < 0)) continue;
+                    maxT = t;
                 }
-                if (tmin < tmin2)
-                {
-                    pickedModel = objBase.ToString();
-                }
+
+                //float curTmin = float.MaxValue;
+                //if (ray.Position.X > tempBox0.Minimum.X && ray.Position.X < tempBox0.Maximum.X)
+                //{
+                //    if (ray.Position.Y > tempBox0.Minimum.Y && ray.Position.Y < tempBox0.Maximum.Y)
+                //    {
+                //        if (ray.Position.Z > tempBox0.Minimum.Z && ray.Position.Z < tempBox0.Maximum.Z)
+                //        {
+                            
+                //            for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
+                //            {
+                //                float tmin2 = float.MaxValue/2;
+                //                var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
+                //                var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
+                //                var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
+                //                float t = 0;
+                //                if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+                //                // find the closest intersection, exclude intersections behind camera
+                //                if (!(t < tmin2 || t < 0)) continue;
+                //                tmin2 = t;
+                //                if (curTmin < tmin2)
+                //                {
+                //                    selected = objBase;
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+                //ray.Intersects(ref tempBox0, out tmin0);
+                //ray.Intersects(ref tempBox1, out tmin1);
+                //Console.WriteLine(tmin0 + " " + tmin1);
+                //continue;
+
+                //Console.WriteLine("Intersection!, " + objBase.Name.String);
+                //float tmin2 = float.MaxValue;
+                //for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
+                //{
+                //    var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
+                //    var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
+                //    var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
+                //    float t = 0;
+                //    if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+                //    // find the closest intersection, exclude intersections behind camera
+                //    if (!(t < tmin2 || t < 0)) continue;
+                //    tmin2 = t;
+                //}
+                //if (tmin < tmin2)
+                //{
+                //    selected = objBase;
+                //}
             }
 
-            Console.WriteLine(pickedModel);
+            if (selected != null)
+            {
+                Graphics.BuildSelectedEntry(selected);
+                Console.WriteLine(selected.Name.String);
+                UpdateCurrentEntryData(selected);
+            }
+        }
+
+        public void AddToLog(string message)
+        {
+            //richTextBox1.AppendText(message + "\n");
         }
 
         public void Shutdown()

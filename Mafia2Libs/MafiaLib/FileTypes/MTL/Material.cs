@@ -4,6 +4,7 @@ using System.ComponentModel;
 using Gibbed.Illusion.FileFormats.Hashing;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Mafia2
 {

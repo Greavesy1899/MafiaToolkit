@@ -83,7 +83,7 @@ namespace Rendering.Graphics
         {
             // convert screen pixel to view space
             var vx = (2.0f * sp.X / screenDims.X - 1.0f) / ProjectionMatrix.M11;
-            var vy = (-2.0f * sp.Y / screenDims.Y + 1.0f) / ProjectionMatrix.M22;
+            var vy = -(2.0f * sp.Y / screenDims.Y - 1.0f) / ProjectionMatrix.M22;
 
             var ray = new Ray(new Vector3(), new Vector3(vx, vy, 1.0f));
             var v = ViewMatrix;

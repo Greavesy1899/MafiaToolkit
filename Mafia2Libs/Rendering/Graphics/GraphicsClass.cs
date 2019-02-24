@@ -18,6 +18,7 @@ namespace Rendering.Graphics
 
         public Dictionary<int, RenderModel> Models { get; set; }
         public Dictionary<int, RenderBoundingBox> Areas { get; set; }
+        public Dictionary<int, RenderBoundingBox> Dummies { get; set; }
         public RenderBoundingBox SelectedEntryBBox { get; private set; }
 
         public GraphicsClass()
@@ -58,6 +59,9 @@ namespace Rendering.Graphics
             foreach (KeyValuePair<int, RenderBoundingBox> area in Areas)
                 area.Value.InitBuffer(D3D.Device);
 
+            foreach (KeyValuePair<int, RenderBoundingBox> dummy in Dummies)
+                dummy.Value.InitBuffer(D3D.Device);
+
             Light = new LightClass();
             Light.SetAmbientColor(0.5f, 0.5f, 0.5f, 1f);
             Light.SetDiffuseColour(0f, 0f, 0f, 0);
@@ -80,11 +84,15 @@ namespace Rendering.Graphics
             foreach (KeyValuePair<int, RenderBoundingBox> area in Areas)
                 area.Value?.ShutdownBuffers();
 
+            foreach (KeyValuePair<int, RenderBoundingBox> dummy in Dummies)
+                dummy.Value?.ShutdownBuffers();
+
             if (SelectedEntryBBox != null)
                 SelectedEntryBBox.ShutdownBuffers();
 
             Models = null;
             Areas = null;
+            Dummies = null;
             D3D?.Shutdown();
             D3D = null;
         }
@@ -99,6 +107,9 @@ namespace Rendering.Graphics
 
             foreach(KeyValuePair<int, RenderModel> entry in Models)
                 entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
+
+            foreach (KeyValuePair<int, RenderBoundingBox> dummy in Dummies)
+                dummy.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
 
             foreach (KeyValuePair<int, RenderBoundingBox> entry in Areas)
                 entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);

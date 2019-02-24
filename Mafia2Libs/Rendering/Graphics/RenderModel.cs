@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using Mafia2;
 using System.Collections.Generic;
 using ResourceTypes.FrameResource;
+using System.Diagnostics;
+using System.IO;
 
 namespace Rendering.Graphics
 {
@@ -91,6 +93,11 @@ namespace Rendering.Graphics
                 LOD lod = new LOD();
                 lod.Indices = indexBuffers[i].Data;
                 lod.ModelParts = new ModelPart[mats.LodMatCount[i]];
+
+                using (BinaryWriter writer = new BinaryWriter(File.Open("VertexBuffers/" + geom.LOD[i].VertexBufferRef.String + ".dat", FileMode.OpenOrCreate)))
+                {
+                    writer.Write(vertexBuffers[i].Data);
+                }
 
                 for (int z = 0; z != mats.Materials[i].Length; z++)
                 {
@@ -224,6 +231,7 @@ namespace Rendering.Graphics
                     part.Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[0];
                 else
                 {
+                    Debug.WriteLine(LODs[0].ModelParts[x].Material.MaterialName + "\t" + LODs[0].ModelParts[x].Material.ShaderHash);
                     part.Shader = (RenderStorageSingleton.Instance.ShaderManager.shaders.ContainsKey(LODs[0].ModelParts[x].Material.ShaderHash) 
                         ? RenderStorageSingleton.Instance.ShaderManager.shaders[LODs[0].ModelParts[x].Material.ShaderHash] 
                         : RenderStorageSingleton.Instance.ShaderManager.shaders[0]);

@@ -160,25 +160,29 @@ namespace Mafia2
 
         public void UpdateMatrixFromEuler()
         {
-            float x = eulerRotation.X * (float)Math.PI / 180;
-            float y = eulerRotation.Y * (float)Math.PI / 180;
-            float z = eulerRotation.Z * (float)Math.PI / 180;
+            //x == roll
+            //y == pitch
+            //z == yaw
 
-            float ch = (float)Math.Cos(z);
-            float sh = (float)Math.Sin(z);
-            float ca = (float)Math.Cos(y);
-            float sa = (float)Math.Sin(y);
-            float cb = (float)Math.Cos(x);
-            float sb = (float)Math.Sin(x);
-            m00 = ch * ca;
-            m01 = sh * sb - ch * sa * cb;
-            m02 = ch * sa * sb + sh * cb;
-            m10 = sa;
-            m11 = ca * cb;
-            m12 = -ca * sb;
-            m20 = -sh * ca;
-            m21 = sh * sa * cb + ch * sb;
-            m22 = -sh * sa * sb + ch * cb;
+            float roll = eulerRotation.X * (float)Math.PI / 180;
+            float pitch = eulerRotation.Y * (float)Math.PI / 180;
+            float yaw = eulerRotation.Z * (float)Math.PI / 180;
+
+            float su = (float)Math.Sin(roll);
+            float cu = (float)Math.Cos(roll);
+            float sv = (float)Math.Sin(pitch);
+            float cv = (float)Math.Cos(pitch);
+            float sw = (float)Math.Sin(yaw);
+            float cw = (float)Math.Cos(yaw);
+            m00 = cv * cw;
+            m10 = su * sv * cw - cu * sw;
+            m20 = su * sw + cu * sv * cw;
+            m01 = cv * sw;
+            m11 = cu * cw + su * sv * sw;
+            m21 = cu * sv * sw - su * cw;
+            m02 = -sv;
+            m12 = su * cv;
+            m22 = cu * cv;
 
             //Remove exponents.
             if (m00 > -0.01f && m00 < 0.01f)
