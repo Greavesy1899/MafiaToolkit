@@ -87,13 +87,10 @@ namespace ResourceTypes.FrameNameTable
                 sceneNames[0] = "<scene>\0";
             }
 
-            for (int i = 0; i != resource.FrameEntries.Count; i++)
+            for (int i = 0; i != resource.FrameObjects.Count; i++)
             {
                 bool addToTable = false;
-                object block = resource.FrameEntries.ElementAt(i).Value;
-
-                if(block as FrameObjectBase == null)
-                    continue;
+                object block = resource.FrameObjects.ElementAt(i).Value;
 
                 //possible types to save? might change in the future however.
                 if (block.GetType().BaseType == typeof(FrameObjectBase) || block.GetType().BaseType == typeof(FrameObjectJoint) || block.GetType().BaseType == typeof(FrameObjectSingleMesh))
@@ -130,7 +127,7 @@ namespace ResourceTypes.FrameNameTable
                         data.NamePos2 = (resource.Header.IsScene) ? (ushort)0xFFFF : data.NamePos1;
 
                         //set frameIndex. minus the blockID and then subtract it from the total number of blocks.
-                        data.FrameIndex = (short)(totalNumBlocks - i);
+                        data.FrameIndex = (short)i;
 
                         tableData.Add(data);
                     }
