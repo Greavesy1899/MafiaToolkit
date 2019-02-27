@@ -20,32 +20,32 @@ namespace Mafia2Tool
         //sort this shit out.
         public void PopulateForm(bool scenes = false)
         {
-            if (scenes)
-            {
-                foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
-                {
-                    listBox1.Items.Add(entry.Value);
-                }
-            }
-            else
-            {
-                foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
-                {
-                    listBox1.Items.Add(entry.Value);
-                }
-            }
+            //if (scenes)
+            //{
+            //    foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
+            //    {
+            //        listBox1.Items.Add(entry.Value);
+            //    }
+            //}
+            //else
+            //{
+            //    foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
+            //    {
+            //        listBox1.Items.Add(entry.Value);
+            //    }
+            //}
         }
 
         private void SearchForms()
         {
-            listBox1.Items.Clear();
-            foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
-            {
-                FrameObjectBase obj = entry.Value as FrameObjectBase;
+            //listBox1.Items.Clear();
+            //foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
+            //{
+            //    FrameObjectBase obj = entry.Value as FrameObjectBase;
 
-                if (obj.Name.String.Contains(SearchBox.Text))
-                    listBox1.Items.Add(entry.Value);
-            }
+            //    if (obj.Name.String.Contains(SearchBox.Text))
+            //        listBox1.Items.Add(entry.Value);
+            //}
         }
 
         private void SearchOnClick(object sender, System.EventArgs e)

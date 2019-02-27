@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mafia2;
-using System.Diagnostics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -17,43 +16,16 @@ namespace ResourceTypes.FrameResource
         Dictionary<int, FrameSkeleton> frameSkeletons = new Dictionary<int, FrameSkeleton>();
         Dictionary<int, FrameSkeletonHierachy> frameSkeletonHierachies = new Dictionary<int, FrameSkeletonHierachy>();
         Dictionary<int, object> frameObjects = new Dictionary<int, object>();
-        Dictionary<int, object> FrameEntries = new Dictionary<int, object>();
+        Dictionary<int, object> frameEntries = new Dictionary<int, object>();
         public FrameNode Frame;
-
-        int[] frameBlocks;
-        int[] objectTypes;
 
         public FrameHeader Header {
             get { return header; }
             set { header = value; }
         }
-        public Dictionary<int, FrameHeaderScene> FrameScenes {
-            get { return frameScenes; }
-            set { frameScenes = value; }
-        }
-        public Dictionary<int, FrameGeometry> FrameGeometries {
-            get { return frameGeometries; }
-            set { frameGeometries = value; }
-        }
-        public Dictionary<int, FrameMaterial> FrameMaterials {
-            get { return frameMaterials; }
-            set { frameMaterials = value; }
-        }
-        public Dictionary<int, FrameBlendInfo> FrameBlendInfos {
-            get { return frameBlendInfos; }
-            set { frameBlendInfos = value; }
-        }
-        public Dictionary<int, FrameSkeleton> FrameSkeletons {
-            get { return frameSkeletons; }
-            set { frameSkeletons = value; }
-        }
-        public Dictionary<int, FrameSkeletonHierachy> FrameSkeletonHierachies {
-            get { return frameSkeletonHierachies; }
-            set { frameSkeletonHierachies = value; }
-        }
-        public Dictionary<int, object> FrameObjects {
-            get { return frameObjects; }
-            set { frameObjects = value; }
+        public Dictionary<int, object> FrameEntries {
+            get { return frameEntries; }
+            set { frameEntries = value; }
         }
 
         public FrameResource(string file)
@@ -64,12 +36,11 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        /// <summary>
-        /// Reads the file into the memory.
-        /// </summary>
-        /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
+            int[] frameBlocks;
+            int[] objectTypes;
+
             header = new FrameHeader();
             header.ReadFromFile(reader);
 
@@ -82,42 +53,48 @@ namespace ResourceTypes.FrameResource
             {
                 frameScenes.Add(header.SceneFolders[i].RefID, header.SceneFolders[i]);
                 frameBlocks[j] = header.SceneFolders[i].RefID;
-                FrameEntries.Add(j++, header.SceneFolders[i]);
+                FrameEntries.Add(frameBlocks[j], header.SceneFolders[i]);
+                j++;
             }
             for (int i = 0; i != header.NumGeometries; i++)
             {
                 FrameGeometry geo = new FrameGeometry(reader);
                 frameGeometries.Add(geo.RefID, geo);
                 frameBlocks[j] = geo.RefID;
-                FrameEntries.Add(j++, geo);
+                FrameEntries.Add(frameBlocks[j], geo);
+                j++;
             }
             for (int i = 0; i != header.NumMaterialResources; i++)
             {
                 FrameMaterial mat = new FrameMaterial(reader);
                 frameMaterials.Add(mat.RefID, mat);
                 frameBlocks[j] = mat.RefID;
-                FrameEntries.Add(j++, mat);
+                FrameEntries.Add(frameBlocks[j], mat);
+                j++;
             }
             for (int i = 0; i != header.NumBlendInfos; i++)
             {
                 FrameBlendInfo blendInfo = new FrameBlendInfo(reader);
                 frameBlendInfos.Add(blendInfo.RefID, blendInfo);
                 frameBlocks[j] = blendInfo.RefID;
-                FrameEntries.Add(j++, blendInfo);
+                FrameEntries.Add(frameBlocks[j], blendInfo);
+                j++;
             }
             for (int i = 0; i != header.NumSkeletons; i++)
             {
                 FrameSkeleton skeleton = new FrameSkeleton(reader);
                 frameSkeletons.Add(skeleton.RefID, skeleton);
                 frameBlocks[j] = skeleton.RefID;
-                FrameEntries.Add(j++, skeleton);
+                FrameEntries.Add(frameBlocks[j], skeleton);
+                j++;
             }
             for (int i = 0; i != header.NumSkelHierachies; i++)
             {
                 FrameSkeletonHierachy skeletonHierachy = new FrameSkeletonHierachy(reader);
                 frameSkeletonHierachies.Add(skeletonHierachy.RefID, skeletonHierachy);
                 frameBlocks[j] = skeletonHierachy.RefID;
-                FrameEntries.Add(j++, skeletonHierachy);
+                FrameEntries.Add(frameBlocks[j], skeletonHierachy);
+                j++;
             }
 
             if (header.NumObjects > 0)
@@ -173,7 +150,7 @@ namespace ResourceTypes.FrameResource
                     {
                         FrameObjectModel mesh = new FrameObjectModel(reader);
                         mesh.ReadFromFile(reader);
-                        mesh.ReadFromFilePart2(reader, (FrameSkeleton)FrameEntries[mesh.SkeletonIndex], (FrameBlendInfo)FrameEntries[mesh.BlendInfoIndex]);
+                        mesh.ReadFromFilePart2(reader, (FrameSkeleton)FrameEntries.ElementAt(mesh.SkeletonIndex).Value, (FrameBlendInfo)FrameEntries.ElementAt(mesh.BlendInfoIndex).Value);
                         mesh.AddRef(FrameEntryRefTypes.Mesh, frameBlocks[mesh.MeshIndex]);
                         mesh.AddRef(FrameEntryRefTypes.Material, frameBlocks[mesh.MaterialIndex]);
                         mesh.AddRef(FrameEntryRefTypes.BlendInfo, frameBlocks[mesh.BlendInfoIndex]);
@@ -185,7 +162,7 @@ namespace ResourceTypes.FrameResource
                         newObject = new FrameObjectCollision(reader);
 
                     frameObjects.Add(i, newObject);
-                    FrameEntries.Add(frameBlocks.Length+i, newObject);
+                    FrameEntries.Add(newObject.RefID, newObject);
                 }
             }
             objectTypes = null;
@@ -193,10 +170,6 @@ namespace ResourceTypes.FrameResource
             DefineFrameBlockParents();
         }
 
-        /// <summary>
-        /// Writes the FrameResource to the file.
-        /// </summary>
-        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             //BEFORE WE WRITE, WE NEED TO COMPILE AND UPDATE THE FRAME.
@@ -291,7 +264,11 @@ namespace ResourceTypes.FrameResource
             Dictionary<int, FrameNode> parsedNodes = new Dictionary<int, FrameNode>();
             for (int i = 0; i != table.FrameData.Length; i++)
             {
-                FrameObjectBase fObject = (FrameEntries[numBlocks+table.FrameData[i].FrameIndex] as FrameObjectBase);
+                FrameObjectBase fObject = (FrameEntries.ElementAt(numBlocks+i).Value as FrameObjectBase);
+
+                if (fObject == null)
+                    continue;
+
                 fObject.IsOnFrameTable = true;
                 fObject.FrameNameTableFlags = table.FrameData[i].Flags;
                 int p1idx = fObject.ParentIndex1.Index;
@@ -358,10 +335,6 @@ namespace ResourceTypes.FrameResource
             Frame = root;
         }
 
-        /// <summary>
-        /// Adds names onto ParentIndex1 and ParentIndex2. Called after the file has been read.
-        /// Adds Refs also. These are needed to save a Frame file.
-        /// </summary>
         public void DefineFrameBlockParents()
         {
             int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
@@ -405,9 +378,6 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        /// <summary>
-        /// This reconstructs the data.
-        /// </summary>
         public void UpdateFrameData()
         {
             int totalResources = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
@@ -489,7 +459,7 @@ namespace ResourceTypes.FrameResource
                 }
             }
 
-            header.NumFolderNames = FrameScenes.Count;
+            header.NumFolderNames = frameScenes.Count;
             header.NumGeometries = frameGeometries.Count;
             header.NumMaterialResources = frameMaterials.Count;
             header.NumBlendInfos = frameBlendInfos.Count;
