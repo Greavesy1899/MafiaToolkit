@@ -116,6 +116,7 @@ namespace Mafia2Tool
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
+            RenderStorageSingleton.Instance.TextureCache.Clear();
             Shutdown();
         }
 
@@ -227,78 +228,60 @@ namespace Mafia2Tool
 
         private void BuildRenderObjects()
         {
-            Graphics.Models = new Dictionary<int, RenderModel>();
-            Graphics.Areas = new Dictionary<int, RenderBoundingBox>();
-            Graphics.Dummies = new Dictionary<int, RenderBoundingBox>();
+            Dictionary<int, RenderModel> meshes = new Dictionary<int, RenderModel>();
+            Dictionary<int, RenderBoundingBox> areas = new Dictionary<int, RenderBoundingBox>();
+            Dictionary<int, RenderBoundingBox> dummies = new Dictionary<int, RenderBoundingBox>();
 
-            for (int i = 0; i != SceneData.FrameResource.Frame.Children.Count; i++)
+            for (int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
             {
-                FrameNode node = SceneData.FrameResource.Frame.Children.ElementAt(i).Value;
-                HandleNode(node);
-               
-                for (int y = 0; y != node.Children.Count; y++)
-                    HandleNode(node.Children.ElementAt(y).Value);
+                FrameEntry fObject = (SceneData.FrameResource.FrameObjects.ElementAt(i).Value as FrameEntry);
 
-            }
-        }
-
-        private void HandleNode(FrameNode node)
-        {
-            if (node.Object as FrameEntry != null)
-            {
-                if (node.Object.GetType() == typeof(FrameObjectSingleMesh) || node.Object.GetType() == typeof(FrameObjectModel))
+                if (fObject.GetType() == typeof(FrameObjectSingleMesh) || fObject.GetType() == typeof(FrameObjectModel))
                 {
-                    FrameObjectSingleMesh mesh = (node.Object as FrameObjectSingleMesh);
+                    FrameObjectSingleMesh mesh = (fObject as FrameObjectSingleMesh);
 
-                    if (mesh.MaterialIndex != -1 && mesh.MeshIndex != -1)
+                    if (mesh.MaterialIndex == -1 && mesh.MeshIndex == -1)
+                        continue;
+
+                    FrameGeometry geom = SceneData.FrameResource.FrameGeometries[mesh.Refs["Mesh"]];
+                    FrameMaterial mat = SceneData.FrameResource.FrameMaterials[mesh.Refs["Material"]];
+                    IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
+                    VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
+
+                    //we need to retrieve buffers first.
+                    for (int c = 0; c != geom.LOD.Length; c++)
                     {
-
-                        FrameGeometry geom = SceneData.FrameResource.FrameEntries[mesh.Refs["Mesh"]] as FrameGeometry;
-                        FrameMaterial mat = SceneData.FrameResource.FrameEntries[mesh.Refs["Material"]] as FrameMaterial;
-
-                        if (geom != null && mat != null)
-                        {
-                            IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
-                            VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
-
-                            //we need to retrieve buffers first.
-                            for (int c = 0; c != geom.LOD.Length; c++)
-                            {
-                                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
-                                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
-                            }
-
-                            RenderModel model = new RenderModel();
-                            model.ConvertFrameToRenderModel(mesh, geom, mat, indexBuffers, vertexBuffers);
-
-                            if(!Graphics.Models.ContainsKey(mesh.RefID))
-                                Graphics.Models.Add(mesh.RefID, model);
-                        }
+                        indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
+                        vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
                     }
+
+                    RenderModel model = new RenderModel();
+                    model.ConvertFrameToRenderModel(mesh, geom, mat, indexBuffers, vertexBuffers);
+                    meshes.Add(fObject.RefID, model);
                 }
-                if (node.Object.GetType() == typeof(FrameObjectArea))
+
+                if (fObject.GetType() == typeof(FrameObjectArea))
                 {
-                    FrameObjectArea area = (node.Object as FrameObjectArea);
+                    FrameObjectArea area = (fObject as FrameObjectArea);
                     RenderBoundingBox areaBBox = new RenderBoundingBox();
                     areaBBox.SetTransform(area.Matrix.Position, area.Matrix.Rotation);
                     areaBBox.Init(area.Bounds);
-
-                    if (!Graphics.Areas.ContainsKey(area.RefID))
-                        Graphics.Areas.Add(area.RefID, areaBBox);
+                    areas.Add(fObject.RefID, areaBBox);
                 }
 
-                if (node.Object.GetType() == typeof(FrameObjectDummy))
+                if (fObject.GetType() == typeof(FrameObjectDummy))
                 {
-                    FrameObjectDummy dummy = (node.Object as FrameObjectDummy);
+                    FrameObjectDummy dummy = (fObject as FrameObjectDummy);
                     RenderBoundingBox dummyBBox = new RenderBoundingBox();
                     dummyBBox.SetTransform(dummy.Matrix.Position, dummy.Matrix.Rotation);
                     dummyBBox.Init(dummy.Bounds);
-
-                    if (!Graphics.Dummies.ContainsKey(dummy.RefID))
-                        Graphics.Dummies.Add(dummy.RefID, dummyBBox);
+                    dummies.Add(fObject.RefID, dummyBBox);
 
                 }
             }
+            Graphics.Models = meshes;
+            Graphics.Areas = areas;
+            Graphics.Dummies = dummies;
         }
 
         private void TreeViewUpdateSelected()
@@ -342,60 +325,60 @@ namespace Mafia2Tool
 
         private void Pick(int sx, int sy)
         {
-            //var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
-            //FrameObjectSingleMesh selected = null;
+            var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
+            FrameObjectSingleMesh selected = null;
 
-            //foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
-            //{
-            //    // transform the picking ray into the object space of the mesh
+            foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
+            {
+                // transform the picking ray into the object space of the mesh
 
-            //    Matrix worldMat = model.Value.Transform;
-            //    var invWorld = Matrix.Invert(worldMat);
-            //    ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
-            //    //ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
-            //    ray.Direction.Normalize();
+                Matrix worldMat = model.Value.Transform;
+                var invWorld = Matrix.Invert(worldMat);
+                ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
+                //ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
+                ray.Direction.Normalize();
 
-            //    float tmin0;
-            //    float tmin1;
+                float tmin0;
+                float tmin1;
 
 
-            //    FrameObjectSingleMesh objBase = null;
-            //    foreach (KeyValuePair<int, object> obj in SceneData.FrameResource.FrameObjects)
-            //    {
-            //        if ((obj.Value as FrameObjectBase).RefID == model.Key)
-            //            objBase = (obj.Value as FrameObjectSingleMesh);
-            //    }
+                FrameObjectSingleMesh objBase = null;
+                foreach (KeyValuePair<int, object> obj in SceneData.FrameResource.FrameObjects)
+                {
+                    if ((obj.Value as FrameObjectBase).RefID == model.Key)
+                        objBase = (obj.Value as FrameObjectSingleMesh);
+                }
 
-            //    if (objBase == null)
-            //        continue;
+                if (objBase == null)
+                    continue;
 
-            //    Vector3 minVector = new Vector3(
-            //    model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Minimum.X,
-            //    model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Minimum.Y,
-            //    model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Minimum.Z
-            //    );
-            //    Vector3 maxVector = new Vector3(
-            //       model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Maximum.X,
-            //       model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Maximum.Y,
-            //       model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Maximum.Z
-            //       );
-            //   BoundingBox tempBox0 = new BoundingBox(minVector, maxVector);
-            //    BoundingBox tempBox1 = objBase.Boundings;
-            //    float tmin;
+                Vector3 minVector = new Vector3(
+                model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Minimum.X,
+                model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Minimum.Y,
+                model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Minimum.Z
+                );
+                Vector3 maxVector = new Vector3(
+                   model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Maximum.X,
+                   model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Maximum.Y,
+                   model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Maximum.Z
+                   );
+               BoundingBox tempBox0 = new BoundingBox(minVector, maxVector);
+                BoundingBox tempBox1 = objBase.Boundings;
+                float tmin;
 
-            //    if (!ray.Intersects(ref tempBox0, out tmin)) continue;
-            //    Console.WriteLine("intersect with " + objBase.Name.String);
-            //    float maxT = float.MaxValue;
-            //    for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
-            //    {
-            //        var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
-            //        var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
-            //        var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
-            //        float t = 0;
-            //        if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-            //        if (!(t < tmin || t < 0)) continue;
-            //        maxT = t;
-            //    }
+                if (!ray.Intersects(ref tempBox0, out tmin)) continue;
+                Console.WriteLine("intersect with " + objBase.Name.String);
+                float maxT = float.MaxValue;
+                for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
+                {
+                    var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
+                    var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
+                    var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
+                    float t = 0;
+                    if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+                    if (!(t < tmin || t < 0)) continue;
+                    maxT = t;
+                }
 
                 //float curTmin = float.MaxValue;
                 //if (ray.Position.X > tempBox0.Minimum.X && ray.Position.X < tempBox0.Maximum.X)
@@ -445,15 +428,15 @@ namespace Mafia2Tool
                 //if (tmin < tmin2)
                 //{
                 //    selected = objBase;
-            //    //}
-            //}
+                //}
+            }
 
-            //if (selected != null)
-            //{
-            //    Graphics.BuildSelectedEntry(selected);
-            //    Console.WriteLine(selected.Name.String);
-            //    UpdateCurrentEntryData(selected);
-            //}
+            if (selected != null)
+            {
+                Graphics.BuildSelectedEntry(selected);
+                Console.WriteLine(selected.Name.String);
+                UpdateCurrentEntryData(selected);
+            }
         }
 
         public void AddToLog(string message)
