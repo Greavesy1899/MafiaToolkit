@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mafia2;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace ResourceTypes.FrameResource
 {
@@ -285,42 +286,58 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        public void BuildFrameTree(FrameNameTable.FrameNameTable table)
+        public TreeNode BuildTree(FrameNameTable.FrameNameTable table)
         {
+            TreeNode root = new TreeNode("Root");
+
             int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
-            Dictionary<int, FrameNode> parsedNodes = new Dictionary<int, FrameNode>();
+            Dictionary<int, TreeNode> parsedNodes = new Dictionary<int, TreeNode>();
+
+            //Add scene groups into the scene viewer.
+            for(int i = 0; i != frameScenes.Count; i++)
+            {
+                FrameHeaderScene scene = frameScenes.Values.ElementAt(i);
+                TreeNode node = new TreeNode(scene.ToString());
+                node.Tag = scene;
+                node.Name = scene.RefID.ToString();
+
+                root.Nodes.Add(node);
+            }
+
+            //add entries from the table, add table data and then add to scene viewer.
             for (int i = 0; i != table.FrameData.Length; i++)
             {
-                FrameObjectBase fObject = (FrameEntries[numBlocks+table.FrameData[i].FrameIndex] as FrameObjectBase);
+                FrameObjectBase fObject = (FrameEntries[numBlocks + table.FrameData[i].FrameIndex] as FrameObjectBase);
                 fObject.IsOnFrameTable = true;
                 fObject.FrameNameTableFlags = table.FrameData[i].Flags;
                 int p1idx = fObject.ParentIndex1.Index;
                 int p2idx = fObject.ParentIndex2.Index;
                 int thisKey = numBlocks + numBlocks + table.FrameData[i].FrameIndex;
 
-                FrameNode node = (!parsedNodes.ContainsKey(thisKey)) ? new FrameNode(fObject) : parsedNodes[thisKey];
+                TreeNode node = (!parsedNodes.ContainsKey(thisKey)) ? new TreeNode(fObject.ToString()) : parsedNodes[thisKey];
+                node.Tag = fObject;
+                node.Name = fObject.RefID.ToString();
 
-                if(p1idx == -1 && p2idx == -1)
+                if (p1idx == -1 && p2idx == -1)
                 {
                     //might be temp? it fixes cars loading in or non binded entries.
+                    root.Nodes.Add(node);
                     continue;
-                }
-                else if (p2idx != -1 && parsedNodes.ContainsKey(p2idx))
-                {
-                    node.SetParent2(parsedNodes[p2idx]);
-                    parsedNodes[p2idx].AddChild(node, thisKey);
                 }
                 else
                 {
-                    FrameNode pNode = new FrameNode(FrameEntries.ElementAt(p2idx).Value);
-                    pNode.AddChild(node, thisKey);
-                    parsedNodes.Add(p2idx, pNode);
+                    FrameEntry pBase = (FrameEntries.ElementAt(p2idx).Value as FrameEntry);
+                    TreeNode[] nodes = root.Nodes.Find(pBase.RefID.ToString(), true);
+
+                    if (nodes.Length > 0)
+                        nodes[0].Nodes.Add(node);
                 }
 
                 if (!parsedNodes.ContainsKey(thisKey))
                     parsedNodes.Add(thisKey, node);
             }
 
+            //add objects from the main dictionary.
             foreach (KeyValuePair<int, object> entry in frameObjects)
             {
                 FrameObjectBase fObject = (entry.Value as FrameObjectBase);
@@ -328,34 +345,81 @@ namespace ResourceTypes.FrameResource
                 int p2idx = fObject.ParentIndex2.Index;
                 int thisKey = numBlocks + entry.Key;
 
-                FrameNode node = (!parsedNodes.ContainsKey(thisKey)) ? new FrameNode(fObject) : parsedNodes[thisKey];
+                TreeNode node = (!parsedNodes.ContainsKey(thisKey)) ? new TreeNode(fObject.ToString()) : parsedNodes[thisKey];
+                node.Tag = fObject;
+                node.Name = fObject.RefID.ToString();
 
-                if (p1idx == -1)
+                if (root.Nodes.Find(fObject.RefID.ToString(), true).Length > 0)
                     continue;
 
-                if (p1idx != -1 && parsedNodes.ContainsKey(p1idx))
+                if(p2idx != -1)
                 {
-                    node.SetParent1(parsedNodes[p1idx]);
-                    parsedNodes[p1idx].AddChild(node, thisKey);
-                }
-                else
-                {
-                    FrameNode pNode = new FrameNode(FrameEntries.ElementAt(p1idx).Value);
-                    pNode.AddChild(node, thisKey);
-                    parsedNodes.Add(p1idx, pNode);
+                    FrameEntry pBase2 = (FrameEntries.ElementAt(p2idx).Value as FrameEntry);
+                    TreeNode[] p2Nodes = root.Nodes.Find(pBase2.RefID.ToString(), true);
+
+                    if (p2Nodes.Length > 0)
+                    {
+                        p2Nodes[0].Nodes.Add(node);
+                    }
+                    else
+                    {
+                        Console.WriteLine("did not add {0}", node.Text);
+                    }
                 }
 
                 if (!parsedNodes.ContainsKey(thisKey))
                     parsedNodes.Add(thisKey, node);
             }
 
-            FrameNode root = new FrameNode(new FrameHeaderScene(new Hash("<scene>")));
-            foreach(KeyValuePair<int, FrameNode> entry in parsedNodes)
+            //update p1 objects in tree nodes
+            foreach (KeyValuePair<int, object> entry in frameObjects)
             {
-                if (entry.Value.Parent1 == null && entry.Value.Parent2 == null)
-                    root.AddChild(entry.Value, entry.Key);
+                FrameObjectBase fObject = (entry.Value as FrameObjectBase);
+                int p1idx = fObject.ParentIndex1.Index;
+                int p2idx = fObject.ParentIndex2.Index;
+                int thisKey = numBlocks + entry.Key;
+
+                if(p1idx == p2idx)
+                {
+                    Console.WriteLine("No changes needed.");
+                }
+                else if(p2idx != -1 && p1idx != -1)
+                {
+                    TreeNode node = new TreeNode(fObject.ToString());
+                    node.Tag = fObject;
+                    node.Name = fObject.RefID.ToString();
+
+                    FrameEntry p1Base = (FrameEntries.ElementAt(p1idx).Value as FrameEntry);
+                    FrameEntry p2Base = (FrameEntries.ElementAt(p2idx).Value as FrameEntry);
+                    
+                    TreeNode[] p2Node = root.Nodes.Find(p2Base.RefID.ToString(), true);
+
+                    if(p2Node.Length > 0)
+                    {
+                        TreeNode[] p1Node = p2Node[0].Nodes.Find(p1Base.RefID.ToString(), true);
+
+                        if(p1Node.Length > 0)
+                        {
+                            p2Node[0].Nodes.RemoveByKey(fObject.RefID.ToString());
+                            p1Node[0].Nodes.Add(node);
+                        }
+                    }
+                }
             }
-            Frame = root;
+
+            foreach (KeyValuePair<int, TreeNode> entry in parsedNodes)
+            {
+                FrameObjectBase objBase = (entry.Value.Tag as FrameObjectBase);
+
+                if (objBase != null)
+                {
+                    if (objBase.ParentIndex1.Index == -1 && objBase.ParentIndex2.Index == -1)
+                    {
+                        root.Nodes.Add(entry.Value);
+                    }
+                }
+            }
+            return root;
         }
 
         /// <summary>

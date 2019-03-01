@@ -30,6 +30,7 @@ namespace ResourceTypes.FrameResource
             get { return transformMatrix; }
             set { transformMatrix = value; }
         }
+        [Browsable(false)]
         public short Unk3 {
             get { return unk3; }
             set { unk3 = value; }
@@ -42,6 +43,7 @@ namespace ResourceTypes.FrameResource
             get { return parentIndex2; }
             set { parentIndex2 = value; }
         }
+        [Browsable(false)]
         public short Unk6 {
             get { return unk6; }
             set { unk6 = value; }

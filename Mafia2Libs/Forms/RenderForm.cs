@@ -39,9 +39,10 @@ namespace Mafia2Tool
 
         public void PopulateList(FileInfo info)
         {
-            SceneData.FrameResource.BuildFrameTree(SceneData.FrameNameTable);
-            TreeNode tree = new TreeNode(info.Name);
-            SceneData.FrameResource.Frame.ConvertToTreeNode(ref tree);
+            //SceneData.FrameResource.BuildFrameTree(SceneData.FrameNameTable);
+            TreeNode tree = SceneData.FrameResource.BuildTree(SceneData.FrameNameTable);
+
+            //SceneData.FrameResource.Frame.ConvertToTreeNode(ref tree);
             treeView1.Nodes.Add(tree);
         }
 
@@ -170,24 +171,18 @@ namespace Mafia2Tool
             Graphics.Timer.Frame2();
 
             FrameObjectBase obj1;
-            FrameObjectBase obj2;
 
-            foreach (KeyValuePair<int, FrameNode> child in SceneData.FrameResource.Frame.Children)
+            foreach (TreeNode node in treeView1.Nodes)
             {
-                obj1 = (child.Value.Object as FrameObjectBase);
+                obj1 = (node.Tag as FrameObjectBase);
+                TransformMatrix matrix = ((obj1 != null) ? obj1.Matrix : new TransformMatrix());
 
-                if(obj1 != null && Graphics.Models.ContainsKey(obj1.RefID))
-                    Graphics.Models[obj1.RefID].SetTransform(obj1.Matrix.Position, obj1.Matrix.Rotation);
+                if (obj1 != null && Graphics.Models.ContainsKey(obj1.RefID))
+                    UpdateRenderedObjects(matrix, obj1);
 
-                foreach (KeyValuePair<int, FrameNode> child2 in child.Value.Children)
+                foreach (TreeNode cNode in node.Nodes)
                 {
-                    obj2 = (child2.Value.Object as FrameObjectBase);
-
-                    if (Graphics.Models.ContainsKey(obj2.RefID))
-                    {
-                        TransformMatrix matrix = ((obj1 != null) ? obj1.Matrix : new TransformMatrix());
-                        Graphics.Models[obj2.RefID].SetTransform(matrix.Position + obj2.Matrix.Position, obj2.Matrix.Rotation);
-                    }
+                    UpdateChildRenderNodes(cNode, matrix);
                 }
             }
 
@@ -200,6 +195,35 @@ namespace Mafia2Tool
             }
 
             return true;
+        }
+
+        private void UpdateChildRenderNodes(TreeNode node, TransformMatrix matrix)
+        {
+            FrameObjectBase obj2 = (node.Tag as FrameObjectBase);
+
+            if (obj2 != null)
+                UpdateRenderedObjects(matrix, obj2);
+
+            foreach (TreeNode cNode in node.Nodes)
+            {
+                UpdateChildRenderNodes(cNode, matrix);
+            }
+        }
+
+        private void UpdateRenderedObjects(TransformMatrix obj1Matrix, FrameObjectBase obj)
+        {
+            if(Graphics.Dummies.ContainsKey(obj.RefID) && obj.GetType() == typeof(FrameObjectDummy))
+            {
+                Graphics.Dummies[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Rotation);
+            }
+            else if (Graphics.Models.ContainsKey(obj.RefID) && obj.GetType() == typeof(FrameObjectSingleMesh) || obj.GetType() == typeof(FrameObjectModel))
+            {
+                Graphics.Models[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Rotation);
+            }
+            else if (Graphics.Areas.ContainsKey(obj.RefID) && obj.GetType() == typeof(FrameObjectArea))
+            {
+                Graphics.Areas[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Rotation);
+            }
         }
 
         private void SaveChanges()
@@ -318,7 +342,6 @@ namespace Mafia2Tool
             fObject.Matrix.Rotation.UpdateMatrixFromEuler();
             fObject.IsOnFrameTable = OnFrameNameTable.Checked;
             fObject.FrameNameTableFlags = (NameTableFlags)FrameNameTableFlags.GetCurrentValue();
-            Graphics.Models[fObject.RefID].SetTransform(fObject.Matrix.Position, fObject.Matrix.Rotation);
             Graphics.BuildSelectedEntry(fObject);
             AddToLog(string.Format("Modified Currently Entry", fObject.Name.String));
         }

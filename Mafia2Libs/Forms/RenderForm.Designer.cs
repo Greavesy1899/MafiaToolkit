@@ -42,30 +42,30 @@
             this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.RenderPanel = new System.Windows.Forms.Panel();
             this.MainTabControl = new System.Windows.Forms.TabControl();
-            this.DebugPG = new System.Windows.Forms.TabPage();
-            this.DebugPropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.EditEntryTab = new System.Windows.Forms.TabPage();
-            this.FrameNameTableFlags = new Mafia2.FlagCheckedListBox();
-            this.PositionXLabel = new System.Windows.Forms.Label();
-            this.PositionXBox = new System.Windows.Forms.TextBox();
-            this.PositionYLabel = new System.Windows.Forms.Label();
-            this.PositionYBox = new System.Windows.Forms.TextBox();
-            this.PositionZLabel = new System.Windows.Forms.Label();
-            this.PositionZBox = new System.Windows.Forms.TextBox();
-            this.RotationXLabel = new System.Windows.Forms.Label();
-            this.RotationXBox = new System.Windows.Forms.TextBox();
-            this.RotationYLabel = new System.Windows.Forms.Label();
-            this.RotationYBox = new System.Windows.Forms.TextBox();
-            this.RotationZLabel = new System.Windows.Forms.Label();
-            this.RotationZBox = new System.Windows.Forms.TextBox();
-            this.CurrentEntry = new System.Windows.Forms.Label();
-            this.EntryApplyChanges = new System.Windows.Forms.Button();
-            this.CurrentEntryType = new System.Windows.Forms.Label();
-            this.OnFrameNameTable = new System.Windows.Forms.CheckBox();
             this.SceneTab = new System.Windows.Forms.TabPage();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.EditEntryTab = new System.Windows.Forms.TabPage();
+            this.OnFrameNameTable = new System.Windows.Forms.CheckBox();
+            this.CurrentEntryType = new System.Windows.Forms.Label();
+            this.EntryApplyChanges = new System.Windows.Forms.Button();
+            this.CurrentEntry = new System.Windows.Forms.Label();
+            this.RotationZBox = new System.Windows.Forms.TextBox();
+            this.RotationZLabel = new System.Windows.Forms.Label();
+            this.RotationYBox = new System.Windows.Forms.TextBox();
+            this.RotationYLabel = new System.Windows.Forms.Label();
+            this.RotationXBox = new System.Windows.Forms.TextBox();
+            this.RotationXLabel = new System.Windows.Forms.Label();
+            this.PositionZBox = new System.Windows.Forms.TextBox();
+            this.PositionZLabel = new System.Windows.Forms.Label();
+            this.PositionYBox = new System.Windows.Forms.TextBox();
+            this.PositionYLabel = new System.Windows.Forms.Label();
+            this.PositionXBox = new System.Windows.Forms.TextBox();
+            this.PositionXLabel = new System.Windows.Forms.Label();
+            this.DebugPG = new System.Windows.Forms.TabPage();
+            this.DebugPropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.RenderPanel = new System.Windows.Forms.Panel();
+            this.FrameNameTableFlags = new Mafia2.FlagCheckedListBox();
             this.ToolbarStrip.SuspendLayout();
             this.EntryMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -73,9 +73,9 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.MainTabControl.SuspendLayout();
-            this.DebugPG.SuspendLayout();
-            this.EditEntryTab.SuspendLayout();
             this.SceneTab.SuspendLayout();
+            this.EditEntryTab.SuspendLayout();
+            this.DebugPG.SuspendLayout();
             this.SuspendLayout();
             // 
             // ToolbarStrip
@@ -190,14 +190,6 @@
             this.splitContainer1.SplitterDistance = 266;
             this.splitContainer1.TabIndex = 7;
             // 
-            // RenderPanel
-            // 
-            this.RenderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.RenderPanel.Location = new System.Drawing.Point(0, 0);
-            this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(530, 403);
-            this.RenderPanel.TabIndex = 0;
-            // 
             // MainTabControl
             // 
             this.MainTabControl.Controls.Add(this.SceneTab);
@@ -210,23 +202,26 @@
             this.MainTabControl.Size = new System.Drawing.Size(266, 403);
             this.MainTabControl.TabIndex = 5;
             // 
-            // DebugPG
+            // SceneTab
             // 
-            this.DebugPG.Controls.Add(this.DebugPropertyGrid);
-            this.DebugPG.Location = new System.Drawing.Point(4, 22);
-            this.DebugPG.Name = "DebugPG";
-            this.DebugPG.Size = new System.Drawing.Size(258, 373);
-            this.DebugPG.TabIndex = 2;
-            this.DebugPG.Text = "Debug";
-            this.DebugPG.UseVisualStyleBackColor = true;
+            this.SceneTab.Controls.Add(this.treeView1);
+            this.SceneTab.Location = new System.Drawing.Point(4, 22);
+            this.SceneTab.Name = "SceneTab";
+            this.SceneTab.Padding = new System.Windows.Forms.Padding(3);
+            this.SceneTab.Size = new System.Drawing.Size(258, 377);
+            this.SceneTab.TabIndex = 0;
+            this.SceneTab.Text = "Scene";
+            this.SceneTab.UseVisualStyleBackColor = true;
             // 
-            // DebugPropertyGrid
+            // treeView1
             // 
-            this.DebugPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.DebugPropertyGrid.Location = new System.Drawing.Point(0, 0);
-            this.DebugPropertyGrid.Name = "DebugPropertyGrid";
-            this.DebugPropertyGrid.Size = new System.Drawing.Size(258, 373);
-            this.DebugPropertyGrid.TabIndex = 2;
+            this.treeView1.ContextMenuStrip = this.EntryMenuStrip;
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.Location = new System.Drawing.Point(3, 3);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(252, 371);
+            this.treeView1.TabIndex = 0;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnAfterSelect);
             // 
             // EditEntryTab
             // 
@@ -250,143 +245,10 @@
             this.EditEntryTab.Location = new System.Drawing.Point(4, 22);
             this.EditEntryTab.Name = "EditEntryTab";
             this.EditEntryTab.Padding = new System.Windows.Forms.Padding(3);
-            this.EditEntryTab.Size = new System.Drawing.Size(258, 373);
+            this.EditEntryTab.Size = new System.Drawing.Size(258, 377);
             this.EditEntryTab.TabIndex = 1;
             this.EditEntryTab.Text = "Edit Entry";
             this.EditEntryTab.UseVisualStyleBackColor = true;
-            // 
-            // FrameNameTableFlags
-            // 
-            this.FrameNameTableFlags.CheckOnClick = true;
-            this.FrameNameTableFlags.FormattingEnabled = true;
-            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
-            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
-            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
-            this.FrameNameTableFlags.TabIndex = 16;
-            // 
-            // PositionXLabel
-            // 
-            this.PositionXLabel.AutoSize = true;
-            this.PositionXLabel.Location = new System.Drawing.Point(7, 34);
-            this.PositionXLabel.Name = "PositionXLabel";
-            this.PositionXLabel.Size = new System.Drawing.Size(54, 13);
-            this.PositionXLabel.TabIndex = 0;
-            this.PositionXLabel.Text = "Position X";
-            // 
-            // PositionXBox
-            // 
-            this.PositionXBox.Location = new System.Drawing.Point(67, 31);
-            this.PositionXBox.Name = "PositionXBox";
-            this.PositionXBox.Size = new System.Drawing.Size(131, 20);
-            this.PositionXBox.TabIndex = 1;
-            // 
-            // PositionYLabel
-            // 
-            this.PositionYLabel.AutoSize = true;
-            this.PositionYLabel.Location = new System.Drawing.Point(7, 60);
-            this.PositionYLabel.Name = "PositionYLabel";
-            this.PositionYLabel.Size = new System.Drawing.Size(54, 13);
-            this.PositionYLabel.TabIndex = 2;
-            this.PositionYLabel.Text = "Position Y";
-            // 
-            // PositionYBox
-            // 
-            this.PositionYBox.Location = new System.Drawing.Point(67, 57);
-            this.PositionYBox.Name = "PositionYBox";
-            this.PositionYBox.Size = new System.Drawing.Size(131, 20);
-            this.PositionYBox.TabIndex = 3;
-            // 
-            // PositionZLabel
-            // 
-            this.PositionZLabel.AutoSize = true;
-            this.PositionZLabel.Location = new System.Drawing.Point(7, 86);
-            this.PositionZLabel.Name = "PositionZLabel";
-            this.PositionZLabel.Size = new System.Drawing.Size(54, 13);
-            this.PositionZLabel.TabIndex = 4;
-            this.PositionZLabel.Text = "Position Z";
-            // 
-            // PositionZBox
-            // 
-            this.PositionZBox.Location = new System.Drawing.Point(67, 83);
-            this.PositionZBox.Name = "PositionZBox";
-            this.PositionZBox.Size = new System.Drawing.Size(131, 20);
-            this.PositionZBox.TabIndex = 5;
-            // 
-            // RotationXLabel
-            // 
-            this.RotationXLabel.AutoSize = true;
-            this.RotationXLabel.Location = new System.Drawing.Point(7, 112);
-            this.RotationXLabel.Name = "RotationXLabel";
-            this.RotationXLabel.Size = new System.Drawing.Size(57, 13);
-            this.RotationXLabel.TabIndex = 6;
-            this.RotationXLabel.Text = "Rotation X";
-            // 
-            // RotationXBox
-            // 
-            this.RotationXBox.Location = new System.Drawing.Point(67, 109);
-            this.RotationXBox.Name = "RotationXBox";
-            this.RotationXBox.Size = new System.Drawing.Size(131, 20);
-            this.RotationXBox.TabIndex = 7;
-            // 
-            // RotationYLabel
-            // 
-            this.RotationYLabel.AutoSize = true;
-            this.RotationYLabel.Location = new System.Drawing.Point(7, 138);
-            this.RotationYLabel.Name = "RotationYLabel";
-            this.RotationYLabel.Size = new System.Drawing.Size(57, 13);
-            this.RotationYLabel.TabIndex = 8;
-            this.RotationYLabel.Text = "Rotation Y";
-            // 
-            // RotationYBox
-            // 
-            this.RotationYBox.Location = new System.Drawing.Point(67, 135);
-            this.RotationYBox.Name = "RotationYBox";
-            this.RotationYBox.Size = new System.Drawing.Size(131, 20);
-            this.RotationYBox.TabIndex = 9;
-            // 
-            // RotationZLabel
-            // 
-            this.RotationZLabel.AutoSize = true;
-            this.RotationZLabel.Location = new System.Drawing.Point(7, 164);
-            this.RotationZLabel.Name = "RotationZLabel";
-            this.RotationZLabel.Size = new System.Drawing.Size(57, 13);
-            this.RotationZLabel.TabIndex = 10;
-            this.RotationZLabel.Text = "Rotation Z";
-            // 
-            // RotationZBox
-            // 
-            this.RotationZBox.Location = new System.Drawing.Point(67, 161);
-            this.RotationZBox.Name = "RotationZBox";
-            this.RotationZBox.Size = new System.Drawing.Size(131, 20);
-            this.RotationZBox.TabIndex = 11;
-            // 
-            // CurrentEntry
-            // 
-            this.CurrentEntry.AutoSize = true;
-            this.CurrentEntry.Location = new System.Drawing.Point(10, 7);
-            this.CurrentEntry.Name = "CurrentEntry";
-            this.CurrentEntry.Size = new System.Drawing.Size(111, 13);
-            this.CurrentEntry.TabIndex = 12;
-            this.CurrentEntry.Text = "FRAME NAME HERE";
-            // 
-            // EntryApplyChanges
-            // 
-            this.EntryApplyChanges.Location = new System.Drawing.Point(10, 355);
-            this.EntryApplyChanges.Name = "EntryApplyChanges";
-            this.EntryApplyChanges.Size = new System.Drawing.Size(188, 23);
-            this.EntryApplyChanges.TabIndex = 14;
-            this.EntryApplyChanges.Text = "Apply Changes";
-            this.EntryApplyChanges.UseVisualStyleBackColor = true;
-            this.EntryApplyChanges.Click += new System.EventHandler(this.EntryApplyChanges_OnClick);
-            // 
-            // CurrentEntryType
-            // 
-            this.CurrentEntryType.AutoSize = true;
-            this.CurrentEntryType.Location = new System.Drawing.Point(10, 339);
-            this.CurrentEntryType.Name = "CurrentEntryType";
-            this.CurrentEntryType.Size = new System.Drawing.Size(108, 13);
-            this.CurrentEntryType.TabIndex = 15;
-            this.CurrentEntryType.Text = "FRAME TYPE HERE";
             // 
             // OnFrameNameTable
             // 
@@ -398,26 +260,164 @@
             this.OnFrameNameTable.Text = "On FrameNameTable?";
             this.OnFrameNameTable.UseVisualStyleBackColor = true;
             // 
-            // SceneTab
+            // CurrentEntryType
             // 
-            this.SceneTab.Controls.Add(this.treeView1);
-            this.SceneTab.Location = new System.Drawing.Point(4, 22);
-            this.SceneTab.Name = "SceneTab";
-            this.SceneTab.Padding = new System.Windows.Forms.Padding(3);
-            this.SceneTab.Size = new System.Drawing.Size(258, 377);
-            this.SceneTab.TabIndex = 0;
-            this.SceneTab.Text = "Scene";
-            this.SceneTab.UseVisualStyleBackColor = true;
+            this.CurrentEntryType.AutoSize = true;
+            this.CurrentEntryType.Location = new System.Drawing.Point(10, 339);
+            this.CurrentEntryType.Name = "CurrentEntryType";
+            this.CurrentEntryType.Size = new System.Drawing.Size(108, 13);
+            this.CurrentEntryType.TabIndex = 15;
+            this.CurrentEntryType.Text = "FRAME TYPE HERE";
             // 
-            // treeView1
+            // EntryApplyChanges
             // 
-            this.treeView1.ContextMenuStrip = this.EntryMenuStrip;
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.Location = new System.Drawing.Point(3, 3);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(252, 371);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnAfterSelect);
+            this.EntryApplyChanges.Location = new System.Drawing.Point(10, 355);
+            this.EntryApplyChanges.Name = "EntryApplyChanges";
+            this.EntryApplyChanges.Size = new System.Drawing.Size(188, 23);
+            this.EntryApplyChanges.TabIndex = 14;
+            this.EntryApplyChanges.Text = "Apply Changes";
+            this.EntryApplyChanges.UseVisualStyleBackColor = true;
+            this.EntryApplyChanges.Click += new System.EventHandler(this.EntryApplyChanges_OnClick);
+            // 
+            // CurrentEntry
+            // 
+            this.CurrentEntry.AutoSize = true;
+            this.CurrentEntry.Location = new System.Drawing.Point(10, 7);
+            this.CurrentEntry.Name = "CurrentEntry";
+            this.CurrentEntry.Size = new System.Drawing.Size(111, 13);
+            this.CurrentEntry.TabIndex = 12;
+            this.CurrentEntry.Text = "FRAME NAME HERE";
+            // 
+            // RotationZBox
+            // 
+            this.RotationZBox.Location = new System.Drawing.Point(67, 161);
+            this.RotationZBox.Name = "RotationZBox";
+            this.RotationZBox.Size = new System.Drawing.Size(131, 20);
+            this.RotationZBox.TabIndex = 11;
+            // 
+            // RotationZLabel
+            // 
+            this.RotationZLabel.AutoSize = true;
+            this.RotationZLabel.Location = new System.Drawing.Point(7, 164);
+            this.RotationZLabel.Name = "RotationZLabel";
+            this.RotationZLabel.Size = new System.Drawing.Size(57, 13);
+            this.RotationZLabel.TabIndex = 10;
+            this.RotationZLabel.Text = "Rotation Z";
+            // 
+            // RotationYBox
+            // 
+            this.RotationYBox.Location = new System.Drawing.Point(67, 135);
+            this.RotationYBox.Name = "RotationYBox";
+            this.RotationYBox.Size = new System.Drawing.Size(131, 20);
+            this.RotationYBox.TabIndex = 9;
+            // 
+            // RotationYLabel
+            // 
+            this.RotationYLabel.AutoSize = true;
+            this.RotationYLabel.Location = new System.Drawing.Point(7, 138);
+            this.RotationYLabel.Name = "RotationYLabel";
+            this.RotationYLabel.Size = new System.Drawing.Size(57, 13);
+            this.RotationYLabel.TabIndex = 8;
+            this.RotationYLabel.Text = "Rotation Y";
+            // 
+            // RotationXBox
+            // 
+            this.RotationXBox.Location = new System.Drawing.Point(67, 109);
+            this.RotationXBox.Name = "RotationXBox";
+            this.RotationXBox.Size = new System.Drawing.Size(131, 20);
+            this.RotationXBox.TabIndex = 7;
+            // 
+            // RotationXLabel
+            // 
+            this.RotationXLabel.AutoSize = true;
+            this.RotationXLabel.Location = new System.Drawing.Point(7, 112);
+            this.RotationXLabel.Name = "RotationXLabel";
+            this.RotationXLabel.Size = new System.Drawing.Size(57, 13);
+            this.RotationXLabel.TabIndex = 6;
+            this.RotationXLabel.Text = "Rotation X";
+            // 
+            // PositionZBox
+            // 
+            this.PositionZBox.Location = new System.Drawing.Point(67, 83);
+            this.PositionZBox.Name = "PositionZBox";
+            this.PositionZBox.Size = new System.Drawing.Size(131, 20);
+            this.PositionZBox.TabIndex = 5;
+            // 
+            // PositionZLabel
+            // 
+            this.PositionZLabel.AutoSize = true;
+            this.PositionZLabel.Location = new System.Drawing.Point(7, 86);
+            this.PositionZLabel.Name = "PositionZLabel";
+            this.PositionZLabel.Size = new System.Drawing.Size(54, 13);
+            this.PositionZLabel.TabIndex = 4;
+            this.PositionZLabel.Text = "Position Z";
+            // 
+            // PositionYBox
+            // 
+            this.PositionYBox.Location = new System.Drawing.Point(67, 57);
+            this.PositionYBox.Name = "PositionYBox";
+            this.PositionYBox.Size = new System.Drawing.Size(131, 20);
+            this.PositionYBox.TabIndex = 3;
+            // 
+            // PositionYLabel
+            // 
+            this.PositionYLabel.AutoSize = true;
+            this.PositionYLabel.Location = new System.Drawing.Point(7, 60);
+            this.PositionYLabel.Name = "PositionYLabel";
+            this.PositionYLabel.Size = new System.Drawing.Size(54, 13);
+            this.PositionYLabel.TabIndex = 2;
+            this.PositionYLabel.Text = "Position Y";
+            // 
+            // PositionXBox
+            // 
+            this.PositionXBox.Location = new System.Drawing.Point(67, 31);
+            this.PositionXBox.Name = "PositionXBox";
+            this.PositionXBox.Size = new System.Drawing.Size(131, 20);
+            this.PositionXBox.TabIndex = 1;
+            // 
+            // PositionXLabel
+            // 
+            this.PositionXLabel.AutoSize = true;
+            this.PositionXLabel.Location = new System.Drawing.Point(7, 34);
+            this.PositionXLabel.Name = "PositionXLabel";
+            this.PositionXLabel.Size = new System.Drawing.Size(54, 13);
+            this.PositionXLabel.TabIndex = 0;
+            this.PositionXLabel.Text = "Position X";
+            // 
+            // DebugPG
+            // 
+            this.DebugPG.Controls.Add(this.DebugPropertyGrid);
+            this.DebugPG.Location = new System.Drawing.Point(4, 22);
+            this.DebugPG.Name = "DebugPG";
+            this.DebugPG.Size = new System.Drawing.Size(258, 377);
+            this.DebugPG.TabIndex = 2;
+            this.DebugPG.Text = "Debug";
+            this.DebugPG.UseVisualStyleBackColor = true;
+            // 
+            // DebugPropertyGrid
+            // 
+            this.DebugPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DebugPropertyGrid.Location = new System.Drawing.Point(0, 0);
+            this.DebugPropertyGrid.Name = "DebugPropertyGrid";
+            this.DebugPropertyGrid.Size = new System.Drawing.Size(258, 377);
+            this.DebugPropertyGrid.TabIndex = 2;
+            // 
+            // RenderPanel
+            // 
+            this.RenderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.RenderPanel.Location = new System.Drawing.Point(0, 0);
+            this.RenderPanel.Name = "RenderPanel";
+            this.RenderPanel.Size = new System.Drawing.Size(530, 403);
+            this.RenderPanel.TabIndex = 0;
+            // 
+            // FrameNameTableFlags
+            // 
+            this.FrameNameTableFlags.CheckOnClick = true;
+            this.FrameNameTableFlags.FormattingEnabled = true;
+            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
+            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
+            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
+            this.FrameNameTableFlags.TabIndex = 16;
             // 
             // D3DForm
             // 
@@ -438,10 +438,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.MainTabControl.ResumeLayout(false);
-            this.DebugPG.ResumeLayout(false);
+            this.SceneTab.ResumeLayout(false);
             this.EditEntryTab.ResumeLayout(false);
             this.EditEntryTab.PerformLayout();
-            this.SceneTab.ResumeLayout(false);
+            this.DebugPG.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

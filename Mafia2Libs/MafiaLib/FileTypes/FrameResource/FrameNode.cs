@@ -63,6 +63,7 @@ namespace ResourceTypes.FrameResource
         {
             TreeNode thisNode = new TreeNode(Object.ToString());
             thisNode.Tag = Object;
+            thisNode.Checked = true;
 
             foreach (KeyValuePair<int, FrameNode> child in Children)
             {

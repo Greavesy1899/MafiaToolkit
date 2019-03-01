@@ -92,7 +92,7 @@ namespace Mafia2Tool
             {
                 dataGridView1.Rows.Add(ConvertEntryToDataGridView(entry.Value));
             }
-            SceneData.FrameResource.BuildFrameTree(SceneData.FrameNameTable);
+            //SceneData.FrameResource.BuildFrameTree(SceneData.FrameNameTable);
             TreeNode tree = new TreeNode("SceneManager");
             SceneData.FrameResource.Frame.ConvertToTreeNode(ref tree);
             treeView1.Nodes.Add(tree);

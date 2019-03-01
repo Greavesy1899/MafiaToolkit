@@ -40,6 +40,7 @@ namespace Rendering.Graphics
 
         public RenderModel()
         {
+            DoRender = true;
             Transform = Matrix.Identity;
             BoundingBox = new RenderBoundingBox();
         }
@@ -266,7 +267,10 @@ namespace Rendering.Graphics
         }
 
         public void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
-        { 
+        {
+            if (!DoRender)
+                return;
+
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;

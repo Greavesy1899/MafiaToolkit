@@ -14,10 +14,11 @@ namespace Rendering.Graphics
         public  ushort[] Indices { get; private set; }
         public Matrix Transform { get; private set; }
         public BaseShader Shader;
+        public bool DoRender { get; set; }
 
         public RenderBoundingBox()
         {
-
+            DoRender = true;
         }
 
         public bool Init(BoundingBox bbox)
@@ -117,6 +118,9 @@ namespace Rendering.Graphics
         }
         public bool Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
         {
+            if (!DoRender)
+                return true;
+
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<VertexLayouts.BBoxLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
