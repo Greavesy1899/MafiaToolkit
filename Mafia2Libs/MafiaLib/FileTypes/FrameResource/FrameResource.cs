@@ -19,7 +19,6 @@ namespace ResourceTypes.FrameResource
         Dictionary<int, FrameSkeletonHierachy> frameSkeletonHierachies = new Dictionary<int, FrameSkeletonHierachy>();
         Dictionary<int, object> frameObjects = new Dictionary<int, object>();
         Dictionary<int, object> FrameEntries = new Dictionary<int, object>();
-        public FrameNode Frame;
 
         int[] frameBlocks;
         int[] objectTypes;

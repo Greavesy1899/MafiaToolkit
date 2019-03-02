@@ -39,10 +39,7 @@ namespace Mafia2Tool
 
         public void PopulateList(FileInfo info)
         {
-            //SceneData.FrameResource.BuildFrameTree(SceneData.FrameNameTable);
             TreeNode tree = SceneData.FrameResource.BuildTree(SceneData.FrameNameTable);
-
-            //SceneData.FrameResource.Frame.ConvertToTreeNode(ref tree);
             treeView1.Nodes.Add(tree);
         }
 
@@ -177,7 +174,7 @@ namespace Mafia2Tool
                 obj1 = (node.Tag as FrameObjectBase);
                 TransformMatrix matrix = ((obj1 != null) ? obj1.Matrix : new TransformMatrix());
 
-                if (obj1 != null && Graphics.Models.ContainsKey(obj1.RefID))
+                if (obj1 != null)
                     UpdateRenderedObjects(matrix, obj1);
 
                 foreach (TreeNode cNode in node.Nodes)
@@ -206,6 +203,7 @@ namespace Mafia2Tool
 
             foreach (TreeNode cNode in node.Nodes)
             {
+                matrix = ((obj2 != null) ? obj2.Matrix : new TransformMatrix());
                 UpdateChildRenderNodes(cNode, matrix);
             }
         }
