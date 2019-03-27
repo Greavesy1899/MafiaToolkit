@@ -463,13 +463,20 @@ namespace Gibbed.Mafia2.FileFormats
 
                 for(int i = 0; i < ResourceEntries.Count; i++)
                 {
-                    if(ResourceEntries[i].TypeId == type)
+                    if (ResourceEntries[i].TypeId == type)
                     {
-                        using (var reader = new StringReader(Encoding.UTF8.GetString(ResourceEntries[i].Data).Remove(0, 27)))
+                        using (MemoryStream stream = new MemoryStream(ResourceEntries[i].Data))
                         {
-                            doc = new XPathDocument(reader);
-                        }
+                            ushort authorLen = stream.ReadValueU16();
+                            stream.ReadBytes(authorLen);
+                            int fileSize = stream.ReadValueS32();
+                            int password = stream.ReadValueS32();
 
+                            using (var reader = new StringReader(Encoding.UTF8.GetString(stream.ReadBytes(fileSize))))
+                            {
+                                doc = new XPathDocument(reader);
+                            }
+                        }
                         ResourceEntries.RemoveAt(i);
                         ResourceTypes.RemoveAt(type);
                     }

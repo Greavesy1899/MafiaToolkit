@@ -291,6 +291,7 @@ namespace ResourceTypes.FrameResource
 
             int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
             Dictionary<int, TreeNode> parsedNodes = new Dictionary<int, TreeNode>();
+            Dictionary<int, TreeNode> notAddedNodes = new Dictionary<int, TreeNode>();
 
             //Add scene groups into the scene viewer.
             for(int i = 0; i != frameScenes.Count; i++)
@@ -306,6 +307,9 @@ namespace ResourceTypes.FrameResource
             //add entries from the table, add table data and then add to scene viewer.
             for (int i = 0; i != table.FrameData.Length; i++)
             {
+                if (table.FrameData[i].FrameIndex == -1)
+                    continue;
+
                 FrameObjectBase fObject = (FrameEntries[numBlocks + table.FrameData[i].FrameIndex] as FrameObjectBase);
                 fObject.IsOnFrameTable = true;
                 fObject.FrameNameTableFlags = table.FrameData[i].Flags;
@@ -363,6 +367,7 @@ namespace ResourceTypes.FrameResource
                     else
                     {
                         Console.WriteLine("did not add {0}", node.Text);
+                        notAddedNodes.Add(thisKey, node);
                     }
                 }
 
@@ -378,11 +383,7 @@ namespace ResourceTypes.FrameResource
                 int p2idx = fObject.ParentIndex2.Index;
                 int thisKey = numBlocks + entry.Key;
 
-                if(p1idx == p2idx)
-                {
-                    Console.WriteLine("No changes needed.");
-                }
-                else if(p2idx != -1 && p1idx != -1)
+                if(p2idx != -1 && p1idx != -1)
                 {
                     TreeNode node = new TreeNode(fObject.ToString());
                     node.Tag = fObject;
@@ -416,6 +417,18 @@ namespace ResourceTypes.FrameResource
                     {
                         root.Nodes.Add(entry.Value);
                     }
+                }
+            }
+
+            foreach (KeyValuePair<int, TreeNode> entry in notAddedNodes)
+            {
+                FrameObjectBase objBase = (entry.Value.Tag as FrameObjectBase);
+                TreeNode[] nodes = root.Nodes.Find(objBase.ParentIndex2.RefID.ToString(), true);
+
+                if (nodes.Length > 0)
+                {
+                    nodes[0].Nodes.Add(entry.Value);
+                    Debug.WriteLine("Added {0}", objBase.Name);
                 }
             }
             return root;

@@ -41,6 +41,7 @@
             this.EntryMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.MainTabControl = new System.Windows.Forms.TabControl();
             this.SceneTab = new System.Windows.Forms.TabPage();
@@ -62,12 +63,14 @@
             this.PositionYLabel = new System.Windows.Forms.Label();
             this.PositionXBox = new System.Windows.Forms.TextBox();
             this.PositionXLabel = new System.Windows.Forms.Label();
+            this.FrameNameTableFlags = new Mafia2.FlagCheckedListBox();
             this.DebugPG = new System.Windows.Forms.TabPage();
             this.DebugPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.RenderPanel = new System.Windows.Forms.Panel();
-            this.FrameNameTableFlags = new Mafia2.FlagCheckedListBox();
+            this.TEMPCameraSpeed = new System.Windows.Forms.ToolStripTextBox();
             this.ToolbarStrip.SuspendLayout();
             this.EntryMenuStrip.SuspendLayout();
+            this.StatusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -83,7 +86,8 @@
             this.ToolbarStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileButton,
             this.ViewButton,
-            this.OptionsButton});
+            this.OptionsButton,
+            this.TEMPCameraSpeed});
             this.ToolbarStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolbarStrip.Name = "ToolbarStrip";
             this.ToolbarStrip.Size = new System.Drawing.Size(800, 25);
@@ -167,11 +171,19 @@
             // 
             // StatusStrip
             // 
+            this.StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
             this.StatusStrip.Location = new System.Drawing.Point(0, 428);
             this.StatusStrip.Name = "StatusStrip";
             this.StatusStrip.Size = new System.Drawing.Size(800, 22);
             this.StatusStrip.TabIndex = 6;
             this.StatusStrip.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
             // splitContainer1
             // 
@@ -384,6 +396,15 @@
             this.PositionXLabel.TabIndex = 0;
             this.PositionXLabel.Text = "Position X";
             // 
+            // FrameNameTableFlags
+            // 
+            this.FrameNameTableFlags.CheckOnClick = true;
+            this.FrameNameTableFlags.FormattingEnabled = true;
+            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
+            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
+            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
+            this.FrameNameTableFlags.TabIndex = 16;
+            // 
             // DebugPG
             // 
             this.DebugPG.Controls.Add(this.DebugPropertyGrid);
@@ -401,6 +422,7 @@
             this.DebugPropertyGrid.Name = "DebugPropertyGrid";
             this.DebugPropertyGrid.Size = new System.Drawing.Size(258, 377);
             this.DebugPropertyGrid.TabIndex = 2;
+            this.DebugPropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.OnPropertyChanged);
             // 
             // RenderPanel
             // 
@@ -410,14 +432,11 @@
             this.RenderPanel.Size = new System.Drawing.Size(530, 403);
             this.RenderPanel.TabIndex = 0;
             // 
-            // FrameNameTableFlags
+            // TEMPCameraSpeed
             // 
-            this.FrameNameTableFlags.CheckOnClick = true;
-            this.FrameNameTableFlags.FormattingEnabled = true;
-            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
-            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
-            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
-            this.FrameNameTableFlags.TabIndex = 16;
+            this.TEMPCameraSpeed.Name = "TEMPCameraSpeed";
+            this.TEMPCameraSpeed.Size = new System.Drawing.Size(100, 25);
+            this.TEMPCameraSpeed.Leave += new System.EventHandler(this.CameraSpeedUpdate);
             // 
             // D3DForm
             // 
@@ -433,6 +452,8 @@
             this.ToolbarStrip.ResumeLayout(false);
             this.ToolbarStrip.PerformLayout();
             this.EntryMenuStrip.ResumeLayout(false);
+            this.StatusStrip.ResumeLayout(false);
+            this.StatusStrip.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -484,5 +505,7 @@
         private System.Windows.Forms.TabPage DebugPG;
         private System.Windows.Forms.PropertyGrid DebugPropertyGrid;
         private System.Windows.Forms.Panel RenderPanel;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripTextBox TEMPCameraSpeed;
     }
 }

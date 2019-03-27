@@ -23,6 +23,8 @@ namespace Mafia2Tool
         private Point lastMousePos;
         private FileInfo fileLocation;
 
+        private float CameraSpeed = 10.0f;
+
         public D3DForm(FileInfo info)
         {
             InitializeComponent();
@@ -30,7 +32,7 @@ namespace Mafia2Tool
             fileLocation = info;
             SceneData.BuildData();
             PopulateList(info);
-
+            TEMPCameraSpeed.Text = CameraSpeed.ToString();
             KeyPreview = true;
             RenderPanel.Focus();
             //do D3D stuff/
@@ -146,23 +148,25 @@ namespace Mafia2Tool
                     Pick(mousePos.X, mousePos.Y);
                 }
 
+                float speed = /*Graphics.Timer.FrameTime * */CameraSpeed;
+
                 if (Input.IsKeyDown(Keys.A))
-                    Graphics.Camera.Position.X += 1f;
+                    Graphics.Camera.Position.X += speed;
 
                 if (Input.IsKeyDown(Keys.D))
-                    Graphics.Camera.Position.X -= 1f;
+                    Graphics.Camera.Position.X -= speed;
 
                 if (Input.IsKeyDown(Keys.W))
-                    Graphics.Camera.Position.Y += 1f;
+                    Graphics.Camera.Position.Y += speed;
 
                 if (Input.IsKeyDown(Keys.S))
-                    Graphics.Camera.Position.Y -= 1f;
+                    Graphics.Camera.Position.Y -= speed;
 
                 if (Input.IsKeyDown(Keys.Q))
-                    Graphics.Camera.Position.Z += 1f;
+                    Graphics.Camera.Position.Z += speed;
 
                 if (Input.IsKeyDown(Keys.E))
-                    Graphics.Camera.Position.Z -= 1f;
+                    Graphics.Camera.Position.Z -= speed;
             }
             lastMousePos = mousePos;
             Graphics.Timer.Frame2();
@@ -190,7 +194,6 @@ namespace Mafia2Tool
             {
                 Thread.Sleep((int)Math.Abs(Graphics.Timer.FrameTime - 1000 / 60));
             }
-
             return true;
         }
 
@@ -477,6 +480,76 @@ namespace Mafia2Tool
         {
             //FrameObjectBase obj = (treeView1.SelectedNode.Tag as FrameObjectBase);
             //RenderModelView viewer = new RenderModelView(obj.RefID, Graphics.Models[obj.RefID]);
+        }
+
+        private void OnPropertyChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            if (e.ChangedItem.Label == "RefID")
+            {
+                TreeNode[] nodes = treeView1.Nodes.Find(e.ChangedItem.Value.ToString(), true);
+
+                if (nodes.Length > 0)
+                {
+                    int newValue = (int)e.ChangedItem.Value;
+                    FrameObjectBase obj = (treeView1.SelectedNode.Tag as FrameObjectBase);
+                    int newIndex = 0;
+
+                    for(int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
+                    {
+                        FrameObjectBase frameObj = (SceneData.FrameResource.FrameObjects[i] as FrameObjectBase);
+
+                        if (frameObj.RefID == newValue)
+                            newIndex = i;
+                    }
+
+                    if (newIndex == -1)
+                    {
+                        for (int i = 0; i != SceneData.FrameResource.FrameScenes.Count; i++)
+                        {
+                            FrameEntry frameObj = (SceneData.FrameResource.FrameObjects[i] as FrameEntry);
+
+                            if (frameObj.RefID == newValue)
+                                newIndex = i;
+                        }
+                    }
+
+                    string name = (SceneData.FrameResource.FrameObjects.ElementAt(newIndex).Value as FrameObjectBase).Name.String;
+
+                    //because C# doesn't allow me to get this data for some odd reason, im going to check for it in obj. Why does C# not allow me to see FullLabel in the e var?      
+                    if (obj.ParentIndex1.RefID == newValue)
+                    {
+                        obj.ParentIndex1.Index = newIndex;
+                        obj.ParentIndex1.Name = name;
+                        obj.SubRef(FrameEntryRefTypes.Parent1);
+                        obj.AddRef(FrameEntryRefTypes.Parent1, newValue);
+                    }
+                    else if (obj.ParentIndex2.RefID == newValue)
+                    {
+                        obj.ParentIndex2.Index = newIndex;
+                        obj.ParentIndex2.Name = name;
+                        obj.SubRef(FrameEntryRefTypes.Parent2);
+                        obj.AddRef(FrameEntryRefTypes.Parent2, newValue);
+                    }
+                    obj.UpdateNode();
+                    treeView1.Nodes.Remove(treeView1.SelectedNode);
+                    TreeNode newNode = new TreeNode(obj.ToString());
+                    newNode.Tag = obj;
+                    newNode.Name = obj.RefID.ToString();
+                    nodes[0].Nodes.Add(newNode);
+                    treeView1.SelectedNode = newNode;
+                }
+            }
+        }
+
+        private void CameraSpeedUpdate(object sender, EventArgs e)
+        {
+            float.TryParse(TEMPCameraSpeed.Text, out CameraSpeed);
+
+            if (CameraSpeed == 0.0f)
+            {
+                CameraSpeed = 1.0f;
+                TEMPCameraSpeed.Text = CameraSpeed.ToString();
+            }
         }
     }
 }

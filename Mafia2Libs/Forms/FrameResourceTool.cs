@@ -94,7 +94,7 @@ namespace Mafia2Tool
             }
             //SceneData.FrameResource.BuildFrameTree(SceneData.FrameNameTable);
             TreeNode tree = new TreeNode("SceneManager");
-            SceneData.FrameResource.Frame.ConvertToTreeNode(ref tree);
+            //SceneData.FrameResource.Frame.ConvertToTreeNode(ref tree);
             treeView1.Nodes.Add(tree);
 
             dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);

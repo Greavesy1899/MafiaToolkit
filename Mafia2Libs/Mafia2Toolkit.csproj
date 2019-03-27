@@ -191,7 +191,6 @@
     <Compile Include="MafiaLib\FileTypes\FrameNameTable\FrameNameTable.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameEntry.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameHeader.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameNode.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResource.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectArea.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectBase.cs" />
