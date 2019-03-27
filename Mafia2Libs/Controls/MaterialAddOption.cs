@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using Utils.Lang;
 
 namespace Mafia2Tool.EditorControls
 {

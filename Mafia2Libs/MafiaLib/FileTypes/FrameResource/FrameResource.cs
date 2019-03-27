@@ -5,6 +5,7 @@ using System.Linq;
 using Mafia2;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Utils.Extensions;
 
 namespace ResourceTypes.FrameResource
 {

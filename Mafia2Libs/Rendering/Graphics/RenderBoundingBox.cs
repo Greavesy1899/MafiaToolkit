@@ -2,6 +2,7 @@
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using Mafia2;
+using Utils.Types;
 
 namespace Rendering.Graphics
 {

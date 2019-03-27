@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Mafia2;
+using System;
 using System.IO;
+using Utils.StringHelpers;
 
-namespace Mafia2
+namespace ResourceTypes.Speech
 {
-    public class Speech
+    public class SpeechLoader
     {
         int fileversion = 2; //probably a reference to file version; xml is also 2;
         int fileversion2 = 2; //another one though?
@@ -21,12 +23,12 @@ namespace Mafia2
             set { speechItems = value; }
         }
 
-        public Speech(BinaryReader reader)
+        public SpeechLoader(BinaryReader reader)
         {
             ReadFromFile(reader);
         }
 
-        public Speech(FileInfo info)
+        public SpeechLoader(FileInfo info)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
             {
@@ -90,18 +92,18 @@ namespace Mafia2
             public void ReadFromFile(BinaryReader reader)
             {
                 unk0 = reader.ReadInt32();
-                entityType = Functions.ReadString32(reader);
-                speechType = Functions.ReadString32(reader);
-                folder = Functions.ReadString32(reader);
+                entityType = StringHelpers.ReadString32(reader);
+                speechType = StringHelpers.ReadString32(reader);
+                folder = StringHelpers.ReadString32(reader);
                 unkBytes = reader.ReadBytes(20);
             }
 
             public void WriteToFile(BinaryWriter writer)
             {
                 writer.Write(unk0);
-                Functions.WriteString32(writer, entityType);
-                Functions.WriteString32(writer, speechType);
-                Functions.WriteString32(writer, folder);
+                StringHelpers.WriteString32(writer, entityType);
+                StringHelpers.WriteString32(writer, speechType);
+                StringHelpers.WriteString32(writer, folder);
                 writer.Write(unkBytes);
             }
 
@@ -155,7 +157,7 @@ namespace Mafia2
                 unk0 = reader.ReadInt32();
                 unk1 = reader.ReadInt64();
                 unk2 = reader.ReadInt32();
-                itemName = Functions.ReadString32(reader);
+                itemName = StringHelpers.ReadString32(reader);
                 unk3 = reader.ReadInt32();
                 unkBytes = reader.ReadBytes(12);
             }
@@ -165,7 +167,7 @@ namespace Mafia2
                 writer.Write(unk0);
                 writer.Write(unk1);
                 writer.Write(unk2);
-                Functions.WriteString32(writer, itemName);
+                StringHelpers.WriteString32(writer, itemName);
                 writer.Write(unk3);
                 writer.Write(unkBytes);
             }

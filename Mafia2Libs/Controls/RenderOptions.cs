@@ -1,6 +1,8 @@
 ﻿using Mafia2;
 using System;
 using System.Windows.Forms;
+using Utils.Lang;
+using Utils.Settings;
 
 namespace Mafia2Tool.OptionControls
 {

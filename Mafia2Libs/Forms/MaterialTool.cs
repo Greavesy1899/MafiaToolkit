@@ -6,6 +6,9 @@ using System.Windows.Forms;
 using Gibbed.Illusion.FileFormats.Hashing;
 using Mafia2;
 using Mafia2Tool.EditorControls;
+using ResourceTypes.Materials;
+using Utils.Lang;
+using Utils.Settings;
 
 namespace Mafia2Tool
 {

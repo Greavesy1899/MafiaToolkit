@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Mafia2;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.FrameResource
 {
@@ -26,7 +27,7 @@ namespace ResourceTypes.FrameResource
         /// </summary>
         public FrameEntry()
         {
-            refID = Functions.RandomGenerator.Next();
+            refID = StringHelpers.RandomGenerator.Next();
         }
 
         /// <summary>

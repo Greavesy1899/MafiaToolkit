@@ -3,6 +3,8 @@ using System.IO;
 using System.Windows.Forms;
 using SharpDX;
 using System.ComponentModel;
+using Utils.Settings;
+using Utils.Lang;
 
 namespace Mafia2Tool
 {
@@ -25,9 +27,6 @@ namespace Mafia2Tool
             Language.ReadLanguageXML();
 
             MaterialData.Load();
-
-            TypeDescriptor.AddAttributes(typeof(BoundingBox), new TypeConverterAttribute(typeof(ExpandableObjectConverter)));
-            TypeDescriptor.AddAttributes(typeof(BoundingSphere), new TypeConverterAttribute(typeof(ExpandableObjectConverter)));
 
             Application.Run(new GameExplorer());
         }

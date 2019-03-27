@@ -6,9 +6,15 @@ using System.Windows.Forms;
 using Gibbed.Mafia2.FileFormats;
 using Gibbed.Mafia2.FileFormats.Archive;
 using Mafia2;
-using Extensions.TreeViewCollection;
+using Utils.Extensions;
 using ApexSDK;
 using System.Drawing;
+using Utils.Lang;
+using Utils.Logging;
+using Utils.Settings;
+using ResourceTypes.Cutscene;
+using ResourceTypes.Navigation;
+using ResourceTypes.Prefab;
 
 namespace Mafia2Tool
 {
@@ -390,9 +396,9 @@ namespace Mafia2Tool
             FrameResourceTool fTool;
             CollisionEditor cTool;
             ActorEditor aTool;
-            Prefab prefabs;
+            PrefabLoader prefabs;
             SpeechEditor sTool;
-            CutsceneFile cutscene;
+            CutsceneLoader cutscene;
             IOFxFile iofx;
             EmitterFile emitterFile;
             TableEditor tTool;
@@ -440,7 +446,7 @@ namespace Mafia2Tool
                     sTool = new SpeechEditor((FileInfo)item.Tag);
                     return;
                 case "CUT":
-                    cutscene = new CutsceneFile((FileInfo)item.Tag);
+                    cutscene = new CutsceneLoader((FileInfo)item.Tag);
                     return;
                 case "SDS Archive":
                     OpenSDS((FileInfo)item.Tag);
@@ -468,7 +474,7 @@ namespace Mafia2Tool
                     aTool = new ActorEditor((FileInfo)item.Tag);
                     break;
                 case "PRF":
-                    prefabs = new Prefab((FileInfo)item.Tag);
+                    prefabs = new PrefabLoader((FileInfo)item.Tag);
                     return;
                 default:
                     Process.Start(((FileInfo)item.Tag).FullName);

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Mafia2
+namespace ResourceTypes.Prefab
 {
 //S_DeformationInitData
 //S_VehicleInitData
@@ -11,7 +11,7 @@ namespace Mafia2
 //S_BoatInitData
 //S_WagonInitData
 //S_BrainInitData
-    public class Prefab
+    public class PrefabLoader
     {
         int sizeOfFile; //-4 bytes
         int unk01; //possible count
@@ -21,13 +21,13 @@ namespace Mafia2
         PrefabStruct[] prefabs;
 
 
-        public Prefab(FileInfo file)
+        public PrefabLoader(FileInfo file)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
                 ReadFromFile(reader);
         }
 
-        public Prefab(string fileName)
+        public PrefabLoader(string fileName)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
                 ReadFromFile(reader);

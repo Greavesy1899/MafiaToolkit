@@ -1,4 +1,6 @@
-﻿namespace Mafia2Tool.OptionControls
+﻿using Utils.Lang;
+
+namespace Mafia2Tool.OptionControls
 {
     partial class ModelOptions
     {

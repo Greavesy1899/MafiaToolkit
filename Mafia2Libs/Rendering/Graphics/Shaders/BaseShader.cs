@@ -1,4 +1,5 @@
 ﻿using Mafia2;
+using ResourceTypes.Materials;
 using SharpDX;
 using SharpDX.Direct3D11;
 using System.Runtime.InteropServices;

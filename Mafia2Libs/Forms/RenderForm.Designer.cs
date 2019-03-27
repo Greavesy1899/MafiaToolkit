@@ -1,4 +1,6 @@
-﻿namespace Mafia2Tool
+﻿using Utils.Extensions;
+
+namespace Mafia2Tool
 {
     partial class D3DForm
     {
@@ -63,7 +65,7 @@
             this.PositionYLabel = new System.Windows.Forms.Label();
             this.PositionXBox = new System.Windows.Forms.TextBox();
             this.PositionXLabel = new System.Windows.Forms.Label();
-            this.FrameNameTableFlags = new Mafia2.FlagCheckedListBox();
+            this.FrameNameTableFlags = new FlagCheckedListBox();
             this.DebugPG = new System.Windows.Forms.TabPage();
             this.DebugPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.RenderPanel = new System.Windows.Forms.Panel();
@@ -501,7 +503,7 @@
         private System.Windows.Forms.Label PositionYLabel;
         private System.Windows.Forms.TextBox PositionXBox;
         private System.Windows.Forms.Label PositionXLabel;
-        private Mafia2.FlagCheckedListBox FrameNameTableFlags;
+        private FlagCheckedListBox FrameNameTableFlags;
         private System.Windows.Forms.TabPage DebugPG;
         private System.Windows.Forms.PropertyGrid DebugPropertyGrid;
         private System.Windows.Forms.Panel RenderPanel;

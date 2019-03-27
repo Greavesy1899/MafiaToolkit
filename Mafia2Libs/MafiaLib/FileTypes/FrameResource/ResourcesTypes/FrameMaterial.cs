@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using SharpDX;
 using Mafia2;
+using Utils.SharpDXExtensions;
+using ResourceTypes.Materials;
 
 namespace ResourceTypes.FrameResource
 {

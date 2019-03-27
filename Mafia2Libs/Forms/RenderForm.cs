@@ -11,6 +11,9 @@ using SharpDX;
 using System.Threading;
 using ResourceTypes.FrameNameTable;
 using ResourceTypes.FrameResource;
+using Utils.Settings;
+using ResourceTypes.BufferPools;
+using Utils.Types;
 
 namespace Mafia2Tool
 {
@@ -332,7 +335,7 @@ namespace Mafia2Tool
             DebugPropertyGrid.SelectedObject = fObject;
             OnFrameNameTable.Checked = fObject.IsOnFrameTable;
             FrameNameTableFlags.EnumValue = (Enum)Convert.ChangeType(fObject.FrameNameTableFlags, typeof(NameTableFlags));
-            AddToLog(string.Format("New Current Entry", fObject.Name.String));
+            AddToLog(string.Format("New Current Entry {0}", fObject.Name.String));
         }
 
         private void EntryApplyChanges_OnClick(object sender, EventArgs e)
@@ -344,7 +347,7 @@ namespace Mafia2Tool
             fObject.IsOnFrameTable = OnFrameNameTable.Checked;
             fObject.FrameNameTableFlags = (NameTableFlags)FrameNameTableFlags.GetCurrentValue();
             Graphics.BuildSelectedEntry(fObject);
-            AddToLog(string.Format("Modified Currently Entry", fObject.Name.String));
+            AddToLog(string.Format("Modified Currently Entry {0}", fObject.Name.String));
         }
 
         private void Pick(int sx, int sy)

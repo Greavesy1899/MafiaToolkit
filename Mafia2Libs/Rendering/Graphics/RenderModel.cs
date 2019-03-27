@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using ResourceTypes.FrameResource;
 using System.Diagnostics;
 using System.IO;
+using ResourceTypes.Materials;
+using ResourceTypes.BufferPools;
+using Utils.Types;
 
 namespace Rendering.Graphics
 {

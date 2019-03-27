@@ -1,12 +1,13 @@
 ﻿using System.IO;
+using Utils.Types;
 
-namespace Mafia2
+namespace ResourceTypes.ItemDesc
 {
     public class CollisionBase
     {
         ulong hash;
         short colMaterial;
-        TransformMatrix matrix;
+        Utils.Types.TransformMatrix matrix;
         byte unk_byte;
 
         public ulong Hash {

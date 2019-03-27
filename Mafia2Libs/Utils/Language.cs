@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
 using Mafia2;
+using Utils.Logging;
+using Utils.Settings;
 
-namespace Mafia2Tool
+namespace Utils.Lang
 {
     public class Language
     {

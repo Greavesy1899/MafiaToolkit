@@ -6,10 +6,12 @@ using System.Linq;
 using System.Windows.Forms;
 using Gibbed.Illusion.FileFormats.Hashing;
 using Mafia2;
+using ResourceTypes.Collisions;
 using SharpDX;
-
-using static Mafia2.M2TStructure;
-using Collision = Mafia2.Collision;
+using Utils.Lang;
+using Utils.Settings;
+using Utils.Types;
+using Collision = ResourceTypes.Collisions.Collision;
 
 namespace Mafia2Tool
 {

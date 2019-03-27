@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Mafia2
+namespace ResourceTypes.ItemDesc
 {
     public class CollisionSphere
     {

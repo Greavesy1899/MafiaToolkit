@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using SharpDX;
+using Utils.SharpDXExtensions;
+using Utils.Types;
 
 namespace Mafia2
 {
@@ -108,7 +110,7 @@ namespace Mafia2
         {
             int lodCount;
             Vector3 position;
-            Matrix33 rotation;
+            Utils.Types.Matrix33 rotation;
             string[] lodNames;
 
             public int LodCount {
@@ -119,7 +121,7 @@ namespace Mafia2
                 get { return position; }
                 set { position = value; }
             }
-            public Matrix33 Rotation {
+            public Utils.Types.Matrix33 Rotation {
                 get { return rotation; }
                 set { rotation = value; }
             }

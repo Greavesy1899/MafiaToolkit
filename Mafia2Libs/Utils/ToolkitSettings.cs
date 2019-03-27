@@ -1,8 +1,9 @@
 ﻿using System;
-using Mafia2;
+using Utils.Logging;
+using Utils.Discord;
 using System.Windows.Forms;
 
-namespace Mafia2Tool
+namespace Utils.Settings
 {
     public class ToolkitSettings
     {

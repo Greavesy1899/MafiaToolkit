@@ -7,6 +7,15 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
+using Utils.Settings;
+using Utils.Lang;
+using ResourceTypes.BufferPools;
+using ResourceTypes.City;
+using ResourceTypes.ItemDesc;
+using ResourceTypes.Materials;
+using ResourceTypes.Sound;
+using ResourceTypes.Actors;
+using ResourceTypes.Collisions;
 
 namespace Mafia2Tool
 {
@@ -16,9 +25,9 @@ namespace Mafia2Tool
         public static FrameResource FrameResource;
         public static VertexBufferManager VertexBufferPool;
         public static IndexBufferManager IndexBufferPool;
-        public static SoundSector SoundSector;
+        public static SoundSectorLoader SoundSector;
         public static Actor[] Actors;
-        public static ItemDesc[] ItemDescs;
+        public static ItemDescLoader[] ItemDescs;
         public static Collision Collisions;
         public static CityAreas CityAreas;
         public static CityShops CityShops;
@@ -28,7 +37,7 @@ namespace Mafia2Tool
         {
             List<FileInfo> vbps = new List<FileInfo>();
             List<FileInfo> ibps = new List<FileInfo>();
-            List<ItemDesc> ids = new List<ItemDesc>();
+            List<ItemDescLoader> ids = new List<ItemDescLoader>();
             List<Actor> act = new List<Actor>();
 
             DirectoryInfo dirInfo = new DirectoryInfo(ScenePath);
@@ -56,7 +65,7 @@ namespace Mafia2Tool
                 else if (type == "FrameResource")
                     FrameResource = new FrameResource(name);
                 else if (type == "ItemDesc")
-                    ids.Add(new ItemDesc(name));
+                    ids.Add(new ItemDescLoader(name));
                 else if (type == "FrameNameTable")
                     FrameNameTable = new FrameNameTable(name);
             }

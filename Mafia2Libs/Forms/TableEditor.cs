@@ -2,6 +2,7 @@
 using Gibbed.Mafia2.ResourceFormats;
 using System.Windows.Forms;
 using System;
+using Utils.Lang;
 
 namespace Mafia2Tool
 {

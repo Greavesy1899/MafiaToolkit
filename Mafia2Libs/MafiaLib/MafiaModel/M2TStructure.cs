@@ -6,6 +6,9 @@ using System.IO;
 using System.Windows.Forms;
 using SharpDX;
 using ResourceTypes.FrameResource;
+using Utils.SharpDXExtensions;
+using ResourceTypes.BufferPools;
+using ResourceTypes.Materials;
 
 namespace Mafia2
 {

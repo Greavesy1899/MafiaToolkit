@@ -1,13 +1,15 @@
 ﻿using System.IO;
 using System.Windows.Forms;
-using Mafia2;
+using ResourceTypes.Speech;
+using Utils.Lang;
+using Utils.Settings;
 
 namespace Mafia2Tool
 {
     public partial class SpeechEditor : Form
     {
         private FileInfo speechFile;
-        private Speech speechData;
+        private SpeechLoader speechData;
 
         public SpeechEditor(FileInfo file)
         {
@@ -30,11 +32,11 @@ namespace Mafia2Tool
 
         private void BuildData()
         {
-            speechData = new Speech(speechFile);
+            speechData = new SpeechLoader(speechFile);
 
             for (int i = 0; i != speechData.SpeechTypes.Length; i++)
             {
-                Speech.SpeechTypeData typeData = speechData.SpeechTypes[i];
+                SpeechLoader.SpeechTypeData typeData = speechData.SpeechTypes[i];
 
                 TreeNode node = new TreeNode(typeData.SpeechType.ToString());
                 node.Tag = typeData;
@@ -43,7 +45,7 @@ namespace Mafia2Tool
                 for (int x = 0; x != speechData.SpeechItems.Length; x++)
                 {
                     num++;
-                    Speech.SpeechItemData itemData = speechData.SpeechItems[x];
+                    SpeechLoader.SpeechItemData itemData = speechData.SpeechItems[x];
                     TreeNode node1 = new TreeNode(typeData.SpeechType.ToString());
                     node1.Tag = itemData;
 

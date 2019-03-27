@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Mafia2;
+using System;
 using System.IO;
 
-namespace Mafia2
+namespace ResourceTypes.ItemDesc
 {
-    public class ItemDesc
+    public class ItemDescLoader
     {
         public ulong frameRef; //links into FrameResources. Only checked collisions.
         public byte unk_byte; //ALWAYS 2
@@ -11,7 +12,7 @@ namespace Mafia2
         public CollisionBase cBase;
         public object collision;
 
-        public ItemDesc(string fileName)
+        public ItemDescLoader(string fileName)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
             {

@@ -6,8 +6,9 @@ using System.Linq;
 using SharpDX;
 using Mafia2;
 using static Mafia2.M2TStructure;
+using Utils.SharpDXExtensions;
 
-namespace Mafia2
+namespace ResourceTypes.Collisions
 {
     public class Collision
     {

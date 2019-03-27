@@ -9,6 +9,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mafia2Tool.EditorControls;
 using SharpDX;
+using Utils.Settings;
+using Utils.Logging;
+using Utils.Lang;
+using Utils.SharpDXExtensions;
+using Utils.Extensions;
+using ResourceTypes.BufferPools;
+using Utils.Types;
 
 namespace Mafia2Tool
 {

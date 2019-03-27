@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Mafia2;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Mafia2
+namespace ResourceTypes.BufferPools
 {
     public class IndexBufferManager
     {

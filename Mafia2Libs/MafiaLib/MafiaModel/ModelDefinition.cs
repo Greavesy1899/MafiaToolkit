@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using SharpDX;
 using Gibbed.Illusion.FileFormats.Hashing;
 using ResourceTypes.FrameResource;
+using Utils.SharpDXExtensions;
+using ResourceTypes.BufferPools;
+using Utils.Types;
 
 namespace Mafia2
 {

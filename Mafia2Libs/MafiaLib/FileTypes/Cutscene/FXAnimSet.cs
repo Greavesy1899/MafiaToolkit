@@ -1,24 +1,27 @@
 ﻿using System;
 using System.IO;
+using Mafia2;
 using SharpDX;
+using Utils.SharpDXExtensions;
+using Utils.StringHelpers;
 
-namespace Mafia2
+namespace ResourceTypes.FaceFX
 {
-    public class FXAnimSet
+    public class FXAnimSetLoader
     {
         int numAnimSets; //num of first set of data.
         FxAnim[] animSets;
 
-        public FXAnimSet(BinaryReader reader)
+        public FXAnimSetLoader(BinaryReader reader)
         {
             ReadFromFile(reader);
         }
 
-        public FXAnimSet(FileInfo info)
+        public FXAnimSetLoader(FileInfo info)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
             {
-                Speech speech = new Speech(reader);
+                ReadFromFile(reader);
             }
         }
 
@@ -63,23 +66,23 @@ namespace Mafia2
                 if (reader.ReadInt64() != 1730) //64bits after face.
                     throw new System.Exception("Unexpected value");
 
-                if (Functions.ReadString32(reader) != "IllusionSoftworks\0")
+                if (StringHelpers.ReadString32(reader) != "IllusionSoftworks\0")
                     throw new System.Exception("Unexpected value");
 
-                if (Functions.ReadString32(reader) != "Mafia 2\0")
+                if (StringHelpers.ReadString32(reader) != "Mafia 2\0")
                     throw new System.Exception("Unexpected value");
 
                 reader.ReadBytes(172); //seem to be exactly the same..
 
                 //get to the real stuff.
                 animCount = reader.ReadInt32();
-                fxAnimName = Functions.ReadString32(reader);
-                pedName = Functions.ReadString32(reader);
+                fxAnimName = StringHelpers.ReadString32(reader);
+                pedName = StringHelpers.ReadString32(reader);
 
                 //get them anim names.
                 animNames = new string[animCount-2];
                 for (int i = 0; i != animCount-2; i++)
-                    animNames[i] = Functions.ReadString32(reader);
+                    animNames[i] = StringHelpers.ReadString32(reader);
 
                 reader.ReadInt64();
                 reader.ReadInt64();

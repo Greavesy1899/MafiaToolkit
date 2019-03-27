@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using Mafia2;
+using ResourceTypes.Actors;
+using Utils.Types;
 
 namespace ResourceTypes.FrameResource
 {

@@ -3,6 +3,7 @@ using ResourceTypes.FrameResource;
 using Mafia2;
 using System.IO;
 using System.Linq;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.FrameNameTable
 {
@@ -169,7 +170,7 @@ namespace ResourceTypes.FrameNameTable
                 if (offset == bufferSize)
                     break;
 
-                string name = Functions.ReadString(reader); //read string
+                string name = StringHelpers.ReadString(reader); //read string
                 names.Add(offset, name); //add offset as unique key and string
             }
 

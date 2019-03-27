@@ -7,6 +7,7 @@ using SharpDX.Windows;
 using System.Threading;
 using System.Collections.Generic;
 using ResourceTypes.FrameResource;
+using Utils.Types;
 
 namespace Mafia2Tool
 {
@@ -28,7 +29,7 @@ namespace Mafia2Tool
 
         public void PopulateView(int refID, RenderModel model)
         {
-            model.SetTransform(new SharpDX.Vector3(0), new Mafia2.Matrix33());
+            model.SetTransform(new SharpDX.Vector3(0), new Matrix33());
             Graphics.Models.Add(refID, model);
         }
 

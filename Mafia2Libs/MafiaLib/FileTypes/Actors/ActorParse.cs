@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using SharpDX;
+using Utils.SharpDXExtensions;
 
-namespace Mafia2
+namespace ResourceTypes.Actors
 {
     public class Actor
     {

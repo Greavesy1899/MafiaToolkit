@@ -2,6 +2,9 @@
 using System.IO;
 using System.Windows.Forms;
 using Mafia2;
+using ResourceTypes.City;
+using Utils.Lang;
+using Utils.Settings;
 
 namespace Mafia2Tool
 {
@@ -9,7 +12,6 @@ namespace Mafia2Tool
     {
         private FileInfo cityShopsFile;
         private CityShops shopsData;
-        private int curIndex = -1;
 
         public CityShopEditor(FileInfo file)
         {

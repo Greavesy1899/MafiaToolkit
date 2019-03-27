@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Mafia2
+namespace ResourceTypes.Cutscene
 {
 //__cstring:01E80A6E aPp41_motionblu db 'pp41_MotionBlurScale',0
 //__cstring:01E80A83 aU025_motionblu db 'U025_MotionBlurStartAndBack',0
@@ -47,12 +47,13 @@ namespace Mafia2
 //__cstring:01E80D40 aU011_blindtime db 'U011_BlindTime',0
 //__cstring:01E80D4F aU012_blindfade db 'U012_BlindFadeOutTime',0
 //__cstring:01E80D65 aU013_monofadeo db 'U013_MonoFadeOutTime',0
-    public class CutsceneFile
+
+    public class CutsceneLoader
     {
         private int count; // number of cutscenes
         private Cutscene[] cutscenes;
 
-        public CutsceneFile(FileInfo file)
+        public CutsceneLoader(FileInfo file)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
             {

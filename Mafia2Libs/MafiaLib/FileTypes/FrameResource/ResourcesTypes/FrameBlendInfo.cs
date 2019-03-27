@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using Mafia2;
 using SharpDX;
+using Utils.SharpDXExtensions;
+using Utils.Types;
 
 namespace ResourceTypes.FrameResource
 {

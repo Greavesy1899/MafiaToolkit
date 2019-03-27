@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
+using Utils.Types;
 
-namespace Mafia2
+namespace ResourceTypes.Animation2
 {
-    public class Animation2
+    public class Animation2Loader
     {
         private int animSetID; //usually in the name. Different types. If not using skeleton, it's 0xFFFF
         private byte version; //Potentially Version 2, Because why not, it is Animation2. :)

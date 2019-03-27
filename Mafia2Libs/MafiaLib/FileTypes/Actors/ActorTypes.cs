@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
+using Utils.StringHelpers;
 
-namespace Mafia2
+namespace ResourceTypes.Actors
 {
     public interface IActorExtraDataInterface
     {
@@ -193,7 +194,7 @@ namespace Mafia2
             behaviourType = reader.ReadInt32();
             volume = reader.ReadSingle();
             pitch = reader.ReadSingle();  
-            file = Functions.ReadString(reader);
+            file = StringHelpers.ReadString(reader);
             ActorSoundEntityFlags tempType = (ActorSoundEntityFlags)type;
 
             Console.WriteLine("Sound: Name {0}", file);

@@ -2,6 +2,7 @@
 using SharpDX;
 using System;
 using System.Diagnostics;
+using Utils.Settings;
 
 namespace Rendering.Graphics
 {

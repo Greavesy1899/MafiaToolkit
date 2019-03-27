@@ -1,13 +1,13 @@
 ﻿using System.IO;
 
-namespace Mafia2
+namespace ResourceTypes.Sound
 {
-    public class SoundSector
+    public class SoundSectorLoader
     {
         ulong[] unk_01_array;
         short[] unk_02_array;
 
-        public SoundSector(string file)
+        public SoundSectorLoader(string file)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
             {

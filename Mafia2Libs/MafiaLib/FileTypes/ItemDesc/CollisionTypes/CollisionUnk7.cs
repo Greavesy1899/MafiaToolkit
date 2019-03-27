@@ -1,7 +1,10 @@
 ﻿using System.IO;
+using Mafia2Tool;
 using SharpDX;
+using Utils.SharpDXExtensions;
+using Utils.Types;
 
-namespace Mafia2
+namespace ResourceTypes.ItemDesc
 {
     public class CollisionUnk7
     {
@@ -33,7 +36,7 @@ namespace Mafia2
         short[] vertDef;
         Vector3 centerOfMass;
 
-        Polygon[] polygons;
+        Utils.Types.Polygon[] polygons;
 
         public CollisionUnk7(BinaryReader reader)
         {

@@ -5,6 +5,9 @@ using Mafia2;
 using ApexSDK;
 using System.Threading;
 using System.ComponentModel;
+using Utils.Settings;
+using Utils.Lang;
+using Utils.Logging;
 
 namespace Mafia2Tool
 {
