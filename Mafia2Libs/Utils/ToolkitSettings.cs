@@ -22,6 +22,7 @@ namespace Utils.Settings
         public static bool VSync;
         public static float ScreenDepth;
         public static float ScreenNear;
+        public static float CameraSpeed;
         public static string ShaderPath;
         public static string DataPath;
         public const int Width = 1920;
@@ -57,6 +58,7 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("VSync", "ModelViewer", "True"), out VSync);
             float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "10000"), out ScreenDepth);
             float.TryParse(ReadKey("ScreenNear", "ModelViewer", "1"), out ScreenNear);
+            float.TryParse(ReadKey("CameraSpeed", "ModelViewer", "1"), out CameraSpeed);
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
             int.TryParse(ReadKey("Language", "Misc", "0"), out Language);
             int.TryParse(ReadKey("Format", "Exporting", "0"), out Format);

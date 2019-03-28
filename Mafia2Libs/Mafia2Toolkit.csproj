@@ -428,6 +428,7 @@
     <None Include="Configs\packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApexSDK\ApexClothingAsset.cs" />
     <Content Include="build.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

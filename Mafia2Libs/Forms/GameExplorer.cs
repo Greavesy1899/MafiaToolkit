@@ -5,7 +5,6 @@ using System.IO;
 using System.Windows.Forms;
 using Gibbed.Mafia2.FileFormats;
 using Gibbed.Mafia2.FileFormats.Archive;
-using Mafia2;
 using Utils.Extensions;
 using ApexSDK;
 using System.Drawing;
@@ -404,6 +403,7 @@ namespace Mafia2Tool
             TableEditor tTool;
             NAVData nav;
             ApexRenderMesh mesh;
+            ApexClothingAssetLoader aca;
             CityAreaEditor caEditor;
             CityShopEditor csEditor;
 
@@ -432,6 +432,9 @@ namespace Mafia2Tool
 
                 case "ARM":
                     mesh = new ApexRenderMesh((FileInfo)item.Tag);
+                    return;
+                case "ACA":
+                    aca = new ApexClothingAssetLoader((FileInfo)item.Tag);
                     return;
                 case "Directory":
                     OpenDirectory((DirectoryInfo)item.Tag);

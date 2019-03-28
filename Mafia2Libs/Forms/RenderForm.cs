@@ -26,8 +26,6 @@ namespace Mafia2Tool
         private Point lastMousePos;
         private FileInfo fileLocation;
 
-        private float CameraSpeed = 10.0f;
-
         public D3DForm(FileInfo info)
         {
             InitializeComponent();
@@ -35,7 +33,7 @@ namespace Mafia2Tool
             fileLocation = info;
             SceneData.BuildData();
             PopulateList(info);
-            TEMPCameraSpeed.Text = CameraSpeed.ToString();
+            TEMPCameraSpeed.Text = ToolkitSettings.CameraSpeed.ToString();
             KeyPreview = true;
             RenderPanel.Focus();
             //do D3D stuff/
@@ -151,7 +149,7 @@ namespace Mafia2Tool
                     Pick(mousePos.X, mousePos.Y);
                 }
 
-                float speed = /*Graphics.Timer.FrameTime * */CameraSpeed;
+                float speed = /*Graphics.Timer.FrameTime * */ToolkitSettings.CameraSpeed;
 
                 if (Input.IsKeyDown(Keys.A))
                     Graphics.Camera.Position.X += speed;
@@ -546,13 +544,15 @@ namespace Mafia2Tool
 
         private void CameraSpeedUpdate(object sender, EventArgs e)
         {
-            float.TryParse(TEMPCameraSpeed.Text, out CameraSpeed);
+            float.TryParse(TEMPCameraSpeed.Text, out ToolkitSettings.CameraSpeed);
 
-            if (CameraSpeed == 0.0f)
+            if (ToolkitSettings.CameraSpeed == 0.0f)
             {
-                CameraSpeed = 1.0f;
-                TEMPCameraSpeed.Text = CameraSpeed.ToString();
+                ToolkitSettings.CameraSpeed = 0.1f;
+                TEMPCameraSpeed.Text = ToolkitSettings.CameraSpeed.ToString();
             }
+
+            ToolkitSettings.WriteKey("CameraSpeed", "ModelViewer", ToolkitSettings.CameraSpeed.ToString());
         }
     }
 }

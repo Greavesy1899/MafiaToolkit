@@ -34,13 +34,18 @@
             this.ScreenFarLabel = new System.Windows.Forms.Label();
             this.ScreenNearLabel = new System.Windows.Forms.Label();
             this.ExportPathButton = new System.Windows.Forms.FolderBrowserDialog();
+            this.CameraSpeedUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
             this.RenderGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenFarUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenNearUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // RenderGroup
             // 
+            this.RenderGroup.Controls.Add(this.CameraSpeedUpDown);
+            this.RenderGroup.Controls.Add(this.label1);
             this.RenderGroup.Controls.Add(this.ScreenFarUpDown);
             this.RenderGroup.Controls.Add(this.ScreenNearUpDown);
             this.RenderGroup.Controls.Add(this.ScreenFarLabel);
@@ -111,6 +116,44 @@
             // 
             this.ExportPathButton.Description = "$EXPORT_PATH_DESC";
             // 
+            // CameraSpeedUpDown
+            // 
+            this.CameraSpeedUpDown.DecimalPlaces = 1;
+            this.CameraSpeedUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.CameraSpeedUpDown.Location = new System.Drawing.Point(7, 126);
+            this.CameraSpeedUpDown.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.CameraSpeedUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.CameraSpeedUpDown.Name = "CameraSpeedUpDown";
+            this.CameraSpeedUpDown.Size = new System.Drawing.Size(120, 20);
+            this.CameraSpeedUpDown.TabIndex = 6;
+            this.CameraSpeedUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.CameraSpeedUpDown.ValueChanged += new System.EventHandler(this.CameraSpeedUpDown_Changed);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(4, 110);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(146, 13);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "$RENDER_CAMERASPEED";
+            // 
             // RenderOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -122,6 +165,7 @@
             this.RenderGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenFarUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenNearUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -134,5 +178,7 @@
         private System.Windows.Forms.FolderBrowserDialog ExportPathButton;
         private System.Windows.Forms.NumericUpDown ScreenFarUpDown;
         private System.Windows.Forms.NumericUpDown ScreenNearUpDown;
+        private System.Windows.Forms.NumericUpDown CameraSpeedUpDown;
+        private System.Windows.Forms.Label label1;
     }
 }

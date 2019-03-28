@@ -29,6 +29,7 @@ namespace Mafia2Tool.OptionControls
         {
             ScreenFarUpDown.Value = Math.Min(Convert.ToInt16(ToolkitSettings.ScreenDepth), ScreenFarUpDown.Maximum);
             ScreenNearUpDown.Value = Math.Min(Convert.ToInt16(ToolkitSettings.ScreenNear), ScreenNearUpDown.Maximum);
+            CameraSpeedUpDown.Value = Math.Min((decimal)ToolkitSettings.CameraSpeed, CameraSpeedUpDown.Maximum);
         }
 
         private void ScreenDepth_Changed(object sender, EventArgs e)
@@ -41,6 +42,12 @@ namespace Mafia2Tool.OptionControls
         {
             ToolkitSettings.ScreenNear = Convert.ToSingle(ScreenNearUpDown.Value);
             ToolkitSettings.WriteKey("ScreenNear", "ModelViewer", ToolkitSettings.ScreenNear.ToString());
+        }
+
+        private void CameraSpeedUpDown_Changed(object sender, EventArgs e)
+        {
+            ToolkitSettings.CameraSpeed = Convert.ToSingle(CameraSpeedUpDown.Value);
+            ToolkitSettings.WriteKey("CameraSpeed", "ModelViewer", ToolkitSettings.CameraSpeed.ToString());
         }
     }
 }
