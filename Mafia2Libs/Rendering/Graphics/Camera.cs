@@ -83,10 +83,12 @@ namespace Rendering.Graphics
         public Ray GetPickingRay(Vector2 sp, Vector2 screenDims)
         {
             // convert screen pixel to view space
-            var vx = (2.0f * sp.X / screenDims.X - 1.0f) / ProjectionMatrix.M11;
-            var vy = -(2.0f * sp.Y / screenDims.Y - 1.0f) / ProjectionMatrix.M22;
+            var vx = (2.0f * sp.X / screenDims.X - 1.0f);
+            var vy = -(2.0f * sp.Y / screenDims.Y - 1.0f);
+            vx /= ProjectionMatrix.M11;
+            vy /= ProjectionMatrix.M22;
 
-            var ray = new Ray(new Vector3(), new Vector3(vx, vy, 1.0f));
+            var ray = new Ray(Position, new Vector3(vx, vy, 1.0f));
             var v = ViewMatrix;
             var invView = Matrix.Invert(v);
 

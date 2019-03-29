@@ -9,6 +9,18 @@ using Utils.Extensions;
 
 namespace ResourceTypes.FrameResource
 {
+    struct FrameIndexer
+    {
+        public int Idx;
+        public int RefID;
+
+        public FrameIndexer(int idx, int refid)
+        {
+            Idx = idx;
+            RefID = refid;
+        }
+    }
+
     public class FrameResource
     {
         FrameHeader header;

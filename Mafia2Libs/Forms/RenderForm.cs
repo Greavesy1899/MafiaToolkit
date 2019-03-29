@@ -36,7 +36,6 @@ namespace Mafia2Tool
             TEMPCameraSpeed.Text = ToolkitSettings.CameraSpeed.ToString();
             KeyPreview = true;
             RenderPanel.Focus();
-            //do D3D stuff/
             StartD3DPanel();
         }
 
@@ -96,13 +95,11 @@ namespace Mafia2Tool
         private void CullModeButton_Click(object sender, EventArgs e)
         {
             Graphics.ToggleD3DCullMode();
-            AddToLog("Toggled Cull Mode");
         }
 
         private void FillModeButton_Click(object sender, EventArgs e)
         {
             Graphics.ToggleD3DFillMode();
-            AddToLog("Toggled Fill Mode");
         }
 
         private void OnSelectedIndexChanged(object sender, EventArgs e)
@@ -171,23 +168,6 @@ namespace Mafia2Tool
             }
             lastMousePos = mousePos;
             Graphics.Timer.Frame2();
-
-            FrameObjectBase obj1;
-
-            foreach (TreeNode node in treeView1.Nodes)
-            {
-                obj1 = (node.Tag as FrameObjectBase);
-                TransformMatrix matrix = ((obj1 != null) ? obj1.Matrix : new TransformMatrix());
-
-                if (obj1 != null)
-                    UpdateRenderedObjects(matrix, obj1);
-
-                foreach (TreeNode cNode in node.Nodes)
-                {
-                    UpdateChildRenderNodes(cNode, matrix);
-                }
-            }
-
             Graphics.Frame();
 
             //awful i know
@@ -248,7 +228,6 @@ namespace Mafia2Tool
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
                 Console.WriteLine("Saved Changes Succesfully");
-                AddToLog("Saved Changes Succesfully!");
             }
         }
 
@@ -333,7 +312,6 @@ namespace Mafia2Tool
             DebugPropertyGrid.SelectedObject = fObject;
             OnFrameNameTable.Checked = fObject.IsOnFrameTable;
             FrameNameTableFlags.EnumValue = (Enum)Convert.ChangeType(fObject.FrameNameTableFlags, typeof(NameTableFlags));
-            AddToLog(string.Format("New Current Entry {0}", fObject.Name.String));
         }
 
         private void EntryApplyChanges_OnClick(object sender, EventArgs e)
@@ -345,27 +323,37 @@ namespace Mafia2Tool
             fObject.IsOnFrameTable = OnFrameNameTable.Checked;
             fObject.FrameNameTableFlags = (NameTableFlags)FrameNameTableFlags.GetCurrentValue();
             Graphics.BuildSelectedEntry(fObject);
-            AddToLog(string.Format("Modified Currently Entry {0}", fObject.Name.String));
+
+            FrameObjectBase obj1;
+
+            foreach (TreeNode node in treeView1.Nodes)
+            {
+                obj1 = (node.Tag as FrameObjectBase);
+                TransformMatrix matrix = ((obj1 != null) ? obj1.Matrix : new TransformMatrix());
+
+                if (obj1 != null)
+                    UpdateRenderedObjects(matrix, obj1);
+
+                foreach (TreeNode cNode in node.Nodes)
+                {
+                    UpdateChildRenderNodes(cNode, matrix);
+                }
+            }
         }
 
         private void Pick(int sx, int sy)
         {
             var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
             FrameObjectSingleMesh selected = null;
+            float seltMin = float.MaxValue;
 
             foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
             {
-                // transform the picking ray into the object space of the mesh
-
                 Matrix worldMat = model.Value.Transform;
                 var invWorld = Matrix.Invert(worldMat);
-                ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
+                //ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
                 //ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
-                ray.Direction.Normalize();
-
-                float tmin0;
-                float tmin1;
-
+                //ray.Direction.Normalize();
 
                 FrameObjectSingleMesh objBase = null;
                 foreach (KeyValuePair<int, object> obj in SceneData.FrameResource.FrameObjects)
@@ -391,19 +379,28 @@ namespace Mafia2Tool
                 BoundingBox tempBox1 = objBase.Boundings;
                 float tmin;
 
-                if (!ray.Intersects(ref tempBox0, out tmin)) continue;
-                Console.WriteLine("intersect with " + objBase.Name.String);
-                float maxT = float.MaxValue;
-                for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
+                if (!ray.Intersects(ref tempBox0, out tmin))
+                    continue;
+
+                Console.WriteLine("intersect with {0} {1}", objBase.Name.String, tmin);
+
+                if (tmin < seltMin)
                 {
-                    var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
-                    var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
-                    var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
-                    float t = 0;
-                    if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-                    if (!(t < tmin || t < 0)) continue;
-                    maxT = t;
+                    selected = objBase;
+                    seltMin = tmin;
                 }
+
+                //float maxT = float.MaxValue;
+                //for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
+                //{
+                //    var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
+                //    var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
+                //    var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
+                //    float t = 0;
+                //    if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+                //    if (!(t < tmin || t < 0)) continue;
+                //    maxT = t;
+                //}
 
                 //float curTmin = float.MaxValue;
                 //if (ray.Position.X > tempBox0.Minimum.X && ray.Position.X < tempBox0.Maximum.X)
@@ -462,11 +459,6 @@ namespace Mafia2Tool
                 Console.WriteLine(selected.Name.String);
                 UpdateCurrentEntryData(selected);
             }
-        }
-
-        public void AddToLog(string message)
-        {
-            //richTextBox1.AppendText(message + "\n");
         }
 
         public void Shutdown()
@@ -553,6 +545,37 @@ namespace Mafia2Tool
             }
 
             ToolkitSettings.WriteKey("CameraSpeed", "ModelViewer", ToolkitSettings.CameraSpeed.ToString());
+        }
+
+        private void DeleteButton_Click(object sender, EventArgs e)
+        {
+            TreeNode node = treeView1.SelectedNode;
+
+            if (node.Nodes.Count > 0)
+            {
+                MessageBox.Show("Cannot delete a node with children!", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+            }
+            else
+            {
+                treeView1.Nodes.Remove(node);
+                //SceneData.FrameResource.FrameObjects.Remove(node.)
+            }
+
+        }
+
+        private void OpenEntryContext(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            EntryMenuStrip.Items[0].Visible = false;
+            EntryMenuStrip.Items[1].Visible = false;
+
+            if (treeView1.SelectedNode == null)
+                e.Cancel = true;
+
+            if(!e.Cancel)
+            {
+                EntryMenuStrip.Items[0].Visible = true;
+                EntryMenuStrip.Items[1].Visible = true;
+            }
         }
     }
 }
