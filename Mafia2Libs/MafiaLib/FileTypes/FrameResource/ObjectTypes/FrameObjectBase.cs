@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Mafia2;
 using Utils.Extensions;
 using Utils.Types;
+using System.Xml;
 
 namespace ResourceTypes.FrameResource
 {

@@ -125,14 +125,14 @@ namespace ResourceTypes.City
                     bool fix = false;
                     if(areaDatas[i].Translokators[y].EntityProperties == null)
                         fix = true;
-                    else if(areaDatas[i].Translokators[y].EntityProperties.Count != areaDatas[i].Entries.Count)
+                    else if(areaDatas[i].Translokators[y].EntityProperties.Count != areaDatas[i].Entries.Length)
                         fix = true;
 
                     if(fix)
                     {
                         areaDatas[i].Translokators[y].EntityProperties = new List<short>();
 
-                        for (int z = 0; z != areaDatas[i].Entries.Count; z++)
+                        for (int z = 0; z != areaDatas[i].Entries.Length; z++)
                             areaDatas[i].Translokators[y].EntityProperties.Add(1023);
                     }
                 }
@@ -257,7 +257,7 @@ namespace ResourceTypes.City
             int unk2;
             int unk3;
             int numEntities;
-            List<string> entries;
+            string[] entries;
             int numTranslokators;
             List<TranslokatorData> translokators;
 
@@ -294,13 +294,23 @@ namespace ResourceTypes.City
                 get { return unk3; }
                 set { unk3 = value; }
             }
-            public List<string> Entries {
+            public string[] Entries {
                 get { return entries; }
                 set { entries = value; }
             }
             public List<TranslokatorData> Translokators {
                 get { return translokators; }
                 set { translokators = value; }
+            }
+
+            public AreaData()
+            {
+                entries = new string[0];
+                translokators = new List<TranslokatorData>();
+                actorFile = "";
+                description = "";
+                name = "New Area Data";
+                translokatorName = "";
             }
 
             public void ReadFromFile(BinaryReader reader, int fileVersion)
@@ -313,11 +323,11 @@ namespace ResourceTypes.City
                 unk2 = reader.ReadInt32();
                 unk3 = reader.ReadInt32();
                 numEntities = reader.ReadInt32();
-                entries = new List<string>();
+                entries = new string[numEntities];
                 
                 for(int i = 0; i != numEntities; i++)
                 {
-                    entries.Add(StringHelpers.ReadString(reader));
+                    entries[i] = StringHelpers.ReadString(reader);
                 }
 
                 numTranslokators = reader.ReadInt32();
@@ -340,7 +350,7 @@ namespace ResourceTypes.City
                 writer.Write(unk1);
                 writer.Write(unk2);
                 writer.Write(unk3);
-                writer.Write(entries.Count);
+                writer.Write(entries.Length);
 
                 for (int i = 0; i != numEntities; i++)
                     StringHelpers.WriteString(writer, entries[i]);

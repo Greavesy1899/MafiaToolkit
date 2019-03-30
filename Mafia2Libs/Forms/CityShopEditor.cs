@@ -32,6 +32,7 @@ namespace Mafia2Tool
             ExitButton.Text = Language.GetString("$EXIT");
             toolButton.Text = Language.GetString("$TOOLS");
             AddAreaButton.Text = Language.GetString("$ADD_AREA");
+            AddDataButton.Text = Language.GetString("$ADD_DATA");
             SaveButton.Text = Language.GetString("$SAVE");
             ReloadButton.Text = Language.GetString("$RELOAD");
             PopulateTranslokatorButton.Text = Language.GetString("$POPULATE_TRANSLOKATORS");
@@ -103,6 +104,24 @@ namespace Mafia2Tool
         {
             shopsData.PopulateTranslokatorEntities();
             MessageBox.Show("All translokators were checked for errors.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void AddDataButton_Click(object sender, EventArgs e)
+        {
+            CityShops.AreaData areaData = new CityShops.AreaData();
+            shopsData.AreaDatas.Add(areaData);
+            TreeNode node = new TreeNode("New Area Data");
+            node.Tag = areaData;
+            treeView1.Nodes[1].Nodes.Add(node);
+            shopsData.PopulateTranslokatorEntities();
+            MessageBox.Show("A new area data was added succesfully! Check under the 'Data' node.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        }
+
+        private void OnPropertyChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            if(e.ChangedItem.Label == "Name")
+                treeView1.SelectedNode.Text = e.ChangedItem.Value.ToString();
         }
     }
 }

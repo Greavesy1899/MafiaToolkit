@@ -9,15 +9,17 @@ using Utils.Extensions;
 
 namespace ResourceTypes.FrameResource
 {
-    struct FrameIndexer
+    struct FrameHolder
     {
         public int Idx;
         public int RefID;
+        public object Data;
 
-        public FrameIndexer(int idx, int refid)
+        public FrameHolder(int idx, int refid, object data)
         {
             Idx = idx;
             RefID = refid;
+            Data = data;
         }
     }
 
@@ -135,7 +137,7 @@ namespace ResourceTypes.FrameResource
 
             if (header.NumObjects > 0)
             {
-                    for (int i = 0; i != header.NumObjects; i++)
+                for (int i = 0; i != header.NumObjects; i++)
                     objectTypes[i] = reader.ReadInt32();
 
                 for (int i = 0; i != header.NumObjects; i++)
@@ -198,7 +200,7 @@ namespace ResourceTypes.FrameResource
                         newObject = new FrameObjectCollision(reader);
 
                     frameObjects.Add(i, newObject);
-                    FrameEntries.Add(frameBlocks.Length+i, newObject);
+                    FrameEntries.Add(frameBlocks.Length + i, newObject);
                 }
             }
             objectTypes = null;
@@ -238,7 +240,7 @@ namespace ResourceTypes.FrameResource
             {
                 entry.Value.WriteToFile(writer);
             }
-            foreach(KeyValuePair<int, object> entry in frameObjects)
+            foreach (KeyValuePair<int, object> entry in frameObjects)
             {
                 if (entry.Value.GetType() == typeof(FrameObjectJoint))
                     writer.Write((int)ObjectType.Joint);
@@ -307,7 +309,7 @@ namespace ResourceTypes.FrameResource
             Dictionary<int, TreeNode> notAddedNodes = new Dictionary<int, TreeNode>();
 
             //Add scene groups into the scene viewer.
-            for(int i = 0; i != frameScenes.Count; i++)
+            for (int i = 0; i != frameScenes.Count; i++)
             {
                 FrameHeaderScene scene = frameScenes.Values.ElementAt(i);
                 TreeNode node = new TreeNode(scene.ToString());
@@ -368,7 +370,7 @@ namespace ResourceTypes.FrameResource
                 if (root.Nodes.Find(fObject.RefID.ToString(), true).Length > 0)
                     continue;
 
-                if(p2idx != -1)
+                if (p2idx != -1)
                 {
                     FrameEntry pBase2 = (FrameEntries.ElementAt(p2idx).Value as FrameEntry);
                     TreeNode[] p2Nodes = root.Nodes.Find(pBase2.RefID.ToString(), true);
@@ -396,7 +398,7 @@ namespace ResourceTypes.FrameResource
                 int p2idx = fObject.ParentIndex2.Index;
                 int thisKey = numBlocks + entry.Key;
 
-                if(p2idx != -1 && p1idx != -1)
+                if (p2idx != -1 && p1idx != -1)
                 {
                     TreeNode node = new TreeNode(fObject.ToString());
                     node.Tag = fObject;
@@ -404,14 +406,14 @@ namespace ResourceTypes.FrameResource
 
                     FrameEntry p1Base = (FrameEntries.ElementAt(p1idx).Value as FrameEntry);
                     FrameEntry p2Base = (FrameEntries.ElementAt(p2idx).Value as FrameEntry);
-                    
+
                     TreeNode[] p2Node = root.Nodes.Find(p2Base.RefID.ToString(), true);
 
-                    if(p2Node.Length > 0)
+                    if (p2Node.Length > 0)
                     {
                         TreeNode[] p1Node = p2Node[0].Nodes.Find(p1Base.RefID.ToString(), true);
 
-                        if(p1Node.Length > 0)
+                        if (p1Node.Length > 0)
                         {
                             p2Node[0].Nodes.RemoveByKey(fObject.RefID.ToString());
                             p1Node[0].Nodes.Add(node);
@@ -555,7 +557,7 @@ namespace ResourceTypes.FrameResource
                     FrameObjectSingleMesh mesh = (block as FrameObjectSingleMesh);
                     Console.WriteLine(string.Format("Updating: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
 
-                    if(mesh.MaterialIndex != -1)
+                    if (mesh.MaterialIndex != -1)
                         mesh.MaterialIndex = newFrame.IndexOfValue(mesh.Refs["Material"]);
 
                     if (mesh.MeshIndex != -1)
