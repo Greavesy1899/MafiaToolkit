@@ -47,6 +47,7 @@ namespace Mafia2Tool
 
         private bool Localise()
         {
+            creditsToolStripMenuItem.Text = Language.GetString("$CREDITS");
             Text = Language.GetString("$MII_TK_GAME_EXPLORER");
             UpButton.ToolTipText = Language.GetString("$UP_TOOLTIP");
             FolderPath.ToolTipText = Language.GetString("$FOLDER_PATH_TOOLTIP");
@@ -211,6 +212,8 @@ namespace Mafia2Tool
             {
                 if (!imageBank.Images.ContainsKey(file.Extension))
                     imageBank.Images.Add(file.Extension, Icon.ExtractAssociatedIcon(file.FullName));
+
+                //Icon.ExtractAssociatedIcon(file.FullName).ToBitmap().Save(file.Name + ".bmp");
 
                 if (searchMode && !string.IsNullOrEmpty(filename))
                 {
@@ -660,6 +663,17 @@ namespace Mafia2Tool
         private void OnViewTileClicked(object sender, EventArgs e)
         {
             FileListViewTypeController(4);
+        }
+
+        private void OnCredits_Pressed(object sender, EventArgs e)
+        {
+            MessageBox.Show("Toolkit written by Greavesy. \n\n" +
+                "Special thanks to: \nOleg @ ZModeler 3 \nRick 'Gibbed' \nFireboyd for UnluacNET" + 
+                "\n\n" + 
+                "Also, a very special thanks to donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider", 
+                "Toolkit", 
+                MessageBoxButtons.OK, 
+                MessageBoxIcon.Information);
         }
     }
 }

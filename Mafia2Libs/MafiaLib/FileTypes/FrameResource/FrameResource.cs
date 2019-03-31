@@ -544,9 +544,6 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        /// <summary>
-        /// This reconstructs the data.
-        /// </summary>
         public void UpdateFrameData()
         {
             int totalResources = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;

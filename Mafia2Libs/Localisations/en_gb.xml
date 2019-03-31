@@ -6,6 +6,7 @@
   <String ID="$ENTRY_NAME">Entry Name</String>
   
   <!-- Game Explorer Strings -->
+  <String ID="$CREDITS">Special Thanks</String>
   <String ID="$VIEW">View</String>
   <String ID="$FILE">File</String>
   <String ID="$TOOLS">Tools</String>
