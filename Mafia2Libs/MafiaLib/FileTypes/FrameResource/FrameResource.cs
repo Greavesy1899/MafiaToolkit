@@ -9,16 +9,14 @@ using Utils.Extensions;
 
 namespace ResourceTypes.FrameResource
 {
-    struct FrameHolder
+    public struct FrameHolder
     {
         public int Idx;
-        public int RefID;
-        public object Data;
+        public FrameEntry Data;
 
-        public FrameHolder(int idx, int refid, object data)
+        public FrameHolder(int idx, FrameEntry data)
         {
             Idx = idx;
-            RefID = refid;
             Data = data;
         }
     }
@@ -33,10 +31,8 @@ namespace ResourceTypes.FrameResource
         Dictionary<int, FrameSkeleton> frameSkeletons = new Dictionary<int, FrameSkeleton>();
         Dictionary<int, FrameSkeletonHierachy> frameSkeletonHierachies = new Dictionary<int, FrameSkeletonHierachy>();
         Dictionary<int, object> frameObjects = new Dictionary<int, object>();
-        Dictionary<int, object> FrameEntries = new Dictionary<int, object>();
-
-        int[] frameBlocks;
-        int[] objectTypes;
+        //Dictionary<int, object> FrameEntries = new Dictionary<int, object>();
+        List<FrameHolder> NewFrames = new List<FrameHolder>();
 
         public FrameHeader Header {
             get { return header; }
@@ -71,6 +67,51 @@ namespace ResourceTypes.FrameResource
             set { frameObjects = value; }
         }
 
+
+        public FrameHolder GetEntryFromRefID(int refID)
+        {
+            foreach (FrameHolder holder in NewFrames)
+            {
+                if (holder.Data.RefID == refID)
+                    return holder;
+            }
+
+            return new FrameHolder(-1, null);
+        }
+
+        private FrameHolder GetLocalEntryFromRefID(List<FrameHolder> frames, int refID)
+        {
+            foreach (FrameHolder holder in frames)
+            {
+                if (holder.Data.RefID == refID)
+                    return holder;
+            }
+
+            return new FrameHolder(-1, null);
+        }
+
+        public FrameHolder GetEntryFromIdx(int idx)
+        {
+            foreach (FrameHolder holder in NewFrames)
+            {
+                if (holder.Idx == idx)
+                    return holder;
+            }
+
+            return new FrameHolder(-1, null);
+        }
+
+        private FrameHolder GetLocalEntryFromIdx(List<FrameHolder> frames, int idx)
+        {
+            foreach (FrameHolder holder in frames)
+            {
+                if (holder.Idx == idx)
+                    return holder;
+            }
+
+            return new FrameHolder(-1, null);
+        }
+
         public FrameResource(string file)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
@@ -88,52 +129,46 @@ namespace ResourceTypes.FrameResource
             header = new FrameHeader();
             header.ReadFromFile(reader);
 
-            objectTypes = new int[header.NumObjects];
-            frameBlocks = new int[header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies];
-
             int j = 0;
 
             for (int i = 0; i != header.SceneFolders.Length; i++)
             {
                 frameScenes.Add(header.SceneFolders[i].RefID, header.SceneFolders[i]);
-                frameBlocks[j] = header.SceneFolders[i].RefID;
-                FrameEntries.Add(j++, header.SceneFolders[i]);
+                NewFrames.Add(new FrameHolder(j++, header.SceneFolders[i]));
             }
             for (int i = 0; i != header.NumGeometries; i++)
             {
                 FrameGeometry geo = new FrameGeometry(reader);
                 frameGeometries.Add(geo.RefID, geo);
-                frameBlocks[j] = geo.RefID;
-                FrameEntries.Add(j++, geo);
+                NewFrames.Add(new FrameHolder(j++, geo));
             }
             for (int i = 0; i != header.NumMaterialResources; i++)
             {
                 FrameMaterial mat = new FrameMaterial(reader);
                 frameMaterials.Add(mat.RefID, mat);
-                frameBlocks[j] = mat.RefID;
-                FrameEntries.Add(j++, mat);
+                NewFrames.Add(new FrameHolder(j++, mat));
             }
             for (int i = 0; i != header.NumBlendInfos; i++)
             {
                 FrameBlendInfo blendInfo = new FrameBlendInfo(reader);
                 frameBlendInfos.Add(blendInfo.RefID, blendInfo);
-                frameBlocks[j] = blendInfo.RefID;
-                FrameEntries.Add(j++, blendInfo);
+                NewFrames.Add(new FrameHolder(j++, blendInfo));
             }
             for (int i = 0; i != header.NumSkeletons; i++)
             {
                 FrameSkeleton skeleton = new FrameSkeleton(reader);
                 frameSkeletons.Add(skeleton.RefID, skeleton);
-                frameBlocks[j] = skeleton.RefID;
-                FrameEntries.Add(j++, skeleton);
+                NewFrames.Add(new FrameHolder(j++, skeleton));
             }
             for (int i = 0; i != header.NumSkelHierachies; i++)
             {
                 FrameSkeletonHierachy skeletonHierachy = new FrameSkeletonHierachy(reader);
                 frameSkeletonHierachies.Add(skeletonHierachy.RefID, skeletonHierachy);
-                frameBlocks[j] = skeletonHierachy.RefID;
-                FrameEntries.Add(j++, skeletonHierachy);
+                NewFrames.Add(new FrameHolder(j++, skeletonHierachy));
             }
+
+            int[] objectTypes = new int[header.NumObjects];
+            int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
 
             if (header.NumObjects > 0)
             {
@@ -152,10 +187,10 @@ namespace ResourceTypes.FrameResource
                         FrameObjectSingleMesh mesh = newObject as FrameObjectSingleMesh;
 
                         if (mesh.MeshIndex != -1)
-                            mesh.AddRef(FrameEntryRefTypes.Mesh, frameBlocks[mesh.MeshIndex]);
+                            mesh.AddRef(FrameEntryRefTypes.Mesh, GetEntryFromIdx(mesh.MeshIndex).Data.RefID);
 
                         if (mesh.MaterialIndex != -1)
-                            mesh.AddRef(FrameEntryRefTypes.Material, frameBlocks[mesh.MaterialIndex]);
+                            mesh.AddRef(FrameEntryRefTypes.Material, GetEntryFromIdx(mesh.MaterialIndex).Data.RefID);
                     }
                     else if (objectTypes[i] == (int)ObjectType.Frame)
                         newObject = new FrameObjectFrame(reader);
@@ -188,23 +223,22 @@ namespace ResourceTypes.FrameResource
                     {
                         FrameObjectModel mesh = new FrameObjectModel(reader);
                         mesh.ReadFromFile(reader);
-                        mesh.ReadFromFilePart2(reader, (FrameSkeleton)FrameEntries[mesh.SkeletonIndex], (FrameBlendInfo)FrameEntries[mesh.BlendInfoIndex]);
-                        mesh.AddRef(FrameEntryRefTypes.Mesh, frameBlocks[mesh.MeshIndex]);
-                        mesh.AddRef(FrameEntryRefTypes.Material, frameBlocks[mesh.MaterialIndex]);
-                        mesh.AddRef(FrameEntryRefTypes.BlendInfo, frameBlocks[mesh.BlendInfoIndex]);
-                        mesh.AddRef(FrameEntryRefTypes.Skeleton, frameBlocks[mesh.SkeletonIndex]);
-                        mesh.AddRef(FrameEntryRefTypes.SkeletonHierachy, frameBlocks[mesh.SkeletonHierachyIndex]);
+                        mesh.ReadFromFilePart2(reader, (FrameSkeleton)GetEntryFromIdx(mesh.SkeletonIndex).Data, (FrameBlendInfo)GetEntryFromIdx(mesh.BlendInfoIndex).Data);
+                        mesh.AddRef(FrameEntryRefTypes.Mesh, GetEntryFromIdx(mesh.MeshIndex).Data.RefID);
+                        mesh.AddRef(FrameEntryRefTypes.Material, GetEntryFromIdx(mesh.MaterialIndex).Data.RefID);
+                        mesh.AddRef(FrameEntryRefTypes.BlendInfo, GetEntryFromIdx(mesh.BlendInfoIndex).Data.RefID);
+                        mesh.AddRef(FrameEntryRefTypes.Skeleton, GetEntryFromIdx(mesh.SkeletonIndex).Data.RefID);
+                        mesh.AddRef(FrameEntryRefTypes.SkeletonHierachy, GetEntryFromIdx(mesh.SkeletonHierachyIndex).Data.RefID);
                         newObject = mesh;
                     }
                     else if (objectTypes[i] == (int)ObjectType.Collision)
                         newObject = new FrameObjectCollision(reader);
 
-                    frameObjects.Add(i, newObject);
-                    FrameEntries.Add(frameBlocks.Length + i, newObject);
+                    frameObjects.Add(newObject.RefID, newObject);
+                    NewFrames.Add(new FrameHolder(i + numBlocks, newObject));
                 }
             }
             objectTypes = null;
-            frameBlocks = null;
             DefineFrameBlockParents();
         }
 
@@ -219,84 +253,89 @@ namespace ResourceTypes.FrameResource
             header.WriteToFile(writer);
 
             int totalBlockCount = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
+            int currentIdx = header.SceneFolders.Length;
 
-            foreach (KeyValuePair<int, FrameGeometry> entry in frameGeometries)
+            for (; currentIdx != header.SceneFolders.Length + header.NumGeometries; currentIdx++)
+                (NewFrames[currentIdx].Data as FrameGeometry).WriteToFile(writer);
+
+            for (; currentIdx != header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources; currentIdx++)
+                (NewFrames[currentIdx].Data as FrameMaterial).WriteToFile(writer);
+
+            for (; currentIdx != header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos; currentIdx++)
+                (NewFrames[currentIdx].Data as FrameBlendInfo).WriteToFile(writer);
+
+            for (; currentIdx != header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons; currentIdx++)
+                (NewFrames[currentIdx].Data as FrameSkeleton).WriteToFile(writer);
+
+            for (; currentIdx != header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies; currentIdx++)
+                (NewFrames[currentIdx].Data as FrameSkeletonHierachy).WriteToFile(writer);
+
+            int savedIdx = currentIdx;
+
+            for (; savedIdx != header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies + header.NumObjects; savedIdx++)
             {
-                entry.Value.WriteToFile(writer);
-            }
-            foreach (KeyValuePair<int, FrameMaterial> entry in frameMaterials)
-            {
-                entry.Value.WriteToFile(writer);
-            }
-            foreach (KeyValuePair<int, FrameBlendInfo> entry in frameBlendInfos)
-            {
-                entry.Value.WriteToFile(writer);
-            }
-            foreach (KeyValuePair<int, FrameSkeleton> entry in frameSkeletons)
-            {
-                entry.Value.WriteToFile(writer);
-            }
-            foreach (KeyValuePair<int, FrameSkeletonHierachy> entry in frameSkeletonHierachies)
-            {
-                entry.Value.WriteToFile(writer);
-            }
-            foreach (KeyValuePair<int, object> entry in frameObjects)
-            {
-                if (entry.Value.GetType() == typeof(FrameObjectJoint))
+                FrameEntry entry = NewFrames[savedIdx].Data;
+
+                if (entry.GetType() == typeof(FrameObjectJoint))
                     writer.Write((int)ObjectType.Joint);
-                else if (entry.Value.GetType() == typeof(FrameObjectSingleMesh))
+                else if (entry.GetType() == typeof(FrameObjectSingleMesh))
                     writer.Write((int)ObjectType.SingleMesh);
-                else if (entry.Value.GetType() == typeof(FrameObjectFrame))
+                else if (entry.GetType() == typeof(FrameObjectFrame))
                     writer.Write((int)ObjectType.Frame);
-                else if (entry.Value.GetType() == typeof(FrameObjectLight))
+                else if (entry.GetType() == typeof(FrameObjectLight))
                     writer.Write((int)ObjectType.Light);
-                else if (entry.Value.GetType() == typeof(FrameObjectCamera))
+                else if (entry.GetType() == typeof(FrameObjectCamera))
                     writer.Write((int)ObjectType.Camera);
-                else if (entry.Value.GetType() == typeof(FrameObjectComponent_U005))
+                else if (entry.GetType() == typeof(FrameObjectComponent_U005))
                     writer.Write((int)ObjectType.Component_U00000005);
-                else if (entry.Value.GetType() == typeof(FrameObjectSector))
+                else if (entry.GetType() == typeof(FrameObjectSector))
                     writer.Write((int)ObjectType.Sector);
-                else if (entry.Value.GetType() == typeof(FrameObjectDummy))
+                else if (entry.GetType() == typeof(FrameObjectDummy))
                     writer.Write((int)ObjectType.Dummy);
-                else if (entry.Value.GetType() == typeof(FrameObjectDeflector))
+                else if (entry.GetType() == typeof(FrameObjectDeflector))
                     writer.Write((int)ObjectType.ParticleDeflector);
-                else if (entry.Value.GetType() == typeof(FrameObjectArea))
+                else if (entry.GetType() == typeof(FrameObjectArea))
                     writer.Write((int)ObjectType.Area);
-                else if (entry.Value.GetType() == typeof(FrameObjectTarget))
+                else if (entry.GetType() == typeof(FrameObjectTarget))
                     writer.Write((int)ObjectType.Target);
-                else if (entry.Value.GetType() == typeof(FrameObjectModel))
+                else if (entry.GetType() == typeof(FrameObjectModel))
                     writer.Write((int)ObjectType.Model);
-                else if (entry.Value.GetType() == typeof(FrameObjectCollision))
+                else if (entry.GetType() == typeof(FrameObjectCollision))
                     writer.Write((int)ObjectType.Collision);
             }
-            foreach (KeyValuePair<int, object> entry in frameObjects)
+
+            savedIdx = currentIdx;
+
+            for (; savedIdx != header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies + header.NumObjects; savedIdx++)
             {
-                if (entry.Value.GetType() == typeof(FrameObjectJoint))
-                    (entry.Value as FrameObjectJoint).WriteToFile(writer);
-                else if (entry.Value.GetType() == typeof(FrameObjectSingleMesh))
-                    (entry.Value as FrameObjectSingleMesh).WriteToFile(writer);
-                else if (entry.Value.GetType() == typeof(FrameObjectFrame))
-                    (entry.Value as FrameObjectFrame).WriteToFile(writer);
-                else if (entry.Value.GetType() == typeof(FrameObjectLight))
-                    (entry.Value as FrameObjectLight).WriteToFile(writer);
-                else if (entry.Value.GetType() == typeof(FrameObjectCamera))
-                    (entry.Value as FrameObjectCamera).WriteToFile(writer);
-                else if (entry.Value.GetType() == typeof(FrameObjectComponent_U005))
-                    (entry.Value as FrameObjectComponent_U005).WriteToFile(writer);
-                else if (entry.Value.GetType() == typeof(FrameObjectSector))
-                    (entry.Value as FrameObjectSector).WriteToFile(writer);
-                else if (entry.Value.GetType() == typeof(FrameObjectDummy))
-                    (entry.Value as FrameObjectDummy).WriteToFile(writer);
-                else if (entry.Value.GetType() == typeof(FrameObjectDeflector))
-                    (entry.Value as FrameObjectDeflector).WriteToFile(writer);
-                else if (entry.Value.GetType() == typeof(FrameObjectArea))
-                    (entry.Value as FrameObjectArea).WriteToFile(writer);
-                else if (entry.Value.GetType() == typeof(FrameObjectTarget))
-                    (entry.Value as FrameObjectTarget).WriteToFile(writer);
-                else if (entry.Value.GetType() == typeof(FrameObjectModel))
-                    (entry.Value as FrameObjectModel).WriteToFile(writer);
-                else if (entry.Value.GetType() == typeof(FrameObjectCollision))
-                    (entry.Value as FrameObjectCollision).WriteToFile(writer);
+                FrameEntry entry = NewFrames[savedIdx].Data;
+
+                if (entry.GetType() == typeof(FrameObjectJoint))
+                    (entry as FrameObjectJoint).WriteToFile(writer);
+                else if (entry.GetType() == typeof(FrameObjectSingleMesh))
+                    (entry as FrameObjectSingleMesh).WriteToFile(writer);
+                else if (entry.GetType() == typeof(FrameObjectFrame))
+                    (entry as FrameObjectFrame).WriteToFile(writer);
+                else if (entry.GetType() == typeof(FrameObjectLight))
+                    (entry as FrameObjectLight).WriteToFile(writer);
+                else if (entry.GetType() == typeof(FrameObjectCamera))
+                    (entry as FrameObjectCamera).WriteToFile(writer);
+                else if (entry.GetType() == typeof(FrameObjectComponent_U005))
+                    (entry as FrameObjectComponent_U005).WriteToFile(writer);
+                else if (entry.GetType() == typeof(FrameObjectSector))
+                    (entry as FrameObjectSector).WriteToFile(writer);
+                else if (entry.GetType() == typeof(FrameObjectDummy))
+                    (entry as FrameObjectDummy).WriteToFile(writer);
+                else if (entry.GetType() == typeof(FrameObjectDeflector))
+                    (entry as FrameObjectDeflector).WriteToFile(writer);
+                else if (entry.GetType() == typeof(FrameObjectArea))
+                    (entry as FrameObjectArea).WriteToFile(writer);
+                else if (entry.GetType() == typeof(FrameObjectTarget))
+                    (entry as FrameObjectTarget).WriteToFile(writer);
+                else if (entry.GetType() == typeof(FrameObjectModel))
+                    (entry as FrameObjectModel).WriteToFile(writer);
+                else if (entry.GetType() == typeof(FrameObjectCollision))
+                    (entry as FrameObjectCollision).WriteToFile(writer);
             }
         }
 
@@ -325,12 +364,12 @@ namespace ResourceTypes.FrameResource
                 if (table.FrameData[i].FrameIndex == -1)
                     continue;
 
-                FrameObjectBase fObject = (FrameEntries[numBlocks + table.FrameData[i].FrameIndex] as FrameObjectBase);
+                FrameObjectBase fObject = (GetEntryFromIdx(numBlocks + table.FrameData[i].FrameIndex).Data as FrameObjectBase);
                 fObject.IsOnFrameTable = true;
                 fObject.FrameNameTableFlags = table.FrameData[i].Flags;
-                int p1idx = fObject.ParentIndex1.Index;
-                int p2idx = fObject.ParentIndex2.Index;
-                int thisKey = numBlocks + numBlocks + table.FrameData[i].FrameIndex;
+                int p1idx = numBlocks + fObject.ParentIndex1.Index;
+                int p2idx = numBlocks + fObject.ParentIndex2.Index;
+                int thisKey = numBlocks + table.FrameData[i].FrameIndex;
 
                 TreeNode node = (!parsedNodes.ContainsKey(thisKey)) ? new TreeNode(fObject.ToString()) : parsedNodes[thisKey];
                 node.Tag = fObject;
@@ -344,7 +383,7 @@ namespace ResourceTypes.FrameResource
                 }
                 else
                 {
-                    FrameEntry pBase = (FrameEntries.ElementAt(p2idx).Value as FrameEntry);
+                    FrameEntry pBase = (GetEntryFromIdx(p2idx).Data as FrameEntry);
                     TreeNode[] nodes = root.Nodes.Find(pBase.RefID.ToString(), true);
 
                     if (nodes.Length > 0)
@@ -356,12 +395,16 @@ namespace ResourceTypes.FrameResource
             }
 
             //add objects from the main dictionary.
-            foreach (KeyValuePair<int, object> entry in frameObjects)
+            foreach (FrameHolder holder in NewFrames)
             {
-                FrameObjectBase fObject = (entry.Value as FrameObjectBase);
+                FrameObjectBase fObject = holder.Data as FrameObjectBase;
+
+                if (fObject == null)
+                    continue;
+
                 int p1idx = fObject.ParentIndex1.Index;
                 int p2idx = fObject.ParentIndex2.Index;
-                int thisKey = numBlocks + entry.Key;
+                int thisKey = numBlocks + holder.Idx;
 
                 TreeNode node = (!parsedNodes.ContainsKey(thisKey)) ? new TreeNode(fObject.ToString()) : parsedNodes[thisKey];
                 node.Tag = fObject;
@@ -372,7 +415,7 @@ namespace ResourceTypes.FrameResource
 
                 if (p2idx != -1)
                 {
-                    FrameEntry pBase2 = (FrameEntries.ElementAt(p2idx).Value as FrameEntry);
+                    FrameEntry pBase2 = (GetEntryFromIdx(p2idx).Data as FrameEntry);
                     TreeNode[] p2Nodes = root.Nodes.Find(pBase2.RefID.ToString(), true);
 
                     if (p2Nodes.Length > 0)
@@ -391,12 +434,16 @@ namespace ResourceTypes.FrameResource
             }
 
             //update p1 objects in tree nodes
-            foreach (KeyValuePair<int, object> entry in frameObjects)
+            foreach (FrameHolder entry in NewFrames)
             {
-                FrameObjectBase fObject = (entry.Value as FrameObjectBase);
+                FrameObjectBase fObject = (entry.Data as FrameObjectBase);
+
+                if (fObject == null)
+                    continue;
+
                 int p1idx = fObject.ParentIndex1.Index;
                 int p2idx = fObject.ParentIndex2.Index;
-                int thisKey = numBlocks + entry.Key;
+                int thisKey = numBlocks + entry.Idx;
 
                 if (p2idx != -1 && p1idx != -1)
                 {
@@ -404,8 +451,8 @@ namespace ResourceTypes.FrameResource
                     node.Tag = fObject;
                     node.Name = fObject.RefID.ToString();
 
-                    FrameEntry p1Base = (FrameEntries.ElementAt(p1idx).Value as FrameEntry);
-                    FrameEntry p2Base = (FrameEntries.ElementAt(p2idx).Value as FrameEntry);
+                    FrameEntry p1Base = GetEntryFromIdx(p1idx).Data as FrameEntry;
+                    FrameEntry p2Base = GetEntryFromIdx(p2idx).Data as FrameEntry;
 
                     TreeNode[] p2Node = root.Nodes.Find(p2Base.RefID.ToString(), true);
 
@@ -457,9 +504,9 @@ namespace ResourceTypes.FrameResource
         {
             int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
 
-            for (int i = 0; i != frameObjects.Count; i++)
+            for (int i = 0; i != NewFrames.Count; i++)
             {
-                FrameObjectBase obj = (frameObjects.ElementAt(i).Value as FrameObjectBase);
+                FrameObjectBase obj = (GetEntryFromIdx(i).Data as FrameObjectBase);
 
                 if (obj == null)
                     continue;
@@ -473,8 +520,8 @@ namespace ResourceTypes.FrameResource
                     }
                     else if (obj.ParentIndex1.Index >= numBlocks)
                     {
-                        obj.ParentIndex1.RefID = (frameObjects.ElementAt(obj.ParentIndex1.Index - numBlocks).Value as FrameObjectBase).RefID;
-                        obj.ParentIndex1.Name = (frameObjects.ElementAt(obj.ParentIndex1.Index - numBlocks).Value as FrameObjectBase).Name.String;
+                        obj.ParentIndex1.RefID = (GetEntryFromIdx(obj.ParentIndex1.Index).Data as FrameObjectBase).RefID;
+                        obj.ParentIndex1.Name = (GetEntryFromIdx(obj.ParentIndex1.Index).Data as FrameObjectBase).Name.String;
                     }
                     obj.AddRef(FrameEntryRefTypes.Parent1, obj.ParentIndex1.RefID);
                 }
@@ -488,9 +535,10 @@ namespace ResourceTypes.FrameResource
                     }
                     else if (obj.ParentIndex2.Index >= numBlocks)
                     {
-                        obj.ParentIndex2.RefID = (frameObjects.ElementAt(obj.ParentIndex2.Index - numBlocks).Value as FrameObjectBase).RefID;
-                        obj.ParentIndex2.Name = (frameObjects.ElementAt(obj.ParentIndex2.Index - numBlocks).Value as FrameObjectBase).Name.String;
+                        obj.ParentIndex2.RefID = (GetEntryFromIdx(obj.ParentIndex2.Index).Data as FrameObjectBase).RefID;
+                        obj.ParentIndex2.Name = (GetEntryFromIdx(obj.ParentIndex2.Index).Data as FrameObjectBase).Name.String;
                     }
+
                     obj.AddRef(FrameEntryRefTypes.Parent2, obj.ParentIndex2.RefID);
                 }
             }
@@ -502,53 +550,47 @@ namespace ResourceTypes.FrameResource
         public void UpdateFrameData()
         {
             int totalResources = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
+            int currentCount = 0;
 
-            Dictionary<int, object> newFrame = new Dictionary<int, object>();
+            List<FrameHolder> updatedFrames = new List<FrameHolder>();
 
             foreach (KeyValuePair<int, FrameHeaderScene> entry in frameScenes)
-            {
-                newFrame.Add(entry.Key, entry.Value);
-            }
+                updatedFrames.Add(new FrameHolder(currentCount++, entry.Value));
+
             foreach (KeyValuePair<int, FrameGeometry> entry in frameGeometries)
-            {
-                newFrame.Add(entry.Key, entry.Value);
-            }
+                updatedFrames.Add(new FrameHolder(currentCount++, entry.Value));
+
             foreach (KeyValuePair<int, FrameMaterial> entry in frameMaterials)
-            {
-                newFrame.Add(entry.Key, entry.Value);
-            }
+                updatedFrames.Add(new FrameHolder(currentCount++, entry.Value));
+
             foreach (KeyValuePair<int, FrameBlendInfo> entry in frameBlendInfos)
-            {
-                newFrame.Add(entry.Key, entry.Value);
-            }
+                updatedFrames.Add(new FrameHolder(currentCount++, entry.Value));
+
             foreach (KeyValuePair<int, FrameSkeleton> entry in frameSkeletons)
-            {
-                newFrame.Add(entry.Key, entry.Value);
-            }
+                updatedFrames.Add(new FrameHolder(currentCount++, entry.Value));
+
             foreach (KeyValuePair<int, FrameSkeletonHierachy> entry in frameSkeletonHierachies)
-            {
-                newFrame.Add(entry.Key, entry.Value);
-            }
+                updatedFrames.Add(new FrameHolder(currentCount++, entry.Value));
 
             //We have to add the objects to the new frame AND THEN update refs. This is kind of odd, and I think i've done something wrong.
-            int objectPosStart = newFrame.Count;
+            int objectPosStart = currentCount;
             for (int i = 0; i != frameObjects.Count; i++)
             {
                 FrameObjectBase block = (frameObjects.ElementAt(i).Value as FrameObjectBase);
-                newFrame.Add(block.RefID, block);
+                updatedFrames.Add(new FrameHolder(currentCount++, block));
             }
-            for (int i = objectPosStart; i != newFrame.Count; i++)
+            for (int i = objectPosStart; i != updatedFrames.Count; i++)
             {
-                FrameObjectBase block = (newFrame.ElementAt(i).Value as FrameObjectBase);
+                FrameObjectBase block = (updatedFrames[i].Data as FrameObjectBase);
                 Console.WriteLine("Working on block " + block.Name.String);
 
                 if (block.Refs.ContainsKey("Parent1"))
-                    block.ParentIndex1.Index = newFrame.IndexOfValue(block.Refs["Parent1"]);
+                    block.ParentIndex1.Index = GetLocalEntryFromRefID(updatedFrames, block.Refs["Parent1"]).Idx;
                 else
                     block.ParentIndex1.Index = -1;
 
                 if (block.Refs.ContainsKey("Parent2"))
-                    block.ParentIndex2.Index = newFrame.IndexOfValue(block.Refs["Parent2"]);
+                    block.ParentIndex2.Index = GetLocalEntryFromRefID(updatedFrames, block.Refs["Parent2"]).Idx;
                 else
                     block.ParentIndex2.Index = -1;
 
@@ -558,10 +600,10 @@ namespace ResourceTypes.FrameResource
                     Console.WriteLine(string.Format("Updating: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
 
                     if (mesh.MaterialIndex != -1)
-                        mesh.MaterialIndex = newFrame.IndexOfValue(mesh.Refs["Material"]);
+                        mesh.MaterialIndex = GetLocalEntryFromRefID(updatedFrames, block.Refs["Material"]).Idx;
 
                     if (mesh.MeshIndex != -1)
-                        mesh.MeshIndex = newFrame.IndexOfValue(mesh.Refs["Mesh"]);
+                        mesh.MeshIndex = GetLocalEntryFromRefID(updatedFrames, block.Refs["Mesh"]).Idx;
 
                     block = mesh;
                     Console.WriteLine(string.Format("Updated: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
@@ -570,11 +612,11 @@ namespace ResourceTypes.FrameResource
                 {
                     FrameObjectModel mesh = (block as FrameObjectModel);
                     Console.WriteLine(string.Format("Updating: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
-                    mesh.MaterialIndex = newFrame.IndexOfValue(mesh.Refs["Material"]);
-                    mesh.MeshIndex = newFrame.IndexOfValue(mesh.Refs["Mesh"]);
-                    mesh.BlendInfoIndex = newFrame.IndexOfValue(mesh.Refs["BlendInfo"]);
-                    mesh.SkeletonIndex = newFrame.IndexOfValue(mesh.Refs["Skeleton"]);
-                    mesh.SkeletonHierachyIndex = newFrame.IndexOfValue(mesh.Refs["SkeletonHierachy"]);
+                    mesh.MaterialIndex = GetLocalEntryFromRefID(updatedFrames, block.Refs["Material"]).Idx;
+                    mesh.MeshIndex = GetLocalEntryFromRefID(updatedFrames, block.Refs["Mesh"]).Idx;
+                    mesh.BlendInfoIndex = GetLocalEntryFromRefID(updatedFrames, block.Refs["BlendInfo"]).Idx;
+                    mesh.SkeletonIndex = GetLocalEntryFromRefID(updatedFrames, block.Refs["Skeleton"]).Idx;
+                    mesh.SkeletonHierachyIndex = GetLocalEntryFromRefID(updatedFrames, block.Refs["SkeletonHierarchy"]).Idx;
                     block = mesh;
                     Console.WriteLine(string.Format("Updated: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
                 }
@@ -587,6 +629,7 @@ namespace ResourceTypes.FrameResource
             header.NumSkeletons = frameSkeletons.Count;
             header.NumSkelHierachies = frameSkeletonHierachies.Count;
             header.NumObjects = frameObjects.Count;
+            NewFrames = updatedFrames;
         }
     }
 }

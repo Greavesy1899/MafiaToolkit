@@ -23,11 +23,8 @@ namespace Mafia2Tool
             ////do vital inits;
             CheckINIExists();
             ToolkitSettings.ReadINI();
-
             Language.ReadLanguageXML();
-
             MaterialData.Load();
-
             Application.Run(new GameExplorer());
         }
 
@@ -36,7 +33,7 @@ namespace Mafia2Tool
         /// </summary>
         private static void CheckINIExists()
         {
-            if (File.Exists("Mafia2Tool.ini"))
+            if (File.Exists(Path.Combine(Application.ExecutablePath, "Mafia2Tool.ini")))
                 return;
             else
                 new IniFile();

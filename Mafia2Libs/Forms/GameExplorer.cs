@@ -232,7 +232,7 @@ namespace Mafia2Tool
             }
 
             infoText.Text = "Done loading directory.";
-            FolderPath.Text = directory.FullName;
+            FolderPath.Text = directory.FullName.Remove(0, directory.FullName.IndexOf(originalPath.Name));
             fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
             //sort out treeview stuff.
@@ -508,10 +508,15 @@ namespace Mafia2Tool
         {
             if (e.KeyChar == '\r')
             {
-                if (Directory.Exists(FolderPath.Text) && FolderPath.Text.Contains(currentDirectory.Name))
-                    OpenDirectory(new DirectoryInfo(FolderPath.Text));
+                string newDir = FolderPath.Text;
+                int idx = newDir.IndexOf(originalPath.Name);
+                if (newDir.IndexOf(originalPath.Name) == 0)
+                    newDir = Path.Combine(originalPath.Parent.FullName, FolderPath.Text);
+
+               if (Directory.Exists(newDir) && FolderPath.Text.Contains(currentDirectory.Name))
+                    OpenDirectory(new DirectoryInfo(newDir));
                 else
-                    MessageBox.Show("Game Explorer cannot find path '" + FolderPath + "'. Make sure the path exists and try again.", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Game Explorer cannot find path '" + newDir + "'. Make sure the path exists and try again.", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void ContextOpenFolder_Click(object sender, EventArgs e)

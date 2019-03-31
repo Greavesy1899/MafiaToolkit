@@ -557,8 +557,21 @@ namespace Mafia2Tool
             }
             else
             {
-                treeView1.Nodes.Remove(node);
-                //SceneData.FrameResource.FrameObjects.Remove(node.)
+                FrameEntry obj = node.Tag as FrameEntry;
+
+                if (obj != null)
+                {
+                    treeView1.Nodes.Remove(node);
+                    Graphics.Models.Remove(obj.RefID);
+                    SceneData.FrameResource.FrameObjects.Remove(obj.RefID);
+
+                    if (obj.GetType() == typeof(FrameObjectSingleMesh) || obj.GetType() == typeof(FrameObjectModel))
+                        Graphics.Models.Remove(obj.RefID);
+                    else if (obj.GetType() == typeof(FrameObjectArea))
+                        Graphics.Areas.Remove(obj.RefID);
+                    else if (obj.GetType() == typeof(FrameObjectDummy))
+                        Graphics.Dummies.Remove(obj.RefID);
+                }
             }
 
         }

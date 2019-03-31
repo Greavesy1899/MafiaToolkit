@@ -98,11 +98,6 @@ namespace Rendering.Graphics
                 lod.Indices = indexBuffers[i].Data;
                 lod.ModelParts = new ModelPart[mats.LodMatCount[i]];
 
-                using (BinaryWriter writer = new BinaryWriter(File.Open("VertexBuffers/" + geom.LOD[i].VertexBufferRef.String + ".dat", FileMode.OpenOrCreate)))
-                {
-                    writer.Write(vertexBuffers[i].Data);
-                }
-
                 for (int z = 0; z != mats.Materials[i].Length; z++)
                 {
                     lod.ModelParts[z] = new ModelPart();
