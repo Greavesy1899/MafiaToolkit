@@ -657,6 +657,7 @@ namespace Mafia2Tool
             else return;
 
             CreateNewEntry(selection, form.GetInputText());
+            
         }
 
         private void OnExportFarLods(object sender, EventArgs e)

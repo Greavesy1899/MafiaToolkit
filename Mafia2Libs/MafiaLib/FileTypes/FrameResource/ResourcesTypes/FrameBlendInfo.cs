@@ -60,7 +60,8 @@ namespace ResourceTypes.FrameResource
 
                 //IDs..
                 boneIndexInfos[i].IDs = reader.ReadBytes(boneIndexInfos[i].NumIDs);
-                reader.ReadInt32(); //zero;
+                boneIndexInfos[i].Unk01 = reader.ReadInt32();
+
                 //Material blendings..
                 boneIndexInfos[i].MatBlends = new ushort[boneIndexInfos[i].NumMaterials];
                 for (int x = 0; x != boneIndexInfos[i].NumMaterials; x++)
@@ -93,7 +94,7 @@ namespace ResourceTypes.FrameResource
 
                 //IDs..
                 writer.Write(boneIndexInfos[i].IDs);
-                writer.Write(0);
+                writer.Write(boneIndexInfos[i].Unk01);
 
                 //Material blendings..
                 for (int x = 0; x != boneIndexInfos[i].NumMaterials; x++)
@@ -112,6 +113,7 @@ namespace ResourceTypes.FrameResource
             int numMaterials;
             byte[] bonesPerPool;
             byte[] ids;
+            int unk01;
             ushort[] matBlends;
 
             public int NumIDs {
@@ -130,6 +132,10 @@ namespace ResourceTypes.FrameResource
                 get { return ids; }
                 set { ids = value; }
             }
+            public int Unk01 {
+                get { return unk01; }
+                set { unk01 = value; }
+            }
             public ushort[] MatBlends {
                 get { return matBlends; }
                 set { matBlends = value; }
@@ -140,7 +146,7 @@ namespace ResourceTypes.FrameResource
         {
             TransformMatrix transform;
             BoundingBox bounds;
-            bool isValid;
+            byte isValid;
 
             public TransformMatrix Transform {
                 get { return transform; }
@@ -150,7 +156,7 @@ namespace ResourceTypes.FrameResource
                 get { return bounds; }
                 set { bounds = value; }
             }
-            public bool IsValid {
+            public byte IsValid {
                 get { return isValid; }
                 set { isValid = value; }
             }
@@ -159,12 +165,12 @@ namespace ResourceTypes.FrameResource
             {
                 transform = new TransformMatrix(reader);
                 bounds = BoundingBoxExtenders.ReadFromFile(reader);
-                isValid = reader.ReadBoolean();
+                isValid = reader.ReadByte();
             }
 
             public void WriteToFile(BinaryWriter writer)
             {
-                transform.WriteToFile(writer);
+                transform.WriteToFrame(writer);
                 bounds.WriteToFile(writer);
                 writer.Write(IsValid);
             }

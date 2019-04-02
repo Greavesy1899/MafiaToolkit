@@ -61,6 +61,32 @@ namespace ResourceTypes.FrameResource
         {
         }
 
+        public FrameObjectModel(FrameObjectModel other) : base(other)
+        {
+            blendInfoIndex = other.blendInfoIndex;
+            skeletonIndex = other.skeletonIndex;
+            skeletonHierachyIndex = other.skeletonHierachyIndex;
+            skeleton = other.skeleton;
+            blendInfo = other.blendInfo;
+            restPose = new TransformMatrix[skeleton.NumBones[0]];
+            for (int i = 0; i != restPose.Length; i++)
+                restPose[i] = new TransformMatrix(other.restPose[i]);
+            unkTrasform = other.unkTrasform;
+            attachmentReferences = new AttachmentReference[other.attachmentReferences.Length];
+            for (int i = 0; i != attachmentReferences.Length; i++)
+                attachmentReferences[i] = new AttachmentReference(other.attachmentReferences[i]);
+            unkFlags = other.unkFlags;
+            physSplitSize = other.physSplitSize;
+            hitBoxSize = other.hitBoxSize;
+            nPhysSplits = other.nPhysSplits;
+            blendMeshSplits = new WeightedByMeshSplit[nPhysSplits];
+            for (int i = 0; i != blendMeshSplits.Length; i++)
+                blendMeshSplits[i] = new WeightedByMeshSplit(other.blendMeshSplits[i]);
+            hitBoxInfo = new HitBoxInfo[other.hitBoxInfo.Length];
+            for (int i = 0; i != hitBoxInfo.Length; i++)
+                hitBoxInfo[i] = new HitBoxInfo(hitBoxInfo[i]);
+        }
+
         public override void ReadFromFile(BinaryReader reader)
         {
             base.ReadFromFile(reader);
@@ -172,6 +198,12 @@ namespace ResourceTypes.FrameResource
                 ReadFromFile(reader);
             }
 
+            public AttachmentReference(AttachmentReference other)
+            {
+                attachmentIndex = other.attachmentIndex;
+                jointIndex = other.jointIndex;
+            }
+
             public void ReadFromFile(BinaryReader reader)
             {
                 attachmentIndex = reader.ReadInt32();
@@ -210,6 +242,13 @@ namespace ResourceTypes.FrameResource
                 ReadFromFile(reader);
             }
 
+            public HitBoxInfo(HitBoxInfo other)
+            {
+                unk = other.unk;
+                pos = new Short3(other.pos);
+                size = new Short3(other.size);
+            }
+
             public void ReadFromFile(BinaryReader reader)
             {
                 unk = reader.ReadUInt32();
@@ -246,6 +285,15 @@ namespace ResourceTypes.FrameResource
             public WeightedByMeshSplit(BinaryReader reader)
             {
                 ReadFromFile(reader);
+            }
+
+            public WeightedByMeshSplit(WeightedByMeshSplit other)
+            {
+                blendIndex = other.blendIndex;
+                data = new BlendMeshSplitInfo[other.data.Length];
+                for (int i = 0; i != other.data.Length; i++)
+                    data[i] = other.data[i];
+                jointName = other.jointName;
             }
 
             public void ReadFromFile(BinaryReader reader)
@@ -288,6 +336,13 @@ namespace ResourceTypes.FrameResource
                 ReadFromFile(reader);
             }
 
+            public BlendMeshSplitInfo(BlendMeshSplitInfo other)
+            {
+                data = new MiniMaterialBurst[other.data.Length];
+                for (int i = 0; i != other.data.Length; i++)
+                    data[i] = other.data[i];
+            }
+
             public void ReadFromFile(BinaryReader reader)
             {
                 short num = reader.ReadInt16();
@@ -322,6 +377,14 @@ namespace ResourceTypes.FrameResource
             public MiniMaterialBurst(BinaryReader reader)
             {
                 ReadFromFile(reader);
+            }
+
+            public MiniMaterialBurst(MiniMaterialBurst other)
+            {
+                materialIndex = other.materialIndex;
+                data = new FacesBurst[other.data.Length];
+                for (int i = 0; i != other.data.Length; i++)
+                    data[i] = other.data[i];
             }
 
             public void ReadFromFile(BinaryReader reader)
@@ -361,6 +424,12 @@ namespace ResourceTypes.FrameResource
             public FacesBurst(BinaryReader reader)
             {
                 ReadFromFile(reader);
+            }
+
+            public FacesBurst(FacesBurst other)
+            {
+                startIndex = other.startIndex;
+                numFaces = other.numFaces;
             }
 
             public void ReadFromFile(BinaryReader reader)

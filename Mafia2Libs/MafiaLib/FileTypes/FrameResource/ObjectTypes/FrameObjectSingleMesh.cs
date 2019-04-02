@@ -67,6 +67,19 @@ namespace ResourceTypes.FrameResource
             ReadFromFile(reader);
         }
 
+        public FrameObjectSingleMesh(FrameObjectSingleMesh other) : base(other)
+        {
+            flags = other.flags;
+            bounds = other.bounds;
+            unk_14_byte = other.unk_14_byte;
+            meshIndex = other.meshIndex;
+            materialIndex = other.materialIndex;
+            unk_17_textureHash = new Hash(other.unk_17_textureHash.String);
+            unk_18_byte1 = other.unk_18_byte1;
+            unk_18_byte2 = other.unk_18_byte2;
+            unk_18_byte3 = other.unk_18_byte3;
+        }
+
         /// <summary>
         /// Build basic singleMesh data.
         /// </summary>

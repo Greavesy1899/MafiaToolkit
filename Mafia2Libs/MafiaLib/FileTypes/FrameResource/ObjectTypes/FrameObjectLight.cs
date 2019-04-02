@@ -132,6 +132,33 @@ namespace ResourceTypes.FrameResource
             unkVector6 = new Vector3(0);
         }
 
+        public FrameObjectLight(FrameObjectLight other) : base(other)
+        {
+            flags = other.flags;
+            unkFloat1 = other.unkFloat1;
+            unk_int = other.unk_int;
+            unkFloat2 = other.unkFloat1;
+            unk_byte1 = other.unk_byte1;
+            unkFloat3 = other.unkFloat1;
+            unk_byte2 = other.unk_byte2;
+            unkFloat4 = other.unkFloat4;
+            nameLight = new Hash(other.name.String);
+            unk_int2 = other.unk_int2;
+            unkFloat5 = other.unkFloat5;
+
+            names = new Hash[4];
+            for (int i = 0; i != 4; i++)
+                names[i] = new Hash(names[i].String);
+
+            unkVector1 = other.unkVector1;
+            unkVector2 = other.unkVector2;
+            unk_byte3 = other.unk_byte3;
+            unkVector3 = other.unkVector3;
+            unkVector4 = other.unkVector4;
+            unkVector5 = other.unkVector5;
+            unkVector6 = other.unkVector6;
+        }
+
         public FrameObjectLight(BinaryReader reader) : base()
         {
             ReadFromFile(reader);

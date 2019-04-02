@@ -74,13 +74,24 @@ namespace ResourceTypes.FrameResource
         public FrameObjectBase() : base()
         {
             //do example name.
-            name = new Hash();
-            name.Set("NewObject");
+            name = new Hash("NewObject");
             unk0 = 1;
             transformMatrix = new TransformMatrix();
             unk3 = -1;
             parentIndex1 = new ParentStruct(-1);
             parentIndex2 = new ParentStruct(-1);
+            unk6 = -1;
+            UpdateNode();
+        }
+
+        public FrameObjectBase(FrameObjectBase other) : base()
+        {
+            name = new Hash(other.name.String);
+            unk0 = other.unk0;
+            transformMatrix = new TransformMatrix(other.transformMatrix);
+            unk3 = other.unk3;
+            parentIndex1 = new ParentStruct(other.parentIndex1);
+            parentIndex2 = new ParentStruct(other.parentIndex2);
             unk6 = -1;
             UpdateNode();
         }

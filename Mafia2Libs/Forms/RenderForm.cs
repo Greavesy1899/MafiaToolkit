@@ -114,6 +114,7 @@ namespace Mafia2Tool
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
+            SceneData.CleanData();
             RenderStorageSingleton.Instance.TextureCache.Clear();
             Shutdown();
         }
@@ -221,6 +222,7 @@ namespace Mafia2Tool
                 using (BinaryWriter writer = new BinaryWriter(File.Open(SceneData.FrameNameTable.FileName, FileMode.Create)))
                 {
                     FrameNameTable nameTable = new FrameNameTable();
+                    nameTable.FileName = SceneData.FrameNameTable.FileName;
                     nameTable.BuildDataFromResource(SceneData.FrameResource);
                     nameTable.WriteToFile(writer);
                     SceneData.FrameNameTable = nameTable;

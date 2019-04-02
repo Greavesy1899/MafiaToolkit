@@ -9,7 +9,6 @@ namespace ResourceTypes.FrameResource
 {
     public class FrameObjectSector : FrameObjectJoint
     {
-
         int unk_08_int;
         int unk_09_int;
         float[] unk_10_floats;
@@ -53,6 +52,14 @@ namespace ResourceTypes.FrameResource
             unk_13_vector3 = new Vector3(0);
             unk_14_vector3 = new Vector3(0);
             unk_15_hash = new Hash();
+        }
+
+        public FrameObjectSector(FrameObjectSector other) : base(other)
+        {
+            unk_11_bounds = other.unk_11_bounds;
+            unk_13_vector3 = other.unk_13_vector3;
+            unk_14_vector3 = other.unk_14_vector3;
+            unk_15_hash = new Hash(unk_15_hash.String);
         }
 
         public FrameObjectSector(BinaryReader reader) : base()

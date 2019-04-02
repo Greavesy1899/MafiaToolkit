@@ -9,6 +9,11 @@ namespace ResourceTypes.FrameResource
 
         }
 
+        public FrameObjectDeflector(FrameObjectDeflector other) : base(other)
+        {
+
+        }
+
         public FrameObjectDeflector(BinaryReader reader) : base()
         {
             ReadFromFile(reader);

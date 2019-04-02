@@ -33,6 +33,12 @@ namespace ResourceTypes.FrameResource
             ReadFromFile(reader);
         }
 
+        public FrameObjectJoint(FrameObjectJoint other) : base(other)
+        {
+            dataSize = other.dataSize;
+            nodeData = other.nodeData;
+        }
+
         public override void ReadFromFile(BinaryReader reader)
         {
             base.ReadFromFile(reader);

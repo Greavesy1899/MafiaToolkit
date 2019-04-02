@@ -26,6 +26,11 @@ namespace ResourceTypes.FrameResource
             ReadFromFile(reader);
         }
 
+        public FrameObjectFrame(FrameObjectFrame other) : base(other)
+        {
+            actorHash = other.actorHash;
+        }
+
         public FrameObjectFrame() : base()
         {
             actorHash = new Hash();

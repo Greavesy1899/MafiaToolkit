@@ -22,10 +22,18 @@ namespace ResourceTypes.FrameResource
         {
             unk01 = 0;
         }
+
         public FrameObjectCamera(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
         }
+
+        public FrameObjectCamera(FrameObjectCamera other) : base(other)
+        {
+            unk01 = other.unk01;
+            unkData = other.unkData;
+        }
+
         public override void ReadFromFile(BinaryReader reader)
         {
             base.ReadFromFile(reader);

@@ -58,7 +58,6 @@ namespace ResourceTypes.FrameNameTable
             List<Data> tableData = new List<Data>();
             int[] scenePos;
             string[] sceneNames;
-            int totalNumBlocks = resource.Header.SceneFolders.Length + resource.Header.NumGeometries + resource.Header.NumMaterialResources + resource.Header.NumBlendInfos + resource.Header.NumSkeletons + resource.Header.NumSkelHierachies;
 
             if (resource.Header.IsScene)
             {

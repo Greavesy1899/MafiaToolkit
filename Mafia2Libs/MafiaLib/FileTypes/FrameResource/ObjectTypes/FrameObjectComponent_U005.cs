@@ -20,6 +20,11 @@ namespace ResourceTypes.FrameResource
             ReadFromFile(reader);
         }
 
+        public FrameObjectComponent_U005(FrameObjectComponent_U005 other) : base(other)
+        {
+            unk01 = other.unk01;
+        }
+
         public override void ReadFromFile(BinaryReader reader)
         {
             base.ReadFromFile(reader);

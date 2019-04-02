@@ -20,6 +20,11 @@ namespace ResourceTypes.FrameResource
             ReadFromFile(reader);
         }
 
+        public FrameObjectDummy(FrameObjectDummy other) : base(other)
+        {
+            bounds = other.bounds;
+        }
+
         public FrameObjectDummy() : base()
         {
             bounds = new BoundingBox();

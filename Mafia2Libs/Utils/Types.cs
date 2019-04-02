@@ -353,6 +353,13 @@ namespace Utils.Types
             this.index = index;
         }
 
+        public ParentStruct(ParentStruct other)
+        {
+            index = other.index;
+            name = other.name;
+            refID = other.refID;
+        }
+
         public override string ToString()
         {
             if (index == -1)
@@ -384,6 +391,21 @@ namespace Utils.Types
         public TransformMatrix(BinaryReader reader)
         {
             ReadFromFile(reader);
+        }
+
+        public TransformMatrix(TransformMatrix other)
+        {
+            Rotation = new Matrix33();
+            Rotation.M00 = other.Rotation.M00;
+            Rotation.M01 = other.Rotation.M01;
+            Rotation.M02 = other.Rotation.M02;
+            Rotation.M10 = other.Rotation.M10;
+            Rotation.M11 = other.Rotation.M11;
+            Rotation.M12 = other.Rotation.M12;
+            Rotation.M20 = other.Rotation.M20;
+            Rotation.M21 = other.Rotation.M21;
+            Rotation.M22 = other.Rotation.M22;
+            Position = new Vector3(other.Position.X, other.Position.Y, other.Position.Z);
         }
 
         /// <summary>
@@ -463,6 +485,13 @@ namespace Utils.Types
             S1 = ushort.MaxValue;
             S2 = ushort.MaxValue;
             S3 = ushort.MaxValue;
+        }
+
+        public Short3(Short3 other)
+        {
+            S1 = other.S1;
+            S2 = other.S2;
+            S3 = other.S3;
         }
 
         /// <summary>

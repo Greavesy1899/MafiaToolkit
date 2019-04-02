@@ -32,7 +32,7 @@ namespace ResourceTypes.FrameResource
         Dictionary<int, FrameSkeletonHierachy> frameSkeletonHierachies = new Dictionary<int, FrameSkeletonHierachy>();
         Dictionary<int, object> frameObjects = new Dictionary<int, object>();
         //Dictionary<int, object> FrameEntries = new Dictionary<int, object>();
-        List<FrameHolder> NewFrames = new List<FrameHolder>();
+        List<FrameHolder> newFrames = new List<FrameHolder>();
 
         public FrameHeader Header {
             get { return header; }
@@ -65,6 +65,10 @@ namespace ResourceTypes.FrameResource
         public Dictionary<int, object> FrameObjects {
             get { return frameObjects; }
             set { frameObjects = value; }
+        }
+        public List<FrameHolder> NewFrames {
+            get { return newFrames; }
+            set { newFrames = value; }
         }
 
 
@@ -613,7 +617,7 @@ namespace ResourceTypes.FrameResource
                     mesh.MeshIndex = GetLocalEntryFromRefID(updatedFrames, block.Refs["Mesh"]).Idx;
                     mesh.BlendInfoIndex = GetLocalEntryFromRefID(updatedFrames, block.Refs["BlendInfo"]).Idx;
                     mesh.SkeletonIndex = GetLocalEntryFromRefID(updatedFrames, block.Refs["Skeleton"]).Idx;
-                    mesh.SkeletonHierachyIndex = GetLocalEntryFromRefID(updatedFrames, block.Refs["SkeletonHierarchy"]).Idx;
+                    mesh.SkeletonHierachyIndex = GetLocalEntryFromRefID(updatedFrames, block.Refs["SkeletonHierachy"]).Idx;
                     block = mesh;
                     Console.WriteLine(string.Format("Updated: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
                 }

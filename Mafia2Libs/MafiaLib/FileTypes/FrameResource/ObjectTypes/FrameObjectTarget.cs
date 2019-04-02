@@ -21,6 +21,12 @@ namespace ResourceTypes.FrameResource
         {
         }
 
+        public FrameObjectTarget(FrameObjectTarget other) : base(other)
+        {
+            unk01 = other.unk01;
+            unk02 = other.unk02;
+        }
+
         public FrameObjectTarget(BinaryReader reader) : base()
         {
             ReadFromFile(reader);

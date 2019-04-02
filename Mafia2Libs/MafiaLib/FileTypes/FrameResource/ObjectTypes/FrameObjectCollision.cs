@@ -22,6 +22,11 @@ namespace ResourceTypes.FrameResource
             hash = 0;
         }
 
+        public FrameObjectCollision(FrameObjectCollision other) : base(other)
+        {
+            hash = other.hash;
+        }
+
         public override void ReadFromFile(BinaryReader reader)
         {
             base.ReadFromFile(reader);

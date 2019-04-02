@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Mafia2;
 using SharpDX;
 using Utils.SharpDXExtensions;
 
@@ -47,6 +46,14 @@ namespace ResourceTypes.FrameResource
             unk02 = 0;
             unkFloats = new Vector4[unk02];
             unkBounds = new BoundingBox();
+        }
+
+        public FrameObjectArea(FrameObjectArea other) : base(other)
+        {
+            unk01 = other.unk01;
+            unk02 = other.unk02;
+            unkFloats = other.unkFloats;
+            unkBounds = other.unkBounds;
         }
 
         public override void ReadFromFile(BinaryReader reader)
