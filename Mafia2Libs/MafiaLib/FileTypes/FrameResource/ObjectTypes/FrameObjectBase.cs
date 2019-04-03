@@ -84,7 +84,7 @@ namespace ResourceTypes.FrameResource
             UpdateNode();
         }
 
-        public FrameObjectBase(FrameObjectBase other) : base()
+        public FrameObjectBase(FrameObjectBase other) : base(other)
         {
             name = new Hash(other.name.String);
             unk0 = other.unk0;

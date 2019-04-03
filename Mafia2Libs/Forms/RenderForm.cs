@@ -233,6 +233,44 @@ namespace Mafia2Tool
             }
         }
 
+        private RenderBoundingBox BuildRenderBounds(FrameObjectDummy dummy)
+        {
+            RenderBoundingBox dummyBBox = new RenderBoundingBox();
+            dummyBBox.SetTransform(dummy.Matrix.Position, dummy.Matrix.Rotation);
+            dummyBBox.Init(dummy.Bounds);
+            return dummyBBox;
+        }
+
+        private RenderBoundingBox BuildRenderBounds(FrameObjectArea area)
+        {
+            RenderBoundingBox areaBBox = new RenderBoundingBox();
+            areaBBox.SetTransform(area.Matrix.Position, area.Matrix.Rotation);
+            areaBBox.Init(area.Bounds);
+            return areaBBox;
+        }
+
+        private RenderModel BuildRenderModel(FrameObjectSingleMesh mesh)
+        {
+            if (mesh.MaterialIndex == -1 && mesh.MeshIndex == -1)
+                return null;
+
+            FrameGeometry geom = SceneData.FrameResource.FrameGeometries[mesh.Refs["Mesh"]];
+            FrameMaterial mat = SceneData.FrameResource.FrameMaterials[mesh.Refs["Material"]];
+            IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
+            VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
+
+            //we need to retrieve buffers first.
+            for (int c = 0; c != geom.LOD.Length; c++)
+            {
+                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
+                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
+            }
+
+            RenderModel model = new RenderModel();
+            model.ConvertFrameToRenderModel(mesh, geom, mat, indexBuffers, vertexBuffers);
+            return model;
+        }
+
         private void BuildRenderObjects()
         {
             Dictionary<int, RenderModel> meshes = new Dictionary<int, RenderModel>();
@@ -246,43 +284,24 @@ namespace Mafia2Tool
                 if (fObject.GetType() == typeof(FrameObjectSingleMesh) || fObject.GetType() == typeof(FrameObjectModel))
                 {
                     FrameObjectSingleMesh mesh = (fObject as FrameObjectSingleMesh);
+                    RenderModel model = BuildRenderModel(mesh);
 
-                    if (mesh.MaterialIndex == -1 && mesh.MeshIndex == -1)
+                    if (model == null)
                         continue;
 
-                    FrameGeometry geom = SceneData.FrameResource.FrameGeometries[mesh.Refs["Mesh"]];
-                    FrameMaterial mat = SceneData.FrameResource.FrameMaterials[mesh.Refs["Material"]];
-                    IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
-                    VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
-
-                    //we need to retrieve buffers first.
-                    for (int c = 0; c != geom.LOD.Length; c++)
-                    {
-                        indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
-                        vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
-                    }
-
-                    RenderModel model = new RenderModel();
-                    model.ConvertFrameToRenderModel(mesh, geom, mat, indexBuffers, vertexBuffers);
                     meshes.Add(fObject.RefID, model);
                 }
 
                 if (fObject.GetType() == typeof(FrameObjectArea))
                 {
                     FrameObjectArea area = (fObject as FrameObjectArea);
-                    RenderBoundingBox areaBBox = new RenderBoundingBox();
-                    areaBBox.SetTransform(area.Matrix.Position, area.Matrix.Rotation);
-                    areaBBox.Init(area.Bounds);
-                    areas.Add(fObject.RefID, areaBBox);
+                    areas.Add(fObject.RefID, BuildRenderBounds(area));
                 }
 
                 if (fObject.GetType() == typeof(FrameObjectDummy))
                 {
                     FrameObjectDummy dummy = (fObject as FrameObjectDummy);
-                    RenderBoundingBox dummyBBox = new RenderBoundingBox();
-                    dummyBBox.SetTransform(dummy.Matrix.Position, dummy.Matrix.Rotation);
-                    dummyBBox.Init(dummy.Bounds);
-                    dummies.Add(fObject.RefID, dummyBBox);
+                    dummies.Add(fObject.RefID, BuildRenderBounds(dummy));
 
                 }
             }
@@ -582,14 +601,94 @@ namespace Mafia2Tool
         {
             EntryMenuStrip.Items[0].Visible = false;
             EntryMenuStrip.Items[1].Visible = false;
+            EntryMenuStrip.Items[2].Visible = false;
 
             if (treeView1.SelectedNode == null)
-                e.Cancel = true;
+                e.Cancel = false;
 
             if(!e.Cancel)
             {
                 EntryMenuStrip.Items[0].Visible = true;
                 EntryMenuStrip.Items[1].Visible = true;
+                EntryMenuStrip.Items[2].Visible = true;
+            }
+        }
+
+        private void DuplicateButton_Click(object sender, EventArgs e)
+        {
+            TreeNode node = treeView1.SelectedNode;
+            FrameObjectBase newEntry = null;
+
+            //is this even needed? hmm.
+            if (node.Tag.GetType() == typeof(FrameObjectArea))
+            {
+                newEntry = new FrameObjectArea((FrameObjectArea)node.Tag);
+                FrameObjectArea area = (newEntry as FrameObjectArea);
+                Graphics.Areas.Add(area.RefID, BuildRenderBounds(area));
+            }
+            else if (node.Tag.GetType() == typeof(FrameObjectCamera))
+                newEntry = new FrameObjectCamera((FrameObjectCamera)node.Tag);
+            else if (node.Tag.GetType() == typeof(FrameObjectCollision))
+                newEntry = new FrameObjectCollision((FrameObjectCollision)node.Tag);
+            else if (node.Tag.GetType() == typeof(FrameObjectComponent_U005))
+                newEntry = new FrameObjectComponent_U005((FrameObjectComponent_U005)node.Tag);
+            else if (node.Tag.GetType() == typeof(FrameObjectDummy))
+            {
+                newEntry = new FrameObjectDummy((FrameObjectDummy)node.Tag);
+                FrameObjectDummy dummy = (newEntry as FrameObjectDummy);
+                Graphics.Dummies.Add(dummy.RefID, BuildRenderBounds(dummy));
+            }
+            else if (node.Tag.GetType() == typeof(FrameObjectDeflector))
+                newEntry = new FrameObjectDeflector((FrameObjectDeflector)node.Tag);
+            else if (node.Tag.GetType() == typeof(FrameObjectDummy))
+                newEntry = new FrameObjectDummy((FrameObjectDummy)node.Tag);
+            else if (node.Tag.GetType() == typeof(FrameObjectFrame))
+                newEntry = new FrameObjectFrame((FrameObjectFrame)node.Tag);
+            else if (node.Tag.GetType() == typeof(FrameObjectJoint))
+                newEntry = new FrameObjectJoint((FrameObjectJoint)node.Tag);
+            else if (node.Tag.GetType() == typeof(FrameObjectLight))
+                newEntry = new FrameObjectLight((FrameObjectLight)node.Tag);
+            else if (node.Tag.GetType() == typeof(FrameObjectModel))
+            {
+                newEntry = new FrameObjectModel((FrameObjectModel)node.Tag);
+                FrameObjectSingleMesh mesh = (newEntry as FrameObjectSingleMesh);
+                RenderModel model = BuildRenderModel(mesh);
+                Graphics.Models.Add(mesh.RefID, model);
+            }
+            else if (node.Tag.GetType() == typeof(FrameObjectSector))
+                newEntry = new FrameObjectSector((FrameObjectSector)node.Tag);
+            else if (node.Tag.GetType() == typeof(FrameObjectSingleMesh))
+            {
+                newEntry = new FrameObjectSingleMesh((FrameObjectSingleMesh)node.Tag);
+                FrameObjectSingleMesh mesh = (newEntry as FrameObjectSingleMesh);
+                RenderModel model = BuildRenderModel(mesh);
+                Graphics.Models.Add(mesh.RefID, model);
+            }
+            else if (node.Tag.GetType() == typeof(FrameObjectTarget))
+                newEntry = new FrameObjectTarget((FrameObjectTarget)node.Tag);
+            else
+                newEntry = new FrameObjectBase((FrameObjectBase)node.Tag);
+
+            newEntry.Name.Set(newEntry.Name.String + "_dupe");
+            TreeNode tNode = new TreeNode(newEntry.ToString());
+            tNode.Tag = newEntry;
+            tNode.Name = newEntry.RefID.ToString();
+            treeView1.Nodes.Find(newEntry.ParentIndex2.RefID.ToString(), true)[0].Nodes.Add(tNode);
+
+            FrameObjectBase obj1;
+
+            foreach (TreeNode node1 in treeView1.Nodes)
+            {
+                obj1 = (node1.Tag as FrameObjectBase);
+                TransformMatrix matrix = ((obj1 != null) ? obj1.Matrix : new TransformMatrix());
+
+                if (obj1 != null)
+                    UpdateRenderedObjects(matrix, obj1);
+
+                foreach (TreeNode cNode in node1.Nodes)
+                {
+                    UpdateChildRenderNodes(cNode, matrix);
+                }
             }
         }
     }

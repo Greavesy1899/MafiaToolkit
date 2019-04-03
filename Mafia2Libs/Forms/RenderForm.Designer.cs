@@ -43,6 +43,7 @@ namespace Mafia2Tool
             this.TEMPCameraSpeed = new System.Windows.Forms.ToolStripTextBox();
             this.EntryMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteButton = new System.Windows.Forms.ToolStripMenuItem();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -66,11 +67,11 @@ namespace Mafia2Tool
             this.PositionYLabel = new System.Windows.Forms.Label();
             this.PositionXBox = new System.Windows.Forms.TextBox();
             this.PositionXLabel = new System.Windows.Forms.Label();
+            this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
             this.DebugPG = new System.Windows.Forms.TabPage();
             this.DebugPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.RenderPanel = new System.Windows.Forms.Panel();
-            this.DeleteButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
+            this.DuplicateButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolbarStrip.SuspendLayout();
             this.EntryMenuStrip.SuspendLayout();
             this.StatusStrip.SuspendLayout();
@@ -168,9 +169,10 @@ namespace Mafia2Tool
             // 
             this.EntryMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.PreviewButton,
-            this.DeleteButton});
+            this.DeleteButton,
+            this.DuplicateButton});
             this.EntryMenuStrip.Name = "EntryMenuStrip";
-            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 70);
+            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 92);
             this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
             // 
             // PreviewButton
@@ -179,6 +181,13 @@ namespace Mafia2Tool
             this.PreviewButton.Size = new System.Drawing.Size(180, 22);
             this.PreviewButton.Text = "Preview";
             this.PreviewButton.Click += new System.EventHandler(this.PreviewButton_Click);
+            // 
+            // DeleteButton
+            // 
+            this.DeleteButton.Name = "DeleteButton";
+            this.DeleteButton.Size = new System.Drawing.Size(180, 22);
+            this.DeleteButton.Text = "Delete";
+            this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
             // 
             // StatusStrip
             // 
@@ -407,6 +416,15 @@ namespace Mafia2Tool
             this.PositionXLabel.TabIndex = 0;
             this.PositionXLabel.Text = "Position X";
             // 
+            // FrameNameTableFlags
+            // 
+            this.FrameNameTableFlags.CheckOnClick = true;
+            this.FrameNameTableFlags.FormattingEnabled = true;
+            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
+            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
+            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
+            this.FrameNameTableFlags.TabIndex = 16;
+            // 
             // DebugPG
             // 
             this.DebugPG.Controls.Add(this.DebugPropertyGrid);
@@ -434,21 +452,12 @@ namespace Mafia2Tool
             this.RenderPanel.Size = new System.Drawing.Size(530, 403);
             this.RenderPanel.TabIndex = 0;
             // 
-            // DeleteButton
+            // DuplicateButton
             // 
-            this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(180, 22);
-            this.DeleteButton.Text = "Delete";
-            this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
-            // 
-            // FrameNameTableFlags
-            // 
-            this.FrameNameTableFlags.CheckOnClick = true;
-            this.FrameNameTableFlags.FormattingEnabled = true;
-            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
-            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
-            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
-            this.FrameNameTableFlags.TabIndex = 16;
+            this.DuplicateButton.Name = "DuplicateButton";
+            this.DuplicateButton.Size = new System.Drawing.Size(180, 22);
+            this.DuplicateButton.Text = "Duplicate";
+            this.DuplicateButton.Click += new System.EventHandler(this.DuplicateButton_Click);
             // 
             // D3DForm
             // 
@@ -520,5 +529,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripTextBox TEMPCameraSpeed;
         private System.Windows.Forms.ToolStripMenuItem DeleteButton;
+        private System.Windows.Forms.ToolStripMenuItem DuplicateButton;
     }
 }

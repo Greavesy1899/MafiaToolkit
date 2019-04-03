@@ -41,6 +41,7 @@ namespace Utils.Settings
         public const string DiscordLibLocation = "libs/discord-rpc";
         public static bool LoggingEnabled;
         public static int Language;
+        public static int SerializeSDSOption;
 
         /// <summary>
         /// Read and store settings.
@@ -55,6 +56,7 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("ElapsedTimeEnabled", "Discord", "True"), out DiscordElapsedTimeEnabled);
             bool.TryParse(ReadKey("StateEmabled", "Discord", "True"), out DiscordStateEnabled);
             bool.TryParse(ReadKey("DetailsEnabled", "Discord", "True"), out DiscordDetailsEnabled);
+            int.TryParse(ReadKey("SerializeOption", "SDS", "0"), out SerializeSDSOption);
             bool.TryParse(ReadKey("VSync", "ModelViewer", "True"), out VSync);
             float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "10000"), out ScreenDepth);
             float.TryParse(ReadKey("ScreenNear", "ModelViewer", "1"), out ScreenNear);

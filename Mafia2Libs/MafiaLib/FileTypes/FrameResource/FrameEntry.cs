@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Mafia2;
+using System.Linq;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.FrameResource
@@ -28,6 +29,17 @@ namespace ResourceTypes.FrameResource
         public FrameEntry()
         {
             refID = StringHelpers.RandomGenerator.Next();
+        }
+
+        public FrameEntry(FrameEntry entry)
+        {
+            refID = StringHelpers.RandomGenerator.Next();
+            refs = new Dictionary<string, int>();
+
+            for(int i = 0; i != entry.refs.Count; i++)
+            {
+                refs.Add(entry.refs.ElementAt(i).Key, entry.refs.ElementAt(i).Value);
+            }
         }
 
         /// <summary>
