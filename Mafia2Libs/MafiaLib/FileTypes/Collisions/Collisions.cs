@@ -257,10 +257,10 @@ namespace ResourceTypes.Collisions
         {
             string nxs;
             string mesh;
-            int num1;
-            int num2;
-            float unkSmall;
-            int num3;
+            int ver;
+            MeshSerialFlags flags;
+            float convexEdgeThreshold;
+            int maxVertices;
             int num4;
 
             int nPoints;
@@ -268,16 +268,15 @@ namespace ResourceTypes.Collisions
 
             protected Vector3[] points;
             protected uint[] indices; //or some linking thing
-            protected CollisionMaterials[] unkShorts; //COULD be materialIDs
+            protected CollisionMaterials[] materials; //COULD be materialIDs
 
-            int num5;
+            int max;
+            int[] remapData;
 
-            short[] unkBytes;
-
-            int unk0;
-            byte[] unkData;
-
-            int unk1;
+            int numConvexParts;
+            int numFlatParts;
+            private short[] convexParts;
+            private short[] flatParts;
 
             HBMOPCDataClass opcHbmData;
             private BoundingBox boundingBox;
@@ -285,24 +284,22 @@ namespace ResourceTypes.Collisions
             private float[] unkFloats;
             private int unkSize;
             private byte[] unkSizeData;
-            private short[] unkShortSectorData;
-            private byte[] unkByteSectorData;
 
-            public float UnkSmall {
-                get { return unkSmall; }
-                set { unkSmall = value; }
+            public float ConvexEdgeThreshold {
+                get { return convexEdgeThreshold; }
+                set { convexEdgeThreshold = value; }
             }
-            public int Num1 {
-                get { return num1; }
-                set { num1 = value; }
+            public int Version {
+                get { return ver; }
+                set { ver = value; }
             }
-            public int Num2 {
-                get { return num2; }
-                set { num2 = value; }
+            public MeshSerialFlags Flags {
+                get { return flags; }
+                set { flags = value; }
             }
-            public int Num3 {
-                get { return num3; }
-                set { num3 = value; }
+            public int MaxVertices {
+                get { return maxVertices; }
+                set { maxVertices = value; }
             }
             public int Num4 {
                 get { return num4; }
@@ -317,20 +314,16 @@ namespace ResourceTypes.Collisions
                 set { indices = value; }
             }
             public CollisionMaterials[] Materials {
-                get { return unkShorts; }
-                set { unkShorts = value; }
+                get { return materials; }
+                set { materials = value; }
             }
-            public int Num5 {
-                get { return num5; }
-                set { num5 = value; }
+            public int RemapMax {
+                get { return max; }
+                set { max = value; }
             }
-            public byte[] UnkData {
-                get { return unkData; }
-                set { unkData = value; }
-            }
-            public short[] UnkBytes {
-                get { return unkBytes; }
-                set { unkBytes = value; }
+            public int[] RemapData {
+                get { return remapData; }
+                set { remapData = value; }
             }
             public HBMOPCDataClass OPCHBMData {
                 get { return opcHbmData; }
@@ -356,21 +349,21 @@ namespace ResourceTypes.Collisions
                 get { return unkSizeData; }
                 set { unkSizeData = value; }
             }
-            public short[] UnkShortSectorData {
-                get { return unkShortSectorData; }
-                set { unkShortSectorData = value; }
+            public short[] ConvexParts {
+                get { return convexParts; }
+                set { convexParts = value; }
             }
-            public byte[] UnkByteSectorData {
-                get { return unkByteSectorData; }
-                set { unkByteSectorData = value; }
+            public short[] FlatParts {
+                get { return flatParts; }
+                set { flatParts = value; }
             }
-            public int Unk0 {
-                get { return unk0; }
-                set { unk0 = value; }
+            public int NumConvexParts {
+                get { return numConvexParts; }
+                set { numConvexParts = value; }
             }
-            public int Unk1 {
-                get { return unk1; }
-                set { unk1 = value; }
+            public int NumFlatParts {
+                get { return numFlatParts; }
+                set { numFlatParts = value; }
             }
 
             public MeshData(BinaryReader reader, Section[] sections)
@@ -386,10 +379,10 @@ namespace ResourceTypes.Collisions
             {
                 nxs = new string(reader.ReadChars(4));
                 mesh = new string(reader.ReadChars(4));
-                num1 = reader.ReadInt32();
-                num2 = reader.ReadInt32();
-                unkSmall = reader.ReadSingle();
-                num3 = reader.ReadInt32();
+                ver = reader.ReadInt32();
+                flags = (MeshSerialFlags)reader.ReadInt32();
+                convexEdgeThreshold = reader.ReadSingle();
+                maxVertices = reader.ReadInt32();
                 num4 = reader.ReadInt32();
 
                 nPoints = reader.ReadInt32();
@@ -397,74 +390,65 @@ namespace ResourceTypes.Collisions
 
                 points = new Vector3[nPoints];
                 indices = new uint[nTriangles*3];
-                unkShorts = new CollisionMaterials[nTriangles];
+                materials = new CollisionMaterials[nTriangles];
 
                 for (int i = 0; i != points.Length; i++)
                     points[i] = Vector3Extenders.ReadFromFile(reader);
 
+                if (flags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES) || flags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
+                    throw new Exception("Unsupported! 8bit or 16bit indices");
+
                 for (int i = 0; i != indices.Length; i++)
                     indices[i] = reader.ReadUInt32();
 
-                for (int i = 0; i != unkShorts.Length; i++)
-                    unkShorts[i] = (CollisionMaterials)reader.ReadInt16();
-
-                //bool overTri1 = false;
-
-                if (num2 == 3)
+                if (flags.HasFlag(MeshSerialFlags.MSF_MATERIALS))
                 {
-                    num5 = reader.ReadInt32();
+                    for (int i = 0; i != materials.Length; i++)
+                        materials[i] = (CollisionMaterials)reader.ReadInt16();
+                }
 
-                    if (nTriangles <= 256)
+                if (flags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP))
+                {
+                    max = reader.ReadInt32();
+                    remapData = new int[nTriangles];
+
+                    for (int i = 0; i < nTriangles; i++)
                     {
-                        unkData = new byte[nTriangles];
+                        if (max > 0xFFFF)
+                            remapData[i] = reader.ReadInt32();
+                        else if (max > 0xFF)
+                            remapData[i] = reader.ReadInt16();
+                        else
+                            remapData[i] = reader.ReadByte();
+                    }
+                }
+
+                numConvexParts = reader.ReadInt32();
+                numFlatParts = reader.ReadInt32();
+
+                if (numConvexParts > 0)
+                {
+                    convexParts = new short[nTriangles];
+                    for (int i = 0; i != nTriangles; i++)
+                        convexParts[i] = reader.ReadInt16();
+                }
+                if (numFlatParts > 0)
+                {
+                    if (numFlatParts < 256)
+                    {
+                        flatParts = new short[nTriangles];
                         for (int i = 0; i != nTriangles; i++)
-                            unkData[i] = reader.ReadByte();
+                            flatParts[i] = reader.ReadByte();
                     }
                     else
                     {
-                        unkBytes = new short[nTriangles];
+                        flatParts = new short[nTriangles];
                         for (int i = 0; i != nTriangles; i++)
-                            unkBytes[i] = reader.ReadInt16();
+                            flatParts[i] = reader.ReadInt16();
                     }
-
-                    //OLD METHOD::
-                    //if (num5 != nTriangles - 1)
-                    //{
-                    //    overTri1 = true;
-                    //}
                 }
 
-
-                unk0 = reader.ReadInt32();
-                unk1 = reader.ReadInt32();
-                long curPosition = reader.BaseStream.Position;
-                unkShortSectorData = new short[nTriangles];
-
-                for (int i = 0; i != nTriangles; i++)
-                    unkShortSectorData[i] = reader.ReadInt16();
-
-                unkByteSectorData = reader.ReadBytes(nTriangles);
-                long finalPosition = reader.BaseStream.Position;
-
-                int total = 0;
-
-                //OLD METHOD:
-                //if (overTri1)
-                //{
-                //    unkShortSectorData = new short[nTriangles];
-
-                //    for (int i = 0; i != nTriangles; i++)
-                //        unkShortSectorData[i] = reader.ReadInt16();
-
-                //    unkByteSectorData = reader.ReadBytes(nTriangles);
-                //}
-                //else
-                //{
-                //    for (int i = 0; i != sections.Length; i++)
-                //        sections[i].EdgeData = reader.ReadBytes(sections[i].NumEdges);
-                //}
-
-                opcHbmData = new HBMOPCDataClass(reader);
+               opcHbmData = new HBMOPCDataClass(reader);
 
                 unkFloats = new float[14];
                 unkFloats[0] = reader.ReadSingle();
@@ -485,10 +469,10 @@ namespace ResourceTypes.Collisions
             {
                 writer.Write(22239310);
                 writer.Write(1213416781);
-                writer.Write(num1);
-                writer.Write(num2);
-                writer.Write(unkSmall);
-                writer.Write(num3);
+                writer.Write(ver);
+                writer.Write((int)flags);
+                writer.Write(convexEdgeThreshold);
+                writer.Write(maxVertices);
                 writer.Write(num4);
 
                 writer.Write(nPoints);
@@ -500,53 +484,49 @@ namespace ResourceTypes.Collisions
                 for (int i = 0; i != indices.Length * 3; i++)
                     writer.Write(indices[i]);
 
-                for (int i = 0; i != unkShorts.Length; i++)
-                    writer.Write((short)unkShorts[i]);
-
-                //bool overTri1 = false;
-
-                if (num2 == 3)
+                if (flags.HasFlag(MeshSerialFlags.MSF_MATERIALS))
                 {
-                    writer.Write(num5);
-                    if(nTriangles <= 256)
+                    for (int i = 0; i != materials.Length; i++)
+                        writer.Write((short)materials[i]);
+                }
+
+                if (flags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP))
+                {
+                    writer.Write(max);
+                    remapData = new int[nTriangles];
+
+                    for (int i = 0; i < nTriangles; i++)
                     {
-                        writer.Write(unkData);
+                        if (max > 0xFFFF)
+                            writer.Write(remapData[i]);
+                        else if (max > 0xFF)
+                            writer.Write((short)remapData[i]);
+                        else
+                            writer.Write((byte)remapData[i]);
+                    }
+                }
+
+                writer.Write(numConvexParts);
+                writer.Write(numFlatParts);
+
+                if (numConvexParts > 0)
+                {
+                    for (int i = 0; i != nTriangles; i++)
+                        writer.Write(convexParts[i]);
+                }
+                if (numFlatParts > 0)
+                {
+                    if (numFlatParts < 256)
+                    {
+                        for (int i = 0; i != nTriangles; i++)
+                            writer.Write((byte)flatParts[i]);
                     }
                     else
                     {
-                        for(int i = 0; i != indices.Length; i++)
-                            writer.Write(UnkBytes[i]);
+                        for (int i = 0; i != nTriangles; i++)
+                            writer.Write(flatParts[i]);
                     }
-
-                    //OLD METHOD::
-                    //if (num5 != nTriangles - 1)
-                    //{
-                    //    overTri1 = true;
-                    //}
                 }
-
-                writer.Write(unk0);
-                writer.Write(unk1);
-
-                for (int i = 0; i != nTriangles; i++)
-                    writer.Write(unkShortSectorData[i]);
-
-                writer.Write(UnkByteSectorData);
-
-                //OLD METHOD::
-                //if (overTri1)
-                //{
-                //    for (int i = 0; i != nTriangles; i++)
-                //        writer.Write(unkShortSectorData[i]);
-
-                //    writer.Write(UnkByteSectorData);
-                //}
-                //else
-                //{
-                //    //sections for 2 is 186811
-                //    for (int i = 0; i != sections.Length; i++)
-                //        writer.Write(sections[i].EdgeData);
-                //}
 
                 opcHbmData.WriteToFile(writer);
 
@@ -567,51 +547,41 @@ namespace ResourceTypes.Collisions
 
                 //header data is 36 bytes long;
                 size += 36;
+                size += (points.Length * 12);
+                size += (indices.Length * 12);
 
-                for (int i = 0; i != points.Length; i++)
-                    size += 12;
+                if (flags.HasFlag(MeshSerialFlags.MSF_MATERIALS))
+                    size += (materials.Length * 2);
 
-                for (int i = 0; i != indices.Length; i++)
-                    size += 12;
-
-                for (int i = 0; i != unkShorts.Length; i++)
-                    size += 2;
-
-                bool overTri1 = false;
-
-                if (num2 == 3)
+                if (flags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP))
                 {
                     size += 4;
-                    if (nTriangles <= 256)
-                    {
-                        size += unkData.Length;
-                    }
-                    else
-                    {
-                        size += (unkBytes.Length * 2); //unkbytes is 'short' array;
-                    }
 
-                    if (num5 != nTriangles - 1)
-                    {
-                        overTri1 = true;
-                    }
+                    if (max > 0xFFFF)
+                        size += (4 * nTriangles);
+                    else if (max > 0xFF)
+                        size += (2 * nTriangles);
+                    else
+                        size += (nTriangles);
                 }
 
                 //unk0 and unk1;
                 size += 8;
 
-                size += (nTriangles * 3);
+                if (numConvexParts > 0)
+                    size += (2 * nTriangles);
 
-                //OLD
-                //if (overTri1)
-                //{
-                //    size += (nTriangles * 3);
-                //}
-                //else
-                //{
-                //    for (int i = 0; i != sections.Length; i++)
-                //        size += sections[i].NumEdges;
-                //}
+                if (numFlatParts > 0)
+                {
+                    if (numFlatParts < 256)
+                    {
+                        size += (nTriangles);
+                    }
+                    else
+                    {
+                        size += (2 * nTriangles);
+                    }
+                }
 
                 size += 4; //opcSize;
                 opcHbmData.GetSize(ref size);
@@ -627,10 +597,10 @@ namespace ResourceTypes.Collisions
                 nxs = Convert.ToString(22239310);
                 mesh = Convert.ToString(1213416781);
 
-                num1 = 1;
-                num2 = 3;
-                unkSmall = 0.001f;
-                num3 = 255;
+                ver = 1;
+                //flags = 3;
+                convexEdgeThreshold = 0.001f;
+                maxVertices = 255;
                 num4 = 0;
 
                 List<uint> ltriangles = new List<uint>();
@@ -649,18 +619,18 @@ namespace ResourceTypes.Collisions
                 nPoints = model.Vertices.Length;
                 nTriangles = ltriangles.Count;
 
-                if (num2 == 3)
-                {
-                    num5 = nTriangles - 1;
-                    if (nTriangles <= 256)
-                    {
-                        UnkData = new byte[nTriangles];
-                    }
-                    else
-                    {
-                        unkBytes = new short[nTriangles];
-                    }
-                }
+                //if (flags == 3)
+                //{
+                //    num5 = nTriangles - 1;
+                //    if (nTriangles <= 256)
+                //    {
+                //        UnkData = new byte[nTriangles];
+                //    }
+                //    else
+                //    {
+                //        unkBytes = new short[nTriangles];
+                //    }
+                //}
 
                 points = new Vector3[nPoints];
 
@@ -668,13 +638,13 @@ namespace ResourceTypes.Collisions
                     points[i] = model.Vertices[i].Position;
 
                 indices = ltriangles.ToArray();
-                unkShorts = lmatTypes.ToArray();
+                materials = lmatTypes.ToArray();
 
-                unk0 = 1;
-                unk1 = 1;
+                numConvexParts = 1;
+                numFlatParts = 1;
 
-                unkShortSectorData = new short[nTriangles];
-                unkByteSectorData = new byte[nTriangles];
+                convexParts = new short[nTriangles];
+                //flatParts = new byte[nTriangles];
 
                 opcHbmData = new HBMOPCDataClass();
                 opcHbmData.BuildBasicOPCHBM();
@@ -938,21 +908,11 @@ namespace ResourceTypes.Collisions
                 public struct UnkOPCData
                 {
                     private short[] unkHalfs;
-                    private float[] unkFloats1;
-                    private float[] unkFloats2;
                     private int unkInt;
 
                     public short[] UnkHalfs {
                         get { return unkHalfs; }
                         set { unkHalfs = value; }
-                    }
-                    public float[] UnkFloats1 {
-                        get { return unkFloats1; }
-                        set { unkFloats1 = value; }
-                    }
-                    public float[] UnkFloats2 {
-                        get { return unkFloats2; }
-                        set { unkFloats2 = value; }
                     }
                     public int UnkInt {
                         get { return unkInt; }
@@ -962,8 +922,6 @@ namespace ResourceTypes.Collisions
                     public UnkOPCData(BinaryReader reader)
                     {
                         unkHalfs = new short[8];
-                        unkFloats1 = new float[8];
-                        unkFloats2 = new float[8];
 
                         for (int i = 0; i != unkHalfs.Length; i++)
                         {
@@ -971,15 +929,6 @@ namespace ResourceTypes.Collisions
                         }
 
                         unkInt = reader.ReadInt32();
-
-                        for (int i = 0; i != unkHalfs.Length; i++)
-                        {
-                            if (unkInt != 0 && unkHalfs[i] != 0)
-                            {
-                                unkFloats1[i] = unkHalfs[i] / unkInt;
-                                unkFloats2[i] = unkInt / unkHalfs[i];
-                            }
-                        }
                     }
                     public void WriteToFile(BinaryWriter writer)
                     {
