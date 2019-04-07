@@ -339,4 +339,26 @@ namespace Utils.Extensions
             return String.Format("{0:0.##} {1}", len, sizes[order]);
         }
     }
+
+    public static class BinaryReaderExtender
+    {
+        public static int ReadInt24(this BinaryReader reader)
+        {
+            byte[] bytes = reader.ReadBytes(3);
+            int value = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16);
+            return value;
+        }
+    }
+
+    public static class BinaryWriterExtender
+    {
+        public static void WriteInt24(this BinaryWriter writer, int value)
+        {
+            byte[] bytes = new byte[3];
+            bytes[0] = (byte)(value & 0xFF);
+            bytes[1] = (byte)(value >> 8);
+            bytes[2] = (byte)(value >> 16);
+            writer.Write(bytes);
+        }
+    }
 }
