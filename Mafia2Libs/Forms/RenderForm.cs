@@ -292,9 +292,7 @@ namespace Mafia2Tool
 
         private void BuildRenderObjects()
         {
-            Dictionary<int, RenderModel> meshes = new Dictionary<int, RenderModel>();
-            Dictionary<int, RenderBoundingBox> areas = new Dictionary<int, RenderBoundingBox>();
-            Dictionary<int, RenderBoundingBox> dummies = new Dictionary<int, RenderBoundingBox>();
+            Dictionary<int, IRenderer> assets = new Dictionary<int, IRenderer>();
 
             for (int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
             {
@@ -308,25 +306,23 @@ namespace Mafia2Tool
                     if (model == null)
                         continue;
 
-                    meshes.Add(fObject.RefID, model);
+                    assets.Add(fObject.RefID, model);
                 }
 
                 if (fObject.GetType() == typeof(FrameObjectArea))
                 {
                     FrameObjectArea area = (fObject as FrameObjectArea);
-                    areas.Add(fObject.RefID, BuildRenderBounds(area));
+                    assets.Add(fObject.RefID, BuildRenderBounds(area));
                 }
 
                 if (fObject.GetType() == typeof(FrameObjectDummy))
                 {
                     FrameObjectDummy dummy = (fObject as FrameObjectDummy);
-                    dummies.Add(fObject.RefID, BuildRenderBounds(dummy));
+                    assets.Add(fObject.RefID, BuildRenderBounds(dummy));
 
                 }
             }
-            Graphics.Models = meshes;
-            Graphics.Areas = areas;
-            Graphics.Dummies = dummies;
+            Graphics.InitObjectStack = assets;
             UpdateMatrices();
         }
 
@@ -629,7 +625,7 @@ namespace Mafia2Tool
             {
                 newEntry = new FrameObjectArea((FrameObjectArea)node.Tag);
                 FrameObjectArea area = (newEntry as FrameObjectArea);
-                Graphics.Areas.Add(area.RefID, BuildRenderBounds(area));
+                Graphics.InitObjectStack.Add(area.RefID, BuildRenderBounds(area));
             }
             else if (node.Tag.GetType() == typeof(FrameObjectCamera))
                 newEntry = new FrameObjectCamera((FrameObjectCamera)node.Tag);
@@ -641,7 +637,7 @@ namespace Mafia2Tool
             {
                 newEntry = new FrameObjectDummy((FrameObjectDummy)node.Tag);
                 FrameObjectDummy dummy = (newEntry as FrameObjectDummy);
-                Graphics.Dummies.Add(dummy.RefID, BuildRenderBounds(dummy));
+                Graphics.InitObjectStack.Add(dummy.RefID, BuildRenderBounds(dummy));
             }
             else if (node.Tag.GetType() == typeof(FrameObjectDeflector))
                 newEntry = new FrameObjectDeflector((FrameObjectDeflector)node.Tag);
@@ -658,7 +654,7 @@ namespace Mafia2Tool
                 newEntry = new FrameObjectModel((FrameObjectModel)node.Tag);
                 FrameObjectSingleMesh mesh = (newEntry as FrameObjectSingleMesh);
                 RenderModel model = BuildRenderModel(mesh);
-                Graphics.Models.Add(mesh.RefID, model);
+                Graphics.InitObjectStack.Add(mesh.RefID, model);
             }
             else if (node.Tag.GetType() == typeof(FrameObjectSector))
                 newEntry = new FrameObjectSector((FrameObjectSector)node.Tag);
@@ -667,7 +663,7 @@ namespace Mafia2Tool
                 newEntry = new FrameObjectSingleMesh((FrameObjectSingleMesh)node.Tag);
                 FrameObjectSingleMesh mesh = (newEntry as FrameObjectSingleMesh);
                 RenderModel model = BuildRenderModel(mesh);
-                Graphics.Models.Add(mesh.RefID, model);
+                Graphics.InitObjectStack.Add(mesh.RefID, model);
             }
             else if (node.Tag.GetType() == typeof(FrameObjectTarget))
                 newEntry = new FrameObjectTarget((FrameObjectTarget)node.Tag);

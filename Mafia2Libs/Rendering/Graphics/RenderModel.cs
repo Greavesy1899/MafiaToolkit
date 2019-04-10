@@ -6,14 +6,13 @@ using Mafia2;
 using System.Collections.Generic;
 using ResourceTypes.FrameResource;
 using System.Diagnostics;
-using System.IO;
 using ResourceTypes.Materials;
 using ResourceTypes.BufferPools;
 using Utils.Types;
 
 namespace Rendering.Graphics
 {
-    public class RenderModel
+    public class RenderModel : IRenderer
     {
         public struct ModelPart
         {
@@ -24,10 +23,9 @@ namespace Rendering.Graphics
             public uint NumFaces;
             public BaseShader Shader;
         }
+
         public ShaderResourceView AOTexture { get; set; }
-        private Buffer VertexBuffer { get; set; }
-        private Buffer IndexBuffer { get; set; }
-        public RenderBoundingBox BoundingBox { get; private set; }
+        public RenderBoundingBox BoundingBox { get; set; }
 
         //new
         public struct LOD
@@ -38,8 +36,6 @@ namespace Rendering.Graphics
         }
 
         public LOD[] LODs { get; private set; }
-        public Matrix Transform { get; private set; }
-        public bool DoRender { get; set; }
 
         public RenderModel()
         {
@@ -61,29 +57,6 @@ namespace Rendering.Graphics
                 return false;
             }
             return true;
-        }
-
-        public void SetTransform(Vector3 position, Matrix33 rotation)
-        {
-            Matrix m_trans = Matrix.Identity;
-            m_trans[0, 0] = rotation.M00;
-            m_trans[0, 1] = rotation.M01;
-            m_trans[0, 2] = rotation.M02;
-            m_trans[1, 0] = rotation.M10;
-            m_trans[1, 1] = rotation.M11;
-            m_trans[1, 2] = rotation.M12;
-            m_trans[2, 0] = rotation.M20;
-            m_trans[2, 1] = rotation.M21;
-            m_trans[2, 2] = rotation.M22;
-            m_trans[3, 0] = position.X;
-            m_trans[3, 1] = position.Y;
-            m_trans[3, 2] = position.Z;
-            Transform = m_trans;
-        }
-
-        public void SetTransform(Matrix transform)
-        {
-            Transform = transform;
         }
 
         public bool ConvertFrameToRenderModel(FrameObjectSingleMesh mesh, FrameGeometry geom, FrameMaterial mats, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
@@ -198,15 +171,10 @@ namespace Rendering.Graphics
             SetupShaders();
             return true;
         }
-        public void Shutdown()
-        {
-            ReleaseTextures();
-            ShutdownBuffers();
-        }
         private bool InitBuffer(Device device)
         {
-            VertexBuffer = Buffer.Create(device, BindFlags.VertexBuffer, LODs[0].Vertices);
-            IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, LODs[0].Indices);
+            vertexBuffer = Buffer.Create(device, BindFlags.VertexBuffer, LODs[0].Vertices);
+            indexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, LODs[0].Indices);
 
             BoundingBox.InitBuffers(device);
             return true;
@@ -244,38 +212,45 @@ namespace Rendering.Graphics
                 LODs[0].ModelParts[x] = part;
             }
         }
-        private void ReleaseTextures()
+
+        public override void InitBuffers(Device d3d)
         {
-            for (int x = 0; x != LODs[0].ModelParts.Length; x++)
-            {
-                LODs[0].ModelParts[x].Texture?.Dispose();
-                LODs[0].ModelParts[x].Texture = null;
-            }
-            AOTexture?.Dispose();
-            AOTexture = null;
-        }
-        private void ReleaseModel()
-        {
-            LODs[0].Vertices = null;
-            LODs[0].Indices = null;
-            BoundingBox.Shutdown();
-        }
-        private void ShutdownBuffers()
-        {
-            BoundingBox.Shutdown();
-            VertexBuffer?.Dispose();
-            VertexBuffer = null;
-            IndexBuffer?.Dispose();
-            IndexBuffer = null;
+            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, LODs[0].Vertices);
+            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, LODs[0].Indices);
+
+            BoundingBox.InitBuffers(d3d);
         }
 
-        public void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void SetTransform(Vector3 position, Matrix33 rotation)
+        {
+            Matrix m_trans = Matrix.Identity;
+            m_trans[0, 0] = rotation.M00;
+            m_trans[0, 1] = rotation.M01;
+            m_trans[0, 2] = rotation.M02;
+            m_trans[1, 0] = rotation.M10;
+            m_trans[1, 1] = rotation.M11;
+            m_trans[1, 2] = rotation.M12;
+            m_trans[2, 0] = rotation.M20;
+            m_trans[2, 1] = rotation.M21;
+            m_trans[2, 2] = rotation.M22;
+            m_trans[3, 0] = position.X;
+            m_trans[3, 1] = position.Y;
+            m_trans[3, 2] = position.Z;
+            Transform = m_trans;
+        }
+
+        public override void SetTransform(Matrix matrix)
+        {
+            Transform = matrix;
+        }
+
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
         {
             if (!DoRender)
                 return;
 
-            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
-            deviceContext.InputAssembler.SetIndexBuffer(IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
+            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
+            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
@@ -285,6 +260,25 @@ namespace Rendering.Graphics
                 deviceContext.PixelShader.SetShaderResource(1, AOTexture);
                 LODs[0].ModelParts[i].Shader.Render(deviceContext, LODs[0].ModelParts[i].NumFaces * 3, LODs[0].ModelParts[i].StartIndex);
             }
+        }
+
+        public override void Shutdown()
+        {
+            LODs[0].Vertices = null;
+            LODs[0].Indices = null;
+            BoundingBox.Shutdown();
+            for (int x = 0; x != LODs[0].ModelParts.Length; x++)
+            {
+                LODs[0].ModelParts[x].Texture?.Dispose();
+                LODs[0].ModelParts[x].Texture = null;
+            }
+            AOTexture?.Dispose();
+            AOTexture = null;
+            BoundingBox.Shutdown();
+            vertexBuffer?.Dispose();
+            vertexBuffer = null;
+            indexBuffer?.Dispose();
+            indexBuffer = null;
         }
     }
 }

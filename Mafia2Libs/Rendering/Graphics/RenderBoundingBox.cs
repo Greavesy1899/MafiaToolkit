@@ -1,7 +1,6 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
-using Mafia2;
 using Utils.Types;
 
 namespace Rendering.Graphics
@@ -94,12 +93,12 @@ namespace Rendering.Graphics
             m_trans[3, 0] = position.X;
             m_trans[3, 1] = position.Y;
             m_trans[3, 2] = position.Z;
-            transform = m_trans;
+            Transform = m_trans;
         }
 
         public override void SetTransform(Matrix matrix)
         {
-            this.transform = matrix;
+            this.Transform = matrix;
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
@@ -111,7 +110,7 @@ namespace Rendering.Graphics
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
 
-            shader.SetSceneVariables(deviceContext, transform, camera, light);
+            shader.SetSceneVariables(deviceContext, Transform, camera, light);
             shader.Render(deviceContext, 12 * 3, 0);
         }
 
