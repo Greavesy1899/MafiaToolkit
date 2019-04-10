@@ -57,10 +57,10 @@ namespace Rendering.Graphics
                 model.Value.Init(D3D.Device);
 
             foreach (KeyValuePair<int, RenderBoundingBox> area in Areas)
-                area.Value.InitBuffer(D3D.Device);
+                area.Value.InitBuffers(D3D.Device);
 
             foreach (KeyValuePair<int, RenderBoundingBox> dummy in Dummies)
-                dummy.Value.InitBuffer(D3D.Device);
+                dummy.Value.InitBuffers(D3D.Device);
 
             Light = new LightClass();
             Light.SetAmbientColor(0.5f, 0.5f, 0.5f, 1f);
@@ -82,13 +82,13 @@ namespace Rendering.Graphics
                 model.Value?.Shutdown();
 
             foreach (KeyValuePair<int, RenderBoundingBox> area in Areas)
-                area.Value?.ShutdownBuffers();
+                area.Value?.Shutdown();
 
             foreach (KeyValuePair<int, RenderBoundingBox> dummy in Dummies)
-                dummy.Value?.ShutdownBuffers();
+                dummy.Value?.Shutdown();
 
             if (SelectedEntryBBox != null)
-                SelectedEntryBBox.ShutdownBuffers();
+                SelectedEntryBBox.Shutdown();
 
             Models = null;
             Areas = null;
@@ -127,16 +127,16 @@ namespace Rendering.Graphics
 
             if (SelectedEntryBBox != null)
             {
-                SelectedEntryBBox.ShutdownBuffers();
+                SelectedEntryBBox.Shutdown();
                 SelectedEntryBBox = null;
             }
 
             if (mesh != null)
             {
                 SelectedEntryBBox = new RenderBoundingBox();
-                SelectedEntryBBox.SetTransform(mesh.Matrix.Position, mesh.Matrix.Rotation);
+                SelectedEntryBBox.SetTransform(Models[mesh.RefID].Transform);
                 SelectedEntryBBox.Init(mesh.Boundings);
-                SelectedEntryBBox.InitBuffer(D3D.Device);
+                SelectedEntryBBox.InitBuffers(D3D.Device);
             }
         }
 

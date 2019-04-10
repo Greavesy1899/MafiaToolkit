@@ -128,6 +128,14 @@ namespace ResourceTypes.Navigation
 
     public class Roadmap
     {
+        public Roadmap(FileInfo info)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             int magic = reader.ReadInt32();

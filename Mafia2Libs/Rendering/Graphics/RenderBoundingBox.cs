@@ -6,16 +6,10 @@ using Utils.Types;
 
 namespace Rendering.Graphics
 {
-    public class RenderBoundingBox
+    public class RenderBoundingBox : IRenderer
     {
-        public BoundingBox Boundings { get; private set; }
-        public Buffer VertexBuffer { get; private set; }
-        public Buffer IndexBuffer { get; private set; }
-        private VertexLayouts.BBoxLayout.Vertex[] Vertices { get; set; }
-        public  ushort[] Indices { get; private set; }
-        public Matrix Transform { get; private set; }
-        public BaseShader Shader;
-        public bool DoRender { get; set; }
+        private VertexLayouts.BBoxLayout.Vertex[] vertices;
+        private ushort[] indices;
 
         public RenderBoundingBox()
         {
@@ -24,43 +18,43 @@ namespace Rendering.Graphics
 
         public bool Init(BoundingBox bbox)
         {
-            Boundings = bbox;
+            boundingBox = bbox;
 
-            Vertices = new VertexLayouts.BBoxLayout.Vertex[8];
+            vertices = new VertexLayouts.BBoxLayout.Vertex[8];
             //1
-            Vertices[0].Position = new Vector3(Boundings.Minimum.X, Boundings.Minimum.Y, Boundings.Maximum.Z);
-            Vertices[0].Colour = new Vector3(1.0f);
+            vertices[0].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Minimum.Y, boundingBox.Maximum.Z);
+            vertices[0].Colour = new Vector3(1.0f);
 
             //2
-            Vertices[1].Position = new Vector3(Boundings.Maximum.X, Boundings.Minimum.Y, Boundings.Maximum.Z);
-            Vertices[1].Colour = new Vector3(1.0f);
+            vertices[1].Position = new Vector3(boundingBox.Maximum.X, boundingBox.Minimum.Y, boundingBox.Maximum.Z);
+            vertices[1].Colour = new Vector3(1.0f);
 
             //3
-            Vertices[2].Position = new Vector3(Boundings.Minimum.X, Boundings.Minimum.Y, Boundings.Minimum.Z);
-            Vertices[2].Colour = new Vector3(1.0f);
+            vertices[2].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Minimum.Y, boundingBox.Minimum.Z);
+            vertices[2].Colour = new Vector3(1.0f);
 
             //4
-            Vertices[3].Position = new Vector3(Boundings.Maximum.X, Boundings.Minimum.Y, Boundings.Minimum.Z);
-            Vertices[3].Colour = new Vector3(1.0f);
+            vertices[3].Position = new Vector3(boundingBox.Maximum.X, boundingBox.Minimum.Y, boundingBox.Minimum.Z);
+            vertices[3].Colour = new Vector3(1.0f);
 
             //5
-            Vertices[4].Position = new Vector3(Boundings.Minimum.X, Boundings.Maximum.Y, Boundings.Maximum.Z);
-            Vertices[4].Colour = new Vector3(1.0f);
+            vertices[4].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Maximum.Y, boundingBox.Maximum.Z);
+            vertices[4].Colour = new Vector3(1.0f);
 
             //6
-            Vertices[5].Position = new Vector3(Boundings.Maximum.X, Boundings.Maximum.Y, Boundings.Maximum.Z);
-            Vertices[5].Colour = new Vector3(1.0f);
+            vertices[5].Position = new Vector3(boundingBox.Maximum.X, boundingBox.Maximum.Y, boundingBox.Maximum.Z);
+            vertices[5].Colour = new Vector3(1.0f);
 
 
             //7
-            Vertices[6].Position = new Vector3(Boundings.Minimum.X, Boundings.Maximum.Y, Boundings.Minimum.Z);
-            Vertices[6].Colour = new Vector3(1.0f);
+            vertices[6].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Maximum.Y, boundingBox.Minimum.Z);
+            vertices[6].Colour = new Vector3(1.0f);
 
             //8
-            Vertices[7].Position = new Vector3(Boundings.Maximum.X, Boundings.Maximum.Y, Boundings.Minimum.Z);
-            Vertices[7].Colour = new Vector3(1.0f);
+            vertices[7].Position = new Vector3(boundingBox.Maximum.X, boundingBox.Maximum.Y, boundingBox.Minimum.Z);
+            vertices[7].Colour = new Vector3(1.0f);
 
-            Indices = new ushort[] {
+            indices = new ushort[] {
             0, 2, 3,
             3, 1, 0,
             4, 5, 7,
@@ -75,18 +69,17 @@ namespace Rendering.Graphics
             4, 6, 2
             };
 
-            Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
+            shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
             return true;
         }
 
-        public bool InitBuffer(Device device)
+        public override void InitBuffers(Device d3d)
         {
-            VertexBuffer = Buffer.Create(device, BindFlags.VertexBuffer, Vertices);
-            IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, Indices);
-            return true;
+            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices);
+            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices);
         }
 
-        public void SetTransform(Vector3 position, Matrix33 rotation)
+        public override void SetTransform(Vector3 position, Matrix33 rotation)
         {
             Matrix m_trans = Matrix.Identity;
             m_trans[0, 0] = rotation.M00;
@@ -101,36 +94,33 @@ namespace Rendering.Graphics
             m_trans[3, 0] = position.X;
             m_trans[3, 1] = position.Y;
             m_trans[3, 2] = position.Z;
-            Transform = m_trans;
+            transform = m_trans;
         }
 
-        public void ReleaseModel()
+        public override void SetTransform(Matrix matrix)
         {
-            Vertices = null;
-            Indices = null;
+            this.transform = matrix;
         }
 
-        public void ShutdownBuffers()
-        { 
-            IndexBuffer?.Dispose();
-            IndexBuffer = null;
-            VertexBuffer?.Dispose();
-            VertexBuffer = null;
-        }
-        public bool Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
         {
             if (!DoRender)
-                return true;
+                return;
 
-            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<VertexLayouts.BBoxLayout.Vertex>(), 0));
-            deviceContext.InputAssembler.SetIndexBuffer(IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
+            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.BBoxLayout.Vertex>(), 0));
+            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
 
-            Shader.SetSceneVariables(deviceContext, Transform, camera, light);
-            Shader.Render(deviceContext, 12 * 3, 0);
-            return true;
+            shader.SetSceneVariables(deviceContext, transform, camera, light);
+            shader.Render(deviceContext, 12 * 3, 0);
         }
 
-
+        public override void Shutdown()
+        {
+            indexBuffer?.Dispose();
+            indexBuffer = null;
+            vertexBuffer?.Dispose();
+            vertexBuffer = null;
+        }
     }
 }

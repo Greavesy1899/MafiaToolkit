@@ -48,7 +48,15 @@ namespace ResourceTypes.Translokator
 
     public class TranslokatorLoader
     {
-        public void ReadFromFile(BinaryReader reader, FileInfo info)
+        public TranslokatorLoader(FileInfo info)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
+        }
+
+        public void ReadFromFile(BinaryReader reader)
         {
             int Version = reader.ReadInt32();
             int unk1 = reader.ReadInt32();

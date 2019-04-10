@@ -170,6 +170,7 @@ namespace Mafia2Tool
             lastMousePos = mousePos;
             Graphics.Timer.Frame2();
             Graphics.Frame();
+            toolStripStatusLabel1.Text = Graphics.Camera.Position.ToString();
 
             //awful i know
             if (Graphics.Timer.FrameTime < 1000 / 60)
@@ -179,6 +180,24 @@ namespace Mafia2Tool
             return true;
         }
 
+        private void UpdateMatrices()
+        {
+            FrameObjectBase obj1;
+
+            foreach (TreeNode node in treeView1.Nodes)
+            {
+                obj1 = (node.Tag as FrameObjectBase);
+                TransformMatrix matrix = ((obj1 != null) ? obj1.Matrix : new TransformMatrix());
+
+                if (obj1 != null)
+                    UpdateRenderedObjects(matrix, obj1);
+
+                foreach (TreeNode cNode in node.Nodes)
+                {
+                    UpdateChildRenderNodes(cNode, matrix);
+                }
+            }
+        }
         private void UpdateChildRenderNodes(TreeNode node, TransformMatrix matrix)
         {
             FrameObjectBase obj2 = (node.Tag as FrameObjectBase);
@@ -195,7 +214,7 @@ namespace Mafia2Tool
 
         private void UpdateRenderedObjects(TransformMatrix obj1Matrix, FrameObjectBase obj)
         {
-            if(Graphics.Dummies.ContainsKey(obj.RefID) && obj.GetType() == typeof(FrameObjectDummy))
+            if (Graphics.Dummies.ContainsKey(obj.RefID) && obj.GetType() == typeof(FrameObjectDummy))
             {
                 Graphics.Dummies[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Rotation);
             }
@@ -308,6 +327,7 @@ namespace Mafia2Tool
             Graphics.Models = meshes;
             Graphics.Areas = areas;
             Graphics.Dummies = dummies;
+            UpdateMatrices();
         }
 
         private void TreeViewUpdateSelected()
@@ -344,142 +364,127 @@ namespace Mafia2Tool
             fObject.IsOnFrameTable = OnFrameNameTable.Checked;
             fObject.FrameNameTableFlags = (NameTableFlags)FrameNameTableFlags.GetCurrentValue();
             Graphics.BuildSelectedEntry(fObject);
-
-            FrameObjectBase obj1;
-
-            foreach (TreeNode node in treeView1.Nodes)
-            {
-                obj1 = (node.Tag as FrameObjectBase);
-                TransformMatrix matrix = ((obj1 != null) ? obj1.Matrix : new TransformMatrix());
-
-                if (obj1 != null)
-                    UpdateRenderedObjects(matrix, obj1);
-
-                foreach (TreeNode cNode in node.Nodes)
-                {
-                    UpdateChildRenderNodes(cNode, matrix);
-                }
-            }
+            UpdateMatrices();
         }
 
         private void Pick(int sx, int sy)
         {
-            var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
-            FrameObjectSingleMesh selected = null;
-            float seltMin = float.MaxValue;
+            //var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
+            //FrameObjectSingleMesh selected = null;
+            //float seltMin = float.MaxValue;
 
-            foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
-            {
-                Matrix worldMat = model.Value.Transform;
-                var invWorld = Matrix.Invert(worldMat);
-                //ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
-                //ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
-                //ray.Direction.Normalize();
+            //foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
+            //{
+            //    Matrix worldMat = model.Value.Transform;
+            //    var invWorld = Matrix.Invert(worldMat);
+            //    //ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
+            //    //ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
+            //    //ray.Direction.Normalize();
 
-                FrameObjectSingleMesh objBase = null;
-                foreach (KeyValuePair<int, object> obj in SceneData.FrameResource.FrameObjects)
-                {
-                    if ((obj.Value as FrameObjectBase).RefID == model.Key)
-                        objBase = (obj.Value as FrameObjectSingleMesh);
-                }
+            //    FrameObjectSingleMesh objBase = null;
+            //    foreach (KeyValuePair<int, object> obj in SceneData.FrameResource.FrameObjects)
+            //    {
+            //        if ((obj.Value as FrameObjectBase).RefID == model.Key)
+            //            objBase = (obj.Value as FrameObjectSingleMesh);
+            //    }
 
-                if (objBase == null)
-                    continue;
+            //    if (objBase == null)
+            //        continue;
 
-                Vector3 minVector = new Vector3(
-                model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Minimum.X,
-                model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Minimum.Y,
-                model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Minimum.Z
-                );
-                Vector3 maxVector = new Vector3(
-                   model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Maximum.X,
-                   model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Maximum.Y,
-                   model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Maximum.Z
-                   );
-               BoundingBox tempBox0 = new BoundingBox(minVector, maxVector);
-                BoundingBox tempBox1 = objBase.Boundings;
-                float tmin;
+            //    Vector3 minVector = new Vector3(
+            //    model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Minimum.X,
+            //    model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Minimum.Y,
+            //    model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Minimum.Z
+            //    );
+            //    Vector3 maxVector = new Vector3(
+            //       model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Maximum.X,
+            //       model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Maximum.Y,
+            //       model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Maximum.Z
+            //       );
+            //   BoundingBox tempBox0 = new BoundingBox(minVector, maxVector);
+            //    BoundingBox tempBox1 = objBase.Boundings;
+            //    float tmin;
 
-                if (!ray.Intersects(ref tempBox0, out tmin))
-                    continue;
+            //    if (!ray.Intersects(ref tempBox0, out tmin))
+            //        continue;
 
-                Console.WriteLine("intersect with {0} {1}", objBase.Name.String, tmin);
+            //    Console.WriteLine("intersect with {0} {1}", objBase.Name.String, tmin);
 
-                if (tmin < seltMin)
-                {
-                    selected = objBase;
-                    seltMin = tmin;
-                }
+            //    if (tmin < seltMin)
+            //    {
+            //        selected = objBase;
+            //        seltMin = tmin;
+            //    }
 
-                //float maxT = float.MaxValue;
-                //for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
-                //{
-                //    var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
-                //    var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
-                //    var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
-                //    float t = 0;
-                //    if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-                //    if (!(t < tmin || t < 0)) continue;
-                //    maxT = t;
-                //}
+            //    //float maxT = float.MaxValue;
+            //    //for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
+            //    //{
+            //    //    var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
+            //    //    var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
+            //    //    var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
+            //    //    float t = 0;
+            //    //    if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+            //    //    if (!(t < tmin || t < 0)) continue;
+            //    //    maxT = t;
+            //    //}
 
-                //float curTmin = float.MaxValue;
-                //if (ray.Position.X > tempBox0.Minimum.X && ray.Position.X < tempBox0.Maximum.X)
-                //{
-                //    if (ray.Position.Y > tempBox0.Minimum.Y && ray.Position.Y < tempBox0.Maximum.Y)
-                //    {
-                //        if (ray.Position.Z > tempBox0.Minimum.Z && ray.Position.Z < tempBox0.Maximum.Z)
-                //        {
+            //    //float curTmin = float.MaxValue;
+            //    //if (ray.Position.X > tempBox0.Minimum.X && ray.Position.X < tempBox0.Maximum.X)
+            //    //{
+            //    //    if (ray.Position.Y > tempBox0.Minimum.Y && ray.Position.Y < tempBox0.Maximum.Y)
+            //    //    {
+            //    //        if (ray.Position.Z > tempBox0.Minimum.Z && ray.Position.Z < tempBox0.Maximum.Z)
+            //    //        {
                             
-                //            for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
-                //            {
-                //                float tmin2 = float.MaxValue/2;
-                //                var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
-                //                var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
-                //                var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
-                //                float t = 0;
-                //                if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-                //                // find the closest intersection, exclude intersections behind camera
-                //                if (!(t < tmin2 || t < 0)) continue;
-                //                tmin2 = t;
-                //                if (curTmin < tmin2)
-                //                {
-                //                    selected = objBase;
-                //                }
-                //            }
-                //        }
-                //    }
-                //}
-                //ray.Intersects(ref tempBox0, out tmin0);
-                //ray.Intersects(ref tempBox1, out tmin1);
-                //Console.WriteLine(tmin0 + " " + tmin1);
-                //continue;
+            //    //            for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
+            //    //            {
+            //    //                float tmin2 = float.MaxValue/2;
+            //    //                var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
+            //    //                var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
+            //    //                var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
+            //    //                float t = 0;
+            //    //                if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+            //    //                // find the closest intersection, exclude intersections behind camera
+            //    //                if (!(t < tmin2 || t < 0)) continue;
+            //    //                tmin2 = t;
+            //    //                if (curTmin < tmin2)
+            //    //                {
+            //    //                    selected = objBase;
+            //    //                }
+            //    //            }
+            //    //        }
+            //    //    }
+            //    //}
+            //    //ray.Intersects(ref tempBox0, out tmin0);
+            //    //ray.Intersects(ref tempBox1, out tmin1);
+            //    //Console.WriteLine(tmin0 + " " + tmin1);
+            //    //continue;
 
-                //Console.WriteLine("Intersection!, " + objBase.Name.String);
-                //float tmin2 = float.MaxValue;
-                //for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
-                //{
-                //    var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
-                //    var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
-                //    var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
-                //    float t = 0;
-                //    if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-                //    // find the closest intersection, exclude intersections behind camera
-                //    if (!(t < tmin2 || t < 0)) continue;
-                //    tmin2 = t;
-                //}
-                //if (tmin < tmin2)
-                //{
-                //    selected = objBase;
-                //}
-            }
+            //    //Console.WriteLine("Intersection!, " + objBase.Name.String);
+            //    //float tmin2 = float.MaxValue;
+            //    //for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
+            //    //{
+            //    //    var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
+            //    //    var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
+            //    //    var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
+            //    //    float t = 0;
+            //    //    if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+            //    //    // find the closest intersection, exclude intersections behind camera
+            //    //    if (!(t < tmin2 || t < 0)) continue;
+            //    //    tmin2 = t;
+            //    //}
+            //    //if (tmin < tmin2)
+            //    //{
+            //    //    selected = objBase;
+            //    //}
+            //}
 
-            if (selected != null)
-            {
-                Graphics.BuildSelectedEntry(selected);
-                Console.WriteLine(selected.Name.String);
-                UpdateCurrentEntryData(selected);
-            }
+            //if (selected != null)
+            //{
+            //    Graphics.BuildSelectedEntry(selected);
+            //    Console.WriteLine(selected.Name.String);
+            //    UpdateCurrentEntryData(selected);
+            //}
         }
 
         public void Shutdown()
@@ -674,22 +679,7 @@ namespace Mafia2Tool
             tNode.Tag = newEntry;
             tNode.Name = newEntry.RefID.ToString();
             treeView1.Nodes.Find(newEntry.ParentIndex2.RefID.ToString(), true)[0].Nodes.Add(tNode);
-
-            FrameObjectBase obj1;
-
-            foreach (TreeNode node1 in treeView1.Nodes)
-            {
-                obj1 = (node1.Tag as FrameObjectBase);
-                TransformMatrix matrix = ((obj1 != null) ? obj1.Matrix : new TransformMatrix());
-
-                if (obj1 != null)
-                    UpdateRenderedObjects(matrix, obj1);
-
-                foreach (TreeNode cNode in node1.Nodes)
-                {
-                    UpdateChildRenderNodes(cNode, matrix);
-                }
-            }
+            UpdateMatrices();
         }
     }
 }

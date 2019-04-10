@@ -81,6 +81,11 @@ namespace Rendering.Graphics
             Transform = m_trans;
         }
 
+        public void SetTransform(Matrix transform)
+        {
+            Transform = transform;
+        }
+
         public bool ConvertFrameToRenderModel(FrameObjectSingleMesh mesh, FrameGeometry geom, FrameMaterial mats, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
             if (mesh == null || geom == null || mats == null || indexBuffers == null || vertexBuffers == null)
@@ -190,7 +195,7 @@ namespace Rendering.Graphics
                 LODs[i] = lod;
             }
 
-
+            SetupShaders();
             return true;
         }
         public void Shutdown()
@@ -203,7 +208,7 @@ namespace Rendering.Graphics
             VertexBuffer = Buffer.Create(device, BindFlags.VertexBuffer, LODs[0].Vertices);
             IndexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, LODs[0].Indices);
 
-            BoundingBox.InitBuffer(device);
+            BoundingBox.InitBuffers(device);
             return true;
         }
         private bool InitializePartShaders(Device device)
@@ -220,9 +225,10 @@ namespace Rendering.Graphics
                 RenderStorageSingleton.Instance.TextureCache.Add(0, AOTextureClass.TextureResource);
                 AOTexture = AOTextureClass.TextureResource;
             }
-
-            //m_Temp = null;
-
+            return true;
+        }
+        private void SetupShaders()
+        {
             for (int x = 0; x != LODs[0].ModelParts.Length; x++)
             {
                 ModelPart part = LODs[0].ModelParts[x];
@@ -231,13 +237,12 @@ namespace Rendering.Graphics
                 else
                 {
                     Debug.WriteLine(LODs[0].ModelParts[x].Material.MaterialName + "\t" + LODs[0].ModelParts[x].Material.ShaderHash);
-                    part.Shader = (RenderStorageSingleton.Instance.ShaderManager.shaders.ContainsKey(LODs[0].ModelParts[x].Material.ShaderHash) 
-                        ? RenderStorageSingleton.Instance.ShaderManager.shaders[LODs[0].ModelParts[x].Material.ShaderHash] 
+                    part.Shader = (RenderStorageSingleton.Instance.ShaderManager.shaders.ContainsKey(LODs[0].ModelParts[x].Material.ShaderHash)
+                        ? RenderStorageSingleton.Instance.ShaderManager.shaders[LODs[0].ModelParts[x].Material.ShaderHash]
                         : RenderStorageSingleton.Instance.ShaderManager.shaders[0]);
                 }
-                    LODs[0].ModelParts[x] = part;
+                LODs[0].ModelParts[x] = part;
             }
-            return true;
         }
         private void ReleaseTextures()
         {
@@ -253,11 +258,11 @@ namespace Rendering.Graphics
         {
             LODs[0].Vertices = null;
             LODs[0].Indices = null;
-            BoundingBox.ReleaseModel();
+            BoundingBox.Shutdown();
         }
         private void ShutdownBuffers()
         {
-            BoundingBox.ShutdownBuffers();
+            BoundingBox.Shutdown();
             VertexBuffer?.Dispose();
             VertexBuffer = null;
             IndexBuffer?.Dispose();

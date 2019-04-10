@@ -1,4 +1,5 @@
 ﻿using SharpDX;
+using System.Collections.Generic;
 using System.IO;
 using Utils.SharpDXExtensions;
 
@@ -39,24 +40,24 @@ namespace ResourceTypes.Sound
         ulong[] actorHashes;
         ushort[] unksData2;
         string fileName;
-        int numUnk0;
+        int numActorhashes;
         int unk01;
         byte unk02;
-        short count2;
+        short count1;
         int parent;
         int unk03;
         string soundPrimary;
         short parentIdx;
         short sUnk04;
-        short sUnk05;
+        short count2;
         unkStruct1[] data;
         byte sUnk06;
         int sUnk07;
         unkStruct2[] data1;
 
-        public SoundSectorLoader(string file)
+        public SoundSectorLoader(FileInfo info)
         {
-            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
             {
                 ReadFromFile(reader);
             }
@@ -64,11 +65,9 @@ namespace ResourceTypes.Sound
 
         public void ReadFromFile(BinaryReader reader)
         {
-
-
             fileName = new string(reader.ReadChars(reader.ReadByte()));
-            numUnk0 = reader.ReadInt32();
-            actorHashes = new ulong[numUnk0];
+            numActorhashes = reader.ReadInt32();
+            actorHashes = new ulong[numActorhashes];
 
             for (int i = 0; i != actorHashes.Length; i++)
             {
@@ -77,10 +76,11 @@ namespace ResourceTypes.Sound
 
             unk01 = reader.ReadInt32();
             unk02 = reader.ReadByte();
-            count2 = reader.ReadInt16();
-            unksData2 = new ushort[count2];
 
-            for (int i = 0; i != count2; i++)
+            count1 = reader.ReadInt16();
+            unksData2 = new ushort[count1];
+
+            for (int i = 0; i != count1; i++)
             {
                 unksData2[i] = reader.ReadUInt16();
             }
@@ -90,10 +90,10 @@ namespace ResourceTypes.Sound
             soundPrimary = new string(reader.ReadChars(reader.ReadByte()));
             parentIdx = reader.ReadInt16();
             sUnk04 = reader.ReadInt16();
-            sUnk05 = reader.ReadInt16();
+            count2 = reader.ReadInt16();
 
-            data = new unkStruct1[sUnk05];
-            for (int i = 0; i != sUnk05; i++)
+            data = new unkStruct1[count2];
+            for (int i = 0; i != count2; i++)
             {
                 unkStruct1 subData = new unkStruct1();
                 subData.unk0 = reader.ReadByte();
@@ -151,22 +151,107 @@ namespace ResourceTypes.Sound
 
                 data1[i] = subData;
             }
+            DumpToSound();
+        }
+
+        private void DumpToSound()
+        {
+            List<string> dump = new List<string>();
+            dump.Add(string.Format("File Name: {0}", fileName));
+            dump.Add("");
+            dump.Add("Sound hashes (Links to sounds in actors)");
+            dump.Add("========================================");
+            dump.Add(string.Format("Count: {0}", numActorhashes));
+
+            for (int i = 0; i != actorHashes.Length; i++)
+                dump.Add(actorHashes[i].ToString());
+
+            dump.Add(string.Format("Unk01: {0}", unk01));
+            dump.Add(string.Format("Unk02: {0}", unk02));
+            dump.Add("");
+            dump.Add("Unknown Data Set:");
+            dump.Add("========================================");
+            dump.Add(string.Format("Count: {0}", count1));
+            for (int i = 0; i != unksData2.Length; i++)
+                dump.Add(unksData2[i].ToString());
+            dump.Add("");
+            dump.Add(string.Format("Parent: {0}", parent));
+            dump.Add(string.Format("Unk03: {0}", unk03));
+            dump.Add(string.Format("SoundPrimary: {0}", soundPrimary));
+            dump.Add(string.Format("Parent Index: {0}", parentIdx));
+            dump.Add(string.Format("Unk04: {0}", sUnk04));
+            dump.Add("");
+            dump.Add("Unknown Data Set:");
+            dump.Add("========================================");
+            dump.Add(string.Format("Count: {0}", count2));
+            for (int i = 0; i != count2; i++)
+            {
+                dump.Add("Next Set: " + i.ToString());
+                dump.Add("========================================");
+                dump.Add(string.Format("Unk00: {0}", data[i].unk0));
+                dump.Add(string.Format("Unk01: {0}", data[i].unk1));
+                dump.Add("");
+                dump.Add(string.Format("Vector4 Count: {0}", data[i].numFloats));
+                for (int x = 0; x != data[i].numFloats; x++)
+                    dump.Add(string.Format(data[i].floats[x].ToString()));
+                dump.Add("");
+                dump.Add(string.Format("Short Count: {0}", data[i].numShorts));
+                for (int x = 0; x != data[i].numShorts; x++)
+                    dump.Add(string.Format(data[i].shorts[x].ToString()));
+                dump.Add("");
+                dump.Add(string.Format("Unk02: {0}", data[i].unk2));
+                dump.Add(string.Format("Unk03: {0}", data[i].unk3));
+                dump.Add(string.Format("Name: {0}", data[i].name));
+                dump.Add(string.Format("Unk04: {0}", data[i].unk4));
+                dump.Add(string.Format("Unk05: {0}", data[i].unk5));
+                dump.Add("========================================");
+                dump.Add("");
+                dump.Add("");
+            }
+            dump.Add("");
+            dump.Add(string.Format("sUnk06: {0}", sUnk06));
+            dump.Add("");
+            dump.Add("Unknown Data Set:");
+            dump.Add("========================================");
+            dump.Add(string.Format("Count 3: {0}", sUnk07));
+            for (int i = 0; i != sUnk07; i++)
+            {
+                dump.Add("Next Set: " + i.ToString());
+                dump.Add("========================================");
+                dump.Add(string.Format("Name: {0}", data1[i].name));
+                dump.Add(string.Format("Floats (First three position): {0}", 5));
+                for (int x = 0; x != 5; x++)
+                    dump.Add(string.Format(data1[i].floats[x].ToString()));
+                dump.Add(string.Format("Name2: {0}", data1[i].name2));
+                dump.Add(string.Format("Unk01: {0}", data1[i].unk01));
+                dump.Add(string.Format("Unk02: {0}", data1[i].name3));
+                dump.Add(string.Format("Name3: {0}", data1[i].unk02));
+                dump.Add(string.Format("Unk03: {0}", data1[i].unk03));
+                dump.Add(string.Format("Name4: {0}", data1[i].name4));
+                dump.Add(string.Format("Unk04: {0}", data1[i].unk04));
+                dump.Add(string.Format("Unk05: {0}", data1[i].unk05));
+                dump.Add(string.Format("Unk06: {0}", data1[i].unk06));
+                dump.Add("========================================");
+                dump.Add("");
+                dump.Add("");
+            }
+            File.WriteAllLines("SoundSectors/"+(fileName.Replace("/", "").Trim('\0')) + ".txt", dump.ToArray());
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write((byte)fileName.Length);
             writer.Write(fileName.ToCharArray());
-            writer.Write(numUnk0);
+            writer.Write(numActorhashes);
 
-            for (int i = 0; i != numUnk0; i++)
+            for (int i = 0; i != numActorhashes; i++)
                 writer.Write(actorHashes[i]);
 
             writer.Write(unk01);
             writer.Write(unk02);
-            writer.Write(count2);
+            writer.Write(count1);
 
-            for (int i = 0; i != count2; i++)
+            for (int i = 0; i != count1; i++)
                 writer.Write(unksData2[i]);
 
             writer.Write(parent);
@@ -175,9 +260,9 @@ namespace ResourceTypes.Sound
             writer.Write(soundPrimary.ToCharArray());
             writer.Write(parentIdx);
             writer.Write(sUnk04);
-            writer.Write(sUnk05);
+            writer.Write(count2);
 
-            for (int i = 0; i != sUnk05; i++)
+            for (int i = 0; i != count2; i++)
             {
                 unkStruct1 subData = data[i];
                 writer.Write(subData.unk0);

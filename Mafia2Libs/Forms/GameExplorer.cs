@@ -14,6 +14,7 @@ using Utils.Settings;
 using ResourceTypes.Cutscene;
 using ResourceTypes.Navigation;
 using ResourceTypes.Prefab;
+using ResourceTypes.Sound;
 
 namespace Mafia2Tool
 {
@@ -409,6 +410,7 @@ namespace Mafia2Tool
             ApexClothingAssetLoader aca;
             CityAreaEditor caEditor;
             CityShopEditor csEditor;
+            SoundSectorLoader soundSector;
 
             //DEBUG
             D3DForm d3dForm;
@@ -481,6 +483,9 @@ namespace Mafia2Tool
                     break;
                 case "PRF":
                     prefabs = new PrefabLoader((FileInfo)item.Tag);
+                    return;
+                case "AUS":
+                    soundSector = new SoundSectorLoader((FileInfo)item.Tag);
                     return;
                 default:
                     Process.Start(((FileInfo)item.Tag).FullName);

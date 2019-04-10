@@ -226,6 +226,7 @@
     <Compile Include="MafiaLib\FileTypes\CityAreas.cs" />
     <Compile Include="MafiaLib\FileTypes\CityShops.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameProps.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\Roadmap.cs" />
     <Compile Include="MafiaLib\FileTypes\RPMG.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\TAPIndices.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\Material.cs" />
@@ -234,6 +235,7 @@
     <Compile Include="MafiaLib\FileTypes\Navigation\NAV_AI.cs" />
     <Compile Include="MafiaLib\FileTypes\PREFAB\Prefab.cs" />
     <Compile Include="MafiaLib\FileTypes\SoundSectors\SoundSector.cs" />
+    <Compile Include="MafiaLib\FileTypes\Translokator\Translokator.cs" />
     <Compile Include="MafiaLib\FileTypes\VertexBufferPool\VertexBufferPool.cs" />
     <Compile Include="MafiaLib\GeometryExporters\CustomEDD.cs" />
     <Compile Include="Gibbed.Illusion.FileFormats\BlockReaderStream.cs" />
@@ -264,6 +266,7 @@
     <Compile Include="Gibbed.Mafia2.FileFormats\TEA.cs" />
     <Compile Include="MafiaLib\MafiaModel\M2TStructure.cs" />
     <Compile Include="MafiaLib\MafiaModel\ModelDefinition.cs" />
+    <Compile Include="Rendering\Graphics\IRenderer.cs" />
     <Compile Include="Utils\BoundExtensions.cs" />
     <Compile Include="MafiaLib\Utils\Enums.cs" />
     <Compile Include="Utils\StringHelpers.cs" />
