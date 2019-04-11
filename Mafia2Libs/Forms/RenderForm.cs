@@ -26,6 +26,8 @@ namespace Mafia2Tool
         private Point lastMousePos;
         private FileInfo fileLocation;
 
+        private int nameTableLimit = 0;
+
         public D3DForm(FileInfo info)
         {
             InitializeComponent();
@@ -67,6 +69,7 @@ namespace Mafia2Tool
                 Graphics.PreInit(handle);
                 BuildRenderObjects();
                 result = Graphics.InitScene();
+                UpdateMatrices();
             }
             return result;
         }
@@ -214,18 +217,8 @@ namespace Mafia2Tool
 
         private void UpdateRenderedObjects(TransformMatrix obj1Matrix, FrameObjectBase obj)
         {
-            if (Graphics.Dummies.ContainsKey(obj.RefID) && obj.GetType() == typeof(FrameObjectDummy))
-            {
-                Graphics.Dummies[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Rotation);
-            }
-            else if (Graphics.Models.ContainsKey(obj.RefID) && obj.GetType() == typeof(FrameObjectSingleMesh) || obj.GetType() == typeof(FrameObjectModel))
-            {
-                Graphics.Models[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Rotation);
-            }
-            else if (Graphics.Areas.ContainsKey(obj.RefID) && obj.GetType() == typeof(FrameObjectArea))
-            {
-                Graphics.Areas[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Rotation);
-            }
+            if (Graphics.Assets.ContainsKey(obj.RefID))
+                Graphics.Assets[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Rotation);
         }
 
         private void SaveChanges()
@@ -323,7 +316,6 @@ namespace Mafia2Tool
                 }
             }
             Graphics.InitObjectStack = assets;
-            UpdateMatrices();
         }
 
         private void TreeViewUpdateSelected()
@@ -338,12 +330,12 @@ namespace Mafia2Tool
         private void UpdateCurrentEntryData(FrameObjectBase fObject)
         {
             CurrentEntry.Text = fObject.Name.String;
-            PositionXBox.Text = fObject.Matrix.Position.X.ToString();
-            PositionYBox.Text = fObject.Matrix.Position.Y.ToString();
-            PositionZBox.Text = fObject.Matrix.Position.Z.ToString();
-            RotationXBox.Text = fObject.Matrix.Rotation.EulerRotation.X.ToString();
-            RotationYBox.Text = fObject.Matrix.Rotation.EulerRotation.Y.ToString();
-            RotationZBox.Text = fObject.Matrix.Rotation.EulerRotation.Z.ToString();
+            PositionXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.X);
+            PositionYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.Y);
+            PositionZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.Z);
+            RotationXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.EulerRotation.X);
+            RotationYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.EulerRotation.Y);
+            RotationZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.EulerRotation.Z);
             CurrentEntryType.Text = fObject.GetType().Name;
             Graphics.BuildSelectedEntry(fObject);
             DebugPropertyGrid.SelectedObject = fObject;
@@ -354,8 +346,8 @@ namespace Mafia2Tool
         private void EntryApplyChanges_OnClick(object sender, EventArgs e)
         {
             FrameObjectBase fObject = (treeView1.SelectedNode.Tag as FrameObjectBase);
-            fObject.Matrix.Position = new Vector3(float.Parse(PositionXBox.Text), float.Parse(PositionYBox.Text), float.Parse(PositionZBox.Text));
-            fObject.Matrix.Rotation.EulerRotation = new Vector3(float.Parse(RotationXBox.Text), float.Parse(RotationYBox.Text), float.Parse(RotationZBox.Text));
+            fObject.Matrix.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
+            fObject.Matrix.Rotation.EulerRotation = new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value));
             fObject.Matrix.Rotation.UpdateMatrixFromEuler();
             fObject.IsOnFrameTable = OnFrameNameTable.Checked;
             fObject.FrameNameTableFlags = (NameTableFlags)FrameNameTableFlags.GetCurrentValue();
@@ -584,15 +576,11 @@ namespace Mafia2Tool
                 if (obj != null)
                 {
                     treeView1.Nodes.Remove(node);
-                    Graphics.Models.Remove(obj.RefID);
+                    Graphics.Assets.Remove(obj.RefID);
                     SceneData.FrameResource.FrameObjects.Remove(obj.RefID);
 
-                    if (obj.GetType() == typeof(FrameObjectSingleMesh) || obj.GetType() == typeof(FrameObjectModel))
-                        Graphics.Models.Remove(obj.RefID);
-                    else if (obj.GetType() == typeof(FrameObjectArea))
-                        Graphics.Areas.Remove(obj.RefID);
-                    else if (obj.GetType() == typeof(FrameObjectDummy))
-                        Graphics.Dummies.Remove(obj.RefID);
+                    if(Graphics.Assets.ContainsKey(obj.RefID))
+                        Graphics.Assets.Remove(obj.RefID);
                 }
             }
 
@@ -675,7 +663,27 @@ namespace Mafia2Tool
             tNode.Tag = newEntry;
             tNode.Name = newEntry.RefID.ToString();
             treeView1.Nodes.Find(newEntry.ParentIndex2.RefID.ToString(), true)[0].Nodes.Add(tNode);
+            SceneData.FrameResource.FrameObjects.Add(newEntry.RefID, newEntry);
             UpdateMatrices();
+        }
+
+        private void DisableLodButtonOnClick(object sender, EventArgs e)
+        {
+            //foreach(KeyValuePair<int, object> pair in SceneData.FrameResource.FrameObjects)
+            //{
+            //    FrameObjectBase obj = (pair.Value as FrameObjectBase);
+                
+            //    if(obj.FrameNameTableFlags > (NameTableFlags)nameTableLimit)
+            //    {
+            //        if (Graphics.Assets.ContainsKey(pair.Key))
+            //            Graphics.Assets[pair.Key].DoRender = false;
+            //    }
+            //}
+        }
+
+        private void NameTableFlagValueChanged(object sender, EventArgs e)
+        {
+            nameTableLimit = int.Parse(NameTableFlagLimit.Text);
         }
     }
 }

@@ -16,17 +16,13 @@ namespace Rendering.Graphics
         public InputClass Input { get; private set; }
         public Camera Camera { get; set; }
 
-        public Dictionary<int, RenderModel> Models { get; private set; }
-        public Dictionary<int, RenderBoundingBox> Areas { get; private set; }
-        public Dictionary<int, RenderBoundingBox> Dummies { get; private set; }
+        public Dictionary<int, IRenderer> Assets { get; private set; }
         public Dictionary<int, IRenderer> InitObjectStack { get; set; }
         public RenderBoundingBox SelectedEntryBBox { get; private set; }
 
         public GraphicsClass()
         {
-            Dummies = new Dictionary<int, RenderBoundingBox>();
-            Areas = new Dictionary<int, RenderBoundingBox>();
-            Models = new Dictionary<int, RenderModel>();
+            Assets = new Dictionary<int, IRenderer>();
         }
 
         public bool PreInit(IntPtr WindowHandle)
@@ -55,6 +51,7 @@ namespace Rendering.Graphics
             Camera = new Camera();
             Camera.Position = new Vector3(0, 0, 15);
             Camera.SetProjectionMatrix();
+            ClearRenderStack();
             Light = new LightClass();
             Light.SetAmbientColor(0.5f, 0.5f, 0.5f, 1f);
             Light.SetDiffuseColour(0f, 0f, 0f, 0);
@@ -71,36 +68,19 @@ namespace Rendering.Graphics
             Timer = null;
             Light = null;
 
-            foreach (KeyValuePair<int, RenderModel> model in Models)
+            foreach (KeyValuePair<int, IRenderer> model in Assets)
                 model.Value?.Shutdown();
-
-            foreach (KeyValuePair<int, RenderBoundingBox> area in Areas)
-                area.Value?.Shutdown();
-
-            foreach (KeyValuePair<int, RenderBoundingBox> dummy in Dummies)
-                dummy.Value?.Shutdown();
 
             if (SelectedEntryBBox != null)
                 SelectedEntryBBox.Shutdown();
 
-            Models = null;
-            Areas = null;
-            Dummies = null;
+            Assets = null;
             D3D?.Shutdown();
             D3D = null;
         }
         public bool Frame()
         {
-            foreach (KeyValuePair<int, IRenderer> asset in InitObjectStack)
-            {
-                asset.Value.InitBuffers(D3D.Device);
-
-                if (asset.Value.GetType() == typeof(RenderModel))
-                    Models.Add(asset.Key, (RenderModel)asset.Value);
-                else
-                    Dummies.Add(asset.Key, (RenderBoundingBox)asset.Value);
-            }
-            InitObjectStack.Clear();
+            ClearRenderStack();
             return Render();
         }
         public bool Render()
@@ -108,13 +88,7 @@ namespace Rendering.Graphics
             D3D.BeginScene(0.0f, 0f, 0f, 1.0f);
             Camera.Render();
 
-            foreach(KeyValuePair<int, RenderModel> entry in Models)
-                entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
-
-            foreach (KeyValuePair<int, RenderBoundingBox> dummy in Dummies)
-                dummy.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
-
-            foreach (KeyValuePair<int, RenderBoundingBox> entry in Areas)
+            foreach(KeyValuePair<int, IRenderer> entry in Assets)
                 entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
 
             if (SelectedEntryBBox != null)
@@ -124,6 +98,15 @@ namespace Rendering.Graphics
             return true;
         }
 
+        private void ClearRenderStack()
+        {
+            foreach (KeyValuePair<int, IRenderer> asset in InitObjectStack)
+            {
+                asset.Value.InitBuffers(D3D.Device);
+                Assets.Add(asset.Key, asset.Value);
+            }
+            InitObjectStack.Clear();
+        }
         public void BuildSelectedEntry(FrameObjectBase obj)
         {
             FrameObjectSingleMesh mesh = (obj as FrameObjectSingleMesh);
@@ -137,7 +120,7 @@ namespace Rendering.Graphics
             if (mesh != null)
             {
                 SelectedEntryBBox = new RenderBoundingBox();
-                SelectedEntryBBox.SetTransform(Models[mesh.RefID].Transform);
+                SelectedEntryBBox.SetTransform(obj.Matrix.Position, obj.Matrix.Rotation);
                 SelectedEntryBBox.Init(mesh.Boundings);
                 SelectedEntryBBox.InitBuffers(D3D.Device);
             }

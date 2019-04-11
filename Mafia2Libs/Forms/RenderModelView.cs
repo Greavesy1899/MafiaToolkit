@@ -30,7 +30,7 @@ namespace Mafia2Tool
         public void PopulateView(int refID, RenderModel model)
         {
             model.SetTransform(new SharpDX.Vector3(0), new Matrix33());
-            Graphics.Models.Add(refID, model);
+            Graphics.Assets.Add(refID, model);
         }
 
         public void StartD3DPanel()

@@ -1,4 +1,5 @@
-﻿using Utils.Extensions;
+﻿using System;
+using Utils.Extensions;
 
 namespace Mafia2Tool
 {
@@ -40,10 +41,13 @@ namespace Mafia2Tool
             this.ToggleWireFrameButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToggleCullingBottle = new System.Windows.Forms.ToolStripMenuItem();
             this.OptionsButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.DisableLODButton = new System.Windows.Forms.ToolStripMenuItem();
             this.TEMPCameraSpeed = new System.Windows.Forms.ToolStripTextBox();
+            this.NameTableFlagLimit = new System.Windows.Forms.ToolStripTextBox();
             this.EntryMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.DuplicateButton = new System.Windows.Forms.ToolStripMenuItem();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -51,27 +55,26 @@ namespace Mafia2Tool
             this.SceneTab = new System.Windows.Forms.TabPage();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.EditEntryTab = new System.Windows.Forms.TabPage();
+            this.RotationZNumeric = new System.Windows.Forms.NumericUpDown();
+            this.RotationYNumeric = new System.Windows.Forms.NumericUpDown();
+            this.RotationXNumeric = new System.Windows.Forms.NumericUpDown();
+            this.PositionZNumeric = new System.Windows.Forms.NumericUpDown();
+            this.PositionYNumeric = new System.Windows.Forms.NumericUpDown();
+            this.PositionXNumeric = new System.Windows.Forms.NumericUpDown();
             this.OnFrameNameTable = new System.Windows.Forms.CheckBox();
             this.CurrentEntryType = new System.Windows.Forms.Label();
             this.EntryApplyChanges = new System.Windows.Forms.Button();
             this.CurrentEntry = new System.Windows.Forms.Label();
-            this.RotationZBox = new System.Windows.Forms.TextBox();
             this.RotationZLabel = new System.Windows.Forms.Label();
-            this.RotationYBox = new System.Windows.Forms.TextBox();
             this.RotationYLabel = new System.Windows.Forms.Label();
-            this.RotationXBox = new System.Windows.Forms.TextBox();
             this.RotationXLabel = new System.Windows.Forms.Label();
-            this.PositionZBox = new System.Windows.Forms.TextBox();
             this.PositionZLabel = new System.Windows.Forms.Label();
-            this.PositionYBox = new System.Windows.Forms.TextBox();
             this.PositionYLabel = new System.Windows.Forms.Label();
-            this.PositionXBox = new System.Windows.Forms.TextBox();
             this.PositionXLabel = new System.Windows.Forms.Label();
-            this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
             this.DebugPG = new System.Windows.Forms.TabPage();
             this.DebugPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.RenderPanel = new System.Windows.Forms.Panel();
-            this.DuplicateButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
             this.ToolbarStrip.SuspendLayout();
             this.EntryMenuStrip.SuspendLayout();
             this.StatusStrip.SuspendLayout();
@@ -82,6 +85,12 @@ namespace Mafia2Tool
             this.MainTabControl.SuspendLayout();
             this.SceneTab.SuspendLayout();
             this.EditEntryTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationZNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationYNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationXNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PositionZNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PositionYNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PositionXNumeric)).BeginInit();
             this.DebugPG.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -91,7 +100,8 @@ namespace Mafia2Tool
             this.FileButton,
             this.ViewButton,
             this.OptionsButton,
-            this.TEMPCameraSpeed});
+            this.TEMPCameraSpeed,
+            this.NameTableFlagLimit});
             this.ToolbarStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolbarStrip.Name = "ToolbarStrip";
             this.ToolbarStrip.Size = new System.Drawing.Size(800, 25);
@@ -153,17 +163,33 @@ namespace Mafia2Tool
             // OptionsButton
             // 
             this.OptionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.OptionsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.DisableLODButton});
             this.OptionsButton.Image = ((System.Drawing.Image)(resources.GetObject("OptionsButton.Image")));
             this.OptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.OptionsButton.Name = "OptionsButton";
             this.OptionsButton.Size = new System.Drawing.Size(62, 22);
             this.OptionsButton.Text = "Options";
             // 
+            // DisableLODButton
+            // 
+            this.DisableLODButton.Name = "DisableLODButton";
+            this.DisableLODButton.Size = new System.Drawing.Size(143, 22);
+            this.DisableLODButton.Text = "Disable LODs";
+            this.DisableLODButton.Click += new System.EventHandler(this.DisableLodButtonOnClick);
+            // 
             // TEMPCameraSpeed
             // 
             this.TEMPCameraSpeed.Name = "TEMPCameraSpeed";
             this.TEMPCameraSpeed.Size = new System.Drawing.Size(100, 25);
             this.TEMPCameraSpeed.Leave += new System.EventHandler(this.CameraSpeedUpdate);
+            // 
+            // NameTableFlagLimit
+            // 
+            this.NameTableFlagLimit.Name = "NameTableFlagLimit";
+            this.NameTableFlagLimit.Size = new System.Drawing.Size(100, 25);
+            this.NameTableFlagLimit.Text = "0";
+            this.NameTableFlagLimit.TextChanged += new System.EventHandler(this.NameTableFlagValueChanged);
             // 
             // EntryMenuStrip
             // 
@@ -172,22 +198,29 @@ namespace Mafia2Tool
             this.DeleteButton,
             this.DuplicateButton});
             this.EntryMenuStrip.Name = "EntryMenuStrip";
-            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 92);
+            this.EntryMenuStrip.Size = new System.Drawing.Size(125, 70);
             this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
             // 
             // PreviewButton
             // 
             this.PreviewButton.Name = "PreviewButton";
-            this.PreviewButton.Size = new System.Drawing.Size(180, 22);
+            this.PreviewButton.Size = new System.Drawing.Size(124, 22);
             this.PreviewButton.Text = "Preview";
             this.PreviewButton.Click += new System.EventHandler(this.PreviewButton_Click);
             // 
             // DeleteButton
             // 
             this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(180, 22);
+            this.DeleteButton.Size = new System.Drawing.Size(124, 22);
             this.DeleteButton.Text = "Delete";
             this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
+            // 
+            // DuplicateButton
+            // 
+            this.DuplicateButton.Name = "DuplicateButton";
+            this.DuplicateButton.Size = new System.Drawing.Size(124, 22);
+            this.DuplicateButton.Text = "Duplicate";
+            this.DuplicateButton.Click += new System.EventHandler(this.DuplicateButton_Click);
             // 
             // StatusStrip
             // 
@@ -257,21 +290,21 @@ namespace Mafia2Tool
             // 
             // EditEntryTab
             // 
+            this.EditEntryTab.Controls.Add(this.RotationZNumeric);
+            this.EditEntryTab.Controls.Add(this.RotationYNumeric);
+            this.EditEntryTab.Controls.Add(this.RotationXNumeric);
+            this.EditEntryTab.Controls.Add(this.PositionZNumeric);
+            this.EditEntryTab.Controls.Add(this.PositionYNumeric);
+            this.EditEntryTab.Controls.Add(this.PositionXNumeric);
             this.EditEntryTab.Controls.Add(this.OnFrameNameTable);
             this.EditEntryTab.Controls.Add(this.CurrentEntryType);
             this.EditEntryTab.Controls.Add(this.EntryApplyChanges);
             this.EditEntryTab.Controls.Add(this.CurrentEntry);
-            this.EditEntryTab.Controls.Add(this.RotationZBox);
             this.EditEntryTab.Controls.Add(this.RotationZLabel);
-            this.EditEntryTab.Controls.Add(this.RotationYBox);
             this.EditEntryTab.Controls.Add(this.RotationYLabel);
-            this.EditEntryTab.Controls.Add(this.RotationXBox);
             this.EditEntryTab.Controls.Add(this.RotationXLabel);
-            this.EditEntryTab.Controls.Add(this.PositionZBox);
             this.EditEntryTab.Controls.Add(this.PositionZLabel);
-            this.EditEntryTab.Controls.Add(this.PositionYBox);
             this.EditEntryTab.Controls.Add(this.PositionYLabel);
-            this.EditEntryTab.Controls.Add(this.PositionXBox);
             this.EditEntryTab.Controls.Add(this.PositionXLabel);
             this.EditEntryTab.Controls.Add(this.FrameNameTableFlags);
             this.EditEntryTab.Location = new System.Drawing.Point(4, 22);
@@ -281,6 +314,114 @@ namespace Mafia2Tool
             this.EditEntryTab.TabIndex = 1;
             this.EditEntryTab.Text = "Edit Entry";
             this.EditEntryTab.UseVisualStyleBackColor = true;
+            // 
+            // RotationZNumeric
+            // 
+            this.RotationZNumeric.DecimalPlaces = 5;
+            this.RotationZNumeric.Location = new System.Drawing.Point(67, 162);
+            this.RotationZNumeric.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.RotationZNumeric.Minimum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            -2147483648});
+            this.RotationZNumeric.Name = "RotationZNumeric";
+            this.RotationZNumeric.Size = new System.Drawing.Size(185, 20);
+            this.RotationZNumeric.TabIndex = 23;
+            // 
+            // RotationYNumeric
+            // 
+            this.RotationYNumeric.DecimalPlaces = 5;
+            this.RotationYNumeric.Location = new System.Drawing.Point(67, 136);
+            this.RotationYNumeric.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.RotationYNumeric.Minimum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            -2147483648});
+            this.RotationYNumeric.Name = "RotationYNumeric";
+            this.RotationYNumeric.Size = new System.Drawing.Size(185, 20);
+            this.RotationYNumeric.TabIndex = 22;
+            // 
+            // RotationXNumeric
+            // 
+            this.RotationXNumeric.DecimalPlaces = 5;
+            this.RotationXNumeric.Location = new System.Drawing.Point(67, 110);
+            this.RotationXNumeric.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.RotationXNumeric.Minimum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            -2147483648});
+            this.RotationXNumeric.Name = "RotationXNumeric";
+            this.RotationXNumeric.Size = new System.Drawing.Size(185, 20);
+            this.RotationXNumeric.TabIndex = 21;
+            // 
+            // PositionZNumeric
+            // 
+            this.PositionZNumeric.DecimalPlaces = 5;
+            this.PositionZNumeric.Location = new System.Drawing.Point(67, 84);
+            this.PositionZNumeric.Maximum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            0});
+            this.PositionZNumeric.Minimum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            -2147483648});
+            this.PositionZNumeric.Name = "PositionZNumeric";
+            this.PositionZNumeric.Size = new System.Drawing.Size(185, 20);
+            this.PositionZNumeric.TabIndex = 20;
+            // 
+            // PositionYNumeric
+            // 
+            this.PositionYNumeric.DecimalPlaces = 5;
+            this.PositionYNumeric.Location = new System.Drawing.Point(67, 58);
+            this.PositionYNumeric.Maximum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            0});
+            this.PositionYNumeric.Minimum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            -2147483648});
+            this.PositionYNumeric.Name = "PositionYNumeric";
+            this.PositionYNumeric.Size = new System.Drawing.Size(185, 20);
+            this.PositionYNumeric.TabIndex = 19;
+            // 
+            // PositionXNumeric
+            // 
+            this.PositionXNumeric.DecimalPlaces = 5;
+            this.PositionXNumeric.Location = new System.Drawing.Point(67, 32);
+            this.PositionXNumeric.Maximum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            0});
+            this.PositionXNumeric.Minimum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            -2147483648});
+            this.PositionXNumeric.Name = "PositionXNumeric";
+            this.PositionXNumeric.Size = new System.Drawing.Size(185, 20);
+            this.PositionXNumeric.TabIndex = 18;
             // 
             // OnFrameNameTable
             // 
@@ -320,13 +461,6 @@ namespace Mafia2Tool
             this.CurrentEntry.TabIndex = 12;
             this.CurrentEntry.Text = "FRAME NAME HERE";
             // 
-            // RotationZBox
-            // 
-            this.RotationZBox.Location = new System.Drawing.Point(67, 161);
-            this.RotationZBox.Name = "RotationZBox";
-            this.RotationZBox.Size = new System.Drawing.Size(131, 20);
-            this.RotationZBox.TabIndex = 11;
-            // 
             // RotationZLabel
             // 
             this.RotationZLabel.AutoSize = true;
@@ -335,13 +469,6 @@ namespace Mafia2Tool
             this.RotationZLabel.Size = new System.Drawing.Size(57, 13);
             this.RotationZLabel.TabIndex = 10;
             this.RotationZLabel.Text = "Rotation Z";
-            // 
-            // RotationYBox
-            // 
-            this.RotationYBox.Location = new System.Drawing.Point(67, 135);
-            this.RotationYBox.Name = "RotationYBox";
-            this.RotationYBox.Size = new System.Drawing.Size(131, 20);
-            this.RotationYBox.TabIndex = 9;
             // 
             // RotationYLabel
             // 
@@ -352,13 +479,6 @@ namespace Mafia2Tool
             this.RotationYLabel.TabIndex = 8;
             this.RotationYLabel.Text = "Rotation Y";
             // 
-            // RotationXBox
-            // 
-            this.RotationXBox.Location = new System.Drawing.Point(67, 109);
-            this.RotationXBox.Name = "RotationXBox";
-            this.RotationXBox.Size = new System.Drawing.Size(131, 20);
-            this.RotationXBox.TabIndex = 7;
-            // 
             // RotationXLabel
             // 
             this.RotationXLabel.AutoSize = true;
@@ -367,13 +487,6 @@ namespace Mafia2Tool
             this.RotationXLabel.Size = new System.Drawing.Size(57, 13);
             this.RotationXLabel.TabIndex = 6;
             this.RotationXLabel.Text = "Rotation X";
-            // 
-            // PositionZBox
-            // 
-            this.PositionZBox.Location = new System.Drawing.Point(67, 83);
-            this.PositionZBox.Name = "PositionZBox";
-            this.PositionZBox.Size = new System.Drawing.Size(131, 20);
-            this.PositionZBox.TabIndex = 5;
             // 
             // PositionZLabel
             // 
@@ -384,13 +497,6 @@ namespace Mafia2Tool
             this.PositionZLabel.TabIndex = 4;
             this.PositionZLabel.Text = "Position Z";
             // 
-            // PositionYBox
-            // 
-            this.PositionYBox.Location = new System.Drawing.Point(67, 57);
-            this.PositionYBox.Name = "PositionYBox";
-            this.PositionYBox.Size = new System.Drawing.Size(131, 20);
-            this.PositionYBox.TabIndex = 3;
-            // 
             // PositionYLabel
             // 
             this.PositionYLabel.AutoSize = true;
@@ -400,13 +506,6 @@ namespace Mafia2Tool
             this.PositionYLabel.TabIndex = 2;
             this.PositionYLabel.Text = "Position Y";
             // 
-            // PositionXBox
-            // 
-            this.PositionXBox.Location = new System.Drawing.Point(67, 31);
-            this.PositionXBox.Name = "PositionXBox";
-            this.PositionXBox.Size = new System.Drawing.Size(131, 20);
-            this.PositionXBox.TabIndex = 1;
-            // 
             // PositionXLabel
             // 
             this.PositionXLabel.AutoSize = true;
@@ -415,15 +514,6 @@ namespace Mafia2Tool
             this.PositionXLabel.Size = new System.Drawing.Size(54, 13);
             this.PositionXLabel.TabIndex = 0;
             this.PositionXLabel.Text = "Position X";
-            // 
-            // FrameNameTableFlags
-            // 
-            this.FrameNameTableFlags.CheckOnClick = true;
-            this.FrameNameTableFlags.FormattingEnabled = true;
-            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
-            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
-            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
-            this.FrameNameTableFlags.TabIndex = 16;
             // 
             // DebugPG
             // 
@@ -452,12 +542,14 @@ namespace Mafia2Tool
             this.RenderPanel.Size = new System.Drawing.Size(530, 403);
             this.RenderPanel.TabIndex = 0;
             // 
-            // DuplicateButton
+            // FrameNameTableFlags
             // 
-            this.DuplicateButton.Name = "DuplicateButton";
-            this.DuplicateButton.Size = new System.Drawing.Size(180, 22);
-            this.DuplicateButton.Text = "Duplicate";
-            this.DuplicateButton.Click += new System.EventHandler(this.DuplicateButton_Click);
+            this.FrameNameTableFlags.CheckOnClick = true;
+            this.FrameNameTableFlags.FormattingEnabled = true;
+            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
+            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
+            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
+            this.FrameNameTableFlags.TabIndex = 16;
             // 
             // D3DForm
             // 
@@ -483,6 +575,12 @@ namespace Mafia2Tool
             this.SceneTab.ResumeLayout(false);
             this.EditEntryTab.ResumeLayout(false);
             this.EditEntryTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationZNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationYNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationXNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PositionZNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PositionYNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PositionXNumeric)).EndInit();
             this.DebugPG.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -510,17 +608,11 @@ namespace Mafia2Tool
         private System.Windows.Forms.Label CurrentEntryType;
         private System.Windows.Forms.Button EntryApplyChanges;
         private System.Windows.Forms.Label CurrentEntry;
-        private System.Windows.Forms.TextBox RotationZBox;
         private System.Windows.Forms.Label RotationZLabel;
-        private System.Windows.Forms.TextBox RotationYBox;
         private System.Windows.Forms.Label RotationYLabel;
-        private System.Windows.Forms.TextBox RotationXBox;
         private System.Windows.Forms.Label RotationXLabel;
-        private System.Windows.Forms.TextBox PositionZBox;
         private System.Windows.Forms.Label PositionZLabel;
-        private System.Windows.Forms.TextBox PositionYBox;
         private System.Windows.Forms.Label PositionYLabel;
-        private System.Windows.Forms.TextBox PositionXBox;
         private System.Windows.Forms.Label PositionXLabel;
         private FlagCheckedListBox FrameNameTableFlags;
         private System.Windows.Forms.TabPage DebugPG;
@@ -530,5 +622,13 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripTextBox TEMPCameraSpeed;
         private System.Windows.Forms.ToolStripMenuItem DeleteButton;
         private System.Windows.Forms.ToolStripMenuItem DuplicateButton;
+        private System.Windows.Forms.ToolStripMenuItem DisableLODButton;
+        private System.Windows.Forms.ToolStripTextBox NameTableFlagLimit;
+        private System.Windows.Forms.NumericUpDown RotationZNumeric;
+        private System.Windows.Forms.NumericUpDown RotationYNumeric;
+        private System.Windows.Forms.NumericUpDown RotationXNumeric;
+        private System.Windows.Forms.NumericUpDown PositionZNumeric;
+        private System.Windows.Forms.NumericUpDown PositionYNumeric;
+        private System.Windows.Forms.NumericUpDown PositionXNumeric;
     }
 }
