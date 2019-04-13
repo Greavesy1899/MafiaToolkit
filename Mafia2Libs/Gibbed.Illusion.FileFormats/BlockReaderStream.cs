@@ -342,32 +342,24 @@ namespace Gibbed.Illusion.FileFormats
         {
             public uint UncompressedSize;
             public uint Unknown04;
-            public ushort Unknown08;
-            public ushort Unknown0A;
-            public ushort Unknown0C;
-            public byte Unknown0E;
-            public byte Unknown0F;
+            public uint Unknown08;
+            public uint Unknown0C;
             public uint CompressedSize;
             public uint Unknown14;
             public uint Unknown18;
             public uint Unknown1C;
-            public uint Unknown1E;
 
             public static CompressedBlockHeader Read(Stream input, Endian endian)
             {
                 CompressedBlockHeader instance;
                 instance.UncompressedSize = input.ReadValueU32(endian);
                 instance.Unknown04 = input.ReadValueU32(endian);
-                instance.Unknown08 = input.ReadValueU16(endian);
-                instance.Unknown0A = input.ReadValueU16(endian);
-                instance.Unknown0C = input.ReadValueU16(endian);
-                instance.Unknown0E = input.ReadValueU8();
-                instance.Unknown0F = input.ReadValueU8();
-                instance.CompressedSize = input.ReadValueU16(endian);
+                instance.Unknown08 = input.ReadValueU32(endian);
+                instance.Unknown0C = input.ReadValueU32(endian);
+                instance.CompressedSize = input.ReadValueU32(endian);
                 instance.Unknown14 = input.ReadValueU32(endian);
                 instance.Unknown18 = input.ReadValueU32(endian);
                 instance.Unknown1C = input.ReadValueU32(endian);
-                instance.Unknown1E = input.ReadValueU16(endian);
                 return instance;
             }
         }
@@ -402,13 +394,10 @@ namespace Gibbed.Illusion.FileFormats
                 {
                     var compressedBlockHeader = CompressedBlockHeader.Read(baseStream, endian);
                     if (compressedBlockHeader.Unknown04 != 32 ||
-                        compressedBlockHeader.Unknown08 != 16384 ||
-                        compressedBlockHeader.Unknown0A != 1 ||
-                        compressedBlockHeader.Unknown0C != 1 ||
-                        compressedBlockHeader.Unknown0E != 15 ||
-                        compressedBlockHeader.Unknown0F != 8 ||
-                        //compressedBlockHeader.Unknown14 != 0 ||
-                        //compressedBlockHeader.Unknown18 != 0 ||
+                        compressedBlockHeader.Unknown08 != 81920 ||
+                        compressedBlockHeader.Unknown0C != 135200769 ||
+                        compressedBlockHeader.Unknown14 != 0 ||
+                        compressedBlockHeader.Unknown18 != 0 ||
                         compressedBlockHeader.Unknown1C != 0)
                     {
                         throw new InvalidOperationException();

@@ -180,6 +180,7 @@
     <Compile Include="ApexSDK\IOFX\ScaleVsLifeModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SimpleScaleModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SubtextureVsLifeModifier.cs" />
+    <Compile Include="MafiaLib\FileTypes\SdsConfigFile.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorParse.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorTypes.cs" />

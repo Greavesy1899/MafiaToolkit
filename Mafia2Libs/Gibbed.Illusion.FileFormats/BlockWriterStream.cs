@@ -54,18 +54,15 @@ namespace Gibbed.Illusion.FileFormats
         }
 
         #region Stream
-        public override bool CanRead
-        {
+        public override bool CanRead {
             get { return false; }
         }
 
-        public override bool CanSeek
-        {
+        public override bool CanSeek {
             get { return false; }
         }
 
-        public override bool CanWrite
-        {
+        public override bool CanWrite {
             get { return true; }
         }
 
@@ -74,13 +71,11 @@ namespace Gibbed.Illusion.FileFormats
             this.FlushBlock();
         }
 
-        public override long Length
-        {
+        public override long Length {
             get { throw new NotSupportedException(); }
         }
 
-        public override long Position
-        {
+        public override long Position {
             get { throw new NotSupportedException(); }
             set { throw new NotSupportedException(); }
         }

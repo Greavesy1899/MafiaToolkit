@@ -26,6 +26,7 @@ using System.Drawing;
 using System.IO;
 using Gibbed.Illusion.FileFormats;
 using Gibbed.IO;
+using Utils.StringHelpers;
 
 namespace Gibbed.Mafia2.ResourceFormats
 {
@@ -58,6 +59,75 @@ namespace Gibbed.Mafia2.ResourceFormats
 
             for (int i = 0; i < Columns.Count; i++)
                 Columns[i].Serialize(input, endian);
+        }
+
+        public void Serialize(BinaryWriter writer)
+        {
+            writer.Write(NameHash);
+            StringHelpers.WriteString16(writer, Name);
+            writer.Write((ushort)Columns.Count);
+            writer.Write(Unk1);
+            writer.Write(Unk2);
+            writer.Write((uint)CalculateRowSize());
+            writer.Write((uint)Rows.Count);
+
+            for (int i = 0; i < Rows.Count; i++)
+            {
+                for (int x = 0; x < Columns.Count; x++)
+                {
+                    Column column = Columns[x];
+                    object value = Rows[i].Values[x];
+                    switch (column.Type)
+                    {
+                        case ColumnType.Boolean:
+                            writer.Write(value.GetType() == typeof(string) ? Convert.ToUInt32(value): (uint)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.Float32:
+                            writer.Write(value.GetType() == typeof(string) ? Convert.ToSingle(value) : (float)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.Signed32:
+                            writer.Write(value.GetType() == typeof(string) ? Convert.ToInt32(value) : (int)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.Unsigned32:
+                            writer.Write(value.GetType() == typeof(string) ? Convert.ToUInt32(value) : (uint)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.Flags32:
+                            writer.Write(value.GetType() == typeof(string) ? Convert.ToUInt32(value) : (uint)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.Hash64:
+                            writer.Write(value.GetType() == typeof(string) ? Convert.ToUInt64(value) : (ulong)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.String8:
+                            StringHelpers.WriteStringBuffer(writer, 8, (string)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.String16:
+                            StringHelpers.WriteStringBuffer(writer, 16, (string)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.String32:
+                            StringHelpers.WriteStringBuffer(writer, 32, (string)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.String64:
+                            StringHelpers.WriteStringBuffer(writer, 64, (string)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.Color:
+                            string[] colors = (Rows[i].Values[x] as string).Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            writer.Write(float.Parse(colors[0]));
+                            writer.Write(float.Parse(colors[1]));
+                            writer.Write(float.Parse(colors[2]));
+                            break;
+                        case ColumnType.Hash64AndString32:
+                            string[] data = (Rows[i].Values[x] as string).Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            writer.Write(ulong.Parse(data[0]));
+                            StringHelpers.WriteStringBuffer(writer, 32, data.Length == 2 ? data[1] : "");
+                            break;
+                        default:
+                            throw new FormatException();
+                    }
+                }
+            }
+
+            for (int i = 0; i < Columns.Count; i++)
+                Columns[i].Serialize(writer);
         }
 
         public void Deserialize(ushort version, Stream input, Endian endian)
@@ -189,9 +259,9 @@ namespace Gibbed.Mafia2.ResourceFormats
                                     float r = data.ReadValueF32(endian);
                                     float g = data.ReadValueF32(endian);
                                     float b = data.ReadValueF32(endian);
-                                    Color color = Color.FromArgb((int)r, (int)g, (int)b);
+                                    //Color color = Color.FromArgb((int)r, (int)g, (int)b);
                                     // TODO: de-stupidize this
-                                    row.Values.Add(color.ToString());
+                                    row.Values.Add(r + " " + g + " " + b);
                                     break;
                                 }
 
@@ -199,7 +269,7 @@ namespace Gibbed.Mafia2.ResourceFormats
                                 {
                                     var hash = data.ReadValueU64(endian);
                                     string value = data.ReadString(32, true);
-                                    row.Values.Add(value);
+                                    row.Values.Add(hash + " " + value);
                                     break;
                                 }
 
@@ -228,6 +298,14 @@ namespace Gibbed.Mafia2.ResourceFormats
                 input.WriteValueU8((byte)Type);
                 input.WriteValueU8(Unknown2);
                 input.WriteValueU16(Unknown3);
+            }
+
+            public void Serialize(BinaryWriter writer)
+            {
+                writer.Write(NameHash);
+                writer.Write((byte)Type);
+                writer.Write(Unknown2);
+                writer.Write(Unknown3);
             }
 
             public override string ToString()
@@ -327,6 +405,49 @@ namespace Gibbed.Mafia2.ResourceFormats
             }
 
             throw new ArgumentException("unhandled type", "type");
+        }
+
+        private int CalculateRowSize()
+        {
+            int rowSize = 0;
+
+            foreach (Column col in Columns)
+            {
+                switch (col.Type)
+                {
+                    case ColumnType.Boolean:
+                    case ColumnType.Float32:
+                    case ColumnType.Signed32:
+                    case ColumnType.Unsigned32:
+                    case ColumnType.Flags32:
+                        rowSize += 4;
+                        break;
+                    case ColumnType.Hash64:
+                        rowSize += 8;
+                        break;
+                    case ColumnType.String8:
+                        rowSize += 8;
+                        break;
+                    case ColumnType.Color:
+                        rowSize += 12;
+                        break;
+                    case ColumnType.String16:
+                        rowSize += 16;
+                        break;
+                    case ColumnType.String32:
+                        rowSize += 32;
+                        break;
+                    case ColumnType.Hash64AndString32:
+                        rowSize += 40;
+                        break;
+                    case ColumnType.String64:
+                        rowSize += 64;
+                        break;
+                    default:
+                        throw new FormatException();
+                }
+            }
+            return rowSize;
         }
     }
 }

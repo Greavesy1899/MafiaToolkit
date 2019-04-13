@@ -118,7 +118,7 @@ namespace Rendering.Graphics
                        // vertex.BoneID = VertexTranslator.ReadBlendIDFromVB(vertexBuffer.Data, startIndex);
                     }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x80))
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Color))
                     {
                         //unknown
                     }
@@ -147,12 +147,12 @@ namespace Rendering.Graphics
                         vertex.TexCoord7 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
                     }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x20000))
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Color1))
                     {
                         //unknown
                     }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x40000))
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.BBCoeffs))
                     {
                         //unknown
                     }
@@ -204,7 +204,7 @@ namespace Rendering.Graphics
                     part.Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[0];
                 else
                 {
-                    Debug.WriteLine(LODs[0].ModelParts[x].Material.MaterialName + "\t" + LODs[0].ModelParts[x].Material.ShaderHash);
+                    //Debug.WriteLine(LODs[0].ModelParts[x].Material.MaterialName + "\t" + LODs[0].ModelParts[x].Material.ShaderHash);
                     part.Shader = (RenderStorageSingleton.Instance.ShaderManager.shaders.ContainsKey(LODs[0].ModelParts[x].Material.ShaderHash)
                         ? RenderStorageSingleton.Instance.ShaderManager.shaders[LODs[0].ModelParts[x].Material.ShaderHash]
                         : RenderStorageSingleton.Instance.ShaderManager.shaders[0]);

@@ -93,9 +93,10 @@ namespace Mafia2
                         vertex.BoneID = VertexTranslator.ReadBlendIDFromVB(vertexBuffer.Data, startIndex);
                     }
 
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x80))
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Color))
                     {
-                        //unknown
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Color].Offset;
+                        Int4 colorData = VertexTranslator.ReadColorFromVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
@@ -122,14 +123,16 @@ namespace Mafia2
                         vertex.UVs[3] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
                     }
 
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x20000))
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Color1))
                     {
-                        //unknown
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Color1].Offset;
+                        Int4 colorData = VertexTranslator.ReadColorFromVB(vertexBuffer.Data, startIndex);
                     }
 
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.flag_0x40000))
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.BBCoeffs))
                     {
-                        //unknown
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.BBCoeffs].Offset;
+                        Vector3 coeffData = VertexTranslator.ReadBBCoeffsVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
@@ -214,13 +217,13 @@ namespace Mafia2
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Normals));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Tangent));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.BlendData));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.flag_0x80));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Color));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords7));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.flag_0x20000));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.flag_0x40000));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Color1));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.BBCoeffs));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.DamageGroup));
 
                     //write length and then all vertices.
@@ -324,7 +327,7 @@ namespace Mafia2
                     Lods[i].VertexDeclaration += (int)VertexFlags.BlendData;
 
                 if (reader.ReadBoolean())
-                    Lods[i].VertexDeclaration += (int)VertexFlags.flag_0x80;
+                    Lods[i].VertexDeclaration += (int)VertexFlags.Color;
 
                 if (reader.ReadBoolean())
                     Lods[i].VertexDeclaration += (int)VertexFlags.TexCoords0;
@@ -339,10 +342,10 @@ namespace Mafia2
                     Lods[i].VertexDeclaration += (int)VertexFlags.TexCoords7;
 
                 if (reader.ReadBoolean())
-                    Lods[i].VertexDeclaration += (int)VertexFlags.flag_0x20000;
+                    Lods[i].VertexDeclaration += (int)VertexFlags.Color1;
 
                 if (reader.ReadBoolean())
-                    Lods[i].VertexDeclaration += (int)VertexFlags.flag_0x40000;
+                    Lods[i].VertexDeclaration += (int)VertexFlags.BBCoeffs;
 
                 if (reader.ReadBoolean())
                     Lods[i].VertexDeclaration += (int)VertexFlags.DamageGroup;

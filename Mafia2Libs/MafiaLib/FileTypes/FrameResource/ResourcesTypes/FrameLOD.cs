@@ -13,18 +13,19 @@ namespace ResourceTypes.FrameResource
     public class FrameLOD
     {
 
-        public static VertexFlags[] VertexFlagOrder = new VertexFlags[12] {
+        public static VertexFlags[] VertexFlagOrder = new VertexFlags[13] {
             VertexFlags.Position,
+            VertexFlags.Position2D,
             VertexFlags.Normals,
             VertexFlags.BlendData,
-            VertexFlags.flag_0x80,
-            VertexFlags.flag_0x20000,
+            VertexFlags.Color,
+            VertexFlags.Color1,
             VertexFlags.DamageGroup,
             VertexFlags.TexCoords0,
             VertexFlags.TexCoords1,
             VertexFlags.TexCoords2,
             VertexFlags.TexCoords7,
-            VertexFlags.flag_0x40000,
+            VertexFlags.BBCoeffs,
             VertexFlags.Tangent
         };
 
@@ -660,17 +661,17 @@ namespace ResourceTypes.FrameResource
                 case VertexFlags.BlendData:
                     return 8;
                 case VertexFlags.Normals:
-                case VertexFlags.flag_0x80:
+                case VertexFlags.Color:
                 case VertexFlags.TexCoords0:
                 case VertexFlags.TexCoords1:
                 case VertexFlags.TexCoords2:
                 case VertexFlags.TexCoords7:
-                case VertexFlags.flag_0x20000:
+                case VertexFlags.Color1:
                 case VertexFlags.DamageGroup:
                     return 4;
                 case VertexFlags.Tangent:
                     return 0;
-                case VertexFlags.flag_0x40000:
+                case VertexFlags.BBCoeffs:
                     return 12;
                 default:
                     return -1;

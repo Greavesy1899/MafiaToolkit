@@ -10,6 +10,30 @@ using System.Windows.Forms.Design;
 
 namespace Utils.Extensions
 {
+    public class MTableColumn : DataGridViewColumn
+    {
+        private byte unk2;
+        private ushort unk3;
+        private Gibbed.Mafia2.ResourceFormats.TableData.ColumnType m2Type;
+        private uint hash;
+
+        public byte Unk2 {
+            get { return unk2; }
+            set { unk2 = value; }
+        }
+        public ushort Unk3 {
+            get { return unk3; }
+            set { unk3 = value; }
+        }
+        public Gibbed.Mafia2.ResourceFormats.TableData.ColumnType TypeM2 {
+            get { return m2Type; }
+            set { m2Type = value; }
+        }
+        public uint NameHash {
+            get { return hash; }
+            set { hash = value; }
+        }
+    }
     public class DataGridViewRGBBox : DataGridViewButtonCell
     {
         protected override bool SetValue(int rowIndex, object value)

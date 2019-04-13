@@ -71,10 +71,11 @@ namespace Mafia2Tool
             this.PositionZLabel = new System.Windows.Forms.Label();
             this.PositionYLabel = new System.Windows.Forms.Label();
             this.PositionXLabel = new System.Windows.Forms.Label();
+            this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
             this.DebugPG = new System.Windows.Forms.TabPage();
             this.DebugPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.RenderPanel = new System.Windows.Forms.Panel();
-            this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
+            this.Export3DButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolbarStrip.SuspendLayout();
             this.EntryMenuStrip.SuspendLayout();
             this.StatusStrip.SuspendLayout();
@@ -196,29 +197,30 @@ namespace Mafia2Tool
             this.EntryMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.PreviewButton,
             this.DeleteButton,
-            this.DuplicateButton});
+            this.DuplicateButton,
+            this.Export3DButton});
             this.EntryMenuStrip.Name = "EntryMenuStrip";
-            this.EntryMenuStrip.Size = new System.Drawing.Size(125, 70);
+            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 114);
             this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
             // 
             // PreviewButton
             // 
             this.PreviewButton.Name = "PreviewButton";
-            this.PreviewButton.Size = new System.Drawing.Size(124, 22);
+            this.PreviewButton.Size = new System.Drawing.Size(180, 22);
             this.PreviewButton.Text = "Preview";
             this.PreviewButton.Click += new System.EventHandler(this.PreviewButton_Click);
             // 
             // DeleteButton
             // 
             this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(124, 22);
+            this.DeleteButton.Size = new System.Drawing.Size(180, 22);
             this.DeleteButton.Text = "Delete";
             this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
             // 
             // DuplicateButton
             // 
             this.DuplicateButton.Name = "DuplicateButton";
-            this.DuplicateButton.Size = new System.Drawing.Size(124, 22);
+            this.DuplicateButton.Size = new System.Drawing.Size(180, 22);
             this.DuplicateButton.Text = "Duplicate";
             this.DuplicateButton.Click += new System.EventHandler(this.DuplicateButton_Click);
             // 
@@ -332,6 +334,7 @@ namespace Mafia2Tool
             this.RotationZNumeric.Name = "RotationZNumeric";
             this.RotationZNumeric.Size = new System.Drawing.Size(185, 20);
             this.RotationZNumeric.TabIndex = 23;
+            this.RotationZNumeric.ValueChanged += new System.EventHandler(this.EntryField_ValueChanged);
             // 
             // RotationYNumeric
             // 
@@ -350,6 +353,7 @@ namespace Mafia2Tool
             this.RotationYNumeric.Name = "RotationYNumeric";
             this.RotationYNumeric.Size = new System.Drawing.Size(185, 20);
             this.RotationYNumeric.TabIndex = 22;
+            this.RotationYNumeric.ValueChanged += new System.EventHandler(this.EntryField_ValueChanged);
             // 
             // RotationXNumeric
             // 
@@ -368,6 +372,7 @@ namespace Mafia2Tool
             this.RotationXNumeric.Name = "RotationXNumeric";
             this.RotationXNumeric.Size = new System.Drawing.Size(185, 20);
             this.RotationXNumeric.TabIndex = 21;
+            this.RotationXNumeric.ValueChanged += new System.EventHandler(this.EntryField_ValueChanged);
             // 
             // PositionZNumeric
             // 
@@ -386,6 +391,7 @@ namespace Mafia2Tool
             this.PositionZNumeric.Name = "PositionZNumeric";
             this.PositionZNumeric.Size = new System.Drawing.Size(185, 20);
             this.PositionZNumeric.TabIndex = 20;
+            this.PositionZNumeric.ValueChanged += new System.EventHandler(this.EntryField_ValueChanged);
             // 
             // PositionYNumeric
             // 
@@ -404,6 +410,7 @@ namespace Mafia2Tool
             this.PositionYNumeric.Name = "PositionYNumeric";
             this.PositionYNumeric.Size = new System.Drawing.Size(185, 20);
             this.PositionYNumeric.TabIndex = 19;
+            this.PositionYNumeric.ValueChanged += new System.EventHandler(this.EntryField_ValueChanged);
             // 
             // PositionXNumeric
             // 
@@ -422,6 +429,7 @@ namespace Mafia2Tool
             this.PositionXNumeric.Name = "PositionXNumeric";
             this.PositionXNumeric.Size = new System.Drawing.Size(185, 20);
             this.PositionXNumeric.TabIndex = 18;
+            this.PositionXNumeric.ValueChanged += new System.EventHandler(this.EntryField_ValueChanged);
             // 
             // OnFrameNameTable
             // 
@@ -515,6 +523,15 @@ namespace Mafia2Tool
             this.PositionXLabel.TabIndex = 0;
             this.PositionXLabel.Text = "Position X";
             // 
+            // FrameNameTableFlags
+            // 
+            this.FrameNameTableFlags.CheckOnClick = true;
+            this.FrameNameTableFlags.FormattingEnabled = true;
+            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
+            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
+            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
+            this.FrameNameTableFlags.TabIndex = 16;
+            // 
             // DebugPG
             // 
             this.DebugPG.Controls.Add(this.DebugPropertyGrid);
@@ -542,14 +559,12 @@ namespace Mafia2Tool
             this.RenderPanel.Size = new System.Drawing.Size(530, 403);
             this.RenderPanel.TabIndex = 0;
             // 
-            // FrameNameTableFlags
+            // Export3DButton
             // 
-            this.FrameNameTableFlags.CheckOnClick = true;
-            this.FrameNameTableFlags.FormattingEnabled = true;
-            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
-            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
-            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
-            this.FrameNameTableFlags.TabIndex = 16;
+            this.Export3DButton.Name = "Export3DButton";
+            this.Export3DButton.Size = new System.Drawing.Size(180, 22);
+            this.Export3DButton.Text = "Export 3D";
+            this.Export3DButton.Click += new System.EventHandler(this.Export3DButton_Click);
             // 
             // D3DForm
             // 
@@ -630,5 +645,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.NumericUpDown PositionZNumeric;
         private System.Windows.Forms.NumericUpDown PositionYNumeric;
         private System.Windows.Forms.NumericUpDown PositionXNumeric;
+        private System.Windows.Forms.ToolStripMenuItem Export3DButton;
     }
 }

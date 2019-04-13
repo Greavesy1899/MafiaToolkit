@@ -131,9 +131,7 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceType.Write(output, endian);
             }
 
-            var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != 0
-                ? (uint)this._ResourceEntries.Sum(re => 30 + (re.Data == null ? 0 : re.Data.Length))
-                : 0x4000;
+            var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != 0 ? (uint)this._ResourceEntries.Sum(re => 30 + (re.Data == null ? 0 : re.Data.Length)) : 0x4000;
 
             fileHeader.BlockTableOffset = (uint)(output.Position - basePosition);
             fileHeader.ResourceCount = 0;
@@ -1055,7 +1053,7 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.Data = stream.ToArray();
                 entry.SlotRamRequired = (uint)entry.Data.Length + 128;
 
-                using (BinaryWriter writer = new BinaryWriter(File.Open(sdsFolder + "/table.tbl", FileMode.Create)))
+                using (BinaryWriter writer = new BinaryWriter(File.Open(sdsFolder + "/Tables.tbl", FileMode.Create)))
                     writer.Write(entry.Data);
             }
 

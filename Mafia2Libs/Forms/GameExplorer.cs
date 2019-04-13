@@ -15,6 +15,7 @@ using ResourceTypes.Cutscene;
 using ResourceTypes.Navigation;
 using ResourceTypes.Prefab;
 using ResourceTypes.Sound;
+using ResourceTypes.SDSConfig;
 
 namespace Mafia2Tool
 {
@@ -282,7 +283,7 @@ namespace Mafia2Tool
 
             using (var output = File.Create(file.FullName))
             {
-                archiveFile.Serialize(output, (ArchiveSerializeOptions)ToolkitSettings.SerializeSDSOption);
+                archiveFile.Serialize(output, /*(ArchiveSerializeOptions)ToolkitSettings.SerializeSDSOption*/ArchiveSerializeOptions.Compress);
             }
             infoText.Text = "Saved SDS.";
         }
@@ -429,6 +430,15 @@ namespace Mafia2Tool
             else if(item.SubItems[0].Text.Contains("cityshop") && item.SubItems[1].Text == "BIN")
             {
                 csEditor = new CityShopEditor((FileInfo)item.Tag);
+                return;
+            }
+            else if(item.SubItems[0].Text.Contains("sdsconfig") && item.SubItems[1].Text == "BIN")
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open((item.Tag as FileInfo).FullName, FileMode.Open)))
+                {
+                    SdsConfigFile sdsConfig = new SdsConfigFile();
+                    sdsConfig.ReadFromFile(reader);
+                }
                 return;
             }
 

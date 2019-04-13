@@ -27,6 +27,7 @@ namespace Mafia2Tool
         private FileInfo fileLocation;
 
         private int nameTableLimit = 0;
+        private bool isEntryReady = false;
 
         public D3DForm(FileInfo info)
         {
@@ -329,6 +330,7 @@ namespace Mafia2Tool
         //Improvement Idea: Sync updates values IF selected indexes is valid.
         private void UpdateCurrentEntryData(FrameObjectBase fObject)
         {
+            isEntryReady = false;
             CurrentEntry.Text = fObject.Name.String;
             PositionXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.X);
             PositionYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.Y);
@@ -341,9 +343,10 @@ namespace Mafia2Tool
             DebugPropertyGrid.SelectedObject = fObject;
             OnFrameNameTable.Checked = fObject.IsOnFrameTable;
             FrameNameTableFlags.EnumValue = (Enum)Convert.ChangeType(fObject.FrameNameTableFlags, typeof(NameTableFlags));
+            isEntryReady = true;
         }
 
-        private void EntryApplyChanges_OnClick(object sender, EventArgs e)
+        private void ApplyEntryChanges()
         {
             FrameObjectBase fObject = (treeView1.SelectedNode.Tag as FrameObjectBase);
             fObject.Matrix.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
@@ -591,6 +594,7 @@ namespace Mafia2Tool
             EntryMenuStrip.Items[0].Visible = false;
             EntryMenuStrip.Items[1].Visible = false;
             EntryMenuStrip.Items[2].Visible = false;
+            EntryMenuStrip.Items[3].Visible = false;
 
             if (treeView1.SelectedNode == null)
                 e.Cancel = false;
@@ -600,6 +604,9 @@ namespace Mafia2Tool
                 EntryMenuStrip.Items[0].Visible = true;
                 EntryMenuStrip.Items[1].Visible = true;
                 EntryMenuStrip.Items[2].Visible = true;
+
+                if ((treeView1.SelectedNode.Tag != null) && (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel)))
+                    EntryMenuStrip.Items[3].Visible = true;
             }
         }
 
@@ -681,9 +688,57 @@ namespace Mafia2Tool
             //}
         }
 
+        private void EntryApplyChanges_OnClick(object sender, EventArgs e)
+        {
+            ApplyEntryChanges();
+        }
+
         private void NameTableFlagValueChanged(object sender, EventArgs e)
         {
             nameTableLimit = int.Parse(NameTableFlagLimit.Text);
+        }
+
+        private void EntryField_ValueChanged(object sender, EventArgs e)
+        {
+            if (isEntryReady)
+                ApplyEntryChanges();
+        }
+
+        private void Export3DButton_Click(object sender, EventArgs e)
+        {
+            FrameObjectSingleMesh mesh = (treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
+            FrameGeometry geom = SceneData.FrameResource.FrameGeometries[mesh.Refs["Mesh"]];
+            FrameMaterial mat = SceneData.FrameResource.FrameMaterials[mesh.Refs["Material"]];
+            IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
+            VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
+
+            //we need to retrieve buffers first.
+            for (int c = 0; c != geom.LOD.Length; c++)
+            {
+                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
+                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
+            }
+
+            Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
+
+            for (int c = 0; c != newModel.ModelStructure.Lods.Length; c++)
+            {
+                newModel.ModelStructure.ExportToM2T(ToolkitSettings.ExportPath + "\\");
+                switch (ToolkitSettings.Format)
+                {
+                    case 0:
+                        newModel.ModelStructure.ExportToFbx(ToolkitSettings.ExportPath + "\\", false);
+                        break;
+                    case 1:
+                        newModel.ModelStructure.ExportToFbx(ToolkitSettings.ExportPath + "\\", true);
+                        break;
+                    case 2:
+                        newModel.ModelStructure.ExportToM2T(ToolkitSettings.ExportPath + "\\");
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 }
