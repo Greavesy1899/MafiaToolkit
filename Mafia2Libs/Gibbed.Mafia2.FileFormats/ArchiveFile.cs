@@ -418,7 +418,10 @@ namespace Gibbed.Mafia2.FileFormats
                         MessageBox.Show("Did not pack type: " + resourceType, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         break;
                 }
-
+                resourceEntry.SlotRamRequired = 0;
+                resourceEntry.SlotVramRequired = 0;
+                resourceEntry.OtherRamRequired = 0;
+                resourceEntry.OtherVramRequired = 0;
                 resourceNode.AppendChild(typeNameNode);
                 resourceNode.AppendChild(sddescNode);
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotRamRequired", 0)); //(int)resourceEntry.SlotRamRequired));

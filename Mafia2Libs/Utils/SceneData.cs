@@ -68,6 +68,8 @@ namespace Mafia2Tool
                     ids.Add(new ItemDescLoader(name));
                 else if (type == "FrameNameTable")
                     FrameNameTable = new FrameNameTable(name);
+                else if (type == "Collisions")
+                    Collisions = new Collision(name);
             }
 
             IndexBufferPool = new IndexBufferManager(ibps);

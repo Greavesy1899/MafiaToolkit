@@ -6,7 +6,7 @@ namespace Rendering.Graphics
 {
     public class VertexLayouts
     {
-        public class BBoxLayout
+        public class BasicLayout
         {
             [StructLayout(LayoutKind.Sequential)]
             public struct Vertex

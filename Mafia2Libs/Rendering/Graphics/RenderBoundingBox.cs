@@ -7,7 +7,7 @@ namespace Rendering.Graphics
 {
     public class RenderBoundingBox : IRenderer
     {
-        private VertexLayouts.BBoxLayout.Vertex[] vertices;
+        private VertexLayouts.BasicLayout.Vertex[] vertices;
         private ushort[] indices;
 
         public RenderBoundingBox()
@@ -19,7 +19,7 @@ namespace Rendering.Graphics
         {
             boundingBox = bbox;
 
-            vertices = new VertexLayouts.BBoxLayout.Vertex[8];
+            vertices = new VertexLayouts.BasicLayout.Vertex[8];
             //1
             vertices[0].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Minimum.Y, boundingBox.Maximum.Z);
             vertices[0].Colour = new Vector3(1.0f);
@@ -106,7 +106,7 @@ namespace Rendering.Graphics
             if (!DoRender)
                 return;
 
-            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.BBoxLayout.Vertex>(), 0));
+            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
 

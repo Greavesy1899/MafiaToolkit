@@ -46,11 +46,7 @@ namespace Rendering.Graphics
 
         public bool Init(Device device)
         {
-            if (!InitBuffer(device))
-            {
-                MessageBox.Show("unable to init buffer");
-                return false;
-            }
+            InitBuffers(device);
             if (!InitializePartShaders(device))
             {
                 MessageBox.Show("unable to load texture");
@@ -169,14 +165,6 @@ namespace Rendering.Graphics
             }
 
             SetupShaders();
-            return true;
-        }
-        private bool InitBuffer(Device device)
-        {
-            vertexBuffer = Buffer.Create(device, BindFlags.VertexBuffer, LODs[0].Vertices);
-            indexBuffer = Buffer.Create(device, BindFlags.IndexBuffer, LODs[0].Indices);
-
-            BoundingBox.InitBuffers(device);
             return true;
         }
         private bool InitializePartShaders(Device device)
