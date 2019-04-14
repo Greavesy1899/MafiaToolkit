@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
-using Mafia2;
 using Utils.Logging;
 using Utils.Settings;
 
@@ -15,7 +14,7 @@ namespace Utils.Lang
             Localisation.Clear();
             string xmlToLoad;
 
-            switch(ToolkitSettings.Language)
+            switch (ToolkitSettings.Language)
             {
                 case 0:
                     xmlToLoad = "Localisations/en_GB.xml";
@@ -55,9 +54,14 @@ namespace Utils.Lang
             string text;
 
             if (Localisation.TryGetValue(key, out text))
+            {
                 return text;
+            }
             else
+            {
+                System.Console.WriteLine("Missing {0}", key);
                 return key;
+            }
         }
     }
 }

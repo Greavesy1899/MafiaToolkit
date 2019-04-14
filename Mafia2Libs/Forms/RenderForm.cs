@@ -335,7 +335,6 @@ namespace Mafia2Tool
             UpdateCurrentEntryData(treeView1.SelectedNode.Tag as FrameObjectBase);
         }
 
-        //Improvement Idea: Sync updates values IF selected indexes is valid.
         private void UpdateCurrentEntryData(FrameObjectBase fObject)
         {
             isEntryReady = false;

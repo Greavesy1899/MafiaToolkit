@@ -34,6 +34,7 @@ namespace Utils.Extensions
             set { hash = value; }
         }
     }
+
     public class DataGridViewRGBBox : DataGridViewButtonCell
     {
         protected override bool SetValue(int rowIndex, object value)
@@ -46,6 +47,7 @@ namespace Utils.Extensions
 
         }
     }
+
     public class FlagCheckedListBox : CheckedListBox
     {
         private System.ComponentModel.Container components = null;

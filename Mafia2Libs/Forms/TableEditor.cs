@@ -29,10 +29,13 @@ namespace Mafia2Tool
             SaveButton.Text = Language.GetString("$SAVE");
             ExitButton.Text = Language.GetString("$EXIT");
             ReloadButton.Text = Language.GetString("$RELOAD");
+            AddColumnButton.Text = Language.GetString("$TABLE_ADD_COLUMN");
+            AddRowButton.Text = Language.GetString("$TABLE_ADD_ROW");
         }
 
         public void Initialise()
         {
+            AddColumnButton.Enabled = false;
             LoadTableData();
             ShowDialog();
         }

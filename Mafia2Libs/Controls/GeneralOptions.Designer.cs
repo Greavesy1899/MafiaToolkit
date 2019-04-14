@@ -127,6 +127,7 @@
             this.M2Label.Size = new System.Drawing.Size(97, 13);
             this.M2Label.TabIndex = 0;
             this.M2Label.Text = "$MII_DIRECTORY";
+            this.M2Label.Click += new System.EventHandler(this.M2Label_Click);
             // 
             // MafiaIIBrowser
             // 

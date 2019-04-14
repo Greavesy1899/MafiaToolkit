@@ -20,8 +20,11 @@ namespace Mafia2Tool.OptionControls
             RenderGroup.Text = Language.GetString("$RENDER_OPTIONS");
             ScreenFarLabel.Text = Language.GetString("$RENDER_SCREENFAR");
             ScreenNearLabel.Text = Language.GetString("$RENDER_SCREENEAR");
+            TexLabel.Text = Language.GetString("$TEXTURE_DIRECTORY");
+            CameraSpeedLabel.Text = Language.GetString("$RENDER_CAMERASPEED");
+            TexBrowser.Description = Language.GetString("$SELECT_TEX_FOLDER");
         }
-
+        
         /// <summary>
         /// Read Settings from INI and populate controls.
         /// </summary>
@@ -30,6 +33,7 @@ namespace Mafia2Tool.OptionControls
             ScreenFarUpDown.Value = Math.Min(Convert.ToInt16(ToolkitSettings.ScreenDepth), ScreenFarUpDown.Maximum);
             ScreenNearUpDown.Value = Math.Min(Convert.ToInt16(ToolkitSettings.ScreenNear), ScreenNearUpDown.Maximum);
             CameraSpeedUpDown.Value = Math.Min((decimal)ToolkitSettings.CameraSpeed, CameraSpeedUpDown.Maximum);
+            TexDirectoryBox.Text = ToolkitSettings.TexturePath;
         }
 
         private void ScreenDepth_Changed(object sender, EventArgs e)
@@ -48,6 +52,23 @@ namespace Mafia2Tool.OptionControls
         {
             ToolkitSettings.CameraSpeed = Convert.ToSingle(CameraSpeedUpDown.Value);
             ToolkitSettings.WriteKey("CameraSpeed", "ModelViewer", ToolkitSettings.CameraSpeed.ToString());
+        }
+
+        private void TexDirectoryBox_TextChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.TexturePath = TexDirectoryBox.Text;
+            ToolkitSettings.WriteKey("TexturePath", "ModelViewer", ToolkitSettings.TexturePath);
+        }
+
+        private void BrowseButton_Click(object sender, EventArgs e)
+        {
+            TexBrowser.SelectedPath = "";
+            if (TexBrowser.ShowDialog() == DialogResult.OK)
+            {
+                TexDirectoryBox.Text = TexBrowser.SelectedPath;
+                TexDirectoryBox_TextChanged(null, null);
+            }
+            else return;
         }
     }
 }

@@ -10,16 +10,21 @@ namespace Mafia2Tool.OptionControls
         public SDSOptions()
         {
             InitializeComponent();
+            Localise();
             LoadSettings();
         }
 
         private void Localise()
         {
             M2Label.Text = Language.GetString("$SDS_COMPRESSION_TYPE");
+            CompressionDropdownBox.Items[0] = Language.GetString("$SDS_UNCOMPRESSED");
+            CompressionDropdownBox.Items[0] = Language.GetString("$SDS_COMPRESSED");
+            CompressionDropdownBox.Items[0] = Language.GetString("$SDS_ONEBLOCK");
         }
 
         private void LoadSettings()
         {
+            CompressionDropdownBox.Enabled = false;
             CompressionDropdownBox.SelectedIndex = ToolkitSettings.SerializeSDSOption;
         }
 

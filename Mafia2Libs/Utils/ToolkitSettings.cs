@@ -25,6 +25,7 @@ namespace Utils.Settings
         public static float CameraSpeed;
         public static string ShaderPath;
         public static string DataPath;
+        public static string TexturePath;
         public const int Width = 1920;
         public const int Height = 1080;
 
@@ -52,6 +53,7 @@ namespace Utils.Settings
             ElapsedTime = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
             M2Directory = ReadKey("MafiaII", "Directories");
+            TexturePath = ReadKey("TexturePath", "ModelViewer");
             bool.TryParse(ReadKey("Enabled", "Discord", "True"), out DiscordEnabled);
             bool.TryParse(ReadKey("ElapsedTimeEnabled", "Discord", "True"), out DiscordElapsedTimeEnabled);
             bool.TryParse(ReadKey("StateEmabled", "Discord", "True"), out DiscordStateEnabled);

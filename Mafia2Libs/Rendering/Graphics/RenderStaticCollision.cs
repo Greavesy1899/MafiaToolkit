@@ -3,8 +3,8 @@ using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using System;
 using Utils.Types;
-using Buffer = SharpDX.Direct3D11.Buffer;
 using static ResourceTypes.Collisions.Collision;
+using Buffer = SharpDX.Direct3D11.Buffer;
 
 namespace Rendering.Graphics
 {
@@ -43,7 +43,7 @@ namespace Rendering.Graphics
             numTriangles = Convert.ToUInt32(data.Indices.Length * 3);
             Vertices = new VertexLayouts.BasicLayout.Vertex[data.Vertices.Length];
 
-            for(int i = 0; i != data.Vertices.Length; i++)
+            for (int i = 0; i != data.Vertices.Length; i++)
             {
                 VertexLayouts.BasicLayout.Vertex vertex = new VertexLayouts.BasicLayout.Vertex();
                 vertex.Position = data.Vertices[i];

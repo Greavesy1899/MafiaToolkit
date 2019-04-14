@@ -2,6 +2,7 @@
   <!-- Generic String -->
   <String ID="$CONTINUE">Continue</String>
   <String ID="$CANCEL">Cancel</String>
+  <String ID="$EDIT">Edit</String>
   <String ID="$INDEX">Index</String>
   <String ID="$ENTRY_NAME">Entry Name</String>
   
@@ -65,6 +66,21 @@
   <String ID="$MATERIAL_LIB_ADD">Add Library</String>
   <String ID="$MATERIAL_LIB_SELECTED">Selected Libraries</String>
   
+  <!-- SDS Options -->
+  <String ID="$SDS_COMPRESSION_TYPE">Compression Type</String>
+  <String ID="$SDS_UNCOMPRESSED">Uncompressed</String>
+  <String ID="$SDS_COMPRESSED">Compressed</String>
+  <String ID="$SDS_ONEBLOCK">One Block</String>
+
+  <!-- Render Options -->
+  <String ID="$RENDER">Render</String>
+  <String ID="$RENDER_OPTIONS">Render Options</String>
+  <String ID="$RENDER_SCREENFAR">Screen Far</String>
+  <String ID="$RENDER_SCREENEAR">Screen Near</String>
+  <String ID="$RENDER_CAMERASPEED">Camera Speed</String>
+  <String ID="$TEXTURE_DIRECTORY">Texture Directory</String>
+  <String ID="$SELECT_TEX_FOLDER">Select the folder which contains textures.</String>
+  
   <!-- Collision Editor Form Strings-->
   <String ID="$SAVE">Save</String>
   <String ID="$RELOAD">Reload</String>
@@ -124,5 +140,10 @@
   <String ID="$ADD_AREA">Add Area</String>
   <String ID="$ADD_DATA">Add Data</String>
   <String ID="$POPULATE_TRANSLOKATORS">Populate New Translocators</String>
+
+  <!-- Table Editor string -->
+  <String ID="$TABLE_EDITOR_TITLE">Table Editor</String>
+  <String ID="$TABLE_ADD_ROW">Add Row</String>
+  <String ID="$TABLE_ADD_COLUMN">Add Column</String>
    
 </Localisation>

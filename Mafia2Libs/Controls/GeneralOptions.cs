@@ -55,8 +55,7 @@ namespace Mafia2Tool.OptionControls
                 M2DirectoryBox.Text = MafiaIIBrowser.SelectedPath;
                 M2Directory_TextChanged(null, null);
             }
-            else
-                return;
+            else return;
         }
 
         private void M2Directory_TextChanged(object sender, EventArgs e)
@@ -108,6 +107,11 @@ namespace Mafia2Tool.OptionControls
             ToolkitSettings.Language = languageComboBox.SelectedIndex;
             ToolkitSettings.WriteKey("Language", "Misc", ToolkitSettings.Language.ToString());
             Language.ReadLanguageXML();
+        }
+
+        private void M2Label_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

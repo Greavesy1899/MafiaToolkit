@@ -29,23 +29,29 @@
         private void InitializeComponent()
         {
             this.RenderGroup = new System.Windows.Forms.GroupBox();
+            this.BrowseButton = new System.Windows.Forms.Button();
+            this.TexDirectoryBox = new System.Windows.Forms.TextBox();
+            this.TexLabel = new System.Windows.Forms.Label();
+            this.CameraSpeedUpDown = new System.Windows.Forms.NumericUpDown();
+            this.CameraSpeedLabel = new System.Windows.Forms.Label();
             this.ScreenFarUpDown = new System.Windows.Forms.NumericUpDown();
             this.ScreenNearUpDown = new System.Windows.Forms.NumericUpDown();
             this.ScreenFarLabel = new System.Windows.Forms.Label();
             this.ScreenNearLabel = new System.Windows.Forms.Label();
-            this.ExportPathButton = new System.Windows.Forms.FolderBrowserDialog();
-            this.CameraSpeedUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label1 = new System.Windows.Forms.Label();
+            this.TexBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.RenderGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenFarUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenNearUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // RenderGroup
             // 
+            this.RenderGroup.Controls.Add(this.BrowseButton);
+            this.RenderGroup.Controls.Add(this.TexDirectoryBox);
+            this.RenderGroup.Controls.Add(this.TexLabel);
             this.RenderGroup.Controls.Add(this.CameraSpeedUpDown);
-            this.RenderGroup.Controls.Add(this.label1);
+            this.RenderGroup.Controls.Add(this.CameraSpeedLabel);
             this.RenderGroup.Controls.Add(this.ScreenFarUpDown);
             this.RenderGroup.Controls.Add(this.ScreenNearUpDown);
             this.RenderGroup.Controls.Add(this.ScreenFarLabel);
@@ -57,6 +63,71 @@
             this.RenderGroup.TabIndex = 2;
             this.RenderGroup.TabStop = false;
             this.RenderGroup.Text = "$RENDER_OPTIONS";
+            // 
+            // BrowseButton
+            // 
+            this.BrowseButton.Location = new System.Drawing.Point(345, 167);
+            this.BrowseButton.Name = "BrowseButton";
+            this.BrowseButton.Size = new System.Drawing.Size(26, 20);
+            this.BrowseButton.TabIndex = 9;
+            this.BrowseButton.Text = "...";
+            this.BrowseButton.UseVisualStyleBackColor = true;
+            this.BrowseButton.Click += new System.EventHandler(this.BrowseButton_Click);
+            // 
+            // TexDirectoryBox
+            // 
+            this.TexDirectoryBox.Location = new System.Drawing.Point(7, 167);
+            this.TexDirectoryBox.Name = "TexDirectoryBox";
+            this.TexDirectoryBox.Size = new System.Drawing.Size(332, 20);
+            this.TexDirectoryBox.TabIndex = 8;
+            this.TexDirectoryBox.TextChanged += new System.EventHandler(this.TexDirectoryBox_TextChanged);
+            // 
+            // TexLabel
+            // 
+            this.TexLabel.AutoSize = true;
+            this.TexLabel.Location = new System.Drawing.Point(4, 151);
+            this.TexLabel.Name = "TexLabel";
+            this.TexLabel.Size = new System.Drawing.Size(133, 13);
+            this.TexLabel.TabIndex = 7;
+            this.TexLabel.Text = "$TEXTURE_DIRECTORY";
+            // 
+            // CameraSpeedUpDown
+            // 
+            this.CameraSpeedUpDown.DecimalPlaces = 1;
+            this.CameraSpeedUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.CameraSpeedUpDown.Location = new System.Drawing.Point(7, 126);
+            this.CameraSpeedUpDown.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.CameraSpeedUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.CameraSpeedUpDown.Name = "CameraSpeedUpDown";
+            this.CameraSpeedUpDown.Size = new System.Drawing.Size(120, 20);
+            this.CameraSpeedUpDown.TabIndex = 6;
+            this.CameraSpeedUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.CameraSpeedUpDown.ValueChanged += new System.EventHandler(this.CameraSpeedUpDown_Changed);
+            // 
+            // CameraSpeedLabel
+            // 
+            this.CameraSpeedLabel.AutoSize = true;
+            this.CameraSpeedLabel.Location = new System.Drawing.Point(4, 110);
+            this.CameraSpeedLabel.Name = "CameraSpeedLabel";
+            this.CameraSpeedLabel.Size = new System.Drawing.Size(146, 13);
+            this.CameraSpeedLabel.TabIndex = 5;
+            this.CameraSpeedLabel.Text = "$RENDER_CAMERASPEED";
             // 
             // ScreenFarUpDown
             // 
@@ -112,47 +183,9 @@
             this.ScreenNearLabel.TabIndex = 0;
             this.ScreenNearLabel.Text = "$RENDER_SCREENNEAR";
             // 
-            // ExportPathButton
+            // TexBrowser
             // 
-            this.ExportPathButton.Description = "$EXPORT_PATH_DESC";
-            // 
-            // CameraSpeedUpDown
-            // 
-            this.CameraSpeedUpDown.DecimalPlaces = 1;
-            this.CameraSpeedUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.CameraSpeedUpDown.Location = new System.Drawing.Point(7, 126);
-            this.CameraSpeedUpDown.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.CameraSpeedUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.CameraSpeedUpDown.Name = "CameraSpeedUpDown";
-            this.CameraSpeedUpDown.Size = new System.Drawing.Size(120, 20);
-            this.CameraSpeedUpDown.TabIndex = 6;
-            this.CameraSpeedUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.CameraSpeedUpDown.ValueChanged += new System.EventHandler(this.CameraSpeedUpDown_Changed);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(4, 110);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(146, 13);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "$RENDER_CAMERASPEED";
+            this.TexBrowser.Description = "$SELECT_TEX_FOLDER";
             // 
             // RenderOptions
             // 
@@ -163,9 +196,9 @@
             this.Size = new System.Drawing.Size(390, 193);
             this.RenderGroup.ResumeLayout(false);
             this.RenderGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenFarUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenNearUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -175,10 +208,13 @@
         private System.Windows.Forms.GroupBox RenderGroup;
         private System.Windows.Forms.Label ScreenNearLabel;
         private System.Windows.Forms.Label ScreenFarLabel;
-        private System.Windows.Forms.FolderBrowserDialog ExportPathButton;
         private System.Windows.Forms.NumericUpDown ScreenFarUpDown;
         private System.Windows.Forms.NumericUpDown ScreenNearUpDown;
         private System.Windows.Forms.NumericUpDown CameraSpeedUpDown;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label CameraSpeedLabel;
+        private System.Windows.Forms.Button BrowseButton;
+        private System.Windows.Forms.TextBox TexDirectoryBox;
+        private System.Windows.Forms.Label TexLabel;
+        private System.Windows.Forms.FolderBrowserDialog TexBrowser;
     }
 }
