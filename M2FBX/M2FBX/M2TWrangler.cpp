@@ -3,7 +3,7 @@
 #include "M2Model.h"
 #include <conio.h>
 
-void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
+void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 {
 	FbxMesh* pMesh = (FbxMesh*)pNode->GetNodeAttribute();
 	FbxGeometryElementNormal* pElementNormal = pMesh->GetElementNormal(0);
@@ -33,13 +33,13 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	}
 	
 
-	pPart->SetHasPositions(true);
-	pPart->SetHasNormals(pElementNormal);
-	pPart->SetHasTangents(pElementTangent);
-	pPart->SetHasUV0(pElementUV && pElementMaterial);
-	pPart->SetHasUV1(pElementVC);
-	pPart->SetHasUV2(pElementVC);
-	pPart->SetHasUV7(pElementOM);
+	pPart.SetHasPositions(true);
+	pPart.SetHasNormals(pElementNormal);
+	pPart.SetHasTangents(pElementTangent);
+	pPart.SetHasUV0(pElementUV && pElementMaterial);
+	pPart.SetHasUV1(pElementVC);
+	pPart.SetHasUV2(pElementVC);
+	pPart.SetHasUV7(pElementOM);
 
 	//Gotta make sure the normals are correctly set up.
 	if (pElementNormal->GetReferenceMode() != FbxGeometryElement::eDirect) {
@@ -72,7 +72,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		vertices.push_back(vert);
 
 		//do normal stuff.
-		if (pPart->GetHasNormals()) {
+		if (pPart.GetHasNormals()) {
 			vec4 = pElementNormal->GetDirectArray().GetAt(i);
 			vert.x = vec4.mData[0];
 			vert.y = vec4.mData[1];
@@ -81,7 +81,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		}
 
 		//do tangent stuff.
-		if (pPart->GetHasTangents()) {
+		if (pPart.GetHasTangents()) {
 			vec4 = pElementTangent->GetDirectArray().GetAt(i);
 			vert.x = vec4.mData[0];
 			vert.y = vec4.mData[1];
@@ -90,7 +90,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		}
 
 		//do UV stuff.
-		if (pPart->GetHasUV0()) {
+		if (pPart.GetHasUV0()) {
 			vec4 = pElementUV->GetDirectArray().GetAt(i);
 			uvCoords.x = vec4.mData[0];
 			uvCoords.y = vec4.mData[1];
@@ -98,19 +98,19 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		}
 
 		//Colours
-		if (pPart->GetHasUV1()) {
+		if (pPart.GetHasUV1()) {
 			color = pElementVC->GetDirectArray().GetAt(i);
 			uvCoords.x = color.mRed;
 			uvCoords.y = color.mBlue;
 			uvs1.push_back(uvCoords);
 		}
-		if (pPart->GetHasUV2()) {
+		if (pPart.GetHasUV2()) {
 			color = pElementVC->GetDirectArray().GetAt(i);
 			uvCoords.x = color.mBlue;
 			uvCoords.y = color.mAlpha;
 			uvs2.push_back(uvCoords);
 		}
-		if (pPart->GetHasUV7()) {
+		if (pPart.GetHasUV7()) {
 			vec4 = pElementOM->GetDirectArray().GetAt(i);
 			uvCoords.x = vec4.mData[0];
 			uvCoords.y = vec4.mData[1];
@@ -119,13 +119,13 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	}
 
 	//update the part with the latest data.
-	pPart->SetVertices(vertices, true);
-	pPart->SetNormals(normals);
-	pPart->SetTangents(tangents);
-	pPart->SetUV0s(uvs);
-	pPart->SetUV1s(uvs1);
-	pPart->SetUV2s(uvs2);
-	pPart->SetUV7s(uvs7);
+	pPart.SetVertices(vertices, true);
+	pPart.SetNormals(normals);
+	pPart.SetTangents(tangents);
+	pPart.SetUV0s(uvs);
+	pPart.SetUV1s(uvs1);
+	pPart.SetUV2s(uvs2);
+	pPart.SetUV7s(uvs7);
 
 	//Gotta be triangulated.
 	if (!pMesh->IsTriangleMesh()) {
@@ -203,10 +203,10 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		curTotal += faces*3;
 	}
 	//Update data to do with triangles.
-	pPart->SetIndices(indices, true);
-	pPart->SetMatIDs(matIDs);
-	pPart->SetSubMeshes(subMeshes);
-	pPart->SetSubMeshCount(pNode->GetMaterialCount());
+	pPart.SetIndices(indices, true);
+	pPart.SetMatIDs(matIDs);
+	pPart.SetSubMeshes(subMeshes);
+	pPart.SetSubMeshCount(pNode->GetMaterialCount());
 	delete[] subNumFacesCount;
 }
 
@@ -223,14 +223,15 @@ int DetermineNodeAttribute(FbxNode* node)
 
 void BuildModel(ModelStructure* structure, FbxNode* node)
 {
-	structure->SetPartSize(1);
-	std::vector<ModelPart*> parts = std::vector<ModelPart*>();
-	structure->SetName(node->GetName());
+	char size = 1;
+	structure->SetPartSize(size);
+	ModelPart* parts = new ModelPart[1];
+	structure->SetName(std::string(node->GetName()));
 	FBXSDK_printf("Converting Mesh..\n");
-	ModelPart* Part = new ModelPart();
+	ModelPart Part = ModelPart();
 	BuildModelPart(node, Part);
-	parts.push_back(Part);
-	structure->SetParts(parts, true);
+	parts[0] = Part;
+	structure->SetParts(parts);
 	FBXSDK_printf("Built Model..\n");
 }
 

@@ -319,12 +319,12 @@ namespace Mafia2Tool
                 }
             }
 
-            //for(int i = 0; i != SceneData.Collisions.Placements.Count; i++)
+            //for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
             //{
             //    ResourceTypes.Collisions.Collision.Placement placement = SceneData.Collisions.Placements[i];
             //    RenderStaticCollision collision = new RenderStaticCollision();
             //    collision.ConvertCollisionToRender(placement, SceneData.Collisions.NXSData[placement.Hash].Data);
-            //    assets.Add((int)placement.Hash+i, collision);
+            //    assets.Add((int)placement.Hash + i, collision);
             //}
             Graphics.InitObjectStack = assets;
         }

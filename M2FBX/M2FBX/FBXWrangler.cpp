@@ -170,16 +170,16 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 {
 	FbxMesh* lMesh = FbxMesh::Create(pManager, pName);
 
-	ModelPart* part = model.GetParts()[0];
-	std::vector<Point3> vertices = part->GetVertices();
-	std::vector<Int3> triangles = part->GetIndices();
-	std::vector<Point3> normals = part->GetNormals();
-	std::vector<Point3> tangents = part->GetTangents();
-	std::vector<UVVert> uvs0 = part->GetUV0s();
-	std::vector<UVVert> uvs1 = part->GetUV1s();
-	std::vector<UVVert> uvs2 = part->GetUV2s();
-	std::vector<UVVert> uvs7 = part->GetUV7s();
-	std::vector<short> matIDs = part->GetMatIDs();
+	ModelPart part = model.GetParts()[0];
+	std::vector<Point3> vertices = part.GetVertices();
+	std::vector<Int3> triangles = part.GetIndices();
+	std::vector<Point3> normals = part.GetNormals();
+	std::vector<Point3> tangents = part.GetTangents();
+	std::vector<UVVert> uvs0 = part.GetUV0s();
+	std::vector<UVVert> uvs1 = part.GetUV1s();
+	std::vector<UVVert> uvs2 = part.GetUV2s();
+	std::vector<UVVert> uvs7 = part.GetUV7s();
+	std::vector<short> matIDs = part.GetMatIDs();
 
 	lMesh->InitControlPoints(vertices.size());
 	FbxVector4* lControlPoints = lMesh->GetControlPoints();
@@ -192,7 +192,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 
 	// We want to have one normal for each vertex (or control point),
 	// so we set the mapping mode to eByControlPoint.
-	if (part->GetHasNormals())
+	if (part.GetHasNormals())
 	{
 		FbxGeometryElementNormal* lElementNormal = lMesh->CreateElementNormal();
 		lElementNormal->SetMappingMode(FbxGeometryElement::eByControlPoint);
@@ -200,7 +200,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 		for (size_t i = 0; i < vertices.size(); i++)
 			lElementNormal->GetDirectArray().Add(FbxVector4(normals[i].x, normals[i].y, normals[i].z));
 	}
-	if (part->GetHasTangents())
+	if (part.GetHasTangents())
 	{
 		FbxGeometryElementTangent* lElementTangent = lMesh->CreateElementTangent();
 		lElementTangent->SetMappingMode(FbxGeometryElement::eByControlPoint);
@@ -217,7 +217,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 
 	for (size_t i = 0; i < vertices.size(); i++)
 	{
-		if(part->GetHasUV0())
+		if(part.GetHasUV0())
 			lUVDiffuseElement->GetDirectArray().Add(FbxVector2(uvs0[i].x, uvs0[i].y));
 		else
 			lUVDiffuseElement->GetDirectArray().Add(FbxVector2(0.0, 1.0));
@@ -227,7 +227,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	//we must update the size of the index array.
 	lUVDiffuseElement->GetIndexArray().SetCount(triangles.size() * 3);
 
-	if (part->GetHasUV1() && part->GetHasUV2())
+	if (part.GetHasUV1() && part.GetHasUV2())
 	{
 		//Create VC in channels;
 		lUVVCElement = lMesh->CreateElementVertexColor();
@@ -240,7 +240,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 
 	}
 
-	if (part->GetHasUV7())
+	if (part.GetHasUV7())
 	{
 		// Create UV for OM channel.
 		lUVOMElement = lMesh->CreateElementUV("OMUV", FbxLayerElement::eTextureAmbient);
@@ -275,7 +275,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 		// update the index array of the UVs that map the texture to the face
 		//lUVDiffuseElement->GetIndexArray().SetAt(i, 0);
 
-		if(part->GetHasUV1() && part->GetHasUV2())
+		if(part.GetHasUV1() && part.GetHasUV2())
 			lUVVCElement->GetIndexArray().SetAt(i, 0);
 	}
 
@@ -308,7 +308,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	// We are in eByPolygon, so there's only need for index (a plane has 1 polygon).
 	lMaterialElement->GetIndexArray().SetCount(lMesh->GetPolygonSize(0)/3);
 
-	if (part->GetHasUV7())
+	if (part.GetHasUV7())
 	{
 		lOMElement = lMesh->CreateElementMaterial();
 		lOMElement->SetName("AO/OM Mapping");
@@ -321,9 +321,9 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 		lOMElement->GetIndexArray().SetCount(lMesh->GetPolygonSize(0)/3);
 	}
 
-	for (int i = 0; i != part->GetSubMeshCount(); i++)
+	for (int i = 0; i != part.GetSubMeshCount(); i++)
 	{
-		SubMesh sub = part->GetSubMeshes()[i];
+		SubMesh sub = part.GetSubMeshes()[i];
 		for (int x = sub.GetStartIndex()/3; x != (sub.GetStartIndex() / 3) + (sub.GetNumFaces()); x++)
 			lMaterialElement->GetIndexArray().SetAt(x, i);
 	}
@@ -331,13 +331,13 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	// Set the Index to the material
 	for (int i = 0; i < lMesh->GetPolygonSize(0) / 3; ++i)
 	{
-		if(part->GetHasUV7())
+		if(part.GetHasUV7())
 			lOMElement->GetIndexArray().SetAt(i, 0);
 	}
 
-	for (int i = 0; i < part->GetSubMeshCount(); i++)
+	for (int i = 0; i < part.GetSubMeshCount(); i++)
 	{
-		SubMesh sub = part->GetSubMeshes()[i];
+		SubMesh sub = part.GetSubMeshes()[i];
 		lNode->AddMaterial(CreateMaterial(pManager, sub.GetMatName().c_str()));
 	}
 

@@ -376,37 +376,34 @@ void ModelPart::WriteToStream(FILE * stream) {
 ModelPart::ModelPart() {}
 ModelPart::~ModelPart() 
 {
-	delete[] this->submeshes;
+	//delete[] this->submeshes;
 }
 
 //===================================================
 //		ModelStructure
 //===================================================
-void ModelStructure::SetName(std::string name) {
+void ModelStructure::SetName(std::string& name) {
 	name.erase(std::remove(name.begin(), name.end(), '?'), name.end());
 	ModelStructure::name = name;
 }
 
-void ModelStructure::SetPartSize(char count) {
+void ModelStructure::SetPartSize(char& count) {
 	ModelStructure::partSize = count;
 }
 
-void ModelStructure::SetParts(std::vector<ModelPart*> parts, bool updateCount) {
+void ModelStructure::SetParts(ModelPart* parts) {
 	ModelStructure::parts = parts;
-
-	if (updateCount)
-		ModelStructure::partSize = parts.size();
 }
 
-std::string ModelStructure::GetName() {
+std::string ModelStructure::GetName() const {
 	return name;
 }
 
-char ModelStructure::GetPartSize() {
+char ModelStructure::GetPartSize() const {
 	return partSize;
 }
 
-std::vector<ModelPart*> ModelStructure::GetParts() {
+ModelPart* ModelStructure::GetParts() const {
 	return parts;
 }
 
@@ -417,25 +414,27 @@ void ModelStructure::ReadFromStream(FILE * stream) {
 	if (header != magic)
 		exit(0);
 
-	std::string edmName = std::string();
-	edmName = ReadString(stream, edmName);
-	name = edmName;
-	fread(&partSize, 1, 1, stream);
-	parts = std::vector<ModelPart*>(partSize);
+	this->name = ReadString(stream, this->name);
+	fread(&this->partSize, sizeof(char), 1, stream);
+	this->parts = new ModelPart[this->partSize];
 
-	for (int i = 0; i != parts.size(); i++)
-		parts[i]->ReadFromStream(stream);
-
+	for (int i = 0; i != this->partSize; i++)
+	{
+		ModelPart part = ModelPart();
+		part.ReadFromStream(stream);
+		this->parts[i] = part;
+	}
+		
 	fclose(stream);
 }
 
 void ModelStructure::WriteToStream(FILE * stream) {
 	fwrite(&magic, sizeof(int), 1, stream);
-	WriteString(stream, name);
-	fwrite(&partSize, sizeof(char), 1, stream);
+	WriteString(stream, this->name);
+	fwrite(&this->partSize, sizeof(char), 1, stream);
 
-	for (int x = 0; x != parts.size(); x++)
-		parts[x]->WriteToStream(stream);
+	for (int x = 0; x != this->partSize; x++)
+		this->parts[x].WriteToStream(stream);
 
 	fclose(stream);
 }
@@ -443,10 +442,7 @@ void ModelStructure::WriteToStream(FILE * stream) {
 ModelStructure::ModelStructure() {}
 ModelStructure::~ModelStructure()
 {
-	for (int i = 0; i != this->parts.size(); i++)
-		delete this->parts[i];
-
-	this->parts.clear();
+	//delete[] this->parts;
 }
 
 //===================================================

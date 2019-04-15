@@ -239,6 +239,9 @@ namespace Utils.Types
             y = y * 180 / Math.PI;
             z = z * 180 / Math.PI;
 
+            x = double.IsNaN(x) ? 0 : x;
+            y = double.IsNaN(y) ? 0 : y;
+            z = double.IsNaN(z) ? 0 : z;
             return new Vector3((float)x, (float)y, (float)z);
         }
 

@@ -134,16 +134,16 @@ private:
 	const int magic = 22295117;
 	std::string name;
 	char partSize;
-	std::vector<ModelPart*> parts;
+	ModelPart* parts;
 public:
 	ModelStructure();
 	~ModelStructure();
-	void SetName(std::string name);
-	void SetPartSize(char count);
-	void SetParts(std::vector<ModelPart*> parts, bool updateCount = false);
-	std::string GetName();
-	char GetPartSize();
-	std::vector<ModelPart*> GetParts();
+	void SetName(std::string& name);
+	void SetPartSize(char& count);
+	void SetParts(ModelPart* parts);
+	std::string GetName() const;
+	char GetPartSize() const;
+	ModelPart* GetParts() const;
 
 	void ReadFromStream(FILE* stream);
 	void WriteToStream(FILE * stream);
