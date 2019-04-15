@@ -42,12 +42,15 @@ namespace Mafia2Tool
             this.ToggleCullingBottle = new System.Windows.Forms.ToolStripMenuItem();
             this.OptionsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.DisableLODButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToggleModelsButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToggleCollisionsButton = new System.Windows.Forms.ToolStripMenuItem();
             this.TEMPCameraSpeed = new System.Windows.Forms.ToolStripTextBox();
             this.NameTableFlagLimit = new System.Windows.Forms.ToolStripTextBox();
             this.EntryMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DuplicateButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.Export3DButton = new System.Windows.Forms.ToolStripMenuItem();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -71,11 +74,13 @@ namespace Mafia2Tool
             this.PositionZLabel = new System.Windows.Forms.Label();
             this.PositionYLabel = new System.Windows.Forms.Label();
             this.PositionXLabel = new System.Windows.Forms.Label();
-            this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
             this.DebugPG = new System.Windows.Forms.TabPage();
             this.DebugPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.RenderPanel = new System.Windows.Forms.Panel();
-            this.Export3DButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.AddButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
+            this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
             this.ToolbarStrip.SuspendLayout();
             this.EntryMenuStrip.SuspendLayout();
             this.StatusStrip.SuspendLayout();
@@ -99,6 +104,7 @@ namespace Mafia2Tool
             // 
             this.ToolbarStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileButton,
+            this.EditButton,
             this.ViewButton,
             this.OptionsButton,
             this.TEMPCameraSpeed,
@@ -165,7 +171,9 @@ namespace Mafia2Tool
             // 
             this.OptionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.OptionsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.DisableLODButton});
+            this.DisableLODButton,
+            this.ToggleModelsButton,
+            this.ToggleCollisionsButton});
             this.OptionsButton.Image = ((System.Drawing.Image)(resources.GetObject("OptionsButton.Image")));
             this.OptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.OptionsButton.Name = "OptionsButton";
@@ -175,9 +183,29 @@ namespace Mafia2Tool
             // DisableLODButton
             // 
             this.DisableLODButton.Name = "DisableLODButton";
-            this.DisableLODButton.Size = new System.Drawing.Size(143, 22);
+            this.DisableLODButton.Size = new System.Drawing.Size(164, 22);
             this.DisableLODButton.Text = "Disable LODs";
             this.DisableLODButton.Click += new System.EventHandler(this.DisableLodButtonOnClick);
+            // 
+            // ToggleModelsButton
+            // 
+            this.ToggleModelsButton.Checked = true;
+            this.ToggleModelsButton.CheckOnClick = true;
+            this.ToggleModelsButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ToggleModelsButton.Name = "ToggleModelsButton";
+            this.ToggleModelsButton.Size = new System.Drawing.Size(164, 22);
+            this.ToggleModelsButton.Text = "Toggle Models";
+            this.ToggleModelsButton.Click += new System.EventHandler(this.ToggleModelOnClick);
+            // 
+            // ToggleCollisionsButton
+            // 
+            this.ToggleCollisionsButton.Checked = true;
+            this.ToggleCollisionsButton.CheckOnClick = true;
+            this.ToggleCollisionsButton.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ToggleCollisionsButton.Name = "ToggleCollisionsButton";
+            this.ToggleCollisionsButton.Size = new System.Drawing.Size(164, 22);
+            this.ToggleCollisionsButton.Text = "Toggle Collisions";
+            this.ToggleCollisionsButton.Click += new System.EventHandler(this.ToggleCollisionsOnClick);
             // 
             // TEMPCameraSpeed
             // 
@@ -200,29 +228,36 @@ namespace Mafia2Tool
             this.DuplicateButton,
             this.Export3DButton});
             this.EntryMenuStrip.Name = "EntryMenuStrip";
-            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 114);
+            this.EntryMenuStrip.Size = new System.Drawing.Size(125, 92);
             this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
             // 
             // PreviewButton
             // 
             this.PreviewButton.Name = "PreviewButton";
-            this.PreviewButton.Size = new System.Drawing.Size(180, 22);
+            this.PreviewButton.Size = new System.Drawing.Size(124, 22);
             this.PreviewButton.Text = "Preview";
             this.PreviewButton.Click += new System.EventHandler(this.PreviewButton_Click);
             // 
             // DeleteButton
             // 
             this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(180, 22);
+            this.DeleteButton.Size = new System.Drawing.Size(124, 22);
             this.DeleteButton.Text = "Delete";
             this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
             // 
             // DuplicateButton
             // 
             this.DuplicateButton.Name = "DuplicateButton";
-            this.DuplicateButton.Size = new System.Drawing.Size(180, 22);
+            this.DuplicateButton.Size = new System.Drawing.Size(124, 22);
             this.DuplicateButton.Text = "Duplicate";
             this.DuplicateButton.Click += new System.EventHandler(this.DuplicateButton_Click);
+            // 
+            // Export3DButton
+            // 
+            this.Export3DButton.Name = "Export3DButton";
+            this.Export3DButton.Size = new System.Drawing.Size(124, 22);
+            this.Export3DButton.Text = "Export 3D";
+            this.Export3DButton.Click += new System.EventHandler(this.Export3DButton_Click);
             // 
             // StatusStrip
             // 
@@ -523,15 +558,6 @@ namespace Mafia2Tool
             this.PositionXLabel.TabIndex = 0;
             this.PositionXLabel.Text = "Position X";
             // 
-            // FrameNameTableFlags
-            // 
-            this.FrameNameTableFlags.CheckOnClick = true;
-            this.FrameNameTableFlags.FormattingEnabled = true;
-            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
-            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
-            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
-            this.FrameNameTableFlags.TabIndex = 16;
-            // 
             // DebugPG
             // 
             this.DebugPG.Controls.Add(this.DebugPropertyGrid);
@@ -559,12 +585,36 @@ namespace Mafia2Tool
             this.RenderPanel.Size = new System.Drawing.Size(530, 403);
             this.RenderPanel.TabIndex = 0;
             // 
-            // Export3DButton
+            // EditButton
             // 
-            this.Export3DButton.Name = "Export3DButton";
-            this.Export3DButton.Size = new System.Drawing.Size(180, 22);
-            this.Export3DButton.Text = "Export 3D";
-            this.Export3DButton.Click += new System.EventHandler(this.Export3DButton_Click);
+            this.EditButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.AddButton});
+            this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
+            this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.EditButton.Name = "EditButton";
+            this.EditButton.Size = new System.Drawing.Size(40, 22);
+            this.EditButton.Text = "Edit";
+            // 
+            // AddButton
+            // 
+            this.AddButton.Name = "AddButton";
+            this.AddButton.Size = new System.Drawing.Size(180, 22);
+            this.AddButton.Text = "$ADD";
+            this.AddButton.Click += new System.EventHandler(this.AddButtonOnClick);
+            // 
+            // FrameNameTableFlags
+            // 
+            this.FrameNameTableFlags.CheckOnClick = true;
+            this.FrameNameTableFlags.FormattingEnabled = true;
+            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
+            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
+            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
+            this.FrameNameTableFlags.TabIndex = 16;
+            // 
+            // MeshBrowser
+            // 
+            this.MeshBrowser.Filter = "Meshes|*.m2t|FBX|*.fbx";
             // 
             // D3DForm
             // 
@@ -646,5 +696,10 @@ namespace Mafia2Tool
         private System.Windows.Forms.NumericUpDown PositionYNumeric;
         private System.Windows.Forms.NumericUpDown PositionXNumeric;
         private System.Windows.Forms.ToolStripMenuItem Export3DButton;
+        private System.Windows.Forms.ToolStripMenuItem ToggleCollisionsButton;
+        private System.Windows.Forms.ToolStripMenuItem ToggleModelsButton;
+        private System.Windows.Forms.ToolStripDropDownButton EditButton;
+        private System.Windows.Forms.ToolStripMenuItem AddButton;
+        private System.Windows.Forms.OpenFileDialog MeshBrowser;
     }
 }

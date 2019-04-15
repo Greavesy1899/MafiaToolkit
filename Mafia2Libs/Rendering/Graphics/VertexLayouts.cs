@@ -12,7 +12,7 @@ namespace Rendering.Graphics
             public struct Vertex
             {
                 public Vector3 Position;
-                public Vector3 Colour;
+                public Vector4 Colour;
             }
 
             public static InputElement[] GetLayout()
@@ -33,7 +33,7 @@ namespace Rendering.Graphics
                     {
                         SemanticName = "COLOR",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Format = SharpDX.DXGI.Format.R32G32B32A32_Float,
                         Slot = 0,
                         AlignedByteOffset = InputElement.AppendAligned,
                         Classification = InputClassification.PerVertexData,

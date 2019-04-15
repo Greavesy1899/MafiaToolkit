@@ -22,36 +22,36 @@ namespace Rendering.Graphics
             vertices = new VertexLayouts.BasicLayout.Vertex[8];
             //1
             vertices[0].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Minimum.Y, boundingBox.Maximum.Z);
-            vertices[0].Colour = new Vector3(1.0f);
+            vertices[0].Colour = new Vector4(1.0f);
 
             //2
             vertices[1].Position = new Vector3(boundingBox.Maximum.X, boundingBox.Minimum.Y, boundingBox.Maximum.Z);
-            vertices[1].Colour = new Vector3(1.0f);
+            vertices[1].Colour = new Vector4(1.0f);
 
             //3
             vertices[2].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Minimum.Y, boundingBox.Minimum.Z);
-            vertices[2].Colour = new Vector3(1.0f);
+            vertices[2].Colour = new Vector4(1.0f);
 
             //4
             vertices[3].Position = new Vector3(boundingBox.Maximum.X, boundingBox.Minimum.Y, boundingBox.Minimum.Z);
-            vertices[3].Colour = new Vector3(1.0f);
+            vertices[3].Colour = new Vector4(1.0f);
 
             //5
             vertices[4].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Maximum.Y, boundingBox.Maximum.Z);
-            vertices[4].Colour = new Vector3(1.0f);
+            vertices[4].Colour = new Vector4(1.0f);
 
             //6
             vertices[5].Position = new Vector3(boundingBox.Maximum.X, boundingBox.Maximum.Y, boundingBox.Maximum.Z);
-            vertices[5].Colour = new Vector3(1.0f);
+            vertices[5].Colour = new Vector4(1.0f);
 
 
             //7
             vertices[6].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Maximum.Y, boundingBox.Minimum.Z);
-            vertices[6].Colour = new Vector3(1.0f);
+            vertices[6].Colour = new Vector4(1.0f);
 
             //8
             vertices[7].Position = new Vector3(boundingBox.Maximum.X, boundingBox.Maximum.Y, boundingBox.Minimum.Z);
-            vertices[7].Colour = new Vector3(1.0f);
+            vertices[7].Colour = new Vector4(1.0f);
 
             indices = new ushort[] {
             0, 2, 3,

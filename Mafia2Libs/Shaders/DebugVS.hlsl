@@ -8,13 +8,13 @@
 struct VS_INPUT
 {
 	float4 Position : POSITION;
-    float3 Colour : COLOR;
+    float4 Colour : COLOR;
 };
 
 struct VS_OUTPUT
 {
     float4 Position : SV_POSITION;
-    float3 Colour : Colour;
+    float4 Colour : Colour;
 };
 
 VS_OUTPUT DebugVertexShader(VS_INPUT input)

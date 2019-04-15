@@ -17,14 +17,14 @@ namespace ResourceTypes.FrameResource
             VertexFlags.Position,
             VertexFlags.Position2D,
             VertexFlags.Normals,
-            VertexFlags.BlendData,
+            VertexFlags.Skin,
             VertexFlags.Color,
             VertexFlags.Color1,
             VertexFlags.DamageGroup,
             VertexFlags.TexCoords0,
             VertexFlags.TexCoords1,
             VertexFlags.TexCoords2,
-            VertexFlags.TexCoords7,
+            VertexFlags.ShadowTexture,
             VertexFlags.BBCoeffs,
             VertexFlags.Tangent
         };
@@ -658,14 +658,14 @@ namespace ResourceTypes.FrameResource
             switch (flags)
             {
                 case VertexFlags.Position:
-                case VertexFlags.BlendData:
+                case VertexFlags.Skin:
                     return 8;
                 case VertexFlags.Normals:
                 case VertexFlags.Color:
                 case VertexFlags.TexCoords0:
                 case VertexFlags.TexCoords1:
                 case VertexFlags.TexCoords2:
-                case VertexFlags.TexCoords7:
+                case VertexFlags.ShadowTexture:
                 case VertexFlags.Color1:
                 case VertexFlags.DamageGroup:
                     return 4;

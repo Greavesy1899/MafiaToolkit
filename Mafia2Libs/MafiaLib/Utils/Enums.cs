@@ -268,20 +268,61 @@ namespace Mafia2
     {
         //potential sizes
 
-        Position = 1,                                               
-        Position2D = 2,
-        Normals = 4,
-        Tangent = 16, // 0x00000010
-        BlendData = 64, // 0x00000040
-        Color = 128, // 0x00000080
+        Position = (1 << 0),                                               
+        Position2D = (1 << 1),
+        Normals = (1 << 2),
+        Tangent = (1 << 4), // 0x00000010
+        Skin = (1 << 6), // 0x00000040
+        Color = (1 << 7), // 0x00000080
+        Texture = (1 << 8),
         TexCoords0 = 256, // 0x00000100
         TexCoords1 = 512, // 0x00000200
         TexCoords2 = 1024, // 0x00000400
-        TexCoords7 = 32768, // 0x00008000 
-        Color1 = 131072, // 0x00020000
-        BBCoeffs = 262144, // 0x00040000
-        DamageGroup = 1048576, // 0x00100000
+        ShadowTexture = (1 << 15), // 0x00008000 
+        Color1 = (1 << 17), // 0x00020000
+        BBCoeffs = (1 << 18), // 0x00040000
+        DamageGroup = (1 << 20), // 0x00100000
     }
+
+    //Fireboyd's work from nomad
+//    enum MafiaVertexFormat : int
+//    {
+//        Position = (1 << 0),
+//        Position2D = (1 << 1),
+//        Normal = (1 << 2),
+
+//        Tangent = (1 << 4),
+
+//        Skin = (1 << 6),
+//        Color = (1 << 7),
+//        Texture = (1 << 8),
+
+//        Texture1 = (1 << 9),
+//        Texture2 = (1 << 10),
+//        Texture3 = (1 << 11),
+//        Texture4 = (1 << 12),
+
+//        ShadowTexture = (1 << 15),
+
+//        Color1 = (1 << 17),
+//        BBCoeffs = (1 << 18),
+//        Velocity = (1 << 19),
+
+//        HelpingIndices = (1 << 20),
+//        MorphIndices = (1 << 21),
+
+//        FloatAlpha = (1 << 25),
+//        Data_4_U8 = (1 << 26),
+
+//        InstanceMatrix = (1 << 28),
+//        InstanceGrass = (1 << 29),
+
+//#if VFF_USE_DYNAMIC_PARAMETER
+//    DynamicParameter    = (1 << 30), // Mafia III
+//#else
+//        InstanceGrassOrigin = (1 << 30), // Mafia II
+//#endif
+//    };
 
     [Flags]
     public enum NameTableFlags : int //There is a possibility that this is correct.
@@ -340,6 +381,7 @@ namespace Mafia2
     [Flags]
     public enum MaterialFlags : uint //No idea which ones are used.
     {
+        flag0 = 0x10,
         flag_1 = 1,
         Alpha = 2,
         flag_4 = 4,

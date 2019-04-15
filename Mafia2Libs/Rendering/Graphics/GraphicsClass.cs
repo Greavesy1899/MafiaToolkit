@@ -55,9 +55,9 @@ namespace Rendering.Graphics
             Light = new LightClass();
             Light.SetAmbientColor(0.5f, 0.5f, 0.5f, 1f);
             Light.SetDiffuseColour(0f, 0f, 0f, 0);
-            Light.Direction = Camera.Position;
+            Light.Direction = new Vector3(0, 0, 100);
             Light.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-            Light.SetSpecularPower(32.0f);
+            Light.SetSpecularPower(255.0f);
             Input = new InputClass();
             Input.Init();
             return true;

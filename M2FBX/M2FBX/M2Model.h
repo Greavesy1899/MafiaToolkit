@@ -2,6 +2,7 @@
 #define M2_EDM_HEADER
 #include <fbxsdk.h>
 #include <vector>
+#include <string>
 
 typedef struct {
 	unsigned short i1;
@@ -29,6 +30,20 @@ typedef struct {
 	float m22;
 } Matrix3;
 
+class SubMesh {
+private:
+	int startIndex;
+	int numFaces;
+	std::string matName;
+
+public:
+	void SetStartIndex(int& value);
+	void SetNumFaces(int& value);
+	void SetMatName(std::string& name);
+	int GetStartIndex() const;
+	int GetNumFaces() const;
+	std::string GetMatName() const;
+};
 class ModelPart {
 private:
 	bool hasPosition;
@@ -52,7 +67,7 @@ private:
 	std::vector<UVVert> uvs2;
 	std::vector<UVVert> uvs7;
 	int subMeshCount;
-	std::vector<std::string> matNames;
+	SubMesh* submeshes;
 	int indicesSize;
 	std::vector<Int3> indices;
 	std::vector<short> matIDs;
@@ -79,9 +94,9 @@ public:
 	void SetUV1s(std::vector<UVVert> uvs);
 	void SetUV2s(std::vector<UVVert> uvs);
 	void SetUV7s(std::vector<UVVert> uvs);
+	void SetSubMeshes(SubMesh* subMeshes);
 	void SetSubMeshCount(int count);
 	void SetIndicesSize(int count);
-	void SetMatNames(std::vector<std::string> matNames, bool updateCount = false);
 	void SetIndices(std::vector<Int3> indices, bool updateCount = false);
 	void SetMatIDs(std::vector<short> matIDs);
 	bool GetHasPositions();
@@ -106,7 +121,7 @@ public:
 	std::vector<UVVert> GetUV7s();
 	int GetSubMeshCount();
 	int GetIndicesSize();
-	std::vector<std::string> GetMatNames();
+	SubMesh* GetSubMeshes() const;
 	std::vector<Int3> GetIndices();
 	std::vector<short> GetMatIDs();
 
@@ -119,16 +134,16 @@ private:
 	const int magic = 22295117;
 	std::string name;
 	char partSize;
-	std::vector<ModelPart> parts;
+	std::vector<ModelPart*> parts;
 public:
 	ModelStructure();
 	~ModelStructure();
 	void SetName(std::string name);
 	void SetPartSize(char count);
-	void SetParts(std::vector<ModelPart> parts, bool updateCount = false);
+	void SetParts(std::vector<ModelPart*> parts, bool updateCount = false);
 	std::string GetName();
 	char GetPartSize();
-	std::vector<ModelPart> GetParts();
+	std::vector<ModelPart*> GetParts();
 
 	void ReadFromStream(FILE* stream);
 	void WriteToStream(FILE * stream);

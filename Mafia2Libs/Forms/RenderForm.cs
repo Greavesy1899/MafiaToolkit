@@ -14,6 +14,8 @@ using ResourceTypes.FrameResource;
 using Utils.Settings;
 using ResourceTypes.BufferPools;
 using Utils.Types;
+using Utils.Lang;
+using Mafia2Tool.EditorControls;
 
 namespace Mafia2Tool
 {
@@ -317,13 +319,13 @@ namespace Mafia2Tool
                 }
             }
 
-            for(int i = 0; i != SceneData.Collisions.Placements.Count; i++)
-            {
-                ResourceTypes.Collisions.Collision.Placement placement = SceneData.Collisions.Placements[i];
-                RenderStaticCollision collision = new RenderStaticCollision();
-                collision.ConvertCollisionToRender(placement, SceneData.Collisions.NXSData[placement.Hash].Data);
-                assets.Add((int)placement.Hash+i, collision);
-            }
+            //for(int i = 0; i != SceneData.Collisions.Placements.Count; i++)
+            //{
+            //    ResourceTypes.Collisions.Collision.Placement placement = SceneData.Collisions.Placements[i];
+            //    RenderStaticCollision collision = new RenderStaticCollision();
+            //    collision.ConvertCollisionToRender(placement, SceneData.Collisions.NXSData[placement.Hash].Data);
+            //    assets.Add((int)placement.Hash+i, collision);
+            //}
             Graphics.InitObjectStack = assets;
         }
 
@@ -363,6 +365,147 @@ namespace Mafia2Tool
             fObject.FrameNameTableFlags = (NameTableFlags)FrameNameTableFlags.GetCurrentValue();
             Graphics.BuildSelectedEntry(fObject);
             UpdateMatrices();
+        }
+
+        private FrameObjectBase CreateSingleMesh()
+        {
+            FrameObjectBase mesh = new FrameObjectSingleMesh();
+
+            Model model = new Model();
+            model.FrameMesh = (mesh as FrameObjectSingleMesh);
+
+            if (MeshBrowser.ShowDialog() == DialogResult.Cancel)
+                return null;
+
+            if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
+                model.ModelStructure.ReadFromM2T(new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)));
+            else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
+            {
+                if (model.ModelStructure.ReadFromFbx(MeshBrowser.FileName) == -1)
+                    return null;
+            }
+
+            FrameResourceModelOptions options = new FrameResourceModelOptions();
+            options.ShowDialog();
+
+            if (options.type == -1)
+                return null;
+
+            bool[] data = options.data;
+            options.Dispose();
+
+            //for (int i = 0; i != model.ModelStructure.Lods.Length; i++)
+            //{
+            //    if (data[0])
+            //    {
+            //        model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.Normals;
+            //        model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.Tangent;
+            //    }
+
+            //    if (data[5])
+            //        model.ModelStructure.FlipUVs();
+            //}
+
+            mesh.Name.Set(model.ModelStructure.Name);
+            model.CreateObjectsFromModel();
+            mesh.AddRef(FrameEntryRefTypes.Mesh, model.FrameGeometry.RefID);
+            mesh.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
+            SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
+            SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
+
+            //Check for existing buffer; if it exists, remove so we can add one later.
+            if (SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[0].Hash) != null)
+                SceneData.IndexBufferPool.RemoveBuffer(model.IndexBuffers[0]);
+
+            //do the same for vertexbuffer pools.
+            if (SceneData.VertexBufferPool.SearchBuffer(model.VertexBuffers[0].Hash) != null)
+                SceneData.VertexBufferPool.RemoveBuffer(model.VertexBuffers[0]);
+
+            SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[0]);
+            SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[0]);
+
+            return mesh;
+        }
+
+        private void CreateNewEntry(int selected, string name)
+        {
+            FrameObjectBase frame;
+
+            switch(selected)
+            {
+                case 0:
+                    frame = CreateSingleMesh();
+
+                    if (frame == null)
+                        return;
+                    break;
+                case 1:
+                    frame = new FrameObjectFrame();
+                    break;
+                case 2:
+                    frame = new FrameObjectLight();
+                    break;
+                case 3:
+                    frame = new FrameObjectCamera();
+                    break;
+                case 4:
+                    frame = new FrameObjectComponent_U005();
+                    break;
+                case 5:
+                    frame = new FrameObjectSector();
+                    break;
+                case 6:
+                    frame = new FrameObjectDummy();
+                    break;
+                case 7:
+                    frame = new FrameObjectDeflector();
+                    break;
+                case 8:
+                    frame = new FrameObjectArea();
+                    break;
+                case 9:
+                    frame = new FrameObjectTarget();
+                    break;
+                case 10:
+                    throw new NotImplementedException();
+                    break;
+                case 11:
+                    frame = new FrameObjectCollision();
+                    break;
+                default:
+                    frame = new FrameObjectBase();
+                    Console.WriteLine("Unknown type selected");
+                    break;
+            }
+
+            frame.Name.Set(name);
+            frame.UpdateNode();
+            SceneData.FrameResource.FrameObjects.Add(frame.RefID, frame);
+            TreeNode node = new TreeNode(frame.Name.String);
+            node.Tag = frame;
+            node.Name = frame.RefID.ToString();
+            treeView1.Nodes.Add(node);
+
+            if (frame.GetType() == typeof(FrameObjectSingleMesh) || frame.GetType() == typeof(FrameObjectModel))
+            {
+                FrameObjectSingleMesh mesh = (frame as FrameObjectSingleMesh);
+                RenderModel model = BuildRenderModel(mesh);
+
+                Graphics.InitObjectStack.Add(frame.RefID, model);
+            }
+
+            if (frame.GetType() == typeof(FrameObjectArea))
+            {
+                FrameObjectArea area = (frame as FrameObjectArea);
+                Graphics.InitObjectStack.Add(frame.RefID, BuildRenderBounds(area));
+            }
+
+            if (frame.GetType() == typeof(FrameObjectDummy))
+            {
+                FrameObjectDummy dummy = (frame as FrameObjectDummy);
+                Graphics.InitObjectStack.Add(frame.RefID, BuildRenderBounds(dummy));
+
+            }
         }
 
         private void Pick(int sx, int sy)
@@ -746,6 +889,40 @@ namespace Mafia2Tool
                         break;
                 }
             }
+        }
+
+        private void ToggleCollisionsOnClick(object sender, EventArgs e)
+        {
+            foreach(KeyValuePair<int, IRenderer> obj in Graphics.Assets)
+            {
+                if (obj.Value.GetType() == typeof(RenderStaticCollision))
+                    obj.Value.DoRender = !obj.Value.DoRender;
+            }
+        }
+
+        private void ToggleModelOnClick(object sender, EventArgs e)
+        {
+            foreach (KeyValuePair<int, IRenderer> obj in Graphics.Assets)
+            {
+                if (obj.Value.GetType() != typeof(RenderStaticCollision))
+                    obj.Value.DoRender = !obj.Value.DoRender;
+            }
+        }
+
+        private void AddButtonOnClick(object sender, EventArgs e)
+        {
+            NewObjectForm form = new NewObjectForm(true);
+            form.SetLabel(Language.GetString("$QUESTION_FRADD"));
+            form.LoadOption(new FrameResourceAddOption());
+            form.ShowDialog();
+
+            int selection;
+
+            if (form.type != -1)
+                selection = (form.control as FrameResourceAddOption).GetSelectedType();
+            else return;
+
+            CreateNewEntry(selection, form.GetInputText());
         }
     }
 }

@@ -86,9 +86,9 @@ namespace Mafia2
                         vertex.Normal = VertexTranslator.ReadNormalDataFromVB(vertexBuffer.Data, startIndex);
                     }
 
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.BlendData))
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Skin))
                     {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.BlendData].Offset;
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Skin].Offset;
                         vertex.BlendWeight = VertexTranslator.ReadBlendWeightFromVB(vertexBuffer.Data, startIndex);
                         vertex.BoneID = VertexTranslator.ReadBlendIDFromVB(vertexBuffer.Data, startIndex);
                     }
@@ -117,9 +117,9 @@ namespace Mafia2
                         vertex.UVs[2] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
                     }
 
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
                     {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords7].Offset;
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.ShadowTexture].Offset;
                         vertex.UVs[3] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
                     }
 
@@ -152,16 +152,17 @@ namespace Mafia2
                     {
 
                         ModelPart modelPart = new ModelPart();
-                        Material mat = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
+                        modelPart.Material = materials[x].MaterialHash.ToString();
+                        //Material mat = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
 
-                        if (mat == null || mat.Samplers.Count == 0)
-                        {
-                            modelPart.Material = "_test_gray";
-                        }
-                        else
-                        {
-                            modelPart.Material = (mat == null) ? "null" : mat.Samplers["S000"].File;
-                        }
+                        //if (mat == null || mat.Samplers.Count == 0)
+                        //{
+                        //    modelPart.Material = "_test_gray";
+                        //}
+                        //else
+                        //{
+                        //    modelPart.Material = (mat == null) ? "null" : mat.Samplers["S000"].File;
+                        //}
 
                         modelPart.StartIndex = (uint)materials[x].StartIndex;
                         modelPart.NumFaces = (uint)materials[x].NumFaces;
@@ -187,7 +188,7 @@ namespace Mafia2
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
                         vert.UVs[2].Y = (1f - vert.UVs[2].Y);
 
-                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
                         vert.UVs[3].Y = (1f - vert.UVs[3].Y);
                 }
             }
@@ -216,12 +217,12 @@ namespace Mafia2
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Position));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Normals));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Tangent));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.BlendData));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Skin));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Color));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords7));
+                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.ShadowTexture));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Color1));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.BBCoeffs));
                     writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.DamageGroup));
@@ -250,31 +251,23 @@ namespace Mafia2
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
                             vert.UVs[2].WriteToFile(writer);
 
-                        if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                        if (lod.VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
                             vert.UVs[3].WriteToFile(writer);
                     }
 
                     //write mesh count and texture names.
                     writer.Write(lod.Parts.Length);
                     for (int x = 0; x != lod.Parts.Length; x++)
+                    {
                         writer.Write(lods[i].Parts[x].Material);
+                        writer.Write(lods[i].Parts[x].StartIndex);
+                        writer.Write(lods[i].Parts[x].NumFaces);
+                    }
 
                     //write triangle data.
-                    int totalFaces = lod.Indices.Length;
-
-                    writer.Write(totalFaces);
-                    for (int x = 0; x != lod.Parts.Length; x++)
-                    {
-                        uint offset = lod.Parts[x].StartIndex;
-                        while(offset != lod.Parts[x].StartIndex+(lod.Parts[x].NumFaces*3))
-                        {
-                            writer.Write(lods[i].Indices[offset]);
-                            writer.Write(lods[i].Indices[offset+1]);
-                            writer.Write(lods[i].Indices[offset+2]);
-                            offset += 3;
-                            writer.Write((ushort)x);
-                        }
-                    }
+                    writer.Write(lod.Indices.Length);
+                    for(int x = 0; x != lod.Indices.Length; x++)
+                        writer.Write(lods[i].Indices[x]);
                 }
             }
         }
@@ -324,7 +317,7 @@ namespace Mafia2
                     Lods[i].VertexDeclaration += (int)VertexFlags.Tangent;
 
                 if (reader.ReadBoolean())
-                    Lods[i].VertexDeclaration += (int)VertexFlags.BlendData;
+                    Lods[i].VertexDeclaration += (int)VertexFlags.Skin;
 
                 if (reader.ReadBoolean())
                     Lods[i].VertexDeclaration += (int)VertexFlags.Color;
@@ -339,7 +332,7 @@ namespace Mafia2
                     Lods[i].VertexDeclaration += (int)VertexFlags.TexCoords2;
 
                 if (reader.ReadBoolean())
-                    Lods[i].VertexDeclaration += (int)VertexFlags.TexCoords7;
+                    Lods[i].VertexDeclaration += (int)VertexFlags.ShadowTexture;
 
                 if (reader.ReadBoolean())
                     Lods[i].VertexDeclaration += (int)VertexFlags.Color1;
@@ -376,7 +369,7 @@ namespace Mafia2
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
                         vert.UVs[2] = Half2Extenders.ReadFromFile(reader);
 
-                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
                         vert.UVs[3] = Half2Extenders.ReadFromFile(reader);
 
                     lods[i].Vertices[x] = vert;
@@ -388,29 +381,15 @@ namespace Mafia2
                 {
                     Lods[i].Parts[x] = new ModelPart();
                     Lods[i].Parts[x].Material = reader.ReadString();
+                    Lods[i].Parts[x].Hash = Convert.ToUInt64(Lods[i].Parts[x].Material);
+                    Lods[i].Parts[x].StartIndex = reader.ReadUInt32();
+                    Lods[i].Parts[x].NumFaces = reader.ReadUInt32();
                 }
 
-                int totalFaces = reader.ReadInt32();
-                Lods[i].Indices = new ushort[totalFaces*3];
-                short curPart = 0;
-                uint startIndex = 0;
-                for (int x = 0; x != Lods[i].Indices.Length; x+=3)
-                {
+                int numIndices = reader.ReadInt32();
+                Lods[i].Indices = new ushort[numIndices];
+                for (int x = 0; x != Lods[i].Indices.Length; x++)
                     Lods[i].Indices[x] = reader.ReadUInt16();
-                    Lods[i].Indices[x+1] = reader.ReadUInt16();
-                    Lods[i].Indices[x+2] = reader.ReadUInt16();
-                    short matId = reader.ReadInt16();
-
-                    if(curPart != matId || x+3 == Lods[i].Indices.Length)
-                    {
-                        Lods[i].Parts[curPart].StartIndex = startIndex;
-                        uint val = (uint)Math.Abs(x+3 - Lods[i].Parts[curPart].StartIndex) / 3;
-                        Lods[i].Parts[curPart].NumFaces = val;
-
-                        startIndex = (uint)x;
-                        curPart = matId;
-                    }
-                }
 
                 Lods[i].CalculatePartBounds();
 
@@ -514,21 +493,18 @@ namespace Mafia2
                         vert.Position.WriteToFile(writer);
                     }
 
-                    //write mesh count and texture names.
-                    writer.Write(0);
-                    writer.Write(lods[i].Indices.Length);
+                    writer.Write(lods[i].Parts.Length);
                     for (int x = 0; x != lods[i].Parts.Length; x++)
                     {
-                        uint offset = lods[i].Parts[x].StartIndex;
-                        while (offset != lods[i].Parts[x].StartIndex + (lods[i].Parts[x].NumFaces * 3))
-                        {
-                            writer.Write(lods[i].Indices[offset]);
-                            writer.Write(lods[i].Indices[offset + 1]);
-                            writer.Write(lods[i].Indices[offset + 2]);
-                            offset += 3;
-                            writer.Write((ushort)x);
-                        }
+                        writer.Write("Null");
+                        writer.Write(lods[i].Parts[x].StartIndex);
+                        writer.Write(lods[i].Parts[x].NumFaces);
                     }
+
+                    //write triangle data.
+                    writer.Write(lods[i].Indices.Length);
+                    for (int x = 0; x != lods[i].Indices.Length; x++)
+                        writer.Write(lods[i].Indices[x]);
                 }
             }
         }
@@ -602,14 +578,12 @@ namespace Mafia2
 
             public string Material {
                 get { return material; }
-                set {
-                    material = value;
-                    hash = FNV64.Hash(value);
-                }
+                set {material = value; }
             }
 
             public ulong Hash {
                 get { return hash; }
+                set { hash = value; }
             }
 
             public BoundingBox Bounds {

@@ -14,7 +14,7 @@ namespace Rendering.Graphics
             DDSTextureLoader.DDS_ALPHA_MODE mode;
 
             string texturePath = "";
-            if (!System.IO.File.Exists(ToolkitSettings.DataPath + fileName))
+            if (!System.IO.File.Exists(ToolkitSettings.TexturePath + fileName))
             {
                 Debug.WriteLine(string.Format("FAILED TO LOAD {0}", fileName));
                 texturePath = "texture.dds";
@@ -22,13 +22,13 @@ namespace Rendering.Graphics
             else
             {
                 string mipDds = fileName.Insert(0, "MIP_");
-                if (System.IO.File.Exists(ToolkitSettings.DataPath + mipDds))
+                if (System.IO.File.Exists(ToolkitSettings.TexturePath + mipDds))
                     texturePath = mipDds;
                 else
                     texturePath = fileName;
             }
             //Debug.WriteLine(string.Format("Loading {0}\tDevice State {1}", fileName, device));
-            DDSTextureLoader.CreateDDSTextureFromFile(device, ToolkitSettings.DataPath + texturePath, out ddsResource, out _temp, 4096, out mode);
+            DDSTextureLoader.CreateDDSTextureFromFile(device, ToolkitSettings.TexturePath + texturePath, out ddsResource, out _temp, 4096, out mode);
             TextureResource = _temp;
             return true;
         }

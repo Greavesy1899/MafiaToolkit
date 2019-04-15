@@ -9,6 +9,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	FbxGeometryElementNormal* pElementNormal = pMesh->GetElementNormal(0);
 	FbxGeometryElementTangent* pElementTangent = pMesh->GetElementTangent(0);
 	FbxGeometryElementUV* pElementUV = pMesh->GetElementUV(0);
+	FbxGeometryElementUV* pElementOM = pMesh->GetElementUV("OMUV");
 	FbxGeometryElementMaterial* pElementMaterial = pMesh->GetElementMaterial(0);
 	FbxGeometryElementVertexColor* pElementVC = pMesh->GetElementVertexColor(0);
 
@@ -38,6 +39,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	pPart->SetHasUV0(pElementUV && pElementMaterial);
 	pPart->SetHasUV1(pElementVC);
 	pPart->SetHasUV2(pElementVC);
+	pPart->SetHasUV7(pElementOM);
 
 	//Gotta make sure the normals are correctly set up.
 	if (pElementNormal->GetReferenceMode() != FbxGeometryElement::eDirect) {
@@ -55,6 +57,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	std::vector<UVVert> uvs = std::vector<UVVert>();
 	std::vector<UVVert> uvs1 = std::vector<UVVert>();
 	std::vector<UVVert> uvs2 = std::vector<UVVert>();
+	std::vector<UVVert> uvs7 = std::vector<UVVert>();
 
 	for (int i = 0; i != pMesh->GetControlPointsCount(); i++) {
 		Point3 vert;
@@ -99,13 +102,19 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 			color = pElementVC->GetDirectArray().GetAt(i);
 			uvCoords.x = color.mRed;
 			uvCoords.y = color.mBlue;
-			uvs.push_back(uvCoords);
+			uvs1.push_back(uvCoords);
 		}
 		if (pPart->GetHasUV2()) {
 			color = pElementVC->GetDirectArray().GetAt(i);
 			uvCoords.x = color.mBlue;
 			uvCoords.y = color.mAlpha;
-			uvs.push_back(uvCoords);
+			uvs2.push_back(uvCoords);
+		}
+		if (pPart->GetHasUV7()) {
+			vec4 = pElementOM->GetDirectArray().GetAt(i);
+			uvCoords.x = vec4.mData[0];
+			uvCoords.y = vec4.mData[1];
+			uvs7.push_back(uvCoords);
 		}
 	}
 
@@ -116,6 +125,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	pPart->SetUV0s(uvs);
 	pPart->SetUV1s(uvs1);
 	pPart->SetUV2s(uvs2);
+	pPart->SetUV7s(uvs7);
 
 	//Gotta be triangulated.
 	if (!pMesh->IsTriangleMesh()) {
@@ -127,6 +137,28 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	std::vector<Int3> indices = std::vector<Int3>();
 	std::vector<short> matIDs = std::vector<short>();
 
+	SubMesh* subMeshes = new SubMesh[pNode->GetMaterialCount()];
+
+	if (pNode->GetMaterialCount() != 0)
+	{
+		for (int i = 0; i != pNode->GetMaterialCount(); i++)
+		{
+			SubMesh sub = SubMesh();
+			FbxSurfaceMaterial* mat = pNode->GetMaterial(i);
+			sub.SetMatName(std::string(mat->GetName()));
+			subMeshes[i] = sub;
+		}
+	}
+	else
+	{
+		FBXSDK_printf("Missing material nodes on this FBX Model!\n");
+	}
+
+	int subIDX = 0;
+	int* subNumFacesCount = new int[pNode->GetMaterialCount()];
+	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+		subNumFacesCount[i] = 0;
+
 	for (int i = 0; i != pMesh->GetPolygonCount(); i++)
 	{
 		Int3 triangle;
@@ -135,34 +167,47 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		triangle.i2 = pMesh->GetPolygonVertex(i, 1);
 		triangle.i3 = pMesh->GetPolygonVertex(i, 2);
 
-		if(pElementMaterial != NULL)
-			matID = pElementMaterial->GetIndexArray().GetAt(i);
+		if (pElementMaterial != NULL)
+		{
+			if (subIDX == pElementMaterial->GetIndexArray().GetAt(i))
+			{
+				subNumFacesCount[subIDX]++;
+			}
+			else
+			{
+				subIDX = pElementMaterial->GetIndexArray().GetAt(i);
+				subNumFacesCount[subIDX]++;
+			}
+		}
+			//matID = pElementMaterial->GetIndexArray().GetAt(i);
 
 		indices.push_back(triangle);
 		matIDs.push_back(matID);
 	}
 
+	int total = pMesh->GetPolygonCount();
+	int calcTotal = 0;
+
+	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+		calcTotal += subNumFacesCount[i];
+
+	if (calcTotal != total)
+		FBXSDK_printf("Potential error when splitting faces!\n");
+
+	int curTotal = 0;
+	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+	{
+		int faces = subNumFacesCount[i];
+		subMeshes[i].SetNumFaces(faces);
+		subMeshes[i].SetStartIndex(curTotal);
+		curTotal += faces*3;
+	}
 	//Update data to do with triangles.
 	pPart->SetIndices(indices, true);
 	pPart->SetMatIDs(matIDs);
-
-	std::vector<std::string> names = std::vector<std::string>();
-
-	if (pNode->GetMaterialCount() != 0)
-	{
-		//Get Material Names.
-		for (int i = 0; i != pNode->GetMaterialCount(); i++)
-		{
-			FbxSurfaceMaterial* mat = pNode->GetMaterial(i);
-			names.push_back(mat->GetName());
-		}
-	}
-	else
-	{
-		names.push_back("_test_gray");
-	}
-
-	pPart->SetMatNames(names, true);
+	pPart->SetSubMeshes(subMeshes);
+	pPart->SetSubMeshCount(pNode->GetMaterialCount());
+	delete[] subNumFacesCount;
 }
 
 
@@ -176,17 +221,16 @@ int DetermineNodeAttribute(FbxNode* node)
 	return NULL;
 }
 
-void BuildModel(ModelStructure& structure, FbxNode* node)
+void BuildModel(ModelStructure* structure, FbxNode* node)
 {
-	structure.SetPartSize(1);
-	structure.SetName("Model");
-	std::vector<ModelPart> parts = std::vector<ModelPart>();
-	structure.SetName(node->GetName());
+	structure->SetPartSize(1);
+	std::vector<ModelPart*> parts = std::vector<ModelPart*>();
+	structure->SetName(node->GetName());
 	FBXSDK_printf("Converting Mesh..\n");
 	ModelPart* Part = new ModelPart();
 	BuildModelPart(node, Part);
-	parts.push_back(*Part);
-	structure.SetParts(parts, true);
+	parts.push_back(Part);
+	structure->SetParts(parts, true);
 	FBXSDK_printf("Built Model..\n");
 }
 
@@ -237,7 +281,7 @@ int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 			FbxNode* pNode = Root->GetChild(i);
 			FrameEntry entry = FrameEntry();
 			if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
-				ModelStructure Structure = ModelStructure();
+				ModelStructure* Structure = new ModelStructure();
 				BuildModel(Structure, pNode);
 
 				std::vector<std::string> names = std::vector<std::string>();
@@ -248,21 +292,21 @@ int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 				entry.SetPosition(pos);
 				FBXSDK_printf("Position is: %f, %f, %f\n", pos.x, pos.y, pos.z);
 
-				names.push_back(Structure.GetName());
+				names.push_back(Structure->GetName());
 
 				FILE* stream;
 				std::string dest = pDest;
 				if (strcmp(doScene, "1") == 0) {
-					dest += Structure.GetName();
+					dest += Structure->GetName();
 					dest += ".m2t";
 				}
 				fopen_s(&stream, dest.c_str(), "wb");
-				Structure.WriteToStream(stream);
+				Structure->WriteToStream(stream);
 				fclose(stream);
 
 				entry.SetLodNames(names);
 				entries.push_back(entry);
-				FBXSDK_printf("Exported %s\n", Structure.GetName().c_str());
+				FBXSDK_printf("Exported %s\n", Structure->GetName().c_str());
 			}
 		}
 		frame.SetEntries(entries);

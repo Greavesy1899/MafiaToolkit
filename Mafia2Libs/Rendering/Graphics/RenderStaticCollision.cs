@@ -3,6 +3,7 @@ using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using System;
 using Utils.Types;
+using ResourceTypes.Collisions;
 using static ResourceTypes.Collisions.Collision;
 using Buffer = SharpDX.Direct3D11.Buffer;
 
@@ -15,6 +16,7 @@ namespace Rendering.Graphics
         public uint[] Indices { get; private set; }
         public BaseShader Shader;
         private uint numTriangles;
+        private CollisionMaterials[] materials;
 
         public RenderStaticCollision()
         {
@@ -42,13 +44,50 @@ namespace Rendering.Graphics
             Indices = data.Indices;
             numTriangles = Convert.ToUInt32(data.Indices.Length * 3);
             Vertices = new VertexLayouts.BasicLayout.Vertex[data.Vertices.Length];
-
+            materials = data.Materials;
             for (int i = 0; i != data.Vertices.Length; i++)
             {
                 VertexLayouts.BasicLayout.Vertex vertex = new VertexLayouts.BasicLayout.Vertex();
                 vertex.Position = data.Vertices[i];
-                vertex.Colour = new Vector3(1.0f, 1.0f, 1.0f);
+                vertex.Colour = new Vector4(1.0f);
                 Vertices[i] = vertex;
+            }
+
+            int materialIDX = 0;
+            for(int i = 0; i != data.Indices.Length; i+=3)
+            {
+                switch(materials[materialIDX])
+                {
+                    case CollisionMaterials.GrassAndSnow:
+                        Vertices[data.Indices[i]].Colour = new Vector4(0, 0.4f, 0, 1.0f);
+                        Vertices[data.Indices[i+1]].Colour = new Vector4(0, 0.4f, 0, 1.0f);
+                        Vertices[data.Indices[i+2]].Colour = new Vector4(0, 0.4f, 0, 1.0f);
+                        break;
+                    case CollisionMaterials.Water:
+                        Vertices[data.Indices[i]].Colour = new Vector4(0, 0.3f, 0.8f, 1.0f);
+                        Vertices[data.Indices[i + 1]].Colour = new Vector4(0, 0.3f, 0.8f, 1.0f);
+                        Vertices[data.Indices[i + 2]].Colour = new Vector4(0, 0.3f, 0.8f, 1.0f);
+                        break;
+                    case CollisionMaterials.Gravel:
+                    case CollisionMaterials.Tarmac:
+                    case CollisionMaterials.Sidewalk:
+                    case CollisionMaterials.SidewalkEdge:
+                        Vertices[data.Indices[i]].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        Vertices[data.Indices[i + 1]].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        Vertices[data.Indices[i + 2]].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        break;
+                    case CollisionMaterials.Mud:
+                        Vertices[data.Indices[i]].Colour = new Vector4(0.4f, 0.2f, 0.0f, 1.0f);
+                        Vertices[data.Indices[i + 1]].Colour = new Vector4(0.4f, 0.2f, 0.0f, 1.0f);
+                        Vertices[data.Indices[i + 2]].Colour = new Vector4(0.4f, 0.2f, 0.0f, 1.0f);
+                        break;
+                    case CollisionMaterials.PlayerCollision:
+                        Vertices[data.Indices[i]].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+                        Vertices[data.Indices[i + 1]].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+                        Vertices[data.Indices[i + 2]].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+                        break;
+                }
+                materialIDX++;
             }
         }
 

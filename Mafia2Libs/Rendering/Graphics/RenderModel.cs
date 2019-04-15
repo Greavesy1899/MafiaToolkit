@@ -9,6 +9,8 @@ using System.Diagnostics;
 using ResourceTypes.Materials;
 using ResourceTypes.BufferPools;
 using Utils.Types;
+using System;
+using Buffer = SharpDX.Direct3D11.Buffer;
 
 namespace Rendering.Graphics
 {
@@ -107,7 +109,7 @@ namespace Rendering.Graphics
                         vertex.Normal = VertexTranslator.ReadNormalDataFromVB(vertexBuffers[i].Data, startIndex);
                     }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.BlendData))
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Skin))
                     {
                         //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.BlendData].Offset;
                        // vertex.BlendWeight = VertexTranslator.ReadBlendWeightFromVB(vertexBuffer.Data, startIndex);
@@ -137,9 +139,9 @@ namespace Rendering.Graphics
                         //vertex.UVs[2] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
                     }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
                     {
-                        int startIndex = x * vertexSize + vertexOffsets[VertexFlags.TexCoords7].Offset;
+                        int startIndex = x * vertexSize + vertexOffsets[VertexFlags.ShadowTexture].Offset;
                         vertex.TexCoord7 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
                     }
 

@@ -223,9 +223,9 @@ namespace Mafia2
                         vert.WriteUvData(vBuffer, startIndex, 2);
                     }
 
-                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.TexCoords7))
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
                     {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords7].Offset;
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.ShadowTexture].Offset;
                         vert.WriteUvData(vBuffer, startIndex, 3);
                     }
 
@@ -282,7 +282,7 @@ namespace Mafia2
                 frameMaterial.Materials[0][i].NumFaces = (int)model.Lods[0].Parts[i].NumFaces;
                 frameMaterial.Materials[0][i].Unk3 = 0;
                 frameMaterial.Materials[0][i].MaterialHash = model.Lods[0].Parts[i].Hash;
-                frameMaterial.Materials[0][i].MaterialName = model.Lods[0].Parts[i].Material;
+                //frameMaterial.Materials[0][i].MaterialName = model.Lods[0].Parts[i].Material;
                 faceIndex += (int)model.Lods[0].Parts[i].NumFaces;
 
                 frameGeometry.LOD[0].SplitInfo.MaterialBursts[i].Bounds = new short[6]
