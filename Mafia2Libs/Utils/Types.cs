@@ -408,6 +408,7 @@ namespace Utils.Types
             Rotation.M20 = other.Rotation.M20;
             Rotation.M21 = other.Rotation.M21;
             Rotation.M22 = other.Rotation.M22;
+            Rotation.EulerRotation = new Vector3(other.Rotation.EulerRotation.X, other.Rotation.EulerRotation.Y, other.Rotation.EulerRotation.Z);
             Position = new Vector3(other.Position.X, other.Position.Y, other.Position.Z);
         }
 

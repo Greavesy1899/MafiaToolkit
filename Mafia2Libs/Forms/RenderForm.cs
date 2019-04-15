@@ -479,7 +479,6 @@ namespace Mafia2Tool
             }
 
             frame.Name.Set(name);
-            frame.UpdateNode();
             SceneData.FrameResource.FrameObjects.Add(frame.RefID, frame);
             TreeNode node = new TreeNode(frame.Name.String);
             node.Tag = frame;
@@ -653,27 +652,35 @@ namespace Mafia2Tool
                     int newValue = (int)e.ChangedItem.Value;
                     FrameObjectBase obj = (treeView1.SelectedNode.Tag as FrameObjectBase);
                     int newIndex = 0;
+                    string name = "";
 
                     for(int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
                     {
-                        FrameObjectBase frameObj = (SceneData.FrameResource.FrameObjects[i] as FrameObjectBase);
+                        FrameObjectBase frameObj = (SceneData.FrameResource.FrameObjects.ElementAt(i).Value as FrameObjectBase);
 
                         if (frameObj.RefID == newValue)
+                        {
                             newIndex = i;
+                            name = frameObj.Name.String;
+                        }
                     }
 
                     if (newIndex == -1)
                     {
                         for (int i = 0; i != SceneData.FrameResource.FrameScenes.Count; i++)
                         {
-                            FrameEntry frameObj = (SceneData.FrameResource.FrameObjects[i] as FrameEntry);
+                            FrameHeaderScene frameObj = SceneData.FrameResource.FrameScenes.ElementAt(i).Value;
 
                             if (frameObj.RefID == newValue)
+                            {
                                 newIndex = i;
+                                name = frameObj.Name.String;
+                            }
                         }
                     }
 
-                    string name = (SceneData.FrameResource.FrameObjects.ElementAt(newIndex).Value as FrameObjectBase).Name.String;
+                    if (string.IsNullOrEmpty(name))
+                        name = "unknown";
 
                     //because C# doesn't allow me to get this data for some odd reason, im going to check for it in obj. Why does C# not allow me to see FullLabel in the e var?      
                     if (obj.ParentIndex1.RefID == newValue)
@@ -690,7 +697,6 @@ namespace Mafia2Tool
                         obj.SubRef(FrameEntryRefTypes.Parent2);
                         obj.AddRef(FrameEntryRefTypes.Parent2, newValue);
                     }
-                    obj.UpdateNode();
                     treeView1.Nodes.Remove(treeView1.SelectedNode);
                     TreeNode newNode = new TreeNode(obj.ToString());
                     newNode.Tag = obj;

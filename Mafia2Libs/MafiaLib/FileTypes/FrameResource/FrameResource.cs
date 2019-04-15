@@ -71,18 +71,6 @@ namespace ResourceTypes.FrameResource
             set { newFrames = value; }
         }
 
-
-        public FrameHolder GetEntryFromRefID(int refID)
-        {
-            foreach (FrameHolder holder in NewFrames)
-            {
-                if (holder.Data.RefID == refID)
-                    return holder;
-            }
-
-            return new FrameHolder(-1, null);
-        }
-
         private FrameHolder GetLocalEntryFromRefID(List<FrameHolder> frames, int refID)
         {
             foreach (FrameHolder holder in frames)
@@ -97,17 +85,6 @@ namespace ResourceTypes.FrameResource
         public FrameHolder GetEntryFromIdx(int idx)
         {
             foreach (FrameHolder holder in NewFrames)
-            {
-                if (holder.Idx == idx)
-                    return holder;
-            }
-
-            return new FrameHolder(-1, null);
-        }
-
-        private FrameHolder GetLocalEntryFromIdx(List<FrameHolder> frames, int idx)
-        {
-            foreach (FrameHolder holder in frames)
             {
                 if (holder.Idx == idx)
                     return holder;
@@ -495,6 +472,10 @@ namespace ResourceTypes.FrameResource
                 {
                     nodes[0].Nodes.Add(entry.Value);
                     Debug.WriteLine("Added {0}", objBase.Name);
+                }
+                else
+                {
+                    root.Nodes.Add(entry.Value);
                 }
             }
             return root;

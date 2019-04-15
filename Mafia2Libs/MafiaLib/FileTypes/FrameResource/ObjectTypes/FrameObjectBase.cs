@@ -16,7 +16,6 @@ namespace ResourceTypes.FrameResource
         protected ParentStruct parentIndex1;
         protected ParentStruct parentIndex2;
         protected short unk6;
-        protected Node node;
         protected bool isOnTable;
         protected NameTableFlags nameTableFlags;
 
@@ -51,10 +50,6 @@ namespace ResourceTypes.FrameResource
             get { return unk6; }
             set { unk6 = value; }
         }
-        public Node NodeData {
-            get { return node; }
-            set { node = value; }
-        }
 
         [Description("Only use this if the object is going to be saved in the FrameNameTable"), Category("FrameNameTable Data"), Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public NameTableFlags FrameNameTableFlags {
@@ -81,7 +76,6 @@ namespace ResourceTypes.FrameResource
             parentIndex1 = new ParentStruct(-1);
             parentIndex2 = new ParentStruct(-1);
             unk6 = -1;
-            UpdateNode();
         }
 
         public FrameObjectBase(FrameObjectBase other) : base(other)
@@ -93,7 +87,8 @@ namespace ResourceTypes.FrameResource
             parentIndex1 = new ParentStruct(other.parentIndex1);
             parentIndex2 = new ParentStruct(other.parentIndex2);
             unk6 = -1;
-            UpdateNode();
+            isOnTable = other.isOnTable;
+            nameTableFlags = other.nameTableFlags;
         }
 
         public virtual void ReadFromFile(BinaryReader reader)
@@ -105,7 +100,6 @@ namespace ResourceTypes.FrameResource
             parentIndex1 = new ParentStruct(reader.ReadInt32());
             parentIndex2 = new ParentStruct(reader.ReadInt32());
             unk6 = reader.ReadInt16();
-            UpdateNode();
         }
 
         public virtual void WriteToFile(BinaryWriter writer)
@@ -117,38 +111,6 @@ namespace ResourceTypes.FrameResource
             writer.Write(parentIndex1.Index);
             writer.Write(parentIndex2.Index);
             writer.Write(unk6);
-        }
-
-        public void UpdateNode()
-        {
-            node = new Node(name.ToString(), refID.ToString(), this);
-        }
-    }
-
-    public class Node
-    {
-        string text;
-        string name;
-        object tag;
-
-        public string Text {
-            get { return text; }
-            set { text = value; }
-        }
-        public string Name {
-            get { return name; }
-            set { name = value; }
-        }
-        public object Tag {
-            get { return tag; }
-            set { tag = value; }
-        }
-
-        public Node(string text, string name, object tag)
-        {
-            this.name = name;
-            this.text = text;
-            this.tag = tag;
         }
     }
 }
