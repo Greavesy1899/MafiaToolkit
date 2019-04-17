@@ -20,7 +20,7 @@ namespace Mafia2Tool
             Localise();
             cityAreasFile = file;
             BuildData();
-            ShowDialog();
+            Show();
             ToolkitSettings.UpdateRichPresence("Editing City Areas.");
         }
 

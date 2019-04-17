@@ -19,6 +19,7 @@ namespace Mafia2Tool
             this.file = file;
             Localise();
             Initialise();
+            Show();
         }
 
         public void Localise()
@@ -37,7 +38,6 @@ namespace Mafia2Tool
         {
             AddColumnButton.Enabled = false;
             LoadTableData();
-            ShowDialog();
         }
 
         private void LoadTableData()

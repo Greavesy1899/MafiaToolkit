@@ -16,6 +16,7 @@ using ResourceTypes.Materials;
 using ResourceTypes.Sound;
 using ResourceTypes.Actors;
 using ResourceTypes.Collisions;
+using ResourceTypes.Navigation;
 
 namespace Mafia2Tool
 {
@@ -31,6 +32,7 @@ namespace Mafia2Tool
         public static Collision Collisions;
         public static CityAreas CityAreas;
         public static CityShops CityShops;
+        public static Roadmap roadMap;
         public static string ScenePath;
 
         public static void BuildData()
@@ -70,6 +72,8 @@ namespace Mafia2Tool
                     FrameNameTable = new FrameNameTable(name);
                 else if (type == "Collisions")
                     Collisions = new Collision(name);
+                else if (nodes.Current.Value == "roadmap.gsd")
+                    roadMap = new Roadmap(new FileInfo(name));
             }
 
             IndexBufferPool = new IndexBufferManager(ibps);

@@ -19,7 +19,7 @@ namespace Mafia2Tool
             Localise();
             cityShopsFile = file;
             BuildData();
-            ShowDialog();
+            Show();
             ToolkitSettings.UpdateRichPresence("Editing City Shops.");
         }
 

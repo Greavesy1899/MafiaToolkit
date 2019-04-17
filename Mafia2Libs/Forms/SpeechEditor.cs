@@ -17,7 +17,7 @@ namespace Mafia2Tool
             Localise();
             speechFile = file;
             BuildData();
-            ShowDialog();
+            Show();
             ToolkitSettings.UpdateRichPresence("Using the Speech editor.");
         }
 

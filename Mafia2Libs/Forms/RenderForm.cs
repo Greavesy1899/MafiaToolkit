@@ -16,6 +16,7 @@ using ResourceTypes.BufferPools;
 using Utils.Types;
 using Utils.Lang;
 using Mafia2Tool.EditorControls;
+using Utils.StringHelpers;
 
 namespace Mafia2Tool
 {
@@ -319,6 +320,12 @@ namespace Mafia2Tool
                 }
             }
 
+            for (int i = 0; i != SceneData.roadMap.data2.Length; i++)
+            {
+                RenderLine line = new RenderLine();
+                line.Init(SceneData.roadMap.data2[i].points);
+                assets.Add(StringHelpers.RandomGenerator.Next(), line);
+            }
             //for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
             //{
             //    ResourceTypes.Collisions.Collision.Placement placement = SceneData.Collisions.Placements[i];
@@ -910,7 +917,7 @@ namespace Mafia2Tool
         {
             foreach (KeyValuePair<int, IRenderer> obj in Graphics.Assets)
             {
-                if (obj.Value.GetType() != typeof(RenderStaticCollision))
+                if (obj.Value.GetType() != typeof(RenderLine))
                     obj.Value.DoRender = !obj.Value.DoRender;
             }
         }

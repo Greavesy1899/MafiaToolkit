@@ -226,5 +226,10 @@ namespace Rendering.Graphics
 
             ShaderParams = parameters;
         }
+
+        public override void Render(DeviceContext context, int numVertices, uint offset)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

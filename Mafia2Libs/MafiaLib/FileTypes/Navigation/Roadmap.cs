@@ -26,7 +26,7 @@ namespace ResourceTypes.Navigation
         }
     }
 
-    struct Spline
+    public struct Spline
     {
         public Vector3[] points;
     }
@@ -128,6 +128,8 @@ namespace ResourceTypes.Navigation
 
     public class Roadmap
     {
+        public Spline[] data2;
+
         public Roadmap(FileInfo info)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
@@ -182,7 +184,7 @@ namespace ResourceTypes.Navigation
                 Console.WriteLine("POTENTIAL NODE:  " + data.ToString());
             }
 
-            Spline[] data2 = new Spline[splineCount1];
+            data2 = new Spline[splineCount1];
 
             List<string> splines = new List<string>();
 

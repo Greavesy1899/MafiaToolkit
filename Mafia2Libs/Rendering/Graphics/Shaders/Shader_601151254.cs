@@ -218,5 +218,10 @@ namespace Rendering.Graphics
             VertexShader?.Dispose();
             VertexShader = null;
         }
+
+        public override void Render(DeviceContext context, int numVertices, uint offset)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

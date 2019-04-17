@@ -24,7 +24,7 @@ namespace Mafia2Tool
             mtl = new MaterialLibrary();
             mtl.ReadMatFile(file.FullName);
             FetchMaterials();
-            ShowDialog();
+            Show();
             ToolkitSettings.UpdateRichPresence("Using the Material Library editor.");
         }
 

@@ -98,11 +98,20 @@ namespace Rendering.Graphics
             deviceContext.VertexShader.Set(VertexShader);
             deviceContext.PixelShader.Set(PixelShader);
             deviceContext.DrawIndexed((int)numTriangles, (int)offset, 0);
+            deviceContext.Draw((int)numTriangles, 0);
         }
 
         public override void SetShaderParamters(Device device, DeviceContext context, Material material)
         {
             //empty
+        }
+
+        public override void Render(DeviceContext deviceContext, int numVertices, uint offset)
+        {
+            deviceContext.InputAssembler.InputLayout = Layout;
+            deviceContext.VertexShader.Set(VertexShader);
+            deviceContext.PixelShader.Set(PixelShader);
+            deviceContext.Draw(numVertices, 0);
         }
     }
 }
