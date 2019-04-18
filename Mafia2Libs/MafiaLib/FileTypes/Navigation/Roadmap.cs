@@ -119,6 +119,11 @@ namespace ResourceTypes.Navigation
         public float unk9;
         public float[] unk10;
         public unkStruct2Sect2[] unk11;
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}", unk0, unk1, unk2, unk3, unk4, unk5, unk4, unk6, unk5, unk7, unk8, unk9);
+        }
     }
 
     public struct unkStruct2Sect2
@@ -326,10 +331,10 @@ namespace ResourceTypes.Navigation
             for (int i = 0; i != unkDataSet2Count1; i++)
             {
                 data4[i].dataSet1 = new unkStruct2Sect1[data4[i].unk0];
-                unkStruct2Sect1 data4Sect = new unkStruct2Sect1();
 
                 for (int y = 0; y != data4[i].unk0; y++)
                 {
+                    unkStruct2Sect1 data4Sect = new unkStruct2Sect1();
                     data4Sect.unk0 = reader.ReadInt16();
                     data4Sect.unk1 = reader.ReadInt16();
                     data4Sect.unk2 = reader.ReadInt16();
@@ -341,17 +346,17 @@ namespace ResourceTypes.Navigation
                     data4Sect.unk7 = reader.ReadInt16();
                     data4Sect.unk8 = reader.ReadInt16();
                     data4Sect.unk9 = reader.ReadSingle();
+                    Console.WriteLine(data4Sect.ToString());
                     data4[i].dataSet1[y] = data4Sect;
                 }
                 for (int y = 0; y != data4[i].unk0; y++)
                 {
-                    data4Sect.unk10 = new float[12];
+                    data4[i].dataSet1[y].unk10 = new float[12];
 
                     for (int z = 0; z != 12; z++)
                     {
-                        data4Sect.unk10[z] = reader.ReadSingle();
+                        data4[i].dataSet1[y].unk10[z] = reader.ReadSingle();
                     }
-                    data4[i].dataSet1[y] = data4Sect;
                 }
 
                 data4[i].dataSet2 = new unkStruct2Sect2[data4[i].unk5];
@@ -362,8 +367,8 @@ namespace ResourceTypes.Navigation
                     data4Sect2.data = reader.ReadBytes(16);
                     data4[i].dataSet2[z] = data4Sect2;
                 }
-                long position = reader.BaseStream.Position;
-                Console.WriteLine(position);
+                if (reader.BaseStream.Position != data4[i + 1].offset0 - 4)
+                    throw new Exception("error");
             }
             File.WriteAllLines("NEW_SPLINES_JA", splines.ToArray());
         }

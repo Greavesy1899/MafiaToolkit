@@ -24,7 +24,6 @@ namespace Utils.Settings
         public static float ScreenNear;
         public static float CameraSpeed;
         public static string ShaderPath;
-        public static string DataPath;
         public static string TexturePath;
         public const int Width = 1920;
         public const int Height = 1080;
@@ -71,7 +70,6 @@ namespace Utils.Settings
 
 
             ShaderPath = @"Shaders\";
-            DataPath = @"Data\";
             Log.LoggingEnabled = LoggingEnabled;
 
             if (DiscordEnabled)

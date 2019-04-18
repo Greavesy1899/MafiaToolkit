@@ -11,6 +11,8 @@ using ResourceTypes.BufferPools;
 using Utils.Types;
 using System;
 using Buffer = SharpDX.Direct3D11.Buffer;
+using System.IO;
+using Utils.Settings;
 
 namespace Rendering.Graphics
 {
@@ -44,17 +46,6 @@ namespace Rendering.Graphics
             DoRender = true;
             Transform = Matrix.Identity;
             BoundingBox = new RenderBoundingBox();
-        }
-
-        public bool Init(Device device)
-        {
-            InitBuffers(device);
-            if (!InitializePartShaders(device))
-            {
-                MessageBox.Show("unable to load texture");
-                return false;
-            }
-            return true;
         }
 
         public bool ConvertFrameToRenderModel(FrameObjectSingleMesh mesh, FrameGeometry geom, FrameMaterial mats, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
@@ -171,18 +162,18 @@ namespace Rendering.Graphics
         }
         private bool InitializePartShaders(Device device)
         {
-            TextureClass AOTextureClass = new TextureClass();
-            ShaderResourceView m_Temp;
+            //TextureLoader AOTextureClass = new TextureLoader();
+            //ShaderResourceView m_Temp;
 
-            RenderStorageSingleton.Instance.TextureCache.TryGetValue(0, out m_Temp);
-            AOTexture = m_Temp;
+            //RenderStorageSingleton.Instance.TextureCache.TryGetValue(0, out m_Temp);
+            //AOTexture = m_Temp;
 
-            if (m_Temp == null)
-            {
-                AOTextureClass.Init(device, "texture.dds");
-                RenderStorageSingleton.Instance.TextureCache.Add(0, AOTextureClass.TextureResource);
-                AOTexture = AOTextureClass.TextureResource;
-            }
+            //if (m_Temp == null)
+            //{
+            //    AOTextureClass.Init(device, "texture.dds");
+            //    RenderStorageSingleton.Instance.TextureCache.Add(0, AOTextureClass.TextureResource);
+            //    AOTexture = AOTextureClass.TextureResource;
+            //}
             return true;
         }
         private void SetupShaders()
@@ -203,12 +194,50 @@ namespace Rendering.Graphics
             }
         }
 
+        private void InitTextures(Device d3d)
+        {
+            for(int i = 0; i < LODs.Length; i++)
+            {
+                for(int x = 0; x < LODs[i].ModelParts.Length; x++)
+                {
+                    ModelPart part = LODs[i].ModelParts[x];
+                    
+                    if(part.Material != null)
+                    {
+                        ShaderParameterSampler sampler;
+                        if (part.Material.Samplers.TryGetValue("S000", out sampler))
+                        {
+
+                            ShaderResourceView texture;
+
+                            if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(sampler.TextureHash, out texture))
+                            {
+                                if (!string.IsNullOrEmpty(sampler.File))
+                                {
+                                    texture = TextureLoader.LoadTexture(d3d, Path.Combine(ToolkitSettings.TexturePath, sampler.File));
+                                    RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
+                                }
+                            }
+
+                            part.Texture = texture;
+                        }
+                    }
+                    else
+                    {
+                        //blank white
+                        part.Texture = RenderStorageSingleton.Instance.TextureCache[0];
+                    }
+                }
+            }
+        }
+
         public override void InitBuffers(Device d3d)
         {
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, LODs[0].Vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, LODs[0].Indices);
 
             BoundingBox.InitBuffers(d3d);
+            InitTextures(d3d);
         }
 
         public override void SetTransform(Vector3 position, Matrix33 rotation)

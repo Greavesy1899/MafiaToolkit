@@ -6,6 +6,7 @@ using Mafia2Tool;
 using Mafia2;
 using Utils.Settings;
 using ResourceTypes.Materials;
+using System.Diagnostics;
 
 namespace Rendering.Graphics
 {
@@ -204,29 +205,31 @@ namespace Rendering.Graphics
 
         public override void SetShaderParamters(Device device, DeviceContext context, Material material)
         {
-            DefaultShaderParams parameters = new DefaultShaderParams();
-
-            if (material != null && material.Samplers.ContainsKey("S000") && !string.IsNullOrEmpty(material.Samplers["S000"].File))
+            if (material == null)
             {
-                ShaderParameterSampler sampler = material.Samplers["S000"];
-
-                ShaderResourceView texture;
-                RenderStorageSingleton.Instance.TextureCache.TryGetValue(sampler.TextureHash, out texture);
-
-                if(texture == null)
-                {
-                    TextureClass Texture = new TextureClass();
-                    Texture.Init(device, sampler.File);
-                    RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, Texture.TextureResource);
-                    texture = Texture.TextureResource;
-                }
-
+                DefaultShaderParams parameters = new DefaultShaderParams();
+                ShaderResourceView texture = RenderStorageSingleton.Instance.TextureCache[0];
                 context.PixelShader.SetShaderResource(0, texture);
+                ShaderParams = parameters;
+                Debug.WriteLine("Missing material!");
             }
-
-            ShaderParams = parameters;
+            else
+            {
+                DefaultShaderParams parameters = new DefaultShaderParams();
+                ShaderParameterSampler sampler;
+                ShaderResourceView texture = null;
+                if (material.Samplers.TryGetValue("S000", out sampler))
+                {
+                    texture = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
+                }
+                else
+                {
+                    texture = RenderStorageSingleton.Instance.TextureCache[0];
+                    context.PixelShader.SetShaderResource(0, texture);
+                    ShaderParams = parameters;
+                }
+            }
         }
-
         public override void Render(DeviceContext context, int numVertices, uint offset)
         {
             throw new System.NotImplementedException();

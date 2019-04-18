@@ -72,8 +72,8 @@ namespace Mafia2Tool
                     FrameNameTable = new FrameNameTable(name);
                 else if (type == "Collisions")
                     Collisions = new Collision(name);
-                else if (nodes.Current.Value == "roadmap.gsd")
-                    roadMap = new Roadmap(new FileInfo(name));
+                //else if (nodes.Current.Value == "roadmap.gsd")
+                //    roadMap = new Roadmap(new FileInfo(name));
             }
 
             IndexBufferPool = new IndexBufferManager(ibps);

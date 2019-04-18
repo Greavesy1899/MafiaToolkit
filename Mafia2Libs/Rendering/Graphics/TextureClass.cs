@@ -4,38 +4,31 @@ using Utils.Settings;
 
 namespace Rendering.Graphics
 {
-    public class TextureClass
+    public static class TextureLoader
     {
-        public ShaderResourceView TextureResource { get; private set; }
-        public bool Init(Device device, string fileName)
+        public static ShaderResourceView LoadTexture(Device d3d, string fileName)
         {
             Resource ddsResource;
             ShaderResourceView _temp;
             DDSTextureLoader.DDS_ALPHA_MODE mode;
 
             string texturePath = "";
-            if (!System.IO.File.Exists(ToolkitSettings.TexturePath + fileName))
+            if (!System.IO.File.Exists(fileName))
             {
                 Debug.WriteLine(string.Format("FAILED TO LOAD {0}", fileName));
-                texturePath = "texture.dds";
+                return RenderStorageSingleton.Instance.TextureCache[0];
             }
             else
             {
                 string mipDds = fileName.Insert(0, "MIP_");
-                if (System.IO.File.Exists(ToolkitSettings.TexturePath + mipDds))
+                if (System.IO.File.Exists(mipDds))
                     texturePath = mipDds;
                 else
                     texturePath = fileName;
             }
             //Debug.WriteLine(string.Format("Loading {0}\tDevice State {1}", fileName, device));
-            DDSTextureLoader.CreateDDSTextureFromFile(device, ToolkitSettings.TexturePath + texturePath, out ddsResource, out _temp, 4096, out mode);
-            TextureResource = _temp;
-            return true;
-        }
-        public void Shutdown()
-        {
-            TextureResource?.Dispose();
-            TextureResource = null;
+            DDSTextureLoader.CreateDDSTextureFromFile(d3d, texturePath, out ddsResource, out _temp, 4096, out mode);
+            return _temp;
         }
     }
 }

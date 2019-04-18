@@ -182,6 +182,7 @@ namespace Mafia2Tool
             //awful i know
             if (Graphics.Timer.FrameTime < 1000 / 60)
             {
+                float calculation = Graphics.Timer.FrameTime - 1000 / 60;
                 Thread.Sleep((int)Math.Abs(Graphics.Timer.FrameTime - 1000 / 60));
             }
             return true;
@@ -320,12 +321,12 @@ namespace Mafia2Tool
                 }
             }
 
-            for (int i = 0; i != SceneData.roadMap.data2.Length; i++)
-            {
-                RenderLine line = new RenderLine();
-                line.Init(SceneData.roadMap.data2[i].points);
-                assets.Add(StringHelpers.RandomGenerator.Next(), line);
-            }
+            //for (int i = 0; i != SceneData.roadMap.data2.Length; i++)
+            //{
+            //    RenderLine line = new RenderLine();
+            //    line.Init(SceneData.roadMap.data2[i].points);
+            //    assets.Add(StringHelpers.RandomGenerator.Next(), line);
+            //}
             //for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
             //{
             //    ResourceTypes.Collisions.Collision.Placement placement = SceneData.Collisions.Placements[i];

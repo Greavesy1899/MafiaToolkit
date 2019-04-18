@@ -56,6 +56,51 @@ namespace ResourceTypes.Translokator
             }
         }
 
+        private void DecompressRotation(structInstance instance)
+        {
+            Vector4 quat = new Vector4();
+            float v6 = 0.0f;
+            float v7 = 0.0f;
+            float v8 = 0.0f;
+            float v9 = 0.0f;
+
+            if ((instance.Rotation2 & 0x10) != 0)
+            {
+                int val = instance.Rotation2 & 0x1FF;
+                v7 = 0.0019569471f;
+                v6 = val * 0.0019569471f;
+                v8 = ((instance.Rotation2 >> 9) & 0x1FF) * v7;
+                v9 = (instance.Rotation2 >> 18) & 0x1FF;
+            }
+            else
+            {
+                int val = ((instance.Rotation1 & 0xE0) << 4) | (instance.Rotation2 & 0x1FF);
+                v6 = val * 0.00024420026f;
+                v7 = 0.00012208521f;
+                v8 = Convert.ToSingle((((instance.Rotation2 >> 9) & 0x1FF) + 2 * (instance.Rotation1 & 0xF00)) * 0.00012208521);
+                v9 = ((instance.Rotation2 >> 18) & 0x1FF | (instance.Rotation1 >> 3) & 0x1E00);
+            }
+            double v11 = (v6 * Math.PI) * 2;
+            double v12 = Math.Sin(v11 + -Math.PI) * 0.5f;
+            double v13 = Math.Cos(v11 + -Math.PI) * 0.5f;
+            double v14 = (((v8 * Math.PI) + (v8 * Math.PI)) + -Math.PI) * 0.5f;
+            double v15 = Math.Sin(v14);
+            double v16 = Math.Cos(v14);
+            double v17 = ((((v9 * v7) * Math.PI) + ((v9 * v7) * Math.PI)) + -Math.PI) * 0.5;
+            double v18 = Math.Sin(v17);
+            double v19 = Math.Cos(v17);
+            quat.X = Convert.ToSingle((v13 * (v15 * v18)) + (v12 * (v16 * v19)));
+            quat.Y = Convert.ToSingle((v13 * (v15 * v19)) + (v12 * (v16 * v18)));
+            quat.Z = Convert.ToSingle(((v16 * v18) * v13) - ((v15 * v19) * v12));
+            quat.W = Convert.ToSingle(((v16 * v19) * v13) - ((v15 * v18) * v12));
+        }
+
+        private void DecompressPosition(structInstance instance)
+        {
+            Vector3 position = new Vector3();
+            position = new Vector3(instance.PositionX / 65535.0f, instance.PositionY / 65535.0f, instance.PositionZ / 65535.0f);
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             int Version = reader.ReadInt32();
@@ -130,13 +175,15 @@ namespace ResourceTypes.Translokator
                         instance.Rotation2 = reader.ReadInt32();
                         instance.Unk01 = reader.ReadInt16();
                         instance.Rotation1 = reader.ReadInt16();
+                        DecompressRotation(instance);
+                        DecompressPosition(instance);
                         obj.Instances[y] = instance;
 
                         Console.WriteLine("{0:X4}", instance.PositionX);
                         Console.WriteLine("{0:X4}", instance.PositionY);
                         Console.WriteLine("{0:X4}", instance.PositionZ);
                         Console.WriteLine("{0:X8}", instance.Rotation2);
-                        Console.WriteLine("{0:X4}", instance.Unk01);
+                        Console.WriteLine("{0}", instance.Unk01);
                         Console.WriteLine("{0:X4}", instance.Rotation1);
                     }
                     objectGroup.Objects[x] = obj;

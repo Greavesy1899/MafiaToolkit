@@ -5,6 +5,9 @@ using System.Windows.Forms;
 using SharpDX;
 using System.Collections.Generic;
 using ResourceTypes.FrameResource;
+using Mafia2Tool;
+using Utils.Settings;
+using System.IO;
 
 namespace Rendering.Graphics
 {
@@ -43,6 +46,8 @@ namespace Rendering.Graphics
                 MessageBox.Show("Failed to initialize Shader Manager!");
                 return false;
             }
+            //this is backup!
+            RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, Path.Combine(ToolkitSettings.TexturePath, "texture.dds")));
             return true;
         }
 

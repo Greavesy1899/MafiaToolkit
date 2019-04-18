@@ -427,12 +427,17 @@ namespace Mafia2Tool
                 caEditor = new CityAreaEditor((FileInfo)item.Tag);
                 return;
             }
-            else if(item.SubItems[0].Text.Contains("cityshop") && item.SubItems[1].Text == "BIN")
+            else if (item.SubItems[0].Text.Contains("cityshop") && item.SubItems[1].Text == "BIN")
             {
                 csEditor = new CityShopEditor((FileInfo)item.Tag);
                 return;
             }
-            else if(item.SubItems[0].Text.Contains("sdsconfig") && item.SubItems[1].Text == "BIN")
+            else if (item.SubItems[0].Text.Contains("roadmap") && item.SubItems[1].Text == "GSD")
+            {
+                Roadmap roadmap = new Roadmap((item.Tag as FileInfo));
+                return;
+            }
+            else if (item.SubItems[0].Text.Contains("sdsconfig") && item.SubItems[1].Text == "BIN")
             {
                 using (BinaryReader reader = new BinaryReader(File.Open((item.Tag as FileInfo).FullName, FileMode.Open)))
                 {
@@ -487,6 +492,9 @@ namespace Mafia2Tool
                     return;
                 case "Table":
                     tTool = new TableEditor((FileInfo)item.Tag);
+                    return;
+                case "TRA":
+                    ResourceTypes.Translokator.TranslokatorLoader trans = new ResourceTypes.Translokator.TranslokatorLoader((FileInfo)item.Tag);
                     return;
                 case "ACT":
                     aTool = new ActorEditor((FileInfo)item.Tag);
