@@ -60,16 +60,18 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     {
 		// Determine the final diffuse color based on the diffuse color and the amount of the light intensity.
         color += (diffuseColor * lightIntensity);
-
 		// Saturate the ambient and diffuse color.
-        color = saturate(color);
+		color = saturate(color);
 
 		// Calculate the reflection vector based on the light intensity, normal vector, and light direction.
-        reflection = normalize(2 * lightIntensity * input.Normal - lightDir);
+		reflection = normalize(2 * lightIntensity * input.Normal - lightDir);
 
 		// Determine the amount of the specular light based on the reflection vector, viewing direction, and specular power.
-        specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
+		specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
     }
+
+
+
     color = saturate(color + specular);
     return color;
 }

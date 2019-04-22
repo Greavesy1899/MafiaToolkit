@@ -57,6 +57,7 @@ namespace Rendering.Graphics
             DoRender = true;
             BoundingBox = new RenderBoundingBox();
             BoundingBox.Init(mesh.Boundings);
+            BBox = mesh.Boundings;
             LODs = new LOD[geom.NumLods];
 
             for(int i = 0; i != geom.NumLods; i++)
@@ -196,6 +197,7 @@ namespace Rendering.Graphics
 
         private void InitTextures(Device d3d)
         {
+            AOTexture = RenderStorageSingleton.Instance.TextureCache[0];
             for(int i = 0; i < LODs.Length; i++)
             {
                 for(int x = 0; x < LODs[i].ModelParts.Length; x++)
@@ -268,6 +270,9 @@ namespace Rendering.Graphics
             if (!DoRender)
                 return;
 
+            //if (!camera.CheckBBoxFrustrum(boundingBox))
+            //    return;
+
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
@@ -275,9 +280,9 @@ namespace Rendering.Graphics
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
             {
                 LODs[0].ModelParts[i].Shader.SetShaderParamters(device, deviceContext, LODs[0].ModelParts[i].Material);
-                LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera, light);
+                LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera);
                 deviceContext.PixelShader.SetShaderResource(1, AOTexture);
-                LODs[0].ModelParts[i].Shader.Render(deviceContext, LODs[0].ModelParts[i].NumFaces * 3, LODs[0].ModelParts[i].StartIndex);
+                LODs[0].ModelParts[i].Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(LODs[0].ModelParts[i].NumFaces * 3), LODs[0].ModelParts[i].StartIndex);
             }
         }
 

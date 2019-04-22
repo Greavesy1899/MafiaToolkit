@@ -1,13 +1,12 @@
-﻿using Rendering.Utils;
-using Rendering.Input;
+﻿using Rendering.Input;
 using System;
 using System.Windows.Forms;
 using SharpDX;
 using System.Collections.Generic;
 using ResourceTypes.FrameResource;
-using Mafia2Tool;
 using Utils.Settings;
 using System.IO;
+using Rendering.Sys;
 
 namespace Rendering.Graphics
 {
@@ -16,6 +15,7 @@ namespace Rendering.Graphics
         private DirectX11Class D3D { get; set; }
         private LightClass Light { get; set; }
         public TimerClass Timer { get; set; }
+        public FPSClass FPS { get; set; }
         public InputClass Input { get; private set; }
         public Camera Camera { get; set; }
 
@@ -23,9 +23,12 @@ namespace Rendering.Graphics
         public Dictionary<int, IRenderer> InitObjectStack { get; set; }
         public RenderBoundingBox SelectedEntryBBox { get; private set; }
 
+        public RenderBoundingBox PickingRayBBox { get; private set; }
+
         public GraphicsClass()
         {
             Assets = new Dictionary<int, IRenderer>();
+            PickingRayBBox = new RenderBoundingBox();
         }
 
         public bool PreInit(IntPtr WindowHandle)
@@ -36,16 +39,20 @@ namespace Rendering.Graphics
                 MessageBox.Show("Failed to initialize DirectX11!");
                 return false;
             }
+
             Timer = new TimerClass();
-            if (!Timer.Init())
-            {
-                return false;
-            }
+            FPS = new FPSClass();
+
+            Timer.Init();
+            FPS.Init();
+
             if (!RenderStorageSingleton.Instance.ShaderManager.Init(D3D.Device))
             {
                 MessageBox.Show("Failed to initialize Shader Manager!");
                 return false;
             }
+            PickingRayBBox.Init(new BoundingBox(new Vector3(-5, -5, -5), new Vector3(5, 5, 5)));
+            PickingRayBBox.InitBuffers(D3D.Device);
             //this is backup!
             RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, Path.Combine(ToolkitSettings.TexturePath, "texture.dds")));
             return true;
@@ -60,7 +67,7 @@ namespace Rendering.Graphics
             Light = new LightClass();
             Light.SetAmbientColor(0.5f, 0.5f, 0.5f, 1f);
             Light.SetDiffuseColour(0f, 0f, 0f, 0);
-            Light.Direction = new Vector3(0, 0, 100);
+            Light.Direction = new Vector3(0, 0, 1.0f);
             Light.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
             Light.SetSpecularPower(255.0f);
             Input = new InputClass();
@@ -93,12 +100,16 @@ namespace Rendering.Graphics
             D3D.BeginScene(0.0f, 0f, 0f, 1.0f);
             Camera.Render();
 
+            foreach(KeyValuePair<ulong, BaseShader> shader in RenderStorageSingleton.Instance.ShaderManager.shaders)
+                shader.Value.InitCBuffersFrame(D3D.DeviceContext, Camera, Light);
+
             foreach(KeyValuePair<int, IRenderer> entry in Assets)
                 entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
 
             if (SelectedEntryBBox != null)
                 SelectedEntryBBox.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
 
+            PickingRayBBox.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
             D3D.EndScene();
             return true;
         }

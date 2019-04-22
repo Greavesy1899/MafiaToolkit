@@ -46,14 +46,24 @@ namespace Mafia2
 
         public static Vector3 ReadNormalDataFromVB(byte[] data, int i)
         {
-            Vector3 max255 = new Vector3(255);
-            SharpDX.Half x = new SharpDX.Half(data[i]);
-            SharpDX.Half y = new SharpDX.Half(data[i + 1]);
-            SharpDX.Half z = new SharpDX.Half(data[i + 2]);
-            Vector3 vec = new Vector3(x, y, z);
-            vec /= max255;
-            vec *= 2;
-            vec -= 1;
+            Vector3 norm = new Vector3();
+            float tx = (data[i] - 127.0f) * 0.007874f;
+            float ty = (data[i + 1] - 127.0f) * 0.007874f;
+            float tz = (data[i + 2] - 127.0f) * 0.007874f;
+            norm.X = tx;
+            norm.Y = ty;
+            norm.Z = tz;
+            norm.Normalize();
+
+            //SharpDX.Half x = new SharpDX.Half(data[i]);
+            //SharpDX.Half y = new SharpDX.Half(data[i + 1]);
+            //SharpDX.Half z = new SharpDX.Half(data[i + 2]);
+            Vector3 vec = new Vector3();
+            vec.X = data[i];
+            vec.Y = data[i+1];
+            vec.Z = data[i+2];
+            vec /= 255;
+            vec = vec * 2 - 1;
             return vec;
         }
 

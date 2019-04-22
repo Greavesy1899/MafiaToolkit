@@ -50,9 +50,11 @@ namespace ResourceTypes.Actors
 
             unkSector = new ActorExtraData(reader);
 
-            items = new ActorItem[unkSector.ItemCount];
+            int itemCount = reader.ReadInt32();
+            reader.BaseStream.Seek(itemCount * 4, SeekOrigin.Current);
 
-            for (int i = 0; i != unkSector.ItemCount; i++)
+            items = new ActorItem[itemCount];
+            for (int i = 0; i != itemCount; i++)
             {
                 items[i] = new ActorItem(reader);
             }
@@ -120,9 +122,9 @@ namespace ResourceTypes.Actors
         public class ActorExtraData
         {
             int filesize; //size of sector in bits. After this integer (so filesize - 4)
-            short const_6; //always 6
-            short const_2; //always 2
-            int const_16; //always 16
+            short const6; //always 6
+            short const2; //always 2
+            int const16; //always 16
             int filesize2;
             int unk12;
             
@@ -132,14 +134,8 @@ namespace ResourceTypes.Actors
             int unk14;
             int unk13;
 
-            int itemCount;
-
             List<temp_unk> temp_Unks = new List<temp_unk>();
 
-            public int ItemCount {
-                get { return itemCount; }
-                set { itemCount = value; }
-            }
             public List<temp_unk> TempUnks {
                 get { return temp_Unks; }
                 set { temp_Unks = value; }
@@ -148,15 +144,21 @@ namespace ResourceTypes.Actors
             public ActorExtraData(BinaryReader reader)
             {
                 filesize = reader.ReadInt32(); 
-                const_6 = reader.ReadInt16();
-                const_2 = reader.ReadInt16();
-                const_16 = reader.ReadInt32();
+                const6 = reader.ReadInt16();
+                const2 = reader.ReadInt16();
+                const16 = reader.ReadInt32();
                 filesize2 = reader.ReadInt32();
                 unk12 = reader.ReadInt32();
                 unk13 = reader.ReadInt32();
 
-                if (const_2 != 2)
+                //if (const2 != 2)
+                //    throw new Exception("const_6 is not 6");
+
+                if (const6 != 6)
                     throw new Exception("const_2 is not 2");
+
+                if (const16 != 16)
+                    throw new Exception("const_16 is not 16");
 
                 pos_entity = reader.BaseStream.Length - (filesize - filesize2);
                 long tempPosition = reader.BaseStream.Position;
@@ -169,9 +171,6 @@ namespace ResourceTypes.Actors
                 {
                     temp_Unks.Add(new temp_unk(reader, temp_Unks.Count));
                 }
-
-                itemCount = reader.ReadInt32();
-                reader.BaseStream.Seek(itemCount * 4, SeekOrigin.Current);
             }
 
             public struct temp_unk

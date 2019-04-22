@@ -9,49 +9,52 @@ namespace Rendering.Graphics
     {
         private VertexLayouts.BasicLayout.Vertex[] vertices;
         private ushort[] indices;
+        private Vector4 colour;
 
         public RenderBoundingBox()
         {
             DoRender = true;
+            SetTransform(new Vector3(0.0f), new Matrix33());
+            colour = new Vector4(1.0f);
         }
 
         public bool Init(BoundingBox bbox)
         {
-            boundingBox = bbox;
+            BBox = bbox;
 
             vertices = new VertexLayouts.BasicLayout.Vertex[8];
             //1
-            vertices[0].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Minimum.Y, boundingBox.Maximum.Z);
-            vertices[0].Colour = new Vector4(1.0f);
+            vertices[0].Position = new Vector3(BBox.Minimum.X, BBox.Minimum.Y, BBox.Maximum.Z);
+            vertices[0].Colour = colour;
 
             //2
-            vertices[1].Position = new Vector3(boundingBox.Maximum.X, boundingBox.Minimum.Y, boundingBox.Maximum.Z);
-            vertices[1].Colour = new Vector4(1.0f);
+            vertices[1].Position = new Vector3(BBox.Maximum.X, BBox.Minimum.Y, BBox.Maximum.Z);
+            vertices[1].Colour = colour;
 
             //3
-            vertices[2].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Minimum.Y, boundingBox.Minimum.Z);
-            vertices[2].Colour = new Vector4(1.0f);
+            vertices[2].Position = new Vector3(BBox.Minimum.X, BBox.Minimum.Y, BBox.Minimum.Z);
+            vertices[2].Colour = colour;
 
             //4
-            vertices[3].Position = new Vector3(boundingBox.Maximum.X, boundingBox.Minimum.Y, boundingBox.Minimum.Z);
-            vertices[3].Colour = new Vector4(1.0f);
+            vertices[3].Position = new Vector3(BBox.Maximum.X, BBox.Minimum.Y, BBox.Minimum.Z);
+            vertices[3].Colour = colour;
 
             //5
-            vertices[4].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Maximum.Y, boundingBox.Maximum.Z);
-            vertices[4].Colour = new Vector4(1.0f);
+            vertices[4].Position = new Vector3(BBox.Minimum.X, BBox.Maximum.Y, BBox.Maximum.Z);
+            vertices[4].Colour = colour;
 
             //6
-            vertices[5].Position = new Vector3(boundingBox.Maximum.X, boundingBox.Maximum.Y, boundingBox.Maximum.Z);
-            vertices[5].Colour = new Vector4(1.0f);
+            vertices[5].Position = new Vector3(BBox.Maximum.X, BBox.Maximum.Y, BBox.Maximum.Z);
+            vertices[5].Colour = colour;
 
 
             //7
-            vertices[6].Position = new Vector3(boundingBox.Minimum.X, boundingBox.Maximum.Y, boundingBox.Minimum.Z);
-            vertices[6].Colour = new Vector4(1.0f);
+            vertices[6].Position = new Vector3(BBox.Minimum.X, BBox.Maximum.Y, BBox.Minimum.Z);
+            vertices[6].Colour = colour;
 
             //8
-            vertices[7].Position = new Vector3(boundingBox.Maximum.X, boundingBox.Maximum.Y, boundingBox.Minimum.Z);
-            vertices[7].Colour = new Vector4(1.0f);
+            vertices[7].Position = new Vector3(BBox.Maximum.X, BBox.Maximum.Y, BBox.Minimum.Z);
+            vertices[7].Colour = colour;
 
             indices = new ushort[] {
             0, 2, 3,
@@ -76,6 +79,11 @@ namespace Rendering.Graphics
         {
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices);
+        }
+
+        public void SetColour(Vector4 vec)
+        {
+            colour = vec;
         }
 
         public override void SetTransform(Vector3 position, Matrix33 rotation)
@@ -110,8 +118,8 @@ namespace Rendering.Graphics
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
 
-            shader.SetSceneVariables(deviceContext, Transform, camera, light);
-            shader.Render(deviceContext, 12 * 3, 0);
+            shader.SetSceneVariables(deviceContext, Transform, camera);
+            shader.Render(deviceContext, PrimitiveTopology.LineList, 12 * 3, 0);
         }
 
         public override void Shutdown()

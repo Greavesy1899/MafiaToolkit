@@ -158,7 +158,7 @@ namespace Rendering.Graphics
 
             m_RSDesc = new RasterizerStateDescription()
             {
-                IsAntialiasedLineEnabled = false,
+                IsAntialiasedLineEnabled = true,
                 CullMode = CullMode.Back,
                 DepthBias = 10,
                 DepthBiasClamp = .0f,

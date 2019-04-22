@@ -1,38 +1,45 @@
-﻿using System;
+﻿using SharpDX;
+using SharpDX.Direct3D;
+using SharpDX.Direct3D11;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SharpDX;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
 using Utils.Types;
 using Buffer = SharpDX.Direct3D11.Buffer;
 
 namespace Rendering.Graphics
 {
-    public class RenderLine : IRenderer
+    public class Render2DPlane : IRenderer
     {
         private VertexLayouts.BasicLayout.Vertex[] vertices;
+        private Vector4 colour;
 
-        public RenderLine()
+        public Render2DPlane()
         {
             DoRender = true;
             shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
             Transform = Matrix.Identity;
+            colour = new Vector4(1.0f);
         }
 
         public void Init(Vector3[] points)
         {
             vertices = new VertexLayouts.BasicLayout.Vertex[points.Length];
 
-            for(int i = 0; i != vertices.Length; i++)
+            for (int i = 0; i != vertices.Length; i++)
             {
                 VertexLayouts.BasicLayout.Vertex vertex = new VertexLayouts.BasicLayout.Vertex();
                 vertex.Position = points[i];
-                vertex.Colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+                vertex.Colour = colour;
                 vertices[i] = vertex;
             }
+        }
+
+        public void SetColour(Vector4 vec)
+        {
+            colour = vec;
         }
 
         public override void InitBuffers(Device d3d)
@@ -48,8 +55,8 @@ namespace Rendering.Graphics
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0));
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineStrip;
 
-            shader.SetSceneVariables(deviceContext, Transform, camera, light);
-            shader.Render(deviceContext, vertices.Length, 0);
+            shader.SetSceneVariables(deviceContext, Transform, camera);
+            shader.Render(deviceContext, PrimitiveTopology.LineStrip, vertices.Length, 0);
         }
 
         public override void SetTransform(Vector3 position, Matrix33 rotation)

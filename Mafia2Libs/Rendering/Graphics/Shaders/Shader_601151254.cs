@@ -115,16 +115,48 @@ namespace Rendering.Graphics
             return true;
         }
 
-        public override void Render(DeviceContext deviceContext, uint numTriangles, uint offset)
+        public override void Render(DeviceContext deviceContext, SharpDX.Direct3D.PrimitiveTopology type, int numTriangles, uint offset)
         {
             deviceContext.InputAssembler.InputLayout = Layout;
             deviceContext.VertexShader.Set(VertexShader);
             deviceContext.PixelShader.Set(PixelShader);
             deviceContext.PixelShader.SetSampler(0, SamplerState);
-            deviceContext.DrawIndexed((int)numTriangles, (int)offset, 0);
+            deviceContext.DrawIndexed(numTriangles, (int)offset, 0);
         }
 
-        public override void SetSceneVariables(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera, LightClass light)
+        public override void InitCBuffersFrame(DeviceContext deviceContext, Camera camera, LightClass light)
+        {
+            DataStream mappedResource;
+            #region Constant Camera Buffer
+            deviceContext.MapSubresource(ConstantCameraBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
+            var cameraBuffer = new DCameraBuffer()
+            {
+                cameraPosition = camera.Position,
+                padding = 0.0f
+            };
+            mappedResource.Write(cameraBuffer);
+            deviceContext.UnmapSubresource(ConstantCameraBuffer, 0);
+            int bufferSlotNumber = 1;
+            deviceContext.VertexShader.SetConstantBuffer(bufferSlotNumber, ConstantCameraBuffer);
+            #endregion
+            #region Constant Light Buffer
+            deviceContext.MapSubresource(ConstantLightBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
+            LightBuffer lightbuffer = new LightBuffer()
+            {
+                ambientColor = light.AmbientColor,
+                diffuseColor = light.DiffuseColour,
+                LightDirection = light.Direction,
+                specularColor = light.SpecularColor,
+                specularPower = light.SpecularPower
+            };
+            mappedResource.Write(lightbuffer);
+            deviceContext.UnmapSubresource(ConstantLightBuffer, 0);
+            bufferSlotNumber = 0;
+            deviceContext.PixelShader.SetConstantBuffer(bufferSlotNumber, ConstantLightBuffer);
+            #endregion
+        }
+
+        public override void SetSceneVariables(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera)
         {
             DataStream mappedResource;
 
@@ -147,33 +179,6 @@ namespace Rendering.Graphics
             deviceContext.UnmapSubresource(ConstantMatrixBuffer, 0);
             int bufferSlotNumber = 0;
             deviceContext.VertexShader.SetConstantBuffer(bufferSlotNumber, ConstantMatrixBuffer);
-            #endregion
-            #region Constant Camera Buffer
-            deviceContext.MapSubresource(ConstantCameraBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
-            var cameraBuffer = new DCameraBuffer()
-            {
-                cameraPosition = camera.Position,
-                padding = 0.0f
-            };
-            mappedResource.Write(cameraBuffer);
-            deviceContext.UnmapSubresource(ConstantCameraBuffer, 0);
-            bufferSlotNumber = 1;
-            deviceContext.VertexShader.SetConstantBuffer(bufferSlotNumber, ConstantCameraBuffer);
-            #endregion
-            #region Constant Light Buffer
-            deviceContext.MapSubresource(ConstantLightBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
-            LightBuffer lightbuffer = new LightBuffer()
-            {
-                ambientColor = light.AmbientColor,
-                diffuseColor = light.DiffuseColour,
-                LightDirection = light.Direction,
-                specularColor = light.SpecularColor,
-                specularPower = light.SpecularPower
-            };
-            mappedResource.Write(lightbuffer);
-            deviceContext.UnmapSubresource(ConstantLightBuffer, 0);
-            bufferSlotNumber = 0;
-            deviceContext.PixelShader.SetConstantBuffer(bufferSlotNumber, ConstantLightBuffer);
             #endregion
             deviceContext.MapSubresource(ConstantShaderParamBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
             mappedResource.Write(ShaderParams);
@@ -217,11 +222,6 @@ namespace Rendering.Graphics
             PixelShader = null;
             VertexShader?.Dispose();
             VertexShader = null;
-        }
-
-        public override void Render(DeviceContext context, int numVertices, uint offset)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

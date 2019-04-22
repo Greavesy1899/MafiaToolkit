@@ -9,7 +9,7 @@ namespace Rendering.Graphics
         public bool DoRender;
         protected BaseShader shader;
         public Matrix Transform { get; protected set; }
-        protected BoundingBox boundingBox;
+        public BoundingBox BBox { get; protected set; }
         protected Buffer indexBuffer;
         protected Buffer vertexBuffer;
 

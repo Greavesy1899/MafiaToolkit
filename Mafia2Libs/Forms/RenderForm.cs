@@ -17,6 +17,7 @@ using Utils.Types;
 using Utils.Lang;
 using Mafia2Tool.EditorControls;
 using Utils.StringHelpers;
+using System.Diagnostics;
 
 namespace Mafia2Tool
 {
@@ -28,6 +29,7 @@ namespace Mafia2Tool
         private Point mousePos;
         private Point lastMousePos;
         private FileInfo fileLocation;
+        private Ray ray;
 
         private int nameTableLimit = 0;
         private bool isEntryReady = false;
@@ -142,9 +144,9 @@ namespace Mafia2Tool
             {
                 if (Input.IsButtonDown(MouseButtons.Right))
                 {
+                    //Graphics.Camera.UpdateMousePosition(mousePos);
                     var dx = 0.25f * (mousePos.X - lastMousePos.X);
                     var dy = 0.25f * (mousePos.Y - lastMousePos.Y);
-
                     Graphics.Camera.Pitch(dy);
                     Graphics.Camera.Yaw(dx);
                 }
@@ -154,7 +156,7 @@ namespace Mafia2Tool
                     Pick(mousePos.X, mousePos.Y);
                 }
 
-                float speed = /*Graphics.Timer.FrameTime * */ToolkitSettings.CameraSpeed;
+                float speed = Graphics.Timer.FrameTime * ToolkitSettings.CameraSpeed;
 
                 if (Input.IsKeyDown(Keys.A))
                     Graphics.Camera.Position.X += speed;
@@ -176,15 +178,12 @@ namespace Mafia2Tool
             }
             lastMousePos = mousePos;
             Graphics.Timer.Frame2();
+            Graphics.FPS.Frame();
+            Graphics.PickingRayBBox.SetTransform(ray.Position, new Matrix33());
             Graphics.Frame();
             toolStripStatusLabel1.Text = Graphics.Camera.Position.ToString();
-
-            //awful i know
-            if (Graphics.Timer.FrameTime < 1000 / 60)
-            {
-                float calculation = Graphics.Timer.FrameTime - 1000 / 60;
-                Thread.Sleep((int)Math.Abs(Graphics.Timer.FrameTime - 1000 / 60));
-            }
+            toolStripStatusLabel2.Text = string.Format("{0} {1}", mousePos.X, mousePos.Y);
+            toolStripStatusLabel3.Text = string.Format("{0} FPS", Graphics.FPS.FPS);
             return true;
         }
 
@@ -321,19 +320,72 @@ namespace Mafia2Tool
                 }
             }
 
-            //for (int i = 0; i != SceneData.roadMap.data2.Length; i++)
-            //{
-            //    RenderLine line = new RenderLine();
-            //    line.Init(SceneData.roadMap.data2[i].points);
-            //    assets.Add(StringHelpers.RandomGenerator.Next(), line);
-            //}
-            //for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
-            //{
-            //    ResourceTypes.Collisions.Collision.Placement placement = SceneData.Collisions.Placements[i];
-            //    RenderStaticCollision collision = new RenderStaticCollision();
-            //    collision.ConvertCollisionToRender(placement, SceneData.Collisions.NXSData[placement.Hash].Data);
-            //    assets.Add((int)placement.Hash + i, collision);
-            //}
+            if (SceneData.roadMap != null)
+            {
+                for (int i = 0; i != SceneData.roadMap.data2.Length; i++)
+                {
+                    RenderLine line = new RenderLine();
+                    line.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+                    line.Init(SceneData.roadMap.data2[i].points);
+                    assets.Add(StringHelpers.RandomGenerator.Next(), line);
+                }
+
+                for (int i = 0; i < SceneData.roadMap.data4.Length; i++)
+                {
+                    if (SceneData.roadMap.data4[i].boundaries.Length > 0)
+                    {
+                        Vector3[] extraPoints = new Vector3[SceneData.roadMap.data4[i].boundaries.Length+1];
+                        Array.Copy(SceneData.roadMap.data4[i].boundaries, extraPoints, SceneData.roadMap.data4[i].boundaries.Length);
+                        extraPoints[extraPoints.Length - 1] = extraPoints[0];
+                        RenderLine lineBoundary = new RenderLine();
+                        lineBoundary.SetColour(new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+                        lineBoundary.Init(extraPoints);
+                        assets.Add(StringHelpers.RandomGenerator.Next(), lineBoundary);
+                    }
+
+                    for (int x = 0; x < SceneData.roadMap.data4[i].splines.Length; x++)
+                    {
+                        RenderLine line = new RenderLine();
+                        line.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+                        line.Init(SceneData.roadMap.data4[i].splines[x].path);
+                        assets.Add(StringHelpers.RandomGenerator.Next(), line);
+                    }
+                   
+                }
+            }
+
+            if(SceneData.Collisions != null)
+            {
+                for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
+                {
+                    ResourceTypes.Collisions.Collision.Placement placement = SceneData.Collisions.Placements[i];
+                    RenderStaticCollision collision = new RenderStaticCollision();
+                    collision.ConvertCollisionToRender(placement, SceneData.Collisions.NXSData[placement.Hash].Data);
+                    assets.Add((int)placement.Hash + i, collision);
+                }
+            }
+            if (SceneData.ATLoader != null)
+            {
+                for(int i = 0; i != SceneData.ATLoader.paths.Length; i++)
+                {
+                    ResourceTypes.Navigation.AnimalTrafficLoader.AnimalTrafficPath path = SceneData.ATLoader.paths[i];
+                    RenderBoundingBox bbox = new RenderBoundingBox();
+                    bbox.SetTransform(new Vector3(0.0f), new Matrix33());
+                    bbox.Init(path.bbox);
+
+                    RenderLine line = new RenderLine();
+                    line.SetTransform(new Vector3(0.0f), new Matrix33());
+                    List<Vector3> points = new List<Vector3>();
+                    points.Add(path.bbox.Center);
+
+                    for(int x = 0; x < path.vectors.Length; x++)
+                        points.Add(path.vectors[x].vectors[0]);
+
+                    line.Init(points.ToArray());
+                    assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
+                    assets.Add(StringHelpers.RandomGenerator.Next(), line);
+                }
+            }
             Graphics.InitObjectStack = assets;
         }
 
@@ -517,9 +569,39 @@ namespace Mafia2Tool
 
         private void Pick(int sx, int sy)
         {
-            //var ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
+            ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
+            //toolStripStatusLabel4.Text = string.Format("{0}, {1}", ray.Position, ray.Direction);
             //FrameObjectSingleMesh selected = null;
             //float seltMin = float.MaxValue;
+
+            foreach (KeyValuePair<int, IRenderer> model in Graphics.Assets)
+            {
+                var inverseMat = Matrix.Invert(model.Value.Transform);
+                ray.Direction = Vector3.TransformNormal(ray.Direction, inverseMat);
+                ray.Position = Vector3.TransformCoordinate(ray.Position, inverseMat);
+                ray.Direction.Normalize();
+
+                float tmin1 = 0.0f;
+                float tmin2 = 0.0f;
+
+                Vector3 minVector = new Vector3(
+                model.Value.Transform.M41 + model.Value.BBox.Minimum.X,
+                model.Value.Transform.M42 + model.Value.BBox.Minimum.Y,
+                model.Value.Transform.M43 + model.Value.BBox.Minimum.Z
+                );
+                Vector3 maxVector = new Vector3(
+                   model.Value.Transform.M41 + model.Value.BBox.Maximum.X,
+                   model.Value.Transform.M42 + model.Value.BBox.Maximum.Y,
+                   model.Value.Transform.M43 + model.Value.BBox.Maximum.Z
+                   );
+                BoundingBox tempBox0 = new BoundingBox(minVector, maxVector);
+                BoundingBox tempBox1 = model.Value.BBox;
+
+                if (ray.Intersects(ref tempBox0, out tmin1)) { }
+                if (ray.Intersects(ref tempBox1, out tmin2)) { }
+                Debug.WriteLine(tmin1);
+                Debug.WriteLine(tmin2);
+            }
 
             //foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
             //{
@@ -583,7 +665,7 @@ namespace Mafia2Tool
             //    //    {
             //    //        if (ray.Position.Z > tempBox0.Minimum.Z && ray.Position.Z < tempBox0.Maximum.Z)
             //    //        {
-                            
+
             //    //            for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
             //    //            {
             //    //                float tmin2 = float.MaxValue/2;
@@ -918,7 +1000,7 @@ namespace Mafia2Tool
         {
             foreach (KeyValuePair<int, IRenderer> obj in Graphics.Assets)
             {
-                if (obj.Value.GetType() != typeof(RenderLine))
+                if (obj.Value.GetType() == typeof(RenderModel))
                     obj.Value.DoRender = !obj.Value.DoRender;
             }
         }

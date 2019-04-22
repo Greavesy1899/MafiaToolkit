@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Threading;
 
-namespace Rendering.Utils
+namespace Rendering.Sys
 {
     public class TimerClass
     {
@@ -13,21 +13,10 @@ namespace Rendering.Utils
         public float FrameTime { get; private set; }
         public float CumulativeFrameTime { get; private set; }
         //Methods
-        public bool Init()
+        public void Init()
         {
-            if (!Stopwatch.IsHighResolution)
-            {
-                return false;
-            }
-            if (Stopwatch.Frequency == 0)
-            {
-                return false;
-            }
-
-            _StopWatch = Stopwatch.StartNew();
             m_ticksPerMs = (Stopwatch.Frequency / 1000.0f);
-
-            return true;
+            _StopWatch = Stopwatch.StartNew();
         }
         public void Frame2()
         {

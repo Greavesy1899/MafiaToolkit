@@ -453,6 +453,9 @@ namespace Mafia2Tool
                 case "ARM":
                     mesh = new ApexRenderMesh((FileInfo)item.Tag);
                     return;
+                case "ATP":
+                    AnimalTrafficLoader loader = new AnimalTrafficLoader((FileInfo)item.Tag);
+                    return;
                 case "ACA":
                     aca = new ApexClothingAssetLoader((FileInfo)item.Tag);
                     return;

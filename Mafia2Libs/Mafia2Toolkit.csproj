@@ -180,6 +180,7 @@
     <Compile Include="ApexSDK\IOFX\ScaleVsLifeModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SimpleScaleModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SubtextureVsLifeModifier.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\AnimalTraffic.cs" />
     <Compile Include="MafiaLib\FileTypes\SdsConfigFile.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorParse.cs" />
@@ -236,6 +237,7 @@
     <Compile Include="MafiaLib\FileTypes\Navigation\NAV_AI.cs" />
     <Compile Include="MafiaLib\FileTypes\PREFAB\Prefab.cs" />
     <Compile Include="MafiaLib\FileTypes\SoundSectors\SoundSector.cs" />
+    <Compile Include="MafiaLib\FileTypes\StreamMap.cs" />
     <Compile Include="MafiaLib\FileTypes\Translokator\Translokator.cs" />
     <Compile Include="MafiaLib\FileTypes\VertexBufferPool\VertexBufferPool.cs" />
     <Compile Include="MafiaLib\GeometryExporters\CustomEDD.cs" />
@@ -267,9 +269,11 @@
     <Compile Include="Gibbed.Mafia2.FileFormats\TEA.cs" />
     <Compile Include="MafiaLib\MafiaModel\M2TStructure.cs" />
     <Compile Include="MafiaLib\MafiaModel\ModelDefinition.cs" />
-    <Compile Include="Rendering\Graphics\IRenderer.cs" />
-    <Compile Include="Rendering\Graphics\RenderLine.cs" />
-    <Compile Include="Rendering\Graphics\RenderStaticCollision.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\IRenderer.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\Render2DPlane.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderLine.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderStaticCollision.cs" />
+    <Compile Include="Rendering\System\FPSClass.cs" />
     <Compile Include="Utils\BoundExtensions.cs" />
     <Compile Include="MafiaLib\Utils\Enums.cs" />
     <Compile Include="Utils\StringHelpers.cs" />
@@ -367,10 +371,10 @@
     </Compile>
     <Compile Include="Rendering\Graphics\GraphicsClass.cs" />
     <Compile Include="Rendering\Graphics\LightClass.cs" />
-    <Compile Include="Rendering\Graphics\RenderBoundingBox.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderBoundingBox.cs" />
     <Compile Include="Rendering\Graphics\Shaders\DebugShader.cs" />
     <Compile Include="Rendering\Graphics\Shaders\DefaultShader.cs" />
-    <Compile Include="Rendering\Graphics\RenderModel.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderModel.cs" />
     <Compile Include="Controls\ModelOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -387,7 +391,7 @@
     <Compile Include="Rendering\Graphics\Shaders\Shader_601151254.cs" />
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
-    <Compile Include="Rendering\Input\TimerClass.cs" />
+    <Compile Include="Rendering\System\TimerClass.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\IniFile.cs" />
     <Compile Include="Forms\MaterialTool.cs">

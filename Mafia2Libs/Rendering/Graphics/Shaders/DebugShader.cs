@@ -66,7 +66,12 @@ namespace Rendering.Graphics
             VertexShader = null;
         }
 
-        public override void SetSceneVariables(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera, LightClass light)
+        public override void InitCBuffersFrame(DeviceContext context, Camera camera, LightClass light)
+        {
+            //throw new System.NotImplementedException();
+        }
+
+        public override void SetSceneVariables(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera)
         {
             DataStream mappedResource;
 
@@ -92,26 +97,29 @@ namespace Rendering.Graphics
             #endregion
         }
 
-        public override void Render(DeviceContext deviceContext, uint numTriangles, uint offset)
+        public override void Render(DeviceContext deviceContext, SharpDX.Direct3D.PrimitiveTopology type, int size, uint offset)
         {
             deviceContext.InputAssembler.InputLayout = Layout;
             deviceContext.VertexShader.Set(VertexShader);
             deviceContext.PixelShader.Set(PixelShader);
-            deviceContext.DrawIndexed((int)numTriangles, (int)offset, 0);
-            deviceContext.Draw((int)numTriangles, 0);
+
+            switch (type)
+            {
+                case SharpDX.Direct3D.PrimitiveTopology.LineList:
+                case SharpDX.Direct3D.PrimitiveTopology.TriangleList:
+                    deviceContext.DrawIndexed(size, (int)offset, 0);
+                    break;
+                case SharpDX.Direct3D.PrimitiveTopology.LineStrip:
+                    deviceContext.Draw(size, 0);
+                    break;
+                default:
+                    break;
+            }
         }
 
         public override void SetShaderParamters(Device device, DeviceContext context, Material material)
         {
             //empty
-        }
-
-        public override void Render(DeviceContext deviceContext, int numVertices, uint offset)
-        {
-            deviceContext.InputAssembler.InputLayout = Layout;
-            deviceContext.VertexShader.Set(VertexShader);
-            deviceContext.PixelShader.Set(PixelShader);
-            deviceContext.Draw(numVertices, 0);
         }
     }
 }

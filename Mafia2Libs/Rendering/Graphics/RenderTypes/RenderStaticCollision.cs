@@ -35,8 +35,12 @@ namespace Rendering.Graphics
 
         public void ConvertCollisionToRender(Placement placement, MeshData data)
         {
+            
+            Matrix33 rot = new Matrix33();
+            rot.EulerRotation = new Vector3(MathUtil.RadiansToDegrees(placement.Rotation.X), MathUtil.RadiansToDegrees(placement.Rotation.Y), MathUtil.RadiansToDegrees(placement.Rotation.Z));
+            rot.UpdateMatrixFromEuler(); 
             //todo
-            SetTransform(placement.Position, new Matrix33());
+            SetTransform(placement.Position, rot);
             DoRender = true;
             BoundingBox = new RenderBoundingBox();
             BoundingBox.Init(data.BoundingBox);
@@ -99,8 +103,8 @@ namespace Rendering.Graphics
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
-            Shader.SetSceneVariables(deviceContext, Transform, camera, light);
-            Shader.Render(deviceContext, numTriangles, 0);
+            Shader.SetSceneVariables(deviceContext, Transform, camera);
+            Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)numTriangles, 0);
         }
 
         public override void SetTransform(Vector3 position, Matrix33 rotation)

@@ -356,6 +356,9 @@ namespace ResourceTypes.FrameResource
                 node.Tag = fObject;
                 node.Name = fObject.RefID.ToString();
 
+                if (fObject.GetType() == typeof(FrameObjectLight))
+                    node.ImageIndex = 1;
+
                 if (p1idx == -1 && p2idx == -1)
                 {
                     //might be temp? it fixes cars loading in or non binded entries.
@@ -390,6 +393,9 @@ namespace ResourceTypes.FrameResource
                 TreeNode node = (!parsedNodes.ContainsKey(thisKey)) ? new TreeNode(fObject.ToString()) : parsedNodes[thisKey];
                 node.Tag = fObject;
                 node.Name = fObject.RefID.ToString();
+
+                if (fObject.GetType() == typeof(FrameObjectLight))
+                    node.ImageIndex = 1;
 
                 if (root.Nodes.Find(fObject.RefID.ToString(), true).Length > 0)
                     continue;
@@ -431,6 +437,9 @@ namespace ResourceTypes.FrameResource
                     TreeNode node = new TreeNode(fObject.ToString());
                     node.Tag = fObject;
                     node.Name = fObject.RefID.ToString();
+
+                    if (fObject.GetType() == typeof(FrameObjectLight))
+                        node.ImageIndex = 1;
 
                     FrameEntry p1Base = GetEntryFromIdx(p1idx).Data as FrameEntry;
                     FrameEntry p2Base = GetEntryFromIdx(p2idx).Data as FrameEntry;

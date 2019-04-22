@@ -33,10 +33,10 @@ namespace Rendering.Graphics
 
         public BaseShader() { }
         public abstract bool Init(Device device, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint);
-        public abstract void SetSceneVariables(DeviceContext context, Matrix WorldMatrix, Camera camera, LightClass light);
+        public abstract void InitCBuffersFrame(DeviceContext context, Camera camera, LightClass light);
+        public abstract void SetSceneVariables(DeviceContext context, Matrix WorldMatrix, Camera camera);
         public abstract void SetShaderParamters(Device device, DeviceContext deviceContext, Material material);
-        public abstract void Render(DeviceContext context, uint numTriangles, uint offset);
-        public abstract void Render(DeviceContext context, int numVertices, uint offset);
+        public abstract void Render(DeviceContext context, SharpDX.Direct3D.PrimitiveTopology type, int size, uint offset);
         public abstract void Shutdown();
     }
 }
