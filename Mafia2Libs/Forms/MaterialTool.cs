@@ -133,8 +133,12 @@ namespace Mafia2Tool
 
         private void OnMaterialSelected(object sender, DataGridViewCellEventArgs e)
         {
-            if((e.RowIndex > -1) && (e.ColumnIndex > -1))
+            if ((e.RowIndex > -1) && (e.ColumnIndex > -1))
+            {
                 MaterialGrid.SelectedObject = dataGridView1.Rows[e.RowIndex].Tag;
+                Material mat = (dataGridView1.Rows[e.RowIndex].Tag as Material);
+                Console.WriteLine(string.Format("{0} {1}", mat.MaterialName, (int)mat.Flags));
+            }
         }
 
         private void DumpSpecificMaterialNames()

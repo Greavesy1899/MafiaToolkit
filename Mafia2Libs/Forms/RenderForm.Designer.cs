@@ -62,6 +62,7 @@ namespace Mafia2Tool
             this.MainTabControl = new System.Windows.Forms.TabControl();
             this.SceneTab = new System.Windows.Forms.TabPage();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.EditEntryTab = new System.Windows.Forms.TabPage();
             this.RotationZNumeric = new System.Windows.Forms.NumericUpDown();
             this.RotationYNumeric = new System.Windows.Forms.NumericUpDown();
@@ -79,12 +80,11 @@ namespace Mafia2Tool
             this.PositionZLabel = new System.Windows.Forms.Label();
             this.PositionYLabel = new System.Windows.Forms.Label();
             this.PositionXLabel = new System.Windows.Forms.Label();
-            this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
             this.DebugPG = new System.Windows.Forms.TabPage();
             this.DebugPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.RenderPanel = new System.Windows.Forms.Panel();
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
             this.ToolbarStrip.SuspendLayout();
             this.EntryMenuStrip.SuspendLayout();
             this.StatusStrip.SuspendLayout();
@@ -288,34 +288,36 @@ namespace Mafia2Tool
             this.toolStripStatusLabel2,
             this.toolStripStatusLabel3,
             this.toolStripStatusLabel4});
-            this.StatusStrip.Location = new System.Drawing.Point(0, 428);
+            this.StatusStrip.Location = new System.Drawing.Point(0, 426);
             this.StatusStrip.Name = "StatusStrip";
-            this.StatusStrip.Size = new System.Drawing.Size(800, 22);
+            this.StatusStrip.Size = new System.Drawing.Size(800, 24);
             this.StatusStrip.TabIndex = 6;
             this.StatusStrip.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
+            this.toolStripStatusLabel1.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)));
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(122, 19);
             this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
             // toolStripStatusLabel2
             // 
+            this.toolStripStatusLabel2.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)));
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(122, 19);
             this.toolStripStatusLabel2.Text = "toolStripStatusLabel2";
             // 
             // toolStripStatusLabel3
             // 
             this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(118, 19);
             this.toolStripStatusLabel3.Text = "toolStripStatusLabel3";
             // 
             // toolStripStatusLabel4
             // 
             this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
-            this.toolStripStatusLabel4.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel4.Size = new System.Drawing.Size(118, 19);
             this.toolStripStatusLabel4.Text = "toolStripStatusLabel4";
             // 
             // splitContainer1
@@ -331,7 +333,7 @@ namespace Mafia2Tool
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.RenderPanel);
-            this.splitContainer1.Size = new System.Drawing.Size(800, 403);
+            this.splitContainer1.Size = new System.Drawing.Size(800, 401);
             this.splitContainer1.SplitterDistance = 266;
             this.splitContainer1.TabIndex = 7;
             // 
@@ -344,7 +346,7 @@ namespace Mafia2Tool
             this.MainTabControl.Location = new System.Drawing.Point(0, 0);
             this.MainTabControl.Name = "MainTabControl";
             this.MainTabControl.SelectedIndex = 0;
-            this.MainTabControl.Size = new System.Drawing.Size(266, 403);
+            this.MainTabControl.Size = new System.Drawing.Size(266, 401);
             this.MainTabControl.TabIndex = 5;
             // 
             // SceneTab
@@ -353,7 +355,7 @@ namespace Mafia2Tool
             this.SceneTab.Location = new System.Drawing.Point(4, 22);
             this.SceneTab.Name = "SceneTab";
             this.SceneTab.Padding = new System.Windows.Forms.Padding(3);
-            this.SceneTab.Size = new System.Drawing.Size(258, 377);
+            this.SceneTab.Size = new System.Drawing.Size(258, 375);
             this.SceneTab.TabIndex = 0;
             this.SceneTab.Text = "Scene";
             this.SceneTab.UseVisualStyleBackColor = true;
@@ -367,9 +369,16 @@ namespace Mafia2Tool
             this.treeView1.Location = new System.Drawing.Point(3, 3);
             this.treeView1.Name = "treeView1";
             this.treeView1.SelectedImageIndex = 0;
-            this.treeView1.Size = new System.Drawing.Size(252, 371);
+            this.treeView1.Size = new System.Drawing.Size(252, 369);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnAfterSelect);
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "StaticIcon");
+            this.imageList1.Images.SetKeyName(1, "LightIcon");
             // 
             // EditEntryTab
             // 
@@ -393,7 +402,7 @@ namespace Mafia2Tool
             this.EditEntryTab.Location = new System.Drawing.Point(4, 22);
             this.EditEntryTab.Name = "EditEntryTab";
             this.EditEntryTab.Padding = new System.Windows.Forms.Padding(3);
-            this.EditEntryTab.Size = new System.Drawing.Size(258, 377);
+            this.EditEntryTab.Size = new System.Drawing.Size(258, 375);
             this.EditEntryTab.TabIndex = 1;
             this.EditEntryTab.Text = "Edit Entry";
             this.EditEntryTab.UseVisualStyleBackColor = true;
@@ -604,21 +613,12 @@ namespace Mafia2Tool
             this.PositionXLabel.TabIndex = 0;
             this.PositionXLabel.Text = "Position X";
             // 
-            // FrameNameTableFlags
-            // 
-            this.FrameNameTableFlags.CheckOnClick = true;
-            this.FrameNameTableFlags.FormattingEnabled = true;
-            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
-            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
-            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
-            this.FrameNameTableFlags.TabIndex = 16;
-            // 
             // DebugPG
             // 
             this.DebugPG.Controls.Add(this.DebugPropertyGrid);
             this.DebugPG.Location = new System.Drawing.Point(4, 22);
             this.DebugPG.Name = "DebugPG";
-            this.DebugPG.Size = new System.Drawing.Size(258, 377);
+            this.DebugPG.Size = new System.Drawing.Size(258, 375);
             this.DebugPG.TabIndex = 2;
             this.DebugPG.Text = "Debug";
             this.DebugPG.UseVisualStyleBackColor = true;
@@ -628,7 +628,7 @@ namespace Mafia2Tool
             this.DebugPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.DebugPropertyGrid.Location = new System.Drawing.Point(0, 0);
             this.DebugPropertyGrid.Name = "DebugPropertyGrid";
-            this.DebugPropertyGrid.Size = new System.Drawing.Size(258, 377);
+            this.DebugPropertyGrid.Size = new System.Drawing.Size(258, 375);
             this.DebugPropertyGrid.TabIndex = 2;
             this.DebugPropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.OnPropertyChanged);
             // 
@@ -637,19 +637,21 @@ namespace Mafia2Tool
             this.RenderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RenderPanel.Location = new System.Drawing.Point(0, 0);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(530, 403);
+            this.RenderPanel.Size = new System.Drawing.Size(530, 401);
             this.RenderPanel.TabIndex = 0;
             // 
             // MeshBrowser
             // 
             this.MeshBrowser.Filter = "Meshes|*.m2t|FBX|*.fbx";
             // 
-            // imageList1
+            // FrameNameTableFlags
             // 
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "StaticIcon");
-            this.imageList1.Images.SetKeyName(1, "LightIcon");
+            this.FrameNameTableFlags.CheckOnClick = true;
+            this.FrameNameTableFlags.FormattingEnabled = true;
+            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
+            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
+            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
+            this.FrameNameTableFlags.TabIndex = 16;
             // 
             // D3DForm
             // 
@@ -660,7 +662,7 @@ namespace Mafia2Tool
             this.Controls.Add(this.StatusStrip);
             this.Controls.Add(this.ToolbarStrip);
             this.Name = "D3DForm";
-            this.Text = "TestForm";
+            this.Text = "Map Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
             this.ToolbarStrip.ResumeLayout(false);
             this.ToolbarStrip.PerformLayout();

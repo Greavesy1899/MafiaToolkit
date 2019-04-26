@@ -45,6 +45,7 @@ remove_file("ToolkitUpdater.pdb")
 remove_file("Octokit.pdb")
 remove_file("Octokit.xml")
 remove_file("Mafia2Toolkit.pdb")
+remove_file("ICSharpCode.SharpZipLib.xml")
 remove_file("Gibbed.IO.pdb");
 remove_file("SharpDX.D3DCompiler.pdb");
 remove_file("SharpDX.D3DCompiler.xml");

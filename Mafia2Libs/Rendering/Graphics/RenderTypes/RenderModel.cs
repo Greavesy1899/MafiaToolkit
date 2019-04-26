@@ -223,6 +223,23 @@ namespace Rendering.Graphics
 
                             part.Texture = texture;
                         }
+
+                        if (part.Material.Samplers.TryGetValue("S011", out sampler))
+                        {
+
+                            ShaderResourceView texture;
+
+                            if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(sampler.TextureHash, out texture))
+                            {
+                                if (!string.IsNullOrEmpty(sampler.File))
+                                {
+                                    texture = TextureLoader.LoadTexture(d3d, Path.Combine(ToolkitSettings.TexturePath, sampler.File));
+                                    RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
+                                }
+                            }
+
+                            part.Texture = texture;
+                        }
                     }
                     else
                     {
@@ -281,7 +298,6 @@ namespace Rendering.Graphics
             {
                 LODs[0].ModelParts[i].Shader.SetShaderParamters(device, deviceContext, LODs[0].ModelParts[i].Material);
                 LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera);
-                deviceContext.PixelShader.SetShaderResource(1, AOTexture);
                 LODs[0].ModelParts[i].Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(LODs[0].ModelParts[i].NumFaces * 3), LODs[0].ModelParts[i].StartIndex);
             }
         }

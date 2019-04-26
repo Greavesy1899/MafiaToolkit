@@ -176,7 +176,7 @@ namespace ResourceTypes.FrameResource
 
         public override string ToString()
         {
-            return string.Format("{0}", Name.String);
+            return string.Format("{0}", Name.ToString());
         }
 
         public class AttachmentReference

@@ -466,6 +466,7 @@ namespace Mafia2Tool
                     mTool = new MaterialTool((FileInfo)item.Tag);
                     return;
                 case "NAV":
+                case "NOV":
                     nav = new NAVData((FileInfo)item.Tag);
                     return;
                 case "Speech Data":
@@ -483,6 +484,7 @@ namespace Mafia2Tool
                 case "FR":
                     //fTool = new FrameResourceTool((FileInfo)item.Tag);
                     d3dForm = new D3DForm((FileInfo)item.Tag);
+                    d3dForm.Dispose();
                     return;
                 case "COL":
                     cTool = new CollisionEditor((FileInfo)item.Tag);

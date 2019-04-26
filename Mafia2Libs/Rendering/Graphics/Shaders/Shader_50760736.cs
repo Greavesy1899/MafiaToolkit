@@ -1,4 +1,6 @@
 ﻿using System.Runtime.InteropServices;
+using Mafia2;
+using Mafia2Tool;
 using ResourceTypes.Materials;
 using SharpDX;
 using SharpDX.D3DCompiler;
@@ -7,12 +9,12 @@ using Utils.Settings;
 
 namespace Rendering.Graphics
 {
-    class Shader_601151254 : BaseShader
+    class Shader_50760736 : BaseShader
     {
         [StructLayout(LayoutKind.Sequential)]
-        public struct Shader_601151254Params
+        public struct Shader_50760736Params
         {
-            public Vector4 C002_MaterialColor;
+            public Vector4 C005_EmissiveFacadeColorAndIntensity;
         }
 
         public VertexShader VertexShader { get; set; }
@@ -23,9 +25,9 @@ namespace Rendering.Graphics
         public Buffer ConstantCameraBuffer { get; set; }
         public Buffer ConstantShaderParamBuffer { get; set; }
         public SamplerState SamplerState { get; set; }
-        public Shader_601151254Params ShaderParams { get; private set; }
+        public Shader_50760736Params ShaderParams { get; private set; }
 
-        public Shader_601151254(Device device, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
+        public Shader_50760736(Device device, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
         {
             if (!Init(device, vsPath, psPath, vsEntryPoint, psEntryPoint))
                 throw new System.Exception("Failed to load Shader!");
@@ -98,7 +100,7 @@ namespace Rendering.Graphics
             var shaderParamDesc = new BufferDescription()
             {
                 Usage = ResourceUsage.Dynamic,
-                SizeInBytes = Utilities.SizeOf<Shader_601151254Params>(),
+                SizeInBytes = Utilities.SizeOf<Shader_50760736Params>(),
                 BindFlags = BindFlags.ConstantBuffer,
                 CpuAccessFlags = CpuAccessFlags.Write,
                 OptionFlags = ResourceOptionFlags.None,
@@ -187,16 +189,48 @@ namespace Rendering.Graphics
 
         public override void SetShaderParamters(Device device, DeviceContext deviceContext, Material material)
         {
-            Shader_601151254Params parameters = new Shader_601151254Params();
+            Shader_50760736Params parameters = new Shader_50760736Params();
 
-            if (material.Parameters.ContainsKey("C002"))
+            if (material.Parameters.ContainsKey("C005"))
             {
-                ShaderParameter param = material.Parameters["C002"];
-                parameters.C002_MaterialColor = new Vector4(param.Paramaters[0], param.Paramaters[1], param.Paramaters[2], param.Paramaters[3]);
+                ShaderParameter param = material.Parameters["C005"];
+                parameters.C005_EmissiveFacadeColorAndIntensity = new Vector4(param.Paramaters[0], param.Paramaters[1], param.Paramaters[2], param.Paramaters[3]);
             }
             else
             {
-                parameters.C002_MaterialColor = new Vector4(0f);
+                parameters.C005_EmissiveFacadeColorAndIntensity = new Vector4(0f);
+            }
+
+            if (material == null)
+            {
+                ShaderResourceView texture = RenderStorageSingleton.Instance.TextureCache[0];
+                deviceContext.PixelShader.SetShaderResource(0, texture);
+                ShaderParams = parameters;
+            }
+            else
+            {
+
+                ShaderParameterSampler sampler;
+                ShaderResourceView[] textures = new ShaderResourceView[2];
+                if (material.Samplers.TryGetValue("S000", out sampler))
+                {
+                    textures[0] = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
+                }
+                else
+                {
+                    textures[0] = RenderStorageSingleton.Instance.TextureCache[0];
+                }
+
+                if (material.Samplers.TryGetValue("S011", out sampler))
+                {
+                    textures[1] = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
+                }
+                else
+                {
+                    textures[1] = RenderStorageSingleton.Instance.TextureCache[0];
+                }
+
+                deviceContext.PixelShader.SetShaderResources(0, textures.Length, textures);
             }
 
             ShaderParams = parameters;

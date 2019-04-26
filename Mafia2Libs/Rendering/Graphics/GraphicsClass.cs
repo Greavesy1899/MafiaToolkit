@@ -55,6 +55,7 @@ namespace Rendering.Graphics
             PickingRayBBox.InitBuffers(D3D.Device);
             //this is backup!
             RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, Path.Combine(ToolkitSettings.TexturePath, "texture.dds")));
+            RenderStorageSingleton.Instance.TextureCache.Add(1, TextureLoader.LoadTexture(D3D.Device, Path.Combine(ToolkitSettings.TexturePath, "OM_3Bpatro_WALLSA.dds")));
             return true;
         }
 

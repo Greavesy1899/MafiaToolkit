@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using SharpDX;
+using Utils.Extensions;
 using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 
@@ -13,7 +14,7 @@ namespace ResourceTypes.Navigation
 
         int fileSize; //size - 4;
         uint unk01_flags; //possibly flags?
-        object data;
+        public object data;
 
 
 
@@ -37,12 +38,12 @@ namespace ResourceTypes.Navigation
             unk01_flags = reader.ReadUInt32();
 
             //file name seems to be earlier.
-            if(unk01_flags == 3604410608)
+            if (unk01_flags == 3604410608)
             {
                 data = new OBJData(reader);
             }
-            else if(unk01_flags == 1005)
-            {             
+            else if (unk01_flags == 1005)
+            {
                 data = new AIWorld(reader);
             }
             else
@@ -88,12 +89,12 @@ namespace ResourceTypes.Navigation
 
                 unk06 = reader.ReadByte();
 
-                if(unk06 != 1)
+                if (unk06 != 1)
                     throw new Exception("unk06 was not 1");
 
                 int unkCount = reader.ReadInt32();
                 segments = new AISegment[unkCount];
-                for(int i = 0; i != unkCount; i++)
+                for (int i = 0; i != unkCount; i++)
                 {
                     segments[i] = new AISegment(reader);
                 }
@@ -130,7 +131,7 @@ namespace ResourceTypes.Navigation
                     {
                         type = reader.ReadInt16();
 
-                        switch(type)
+                        switch (type)
                         {
                             case 4:
                                 type4Data = new Type4();
@@ -200,12 +201,39 @@ namespace ResourceTypes.Navigation
                         return string.Format("Chunk: {0}", type);
                     }
                 }
-            }         
+            }
         }
 
         public class OBJData
         {
+            public struct VertexStruct
+            {
+                public int unk7;
+                public Vector3 position;
+                public int unk0;
+                public float unk1;
+                public int unk2;
+                public short unk3;
+                public short unk4;
+                public int unk5;
+                public int unk6;
+            }
+
             string fileName;
+            int unk0;
+            byte unk1;
+            int unk2;
+            int unk3;
+            int unk4;
+            int vertSize;
+            int triSize;
+            int unk5;
+            public VertexStruct[] vertices;
+            int unk6;
+            int unk7;
+            short unk8;
+            short unk9;
+            public uint[] indices;
 
             public OBJData(BinaryReader reader)
             {
@@ -216,6 +244,50 @@ namespace ResourceTypes.Navigation
             {
                 int nameSize = reader.ReadInt32();
                 fileName = new string(reader.ReadChars(nameSize));
+                unk0 = reader.ReadInt32();
+                unk2 = reader.ReadInt32();
+                unk3 = reader.ReadInt32();
+                unk4 = reader.ReadInt32();
+                vertSize = reader.ReadInt32();
+                triSize = reader.ReadInt32();
+
+                vertices = new VertexStruct[vertSize];
+                for (int i = 0; i < vertSize; i++)
+                {
+                    VertexStruct vertex = new VertexStruct();
+                    vertex.unk7 = reader.ReadInt32();
+                    vertex.position = Vector3Extenders.ReadFromFile(reader);
+                    vertex.unk0 = reader.ReadInt32();
+                    vertex.unk1 = reader.ReadSingle();
+                    vertex.unk2 = reader.ReadInt32();
+                    vertex.unk3 = reader.ReadInt16();
+                    vertex.unk4 = reader.ReadInt16();
+                    vertex.unk5 = reader.ReadInt32();
+                    vertex.unk6 = reader.ReadInt32();
+                    vertices[i] = vertex;
+                }
+                //unk6 = reader.ReadInt32();
+                //unk7 = reader.ReadInt32();
+                //unk8 = reader.ReadInt16();
+                //unk9 = reader.ReadInt16();
+
+                int x = 2;
+                indices = new uint[(triSize-1) * 3];
+                for (int i = 0; i < (triSize-1)*3; i++)
+                {
+                    if (x == 0)
+                    {
+                        indices[i] = reader.ReadUInt32();
+                        x = 2;
+                    }
+                    else
+                    {
+                        indices[i] = (uint)reader.ReadInt24();
+                        reader.ReadByte();
+                        x--;
+                    }
+                }
+                //TODO::
             }
         }
     }

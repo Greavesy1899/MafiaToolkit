@@ -84,6 +84,7 @@ namespace Rendering.Graphics
 
         public override void Shutdown()
         {
+            vertices = null;
             vertexBuffer?.Dispose();
             vertexBuffer = null;
         }

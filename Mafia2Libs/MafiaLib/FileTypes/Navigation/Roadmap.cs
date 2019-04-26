@@ -19,7 +19,7 @@ namespace ResourceTypes.Navigation
     public struct SplineDefintion
     {
         //12 bytes max!
-        public int offset;
+        public uint offset;
         public byte unk0; //knowing 2k, just 128.
         public short NumSplines1; //should be equal to unk2
         public short NumSplines2;
@@ -40,10 +40,10 @@ namespace ResourceTypes.Navigation
     {
         public ushort unk0;
         public ushort unk1;
-        public int offset0;
+        public uint offset0;
         public ushort laneSize0;
         public ushort laneSize1;
-        public int offset1;
+        public uint offset1;
         public ushort rangeSize0;
         public ushort rangeSize1;
         public int unk6;
@@ -62,7 +62,7 @@ namespace ResourceTypes.Navigation
         public float unk01;
         public ushort unk02;
         public ushort unk03;
-        public int unk04;
+        public uint unk04;
         public ushort unk05;
         public ushort unk06;
         public unkStruct1Sect1[] children; //SOMETIMES this is the case.
@@ -82,6 +82,7 @@ namespace ResourceTypes.Navigation
         public short unk04;
         public float unk05;
 
+
         public override string ToString()
         {
             return string.Format("{0} {1} {2} {3} {4}", unk01, unk02, unk03, unk04, unk05);
@@ -91,14 +92,14 @@ namespace ResourceTypes.Navigation
     public struct JunctionDefinition
     {
         public Vector3 position;
-        public int offset0;
+        public uint offset0;
         public short junctionSize0;
         public short junctionSize1;
-        public int offset1;
+        public uint offset1;
         public short boundarySize0;
         public short boundarySize1;
         public int junctionIdx;
-        public int offset2;
+        public uint offset2;
         public short unk5;
         public short unk6;
         public Vector3[] boundaries; //lines, not a box.
@@ -119,7 +120,7 @@ namespace ResourceTypes.Navigation
         public short unk3;
         public short unk4;
         public short unk5;
-        public int unk6;
+        public uint offset0;
         public short pathSize0;
         public short pathSize1;
         public float catmullMod;
@@ -128,24 +129,26 @@ namespace ResourceTypes.Navigation
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}", unk0, unk1, unk2, unk3, unk4, unk5, unk4, unk6, unk5, pathSize0, pathSize1, catmullMod);
+            return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}", unk0, unk1, unk2, unk3, unk4, unk5, unk4, offset0, unk5, pathSize0, pathSize1, catmullMod);
         }
     }
 
     public struct unkStruct2Sect2
     {
         public int unk0;
-        public int offset0;
+        public uint offset0;
         public short unk1;
         public short unk2;
         public int unk3;
-        public int offset1;
+        public uint offset1;
         public short unk4;
         public short unk5;
         public short unk6;
         public short unk7;
         public short unk8;
         public short unk9;
+        public int unk10_0;
+        public int unk10_1;
         public byte[] unk3Bytes;
     }
 
@@ -162,6 +165,21 @@ namespace ResourceTypes.Navigation
 
     public class Roadmap
     {
+        public int magic;
+        public ushort splineCount;
+        public uint splineOffset;
+        public ushort splinePropertiesCount;
+        public uint splinePropertiesOffset;
+        public ushort junctionPropertiesCount;
+        public uint junctionPropertiesOffset;
+        public ushort unkDataSet3Count;
+        public uint unkDataSet3Offset;
+        public ushort unkDataSet4Count;
+        public uint unkDataSet4Offset;
+        public ushort unkDataSet5Count;
+        public uint unkDataSet5Offset;
+        public ushort unkDataSet6Count;
+
         public SplineDefintion[] data1;
         public Spline[] data2;
         public SplineProperties[] data3;
@@ -177,42 +195,46 @@ namespace ResourceTypes.Navigation
             {
                 ReadFromFile(reader);
             }
+            using (BinaryWriter writer = new BinaryWriter(File.Open(info.FullName + "_dupe", FileMode.Create)))
+            {
+                WriteToFile(writer);
+            }
         }
 
         public void ReadFromFile(BinaryReader reader)
         {
-            int magic = reader.ReadInt32();
-            short splineCount1 = reader.ReadInt16();
+            magic = reader.ReadInt32();
+            splineCount = reader.ReadUInt16();
             short splineCount2 = reader.ReadInt16();
-            int splineFinishOffset = reader.ReadInt24();
+            splineOffset = reader.ReadInt24();
             reader.ReadByte();
-            short splinePropertiesCount1 = reader.ReadInt16();
+            splinePropertiesCount = reader.ReadUInt16();
             short splinePropertiesCount2 = reader.ReadInt16();
-            int splinePropertiesOffset = reader.ReadInt24();
+            splinePropertiesOffset = reader.ReadInt24();
             reader.ReadByte();
-            short junctionPropertiesCount1 = reader.ReadInt16();
+            junctionPropertiesCount = reader.ReadUInt16();
             short junctionPropertiesCount2 = reader.ReadInt16();
-            int junctionPropertiesOffset = reader.ReadInt24();
+            junctionPropertiesOffset = reader.ReadInt24();
             reader.ReadByte();
-            short unkDataSet3Count1 = reader.ReadInt16();
+            unkDataSet3Count = reader.ReadUInt16();
             short unkDataSet3Count2 = reader.ReadInt16();
-            int unkDataSet3Offset = reader.ReadInt24();
+            unkDataSet3Offset = reader.ReadInt24();
             reader.ReadByte();
-            short unkDataSet4Count1 = reader.ReadInt16();
+            unkDataSet4Count = reader.ReadUInt16();
             short unkDataSet4Count2 = reader.ReadInt16();
-            int unkDataSet4Offset = reader.ReadInt24();
+            unkDataSet4Offset = reader.ReadInt24();
             reader.ReadByte();
-            short unkDataSet5Count1 = reader.ReadInt16();
+            unkDataSet5Count = reader.ReadUInt16();
             short unkDataSet5Count2 = reader.ReadInt16();
-            int unkDataSet5Offset = reader.ReadInt24();
+            unkDataSet5Offset = reader.ReadInt24();
             reader.ReadByte();
-            short unkDataSet6Count1 = reader.ReadInt16();
+            unkDataSet6Count = reader.ReadUInt16();
             short unkDataSet6Count2 = reader.ReadInt16();
 
             int count1 = reader.ReadInt32();
-            data1 = new SplineDefintion[splineCount1];
+            data1 = new SplineDefintion[splineCount];
 
-            for (int i = 0; i != splineCount1; i++)
+            for (int i = 0; i != splineCount; i++)
             {
                 SplineDefintion data = new SplineDefintion();
                 data.offset = reader.ReadInt24();
@@ -223,9 +245,9 @@ namespace ResourceTypes.Navigation
                 data1[i] = data;
             }
 
-            data2 = new Spline[splineCount1];
+            data2 = new Spline[splineCount];
 
-            for (int i = 0; i != splineCount1; i++)
+            for (int i = 0; i != splineCount; i++)
             {
                 Spline splineData = new Spline();
                 splineData.points = new Vector3[data1[i].NumSplines1];
@@ -237,7 +259,7 @@ namespace ResourceTypes.Navigation
                 data2[i] = splineData;
             }
 
-            data3 = new SplineProperties[splinePropertiesCount1];
+            data3 = new SplineProperties[splinePropertiesCount];
 
             for (int i = 0; i != data3.Length; i++)
             {
@@ -256,11 +278,8 @@ namespace ResourceTypes.Navigation
                 data3[i] = data;
             }
 
-            for (int i = 0; i != splinePropertiesCount1; i++)
+            for (int i = 0; i != splinePropertiesCount; i++)
             {
-                if (i == 666)
-                    Console.WriteLine("stop");
-
                 SplineProperties data = data3[i];
                 data.lanes = new unkStruct1Sect1[data.laneSize1];
 
@@ -321,8 +340,8 @@ namespace ResourceTypes.Navigation
                 data3[i] = data;
             }
 
-            data4 = new JunctionDefinition[junctionPropertiesCount1];
-            for (int i = 0; i != junctionPropertiesCount1; i++)
+            data4 = new JunctionDefinition[junctionPropertiesCount];
+            for (int i = 0; i != junctionPropertiesCount; i++)
             {
                 JunctionDefinition data = new JunctionDefinition();
                 data.position = Vector3Extenders.ReadFromFile(reader);
@@ -342,11 +361,8 @@ namespace ResourceTypes.Navigation
                 data4[i] = data;
             }
 
-            for (int i = 0; i != junctionPropertiesCount1; i++)
+            for (int i = 0; i != junctionPropertiesCount; i++)
             {
-                if (i == 140)
-                    Console.WriteLine("stop right thre!");
-
                 data4[i].splines = new JunctionSpline[data4[i].junctionSize0];
 
                 for (int y = 0; y != data4[i].junctionSize0; y++)
@@ -358,12 +374,11 @@ namespace ResourceTypes.Navigation
                     data4Sect.unk3 = reader.ReadInt16();
                     data4Sect.unk4 = reader.ReadInt16();
                     data4Sect.unk5 = reader.ReadInt16();
-                    data4Sect.unk6 = reader.ReadInt24();
+                    data4Sect.offset0 = reader.ReadInt24();
                     reader.ReadByte();
                     data4Sect.pathSize0 = reader.ReadInt16();
                     data4Sect.pathSize1 = reader.ReadInt16();
                     data4Sect.catmullMod = reader.ReadSingle();
-                    Console.WriteLine(data4Sect.ToString());
                     data4[i].splines[y] = data4Sect;
                 }
                 for (int y = 0; y != data4[i].junctionSize0; y++)
@@ -382,7 +397,7 @@ namespace ResourceTypes.Navigation
                     data4[i].boundaries[y] = Vector3Extenders.ReadFromFile(reader);
                 }
 
-                if(data4[i].unk5 >= 2)
+                if (data4[i].unk5 >= 2)
                 {
                     data4[i].dataSet2 = new unkStruct2Sect2();
                     data4[i].dataSet2.unk0 = reader.ReadInt32();
@@ -404,12 +419,13 @@ namespace ResourceTypes.Navigation
                     {
                         if (data4[i].dataSet2.unk1 == 4)
                         {
-                            reader.ReadInt32();
+                            data4[i].dataSet2.unk10_0 = reader.ReadInt32();
+                            data4[i].dataSet2.unk10_1 = -1;
                         }
                         else
                         {
-                            reader.ReadInt32();
-                            reader.ReadInt32();
+                            data4[i].dataSet2.unk10_0 = reader.ReadInt32();
+                            data4[i].dataSet2.unk10_1 = reader.ReadInt32();
                         }
                     }
 
@@ -423,25 +439,256 @@ namespace ResourceTypes.Navigation
                 //    break; //Console.WriteLine("POSSIBLE ERROR AT " + i);
             }
 
-            unkSet3 = new ushort[unkDataSet3Count1];
-            unkSet4 = new unkStruct3[unkDataSet4Count1];
-            unkSet5 = new ushort[unkDataSet5Count1];
-            unkSet6 = new ushort[unkDataSet6Count1];
+            unkSet3 = new ushort[unkDataSet3Count];
+            unkSet4 = new unkStruct3[unkDataSet4Count];
+            unkSet5 = new ushort[unkDataSet5Count];
+            unkSet6 = new ushort[unkDataSet6Count];
 
-            for(int i = 0; i < unkDataSet3Count1; i++)
+            //related to junctions.
+            for (int i = 0; i < unkDataSet3Count; i++)
                 unkSet3[i] = reader.ReadUInt16();
 
-            for (int i = 0; i < unkDataSet4Count1; i++)
+            for (int i = 0; i < unkDataSet4Count; i++)
             {
                 unkSet4[i].unk0 = reader.ReadUInt16();
                 unkSet4[i].unk1 = reader.ReadUInt16();
             }
 
-            for (int i = 0; i < unkDataSet5Count1; i++)
+            for (int i = 0; i < unkDataSet5Count; i++)
                 unkSet5[i] = reader.ReadUInt16();
 
-            for (int i = 0; i < unkDataSet6Count1; i++)
+            for (int i = 0; i < unkDataSet6Count; i++)
                 unkSet6[i] = reader.ReadUInt16();
+
+            int highest = -1;
+
+            for (int i = 0; i < unkDataSet3Count; i++)
+            {
+                if (unkSet3[i] > highest)
+                    highest = unkSet3[i];
+            }
+
+            int highestp1 = -1;
+            int highestp2 = -1;
+            int idxp2 = -1;
+
+            for (int i = 0; i < unkDataSet4Count; i++)
+            {
+                if (unkSet4[i].unk0 > highestp1)
+                    highestp1 = unkSet4[i].unk0;
+
+                if (unkSet4[i].unk1 > highestp2)
+                {
+                    highestp2 = unkSet4[i].unk1;
+                    idxp2 = i;
+                }
+            }
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(magic);
+            writer.Write(splineCount);
+            writer.Write(splineCount);
+            writer.WriteInt24(splineOffset);
+            writer.Write(splinePropertiesCount);
+            writer.Write(splinePropertiesCount);
+            writer.WriteInt24(splinePropertiesOffset);
+            writer.Write(junctionPropertiesCount);
+            writer.Write(junctionPropertiesCount);
+            writer.WriteInt24(junctionPropertiesOffset);
+            writer.Write(unkDataSet3Count);
+            writer.Write(unkDataSet3Count);
+            writer.WriteInt24(unkDataSet3Offset);
+            writer.Write(unkDataSet4Count);
+            writer.Write(unkDataSet4Count);
+            writer.WriteInt24(unkDataSet4Offset);
+            writer.Write(unkDataSet5Count);
+            writer.Write(unkDataSet5Count);
+            writer.WriteInt24(unkDataSet5Offset);
+            writer.Write(unkDataSet6Count);
+            writer.Write(unkDataSet6Count);
+            writer.Write((int)unkDataSet3Count);
+
+            for (int i = 0; i < splineCount; i++)
+            {
+                SplineDefintion data = data1[i];
+                writer.WriteInt24(data.offset);
+                writer.Write(data.NumSplines1);
+                writer.Write(data.NumSplines2);
+                writer.Write(data.unk3);
+            }
+
+            for (int i = 0; i < splineCount; i++)
+            {
+                Spline splineData = data2[i];
+
+                for (int y = 0; y != splineData.points.Length; y++)
+                    Vector3Extenders.WriteToFile(splineData.points[y], writer);
+            }
+
+            for (int i = 0; i != data3.Length; i++)
+            {
+                SplineProperties data = data3[i];
+                writer.Write(data.unk0);
+                writer.Write(data.unk1);
+                writer.WriteInt24(data.offset0);
+                writer.Write(data.laneSize0);
+                writer.Write(data.laneSize1);
+                writer.WriteInt24(data.offset1);
+                writer.Write(data.rangeSize0);
+                writer.Write(data.rangeSize1);
+                writer.Write(data.unk6);
+            }
+
+            for (int i = 0; i < splinePropertiesCount; i++)
+            {
+                SplineProperties data = data3[i];
+
+                for (int y = 0; y < data.laneSize1; y++)
+                {
+                    unkStruct1Sect1 sect = data3[i].lanes[y];
+                    writer.Write(sect.unk01);
+                    writer.Write(sect.unk02);
+                    writer.Write(sect.unk03);
+                    writer.WriteInt24(sect.unk04);
+                    writer.Write(sect.unk05);
+                    writer.Write(sect.unk06);
+
+                    for (int x = 0; x < sect.unk05; x++)
+                    {
+                        unkStruct1Sect1 child = sect.children[x];
+                        writer.Write(child.unk01);
+                        writer.Write(child.unk02);
+                        writer.Write(child.unk03);
+                        writer.WriteInt24(child.unk04);
+                        writer.Write(child.unk05);
+                        writer.Write(child.unk06);
+
+                        for (int z = 0; z < child.unk05; z++)
+                        {
+                            unkStruct1Sect1 child2 = child.children[z];
+                            writer.Write(child2.unk01);
+                            writer.Write(child2.unk02);
+                            writer.Write(child2.unk03);
+                            writer.WriteInt24(child2.unk04);
+                            writer.Write(child2.unk05);
+                            writer.Write(child2.unk06);
+                        }
+                    }
+                }
+
+                for (int y = 0; y < data.rangeSize0; y++)
+                {
+                    unkStruct1Sect2 sect = data.ranges[y];
+                    writer.Write(sect.unk01);
+                    writer.Write(sect.unk02);
+                    writer.Write(sect.unk03);
+                    writer.Write(sect.unk04);
+                    writer.Write(sect.unk05);
+                }
+            }
+
+            for (int i = 0; i < junctionPropertiesCount; i++)
+            {
+                JunctionDefinition data = data4[i];
+                Vector3Extenders.WriteToFile(data.position, writer);
+                writer.WriteInt24(data.offset0);
+                writer.Write(data.junctionSize0);
+                writer.Write(data.junctionSize1);
+                writer.WriteInt24(data.offset1);
+                writer.Write(data.boundarySize0);
+                writer.Write(data.boundarySize1);
+                writer.Write(data.junctionIdx);
+                writer.WriteInt24(data.offset2);
+                writer.Write(data.unk5);
+                writer.Write(data.unk6);
+            }
+
+            for (int i = 0; i < junctionPropertiesCount; i++)
+            {
+                for (int y = 0; y < data4[i].junctionSize0; y++)
+                {
+                    JunctionSpline data4Sect = data4[i].splines[y];
+                    writer.Write(data4Sect.unk0);
+                    writer.Write(data4Sect.unk1);
+                    writer.Write(data4Sect.unk2);
+                    writer.Write(data4Sect.unk3);
+                    writer.Write(data4Sect.unk4);
+                    writer.Write(data4Sect.unk5);
+                    writer.WriteInt24(data4Sect.offset0);
+                    writer.Write(data4Sect.pathSize0);
+                    writer.Write(data4Sect.pathSize1);
+                    writer.Write(data4Sect.catmullMod);
+                }
+                for (int y = 0; y < data4[i].junctionSize0; y++)
+                {
+                    for (int z = 0; z != data4[i].splines[y].pathSize1; z++)
+                    {
+                        Vector3Extenders.WriteToFile(data4[i].splines[y].path[z], writer);
+                    }
+                }
+
+                for (int y = 0; y < data4[i].boundarySize0; y++)
+                {
+                    Vector3Extenders.WriteToFile(data4[i].boundaries[y], writer);
+                }
+
+                if (data4[i].unk5 >= 2)
+                {
+                    unkStruct2Sect2 data = data4[i].dataSet2;
+
+                    writer.Write(data.unk0);
+                    writer.WriteInt24(data.offset0);
+                    writer.Write(data.unk1);
+                    writer.Write(data.unk2);
+                    writer.Write(data.unk3);
+                    writer.WriteInt24(data.offset1);
+                    writer.Write(data.unk4);
+                    writer.Write(data.unk5);
+                    writer.Write(data.unk6);
+                    writer.Write(data.unk7);
+                    writer.Write(data.unk8);
+                    writer.Write(data.unk9);
+
+                    if (data.unk1 > 2 && data.unk2 > 2)
+                    {
+                        if (data.unk1 == 4)
+                        {
+                            writer.Write(data.unk10_0);
+                        }
+                        else
+                        {
+                            writer.Write(data.unk10_0);
+                            writer.Write(data.unk10_1);
+                        }
+                    }
+
+
+                    if (data4[i].unk5 == 3)
+                        writer.Write(data.unk3Bytes);
+                }
+                //6 5 2
+
+                //if (reader.BaseStream.Position != data4[i + 1].offset0 - 4)
+                //    break; //Console.WriteLine("POSSIBLE ERROR AT " + i);
+            }
+
+            //related to junctions.
+            for (int i = 0; i < unkDataSet3Count; i++)
+                writer.Write(unkSet3[i]);
+
+            for (int i = 0; i < unkDataSet4Count; i++)
+            {
+                writer.Write(unkSet4[i].unk0);
+                writer.Write(unkSet4[i].unk1);
+            }
+
+            for (int i = 0; i < unkDataSet5Count; i++)
+                writer.Write(unkSet5[i]);
+
+            for (int i = 0; i < unkDataSet6Count; i++)
+                writer.Write(unkSet6[i]);
         }
     }
 }

@@ -30,7 +30,24 @@ namespace Rendering.Graphics
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, Vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, Indices);
             Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
-            BoundingBox.InitBuffers(d3d);
+
+            //BoundingBox.InitBuffers(d3d);
+        }
+
+        //TEMP
+        public void ConvertNavOBJDataToRender(ResourceTypes.Navigation.NAVData.OBJData data)
+        {
+            SetTransform(new Vector3(), new Matrix33());
+            Indices = data.indices;
+            numTriangles = (uint)(data.indices.Length);
+            Vertices = new VertexLayouts.BasicLayout.Vertex[data.vertices.Length];
+            for (int i = 0; i < data.vertices.Length; i++)
+            {
+                VertexLayouts.BasicLayout.Vertex vertex = new VertexLayouts.BasicLayout.Vertex();
+                vertex.Position = data.vertices[i].position;
+                vertex.Colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+                Vertices[i] = vertex;
+            }
         }
 
         public void ConvertCollisionToRender(Placement placement, MeshData data)
@@ -134,6 +151,7 @@ namespace Rendering.Graphics
         {
             Indices = null;
             Vertices = null;
+            materials = null;
             BoundingBox.Shutdown();
             BoundingBox.Shutdown();
             vertexBuffer?.Dispose();

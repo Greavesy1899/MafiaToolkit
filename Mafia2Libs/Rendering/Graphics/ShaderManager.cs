@@ -14,6 +14,7 @@ namespace Rendering.Graphics
             shaders.Add(0, new DefaultShader(device, "LightPS.hlsl", "LightVS.hlsl", "LightVertexShader", "LightPixelShader"));
             shaders.Add(1, new DebugShader(device, "DebugPS.hlsl", "DebugVS.hlsl", "DebugVertexShader", "DebugPixelShader"));
             shaders.Add(601151254, new Shader_601151254(device, "LightPS.hlsl", "LightVS.hlsl", "LightVertexShader", "PS_601151254"));
+            shaders.Add(50760736, new Shader_50760736(device, "LightPS.hlsl", "LightVS.hlsl", "LightVertexShader", "PS_50760736"));
             return true;
         }
 

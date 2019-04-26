@@ -124,6 +124,8 @@ namespace Rendering.Graphics
 
         public override void Shutdown()
         {
+            vertices = null;
+            indices = null;
             indexBuffer?.Dispose();
             indexBuffer = null;
             vertexBuffer?.Dispose();

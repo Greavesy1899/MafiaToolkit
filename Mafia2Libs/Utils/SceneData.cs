@@ -34,6 +34,8 @@ namespace Mafia2Tool
         public static CityShops CityShops;
         public static Roadmap roadMap;
         public static AnimalTrafficLoader ATLoader;
+        public static NAVData[] AIWorlds;
+        public static NAVData[] OBJData;
         public static string ScenePath;
 
         public static void BuildData()
@@ -42,6 +44,8 @@ namespace Mafia2Tool
             List<FileInfo> ibps = new List<FileInfo>();
             List<ItemDescLoader> ids = new List<ItemDescLoader>();
             List<Actor> act = new List<Actor>();
+            List<NAVData> aiw = new List<NAVData>();
+            List<NAVData> obj = new List<NAVData>();
 
             DirectoryInfo dirInfo = new DirectoryInfo(ScenePath);
 
@@ -77,15 +81,15 @@ namespace Mafia2Tool
                     ATLoader = new AnimalTrafficLoader(new FileInfo(name));
                 else if (nodes.Current.Value == "roadmap.gsd")
                     roadMap = new Roadmap(new FileInfo(name));
+                else if (type == "NAV_OBJ_DATA")
+                    obj.Add(new NAVData(new FileInfo(name)));
             }
 
             IndexBufferPool = new IndexBufferManager(ibps);
             VertexBufferPool = new VertexBufferManager(vbps);
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
-
-            for (int i = 0; i != ItemDescs.Length; i++)
-                ItemDescs[i].WriteToEDC();
+            OBJData = obj.ToArray();
 
             if (Actors == null)
                 return;

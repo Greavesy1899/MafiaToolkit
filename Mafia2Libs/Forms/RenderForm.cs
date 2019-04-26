@@ -354,16 +354,16 @@ namespace Mafia2Tool
                 }
             }
 
-            if(SceneData.Collisions != null)
-            {
-                for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
-                {
-                    ResourceTypes.Collisions.Collision.Placement placement = SceneData.Collisions.Placements[i];
-                    RenderStaticCollision collision = new RenderStaticCollision();
-                    collision.ConvertCollisionToRender(placement, SceneData.Collisions.NXSData[placement.Hash].Data);
-                    assets.Add((int)placement.Hash + i, collision);
-                }
-            }
+            //if(SceneData.Collisions != null)
+            //{
+            //    for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
+            //    {
+            //        ResourceTypes.Collisions.Collision.Placement placement = SceneData.Collisions.Placements[i];
+            //        RenderStaticCollision collision = new RenderStaticCollision();
+            //        collision.ConvertCollisionToRender(placement, SceneData.Collisions.NXSData[placement.Hash].Data);
+            //        assets.Add((int)placement.Hash + i, collision);
+            //    }
+            //}
             if (SceneData.ATLoader != null)
             {
                 for(int i = 0; i != SceneData.ATLoader.paths.Length; i++)
@@ -380,12 +380,26 @@ namespace Mafia2Tool
 
                     for(int x = 0; x < path.vectors.Length; x++)
                         points.Add(path.vectors[x].vectors[0]);
-
+                    line.SetColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
                     line.Init(points.ToArray());
                     assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
                     assets.Add(StringHelpers.RandomGenerator.Next(), line);
                 }
             }
+
+            //for(int i = 0; i != SceneData.OBJData.Length; i++)
+            //{
+            //    ResourceTypes.Navigation.NAVData.OBJData objData = (SceneData.OBJData[i].data as ResourceTypes.Navigation.NAVData.OBJData);
+            //    RenderLine line = new RenderLine();
+            //    line.SetTransform(new Vector3(0.0f), new Matrix33());
+            //    List<Vector3> points = new List<Vector3>();
+
+            //    for (int x = 0; x < objData.vertices.Length; x++)
+            //        points.Add(objData.vertices[x].position);
+            //    line.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+            //    line.Init(points.ToArray());
+            //    assets.Add(StringHelpers.RandomGenerator.Next(), line);
+            //}
             Graphics.InitObjectStack = assets;
         }
 

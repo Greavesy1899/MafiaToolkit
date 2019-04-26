@@ -368,22 +368,23 @@ namespace Utils.Extensions
 
     public static class BinaryReaderExtender
     {
-        public static int ReadInt24(this BinaryReader reader)
+        public static uint ReadInt24(this BinaryReader reader)
         {
             byte[] bytes = reader.ReadBytes(3);
             int value = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16);
-            return value;
+            return (uint)value;
         }
     }
 
     public static class BinaryWriterExtender
     {
-        public static void WriteInt24(this BinaryWriter writer, int value)
+        public static void WriteInt24(this BinaryWriter writer, uint value)
         {
-            byte[] bytes = new byte[3];
+            byte[] bytes = new byte[4];
             bytes[0] = (byte)(value & 0xFF);
             bytes[1] = (byte)(value >> 8);
             bytes[2] = (byte)(value >> 16);
+            bytes[3] = (byte)(value >= 128 ? 0x80 : 0); //not sure this is correct..
             writer.Write(bytes);
         }
     }

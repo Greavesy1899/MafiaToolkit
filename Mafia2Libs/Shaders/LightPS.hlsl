@@ -1,7 +1,7 @@
 ﻿//////////////////////
 ////   GLOBALS
 //////////////////////
-Texture2D textures[2];
+Texture2D textures[3];
 SamplerState SampleType;
 
 cbuffer LightBuffer
@@ -21,6 +21,11 @@ cbuffer ShaderParams
 cbuffer Shader_601151254Params
 {
     float4 C002MaterialColour;
+};
+
+cbuffer Shader_50760736Params
+{
+	float4 C005_EmissiveFacadeColorAndIntensity;
 };
 
 //////////////////////
@@ -83,7 +88,7 @@ float4 LightPixelShader(VS_OUTPUT input) : SV_TARGET
 	float4 aoTextureColor;
 
     diffuseTextureColor = textures[0].Sample(SampleType, input.TexCoord0);
-    aoTextureColor = textures[1].Sample(SampleType, input.TexCoord7);
+    //aoTextureColor = textures[1].Sample(SampleType, input.TexCoord7);
 
     color = CalculateColor(input, color);
 	color = color * diffuseTextureColor;
@@ -99,4 +104,18 @@ float4 PS_601151254(VS_OUTPUT input) : SV_TARGET
     color = color * C002MaterialColour;
 
     return color;
+}
+
+float4 PS_50760736(VS_OUTPUT input) : SV_TARGET
+{
+	float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float4 diffuseTextureColor;
+	float4 emissiveTextureColor;
+
+	diffuseTextureColor = textures[0].Sample(SampleType, input.TexCoord0);
+	emissiveTextureColor = (textures[1].Sample(SampleType, input.TexCoord0)* C005_EmissiveFacadeColorAndIntensity);
+	color = CalculateColor(input, color);
+	color = color * (diffuseTextureColor + emissiveTextureColor);
+
+	return color;
 }

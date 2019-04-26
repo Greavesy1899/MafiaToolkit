@@ -344,6 +344,7 @@ namespace ResourceTypes.Actors
                 scale = Vector3Extenders.ReadFromFile(reader);
                 unk3 = reader.ReadUInt16();
                 propID = reader.ReadUInt16();
+                Console.WriteLine("{0} {1}", unkString, (ActorTypes)actortype);
             }
 
             public void WriteToFile(BinaryWriter writer)
