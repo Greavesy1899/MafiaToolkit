@@ -1,11 +1,6 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Utils.Types;
 using Buffer = SharpDX.Direct3D11.Buffer;
 
@@ -14,7 +9,9 @@ namespace Rendering.Graphics
     public class Render2DPlane : IRenderer
     {
         private VertexLayouts.BasicLayout.Vertex[] vertices;
+        private ushort[] indices;
         private Vector4 colour;
+        private RenderLine[] dirLines;
 
         public Render2DPlane()
         {
@@ -24,16 +21,83 @@ namespace Rendering.Graphics
             colour = new Vector4(1.0f);
         }
 
-        public void Init(Vector3[] points)
+        public void Init(Vector3[] points, ResourceTypes.Navigation.SplineProperties properties)
         {
-            vertices = new VertexLayouts.BasicLayout.Vertex[points.Length];
-
-            for (int i = 0; i != vertices.Length; i++)
+            Transform = Matrix.Identity;
+            if(properties.laneSize0 > 0)
             {
-                VertexLayouts.BasicLayout.Vertex vertex = new VertexLayouts.BasicLayout.Vertex();
-                vertex.Position = points[i];
-                vertex.Colour = colour;
-                vertices[i] = vertex;
+                vertices = new VertexLayouts.BasicLayout.Vertex[points.Length * 2];
+                dirLines = new RenderLine[points.Length];
+                indices = new ushort[(vertices.Length - 2) * 3];
+                int idx = 0;
+                for(int i = 0; i < points.Length; i++)
+                {
+                    vertices[idx] = new VertexLayouts.BasicLayout.Vertex();
+                    vertices[idx].Position = points[i];
+                    vertices[idx].Colour = colour;
+                    Vector2 forward = Vector2.Zero;
+
+                    if (i < points.Length - 1)
+                    {
+                        forward += new Vector2(points[i + 1].X, points[i + 1].Y) - new Vector2(points[i].X, points[i].Y);
+                    }
+                    if (i > 0)
+                    {
+                        forward += new Vector2(points[i].X, points[i].Y) - new Vector2(points[i-1].X, points[i-1].Y);
+                    }
+
+                    forward.Normalize();
+                    Vector3 left = new Vector3(-forward.Y, forward.X, points[i].Z);
+                    idx++;
+                    vertices[idx] = new VertexLayouts.BasicLayout.Vertex();
+
+                    float x = 0.0f;
+                    float y = 0.0f;
+
+                    if(properties.unk2 >= 4096)
+                    {
+                        x = (points[i].X + left.X * properties.lanes[0].unk01);
+                        y = (points[i].Y + left.Y * properties.lanes[0].unk01);
+                    }
+                    else
+                    {
+                        x = (points[i].X - left.X * properties.lanes[0].unk01);
+                        y = (points[i].Y - left.Y * properties.lanes[0].unk01);
+                    }
+
+                    vertices[idx].Position = new Vector3(x, y, points[i].Z);
+                    vertices[idx].Colour = colour;
+
+                    RenderLine line = new RenderLine();
+                    line.SetColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+                    line.Init(new Vector3[2] { vertices[idx - 1].Position, vertices[idx].Position });
+                    dirLines[i] = line;
+                    idx++;
+                }
+
+                ushort sIdx = 0;
+                int indIdx = 0;
+                bool switcheroo = false;
+                while(indIdx < indices.Length)
+                {
+                    if(switcheroo == false)
+                    {
+                        indices[indIdx] = sIdx++;
+                        indices[indIdx+1] = sIdx++;
+                        indices[indIdx+2] = sIdx++;
+                        switcheroo = true;
+                    }
+                    else
+                    {
+                        indices[indIdx] = sIdx--;
+                        indices[indIdx+1] = sIdx--;
+                        indices[indIdx+2] = sIdx--;
+
+                        switcheroo = false;
+                    }
+                    sIdx = (ushort)(indices[indIdx + 2] + 1);
+                    indIdx +=3;
+                }
             }
         }
 
@@ -45,6 +109,10 @@ namespace Rendering.Graphics
         public override void InitBuffers(Device d3d)
         {
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices);
+            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices);
+
+            for(int i = 0; i != dirLines.Length; i++)
+                dirLines[i].InitBuffers(d3d);
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
@@ -53,10 +121,14 @@ namespace Rendering.Graphics
                 return;
 
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0));
-            deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineStrip;
+            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
+            deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
             shader.SetSceneVariables(deviceContext, Transform, camera);
-            shader.Render(deviceContext, PrimitiveTopology.LineStrip, vertices.Length, 0);
+            shader.Render(deviceContext, PrimitiveTopology.TriangleList, indices.Length, 0);
+
+            for (int i = 0; i != dirLines.Length; i++)
+                dirLines[i].Render(device, deviceContext, camera, light);
         }
 
         public override void SetTransform(Vector3 position, Matrix33 rotation)
@@ -85,6 +157,9 @@ namespace Rendering.Graphics
         public override void Shutdown()
         {
             vertices = null;
+            indices = null;
+            indexBuffer?.Dispose();
+            indexBuffer = null;
             vertexBuffer?.Dispose();
             vertexBuffer = null;
         }

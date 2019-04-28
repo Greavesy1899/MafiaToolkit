@@ -279,7 +279,7 @@ namespace Mafia2
             args += ("\"" + path + name + ".fbx\"");
             ProcessStartInfo processStartInfo = new ProcessStartInfo("M2FBX.exe", args)
             {
-                CreateNoWindow = true,
+                CreateNoWindow = false,
                 UseShellExecute = false
             };
             Process FbxTool = Process.Start(processStartInfo);

@@ -11,6 +11,7 @@ using SharpDX;
 using Utils.Lang;
 using Utils.Settings;
 using Utils.Types;
+using static Mafia2.M2TStructure;
 using Collision = ResourceTypes.Collisions.Collision;
 
 namespace Mafia2Tool
@@ -67,52 +68,37 @@ namespace Mafia2Tool
                 node.Tag = nxsData;
                 node.Name = nxsData.Hash.ToString();
 
+                M2TStructure model = new M2TStructure();
+                model.Lods = new Lod[1];
+                model.Lods[0] = new Lod();
 
-                //M2TStructure model = new M2TStructure();
-                //model.Lods = new Lod[1];
-                //model.Lods[0] = new Lod();
+                model.Lods[0].Vertices = new Vertex[nxsData.Data.Vertices.Length];
+                model.Lods[0].Indices = new ushort[nxsData.Data.Indices.Length];
 
-                //model.Lods[0].Vertices = new Vertex[nxsData.Data.Vertices.Length];
+                for (int x = 0; x != nxsData.Data.Indices.Length; x++)
+                    model.Lods[0].Indices[x] = (ushort)nxsData.Data.Indices[x];
 
-                //for (int x = 0; x != model.Lods[0].Vertices.Length; x++)
-                //{
-                //    model.Lods[0].Vertices[x] = new Vertex();
-                //    model.Lods[0].Vertices[x].Position = nxsData.Data.Vertices[x];
-                //}
+                for (int x = 0; x != model.Lods[0].Vertices.Length; x++)
+                {
+                    model.Lods[0].Vertices[x] = new Vertex();
+                    model.Lods[0].Vertices[x].Position = nxsData.Data.Vertices[x];
+                }
 
-                //List<CollisionMaterials> typeList = new List<CollisionMaterials>();
-                //List<List<uint>> values = new List<List<uint>>();
+                List<CollisionMaterials> mats = new List<CollisionMaterials>();
+                List<Short3> matInds = new List<Short3>();
 
-                //for (int x = 0; x != nxsData.Data.Materials.Length; x++)
-                //{
-                //    CollisionMaterials[] mats = nxsData.Data.Materials;
-                //    uint[] triangles = nxsData.Data.Indices;
+                model.Lods[0].Parts = new ModelPart[1];
 
-                //    if (!typeList.Contains(mats[x]))
-                //    {
-                //        typeList.Add(mats[x]);
-                //        values.Add(new List<uint>());
-                //        values[typeList.Count - 1].Add(triangles[x]);
-                //    }
-                //    else
-                //    {
-                //        for (int y = 0; y != typeList.Count; y++)
-                //        {
-                //            if (typeList[y] == mats[x])
-                //                values[y].Add(new Short3(triangles[x]));
-                //        }
-                //    }
+                for (int x = 0; x != 1; x++)
+                {
+                    model.Lods[0].Parts[x] = new ModelPart();
+                    model.Lods[0].Parts[x].StartIndex = 0;
+                    model.Lods[0].Parts[x].NumFaces = (uint)nxsData.Data.Indices.Length / 3;
+                }
 
-                //    model.Lods[0].Parts = new ModelPart[typeList.Count];
-
-                //    for (int x = 0; x != typeList.Count; x++)
-                //    {
-                //        model.Lods[0].Parts[x] = new ModelPart();
-                //        model.Lods[0].Parts[x].Indices = values[x].ToArray();
-                //        model.Lods[0].Parts[x].Material = typeList[x].ToString();
-                //    }
-
-                //    model.ExportCollisionToM2T(node.Name);
+                model.ExportCollisionToM2T(node.Name);
+                model.Name = node.Name;
+                model.ExportToFbx("Collisions" + "//", true);
                 treeView1.Nodes.Add(node);
             }
 

@@ -322,12 +322,36 @@ namespace Mafia2Tool
 
             if (SceneData.roadMap != null)
             {
-                for (int i = 0; i != SceneData.roadMap.data2.Length; i++)
+                TreeNode node = new TreeNode("RoadMap Data");
+
+                for (int i = 0; i != SceneData.roadMap.data1.Length; i++)
                 {
                     RenderLine line = new RenderLine();
                     line.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-                    line.Init(SceneData.roadMap.data2[i].points);
+                    line.Init(SceneData.roadMap.data1[i].points);
                     assets.Add(StringHelpers.RandomGenerator.Next(), line);
+                    int id = -(51889215 + i);
+                    assets.Add(id, line);
+                    TreeNode child = new TreeNode(id.ToString());
+                    child.Text = "ID: " + i;
+                    child.Name = id.ToString();
+                    child.Tag = "RoadMap_Spline";
+                    node.Nodes.Add(child);
+                }
+
+                for (int i = 0; i != SceneData.roadMap.data3.Length; i++)
+                {
+                    ResourceTypes.Navigation.SplineProperties properties = SceneData.roadMap.data3[i];
+                    Render2DPlane plane = new Render2DPlane();
+                    if (properties.unk3 > -1 && properties.unk3 < SceneData.roadMap.data1.Length)
+                    {
+                        plane.Init(SceneData.roadMap.data1[properties.unk3].points, properties);
+                        assets.Add(StringHelpers.RandomGenerator.Next(), plane);
+                    }
+                    else
+                    {
+                        Console.WriteLine("did not do {0}", i);
+                    }
                 }
 
                 for (int i = 0; i < SceneData.roadMap.data4.Length; i++)
@@ -350,20 +374,31 @@ namespace Mafia2Tool
                         line.Init(SceneData.roadMap.data4[i].splines[x].path);
                         assets.Add(StringHelpers.RandomGenerator.Next(), line);
                     }
-                   
                 }
+                treeView1.Nodes.Add(node);
             }
+            if (SceneData.Collisions != null)
+            {
+                TreeNode node = new TreeNode("Collision Data");
 
-            //if(SceneData.Collisions != null)
-            //{
-            //    for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
-            //    {
-            //        ResourceTypes.Collisions.Collision.Placement placement = SceneData.Collisions.Placements[i];
-            //        RenderStaticCollision collision = new RenderStaticCollision();
-            //        collision.ConvertCollisionToRender(placement, SceneData.Collisions.NXSData[placement.Hash].Data);
-            //        assets.Add((int)placement.Hash + i, collision);
-            //    }
-            //}
+                for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
+                {
+                    ResourceTypes.Collisions.Collision.Placement placement = SceneData.Collisions.Placements[i];
+                    RenderStaticCollision collision = new RenderStaticCollision();
+                    collision.ConvertCollisionToRender(placement, SceneData.Collisions.NXSData[placement.Hash].Data);
+
+                    int id = ((int)placement.Hash + i);
+                    assets.Add(id, collision);
+
+                    TreeNode child = new TreeNode(id.ToString());
+                    child.Text = "Hash: " + placement.Hash;
+                    child.Name = id.ToString();
+                    child.Tag = "Collision_Mesh";
+                    node.Nodes.Add(child);
+                }
+
+                treeView1.Nodes.Add(node);
+            }
             if (SceneData.ATLoader != null)
             {
                 for(int i = 0; i != SceneData.ATLoader.paths.Length; i++)
@@ -380,6 +415,7 @@ namespace Mafia2Tool
 
                     for(int x = 0; x < path.vectors.Length; x++)
                         points.Add(path.vectors[x].vectors[0]);
+
                     line.SetColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
                     line.Init(points.ToArray());
                     assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
@@ -408,6 +444,17 @@ namespace Mafia2Tool
             if (treeView1.SelectedNode.Tag == null || treeView1.SelectedNode.Tag.GetType() == typeof(FrameHeaderScene))
                 return;
 
+            if(treeView1.SelectedNode.Tag == "RoadMap_Spline")
+            {
+                Graphics.BuildSelectedEntry(Convert.ToInt32(treeView1.SelectedNode.Name));
+                return;
+            }
+            else if (treeView1.SelectedNode.Tag == "Collision_Mesh")
+            {
+                Graphics.BuildSelectedEntry(Convert.ToInt32(treeView1.SelectedNode.Name));
+                return;
+            }
+
             UpdateCurrentEntryData(treeView1.SelectedNode.Tag as FrameObjectBase);
         }
 
@@ -422,7 +469,7 @@ namespace Mafia2Tool
             RotationYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.EulerRotation.Y);
             RotationZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.EulerRotation.Z);
             CurrentEntryType.Text = fObject.GetType().Name;
-            Graphics.BuildSelectedEntry(fObject);
+            Graphics.BuildSelectedEntry(fObject.RefID);
             DebugPropertyGrid.SelectedObject = fObject;
             OnFrameNameTable.Checked = fObject.IsOnFrameTable;
             FrameNameTableFlags.EnumValue = (Enum)Convert.ChangeType(fObject.FrameNameTableFlags, typeof(NameTableFlags));
@@ -437,7 +484,7 @@ namespace Mafia2Tool
             fObject.Matrix.Rotation.UpdateMatrixFromEuler();
             fObject.IsOnFrameTable = OnFrameNameTable.Checked;
             fObject.FrameNameTableFlags = (NameTableFlags)FrameNameTableFlags.GetCurrentValue();
-            Graphics.BuildSelectedEntry(fObject);
+            Graphics.BuildSelectedEntry(fObject.RefID);
             UpdateMatrices();
         }
 

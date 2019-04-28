@@ -14,6 +14,7 @@ namespace Rendering.Graphics
     public class RenderLine : IRenderer
     {
         private VertexLayouts.BasicLayout.Vertex[] vertices;
+        public Vector3[] RawPoints;
         private Vector4 colour;
 
         public RenderLine()
@@ -26,6 +27,7 @@ namespace Rendering.Graphics
 
         public void Init(Vector3[] points)
         {
+            RawPoints = points;
             vertices = new VertexLayouts.BasicLayout.Vertex[points.Length];
 
             for(int i = 0; i != vertices.Length; i++)

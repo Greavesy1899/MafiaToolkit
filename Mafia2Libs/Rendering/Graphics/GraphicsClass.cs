@@ -7,6 +7,7 @@ using ResourceTypes.FrameResource;
 using Utils.Settings;
 using System.IO;
 using Rendering.Sys;
+using Utils.SharpDXExtensions;
 
 namespace Rendering.Graphics
 {
@@ -22,7 +23,8 @@ namespace Rendering.Graphics
         public Dictionary<int, IRenderer> Assets { get; private set; }
         public Dictionary<int, IRenderer> InitObjectStack { get; set; }
         public RenderBoundingBox SelectedEntryBBox { get; private set; }
-
+        public RenderLine SelectedEntryLine { get; private set; }
+        private int selectedEntryLineID;
         public RenderBoundingBox PickingRayBBox { get; private set; }
 
         public GraphicsClass()
@@ -110,6 +112,9 @@ namespace Rendering.Graphics
             if (SelectedEntryBBox != null)
                 SelectedEntryBBox.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
 
+            if (SelectedEntryLine != null)
+                SelectedEntryLine.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
+
             PickingRayBBox.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
             D3D.EndScene();
             return true;
@@ -124,22 +129,70 @@ namespace Rendering.Graphics
             }
             InitObjectStack.Clear();
         }
-        public void BuildSelectedEntry(FrameObjectBase obj)
+
+        public void BuildSelectedEntry(int id)
         {
-            FrameObjectSingleMesh mesh = (obj as FrameObjectSingleMesh);
+            IRenderer obj;
+            Assets.TryGetValue(id, out obj);
 
-            if (SelectedEntryBBox != null)
+            if (obj == null)
+                return;
+
+            if (obj.GetType() == typeof(RenderLine))
             {
-                SelectedEntryBBox.Shutdown();
-                SelectedEntryBBox = null;
+                RenderLine line = (obj as RenderLine);
+                if (SelectedEntryLine != null)
+                {
+                    SelectedEntryLine.Shutdown();
+                    SelectedEntryLine = null;
+                    Assets[selectedEntryLineID].DoRender = true;
+                }
+
+                if (line != null)
+                {
+                    SelectedEntryLine = new RenderLine();
+                    SelectedEntryLine.SetTransform(new Vector3(), new Utils.Types.Matrix33());
+                    selectedEntryLineID = id;
+                    Assets[selectedEntryLineID].DoRender = false;
+                    SelectedEntryLine.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+                    SelectedEntryLine.Init(line.RawPoints);
+                    SelectedEntryLine.InitBuffers(D3D.Device);
+                }
             }
-
-            if (mesh != null)
+            else if(obj.GetType() == typeof(RenderStaticCollision))
             {
-                SelectedEntryBBox = new RenderBoundingBox();
-                SelectedEntryBBox.SetTransform(obj.Matrix.Position, obj.Matrix.Rotation);
-                SelectedEntryBBox.Init(mesh.Boundings);
-                SelectedEntryBBox.InitBuffers(D3D.Device);
+                RenderStaticCollision collision = (obj as RenderStaticCollision);
+                if (SelectedEntryBBox != null)
+                {
+                    SelectedEntryBBox.Shutdown();
+                    SelectedEntryBBox = null;
+                }
+
+                if (collision != null)
+                {
+                    SelectedEntryBBox = new RenderBoundingBox();
+                    SelectedEntryBBox.SetTransform(collision.Transform);
+                    SelectedEntryBBox.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+                    SelectedEntryBBox.Init(collision.BoundingBox.BBox);
+                    SelectedEntryBBox.InitBuffers(D3D.Device);
+                }
+            }
+            else if (obj.GetType() == typeof(RenderModel))
+            {
+                RenderModel mesh = (obj as RenderModel);
+                if (SelectedEntryBBox != null)
+                {
+                    SelectedEntryBBox.Shutdown();
+                    SelectedEntryBBox = null;
+                }
+
+                if (mesh != null)
+                {
+                    SelectedEntryBBox = new RenderBoundingBox();
+                    SelectedEntryBBox.SetTransform(mesh.Transform);
+                    SelectedEntryBBox.Init(mesh.BoundingBox.BBox);
+                    SelectedEntryBBox.InitBuffers(D3D.Device);
+                }
             }
         }
 

@@ -11,12 +11,24 @@ using Utils.SharpDXExtensions;
 //green = main road
 //blue = parking
 //yellow = optional road, the AI knows its there, but not direct.
+//281
+//311
+//317
 
-
+//195
+//198
+//199
+//    1 = 
+//2 = 
+//4 = 
+//8 = 
+//16 = 
+//32 = main road?
+//64 = highway?
 
 namespace ResourceTypes.Navigation
 {
-    public struct SplineDefintion
+    public struct SplineDefinition
     {
         //12 bytes max!
         public uint offset;
@@ -24,16 +36,12 @@ namespace ResourceTypes.Navigation
         public short NumSplines1; //should be equal to unk2
         public short NumSplines2;
         public float unk3;
+        public Vector3[] points;
 
         public override string ToString()
         {
             return string.Format("{0} {1} {2} {3} {4}", offset, unk0, NumSplines1, NumSplines2, unk3);
         }
-    }
-
-    public struct Spline
-    {
-        public Vector3[] points;
     }
 
     public struct SplineProperties
@@ -46,13 +54,14 @@ namespace ResourceTypes.Navigation
         public uint offset1;
         public ushort rangeSize0;
         public ushort rangeSize1;
-        public int unk6;
+        public short unk2;
+        public short unk3;
         public unkStruct1Sect1[] lanes;
         public unkStruct1Sect2[] ranges;
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5}, {6}, {7}, {8}", unk0, unk1, offset0, laneSize0, laneSize1, offset1, rangeSize0, rangeSize1, unk6);
+            return string.Format("{0} {1} {2} {3} {4} {5}, {6}, {7}, {8}, {9}", unk0, unk1, offset0, laneSize0, laneSize1, offset1, rangeSize0, rangeSize1, unk2, unk3);
         }
     }
 
@@ -180,8 +189,7 @@ namespace ResourceTypes.Navigation
         public uint unkDataSet5Offset;
         public ushort unkDataSet6Count;
 
-        public SplineDefintion[] data1;
-        public Spline[] data2;
+        public SplineDefinition[] data1;
         public SplineProperties[] data3;
         public JunctionDefinition[] data4;
         public ushort[] unkSet3;
@@ -232,11 +240,11 @@ namespace ResourceTypes.Navigation
             short unkDataSet6Count2 = reader.ReadInt16();
 
             int count1 = reader.ReadInt32();
-            data1 = new SplineDefintion[splineCount];
+            data1 = new SplineDefinition[splineCount];
 
             for (int i = 0; i != splineCount; i++)
             {
-                SplineDefintion data = new SplineDefintion();
+                SplineDefinition data = new SplineDefinition();
                 data.offset = reader.ReadInt24();
                 data.unk0 = reader.ReadByte();
                 data.NumSplines1 = reader.ReadInt16();
@@ -245,18 +253,16 @@ namespace ResourceTypes.Navigation
                 data1[i] = data;
             }
 
-            data2 = new Spline[splineCount];
-
             for (int i = 0; i != splineCount; i++)
             {
-                Spline splineData = new Spline();
-                splineData.points = new Vector3[data1[i].NumSplines1];
+                SplineDefinition data = data1[i];
+                data.points = new Vector3[data1[i].NumSplines1];
                 reader.BaseStream.Position = data1[i].offset - 4;
 
                 for (int y = 0; y != data1[i].NumSplines1; y++)
-                    splineData.points[y] = Vector3Extenders.ReadFromFile(reader);
+                    data.points[y] = Vector3Extenders.ReadFromFile(reader);
 
-                data2[i] = splineData;
+                data1[i] = data;
             }
 
             data3 = new SplineProperties[splinePropertiesCount];
@@ -274,7 +280,8 @@ namespace ResourceTypes.Navigation
                 reader.ReadByte();
                 data.rangeSize0 = reader.ReadUInt16();
                 data.rangeSize1 = reader.ReadUInt16();
-                data.unk6 = reader.ReadInt32();
+                data.unk2 = reader.ReadInt16();
+                data.unk3 = reader.ReadInt16();
                 data3[i] = data;
             }
 
@@ -512,7 +519,7 @@ namespace ResourceTypes.Navigation
 
             for (int i = 0; i < splineCount; i++)
             {
-                SplineDefintion data = data1[i];
+                SplineDefinition data = data1[i];
                 writer.WriteInt24(data.offset);
                 writer.Write(data.NumSplines1);
                 writer.Write(data.NumSplines2);
@@ -521,7 +528,7 @@ namespace ResourceTypes.Navigation
 
             for (int i = 0; i < splineCount; i++)
             {
-                Spline splineData = data2[i];
+                SplineDefinition splineData = data1[i];
 
                 for (int y = 0; y != splineData.points.Length; y++)
                     Vector3Extenders.WriteToFile(splineData.points[y], writer);
@@ -538,7 +545,8 @@ namespace ResourceTypes.Navigation
                 writer.WriteInt24(data.offset1);
                 writer.Write(data.rangeSize0);
                 writer.Write(data.rangeSize1);
-                writer.Write(data.unk6);
+                writer.Write(data.unk2);
+                writer.Write(data.unk3);
             }
 
             for (int i = 0; i < splinePropertiesCount; i++)
