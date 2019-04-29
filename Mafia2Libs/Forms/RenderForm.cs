@@ -387,13 +387,22 @@ namespace Mafia2Tool
                     RenderStaticCollision collision = new RenderStaticCollision();
                     collision.ConvertCollisionToRender(placement, SceneData.Collisions.NXSData[placement.Hash].Data);
 
-                    int id = ((int)placement.Hash + i);
-                    assets.Add(id, collision);
+                    bool isAdded = false;
+                    int inc = 0;
+                    int hash = 0;
+                    while(!isAdded)
+                    {
+                        hash = (int)(placement.Hash);
+                        hash += inc;
+                        isAdded = !assets.ContainsKey(hash);
+                        inc++;
+                    }
+                    assets.Add(hash, collision);
 
-                    TreeNode child = new TreeNode(id.ToString());
+                    TreeNode child = new TreeNode(hash.ToString());
                     child.Text = "Hash: " + placement.Hash;
-                    child.Name = id.ToString();
-                    child.Tag = "Collision_Mesh";
+                    child.Name = hash.ToString();
+                    child.Tag = SceneData.Collisions.NXSData[placement.Hash];
                     node.Nodes.Add(child);
                 }
 
@@ -449,7 +458,7 @@ namespace Mafia2Tool
                 Graphics.BuildSelectedEntry(Convert.ToInt32(treeView1.SelectedNode.Name));
                 return;
             }
-            else if (treeView1.SelectedNode.Tag == "Collision_Mesh")
+            else if (treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.NXSStruct))
             {
                 Graphics.BuildSelectedEntry(Convert.ToInt32(treeView1.SelectedNode.Name));
                 return;
@@ -912,7 +921,7 @@ namespace Mafia2Tool
                 EntryMenuStrip.Items[1].Visible = true;
                 EntryMenuStrip.Items[2].Visible = true;
 
-                if ((treeView1.SelectedNode.Tag != null) && (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel)))
+                if ((treeView1.SelectedNode.Tag != null) && (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) || treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.NXSStruct)))
                     EntryMenuStrip.Items[3].Visible = true;
             }
         }
@@ -1012,6 +1021,21 @@ namespace Mafia2Tool
         }
 
         private void Export3DButton_Click(object sender, EventArgs e)
+        {
+            if(treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.NXSStruct))
+                ExportCollision(treeView1.SelectedNode.Tag as ResourceTypes.Collisions.Collision.NXSStruct);
+            else
+                Export3DFrame(treeView1.SelectedNode.Tag);
+        }
+
+        private void ExportCollision(ResourceTypes.Collisions.Collision.NXSStruct data)
+        {
+            M2TStructure structure = new M2TStructure();
+            structure.BuildCollision(data, treeView1.SelectedNode.Name);
+            structure.ExportCollisionToM2T(treeView1.SelectedNode.Name);
+            structure.ExportToFbx("Collisions/", false);
+        }
+        private void Export3DFrame(object tag)
         {
             FrameObjectSingleMesh mesh = (treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
             FrameGeometry geom = SceneData.FrameResource.FrameGeometries[mesh.Refs["Mesh"]];

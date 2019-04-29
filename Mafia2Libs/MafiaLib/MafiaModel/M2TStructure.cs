@@ -172,6 +172,59 @@ namespace Mafia2
             }
         }
 
+        public void BuildCollision(ResourceTypes.Collisions.Collision.NXSStruct nxsData, string name)
+        {
+            lods = new Lod[1];
+            lods[0] = new Lod();
+
+            lods[0].Vertices = new Vertex[nxsData.Data.Vertices.Length];
+            lods[0].Indices = new ushort[nxsData.Data.Indices.Length];
+
+            for (int x = 0; x != nxsData.Data.Indices.Length; x++)
+                lods[0].Indices[x] = (ushort)nxsData.Data.Indices[x];
+
+            for (int x = 0; x != lods[0].Vertices.Length; x++)
+            {
+                lods[0].Vertices[x] = new Vertex();
+                lods[0].Vertices[x].Position = nxsData.Data.Vertices[x];
+            }
+
+            string[] matNames = new string[nxsData.Sections.Length];
+            List<ushort>[] matInds = new List<ushort>[nxsData.Sections.Length];
+
+            for (int t = 0; t != matInds.Length; t++)
+                matInds[t] = new List<ushort>();
+
+            lods[0].Parts = new ModelPart[nxsData.Sections.Length];
+            int indIDX = 0;
+            for (int t = 0; t != nxsData.Data.Materials.Length; t++)
+            {
+                for (int g = 0; g != nxsData.Sections.Length; g++)
+                {
+                    if ((int)nxsData.Data.Materials[t] == (nxsData.Sections[g].Unk1 + 2))
+                    {
+                        matNames[g] = nxsData.Data.Materials[t].ToString();
+                        matInds[g].Add((ushort)nxsData.Data.Indices[indIDX]);
+                        matInds[g].Add((ushort)nxsData.Data.Indices[indIDX + 1]);
+                        matInds[g].Add((ushort)nxsData.Data.Indices[indIDX + 2]);
+                        indIDX += 3;
+                    }
+                }
+            }
+
+            List<ushort> inds = new List<ushort>();
+            for (int x = 0; x != lods[0].Parts.Length; x++)
+            {
+                lods[0].Parts[x] = new ModelPart();
+                lods[0].Parts[x].Material = matNames[x];
+                lods[0].Parts[x].StartIndex = (uint)inds.Count;
+                inds.AddRange(matInds[x]);
+                lods[0].Parts[x].NumFaces = (uint)Math.Abs(inds.Count - (matInds[x].Count / 3));
+            }
+            this.name = name;
+            lods[0].Indices = inds.ToArray();
+        }
+
         public void FlipUVs()
         {
             for (int i = 0; i != lods.Length; i++)
@@ -381,7 +434,9 @@ namespace Mafia2
                 {
                     Lods[i].Parts[x] = new ModelPart();
                     Lods[i].Parts[x].Material = reader.ReadString();
-                    Lods[i].Parts[x].Hash = Convert.ToUInt64(Lods[i].Parts[x].Material);
+                    ulong hash = 0;
+                    ulong.TryParse(Lods[i].Parts[x].Material, out hash);
+                    Lods[i].Parts[x].Hash = hash;
                     Lods[i].Parts[x].StartIndex = reader.ReadUInt32();
                     Lods[i].Parts[x].NumFaces = reader.ReadUInt32();
                 }
@@ -496,7 +551,7 @@ namespace Mafia2
                     writer.Write(lods[i].Parts.Length);
                     for (int x = 0; x != lods[i].Parts.Length; x++)
                     {
-                        writer.Write("Null");
+                        writer.Write(lods[i].Parts[x].Material);
                         writer.Write(lods[i].Parts[x].StartIndex);
                         writer.Write(lods[i].Parts[x].NumFaces);
                     }

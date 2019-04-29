@@ -228,21 +228,8 @@ namespace ResourceTypes.Collisions
             public void WriteToFile(BinaryWriter writer)
             {
                 Console.WriteLine("saving :" + hash);
-                //quick check for bugs
-                //if (data.Num2 == 3)
-                //{
-                //    data.Num5 = data.Triangles.Length - 1;
-                //    if ((data.Triangles.Length <= 256) && (data.UnkData == null))
-                //    {
-                //        data.UnkData = new byte[data.Triangles.Length];
-                //    }
-                //    else if ((data.Triangles.Length > 256) && (data.UnkBytes == null))
-                //    {
-                //        data.UnkBytes = new short[data.Triangles.Length];
-                //    }
-                //}
-
                 writer.Write(hash);
+                Console.WriteLine("{0} {1} {2}", dataSize, data.GetMeshSize(), (int)data.Flags);
                 writer.Write(data.GetMeshSize());
                 data.WriteToFile(writer);
                 writer.Write(sections.Length);
@@ -481,7 +468,7 @@ namespace ResourceTypes.Collisions
                 for (int i = 0; i != points.Length; i++)
                     points[i].WriteToFile(writer);
 
-                for (int i = 0; i != indices.Length * 3; i++)
+                for (int i = 0; i != indices.Length; i++)
                     writer.Write(indices[i]);
 
                 if (flags.HasFlag(MeshSerialFlags.MSF_MATERIALS))
@@ -493,8 +480,6 @@ namespace ResourceTypes.Collisions
                 if (flags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP))
                 {
                     writer.Write(max);
-                    remapData = new int[nTriangles];
-
                     for (int i = 0; i < nTriangles; i++)
                     {
                         if (max > 0xFFFF)
@@ -544,11 +529,13 @@ namespace ResourceTypes.Collisions
             public int GetMeshSize()
             {
                 int size = 0;
-
-                //header data is 36 bytes long;
                 size += 36;
                 size += (points.Length * 12);
-                size += (indices.Length * 12);
+
+                if (flags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES) || flags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
+                    throw new Exception("Unsupported! 8bit or 16bit indices");
+
+                size += (indices.Length * 4);
 
                 if (flags.HasFlag(MeshSerialFlags.MSF_MATERIALS))
                     size += (materials.Length * 2);
@@ -565,12 +552,11 @@ namespace ResourceTypes.Collisions
                         size += (nTriangles);
                 }
 
-                //unk0 and unk1;
                 size += 8;
-
                 if (numConvexParts > 0)
-                    size += (2 * nTriangles);
-
+                {
+                    size += (nTriangles * 2);
+                }
                 if (numFlatParts > 0)
                 {
                     if (numFlatParts < 256)
@@ -579,15 +565,13 @@ namespace ResourceTypes.Collisions
                     }
                     else
                     {
-                        size += (2 * nTriangles);
+                        size += (nTriangles * 2);
                     }
                 }
 
-                size += 4; //opcSize;
                 opcHbmData.GetSize(ref size);
-                for (int i = 0; i != 24; i++)
-                    size += 4;
 
+                size += 100;
                 size += 4;
                 size += unkSize;
                 return size;
@@ -598,53 +582,35 @@ namespace ResourceTypes.Collisions
                 mesh = Convert.ToString(1213416781);
 
                 ver = 1;
-                //flags = 3;
+                flags = MeshSerialFlags.MSF_MATERIALS;
                 convexEdgeThreshold = 0.001f;
                 maxVertices = 255;
                 num4 = 0;
+                nPoints = model.Vertices.Length;
+                nTriangles = model.Indices.Length/3;
+                points = new Vector3[nPoints];
+                indices = new uint[model.Indices.Length];
+                materials = new CollisionMaterials[model.Indices.Length];
 
-                List<uint> ltriangles = new List<uint>();
-                List<CollisionMaterials> lmatTypes = new List<CollisionMaterials>();
-
+                int idx = 0;
                 for (int i = 0; i != model.Parts.Length; i++)
                 {
-                    model.Parts[i].Material = ConvertCollisionMats(model.Parts[i].Material).ToString();
-                    //for (int x = 0; x != model.Parts[i].Indices.Length; x++)
-                    //{
-                    //    ltriangles.Add(model.Parts[i].Indices[x]);
-                    //    lmatTypes.Add((CollisionMaterials)Enum.Parse(typeof(CollisionMaterials), model.Parts[i].Material));
-                    //}
+                    ModelPart part = model.Parts[i];
+                    for (int x = (int)part.StartIndex; x < part.StartIndex+part.NumFaces*3; x++)
+                    {
+                        indices[x] = model.Indices[x];
+                        materials[x] = (CollisionMaterials)Enum.Parse(typeof(CollisionMaterials), model.Parts[i].Material);
+                    }
                 }
-
-                nPoints = model.Vertices.Length;
-                nTriangles = ltriangles.Count;
-
-                //if (flags == 3)
-                //{
-                //    num5 = nTriangles - 1;
-                //    if (nTriangles <= 256)
-                //    {
-                //        UnkData = new byte[nTriangles];
-                //    }
-                //    else
-                //    {
-                //        unkBytes = new short[nTriangles];
-                //    }
-                //}
-
-                points = new Vector3[nPoints];
 
                 for (int i = 0; i != points.Length; i++)
                     points[i] = model.Vertices[i].Position;
 
-                indices = ltriangles.ToArray();
-                materials = lmatTypes.ToArray();
-
-                numConvexParts = 1;
-                numFlatParts = 1;
+                numConvexParts = 0;
+                numFlatParts = 0;
 
                 convexParts = new short[nTriangles];
-                //flatParts = new byte[nTriangles];
+                flatParts = new short[nTriangles];
 
                 opcHbmData = new HBMOPCDataClass();
                 opcHbmData.BuildBasicOPCHBM();
@@ -664,33 +630,6 @@ namespace ResourceTypes.Collisions
                 unkSizeData = new byte[unkSize];
                 for (int i = 0; i != unkSizeData.Length; i++)
                     unkSizeData[i] = 0;
-            }
-            private CollisionMaterials ConvertCollisionMats(string name)
-            {
-                name = name.ToLower();
-
-                switch (name)
-                {
-                    case "rock":
-                        return CollisionMaterials.Rock;
-                    case "grassandsnow":
-                        return CollisionMaterials.GrassAndSnow;
-                    case "playercollision":
-                        return CollisionMaterials.PlayerCollision;
-                    case "tarmac":
-                        return CollisionMaterials.Tarmac;
-                    case "mud":
-                        return CollisionMaterials.Mud;
-                    case "gravel":
-                        return CollisionMaterials.Gravel;
-                    case "sidewalk":
-                        return CollisionMaterials.Sidewalk;
-                    case "sidewalkedge":
-                        return CollisionMaterials.SidewalkEdge;
-                    default:
-                        Console.WriteLine("ERROR! Unknown col type: {0}", name);
-                        return CollisionMaterials.Concrete2;
-                }
             }
 
             [TypeConverter(typeof(ExpandableObjectConverter))]

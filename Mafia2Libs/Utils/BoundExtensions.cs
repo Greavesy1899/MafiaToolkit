@@ -105,7 +105,7 @@ namespace Utils.SharpDXExtensions
 
         public static void WriteToFile(this BoundingSphere bSphere, BinaryWriter writer)
         {
-            bSphere.WriteToFile(writer);
+            bSphere.Center.WriteToFile(writer);
             writer.Write(bSphere.Radius);
         }
 

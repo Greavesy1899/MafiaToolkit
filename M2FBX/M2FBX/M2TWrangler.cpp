@@ -41,14 +41,17 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	pPart.SetHasUV2(pElementVC);
 	pPart.SetHasUV7(pElementOM);
 
-	//Gotta make sure the normals are correctly set up.
-	if (pElementNormal->GetReferenceMode() != FbxGeometryElement::eDirect) {
-		FBXSDK_printf("pElementNormal->GetReferenceMode() did not equal eDirect.. Cannot continue.\n");
-		exit(-99);
-	}
-	if ((pElementNormal->GetMappingMode() <= FbxGeometryElement::eByControlPoint) && (pElementNormal->GetMappingMode() >= FbxGeometryElement::eByPolygonVertex)) {
-		FBXSDK_printf("pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex.. Cannot continue.\n");
-		exit(-98);
+	if (pPart.GetHasNormals())
+	{
+		//Gotta make sure the normals are correctly set up.
+		if (pElementNormal->GetReferenceMode() != FbxGeometryElement::eDirect) {
+			FBXSDK_printf("pElementNormal->GetReferenceMode() did not equal eDirect.. Cannot continue.\n");
+			exit(-99);
+		}
+		if ((pElementNormal->GetMappingMode() <= FbxGeometryElement::eByControlPoint) && (pElementNormal->GetMappingMode() >= FbxGeometryElement::eByPolygonVertex)) {
+			FBXSDK_printf("pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex.. Cannot continue.\n");
+			exit(-98);
+		}
 	}
 
 	std::vector<Point3> vertices = std::vector<Point3>();

@@ -328,10 +328,9 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 			lMaterialElement->GetIndexArray().SetAt(x, i);
 	}
 
-	// Set the Index to the material
-	for (int i = 0; i < lMesh->GetPolygonSize(0) / 3; ++i)
+	if (part.GetHasUV7())
 	{
-		if(part.GetHasUV7())
+		for (int i = 0; i < lMesh->GetPolygonSize(0) / 3; ++i)
 			lOMElement->GetIndexArray().SetAt(i, 0);
 	}
 
