@@ -55,7 +55,7 @@ namespace ResourceTypes.Navigation
         public ushort rangeSize0;
         public ushort rangeSize1;
         public short unk2;
-        public short unk3;
+        public ushort unk3;
         public unkStruct1Sect1[] lanes;
         public unkStruct1Sect2[] ranges;
 
@@ -266,7 +266,6 @@ namespace ResourceTypes.Navigation
             }
 
             data3 = new SplineProperties[splinePropertiesCount];
-
             for (int i = 0; i != data3.Length; i++)
             {
                 SplineProperties data = new SplineProperties();
@@ -281,7 +280,7 @@ namespace ResourceTypes.Navigation
                 data.rangeSize0 = reader.ReadUInt16();
                 data.rangeSize1 = reader.ReadUInt16();
                 data.unk2 = reader.ReadInt16();
-                data.unk3 = reader.ReadInt16();
+                data.unk3 = reader.ReadUInt16();
                 data3[i] = data;
             }
 
@@ -440,10 +439,6 @@ namespace ResourceTypes.Navigation
                     if (data4[i].unk5 == 3)
                         data4[i].dataSet2.unk3Bytes = reader.ReadBytes(16);
                 }
-                //6 5 2
-
-                //if (reader.BaseStream.Position != data4[i + 1].offset0 - 4)
-                //    break; //Console.WriteLine("POSSIBLE ERROR AT " + i);
             }
 
             unkSet3 = new ushort[unkDataSet3Count];
@@ -451,7 +446,6 @@ namespace ResourceTypes.Navigation
             unkSet5 = new ushort[unkDataSet5Count];
             unkSet6 = new ushort[unkDataSet6Count];
 
-            //related to junctions.
             for (int i = 0; i < unkDataSet3Count; i++)
                 unkSet3[i] = reader.ReadUInt16();
 
@@ -517,9 +511,11 @@ namespace ResourceTypes.Navigation
             writer.Write(unkDataSet6Count);
             writer.Write((int)unkDataSet3Count);
 
+            long[] positions = new long[splineCount];
             for (int i = 0; i < splineCount; i++)
             {
                 SplineDefinition data = data1[i];
+                positions[i] = writer.BaseStream.Position;
                 writer.WriteInt24(data.offset);
                 writer.Write(data.NumSplines1);
                 writer.Write(data.NumSplines2);
@@ -528,20 +524,32 @@ namespace ResourceTypes.Navigation
 
             for (int i = 0; i < splineCount; i++)
             {
+                long position = writer.BaseStream.Position;
+                writer.BaseStream.Seek(positions[i], SeekOrigin.Begin);
+                writer.WriteInt24((uint)position + 4);
+                writer.BaseStream.Seek(position, SeekOrigin.Begin);
                 SplineDefinition splineData = data1[i];
-
                 for (int y = 0; y != splineData.points.Length; y++)
                     Vector3Extenders.WriteToFile(splineData.points[y], writer);
             }
 
+            long offset = writer.BaseStream.Position;
+            writer.BaseStream.Seek(8, SeekOrigin.Begin);
+            writer.WriteInt24((uint)offset + 4);
+            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
+
+            positions = new long[data3.Length]; //lane offset
+            long[] pos2 = new long[data3.Length]; //range offset
             for (int i = 0; i != data3.Length; i++)
             {
                 SplineProperties data = data3[i];
                 writer.Write(data.unk0);
                 writer.Write(data.unk1);
+                positions[i] = writer.BaseStream.Position;
                 writer.WriteInt24(data.offset0);
                 writer.Write(data.laneSize0);
                 writer.Write(data.laneSize1);
+                pos2[i] = writer.BaseStream.Position;
                 writer.WriteInt24(data.offset1);
                 writer.Write(data.rangeSize0);
                 writer.Write(data.rangeSize1);
@@ -552,7 +560,12 @@ namespace ResourceTypes.Navigation
             for (int i = 0; i < splinePropertiesCount; i++)
             {
                 SplineProperties data = data3[i];
-
+                //update lane position
+                long curPosition = writer.BaseStream.Position;
+                writer.BaseStream.Seek(positions[i], SeekOrigin.Begin);
+                writer.WriteInt24((uint)curPosition + 4);
+                writer.BaseStream.Seek(curPosition, SeekOrigin.Begin);
+                //finished
                 for (int y = 0; y < data.laneSize1; y++)
                 {
                     unkStruct1Sect1 sect = data3[i].lanes[y];
@@ -586,6 +599,14 @@ namespace ResourceTypes.Navigation
                     }
                 }
 
+                //update range position
+                curPosition = writer.BaseStream.Position;
+                uint laneOffset = (uint)(data.rangeSize0 > 0 ? curPosition + 4 : 0);
+                writer.BaseStream.Seek(pos2[i], SeekOrigin.Begin);
+                writer.WriteInt24(laneOffset);
+                writer.BaseStream.Seek(curPosition, SeekOrigin.Begin);
+                //finished
+
                 for (int y = 0; y < data.rangeSize0; y++)
                 {
                     unkStruct1Sect2 sect = data.ranges[y];
@@ -597,17 +618,28 @@ namespace ResourceTypes.Navigation
                 }
             }
 
+            offset = writer.BaseStream.Position;
+            writer.BaseStream.Seek(16, SeekOrigin.Begin);
+            writer.WriteInt24((uint)offset + 4);
+            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
+
+            positions = new long[junctionPropertiesCount];
+            pos2 = new long[junctionPropertiesCount];
+            long[] pos3 = new long[junctionPropertiesCount];
             for (int i = 0; i < junctionPropertiesCount; i++)
             {
                 JunctionDefinition data = data4[i];
                 Vector3Extenders.WriteToFile(data.position, writer);
+                positions[i] = writer.BaseStream.Position;
                 writer.WriteInt24(data.offset0);
                 writer.Write(data.junctionSize0);
                 writer.Write(data.junctionSize1);
+                pos2[i] = writer.BaseStream.Position;
                 writer.WriteInt24(data.offset1);
                 writer.Write(data.boundarySize0);
                 writer.Write(data.boundarySize1);
                 writer.Write(data.junctionIdx);
+                pos3[i] = writer.BaseStream.Position;
                 writer.WriteInt24(data.offset2);
                 writer.Write(data.unk5);
                 writer.Write(data.unk6);
@@ -615,6 +647,14 @@ namespace ResourceTypes.Navigation
 
             for (int i = 0; i < junctionPropertiesCount; i++)
             {
+                //update junction position
+                long curPosition = writer.BaseStream.Position;
+                uint junctionOffset = (uint)(data4[i].junctionSize0 > 0 ? curPosition + 4 : 0);
+                writer.BaseStream.Seek(positions[i], SeekOrigin.Begin);
+                writer.WriteInt24(junctionOffset);
+                writer.BaseStream.Seek(curPosition, SeekOrigin.Begin);
+                //finished
+
                 for (int y = 0; y < data4[i].junctionSize0; y++)
                 {
                     JunctionSpline data4Sect = data4[i].splines[y];
@@ -637,10 +677,26 @@ namespace ResourceTypes.Navigation
                     }
                 }
 
+                //update boundary position
+                curPosition = writer.BaseStream.Position;
+                uint boundaryOffset = (uint)(data4[i].boundarySize0 > 0 ? curPosition + 4 : 0);
+                writer.BaseStream.Seek(pos2[i], SeekOrigin.Begin);
+                writer.WriteInt24(boundaryOffset);
+                writer.BaseStream.Seek(curPosition, SeekOrigin.Begin);
+                //finished
+
                 for (int y = 0; y < data4[i].boundarySize0; y++)
                 {
                     Vector3Extenders.WriteToFile(data4[i].boundaries[y], writer);
                 }
+
+                //update unk position
+                curPosition = writer.BaseStream.Position;
+                uint unkOffset = (uint)(data4[i].unk5 > 0 ? curPosition + 4 : 0);
+                writer.BaseStream.Seek(pos3[i], SeekOrigin.Begin);
+                writer.WriteInt24(unkOffset);
+                writer.BaseStream.Seek(curPosition, SeekOrigin.Begin);
+                //finished
 
                 if (data4[i].unk5 >= 2)
                 {
@@ -676,15 +732,21 @@ namespace ResourceTypes.Navigation
                     if (data4[i].unk5 == 3)
                         writer.Write(data.unk3Bytes);
                 }
-                //6 5 2
-
-                //if (reader.BaseStream.Position != data4[i + 1].offset0 - 4)
-                //    break; //Console.WriteLine("POSSIBLE ERROR AT " + i);
             }
+
+            offset = writer.BaseStream.Position;
+            writer.BaseStream.Seek(24, SeekOrigin.Begin);
+            writer.WriteInt24((uint)offset + 4);
+            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
 
             //related to junctions.
             for (int i = 0; i < unkDataSet3Count; i++)
                 writer.Write(unkSet3[i]);
+
+            offset = writer.BaseStream.Position;
+            writer.BaseStream.Seek(32, SeekOrigin.Begin);
+            writer.WriteInt24((uint)offset + 4);
+            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
 
             for (int i = 0; i < unkDataSet4Count; i++)
             {
@@ -692,8 +754,18 @@ namespace ResourceTypes.Navigation
                 writer.Write(unkSet4[i].unk1);
             }
 
+            offset = writer.BaseStream.Position;
+            writer.BaseStream.Seek(40, SeekOrigin.Begin);
+            writer.WriteInt24((uint)offset + 4);
+            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
+
             for (int i = 0; i < unkDataSet5Count; i++)
                 writer.Write(unkSet5[i]);
+
+            offset = writer.BaseStream.Position;
+            writer.BaseStream.Seek(48, SeekOrigin.Begin);
+            writer.WriteInt24((uint)offset + 4);
+            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
 
             for (int i = 0; i < unkDataSet6Count; i++)
                 writer.Write(unkSet6[i]);

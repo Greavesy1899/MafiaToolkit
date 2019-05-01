@@ -131,5 +131,19 @@ namespace Rendering.Graphics
             vertexBuffer?.Dispose();
             vertexBuffer = null;
         }
+
+        public override void UpdateBuffers(DeviceContext device)
+        {
+            if(isUpdatedNeeded)
+            {
+                DataBox dataBox;
+                dataBox = device.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+                Utilities.Write(dataBox.DataPointer, vertices, 0, vertices.Length);
+                device.UnmapSubresource(vertexBuffer, 0);
+                dataBox = device.MapSubresource(indexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+                Utilities.Write(dataBox.DataPointer, indices, 0, indices.Length);
+                device.UnmapSubresource(indexBuffer, 0);
+            }
+        }
     }
 }

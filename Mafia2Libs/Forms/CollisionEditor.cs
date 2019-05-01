@@ -202,7 +202,6 @@ namespace Mafia2Tool
         /// <param name="e"></param>
         private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
-            SceneData.Collisions.Placements[708].Position = new Vector3(SceneData.Collisions.Placements[708].Position.X, SceneData.Collisions.Placements[708].Position.Y, -19.91624f);
             using (BinaryWriter writer = new BinaryWriter(File.Create(SceneData.Collisions.name)))
             {
                 SceneData.Collisions.WriteToFile(writer);

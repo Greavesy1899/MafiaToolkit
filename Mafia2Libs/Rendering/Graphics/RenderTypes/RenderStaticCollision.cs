@@ -159,5 +159,13 @@ namespace Rendering.Graphics
             indexBuffer?.Dispose();
             indexBuffer = null;
         }
+
+        public override void UpdateBuffers(DeviceContext device)
+        {
+            if(isUpdatedNeeded)
+            {
+                //todo: implement this!
+            }
+        }
     }
 }

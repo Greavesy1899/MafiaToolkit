@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Mafia2;
 using SharpDX;
-using System.Threading;
 using ResourceTypes.FrameNameTable;
 using ResourceTypes.FrameResource;
 using Utils.Settings;
@@ -324,34 +323,58 @@ namespace Mafia2Tool
             {
                 TreeNode node = new TreeNode("RoadMap Data");
 
-                for (int i = 0; i != SceneData.roadMap.data1.Length; i++)
-                {
-                    RenderLine line = new RenderLine();
-                    line.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-                    line.Init(SceneData.roadMap.data1[i].points);
-                    assets.Add(StringHelpers.RandomGenerator.Next(), line);
-                    int id = -(51889215 + i);
-                    assets.Add(id, line);
-                    TreeNode child = new TreeNode(id.ToString());
-                    child.Text = "ID: " + i;
-                    child.Name = id.ToString();
-                    child.Tag = "RoadMap_Spline";
-                    node.Nodes.Add(child);
-                }
-
                 for (int i = 0; i != SceneData.roadMap.data3.Length; i++)
                 {
                     ResourceTypes.Navigation.SplineProperties properties = SceneData.roadMap.data3[i];
-                    Render2DPlane plane = new Render2DPlane();
-                    if (properties.unk3 > -1 && properties.unk3 < SceneData.roadMap.data1.Length)
+                    RenderRoad road = new RenderRoad();
+                    if (properties.unk3 >= 0 && properties.unk3 < SceneData.roadMap.data1.Length)
                     {
-                        plane.Init(SceneData.roadMap.data1[properties.unk3].points, properties);
-                        assets.Add(StringHelpers.RandomGenerator.Next(), plane);
+                        road.Init(SceneData.roadMap.data1[properties.unk3].points, properties);
+                        assets.Add(StringHelpers.RandomGenerator.Next(), road);
                     }
                     else
                     {
-                        Console.WriteLine("did not do {0}", i);
+                        if (properties.unk3 > 4096 && properties.unk3 < 4128)
+                        {
+                            Console.WriteLine("Found subway {0}", i);
+                            road.Init(SceneData.roadMap.data1[properties.unk3 - 4096].points, properties);
+                            assets.Add(StringHelpers.RandomGenerator.Next(), road);
+                        }
+                        else if (properties.unk3 > 24576 && properties.unk3 < 25332)
+                        {
+                            Console.WriteLine("Found backroad {0}", i);
+                            road.Init(SceneData.roadMap.data1[properties.unk3 - 24576].points, properties);
+                            assets.Add(StringHelpers.RandomGenerator.Next(), road);
+                        }
+                        else if (properties.unk3 > 16384 && properties.unk3 < 16900)
+                        {
+                            Console.WriteLine("Found boat {0}", i);
+                            road.Init(SceneData.roadMap.data1[properties.unk3 - 16384].points, properties);
+                            assets.Add(StringHelpers.RandomGenerator.Next(), road);
+                        }
+                        else if(properties.unk3 > 32768 && properties.unk3 < 36864)
+                        {
+                            Console.WriteLine("Found unknown1 {0}", i);
+                            road.Init(SceneData.roadMap.data1[properties.unk3 - 32768].points, properties);
+                            assets.Add(StringHelpers.RandomGenerator.Next(), road);
+                        }
+                        else if(properties.unk3 > 36864)
+                        {
+                            Console.WriteLine("Found unknown2 {0}", i);
+                            road.Init(SceneData.roadMap.data1[properties.unk3 - 36864].points, properties);
+                            assets.Add(StringHelpers.RandomGenerator.Next(), road);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Did not add");
+                        }
+                        TreeNode child = new TreeNode(i.ToString());
+                        child.Text = "ID: " + i;
+                        child.Name = i.ToString();
+                        child.Tag = road;
+                        node.Nodes.Add(child);
                     }
+
                 }
 
                 for (int i = 0; i < SceneData.roadMap.data4.Length; i++)
@@ -431,20 +454,6 @@ namespace Mafia2Tool
                     assets.Add(StringHelpers.RandomGenerator.Next(), line);
                 }
             }
-
-            //for(int i = 0; i != SceneData.OBJData.Length; i++)
-            //{
-            //    ResourceTypes.Navigation.NAVData.OBJData objData = (SceneData.OBJData[i].data as ResourceTypes.Navigation.NAVData.OBJData);
-            //    RenderLine line = new RenderLine();
-            //    line.SetTransform(new Vector3(0.0f), new Matrix33());
-            //    List<Vector3> points = new List<Vector3>();
-
-            //    for (int x = 0; x < objData.vertices.Length; x++)
-            //        points.Add(objData.vertices[x].position);
-            //    line.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
-            //    line.Init(points.ToArray());
-            //    assets.Add(StringHelpers.RandomGenerator.Next(), line);
-            //}
             Graphics.InitObjectStack = assets;
         }
 
@@ -453,18 +462,18 @@ namespace Mafia2Tool
             if (treeView1.SelectedNode.Tag == null || treeView1.SelectedNode.Tag.GetType() == typeof(FrameHeaderScene))
                 return;
 
-            if(treeView1.SelectedNode.Tag == "RoadMap_Spline")
+            if(treeView1.SelectedNode.Tag.GetType() == typeof(RenderRoad))
             {
                 Graphics.BuildSelectedEntry(Convert.ToInt32(treeView1.SelectedNode.Name));
-                return;
             }
             else if (treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.NXSStruct))
             {
                 Graphics.BuildSelectedEntry(Convert.ToInt32(treeView1.SelectedNode.Name));
-                return;
             }
-
-            UpdateCurrentEntryData(treeView1.SelectedNode.Tag as FrameObjectBase);
+            else if(treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectBase))
+            {
+                UpdateCurrentEntryData(treeView1.SelectedNode.Tag as FrameObjectBase);
+            }         
         }
 
         private void UpdateCurrentEntryData(FrameObjectBase fObject)

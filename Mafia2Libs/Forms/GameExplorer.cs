@@ -83,6 +83,7 @@ namespace Mafia2Tool
             dropdownTools.Text = Language.GetString("$TOOLS");
             OptionsItem.Text = Language.GetString("$OPTIONS");
             MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
+            VersionLabel.Text += ToolkitSettings.Version;
             return true;
         }
 

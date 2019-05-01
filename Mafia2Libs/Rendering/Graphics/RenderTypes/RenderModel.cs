@@ -1,11 +1,9 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
-using System.Windows.Forms;
 using Mafia2;
 using System.Collections.Generic;
 using ResourceTypes.FrameResource;
-using System.Diagnostics;
 using ResourceTypes.Materials;
 using ResourceTypes.BufferPools;
 using Utils.Types;
@@ -44,6 +42,7 @@ namespace Rendering.Graphics
         public RenderModel()
         {
             DoRender = true;
+            isUpdatedNeeded = false;
             Transform = Matrix.Identity;
             BoundingBox = new RenderBoundingBox();
         }
@@ -319,6 +318,14 @@ namespace Rendering.Graphics
             vertexBuffer = null;
             indexBuffer?.Dispose();
             indexBuffer = null;
+        }
+
+        public override void UpdateBuffers(DeviceContext device)
+        {
+            if(isUpdatedNeeded)
+            {
+                //Should never need updating.
+            }
         }
     }
 }

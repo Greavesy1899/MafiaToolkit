@@ -42,6 +42,7 @@ namespace Utils.Settings
         public static bool LoggingEnabled;
         public static int Language;
         public static int SerializeSDSOption;
+        public static readonly string Version = "2.0 pre";
 
         /// <summary>
         /// Read and store settings.

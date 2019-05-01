@@ -11,7 +11,6 @@ namespace Rendering.Graphics
         private VertexLayouts.BasicLayout.Vertex[] vertices;
         private ushort[] indices;
         private Vector4 colour;
-        private RenderLine[] dirLines;
 
         public Render2DPlane()
         {
@@ -21,82 +20,76 @@ namespace Rendering.Graphics
             colour = new Vector4(1.0f);
         }
 
-        public void Init(Vector3[] points, ResourceTypes.Navigation.SplineProperties properties)
+        public void Init(Vector3[] points, ResourceTypes.Navigation.unkStruct1Sect1 lane, int roadFlags)
         {
-            Transform = Matrix.Identity;
-            if(properties.laneSize0 > 0)
+            vertices = new VertexLayouts.BasicLayout.Vertex[points.Length * 2];
+            indices = new ushort[(vertices.Length - 2) * 3];
+            int idx = 0;
+            for (int i = 0; i < points.Length; i++)
             {
-                vertices = new VertexLayouts.BasicLayout.Vertex[points.Length * 2];
-                dirLines = new RenderLine[points.Length];
-                indices = new ushort[(vertices.Length - 2) * 3];
-                int idx = 0;
-                for(int i = 0; i < points.Length; i++)
+                vertices[idx] = new VertexLayouts.BasicLayout.Vertex();
+                vertices[idx].Position = points[i];
+                vertices[idx].Colour = colour;
+                Vector2 forward = Vector2.Zero;
+
+                if (i < points.Length - 1)
                 {
-                    vertices[idx] = new VertexLayouts.BasicLayout.Vertex();
-                    vertices[idx].Position = points[i];
-                    vertices[idx].Colour = colour;
-                    Vector2 forward = Vector2.Zero;
-
-                    if (i < points.Length - 1)
-                    {
-                        forward += new Vector2(points[i + 1].X, points[i + 1].Y) - new Vector2(points[i].X, points[i].Y);
-                    }
-                    if (i > 0)
-                    {
-                        forward += new Vector2(points[i].X, points[i].Y) - new Vector2(points[i-1].X, points[i-1].Y);
-                    }
-
-                    forward.Normalize();
-                    Vector3 left = new Vector3(-forward.Y, forward.X, points[i].Z);
-                    idx++;
-                    vertices[idx] = new VertexLayouts.BasicLayout.Vertex();
-
-                    float x = 0.0f;
-                    float y = 0.0f;
-
-                    if(properties.unk2 >= 4096)
-                    {
-                        x = (points[i].X + left.X * properties.lanes[0].unk01);
-                        y = (points[i].Y + left.Y * properties.lanes[0].unk01);
-                    }
-                    else
-                    {
-                        x = (points[i].X - left.X * properties.lanes[0].unk01);
-                        y = (points[i].Y - left.Y * properties.lanes[0].unk01);
-                    }
-
-                    vertices[idx].Position = new Vector3(x, y, points[i].Z);
-                    vertices[idx].Colour = colour;
-
-                    RenderLine line = new RenderLine();
-                    line.SetColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-                    line.Init(new Vector3[2] { vertices[idx - 1].Position, vertices[idx].Position });
-                    dirLines[i] = line;
-                    idx++;
+                    forward += new Vector2(points[i + 1].X, points[i + 1].Y) - new Vector2(points[i].X, points[i].Y);
                 }
+                if (i > 0)
+                {
+                    forward += new Vector2(points[i].X, points[i].Y) - new Vector2(points[i - 1].X, points[i - 1].Y);
+                }
+
+                forward.Normalize();
+                Vector3 left = new Vector3(-forward.Y, forward.X, points[i].Z);
+                idx++;
+                vertices[idx] = new VertexLayouts.BasicLayout.Vertex();
+
+                float x = 0.0f;
+                float y = 0.0f;
+
+                if (roadFlags >= 4096)
+                {
+                    x = (points[i].X + left.X * lane.unk01);
+                    y = (points[i].Y + left.Y * lane.unk01);
+                }
+                else
+                {
+                    x = (points[i].X - left.X * lane.unk01);
+                    y = (points[i].Y - left.Y * lane.unk01);
+                }
+
+                vertices[idx].Position = new Vector3(x, y, points[i].Z);
+                vertices[idx].Colour = colour;
+
+                RenderLine line = new RenderLine();
+                line.SetColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+                line.Init(new Vector3[2] { vertices[idx - 1].Position, vertices[idx].Position });
+                idx++;
 
                 ushort sIdx = 0;
                 int indIdx = 0;
                 bool switcheroo = false;
-                while(indIdx < indices.Length)
+                while (indIdx < indices.Length)
                 {
-                    if(switcheroo == false)
+                    if (switcheroo == false)
                     {
                         indices[indIdx] = sIdx++;
-                        indices[indIdx+1] = sIdx++;
-                        indices[indIdx+2] = sIdx++;
+                        indices[indIdx + 1] = sIdx++;
+                        indices[indIdx + 2] = sIdx++;
                         switcheroo = true;
                     }
                     else
                     {
                         indices[indIdx] = sIdx--;
-                        indices[indIdx+1] = sIdx--;
-                        indices[indIdx+2] = sIdx--;
+                        indices[indIdx + 1] = sIdx--;
+                        indices[indIdx + 2] = sIdx--;
 
                         switcheroo = false;
                     }
                     sIdx = (ushort)(indices[indIdx + 2] + 1);
-                    indIdx +=3;
+                    indIdx += 3;
                 }
             }
         }
@@ -110,9 +103,6 @@ namespace Rendering.Graphics
         {
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices);
-
-            for(int i = 0; i != dirLines.Length; i++)
-                dirLines[i].InitBuffers(d3d);
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
@@ -126,9 +116,6 @@ namespace Rendering.Graphics
 
             shader.SetSceneVariables(deviceContext, Transform, camera);
             shader.Render(deviceContext, PrimitiveTopology.TriangleList, indices.Length, 0);
-
-            for (int i = 0; i != dirLines.Length; i++)
-                dirLines[i].Render(device, deviceContext, camera, light);
         }
 
         public override void SetTransform(Vector3 position, Matrix33 rotation)
@@ -162,6 +149,23 @@ namespace Rendering.Graphics
             indexBuffer = null;
             vertexBuffer?.Dispose();
             vertexBuffer = null;
+        }
+
+        public override void UpdateBuffers(DeviceContext device)
+        {
+            if(isUpdatedNeeded)
+            {
+                for(int i = 0; i < vertices.Length; i++)
+                    vertices[i].Colour = colour;
+
+                DataBox dataBox;
+                dataBox = device.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+                Utilities.Write(dataBox.DataPointer, vertices, 0, vertices.Length);
+                device.UnmapSubresource(vertexBuffer, 0);
+                dataBox = device.MapSubresource(indexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+                Utilities.Write(dataBox.DataPointer, indices, 0, indices.Length);
+                device.UnmapSubresource(indexBuffer, 0);
+            }
         }
     }
 }

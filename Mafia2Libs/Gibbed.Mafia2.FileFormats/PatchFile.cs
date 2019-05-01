@@ -1,6 +1,7 @@
 ﻿using Gibbed.Illusion.FileFormats;
 using Gibbed.IO;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Gibbed.Mafia2.FileFormats
@@ -22,26 +23,34 @@ namespace Gibbed.Mafia2.FileFormats
             if (reader.ReadInt32() != Signature)
                 return;
 
-            if (reader.ReadInt32() != 2)
+            if (reader.ReadInt32() < 1)
                 return;
 
             if (reader.ReadInt64() != Signature2)
                 return;
 
+            List<string> indexes = new List<string>();
+            indexes.Add("UnkSet0:");
             UnkCount1 = reader.ReadInt32();
             UnkInts1 = new int[UnkCount1];
             for (int i = 0; i != UnkCount1; i++)
+            {
                 UnkInts1[i] = reader.ReadInt32();
-
+                indexes.Add(UnkInts1[i].ToString());
+            }
+            indexes.Add("/nUnkSet1:");
             UnkCount2 = reader.ReadInt32();
             UnkInts2 = new int[UnkCount2];
             for (int i = 0; i != UnkCount2; i++)
+            {
                 UnkInts2[i] = reader.ReadInt32();
+                indexes.Add(UnkInts2[i].ToString());
+            }
 
             UnkTotal = reader.ReadInt32();
 
             //if (UnkCount1 + UnkCount2 != UnkTotal)
-                //throw new FormatException();
+            //throw new FormatException();        
 
             if (UnkTotal == 0)          
                 return;
@@ -53,6 +62,7 @@ namespace Gibbed.Mafia2.FileFormats
             if (!Directory.Exists("patches/"))
                 Directory.CreateDirectory("patches/");
 
+            File.WriteAllLines("patches/patchIDX_of_" + file.Name + ".txt", indexes.ToArray());
             using (BinaryWriter writer = new BinaryWriter(File.Open("patches/patch_of_" + file.Name + ".bin", FileMode.Create)))
             {
                 blockStream.SaveUncompressed(writer.BaseStream);

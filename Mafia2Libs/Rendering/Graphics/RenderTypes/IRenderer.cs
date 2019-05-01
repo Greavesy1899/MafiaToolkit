@@ -8,6 +8,7 @@ namespace Rendering.Graphics
     {
         public bool DoRender;
         protected BaseShader shader;
+        protected bool isUpdatedNeeded;
         public Matrix Transform { get; protected set; }
         public BoundingBox BBox { get; protected set; }
         protected Buffer indexBuffer;
@@ -16,7 +17,7 @@ namespace Rendering.Graphics
         public abstract void InitBuffers(Device d3d);
         public abstract void SetTransform(Vector3 position, Matrix33 rotation);
         public abstract void SetTransform(Matrix matrix);
-
+        public abstract void UpdateBuffers(DeviceContext device);
         public abstract void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light);
         public abstract void Shutdown();
 

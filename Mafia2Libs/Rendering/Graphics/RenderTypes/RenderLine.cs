@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
@@ -46,7 +42,7 @@ namespace Rendering.Graphics
 
         public override void InitBuffers(Device d3d)
         {
-            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices);
+            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
@@ -89,6 +85,17 @@ namespace Rendering.Graphics
             vertices = null;
             vertexBuffer?.Dispose();
             vertexBuffer = null;
+        }
+
+        public override void UpdateBuffers(DeviceContext device)
+        {
+            if(isUpdatedNeeded)
+            {
+                DataBox dataBox;
+                dataBox = device.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+                Utilities.Write(dataBox.DataPointer, RawPoints, 0, RawPoints.Length);
+                device.UnmapSubresource(vertexBuffer, 0);
+            }
         }
     }
 }
