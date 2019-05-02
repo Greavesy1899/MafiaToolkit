@@ -462,15 +462,15 @@ namespace Mafia2Tool
             if (treeView1.SelectedNode.Tag == null || treeView1.SelectedNode.Tag.GetType() == typeof(FrameHeaderScene))
                 return;
 
-            if(treeView1.SelectedNode.Tag.GetType() == typeof(RenderRoad))
+            if(treeView1.SelectedNode.Tag is RenderRoad)
             {
                 Graphics.BuildSelectedEntry(Convert.ToInt32(treeView1.SelectedNode.Name));
             }
-            else if (treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.NXSStruct))
+            else if (treeView1.SelectedNode.Tag is ResourceTypes.Collisions.Collision.NXSStruct)
             {
                 Graphics.BuildSelectedEntry(Convert.ToInt32(treeView1.SelectedNode.Name));
             }
-            else if(treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectBase))
+            else if(treeView1.SelectedNode.Tag is FrameObjectBase)
             {
                 UpdateCurrentEntryData(treeView1.SelectedNode.Tag as FrameObjectBase);
             }         

@@ -19,6 +19,11 @@ namespace ResourceTypes.FrameResource
             Idx = idx;
             Data = data;
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1}", Idx, Data.ToString());
+        }
     }
 
     public class FrameResource
@@ -345,7 +350,8 @@ namespace ResourceTypes.FrameResource
                 if (table.FrameData[i].FrameIndex == -1)
                     continue;
 
-                FrameObjectBase fObject = (GetEntryFromIdx(numBlocks + table.FrameData[i].FrameIndex).Data as FrameObjectBase);
+                var frameData = table.FrameData[i];
+                FrameObjectBase fObject = (GetEntryFromIdx(numBlocks + frameData.FrameIndex).Data as FrameObjectBase);
                 fObject.IsOnFrameTable = true;
                 fObject.FrameNameTableFlags = table.FrameData[i].Flags;
                 int p1idx = numBlocks + fObject.ParentIndex1.Index;
@@ -355,9 +361,6 @@ namespace ResourceTypes.FrameResource
                 TreeNode node = (!parsedNodes.ContainsKey(thisKey)) ? new TreeNode(fObject.ToString()) : parsedNodes[thisKey];
                 node.Tag = fObject;
                 node.Name = fObject.RefID.ToString();
-
-                if (fObject.GetType() == typeof(FrameObjectLight))
-                    node.ImageIndex = 1;
 
                 if (p1idx == -1 && p2idx == -1)
                 {
@@ -388,7 +391,7 @@ namespace ResourceTypes.FrameResource
 
                 int p1idx = fObject.ParentIndex1.Index;
                 int p2idx = fObject.ParentIndex2.Index;
-                int thisKey = numBlocks + holder.Idx;
+                int thisKey = holder.Idx;
 
                 TreeNode node = (!parsedNodes.ContainsKey(thisKey)) ? new TreeNode(fObject.ToString()) : parsedNodes[thisKey];
                 node.Tag = fObject;

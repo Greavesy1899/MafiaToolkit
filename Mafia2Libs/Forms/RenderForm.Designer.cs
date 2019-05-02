@@ -80,11 +80,11 @@ namespace Mafia2Tool
             this.PositionZLabel = new System.Windows.Forms.Label();
             this.PositionYLabel = new System.Windows.Forms.Label();
             this.PositionXLabel = new System.Windows.Forms.Label();
+            this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
             this.DebugPG = new System.Windows.Forms.TabPage();
             this.DebugPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.RenderPanel = new System.Windows.Forms.Panel();
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
             this.ToolbarStrip.SuspendLayout();
             this.EntryMenuStrip.SuspendLayout();
             this.StatusStrip.SuspendLayout();
@@ -613,6 +613,15 @@ namespace Mafia2Tool
             this.PositionXLabel.TabIndex = 0;
             this.PositionXLabel.Text = "Position X";
             // 
+            // FrameNameTableFlags
+            // 
+            this.FrameNameTableFlags.CheckOnClick = true;
+            this.FrameNameTableFlags.FormattingEnabled = true;
+            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
+            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
+            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
+            this.FrameNameTableFlags.TabIndex = 16;
+            // 
             // DebugPG
             // 
             this.DebugPG.Controls.Add(this.DebugPropertyGrid);
@@ -643,15 +652,6 @@ namespace Mafia2Tool
             // MeshBrowser
             // 
             this.MeshBrowser.Filter = "Meshes|*.m2t|FBX|*.fbx";
-            // 
-            // FrameNameTableFlags
-            // 
-            this.FrameNameTableFlags.CheckOnClick = true;
-            this.FrameNameTableFlags.FormattingEnabled = true;
-            this.FrameNameTableFlags.Location = new System.Drawing.Point(10, 222);
-            this.FrameNameTableFlags.Name = "FrameNameTableFlags";
-            this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
-            this.FrameNameTableFlags.TabIndex = 16;
             // 
             // D3DForm
             // 

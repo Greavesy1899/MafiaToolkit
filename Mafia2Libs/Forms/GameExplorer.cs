@@ -392,12 +392,16 @@ namespace Mafia2Tool
         }
         void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            TreeNode selectedNode = e.Node;
-            OpenDirectory((DirectoryInfo)selectedNode.Tag);
+            if (e.Node != null)
+            {
+                TreeNode selectedNode = e.Node;
+                OpenDirectory((DirectoryInfo)selectedNode.Tag);
+            }
         }
         private void listView1_ItemActivate(object sender, EventArgs e)
         {
-            HandleFile(fileListView.SelectedItems[0]);
+            if(fileListView.SelectedItems.Count > 0)
+                HandleFile(fileListView.SelectedItems[0]);
         }
 
         private void HandleFile(ListViewItem item)

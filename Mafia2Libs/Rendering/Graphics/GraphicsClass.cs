@@ -3,11 +3,9 @@ using System;
 using System.Windows.Forms;
 using SharpDX;
 using System.Collections.Generic;
-using ResourceTypes.FrameResource;
 using Utils.Settings;
 using System.IO;
 using Rendering.Sys;
-using Utils.SharpDXExtensions;
 
 namespace Rendering.Graphics
 {
