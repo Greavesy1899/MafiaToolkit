@@ -7,14 +7,20 @@ namespace Rendering.Graphics
 {
     public class RenderRoad : IRenderer
     {
-        RenderLine spline;
+        public RenderLine Spline { get; private set; }
         Render2DPlane[] lanes;
+
+        public RenderRoad()
+        {
+            DoRender = true;
+            Transform = Matrix.Identity;
+        }
 
         public void Init(Vector3[] points, ResourceTypes.Navigation.SplineProperties properties)
         {
-            spline = new RenderLine();
-            spline.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-            spline.Init(points);
+            Spline = new RenderLine();
+            Spline.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+            Spline.Init(points);
             lanes = new Render2DPlane[properties.laneSize0];
             for(int i = 0; i != properties.laneSize0; i++)
             {
@@ -26,7 +32,7 @@ namespace Rendering.Graphics
 
         public override void InitBuffers(Device d3d)
         {
-            spline.InitBuffers(d3d);
+            Spline.InitBuffers(d3d);
 
             foreach (Render2DPlane plane in lanes)
                 plane.InitBuffers(d3d);
@@ -34,7 +40,10 @@ namespace Rendering.Graphics
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
         {
-            spline.Render(device, deviceContext, camera, light);
+            if (!DoRender)
+                return;
+
+            Spline.Render(device, deviceContext, camera, light);
 
             foreach (Render2DPlane plane in lanes)
                 plane.Render(device, deviceContext, camera, light);
@@ -65,7 +74,7 @@ namespace Rendering.Graphics
 
         public override void Shutdown()
         {
-            spline.Shutdown();
+            Spline.Shutdown();
 
             foreach (Render2DPlane plane in lanes)
                 plane.Shutdown();
@@ -73,7 +82,7 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(DeviceContext device)
         {
-            spline.UpdateBuffers(device);
+            Spline.UpdateBuffers(device);
 
             foreach (Render2DPlane plane in lanes)
                 plane.UpdateBuffers(device);

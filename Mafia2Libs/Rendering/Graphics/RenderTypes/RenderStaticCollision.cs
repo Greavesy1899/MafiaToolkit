@@ -54,9 +54,8 @@ namespace Rendering.Graphics
         {
             
             Matrix33 rot = new Matrix33();
-            rot.EulerRotation = new Vector3(MathUtil.RadiansToDegrees(placement.Rotation.X), MathUtil.RadiansToDegrees(placement.Rotation.Y), MathUtil.RadiansToDegrees(placement.Rotation.Z));
+            rot.EulerRotation = new Vector3(MathUtil.RadiansToDegrees(placement.Rotation.X), -MathUtil.RadiansToDegrees(placement.Rotation.Y), 0.0f);
             rot.UpdateMatrixFromEuler(); 
-            //todo
             SetTransform(placement.Position, rot);
             DoRender = true;
             BoundingBox = new RenderBoundingBox();

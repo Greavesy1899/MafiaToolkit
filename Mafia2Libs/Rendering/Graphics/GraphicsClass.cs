@@ -13,9 +13,6 @@ namespace Rendering.Graphics
 {
     public class GraphicsClass
     {
-        private DirectX11Class D3D { get; set; }
-        private LightClass Light { get; set; }
-        public TimerClass Timer { get; set; }
         public FPSClass FPS { get; set; }
         public InputClass Input { get; private set; }
         public Camera Camera { get; set; }
@@ -26,6 +23,11 @@ namespace Rendering.Graphics
         public RenderLine SelectedEntryLine { get; private set; }
         private int selectedEntryLineID;
         public RenderBoundingBox PickingRayBBox { get; private set; }
+
+        private RenderLine[] SplineStorage;
+        private DirectX11Class D3D;
+        private LightClass Light;
+        public TimerClass Timer;
 
         public GraphicsClass()
         {
@@ -130,6 +132,21 @@ namespace Rendering.Graphics
             InitObjectStack.Clear();
         }
 
+        public void UpdateSplineStorage(ResourceTypes.Navigation.SplineDefinition[] splines)
+        {
+            SplineStorage = new RenderLine[splines.Length];
+
+            for(int i = 0; i != SplineStorage.Length; i++)
+            {
+                RenderLine line = new RenderLine();
+                SelectedEntryLine.SetTransform(new Vector3(), new Utils.Types.Matrix33());
+                SelectedEntryLine.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+                SelectedEntryLine.Init(splines[i].points);
+                SelectedEntryLine.InitBuffers(D3D.Device);
+                SplineStorage[i] = line;
+            }
+        }
+
         public void BuildSelectedEntry(int id)
         {
             IRenderer obj;
@@ -192,6 +209,27 @@ namespace Rendering.Graphics
                     SelectedEntryBBox.SetTransform(mesh.Transform);
                     SelectedEntryBBox.Init(mesh.BoundingBox.BBox);
                     SelectedEntryBBox.InitBuffers(D3D.Device);
+                }
+            }
+            else if(obj.GetType() == typeof(RenderRoad))
+            {
+                RenderRoad road = (obj as RenderRoad);
+                if (SelectedEntryLine != null)
+                {
+                    SelectedEntryLine.Shutdown();
+                    SelectedEntryLine = null;
+                    (Assets[selectedEntryLineID] as RenderRoad).Spline.DoRender = true;
+                }
+
+                if (road.Spline != null)
+                {
+                    SelectedEntryLine = new RenderLine();
+                    SelectedEntryLine.SetTransform(new Vector3(), new Utils.Types.Matrix33());
+                    selectedEntryLineID = id;
+                    road.Spline.DoRender = false;
+                    SelectedEntryLine.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+                    SelectedEntryLine.Init(road.Spline.RawPoints);
+                    SelectedEntryLine.InitBuffers(D3D.Device);
                 }
             }
         }

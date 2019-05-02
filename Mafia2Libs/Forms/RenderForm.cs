@@ -327,10 +327,11 @@ namespace Mafia2Tool
                 {
                     ResourceTypes.Navigation.SplineProperties properties = SceneData.roadMap.data3[i];
                     RenderRoad road = new RenderRoad();
+                    int generatedID = StringHelpers.RandomGenerator.Next();
                     if (properties.unk3 >= 0 && properties.unk3 < SceneData.roadMap.data1.Length)
                     {
                         road.Init(SceneData.roadMap.data1[properties.unk3].points, properties);
-                        assets.Add(StringHelpers.RandomGenerator.Next(), road);
+                        assets.Add(generatedID, road);
                     }
                     else
                     {
@@ -338,43 +339,42 @@ namespace Mafia2Tool
                         {
                             Console.WriteLine("Found subway {0}", i);
                             road.Init(SceneData.roadMap.data1[properties.unk3 - 4096].points, properties);
-                            assets.Add(StringHelpers.RandomGenerator.Next(), road);
+                            assets.Add(generatedID, road);
                         }
                         else if (properties.unk3 > 24576 && properties.unk3 < 25332)
                         {
                             Console.WriteLine("Found backroad {0}", i);
                             road.Init(SceneData.roadMap.data1[properties.unk3 - 24576].points, properties);
-                            assets.Add(StringHelpers.RandomGenerator.Next(), road);
+                            assets.Add(generatedID, road);
                         }
                         else if (properties.unk3 > 16384 && properties.unk3 < 16900)
                         {
                             Console.WriteLine("Found boat {0}", i);
                             road.Init(SceneData.roadMap.data1[properties.unk3 - 16384].points, properties);
-                            assets.Add(StringHelpers.RandomGenerator.Next(), road);
+                            assets.Add(generatedID, road);
                         }
-                        else if(properties.unk3 > 32768 && properties.unk3 < 36864)
+                        else if (properties.unk3 > 32768 && properties.unk3 < 36864)
                         {
                             Console.WriteLine("Found unknown1 {0}", i);
                             road.Init(SceneData.roadMap.data1[properties.unk3 - 32768].points, properties);
-                            assets.Add(StringHelpers.RandomGenerator.Next(), road);
+                            assets.Add(generatedID, road);
                         }
-                        else if(properties.unk3 > 36864)
+                        else if (properties.unk3 > 36864)
                         {
                             Console.WriteLine("Found unknown2 {0}", i);
                             road.Init(SceneData.roadMap.data1[properties.unk3 - 36864].points, properties);
-                            assets.Add(StringHelpers.RandomGenerator.Next(), road);
+                            assets.Add(generatedID, road);
                         }
                         else
                         {
                             Console.WriteLine("Did not add");
                         }
-                        TreeNode child = new TreeNode(i.ToString());
-                        child.Text = "ID: " + i;
-                        child.Name = i.ToString();
-                        child.Tag = road;
-                        node.Nodes.Add(child);
                     }
-
+                    TreeNode child = new TreeNode(i.ToString());
+                    child.Text = "ID: " + i;
+                    child.Name = generatedID.ToString();
+                    child.Tag = road;
+                    node.Nodes.Add(child);
                 }
 
                 for (int i = 0; i < SceneData.roadMap.data4.Length; i++)

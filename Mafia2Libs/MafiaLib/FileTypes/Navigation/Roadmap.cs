@@ -533,11 +533,7 @@ namespace ResourceTypes.Navigation
                     Vector3Extenders.WriteToFile(splineData.points[y], writer);
             }
 
-            long offset = writer.BaseStream.Position;
-            writer.BaseStream.Seek(8, SeekOrigin.Begin);
-            writer.WriteInt24((uint)offset + 4);
-            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
-
+            WriteUpdatedOffset(writer, 8);
             positions = new long[data3.Length]; //lane offset
             long[] pos2 = new long[data3.Length]; //range offset
             for (int i = 0; i != data3.Length; i++)
@@ -618,10 +614,7 @@ namespace ResourceTypes.Navigation
                 }
             }
 
-            offset = writer.BaseStream.Position;
-            writer.BaseStream.Seek(16, SeekOrigin.Begin);
-            writer.WriteInt24((uint)offset + 4);
-            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
+            WriteUpdatedOffset(writer, 16);
 
             positions = new long[junctionPropertiesCount];
             pos2 = new long[junctionPropertiesCount];
@@ -734,19 +727,13 @@ namespace ResourceTypes.Navigation
                 }
             }
 
-            offset = writer.BaseStream.Position;
-            writer.BaseStream.Seek(24, SeekOrigin.Begin);
-            writer.WriteInt24((uint)offset + 4);
-            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
+            WriteUpdatedOffset(writer, 24);
 
             //related to junctions.
             for (int i = 0; i < unkDataSet3Count; i++)
                 writer.Write(unkSet3[i]);
 
-            offset = writer.BaseStream.Position;
-            writer.BaseStream.Seek(32, SeekOrigin.Begin);
-            writer.WriteInt24((uint)offset + 4);
-            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
+            WriteUpdatedOffset(writer, 32);
 
             for (int i = 0; i < unkDataSet4Count; i++)
             {
@@ -754,21 +741,23 @@ namespace ResourceTypes.Navigation
                 writer.Write(unkSet4[i].unk1);
             }
 
-            offset = writer.BaseStream.Position;
-            writer.BaseStream.Seek(40, SeekOrigin.Begin);
-            writer.WriteInt24((uint)offset + 4);
-            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
+            WriteUpdatedOffset(writer, 40);
 
             for (int i = 0; i < unkDataSet5Count; i++)
                 writer.Write(unkSet5[i]);
 
-            offset = writer.BaseStream.Position;
-            writer.BaseStream.Seek(48, SeekOrigin.Begin);
-            writer.WriteInt24((uint)offset + 4);
-            writer.BaseStream.Seek(offset, SeekOrigin.Begin);
+            WriteUpdatedOffset(writer, 48);
 
             for (int i = 0; i < unkDataSet6Count; i++)
                 writer.Write(unkSet6[i]);
+        }
+
+        private void WriteUpdatedOffset(BinaryWriter writer, long pos, bool isZero = false)
+        {
+            long jump = writer.BaseStream.Position;
+            writer.BaseStream.Seek(pos, SeekOrigin.Begin);
+            writer.WriteInt24(isZero ? 0 : (uint)jump + 4);
+            writer.BaseStream.Seek(jump, SeekOrigin.Begin);
         }
     }
 }

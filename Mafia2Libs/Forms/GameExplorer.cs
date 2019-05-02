@@ -42,7 +42,7 @@ namespace Mafia2Tool
             toolStrip1_Resize(this, null);
             Localise();            
             infoText.Text = "Loading..";
-            BuildTreeView();
+            InitExplorerSettings();
             FileListViewTypeController(1);
             infoText.Text = "Ready..";
         }
@@ -96,10 +96,8 @@ namespace Mafia2Tool
         /// <summary>
         /// Build TreeView from Mafia II's main directory.
         /// </summary>
-        public void BuildTreeView()
+        public void InitExplorerSettings()
         {
-            TreeNode rootTreeNode;
-
             if (string.IsNullOrEmpty(ToolkitSettings.M2Directory))
                 GetPath();
 
@@ -109,6 +107,7 @@ namespace Mafia2Tool
             if (!originalPath.Exists)
             {
                 PrintErrorLauncher();
+                GetPath();
                 return;
             }
 
@@ -130,17 +129,10 @@ namespace Mafia2Tool
             if (!hasLauncher)
             {
                 PrintErrorLauncher();
+                GetPath();
                 return;
             }
-
-            infoText.Text = "Building folders..";
-            //build treeView.
-            rootTreeNode = new TreeNode(originalPath.Name);
-            rootTreeNode.Tag = originalPath;
-            GetSubFolders(originalPath.GetDirectories(), rootTreeNode);
-            folderView.Nodes.Add(rootTreeNode);
-            infoText.Text = "Done builidng folders..";
-            OpenDirectory(originalPath);
+            InitTreeView();
         }
 
         /// <summary>
@@ -153,9 +145,22 @@ namespace Mafia2Tool
             {
                 ToolkitSettings.M2Directory = MafiaIIBrowser.SelectedPath;
                 ToolkitSettings.WriteKey("MafiaII", "Directories", MafiaIIBrowser.SelectedPath);
+                InitTreeView();
             }
             else
                 return;
+        }
+
+        private void InitTreeView()
+        {
+            infoText.Text = "Building folders..";
+            //build treeView.
+            TreeNode rootTreeNode = new TreeNode(originalPath.Name);
+            rootTreeNode.Tag = originalPath;
+            GetSubFolders(originalPath.GetDirectories(), rootTreeNode);
+            folderView.Nodes.Add(rootTreeNode);
+            infoText.Text = "Done builidng folders..";
+            OpenDirectory(originalPath);
         }
 
         /// <summary>
@@ -230,7 +235,7 @@ namespace Mafia2Tool
                 {
                     new ListViewItem.ListViewSubItem(item, DetermineFileType(file.Extension)),
                     new ListViewItem.ListViewSubItem(item, file.CalculateFileSize()),
-                    new ListViewItem.ListViewSubItem(item, file.LastAccessTime.ToShortDateString()),
+                    new ListViewItem.ListViewSubItem(item, file.LastWriteTime.ToShortDateString()),
                 };
 
                 item.SubItems.AddRange(subItems);
@@ -595,7 +600,7 @@ namespace Mafia2Tool
         private void OpenMafiaIIClicked(object sender, EventArgs e)
         {
             folderView.Nodes.Clear();
-            BuildTreeView();
+            InitExplorerSettings();
         }
         private void ExitToolkitClicked(object sender, EventArgs e)
         {
@@ -622,8 +627,11 @@ namespace Mafia2Tool
         }
         private void OnRefreshButtonClicked(object sender, EventArgs e)
         {
-            currentDirectory.Refresh();
-            OpenDirectory(currentDirectory);
+            if (currentDirectory != null)
+            {
+                currentDirectory.Refresh();
+                OpenDirectory(currentDirectory);
+            }
         }
         private void SearchBarOnTextChanged(object sender, EventArgs e)
         {
