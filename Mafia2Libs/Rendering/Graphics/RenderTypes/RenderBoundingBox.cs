@@ -119,7 +119,7 @@ namespace Rendering.Graphics
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
 
             shader.SetSceneVariables(deviceContext, Transform, camera);
-            shader.Render(deviceContext, PrimitiveTopology.LineList, 12 * 3, 0);
+            shader.Render(deviceContext, PrimitiveTopology.LineList, 36, 0);
         }
 
         public override void Shutdown()

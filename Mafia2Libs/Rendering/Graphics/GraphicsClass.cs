@@ -17,6 +17,7 @@ namespace Rendering.Graphics
 
         public Dictionary<int, IRenderer> Assets { get; private set; }
         public Dictionary<int, IRenderer> InitObjectStack { get; set; }
+        public Dictionary<int, IRenderer> UpdateObjectStack { get; set; }
         public RenderBoundingBox SelectedEntryBBox { get; private set; }
         public RenderLine SelectedEntryLine { get; private set; }
         private int selectedEntryLineID;
@@ -29,6 +30,8 @@ namespace Rendering.Graphics
 
         public GraphicsClass()
         {
+            InitObjectStack = new Dictionary<int, IRenderer>();
+            UpdateObjectStack = new Dictionary<int, IRenderer>();
             Assets = new Dictionary<int, IRenderer>();
             PickingRayBBox = new RenderBoundingBox();
         }
@@ -96,6 +99,7 @@ namespace Rendering.Graphics
         public bool Frame()
         {
             ClearRenderStack();
+            ClearUpdateStack();
             return Render();
         }
         public bool Render()
@@ -127,6 +131,14 @@ namespace Rendering.Graphics
                 asset.Value.InitBuffers(D3D.Device);
                 Assets.Add(asset.Key, asset.Value);
             }
+            InitObjectStack.Clear();
+        }
+
+        private void ClearUpdateStack()
+        {
+            foreach (KeyValuePair<int, IRenderer> asset in InitObjectStack)
+                asset.Value.UpdateBuffers(D3D.DeviceContext);
+
             InitObjectStack.Clear();
         }
 

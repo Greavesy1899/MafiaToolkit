@@ -504,6 +504,18 @@ namespace Mafia2Tool
             fObject.FrameNameTableFlags = (NameTableFlags)FrameNameTableFlags.GetCurrentValue();
             Graphics.BuildSelectedEntry(fObject.RefID);
             UpdateMatrices();
+            ApplyChangesToRenderable(fObject);
+        }
+
+        private void ApplyChangesToRenderable(FrameObjectBase obj)
+        {
+            if (obj is FrameObjectArea)
+            {
+                FrameObjectArea area = (obj as FrameObjectArea);
+                RenderBoundingBox bbox = (Graphics.Assets[obj.RefID] as RenderBoundingBox);
+                bbox.Init(area.Bounds);
+                Graphics.UpdateObjectStack.Add(obj.RefID, bbox);
+            }
         }
 
         private FrameObjectBase CreateSingleMesh()

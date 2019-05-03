@@ -407,7 +407,6 @@ namespace Mafia2Tool
         private void HandleFile(ListViewItem item)
         {
             MaterialTool mTool;
-            FrameResourceTool fTool;
             CollisionEditor cTool;
             ActorEditor aTool;
             PrefabLoader prefabs;
