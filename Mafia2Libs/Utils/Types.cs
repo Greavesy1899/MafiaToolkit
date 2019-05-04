@@ -103,45 +103,69 @@ namespace Utils.Types
         private float m22;
         private Vector3 eulerRotation;
 
+        [Browsable(false)]
         public float M00 {
             get { return m00; }
             set { m00 = value; }
         }
+        [Browsable(false)]
         public float M01 {
             get { return m01; }
             set { m01 = value; }
         }
+        [Browsable(false)]
         public float M02 {
             get { return m02; }
             set { m02 = value; }
         }
+        [Browsable(false)]
         public float M10 {
             get { return m10; }
             set { m10 = value; }
         }
+        [Browsable(false)]
         public float M11 {
             get { return m11; }
             set { m11 = value; }
         }
+        [Browsable(false)]
         public float M12 {
             get { return m12; }
             set { m12 = value; }
         }
+        [Browsable(false)]
         public float M20 {
             get { return m20; }
             set { m20 = value; }
         }
+        [Browsable(false)]
         public float M21 {
             get { return m21; }
             set { m21 = value; }
         }
+        [Browsable(false)]
         public float M22 {
             get { return m22; }
             set { m22 = value; }
         }
+
+        [Browsable(false)]
         public Vector3 EulerRotation {
             get { return eulerRotation; }
             set { eulerRotation = value; }
+        }
+
+        public float RotationX {
+            get { return eulerRotation.X; }
+            set { eulerRotation.X = value; }
+        }
+        public float RotationY {
+            get { return eulerRotation.X; }
+            set { eulerRotation.X = value; }
+        }
+        public float RotationZ {
+            get { return eulerRotation.X; }
+            set { eulerRotation.X = value; }
         }
 
         /// <summary>
@@ -318,7 +342,7 @@ namespace Utils.Types
 
         public override string ToString()
         {
-            return $"Matrix";
+            return eulerRotation.ToString();
         }
 
         // Returns a matrix with all elements set to zero (RO).
@@ -375,8 +399,25 @@ namespace Utils.Types
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class TransformMatrix
     {
+        private Vector3 position;
+
         public Matrix33 Rotation { get; set; }
-        public Vector3 Position { get; set; }
+
+        [Browsable(false)]
+        public Vector3 Position { get { return position; } set { position = value; } }
+
+        public float PositionX {
+            get { return position.X; }
+            set { position.X = value; }
+        }
+        public float PositionY {
+            get { return position.Y; }
+            set { position.Y = value; }
+        }
+        public float PositionZ {
+            get { return position.Z; }
+            set { position.Z = value; }
+        }
 
         /// <summary>
         /// Construct empty TransformMatrix.

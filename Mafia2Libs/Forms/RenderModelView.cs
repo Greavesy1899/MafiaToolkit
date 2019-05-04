@@ -83,8 +83,8 @@ namespace Mafia2Tool
                     var dx = 0.25f * (mousePos.X - lastMousePos.X);
                     var dy = 0.25f * (mousePos.Y - lastMousePos.Y);
 
-                    Graphics.Camera.Pitch(dy);
-                    Graphics.Camera.Yaw(dx);
+                    //Graphics.Camera.Pitch(dy);
+                    //Graphics.Camera.Yaw(dx);
                 }
             }
             lastMousePos = mousePos;

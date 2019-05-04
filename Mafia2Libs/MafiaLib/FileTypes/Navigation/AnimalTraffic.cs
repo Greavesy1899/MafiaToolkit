@@ -112,6 +112,9 @@ namespace ResourceTypes.Navigation
                     vector.unk0 = reader.ReadByte(); //7 or 4
                     path.vectors[x] = vector;
                 }
+                if (path.unk2 == 2)
+                    path.unk3 = reader.ReadByte();
+
                 paths[i] = path;
             }
         }
@@ -151,6 +154,8 @@ namespace ResourceTypes.Navigation
                         Vector3Extenders.WriteToFile(path.vectors[x].vectors[1], writer);
                         writer.Write(path.vectors[x].unk0);
                     }
+                    if (path.unk2 == 2)
+                        writer.Write(path.unk3);
                 }
             }
         }

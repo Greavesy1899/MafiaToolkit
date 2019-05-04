@@ -15,6 +15,31 @@ namespace ResourceTypes.FrameResource
             set { bounds = value; }
         }
 
+        public float BoundsMinimumX {
+            get { return bounds.Minimum.X; }
+            set { bounds.Minimum.X = value; }
+        }
+        public float BoundsMinimumY {
+            get { return bounds.Minimum.Y; }
+            set { bounds.Minimum.Y = value; }
+        }
+        public float BoundsMinimumZ {
+            get { return bounds.Minimum.Z; }
+            set { bounds.Minimum.Z = value; }
+        }
+        public float BoundsMaximumX {
+            get { return bounds.Maximum.X; }
+            set { bounds.Maximum.X = value; }
+        }
+        public float BoundsMaximumY {
+            get { return bounds.Maximum.Y; }
+            set { bounds.Maximum.Y = value; }
+        }
+        public float BoundsMaximumZ {
+            get { return bounds.Maximum.Z; }
+            set { bounds.Maximum.Z = value; }
+        }
+
         public FrameObjectDummy(BinaryReader reader) : base()
         {
             ReadFromFile(reader);

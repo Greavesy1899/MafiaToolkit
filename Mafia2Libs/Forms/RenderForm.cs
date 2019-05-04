@@ -680,17 +680,20 @@ namespace Mafia2Tool
         private void Pick(int sx, int sy)
         {
             ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
+            Console.WriteLine(ray);
             //toolStripStatusLabel4.Text = string.Format("{0}, {1}", ray.Position, ray.Direction);
             //FrameObjectSingleMesh selected = null;
             //float seltMin = float.MaxValue;
 
+            float lowest = float.MaxValue;
+            int lowestRefID = -1;
             foreach (KeyValuePair<int, IRenderer> model in Graphics.Assets)
             {
+                Ray tempRay = ray;
                 var inverseMat = Matrix.Invert(model.Value.Transform);
-                ray.Direction = Vector3.TransformNormal(ray.Direction, inverseMat);
-                ray.Position = Vector3.TransformCoordinate(ray.Position, inverseMat);
-                ray.Direction.Normalize();
-
+                tempRay.Direction = Vector3.TransformNormal(tempRay.Direction, inverseMat);
+                tempRay.Position = Vector3.TransformCoordinate(tempRay.Position, inverseMat);
+                tempRay.Direction.Normalize();
                 float tmin1 = 0.0f;
                 float tmin2 = 0.0f;
 
@@ -705,126 +708,17 @@ namespace Mafia2Tool
                    model.Value.Transform.M43 + model.Value.BBox.Maximum.Z
                    );
                 BoundingBox tempBox0 = new BoundingBox(minVector, maxVector);
-                BoundingBox tempBox1 = model.Value.BBox;
+                Console.WriteLine(tempRay);
+                Console.WriteLine(tempBox0);
+                if (tempRay.Intersects(ref tempBox0, out tmin1)) continue;
 
-                if (ray.Intersects(ref tempBox0, out tmin1)) { }
-                if (ray.Intersects(ref tempBox1, out tmin2)) { }
-                Debug.WriteLine(tmin1);
-                Debug.WriteLine(tmin2);
+                if (lowest > tmin1)
+                {
+                    lowest = tmin1;
+                    lowestRefID = model.Key;
+                }
             }
-
-            //foreach (KeyValuePair<int, RenderModel> model in Graphics.Models)
-            //{
-            //    Matrix worldMat = model.Value.Transform;
-            //    var invWorld = Matrix.Invert(worldMat);
-            //    //ray.Direction = Vector3.TransformNormal(ray.Direction, invWorld);
-            //    //ray.Position = Vector3.TransformCoordinate(ray.Position, invWorld);
-            //    //ray.Direction.Normalize();
-
-            //    FrameObjectSingleMesh objBase = null;
-            //    foreach (KeyValuePair<int, object> obj in SceneData.FrameResource.FrameObjects)
-            //    {
-            //        if ((obj.Value as FrameObjectBase).RefID == model.Key)
-            //            objBase = (obj.Value as FrameObjectSingleMesh);
-            //    }
-
-            //    if (objBase == null)
-            //        continue;
-
-            //    Vector3 minVector = new Vector3(
-            //    model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Minimum.X,
-            //    model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Minimum.Y,
-            //    model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Minimum.Z
-            //    );
-            //    Vector3 maxVector = new Vector3(
-            //       model.Value.Transform.M41 + model.Value.BoundingBox.Boundings.Maximum.X,
-            //       model.Value.Transform.M42 + model.Value.BoundingBox.Boundings.Maximum.Y,
-            //       model.Value.Transform.M43 + model.Value.BoundingBox.Boundings.Maximum.Z
-            //       );
-            //   BoundingBox tempBox0 = new BoundingBox(minVector, maxVector);
-            //    BoundingBox tempBox1 = objBase.Boundings;
-            //    float tmin;
-
-            //    if (!ray.Intersects(ref tempBox0, out tmin))
-            //        continue;
-
-            //    Console.WriteLine("intersect with {0} {1}", objBase.Name.String, tmin);
-
-            //    if (tmin < seltMin)
-            //    {
-            //        selected = objBase;
-            //        seltMin = tmin;
-            //    }
-
-            //    //float maxT = float.MaxValue;
-            //    //for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
-            //    //{
-            //    //    var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
-            //    //    var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
-            //    //    var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
-            //    //    float t = 0;
-            //    //    if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-            //    //    if (!(t < tmin || t < 0)) continue;
-            //    //    maxT = t;
-            //    //}
-
-            //    //float curTmin = float.MaxValue;
-            //    //if (ray.Position.X > tempBox0.Minimum.X && ray.Position.X < tempBox0.Maximum.X)
-            //    //{
-            //    //    if (ray.Position.Y > tempBox0.Minimum.Y && ray.Position.Y < tempBox0.Maximum.Y)
-            //    //    {
-            //    //        if (ray.Position.Z > tempBox0.Minimum.Z && ray.Position.Z < tempBox0.Maximum.Z)
-            //    //        {
-
-            //    //            for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
-            //    //            {
-            //    //                float tmin2 = float.MaxValue/2;
-            //    //                var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
-            //    //                var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
-            //    //                var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
-            //    //                float t = 0;
-            //    //                if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-            //    //                // find the closest intersection, exclude intersections behind camera
-            //    //                if (!(t < tmin2 || t < 0)) continue;
-            //    //                tmin2 = t;
-            //    //                if (curTmin < tmin2)
-            //    //                {
-            //    //                    selected = objBase;
-            //    //                }
-            //    //            }
-            //    //        }
-            //    //    }
-            //    //}
-            //    //ray.Intersects(ref tempBox0, out tmin0);
-            //    //ray.Intersects(ref tempBox1, out tmin1);
-            //    //Console.WriteLine(tmin0 + " " + tmin1);
-            //    //continue;
-
-            //    //Console.WriteLine("Intersection!, " + objBase.Name.String);
-            //    //float tmin2 = float.MaxValue;
-            //    //for (var i = 0; i < model.Value.LODs[0].Indices.Length / 3; i++)
-            //    //{
-            //    //    var v0 = model.Value.Transform.M41 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3]].Position;
-            //    //    var v1 = model.Value.Transform.M42 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 1]].Position;
-            //    //    var v2 = model.Value.Transform.M43 + model.Value.LODs[0].Vertices[model.Value.LODs[0].Indices[i * 3 + 2]].Position;
-            //    //    float t = 0;
-            //    //    if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-            //    //    // find the closest intersection, exclude intersections behind camera
-            //    //    if (!(t < tmin2 || t < 0)) continue;
-            //    //    tmin2 = t;
-            //    //}
-            //    //if (tmin < tmin2)
-            //    //{
-            //    //    selected = objBase;
-            //    //}
-            //}
-
-            //if (selected != null)
-            //{
-            //    Graphics.BuildSelectedEntry(selected);
-            //    Console.WriteLine(selected.Name.String);
-            //    UpdateCurrentEntryData(selected);
-            //}
+            Graphics.BuildSelectedEntry(lowestRefID);
         }
 
         public void Shutdown()

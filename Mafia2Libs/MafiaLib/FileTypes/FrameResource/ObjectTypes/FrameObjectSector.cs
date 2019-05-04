@@ -12,7 +12,7 @@ namespace ResourceTypes.FrameResource
         int unk_08_int;
         int unk_09_int;
         float[] unk_10_floats;
-        BoundingBox unk_11_bounds;
+        BoundingBox unkBounds;
         Vector3 unk_13_vector3;
         Vector3 unk_14_vector3;
         Hash unk_15_hash;
@@ -30,8 +30,8 @@ namespace ResourceTypes.FrameResource
             set { unk_10_floats = value; }
         }
         public BoundingBox Unk11 {
-            get { return unk_11_bounds ; }
-            set { unk_11_bounds = value; }
+            get { return unkBounds ; }
+            set { unkBounds = value; }
         }
         public Vector3 Unk13 {
             get { return unk_13_vector3; }
@@ -46,9 +46,34 @@ namespace ResourceTypes.FrameResource
             set { unk_15_hash = value; }
         }
 
+        public float BoundsMinimumX {
+            get { return unkBounds.Minimum.X; }
+            set { unkBounds.Minimum.X = value; }
+        }
+        public float BoundsMinimumY {
+            get { return unkBounds.Minimum.Y; }
+            set { unkBounds.Minimum.Y = value; }
+        }
+        public float BoundsMinimumZ {
+            get { return unkBounds.Minimum.Z; }
+            set { unkBounds.Minimum.Z = value; }
+        }
+        public float BoundsMaximumX {
+            get { return unkBounds.Maximum.X; }
+            set { unkBounds.Maximum.X = value; }
+        }
+        public float BoundsMaximumY {
+            get { return unkBounds.Maximum.Y; }
+            set { unkBounds.Maximum.Y = value; }
+        }
+        public float BoundsMaximumZ {
+            get { return unkBounds.Maximum.Z; }
+            set { unkBounds.Maximum.Z = value; }
+        }
+
         public FrameObjectSector() : base()
         {
-            unk_11_bounds = new BoundingBox();
+            unkBounds = new BoundingBox();
             unk_13_vector3 = new Vector3(0);
             unk_14_vector3 = new Vector3(0);
             unk_15_hash = new Hash();
@@ -56,7 +81,7 @@ namespace ResourceTypes.FrameResource
 
         public FrameObjectSector(FrameObjectSector other) : base(other)
         {
-            unk_11_bounds = other.unk_11_bounds;
+            unkBounds = other.unkBounds;
             unk_13_vector3 = other.unk_13_vector3;
             unk_14_vector3 = other.unk_14_vector3;
             unk_15_hash = new Hash(unk_15_hash.String);
@@ -79,7 +104,7 @@ namespace ResourceTypes.FrameResource
                 unk_10_floats[i] = reader.ReadSingle();
             }
 
-            unk_11_bounds = BoundingBoxExtenders.ReadFromFile(reader);
+            unkBounds = BoundingBoxExtenders.ReadFromFile(reader);
             unk_13_vector3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             unk_14_vector3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             unk_15_hash = new Hash(reader);
@@ -97,7 +122,7 @@ namespace ResourceTypes.FrameResource
                 writer.Write(unk_10_floats[i]);
             }
 
-            unk_11_bounds.WriteToFile(writer);
+            unkBounds.WriteToFile(writer);
             unk_13_vector3.WriteToFile(writer);
             unk_14_vector3.WriteToFile(writer);
             unk_15_hash.WriteToFile(writer);

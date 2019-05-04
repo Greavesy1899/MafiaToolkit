@@ -35,6 +35,32 @@ namespace ResourceTypes.FrameResource
             get { return unkBounds; }
             set { unkBounds = value; }
         }
+
+        public float BoundsMinimumX {
+            get { return unkBounds.Minimum.X; }
+            set { unkBounds.Minimum.X = value; }
+        }
+        public float BoundsMinimumY {
+            get { return unkBounds.Minimum.Y; }
+            set { unkBounds.Minimum.Y = value; }
+        }
+        public float BoundsMinimumZ {
+            get { return unkBounds.Minimum.Z; }
+            set { unkBounds.Minimum.Z = value; }
+        }
+        public float BoundsMaximumX {
+            get { return unkBounds.Maximum.X; }
+            set { unkBounds.Maximum.X = value; }
+        }
+        public float BoundsMaximumY {
+            get { return unkBounds.Maximum.Y; }
+            set { unkBounds.Maximum.Y = value; }
+        }
+        public float BoundsMaximumZ {
+            get { return unkBounds.Maximum.Z; }
+            set { unkBounds.Maximum.Z = value; }
+        }
+
         public FrameObjectArea(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
