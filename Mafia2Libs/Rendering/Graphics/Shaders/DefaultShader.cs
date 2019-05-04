@@ -217,7 +217,6 @@ namespace Rendering.Graphics
                 ShaderResourceView texture = RenderStorageSingleton.Instance.TextureCache[0];
                 context.PixelShader.SetShaderResource(0, texture);
                 ShaderParams = parameters;
-                Debug.WriteLine("Missing material!");
             }
             else
             {

@@ -15,7 +15,7 @@ namespace ResourceTypes.FrameResource
         byte unk_14_byte;
         int meshIndex;
         int materialIndex;
-        Hash unk_17_textureHash;
+        Hash omTextureHash;
         byte unk_18_byte1;
         byte unk_18_byte2;
         byte unk_18_byte3;
@@ -41,9 +41,9 @@ namespace ResourceTypes.FrameResource
             get { return materialIndex; }
             set { materialIndex = value; }
         }
-        public Hash Unk17 {
-            get { return unk_17_textureHash; }
-            set { unk_17_textureHash = value; }
+        public Hash OMTextureHash {
+            get { return omTextureHash; }
+            set { omTextureHash = value; }
         }
         public byte Unk_18_1 {
             get { return unk_18_byte1; }
@@ -74,7 +74,7 @@ namespace ResourceTypes.FrameResource
             unk_14_byte = other.unk_14_byte;
             meshIndex = other.meshIndex;
             materialIndex = other.materialIndex;
-            unk_17_textureHash = new Hash(other.unk_17_textureHash.String);
+            omTextureHash = new Hash(other.omTextureHash.String);
             unk_18_byte1 = other.unk_18_byte1;
             unk_18_byte2 = other.unk_18_byte2;
             unk_18_byte3 = other.unk_18_byte3;
@@ -91,7 +91,7 @@ namespace ResourceTypes.FrameResource
             meshIndex = 0;
             materialIndex = 0;
             transformMatrix = new TransformMatrix();
-            unk_17_textureHash = new Hash();
+            omTextureHash = new Hash();
             unk_18_byte1 = 0;
             unk_18_byte2 = 0;
             unk_18_byte3 = 0;
@@ -105,7 +105,7 @@ namespace ResourceTypes.FrameResource
             unk_14_byte = reader.ReadByte();
             meshIndex = reader.ReadInt32();
             materialIndex = reader.ReadInt32();
-            unk_17_textureHash = new Hash(reader);
+            omTextureHash = new Hash(reader);
             unk_18_byte1 = reader.ReadByte();
             unk_18_byte2 = reader.ReadByte();
             unk_18_byte3 = reader.ReadByte();
@@ -119,7 +119,7 @@ namespace ResourceTypes.FrameResource
             writer.Write(unk_14_byte);
             writer.Write(meshIndex);
             writer.Write(materialIndex);
-            unk_17_textureHash.WriteToFile(writer);
+            omTextureHash.WriteToFile(writer);
             writer.Write(unk_18_byte1);
             writer.Write(unk_18_byte2);
             writer.Write(unk_18_byte3);

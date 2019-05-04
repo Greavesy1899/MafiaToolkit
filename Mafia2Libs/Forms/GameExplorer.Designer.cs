@@ -65,6 +65,7 @@ namespace Mafia2Tool
             this.runMafiaIIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.creditsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.VersionLabel = new System.Windows.Forms.ToolStripMenuItem();
             this.dropdownView = new System.Windows.Forms.ToolStripDropDownButton();
             this.ViewStripMenuIcon = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewStripMenuDetails = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,7 +78,6 @@ namespace Mafia2Tool
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.VersionLabel = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -385,30 +385,37 @@ namespace Mafia2Tool
             // openMafiaIIToolStripMenuItem
             // 
             this.openMafiaIIToolStripMenuItem.Name = "openMafiaIIToolStripMenuItem";
-            this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.openMafiaIIToolStripMenuItem.Text = "$BTN_OPEN_MII";
             this.openMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.OpenMafiaIIClicked);
             // 
             // runMafiaIIToolStripMenuItem
             // 
             this.runMafiaIIToolStripMenuItem.Name = "runMafiaIIToolStripMenuItem";
-            this.runMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.runMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.runMafiaIIToolStripMenuItem.Text = "$BTN_RUN_MII";
             this.runMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.RunMafiaIIClicked);
             // 
             // creditsToolStripMenuItem
             // 
             this.creditsToolStripMenuItem.Name = "creditsToolStripMenuItem";
-            this.creditsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.creditsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.creditsToolStripMenuItem.Text = "$CREDITS";
             this.creditsToolStripMenuItem.Click += new System.EventHandler(this.OnCredits_Pressed);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exitToolStripMenuItem.Text = "$EXIT";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolkitClicked);
+            // 
+            // VersionLabel
+            // 
+            this.VersionLabel.Enabled = false;
+            this.VersionLabel.Name = "VersionLabel";
+            this.VersionLabel.Size = new System.Drawing.Size(160, 22);
+            this.VersionLabel.Text = "Toolkit v";
             // 
             // dropdownView
             // 
@@ -520,13 +527,6 @@ namespace Mafia2Tool
             // MafiaIIBrowser
             // 
             this.MafiaIIBrowser.Description = "$SELECT_MII_FOLDER";
-            // 
-            // VersionLabel
-            // 
-            this.VersionLabel.Enabled = false;
-            this.VersionLabel.Name = "VersionLabel";
-            this.VersionLabel.Size = new System.Drawing.Size(180, 22);
-            this.VersionLabel.Text = "Toolkit v";
             // 
             // GameExplorer
             // 

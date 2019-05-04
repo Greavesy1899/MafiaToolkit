@@ -71,6 +71,7 @@ artifacts/
 *.scc
 *.m2t
 *.fbx
+*.png
 
 # Chutzpah Test files
 _Chutzpah*
