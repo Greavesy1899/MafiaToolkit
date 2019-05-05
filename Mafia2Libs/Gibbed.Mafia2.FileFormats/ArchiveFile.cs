@@ -371,11 +371,13 @@ namespace Gibbed.Mafia2.FileFormats
                     case "FxActor":
                     case "FxAnimSet":
                     case "Translokator":
-                    case "AudioSectors":
                     case "Speech":
                     case "SoundTable":
                     case "AnimalTrafficPaths":
                         resourceEntry = WriteBasicEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "AudioSectors":
+                        resourceEntry = WriteAudioSectorEntry(resourceEntry, nodes, sdsFolder, sddescNode);
                         break;
                     case "Animated Texture":
                         resourceEntry = WriteAnimatedTextureEntry(resourceEntry, nodes, sdsFolder, sddescNode);
@@ -576,7 +578,8 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = ReadBasicEntry(resourceXML, "Collisions_" + i + ".col");
                         break;
                     case "AudioSectors":
-                        saveName = ReadBasicEntry(resourceXML, "AudioSectors_" + i + ".aus");
+                        ReadAudioSectorEntry(entry, resourceXML, itemNames[i], extractedPath + file.Name);
+                        saveName = itemNames[i];
                         break;
                     case "SoundTable":
                         saveName = ReadBasicEntry(resourceXML, "SoundTable_" + i + ".stbl");
@@ -919,6 +922,37 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.Data = stream.GetBuffer();
             }
 
+            return entry;
+        }
+        public void ReadAudioSectorEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string soundDir)
+        {
+            string[] dirs = name.Split('/');
+
+            string sounddir = soundDir;
+            for (int z = 0; z != dirs.Length - 1; z++)
+            {
+                sounddir += "/" + dirs[z];
+                Directory.CreateDirectory(sounddir);
+            }
+            sounddir += "/" + dirs[dirs.Length-1];
+            using (BinaryWriter writer = new BinaryWriter(File.Open(sounddir, FileMode.Create)))
+                writer.Write(entry.Data);
+
+            resourceXML.WriteElementString("File", name);
+        }
+        public ResourceEntry WriteAudioSectorEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            string file;
+            nodes.Current.MoveToNext();
+            file = nodes.Current.Value;
+
+            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
+            {
+                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+            }
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+            descNode.InnerText = file;
             return entry;
         }
         public void ReadSoundEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string soundDir)
