@@ -16,6 +16,7 @@ using ResourceTypes.Navigation;
 using ResourceTypes.Prefab;
 using ResourceTypes.Sound;
 using ResourceTypes.SDSConfig;
+using Utils.Lua;
 
 namespace Mafia2Tool
 {
@@ -339,6 +340,22 @@ namespace Mafia2Tool
             }
         }
 
+        private void HandleLuaFile(FileInfo file)
+        {
+            bool doDecompile = false;
+            using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+            {
+                if (reader.ReadInt32() == 1635077147)
+                    doDecompile = true;
+            }
+
+            if (doDecompile)
+                LuaHelper.ReadFile(file);
+            else Process.Start(file.FullName);
+
+            OnRefreshButtonClicked(null, null);
+        }
+
         /// <summary>
         /// Check extension and return file type string.
         /// </summary>
@@ -518,6 +535,10 @@ namespace Mafia2Tool
                     return;
                 case "AUS":
                     soundSector = new SoundSectorLoader((FileInfo)item.Tag);
+                    return;
+                case "LUA":
+                case "AP":
+                    HandleLuaFile((FileInfo)item.Tag);
                     return;
                 default:
                     Process.Start(((FileInfo)item.Tag).FullName);

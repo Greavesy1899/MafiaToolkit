@@ -112,13 +112,13 @@ namespace Rendering.Graphics
             ProjectionMatrix = Matrix.PerspectiveFovRH((float)(Math.PI / 4), (ToolkitSettings.Width / ToolkitSettings.Height), ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
         }
 
-        public Ray GetPickingRay(Vector2 sp, Vector2 screenDims)
+        public Ray GetPickingRay(Vector2 pos, Vector2 screenDims)
         {
             Matrix pm, v;
             pm = ProjectionMatrix;
             v = ViewMatrix;
-            var vx = (2.0f * sp.X / screenDims.X - 1.0f) / pm.M11;
-            var vy = (-2.0f * sp.Y / screenDims.Y + 1.0f) / pm.M22;
+            var vx = (2.0f * pos.X / screenDims.X - 1.0f) / pm.M11;
+            var vy = (-2.0f * pos.Y / screenDims.Y + 1.0f) / pm.M22;
             var ray = new Ray(new Vector3(), new Vector3(vx, vy, 1.0f));
             var invView = Matrix.Invert(v);
             var toWorld = invView;

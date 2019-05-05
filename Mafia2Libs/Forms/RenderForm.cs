@@ -679,46 +679,47 @@ namespace Mafia2Tool
 
         private void Pick(int sx, int sy)
         {
-            ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
-            Console.WriteLine(ray);
-            //toolStripStatusLabel4.Text = string.Format("{0}, {1}", ray.Position, ray.Direction);
-            //FrameObjectSingleMesh selected = null;
-            //float seltMin = float.MaxValue;
-
             float lowest = float.MaxValue;
             int lowestRefID = -1;
             foreach (KeyValuePair<int, IRenderer> model in Graphics.Assets)
             {
-                Ray tempRay = ray;
-                var inverseMat = Matrix.Invert(model.Value.Transform);
-                tempRay.Direction = Vector3.TransformNormal(tempRay.Direction, inverseMat);
-                tempRay.Position = Vector3.TransformCoordinate(tempRay.Position, inverseMat);
-                tempRay.Direction.Normalize();
-                float tmin1 = 0.0f;
-                float tmin2 = 0.0f;
-
-                Vector3 minVector = new Vector3(
-                model.Value.Transform.M41 + model.Value.BBox.Minimum.X,
-                model.Value.Transform.M42 + model.Value.BBox.Minimum.Y,
-                model.Value.Transform.M43 + model.Value.BBox.Minimum.Z
-                );
-                Vector3 maxVector = new Vector3(
-                   model.Value.Transform.M41 + model.Value.BBox.Maximum.X,
-                   model.Value.Transform.M42 + model.Value.BBox.Maximum.Y,
-                   model.Value.Transform.M43 + model.Value.BBox.Maximum.Z
-                   );
-                BoundingBox tempBox0 = new BoundingBox(minVector, maxVector);
-                Console.WriteLine(tempRay);
-                Console.WriteLine(tempBox0);
-                if (tempRay.Intersects(ref tempBox0, out tmin1)) continue;
-
-                if (lowest > tmin1)
+                if (model.Value is RenderModel)
                 {
-                    lowest = tmin1;
+                    RenderModel mesh = (model.Value as RenderModel);
+                    Ray tempRay = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
+                    var inverseMat = Matrix.Invert(model.Value.Transform);
+                    tempRay.Direction = Vector3.TransformNormal(tempRay.Direction, inverseMat);
+                    tempRay.Position = Vector3.TransformCoordinate(tempRay.Position, inverseMat);
+                    //tempRay.Direction.Normalize();
+                    tempRay.Direction = new Vector3(tempRay.Direction.X, tempRay.Direction.Y, -tempRay.Direction.Z);
+                    float tmin = float.MaxValue;
+                    BoundingBox tempBox1 = model.Value.BBox;
+                    if (!tempRay.Intersects(ref tempBox1, out tmin)) continue;
+                    tmin = float.MaxValue;
+                    for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
+                    {
+                        var v0 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3]].Position;
+                        var v1 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 1]].Position;
+                        var v2 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position;
+                        float t;
+
+                        if (!tempRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+                        // find the closest intersection, exclude intersections behind camera
+                        if (!(t < tmin || t < 0)) continue;
+                        tmin = t;
+                    }
+
+                    if (tmin != 0.0f)
+                        Console.WriteLine(tmin);
+
+                    lowest = tmin;
                     lowestRefID = model.Key;
+                    ray = tempRay;
                 }
             }
             Graphics.BuildSelectedEntry(lowestRefID);
+            TreeNode[] nodes = dSceneTree.treeView1.Nodes.Find(lowestRefID.ToString(), true);
+            dPropertyGrid.SetObjectOnPropertyGrid((nodes.Length > 0) ? nodes[0].Tag : null);
         }
 
         public void Shutdown()
@@ -839,7 +840,7 @@ namespace Mafia2Tool
 
         }
 
-        private void OpenEntryContext(object sender, System.ComponentModel.CancelEventArgs e)
+        private void OpenEntryContext(object sender, CancelEventArgs e)
         {
             EntryMenuStrip.Items[0].Visible = false;
             EntryMenuStrip.Items[1].Visible = false;

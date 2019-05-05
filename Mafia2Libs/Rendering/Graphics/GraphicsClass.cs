@@ -217,6 +217,7 @@ namespace Rendering.Graphics
                 {
                     SelectedEntryBBox = new RenderBoundingBox();
                     SelectedEntryBBox.SetTransform(mesh.Transform);
+                    SelectedEntryBBox.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
                     SelectedEntryBBox.Init(mesh.BoundingBox.BBox);
                     SelectedEntryBBox.InitBuffers(D3D.Device);
                 }

@@ -125,6 +125,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="UnluacNET, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\UnluacNET.dll</HintPath>
+    </Reference>
     <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=3.0.6.0, Culture=neutral, PublicKeyToken=5cded1a1a0a7b481, processorArchitecture=MSIL">
       <HintPath>..\packages\DockPanelSuite.3.0.6\lib\net40\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
     </Reference>
@@ -294,6 +298,7 @@
     <Compile Include="Rendering\System\FPSClass.cs" />
     <Compile Include="Utils\BoundExtensions.cs" />
     <Compile Include="MafiaLib\Utils\Enums.cs" />
+    <Compile Include="Utils\LuaHelper.cs" />
     <Compile Include="Utils\StringHelpers.cs" />
     <Compile Include="Utils\Half.cs" />
     <Compile Include="Utils\HalfHelper.cs" />
@@ -460,7 +465,12 @@
     <Content Include="libs\Gibbed.IO.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="libs\ICSharpCode.SharpZipLib.dll" />
+    <Content Include="libs\ICSharpCode.SharpZipLib.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\UnluacNET.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Localisations\cz_CZ.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
