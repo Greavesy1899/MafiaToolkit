@@ -68,5 +68,26 @@ namespace Mafia2Tool.Forms.Docking
             else
                 node.SelectedImageIndex = node.ImageIndex = 7;
         }
+
+        private void OpenEntryContext(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            EntryMenuStrip.Items[0].Visible = false;
+            EntryMenuStrip.Items[1].Visible = false;
+            EntryMenuStrip.Items[2].Visible = false;
+            EntryMenuStrip.Items[3].Visible = false;
+
+            if (treeView1.SelectedNode == null || treeView1.SelectedNode.Tag == null)
+                e.Cancel = false;
+
+            if (!e.Cancel)
+            {
+                EntryMenuStrip.Items[0].Visible = false;
+                EntryMenuStrip.Items[1].Visible = true;
+                EntryMenuStrip.Items[2].Visible = true;
+
+                if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) || treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.NXSStruct)))
+                    EntryMenuStrip.Items[3].Visible = true;
+            }
+        }
     }
 }

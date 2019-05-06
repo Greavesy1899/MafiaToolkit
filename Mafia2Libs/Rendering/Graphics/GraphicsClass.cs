@@ -162,19 +162,24 @@ namespace Rendering.Graphics
             IRenderer obj;
             Assets.TryGetValue(id, out obj);
 
+            if (SelectedEntryBBox != null)
+            {
+                SelectedEntryBBox.Shutdown();
+                SelectedEntryBBox = null;
+            }
+            if (SelectedEntryLine != null)
+            {
+                SelectedEntryLine.Shutdown();
+                SelectedEntryLine = null;
+                Assets[selectedEntryLineID].DoRender = true;
+            }
+
             if (obj == null)
                 return;
 
             if (obj.GetType() == typeof(RenderLine))
             {
                 RenderLine line = (obj as RenderLine);
-                if (SelectedEntryLine != null)
-                {
-                    SelectedEntryLine.Shutdown();
-                    SelectedEntryLine = null;
-                    Assets[selectedEntryLineID].DoRender = true;
-                }
-
                 if (line != null)
                 {
                     SelectedEntryLine = new RenderLine();
@@ -189,12 +194,6 @@ namespace Rendering.Graphics
             else if(obj.GetType() == typeof(RenderStaticCollision))
             {
                 RenderStaticCollision collision = (obj as RenderStaticCollision);
-                if (SelectedEntryBBox != null)
-                {
-                    SelectedEntryBBox.Shutdown();
-                    SelectedEntryBBox = null;
-                }
-
                 if (collision != null)
                 {
                     SelectedEntryBBox = new RenderBoundingBox();
@@ -207,12 +206,6 @@ namespace Rendering.Graphics
             else if (obj.GetType() == typeof(RenderModel))
             {
                 RenderModel mesh = (obj as RenderModel);
-                if (SelectedEntryBBox != null)
-                {
-                    SelectedEntryBBox.Shutdown();
-                    SelectedEntryBBox = null;
-                }
-
                 if (mesh != null)
                 {
                     SelectedEntryBBox = new RenderBoundingBox();
@@ -225,13 +218,6 @@ namespace Rendering.Graphics
             else if(obj.GetType() == typeof(RenderRoad))
             {
                 RenderRoad road = (obj as RenderRoad);
-                if (SelectedEntryLine != null)
-                {
-                    SelectedEntryLine.Shutdown();
-                    SelectedEntryLine = null;
-                    (Assets[selectedEntryLineID] as RenderRoad).Spline.DoRender = true;
-                }
-
                 if (road.Spline != null)
                 {
                     SelectedEntryLine = new RenderLine();

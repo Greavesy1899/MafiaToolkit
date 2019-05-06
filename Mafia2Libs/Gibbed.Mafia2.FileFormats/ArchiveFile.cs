@@ -420,22 +420,22 @@ namespace Gibbed.Mafia2.FileFormats
                         MessageBox.Show("Did not pack type: " + resourceType, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         break;
                 }
-                resourceEntry.SlotRamRequired = 0;
-                resourceEntry.SlotVramRequired = 0;
-                resourceEntry.OtherRamRequired = 0;
-                resourceEntry.OtherVramRequired = 0;
+                //resourceEntry.SlotRamRequired = 0;
+                //resourceEntry.SlotVramRequired = 0;
+                //resourceEntry.OtherRamRequired = 0;
+                //resourceEntry.OtherVramRequired = 0;
                 resourceNode.AppendChild(typeNameNode);
                 resourceNode.AppendChild(sddescNode);
-                resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotRamRequired", 0)); //(int)resourceEntry.SlotRamRequired));
-                resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotVRamRequired", 0)); //(int)resourceEntry.SlotVramRequired));
-                resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherRamRequired", 0)); //(int)resourceEntry.OtherRamRequired));
-                resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherVramRequired", 0));//(int)resourceEntry.OtherVramRequired));
+                resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotRamRequired", (int)resourceEntry.SlotRamRequired));
+                resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotVRamRequired", (int)resourceEntry.SlotVramRequired));
+                resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherRamRequired", (int)resourceEntry.OtherRamRequired));
+                resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherVramRequired", (int)resourceEntry.OtherVramRequired));
                 rootNode.AppendChild(resourceNode);
                 ResourceEntries.Add(resourceEntry);
-                //SlotRamRequired += resourceEntry.SlotRamRequired;
-                //SlotVramRequired += resourceEntry.SlotVramRequired;
-                //OtherRamRequired += resourceEntry.OtherRamRequired;
-                //OtherVramRequired += resourceEntry.OtherVramRequired;
+                SlotRamRequired += resourceEntry.SlotRamRequired;
+                SlotVramRequired += resourceEntry.SlotVramRequired;
+                OtherRamRequired += resourceEntry.OtherRamRequired;
+                OtherVramRequired += resourceEntry.OtherVramRequired;
             }
 
             ResourceInfoXml = xmlDoc.OuterXml;
@@ -680,8 +680,9 @@ namespace Gibbed.Mafia2.FileFormats
                 texData = reader.ReadBytes((int)reader.BaseStream.Length);
 
             resource = new TextureResource(FNV64.Hash(file), hasMIP, texData);
-            entry.SlotVramRequired = (uint)texData.Length - 128;
-
+            if (resource.NameHash == 3235281003379534705)
+                Console.WriteLine("hello");
+            entry.SlotVramRequired = (uint)(texData.Length - 128);
             if (hasMIP == 1)
             {
                 using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/MIP_" + file, FileMode.Open)))

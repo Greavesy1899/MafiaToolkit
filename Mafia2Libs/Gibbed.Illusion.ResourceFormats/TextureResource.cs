@@ -56,9 +56,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             output.WriteValueU64(this.NameHash, endian);
             output.WriteValueU8(this.Unknown8);
             if (version == 2)
-            {
                 output.WriteValueU8(this.HasMIP);
-            }
             output.WriteBytes(this.Data);
             Log.WriteLine("Packing: " + ToString());
         }
@@ -66,7 +64,7 @@ namespace Gibbed.Mafia2.ResourceFormats
         public void SerializeMIP(ushort version, Stream output, Endian endian)
         {
             output.WriteValueU64(this.NameHash, endian);
-            output.WriteValueU8(this.HasMIP);
+            output.WriteValueU8(this.Unknown8);
             output.WriteBytes(this.Data);
             Log.WriteLine("Packing: " + ToString());
         }
@@ -75,12 +73,9 @@ namespace Gibbed.Mafia2.ResourceFormats
         {
             this.NameHash = input.ReadValueU64(endian);
             this.Unknown8 = input.ReadValueU8();
-            this.HasMIP = input.ReadValueU8();
 
-            //if (this.HasMIP != 0 && this.HasMIP != 1)
-            //{
-            //    throw new InvalidOperationException();
-            //}
+            if(version == 2)
+                this.HasMIP = input.ReadValueU8();
 
             this.Data = input.ReadBytes((int)(input.Length - input.Position));
             Log.WriteLine("Unpacking: " + ToString());
@@ -90,12 +85,6 @@ namespace Gibbed.Mafia2.ResourceFormats
         {
             this.NameHash = input.ReadValueU64(endian);
             this.Unknown8 = input.ReadValueU8();
-
-            if (this.HasMIP != 0 && this.HasMIP != 1)
-            {
-                throw new InvalidOperationException();
-            }
-
             this.Data = input.ReadBytes((int)(input.Length - input.Position));
             Log.WriteLine("Unpacking: " + ToString());
         }

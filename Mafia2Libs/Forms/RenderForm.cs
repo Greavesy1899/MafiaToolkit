@@ -61,8 +61,11 @@ namespace Mafia2Tool
             dSceneTree = new DockSceneTree();
             dPropertyGrid.Show(dockPanel1, DockState.DockRight);
             dSceneTree.Show(dockPanel1, DockState.DockLeft);
-
             dSceneTree.treeView1.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
+            dSceneTree.Export3DButton.Click += new EventHandler(this.Export3DButton_Click);
+            dSceneTree.PreviewButton.Click += new EventHandler(this.PreviewButton_Click);
+            dSceneTree.DeleteButton.Click += new EventHandler(this.DeleteButton_Click);
+            dSceneTree.DuplicateButton.Click += new EventHandler(this.DuplicateButton_Click);
         }
 
         public void PopulateList(FileInfo info)
@@ -681,19 +684,21 @@ namespace Mafia2Tool
         {
             float lowest = float.MaxValue;
             int lowestRefID = -1;
+            ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
             foreach (KeyValuePair<int, IRenderer> model in Graphics.Assets)
             {
                 if (model.Value is RenderModel)
                 {
                     RenderModel mesh = (model.Value as RenderModel);
-                    Ray tempRay = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
-                    var inverseMat = Matrix.Invert(model.Value.Transform);
-                    tempRay.Direction = Vector3.TransformNormal(tempRay.Direction, inverseMat);
-                    tempRay.Position = Vector3.TransformCoordinate(tempRay.Position, inverseMat);
+                    Ray tempRay = ray;
+                    //var inverseMat = Matrix.Invert(model.Value.Transform);
+                    //tempRay.Direction = Vector3.TransformNormal(tempRay.Direction, inverseMat);
+                    //tempRay.Position = Vector3.TransformCoordinate(tempRay.Position, inverseMat);
                     //tempRay.Direction.Normalize();
-                    tempRay.Direction = new Vector3(tempRay.Direction.X, tempRay.Direction.Y, -tempRay.Direction.Z);
+                    //tempRay.Direction = new Vector3(tempRay.Direction.X, tempRay.Direction.Y, -tempRay.Direction.Z);
                     float tmin = float.MaxValue;
                     BoundingBox tempBox1 = model.Value.BBox;
+
                     if (!tempRay.Intersects(ref tempBox1, out tmin)) continue;
                     tmin = float.MaxValue;
                     for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
@@ -704,21 +709,18 @@ namespace Mafia2Tool
                         float t;
 
                         if (!tempRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-                        // find the closest intersection, exclude intersections behind camera
                         if (!(t < tmin || t < 0)) continue;
                         tmin = t;
                     }
 
-                    if (tmin != 0.0f)
-                        Console.WriteLine(tmin);
-
                     lowest = tmin;
                     lowestRefID = model.Key;
-                    ray = tempRay;
                 }
             }
+            toolStripStatusLabel4.Text = ray.Position.ToString();
             Graphics.BuildSelectedEntry(lowestRefID);
             TreeNode[] nodes = dSceneTree.treeView1.Nodes.Find(lowestRefID.ToString(), true);
+            dSceneTree.treeView1.SelectedNode = (nodes.Length > 0) ? nodes[0] : null;
             dPropertyGrid.SetObjectOnPropertyGrid((nodes.Length > 0) ? nodes[0].Tag : null);
         }
 
@@ -838,27 +840,6 @@ namespace Mafia2Tool
                 }
             }
 
-        }
-
-        private void OpenEntryContext(object sender, CancelEventArgs e)
-        {
-            EntryMenuStrip.Items[0].Visible = false;
-            EntryMenuStrip.Items[1].Visible = false;
-            EntryMenuStrip.Items[2].Visible = false;
-            EntryMenuStrip.Items[3].Visible = false;
-
-            if (dSceneTree.treeView1.SelectedNode == null)
-                e.Cancel = false;
-
-            if(!e.Cancel)
-            {
-                EntryMenuStrip.Items[0].Visible = true;
-                EntryMenuStrip.Items[1].Visible = true;
-                EntryMenuStrip.Items[2].Visible = true;
-
-                if ((dSceneTree.treeView1.SelectedNode.Tag != null) && (dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) || dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.NXSStruct)))
-                    EntryMenuStrip.Items[3].Visible = true;
-            }
         }
 
         private void DuplicateButton_Click(object sender, EventArgs e)

@@ -52,6 +52,11 @@
             this.PositionYLabel = new System.Windows.Forms.Label();
             this.PositionXLabel = new System.Windows.Forms.Label();
             this.FrameNameTableFlags = new Utils.Extensions.FlagCheckedListBox();
+            this.EntryMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.DuplicateButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.Export3DButton = new System.Windows.Forms.ToolStripMenuItem();
             this.MainTabControl.SuspendLayout();
             this.SceneTab.SuspendLayout();
             this.EditEntryTab.SuspendLayout();
@@ -61,6 +66,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.PositionZNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PositionYNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PositionXNumeric)).BeginInit();
+            this.EntryMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // MainTabControl
@@ -87,6 +93,7 @@
             // 
             // treeView1
             // 
+            this.treeView1.ContextMenuStrip = this.EntryMenuStrip;
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.ImageIndex = 3;
             this.treeView1.ImageList = this.imageList1;
@@ -347,6 +354,41 @@
             this.FrameNameTableFlags.Size = new System.Drawing.Size(188, 94);
             this.FrameNameTableFlags.TabIndex = 16;
             // 
+            // EntryMenuStrip
+            // 
+            this.EntryMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.PreviewButton,
+            this.DeleteButton,
+            this.DuplicateButton,
+            this.Export3DButton});
+            this.EntryMenuStrip.Name = "EntryMenuStrip";
+            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 114);
+            this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
+            // 
+            // PreviewButton
+            // 
+            this.PreviewButton.Name = "PreviewButton";
+            this.PreviewButton.Size = new System.Drawing.Size(180, 22);
+            this.PreviewButton.Text = "Preview";
+            // 
+            // DeleteButton
+            // 
+            this.DeleteButton.Name = "DeleteButton";
+            this.DeleteButton.Size = new System.Drawing.Size(180, 22);
+            this.DeleteButton.Text = "Delete";
+            // 
+            // DuplicateButton
+            // 
+            this.DuplicateButton.Name = "DuplicateButton";
+            this.DuplicateButton.Size = new System.Drawing.Size(180, 22);
+            this.DuplicateButton.Text = "Duplicate";
+            // 
+            // Export3DButton
+            // 
+            this.Export3DButton.Name = "Export3DButton";
+            this.Export3DButton.Size = new System.Drawing.Size(180, 22);
+            this.Export3DButton.Text = "Export 3D";
+            // 
             // DockSceneTree
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -366,6 +408,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.PositionZNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PositionYNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PositionXNumeric)).EndInit();
+            this.EntryMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -394,5 +437,10 @@
         private System.Windows.Forms.Label PositionXLabel;
         private Utils.Extensions.FlagCheckedListBox FrameNameTableFlags;
         private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.ContextMenuStrip EntryMenuStrip;
+        public System.Windows.Forms.ToolStripMenuItem PreviewButton;
+        public System.Windows.Forms.ToolStripMenuItem DeleteButton;
+        public System.Windows.Forms.ToolStripMenuItem DuplicateButton;
+        public System.Windows.Forms.ToolStripMenuItem Export3DButton;
     }
 }

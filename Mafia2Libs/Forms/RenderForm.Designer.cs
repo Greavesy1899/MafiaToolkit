@@ -48,11 +48,6 @@ namespace Mafia2Tool
             this.ToggleCollisionsButton = new System.Windows.Forms.ToolStripMenuItem();
             this.TEMPCameraSpeed = new System.Windows.Forms.ToolStripTextBox();
             this.NameTableFlagLimit = new System.Windows.Forms.ToolStripTextBox();
-            this.EntryMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.DeleteButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.DuplicateButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.Export3DButton = new System.Windows.Forms.ToolStripMenuItem();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -63,7 +58,6 @@ namespace Mafia2Tool
             this.RenderPanel = new System.Windows.Forms.Panel();
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
             this.ToolbarStrip.SuspendLayout();
-            this.EntryMenuStrip.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -205,45 +199,6 @@ namespace Mafia2Tool
             this.NameTableFlagLimit.Text = "0";
             this.NameTableFlagLimit.TextChanged += new System.EventHandler(this.NameTableFlagValueChanged);
             // 
-            // EntryMenuStrip
-            // 
-            this.EntryMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.PreviewButton,
-            this.DeleteButton,
-            this.DuplicateButton,
-            this.Export3DButton});
-            this.EntryMenuStrip.Name = "EntryMenuStrip";
-            this.EntryMenuStrip.Size = new System.Drawing.Size(125, 92);
-            this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
-            // 
-            // PreviewButton
-            // 
-            this.PreviewButton.Name = "PreviewButton";
-            this.PreviewButton.Size = new System.Drawing.Size(124, 22);
-            this.PreviewButton.Text = "Preview";
-            this.PreviewButton.Click += new System.EventHandler(this.PreviewButton_Click);
-            // 
-            // DeleteButton
-            // 
-            this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(124, 22);
-            this.DeleteButton.Text = "Delete";
-            this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
-            // 
-            // DuplicateButton
-            // 
-            this.DuplicateButton.Name = "DuplicateButton";
-            this.DuplicateButton.Size = new System.Drawing.Size(124, 22);
-            this.DuplicateButton.Text = "Duplicate";
-            this.DuplicateButton.Click += new System.EventHandler(this.DuplicateButton_Click);
-            // 
-            // Export3DButton
-            // 
-            this.Export3DButton.Name = "Export3DButton";
-            this.Export3DButton.Size = new System.Drawing.Size(124, 22);
-            this.Export3DButton.Text = "Export 3D";
-            this.Export3DButton.Click += new System.EventHandler(this.Export3DButton_Click);
-            // 
             // StatusStrip
             // 
             this.StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -325,7 +280,6 @@ namespace Mafia2Tool
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
             this.ToolbarStrip.ResumeLayout(false);
             this.ToolbarStrip.PerformLayout();
-            this.EntryMenuStrip.ResumeLayout(false);
             this.StatusStrip.ResumeLayout(false);
             this.StatusStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -343,16 +297,11 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem ToggleCullingBottle;
         private System.Windows.Forms.StatusStrip StatusStrip;
         private System.Windows.Forms.ToolStripDropDownButton OptionsButton;
-        private System.Windows.Forms.ContextMenuStrip EntryMenuStrip;
-        private System.Windows.Forms.ToolStripMenuItem PreviewButton;
         private System.Windows.Forms.Panel RenderPanel;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripTextBox TEMPCameraSpeed;
-        private System.Windows.Forms.ToolStripMenuItem DeleteButton;
-        private System.Windows.Forms.ToolStripMenuItem DuplicateButton;
         private System.Windows.Forms.ToolStripMenuItem DisableLODButton;
         private System.Windows.Forms.ToolStripTextBox NameTableFlagLimit;
-        private System.Windows.Forms.ToolStripMenuItem Export3DButton;
         private System.Windows.Forms.ToolStripMenuItem ToggleCollisionsButton;
         private System.Windows.Forms.ToolStripMenuItem ToggleModelsButton;
         private System.Windows.Forms.ToolStripDropDownButton EditButton;
