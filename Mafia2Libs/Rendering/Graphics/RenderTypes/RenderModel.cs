@@ -1,7 +1,6 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
-using Mafia2;
 using System.Collections.Generic;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
@@ -11,6 +10,7 @@ using System;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using System.IO;
 using Utils.Settings;
+using Utils.Models;
 
 namespace Rendering.Graphics
 {

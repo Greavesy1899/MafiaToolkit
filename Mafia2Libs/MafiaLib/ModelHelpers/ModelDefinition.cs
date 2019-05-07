@@ -7,7 +7,7 @@ using Utils.SharpDXExtensions;
 using ResourceTypes.BufferPools;
 using Utils.Types;
 
-namespace Mafia2
+namespace Utils.Models
 {
     public class Model
     {
@@ -333,30 +333,6 @@ namespace Mafia2
             BuildVertexBuffer("M2TK." + model.Name + ".VB0");
             frameGeometry.LOD[0].IndexBufferRef = new Hash("M2TK." + model.Name + ".IB0");
             frameGeometry.LOD[0].VertexBufferRef = new Hash("M2TK." + model.Name + ".VB0");
-        }
-    }
-
-    public class BufferLocationStruct
-    {
-        private int poolLoc;
-        private int bufferLoc;
-
-        public int PoolLocation
-        {
-            get { return poolLoc; }
-            set { poolLoc = value; }
-        }
-
-        public int BufferLocation
-        {
-            get { return bufferLoc; }
-            set { bufferLoc = value; }
-        }
-
-        public BufferLocationStruct(int i, int c)
-        {
-            poolLoc = i;
-            bufferLoc = c;
         }
     }
 }

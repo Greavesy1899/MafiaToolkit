@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using ResourceTypes.FrameResource;
 
-namespace Mafia2Tool.Forms.Docking
+namespace Forms.Docking
 {
     public partial class DockSceneTree : DockContent
     {

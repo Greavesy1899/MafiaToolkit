@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Mafia2;
+using Utils.Models;
 using SharpDX;
 
 namespace Utils.SharpDXExtensions

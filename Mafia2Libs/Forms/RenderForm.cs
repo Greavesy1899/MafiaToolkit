@@ -6,20 +6,19 @@ using System.IO;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
-using Mafia2;
 using SharpDX;
 using ResourceTypes.FrameNameTable;
 using ResourceTypes.FrameResource;
-using Utils.Settings;
 using ResourceTypes.BufferPools;
+using Collision = ResourceTypes.Collisions.Collision;
+using Utils.Settings;
 using Utils.Types;
 using Utils.Lang;
-using Mafia2Tool.EditorControls;
+using Forms.EditorControls;
 using Utils.StringHelpers;
-using System.Diagnostics;
-using Mafia2Tool.Forms.Docking;
+using Forms.Docking;
 using WeifenLuo.WinFormsUI.Docking;
-using System.ComponentModel;
+using Utils.Models;
 
 namespace Mafia2Tool
 {
@@ -32,8 +31,6 @@ namespace Mafia2Tool
         private Point lastMousePos;
         private FileInfo fileLocation;
         private Ray ray;
-
-        private int nameTableLimit = 0;
         private bool isEntryReady = false;
 
         //docking panels
@@ -61,11 +58,12 @@ namespace Mafia2Tool
             dSceneTree = new DockSceneTree();
             dPropertyGrid.Show(dockPanel1, DockState.DockRight);
             dSceneTree.Show(dockPanel1, DockState.DockLeft);
-            dSceneTree.treeView1.AfterSelect += new TreeViewEventHandler(this.OnAfterSelect);
-            dSceneTree.Export3DButton.Click += new EventHandler(this.Export3DButton_Click);
-            dSceneTree.PreviewButton.Click += new EventHandler(this.PreviewButton_Click);
-            dSceneTree.DeleteButton.Click += new EventHandler(this.DeleteButton_Click);
-            dSceneTree.DuplicateButton.Click += new EventHandler(this.DuplicateButton_Click);
+            dSceneTree.treeView1.AfterSelect += new TreeViewEventHandler(OnAfterSelect);
+            dSceneTree.Export3DButton.Click += new EventHandler(Export3DButton_Click);
+            dSceneTree.PreviewButton.Click += new EventHandler(PreviewButton_Click);
+            dSceneTree.DeleteButton.Click += new EventHandler(DeleteButton_Click);
+            dSceneTree.DuplicateButton.Click += new EventHandler(DuplicateButton_Click);
+            dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyChanged);
         }
 
         public void PopulateList(FileInfo info)
@@ -428,7 +426,7 @@ namespace Mafia2Tool
 
                 for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
                 {
-                    ResourceTypes.Collisions.Collision.Placement placement = SceneData.Collisions.Placements[i];
+                    Collision.Placement placement = SceneData.Collisions.Placements[i];
                     RenderStaticCollision collision = new RenderStaticCollision();
                     collision.ConvertCollisionToRender(placement, SceneData.Collisions.NXSData[placement.Hash].Data);
 
@@ -690,16 +688,35 @@ namespace Mafia2Tool
                 if (model.Value is RenderModel)
                 {
                     RenderModel mesh = (model.Value as RenderModel);
-                    Ray tempRay = ray;
+                    if (!mesh.DoRender)
+                        continue;
+
+                    Ray tempRay = Graphics.Camera.GetPickingRay(sx, sy, RenderPanel.Size.Height, RenderPanel.Size.Width, mesh.Transform);
+                    ray = tempRay;
                     //var inverseMat = Matrix.Invert(model.Value.Transform);
                     //tempRay.Direction = Vector3.TransformNormal(tempRay.Direction, inverseMat);
                     //tempRay.Position = Vector3.TransformCoordinate(tempRay.Position, inverseMat);
                     //tempRay.Direction.Normalize();
                     //tempRay.Direction = new Vector3(tempRay.Direction.X, tempRay.Direction.Y, -tempRay.Direction.Z);
+
+                    Vector3 minVector = new Vector3(
+                    model.Value.Transform.M41 + model.Value.BBox.Minimum.X,
+                    model.Value.Transform.M42 + model.Value.BBox.Minimum.Y,
+                    model.Value.Transform.M43 + model.Value.BBox.Minimum.Z
+                    );
+                    Vector3 maxVector = new Vector3(
+                       model.Value.Transform.M41 + model.Value.BBox.Maximum.X,
+                       model.Value.Transform.M42 + model.Value.BBox.Maximum.Y,
+                       model.Value.Transform.M43 + model.Value.BBox.Maximum.Z
+                       );
+                    BoundingBox tempBox0 = new BoundingBox(minVector, maxVector);
+
                     float tmin = float.MaxValue;
                     BoundingBox tempBox1 = model.Value.BBox;
 
-                    if (!tempRay.Intersects(ref tempBox1, out tmin)) continue;
+                    if (!tempRay.Intersects(ref tempBox0, out tmin)) continue;
+                    if ((tmin == 0)) continue;
+
                     tmin = float.MaxValue;
                     for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
                     {
@@ -927,7 +944,7 @@ namespace Mafia2Tool
 
         private void NameTableFlagValueChanged(object sender, EventArgs e)
         {
-            nameTableLimit = int.Parse(NameTableFlagLimit.Text);
+            //nameTableLimit = int.Parse(NameTableFlagLimit.Text);
         }
 
         private void EntryField_ValueChanged(object sender, EventArgs e)

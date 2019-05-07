@@ -1,12 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Mafia2;
 using System.Linq;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.FrameResource
 {
+    public enum FrameEntryRefTypes
+    {
+        Mesh,
+        Material,
+        BlendInfo,
+        Skeleton,
+        SkeletonHierachy,
+        Parent1,
+        Parent2
+    }
+
     public class FrameEntry
     {
         //All frame entries have their own ID, this is used so we can link the entries with each other instead of using Indexes, like Mafia II uses.

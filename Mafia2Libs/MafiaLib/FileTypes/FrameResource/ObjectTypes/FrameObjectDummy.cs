@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.IO;
-using Mafia2;
 using SharpDX;
 using Utils.SharpDXExtensions;
 

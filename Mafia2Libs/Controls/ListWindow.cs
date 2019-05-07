@@ -1,5 +1,4 @@
-﻿using Mafia2;
-using ResourceTypes.FrameResource;
+﻿using ResourceTypes.FrameResource;
 using System.Collections.Generic;
 using System.Windows.Forms;
 

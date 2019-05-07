@@ -1,6 +1,6 @@
 ﻿using Utils.Lang;
 
-namespace Mafia2Tool.OptionControls
+namespace Forms.OptionControls
 {
     partial class ModelOptions
     {

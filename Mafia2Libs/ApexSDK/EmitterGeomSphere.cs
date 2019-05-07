@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Mafia2;
 using Utils.StringHelpers;
 
 namespace ApexSDK

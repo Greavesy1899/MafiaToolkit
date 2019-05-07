@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using SharpDX;
-using Mafia2;
 using Utils.SharpDXExtensions;
 
 namespace ApexSDK

@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using SharpDX;
-using Mafia2;
-using static Mafia2.M2TStructure;
+using Utils.Models;
 using Utils.SharpDXExtensions;
+using static Utils.Models.M2TStructure;
 
 namespace ResourceTypes.Collisions
 {

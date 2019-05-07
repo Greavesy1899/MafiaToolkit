@@ -1,10 +1,9 @@
-﻿using Mafia2;
-using System;
+﻿using System;
 using System.Windows.Forms;
 using Utils.Lang;
 using Utils.Settings;
 
-namespace Mafia2Tool.OptionControls
+namespace Forms.OptionControls
 {
     public partial class RenderOptions : UserControl
     {

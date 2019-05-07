@@ -1,5 +1,4 @@
-﻿using Mafia2;
-using SharpDX;
+﻿using SharpDX;
 using System.IO;
 using Utils.SharpDXExtensions;
 

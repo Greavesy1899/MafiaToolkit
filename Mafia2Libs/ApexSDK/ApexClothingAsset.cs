@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Mafia2;
-using SharpDX;
-using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 
 namespace ApexSDK

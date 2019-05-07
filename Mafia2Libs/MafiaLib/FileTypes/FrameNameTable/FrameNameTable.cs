@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ResourceTypes.FrameResource;
-using Mafia2;
 using System.IO;
 using System.Linq;
 using Utils.StringHelpers;

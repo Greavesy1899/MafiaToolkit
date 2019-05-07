@@ -4,7 +4,7 @@ using Utils.Lang;
 using Utils.Logging;
 using Utils.Settings;
 
-namespace Mafia2Tool.OptionControls
+namespace Forms.OptionControls
 {
     public partial class GeneralOptions : UserControl
     {

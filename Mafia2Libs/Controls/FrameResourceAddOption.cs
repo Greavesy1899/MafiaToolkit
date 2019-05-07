@@ -1,8 +1,7 @@
 ﻿using System.Windows.Forms;
 using Utils.Lang;
-using Mafia2;
 
-namespace Mafia2Tool.EditorControls
+namespace Forms.EditorControls
 {
     public partial class FrameResourceAddOption : UserControl
     {

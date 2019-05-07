@@ -1,4 +1,4 @@
-﻿using Mafia2Tool.OptionControls;
+﻿using Forms.OptionControls;
 using System.Windows.Forms;
 using Utils.Lang;
 using Utils.Settings;

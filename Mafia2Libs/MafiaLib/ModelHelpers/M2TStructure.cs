@@ -8,9 +8,8 @@ using SharpDX;
 using ResourceTypes.FrameResource;
 using Utils.SharpDXExtensions;
 using ResourceTypes.BufferPools;
-using ResourceTypes.Materials;
 
-namespace Mafia2
+namespace Utils.Models
 {
     public class M2TStructure
     {

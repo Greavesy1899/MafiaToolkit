@@ -1,5 +1,4 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
-using Mafia2;
 using ResourceTypes.Collisions;
 using SharpDX;
 using System;
@@ -9,8 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Utils.Lang;
+using Utils.Models;
 using Utils.Settings;
-using static Mafia2.M2TStructure;
 using Collision = ResourceTypes.Collisions.Collision;
 
 namespace Mafia2Tool

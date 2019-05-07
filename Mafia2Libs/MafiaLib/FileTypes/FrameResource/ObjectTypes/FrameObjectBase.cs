@@ -1,9 +1,8 @@
 ﻿using System.IO;
 using System.ComponentModel;
-using Mafia2;
+using ResourceTypes.FrameNameTable;
 using Utils.Extensions;
 using Utils.Types;
-using System.Xml;
 
 namespace ResourceTypes.FrameResource
 {

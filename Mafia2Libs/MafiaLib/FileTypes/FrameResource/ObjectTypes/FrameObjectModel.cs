@@ -1,7 +1,5 @@
-﻿using Mafia2;
-using Mafia2Tool;
-using System.IO;
-using Utils.SharpDXExtensions;
+﻿using System.IO;
+using Utils.Models;
 using Utils.Types;
 
 namespace ResourceTypes.FrameResource

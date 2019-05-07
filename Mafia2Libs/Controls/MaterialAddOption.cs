@@ -1,7 +1,7 @@
 ﻿using System.Windows.Forms;
 using Utils.Lang;
 
-namespace Mafia2Tool.EditorControls
+namespace Forms.EditorControls
 {
     public partial class MaterialAddOption : UserControl
     {

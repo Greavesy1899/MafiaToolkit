@@ -5,7 +5,7 @@ using System.IO;
 using SharpDX;
 using Utils.SharpDXExtensions;
 
-namespace Mafia2
+namespace Utils.Models
 {
     public class Vertex
     {

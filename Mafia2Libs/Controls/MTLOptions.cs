@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using Utils.Lang;
 using Utils.Settings;
 
-namespace Mafia2Tool.OptionControls
+namespace Forms.OptionControls
 {
     public partial class MTLOptions : UserControl
     {

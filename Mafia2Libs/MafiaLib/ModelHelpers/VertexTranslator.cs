@@ -1,6 +1,7 @@
 ﻿using System;
 using SharpDX;
-namespace Mafia2
+
+namespace Utils.Models
 {
     public class VertexTranslator
     {

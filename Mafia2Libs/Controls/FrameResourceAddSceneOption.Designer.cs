@@ -1,4 +1,4 @@
-﻿namespace Mafia2Tool.EditorControls
+﻿namespace Forms.EditorControls
 {
     partial class FrameResourceSceneOption
     {

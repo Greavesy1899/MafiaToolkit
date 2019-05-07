@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using Mafia2;
 using ResourceTypes.Actors;
 using Utils.Types;
 

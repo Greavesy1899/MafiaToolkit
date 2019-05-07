@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Mafia2;
 using Utils.Types;
 
 namespace ResourceTypes.FrameResource

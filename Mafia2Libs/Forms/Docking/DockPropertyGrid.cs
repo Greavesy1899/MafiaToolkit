@@ -1,6 +1,6 @@
 ﻿using WeifenLuo.WinFormsUI.Docking;
 
-namespace Mafia2Tool.Forms.Docking
+namespace Forms.Docking
 {
     public partial class DockPropertyGrid : DockContent
     {
@@ -11,7 +11,7 @@ namespace Mafia2Tool.Forms.Docking
 
         public void SetObjectOnPropertyGrid(object obj)
         {
-            propertyGrid1.SelectedObject = obj;
+            PropertyGrid.SelectedObject = obj;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Mafia2;
-using System;
+﻿using System;
 using System.IO;
 
 namespace ResourceTypes.ItemDesc

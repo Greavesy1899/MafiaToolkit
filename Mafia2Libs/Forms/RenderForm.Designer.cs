@@ -275,6 +275,7 @@ namespace Mafia2Tool
             this.Controls.Add(this.RenderPanel);
             this.Controls.Add(this.StatusStrip);
             this.Controls.Add(this.ToolbarStrip);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "D3DForm";
             this.Text = "Map Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);

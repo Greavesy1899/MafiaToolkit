@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using Gibbed.Illusion.FileFormats.Hashing;
-using Mafia2;
-using Mafia2Tool.EditorControls;
+using Forms.EditorControls;
 using ResourceTypes.Materials;
 using Utils.Lang;
 using Utils.Settings;

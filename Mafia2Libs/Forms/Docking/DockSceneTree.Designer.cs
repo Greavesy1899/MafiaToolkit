@@ -1,4 +1,4 @@
-﻿namespace Mafia2Tool.Forms.Docking
+﻿namespace Forms.Docking
 {
     partial class DockSceneTree
     {

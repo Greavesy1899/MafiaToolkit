@@ -1,10 +1,10 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
-using Mafia2;
 using SharpDX;
 using System;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using Utils.Models;
 using Utils.SharpDXExtensions;
 
 namespace Utils.Types

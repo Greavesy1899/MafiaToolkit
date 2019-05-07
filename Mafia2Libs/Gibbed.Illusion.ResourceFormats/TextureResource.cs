@@ -27,7 +27,6 @@
 using System;
 using System.IO;
 using Gibbed.IO;
-using Mafia2;
 using Utils.Logging;
 
 namespace Gibbed.Mafia2.ResourceFormats

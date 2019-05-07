@@ -2,7 +2,7 @@
 using Utils.Lang;
 using SharpDX;
 
-namespace Mafia2Tool.EditorControls
+namespace Forms.EditorControls
 {
     public partial class FrameResourceSceneOption : UserControl
     {

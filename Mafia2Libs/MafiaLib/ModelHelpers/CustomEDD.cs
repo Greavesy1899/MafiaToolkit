@@ -6,7 +6,7 @@ using SharpDX;
 using Utils.SharpDXExtensions;
 using Utils.Types;
 
-namespace Mafia2
+namespace Utils.Models
 {
     public class CustomEDD
     {

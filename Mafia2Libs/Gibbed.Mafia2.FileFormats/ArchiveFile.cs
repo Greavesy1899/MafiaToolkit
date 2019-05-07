@@ -33,7 +33,6 @@ using Gibbed.Illusion.FileFormats.Hashing;
 using Gibbed.IO;
 using Gibbed.Mafia2.FileFormats.Archive;
 using Gibbed.Mafia2.ResourceFormats;
-using Mafia2;
 using Utils.Logging;
 
 namespace Gibbed.Mafia2.FileFormats

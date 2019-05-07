@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using SharpDX;
-using Mafia2;
+using Utils.Models;
 using Utils.SharpDXExtensions;
 using Utils.Extensions;
 using Utils.Types;

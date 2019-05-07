@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Mafia2;
 using ResourceTypes.City;
 using Utils.Lang;
 using Utils.Settings;
