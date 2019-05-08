@@ -53,7 +53,7 @@ namespace Rendering.Graphics
                 return false;
 
             SetTransform(mesh.Matrix.Position, mesh.Matrix.Rotation);
-            DoRender = true;
+            //DoRender = (mesh.SecondaryFlags == 4097 ? true : false);
             BoundingBox = new RenderBoundingBox();
             BoundingBox.Init(mesh.Boundings);
             BBox = mesh.Boundings;

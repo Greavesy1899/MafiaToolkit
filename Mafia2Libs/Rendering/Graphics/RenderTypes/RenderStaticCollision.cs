@@ -50,13 +50,8 @@ namespace Rendering.Graphics
             }
         }
 
-        public void ConvertCollisionToRender(Placement placement, MeshData data)
-        {
-            
-            Matrix33 rot = new Matrix33();
-            rot.EulerRotation = new Vector3(MathUtil.RadiansToDegrees(placement.Rotation.X), -MathUtil.RadiansToDegrees(placement.Rotation.Y), 0.0f);
-            rot.UpdateMatrixFromEuler(); 
-            SetTransform(placement.Position, rot);
+        public void ConvertCollisionToRender(MeshData data)
+        { 
             DoRender = true;
             BoundingBox = new RenderBoundingBox();
             BoundingBox.Init(data.BoundingBox);

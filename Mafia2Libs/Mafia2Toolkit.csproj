@@ -164,6 +164,12 @@
     <Compile Include="Forms\Docking\DockPropertyGrid.Designer.cs">
       <DependentUpon>DockPropertyGrid.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Docking\DockViewProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Docking\DockViewProperties.Designer.cs">
+      <DependentUpon>DockViewProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Docking\DockSceneTree.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -295,13 +301,14 @@
     <Compile Include="MafiaLib\ModelHelpers\ModelDefinition.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\IRenderer.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\Render2DPlane.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderInstance.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderLine.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderRoad.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderStaticCollision.cs" />
     <Compile Include="Rendering\Graphics\Shaders\Shader_50760736.cs" />
     <Compile Include="Rendering\System\FPSClass.cs" />
     <Compile Include="Utils\BoundExtensions.cs" />
-    <Compile Include="MafiaLib\Utils\Enums.cs" />
+    <Compile Include="MafiaLib\ModelHelpers\Enums.cs" />
     <Compile Include="Utils\LuaHelper.cs" />
     <Compile Include="Utils\StringHelpers.cs" />
     <Compile Include="Utils\Half.cs" />
@@ -554,6 +561,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Docking\DockPropertyGrid.resx">
       <DependentUpon>DockPropertyGrid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Docking\DockViewProperties.resx">
+      <DependentUpon>DockViewProperties.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Docking\DockSceneTree.resx">
       <DependentUpon>DockSceneTree.cs</DependentUpon>

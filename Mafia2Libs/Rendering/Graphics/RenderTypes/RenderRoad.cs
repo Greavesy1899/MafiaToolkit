@@ -16,16 +16,41 @@ namespace Rendering.Graphics
             Transform = Matrix.Identity;
         }
 
-        public void Init(Vector3[] points, ResourceTypes.Navigation.SplineProperties properties)
+        public void Init(ResourceTypes.Navigation.SplineProperties properties)
         {
-            Spline = new RenderLine();
-            Spline.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-            Spline.Init(points);
+            RenderLine line = null;
+
+            if (properties.unk3 > 4096 && properties.unk3 < 4128)
+            {
+                line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3 - 4096];
+            }
+            else if (properties.unk3 > 24576 && properties.unk3 < 25332)
+            {
+                line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3 - 24576];
+            }
+            else if (properties.unk3 > 16384 && properties.unk3 < 16900)
+            {
+                line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3 - 16384];
+            }
+            else if (properties.unk3 > 32768 && properties.unk3 < 36864)
+            {
+                line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3 - 32768];
+            }
+            else if (properties.unk3 > 36864)
+            {
+                line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3 - 36864];
+            }
+            else
+            {
+                line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3];
+            }
+            Vector3[] editPoints = (Vector3[])line.RawPoints.Clone();
             lanes = new Render2DPlane[properties.laneSize0];
+            Spline = line;
             for(int i = 0; i != properties.laneSize0; i++)
             {
                 Render2DPlane lane = new Render2DPlane();
-                lane.Init(points, properties.lanes[i], properties.unk2);
+                lane.Init(ref editPoints, properties.lanes[i], properties.unk2);
                 lanes[i] = lane;
             }
         }

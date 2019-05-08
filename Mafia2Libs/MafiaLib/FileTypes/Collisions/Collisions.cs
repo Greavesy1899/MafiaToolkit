@@ -97,17 +97,26 @@ namespace ResourceTypes.Collisions
             private int unk4;
             private byte unk5;
 
+            [Browsable(false)]
             public Vector3 Position
             {
                 get { return position; }
                 set { position = value; }
             }
 
+            [Browsable(false)]
             public Vector3 Rotation
             {
                 get { return rotation; }
                 set { rotation = value; }
             }
+
+            public float PositionX { get { return position.X; } set { position.X = value; } }
+            public float PositionY { get { return position.Y; } set { position.Y = value; } }
+            public float PositionZ { get { return position.Z; } set { position.Z = value; } }
+            public float RotationX { get { return rotation.X; } set { rotation.X = value; } }
+            public float RotationY { get { return rotation.Y; } set { rotation.Y = value; } }
+            public float RotationZ { get { return rotation.Z; } set { rotation.Z = value; } }
 
             public ulong Hash
             {

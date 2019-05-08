@@ -31,11 +31,11 @@ namespace Mafia2Tool
         private Point lastMousePos;
         private FileInfo fileLocation;
         private Ray ray;
-        private bool isEntryReady = false;
 
         //docking panels
         private DockPropertyGrid dPropertyGrid;
         private DockSceneTree dSceneTree;
+        private DockViewProperties dViewProperties;
 
         public D3DForm(FileInfo info)
         {
@@ -56,14 +56,22 @@ namespace Mafia2Tool
             dockPanel1.Controls.Add(RenderPanel);
             dPropertyGrid = new DockPropertyGrid();
             dSceneTree = new DockSceneTree();
+            dViewProperties = new DockViewProperties();
             dPropertyGrid.Show(dockPanel1, DockState.DockRight);
             dSceneTree.Show(dockPanel1, DockState.DockLeft);
+            dViewProperties.Show(dockPanel1, DockState.DockRight);
             dSceneTree.treeView1.AfterSelect += new TreeViewEventHandler(OnAfterSelect);
             dSceneTree.Export3DButton.Click += new EventHandler(Export3DButton_Click);
             dSceneTree.PreviewButton.Click += new EventHandler(PreviewButton_Click);
             dSceneTree.DeleteButton.Click += new EventHandler(DeleteButton_Click);
             dSceneTree.DuplicateButton.Click += new EventHandler(DuplicateButton_Click);
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyChanged);
+            dPropertyGrid.PositionXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.PositionYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.PositionZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.RotationXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.RotationYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.RotationZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
         }
 
         public void PopulateList(FileInfo info)
@@ -94,7 +102,7 @@ namespace Mafia2Tool
                 Graphics.PreInit(handle);
                 BuildRenderObjects();
                 result = Graphics.InitScene();
-                UpdateMatrices();
+                UpdateMatricesRecursive();
             }
             return result;
         }
@@ -110,52 +118,27 @@ namespace Mafia2Tool
             RenderLoop.Run(this, () => { if (!Frame()) Shutdown(); });
         }
 
-        private void RenderPanel_MouseEnter(object sender, EventArgs e)
-        {
-            RenderPanel.Focus();
-        }
-
-        private void RenderForm_MouseMove(object sender, MouseEventArgs e)
-        {
-            mousePos = new Point(e.Location.X, e.Location.Y);
-        }
-
-        private void CullModeButton_Click(object sender, EventArgs e)
-        {
-            Graphics.ToggleD3DCullMode();
-        }
-
-        private void FillModeButton_Click(object sender, EventArgs e)
-        {
-            Graphics.ToggleD3DFillMode();
-        }
-
-        private void OnSelectedIndexChanged(object sender, EventArgs e)
-        {
-            TreeViewUpdateSelected();
-        }
-
-        private void OnAfterSelect(object sender, TreeViewEventArgs e)
-        {
-            TreeViewUpdateSelected();
-        }
+        private void RenderPanel_MouseEnter(object sender, EventArgs e) => RenderPanel.Focus();
+        private void RenderForm_MouseMove(object sender, MouseEventArgs e) => mousePos = new Point(e.Location.X, e.Location.Y);
+        private void CullModeButton_Click(object sender, EventArgs e) => Graphics.ToggleD3DCullMode();
+        private void FillModeButton_Click(object sender, EventArgs e) => Graphics.ToggleD3DFillMode();
+        private void OnSelectedIndexChanged(object sender, EventArgs e) => TreeViewUpdateSelected();
+        private void OnAfterSelect(object sender, TreeViewEventArgs e) => TreeViewUpdateSelected();
+        private void ExitButton_Click(object sender, EventArgs e) => Close();
+        private void SaveButton_Click(object sender, EventArgs e) => SaveChanges();
+        private void PropertyGridOnClicked(object sender, EventArgs e) => dPropertyGrid.Show(dockPanel1, DockState.DockRight);
+        private void SceneTreeOnClicked(object sender, EventArgs e) => dSceneTree.Show(dockPanel1, DockState.DockLeft);
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
             SceneData.CleanData();
             RenderStorageSingleton.Instance.TextureCache.Clear();
+            dSceneTree.Dispose();
+            dPropertyGrid.Dispose();
+            dViewProperties.Dispose();
             Shutdown();
         }
 
-        private void ExitButton_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void SaveButton_Click(object sender, EventArgs e)
-        {
-            SaveChanges();
-        }
 
         public bool Frame()
         {
@@ -199,6 +182,19 @@ namespace Mafia2Tool
             Graphics.Timer.Frame2();
             Graphics.FPS.Frame();
             Graphics.PickingRayBBox.SetTransform(ray.Position, new Matrix33());
+
+            foreach(KeyValuePair<int, IRenderer> render in Graphics.Assets)
+            {
+                if (render.Value.GetType() == typeof(RenderModel))
+                    render.Value.DoRender = dViewProperties.VisibleProperties[3];
+
+                if (render.Value.GetType() == typeof(RenderInstance))
+                    render.Value.DoRender = dViewProperties.VisibleProperties[2];
+
+                if (render.Value.GetType() == typeof(RenderBoundingBox))
+                    render.Value.DoRender = dViewProperties.VisibleProperties[4];
+            }
+
             Graphics.Frame();
             toolStripStatusLabel1.Text = Graphics.Camera.Position.ToString();
             toolStripStatusLabel2.Text = string.Format("{0} {1}", mousePos.X, mousePos.Y);
@@ -206,7 +202,7 @@ namespace Mafia2Tool
             return true;
         }
 
-        private void UpdateMatrices()
+        private void UpdateMatricesRecursive()
         {
             FrameObjectBase obj1;
 
@@ -220,11 +216,11 @@ namespace Mafia2Tool
 
                 foreach (TreeNode cNode in node.Nodes)
                 {
-                    UpdateChildRenderNodes(cNode, matrix);
+                    CallMatricesRecursive(cNode, matrix);
                 }
             }
         }
-        private void UpdateChildRenderNodes(TreeNode node, TransformMatrix matrix)
+        private void CallMatricesRecursive(TreeNode node, TransformMatrix matrix)
         {
             FrameObjectBase obj2 = (node.Tag as FrameObjectBase);
 
@@ -234,7 +230,7 @@ namespace Mafia2Tool
             foreach (TreeNode cNode in node.Nodes)
             {
                 matrix = ((obj2 != null) ? obj2.Matrix : new TransformMatrix());
-                UpdateChildRenderNodes(cNode, matrix);
+                CallMatricesRecursive(cNode, matrix);
             }
         }
 
@@ -343,53 +339,21 @@ namespace Mafia2Tool
             {
                 TreeNode node = new TreeNode("RoadMap Data");
 
+                for(int i = 0; i != SceneData.roadMap.data1.Length; i++)
+                {
+                    ResourceTypes.Navigation.SplineDefinition definition = SceneData.roadMap.data1[i];
+                    RenderLine line = new RenderLine();
+                    line.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+                    line.Init(definition.points);
+                    RenderStorageSingleton.Instance.SplineStorage.Add(line);
+                }
                 for (int i = 0; i != SceneData.roadMap.data3.Length; i++)
                 {
                     ResourceTypes.Navigation.SplineProperties properties = SceneData.roadMap.data3[i];
                     RenderRoad road = new RenderRoad();
                     int generatedID = StringHelpers.RandomGenerator.Next();
-                    if (properties.unk3 >= 0 && properties.unk3 < SceneData.roadMap.data1.Length)
-                    {
-                        road.Init(SceneData.roadMap.data1[properties.unk3].points, properties);
-                        assets.Add(generatedID, road);
-                    }
-                    else
-                    {
-                        if (properties.unk3 > 4096 && properties.unk3 < 4128)
-                        {
-                            Console.WriteLine("Found subway {0}", i);
-                            road.Init(SceneData.roadMap.data1[properties.unk3 - 4096].points, properties);
-                            assets.Add(generatedID, road);
-                        }
-                        else if (properties.unk3 > 24576 && properties.unk3 < 25332)
-                        {
-                            Console.WriteLine("Found backroad {0}", i);
-                            road.Init(SceneData.roadMap.data1[properties.unk3 - 24576].points, properties);
-                            assets.Add(generatedID, road);
-                        }
-                        else if (properties.unk3 > 16384 && properties.unk3 < 16900)
-                        {
-                            Console.WriteLine("Found boat {0}", i);
-                            road.Init(SceneData.roadMap.data1[properties.unk3 - 16384].points, properties);
-                            assets.Add(generatedID, road);
-                        }
-                        else if (properties.unk3 > 32768 && properties.unk3 < 36864)
-                        {
-                            Console.WriteLine("Found unknown1 {0}", i);
-                            road.Init(SceneData.roadMap.data1[properties.unk3 - 32768].points, properties);
-                            assets.Add(generatedID, road);
-                        }
-                        else if (properties.unk3 > 36864)
-                        {
-                            Console.WriteLine("Found unknown2 {0}", i);
-                            road.Init(SceneData.roadMap.data1[properties.unk3 - 36864].points, properties);
-                            assets.Add(generatedID, road);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Did not add");
-                        }
-                    }
+                    road.Init(properties);
+                    assets.Add(generatedID, road);
                     TreeNode child = new TreeNode(i.ToString());
                     child.Text = "ID: " + i;
                     child.Name = generatedID.ToString();
@@ -424,11 +388,24 @@ namespace Mafia2Tool
             {
                 TreeNode node = new TreeNode("Collision Data");
 
+                for(int i = 0; i != SceneData.Collisions.NXSData.Count; i++)
+                {
+                    Collision.NXSStruct data = SceneData.Collisions.NXSData.ElementAt(i).Value;
+                    RenderStaticCollision collision = new RenderStaticCollision();
+                    collision.ConvertCollisionToRender(data.Data);
+                    RenderStorageSingleton.Instance.StaticCollisions.Add(SceneData.Collisions.NXSData.ElementAt(i).Key, collision);
+                }
+
                 for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
                 {
                     Collision.Placement placement = SceneData.Collisions.Placements[i];
-                    RenderStaticCollision collision = new RenderStaticCollision();
-                    collision.ConvertCollisionToRender(placement, SceneData.Collisions.NXSData[placement.Hash].Data);
+                    RenderInstance instance = new RenderInstance();
+                    instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
+
+                    Matrix33 rot = new Matrix33();
+                    rot.EulerRotation = new Vector3(MathUtil.RadiansToDegrees(placement.Rotation.X), -MathUtil.RadiansToDegrees(placement.Rotation.Y), 0.0f);
+                    rot.UpdateMatrixFromEuler();
+                    instance.SetTransform(placement.Position, rot);
 
                     bool isAdded = false;
                     int inc = 0;
@@ -440,7 +417,7 @@ namespace Mafia2Tool
                         isAdded = !assets.ContainsKey(hash);
                         inc++;
                     }
-                    assets.Add(hash, collision);
+                    assets.Add(hash, instance);
 
                     TreeNode child = new TreeNode(hash.ToString());
                     child.Text = "Hash: " + placement.Hash;
@@ -486,7 +463,7 @@ namespace Mafia2Tool
             {
                 Graphics.BuildSelectedEntry(Convert.ToInt32(dSceneTree.treeView1.SelectedNode.Name));
             }
-            else if (dSceneTree.treeView1.SelectedNode.Tag is ResourceTypes.Collisions.Collision.NXSStruct)
+            else if (dSceneTree.treeView1.SelectedNode.Tag is Collision.NXSStruct)
             {
                 Graphics.BuildSelectedEntry(Convert.ToInt32(dSceneTree.treeView1.SelectedNode.Name));
             }
@@ -498,32 +475,16 @@ namespace Mafia2Tool
 
         private void UpdateCurrentEntryData(FrameObjectBase fObject)
         {
-            isEntryReady = false;
-            //CurrentEntry.Text = fObject.Name.String;
-            //PositionXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.X);
-            //PositionYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.Y);
-            //PositionZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.Z);
-            //RotationXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.EulerRotation.X);
-            //RotationYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.EulerRotation.Y);
-            //RotationZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.EulerRotation.Z);
-            //CurrentEntryType.Text = fObject.GetType().Name;
             Graphics.BuildSelectedEntry(fObject.RefID);
-            dPropertyGrid.SetObjectOnPropertyGrid(fObject);
-            //OnFrameNameTable.Checked = fObject.IsOnFrameTable;
-            //FrameNameTableFlags.EnumValue = (Enum)Convert.ChangeType(fObject.FrameNameTableFlags, typeof(NameTableFlags));
-            isEntryReady = true;
+            dPropertyGrid.SetObject(fObject);
         }
 
-        private void ApplyEntryChanges()
+        private void ApplyEntryChanges(object sender, EventArgs e)
         {
             FrameObjectBase fObject = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectBase);
-            //fObject.Matrix.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
-            //fObject.Matrix.Rotation.EulerRotation = new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value));
-            //fObject.Matrix.Rotation.UpdateMatrixFromEuler();
-            //fObject.IsOnFrameTable = OnFrameNameTable.Checked;
-            //fObject.FrameNameTableFlags = (NameTableFlags)FrameNameTableFlags.GetCurrentValue();
+            dPropertyGrid.UpdateObject();
             Graphics.BuildSelectedEntry(fObject.RefID);
-            UpdateMatrices();
+            UpdateMatricesRecursive();
             ApplyChangesToRenderable(fObject);
         }
 
@@ -738,7 +699,7 @@ namespace Mafia2Tool
             Graphics.BuildSelectedEntry(lowestRefID);
             TreeNode[] nodes = dSceneTree.treeView1.Nodes.Find(lowestRefID.ToString(), true);
             dSceneTree.treeView1.SelectedNode = (nodes.Length > 0) ? nodes[0] : null;
-            dPropertyGrid.SetObjectOnPropertyGrid((nodes.Length > 0) ? nodes[0].Tag : null);
+            dPropertyGrid.SetObject((nodes.Length > 0) ? nodes[0].Tag : null);
         }
 
         public void Shutdown()
@@ -920,48 +881,18 @@ namespace Mafia2Tool
             tNode.Name = newEntry.RefID.ToString();
             dSceneTree.treeView1.Nodes.Find(newEntry.ParentIndex2.RefID.ToString(), true)[0].Nodes.Add(tNode);
             SceneData.FrameResource.FrameObjects.Add(newEntry.RefID, newEntry);
-            UpdateMatrices();
-        }
-
-        private void DisableLodButtonOnClick(object sender, EventArgs e)
-        {
-            //foreach(KeyValuePair<int, object> pair in SceneData.FrameResource.FrameObjects)
-            //{
-            //    FrameObjectBase obj = (pair.Value as FrameObjectBase);
-                
-            //    if(obj.FrameNameTableFlags > (NameTableFlags)nameTableLimit)
-            //    {
-            //        if (Graphics.Assets.ContainsKey(pair.Key))
-            //            Graphics.Assets[pair.Key].DoRender = false;
-            //    }
-            //}
-        }
-
-        private void EntryApplyChanges_OnClick(object sender, EventArgs e)
-        {
-            ApplyEntryChanges();
-        }
-
-        private void NameTableFlagValueChanged(object sender, EventArgs e)
-        {
-            //nameTableLimit = int.Parse(NameTableFlagLimit.Text);
-        }
-
-        private void EntryField_ValueChanged(object sender, EventArgs e)
-        {
-            if (isEntryReady)
-                ApplyEntryChanges();
+            UpdateMatricesRecursive();
         }
 
         private void Export3DButton_Click(object sender, EventArgs e)
         {
-            if(dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.NXSStruct))
-                ExportCollision(dSceneTree.treeView1.SelectedNode.Tag as ResourceTypes.Collisions.Collision.NXSStruct);
+            if(dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(Collision.NXSStruct))
+                ExportCollision(dSceneTree.treeView1.SelectedNode.Tag as Collision.NXSStruct);
             else
                 Export3DFrame(dSceneTree.treeView1.SelectedNode.Tag);
         }
 
-        private void ExportCollision(ResourceTypes.Collisions.Collision.NXSStruct data)
+        private void ExportCollision(Collision.NXSStruct data)
         {
             M2TStructure structure = new M2TStructure();
             structure.BuildCollision(data, dSceneTree.treeView1.SelectedNode.Name);
@@ -1002,24 +933,6 @@ namespace Mafia2Tool
                     default:
                         break;
                 }
-            }
-        }
-
-        private void ToggleCollisionsOnClick(object sender, EventArgs e)
-        {
-            foreach(KeyValuePair<int, IRenderer> obj in Graphics.Assets)
-            {
-                if (obj.Value.GetType() == typeof(RenderStaticCollision))
-                    obj.Value.DoRender = !obj.Value.DoRender;
-            }
-        }
-
-        private void ToggleModelOnClick(object sender, EventArgs e)
-        {
-            foreach (KeyValuePair<int, IRenderer> obj in Graphics.Assets)
-            {
-                if (obj.Value.GetType() == typeof(RenderModel))
-                    obj.Value.DoRender = !obj.Value.DoRender;
             }
         }
 

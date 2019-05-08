@@ -21,6 +21,7 @@ namespace Rendering.Graphics
         public RenderBoundingBox SelectedEntryBBox { get; private set; }
         public RenderLine SelectedEntryLine { get; private set; }
         private int selectedEntryLineID;
+        private int selectedRoadID;
         public RenderBoundingBox PickingRayBBox { get; private set; }
 
         private RenderLine[] SplineStorage;
@@ -171,7 +172,12 @@ namespace Rendering.Graphics
             {
                 SelectedEntryLine.Shutdown();
                 SelectedEntryLine = null;
-                Assets[selectedEntryLineID].DoRender = true;
+
+                IRenderer road = null;
+                Assets.TryGetValue(selectedRoadID, out road);
+
+                if(road != null)
+                    (road as RenderRoad).Spline.DoRender = true;
             }
 
             if (obj == null)
@@ -191,9 +197,9 @@ namespace Rendering.Graphics
                     SelectedEntryLine.InitBuffers(D3D.Device);
                 }
             }
-            else if(obj.GetType() == typeof(RenderStaticCollision))
+            else if(obj.GetType() == typeof(RenderInstance))
             {
-                RenderStaticCollision collision = (obj as RenderStaticCollision);
+                RenderStaticCollision collision = (obj as RenderInstance).GetCollision();
                 if (collision != null)
                 {
                     SelectedEntryBBox = new RenderBoundingBox();
@@ -222,7 +228,7 @@ namespace Rendering.Graphics
                 {
                     SelectedEntryLine = new RenderLine();
                     SelectedEntryLine.SetTransform(new Vector3(), new Utils.Types.Matrix33());
-                    selectedEntryLineID = id;
+                    selectedRoadID = id;
                     road.Spline.DoRender = false;
                     SelectedEntryLine.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
                     SelectedEntryLine.Init(road.Spline.RawPoints);

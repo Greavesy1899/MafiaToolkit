@@ -1,6 +1,6 @@
 ﻿namespace Forms.Docking
 {
-    partial class DockSceneTree
+    partial class DockViewProperties
     {
         /// <summary>
         /// Required designer variable.
@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DockSceneTree));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DockViewProperties));
             this.EntryMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DuplicateButton = new System.Windows.Forms.ToolStripMenuItem();
             this.Export3DButton = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.EntryMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,7 +49,6 @@
             this.Export3DButton});
             this.EntryMenuStrip.Name = "EntryMenuStrip";
             this.EntryMenuStrip.Size = new System.Drawing.Size(125, 92);
-            this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
             // 
             // PreviewButton
             // 
@@ -91,28 +90,33 @@
             this.imageList1.Images.SetKeyName(9, "SkinnedFrame.png");
             this.imageList1.Images.SetKeyName(10, "DummyFrame.png");
             // 
-            // treeView1
+            // checkedListBox1
             // 
-            this.treeView1.ContextMenuStrip = this.EntryMenuStrip;
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.ImageIndex = 3;
-            this.treeView1.ImageList = this.imageList1;
-            this.treeView1.Location = new System.Drawing.Point(0, 0);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.SelectedImageIndex = 0;
-            this.treeView1.Size = new System.Drawing.Size(266, 450);
-            this.treeView1.TabIndex = 0;
+            this.checkedListBox1.CheckOnClick = true;
+            this.checkedListBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.checkedListBox1.FormattingEnabled = true;
+            this.checkedListBox1.Items.AddRange(new object[] {
+            "Proxy Frames (190466)",
+            "Unknown  Frames (4096)",
+            "All Collisions",
+            "All Models",
+            "All Dummy Frames"});
+            this.checkedListBox1.Location = new System.Drawing.Point(0, 0);
+            this.checkedListBox1.Name = "checkedListBox1";
+            this.checkedListBox1.Size = new System.Drawing.Size(266, 450);
+            this.checkedListBox1.TabIndex = 1;
+            this.checkedListBox1.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.OnValueChanged);
             // 
-            // DockSceneTree
+            // DockViewProperties
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(266, 450);
-            this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.checkedListBox1);
             this.HideOnClose = true;
-            this.Name = "DockSceneTree";
-            this.TabText = "Scene Tree";
-            this.Text = "DockSceneTree";
+            this.Name = "DockViewProperties";
+            this.TabText = "View Properties";
+            this.Text = "DockViewProperties";
             this.EntryMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -125,6 +129,6 @@
         public System.Windows.Forms.ToolStripMenuItem DeleteButton;
         public System.Windows.Forms.ToolStripMenuItem DuplicateButton;
         public System.Windows.Forms.ToolStripMenuItem Export3DButton;
-        public System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.CheckedListBox checkedListBox1;
     }
 }

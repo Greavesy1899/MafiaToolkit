@@ -9,7 +9,7 @@ namespace ResourceTypes.FrameResource
     public class FrameObjectBase : FrameEntry
     {
         protected Hash name;
-        protected int unk0;
+        protected int secondaryFlags;
         protected TransformMatrix transformMatrix;
         protected short unk3;
         protected ParentStruct parentIndex1;
@@ -23,10 +23,11 @@ namespace ResourceTypes.FrameResource
             get { return name; }
             set { name = value; }
         }
-        public int Unk0 {
-            get { return unk0; }
-            set { unk0 = value; }
+        public int SecondaryFlags {
+            get { return secondaryFlags; }
+            set { secondaryFlags = value; }
         }
+        [Browsable(false)]
         public TransformMatrix Matrix {
             get { return transformMatrix; }
             set { transformMatrix = value; }
@@ -69,7 +70,7 @@ namespace ResourceTypes.FrameResource
         {
             //do example name.
             name = new Hash("NewObject");
-            unk0 = 1;
+            secondaryFlags = 1;
             transformMatrix = new TransformMatrix();
             unk3 = -1;
             parentIndex1 = new ParentStruct(-1);
@@ -80,7 +81,7 @@ namespace ResourceTypes.FrameResource
         public FrameObjectBase(FrameObjectBase other) : base(other)
         {
             name = new Hash(other.name.String);
-            unk0 = other.unk0;
+            secondaryFlags = other.secondaryFlags;
             transformMatrix = new TransformMatrix(other.transformMatrix);
             unk3 = other.unk3;
             parentIndex1 = new ParentStruct(other.parentIndex1);
@@ -93,7 +94,7 @@ namespace ResourceTypes.FrameResource
         public virtual void ReadFromFile(BinaryReader reader)
         {
             name = new Hash(reader);
-            unk0 = reader.ReadInt32();
+            secondaryFlags = reader.ReadInt32();
             transformMatrix = new TransformMatrix(reader);
             unk3 = reader.ReadInt16();
             parentIndex1 = new ParentStruct(reader.ReadInt32());
@@ -104,7 +105,7 @@ namespace ResourceTypes.FrameResource
         public virtual void WriteToFile(BinaryWriter writer)
         {
             name.WriteToFile(writer);
-            writer.Write(unk0);
+            writer.Write(secondaryFlags);
             transformMatrix.WriteToFrame(writer);
             writer.Write(unk3);
             writer.Write(parentIndex1.Index);
