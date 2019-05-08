@@ -40,10 +40,14 @@ namespace Mafia2Tool
             this.EditButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AddButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
             this.OptionsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.DisableLODButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToggleModelsButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToggleCollisionsButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToggleWireframeButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToggleCullingButton = new System.Windows.Forms.ToolStripMenuItem();
             this.TEMPCameraSpeed = new System.Windows.Forms.ToolStripTextBox();
             this.NameTableFlagLimit = new System.Windows.Forms.ToolStripTextBox();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
@@ -55,10 +59,7 @@ namespace Mafia2Tool
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.RenderPanel = new System.Windows.Forms.Panel();
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToggleWireframeButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToggleCullingButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.AddSceneFolderButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolbarStrip.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -93,14 +94,14 @@ namespace Mafia2Tool
             // SaveButton
             // 
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(98, 22);
+            this.SaveButton.Size = new System.Drawing.Size(180, 22);
             this.SaveButton.Text = "Save";
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // ExitButton
             // 
             this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(98, 22);
+            this.ExitButton.Size = new System.Drawing.Size(180, 22);
             this.ExitButton.Text = "Exit";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -108,12 +109,13 @@ namespace Mafia2Tool
             // 
             this.EditButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AddButton});
+            this.AddButton,
+            this.AddSceneFolderButton});
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
             this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EditButton.Name = "EditButton";
-            this.EditButton.Size = new System.Drawing.Size(40, 22);
-            this.EditButton.Text = "Edit";
+            this.EditButton.Size = new System.Drawing.Size(54, 22);
+            this.EditButton.Text = "Create";
             // 
             // AddButton
             // 
@@ -134,6 +136,20 @@ namespace Mafia2Tool
             this.ViewButton.Size = new System.Drawing.Size(45, 22);
             this.ViewButton.Text = "View";
             // 
+            // SceneTreeButton
+            // 
+            this.SceneTreeButton.Name = "SceneTreeButton";
+            this.SceneTreeButton.Size = new System.Drawing.Size(182, 22);
+            this.SceneTreeButton.Text = "Scene Tree";
+            this.SceneTreeButton.Click += new System.EventHandler(this.SceneTreeOnClicked);
+            // 
+            // ObjectPropertiesButton
+            // 
+            this.ObjectPropertiesButton.Name = "ObjectPropertiesButton";
+            this.ObjectPropertiesButton.Size = new System.Drawing.Size(182, 22);
+            this.ObjectPropertiesButton.Text = "Object Property Grid";
+            this.ObjectPropertiesButton.Click += new System.EventHandler(this.PropertyGridOnClicked);
+            // 
             // OptionsButton
             // 
             this.OptionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -152,7 +168,7 @@ namespace Mafia2Tool
             // DisableLODButton
             // 
             this.DisableLODButton.Name = "DisableLODButton";
-            this.DisableLODButton.Size = new System.Drawing.Size(180, 22);
+            this.DisableLODButton.Size = new System.Drawing.Size(168, 22);
             this.DisableLODButton.Text = "Disable LODs";
             // 
             // ToggleModelsButton
@@ -161,7 +177,7 @@ namespace Mafia2Tool
             this.ToggleModelsButton.CheckOnClick = true;
             this.ToggleModelsButton.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ToggleModelsButton.Name = "ToggleModelsButton";
-            this.ToggleModelsButton.Size = new System.Drawing.Size(180, 22);
+            this.ToggleModelsButton.Size = new System.Drawing.Size(168, 22);
             this.ToggleModelsButton.Text = "Toggle Models";
             // 
             // ToggleCollisionsButton
@@ -170,8 +186,22 @@ namespace Mafia2Tool
             this.ToggleCollisionsButton.CheckOnClick = true;
             this.ToggleCollisionsButton.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ToggleCollisionsButton.Name = "ToggleCollisionsButton";
-            this.ToggleCollisionsButton.Size = new System.Drawing.Size(180, 22);
+            this.ToggleCollisionsButton.Size = new System.Drawing.Size(168, 22);
             this.ToggleCollisionsButton.Text = "Toggle Collisions";
+            // 
+            // ToggleWireframeButton
+            // 
+            this.ToggleWireframeButton.Name = "ToggleWireframeButton";
+            this.ToggleWireframeButton.Size = new System.Drawing.Size(168, 22);
+            this.ToggleWireframeButton.Text = "Toggle Wireframe";
+            this.ToggleWireframeButton.Click += new System.EventHandler(this.FillModeButton_Click);
+            // 
+            // ToggleCullingButton
+            // 
+            this.ToggleCullingButton.Name = "ToggleCullingButton";
+            this.ToggleCullingButton.Size = new System.Drawing.Size(168, 22);
+            this.ToggleCullingButton.Text = "Toggle Culling";
+            this.ToggleCullingButton.Click += new System.EventHandler(this.CullModeButton_Click);
             // 
             // TEMPCameraSpeed
             // 
@@ -252,33 +282,12 @@ namespace Mafia2Tool
             // 
             this.MeshBrowser.Filter = "Meshes|*.m2t|FBX|*.fbx";
             // 
-            // SceneTreeButton
+            // AddSceneFolderButton
             // 
-            this.SceneTreeButton.Name = "SceneTreeButton";
-            this.SceneTreeButton.Size = new System.Drawing.Size(182, 22);
-            this.SceneTreeButton.Text = "Scene Tree";
-            this.SceneTreeButton.Click += new System.EventHandler(this.SceneTreeOnClicked);
-            // 
-            // ObjectPropertiesButton
-            // 
-            this.ObjectPropertiesButton.Name = "ObjectPropertiesButton";
-            this.ObjectPropertiesButton.Size = new System.Drawing.Size(182, 22);
-            this.ObjectPropertiesButton.Text = "Object Property Grid";
-            this.ObjectPropertiesButton.Click += new System.EventHandler(this.PropertyGridOnClicked);
-            // 
-            // ToggleWireframeButton
-            // 
-            this.ToggleWireframeButton.Name = "ToggleWireframeButton";
-            this.ToggleWireframeButton.Size = new System.Drawing.Size(180, 22);
-            this.ToggleWireframeButton.Text = "Toggle Wireframe";
-            this.ToggleWireframeButton.Click += new System.EventHandler(this.FillModeButton_Click);
-            // 
-            // ToggleCullingButton
-            // 
-            this.ToggleCullingButton.Name = "ToggleCullingButton";
-            this.ToggleCullingButton.Size = new System.Drawing.Size(180, 22);
-            this.ToggleCullingButton.Text = "Toggle Culling";
-            this.ToggleCullingButton.Click += new System.EventHandler(this.CullModeButton_Click);
+            this.AddSceneFolderButton.Name = "AddSceneFolderButton";
+            this.AddSceneFolderButton.Size = new System.Drawing.Size(180, 22);
+            this.AddSceneFolderButton.Text = "Add Scene Folder";
+            this.AddSceneFolderButton.Click += new System.EventHandler(this.AddSceneFolderButton_Click);
             // 
             // D3DForm
             // 
@@ -329,5 +338,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem ObjectPropertiesButton;
         private System.Windows.Forms.ToolStripMenuItem ToggleWireframeButton;
         private System.Windows.Forms.ToolStripMenuItem ToggleCullingButton;
+        private System.Windows.Forms.ToolStripMenuItem AddSceneFolderButton;
     }
 }

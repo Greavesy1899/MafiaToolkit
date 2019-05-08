@@ -28,64 +28,33 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.QuickEditTab = new System.Windows.Forms.TabPage();
+            this.PositionXLabel = new System.Windows.Forms.Label();
+            this.PositionYLabel = new System.Windows.Forms.Label();
+            this.PositionZLabel = new System.Windows.Forms.Label();
+            this.RotationXLabel = new System.Windows.Forms.Label();
+            this.RotationYLabel = new System.Windows.Forms.Label();
+            this.RotationZLabel = new System.Windows.Forms.Label();
+            this.CurrentEntry = new System.Windows.Forms.Label();
+            this.PositionXNumeric = new System.Windows.Forms.NumericUpDown();
+            this.PositionYNumeric = new System.Windows.Forms.NumericUpDown();
+            this.PositionZNumeric = new System.Windows.Forms.NumericUpDown();
+            this.RotationXNumeric = new System.Windows.Forms.NumericUpDown();
+            this.RotationYNumeric = new System.Windows.Forms.NumericUpDown();
+            this.RotationZNumeric = new System.Windows.Forms.NumericUpDown();
+            this.PropertyTab = new System.Windows.Forms.TabPage();
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.MainTabControl = new System.Windows.Forms.TabControl();
-            this.PropertyTab = new System.Windows.Forms.TabPage();
-            this.QuickEditTab = new System.Windows.Forms.TabPage();
-            this.RotationZNumeric = new System.Windows.Forms.NumericUpDown();
-            this.RotationYNumeric = new System.Windows.Forms.NumericUpDown();
-            this.RotationXNumeric = new System.Windows.Forms.NumericUpDown();
-            this.PositionZNumeric = new System.Windows.Forms.NumericUpDown();
-            this.PositionYNumeric = new System.Windows.Forms.NumericUpDown();
-            this.PositionXNumeric = new System.Windows.Forms.NumericUpDown();
-            this.CurrentEntry = new System.Windows.Forms.Label();
-            this.RotationZLabel = new System.Windows.Forms.Label();
-            this.RotationYLabel = new System.Windows.Forms.Label();
-            this.RotationXLabel = new System.Windows.Forms.Label();
-            this.PositionZLabel = new System.Windows.Forms.Label();
-            this.PositionYLabel = new System.Windows.Forms.Label();
-            this.PositionXLabel = new System.Windows.Forms.Label();
-            this.MainTabControl.SuspendLayout();
-            this.PropertyTab.SuspendLayout();
             this.QuickEditTab.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RotationZNumeric)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.RotationYNumeric)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.RotationXNumeric)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PositionZNumeric)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PositionYNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PositionXNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PositionYNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PositionZNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationXNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationYNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationZNumeric)).BeginInit();
+            this.PropertyTab.SuspendLayout();
+            this.MainTabControl.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // PropertyGrid
-            // 
-            this.PropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PropertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
-            this.PropertyGrid.Location = new System.Drawing.Point(3, 3);
-            this.PropertyGrid.Name = "PropertyGrid";
-            this.PropertyGrid.Size = new System.Drawing.Size(253, 418);
-            this.PropertyGrid.TabIndex = 2;
-            // 
-            // MainTabControl
-            // 
-            this.MainTabControl.Controls.Add(this.PropertyTab);
-            this.MainTabControl.Controls.Add(this.QuickEditTab);
-            this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainTabControl.Location = new System.Drawing.Point(0, 0);
-            this.MainTabControl.Name = "MainTabControl";
-            this.MainTabControl.SelectedIndex = 0;
-            this.MainTabControl.Size = new System.Drawing.Size(267, 450);
-            this.MainTabControl.TabIndex = 7;
-            // 
-            // PropertyTab
-            // 
-            this.PropertyTab.Controls.Add(this.PropertyGrid);
-            this.PropertyTab.Location = new System.Drawing.Point(4, 22);
-            this.PropertyTab.Name = "PropertyTab";
-            this.PropertyTab.Padding = new System.Windows.Forms.Padding(3);
-            this.PropertyTab.Size = new System.Drawing.Size(259, 424);
-            this.PropertyTab.TabIndex = 0;
-            this.PropertyTab.Text = "Property Grid";
-            this.PropertyTab.UseVisualStyleBackColor = true;
             // 
             // QuickEditTab
             // 
@@ -110,95 +79,68 @@
             this.QuickEditTab.Text = "Edit Transform";
             this.QuickEditTab.UseVisualStyleBackColor = true;
             // 
-            // RotationZNumeric
+            // PositionXLabel
             // 
-            this.RotationZNumeric.DecimalPlaces = 5;
-            this.RotationZNumeric.Location = new System.Drawing.Point(67, 162);
-            this.RotationZNumeric.Maximum = new decimal(new int[] {
-            360,
-            0,
-            0,
-            0});
-            this.RotationZNumeric.Minimum = new decimal(new int[] {
-            360,
-            0,
-            0,
-            -2147483648});
-            this.RotationZNumeric.Name = "RotationZNumeric";
-            this.RotationZNumeric.Size = new System.Drawing.Size(185, 20);
-            this.RotationZNumeric.TabIndex = 23;
+            this.PositionXLabel.AutoSize = true;
+            this.PositionXLabel.Location = new System.Drawing.Point(7, 34);
+            this.PositionXLabel.Name = "PositionXLabel";
+            this.PositionXLabel.Size = new System.Drawing.Size(54, 13);
+            this.PositionXLabel.TabIndex = 0;
+            this.PositionXLabel.Text = "Position X";
             // 
-            // RotationYNumeric
+            // PositionYLabel
             // 
-            this.RotationYNumeric.DecimalPlaces = 5;
-            this.RotationYNumeric.Location = new System.Drawing.Point(67, 136);
-            this.RotationYNumeric.Maximum = new decimal(new int[] {
-            360,
-            0,
-            0,
-            0});
-            this.RotationYNumeric.Minimum = new decimal(new int[] {
-            360,
-            0,
-            0,
-            -2147483648});
-            this.RotationYNumeric.Name = "RotationYNumeric";
-            this.RotationYNumeric.Size = new System.Drawing.Size(185, 20);
-            this.RotationYNumeric.TabIndex = 22;
+            this.PositionYLabel.AutoSize = true;
+            this.PositionYLabel.Location = new System.Drawing.Point(7, 60);
+            this.PositionYLabel.Name = "PositionYLabel";
+            this.PositionYLabel.Size = new System.Drawing.Size(54, 13);
+            this.PositionYLabel.TabIndex = 2;
+            this.PositionYLabel.Text = "Position Y";
             // 
-            // RotationXNumeric
+            // PositionZLabel
             // 
-            this.RotationXNumeric.DecimalPlaces = 5;
-            this.RotationXNumeric.Location = new System.Drawing.Point(67, 110);
-            this.RotationXNumeric.Maximum = new decimal(new int[] {
-            360,
-            0,
-            0,
-            0});
-            this.RotationXNumeric.Minimum = new decimal(new int[] {
-            360,
-            0,
-            0,
-            -2147483648});
-            this.RotationXNumeric.Name = "RotationXNumeric";
-            this.RotationXNumeric.Size = new System.Drawing.Size(185, 20);
-            this.RotationXNumeric.TabIndex = 21;
+            this.PositionZLabel.AutoSize = true;
+            this.PositionZLabel.Location = new System.Drawing.Point(7, 86);
+            this.PositionZLabel.Name = "PositionZLabel";
+            this.PositionZLabel.Size = new System.Drawing.Size(54, 13);
+            this.PositionZLabel.TabIndex = 4;
+            this.PositionZLabel.Text = "Position Z";
             // 
-            // PositionZNumeric
+            // RotationXLabel
             // 
-            this.PositionZNumeric.DecimalPlaces = 5;
-            this.PositionZNumeric.Location = new System.Drawing.Point(67, 84);
-            this.PositionZNumeric.Maximum = new decimal(new int[] {
-            999999999,
-            0,
-            0,
-            0});
-            this.PositionZNumeric.Minimum = new decimal(new int[] {
-            999999999,
-            0,
-            0,
-            -2147483648});
-            this.PositionZNumeric.Name = "PositionZNumeric";
-            this.PositionZNumeric.Size = new System.Drawing.Size(185, 20);
-            this.PositionZNumeric.TabIndex = 20;
+            this.RotationXLabel.AutoSize = true;
+            this.RotationXLabel.Location = new System.Drawing.Point(7, 112);
+            this.RotationXLabel.Name = "RotationXLabel";
+            this.RotationXLabel.Size = new System.Drawing.Size(57, 13);
+            this.RotationXLabel.TabIndex = 6;
+            this.RotationXLabel.Text = "Rotation X";
             // 
-            // PositionYNumeric
+            // RotationYLabel
             // 
-            this.PositionYNumeric.DecimalPlaces = 5;
-            this.PositionYNumeric.Location = new System.Drawing.Point(67, 58);
-            this.PositionYNumeric.Maximum = new decimal(new int[] {
-            999999999,
-            0,
-            0,
-            0});
-            this.PositionYNumeric.Minimum = new decimal(new int[] {
-            999999999,
-            0,
-            0,
-            -2147483648});
-            this.PositionYNumeric.Name = "PositionYNumeric";
-            this.PositionYNumeric.Size = new System.Drawing.Size(185, 20);
-            this.PositionYNumeric.TabIndex = 19;
+            this.RotationYLabel.AutoSize = true;
+            this.RotationYLabel.Location = new System.Drawing.Point(7, 138);
+            this.RotationYLabel.Name = "RotationYLabel";
+            this.RotationYLabel.Size = new System.Drawing.Size(57, 13);
+            this.RotationYLabel.TabIndex = 8;
+            this.RotationYLabel.Text = "Rotation Y";
+            // 
+            // RotationZLabel
+            // 
+            this.RotationZLabel.AutoSize = true;
+            this.RotationZLabel.Location = new System.Drawing.Point(7, 164);
+            this.RotationZLabel.Name = "RotationZLabel";
+            this.RotationZLabel.Size = new System.Drawing.Size(57, 13);
+            this.RotationZLabel.TabIndex = 10;
+            this.RotationZLabel.Text = "Rotation Z";
+            // 
+            // CurrentEntry
+            // 
+            this.CurrentEntry.AutoSize = true;
+            this.CurrentEntry.Location = new System.Drawing.Point(10, 7);
+            this.CurrentEntry.Name = "CurrentEntry";
+            this.CurrentEntry.Size = new System.Drawing.Size(111, 13);
+            this.CurrentEntry.TabIndex = 12;
+            this.CurrentEntry.Text = "FRAME NAME HERE";
             // 
             // PositionXNumeric
             // 
@@ -218,68 +160,126 @@
             this.PositionXNumeric.Size = new System.Drawing.Size(185, 20);
             this.PositionXNumeric.TabIndex = 18;
             // 
-            // CurrentEntry
+            // PositionYNumeric
             // 
-            this.CurrentEntry.AutoSize = true;
-            this.CurrentEntry.Location = new System.Drawing.Point(10, 7);
-            this.CurrentEntry.Name = "CurrentEntry";
-            this.CurrentEntry.Size = new System.Drawing.Size(111, 13);
-            this.CurrentEntry.TabIndex = 12;
-            this.CurrentEntry.Text = "FRAME NAME HERE";
+            this.PositionYNumeric.DecimalPlaces = 5;
+            this.PositionYNumeric.Location = new System.Drawing.Point(67, 58);
+            this.PositionYNumeric.Maximum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            0});
+            this.PositionYNumeric.Minimum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            -2147483648});
+            this.PositionYNumeric.Name = "PositionYNumeric";
+            this.PositionYNumeric.Size = new System.Drawing.Size(185, 20);
+            this.PositionYNumeric.TabIndex = 19;
             // 
-            // RotationZLabel
+            // PositionZNumeric
             // 
-            this.RotationZLabel.AutoSize = true;
-            this.RotationZLabel.Location = new System.Drawing.Point(7, 164);
-            this.RotationZLabel.Name = "RotationZLabel";
-            this.RotationZLabel.Size = new System.Drawing.Size(57, 13);
-            this.RotationZLabel.TabIndex = 10;
-            this.RotationZLabel.Text = "Rotation Z";
+            this.PositionZNumeric.DecimalPlaces = 5;
+            this.PositionZNumeric.Location = new System.Drawing.Point(67, 84);
+            this.PositionZNumeric.Maximum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            0});
+            this.PositionZNumeric.Minimum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            -2147483648});
+            this.PositionZNumeric.Name = "PositionZNumeric";
+            this.PositionZNumeric.Size = new System.Drawing.Size(185, 20);
+            this.PositionZNumeric.TabIndex = 20;
             // 
-            // RotationYLabel
+            // RotationXNumeric
             // 
-            this.RotationYLabel.AutoSize = true;
-            this.RotationYLabel.Location = new System.Drawing.Point(7, 138);
-            this.RotationYLabel.Name = "RotationYLabel";
-            this.RotationYLabel.Size = new System.Drawing.Size(57, 13);
-            this.RotationYLabel.TabIndex = 8;
-            this.RotationYLabel.Text = "Rotation Y";
+            this.RotationXNumeric.DecimalPlaces = 5;
+            this.RotationXNumeric.Location = new System.Drawing.Point(67, 110);
+            this.RotationXNumeric.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.RotationXNumeric.Minimum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            -2147483648});
+            this.RotationXNumeric.Name = "RotationXNumeric";
+            this.RotationXNumeric.Size = new System.Drawing.Size(185, 20);
+            this.RotationXNumeric.TabIndex = 21;
             // 
-            // RotationXLabel
+            // RotationYNumeric
             // 
-            this.RotationXLabel.AutoSize = true;
-            this.RotationXLabel.Location = new System.Drawing.Point(7, 112);
-            this.RotationXLabel.Name = "RotationXLabel";
-            this.RotationXLabel.Size = new System.Drawing.Size(57, 13);
-            this.RotationXLabel.TabIndex = 6;
-            this.RotationXLabel.Text = "Rotation X";
+            this.RotationYNumeric.DecimalPlaces = 5;
+            this.RotationYNumeric.Location = new System.Drawing.Point(67, 136);
+            this.RotationYNumeric.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.RotationYNumeric.Minimum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            -2147483648});
+            this.RotationYNumeric.Name = "RotationYNumeric";
+            this.RotationYNumeric.Size = new System.Drawing.Size(185, 20);
+            this.RotationYNumeric.TabIndex = 22;
             // 
-            // PositionZLabel
+            // RotationZNumeric
             // 
-            this.PositionZLabel.AutoSize = true;
-            this.PositionZLabel.Location = new System.Drawing.Point(7, 86);
-            this.PositionZLabel.Name = "PositionZLabel";
-            this.PositionZLabel.Size = new System.Drawing.Size(54, 13);
-            this.PositionZLabel.TabIndex = 4;
-            this.PositionZLabel.Text = "Position Z";
+            this.RotationZNumeric.DecimalPlaces = 5;
+            this.RotationZNumeric.Location = new System.Drawing.Point(67, 162);
+            this.RotationZNumeric.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.RotationZNumeric.Minimum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            -2147483648});
+            this.RotationZNumeric.Name = "RotationZNumeric";
+            this.RotationZNumeric.Size = new System.Drawing.Size(185, 20);
+            this.RotationZNumeric.TabIndex = 23;
             // 
-            // PositionYLabel
+            // PropertyTab
             // 
-            this.PositionYLabel.AutoSize = true;
-            this.PositionYLabel.Location = new System.Drawing.Point(7, 60);
-            this.PositionYLabel.Name = "PositionYLabel";
-            this.PositionYLabel.Size = new System.Drawing.Size(54, 13);
-            this.PositionYLabel.TabIndex = 2;
-            this.PositionYLabel.Text = "Position Y";
+            this.PropertyTab.Controls.Add(this.PropertyGrid);
+            this.PropertyTab.Location = new System.Drawing.Point(4, 22);
+            this.PropertyTab.Name = "PropertyTab";
+            this.PropertyTab.Padding = new System.Windows.Forms.Padding(3);
+            this.PropertyTab.Size = new System.Drawing.Size(259, 424);
+            this.PropertyTab.TabIndex = 0;
+            this.PropertyTab.Text = "Property Grid";
+            this.PropertyTab.UseVisualStyleBackColor = true;
             // 
-            // PositionXLabel
+            // PropertyGrid
             // 
-            this.PositionXLabel.AutoSize = true;
-            this.PositionXLabel.Location = new System.Drawing.Point(7, 34);
-            this.PositionXLabel.Name = "PositionXLabel";
-            this.PositionXLabel.Size = new System.Drawing.Size(54, 13);
-            this.PositionXLabel.TabIndex = 0;
-            this.PositionXLabel.Text = "Position X";
+            this.PropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PropertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
+            this.PropertyGrid.Location = new System.Drawing.Point(3, 3);
+            this.PropertyGrid.Name = "PropertyGrid";
+            this.PropertyGrid.Size = new System.Drawing.Size(253, 418);
+            this.PropertyGrid.TabIndex = 2;
+            // 
+            // MainTabControl
+            // 
+            this.MainTabControl.Controls.Add(this.PropertyTab);
+            this.MainTabControl.Controls.Add(this.QuickEditTab);
+            this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainTabControl.Location = new System.Drawing.Point(0, 0);
+            this.MainTabControl.Name = "MainTabControl";
+            this.MainTabControl.SelectedIndex = 0;
+            this.MainTabControl.Size = new System.Drawing.Size(267, 450);
+            this.MainTabControl.TabIndex = 7;
             // 
             // DockPropertyGrid
             // 
@@ -296,24 +296,21 @@
             this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockRight;
             this.TabText = "Frame Properties";
             this.Text = "PropertyGrid";
-            this.MainTabControl.ResumeLayout(false);
-            this.PropertyTab.ResumeLayout(false);
             this.QuickEditTab.ResumeLayout(false);
             this.QuickEditTab.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RotationZNumeric)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.RotationYNumeric)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.RotationXNumeric)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PositionZNumeric)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.PositionYNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PositionXNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PositionYNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PositionZNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationXNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationYNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RotationZNumeric)).EndInit();
+            this.PropertyTab.ResumeLayout(false);
+            this.MainTabControl.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        public System.Windows.Forms.PropertyGrid PropertyGrid;
-        private System.Windows.Forms.TabControl MainTabControl;
-        private System.Windows.Forms.TabPage PropertyTab;
         private System.Windows.Forms.TabPage QuickEditTab;
         public System.Windows.Forms.NumericUpDown RotationZNumeric;
         public System.Windows.Forms.NumericUpDown RotationYNumeric;
@@ -328,5 +325,8 @@
         private System.Windows.Forms.Label PositionZLabel;
         private System.Windows.Forms.Label PositionYLabel;
         private System.Windows.Forms.Label PositionXLabel;
+        private System.Windows.Forms.TabPage PropertyTab;
+        public System.Windows.Forms.PropertyGrid PropertyGrid;
+        private System.Windows.Forms.TabControl MainTabControl;
     }
 }

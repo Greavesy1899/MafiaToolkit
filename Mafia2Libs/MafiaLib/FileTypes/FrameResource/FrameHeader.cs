@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using Utils.Types;
 
 namespace ResourceTypes.FrameResource
@@ -16,7 +18,7 @@ namespace ResourceTypes.FrameResource
         int numObjects = 0;
 
         Hash sceneName;
-        FrameHeaderScene[] sceneFolders;
+        List<FrameHeaderScene> sceneFolders;
 
         float unk1;
         float unk2;
@@ -27,30 +29,37 @@ namespace ResourceTypes.FrameResource
             get { return isScene; }
             set { isScene = value; }
         }
+        [Browsable(false)]
         public int NumFolderNames {
             get { return numFolderNames; }
             set { numFolderNames = value; }
         }
+        [Browsable(false)]
         public int NumGeometries {
             get { return numGeometries; }
             set { numGeometries = value; }
         }
+        [Browsable(false)]
         public int NumMaterialResources {
             get { return numMaterialResources; }
             set { numMaterialResources = value; }
         }
+        [Browsable(false)]
         public int NumObjects {
             get { return numObjects; }
             set { numObjects = value; }
         }
+        [Browsable(false)]
         public int NumBlendInfos {
             get { return numBlendInfos; }
             set { numBlendInfos = value; }
         }
+        [Browsable(false)]
         public int NumSkeletons {
             get { return numSkeletons; }
             set { numSkeletons = value; }
         }
+        [Browsable(false)]
         public int NumSkelHierachies {
             get { return numSkelHierachies; }
             set { numSkelHierachies = value; }
@@ -75,9 +84,15 @@ namespace ResourceTypes.FrameResource
             get { return unkData; }
             set { unkData = value; }
         }
-        public FrameHeaderScene[] SceneFolders {
+        [Browsable(false)]
+        public List<FrameHeaderScene> SceneFolders {
             get { return sceneFolders; }
             set { sceneFolders = value; }
+        }
+
+        public FrameHeader()
+        {
+            sceneFolders = new List<FrameHeaderScene>();
         }
 
         /// <summary>
@@ -107,12 +122,12 @@ namespace ResourceTypes.FrameResource
                 }
                 unk3 = reader.ReadBoolean();
             }
-
-            sceneFolders = new FrameHeaderScene[numFolderNames];
+        
             for (int i = 0; i != numFolderNames; i++)
             {
-                sceneFolders[i] = new FrameHeaderScene();
-                sceneFolders[i].ReadFromFile(reader);
+                FrameHeaderScene scene = new FrameHeaderScene();
+                scene.ReadFromFile(reader);
+                sceneFolders.Add(scene);
             }
         }
 

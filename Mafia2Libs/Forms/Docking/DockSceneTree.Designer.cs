@@ -48,31 +48,31 @@
             this.DuplicateButton,
             this.Export3DButton});
             this.EntryMenuStrip.Name = "EntryMenuStrip";
-            this.EntryMenuStrip.Size = new System.Drawing.Size(125, 92);
+            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 114);
             this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
             // 
             // PreviewButton
             // 
             this.PreviewButton.Name = "PreviewButton";
-            this.PreviewButton.Size = new System.Drawing.Size(124, 22);
+            this.PreviewButton.Size = new System.Drawing.Size(180, 22);
             this.PreviewButton.Text = "Preview";
             // 
             // DeleteButton
             // 
             this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(124, 22);
+            this.DeleteButton.Size = new System.Drawing.Size(180, 22);
             this.DeleteButton.Text = "Delete";
             // 
             // DuplicateButton
             // 
             this.DuplicateButton.Name = "DuplicateButton";
-            this.DuplicateButton.Size = new System.Drawing.Size(124, 22);
+            this.DuplicateButton.Size = new System.Drawing.Size(180, 22);
             this.DuplicateButton.Text = "Duplicate";
             // 
             // Export3DButton
             // 
             this.Export3DButton.Name = "Export3DButton";
-            this.Export3DButton.Size = new System.Drawing.Size(124, 22);
+            this.Export3DButton.Size = new System.Drawing.Size(180, 22);
             this.Export3DButton.Text = "Export 3D";
             // 
             // imageList1

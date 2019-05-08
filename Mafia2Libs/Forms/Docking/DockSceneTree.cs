@@ -11,11 +11,19 @@ namespace Forms.Docking
             InitializeComponent();
         }
 
-        public void AddToTree(TreeNode node)
+        public void AddToTree(TreeNode newNode)
         {
-            ApplyImageIndex(node);
-            RecurseChildren(node);
-            treeView1.Nodes.Add(node);
+            ApplyImageIndex(newNode);
+            RecurseChildren(newNode);
+            treeView1.Nodes.Add(newNode);
+        }
+
+        public void AddToTree(TreeNode newNode, TreeNode parentNode)
+        {
+            ApplyImageIndex(newNode);
+            RecurseChildren(newNode);
+            parentNode.Nodes.Add(newNode);
+            treeView1.SelectedNode = newNode;
         }
 
         private void RecurseChildren(TreeNode node)

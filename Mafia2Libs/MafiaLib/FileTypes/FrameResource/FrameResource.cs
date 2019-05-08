@@ -104,10 +104,15 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        /// <summary>
-        /// Reads the file into the memory.
-        /// </summary>
-        /// <param name="reader"></param>
+        public FrameHeaderScene AddSceneFolder(string name)
+        {
+            FrameHeaderScene scene = new FrameHeaderScene();
+            scene.Name = new Utils.Types.Hash(name);
+            header.SceneFolders.Add(scene);
+            frameScenes.Add(scene.RefID, scene);
+            return scene;
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             header = new FrameHeader();
@@ -115,7 +120,7 @@ namespace ResourceTypes.FrameResource
 
             int j = 0;
 
-            for (int i = 0; i != header.SceneFolders.Length; i++)
+            for (int i = 0; i != header.SceneFolders.Count; i++)
             {
                 frameScenes.Add(header.SceneFolders[i].RefID, header.SceneFolders[i]);
                 NewFrames.Add(new FrameHolder(j++, header.SceneFolders[i]));
@@ -226,10 +231,6 @@ namespace ResourceTypes.FrameResource
             DefineFrameBlockParents();
         }
 
-        /// <summary>
-        /// Writes the FrameResource to the file.
-        /// </summary>
-        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             //BEFORE WE WRITE, WE NEED TO COMPILE AND UPDATE THE FRAME.
@@ -237,26 +238,26 @@ namespace ResourceTypes.FrameResource
             header.WriteToFile(writer);
 
             int totalBlockCount = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
-            int currentIdx = header.SceneFolders.Length;
+            int currentIdx = header.SceneFolders.Count;
 
-            for (; currentIdx != header.SceneFolders.Length + header.NumGeometries; currentIdx++)
+            for (; currentIdx != header.SceneFolders.Count + header.NumGeometries; currentIdx++)
                 (NewFrames[currentIdx].Data as FrameGeometry).WriteToFile(writer);
 
-            for (; currentIdx != header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources; currentIdx++)
+            for (; currentIdx != header.SceneFolders.Count + header.NumGeometries + header.NumMaterialResources; currentIdx++)
                 (NewFrames[currentIdx].Data as FrameMaterial).WriteToFile(writer);
 
-            for (; currentIdx != header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos; currentIdx++)
+            for (; currentIdx != header.SceneFolders.Count + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos; currentIdx++)
                 (NewFrames[currentIdx].Data as FrameBlendInfo).WriteToFile(writer);
 
-            for (; currentIdx != header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons; currentIdx++)
+            for (; currentIdx != header.SceneFolders.Count + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons; currentIdx++)
                 (NewFrames[currentIdx].Data as FrameSkeleton).WriteToFile(writer);
 
-            for (; currentIdx != header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies; currentIdx++)
+            for (; currentIdx != header.SceneFolders.Count + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies; currentIdx++)
                 (NewFrames[currentIdx].Data as FrameSkeletonHierachy).WriteToFile(writer);
 
             int savedIdx = currentIdx;
 
-            for (; savedIdx != header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies + header.NumObjects; savedIdx++)
+            for (; savedIdx != header.SceneFolders.Count + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies + header.NumObjects; savedIdx++)
             {
                 FrameEntry entry = NewFrames[savedIdx].Data;
 
@@ -290,7 +291,7 @@ namespace ResourceTypes.FrameResource
 
             savedIdx = currentIdx;
 
-            for (; savedIdx != header.SceneFolders.Length + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies + header.NumObjects; savedIdx++)
+            for (; savedIdx != header.SceneFolders.Count + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies + header.NumObjects; savedIdx++)
             {
                 FrameEntry entry = NewFrames[savedIdx].Data;
 
@@ -325,7 +326,8 @@ namespace ResourceTypes.FrameResource
 
         public TreeNode BuildTree(FrameNameTable.FrameNameTable table)
         {
-            TreeNode root = new TreeNode("Root");
+            TreeNode root = new TreeNode("FrameResource Contents");
+            root.Tag = header;
 
             int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
             Dictionary<int, TreeNode> parsedNodes = new Dictionary<int, TreeNode>();
@@ -491,10 +493,6 @@ namespace ResourceTypes.FrameResource
             return root;
         }
 
-        /// <summary>
-        /// Adds names onto ParentIndex1 and ParentIndex2. Called after the file has been read.
-        /// Adds Refs also. These are needed to save a Frame file.
-        /// </summary>
         public void DefineFrameBlockParents()
         {
             int numBlocks = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
@@ -541,7 +539,6 @@ namespace ResourceTypes.FrameResource
 
         public void UpdateFrameData()
         {
-            int totalResources = header.NumFolderNames + header.NumGeometries + header.NumMaterialResources + header.NumBlendInfos + header.NumSkeletons + header.NumSkelHierachies;
             int currentCount = 0;
 
             List<FrameHolder> updatedFrames = new List<FrameHolder>();
@@ -621,6 +618,7 @@ namespace ResourceTypes.FrameResource
             header.NumSkeletons = frameSkeletons.Count;
             header.NumSkelHierachies = frameSkeletonHierachies.Count;
             header.NumObjects = frameObjects.Count;
+            header.NumFolderNames = header.SceneFolders.Count;
             NewFrames = updatedFrames;
         }
     }
