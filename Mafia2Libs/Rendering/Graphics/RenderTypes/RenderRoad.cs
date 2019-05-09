@@ -112,5 +112,15 @@ namespace Rendering.Graphics
             foreach (Render2DPlane plane in lanes)
                 plane.UpdateBuffers(device);
         }
+
+        public override void Select()
+        {
+            //TODO
+        }
+
+        public override void Unselect()
+        {
+           //TODO
+        }
     }
 }

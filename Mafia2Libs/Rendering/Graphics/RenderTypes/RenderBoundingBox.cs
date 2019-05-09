@@ -75,10 +75,16 @@ namespace Rendering.Graphics
             return true;
         }
 
+        public void Update(BoundingBox box)
+        {
+            isUpdatedNeeded = true;
+            Init(box);
+        }
+
         public override void InitBuffers(Device d3d)
         {
-            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices);
-            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices);
+            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
         }
 
         public void SetColour(Vector4 vec)
@@ -143,7 +149,20 @@ namespace Rendering.Graphics
                 dataBox = device.MapSubresource(indexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
                 Utilities.Write(dataBox.DataPointer, indices, 0, indices.Length);
                 device.UnmapSubresource(indexBuffer, 0);
+                isUpdatedNeeded = false;
             }
+        }
+
+        public override void Select()
+        {
+            for(int i = 0; i < vertices.Length; i++)
+                vertices[i].Colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+        }
+
+        public override void Unselect()
+        {
+            for (int i = 0; i < vertices.Length; i++)
+                vertices[i].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
 }

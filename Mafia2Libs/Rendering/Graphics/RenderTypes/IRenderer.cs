@@ -14,6 +14,8 @@ namespace Rendering.Graphics
         protected Buffer indexBuffer;
         protected Buffer vertexBuffer;
 
+        public abstract void Select();
+        public abstract void Unselect();
         public abstract void InitBuffers(Device d3d);
         public abstract void SetTransform(Vector3 position, Matrix33 rotation);
         public abstract void SetTransform(Matrix matrix);

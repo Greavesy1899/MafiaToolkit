@@ -15,8 +15,8 @@ namespace Forms.Docking
 
         private void Init()
         {
-            VisibleProperties = new bool[5];
-            for (int i = 0; i < 5; i++)
+            VisibleProperties = new bool[checkedListBox1.Items.Count];
+            for (int i = 0; i < checkedListBox1.Items.Count; i++)
             {
                 VisibleProperties[i] = true;
                 checkedListBox1.SetItemChecked(i, true);

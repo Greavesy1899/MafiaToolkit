@@ -168,5 +168,15 @@ namespace Rendering.Graphics
                 device.UnmapSubresource(indexBuffer, 0);
             }
         }
+
+        public override void Select()
+        {
+            //TODO
+        }
+
+        public override void Unselect()
+        {
+            //TODO
+        }
     }
 }

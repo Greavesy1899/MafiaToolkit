@@ -55,6 +55,7 @@ namespace Rendering.Graphics
             DoRender = true;
             BoundingBox = new RenderBoundingBox();
             BoundingBox.Init(data.BoundingBox);
+            BoundingBox.DoRender = false;
 
             Indices = data.Indices;
             numTriangles = Convert.ToUInt32(data.Indices.Length * 3);
@@ -111,6 +112,7 @@ namespace Rendering.Graphics
             if (!DoRender)
                 return;
 
+            BoundingBox.Render(device, deviceContext, camera, light);
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
@@ -160,6 +162,16 @@ namespace Rendering.Graphics
             {
                 //todo: implement this!
             }
+        }
+
+        public override void Select()
+        {
+            BoundingBox.DoRender = true;
+        }
+
+        public override void Unselect()
+        {
+            BoundingBox.DoRender = false;
         }
     }
 }

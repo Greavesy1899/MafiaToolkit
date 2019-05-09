@@ -8,13 +8,13 @@ namespace Forms.Docking
     public partial class DockPropertyGrid : DockContent
     {
         private object currentObject;
-        private bool isEntryReady;
+        public bool IsEntryReady;
 
         public DockPropertyGrid()
         {
             InitializeComponent();
             currentObject = null;
-            isEntryReady = false;
+            IsEntryReady = false;
         }
 
         public void SetObject(object obj)
@@ -26,7 +26,7 @@ namespace Forms.Docking
 
         private void SetTransformEdit()
         {
-            isEntryReady = false;
+            IsEntryReady = false;
             if (currentObject is FrameObjectBase)
             {
                 FrameObjectBase fObject = (currentObject as FrameObjectBase);
@@ -38,7 +38,7 @@ namespace Forms.Docking
                 RotationYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.EulerRotation.Y);
                 RotationZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.EulerRotation.Z);
             }
-            isEntryReady = true;
+            IsEntryReady = true;
         }
 
         private void SetPropertyGrid()
@@ -48,7 +48,7 @@ namespace Forms.Docking
 
         public void UpdateObject()
         {
-            if(isEntryReady && currentObject != null)
+            if(IsEntryReady && currentObject != null)
             {
                 if (currentObject is FrameObjectBase)
                 {

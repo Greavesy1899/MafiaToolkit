@@ -537,8 +537,100 @@ namespace ResourceTypes.FrameResource
             }
         }
 
+        public void SanitizeFrameData()
+        {
+            Dictionary<int, bool> isGeomUsed = new Dictionary<int, bool>(frameGeometries.Count);
+            Dictionary<int, bool> isMatUsed = new Dictionary<int, bool>(frameMaterials.Count);
+            Dictionary<int, bool> isBlendInfoUsed = new Dictionary<int, bool>(frameBlendInfos.Count);
+            Dictionary<int, bool> isSkelUsed = new Dictionary<int, bool>(frameSkeletons.Count);
+            Dictionary<int, bool> isSkelHierUsed = new Dictionary<int, bool>(frameSkeletonHierachies.Count);
+
+            foreach (KeyValuePair<int, FrameGeometry> entry in frameGeometries)
+                isGeomUsed.Add(entry.Key, false);
+
+            foreach (KeyValuePair<int, FrameMaterial> entry in frameMaterials)
+                isMatUsed.Add(entry.Key, false);
+
+            foreach (KeyValuePair<int, FrameBlendInfo> entry in frameBlendInfos)
+                isBlendInfoUsed.Add(entry.Key, false);
+
+            foreach (KeyValuePair<int, FrameSkeleton> entry in frameSkeletons)
+                isSkelUsed.Add(entry.Key, false);
+
+            foreach (KeyValuePair<int, FrameSkeletonHierachy> entry in frameSkeletonHierachies)
+                isSkelHierUsed.Add(entry.Key, false);
+
+            foreach (KeyValuePair<int, object> entry in frameObjects)
+            {
+                if(entry.Value is FrameObjectSingleMesh)
+                {
+                    FrameObjectSingleMesh mesh = (entry.Value as FrameObjectSingleMesh);
+                    isGeomUsed[mesh.Refs["Mesh"]] = true;
+                    isMatUsed[mesh.Refs["Material"]] = true;
+                }
+                else if(entry.Value is FrameObjectModel)
+                {
+                    FrameObjectModel mesh = (entry.Value as FrameObjectModel);
+                    isGeomUsed[mesh.Refs["Mesh"]] = true;
+                    isMatUsed[mesh.Refs["Material"]] = true;
+                    isBlendInfoUsed[mesh.Refs["BlendInfo"]] = true;
+                    isSkelHierUsed[mesh.Refs["SkeletonHierachy"]] = true;
+                    isSkelUsed[mesh.Refs["Skeleton"]] = true;
+                }
+            }
+
+            for (int i = 0; i != isGeomUsed.Count; i++)
+            {
+                KeyValuePair<int, bool> pair = isGeomUsed.ElementAt(i);
+                if (pair.Value != true)
+                {
+                    frameGeometries.Remove(pair.Key);
+                    Console.WriteLine("Deleted with ID: {0}", pair.Key);
+                }
+               
+            }
+            for (int i = 0; i != isMatUsed.Count; i++)
+            {
+                KeyValuePair<int, bool> pair = isMatUsed.ElementAt(i);
+                if (pair.Value != true)
+                {
+                    frameMaterials.Remove(pair.Key);
+                    Console.WriteLine("Deleted with ID: {0}", pair.Key);
+                }
+            }
+            for (int i = 0; i != isBlendInfoUsed.Count; i++)
+            {
+                KeyValuePair<int, bool> pair = isBlendInfoUsed.ElementAt(i);
+                if (pair.Value != true)
+                {
+                    frameBlendInfos.Remove(pair.Key);
+                    Console.WriteLine("Deleted with ID: {0}", pair.Key);
+                }
+            }
+            for (int i = 0; i != isSkelUsed.Count; i++)
+            {
+                KeyValuePair<int, bool> pair = isSkelUsed.ElementAt(i);
+                if (pair.Value != true)
+                {
+                    frameSkeletons.Remove(pair.Key);
+                    Console.WriteLine("Deleted with ID: {0}", pair.Key);
+                }
+            }
+            for (int i = 0; i != isSkelHierUsed.Count; i++)
+            {
+                KeyValuePair<int, bool> pair = isSkelHierUsed.ElementAt(i);
+                if (pair.Value != true)
+                {
+                    frameSkeletonHierachies.Remove(pair.Key);
+                    Console.WriteLine("Deleted with ID: {0}", pair.Key);
+                }
+            }
+
+        }
+
         public void UpdateFrameData()
         {
+            SanitizeFrameData();
             int currentCount = 0;
 
             List<FrameHolder> updatedFrames = new List<FrameHolder>();
@@ -611,7 +703,7 @@ namespace ResourceTypes.FrameResource
                 }
             }
 
-            header.NumFolderNames = FrameScenes.Count;
+            header.NumFolderNames = frameScenes.Count;
             header.NumGeometries = frameGeometries.Count;
             header.NumMaterialResources = frameMaterials.Count;
             header.NumBlendInfos = frameBlendInfos.Count;

@@ -56,6 +56,8 @@ namespace Rendering.Graphics
             //DoRender = (mesh.SecondaryFlags == 4097 ? true : false);
             BoundingBox = new RenderBoundingBox();
             BoundingBox.Init(mesh.Boundings);
+            BoundingBox.SetTransform(Transform);
+            BoundingBox.DoRender = false;
             BBox = mesh.Boundings;
             LODs = new LOD[geom.NumLods];
 
@@ -299,6 +301,7 @@ namespace Rendering.Graphics
                 LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera);
                 LODs[0].ModelParts[i].Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(LODs[0].ModelParts[i].NumFaces * 3), LODs[0].ModelParts[i].StartIndex);
             }
+            BoundingBox.Render(device, deviceContext, camera, light);
         }
 
         public override void Shutdown()
@@ -326,6 +329,16 @@ namespace Rendering.Graphics
             {
                 //Should never need updating.
             }
+        }
+
+        public override void Select()
+        {
+            BoundingBox.DoRender = true;
+        }
+
+        public override void Unselect()
+        {
+            BoundingBox.DoRender = false;
         }
     }
 }

@@ -97,5 +97,15 @@ namespace Rendering.Graphics
                 device.UnmapSubresource(vertexBuffer, 0);
             }
         }
+
+        public override void Select()
+        {
+            //TODO
+        }
+
+        public override void Unselect()
+        {
+            //TODO
+        }
     }
 }

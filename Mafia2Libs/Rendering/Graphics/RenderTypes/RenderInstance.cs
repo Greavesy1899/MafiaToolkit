@@ -49,5 +49,15 @@ namespace Rendering.Graphics
         {
             return collision;
         }
+
+        public override void Select()
+        {
+            collision.BoundingBox.DoRender = true;
+        }
+
+        public override void Unselect()
+        {
+            collision.BoundingBox.DoRender = false;
+        }
     }
 }
