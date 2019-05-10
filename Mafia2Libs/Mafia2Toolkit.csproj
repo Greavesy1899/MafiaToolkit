@@ -259,7 +259,7 @@
     <Compile Include="MafiaLib\FileTypes\CityShops.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameProps.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\Roadmap.cs" />
-    <Compile Include="MafiaLib\FileTypes\RPMG.cs" />
+    <Compile Include="MafiaLib\FileTypes\CGameData.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\TAPIndices.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\Material.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\MaterialLibrary.cs" />

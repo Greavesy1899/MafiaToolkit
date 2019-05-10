@@ -30,8 +30,7 @@ namespace Rendering.Graphics
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, Vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, Indices);
             Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
-
-            //BoundingBox.InitBuffers(d3d);
+            BoundingBox.InitBuffers(d3d);
         }
 
         //TEMP
@@ -136,11 +135,13 @@ namespace Rendering.Graphics
             m_trans[3, 1] = position.Y;
             m_trans[3, 2] = position.Z;
             Transform = m_trans;
+            BoundingBox.SetTransform(m_trans);
         }
 
         public override void SetTransform(Matrix matrix)
         {
             Transform = matrix;
+            BoundingBox.SetTransform(matrix);
         }
 
         public override void Shutdown()
@@ -149,7 +150,7 @@ namespace Rendering.Graphics
             Vertices = null;
             materials = null;
             BoundingBox.Shutdown();
-            BoundingBox.Shutdown();
+            BoundingBox = null;
             vertexBuffer?.Dispose();
             vertexBuffer = null;
             indexBuffer?.Dispose();

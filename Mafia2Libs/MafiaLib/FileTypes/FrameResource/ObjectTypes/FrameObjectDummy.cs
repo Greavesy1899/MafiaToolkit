@@ -68,7 +68,7 @@ namespace ResourceTypes.FrameResource
 
         public override string ToString()
         {
-            return name.String;
+            return name.ToString();
         }
 
     }

@@ -13,6 +13,8 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
+            ResourceTypes.Misc.CGameData cgame = new ResourceTypes.Misc.CGameData(new FileInfo("Menu_Carcyclopedia.bin"));
+
             //begin form inits;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

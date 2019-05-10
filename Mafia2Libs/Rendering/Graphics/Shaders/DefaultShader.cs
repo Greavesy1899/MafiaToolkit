@@ -2,10 +2,8 @@
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D11;
 using System.Runtime.InteropServices;
-using Mafia2Tool;
 using Utils.Settings;
 using ResourceTypes.Materials;
-using System.Diagnostics;
 
 namespace Rendering.Graphics
 {

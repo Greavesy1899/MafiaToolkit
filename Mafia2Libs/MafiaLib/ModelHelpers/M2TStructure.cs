@@ -616,7 +616,8 @@ namespace Utils.Models
                     List<Vector3> partVerts = new List<Vector3>();
                     for (int x = 0; x != indices.Length; x++)
                         partVerts.Add(vertices[indices[i]].Position);
-                    BoundingBox bounds = BoundingBoxExtenders.CalculateBounds(partVerts.ToArray());
+                    BoundingBox bounds;
+                    BoundingBox.FromPoints(partVerts.ToArray(), out bounds);
                     parts[i].Bounds = bounds;
                 }
             }

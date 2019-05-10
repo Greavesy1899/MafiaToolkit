@@ -56,39 +56,6 @@ namespace Utils.SharpDXExtensions
             }
             return bbox;
         }
-
-        public static BoundingBox CalculateBounds(Vector3[] data)
-        {
-            BoundingBox bbox = new BoundingBox
-            {
-                Minimum = new Vector3(0),
-                Maximum = new Vector3(0)
-            };
-
-            for (int i = 0; i != data.Length; i++)
-            {
-                Vector3 pos = data[i];
-
-                if (pos.X < bbox.Minimum.X)
-                    bbox.Minimum.X = pos.X;
-
-                if (pos.X > bbox.Maximum.X)
-                    bbox.Maximum.X = pos.X;
-
-                if (pos.Y < bbox.Minimum.Y)
-                    bbox.Minimum.Y = pos.Y;
-
-                if (pos.Y > bbox.Maximum.Y)
-                    bbox.Maximum.Y = pos.Y;
-
-                if (pos.Z < bbox.Minimum.Z)
-                    bbox.Minimum.Z = pos.Z;
-
-                if (pos.Z > bbox.Maximum.Z)
-                    bbox.Maximum.Z = pos.Z;
-            }
-            return bbox;
-        }
     }
 
     public static class BoundingSphereExtenders

@@ -115,25 +115,38 @@ namespace ResourceTypes.Cutscene
             public class GCSData
             {
                 private string header; //usually equals !GCS.
-                private long unk02; //cutscene flags? 
-                                    //next 4 bytes is 0x1 and then 0xFF.
-
-                private int unk03; //100000. This COULD be long with the next 8 bytes.
-                private int unk04; //various data found here. potential size for this section.
+                private int unk02; //cutscene flags? 
+                private float unk03; //0?
+                private short unk04; //25.0f;
+                private short unk05; //sometimes 0xFF
+                private int unk06; //100000.
+                private int faceSize; //size of FaceFX data and the int after.
                 private int numStrings; //in fmv0108, i found 2 strings; this block could be for faceFX.
                 private string[] strings; //size is numstrings.
-                                          //3 empty bytes.
+                private int faceUnk0; //100?
 
-                //possible new beginning of data.
+                //size of next set of data.
                 private int size2;
+                private int unkCount1; //camera count - 1?
+                private int unkCount10; //126
+                private int unkCount11; //14
+                private int unkCount12; //18
+                private short unkCount13; //0;
+                private int unkCount14; //126;
+                private int unkCount2; //entity count - 1?
+                private int unkCount21; //0x5;
+                private int unkCount22; //0x2;
+                private short unkCount23; //0;
 
                 public void ReadFromFile(BinaryReader reader)
                 {
                     header = new string(reader.ReadChars(4));
-                    unk02 = reader.ReadInt64();
-                    byte[] unkBytes2 = reader.ReadBytes(4);
-                    unk03 = reader.ReadInt32();
-                    unk04 = reader.ReadInt32();
+                    unk02 = reader.ReadInt32();
+                    unk03 = reader.ReadSingle();
+                    unk04 = reader.ReadInt16();
+                    unk05 = reader.ReadInt16();
+                    unk06 = reader.ReadInt32();
+                    faceSize = reader.ReadInt32();
                     numStrings = reader.ReadInt32();
                     strings = new string[numStrings];
                     for (int i = 0; i != numStrings; i++)
@@ -141,6 +154,7 @@ namespace ResourceTypes.Cutscene
                         short len = reader.ReadInt16();
                         strings[i] = new string(reader.ReadChars(len));
                     }
+                    faceUnk0 = reader.ReadInt32();
                 }
             }
 

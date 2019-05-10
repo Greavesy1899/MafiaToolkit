@@ -59,7 +59,7 @@ namespace ResourceTypes.FrameResource
 
         public override string ToString()
         {
-            return string.IsNullOrEmpty(name.String) ? $"Joint" : name.String;
+            return name.ToString();
         }
 
         public struct NodeStruct

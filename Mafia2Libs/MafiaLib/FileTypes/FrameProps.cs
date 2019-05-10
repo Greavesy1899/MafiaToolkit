@@ -25,7 +25,7 @@ namespace ResourceTypes.Misc
             unks2 = new int[unks[0]];
             unks3 = new string[unks[0]];
             unks4 = new ulong[unks[2]];
-            unks5 = new uint[unks[3]];
+            unks5 = new uint[unks[2]];
 
             for (int i = 0; i != unks2.Length; i++)
                 unks2[i] = reader.ReadInt32();

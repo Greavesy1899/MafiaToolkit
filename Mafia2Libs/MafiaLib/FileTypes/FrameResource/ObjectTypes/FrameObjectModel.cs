@@ -46,6 +46,10 @@ namespace ResourceTypes.FrameResource
             get { return unkTrasform; }
             set { unkTrasform = value; }
         }
+        public HitBoxInfo[] HitBoxes {
+            get { return hitBoxInfo; }
+            set { hitBoxInfo = value; }
+        }
         public AttachmentReference[] AttachmentReferences {
             get { return attachmentReferences; }
             set { attachmentReferences = value; }
@@ -53,6 +57,14 @@ namespace ResourceTypes.FrameResource
         public uint UnkFlags {
             get { return unkFlags; }
             set { unkFlags = value; }
+        }
+        public FrameSkeleton Skeleton {
+            get { return skeleton; }
+            set { skeleton = value; }
+        }
+        public FrameBlendInfo BlendInfo {
+            get { return blendInfo; }
+            set { blendInfo = value; }
         }
 
         public FrameObjectModel (BinaryReader reader)

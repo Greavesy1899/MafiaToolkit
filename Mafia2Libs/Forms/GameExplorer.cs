@@ -493,6 +493,7 @@ namespace Mafia2Tool
                     return;
                 case "NAV":
                 case "NOV":
+                case "NHV":
                     nav = new NAVData((FileInfo)item.Tag);
                     return;
                 case "Speech Data":

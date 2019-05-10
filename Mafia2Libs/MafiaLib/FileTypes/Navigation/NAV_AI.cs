@@ -40,7 +40,22 @@ namespace ResourceTypes.Navigation
             //file name seems to be earlier.
             if (unk01_flags == 3604410608)
             {
-                data = new OBJData(reader);
+                int nameSize = reader.ReadInt32();
+                string fileName = new string(reader.ReadChars(nameSize));
+
+                long start = reader.BaseStream.Position;
+                string hpdString = new string(reader.ReadChars(11));
+                reader.ReadByte();
+                int hpdVersion = reader.ReadInt32();
+                if (hpdString == "Kynogon HPD" && hpdVersion == 2)
+                {
+                    data = new HPDData(reader);
+                }
+                else
+                {
+                    reader.BaseStream.Seek(start, SeekOrigin.Begin);
+                    data = new OBJData(reader);
+                }
             }
             else if (unk01_flags == 1005)
             {
@@ -204,6 +219,52 @@ namespace ResourceTypes.Navigation
             }
         }
 
+        public class HPDData
+        {
+            int unk0;
+            int unk1;
+            byte[] remainingHeader; //132
+            unkStruct[] unkData;
+            string unk2;
+            int unk3;
+            int unk4;
+
+            public struct unkStruct
+            {
+                public int id;
+                public Vector3 unk0;
+                public Vector3 unk1;
+                public byte[] unkData;
+
+                public override string ToString()
+                {
+                    return string.Format("{0} {1} {2}", id, unk0.ToString(), unk1.ToString());
+                }
+            }
+
+            public HPDData(BinaryReader reader)
+            {
+                unk0 = reader.ReadInt32();
+                unk1 = reader.ReadInt32();
+                remainingHeader = reader.ReadBytes(132);
+
+                unkData = new unkStruct[unk1];
+
+                for(int i = 0; i != unkData.Length; i++)
+                {
+                    unkStruct data = new unkStruct();
+                    data.id = reader.ReadInt32();
+                    data.unk0 = Vector3Extenders.ReadFromFile(reader);
+                    data.unk1 = Vector3Extenders.ReadFromFile(reader);
+                    data.unkData = reader.ReadBytes(20);
+                    unkData[i] = data;
+                }
+
+                unk2 = StringHelpers.ReadString(reader);
+                unk3 = reader.ReadInt32();
+                unk4 = reader.ReadInt32();
+            }
+        }
         public class OBJData
         {
             public struct VertexStruct
@@ -242,8 +303,6 @@ namespace ResourceTypes.Navigation
 
             public void ReadFromFile(BinaryReader reader)
             {
-                int nameSize = reader.ReadInt32();
-                fileName = new string(reader.ReadChars(nameSize));
                 unk0 = reader.ReadInt32();
                 unk2 = reader.ReadInt32();
                 unk3 = reader.ReadInt32();

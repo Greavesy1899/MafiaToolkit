@@ -29,7 +29,6 @@ namespace Rendering.Graphics
         public ShaderResourceView AOTexture { get; set; }
         public RenderBoundingBox BoundingBox { get; set; }
 
-        //new
         public struct LOD
         {
             public ModelPart[] ModelParts { get; set; }
@@ -276,11 +275,13 @@ namespace Rendering.Graphics
             m_trans[3, 1] = position.Y;
             m_trans[3, 2] = position.Z;
             Transform = m_trans;
+            BoundingBox.SetTransform(m_trans);
         }
 
         public override void SetTransform(Matrix matrix)
         {
             Transform = matrix;
+            BoundingBox.SetTransform(matrix);
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)

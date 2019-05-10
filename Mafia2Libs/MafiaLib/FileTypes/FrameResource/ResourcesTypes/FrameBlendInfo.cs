@@ -1,10 +1,12 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using SharpDX;
 using Utils.SharpDXExtensions;
 using Utils.Types;
 
 namespace ResourceTypes.FrameResource
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FrameBlendInfo : FrameEntry
     {
         BoneIndexInfo[] boneIndexInfos;

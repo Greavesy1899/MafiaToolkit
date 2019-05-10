@@ -91,7 +91,7 @@ namespace Mafia2Tool
                         TreeNode node = new TreeNode(treeView1.Nodes[x].Nodes.Count + 1.ToString());
                         node.Tag = data;
                         node.Name = treeView1.Nodes[x].Nodes.Count + 1.ToString();
-
+                        
                         treeView1.Nodes[x].Nodes.Add(node);
                     }
                 }
