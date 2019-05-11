@@ -34,11 +34,11 @@ namespace Rendering.Graphics
 
                 if (i < points.Length - 1)
                 {
-                    forward += new Vector2(points[i + 1].X, points[i + 1].Y) - new Vector2(points[i].X, points[i].Y);
+                    forward += new Vector2(points[(i + 1)%points.Length].X, points[(i + 1) % points.Length].Y) - new Vector2(points[i].X, points[i].Y);
                 }
                 if (i > 0)
                 {
-                    forward += new Vector2(points[i].X, points[i].Y) - new Vector2(points[i - 1].X, points[i - 1].Y);
+                    forward += new Vector2(points[i].X, points[i].Y) - new Vector2(points[(i - 1)%points.Length].X, points[(i - 1) % points.Length].Y);
                 }
 
                 forward.Normalize();

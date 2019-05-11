@@ -57,7 +57,6 @@ namespace Rendering.Graphics
             BoundingBox.Init(mesh.Boundings);
             BoundingBox.SetTransform(Transform);
             BoundingBox.DoRender = false;
-            BBox = mesh.Boundings;
             LODs = new LOD[geom.NumLods];
 
             for(int i = 0; i != geom.NumLods; i++)
@@ -326,6 +325,8 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(DeviceContext device)
         {
+            BoundingBox.UpdateBuffers(device);
+
             if(isUpdatedNeeded)
             {
                 //Should never need updating.
@@ -334,11 +335,13 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
+            BoundingBox.Select();
             BoundingBox.DoRender = true;
         }
 
         public override void Unselect()
         {
+            BoundingBox.Unselect();
             BoundingBox.DoRender = false;
         }
     }

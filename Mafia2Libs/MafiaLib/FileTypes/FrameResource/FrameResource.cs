@@ -482,7 +482,19 @@ namespace ResourceTypes.FrameResource
 
                 if (nodes.Length > 0)
                 {
-                    nodes[0].Nodes.Add(entry.Value);
+                    //if(objBase.ParentIndex1.Index != objBase.ParentIndex2.Index)
+                    //{
+                    //    TreeNode[] others = nodes[0].Nodes.Find(objBase.ParentIndex1.RefID.ToString(), true);
+                    //    if (others.Length > 0)
+                    //        others[0].Nodes.Add(entry.Value);
+                    //    else
+                    //        nodes[0].Nodes.Add(entry.Value);
+                    //}
+                    //else
+                    //{
+                        nodes[0].Nodes.Add(entry.Value);
+                    //}
+                    
                     Debug.WriteLine("Added {0}", objBase.Name);
                 }
                 else

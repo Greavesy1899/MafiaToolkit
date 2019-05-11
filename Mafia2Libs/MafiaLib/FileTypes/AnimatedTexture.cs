@@ -11,6 +11,14 @@ namespace ResourceTypes.AnimatedTexture
         private int textureCount;
         private TextureAnim[] textures;
 
+        public AnimatedTextureLoader(FileInfo info)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
+        }
+
         public AnimatedTextureLoader(BinaryReader reader)
         {
             ReadFromFile(reader);

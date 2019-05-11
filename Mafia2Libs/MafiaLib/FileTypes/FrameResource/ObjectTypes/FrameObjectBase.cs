@@ -27,7 +27,7 @@ namespace ResourceTypes.FrameResource
             get { return secondaryFlags; }
             set { secondaryFlags = value; }
         }
-        [Browsable(false)]
+        //[Browsable(false)]
         public TransformMatrix Matrix {
             get { return transformMatrix; }
             set { transformMatrix = value; }

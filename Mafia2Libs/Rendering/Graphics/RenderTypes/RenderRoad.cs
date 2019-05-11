@@ -45,14 +45,14 @@ namespace Rendering.Graphics
                 line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3];
             }
             Vector3[] editPoints = (Vector3[])line.RawPoints.Clone();
-            lanes = new Render2DPlane[properties.laneSize0];
+            lanes = new Render2DPlane[0];
             Spline = line;
-            for(int i = 0; i != properties.laneSize0; i++)
-            {
-                Render2DPlane lane = new Render2DPlane();
-                lane.Init(ref editPoints, properties.lanes[i], properties.unk2);
-                lanes[i] = lane;
-            }
+            //for (int i = 0; i != properties.laneSize0; i++)
+            //{
+            //    Render2DPlane lane = new Render2DPlane();
+            //    lane.Init(ref editPoints, properties.lanes[i], properties.unk2);
+            //    lanes[i] = lane;
+            //}
         }
 
         public override void InitBuffers(Device d3d)
@@ -115,12 +115,12 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            //TODO
+            Spline.Select();
         }
 
         public override void Unselect()
         {
-           //TODO
+            Spline.Unselect();
         }
     }
 }

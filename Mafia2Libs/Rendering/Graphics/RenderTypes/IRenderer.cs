@@ -10,7 +10,6 @@ namespace Rendering.Graphics
         protected BaseShader shader;
         protected bool isUpdatedNeeded;
         public Matrix Transform { get; protected set; }
-        public BoundingBox BBox { get; protected set; }
         protected Buffer indexBuffer;
         protected Buffer vertexBuffer;
 

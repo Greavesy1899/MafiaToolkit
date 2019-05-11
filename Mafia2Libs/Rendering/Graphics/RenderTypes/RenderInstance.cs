@@ -52,12 +52,12 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            collision.BoundingBox.DoRender = true;
+            collision.Select();
         }
 
         public override void Unselect()
         {
-            collision.BoundingBox.DoRender = false;
+            collision.Unselect();
         }
     }
 }

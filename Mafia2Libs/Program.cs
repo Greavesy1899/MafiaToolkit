@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using SharpDX;
-using System.ComponentModel;
 using Utils.Settings;
 using Utils.Lang;
 
@@ -13,8 +11,6 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
-            ResourceTypes.Misc.CGameData cgame = new ResourceTypes.Misc.CGameData(new FileInfo("Menu_Carcyclopedia.bin"));
-
             //begin form inits;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

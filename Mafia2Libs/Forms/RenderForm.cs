@@ -661,39 +661,32 @@ namespace Mafia2Tool
         {
             float lowest = float.MaxValue;
             int lowestRefID = -1;
-            ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(ToolkitSettings.Width, ToolkitSettings.Height));
+            
             foreach (KeyValuePair<int, IRenderer> model in Graphics.Assets)
             {
+
                 if (model.Value is RenderModel)
                 {
                     RenderModel mesh = (model.Value as RenderModel);
                     if (!mesh.DoRender)
                         continue;
 
-                    Ray tempRay = Graphics.Camera.GetPickingRay(sx, sy, RenderPanel.Size.Height, RenderPanel.Size.Width, mesh.Transform);
-                    ray = tempRay;
+                    ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(RenderPanel.Size.Width, RenderPanel.Size.Height));
+                    var vWM = Matrix.Invert(model.Value.Transform);
+                    Vector4 temp = Vector4.Transform(new Vector4(ray.Position, 1.0f), vWM);
+                    ray.Position = new Vector3(temp.X, temp.Y, temp.Z);
+
+                    //Ray tempRay = Graphics.Camera.GetPickingRay(sx, sy, RenderPanel.Size.Height, RenderPanel.Size.Width, mesh.Transform);
+                    //ray = tempRay;
                     //var inverseMat = Matrix.Invert(model.Value.Transform);
                     //tempRay.Direction = Vector3.TransformNormal(tempRay.Direction, inverseMat);
                     //tempRay.Position = Vector3.TransformCoordinate(tempRay.Position, inverseMat);
                     //tempRay.Direction.Normalize();
                     //tempRay.Direction = new Vector3(tempRay.Direction.X, tempRay.Direction.Y, -tempRay.Direction.Z);
-
-                    Vector3 minVector = new Vector3(
-                    model.Value.Transform.M41 + model.Value.BBox.Minimum.X,
-                    model.Value.Transform.M42 + model.Value.BBox.Minimum.Y,
-                    model.Value.Transform.M43 + model.Value.BBox.Minimum.Z
-                    );
-                    Vector3 maxVector = new Vector3(
-                       model.Value.Transform.M41 + model.Value.BBox.Maximum.X,
-                       model.Value.Transform.M42 + model.Value.BBox.Maximum.Y,
-                       model.Value.Transform.M43 + model.Value.BBox.Maximum.Z
-                       );
-                    BoundingBox tempBox0 = new BoundingBox(minVector, maxVector);
-
                     float tmin = float.MaxValue;
-                    BoundingBox tempBox1 = model.Value.BBox;
+                    BoundingBox tempBox1 = mesh.BoundingBox.BBox;
 
-                    if (!tempRay.Intersects(ref tempBox0, out tmin)) continue;
+                    if (!ray.Intersects(ref tempBox1, out tmin)) continue;
                     if ((tmin == 0)) continue;
 
                     tmin = float.MaxValue;
@@ -704,7 +697,7 @@ namespace Mafia2Tool
                         var v2 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position;
                         float t;
 
-                        if (!tempRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+                        if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
                         if (!(t < tmin || t < 0)) continue;
                         tmin = t;
                     }

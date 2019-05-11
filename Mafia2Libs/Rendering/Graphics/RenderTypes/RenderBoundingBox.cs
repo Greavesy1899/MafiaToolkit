@@ -10,6 +10,8 @@ namespace Rendering.Graphics
         private VertexLayouts.BasicLayout.Vertex[] vertices;
         private ushort[] indices;
         private Vector4 colour;
+        private BoundingBox bbox;
+        public BoundingBox BBox { get { return bbox; } }
 
         public RenderBoundingBox()
         {
@@ -20,7 +22,7 @@ namespace Rendering.Graphics
 
         public bool Init(BoundingBox bbox)
         {
-            BBox = bbox;
+            this.bbox = bbox;
 
             vertices = new VertexLayouts.BasicLayout.Vertex[8];
             //1
@@ -157,12 +159,16 @@ namespace Rendering.Graphics
         {
             for(int i = 0; i < vertices.Length; i++)
                 vertices[i].Colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+            isUpdatedNeeded = true;
         }
 
         public override void Unselect()
         {
             for (int i = 0; i < vertices.Length; i++)
                 vertices[i].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+
+            isUpdatedNeeded = true;
         }
     }
 }

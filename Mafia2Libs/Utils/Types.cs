@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using Utils.Extensions;
 using Utils.Models;
 using Utils.SharpDXExtensions;
 
@@ -149,7 +150,7 @@ namespace Utils.Types
             set { m22 = value; }
         }
 
-        [Browsable(false)]
+        [TypeConverter(typeof(Vector3Converter))]
         public Vector3 EulerRotation {
             get { return eulerRotation; }
             set { eulerRotation = value; }

@@ -1,12 +1,15 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace Utils.Extensions
 {
@@ -32,6 +35,32 @@ namespace Utils.Extensions
         public uint NameHash {
             get { return hash; }
             set { hash = value; }
+        }
+    }
+
+    public class Vector3Converter : TypeConverter
+    {
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        {
+            object result = null;
+            string stringValue = value as string;
+
+            if (!string.IsNullOrEmpty(stringValue))
+            {
+                float x, y, z = 0.0f;
+                string[] components = stringValue.Split(' ');
+                float.TryParse(components[0].Substring(2), out x);
+                float.TryParse(components[1].Substring(2), out y);
+                float.TryParse(components[2].Substring(2), out z);
+                result = new Vector3(x, y, z);
+            }
+
+            return result ?? base.ConvertFrom(context, culture, value);
         }
     }
 

@@ -93,19 +93,26 @@ namespace Rendering.Graphics
             {
                 DataBox dataBox;
                 dataBox = device.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-                Utilities.Write(dataBox.DataPointer, RawPoints, 0, RawPoints.Length);
+                Utilities.Write(dataBox.DataPointer, vertices, 0, vertices.Length);
                 device.UnmapSubresource(vertexBuffer, 0);
             }
         }
 
+        //improve this later somehow.
         public override void Select()
         {
-            //TODO
+            for(int i = 0; i != vertices.Length; i++)
+                vertices[i].Colour = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+
+            isUpdatedNeeded = true;
         }
 
         public override void Unselect()
         {
-            //TODO
+            for (int i = 0; i != vertices.Length; i++)
+                vertices[i].Colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+            isUpdatedNeeded = true;
         }
     }
 }

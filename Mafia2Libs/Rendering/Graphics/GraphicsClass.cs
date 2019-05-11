@@ -59,7 +59,6 @@ namespace Rendering.Graphics
             PickingRayBBox.InitBuffers(D3D.Device);
             //this is backup!
             RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, Path.Combine(ToolkitSettings.TexturePath, "texture.dds")));
-            RenderStorageSingleton.Instance.TextureCache.Add(1, TextureLoader.LoadTexture(D3D.Device, Path.Combine(ToolkitSettings.TexturePath, "OM_3Bpatro_WALLSA.dds")));
             return true;
         }
 
@@ -138,12 +137,19 @@ namespace Rendering.Graphics
             Assets.TryGetValue(id, out newObj);
             Assets.TryGetValue(selectedID, out oldObj);
 
+            if (selectedID == id)
+                return;
+
             if (newObj != null)
             {
-                if(oldObj != null)
+                if (oldObj != null)
+                {
                     oldObj.Unselect();
+                    UpdateObjectStack.Add(selectedID, oldObj);
+                }
 
                 newObj.Select();
+                UpdateObjectStack.Add(id, newObj);
                 selectedID = id;
             }
         }

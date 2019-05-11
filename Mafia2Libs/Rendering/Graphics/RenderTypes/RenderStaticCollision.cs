@@ -159,6 +159,7 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(DeviceContext device)
         {
+            BoundingBox.UpdateBuffers(device);
             if(isUpdatedNeeded)
             {
                 //todo: implement this!
@@ -167,11 +168,13 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
+            BoundingBox.Select();
             BoundingBox.DoRender = true;
         }
 
         public override void Unselect()
         {
+            BoundingBox.Unselect();
             BoundingBox.DoRender = false;
         }
     }
