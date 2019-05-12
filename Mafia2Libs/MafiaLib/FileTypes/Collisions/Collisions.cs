@@ -97,26 +97,17 @@ namespace ResourceTypes.Collisions
             private int unk4;
             private byte unk5;
 
-            [Browsable(false)]
             public Vector3 Position
             {
                 get { return position; }
                 set { position = value; }
             }
 
-            [Browsable(false)]
             public Vector3 Rotation
             {
                 get { return rotation; }
                 set { rotation = value; }
             }
-
-            public float PositionX { get { return position.X; } set { position.X = value; } }
-            public float PositionY { get { return position.Y; } set { position.Y = value; } }
-            public float PositionZ { get { return position.Z; } set { position.Z = value; } }
-            public float RotationX { get { return rotation.X; } set { rotation.X = value; } }
-            public float RotationY { get { return rotation.Y; } set { rotation.Y = value; } }
-            public float RotationZ { get { return rotation.Z; } set { rotation.Z = value; } }
 
             public ulong Hash
             {
@@ -154,7 +145,11 @@ namespace ResourceTypes.Collisions
             {
                 position = Vector3Extenders.ReadFromFile(reader);
                 rotation = Vector3Extenders.ReadFromFile(reader);
-                //rotation.ConvertToDegrees();
+                Vector3 rot = new Vector3();
+                rot.X = MathUtil.RadiansToDegrees(rotation.X);
+                rot.Y = MathUtil.RadiansToDegrees(rotation.Y);
+                rot.Z = -MathUtil.RadiansToDegrees(rotation.Z);
+                rotation = rot;
                 hash = reader.ReadUInt64();
                 unk4 = reader.ReadInt32();
                 unk5 = reader.ReadByte();
@@ -168,7 +163,11 @@ namespace ResourceTypes.Collisions
             public void WriteToFile(BinaryWriter writer)
             {
                 position.WriteToFile(writer);
-                //rotation.ConvertToRadians();
+                Vector3 rot = new Vector3();
+                rot.X = 0.0f;//MathUtil.DegreesToRadians(rotation.X);
+                rot.Y = 0.0f;//MathUtil.DegreesToRadians(rotation.Y);
+                rot.Z = -MathUtil.DegreesToRadians(rotation.Z);
+                rotation = rot;
                 rotation.WriteToFile(writer);
                 writer.Write(hash);
                 writer.Write(unk4);

@@ -70,7 +70,7 @@ namespace Mafia2Tool
             dViewProperties = new DockViewProperties();
             dPropertyGrid.Show(dockPanel1, DockState.DockRight);
             dSceneTree.Show(dockPanel1, DockState.DockLeft);
-            //dViewProperties.Show(dockPanel1, DockState.DockRight);
+            dViewProperties.Show(dockPanel1, DockState.DockRight);
             dSceneTree.treeView1.AfterSelect += new TreeViewEventHandler(OnAfterSelect);
             dSceneTree.Export3DButton.Click += new EventHandler(Export3DButton_Click);
             dSceneTree.PreviewButton.Click += new EventHandler(PreviewButton_Click);
@@ -195,17 +195,15 @@ namespace Mafia2Tool
             Graphics.FPS.Frame();
             Graphics.PickingRayBBox.SetTransform(ray.Position, new Matrix33());
 
-            //foreach(KeyValuePair<int, IRenderer> render in Graphics.Assets)
-            //{
-            //    if (render.Value.GetType() == typeof(RenderModel))
-            //        render.Value.DoRender = dViewProperties.VisibleProperties[3];
-
-            //    if (render.Value.GetType() == typeof(RenderInstance))
-            //        render.Value.DoRender = dViewProperties.VisibleProperties[2];
-
-            //    if (render.Value.GetType() == typeof(RenderBoundingBox))
-            //        render.Value.DoRender = dViewProperties.VisibleProperties[4];
-            //}
+            foreach (KeyValuePair<int, IRenderer> render in Graphics.Assets)
+            {
+                if (render.Value.GetType() == typeof(RenderModel))
+                    render.Value.DoRender = dViewProperties.VisibleProperties[0];
+                else if (render.Value.GetType() == typeof(RenderBoundingBox))
+                    render.Value.DoRender = dViewProperties.VisibleProperties[2];
+                else if (render.Value.GetType() == typeof(RenderInstance))
+                    render.Value.DoRender = dViewProperties.VisibleProperties[1];
+            }
 
             Graphics.Frame();
             toolStripStatusLabel1.Text = Graphics.Camera.Position.ToString();
@@ -379,7 +377,7 @@ namespace Mafia2Tool
                 }
                 for (int i = 0; i != SceneData.roadMap.data3.Length; i++)
                 {
-                    ResourceTypes.Navigation.SplineProperties properties = SceneData.roadMap.data3[i];
+                    SplineProperties properties = SceneData.roadMap.data3[i];
                     RenderRoad road = new RenderRoad();
                     int generatedID = StringHelpers.RandomGenerator.Next();
                     road.Init(properties);
@@ -434,7 +432,7 @@ namespace Mafia2Tool
                     instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
 
                     Matrix33 rot = new Matrix33();
-                    rot.EulerRotation = new Vector3(MathUtil.RadiansToDegrees(placement.Rotation.X), -MathUtil.RadiansToDegrees(placement.Rotation.Y), 0.0f);
+                    rot.EulerRotation = placement.Rotation;
                     rot.UpdateMatrixFromEuler();
                     instance.SetTransform(placement.Position, rot);
 
@@ -453,7 +451,7 @@ namespace Mafia2Tool
                     TreeNode child = new TreeNode(hash.ToString());
                     child.Text = "Hash: " + placement.Hash;
                     child.Name = hash.ToString();
-                    child.Tag = SceneData.Collisions.NXSData[placement.Hash];
+                    child.Tag = placement;
                     node.Nodes.Add(child);
                 }
 
@@ -463,7 +461,7 @@ namespace Mafia2Tool
             {
                 for(int i = 0; i != SceneData.ATLoader.paths.Length; i++)
                 {
-                    ResourceTypes.Navigation.AnimalTrafficLoader.AnimalTrafficPath path = SceneData.ATLoader.paths[i];
+                    AnimalTrafficLoader.AnimalTrafficPath path = SceneData.ATLoader.paths[i];
                     RenderBoundingBox bbox = new RenderBoundingBox();
                     bbox.SetTransform(new Vector3(0.0f), new Matrix33());
                     bbox.Init(path.bbox);
@@ -494,7 +492,7 @@ namespace Mafia2Tool
             {
                 Graphics.SelectEntry(Convert.ToInt32(dSceneTree.treeView1.SelectedNode.Name));
             }
-            else if (dSceneTree.treeView1.SelectedNode.Tag is Collision.NXSStruct)
+            else if (dSceneTree.treeView1.SelectedNode.Tag is Collision.Placement)
             {
                 Graphics.SelectEntry(Convert.ToInt32(dSceneTree.treeView1.SelectedNode.Name));
             }
@@ -516,7 +514,7 @@ namespace Mafia2Tool
                     FrameObjectBase fObject = (selected.Tag as FrameObjectBase);
                     selected.Text = fObject.ToString();
                     dPropertyGrid.UpdateObject();
-                    Graphics.SelectEntry(fObject.RefID);
+                    //Graphics.SelectEntry(fObject.RefID);
                     UpdateMatricesRecursive();
                     ApplyChangesToRenderable(fObject);
                 }
@@ -524,6 +522,20 @@ namespace Mafia2Tool
                 {
                     FrameHeaderScene scene = (selected.Tag as FrameHeaderScene);
                     selected.Text = scene.ToString();
+                }
+                else if(selected.Tag is Collision.Placement)
+                {
+                    RenderInstance instance = null;
+                    dPropertyGrid.UpdateObject();
+                    Collision.Placement placement = (selected.Tag as Collision.Placement);
+                    selected.Text = placement.Hash.ToString();
+                    IRenderer asset;
+                    Graphics.Assets.TryGetValue(int.Parse(selected.Name), out asset);
+                    instance = (asset as RenderInstance);
+                    Matrix33 matrix = new Matrix33();
+                    matrix.EulerRotation = placement.Rotation;
+                    matrix.UpdateMatrixFromEuler();
+                    instance.SetTransform(placement.Position, matrix);
                 }
             }
         }
@@ -682,35 +694,27 @@ namespace Mafia2Tool
         {
             float lowest = float.MaxValue;
             int lowestRefID = -1;
-            
+
+            ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(RenderPanel.Size.Width, RenderPanel.Size.Height));
+
             foreach (KeyValuePair<int, IRenderer> model in Graphics.Assets)
             {
-
                 if (model.Value is RenderModel)
                 {
                     RenderModel mesh = (model.Value as RenderModel);
                     if (!mesh.DoRender)
                         continue;
 
-                    ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(RenderPanel.Size.Width, RenderPanel.Size.Height));
                     var vWM = Matrix.Invert(model.Value.Transform);
-                    Vector4 temp = Vector4.Transform(new Vector4(ray.Position, 1.0f), vWM);
-                    ray.Position = new Vector3(temp.X, temp.Y, temp.Z);
+                    var localRay = new Ray(
+                        Vector3.TransformCoordinate(ray.Position, vWM),
+                        Vector3.TransformNormal(ray.Direction, vWM)
+                    );
 
-                    //Ray tempRay = Graphics.Camera.GetPickingRay(sx, sy, RenderPanel.Size.Height, RenderPanel.Size.Width, mesh.Transform);
-                    //ray = tempRay;
-                    //var inverseMat = Matrix.Invert(model.Value.Transform);
-                    //tempRay.Direction = Vector3.TransformNormal(tempRay.Direction, inverseMat);
-                    //tempRay.Position = Vector3.TransformCoordinate(tempRay.Position, inverseMat);
-                    //tempRay.Direction.Normalize();
-                    //tempRay.Direction = new Vector3(tempRay.Direction.X, tempRay.Direction.Y, -tempRay.Direction.Z);
-                    float tmin = float.MaxValue;
-                    BoundingBox tempBox1 = mesh.BoundingBox.BBox;
+                    var bbox = mesh.BoundingBox.BBox;
 
-                    if (!ray.Intersects(ref tempBox1, out tmin)) continue;
-                    if ((tmin == 0)) continue;
+                    if (!localRay.Intersects(ref bbox)) continue;
 
-                    tmin = float.MaxValue;
                     for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
                     {
                         var v0 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3]].Position;
@@ -718,13 +722,18 @@ namespace Mafia2Tool
                         var v2 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position;
                         float t;
 
-                        if (!ray.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-                        if (!(t < tmin || t < 0)) continue;
-                        tmin = t;
-                    }
+                        if (!localRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+                        System.Diagnostics.Debug.Assert(t > 0f);
 
-                    lowest = tmin;
-                    lowestRefID = model.Key;
+                        var worldPosition = ray.Position + t * ray.Direction;
+                        var distance = (worldPosition - ray.Position).LengthSquared();
+
+                        if (distance < lowest)
+                        {
+                            lowest = distance;
+                            lowestRefID = model.Key;
+                        }
+                    }
                 }
             }
             toolStripStatusLabel4.Text = ray.Position.ToString();
@@ -755,6 +764,7 @@ namespace Mafia2Tool
                 RenderRoad road = (pGrid.SelectedObject as RenderRoad);
                 road.Spline.UpdateVertices();
             }
+
             if(pGrid.SelectedObject is FrameObjectArea)
             {
                 switch(e.ChangedItem.Label)

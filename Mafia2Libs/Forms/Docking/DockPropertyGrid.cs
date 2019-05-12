@@ -38,6 +38,17 @@ namespace Forms.Docking
                 RotationYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.EulerRotation.Y);
                 RotationZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.EulerRotation.Z);
             }
+            else if(currentObject is ResourceTypes.Collisions.Collision.Placement)
+            {
+                ResourceTypes.Collisions.Collision.Placement placement = (currentObject as ResourceTypes.Collisions.Collision.Placement);
+                CurrentEntry.Text = placement.Hash.ToString();
+                PositionXNumeric.Value = Convert.ToDecimal(placement.Position.X);
+                PositionYNumeric.Value = Convert.ToDecimal(placement.Position.Y);
+                PositionZNumeric.Value = Convert.ToDecimal(placement.Position.Z);
+                RotationXNumeric.Value = Convert.ToDecimal(placement.Rotation.X);
+                RotationYNumeric.Value = Convert.ToDecimal(placement.Rotation.Y);
+                RotationZNumeric.Value = Convert.ToDecimal(placement.Rotation.Z);
+            }
             IsEntryReady = true;
         }
 
@@ -56,6 +67,12 @@ namespace Forms.Docking
                     fObject.Matrix.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
                     fObject.Matrix.Rotation.EulerRotation = new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value));
                     fObject.Matrix.Rotation.UpdateMatrixFromEuler();
+                }
+                else if(currentObject is ResourceTypes.Collisions.Collision.Placement)
+                {
+                    ResourceTypes.Collisions.Collision.Placement placement = (currentObject as ResourceTypes.Collisions.Collision.Placement);
+                    placement.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
+                    placement.Rotation = new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value));
                 }
             }
         }

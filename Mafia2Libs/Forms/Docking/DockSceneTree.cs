@@ -69,7 +69,7 @@ namespace Forms.Docking
                 node.SelectedImageIndex = node.ImageIndex = 9;
             else if (node.Tag.GetType() == typeof(FrameObjectCollision))
                 node.SelectedImageIndex = node.ImageIndex = 3;
-            else if (node.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.NXSStruct))
+            else if (node.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
                 node.SelectedImageIndex = node.ImageIndex = 4;
             else if (node.Tag.GetType() == typeof(FrameHeaderScene))
                 node.SelectedImageIndex = node.ImageIndex = 8;
@@ -93,7 +93,7 @@ namespace Forms.Docking
                 EntryMenuStrip.Items[1].Visible = true;
                 EntryMenuStrip.Items[2].Visible = true;
 
-                if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) || treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.NXSStruct)))
+                if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) || treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement)))
                     EntryMenuStrip.Items[3].Visible = true;
             }
         }
