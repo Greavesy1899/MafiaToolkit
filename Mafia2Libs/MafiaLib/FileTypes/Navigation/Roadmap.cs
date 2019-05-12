@@ -35,12 +35,12 @@ namespace ResourceTypes.Navigation
         public byte unk0; //knowing 2k, just 128.
         public short NumSplines1; //should be equal to unk2
         public short NumSplines2;
-        public float unk3;
+        public float roadLength;
         public Vector3[] points;
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4}", offset, unk0, NumSplines1, NumSplines2, unk3);
+            return string.Format("{0} {1} {2} {3} {4}", offset, unk0, NumSplines1, NumSplines2, roadLength);
         }
     }
 
@@ -197,16 +197,16 @@ namespace ResourceTypes.Navigation
         public ushort[] unkSet5;
         public ushort[] unkSet6;
 
+        private FileInfo info;
+
         public Roadmap(FileInfo info)
         {
+            this.info = info;
             using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
             {
                 ReadFromFile(reader);
             }
-            using (BinaryWriter writer = new BinaryWriter(File.Open(info.FullName + "_dupe", FileMode.Create)))
-            {
-                WriteToFile(writer);
-            }
+            WriteToFile();
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -249,7 +249,7 @@ namespace ResourceTypes.Navigation
                 data.unk0 = reader.ReadByte();
                 data.NumSplines1 = reader.ReadInt16();
                 data.NumSplines2 = reader.ReadInt16();
-                data.unk3 = reader.ReadSingle();
+                data.roadLength = reader.ReadSingle();
                 data1[i] = data;
             }
 
@@ -486,8 +486,16 @@ namespace ResourceTypes.Navigation
             }
         }
 
+        public void WriteToFile()
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(info.FullName + "_dupe", FileMode.Create)))
+            {
+                WriteToFile(writer);
+            }
+        }
         public void WriteToFile(BinaryWriter writer)
         {
+            splineCount = (ushort)data1.Length;
             writer.Write(magic);
             writer.Write(splineCount);
             writer.Write(splineCount);
@@ -519,7 +527,24 @@ namespace ResourceTypes.Navigation
                 writer.WriteInt24(data.offset);
                 writer.Write(data.NumSplines1);
                 writer.Write(data.NumSplines2);
-                writer.Write(data.unk3);
+
+                float curDistance = 0.0f;
+                for (int x = 0; x < data.NumSplines1; x++)
+                {
+                    float temp = 0.0f;
+
+                    if (x < data.NumSplines1 - 1)
+                    {
+                        temp += Vector3.Distance(data.points[x], data.points[x + 1]);
+                    }
+                    if (x > 0)
+                    {
+                        temp += Vector3.Distance(data.points[x], data.points[x - 1]);
+                    }
+                    curDistance += temp;
+                }
+
+                writer.Write(curDistance/=2);
             }
 
             for (int i = 0; i < splineCount; i++)

@@ -150,23 +150,9 @@ namespace Utils.Types
             set { m22 = value; }
         }
 
-        [TypeConverter(typeof(Vector3Converter))]
         public Vector3 EulerRotation {
             get { return eulerRotation; }
             set { eulerRotation = value; }
-        }
-
-        public float RotationX {
-            get { return eulerRotation.X; }
-            set { eulerRotation.X = value; }
-        }
-        public float RotationY {
-            get { return eulerRotation.X; }
-            set { eulerRotation.X = value; }
-        }
-        public float RotationZ {
-            get { return eulerRotation.X; }
-            set { eulerRotation.X = value; }
         }
 
         /// <summary>
@@ -404,21 +390,7 @@ namespace Utils.Types
 
         public Matrix33 Rotation { get; set; }
 
-        [Browsable(false)]
         public Vector3 Position { get { return position; } set { position = value; } }
-
-        public float PositionX {
-            get { return position.X; }
-            set { position.X = value; }
-        }
-        public float PositionY {
-            get { return position.Y; }
-            set { position.Y = value; }
-        }
-        public float PositionZ {
-            get { return position.Z; }
-            set { position.Z = value; }
-        }
 
         /// <summary>
         /// Construct empty TransformMatrix.

@@ -39,6 +39,7 @@ namespace Mafia2Tool
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.EditButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AddButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.AddSceneFolderButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,7 +60,7 @@ namespace Mafia2Tool
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.RenderPanel = new System.Windows.Forms.Panel();
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.AddSceneFolderButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.AddRoadSplineButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolbarStrip.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -94,14 +95,14 @@ namespace Mafia2Tool
             // SaveButton
             // 
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(180, 22);
+            this.SaveButton.Size = new System.Drawing.Size(98, 22);
             this.SaveButton.Text = "Save";
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // ExitButton
             // 
             this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(180, 22);
+            this.ExitButton.Size = new System.Drawing.Size(98, 22);
             this.ExitButton.Text = "Exit";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -110,7 +111,8 @@ namespace Mafia2Tool
             this.EditButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddButton,
-            this.AddSceneFolderButton});
+            this.AddSceneFolderButton,
+            this.AddRoadSplineButton});
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
             this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EditButton.Name = "EditButton";
@@ -123,6 +125,13 @@ namespace Mafia2Tool
             this.AddButton.Size = new System.Drawing.Size(180, 22);
             this.AddButton.Text = "$ADD";
             this.AddButton.Click += new System.EventHandler(this.AddButtonOnClick);
+            // 
+            // AddSceneFolderButton
+            // 
+            this.AddSceneFolderButton.Name = "AddSceneFolderButton";
+            this.AddSceneFolderButton.Size = new System.Drawing.Size(180, 22);
+            this.AddSceneFolderButton.Text = "Add Scene Folder";
+            this.AddSceneFolderButton.Click += new System.EventHandler(this.AddSceneFolderButton_Click);
             // 
             // ViewButton
             // 
@@ -282,12 +291,12 @@ namespace Mafia2Tool
             // 
             this.MeshBrowser.Filter = "Meshes|*.m2t|FBX|*.fbx";
             // 
-            // AddSceneFolderButton
+            // AddRoadSplineButton
             // 
-            this.AddSceneFolderButton.Name = "AddSceneFolderButton";
-            this.AddSceneFolderButton.Size = new System.Drawing.Size(180, 22);
-            this.AddSceneFolderButton.Text = "Add Scene Folder";
-            this.AddSceneFolderButton.Click += new System.EventHandler(this.AddSceneFolderButton_Click);
+            this.AddRoadSplineButton.Name = "AddRoadSplineButton";
+            this.AddRoadSplineButton.Size = new System.Drawing.Size(180, 22);
+            this.AddRoadSplineButton.Text = "Add Road Spline";
+            this.AddRoadSplineButton.Click += new System.EventHandler(this.AddRoadSplineButton_Click);
             // 
             // D3DForm
             // 
@@ -339,5 +348,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem ToggleWireframeButton;
         private System.Windows.Forms.ToolStripMenuItem ToggleCullingButton;
         private System.Windows.Forms.ToolStripMenuItem AddSceneFolderButton;
+        private System.Windows.Forms.ToolStripMenuItem AddRoadSplineButton;
     }
 }

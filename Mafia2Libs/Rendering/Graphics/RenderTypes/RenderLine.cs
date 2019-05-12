@@ -1,5 +1,4 @@
-﻿using System;
-using SharpDX;
+﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using Utils.Types;
@@ -9,8 +8,16 @@ namespace Rendering.Graphics
 {
     public class RenderLine : IRenderer
     {
+
+        private Vector3[] points;
+        public Vector3[] Points {
+            get { return points; }
+            set {
+                points = value;
+                UpdateVertices();
+            }
+        }
         private VertexLayouts.BasicLayout.Vertex[] vertices;
-        public Vector3[] RawPoints;
         private Vector4 colour;
 
         public RenderLine()
@@ -19,20 +26,28 @@ namespace Rendering.Graphics
             shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
             Transform = Matrix.Identity;
             colour = new Vector4(1.0f);
+            points = new Vector3[0];
+            vertices = new VertexLayouts.BasicLayout.Vertex[0];
         }
 
         public void Init(Vector3[] points)
         {
-            RawPoints = points;
+            this.points = points;
+            UpdateVertices();
+        }
+
+        public void UpdateVertices()
+        {
             vertices = new VertexLayouts.BasicLayout.Vertex[points.Length];
 
-            for(int i = 0; i != vertices.Length; i++)
+            for (int i = 0; i != vertices.Length; i++)
             {
                 VertexLayouts.BasicLayout.Vertex vertex = new VertexLayouts.BasicLayout.Vertex();
                 vertex.Position = points[i];
                 vertex.Colour = colour;
                 vertices[i] = vertex;
             }
+            isUpdatedNeeded = true;
         }
 
         public void SetColour(Vector4 vec)
@@ -89,29 +104,24 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(DeviceContext device)
         {
-            if(isUpdatedNeeded)
-            {
-                DataBox dataBox;
-                dataBox = device.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-                Utilities.Write(dataBox.DataPointer, vertices, 0, vertices.Length);
-                device.UnmapSubresource(vertexBuffer, 0);
-            }
+            DataBox dataBox;
+            dataBox = device.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+            Utilities.Write(dataBox.DataPointer, vertices, 0, vertices.Length);
+            device.UnmapSubresource(vertexBuffer, 0);
+            isUpdatedNeeded = false;
         }
 
-        //improve this later somehow.
         public override void Select()
         {
-            for(int i = 0; i != vertices.Length; i++)
-                vertices[i].Colour = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
-
+            colour = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+            UpdateVertices();
             isUpdatedNeeded = true;
         }
 
         public override void Unselect()
         {
-            for (int i = 0; i != vertices.Length; i++)
-                vertices[i].Colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-
+            colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+            UpdateVertices();
             isUpdatedNeeded = true;
         }
     }

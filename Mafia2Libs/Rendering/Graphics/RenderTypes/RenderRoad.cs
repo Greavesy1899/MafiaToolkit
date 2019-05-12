@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using SharpDX;
 using SharpDX.Direct3D11;
 using Utils.Types;
@@ -7,13 +8,15 @@ namespace Rendering.Graphics
 {
     public class RenderRoad : IRenderer
     {
-        public RenderLine Spline { get; private set; }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public RenderLine Spline { get; set; }
         Render2DPlane[] lanes;
 
         public RenderRoad()
         {
             DoRender = true;
             Transform = Matrix.Identity;
+            lanes = new Render2DPlane[0];
         }
 
         public void Init(ResourceTypes.Navigation.SplineProperties properties)
@@ -44,7 +47,7 @@ namespace Rendering.Graphics
             {
                 line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3];
             }
-            Vector3[] editPoints = (Vector3[])line.RawPoints.Clone();
+            //List editPoints = (Vector3[])line.Points.Clone();
             lanes = new Render2DPlane[0];
             Spline = line;
             //for (int i = 0; i != properties.laneSize0; i++)

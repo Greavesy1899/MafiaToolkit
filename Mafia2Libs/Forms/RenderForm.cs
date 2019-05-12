@@ -19,6 +19,9 @@ using Utils.StringHelpers;
 using Forms.Docking;
 using WeifenLuo.WinFormsUI.Docking;
 using Utils.Models;
+using System.ComponentModel;
+using Utils.Extensions;
+using ResourceTypes.Navigation;
 
 namespace Mafia2Tool
 {
@@ -46,6 +49,8 @@ namespace Mafia2Tool
         public D3DForm(FileInfo info)
         {
             InitializeComponent();
+            TypeDescriptor.AddAttributes(typeof(Vector3), new TypeConverterAttribute(typeof(Vector3Converter)));
+
             SceneData.ScenePath = info.DirectoryName;
             fileLocation = info;
             SceneData.BuildData();
@@ -132,7 +137,7 @@ namespace Mafia2Tool
         private void OnSelectedIndexChanged(object sender, EventArgs e) => TreeViewUpdateSelected();
         private void OnAfterSelect(object sender, TreeViewEventArgs e) => TreeViewUpdateSelected();
         private void ExitButton_Click(object sender, EventArgs e) => Close();
-        private void SaveButton_Click(object sender, EventArgs e) => SaveChanges();
+        private void SaveButton_Click(object sender, EventArgs e) => Save();
         private void PropertyGridOnClicked(object sender, EventArgs e) => dPropertyGrid.Show(dockPanel1, DockState.DockRight);
         private void SceneTreeOnClicked(object sender, EventArgs e) => dSceneTree.Show(dockPanel1, DockState.DockLeft);
 
@@ -247,7 +252,7 @@ namespace Mafia2Tool
                 Graphics.Assets[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Rotation);
         }
 
-        private void SaveChanges()
+        private void Save()
         {
             DialogResult result = MessageBox.Show("Do you want to save your changes?", "Save Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
@@ -267,6 +272,23 @@ namespace Mafia2Tool
                 }
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
+
+                if(SceneData.roadMap != null)
+                {
+                    List<SplineDefinition> splines = new List<SplineDefinition>();
+                    
+                    for(int i = 0; i != RenderStorageSingleton.Instance.SplineStorage.Count; i++)
+                    {
+                        RenderLine line = RenderStorageSingleton.Instance.SplineStorage[i];
+                        SplineDefinition spline = new SplineDefinition();
+                        spline.NumSplines1 = spline.NumSplines2 = (short)line.Points.Length;
+                        spline.unk0 = 128;
+                        spline.points = line.Points;
+                        splines.Add(spline);
+                    }
+                    SceneData.roadMap.data1 = splines.ToArray();
+                    SceneData.roadMap.WriteToFile();
+                }
                 Console.WriteLine("Saved Changes Succesfully");
             }
         }
@@ -513,7 +535,6 @@ namespace Mafia2Tool
                 FrameObjectArea area = (obj as FrameObjectArea);
                 RenderBoundingBox bbox = (Graphics.Assets[obj.RefID] as RenderBoundingBox);
                 bbox.Update(area.Bounds);
-                Graphics.UpdateObjectStack.Add(obj.RefID, bbox);
             }
         }
 
@@ -729,6 +750,11 @@ namespace Mafia2Tool
         private void OnPropertyChanged(object s, PropertyValueChangedEventArgs e)
         {
             PropertyGrid pGrid = (s as PropertyGrid);
+            if(pGrid.SelectedObject is RenderRoad)
+            {
+                RenderRoad road = (pGrid.SelectedObject as RenderRoad);
+                road.Spline.UpdateVertices();
+            }
             if(pGrid.SelectedObject is FrameObjectArea)
             {
                 switch(e.ChangedItem.Label)
@@ -986,6 +1012,27 @@ namespace Mafia2Tool
             node.Tag = scene;
             node.Name = scene.RefID.ToString();
             dSceneTree.AddToTree(node, frameResourceRoot);
+        }
+
+        private void AddRoadSplineButton_Click(object sender, EventArgs e)
+        {
+            if (SceneData.roadMap == null)
+                return;
+
+            RenderRoad road = new RenderRoad();
+            RenderLine spline = new RenderLine();
+            spline.Points = new Vector3[1] { new Vector3(0, 0, 0) };
+            road.Spline = spline;
+
+            int generatedID = StringHelpers.RandomGenerator.Next();
+            RenderStorageSingleton.Instance.SplineStorage.Add(spline);
+            Graphics.InitObjectStack.Add(generatedID, road);
+            int nodeID = (roadRoot.Nodes.Count + 1);
+            TreeNode child = new TreeNode(nodeID.ToString());
+            child.Text = "ID: " + nodeID;
+            child.Name = generatedID.ToString();
+            child.Tag = road;
+            roadRoot.Nodes.Add(child);
         }
     }
 }

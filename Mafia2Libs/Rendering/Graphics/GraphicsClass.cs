@@ -17,8 +17,6 @@ namespace Rendering.Graphics
 
         public Dictionary<int, IRenderer> Assets { get; private set; }
         public Dictionary<int, IRenderer> InitObjectStack { get; set; }
-        public Dictionary<int, IRenderer> UpdateObjectStack { get; set; }
-
         public RenderBoundingBox PickingRayBBox { get; private set; }
 
         public TimerClass Timer;
@@ -30,7 +28,6 @@ namespace Rendering.Graphics
         public GraphicsClass()
         {
             InitObjectStack = new Dictionary<int, IRenderer>();
-            UpdateObjectStack = new Dictionary<int, IRenderer>();
             Assets = new Dictionary<int, IRenderer>();
             PickingRayBBox = new RenderBoundingBox();
         }
@@ -94,7 +91,6 @@ namespace Rendering.Graphics
         public bool Frame()
         {
             ClearRenderStack();
-            ClearUpdateStack();
             return Render();
         }
         public bool Render()
@@ -105,8 +101,11 @@ namespace Rendering.Graphics
             foreach(KeyValuePair<ulong, BaseShader> shader in RenderStorageSingleton.Instance.ShaderManager.shaders)
                 shader.Value.InitCBuffersFrame(D3D.DeviceContext, Camera, Light);
 
-            foreach(KeyValuePair<int, IRenderer> entry in Assets)
+            foreach (KeyValuePair<int, IRenderer> entry in Assets)
+            {
+                entry.Value.UpdateBuffers(D3D.DeviceContext);
                 entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
+            }
 
             PickingRayBBox.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
             D3D.EndScene();
@@ -123,14 +122,6 @@ namespace Rendering.Graphics
             InitObjectStack.Clear();
         }
 
-        private void ClearUpdateStack()
-        {
-            foreach (KeyValuePair<int, IRenderer> asset in UpdateObjectStack)
-                asset.Value.UpdateBuffers(D3D.DeviceContext);
-
-            UpdateObjectStack.Clear();
-        }
-
         public void SelectEntry(int id)
         {
             IRenderer newObj, oldObj;
@@ -145,11 +136,9 @@ namespace Rendering.Graphics
                 if (oldObj != null)
                 {
                     oldObj.Unselect();
-                    UpdateObjectStack.Add(selectedID, oldObj);
                 }
 
                 newObj.Select();
-                UpdateObjectStack.Add(id, newObj);
                 selectedID = id;
             }
         }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Drawing.Design;
 using System.Globalization;
@@ -45,6 +46,11 @@ namespace Utils.Extensions
             return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
         }
 
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+        }
+
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             object result = null;
@@ -61,6 +67,17 @@ namespace Utils.Extensions
             }
 
             return result ?? base.ConvertFrom(context, culture, value);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        {
+            object result = null;
+            Vector3 vector3 = (Vector3)value;
+
+            if (destinationType == typeof(String))
+                result = vector3.ToString();
+
+            return result ?? base.ConvertTo(context, culture, value, destinationType);
         }
     }
 
