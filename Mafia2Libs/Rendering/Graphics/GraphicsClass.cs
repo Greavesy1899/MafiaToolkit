@@ -17,7 +17,6 @@ namespace Rendering.Graphics
 
         public Dictionary<int, IRenderer> Assets { get; private set; }
         public Dictionary<int, IRenderer> InitObjectStack { get; set; }
-        public RenderBoundingBox PickingRayBBox { get; private set; }
 
         public TimerClass Timer;
 
@@ -29,7 +28,6 @@ namespace Rendering.Graphics
         {
             InitObjectStack = new Dictionary<int, IRenderer>();
             Assets = new Dictionary<int, IRenderer>();
-            PickingRayBBox = new RenderBoundingBox();
         }
 
         public bool PreInit(IntPtr WindowHandle)
@@ -52,8 +50,6 @@ namespace Rendering.Graphics
                 MessageBox.Show("Failed to initialize Shader Manager!");
                 return false;
             }
-            PickingRayBBox.Init(new BoundingBox(new Vector3(-5, -5, -5), new Vector3(5, 5, 5)));
-            PickingRayBBox.InitBuffers(D3D.Device);
             //this is backup!
             RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, Path.Combine(ToolkitSettings.TexturePath, "texture.dds")));
             return true;
@@ -107,7 +103,6 @@ namespace Rendering.Graphics
                 entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
             }
 
-            PickingRayBBox.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
             D3D.EndScene();
             return true;
         }
@@ -134,23 +129,14 @@ namespace Rendering.Graphics
             if (newObj != null)
             {
                 if (oldObj != null)
-                {
                     oldObj.Unselect();
-                }
 
                 newObj.Select();
                 selectedID = id;
             }
         }
 
-        public void ToggleD3DFillMode()
-        {
-            D3D.ToggleFillMode();
-        }
-
-        public void ToggleD3DCullMode()
-        {
-            D3D.ToggleCullMode();
-        }
+        public void ToggleD3DFillMode() => D3D.ToggleFillMode();
+        public void ToggleD3DCullMode() => D3D.ToggleCullMode();
     }
 }

@@ -107,9 +107,9 @@ namespace Mafia2Tool
                     {
                         if (act.Items[c].Hash1 == act.Definitions[i].Hash)
                         {
-                            //FrameObjectFrame frame = FrameResource.FrameObjects[act.Definitions[i].FrameIndex] as FrameObjectFrame;
-                            //frame.Item = act.Items[c];
-                            //FrameResource.FrameObjects[act.Definitions[i].FrameIndex] = frame;
+                            FrameObjectFrame frame = FrameResource.FrameObjects[act.Definitions[i].FrameIndex] as FrameObjectFrame;
+                            frame.Item = act.Items[c];
+                            FrameResource.FrameObjects[act.Definitions[i].FrameIndex] = frame;
                         }
                     }
                 }

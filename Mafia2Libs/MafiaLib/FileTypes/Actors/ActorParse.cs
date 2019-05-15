@@ -183,6 +183,8 @@ namespace ResourceTypes.Actors
                     get { return bufferType; }
                     set { bufferType = value; }
                 }
+
+                [TypeConverter(typeof(ExpandableObjectConverter))]
                 public IActorExtraDataInterface Data {
                     get { return data; }
                     set { data = value; }
@@ -212,6 +214,22 @@ namespace ResourceTypes.Actors
                     else if(bufferType == ActorTypes.Radio && bufferLength == 1028)
                     {
                         data = new ActorRadio(reader);
+                    }
+                    else if (bufferType == ActorTypes.Airplane && bufferLength == 4)
+                    {
+                        data = new ActorAircraft(reader);
+                    }
+                    else if (bufferType == ActorTypes.SpikeStrip && bufferLength == 4)
+                    {
+                        data = new ActorSpikeStrip(reader);
+                    }
+                    else if(bufferType == ActorTypes.Door && bufferLength == 364)
+                    {
+                        data = new ActorDoor(reader);
+                    }
+                    else if (bufferType == ActorTypes.Wardrobe && bufferLength == 208)
+                    {
+                        data = new ActorWardrobe(reader);
                     }
                     else if(bufferType == ActorTypes.Sound && bufferLength == 592)
                     {

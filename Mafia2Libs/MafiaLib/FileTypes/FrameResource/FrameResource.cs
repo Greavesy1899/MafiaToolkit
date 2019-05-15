@@ -176,10 +176,16 @@ namespace ResourceTypes.FrameResource
                         FrameObjectSingleMesh mesh = newObject as FrameObjectSingleMesh;
 
                         if (mesh.MeshIndex != -1)
+                        {
                             mesh.AddRef(FrameEntryRefTypes.Mesh, GetEntryFromIdx(mesh.MeshIndex).Data.RefID);
+                            mesh.Geometry = frameGeometries[mesh.Refs["Mesh"]];
+                        }
 
                         if (mesh.MaterialIndex != -1)
+                        {
                             mesh.AddRef(FrameEntryRefTypes.Material, GetEntryFromIdx(mesh.MaterialIndex).Data.RefID);
+                            mesh.Material = frameMaterials[mesh.Refs["Material"]];
+                        }
                     }
                     else if (objectTypes[i] == (int)ObjectType.Frame)
                         newObject = new FrameObjectFrame(reader);
@@ -214,7 +220,9 @@ namespace ResourceTypes.FrameResource
                         mesh.ReadFromFile(reader);
                         mesh.ReadFromFilePart2(reader, (FrameSkeleton)GetEntryFromIdx(mesh.SkeletonIndex).Data, (FrameBlendInfo)GetEntryFromIdx(mesh.BlendInfoIndex).Data);
                         mesh.AddRef(FrameEntryRefTypes.Mesh, GetEntryFromIdx(mesh.MeshIndex).Data.RefID);
+                        mesh.Geometry = frameGeometries[mesh.Refs["Mesh"]];
                         mesh.AddRef(FrameEntryRefTypes.Material, GetEntryFromIdx(mesh.MaterialIndex).Data.RefID);
+                        mesh.Material = frameMaterials[mesh.Refs["Material"]];
                         mesh.AddRef(FrameEntryRefTypes.BlendInfo, GetEntryFromIdx(mesh.BlendInfoIndex).Data.RefID);
                         mesh.AddRef(FrameEntryRefTypes.Skeleton, GetEntryFromIdx(mesh.SkeletonIndex).Data.RefID);
                         mesh.AddRef(FrameEntryRefTypes.SkeletonHierachy, GetEntryFromIdx(mesh.SkeletonHierachyIndex).Data.RefID);
@@ -574,13 +582,7 @@ namespace ResourceTypes.FrameResource
 
             foreach (KeyValuePair<int, object> entry in frameObjects)
             {
-                if(entry.Value is FrameObjectSingleMesh)
-                {
-                    FrameObjectSingleMesh mesh = (entry.Value as FrameObjectSingleMesh);
-                    isGeomUsed[mesh.Refs["Mesh"]] = true;
-                    isMatUsed[mesh.Refs["Material"]] = true;
-                }
-                else if(entry.Value is FrameObjectModel)
+                if(entry.Value is FrameObjectModel)
                 {
                     FrameObjectModel mesh = (entry.Value as FrameObjectModel);
                     isGeomUsed[mesh.Refs["Mesh"]] = true;
@@ -588,6 +590,12 @@ namespace ResourceTypes.FrameResource
                     isBlendInfoUsed[mesh.Refs["BlendInfo"]] = true;
                     isSkelHierUsed[mesh.Refs["SkeletonHierachy"]] = true;
                     isSkelUsed[mesh.Refs["Skeleton"]] = true;
+                }
+                else if (entry.Value is FrameObjectSingleMesh)
+                {
+                    FrameObjectSingleMesh mesh = (entry.Value as FrameObjectSingleMesh);
+                    isGeomUsed[mesh.Refs["Mesh"]] = true;
+                    isMatUsed[mesh.Refs["Material"]] = true;
                 }
             }
 

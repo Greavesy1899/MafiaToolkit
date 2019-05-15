@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.IO;
 using Utils.StringHelpers;
 
@@ -176,6 +177,220 @@ namespace ResourceTypes.Actors
         }
     }
 
+    public class ActorWardrobe : IActorExtraDataInterface
+    {
+        byte[] cameraPos;
+        string doorName;
+        string soundName;
+        string humanAnimationName;
+        int textID;
+        float unk0;
+        int testPrimitive;
+        byte[] posData;
+
+        public byte[] CameraPos { get { return cameraPos;  } set { cameraPos = value; } }
+        public string DoorName { get { return doorName; } set { doorName = value; } }
+        public string SoundName { get { return soundName; } set { soundName = value; } }
+        public string HumanAnimationName { get { return humanAnimationName; } set { humanAnimationName = value; } }
+        public int TextID { get { return textID; } set { textID = value; } }
+        public float Unk0 { get { return unk0; } set { unk0 = value; } }
+        public int TestPrimitive { get { return testPrimitive; } set { testPrimitive = value; } }
+        public byte[] PosData { get { return posData; } set { posData = value; } }
+
+        public ActorWardrobe(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+        public void ReadFromFile(BinaryReader reader)
+        {
+            cameraPos = reader.ReadBytes(72);
+            doorName = new string(reader.ReadChars(32)).TrimEnd('\0');
+            soundName = new string(reader.ReadChars(32)).TrimEnd('\0');
+            humanAnimationName = new string(reader.ReadChars(32)).TrimEnd('\0');
+            textID = reader.ReadInt32();
+            unk0 = reader.ReadSingle();
+            testPrimitive = reader.ReadInt32();
+            posData = reader.ReadBytes(28);
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(cameraPos);
+            StringHelpers.WriteStringBuffer(writer, 32, doorName, '\0');
+            StringHelpers.WriteStringBuffer(writer, 32, soundName, '\0');
+            StringHelpers.WriteStringBuffer(writer, 32, humanAnimationName, '\0');
+            writer.Write(textID);
+            writer.Write(unk0);
+            writer.Write(testPrimitive);
+            writer.Write(posData);
+        }
+    }
+
+    public class ActorDoor : IActorExtraDataInterface
+    {
+        byte[] data;
+        byte disabled;
+        byte closesPortals;
+        byte physicalOpen;
+        byte physicalClose;
+        float closedMagnitude;
+        byte automaticOpen;
+        byte automaticClose;
+        short automaticCloseDelay; //MAYBE??
+        int unk0;
+        float unk1;
+        int locked;
+        int lockedSoundID;
+        int lockTime;
+        int unlockTime;
+        int lockSoundID;
+        int unlockSoundID;
+        int lockpickSoundID;
+        int lockpickClicksCount;
+        int openingSoundID;
+        int closingSoundID;
+        int closingSound2ID;
+        int closingSound3ID;
+        int closingSoundMagnitude;
+        int closingSound2Magnitude;
+        int closingSound3Magnitude;
+        int movingSoundID;
+        int kickingSoundID;
+        int kickable;
+        int closedSoundID;
+        int openHint;
+        int closeHint;
+        int lockpickHint;
+        int kickHint;
+        int actorActionsEnabled;
+        int pushAwayMode;
+        int pushAwayReaction;
+
+        public byte[] Data { get { return data; } set { data = value; } }
+        public byte Disabled { get { return disabled; } set { disabled = value; } }
+        public byte ClosesPortals { get { return closesPortals; } set { closesPortals = value; } }
+        public byte PhysicalOpen { get { return physicalOpen; } set { physicalOpen = value; } }
+        public byte PhysicalClose { get { return physicalClose; } set { physicalClose = value; } }
+        public float ClosedMagnitude { get { return closedMagnitude; } set { closedMagnitude = value; } }
+        public byte AutomaticOpen { get { return automaticOpen; } set { automaticOpen = value; } }
+        public byte AutomaticClose { get { return automaticClose; } set { automaticClose = value; } }
+        public short AutomaticCloseDelay { get { return automaticCloseDelay; } set { automaticCloseDelay = value; } }
+        public int Unk0 { get { return unk0; } set { unk0 = value; } }
+        public float Unk1 { get { return unk1; } set { unk1 = value; } }
+        public int Locked { get { return locked; } set { locked = value; } }
+        public int LockedSoundID { get { return lockedSoundID; } set { lockedSoundID = value; } }
+        public int LockTime { get { return lockTime; } set { lockTime = value; } }
+        public int UnlockTime { get { return unlockTime; } set { unlockTime = value; } }
+        public int LockSoundID { get { return lockSoundID; } set { lockSoundID = value; } }
+        public int UnlockSoundID { get { return unlockSoundID; } set { unlockSoundID = value; } }
+        public int LockpickSoundID { get { return lockpickSoundID; } set { lockpickSoundID = value; } }
+        public int LockpickClicksCount { get { return lockpickClicksCount; } set { lockpickClicksCount = value; } }
+        public int OpeningSoundID { get { return openingSoundID; } set { openingSoundID = value; } }
+        public int ClosingSoundID { get { return closingSoundID; } set { closingSoundID = value; } }
+        public int ClosingSound2ID { get { return closingSound2ID; } set { closingSound2ID = value; } }
+        public int ClosingSound3ID { get { return closingSound3ID; } set { closingSound3ID = value; } }
+        public int ClosingSoundMagnitude { get { return closingSoundMagnitude; } set { closingSoundMagnitude = value; } }
+        public int ClosingSound2Magnitude { get { return closingSound2Magnitude; } set { closingSound2Magnitude = value; } }
+        public int ClosingSound3Magnitude { get { return closingSound3Magnitude; } set { closingSound3Magnitude = value; } }
+        public int MovingSoundID { get { return movingSoundID; } set { movingSoundID = value; } }
+        public int KickingSoundID { get { return kickingSoundID; } set { kickingSoundID = value; } }
+        public int Kickable { get { return kickable; } set { kickable = value; } }
+        public int ClosedSoundID { get { return closedSoundID; } set { closedSoundID = value; } }
+        public int OpenHint { get { return openHint; } set { openHint = value; } }
+        public int CloseHint { get { return closeHint; } set { closeHint = value; } }
+        public int LockpickHint { get { return lockpickHint; } set { lockpickHint = value; } }
+        public int KickHint { get { return kickHint; } set { kickHint = value; } }
+        public int ActorActionsEnabled { get { return actorActionsEnabled; } set { actorActionsEnabled = value; } }
+        public int PushAwayMode { get { return pushAwayMode; } set { pushAwayMode = value; } }
+        public int PushAwayReaction { get { return pushAwayReaction; } set { pushAwayReaction = value; } }
+
+        public ActorDoor(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+        public void ReadFromFile(BinaryReader reader)
+        {
+            data = reader.ReadBytes(240);
+            disabled = reader.ReadByte();
+            closesPortals = reader.ReadByte();
+            physicalOpen = reader.ReadByte();
+            physicalClose = reader.ReadByte();
+            closedMagnitude = reader.ReadSingle();
+            automaticOpen = reader.ReadByte();
+            automaticClose = reader.ReadByte();
+            automaticCloseDelay = reader.ReadInt16();
+            unk0 = reader.ReadInt32();
+            unk1 = reader.ReadSingle();
+            locked = reader.ReadInt32();
+            lockedSoundID = reader.ReadInt32();
+            lockTime = reader.ReadInt32();
+            unlockTime = reader.ReadInt32();
+            lockSoundID = reader.ReadInt32();
+            unlockSoundID = reader.ReadInt32();
+            lockpickSoundID = reader.ReadInt32();
+            lockpickClicksCount = reader.ReadInt32();
+            openingSoundID = reader.ReadInt32();
+            closingSoundID = reader.ReadInt32();
+            closingSound2ID = reader.ReadInt32();
+            closingSound3ID = reader.ReadInt32();
+            closingSoundMagnitude = reader.ReadInt32();
+            closingSound2Magnitude = reader.ReadInt32();
+            closingSound3Magnitude = reader.ReadInt32();
+            movingSoundID = reader.ReadInt32();
+            kickingSoundID = reader.ReadInt32();
+            kickable = reader.ReadInt32();
+            closedSoundID = reader.ReadInt32();
+            openHint = reader.ReadInt32();
+            closeHint = reader.ReadInt32();
+            lockpickHint = reader.ReadInt32();
+            kickHint = reader.ReadInt32();
+            actorActionsEnabled = reader.ReadInt32();
+            pushAwayMode = reader.ReadInt32();
+            pushAwayReaction = reader.ReadInt32();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(data);
+            writer.Write(disabled);
+            writer.Write(closesPortals);
+            writer.Write(physicalOpen);
+            writer.Write(physicalClose);
+            writer.Write(closedMagnitude);
+            writer.Write(automaticOpen);
+            writer.Write(automaticClose);
+            writer.Write(automaticCloseDelay);
+            writer.Write(unk0);
+            writer.Write(unk1);
+            writer.Write(locked);
+            writer.Write(lockedSoundID);
+            writer.Write(lockTime);
+            writer.Write(unlockTime);
+            writer.Write(lockSoundID);
+            writer.Write(unlockSoundID);
+            writer.Write(lockpickSoundID);
+            writer.Write(lockpickClicksCount);
+            writer.Write(openingSoundID);
+            writer.Write(closingSoundID);
+            writer.Write(closingSound2ID);
+            writer.Write(closingSound3ID);
+            writer.Write(closingSoundMagnitude);
+            writer.Write(closingSound2Magnitude);
+            writer.Write(closingSound3Magnitude);
+            writer.Write(movingSoundID);
+            writer.Write(kickingSoundID);
+            writer.Write(kickable);
+            writer.Write(closedSoundID);
+            writer.Write(openHint);
+            writer.Write(closeHint);
+            writer.Write(lockpickHint);
+            writer.Write(kickHint);
+            writer.Write(actorActionsEnabled);
+            writer.Write(pushAwayMode);
+            writer.Write(pushAwayReaction);
+        }
+    }
+
     public class ActorSoundEntity : IActorExtraDataInterface
     {
         int type;
@@ -236,6 +451,57 @@ namespace ResourceTypes.Actors
         public void WriteToFile(BinaryWriter writer)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public class ActorSpikeStrip : IActorExtraDataInterface
+    {
+        float length;
+
+        public float Length {
+            get { return length; }
+            set { length = value; }
+        }
+
+        public ActorSpikeStrip(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
+            length = reader.ReadSingle();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(length);
+        }
+    }
+
+
+    public class ActorAircraft : IActorExtraDataInterface
+    {
+        int soundMotorID;
+
+        public int SoundMotorID {
+            get { return soundMotorID; }
+            set { soundMotorID = value; }
+        }
+
+        public ActorAircraft(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
+            soundMotorID = reader.ReadInt32();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(soundMotorID);
         }
     }
 

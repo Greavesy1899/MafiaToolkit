@@ -182,12 +182,6 @@
     <Compile Include="Forms\RenderForm.Designer.cs">
       <DependentUpon>RenderForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\RenderModelView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\RenderModelView.Designer.cs">
-      <DependentUpon>RenderModelView.cs</DependentUpon>
-    </Compile>
     <Compile Include="ApexSDK\ApexRenderMesh.cs" />
     <Compile Include="ApexSDK\EmitterGeomExplicit.cs" />
     <Compile Include="ApexSDK\EmitterGeomSphere.cs" />
@@ -567,9 +561,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Docking\DockSceneTree.resx">
       <DependentUpon>DockSceneTree.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\RenderModelView.resx">
-      <DependentUpon>RenderModelView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SDSContentEditor.resx">
       <DependentUpon>SDSContentEditor.cs</DependentUpon>

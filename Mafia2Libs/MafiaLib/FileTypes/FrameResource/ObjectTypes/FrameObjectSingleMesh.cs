@@ -19,6 +19,9 @@ namespace ResourceTypes.FrameResource
         byte unk_18_byte2;
         byte unk_18_byte3;
 
+        private FrameMaterial material;
+        private FrameGeometry geometry;
+
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public SingleMeshFlags Flags {
             get { return flags; }
@@ -55,6 +58,18 @@ namespace ResourceTypes.FrameResource
         public byte Unk_18_3 {
             get { return unk_18_byte3; }
             set { unk_18_byte3 = value; }
+        }
+
+        [TypeConverter(typeof(ExpandableObjectConverter)), Category("Debug"), Description("Avoid editing!")]
+        public FrameGeometry Geometry {
+            get { return geometry; }
+            set { geometry = value; }
+        }
+
+        [TypeConverter(typeof(ExpandableObjectConverter)), Category("Debug"), Description("Avoid editing!")]
+        public FrameMaterial Material {
+            get { return material; }
+            set { material = value; }
         }
 
         /// <summary>

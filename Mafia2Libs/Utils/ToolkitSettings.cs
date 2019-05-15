@@ -140,7 +140,8 @@ namespace Utils.Settings
                 if (controller == null)
                     InitRichPresence();
 
-                controller.presence.state = DiscordStateEnabled ? "Making mods for Mafia II." : null;
+                string detailsLine = string.IsNullOrEmpty(details) ? "Making mods for Mafia II." : details;
+                controller.presence.state = DiscordStateEnabled ? detailsLine : null;
                 controller.presence.details = DiscordDetailsEnabled ? "" : null;
                 controller.presence.startTimestamp = DiscordElapsedTimeEnabled ? ElapsedTime : 0;
 

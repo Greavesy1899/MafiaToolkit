@@ -104,8 +104,8 @@ namespace Utils.Models
             tempPosData = BitConverter.GetBytes(Convert.ToUInt16(position.Z));
             Array.Copy(tempPosData, 0, data, i+4, 2);
 
-            data[i + 6] = 0x27;
-            data[i + 7] = 0xDB;
+            data[i + 6] = 0x0;
+            data[i + 7] = 0x0;
         }
 
         /// <summary>

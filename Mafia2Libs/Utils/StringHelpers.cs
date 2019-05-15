@@ -38,10 +38,18 @@ namespace Utils.StringHelpers
             reader.ReadByte();
             return newString;
         }
-        public static void WriteStringBuffer(BinaryWriter writer, int size, string text)
+        public static void WriteStringBuffer(BinaryWriter writer, int size, string text, char trim = ' ')
         {
+            bool addTrim = (trim == ' ' ? false : true);
             int padding = size - text.Length;
             writer.Write(text.ToCharArray());
+
+            if (addTrim)
+            {
+                writer.Write('\0');
+                padding -= 1;
+            }
+
             writer.Write(new byte[padding]);
         }
         public static void WriteString(BinaryWriter writer, string text)
