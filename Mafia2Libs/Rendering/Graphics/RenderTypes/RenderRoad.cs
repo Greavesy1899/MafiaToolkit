@@ -108,12 +108,12 @@ namespace Rendering.Graphics
                 plane.Shutdown();
         }
 
-        public override void UpdateBuffers(DeviceContext device)
+        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
-            Spline.UpdateBuffers(device);
+            Spline.UpdateBuffers(device, deviceContext);
 
             foreach (Render2DPlane plane in lanes)
-                plane.UpdateBuffers(device);
+                plane.UpdateBuffers(device, deviceContext);
         }
 
         public override void Select()

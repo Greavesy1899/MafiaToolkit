@@ -99,7 +99,7 @@ namespace Rendering.Graphics
 
             foreach (KeyValuePair<int, IRenderer> entry in Assets)
             {
-                entry.Value.UpdateBuffers(D3D.DeviceContext);
+                entry.Value.UpdateBuffers(D3D.Device, D3D.DeviceContext);
                 entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
             }
 

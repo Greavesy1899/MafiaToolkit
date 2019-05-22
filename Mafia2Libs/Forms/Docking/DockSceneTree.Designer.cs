@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DockSceneTree));
             this.EntryMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.PreviewButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.JumpToButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DuplicateButton = new System.Windows.Forms.ToolStripMenuItem();
             this.Export3DButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,7 +43,7 @@
             // EntryMenuStrip
             // 
             this.EntryMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.PreviewButton,
+            this.JumpToButton,
             this.DeleteButton,
             this.DuplicateButton,
             this.Export3DButton});
@@ -51,11 +51,11 @@
             this.EntryMenuStrip.Size = new System.Drawing.Size(181, 114);
             this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
             // 
-            // PreviewButton
+            // JumpToButton
             // 
-            this.PreviewButton.Name = "PreviewButton";
-            this.PreviewButton.Size = new System.Drawing.Size(180, 22);
-            this.PreviewButton.Text = "Preview";
+            this.JumpToButton.Name = "JumpToButton";
+            this.JumpToButton.Size = new System.Drawing.Size(180, 22);
+            this.JumpToButton.Text = "Jump To Position";
             // 
             // DeleteButton
             // 
@@ -121,7 +121,7 @@
         #endregion
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.ContextMenuStrip EntryMenuStrip;
-        public System.Windows.Forms.ToolStripMenuItem PreviewButton;
+        public System.Windows.Forms.ToolStripMenuItem JumpToButton;
         public System.Windows.Forms.ToolStripMenuItem DeleteButton;
         public System.Windows.Forms.ToolStripMenuItem DuplicateButton;
         public System.Windows.Forms.ToolStripMenuItem Export3DButton;

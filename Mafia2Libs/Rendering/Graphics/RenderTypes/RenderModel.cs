@@ -160,6 +160,21 @@ namespace Rendering.Graphics
             SetupShaders();
             return true;
         }
+
+        public void UpdateMaterials(FrameMaterial mats)
+        {
+            for (int i = 0; i != LODs.Length; i++)
+            {
+                for (int z = 0; z != LODs[i].ModelParts.Length; z++)
+                {
+                    ulong hash = mats.Materials[i][z].MaterialHash;
+                    LODs[i].ModelParts[z].MaterialHash = hash;
+                    LODs[i].ModelParts[z].Material = MaterialsManager.LookupMaterialByHash(hash);
+                }
+            }
+            isUpdatedNeeded = true;
+        }
+
         private bool InitializePartShaders(Device device)
         {
             //TextureLoader AOTextureClass = new TextureLoader();
@@ -323,13 +338,15 @@ namespace Rendering.Graphics
             indexBuffer = null;
         }
 
-        public override void UpdateBuffers(DeviceContext device)
+        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
-            BoundingBox.UpdateBuffers(device);
+            BoundingBox.UpdateBuffers(device, deviceContext);
 
             if(isUpdatedNeeded)
             {
-                //Should never need updating.
+                SetupShaders();
+                InitTextures(device);
+                isUpdatedNeeded = false;
             }
         }
 

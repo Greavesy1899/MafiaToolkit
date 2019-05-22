@@ -75,8 +75,6 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
 		specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
     }
 
-
-
     color = saturate(color + specular);
     return color;
 }

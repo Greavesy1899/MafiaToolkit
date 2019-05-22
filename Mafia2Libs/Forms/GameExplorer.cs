@@ -534,7 +534,7 @@ namespace Mafia2Tool
                 case "PRF":
                     prefabs = new PrefabLoader((FileInfo)item.Tag);
                     return;
-                case "AUS":
+                case "BIN":
                     soundSector = new SoundSectorLoader((FileInfo)item.Tag);
                     return;
                 case "LUA":
@@ -735,7 +735,7 @@ namespace Mafia2Tool
             MessageBox.Show("Toolkit written by Greavesy. \n\n" +
                 "Special thanks to: \nOleg @ ZModeler 3 \nRick 'Gibbed' \nFireboyd for UnluacNET" + 
                 "\n\n" + 
-                "Also, a very special thanks to donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider", 
+                "Also, a very special thanks to donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider \nNemesis7675", 
                 "Toolkit", 
                 MessageBoxButtons.OK, 
                 MessageBoxIcon.Information);

@@ -152,7 +152,7 @@ namespace Rendering.Graphics
             vertexBuffer = null;
         }
 
-        public override void UpdateBuffers(DeviceContext device)
+        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
             if(isUpdatedNeeded)
             {
@@ -160,12 +160,12 @@ namespace Rendering.Graphics
                     vertices[i].Colour = colour;
 
                 DataBox dataBox;
-                dataBox = device.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+                dataBox = deviceContext.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
                 Utilities.Write(dataBox.DataPointer, vertices, 0, vertices.Length);
-                device.UnmapSubresource(vertexBuffer, 0);
-                dataBox = device.MapSubresource(indexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+                deviceContext.UnmapSubresource(vertexBuffer, 0);
+                dataBox = deviceContext.MapSubresource(indexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
                 Utilities.Write(dataBox.DataPointer, indices, 0, indices.Length);
-                device.UnmapSubresource(indexBuffer, 0);
+                deviceContext.UnmapSubresource(indexBuffer, 0);
             }
         }
 

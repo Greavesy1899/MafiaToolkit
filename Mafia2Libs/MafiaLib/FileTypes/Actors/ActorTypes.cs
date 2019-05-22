@@ -1,6 +1,7 @@
 ﻿using SharpDX;
 using System;
 using System.IO;
+using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Actors
@@ -174,6 +175,240 @@ namespace ResourceTypes.Actors
             program = new string(reader.ReadChars(256));
             playlist = new string(reader.ReadChars(256));
             station = new string(reader.ReadChars(256));
+        }
+    }
+
+    public class ActorTrafficCar : IActorExtraDataInterface
+    {
+        int type;
+        BoundingBox bbox;
+        float unk0;
+        float unk1;
+        float unk2;
+        float unk3;
+        int maxElements;
+        int pie;
+        string tableName;
+        string areaName;
+        float carUnk4;
+        float carUnk5;
+        int carUnk6;
+        int spawnedParking;
+        int parking;
+        string crewGenerator;
+        int dirtyMin;
+        int dirtyMax;
+        int damageMin;
+        int damageMax;
+        int zero;
+
+
+        public int Type { get { return type; } set { type = value; } }
+        public BoundingBox BoundingBox { get { return bbox; } set { bbox = value; } }
+        public float Unk0 { get { return unk0; } set { unk0 = value; } }
+        public float Unk1 { get { return unk1; } set { unk1 = value; } }
+        public float Unk2 { get { return unk2; } set { unk2 = value; } }
+        public float Unk3 { get { return unk3; } set { unk3 = value; } }
+        public int MaxElements { get { return maxElements; } set { maxElements = value; } }
+        public int Pie { get { return pie; } set { pie = value; } }
+        public string TableName { get { return tableName; } set { tableName = value; } }
+        public string AreaName { get { return areaName; } set { areaName = value; } }
+        public float CarUnk4 { get { return carUnk4; } set { carUnk4 = value; } }
+        public float CarUnk5 { get { return carUnk5; } set { carUnk5 = value; } }
+        public int CarUnk6 { get { return carUnk6; } set { carUnk6 = value; } }
+        public int SpawnedParking { get { return spawnedParking; } set { spawnedParking = value; } }
+        public int Parking { get { return parking; } set { parking = value; } }
+        public string CrewGenerator { get { return crewGenerator; } set { crewGenerator = value; } }
+        public int DirtyMin { get { return dirtyMin; } set { dirtyMin = value; } }
+        public int DirtyMax { get { return dirtyMax; } set { dirtyMax = value; } }
+        public int DamageMin { get { return damageMin; } set { damageMin = value; } }
+        public int DamageMax { get { return damageMax; } set { damageMax = value; } }
+        public int Zero { get { return zero; } set { zero = value; } }
+        public ActorTrafficCar(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
+            type = reader.ReadInt32();
+            bbox = BoundingBoxExtenders.ReadFromFile(reader);
+            unk0 = reader.ReadSingle();
+            unk1 = reader.ReadSingle();
+            unk2 = reader.ReadSingle();
+            unk3 = reader.ReadSingle();
+            maxElements = reader.ReadInt32();
+            pie = reader.ReadInt32();
+            tableName = new string(reader.ReadChars(32)).TrimEnd('\0');
+            areaName = new string(reader.ReadChars(64)).TrimEnd('\0');
+            carUnk4 = reader.ReadSingle();
+            carUnk5 = reader.ReadSingle();
+            carUnk6 = reader.ReadInt32();
+            spawnedParking = reader.ReadInt32();
+            parking = reader.ReadInt32();
+            crewGenerator = new string(reader.ReadChars(32)).TrimEnd('\0');
+            dirtyMin = reader.ReadInt32();
+            dirtyMax = reader.ReadInt32();
+            damageMin = reader.ReadInt32();
+            damageMax = reader.ReadInt32();
+            zero = reader.ReadInt32();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(type);
+            BoundingBoxExtenders.WriteToFile(bbox, writer);
+            writer.Write(unk0);
+            writer.Write(unk1);
+            writer.Write(unk2);
+            writer.Write(unk3);
+            writer.Write(maxElements);
+            writer.Write(pie);
+            StringHelpers.WriteStringBuffer(writer, 32, tableName, '\0');
+            StringHelpers.WriteStringBuffer(writer, 64, areaName, '\0');
+            writer.Write(carUnk4);
+            writer.Write(carUnk5);
+            writer.Write(carUnk6);
+            writer.Write(spawnedParking);
+            writer.Write(parking);
+            StringHelpers.WriteStringBuffer(writer, 32, crewGenerator, '\0');
+            writer.Write(dirtyMin);
+            writer.Write(dirtyMax);
+            writer.Write(damageMin);
+            writer.Write(damageMax);
+            writer.Write(zero);
+        }
+    }
+
+    public class ActorTrafficHuman : IActorExtraDataInterface
+    {
+        int type;
+        BoundingBox bbox;
+        float unk0;
+        float unk1;
+        float unk2;
+        float unk3;
+        int maxElements;
+        int pie;
+        string tableName;
+        string areaName;
+        float zDistance;
+        float agregationRange;
+        int agregationCount;
+
+        public int Type { get { return type; } set { type = value; } }
+        public BoundingBox BoundingBox { get { return bbox; } set { bbox = value; } }
+        public float Unk0 { get { return unk0; } set { unk0 = value; } }
+        public float Unk1 { get { return unk1; } set { unk1 = value; } }
+        public float Unk2 { get { return unk2; } set { unk2 = value; } }
+        public float Unk3 { get { return unk3; } set { unk3 = value; } }
+        public int MaxElements { get { return maxElements; } set { maxElements = value; } }
+        public int Pie { get { return pie; } set { pie = value; } }
+        public string TableName { get { return tableName; } set { tableName = value; } }
+        public string AreaName { get { return areaName; } set { areaName = value; } }
+        public float ZDistance { get { return zDistance; } set { zDistance = value; } }
+        public float AgregationRange { get { return agregationRange; } set { agregationRange = value; } }
+        public int AgregationCount { get { return agregationCount; } set { agregationCount = value; } }
+
+        public ActorTrafficHuman(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
+            type = reader.ReadInt32();
+            bbox = BoundingBoxExtenders.ReadFromFile(reader);
+            unk0 = reader.ReadSingle();
+            unk1 = reader.ReadSingle();
+            unk2 = reader.ReadSingle();
+            unk3 = reader.ReadSingle();
+            maxElements = reader.ReadInt32();
+            pie = reader.ReadInt32();
+            tableName = new string(reader.ReadChars(32)).TrimEnd('\0');
+            areaName = new string(reader.ReadChars(64)).TrimEnd('\0');
+            zDistance = reader.ReadSingle();
+            agregationRange = reader.ReadSingle();
+            agregationCount = reader.ReadInt32();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(type);
+            BoundingBoxExtenders.WriteToFile(bbox, writer);
+            writer.Write(unk0);
+            writer.Write(unk1);
+            writer.Write(unk2);
+            writer.Write(unk3);
+            writer.Write(maxElements);
+            writer.Write(pie);
+            StringHelpers.WriteStringBuffer(writer, 32, tableName, '\0');
+            StringHelpers.WriteStringBuffer(writer, 64, areaName, '\0');
+            writer.Write(zDistance);
+            writer.Write(agregationRange);
+            writer.Write(agregationCount);
+        }
+    }
+
+    public class ActorTrafficTrain : IActorExtraDataInterface
+    {
+        int type;
+        BoundingBox bbox;
+        float unk0;
+        float unk1;
+        float unk2;
+        float unk3;
+        int maxElements;
+        int pie;
+        string tableName;
+        string areaName;
+        string crewGenerator;
+
+        public int Type { get { return type; } set { type = value; } }
+        public BoundingBox BoundingBox { get { return bbox; } set { bbox = value; } }
+        public float Unk0 { get { return unk0; } set { unk0 = value; } }
+        public float Unk1 { get { return unk1; } set { unk1 = value; } }
+        public float Unk2 { get { return unk2; } set { unk2 = value; } }
+        public float Unk3 { get { return unk3; } set { unk3 = value; } }
+        public int MaxElements { get { return maxElements; } set { maxElements = value; } }
+        public int Pie { get { return pie; } set { pie = value; } }
+        public string TableName { get { return tableName; } set { tableName = value; } }
+        public string AreaName { get { return areaName; } set { areaName = value; } }
+        public string CrewGenerator { get { return crewGenerator; } set { crewGenerator = value; } }
+
+        public ActorTrafficTrain(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
+            type = reader.ReadInt32();
+            bbox = BoundingBoxExtenders.ReadFromFile(reader);
+            unk0 = reader.ReadSingle();
+            unk1 = reader.ReadSingle();
+            unk2 = reader.ReadSingle();
+            unk3 = reader.ReadSingle();
+            maxElements = reader.ReadInt32();
+            pie = reader.ReadInt32();
+            tableName = new string(reader.ReadChars(32)).TrimEnd('\0');
+            areaName = new string(reader.ReadChars(64)).TrimEnd('\0');
+            crewGenerator = new string(reader.ReadChars(32)).TrimEnd('\0');
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(type);
+            BoundingBoxExtenders.WriteToFile(bbox, writer);
+            writer.Write(unk0);
+            writer.Write(unk1);
+            writer.Write(unk2);
+            writer.Write(unk3);
+            writer.Write(maxElements);
+            writer.Write(pie);
+            StringHelpers.WriteStringBuffer(writer, 32, tableName, '\0');
+            StringHelpers.WriteStringBuffer(writer, 64, areaName, '\0');
+            StringHelpers.WriteStringBuffer(writer, 32, crewGenerator, '\0');
         }
     }
 

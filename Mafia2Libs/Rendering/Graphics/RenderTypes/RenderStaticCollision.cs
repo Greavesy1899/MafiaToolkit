@@ -157,9 +157,9 @@ namespace Rendering.Graphics
             indexBuffer = null;
         }
 
-        public override void UpdateBuffers(DeviceContext device)
+        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
-            BoundingBox.UpdateBuffers(device);
+            BoundingBox.UpdateBuffers(device, deviceContext);
             if(isUpdatedNeeded)
             {
                 //todo: implement this!

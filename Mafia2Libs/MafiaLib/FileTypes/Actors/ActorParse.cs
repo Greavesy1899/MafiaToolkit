@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using SharpDX;
 using Utils.SharpDXExtensions;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Actors
 {
@@ -63,6 +64,22 @@ namespace ResourceTypes.Actors
 
             //if (unk16 != 0)
                 //throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            string pool = "";
+            pool += "<scene>\0";
+            for(int i = 0; i < definitions.Length; i++)
+            {
+                pool += definitions[i].name;
+                pool += '\0';
+            }
+            writer.Write(pool.Length);
+            StringHelpers.WriteString(writer, pool);
+            writer.Write(definitions.Length);
+            for (int i = 0; i < definitions.Length; i++)
+                definitions[i].WriteToFile(writer);
         }
 
         public struct ActorDefinition
@@ -125,12 +142,12 @@ namespace ResourceTypes.Actors
             short const6; //always 6
             short const2; //always 2
             int const16; //always 16
-            int filesize2;
+            int size;
             int unk12;
             
             int newpos;
 
-            long pos_entity;
+            long dataChunkLength;
             int unk14;
             int unk13;
 
@@ -143,11 +160,16 @@ namespace ResourceTypes.Actors
 
             public ActorExtraData(BinaryReader reader)
             {
-                filesize = reader.ReadInt32(); 
+                ReadFromFile(reader);
+            }
+
+            public void ReadFromFile(BinaryReader reader)
+            {
+                filesize = reader.ReadInt32();
                 const6 = reader.ReadInt16();
                 const2 = reader.ReadInt16();
                 const16 = reader.ReadInt32();
-                filesize2 = reader.ReadInt32();
+                size = reader.ReadInt32(); //size of sector end.
                 unk12 = reader.ReadInt32();
                 unk13 = reader.ReadInt32();
 
@@ -160,17 +182,23 @@ namespace ResourceTypes.Actors
                 if (const16 != 16)
                     throw new Exception("const_16 is not 16");
 
-                pos_entity = reader.BaseStream.Length - (filesize - filesize2);
+                dataChunkLength = reader.BaseStream.Length - (filesize - size);
                 long tempPosition = reader.BaseStream.Position;
                 unk14 = reader.ReadInt32();
                 reader.BaseStream.Seek(tempPosition, SeekOrigin.Begin);
-                newpos = (unk14 / 4 - 2)*4;
+                newpos = (unk14 / 4 - 2) * 4; //easiest way to get the data.
                 reader.BaseStream.Seek(newpos, SeekOrigin.Current);
 
-                while(reader.BaseStream.Position < pos_entity)
+                while (reader.BaseStream.Position < dataChunkLength)
                 {
                     temp_Unks.Add(new temp_unk(reader, temp_Unks.Count));
                 }
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(filesize);
+                
             }
 
             public struct temp_unk
@@ -198,6 +226,14 @@ namespace ResourceTypes.Actors
                 {
                     buffer = null;
                     data = null;
+                    bufferType = 0;
+                    ReadFromFile(reader);
+                }
+
+                public void ReadFromFile(BinaryReader reader)
+                {
+                    buffer = null;
+                    data = null;
 
                     bufferType = (ActorTypes)reader.ReadInt32();
 
@@ -211,7 +247,7 @@ namespace ResourceTypes.Actors
                     {
                         data = new ActorScriptEntity(reader);
                     }
-                    else if(bufferType == ActorTypes.Radio && bufferLength == 1028)
+                    else if (bufferType == ActorTypes.Radio && bufferLength == 1028)
                     {
                         data = new ActorRadio(reader);
                     }
@@ -223,7 +259,7 @@ namespace ResourceTypes.Actors
                     {
                         data = new ActorSpikeStrip(reader);
                     }
-                    else if(bufferType == ActorTypes.Door && bufferLength == 364)
+                    else if (bufferType == ActorTypes.Door && bufferLength == 364)
                     {
                         data = new ActorDoor(reader);
                     }
@@ -231,7 +267,19 @@ namespace ResourceTypes.Actors
                     {
                         data = new ActorWardrobe(reader);
                     }
-                    else if(bufferType == ActorTypes.Sound && bufferLength == 592)
+                    else if(bufferType == ActorTypes.TrafficTrain && bufferLength == 180)
+                    {
+                        data = new ActorTrafficTrain(reader);
+                    }
+                    else if (bufferType == ActorTypes.TrafficHuman && bufferLength == 160)
+                    {
+                        data = new ActorTrafficHuman(reader);
+                    }
+                    else if (bufferType == ActorTypes.TrafficCar && bufferLength == 220)
+                    {
+                        data = new ActorTrafficCar(reader);
+                    }
+                    else if (bufferType == ActorTypes.Sound && bufferLength == 592)
                     {
                         //long pos = reader.BaseStream.Position;
                         //data = new ActorSoundEntity(reader);

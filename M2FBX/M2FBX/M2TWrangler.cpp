@@ -158,35 +158,35 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	}
 
 	int subIDX = 0;
+	std::vector<std::vector<Int3>> segments = std::vector<std::vector<Int3>>();
 	int* subNumFacesCount = new int[pNode->GetMaterialCount()];
 	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+	{
 		subNumFacesCount[i] = 0;
+		segments.push_back(std::vector<Int3>());
+	}
 
 	for (int i = 0; i != pMesh->GetPolygonCount(); i++)
 	{
 		Int3 triangle;
-		short matID = 0;
 		triangle.i1 = pMesh->GetPolygonVertex(i, 0);
 		triangle.i2 = pMesh->GetPolygonVertex(i, 1);
 		triangle.i3 = pMesh->GetPolygonVertex(i, 2);
 
 		if (pElementMaterial != NULL)
 		{
-			if (subIDX == pElementMaterial->GetIndexArray().GetAt(i))
-			{
-				subNumFacesCount[subIDX]++;
-			}
-			else
-			{
-				subIDX = pElementMaterial->GetIndexArray().GetAt(i);
-				subNumFacesCount[subIDX]++;
-			}
+			auto matID = pElementMaterial->GetIndexArray().GetAt(i);
+			segments[matID].push_back(triangle);
 		}
-			//matID = pElementMaterial->GetIndexArray().GetAt(i);
-
-		indices.push_back(triangle);
-		matIDs.push_back(matID);
+		matIDs.push_back(0);
 	}
+
+	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+	{
+		subNumFacesCount[i] = segments[i].size();
+		indices.insert(indices.end(), segments[i].begin(), segments[i].end());
+	}
+
 
 	int total = pMesh->GetPolygonCount();
 	int calcTotal = 0;

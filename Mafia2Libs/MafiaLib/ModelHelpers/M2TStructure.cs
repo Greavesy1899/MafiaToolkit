@@ -504,6 +504,8 @@ namespace Utils.Models
 
         public void ExportCollisionToM2T(string name)
         {
+            this.name = name;
+
             if (!Directory.Exists("Collisions"))
                 Directory.CreateDirectory("Collisions");
 

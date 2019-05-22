@@ -41,7 +41,7 @@ namespace ResourceTypes.Collisions
         Stairs,
         GrassAndSnow,
         Mud,
-        OBSOLETE_Puddle,
+        Ballast,
         Gravel,
         OBSOLETE_Snow,
         OBSOLETE_Metal,

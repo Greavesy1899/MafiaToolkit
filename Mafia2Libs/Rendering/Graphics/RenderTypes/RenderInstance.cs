@@ -59,9 +59,9 @@ namespace Rendering.Graphics
             //not required
         }
 
-        public override void UpdateBuffers(DeviceContext device)
+        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
-            collision.UpdateBuffers(device);
+            collision.UpdateBuffers(device, deviceContext);
         }
 
         public RenderStaticCollision GetCollision()

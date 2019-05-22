@@ -382,7 +382,7 @@ ModelPart::~ModelPart()
 //===================================================
 //		ModelStructure
 //===================================================
-void ModelStructure::SetName(std::string& name) {
+void ModelStructure::SetName(std::string name) {
 	name.erase(std::remove(name.begin(), name.end(), '?'), name.end());
 	ModelStructure::name = name;
 }
@@ -616,7 +616,7 @@ void SubMesh::SetNumFaces(int& value)
 	this->numFaces = value;
 }
 
-void SubMesh::SetMatName(std::string& name)
+void SubMesh::SetMatName(std::string name)
 {
 	this->matName = name;
 }

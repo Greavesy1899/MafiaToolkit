@@ -1,6 +1,7 @@
 ﻿using WeifenLuo.WinFormsUI.Docking;
 using System.Windows.Forms;
 using ResourceTypes.FrameResource;
+using SharpDX;
 
 namespace Forms.Docking
 {
@@ -84,18 +85,37 @@ namespace Forms.Docking
             EntryMenuStrip.Items[2].Visible = false;
             EntryMenuStrip.Items[3].Visible = false;
 
-            if (treeView1.SelectedNode == null || treeView1.SelectedNode.Tag == null)
-                e.Cancel = false;
-
-            if (!e.Cancel)
+            if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag != null)
             {
-                EntryMenuStrip.Items[0].Visible = false;
+
                 EntryMenuStrip.Items[1].Visible = true;
                 EntryMenuStrip.Items[2].Visible = true;
 
+                if (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectBase) || treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement) || treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectJoint))
+                {
+                    EntryMenuStrip.Items[0].Visible = true;
+                }
                 if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) || treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement)))
+                {
+                    EntryMenuStrip.Items[0].Visible = true;
                     EntryMenuStrip.Items[3].Visible = true;
+                }
             }
+        }
+
+        public Vector3 JumpToHelper()
+        {
+            if(treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectBase))
+            {
+                return (treeView1.SelectedNode.Tag as FrameObjectBase).Matrix.Position;
+            }
+
+            if(treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
+            {
+                return (treeView1.SelectedNode.Tag as ResourceTypes.Collisions.Collision.Placement).Position;
+            }
+
+            return new Vector3(0, 0, 0);
         }
     }
 }

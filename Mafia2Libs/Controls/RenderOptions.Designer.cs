@@ -109,7 +109,7 @@
             1,
             0,
             0,
-            65536});
+            131072});
             this.CameraSpeedUpDown.Name = "CameraSpeedUpDown";
             this.CameraSpeedUpDown.Size = new System.Drawing.Size(120, 20);
             this.CameraSpeedUpDown.TabIndex = 6;

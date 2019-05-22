@@ -152,12 +152,12 @@ void CreateLightDocument(FbxManager* pManager, FbxDocument* pLightDocument)
 {
 	// create document info
 	FbxDocumentInfo* lDocInfo = FbxDocumentInfo::Create(pManager, "DocInfo");
-	lDocInfo->mTitle = "Sub document for lights";
-	lDocInfo->mSubject = "Illustrates the creation of sub-FbxDocument with lights.";
-	lDocInfo->mAuthor = "ExportDocument.exe sample program.";
+	lDocInfo->mTitle = "";
+	lDocInfo->mSubject = "";
+	lDocInfo->mAuthor = "Mafia II: Toolkit";
 	lDocInfo->mRevision = "rev. 1.0";
-	lDocInfo->mKeywords = "Fbx light document";
-	lDocInfo->mComment = "no particular comments required.";
+	lDocInfo->mKeywords = "";
+	lDocInfo->mComment = "";
 
 	// add the documentInfo
 	pLightDocument->SetDocumentInfo(lDocInfo);

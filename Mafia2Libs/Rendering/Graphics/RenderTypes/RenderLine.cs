@@ -102,12 +102,12 @@ namespace Rendering.Graphics
             vertexBuffer = null;
         }
 
-        public override void UpdateBuffers(DeviceContext device)
+        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
             DataBox dataBox;
-            dataBox = device.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
+            dataBox = deviceContext.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
             Utilities.Write(dataBox.DataPointer, vertices, 0, vertices.Length);
-            device.UnmapSubresource(vertexBuffer, 0);
+            deviceContext.UnmapSubresource(vertexBuffer, 0);
             isUpdatedNeeded = false;
         }
 

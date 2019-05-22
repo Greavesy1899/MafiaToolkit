@@ -39,7 +39,7 @@ private:
 public:
 	void SetStartIndex(int& value);
 	void SetNumFaces(int& value);
-	void SetMatName(std::string& name);
+	void SetMatName(std::string name);
 	int GetStartIndex() const;
 	int GetNumFaces() const;
 	std::string GetMatName() const;
@@ -138,7 +138,7 @@ private:
 public:
 	ModelStructure();
 	~ModelStructure();
-	void SetName(std::string& name);
+	void SetName(std::string name);
 	void SetPartSize(char& count);
 	void SetParts(ModelPart* parts);
 	std::string GetName() const;

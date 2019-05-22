@@ -38,6 +38,8 @@ namespace Mafia2Tool
         {
             AddColumnButton.Enabled = false;
             LoadTableData();
+            RowIndexLabel.Text = "Row Index: 0";
+            ColumnIndexLabel.Text = "Column Index: 0";
         }
 
         private void LoadTableData()
@@ -150,6 +152,12 @@ namespace Mafia2Tool
         private void AddColumnOnClick(object sender, EventArgs e)
         {
 
+        }
+
+        private void OnCellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            RowIndexLabel.Text = "Row Index: " + e.RowIndex.ToString();
+            ColumnIndexLabel.Text = "Column Index: " + e.ColumnIndex.ToString();
         }
     }
 }

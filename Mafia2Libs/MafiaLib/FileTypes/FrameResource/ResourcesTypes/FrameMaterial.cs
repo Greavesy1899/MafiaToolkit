@@ -5,6 +5,7 @@ using System.IO;
 using SharpDX;
 using Utils.SharpDXExtensions;
 using ResourceTypes.Materials;
+using System.ComponentModel;
 
 namespace ResourceTypes.FrameResource
 {
@@ -16,10 +17,12 @@ namespace ResourceTypes.FrameResource
         BoundingBox bounds;
         List<MaterialStruct[]> materials;
 
+        [Browsable(false)]
         public uint NumLods {
             get { return numLods; }
             set { numLods = value; }
         }
+        [Browsable(false)]
         public int[] LodMatCount {
             get { return lodMatCount; }
             set { lodMatCount = value; }
@@ -33,18 +36,11 @@ namespace ResourceTypes.FrameResource
             set { materials = value; }
         }
 
-        /// <summary>
-        /// Construct FrameMaterial by reading the stream.
-        /// </summary>
-        /// <param name="reader"></param>
         public FrameMaterial(BinaryReader reader) : base()
         {
             ReadFromFile(reader);
         }
 
-        /// <summary>
-        /// Construct FrameMaterial with basic settings.
-        /// </summary>
         public FrameMaterial() : base()
         {
             numLods = 0;
@@ -53,10 +49,6 @@ namespace ResourceTypes.FrameResource
             bounds = new BoundingBox();
         }
 
-        /// <summary>
-        /// Read data from stream.
-        /// </summary>
-        /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
             numLods = reader.ReadByte();
@@ -79,10 +71,6 @@ namespace ResourceTypes.FrameResource
             }
         }
 
-        /// <summary>
-        /// Write data to stream.
-        /// </summary>
-        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write((byte)numLods);
@@ -134,18 +122,11 @@ namespace ResourceTypes.FrameResource
             set { unk3 = value; }
         }
 
-        /// <summary>
-        /// Construct Material data from stream.
-        /// </summary>
-        /// <param name="reader"></param>
         public MaterialStruct(BinaryReader reader)
         {
             ReadFromFile(reader);
         }
 
-        /// <summary>
-        /// Constructs Material with default data.
-        /// </summary>
         public MaterialStruct()
         {
             numFaces = 0;
@@ -155,10 +136,6 @@ namespace ResourceTypes.FrameResource
             unk3 = 0;
         }
 
-        /// <summary>
-        /// Read data from stream.
-        /// </summary>
-        /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
             numFaces = reader.ReadInt32();
@@ -174,10 +151,6 @@ namespace ResourceTypes.FrameResource
                 materialName = "UNABLE TO GET FROM MTLs";
         }
 
-        /// <summary>
-        /// Write data to stream.
-        /// </summary>
-        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(numFaces);
@@ -186,10 +159,6 @@ namespace ResourceTypes.FrameResource
             writer.Write(unk3);
         }
 
-        /// <summary>
-        /// Set shader sampler name
-        /// </summary>
-        /// <param name="name"></param>
         public void SetName(string name)
         {
             materialName = name;

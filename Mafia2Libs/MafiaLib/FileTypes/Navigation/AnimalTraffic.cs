@@ -58,9 +58,9 @@ namespace ResourceTypes.Navigation
             file = info;
             using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
             {
-                ReadFromFile(reader);
+                //ReadFromFile(reader);
             }
-            WriteToFile();
+            //WriteToFile();
         }
 
         public void ReadFromFile(BinaryReader reader)
