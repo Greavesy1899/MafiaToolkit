@@ -19,8 +19,17 @@ namespace Mafia2Tool
         {
             InitializeComponent();
             Localise();
-            mtl = new MaterialLibrary();
-            mtl.ReadMatFile(file.FullName);
+
+            if (MaterialsManager.MTLs.ContainsKey(file.FullName))
+            {
+                mtl = MaterialsManager.MTLs[file.FullName];
+            }
+            else
+            {
+                mtl = new MaterialLibrary();
+                mtl.ReadMatFile(file.FullName);
+            }
+
             FetchMaterials();
             Show();
             ToolkitSettings.UpdateRichPresence("Using the Material Library editor.");

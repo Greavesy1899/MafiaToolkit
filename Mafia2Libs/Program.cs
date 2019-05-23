@@ -22,7 +22,6 @@ namespace Mafia2Tool
             CheckINIExists();
             ToolkitSettings.ReadINI();
             Language.ReadLanguageXML();
-            MaterialData.Load();
             Application.Run(new GameExplorer());
         }
 

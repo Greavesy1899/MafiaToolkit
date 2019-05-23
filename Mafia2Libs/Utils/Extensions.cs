@@ -59,10 +59,22 @@ namespace Utils.Extensions
             if (!string.IsNullOrEmpty(stringValue))
             {
                 float x, y, z = 0.0f;
-                string[] components = stringValue.Split(' ');
-                float.TryParse(components[0].Substring(2), out x);
-                float.TryParse(components[1].Substring(2), out y);
-                float.TryParse(components[2].Substring(2), out z);
+
+                if (stringValue.Contains("X") && stringValue.Contains("Y") && stringValue.Contains("Z"))
+                {
+                    string[] components = stringValue.Split(' ');
+                    float.TryParse(components[0].Substring(2), out x);
+                    float.TryParse(components[1].Substring(2), out y);
+                    float.TryParse(components[2].Substring(2), out z);
+                }
+                else
+                {
+                    string[] components = stringValue.Split(' ');
+                    float.TryParse(components[0], out x);
+                    float.TryParse(components[1], out y);
+                    float.TryParse(components[2], out z);
+                }
+                
                 result = new Vector3(x, y, z);
             }
 

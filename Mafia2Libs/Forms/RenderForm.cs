@@ -49,6 +49,7 @@ namespace Mafia2Tool
         public D3DForm(FileInfo info)
         {
             InitializeComponent();
+            MaterialData.Load();
             TypeDescriptor.AddAttributes(typeof(Vector3), new TypeConverterAttribute(typeof(Vector3Converter)));
             ToolkitSettings.UpdateRichPresence(string.Format("Editing '{0}'", info.Directory.Name));
             SceneData.ScenePath = info.DirectoryName;
@@ -526,7 +527,7 @@ namespace Mafia2Tool
             }   
 
             dPropertyGrid.SetObject(dSceneTree.treeView1.SelectedNode.Tag);
-            dPropertyGrid.Show(dockPanel1, DockState.DockRight);
+            //dPropertyGrid.Show(dockPanel1, DockState.DockRight);
             RenderPanel.Focus();
         }
 
