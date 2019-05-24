@@ -36,7 +36,8 @@ namespace ApexSDK
 
         public override void WriteToFile(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.Write(minSubtexture);
+            writer.Write(maxSubtexture);
         }
 
         public override string ToString()

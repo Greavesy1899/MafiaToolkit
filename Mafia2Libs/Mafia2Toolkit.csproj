@@ -106,8 +106,8 @@
     <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.Direct3D11.4.2.0\lib\net45\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.DirectInput, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpDX.DirectInput.4.1.0\lib\net45\SharpDX.DirectInput.dll</HintPath>
+    <Reference Include="SharpDX.DirectInput, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DirectInput.4.2.0\lib\net45\SharpDX.DirectInput.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.DXGI, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.DXGI.4.2.0\lib\net45\SharpDX.DXGI.dll</HintPath>
@@ -134,6 +134,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApexSDK\IOFX\ScaleAlongVelocityModifier.cs" />
     <Compile Include="Controls\ListWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -183,10 +184,10 @@
       <DependentUpon>RenderForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ApexSDK\ApexRenderMesh.cs" />
-    <Compile Include="ApexSDK\EmitterGeomExplicit.cs" />
-    <Compile Include="ApexSDK\EmitterGeomSphere.cs" />
-    <Compile Include="ApexSDK\Enums.cs" />
-    <Compile Include="ApexSDK\File.cs" />
+    <Compile Include="ApexSDK\Emitter\EmitterGeomExplicit.cs" />
+    <Compile Include="ApexSDK\Emitter\EmitterGeomSphere.cs" />
+    <Compile Include="ApexSDK\Emitter\Enums.cs" />
+    <Compile Include="ApexSDK\Emitter\File.cs" />
     <Compile Include="ApexSDK\IOFX\ColorVsDensityModifier.cs" />
     <Compile Include="ApexSDK\IOFX\ColorVsLifeModifier.cs" />
     <Compile Include="ApexSDK\IOFX\Enums.cs" />

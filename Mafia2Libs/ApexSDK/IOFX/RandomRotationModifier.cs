@@ -36,7 +36,8 @@ namespace ApexSDK
 
         public override void WriteToFile(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.Write(minRotation);
+            writer.Write(maxRotation);
         }
 
         public override string ToString()

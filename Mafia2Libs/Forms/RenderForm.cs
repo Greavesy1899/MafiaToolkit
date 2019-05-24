@@ -206,7 +206,6 @@ namespace Mafia2Tool
 
             Graphics.Frame();
             toolStripStatusLabel1.Text = Graphics.Camera.Position.ToString();
-            toolStripStatusLabel2.Text = string.Format("{0} {1}", mousePos.X, mousePos.Y);
             toolStripStatusLabel3.Text = string.Format("{0} FPS", Graphics.FPS.FPS);
             return true;
         }
@@ -310,7 +309,7 @@ namespace Mafia2Tool
         {
             RenderBoundingBox areaBBox = new RenderBoundingBox();
             areaBBox.SetTransform(sector.Matrix.Position, sector.Matrix.Rotation);
-            areaBBox.Init(sector.Unk11);
+            areaBBox.Init(sector.Bounds);
             return areaBBox;
         }
 
@@ -574,6 +573,12 @@ namespace Mafia2Tool
                 FrameObjectArea area = (obj as FrameObjectArea);
                 RenderBoundingBox bbox = (Graphics.Assets[obj.RefID] as RenderBoundingBox);
                 bbox.Update(area.Bounds);
+            }
+            else if(obj is FrameObjectSector)
+            {
+                FrameObjectSector sector = (obj as FrameObjectSector);
+                RenderBoundingBox bbox = (Graphics.Assets[obj.RefID] as RenderBoundingBox);
+                bbox.Update(sector.Bounds);
             }
             else if(obj is FrameObjectSingleMesh)
             {
@@ -888,6 +893,24 @@ namespace Mafia2Tool
                         newNode.Name = obj.RefID.ToString();
                         dSceneTree.AddToTree(newNode, nodes[0]);
                     }
+                }
+            }
+            if(pGrid.SelectedObject is FrameObjectSingleMesh)
+            {
+                if (e.ChangedItem.Label == "MeshIndex")
+                {
+                    int value = (int)e.ChangedItem.Value;
+                    FrameObjectSingleMesh obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
+                    obj.Refs["Mesh"] = SceneData.FrameResource.NewFrames[value].Data.RefID;
+                    obj.Geometry = SceneData.FrameResource.FrameGeometries[obj.Refs["Mesh"]];
+                    
+                }
+                if(e.ChangedItem.Label == "MaterialIndex")
+                {
+                    int value = (int)e.ChangedItem.Value;
+                    FrameObjectSingleMesh obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
+                    obj.Refs["Material"] = SceneData.FrameResource.NewFrames[value].Data.RefID;
+                    obj.Material = SceneData.FrameResource.FrameMaterials[obj.Refs["Material"]];
                 }
             }
         }

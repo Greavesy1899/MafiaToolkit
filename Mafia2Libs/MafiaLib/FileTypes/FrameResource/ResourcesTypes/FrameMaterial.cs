@@ -17,12 +17,12 @@ namespace ResourceTypes.FrameResource
         BoundingBox bounds;
         List<MaterialStruct[]> materials;
 
-        [Browsable(false)]
+        //[Browsable(false)]
         public uint NumLods {
             get { return numLods; }
             set { numLods = value; }
         }
-        [Browsable(false)]
+        //[Browsable(false)]
         public int[] LodMatCount {
             get { return lodMatCount; }
             set { lodMatCount = value; }

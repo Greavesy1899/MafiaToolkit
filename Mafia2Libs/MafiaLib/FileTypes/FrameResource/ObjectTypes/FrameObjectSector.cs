@@ -11,10 +11,10 @@ namespace ResourceTypes.FrameResource
         int unk_08_int;
         int unk_09_int;
         float[] unk_10_floats;
-        BoundingBox unkBounds;
+        BoundingBox bounds;
         Vector3 unk_13_vector3;
         Vector3 unk_14_vector3;
-        Hash unk_15_hash;
+        Hash sectorName;
 
         public int Unk08 {
             get { return unk_08_int; }
@@ -28,9 +28,9 @@ namespace ResourceTypes.FrameResource
             get { return unk_10_floats; }
             set { unk_10_floats = value; }
         }
-        public BoundingBox Unk11 {
-            get { return unkBounds ; }
-            set { unkBounds = value; }
+        public BoundingBox Bounds {
+            get { return bounds ; }
+            set { bounds = value; }
         }
         public Vector3 Unk13 {
             get { return unk_13_vector3; }
@@ -40,50 +40,50 @@ namespace ResourceTypes.FrameResource
             get { return unk_14_vector3; }
             set { unk_14_vector3 = value; }
         }
-        public Hash Unk15 {
-            get { return unk_15_hash; }
-            set { unk_15_hash = value; }
+        public Hash SectorName {
+            get { return sectorName; }
+            set { sectorName = value; }
         }
 
         public float BoundsMinimumX {
-            get { return unkBounds.Minimum.X; }
-            set { unkBounds.Minimum.X = value; }
+            get { return bounds.Minimum.X; }
+            set { bounds.Minimum.X = value; }
         }
         public float BoundsMinimumY {
-            get { return unkBounds.Minimum.Y; }
-            set { unkBounds.Minimum.Y = value; }
+            get { return bounds.Minimum.Y; }
+            set { bounds.Minimum.Y = value; }
         }
         public float BoundsMinimumZ {
-            get { return unkBounds.Minimum.Z; }
-            set { unkBounds.Minimum.Z = value; }
+            get { return bounds.Minimum.Z; }
+            set { bounds.Minimum.Z = value; }
         }
         public float BoundsMaximumX {
-            get { return unkBounds.Maximum.X; }
-            set { unkBounds.Maximum.X = value; }
+            get { return bounds.Maximum.X; }
+            set { bounds.Maximum.X = value; }
         }
         public float BoundsMaximumY {
-            get { return unkBounds.Maximum.Y; }
-            set { unkBounds.Maximum.Y = value; }
+            get { return bounds.Maximum.Y; }
+            set { bounds.Maximum.Y = value; }
         }
         public float BoundsMaximumZ {
-            get { return unkBounds.Maximum.Z; }
-            set { unkBounds.Maximum.Z = value; }
+            get { return bounds.Maximum.Z; }
+            set { bounds.Maximum.Z = value; }
         }
 
         public FrameObjectSector() : base()
         {
-            unkBounds = new BoundingBox();
+            bounds = new BoundingBox();
             unk_13_vector3 = new Vector3(0);
             unk_14_vector3 = new Vector3(0);
-            unk_15_hash = new Hash();
+            sectorName = new Hash();
         }
 
         public FrameObjectSector(FrameObjectSector other) : base(other)
         {
-            unkBounds = other.unkBounds;
+            bounds = other.bounds;
             unk_13_vector3 = other.unk_13_vector3;
             unk_14_vector3 = other.unk_14_vector3;
-            unk_15_hash = new Hash(unk_15_hash.String);
+            sectorName = new Hash(sectorName.String);
         }
 
         public FrameObjectSector(BinaryReader reader) : base()
@@ -103,10 +103,10 @@ namespace ResourceTypes.FrameResource
                 unk_10_floats[i] = reader.ReadSingle();
             }
 
-            unkBounds = BoundingBoxExtenders.ReadFromFile(reader);
+            bounds = BoundingBoxExtenders.ReadFromFile(reader);
             unk_13_vector3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             unk_14_vector3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-            unk_15_hash = new Hash(reader);
+            sectorName = new Hash(reader);
 
         }
 
@@ -121,10 +121,10 @@ namespace ResourceTypes.FrameResource
                 writer.Write(unk_10_floats[i]);
             }
 
-            unkBounds.WriteToFile(writer);
+            bounds.WriteToFile(writer);
             unk_13_vector3.WriteToFile(writer);
             unk_14_vector3.WriteToFile(writer);
-            unk_15_hash.WriteToFile(writer);
+            sectorName.WriteToFile(writer);
         }
     }
 }

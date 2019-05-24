@@ -105,15 +105,13 @@ namespace Forms.Docking
 
         public Vector3 JumpToHelper()
         {
-            if(treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectBase))
-            {
-                return (treeView1.SelectedNode.Tag as FrameObjectBase).Matrix.Position;
-            }
+            object data = treeView1.SelectedNode.Tag;
 
-            if(treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
-            {
-                return (treeView1.SelectedNode.Tag as ResourceTypes.Collisions.Collision.Placement).Position;
-            }
+            if(data.GetType() == typeof(FrameObjectBase) || data.GetType() == typeof(FrameObjectJoint) || data.GetType() == typeof(FrameObjectSingleMesh))
+                return (data as FrameObjectBase).Matrix.Position;
+
+            if(data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
+                return (data as ResourceTypes.Collisions.Collision.Placement).Position;
 
             return new Vector3(0, 0, 0);
         }

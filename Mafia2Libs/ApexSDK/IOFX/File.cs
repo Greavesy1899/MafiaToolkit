@@ -27,6 +27,8 @@ namespace ApexSDK
 
         public void ReadFromFile(BinaryReader reader)
         {
+            Console.WriteLine(string.Format("Checking: {0}", file.Name));
+
             //check version.
             if (reader.ReadInt32() != 41)
                 return;
@@ -102,6 +104,9 @@ namespace ApexSDK
                     break;
                 case "ColorVsDensityModifierParams":
                     modifier = new ColorVsDensityModifier(reader);
+                    break;
+                case "ScaleAlongVelocityModifierParams":
+                    modifier = new ScaleAlongVelocityModifier(reader);
                     break;
                 default:
                     Console.WriteLine("Did not do modifier: {0}", type);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace ApexSDK
 {
@@ -47,7 +46,13 @@ namespace ApexSDK
 
         public override void WriteToFile(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.Write(controlPointsX.Length);
+
+            for(int i = 0; i != controlPointsX.Length; i++)
+                writer.Write(controlPointsX[i]);
+
+            for (int i = 0; i != controlPointsY.Length; i++)
+                writer.Write(controlPointsY[i]);
         }
 
         public override string ToString()

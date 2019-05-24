@@ -517,10 +517,10 @@ namespace Mafia2Tool
                     cTool = new CollisionEditor((FileInfo)item.Tag);
                     return;
                 case "IOFX":
-                    //iofx = new IOFxFile((FileInfo)item.Tag);
+                    iofx = new IOFxFile((FileInfo)item.Tag);
                     return;
                 case "AEA":
-                    //emitterFile = new EmitterFile((FileInfo)item.Tag);
+                    emitterFile = new EmitterFile((FileInfo)item.Tag);
                     return;
                 case "Table":
                     tTool = new TableEditor((FileInfo)item.Tag);
@@ -612,7 +612,6 @@ namespace Mafia2Tool
             OptionsForm options = new OptionsForm();
             options.ShowDialog();
             Localise();
-            MaterialData.Load();
         }
 
         private void ContextSDSUnpackAll_Click(object sender, EventArgs e)
@@ -739,6 +738,14 @@ namespace Mafia2Tool
                 "Toolkit", 
                 MessageBoxButtons.OK, 
                 MessageBoxIcon.Information);
+        }
+
+        private void OnKeyPressed(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == 0x8)
+            {
+                OnUpButtonClicked(null, null);
+            }
         }
     }
 }
