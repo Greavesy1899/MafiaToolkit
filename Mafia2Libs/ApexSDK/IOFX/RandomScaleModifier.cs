@@ -19,13 +19,13 @@ namespace ApexSDK
 
         public RandomScaleModifier()
         {
-            Type = ModifierType.ModifierType_RandomScale;
+            Type = ModifierType.RandomScale;
         }
 
         public RandomScaleModifier(BinaryReader reader)
         {
             ReadFromFile(reader);
-            Type = ModifierType.ModifierType_RandomScale;
+            Type = ModifierType.RandomScale;
         }
 
         public override void ReadFromFile(BinaryReader reader)
@@ -36,7 +36,8 @@ namespace ApexSDK
 
         public override void WriteToFile(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.Write(minScale);
+            writer.Write(maxScale);
         }
 
         public override string ToString()

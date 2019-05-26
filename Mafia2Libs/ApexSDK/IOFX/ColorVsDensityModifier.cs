@@ -30,13 +30,13 @@ namespace ApexSDK
 
         public ColorVsDensityModifier()
         {
-            Type = ModifierType.ModifierType_ColorVsDensity;
+            Type = ModifierType.ColorVsDensity;
         }
 
         public ColorVsDensityModifier(BinaryReader reader)
         {
             ReadFromFile(reader);
-            Type = ModifierType.ModifierType_ColorVsDensity;
+            Type = ModifierType.ColorVsDensity;
         }
 
         public override void ReadFromFile(BinaryReader reader)

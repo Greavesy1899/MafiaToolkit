@@ -39,6 +39,7 @@
             this.ScreenFarLabel = new System.Windows.Forms.Label();
             this.ScreenNearLabel = new System.Windows.Forms.Label();
             this.TexBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            this.ExperimentalBox = new System.Windows.Forms.CheckBox();
             this.RenderGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenFarUpDown)).BeginInit();
@@ -47,6 +48,7 @@
             // 
             // RenderGroup
             // 
+            this.RenderGroup.Controls.Add(this.ExperimentalBox);
             this.RenderGroup.Controls.Add(this.BrowseButton);
             this.RenderGroup.Controls.Add(this.TexDirectoryBox);
             this.RenderGroup.Controls.Add(this.TexLabel);
@@ -187,6 +189,17 @@
             // 
             this.TexBrowser.Description = "$SELECT_TEX_FOLDER";
             // 
+            // ExperimentalBox
+            // 
+            this.ExperimentalBox.AutoSize = true;
+            this.ExperimentalBox.Location = new System.Drawing.Point(235, 38);
+            this.ExperimentalBox.Name = "ExperimentalBox";
+            this.ExperimentalBox.Size = new System.Drawing.Size(86, 17);
+            this.ExperimentalBox.TabIndex = 10;
+            this.ExperimentalBox.Text = "Experimental";
+            this.ExperimentalBox.UseVisualStyleBackColor = true;
+            this.ExperimentalBox.CheckedChanged += new System.EventHandler(this.ExperimentalBox_CheckedChanged);
+            // 
             // RenderOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -216,5 +229,6 @@
         private System.Windows.Forms.TextBox TexDirectoryBox;
         private System.Windows.Forms.Label TexLabel;
         private System.Windows.Forms.FolderBrowserDialog TexBrowser;
+        private System.Windows.Forms.CheckBox ExperimentalBox;
     }
 }

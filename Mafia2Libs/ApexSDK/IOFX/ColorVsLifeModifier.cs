@@ -30,13 +30,13 @@ namespace ApexSDK
 
         public ColorVsLifeModifier()
         {
-            Type = ModifierType.ModifierType_ColorVsLife;
+            Type = ModifierType.ColorVsLife;
         }
 
         public ColorVsLifeModifier(BinaryReader reader)
         {
             ReadFromFile(reader);
-            Type = ModifierType.ModifierType_ColorVsLife;
+            Type = ModifierType.ColorVsLife;
         }
 
         public override void ReadFromFile(BinaryReader reader)

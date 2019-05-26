@@ -72,7 +72,7 @@ namespace Mafia2Tool
             node.Tag = area;
             treeView1.Nodes[0].Nodes.Add(node);
             shopsData.PopulateTranslokatorEntities();
-            MessageBox.Show("A new area was added succesfully! Check under the 'Areas' node.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            treeView1.SelectedNode = node;
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
@@ -113,8 +113,7 @@ namespace Mafia2Tool
             node.Tag = areaData;
             treeView1.Nodes[1].Nodes.Add(node);
             shopsData.PopulateTranslokatorEntities();
-            MessageBox.Show("A new area data was added succesfully! Check under the 'Data' node.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+            treeView1.SelectedNode = node;
         }
 
         private void OnPropertyChanged(object s, PropertyValueChangedEventArgs e)

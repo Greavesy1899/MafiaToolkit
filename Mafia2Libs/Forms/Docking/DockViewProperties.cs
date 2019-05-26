@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
+﻿using Utils.Lang;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Forms.Docking
@@ -11,7 +10,21 @@ namespace Forms.Docking
         public DockViewProperties()
         {
             InitializeComponent();
+            Localise();
             Init();
+        }
+
+        private void Localise()
+        {
+            label1.Text = Language.GetString("$TOGGLE_MODELS");
+            label2.Text = Language.GetString("$TOGGLE_COLLISIONS");
+            label3.Text = Language.GetString("$TOGGLE_BOXES");
+            ModelComboBox.Items[0] = Language.GetString("$VISIBLE");
+            ModelComboBox.Items[1] = Language.GetString("$HIDDEN");
+            CollisionComboBox.Items[0] = Language.GetString("$VISIBLE");
+            CollisionComboBox.Items[1] = Language.GetString("$HIDDEN");
+            BoxComboBox.Items[0] = Language.GetString("$VISIBLE");
+            BoxComboBox.Items[1] = Language.GetString("$HIDDEN");
         }
 
         private void Init()

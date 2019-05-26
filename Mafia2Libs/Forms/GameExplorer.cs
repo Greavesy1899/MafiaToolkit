@@ -29,6 +29,7 @@ namespace Mafia2Tool
         public GameExplorer()
         {
             InitializeComponent();
+            LoadForm();
         }
 
         public void PreloadData()
@@ -197,6 +198,12 @@ namespace Mafia2Tool
             fileListView.Items.Clear();
             ListViewItem.ListViewSubItem[] subItems;
             ListViewItem item = null;
+
+            if(!directory.Exists)
+            {
+                MessageBox.Show("Could not find directory! Returning to original path..", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                OpenDirectory(originalPath, false);
+            }
 
             foreach (DirectoryInfo dir in directory.GetDirectories())
             {
@@ -403,10 +410,7 @@ namespace Mafia2Tool
 
             FolderPath.Width = Math.Max(0, width - FolderPath.Margin.Horizontal);
         }
-        protected override void OnLoad(EventArgs e)
-        {
-            LoadForm();
-        }
+
         void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Node != null)
@@ -629,14 +633,9 @@ namespace Mafia2Tool
             folderView.Nodes.Clear();
             InitExplorerSettings();
         }
-        private void ExitToolkitClicked(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-        private void RunMafiaIIClicked(object sender, EventArgs e)
-        {
-            Process.Start(launcher.FullName);
-        }
+        private void ExitToolkitClicked(object sender, EventArgs e) => Application.Exit();
+        private void RunMafiaIIClicked(object sender, EventArgs e) => Process.Start(launcher.FullName);
+        private void SearchBarOnTextChanged(object sender, EventArgs e) => OpenDirectory(currentDirectory, true, SearchEntryText.Text);
 
         //FileListViewStrip events.
         private void OnUpButtonClicked(object sender, EventArgs e)
@@ -659,10 +658,6 @@ namespace Mafia2Tool
                 currentDirectory.Refresh();
                 OpenDirectory(currentDirectory);
             }
-        }
-        private void SearchBarOnTextChanged(object sender, EventArgs e)
-        {
-            OpenDirectory(currentDirectory, true, SearchEntryText.Text);
         }
 
         //View FileList handling.
@@ -708,26 +703,11 @@ namespace Mafia2Tool
                     break;
             }
         }
-        private void OnViewIconClicked(object sender, EventArgs e)
-        {
-            FileListViewTypeController(0);
-        }
-        private void OnViewDetailsClicked(object sender, EventArgs e)
-        {
-            FileListViewTypeController(1);
-        }
-        private void OnViewSmallIconClicked(object sender, EventArgs e)
-        {
-            FileListViewTypeController(2);
-        }
-        private void OnViewListClicked(object sender, EventArgs e)
-        {
-            FileListViewTypeController(3);
-        }
-        private void OnViewTileClicked(object sender, EventArgs e)
-        {
-            FileListViewTypeController(4);
-        }
+        private void OnViewIconClicked(object sender, EventArgs e) => FileListViewTypeController(0);
+        private void OnViewDetailsClicked(object sender, EventArgs e) => FileListViewTypeController(1);
+        private void OnViewSmallIconClicked(object sender, EventArgs e) => FileListViewTypeController(2);
+        private void OnViewListClicked(object sender, EventArgs e) => FileListViewTypeController(3);
+        private void OnViewTileClicked(object sender, EventArgs e) => FileListViewTypeController(4);
 
         private void OnCredits_Pressed(object sender, EventArgs e)
         {
@@ -743,9 +723,7 @@ namespace Mafia2Tool
         private void OnKeyPressed(object sender, KeyPressEventArgs e)
         {
             if(e.KeyChar == 0x8)
-            {
                 OnUpButtonClicked(null, null);
-            }
         }
     }
 }

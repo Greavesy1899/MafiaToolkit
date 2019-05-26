@@ -19,13 +19,13 @@ namespace ApexSDK
 
         public RandomRotationModifier()
         {
-            Type = ModifierType.ModifierType_RandomRotation;
+            Type = ModifierType.RandomRotation;
         }
 
         public RandomRotationModifier(BinaryReader reader)
         {
             ReadFromFile(reader);
-            Type = ModifierType.ModifierType_RandomRotation;
+            Type = ModifierType.RandomRotation;
         }
 
         public override void ReadFromFile(BinaryReader reader)

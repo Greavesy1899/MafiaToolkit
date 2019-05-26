@@ -22,6 +22,7 @@ namespace Forms.OptionControls
             TexLabel.Text = Language.GetString("$TEXTURE_DIRECTORY");
             CameraSpeedLabel.Text = Language.GetString("$RENDER_CAMERASPEED");
             TexBrowser.Description = Language.GetString("$SELECT_TEX_FOLDER");
+            ExperimentalBox.Text = Language.GetString("$ENABLE_EXPERIMENTAL");
         }
         
         /// <summary>
@@ -33,6 +34,7 @@ namespace Forms.OptionControls
             ScreenNearUpDown.Value = Math.Min(Convert.ToInt16(ToolkitSettings.ScreenNear), ScreenNearUpDown.Maximum);
             CameraSpeedUpDown.Value = Math.Min((decimal)ToolkitSettings.CameraSpeed, CameraSpeedUpDown.Maximum);
             TexDirectoryBox.Text = ToolkitSettings.TexturePath;
+            ExperimentalBox.Checked = ToolkitSettings.Experimental;
         }
 
         private void ScreenDepth_Changed(object sender, EventArgs e)
@@ -68,6 +70,12 @@ namespace Forms.OptionControls
                 TexDirectoryBox_TextChanged(null, null);
             }
             else return;
+        }
+
+        private void ExperimentalBox_CheckedChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.Experimental = ExperimentalBox.Checked;
+            ToolkitSettings.WriteKey("EnableExperimental", "ModelViewer", ToolkitSettings.Experimental.ToString());
         }
     }
 }

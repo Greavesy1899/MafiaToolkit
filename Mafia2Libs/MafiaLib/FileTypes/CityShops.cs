@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using Utils.StringHelpers;
@@ -146,7 +147,7 @@ namespace ResourceTypes.City
             List<ushort> addedPos = new List<ushort>();
             m_buffer = "";
 
-            for (int i = 0; i != numAreas; i++)
+            for (int i = 0; i != areas.Count; i++)
             {
                 int index = addedNames.IndexOf(areas[i].Name);
                 if (index == -1)
@@ -161,7 +162,7 @@ namespace ResourceTypes.City
                     areas[i].NameKey = addedPos[index];
                 }
             }
-            for (int i = 0; i != numDatas; i++)
+            for (int i = 0; i != areaDatas.Count; i++)
             {
                 int index = addedNames.IndexOf(areaDatas[i].TranslokatorName);
                 if (index == -1)

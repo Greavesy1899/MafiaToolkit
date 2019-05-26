@@ -63,15 +63,87 @@ namespace ApexSDK
             //Read Spawn Modifiers
             int spawnModifiersCount = reader.ReadInt32(); //first count of modifiers.
             for(int i = 0; i != spawnModifiersCount; i++)
-                spawnModifiers.Add(DetermineModifier(reader));
+                spawnModifiers.Add(ReadModifier(reader));
 
             //Read Continous Modifiers
             int continousModifiersCount = reader.ReadInt32();
             for (int i = 0; i != continousModifiersCount; i++)
-                continuousModifiers.Add(DetermineModifier(reader));
+                continuousModifiers.Add(ReadModifier(reader));
         }
 
-        private IModifier DetermineModifier(BinaryReader reader)
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(41);
+            StringHelpers.WriteString32(writer, "IOFX");
+            writer.Write(unk01);
+            writer.Write(4096);
+            writer.Write(renderMeshes.Length);
+
+            for (int i = 0; i != renderMeshes.Length; i++)
+            {
+                renderMeshes[i] = new ApexRenderMesh();
+                renderMeshes[i].WriteToFile(writer);
+            }
+
+            //Read ApexMaterials.
+            StringHelpers.WriteString32(writer, "ApexMaterials"); //ApexMaterials
+            StringHelpers.WriteString32(writer, renderMaterials);
+
+            //Read Spawn Modifiers
+            writer.Write(spawnModifiers.Count);
+            for (int i = 0; i != spawnModifiers.Count; i++)
+                WriteModifier(writer, spawnModifiers[i]);
+
+            //Read Continous Modifiers
+            writer.Write(continuousModifiers.Count);
+            for (int i = 0; i != continuousModifiers.Count; i++)
+                WriteModifier(writer, continuousModifiers[i]);
+        }
+
+        private void WriteModifier(BinaryWriter writer, IModifier modifier)
+        {
+            string type = "";
+            switch(modifier.Type)
+            {
+                case ModifierType.RandomScale:
+                    type = "RandomScaleModifierParams";
+                    break;
+                case ModifierType.RandomRotation:
+                    type = "RandomRotationModifierParams";
+                    break;
+                case ModifierType.RandomSubtexture:
+                    type = "RandomSubtextureModifierParams";
+                    break;
+                case ModifierType.SimpleScale:
+                    type = "SimpleScaleModifierParams";
+                    break;
+                case ModifierType.Rotation:
+                    type = "RotationModifierParams";
+                    break;
+                case ModifierType.ColorVsLife:
+                    type = "ColorVsLifeModifierParams";
+                    break;
+                case ModifierType.SubtextureVsLife:
+                    type = "SubtextureVsLifeModifierParams";
+                    break;
+                case ModifierType.ScaleVsLife:
+                    type = "ScaleVsLifeModifierParams";
+                    break;
+                case ModifierType.ColorVsDensity:
+                    type = "ColorVsDensityModifierParams";
+                    break;
+                case ModifierType.ScaleAlongVelocity:
+                    type = "ScaleAlongVelocityModifierParams";
+                    break;
+                default:
+                    Console.WriteLine("Did not do modifier: {0}", type);
+                    break;
+            }
+            StringHelpers.WriteString32(writer, type);
+            modifier.WriteToFile(writer);
+        }
+
+        private IModifier ReadModifier(BinaryReader reader)
         {
             IModifier modifier = null;
 
@@ -135,6 +207,13 @@ namespace ApexSDK
                 StringHelpers.ReadString32(reader); //ApexRenderMesh
                 name = StringHelpers.ReadString32(reader);
                 weight = reader.ReadInt32();
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                StringHelpers.WriteString32(writer, "ApexRenderMesh");
+                StringHelpers.WriteString32(writer, name);
+                writer.Write(weight);
             }
         }
     }

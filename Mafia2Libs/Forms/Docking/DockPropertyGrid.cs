@@ -1,6 +1,7 @@
 ﻿using ResourceTypes.FrameResource;
 using SharpDX;
 using System;
+using Utils.Lang;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Forms.Docking
@@ -13,8 +14,21 @@ namespace Forms.Docking
         public DockPropertyGrid()
         {
             InitializeComponent();
+            Localise();
             currentObject = null;
             IsEntryReady = false;
+        }
+
+        private void Localise()
+        {
+            MainTabControl.TabPages[0].Text = Language.GetString("$PROPERTY_GRID");
+            MainTabControl.TabPages[1].Text = Language.GetString("$EDIT_TRANSFORM");
+            PositionXLabel.Text = Language.GetString("$POSITION_X");
+            PositionYLabel.Text = Language.GetString("$POSITION_Y");
+            PositionZLabel.Text = Language.GetString("$POSITION_Z");
+            RotationXLabel.Text = Language.GetString("$ROTATION_X");
+            RotationYLabel.Text = Language.GetString("$ROTATION_Y");
+            RotationZLabel.Text = Language.GetString("$ROTATION_Z");
         }
 
         public void SetObject(object obj)

@@ -49,6 +49,7 @@ namespace Mafia2Tool
         public D3DForm(FileInfo info)
         {
             InitializeComponent();
+            Localise();
             MaterialData.Load();
             TypeDescriptor.AddAttributes(typeof(Vector3), new TypeConverterAttribute(typeof(Vector3Converter)));
             ToolkitSettings.UpdateRichPresence(string.Format("Editing '{0}'", info.Directory.Name));
@@ -61,6 +62,24 @@ namespace Mafia2Tool
             KeyPreview = true;
             RenderPanel.Focus();
             StartD3DPanel();
+        }
+
+        private void Localise()
+        {
+            FileButton.Text = Language.GetString("$FILE");
+            EditButton.Text = Language.GetString("$CREATE");
+            ViewButton.Text = Language.GetString("$VIEW");
+            OptionsButton.Text = Language.GetString("$OPTIONS");
+            ToggleWireframeButton.Text = Language.GetString("$TOGGLE_WIREFRAME");
+            ToggleCullingButton.Text = Language.GetString("$TOGGLE_CULLING");
+            SceneTreeButton.Text = Language.GetString("$VIEW_SCENE_TREE");
+            ObjectPropertiesButton.Text = Language.GetString("$VIEW_PROPERTY_GRID");
+            ViewButton.Text = Language.GetString("$VIEW_OPTIONS");
+            AddButton.Text = Language.GetString("$ADD");
+            AddSceneFolderButton.Text = Language.GetString("$ADD_SCENE_FOLDER");
+            AddRoadSplineButton.Text = Language.GetString("$ADD_ROAD_SPLINE");
+            SaveButton.Text = Language.GetString("$SAVE");
+            ExitButton.Text = Language.GetString("$EXIT");
         }
 
         private void InitDockingControls()
@@ -142,6 +161,7 @@ namespace Mafia2Tool
         private void SaveButton_Click(object sender, EventArgs e) => Save();
         private void PropertyGridOnClicked(object sender, EventArgs e) => dPropertyGrid.Show(dockPanel1, DockState.DockRight);
         private void SceneTreeOnClicked(object sender, EventArgs e) => dSceneTree.Show(dockPanel1, DockState.DockLeft);
+        private void ViewOptionProperties_Click(object sender, EventArgs e) => dSceneTree.Show(dockPanel1, DockState.DockLeft);
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
@@ -269,7 +289,7 @@ namespace Mafia2Tool
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
 
-                if(SceneData.roadMap != null)
+                if(SceneData.roadMap != null && ToolkitSettings.Experimental)
                 {
                     List<SplineDefinition> splines = new List<SplineDefinition>();
                     
@@ -387,7 +407,7 @@ namespace Mafia2Tool
                 }
             }
 
-            if (SceneData.roadMap != null)
+            if (SceneData.roadMap != null  && ToolkitSettings.Experimental)
             {
                 TreeNode node = new TreeNode("RoadMap Data");
                 roadRoot = node;
@@ -437,7 +457,7 @@ namespace Mafia2Tool
                 }
                 dSceneTree.AddToTree(node);
             }
-            if (SceneData.Collisions != null)
+            if (SceneData.Collisions != null  && ToolkitSettings.Experimental)
             {
                 TreeNode node = new TreeNode("Collision Data");
                 collisionRoot = node;
@@ -481,29 +501,29 @@ namespace Mafia2Tool
 
                 dSceneTree.AddToTree(node);
             }
-            //if (SceneData.ATLoader != null)
-            //{
-            //    for(int i = 0; i != SceneData.ATLoader.paths.Length; i++)
-            //    {
-            //        AnimalTrafficLoader.AnimalTrafficPath path = SceneData.ATLoader.paths[i];
-            //        RenderBoundingBox bbox = new RenderBoundingBox();
-            //        bbox.SetTransform(new Vector3(0.0f), new Matrix33());
-            //        bbox.Init(path.bbox);
+            if (SceneData.ATLoader != null && ToolkitSettings.Experimental)
+            {
+                for (int i = 0; i != SceneData.ATLoader.paths.Length; i++)
+                {
+                    AnimalTrafficLoader.AnimalTrafficPath path = SceneData.ATLoader.paths[i];
+                    RenderBoundingBox bbox = new RenderBoundingBox();
+                    bbox.SetTransform(new Vector3(0.0f), new Matrix33());
+                    bbox.Init(path.bbox);
 
-            //        RenderLine line = new RenderLine();
-            //        line.SetTransform(new Vector3(0.0f), new Matrix33());
-            //        List<Vector3> points = new List<Vector3>();
-            //        points.Add(path.bbox.Center);
+                    RenderLine line = new RenderLine();
+                    line.SetTransform(new Vector3(0.0f), new Matrix33());
+                    List<Vector3> points = new List<Vector3>();
+                    points.Add(path.bbox.Center);
 
-            //        for(int x = 0; x < path.vectors.Length; x++)
-            //            points.Add(path.vectors[x].vectors[0]);
+                    for (int x = 0; x < path.vectors.Length; x++)
+                        points.Add(path.vectors[x].vectors[0]);
 
-            //        line.SetColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-            //        line.Init(points.ToArray());
-            //        assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
-            //        assets.Add(StringHelpers.RandomGenerator.Next(), line);
-            //    }
-            //}
+                    line.SetColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+                    line.Init(points.ToArray());
+                    assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
+                    assets.Add(StringHelpers.RandomGenerator.Next(), line);
+                }
+            }
             Graphics.InitObjectStack = assets;
         }
 

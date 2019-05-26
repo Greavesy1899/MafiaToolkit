@@ -23,13 +23,13 @@ namespace ApexSDK
 
         public SubtextureVsLifeModifier()
         {
-            Type = ModifierType.ModifierType_SubtextureVsLife;
+            Type = ModifierType.SubtextureVsLife;
         }
 
         public SubtextureVsLifeModifier(BinaryReader reader)
         {
             ReadFromFile(reader);
-            Type = ModifierType.ModifierType_SubtextureVsLife;
+            Type = ModifierType.SubtextureVsLife;
         }
 
         public override void ReadFromFile(BinaryReader reader)

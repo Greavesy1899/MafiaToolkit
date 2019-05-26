@@ -16,13 +16,13 @@ namespace ApexSDK
 
         public SimpleScaleModifier()
         {
-            Type = ModifierType.ModifierType_SimpleScale;
+            Type = ModifierType.SimpleScale;
         }
 
         public SimpleScaleModifier(BinaryReader reader)
         {
             ReadFromFile(reader);
-            Type = ModifierType.ModifierType_SimpleScale;
+            Type = ModifierType.SimpleScale;
         }
 
         public override void ReadFromFile(BinaryReader reader)

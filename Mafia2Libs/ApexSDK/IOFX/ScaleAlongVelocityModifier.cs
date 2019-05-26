@@ -15,13 +15,13 @@ namespace ApexSDK
 
         public ScaleAlongVelocityModifier()
         {
-            Type = ModifierType.ModifierType_ScaleAlongVelocity;
+            Type = ModifierType.ScaleAlongVelocity;
         }
 
         public ScaleAlongVelocityModifier(BinaryReader reader)
         {
             ReadFromFile(reader);
-            Type = ModifierType.ModifierType_ScaleAlongVelocity;
+            Type = ModifierType.ScaleAlongVelocity;
         }
 
         public override void ReadFromFile(BinaryReader reader)

@@ -25,13 +25,13 @@ namespace ApexSDK
 
         public RotationModifier()
         {
-            Type = ModifierType.ModifierType_Rotation;
+            Type = ModifierType.Rotation;
         }
 
         public RotationModifier(BinaryReader reader)
         {
             ReadFromFile(reader);
-            Type = ModifierType.ModifierType_Rotation;
+            Type = ModifierType.Rotation;
         }
 
         public override void ReadFromFile(BinaryReader reader)

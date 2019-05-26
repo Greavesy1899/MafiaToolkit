@@ -19,13 +19,13 @@ namespace ApexSDK
 
         public RandomSubtextureModifier()
         {
-            Type = ModifierType.ModifierType_RandomSubtexture;
+            Type = ModifierType.RandomSubtexture;
         }
 
         public RandomSubtextureModifier(BinaryReader reader)
         {
             ReadFromFile(reader);
-            Type = ModifierType.ModifierType_RandomSubtexture;
+            Type = ModifierType.RandomSubtexture;
         }
 
         public override void ReadFromFile(BinaryReader reader)

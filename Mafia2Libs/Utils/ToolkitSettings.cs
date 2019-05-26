@@ -2,6 +2,7 @@
 using Utils.Logging;
 using Utils.Discord;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace Utils.Settings
 {
@@ -25,6 +26,7 @@ namespace Utils.Settings
         public static float CameraSpeed;
         public static string ShaderPath;
         public static string TexturePath;
+        public static bool Experimental;
         public const int Width = 1920;
         public const int Height = 1080;
 
@@ -42,11 +44,8 @@ namespace Utils.Settings
         public static bool LoggingEnabled;
         public static int Language;
         public static int SerializeSDSOption;
-        public static readonly string Version = "2.0 pre";
+        public static readonly string Version = "2.0 experimental";
 
-        /// <summary>
-        /// Read and store settings.
-        /// </summary>
         public static void ReadINI()
         {
             ini = new IniFile();
@@ -63,6 +62,7 @@ namespace Utils.Settings
             float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "10000"), out ScreenDepth);
             float.TryParse(ReadKey("ScreenNear", "ModelViewer", "1"), out ScreenNear);
             float.TryParse(ReadKey("CameraSpeed", "ModelViewer", "1"), out CameraSpeed);
+            bool.TryParse(ReadKey("EnableExperimental", "ModelViewer", "0"), out Experimental);
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
             int.TryParse(ReadKey("Language", "Misc", "0"), out Language);
             int.TryParse(ReadKey("Format", "Exporting", "0"), out Format);
@@ -94,21 +94,11 @@ namespace Utils.Settings
             return defaultValue;
         }
 
-        /// <summary>
-        /// Write Key to the ini file and do some checks.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="section"></param>
-        /// <param name="defaultValue"></param>
-        /// <returns></returns>
         public static void WriteKey(string key, string section, string defaultValue)
         {
             ini.Write(key, defaultValue, section);
         }
 
-        /// <summary>
-        /// Initialise Discord Rich Presence.
-        /// </summary>
         private static void InitRichPresence()
         {
             controller = new DiscordController();
@@ -124,10 +114,6 @@ namespace Utils.Settings
             UpdateRichPresence("Using the Game Explorer");
         }
 
-        /// <summary>
-        /// Update Discord Rich Presence.
-        /// </summary>
-        /// <param name="details"></param>
         public static void UpdateRichPresence(string details = null)
         {
             if (!DiscordEnabled)
@@ -140,9 +126,12 @@ namespace Utils.Settings
                 if (controller == null)
                     InitRichPresence();
 
+                details = ""; //don't like current imp.
                 string detailsLine = string.IsNullOrEmpty(details) ? "Making mods for Mafia II." : details;
                 controller.presence.state = DiscordStateEnabled ? detailsLine : null;
-                controller.presence.details = DiscordDetailsEnabled ? "" : null;
+                string vString = Debugger.IsAttached ? "DEBUG " : "RELEASE ";
+                vString += Version;
+                controller.presence.details = DiscordDetailsEnabled ? vString : null;
                 controller.presence.startTimestamp = DiscordElapsedTimeEnabled ? ElapsedTime : 0;
 
                 DiscordRPC.UpdatePresence(ref controller.presence);

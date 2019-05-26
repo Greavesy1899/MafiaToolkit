@@ -133,16 +133,17 @@ namespace Mafia2Tool
             ItemDescs = null;
             Collisions = null;
             CityAreas = null;
+            CityShops = null;
+            roadMap = null;
+            ATLoader = null;
+            AIWorlds = null;
+            OBJData = null;
         }
     }
-
     public static class MaterialData
     {
         public static bool HasLoaded = false;
 
-        /// <summary>
-        /// Loads all material data from user-specified path.
-        /// </summary>
         public static void Load()
         {
             MaterialsManager.ClearLoadedMTLs();

@@ -30,13 +30,13 @@ namespace ApexSDK
 
         public ScaleVsLifeModifier()
         {
-            Type = ModifierType.ModifierType_ScaleVsLife;
+            Type = ModifierType.ScaleVsLife;
         }
 
         public ScaleVsLifeModifier(BinaryReader reader)
         {
             ReadFromFile(reader);
-            Type = ModifierType.ModifierType_ScaleVsLife;
+            Type = ModifierType.ScaleVsLife;
         }
 
         public override void ReadFromFile(BinaryReader reader)

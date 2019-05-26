@@ -11,6 +11,7 @@ using Buffer = SharpDX.Direct3D11.Buffer;
 using System.IO;
 using Utils.Settings;
 using Utils.Models;
+using Mafia2Tool;
 
 namespace Rendering.Graphics
 {
@@ -247,7 +248,7 @@ namespace Rendering.Graphics
                             {
                                 if (!string.IsNullOrEmpty(sampler.File))
                                 {
-                                    texture = TextureLoader.LoadTexture(d3d, Path.Combine(ToolkitSettings.TexturePath, sampler.File));
+                                    texture = TextureLoader.LoadTexture(d3d, Path.Combine(SceneData.ScenePath, sampler.File));
                                     RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
                                 }
                             }
