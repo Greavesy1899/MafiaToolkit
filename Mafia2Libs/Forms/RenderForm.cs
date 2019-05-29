@@ -503,26 +503,26 @@ namespace Mafia2Tool
             }
             if (SceneData.ATLoader != null && ToolkitSettings.Experimental)
             {
-                for (int i = 0; i != SceneData.ATLoader.paths.Length; i++)
-                {
-                    AnimalTrafficLoader.AnimalTrafficPath path = SceneData.ATLoader.paths[i];
-                    RenderBoundingBox bbox = new RenderBoundingBox();
-                    bbox.SetTransform(new Vector3(0.0f), new Matrix33());
-                    bbox.Init(path.bbox);
+                //for (int i = 0; i != SceneData.ATLoader.paths.Length; i++)
+                //{
+                //    AnimalTrafficLoader.AnimalTrafficPath path = SceneData.ATLoader.paths[i];
+                //    RenderBoundingBox bbox = new RenderBoundingBox();
+                //    bbox.SetTransform(new Vector3(0.0f), new Matrix33());
+                //    bbox.Init(path.bbox);
 
-                    RenderLine line = new RenderLine();
-                    line.SetTransform(new Vector3(0.0f), new Matrix33());
-                    List<Vector3> points = new List<Vector3>();
-                    points.Add(path.bbox.Center);
+                //    RenderLine line = new RenderLine();
+                //    line.SetTransform(new Vector3(0.0f), new Matrix33());
+                //    List<Vector3> points = new List<Vector3>();
+                //    points.Add(path.bbox.Center);
 
-                    for (int x = 0; x < path.vectors.Length; x++)
-                        points.Add(path.vectors[x].vectors[0]);
+                //    for (int x = 0; x < path.vectors.Length; x++)
+                //        points.Add(path.vectors[x].vectors[0]);
 
-                    line.SetColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-                    line.Init(points.ToArray());
-                    assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
-                    assets.Add(StringHelpers.RandomGenerator.Next(), line);
-                }
+                //    line.SetColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+                //    line.Init(points.ToArray());
+                //    assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
+                //    assets.Add(StringHelpers.RandomGenerator.Next(), line);
+                //}
             }
             Graphics.InitObjectStack = assets;
         }
