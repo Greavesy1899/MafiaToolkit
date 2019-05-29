@@ -2,10 +2,12 @@
   <!-- Generic String -->
   <String ID="$CONTINUE">Continuer</String>
   <String ID="$CANCEL">Annuler</String>
+  <String ID="$EDIT">Modifier</String>
   <String ID="$INDEX">Index</String>
   <String ID="$ENTRY_NAME">Nom</String>
   
   <!-- Game Explorer Strings -->
+  <String ID="$CREDITS">Remerciements spéciaux</String>
   <String ID="$VIEW">Vue</String>
   <String ID="$FILE">Fichier</String>
   <String ID="$TOOLS">Outils</String>
@@ -65,6 +67,21 @@
   <String ID="$MATERIAL_LIB_ADD">Ajouter librairie</String>
   <String ID="$MATERIAL_LIB_SELECTED">Librairies sélectionnées</String>
   
+  <!-- SDS Options -->
+  <String ID="$SDS_COMPRESSION_TYPE">Type compression</String>
+  <String ID="$SDS_UNCOMPRESSED">Décompressé</String>
+  <String ID="$SDS_COMPRESSED">Compressé</String>
+  <String ID="$SDS_ONEBLOCK">Un seul bloc</String>
+
+  <!-- Render Options -->
+  <String ID="$RENDER">Render</String>
+  <String ID="$RENDER_OPTIONS">Options Rendering</String>
+  <String ID="$RENDER_SCREENFAR">Screen distant</String>
+  <String ID="$RENDER_SCREENEAR">Screen proche</String>
+  <String ID="$RENDER_CAMERASPEED">Vitesse camera</String>
+  <String ID="$TEXTURE_DIRECTORY">Dossier texture</String>
+  <String ID="$SELECT_TEX_FOLDER">Sélectionnez le dossier qui contient les tetures</String>
+
   <!-- Collision Editor Form Strings-->
   <String ID="$SAVE">Sauvegarder</String>
   <String ID="$RELOAD">Recharger</String>
@@ -123,5 +140,28 @@
   <String ID="$CITY_SHOP_EDITOR_TITLE">Editeur de shop</String>
   <String ID="$ADD_AREA">Ajouter zone</String>
   <String ID="$POPULATE_TRANSLOKATORS">Ajouter nouveaux translocators</String>
-   
+
+  <!-- Table Editor string -->
+  <String ID="$TABLE_EDITOR_TITLE">Editeur de table</String>
+  <String ID="$TABLE_ADD_ROW">Ajouter une ligne</String>
+  <String ID="$TABLE_ADD_COLUMN">Ajouter une colonne</String>
+  
+  <!-- Renderer strings -->
+  <String ID="$CREATE">Créer</String>
+  <String ID="$VIEW_OPTIONS">Options vue</String>
+  <String ID="$VIEW_PROPERTY_GRID">Grille des proprités</String>
+  <String ID="$VIEW_SCENE_TREE">Arbre de scène</String>
+  <String ID="$VIEW_VIS_OPTIONS">Options de visibilité</String>
+  <String ID="$TOGGLE_MODELS">Activer/désactiver modèles</String>
+  <String ID="$TOGGLE_COLLISIONS">Activer/désactiver colisions</String>
+  <String ID="$TOGGLE_BOXES">Activer/désactiver boxes</String>
+  <String ID="$ADD">Ajouter..</String>
+  <String ID="$ADD_SCENE_FOLDER">Ajouter dossier scène</String>
+  <String ID="$ADD_ROAD_SPLINE">Ajouter segment route</String>
+  <String ID="$VISIBLE">Visible</String>
+  <String ID="$HIDDEN">Caché</String>
+  <String ID="$EDIT_TRANSFORM">Modifier transformation</String>
+  <String ID="$PROPERTY_GRID">Grille de propriétés</String>
+  <String ID="$TOGGLE_WIREFRAME">Activer/désactiver wireframe</String>
+  <String ID="$TOGGLE_CULLING">Activer/désactiver culling</String>
 </Localisation>
