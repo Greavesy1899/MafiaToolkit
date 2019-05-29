@@ -38,6 +38,7 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.columnHash = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dumpInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -122,7 +123,8 @@
             this.toolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addMaterialToolStripMenuItem,
-            this.DeleteSelectedMaterialButton});
+            this.DeleteSelectedMaterialButton,
+            this.dumpInfoToolStripMenuItem});
             this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
             this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolButton.Name = "toolButton";
@@ -132,14 +134,14 @@
             // addMaterialToolStripMenuItem
             // 
             this.addMaterialToolStripMenuItem.Name = "addMaterialToolStripMenuItem";
-            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addMaterialToolStripMenuItem.Text = "Add Material";
             this.addMaterialToolStripMenuItem.Click += new System.EventHandler(this.AddMaterial);
             // 
             // DeleteSelectedMaterialButton
             // 
             this.DeleteSelectedMaterialButton.Name = "DeleteSelectedMaterialButton";
-            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(172, 22);
+            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(180, 22);
             this.DeleteSelectedMaterialButton.Text = "$DELETE_SEL_MAT";
             this.DeleteSelectedMaterialButton.Click += new System.EventHandler(this.DeleteMaterial);
             // 
@@ -172,6 +174,13 @@
             this.columnHash.HeaderText = "Hash";
             this.columnHash.Name = "columnHash";
             this.columnHash.ReadOnly = true;
+            // 
+            // dumpInfoToolStripMenuItem
+            // 
+            this.dumpInfoToolStripMenuItem.Name = "dumpInfoToolStripMenuItem";
+            this.dumpInfoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dumpInfoToolStripMenuItem.Text = "Dump Info";
+            this.dumpInfoToolStripMenuItem.Click += new System.EventHandler(this.DumpInfo_Clicked);
             // 
             // MaterialTool
             // 
@@ -209,5 +218,6 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn columnName;
         private System.Windows.Forms.DataGridViewTextBoxColumn columnHash;
+        private System.Windows.Forms.ToolStripMenuItem dumpInfoToolStripMenuItem;
     }
 }

@@ -121,5 +121,29 @@
   <String ID="$CITY_SHOP_EDITOR_TITLE">CityShop Editor</String>
   <String ID="$ADD_AREA">Přidat Area</String>
   <String ID="$POPULATE_TRANSLOKATORS">Oživit nové Translocatory (potřebné pro nové Translocatory)</String>
+  
+    <!-- Table Editor string -->
+  <String ID="$TABLE_EDITOR_TITLE">Table Editor</String>
+  <String ID="$TABLE_ADD_ROW">Přidat řádek</String>
+  <String ID="$TABLE_ADD_COLUMN">Přidat sloupec</String>
+  
+  <!-- Renderer strings -->
+  <String ID="$CREATE">Vytvořit</String>
+  <String ID="$VIEW_OPTIONS">Možnosti zobrazení</String>
+  <String ID="$VIEW_PROPERTY_GRID">Zobrazit síť vlastností</String>
+  <String ID="$VIEW_SCENE_TREE">Zobrazit hierarchii scény</String>
+  <String ID="$VIEW_VIS_OPTIONS">Zobrazit možnosti viditelnosti</String>
+  <String ID="$TOGGLE_MODELS">Zobrazit/skrýt modely</String>
+  <String ID="$TOGGLE_COLLISIONS">Zobrazit/skrýt kolize</String>
+  <String ID="$TOGGLE_BOXES">Zobrazit/skrýt boxy</String>
+  <String ID="$ADD">Přidat...</String>
+  <String ID="$ADD_SCENE_FOLDER">Přidat složku se scénou</String>
+  <String ID="$ADD_ROAD_SPLINE">Přidat křivku cesty</String>
+  <String ID="$VISIBLE">Viditelný</String>
+  <String ID="$HIDDEN">Skrytý</String>
+  <String ID="$EDIT_TRANSFORM">Upravit transformaci</String>
+  <String ID="$PROPERTY_GRID">Síť vlastností</String>
+  <String ID="$TOGGLE_WIREFRAME">Aktivovat/deaktivovat drátový model (wireframe)</String>
+  <String ID="$TOGGLE_CULLING">Aktivovat/deaktivovat culling</String>
    
 </Localisation>

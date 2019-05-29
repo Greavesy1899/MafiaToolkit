@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Mafia2;
+using Utils.Settings;
+using Utils.Lang;
 
 namespace Mafia2Tool
 {
@@ -14,17 +15,13 @@ namespace Mafia2Tool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Log.DeleteOldLog();
-            Log.CreateFile();
+            //Log.DeleteOldLog();
+            //Log.CreateFile();
 
-            //do vital inits;
+            ////do vital inits;
             CheckINIExists();
             ToolkitSettings.ReadINI();
-
             Language.ReadLanguageXML();
-
-            MaterialData.Load();
-
             Application.Run(new GameExplorer());
         }
 
@@ -33,7 +30,7 @@ namespace Mafia2Tool
         /// </summary>
         private static void CheckINIExists()
         {
-            if (File.Exists("Mafia2Tool.ini"))
+            if (File.Exists(Path.Combine(Application.ExecutablePath, "Mafia2Tool.ini")))
                 return;
             else
                 new IniFile();

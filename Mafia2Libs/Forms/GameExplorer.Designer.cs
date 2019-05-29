@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using Utils.Extensions;
 
 namespace Mafia2Tool
 {
@@ -62,7 +63,9 @@ namespace Mafia2Tool
             this.dropdownFile = new System.Windows.Forms.ToolStripDropDownButton();
             this.openMafiaIIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runMafiaIIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.creditsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.VersionLabel = new System.Windows.Forms.ToolStripMenuItem();
             this.dropdownView = new System.Windows.Forms.ToolStripDropDownButton();
             this.ViewStripMenuIcon = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewStripMenuDetails = new System.Windows.Forms.ToolStripMenuItem();
@@ -196,7 +199,7 @@ namespace Mafia2Tool
             this.SearchEntryText.Name = "SearchEntryText";
             this.SearchEntryText.Size = new System.Drawing.Size(200, 23);
             this.SearchEntryText.ToolTipText = "$SEARCH_TOOLTIP";
-            this.SearchEntryText.TextChanged += new System.EventHandler(this.OnRefreshButtonClicked);
+            this.SearchEntryText.TextChanged += new System.EventHandler(this.SearchBarOnTextChanged);
             // 
             // fileListView
             // 
@@ -218,6 +221,7 @@ namespace Mafia2Tool
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.Details;
             this.fileListView.ItemActivate += new System.EventHandler(this.listView1_ItemActivate);
+            this.fileListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
             // 
             // columnName
             // 
@@ -370,7 +374,9 @@ namespace Mafia2Tool
             this.dropdownFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openMafiaIIToolStripMenuItem,
             this.runMafiaIIToolStripMenuItem,
-            this.exitToolStripMenuItem});
+            this.creditsToolStripMenuItem,
+            this.exitToolStripMenuItem,
+            this.VersionLabel});
             this.dropdownFile.Image = ((System.Drawing.Image)(resources.GetObject("dropdownFile.Image")));
             this.dropdownFile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.dropdownFile.Name = "dropdownFile";
@@ -391,12 +397,26 @@ namespace Mafia2Tool
             this.runMafiaIIToolStripMenuItem.Text = "$BTN_RUN_MII";
             this.runMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.RunMafiaIIClicked);
             // 
+            // creditsToolStripMenuItem
+            // 
+            this.creditsToolStripMenuItem.Name = "creditsToolStripMenuItem";
+            this.creditsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.creditsToolStripMenuItem.Text = "$CREDITS";
+            this.creditsToolStripMenuItem.Click += new System.EventHandler(this.OnCredits_Pressed);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exitToolStripMenuItem.Text = "$EXIT";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolkitClicked);
+            // 
+            // VersionLabel
+            // 
+            this.VersionLabel.Enabled = false;
+            this.VersionLabel.Name = "VersionLabel";
+            this.VersionLabel.Size = new System.Drawing.Size(160, 22);
+            this.VersionLabel.Text = "Toolkit v";
             // 
             // dropdownView
             // 
@@ -594,5 +614,7 @@ namespace Mafia2Tool
         private ToolStripMenuItem ViewStripMenuSmallIcon;
         private ToolStripMenuItem ViewStripMenuList;
         private ToolStripMenuItem ViewStripMenuTile;
+        private ToolStripMenuItem creditsToolStripMenuItem;
+        private ToolStripMenuItem VersionLabel;
     }
 }

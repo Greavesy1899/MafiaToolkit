@@ -1,12 +1,16 @@
-﻿using System;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.Collisions;
+using SharpDX;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Gibbed.Illusion.FileFormats.Hashing;
-using Mafia2;
-using static Mafia2.M2TStructure;
+using Utils.Lang;
+using Utils.Models;
+using Utils.Settings;
+using Collision = ResourceTypes.Collisions.Collision;
 
 namespace Mafia2Tool
 {
@@ -61,69 +65,24 @@ namespace Mafia2Tool
                 TreeNode node = new TreeNode(nxsData.Hash.ToString());
                 node.Tag = nxsData;
                 node.Name = nxsData.Hash.ToString();
-
-
-                M2TStructure model = new M2TStructure();
-                model.Lods = new Lod[1];
-                model.Lods[0] = new Lod();
-
-                ;
-                model.Lods[0].Vertices = new Vertex[nxsData.Data.Vertices.Length];
-
-                for (int x = 0; x != model.Lods[0].Vertices.Length; x++)
-                {
-                    model.Lods[0].Vertices[x] = new Vertex();
-                    model.Lods[0].Vertices[x].Position = nxsData.Data.Vertices[x];
-                }
-
-                List<CollisionMaterials> typeList = new List<CollisionMaterials>();
-                List<List<Short3>> values = new List<List<Short3>>();
-
-                for (int x = 0; x != nxsData.Data.Materials.Length; x++)
-                {
-                    CollisionMaterials[] mats = nxsData.Data.Materials;
-                    Int3[] triangles = nxsData.Data.Triangles;
-
-                    if (!typeList.Contains(mats[x]))
-                    {
-                        typeList.Add(mats[x]);
-                        values.Add(new List<Short3>());
-                        values[typeList.Count-1].Add(new Short3(triangles[x]));
-                    }
-                    else
-                    {
-                        for(int y = 0; y != typeList.Count; y++)
-                        {
-                            if(typeList[y] == mats[x])
-                                values[y].Add(new Short3(triangles[x]));
-                        }
-                    }
-                }
-
-                model.Lods[0].Parts = new ModelPart[typeList.Count];
-
-                for(int x = 0; x != typeList.Count; x++)
-                {
-                    model.Lods[0].Parts[x] = new ModelPart();
-                    model.Lods[0].Parts[x].Indices = values[x].ToArray();
-                    model.Lods[0].Parts[x].Material = typeList[x].ToString();
-                }
-
-                model.ExportCollisionToM2T(node.Name);
+                //M2TStructure structure = new M2TStructure();
+                //structure.BuildCollision(nxsData, node.Name);
+                //structure.ExportCollisionToM2T(node.Name);
+                //structure.ExportToFbx("Collisions" + "//", true);
                 treeView1.Nodes.Add(node);
             }
 
-            CustomEDD frame = new CustomEDD();
+            //CustomEDD frame = new CustomEDD();
             for (int i = 0; i != SceneData.Collisions.Placements.Count; i++)
             {
                 Collision.Placement data = SceneData.Collisions.Placements[i];
-                CustomEDD.Entry entry = new CustomEDD.Entry();
+                //CustomEDD.Entry entry = new CustomEDD.Entry();
 
-                entry.LodCount = 1;
-                entry.LODNames = new string[1];
-                entry.LODNames[0] = data.Hash.ToString();
-                entry.Position = data.Position;
-                entry.Rotation = new Matrix33();
+                //entry.LodCount = 1;
+                //entry.LODNames = new string[1];
+                //entry.LODNames[0] = data.Hash.ToString();
+                //entry.Position = data.Position;
+                //entry.Rotation = new Matrix33();
 
                 for (int x = 0; x != treeView1.Nodes.Count; x++)
                 {
@@ -132,17 +91,17 @@ namespace Mafia2Tool
                         TreeNode node = new TreeNode(treeView1.Nodes[x].Nodes.Count + 1.ToString());
                         node.Tag = data;
                         node.Name = treeView1.Nodes[x].Nodes.Count + 1.ToString();
-
+                        
                         treeView1.Nodes[x].Nodes.Add(node);
                     }
                 }
-                frame.Entries.Add(entry);
+                //frame.Entries.Add(entry);
             }
-            frame.EntryCount = frame.Entries.Count;
-            using (BinaryWriter writer = new BinaryWriter(File.Create("collisions/frame.edd")))
-            {
-                frame.WriteToFile(writer);
-            }
+            //frame.EntryCount = frame.Entries.Count;
+            //using (BinaryWriter writer = new BinaryWriter(File.Create("collisions/frame.edd")))
+            //{
+            //    frame.WriteToFile(writer);
+            //}
         }
 
         /// <summary>
@@ -181,8 +140,7 @@ namespace Mafia2Tool
                 nxsData.Sections[i] = new Collision.Section();
                 nxsData.Sections[i].Unk1 = (int)Enum.Parse(typeof(CollisionMaterials), colModel.Lods[0].Parts[i].Material)-2;
                 nxsData.Sections[i].Start = curEdges;
-                nxsData.Sections[i].NumEdges = colModel.Lods[0].Parts[i].Indices.Length*3;
-                curEdges += colModel.Lods[0].Parts[i].Indices.Length * 3;
+                nxsData.Sections[i].NumEdges = (int)colModel.Lods[0].Parts[i].NumFaces*3;
             }
 
             Collision.Placement placement = new Collision.Placement();

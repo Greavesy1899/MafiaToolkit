@@ -32,6 +32,7 @@
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("$SDS_OPTIONS");
             System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("$MODEL_EXPORTING");
             System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("$MATERIAL_LIBS");
+            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("$RENDER");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionsForm));
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -53,11 +54,14 @@
             treeNode3.Text = "$MODEL_EXPORTING";
             treeNode4.Name = "$MATERIAL_LIBS";
             treeNode4.Text = "$MATERIAL_LIBS";
+            treeNode5.Name = "$RENDER";
+            treeNode5.Text = "$RENDER";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1,
             treeNode2,
             treeNode3,
-            treeNode4});
+            treeNode4,
+            treeNode5});
             this.treeView1.Size = new System.Drawing.Size(211, 310);
             this.treeView1.TabIndex = 0;
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.NodeMouseClick);

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Mafia2;
+using ResourceTypes.City;
+using Utils.Lang;
+using Utils.Settings;
 
 namespace Mafia2Tool
 {
@@ -9,7 +11,6 @@ namespace Mafia2Tool
     {
         private FileInfo cityShopsFile;
         private CityShops shopsData;
-        private int curIndex = -1;
 
         public CityShopEditor(FileInfo file)
         {
@@ -17,7 +18,7 @@ namespace Mafia2Tool
             Localise();
             cityShopsFile = file;
             BuildData();
-            ShowDialog();
+            Show();
             ToolkitSettings.UpdateRichPresence("Editing City Shops.");
         }
 
@@ -30,6 +31,7 @@ namespace Mafia2Tool
             ExitButton.Text = Language.GetString("$EXIT");
             toolButton.Text = Language.GetString("$TOOLS");
             AddAreaButton.Text = Language.GetString("$ADD_AREA");
+            AddDataButton.Text = Language.GetString("$ADD_DATA");
             SaveButton.Text = Language.GetString("$SAVE");
             ReloadButton.Text = Language.GetString("$RELOAD");
             PopulateTranslokatorButton.Text = Language.GetString("$POPULATE_TRANSLOKATORS");
@@ -70,7 +72,7 @@ namespace Mafia2Tool
             node.Tag = area;
             treeView1.Nodes[0].Nodes.Add(node);
             shopsData.PopulateTranslokatorEntities();
-            MessageBox.Show("A new area was added succesfully! Check under the 'Areas' node.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            treeView1.SelectedNode = node;
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
@@ -101,6 +103,23 @@ namespace Mafia2Tool
         {
             shopsData.PopulateTranslokatorEntities();
             MessageBox.Show("All translokators were checked for errors.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void AddDataButton_Click(object sender, EventArgs e)
+        {
+            CityShops.AreaData areaData = new CityShops.AreaData();
+            shopsData.AreaDatas.Add(areaData);
+            TreeNode node = new TreeNode("New Area Data");
+            node.Tag = areaData;
+            treeView1.Nodes[1].Nodes.Add(node);
+            shopsData.PopulateTranslokatorEntities();
+            treeView1.SelectedNode = node;
+        }
+
+        private void OnPropertyChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            if(e.ChangedItem.Label == "Name")
+                treeView1.SelectedNode.Text = e.ChangedItem.Value.ToString();
         }
     }
 }

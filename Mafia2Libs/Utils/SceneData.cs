@@ -1,10 +1,21 @@
-﻿using Mafia2;
+﻿using ResourceTypes.FrameResource;
+using ResourceTypes.FrameNameTable;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
+using Utils.Settings;
+using Utils.Lang;
+using ResourceTypes.BufferPools;
+using ResourceTypes.City;
+using ResourceTypes.ItemDesc;
+using ResourceTypes.Materials;
+using ResourceTypes.Sound;
+using ResourceTypes.Actors;
+using ResourceTypes.Collisions;
+using ResourceTypes.Navigation;
 
 namespace Mafia2Tool
 {
@@ -14,20 +25,26 @@ namespace Mafia2Tool
         public static FrameResource FrameResource;
         public static VertexBufferManager VertexBufferPool;
         public static IndexBufferManager IndexBufferPool;
-        public static SoundSector SoundSector;
+        public static SoundSectorLoader SoundSector;
         public static Actor[] Actors;
-        public static ItemDesc[] ItemDescs;
+        public static ItemDescLoader[] ItemDescs;
         public static Collision Collisions;
         public static CityAreas CityAreas;
         public static CityShops CityShops;
+        public static Roadmap roadMap;
+        public static AnimalTrafficLoader ATLoader;
+        public static NAVData[] AIWorlds;
+        public static NAVData[] OBJData;
         public static string ScenePath;
 
         public static void BuildData()
         {
             List<FileInfo> vbps = new List<FileInfo>();
             List<FileInfo> ibps = new List<FileInfo>();
-            List<ItemDesc> ids = new List<ItemDesc>();
+            List<ItemDescLoader> ids = new List<ItemDescLoader>();
             List<Actor> act = new List<Actor>();
+            List<NAVData> aiw = new List<NAVData>();
+            List<NAVData> obj = new List<NAVData>();
 
             DirectoryInfo dirInfo = new DirectoryInfo(ScenePath);
 
@@ -54,26 +71,24 @@ namespace Mafia2Tool
                 else if (type == "FrameResource")
                     FrameResource = new FrameResource(name);
                 else if (type == "ItemDesc")
-                    ids.Add(new ItemDesc(name));
+                    ids.Add(new ItemDescLoader(name));
                 else if (type == "FrameNameTable")
                     FrameNameTable = new FrameNameTable(name);
-                //else if ((type == "MemFile") && (name.Contains("cityshops")))
-                //    CityShops = new CityShops(name);
-                //else if (type == "Actors")
-                //    act.Add(new Actor(name));
-                //else if (type == "AudioSectors")
-                //    SoundSector = new SoundSector(name);
-                //else if ((type == "MemFile") && (name.Contains("cityareas")))
-                //    CityAreas = new CityAreas(name);
+                else if (type == "Collisions")
+                    Collisions = new Collision(name);
+                else if (type == "AnimalTrafficPaths")
+                    ATLoader = new AnimalTrafficLoader(new FileInfo(name));
+                else if (nodes.Current.Value == "roadmap.gsd")
+                    roadMap = new Roadmap(new FileInfo(name));
+                //else if (type == "NAV_OBJ_DATA")
+                //    obj.Add(new NAVData(new FileInfo(name)));
             }
 
             IndexBufferPool = new IndexBufferManager(ibps);
             VertexBufferPool = new VertexBufferManager(vbps);
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
-
-            for (int i = 0; i != ItemDescs.Length; i++)
-                ItemDescs[i].WriteToEDC();
+            OBJData = obj.ToArray();
 
             if (Actors == null)
                 return;
@@ -92,9 +107,9 @@ namespace Mafia2Tool
                     {
                         if (act.Items[c].Hash1 == act.Definitions[i].Hash)
                         {
-                            //FrameObjectFrame frame = FrameResource.FrameObjects[act.Definitions[i].FrameIndex] as FrameObjectFrame;
-                            //frame.Item = act.Items[c];
-                            //FrameResource.FrameObjects[act.Definitions[i].FrameIndex] = frame;
+                            FrameObjectFrame frame = FrameResource.FrameObjects[act.Definitions[i].FrameIndex] as FrameObjectFrame;
+                            frame.Item = act.Items[c];
+                            FrameResource.FrameObjects[act.Definitions[i].FrameIndex] = frame;
                         }
                     }
                 }
@@ -118,16 +133,17 @@ namespace Mafia2Tool
             ItemDescs = null;
             Collisions = null;
             CityAreas = null;
+            CityShops = null;
+            roadMap = null;
+            ATLoader = null;
+            AIWorlds = null;
+            OBJData = null;
         }
     }
-
     public static class MaterialData
     {
         public static bool HasLoaded = false;
 
-        /// <summary>
-        /// Loads all material data from user-specified path.
-        /// </summary>
         public static void Load()
         {
             MaterialsManager.ClearLoadedMTLs();

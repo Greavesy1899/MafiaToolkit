@@ -1,8 +1,10 @@
 ﻿using System;
-using Mafia2;
+using Utils.Logging;
+using Utils.Discord;
 using System.Windows.Forms;
+using System.Diagnostics;
 
-namespace Mafia2Tool
+namespace Utils.Settings
 {
     public class ToolkitSettings
     {
@@ -18,15 +20,15 @@ namespace Mafia2Tool
         public static bool DiscordDetailsEnabled;
 
         //ModelViewer keys;
-        public static bool Fullscreen;
         public static bool VSync;
         public static float ScreenDepth;
         public static float ScreenNear;
+        public static float CameraSpeed;
         public static string ShaderPath;
-        public static string DataPath;
-        public static int BorderStyle;
-        public static int Width;
-        public static int Height;
+        public static string TexturePath;
+        public static bool Experimental;
+        public const int Width = 1920;
+        public const int Height = 1080;
 
         //Model Exporting keys;
         public static int Format;
@@ -41,26 +43,26 @@ namespace Mafia2Tool
         public const string DiscordLibLocation = "libs/discord-rpc";
         public static bool LoggingEnabled;
         public static int Language;
+        public static int SerializeSDSOption;
+        public static readonly string Version = "2.0 experimental";
 
-        /// <summary>
-        /// Read and store settings.
-        /// </summary>
         public static void ReadINI()
         {
             ini = new IniFile();
             ElapsedTime = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
             M2Directory = ReadKey("MafiaII", "Directories");
+            TexturePath = ReadKey("TexturePath", "ModelViewer");
             bool.TryParse(ReadKey("Enabled", "Discord", "True"), out DiscordEnabled);
             bool.TryParse(ReadKey("ElapsedTimeEnabled", "Discord", "True"), out DiscordElapsedTimeEnabled);
             bool.TryParse(ReadKey("StateEmabled", "Discord", "True"), out DiscordStateEnabled);
             bool.TryParse(ReadKey("DetailsEnabled", "Discord", "True"), out DiscordDetailsEnabled);
-            bool.TryParse(ReadKey("Fullscreen", "ModelViewer", "False"), out Fullscreen);
+            int.TryParse(ReadKey("SerializeOption", "SDS", "0"), out SerializeSDSOption);
             bool.TryParse(ReadKey("VSync", "ModelViewer", "True"), out VSync);
-            float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "1000"), out ScreenDepth);
-            float.TryParse(ReadKey("ScreenNear", "ModelViewer", "10"), out ScreenNear);
-            int.TryParse(ReadKey("Width", "ModelViewer", "1024"), out Width);
-            int.TryParse(ReadKey("Height", "ModelViewer", "768"), out Height);
+            float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "10000"), out ScreenDepth);
+            float.TryParse(ReadKey("ScreenNear", "ModelViewer", "1"), out ScreenNear);
+            float.TryParse(ReadKey("CameraSpeed", "ModelViewer", "1"), out CameraSpeed);
+            bool.TryParse(ReadKey("EnableExperimental", "ModelViewer", "0"), out Experimental);
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
             int.TryParse(ReadKey("Language", "Misc", "0"), out Language);
             int.TryParse(ReadKey("Format", "Exporting", "0"), out Format);
@@ -68,19 +70,11 @@ namespace Mafia2Tool
             MaterialLibs = ReadKey("MaterialLibs", "Materials", "");
 
 
-            BorderStyle = 1; //FixedSingle
             ShaderPath = @"Shaders\";
-            DataPath = @"Data\";
             Log.LoggingEnabled = LoggingEnabled;
 
             if (DiscordEnabled)
                 InitRichPresence();
-
-            if (Fullscreen)
-            {
-                Width = Screen.PrimaryScreen.Bounds.Width;
-                Height = Screen.PrimaryScreen.Bounds.Height;
-            }
         }
 
         /// <summary>
@@ -100,21 +94,11 @@ namespace Mafia2Tool
             return defaultValue;
         }
 
-        /// <summary>
-        /// Write Key to the ini file and do some checks.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="section"></param>
-        /// <param name="defaultValue"></param>
-        /// <returns></returns>
         public static void WriteKey(string key, string section, string defaultValue)
         {
             ini.Write(key, defaultValue, section);
         }
 
-        /// <summary>
-        /// Initialise Discord Rich Presence.
-        /// </summary>
         private static void InitRichPresence()
         {
             controller = new DiscordController();
@@ -130,10 +114,6 @@ namespace Mafia2Tool
             UpdateRichPresence("Using the Game Explorer");
         }
 
-        /// <summary>
-        /// Update Discord Rich Presence.
-        /// </summary>
-        /// <param name="details"></param>
         public static void UpdateRichPresence(string details = null)
         {
             if (!DiscordEnabled)
@@ -146,8 +126,12 @@ namespace Mafia2Tool
                 if (controller == null)
                     InitRichPresence();
 
-                controller.presence.state = DiscordStateEnabled ? "Making mods for Mafia II." : null;
-                controller.presence.details = DiscordDetailsEnabled ? "" : null;
+                details = ""; //don't like current imp.
+                string detailsLine = string.IsNullOrEmpty(details) ? "Making mods for Mafia II." : details;
+                controller.presence.state = DiscordStateEnabled ? detailsLine : null;
+                string vString = Debugger.IsAttached ? "DEBUG " : "RELEASE ";
+                vString += Version;
+                controller.presence.details = DiscordDetailsEnabled ? vString : null;
                 controller.presence.startTimestamp = DiscordElapsedTimeEnabled ? ElapsedTime : 0;
 
                 DiscordRPC.UpdatePresence(ref controller.presence);

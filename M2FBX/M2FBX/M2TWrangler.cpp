@@ -3,12 +3,13 @@
 #include "M2Model.h"
 #include <conio.h>
 
-void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
+void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 {
 	FbxMesh* pMesh = (FbxMesh*)pNode->GetNodeAttribute();
 	FbxGeometryElementNormal* pElementNormal = pMesh->GetElementNormal(0);
 	FbxGeometryElementTangent* pElementTangent = pMesh->GetElementTangent(0);
 	FbxGeometryElementUV* pElementUV = pMesh->GetElementUV(0);
+	FbxGeometryElementUV* pElementOM = pMesh->GetElementUV("OMUV");
 	FbxGeometryElementMaterial* pElementMaterial = pMesh->GetElementMaterial(0);
 	FbxGeometryElementVertexColor* pElementVC = pMesh->GetElementVertexColor(0);
 
@@ -32,21 +33,25 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	}
 	
 
-	pPart->SetHasPositions(true);
-	pPart->SetHasNormals(pElementNormal);
-	pPart->SetHasTangents(pElementTangent);
-	pPart->SetHasUV0(pElementUV && pElementMaterial);
-	pPart->SetHasUV1(pElementVC);
-	pPart->SetHasUV2(pElementVC);
+	pPart.SetHasPositions(true);
+	pPart.SetHasNormals(pElementNormal);
+	pPart.SetHasTangents(pElementTangent);
+	pPart.SetHasUV0(pElementUV && pElementMaterial);
+	pPart.SetHasUV1(pElementVC);
+	pPart.SetHasUV2(pElementVC);
+	pPart.SetHasUV7(pElementOM);
 
-	//Gotta make sure the normals are correctly set up.
-	if (pElementNormal->GetReferenceMode() != FbxGeometryElement::eDirect) {
-		FBXSDK_printf("pElementNormal->GetReferenceMode() did not equal eDirect.. Cannot continue.\n");
-		exit(-99);
-	}
-	if ((pElementNormal->GetMappingMode() <= FbxGeometryElement::eByControlPoint) && (pElementNormal->GetMappingMode() >= FbxGeometryElement::eByPolygonVertex)) {
-		FBXSDK_printf("pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex.. Cannot continue.\n");
-		exit(-98);
+	if (pPart.GetHasNormals())
+	{
+		//Gotta make sure the normals are correctly set up.
+		if (pElementNormal->GetReferenceMode() != FbxGeometryElement::eDirect) {
+			FBXSDK_printf("pElementNormal->GetReferenceMode() did not equal eDirect.. Cannot continue.\n");
+			exit(-99);
+		}
+		if ((pElementNormal->GetMappingMode() <= FbxGeometryElement::eByControlPoint) && (pElementNormal->GetMappingMode() >= FbxGeometryElement::eByPolygonVertex)) {
+			FBXSDK_printf("pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex.. Cannot continue.\n");
+			exit(-98);
+		}
 	}
 
 	std::vector<Point3> vertices = std::vector<Point3>();
@@ -55,6 +60,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	std::vector<UVVert> uvs = std::vector<UVVert>();
 	std::vector<UVVert> uvs1 = std::vector<UVVert>();
 	std::vector<UVVert> uvs2 = std::vector<UVVert>();
+	std::vector<UVVert> uvs7 = std::vector<UVVert>();
 
 	for (int i = 0; i != pMesh->GetControlPointsCount(); i++) {
 		Point3 vert;
@@ -69,7 +75,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		vertices.push_back(vert);
 
 		//do normal stuff.
-		if (pPart->GetHasNormals()) {
+		if (pPart.GetHasNormals()) {
 			vec4 = pElementNormal->GetDirectArray().GetAt(i);
 			vert.x = vec4.mData[0];
 			vert.y = vec4.mData[1];
@@ -78,7 +84,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		}
 
 		//do tangent stuff.
-		if (pPart->GetHasTangents()) {
+		if (pPart.GetHasTangents()) {
 			vec4 = pElementTangent->GetDirectArray().GetAt(i);
 			vert.x = vec4.mData[0];
 			vert.y = vec4.mData[1];
@@ -87,7 +93,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		}
 
 		//do UV stuff.
-		if (pPart->GetHasUV0()) {
+		if (pPart.GetHasUV0()) {
 			vec4 = pElementUV->GetDirectArray().GetAt(i);
 			uvCoords.x = vec4.mData[0];
 			uvCoords.y = vec4.mData[1];
@@ -95,27 +101,34 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 		}
 
 		//Colours
-		if (pPart->GetHasUV1()) {
+		if (pPart.GetHasUV1()) {
 			color = pElementVC->GetDirectArray().GetAt(i);
 			uvCoords.x = color.mRed;
 			uvCoords.y = color.mBlue;
-			uvs.push_back(uvCoords);
+			uvs1.push_back(uvCoords);
 		}
-		if (pPart->GetHasUV2()) {
+		if (pPart.GetHasUV2()) {
 			color = pElementVC->GetDirectArray().GetAt(i);
 			uvCoords.x = color.mBlue;
 			uvCoords.y = color.mAlpha;
-			uvs.push_back(uvCoords);
+			uvs2.push_back(uvCoords);
+		}
+		if (pPart.GetHasUV7()) {
+			vec4 = pElementOM->GetDirectArray().GetAt(i);
+			uvCoords.x = vec4.mData[0];
+			uvCoords.y = vec4.mData[1];
+			uvs7.push_back(uvCoords);
 		}
 	}
 
 	//update the part with the latest data.
-	pPart->SetVertices(vertices, true);
-	pPart->SetNormals(normals);
-	pPart->SetTangents(tangents);
-	pPart->SetUV0s(uvs);
-	pPart->SetUV1s(uvs1);
-	pPart->SetUV2s(uvs2);
+	pPart.SetVertices(vertices, true);
+	pPart.SetNormals(normals);
+	pPart.SetTangents(tangents);
+	pPart.SetUV0s(uvs);
+	pPart.SetUV1s(uvs1);
+	pPart.SetUV2s(uvs2);
+	pPart.SetUV7s(uvs7);
 
 	//Gotta be triangulated.
 	if (!pMesh->IsTriangleMesh()) {
@@ -127,42 +140,77 @@ void BuildModelPart(FbxNode* pNode, ModelPart* pPart)
 	std::vector<Int3> indices = std::vector<Int3>();
 	std::vector<short> matIDs = std::vector<short>();
 
-	for (int i = 0; i != pMesh->GetPolygonCount(); i++)
-	{
-		Int3 triangle;
-		short matID = 0;
-		triangle.i1 = pMesh->GetPolygonVertex(i, 0);
-		triangle.i2 = pMesh->GetPolygonVertex(i, 1);
-		triangle.i3 = pMesh->GetPolygonVertex(i, 2);
-
-		if(pElementMaterial != NULL)
-			matID = pElementMaterial->GetIndexArray().GetAt(i);
-
-		indices.push_back(triangle);
-		matIDs.push_back(matID);
-	}
-
-	//Update data to do with triangles.
-	pPart->SetIndices(indices, true);
-	pPart->SetMatIDs(matIDs);
-
-	std::vector<std::string> names = std::vector<std::string>();
+	SubMesh* subMeshes = new SubMesh[pNode->GetMaterialCount()];
 
 	if (pNode->GetMaterialCount() != 0)
 	{
-		//Get Material Names.
 		for (int i = 0; i != pNode->GetMaterialCount(); i++)
 		{
+			SubMesh sub = SubMesh();
 			FbxSurfaceMaterial* mat = pNode->GetMaterial(i);
-			names.push_back(mat->GetName());
+			sub.SetMatName(std::string(mat->GetName()));
+			subMeshes[i] = sub;
 		}
 	}
 	else
 	{
-		names.push_back("_test_gray");
+		FBXSDK_printf("Missing material nodes on this FBX Model!\n");
 	}
 
-	pPart->SetMatNames(names, true);
+	int subIDX = 0;
+	std::vector<std::vector<Int3>> segments = std::vector<std::vector<Int3>>();
+	int* subNumFacesCount = new int[pNode->GetMaterialCount()];
+	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+	{
+		subNumFacesCount[i] = 0;
+		segments.push_back(std::vector<Int3>());
+	}
+
+	for (int i = 0; i != pMesh->GetPolygonCount(); i++)
+	{
+		Int3 triangle;
+		triangle.i1 = pMesh->GetPolygonVertex(i, 0);
+		triangle.i2 = pMesh->GetPolygonVertex(i, 1);
+		triangle.i3 = pMesh->GetPolygonVertex(i, 2);
+
+		if (pElementMaterial != NULL)
+		{
+			auto matID = pElementMaterial->GetIndexArray().GetAt(i);
+			segments[matID].push_back(triangle);
+		}
+		matIDs.push_back(0);
+	}
+
+	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+	{
+		subNumFacesCount[i] = segments[i].size();
+		indices.insert(indices.end(), segments[i].begin(), segments[i].end());
+	}
+
+
+	int total = pMesh->GetPolygonCount();
+	int calcTotal = 0;
+
+	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+		calcTotal += subNumFacesCount[i];
+
+	if (calcTotal != total)
+		FBXSDK_printf("Potential error when splitting faces!\n");
+
+	int curTotal = 0;
+	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+	{
+		int faces = subNumFacesCount[i];
+		subMeshes[i].SetNumFaces(faces);
+		subMeshes[i].SetStartIndex(curTotal);
+		curTotal += faces*3;
+	}
+	//Update data to do with triangles.
+	pPart.SetIndices(indices, true);
+	pPart.SetMatIDs(matIDs);
+	pPart.SetSubMeshes(subMeshes);
+	pPart.SetSubMeshCount(pNode->GetMaterialCount());
+	delete[] subNumFacesCount;
 }
 
 
@@ -176,17 +224,17 @@ int DetermineNodeAttribute(FbxNode* node)
 	return NULL;
 }
 
-void BuildModel(ModelStructure& structure, FbxNode* node)
+void BuildModel(ModelStructure* structure, FbxNode* node)
 {
-	structure.SetPartSize(1);
-	structure.SetName("Model");
-	std::vector<ModelPart> parts = std::vector<ModelPart>();
-	structure.SetName(node->GetName());
+	char size = 1;
+	structure->SetPartSize(size);
+	ModelPart* parts = new ModelPart[1];
+	structure->SetName(std::string(node->GetName()));
 	FBXSDK_printf("Converting Mesh..\n");
-	ModelPart* Part = new ModelPart();
+	ModelPart Part = ModelPart();
 	BuildModelPart(node, Part);
-	parts.push_back(*Part);
-	structure.SetParts(parts, true);
+	parts[0] = Part;
+	structure->SetParts(parts);
 	FBXSDK_printf("Built Model..\n");
 }
 
@@ -237,7 +285,7 @@ int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 			FbxNode* pNode = Root->GetChild(i);
 			FrameEntry entry = FrameEntry();
 			if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
-				ModelStructure Structure = ModelStructure();
+				ModelStructure* Structure = new ModelStructure();
 				BuildModel(Structure, pNode);
 
 				std::vector<std::string> names = std::vector<std::string>();
@@ -248,21 +296,21 @@ int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 				entry.SetPosition(pos);
 				FBXSDK_printf("Position is: %f, %f, %f\n", pos.x, pos.y, pos.z);
 
-				names.push_back(Structure.GetName());
+				names.push_back(Structure->GetName());
 
 				FILE* stream;
 				std::string dest = pDest;
 				if (strcmp(doScene, "1") == 0) {
-					dest += Structure.GetName();
+					dest += Structure->GetName();
 					dest += ".m2t";
 				}
 				fopen_s(&stream, dest.c_str(), "wb");
-				Structure.WriteToStream(stream);
+				Structure->WriteToStream(stream);
 				fclose(stream);
 
 				entry.SetLodNames(names);
 				entries.push_back(entry);
-				FBXSDK_printf("Exported %s\n", Structure.GetName().c_str());
+				FBXSDK_printf("Exported %s\n", Structure->GetName().c_str());
 			}
 		}
 		frame.SetEntries(entries);

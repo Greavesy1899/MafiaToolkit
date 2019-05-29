@@ -86,4 +86,57 @@
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS">Aktualizuj rodzica</String>
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Wybierz scenę do dodania jako rodzica.</String>
   <String ID="$FRAME_EDITOR_TITLE">Edytor FrameResource</String>
+
+  <!-- NewObjForm Form Strings-->
+  <String ID="$NEWOBJFORM_TITLE">Wpisz nazwę</String>
+  <String ID="$QUESTION_NOT_NEEDED">Nazwa nie jest wymagana w tym przypadku.</String>
+  <String ID="$SCENE_OPTIONS">Opcje sceny</String>
+  <String ID="$FSCENE_OFFSET">Margines pozycji</String>
+
+  <!-- Error strings -->
+  <String ID="$ERROR_DID_NOT_FIND_LAUNCHER">Nie było można znaleźć pliku 'launcher.exe', wskaż poprawną lokalizację gry!</String>
+  <String ID="$ERROR_TITLE">Błąd!</String>
+  <String ID="$ERROR_SELECT_ITEM">Wybierz z listy!</String>
+  <String ID="$ERROR_DIDNT_FIND_MTL">Nie można było wczytać materiałów. Wystąpił błąd: \n\n</String>
+
+  <!-- CityArea Strings -->
+  <String ID="$CITY_AREA_EDITOR_TITLE">Edytor CityArea</String>
+  <String ID="$AREA_DATA">Dane Area</String>
+  <String ID="$AREA_1">Area 1</String>
+  <String ID="$AREA_NAME">Nazwa Arei</String>
+  <String ID="$AREA_2">Area 2</String>
+  <String ID="$UNK_BYTE">Unk Byte</String>
+  <String ID="$SAVE_AREA">Zapisz</String>
+  <String ID="$RELOAD_AREA">Odśwież</String>
+
+  <!-- CityShop Strings -->
+  <String ID="$CITY_SHOP_EDITOR_TITLE">Edytor CityShop</String>
+  <String ID="$ADD_AREA">Dodaj areę</String>
+  <String ID="$ADD_DATA">Dodaj dane</String>
+  <String ID="$POPULATE_TRANSLOKATORS">Zaludnij mapę nowymi translokatorami</String>
+
+  <!-- Table Editor string -->
+  <String ID="$TABLE_EDITOR_TITLE">Edytor plików Table</String>
+  <String ID="$TABLE_ADD_ROW">Dodaj wiersz</String>
+  <String ID="$TABLE_ADD_COLUMN">Dodaj kolumnę</String>
+  
+  <!-- Renderer strings -->
+  <String ID="$CREATE">Stwórz</String>
+  <String ID="$VIEW_OPTIONS">Opcje wyświetlania</String>
+  <String ID="$VIEW_PROPERTY_GRID">Wyświetl siatkę właściwości</String>
+  <String ID="$VIEW_SCENE_TREE">Wyświetl drzewko sceny</String>
+  <String ID="$VIEW_VIS_OPTIONS">Wyświetl ustawienia widoczności</String>
+  <String ID="$TOGGLE_MODELS">Pokaż/ukryj modele</String>
+  <String ID="$TOGGLE_COLLISIONS">Pokaż/ukryj Kolizje</String>
+  <String ID="$TOGGLE_BOXES">Pokaż/ukryj pola</String>
+  <String ID="$ADD">Dodaj..</String>
+  <String ID="$ADD_SCENE_FOLDER">Add Scene Folder</String>
+  <String ID="$ADD_ROAD_SPLINE">Dodaj splajn drogi</String>
+  <String ID="$VISIBLE">Widoczne</String>
+  <String ID="$HIDDEN">Ukryte</String>
+  <String ID="$EDIT_TRANSFORM">Edytuj Transform</String>
+  <String ID="$PROPERTY_GRID">Siatka właściwości</String>
+  <String ID="$TOGGLE_WIREFRAME">Pokaż/ukryj Wireframe</String>
+  <String ID="$TOGGLE_CULLING">Pokaż/ukryj Culling</String>
+   
 </Localisation>

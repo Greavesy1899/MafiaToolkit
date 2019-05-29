@@ -152,12 +152,12 @@ void CreateLightDocument(FbxManager* pManager, FbxDocument* pLightDocument)
 {
 	// create document info
 	FbxDocumentInfo* lDocInfo = FbxDocumentInfo::Create(pManager, "DocInfo");
-	lDocInfo->mTitle = "Sub document for lights";
-	lDocInfo->mSubject = "Illustrates the creation of sub-FbxDocument with lights.";
-	lDocInfo->mAuthor = "ExportDocument.exe sample program.";
+	lDocInfo->mTitle = "";
+	lDocInfo->mSubject = "";
+	lDocInfo->mAuthor = "Mafia II: Toolkit";
 	lDocInfo->mRevision = "rev. 1.0";
-	lDocInfo->mKeywords = "Fbx light document";
-	lDocInfo->mComment = "no particular comments required.";
+	lDocInfo->mKeywords = "";
+	lDocInfo->mComment = "";
 
 	// add the documentInfo
 	pLightDocument->SetDocumentInfo(lDocInfo);
@@ -237,6 +237,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 
 		for (size_t i = 0; i < vertices.size(); i++)
 			lUVVCElement->GetDirectArray().Add(FbxColor(uvs1[i].x, uvs1[i].y, uvs2[i].x, uvs2[i].y));
+
 	}
 
 	if (part.GetHasUV7())
@@ -257,13 +258,14 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 
 	//Now we have set the UVs as eIndexToDirect reference and in eByPolygonVertex  mapping mode
 	//we must update the size of the index array.
-	//lUVVCElement->GetIndexArray().SetCount(triangles.size() * 3);
+	
 
 	// Create polygons. Assign texture and texture UV indices.
 	// all faces of the cube have the same texture
+
 	lMesh->BeginPolygon(-1, -1, -1, false);
 
-	for (size_t i = 0; i < triangles.size(); i++)
+	for (size_t i = 0; i != triangles.size(); i++)
 	{
 		// Control point index
 		lMesh->AddPolygon(triangles[i].i1);
@@ -271,10 +273,10 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 		lMesh->AddPolygon(~triangles[i].i3);
 
 		// update the index array of the UVs that map the texture to the face
-		lUVDiffuseElement->GetIndexArray().SetAt(i, matIDs[i]);
+		//lUVDiffuseElement->GetIndexArray().SetAt(i, 0);
 
 		if(part.GetHasUV1() && part.GetHasUV2())
-			lUVVCElement->GetIndexArray().SetAt(i, i);
+			lUVVCElement->GetIndexArray().SetAt(i, 0);
 	}
 
 	lMesh->EndPolygon();
@@ -304,7 +306,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 		return nullptr;
 
 	// We are in eByPolygon, so there's only need for index (a plane has 1 polygon).
-	lMaterialElement->GetIndexArray().SetCount(lMesh->GetPolygonSize(0) / 3);
+	lMaterialElement->GetIndexArray().SetCount(lMesh->GetPolygonSize(0)/3);
 
 	if (part.GetHasUV7())
 	{
@@ -316,20 +318,27 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 			return nullptr;
 
 		// We are in eByPolygon, so there's only need for index (a plane has 1 polygon).
-		lOMElement->GetIndexArray().SetCount(lMesh->GetPolygonSize(0) / 3);
+		lOMElement->GetIndexArray().SetCount(lMesh->GetPolygonSize(0)/3);
 	}
 
-	// Set the Index to the material
-	for (int i = 0; i < lMesh->GetPolygonSize(0) / 3; ++i)
+	for (int i = 0; i != part.GetSubMeshCount(); i++)
 	{
-		lMaterialElement->GetIndexArray().SetAt(i, matIDs[i]);
+		SubMesh sub = part.GetSubMeshes()[i];
+		for (int x = sub.GetStartIndex()/3; x != (sub.GetStartIndex() / 3) + (sub.GetNumFaces()); x++)
+			lMaterialElement->GetIndexArray().SetAt(x, i);
+	}
 
-		if(part.GetHasUV7())
+	if (part.GetHasUV7())
+	{
+		for (int i = 0; i < lMesh->GetPolygonSize(0) / 3; ++i)
 			lOMElement->GetIndexArray().SetAt(i, 0);
 	}
 
 	for (int i = 0; i < part.GetSubMeshCount(); i++)
-		lNode->AddMaterial(CreateMaterial(pManager, part.GetMatNames().at(i).c_str()));
+	{
+		SubMesh sub = part.GetSubMeshes()[i];
+		lNode->AddMaterial(CreateMaterial(pManager, sub.GetMatName().c_str()));
+	}
 
 	// return the FbxNode
 	return lNode;

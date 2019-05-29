@@ -88,15 +88,13 @@ void ModelPart::SetUV7s(std::vector<UVVert> uvs) {
 	ModelPart::uvs7 = uvs;
 }
 
-void ModelPart::SetSubMeshCount(int count) {
-	ModelPart::subMeshCount = count;
+void ModelPart::SetSubMeshes(SubMesh* subMeshes)
+{
+	this->submeshes = subMeshes;
 }
 
-void ModelPart::SetMatNames(std::vector<std::string> names, bool updateCount) {
-	ModelPart::matNames = names;
-
-	if (updateCount)
-		ModelPart::subMeshCount = names.size();
+void ModelPart::SetSubMeshCount(int count) {
+	ModelPart::subMeshCount = count;
 }
 
 void ModelPart::SetIndicesSize(int count) {
@@ -202,12 +200,13 @@ int ModelPart::GetIndicesSize() {
 	return ModelPart::indicesSize;
 }
 
-std::vector<Int3> ModelPart::GetIndices() {
-	return ModelPart::indices;
+SubMesh* ModelPart::GetSubMeshes() const
+{
+	return this->submeshes;
 }
 
-std::vector<std::string> ModelPart::GetMatNames() {
-	return ModelPart::matNames;
+std::vector<Int3> ModelPart::GetIndices() {
+	return ModelPart::indices;
 }
 
 std::vector<short> ModelPart::GetMatIDs() {
@@ -283,23 +282,28 @@ void ModelPart::ReadFromStream(FILE * stream) {
 	}
 	fread(&subMeshCount, sizeof(int), 1, stream);
 	long pos = ftell(stream);
-	matNames = std::vector<std::string>(subMeshCount);
+	this->submeshes = new SubMesh[subMeshCount];
+
 	for (int i = 0; i != subMeshCount; i++) {
-		std::string edmName = std::string();
-		edmName = ReadString(stream, edmName);
-		matNames[i] = edmName;
+		SubMesh subMesh = SubMesh();
+		std::string name = std::string();
+		int startIndex, numFaces;
+
+		name = ReadString(stream, name);
+		subMesh.SetMatName(name);
+		fread(&startIndex, sizeof(int), 1, stream);
+		fread(&numFaces, sizeof(int), 1, stream);
+		subMesh.SetStartIndex(startIndex);
+		subMesh.SetNumFaces(numFaces);
+		this->submeshes[i] = subMesh;
 	}
 	fread(&indicesSize, sizeof(int), 1, stream);
-	indices = std::vector<Int3>(indicesSize);
-	matIDs = std::vector<short>(indicesSize);
-	for (int x = 0; x != indicesSize; x++) {
+	for (int x = 0; x != indicesSize/3; x++) {
 		Int3 tri;
-		char matID = 0;
 		fread(&tri.i1, sizeof(unsigned short), 1, stream);
 		fread(&tri.i2, sizeof(unsigned short), 1, stream);
 		fread(&tri.i3, sizeof(unsigned short), 1, stream);
-		fread(&matIDs[x], sizeof(short), 1, stream);
-		indices[x] = tri;
+		indices.push_back(tri);
 	}
 }
 
@@ -352,21 +356,28 @@ void ModelPart::WriteToStream(FILE * stream) {
 		}
 	}
 	fwrite(&subMeshCount, sizeof(int), 1, stream);
-
-	for (int i = 0; i != subMeshCount; i++)
-		WriteString(stream, matNames[i]);
-
-	fwrite(&indicesSize, sizeof(int), 1, stream);
+	for (int i = 0; i != subMeshCount; i++) {
+		SubMesh subMesh = this->submeshes[i];
+		WriteString(stream, subMesh.GetMatName());
+		int startIndex = subMesh.GetStartIndex();
+		int numFaces = subMesh.GetNumFaces();
+		fwrite(&startIndex, sizeof(int), 1, stream);
+		fwrite(&numFaces, sizeof(int), 1, stream);
+	}
+	int indMult = indicesSize * 3;
+	fwrite(&indMult, sizeof(int), 1, stream);
 	for (int i = 0; i != indices.size(); i++) {
 		fwrite(&indices[i].i1, sizeof(unsigned short), 1, stream);
 		fwrite(&indices[i].i2, sizeof(unsigned short), 1, stream);
 		fwrite(&indices[i].i3, sizeof(unsigned short), 1, stream);
-		fwrite(&matIDs[i], sizeof(short), 1, stream);
 	}
 }
 
 ModelPart::ModelPart() {}
-ModelPart::~ModelPart() {}
+ModelPart::~ModelPart() 
+{
+	//delete[] this->submeshes;
+}
 
 //===================================================
 //		ModelStructure
@@ -376,26 +387,23 @@ void ModelStructure::SetName(std::string name) {
 	ModelStructure::name = name;
 }
 
-void ModelStructure::SetPartSize(char count) {
+void ModelStructure::SetPartSize(char& count) {
 	ModelStructure::partSize = count;
 }
 
-void ModelStructure::SetParts(std::vector<ModelPart> parts, bool updateCount) {
+void ModelStructure::SetParts(ModelPart* parts) {
 	ModelStructure::parts = parts;
-
-	if (updateCount)
-		ModelStructure::partSize = parts.size();
 }
 
-std::string ModelStructure::GetName() {
+std::string ModelStructure::GetName() const {
 	return name;
 }
 
-char ModelStructure::GetPartSize() {
+char ModelStructure::GetPartSize() const {
 	return partSize;
 }
 
-std::vector<ModelPart> ModelStructure::GetParts() {
+ModelPart* ModelStructure::GetParts() const {
 	return parts;
 }
 
@@ -406,25 +414,27 @@ void ModelStructure::ReadFromStream(FILE * stream) {
 	if (header != magic)
 		exit(0);
 
-	std::string edmName = std::string();
-	edmName = ReadString(stream, edmName);
-	name = edmName;
-	fread(&partSize, 1, 1, stream);
-	parts = std::vector<ModelPart>(partSize);
+	this->name = ReadString(stream, this->name);
+	fread(&this->partSize, sizeof(char), 1, stream);
+	this->parts = new ModelPart[this->partSize];
 
-	for (int i = 0; i != parts.size(); i++)
-		parts[i].ReadFromStream(stream);
-
+	for (int i = 0; i != this->partSize; i++)
+	{
+		ModelPart part = ModelPart();
+		part.ReadFromStream(stream);
+		this->parts[i] = part;
+	}
+		
 	fclose(stream);
 }
 
 void ModelStructure::WriteToStream(FILE * stream) {
 	fwrite(&magic, sizeof(int), 1, stream);
-	WriteString(stream, name);
-	fwrite(&partSize, sizeof(char), 1, stream);
+	WriteString(stream, this->name);
+	fwrite(&this->partSize, sizeof(char), 1, stream);
 
-	for (int x = 0; x != parts.size(); x++)
-		parts[x].WriteToStream(stream);
+	for (int x = 0; x != this->partSize; x++)
+		this->parts[x].WriteToStream(stream);
 
 	fclose(stream);
 }
@@ -432,6 +442,7 @@ void ModelStructure::WriteToStream(FILE * stream) {
 ModelStructure::ModelStructure() {}
 ModelStructure::~ModelStructure()
 {
+	//delete[] this->parts;
 }
 
 //===================================================
@@ -593,4 +604,34 @@ void FrameClass::WriteToStream(FILE * stream)
 FrameClass::FrameClass()
 {
 
+}
+
+void SubMesh::SetStartIndex(int& value)
+{
+	this->startIndex = value;
+}
+
+void SubMesh::SetNumFaces(int& value)
+{
+	this->numFaces = value;
+}
+
+void SubMesh::SetMatName(std::string name)
+{
+	this->matName = name;
+}
+
+int SubMesh::GetStartIndex() const
+{
+	return this->startIndex;
+}
+
+int SubMesh::GetNumFaces() const
+{
+	return this->numFaces;
+}
+
+std::string SubMesh::GetMatName() const
+{
+	return this->matName;
 }

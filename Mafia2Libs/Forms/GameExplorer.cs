@@ -5,10 +5,18 @@ using System.IO;
 using System.Windows.Forms;
 using Gibbed.Mafia2.FileFormats;
 using Gibbed.Mafia2.FileFormats.Archive;
-using Mafia2;
-using Extensions.TreeViewCollection;
+using Utils.Extensions;
 using ApexSDK;
 using System.Drawing;
+using Utils.Lang;
+using Utils.Logging;
+using Utils.Settings;
+using ResourceTypes.Cutscene;
+using ResourceTypes.Navigation;
+using ResourceTypes.Prefab;
+using ResourceTypes.Sound;
+using ResourceTypes.SDSConfig;
+using Utils.Lua;
 
 namespace Mafia2Tool
 {
@@ -21,6 +29,7 @@ namespace Mafia2Tool
         public GameExplorer()
         {
             InitializeComponent();
+            LoadForm();
         }
 
         public void PreloadData()
@@ -35,13 +44,14 @@ namespace Mafia2Tool
             toolStrip1_Resize(this, null);
             Localise();            
             infoText.Text = "Loading..";
-            BuildTreeView();
+            InitExplorerSettings();
             FileListViewTypeController(1);
             infoText.Text = "Ready..";
         }
 
         private bool Localise()
         {
+            creditsToolStripMenuItem.Text = Language.GetString("$CREDITS");
             Text = Language.GetString("$MII_TK_GAME_EXPLORER");
             UpButton.ToolTipText = Language.GetString("$UP_TOOLTIP");
             FolderPath.ToolTipText = Language.GetString("$FOLDER_PATH_TOOLTIP");
@@ -75,6 +85,7 @@ namespace Mafia2Tool
             dropdownTools.Text = Language.GetString("$TOOLS");
             OptionsItem.Text = Language.GetString("$OPTIONS");
             MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
+            VersionLabel.Text += ToolkitSettings.Version;
             return true;
         }
 
@@ -87,10 +98,8 @@ namespace Mafia2Tool
         /// <summary>
         /// Build TreeView from Mafia II's main directory.
         /// </summary>
-        public void BuildTreeView()
+        public void InitExplorerSettings()
         {
-            TreeNode rootTreeNode;
-
             if (string.IsNullOrEmpty(ToolkitSettings.M2Directory))
                 GetPath();
 
@@ -100,6 +109,7 @@ namespace Mafia2Tool
             if (!originalPath.Exists)
             {
                 PrintErrorLauncher();
+                GetPath();
                 return;
             }
 
@@ -121,17 +131,10 @@ namespace Mafia2Tool
             if (!hasLauncher)
             {
                 PrintErrorLauncher();
+                GetPath();
                 return;
             }
-
-            infoText.Text = "Building folders..";
-            //build treeView.
-            rootTreeNode = new TreeNode(originalPath.Name);
-            rootTreeNode.Tag = originalPath;
-            GetSubFolders(originalPath.GetDirectories(), rootTreeNode);
-            folderView.Nodes.Add(rootTreeNode);
-            infoText.Text = "Done builidng folders..";
-            OpenDirectory(originalPath);
+            InitTreeView();
         }
 
         /// <summary>
@@ -144,9 +147,22 @@ namespace Mafia2Tool
             {
                 ToolkitSettings.M2Directory = MafiaIIBrowser.SelectedPath;
                 ToolkitSettings.WriteKey("MafiaII", "Directories", MafiaIIBrowser.SelectedPath);
+                InitTreeView();
             }
             else
                 return;
+        }
+
+        private void InitTreeView()
+        {
+            infoText.Text = "Building folders..";
+            //build treeView.
+            TreeNode rootTreeNode = new TreeNode(originalPath.Name);
+            rootTreeNode.Tag = originalPath;
+            GetSubFolders(originalPath.GetDirectories(), rootTreeNode);
+            folderView.Nodes.Add(rootTreeNode);
+            infoText.Text = "Done builidng folders..";
+            OpenDirectory(originalPath);
         }
 
         /// <summary>
@@ -183,6 +199,12 @@ namespace Mafia2Tool
             ListViewItem.ListViewSubItem[] subItems;
             ListViewItem item = null;
 
+            if(!directory.Exists)
+            {
+                MessageBox.Show("Could not find directory! Returning to original path..", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                OpenDirectory(originalPath, false);
+            }
+
             foreach (DirectoryInfo dir in directory.GetDirectories())
             {
                 if (searchMode && !string.IsNullOrEmpty(filename))
@@ -207,6 +229,8 @@ namespace Mafia2Tool
                 if (!imageBank.Images.ContainsKey(file.Extension))
                     imageBank.Images.Add(file.Extension, Icon.ExtractAssociatedIcon(file.FullName));
 
+                //Icon.ExtractAssociatedIcon(file.FullName).ToBitmap().Save(file.Name + ".bmp");
+
                 if (searchMode && !string.IsNullOrEmpty(filename))
                 {
                     if (!file.Name.Contains(filename))
@@ -219,7 +243,7 @@ namespace Mafia2Tool
                 {
                     new ListViewItem.ListViewSubItem(item, DetermineFileType(file.Extension)),
                     new ListViewItem.ListViewSubItem(item, file.CalculateFileSize()),
-                    new ListViewItem.ListViewSubItem(item, file.LastAccessTime.ToShortDateString()),
+                    new ListViewItem.ListViewSubItem(item, file.LastWriteTime.ToShortDateString()),
                 };
 
                 item.SubItems.AddRange(subItems);
@@ -227,7 +251,7 @@ namespace Mafia2Tool
             }
 
             infoText.Text = "Done loading directory.";
-            FolderPath.Text = directory.FullName;
+            FolderPath.Text = directory.FullName.Remove(0, directory.FullName.IndexOf(originalPath.Name));
             fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
             //sort out treeview stuff.
@@ -323,6 +347,22 @@ namespace Mafia2Tool
             }
         }
 
+        private void HandleLuaFile(FileInfo file)
+        {
+            bool doDecompile = false;
+            using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+            {
+                if (reader.ReadInt32() == 1635077147)
+                    doDecompile = true;
+            }
+
+            if (doDecompile)
+                LuaHelper.ReadFile(file);
+            else Process.Start(file.FullName);
+
+            OnRefreshButtonClicked(null, null);
+        }
+
         /// <summary>
         /// Check extension and return file type string.
         /// </summary>
@@ -370,36 +410,41 @@ namespace Mafia2Tool
 
             FolderPath.Width = Math.Max(0, width - FolderPath.Margin.Horizontal);
         }
-        protected override void OnLoad(EventArgs e)
-        {
-            LoadForm();
-        }
+
         void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            TreeNode selectedNode = e.Node;
-            OpenDirectory((DirectoryInfo)selectedNode.Tag);
+            if (e.Node != null)
+            {
+                TreeNode selectedNode = e.Node;
+                OpenDirectory((DirectoryInfo)selectedNode.Tag);
+            }
         }
         private void listView1_ItemActivate(object sender, EventArgs e)
         {
-            HandleFile(fileListView.SelectedItems[0]);
+            if(fileListView.SelectedItems.Count > 0)
+                HandleFile(fileListView.SelectedItems[0]);
         }
 
         private void HandleFile(ListViewItem item)
         {
             MaterialTool mTool;
-            FrameResourceTool fTool;
             CollisionEditor cTool;
             ActorEditor aTool;
-            Prefab prefabs;
+            PrefabLoader prefabs;
             SpeechEditor sTool;
-            CutsceneFile cutscene;
+            CutsceneLoader cutscene;
             IOFxFile iofx;
             EmitterFile emitterFile;
             TableEditor tTool;
             NAVData nav;
             ApexRenderMesh mesh;
+            ApexClothingAssetLoader aca;
             CityAreaEditor caEditor;
             CityShopEditor csEditor;
+            SoundSectorLoader soundSector;
+
+            //DEBUG
+            D3DForm d3dForm;
 
             //special case:
             if (item.SubItems[0].Text.Contains("SDSContent") && item.SubItems[1].Text == "XML")
@@ -412,9 +457,23 @@ namespace Mafia2Tool
                 caEditor = new CityAreaEditor((FileInfo)item.Tag);
                 return;
             }
-            else if(item.SubItems[0].Text.Contains("cityshop") && item.SubItems[1].Text == "BIN")
+            else if (item.SubItems[0].Text.Contains("cityshop") && item.SubItems[1].Text == "BIN")
             {
                 csEditor = new CityShopEditor((FileInfo)item.Tag);
+                return;
+            }
+            else if (item.SubItems[0].Text.Contains("roadmap") && item.SubItems[1].Text == "GSD")
+            {
+                Roadmap roadmap = new Roadmap((item.Tag as FileInfo));
+                return;
+            }
+            else if (item.SubItems[0].Text.Contains("sdsconfig") && item.SubItems[1].Text == "BIN")
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open((item.Tag as FileInfo).FullName, FileMode.Open)))
+                {
+                    SdsConfigFile sdsConfig = new SdsConfigFile();
+                    sdsConfig.ReadFromFile(reader);
+                }
                 return;
             }
 
@@ -424,6 +483,12 @@ namespace Mafia2Tool
                 case "ARM":
                     mesh = new ApexRenderMesh((FileInfo)item.Tag);
                     return;
+                case "ATP":
+                    AnimalTrafficLoader loader = new AnimalTrafficLoader((FileInfo)item.Tag);
+                    return;
+                case "ACA":
+                    aca = new ApexClothingAssetLoader((FileInfo)item.Tag);
+                    return;
                 case "Directory":
                     OpenDirectory((DirectoryInfo)item.Tag);
                     return;
@@ -431,13 +496,15 @@ namespace Mafia2Tool
                     mTool = new MaterialTool((FileInfo)item.Tag);
                     return;
                 case "NAV":
+                case "NOV":
+                case "NHV":
                     nav = new NAVData((FileInfo)item.Tag);
                     return;
                 case "Speech Data":
                     sTool = new SpeechEditor((FileInfo)item.Tag);
                     return;
                 case "CUT":
-                    cutscene = new CutsceneFile((FileInfo)item.Tag);
+                    cutscene = new CutsceneLoader((FileInfo)item.Tag);
                     return;
                 case "SDS Archive":
                     OpenSDS((FileInfo)item.Tag);
@@ -446,25 +513,40 @@ namespace Mafia2Tool
                     OpenPATCH((FileInfo)item.Tag);
                     break;
                 case "FR":
-                    fTool = new FrameResourceTool((FileInfo)item.Tag);
+                    //fTool = new FrameResourceTool((FileInfo)item.Tag);
+                    d3dForm = new D3DForm((FileInfo)item.Tag);
+                    d3dForm.Dispose();
                     return;
                 case "COL":
                     cTool = new CollisionEditor((FileInfo)item.Tag);
                     return;
                 case "IOFX":
-                    //iofx = new IOFxFile((FileInfo)item.Tag);
+                    iofx = new IOFxFile((FileInfo)item.Tag);
                     return;
                 case "AEA":
-                    //emitterFile = new EmitterFile((FileInfo)item.Tag);
+                    emitterFile = new EmitterFile((FileInfo)item.Tag);
                     return;
                 case "Table":
                     tTool = new TableEditor((FileInfo)item.Tag);
+                    return;
+                case "TRA":
+                    ResourceTypes.Translokator.TranslokatorLoader trans = new ResourceTypes.Translokator.TranslokatorLoader((FileInfo)item.Tag);
                     return;
                 case "ACT":
                     aTool = new ActorEditor((FileInfo)item.Tag);
                     break;
                 case "PRF":
-                    prefabs = new Prefab((FileInfo)item.Tag);
+                    prefabs = new PrefabLoader((FileInfo)item.Tag);
+                    return;
+                case "BIN":
+                    soundSector = new SoundSectorLoader((FileInfo)item.Tag);
+                    return;
+                case "LUA":
+                case "AP":
+                    HandleLuaFile((FileInfo)item.Tag);
+                    return;
+                case "IFL":
+                    ResourceTypes.AnimatedTexture.AnimatedTextureLoader an = new ResourceTypes.AnimatedTexture.AnimatedTextureLoader((FileInfo)item.Tag);
                     return;
                 default:
                     Process.Start(((FileInfo)item.Tag).FullName);
@@ -495,10 +577,15 @@ namespace Mafia2Tool
         {
             if (e.KeyChar == '\r')
             {
-                if (Directory.Exists(FolderPath.Text) && FolderPath.Text.Contains(currentDirectory.Name))
-                    OpenDirectory(new DirectoryInfo(FolderPath.Text));
+                string newDir = FolderPath.Text;
+                int idx = newDir.IndexOf(originalPath.Name);
+                if (newDir.IndexOf(originalPath.Name) == 0)
+                    newDir = Path.Combine(originalPath.Parent.FullName, FolderPath.Text);
+
+               if (Directory.Exists(newDir) && FolderPath.Text.Contains(currentDirectory.Name))
+                    OpenDirectory(new DirectoryInfo(newDir));
                 else
-                    MessageBox.Show("Game Explorer cannot find path '" + FolderPath + "'. Make sure the path exists and try again.", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Game Explorer cannot find path '" + newDir + "'. Make sure the path exists and try again.", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void ContextOpenFolder_Click(object sender, EventArgs e)
@@ -529,7 +616,6 @@ namespace Mafia2Tool
             OptionsForm options = new OptionsForm();
             options.ShowDialog();
             Localise();
-            MaterialData.Load();
         }
 
         private void ContextSDSUnpackAll_Click(object sender, EventArgs e)
@@ -545,16 +631,11 @@ namespace Mafia2Tool
         private void OpenMafiaIIClicked(object sender, EventArgs e)
         {
             folderView.Nodes.Clear();
-            BuildTreeView();
+            InitExplorerSettings();
         }
-        private void ExitToolkitClicked(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-        private void RunMafiaIIClicked(object sender, EventArgs e)
-        {
-            Process.Start(launcher.FullName);
-        }
+        private void ExitToolkitClicked(object sender, EventArgs e) => Application.Exit();
+        private void RunMafiaIIClicked(object sender, EventArgs e) => Process.Start(launcher.FullName);
+        private void SearchBarOnTextChanged(object sender, EventArgs e) => OpenDirectory(currentDirectory, true, SearchEntryText.Text);
 
         //FileListViewStrip events.
         private void OnUpButtonClicked(object sender, EventArgs e)
@@ -572,12 +653,11 @@ namespace Mafia2Tool
         }
         private void OnRefreshButtonClicked(object sender, EventArgs e)
         {
-            currentDirectory.Refresh();
-            OpenDirectory(currentDirectory);
-        }
-        private void SearchBarOnTextChanged(object sender, EventArgs e)
-        {
-            OpenDirectory(currentDirectory, true, SearchEntryText.Text);
+            if (currentDirectory != null)
+            {
+                currentDirectory.Refresh();
+                OpenDirectory(currentDirectory);
+            }
         }
 
         //View FileList handling.
@@ -623,25 +703,27 @@ namespace Mafia2Tool
                     break;
             }
         }
-        private void OnViewIconClicked(object sender, EventArgs e)
+        private void OnViewIconClicked(object sender, EventArgs e) => FileListViewTypeController(0);
+        private void OnViewDetailsClicked(object sender, EventArgs e) => FileListViewTypeController(1);
+        private void OnViewSmallIconClicked(object sender, EventArgs e) => FileListViewTypeController(2);
+        private void OnViewListClicked(object sender, EventArgs e) => FileListViewTypeController(3);
+        private void OnViewTileClicked(object sender, EventArgs e) => FileListViewTypeController(4);
+
+        private void OnCredits_Pressed(object sender, EventArgs e)
         {
-            FileListViewTypeController(0);
+            MessageBox.Show("Toolkit written by Greavesy. \n\n" +
+                "Special thanks to: \nOleg @ ZModeler 3 \nRick 'Gibbed' \nFireboyd for UnluacNET" + 
+                "\n\n" + 
+                "Also, a very special thanks to donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider \nNemesis7675", 
+                "Toolkit", 
+                MessageBoxButtons.OK, 
+                MessageBoxIcon.Information);
         }
-        private void OnViewDetailsClicked(object sender, EventArgs e)
+
+        private void OnKeyPressed(object sender, KeyPressEventArgs e)
         {
-            FileListViewTypeController(1);
-        }
-        private void OnViewSmallIconClicked(object sender, EventArgs e)
-        {
-            FileListViewTypeController(2);
-        }
-        private void OnViewListClicked(object sender, EventArgs e)
-        {
-            FileListViewTypeController(3);
-        }
-        private void OnViewTileClicked(object sender, EventArgs e)
-        {
-            FileListViewTypeController(4);
+            if(e.KeyChar == 0x8)
+                OnUpButtonClicked(null, null);
         }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using Gibbed.Illusion.FileFormats.Hashing;
-using Mafia2;
-using Mafia2Tool.EditorControls;
+using Forms.EditorControls;
+using ResourceTypes.Materials;
+using Utils.Lang;
+using Utils.Settings;
 
 namespace Mafia2Tool
 {
@@ -18,10 +19,19 @@ namespace Mafia2Tool
         {
             InitializeComponent();
             Localise();
-            mtl = new MaterialLibrary();
-            mtl.ReadMatFile(file.FullName);
+
+            if (MaterialsManager.MTLs.ContainsKey(file.FullName))
+            {
+                mtl = MaterialsManager.MTLs[file.FullName];
+            }
+            else
+            {
+                mtl = new MaterialLibrary();
+                mtl.ReadMatFile(file.FullName);
+            }
+
             FetchMaterials();
-            ShowDialog();
+            Show();
             ToolkitSettings.UpdateRichPresence("Using the Material Library editor.");
         }
 
@@ -55,8 +65,6 @@ namespace Mafia2Tool
                     dataGridView1.Rows.Add(BuildRowData(mat));
                 }
             }
-
-            File.WriteAllLines("DebugShaderData.txt", debugShader);
         }
 
         public void WriteMaterialsFile()
@@ -132,8 +140,42 @@ namespace Mafia2Tool
 
         private void OnMaterialSelected(object sender, DataGridViewCellEventArgs e)
         {
-            if((e.RowIndex > -1) && (e.ColumnIndex > -1))
+            if ((e.RowIndex > -1) && (e.ColumnIndex > -1))
+            {
                 MaterialGrid.SelectedObject = dataGridView1.Rows[e.RowIndex].Tag;
+                Material mat = (dataGridView1.Rows[e.RowIndex].Tag as Material);
+                Console.WriteLine(string.Format("{0} {1}", mat.MaterialName, (int)mat.Flags));
+            }
+        }
+
+        private void DumpSpecificMaterialNames()
+        {
+            int countForShaderID = 0;
+            int countForShaderHash = 0;
+            int countForBoth = 0;
+            foreach (KeyValuePair<ulong, Material> mat in mtl.Materials)
+            {
+                if (mat.Value.ShaderID == 3854590933660942049)
+                {
+                    Console.WriteLine("Material {0} has ShaderID", mat.Value.MaterialName);
+                    countForShaderID++;
+                }
+
+                if (mat.Value.ShaderHash == 601151254)
+                {
+                    Console.WriteLine("Material {0} has ShaderHash", mat.Value.MaterialName);
+                    countForShaderHash++;
+                }
+
+                if (mat.Value.ShaderID == 3854590933660942049 && mat.Value.ShaderHash == 601151254)
+                {
+                    Console.WriteLine("Material {0} has both ShaderID and ShaderHash", mat.Value.MaterialName);
+                    countForBoth++;
+                }
+            }
+            Console.WriteLine(countForShaderID);
+            Console.WriteLine(countForShaderHash);
+            Console.WriteLine(countForBoth);
         }
 
         private DataGridViewRow BuildRowData(KeyValuePair<ulong, Material> mat)
@@ -150,6 +192,11 @@ namespace Mafia2Tool
             row.Tag = mat;
             row.CreateCells(dataGridView1, new object[] { mat.MaterialName, mat.MaterialHash });
             return row;
+        }
+
+        private void DumpInfo_Clicked(object sender, EventArgs e)
+        {
+            DumpSpecificMaterialNames();
         }
     }
 }

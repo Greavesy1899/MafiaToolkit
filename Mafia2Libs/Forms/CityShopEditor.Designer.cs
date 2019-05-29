@@ -44,6 +44,7 @@
             this.PopulateTranslokatorButton = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.AddDataButton = new System.Windows.Forms.ToolStripMenuItem();
             this.CollisionContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -124,6 +125,7 @@
             this.toolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddAreaButton,
+            this.AddDataButton,
             this.PopulateTranslokatorButton});
             this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
             this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -164,6 +166,14 @@
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.Size = new System.Drawing.Size(461, 410);
             this.propertyGrid1.TabIndex = 17;
+            this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.OnPropertyChanged);
+            // 
+            // AddDataButton
+            // 
+            this.AddDataButton.Name = "AddDataButton";
+            this.AddDataButton.Size = new System.Drawing.Size(236, 22);
+            this.AddDataButton.Text = "$ADD_DATA";
+            this.AddDataButton.Click += new System.EventHandler(this.AddDataButton_Click);
             // 
             // CityShopEditor
             // 
@@ -199,5 +209,6 @@
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.ToolStripMenuItem PopulateTranslokatorButton;
+        private System.Windows.Forms.ToolStripMenuItem AddDataButton;
     }
 }

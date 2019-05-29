@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
-using Mafia2;
+using Utils.Logging;
+using Utils.Settings;
 
-namespace Mafia2Tool
+namespace Utils.Lang
 {
     public class Language
     {
@@ -13,7 +14,7 @@ namespace Mafia2Tool
             Localisation.Clear();
             string xmlToLoad;
 
-            switch(ToolkitSettings.Language)
+            switch (ToolkitSettings.Language)
             {
                 case 0:
                     xmlToLoad = "Localisations/en_GB.xml";
@@ -53,9 +54,14 @@ namespace Mafia2Tool
             string text;
 
             if (Localisation.TryGetValue(key, out text))
+            {
                 return text;
+            }
             else
+            {
+                System.Console.WriteLine("Missing {0}", key);
                 return key;
+            }
         }
     }
 }
