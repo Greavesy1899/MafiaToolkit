@@ -164,5 +164,10 @@
   <String ID="$PROPERTY_GRID">Сетка Свойств</String>
   <String ID="$TOGGLE_WIREFRAME">Переключение визуализации </String>
   <String ID="$TOGGLE_CULLING">Отключить калибровку  </String>
-   
+  <String ID="$POSITION_X">Позиция X</String>
+  <String ID="$POSITION_Y">Позиция Y</String>
+  <String ID="$POSITION_Z">Позиция Z</String>
+  <String ID="$ROTATION_X">Вращение X</String>
+  <String ID="$ROTATION_Y">Вращение Y</String>
+  <String ID="$ROTATION_Z">Вращение Z</String>
 </Localisation>

@@ -231,7 +231,7 @@ namespace Rendering.Graphics
                             {
                                 if (!string.IsNullOrEmpty(sampler.File))
                                 {
-                                    texture = TextureLoader.LoadTexture(d3d, Path.Combine(ToolkitSettings.TexturePath, sampler.File));
+                                    texture = TextureLoader.LoadTexture(d3d,sampler.File);
                                     RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
                                 }
                             }
@@ -248,7 +248,7 @@ namespace Rendering.Graphics
                             {
                                 if (!string.IsNullOrEmpty(sampler.File))
                                 {
-                                    texture = TextureLoader.LoadTexture(d3d, Path.Combine(SceneData.ScenePath, sampler.File));
+                                    texture = TextureLoader.LoadTexture(d3d, sampler.File);
                                     RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
                                 }
                             }

@@ -138,5 +138,11 @@
   <String ID="$PROPERTY_GRID">Siatka właściwości</String>
   <String ID="$TOGGLE_WIREFRAME">Pokaż/ukryj Wireframe</String>
   <String ID="$TOGGLE_CULLING">Pokaż/ukryj Culling</String>
+  <String ID="$POSITION_X">Pozycja X</String>
+  <String ID="$POSITION_Y">Pozycja Y</String>
+  <String ID="$POSITION_Z">Pozycja Z</String>
+  <String ID="$ROTATION_X">Rotacja X</String>
+  <String ID="$ROTATION_Y">Rotacja Y</String>
+  <String ID="$ROTATION_Z">Rotacja Z</String>
    
 </Localisation>

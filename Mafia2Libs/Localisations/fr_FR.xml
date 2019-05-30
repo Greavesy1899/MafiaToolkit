@@ -164,4 +164,10 @@
   <String ID="$PROPERTY_GRID">Grille de propriétés</String>
   <String ID="$TOGGLE_WIREFRAME">Activer/désactiver wireframe</String>
   <String ID="$TOGGLE_CULLING">Activer/désactiver culling</String>
+  <String ID="$POSITION_X">Position X</String>
+  <String ID="$POSITION_Y">Position Y</String>
+  <String ID="$POSITION_Z">Position Z</String>
+  <String ID="$ROTATION_X">Rotation X</String>
+  <String ID="$ROTATION_Y">Rotation Y</String>
+  <String ID="$ROTATION_Z">Rotation Z</String>
 </Localisation>

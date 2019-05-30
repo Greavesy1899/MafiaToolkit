@@ -15,6 +15,7 @@ namespace Forms.EditorControls
         private void Localise()
         {
             groupGeneral.Text = Language.GetString("$GENERAL");
+            FrAddTypeLabel.Text = Language.GetString("$FRADD_TYPE");
             MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
         }
 

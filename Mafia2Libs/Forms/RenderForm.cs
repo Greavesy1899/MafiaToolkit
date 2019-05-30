@@ -22,6 +22,7 @@ using Utils.Models;
 using System.ComponentModel;
 using Utils.Extensions;
 using ResourceTypes.Navigation;
+using ResourceTypes.Materials;
 
 namespace Mafia2Tool
 {
@@ -51,6 +52,10 @@ namespace Mafia2Tool
             InitializeComponent();
             Localise();
             MaterialData.Load();
+
+            if (MaterialsManager.MTLs.Count == 0)
+                MessageBox.Show("No material libraries have loaded, make sure they are set up correctly in the options window!", "Warning!", MessageBoxButtons.OK);
+
             TypeDescriptor.AddAttributes(typeof(Vector3), new TypeConverterAttribute(typeof(Vector3Converter)));
             ToolkitSettings.UpdateRichPresence(string.Format("Editing '{0}'", info.Directory.Name));
             SceneData.ScenePath = info.DirectoryName;
@@ -75,6 +80,7 @@ namespace Mafia2Tool
             SceneTreeButton.Text = Language.GetString("$VIEW_SCENE_TREE");
             ObjectPropertiesButton.Text = Language.GetString("$VIEW_PROPERTY_GRID");
             ViewButton.Text = Language.GetString("$VIEW_OPTIONS");
+            ViewOptionProperties.Text = Language.GetString("$VIEW_VIS_OPTIONS");
             AddButton.Text = Language.GetString("$ADD");
             AddSceneFolderButton.Text = Language.GetString("$ADD_SCENE_FOLDER");
             AddRoadSplineButton.Text = Language.GetString("$ADD_ROAD_SPLINE");

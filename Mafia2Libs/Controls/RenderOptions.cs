@@ -77,5 +77,11 @@ namespace Forms.OptionControls
             ToolkitSettings.Experimental = ExperimentalBox.Checked;
             ToolkitSettings.WriteKey("EnableExperimental", "ModelViewer", ToolkitSettings.Experimental.ToString());
         }
+
+        private void UseMIPsBox_CheckedChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.UseMIPS = UseMIPsBox.Checked;
+            ToolkitSettings.WriteKey("UseMIPs", "ModelViewer", ToolkitSettings.UseMIPS.ToString());
+        }
     }
 }

@@ -1,32 +1,53 @@
-﻿using SharpDX.Direct3D11;
+﻿using Mafia2Tool;
+using SharpDX.Direct3D11;
 using System.Diagnostics;
+using System.IO;
+using System.Windows.Forms;
 using Utils.Settings;
 
 namespace Rendering.Graphics
 {
     public static class TextureLoader
     {
+        private static string GetTextureFromPath(string fileName)
+        {
+            string path = Path.Combine(SceneData.ScenePath, fileName);
+            if (File.Exists(path))
+            {
+                string mip = Path.Combine(SceneData.ScenePath, "MIP_" + fileName);
+                if (File.Exists(mip) && ToolkitSettings.UseMIPS)
+                    return mip;
+                else
+                    return path;
+            }
+
+            path = Path.Combine(ToolkitSettings.TexturePath, fileName);
+            if (File.Exists(path))
+            {
+                string mip = Path.Combine(ToolkitSettings.TexturePath, "MIP_" + fileName);
+                if (File.Exists(mip) && ToolkitSettings.UseMIPS)
+                    return mip;
+                else
+                    return path;
+            }
+
+            path = Path.Combine(ToolkitSettings.TexturePath, "texture.dds");
+            if (File.Exists(path))
+                return path;
+            else
+            {
+                Debug.WriteLine("FAILED TO LOAD: {0}", fileName);
+                throw new System.Exception("Unable to locate texture.dds! This should be located in the texture folder assigned. You can assign it in Options > Render > Texture Directory.");
+            }
+        }
+
         public static ShaderResourceView LoadTexture(Device d3d, string fileName)
         {
             Resource ddsResource;
             ShaderResourceView _temp;
             DDSTextureLoader.DDS_ALPHA_MODE mode;
 
-            string texturePath = "";
-            if (!System.IO.File.Exists(fileName))
-            {
-                Debug.WriteLine(string.Format("FAILED TO LOAD {0}", fileName));
-                return RenderStorageSingleton.Instance.TextureCache[0];
-            }
-            else
-            {
-                string mipDds = fileName.Insert(0, "MIP_");
-                if (System.IO.File.Exists(mipDds))
-                    texturePath = mipDds;
-                else
-                    texturePath = fileName;
-            }
-            //Debug.WriteLine(string.Format("Loading {0}\tDevice State {1}", fileName, device));
+            string texturePath = GetTextureFromPath(fileName);
             DDSTextureLoader.CreateDDSTextureFromFile(d3d, texturePath, out ddsResource, out _temp, 4096, out mode);
             return _temp;
         }

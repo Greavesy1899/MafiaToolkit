@@ -51,7 +51,7 @@ namespace Rendering.Graphics
                 return false;
             }
             //this is backup!
-            RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, Path.Combine(ToolkitSettings.TexturePath, "texture.dds")));
+            RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, "texture.dds"));
             return true;
         }
 

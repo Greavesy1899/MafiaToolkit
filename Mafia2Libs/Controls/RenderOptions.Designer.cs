@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.RenderGroup = new System.Windows.Forms.GroupBox();
+            this.ExperimentalBox = new System.Windows.Forms.CheckBox();
             this.BrowseButton = new System.Windows.Forms.Button();
             this.TexDirectoryBox = new System.Windows.Forms.TextBox();
             this.TexLabel = new System.Windows.Forms.Label();
@@ -39,7 +40,7 @@
             this.ScreenFarLabel = new System.Windows.Forms.Label();
             this.ScreenNearLabel = new System.Windows.Forms.Label();
             this.TexBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.ExperimentalBox = new System.Windows.Forms.CheckBox();
+            this.UseMIPsBox = new System.Windows.Forms.CheckBox();
             this.RenderGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenFarUpDown)).BeginInit();
@@ -48,6 +49,7 @@
             // 
             // RenderGroup
             // 
+            this.RenderGroup.Controls.Add(this.UseMIPsBox);
             this.RenderGroup.Controls.Add(this.ExperimentalBox);
             this.RenderGroup.Controls.Add(this.BrowseButton);
             this.RenderGroup.Controls.Add(this.TexDirectoryBox);
@@ -65,6 +67,17 @@
             this.RenderGroup.TabIndex = 2;
             this.RenderGroup.TabStop = false;
             this.RenderGroup.Text = "$RENDER_OPTIONS";
+            // 
+            // ExperimentalBox
+            // 
+            this.ExperimentalBox.AutoSize = true;
+            this.ExperimentalBox.Location = new System.Drawing.Point(235, 38);
+            this.ExperimentalBox.Name = "ExperimentalBox";
+            this.ExperimentalBox.Size = new System.Drawing.Size(86, 17);
+            this.ExperimentalBox.TabIndex = 10;
+            this.ExperimentalBox.Text = "Experimental";
+            this.ExperimentalBox.UseVisualStyleBackColor = true;
+            this.ExperimentalBox.CheckedChanged += new System.EventHandler(this.ExperimentalBox_CheckedChanged);
             // 
             // BrowseButton
             // 
@@ -189,16 +202,16 @@
             // 
             this.TexBrowser.Description = "$SELECT_TEX_FOLDER";
             // 
-            // ExperimentalBox
+            // UseMIPsBox
             // 
-            this.ExperimentalBox.AutoSize = true;
-            this.ExperimentalBox.Location = new System.Drawing.Point(235, 38);
-            this.ExperimentalBox.Name = "ExperimentalBox";
-            this.ExperimentalBox.Size = new System.Drawing.Size(86, 17);
-            this.ExperimentalBox.TabIndex = 10;
-            this.ExperimentalBox.Text = "Experimental";
-            this.ExperimentalBox.UseVisualStyleBackColor = true;
-            this.ExperimentalBox.CheckedChanged += new System.EventHandler(this.ExperimentalBox_CheckedChanged);
+            this.UseMIPsBox.AutoSize = true;
+            this.UseMIPsBox.Location = new System.Drawing.Point(235, 61);
+            this.UseMIPsBox.Name = "UseMIPsBox";
+            this.UseMIPsBox.Size = new System.Drawing.Size(72, 17);
+            this.UseMIPsBox.TabIndex = 11;
+            this.UseMIPsBox.Text = "Use MIPs";
+            this.UseMIPsBox.UseVisualStyleBackColor = true;
+            this.UseMIPsBox.CheckedChanged += new System.EventHandler(this.UseMIPsBox_CheckedChanged);
             // 
             // RenderOptions
             // 
@@ -230,5 +243,6 @@
         private System.Windows.Forms.Label TexLabel;
         private System.Windows.Forms.FolderBrowserDialog TexBrowser;
         private System.Windows.Forms.CheckBox ExperimentalBox;
+        private System.Windows.Forms.CheckBox UseMIPsBox;
     }
 }

@@ -5,6 +5,7 @@ using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using Mafia2Tool;
 using Utils.Settings;
+using System.Windows.Forms;
 
 namespace Rendering.Graphics
 {
@@ -60,7 +61,7 @@ namespace Rendering.Graphics
 
             var swapChainDesc = new SwapChainDescription()
             {
-                BufferCount = 1,
+                BufferCount = 2,
                 ModeDescription = new ModeDescription(ToolkitSettings.Width, ToolkitSettings.Height, rational, Format.R8G8B8A8_UNorm),
                 Usage = Usage.RenderTargetOutput,
                 OutputHandle = WindowHandle,

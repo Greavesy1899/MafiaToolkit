@@ -27,6 +27,7 @@ namespace Utils.Settings
         public static string ShaderPath;
         public static string TexturePath;
         public static bool Experimental;
+        public static bool UseMIPS;
         public const int Width = 1920;
         public const int Height = 1080;
 
@@ -59,6 +60,7 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("DetailsEnabled", "Discord", "True"), out DiscordDetailsEnabled);
             int.TryParse(ReadKey("SerializeOption", "SDS", "0"), out SerializeSDSOption);
             bool.TryParse(ReadKey("VSync", "ModelViewer", "True"), out VSync);
+            bool.TryParse(ReadKey("UseMIPS", "ModelViewer", "True"), out UseMIPS);
             float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "10000"), out ScreenDepth);
             float.TryParse(ReadKey("ScreenNear", "ModelViewer", "1"), out ScreenNear);
             float.TryParse(ReadKey("CameraSpeed", "ModelViewer", "1"), out CameraSpeed);

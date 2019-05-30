@@ -94,6 +94,8 @@
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS">Aktualizovat Parent</String>
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Vyberte scénu kterou chcete přidat jako parent.</String>
   <String ID="$FRAME_EDITOR_TITLE">FrameResource Editor</String>
+  <String ID="$FRADD_TYPE">Framu Typ</String>
+  <String ID="$QUESTION_FRADD">Napište jméno a typ framu.</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Jméno</String>
@@ -145,5 +147,11 @@
   <String ID="$PROPERTY_GRID">Síť vlastností</String>
   <String ID="$TOGGLE_WIREFRAME">Aktivovat/deaktivovat drátový model (wireframe)</String>
   <String ID="$TOGGLE_CULLING">Aktivovat/deaktivovat culling</String>
+  <String ID="$POSITION_X">Pozice X</String>
+  <String ID="$POSITION_Y">Pozice Y</String>
+  <String ID="$POSITION_Z">Pozice Z</String>
+  <String ID="$ROTATION_X">Rotace X</String>
+  <String ID="$ROTATION_Y">Rotace Y</String>
+  <String ID="$ROTATION_Z">Rotace Z</String>
    
 </Localisation>
