@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 using SharpDX;
 using Utils.SharpDXExtensions;
@@ -9,8 +10,8 @@ namespace ResourceTypes.FrameResource
     public class FrameObjectSector : FrameObjectJoint
     {
         int unk_08_int;
-        int unk_09_int;
-        float[] unk_10_floats;
+        int planesSize;
+        Vector4[] planes;
         BoundingBox bounds;
         Vector3 unk_13_vector3;
         Vector3 unk_14_vector3;
@@ -20,13 +21,15 @@ namespace ResourceTypes.FrameResource
             get { return unk_08_int; }
             set { unk_08_int = value; }
         }
-        public int Unk09 {
-            get { return unk_09_int; }
-            set { unk_09_int = value; }
+
+        [Browsable(false)]
+        public int PlanesSize {
+            get { return planesSize; }
+            set { planesSize = value; }
         }
-        public float[] Unk10 {
-            get { return unk_10_floats; }
-            set { unk_10_floats = value; }
+        public Vector4[] Planes {
+            get { return planes; }
+            set { planes = value; }
         }
         public BoundingBox Bounds {
             get { return bounds ; }
@@ -95,17 +98,15 @@ namespace ResourceTypes.FrameResource
         {
             base.ReadFromFile(reader);
             unk_08_int = reader.ReadInt32();
-            unk_09_int = reader.ReadInt32();
+            planesSize = reader.ReadInt32();
 
-            unk_10_floats = new float[unk_09_int * 4];
-            for (int i = 0; i != unk_10_floats.Length; i++)
-            {
-                unk_10_floats[i] = reader.ReadSingle();
-            }
+            planes = new Vector4[planesSize];
+            for (int i = 0; i != planes.Length; i++)
+                planes[i] = Vector4Extenders.ReadFromFile(reader);
 
             bounds = BoundingBoxExtenders.ReadFromFile(reader);
-            unk_13_vector3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-            unk_14_vector3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+            unk_13_vector3 = Vector3Extenders.ReadFromFile(reader);
+            unk_14_vector3 = Vector3Extenders.ReadFromFile(reader);
             sectorName = new Hash(reader);
 
         }
@@ -114,17 +115,37 @@ namespace ResourceTypes.FrameResource
         {
             base.WriteToFile(writer);
             writer.Write(unk_08_int);
-            writer.Write(unk_09_int);
+            writer.Write(planes.Length);
 
-            for(int i = 0; i != unk_10_floats.Length; i++)
-            {
-                writer.Write(unk_10_floats[i]);
-            }
+            for (int i = 0; i != planes.Length; i++)
+                planes[i].WriteToFile(writer);
 
             bounds.WriteToFile(writer);
             unk_13_vector3.WriteToFile(writer);
             unk_14_vector3.WriteToFile(writer);
             sectorName.WriteToFile(writer);
+        }
+
+        public void FillPlanesArray()
+        {
+            planes = new Vector4[6];
+            planes[0] = new Vector4(-1, 0, 0, bounds.Maximum.X);
+            planes[1] = new Vector4(1, 0, 0, bounds.Maximum.X);
+            planes[2] = new Vector4(0, -1, 0, bounds.Maximum.Y);
+            planes[3] = new Vector4(0, 1, 0, bounds.Maximum.Y);
+            planes[4] = new Vector4(0, 0, -1, bounds.Maximum.Z);
+            planes[5] = new Vector4(0, 0, 1, bounds.Maximum.Z);
+            //planes[0] = new Vector4(0, 1, 0, Math.Abs(bounds.Minimum.X));
+            //planes[1] = new Vector4(1, 0, 0, Math.Abs(bounds.Minimum.Y));
+            //planes[2] = new Vector4(0, 0, -1, bounds.Maximum.Z);
+            //planes[3] = new Vector4(0, 0, 1, Math.Abs(bounds.Minimum.Y));
+            //planes[4] = new Vector4(-1, 0, 0, bounds.Maximum.X);
+            //planes[5] = new Vector4(0, -1, 0, bounds.Maximum.Y);
+        }
+
+        public override string ToString()
+        {
+            return Name.String;
         }
     }
 }

@@ -91,13 +91,15 @@ namespace Forms.Docking
                 EntryMenuStrip.Items[1].Visible = true;
                 EntryMenuStrip.Items[2].Visible = true;
 
-                if (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectBase) || treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement) || treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectJoint))
+                if (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectBase) || 
+                    treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement) || 
+                    treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectDummy) ||
+                    treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectJoint))
                 {
                     EntryMenuStrip.Items[0].Visible = true;
                 }
                 if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) || treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement)))
                 {
-                    EntryMenuStrip.Items[0].Visible = true;
                     EntryMenuStrip.Items[3].Visible = true;
                 }
             }
@@ -107,7 +109,7 @@ namespace Forms.Docking
         {
             object data = treeView1.SelectedNode.Tag;
 
-            if(data.GetType() == typeof(FrameObjectBase) || data.GetType() == typeof(FrameObjectJoint) || data.GetType() == typeof(FrameObjectSingleMesh))
+            if(data.GetType() == typeof(FrameObjectBase) || data.GetType() == typeof(FrameObjectDummy) || data.GetType() == typeof(FrameObjectJoint) || data.GetType() == typeof(FrameObjectSingleMesh))
                 return (data as FrameObjectBase).Matrix.Position;
 
             if(data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))

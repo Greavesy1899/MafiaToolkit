@@ -201,7 +201,7 @@ namespace Mafia2Tool
         /// <param name="e"></param>
         private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Create(SceneData.Collisions.name)))
+            using (BinaryWriter writer = new BinaryWriter(File.Create(SceneData.Collisions.Name)))
             {
                 SceneData.Collisions.WriteToFile(writer);
             }

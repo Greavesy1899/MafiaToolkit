@@ -21,7 +21,7 @@ namespace ResourceTypes.Collisions
         int count2;
         Dictionary<ulong, NXSStruct> nxsData;
 
-        public string name;
+        string name;
 
         public Dictionary<ulong, NXSStruct> NXSData
         {
@@ -35,6 +35,11 @@ namespace ResourceTypes.Collisions
             set { placementData = value; }
         }
 
+        public string Name {
+            get { return name; }
+            set { name = value; }
+        }
+
         public Collision(string fileName)
         {
             name = fileName;
@@ -42,6 +47,14 @@ namespace ResourceTypes.Collisions
             {
                 ReadFromFile(reader);
             }
+        }
+
+        public Collision()
+        {
+            version = 17;
+            unk0 = 0;
+            nxsData = new Dictionary<ulong, NXSStruct>();
+            placementData = new List<Placement>();
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -71,6 +84,11 @@ namespace ResourceTypes.Collisions
 
         }
 
+        public void WriteToFile()
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(name, FileMode.Create)))
+                WriteToFile(writer);
+        }
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(version);
@@ -135,6 +153,15 @@ namespace ResourceTypes.Collisions
             public Placement()
             {
 
+            }
+
+            public Placement(Placement other)
+            {
+                position = other.position;
+                rotation = other.rotation;
+                hash = other.hash;
+                unk4 = other.unk4;
+                unk5 = other.unk5;
             }
 
             /// <summary>

@@ -301,11 +301,11 @@ namespace Mafia2Tool
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
 
-                if(SceneData.roadMap != null && ToolkitSettings.Experimental)
+                if (SceneData.roadMap != null && ToolkitSettings.Experimental)
                 {
                     List<SplineDefinition> splines = new List<SplineDefinition>();
-                    
-                    for(int i = 0; i != RenderStorageSingleton.Instance.SplineStorage.Count; i++)
+
+                    for (int i = 0; i != RenderStorageSingleton.Instance.SplineStorage.Count; i++)
                     {
                         RenderLine line = RenderStorageSingleton.Instance.SplineStorage[i];
                         SplineDefinition spline = new SplineDefinition();
@@ -317,6 +317,29 @@ namespace Mafia2Tool
                     SceneData.roadMap.data1 = splines.ToArray();
                     SceneData.roadMap.WriteToFile();
                 }
+
+                if (SceneData.Collisions != null && ToolkitSettings.Experimental)
+                {
+                    Collision collision = new Collision();
+                    collision.Name = SceneData.Collisions.Name;
+                    for (int i = 0; i != collisionRoot.Nodes.Count; i++)
+                    {
+                        TreeNode node = collisionRoot.Nodes[i];
+                        Collision.NXSStruct nxsData = (node.Tag as Collision.NXSStruct);
+                        collision.NXSData.Add(nxsData.Hash, nxsData);
+
+                        for (int x = 0; x != node.Nodes.Count; x++)
+                        {
+                            TreeNode child = node.Nodes[x];
+                            Collision.Placement placement = (child.Tag as Collision.Placement);
+                            collision.Placements.Add(placement);
+                        }
+                    }
+
+                    SceneData.Collisions = collision;
+                    SceneData.Collisions.WriteToFile();
+                }
+
                 Console.WriteLine("Saved Changes Succesfully");
             }
         }
@@ -349,7 +372,7 @@ namespace Mafia2Tool
         {
             RenderBoundingBox frameBBox = new RenderBoundingBox();
             frameBBox.SetTransform(frame.Matrix.Position, frame.Matrix.Rotation);
-            frameBBox.Init(new BoundingBox(new Vector3(0.5f),  new Vector3(0.5f)));
+            frameBBox.Init(new BoundingBox(new Vector3(0.5f), new Vector3(0.5f)));
             return frameBBox;
         }
 
@@ -400,7 +423,7 @@ namespace Mafia2Tool
                     assets.Add(fObject.RefID, BuildRenderBounds(area));
                 }
 
-                if(fObject.GetType() == typeof(FrameObjectSector))
+                if (fObject.GetType() == typeof(FrameObjectSector))
                 {
                     FrameObjectSector sector = (fObject as FrameObjectSector);
                     assets.Add(fObject.RefID, BuildRenderBounds(sector));
@@ -412,19 +435,19 @@ namespace Mafia2Tool
                     assets.Add(fObject.RefID, BuildRenderBounds(dummy));
                 }
 
-                if(fObject.GetType() == typeof(FrameObjectFrame))
+                if (fObject.GetType() == typeof(FrameObjectFrame))
                 {
                     FrameObjectFrame frame = (fObject as FrameObjectFrame);
                     assets.Add(fObject.RefID, BuildRenderBounds(frame));
                 }
             }
 
-            if (SceneData.roadMap != null  && ToolkitSettings.Experimental)
+            if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
                 TreeNode node = new TreeNode("RoadMap Data");
                 roadRoot = node;
 
-                for(int i = 0; i != SceneData.roadMap.data1.Length; i++)
+                for (int i = 0; i != SceneData.roadMap.data1.Length; i++)
                 {
                     ResourceTypes.Navigation.SplineDefinition definition = SceneData.roadMap.data1[i];
                     RenderLine line = new RenderLine();
@@ -450,7 +473,7 @@ namespace Mafia2Tool
                 {
                     if (SceneData.roadMap.data4[i].boundaries.Length > 0)
                     {
-                        Vector3[] extraPoints = new Vector3[SceneData.roadMap.data4[i].boundaries.Length+1];
+                        Vector3[] extraPoints = new Vector3[SceneData.roadMap.data4[i].boundaries.Length + 1];
                         Array.Copy(SceneData.roadMap.data4[i].boundaries, extraPoints, SceneData.roadMap.data4[i].boundaries.Length);
                         extraPoints[extraPoints.Length - 1] = extraPoints[0];
                         RenderLine lineBoundary = new RenderLine();
@@ -469,7 +492,7 @@ namespace Mafia2Tool
                 }
                 dSceneTree.AddToTree(node);
             }
-            if (SceneData.Collisions != null  && ToolkitSettings.Experimental)
+            if (SceneData.Collisions != null && ToolkitSettings.Experimental)
             {
                 TreeNode node = new TreeNode("Collision Data");
                 collisionRoot = node;
@@ -492,7 +515,7 @@ namespace Mafia2Tool
                     Collision.Placement placement = SceneData.Collisions.Placements[i];
                     TreeNode[] nodes = collisionRoot.Nodes.Find(placement.Hash.ToString(), false);
 
-                    if(nodes.Length > 0)
+                    if (nodes.Length > 0)
                     {
                         int refID = StringHelpers.RandomGenerator.Next();
                         RenderInstance instance = new RenderInstance();
@@ -544,7 +567,7 @@ namespace Mafia2Tool
             if (dSceneTree.treeView1.SelectedNode.Tag == null)
                 return;
 
-            if(dSceneTree.treeView1.SelectedNode.Tag is RenderRoad)
+            if (dSceneTree.treeView1.SelectedNode.Tag is RenderRoad)
             {
                 Graphics.SelectEntry(Convert.ToInt32(dSceneTree.treeView1.SelectedNode.Name));
             }
@@ -552,10 +575,10 @@ namespace Mafia2Tool
             {
                 Graphics.SelectEntry(Convert.ToInt32(dSceneTree.treeView1.SelectedNode.Name));
             }
-            else if(dSceneTree.treeView1.SelectedNode.Tag is FrameEntry)
+            else if (dSceneTree.treeView1.SelectedNode.Tag is FrameEntry)
             {
                 Graphics.SelectEntry((dSceneTree.treeView1.SelectedNode.Tag as FrameEntry).RefID);
-            }   
+            }
 
             dPropertyGrid.SetObject(dSceneTree.treeView1.SelectedNode.Tag);
             //dPropertyGrid.Show(dockPanel1, DockState.DockRight);
@@ -581,7 +604,7 @@ namespace Mafia2Tool
                     FrameHeaderScene scene = (selected.Tag as FrameHeaderScene);
                     selected.Text = scene.ToString();
                 }
-                else if(selected.Tag is Collision.Placement)
+                else if (selected.Tag is Collision.Placement)
                 {
                     RenderInstance instance = null;
                     dPropertyGrid.UpdateObject();
@@ -603,16 +626,18 @@ namespace Mafia2Tool
             if (obj is FrameObjectArea)
             {
                 FrameObjectArea area = (obj as FrameObjectArea);
+                area.FillPlanesArray();
                 RenderBoundingBox bbox = (Graphics.Assets[obj.RefID] as RenderBoundingBox);
                 bbox.Update(area.Bounds);
             }
-            else if(obj is FrameObjectSector)
+            else if (obj is FrameObjectSector)
             {
                 FrameObjectSector sector = (obj as FrameObjectSector);
+                sector.FillPlanesArray();
                 RenderBoundingBox bbox = (Graphics.Assets[obj.RefID] as RenderBoundingBox);
                 bbox.Update(sector.Bounds);
             }
-            else if(obj is FrameObjectSingleMesh)
+            else if (obj is FrameObjectSingleMesh)
             {
                 FrameObjectSingleMesh mesh = (obj as FrameObjectSingleMesh);
                 RenderModel model = (Graphics.Assets[obj.RefID] as RenderModel);
@@ -687,7 +712,7 @@ namespace Mafia2Tool
         {
             FrameObjectBase frame;
 
-            switch(selected)
+            switch (selected)
             {
                 case 0:
                     frame = CreateSingleMesh();
@@ -808,7 +833,7 @@ namespace Mafia2Tool
                         }
                     }
                 }
-                if(model.Value is RenderInstance)
+                if (model.Value is RenderInstance)
                 {
                     RenderInstance instance = (model.Value as RenderInstance);
                     RenderStaticCollision collision = instance.GetCollision();
@@ -927,7 +952,7 @@ namespace Mafia2Tool
                     }
                 }
             }
-            if(pGrid.SelectedObject is FrameObjectSingleMesh)
+            if (pGrid.SelectedObject is FrameObjectSingleMesh)
             {
                 if (e.ChangedItem.Label == "MeshIndex")
                 {
@@ -935,9 +960,9 @@ namespace Mafia2Tool
                     FrameObjectSingleMesh obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
                     obj.Refs["Mesh"] = SceneData.FrameResource.NewFrames[value].Data.RefID;
                     obj.Geometry = SceneData.FrameResource.FrameGeometries[obj.Refs["Mesh"]];
-                    
+
                 }
-                if(e.ChangedItem.Label == "MaterialIndex")
+                if (e.ChangedItem.Label == "MaterialIndex")
                 {
                     int value = (int)e.ChangedItem.Value;
                     FrameObjectSingleMesh obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
@@ -953,7 +978,7 @@ namespace Mafia2Tool
                 return;
 
             PropertyGrid pGrid = (sender as PropertyGrid);
-            if(pGrid.SelectedObject is FrameObjectSingleMesh)
+            if (pGrid.SelectedObject is FrameObjectSingleMesh)
             {
                 ApplyChangesToRenderable((FrameObjectBase)pGrid.SelectedObject);
             }
@@ -976,7 +1001,7 @@ namespace Mafia2Tool
                         break;
                 }
             }
-            
+
         }
 
         private void CameraSpeedUpdate(object sender, EventArgs e)
@@ -996,12 +1021,14 @@ namespace Mafia2Tool
         {
             TreeNode node = dSceneTree.treeView1.SelectedNode;
 
-            if (node.Nodes.Count > 0)
+            if (node.Tag.GetType() == typeof(FrameEntry))
             {
-                MessageBox.Show("Cannot delete a node with children!", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-            }
-            else
-            {
+                if (node.Nodes.Count > 0)
+                {
+                    MessageBox.Show("Cannot delete a node with children!", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    return;
+                }
+
                 FrameEntry obj = node.Tag as FrameEntry;
 
                 if (obj != null)
@@ -1010,11 +1037,33 @@ namespace Mafia2Tool
                     Graphics.Assets.Remove(obj.RefID);
                     SceneData.FrameResource.FrameObjects.Remove(obj.RefID);
 
-                    if(Graphics.Assets.ContainsKey(obj.RefID))
+                    if (Graphics.Assets.ContainsKey(obj.RefID))
                         Graphics.Assets.Remove(obj.RefID);
                 }
             }
+            else if (node.Tag.GetType() == typeof(Collision.Placement))
+            {
+                dSceneTree.treeView1.Nodes.Remove(node);
 
+                int iName = Convert.ToInt32(node.Name);
+                if (Graphics.Assets.ContainsKey(iName))
+                    Graphics.Assets.Remove(iName);
+            }
+            else if (node.Tag.GetType() == typeof(Collision.NXSStruct))
+            {
+                dSceneTree.treeView1.Nodes.Remove(node);
+
+                Collision.NXSStruct data = (node.Tag as Collision.NXSStruct);
+                if (RenderStorageSingleton.Instance.StaticCollisions.ContainsKey(data.Hash))
+                    RenderStorageSingleton.Instance.StaticCollisions.Remove(data.Hash);
+
+                for(int i = 0; i != node.Nodes.Count; i++)
+                {
+                    int iName = Convert.ToInt32(node.Nodes[i].Name);
+                    if (Graphics.Assets.ContainsKey(iName))
+                        Graphics.Assets.Remove(iName);
+                }
+            }
         }
 
         private void DuplicateButton_Click(object sender, EventArgs e)
@@ -1022,63 +1071,90 @@ namespace Mafia2Tool
             TreeNode node = dSceneTree.treeView1.SelectedNode;
             FrameObjectBase newEntry = null;
 
-            //is this even needed? hmm.
-            if (node.Tag.GetType() == typeof(FrameObjectArea))
+            //new safety net
+            if (node.Tag.GetType() == typeof(FrameObjectBase))
             {
-                newEntry = new FrameObjectArea((FrameObjectArea)node.Tag);
-                FrameObjectArea area = (newEntry as FrameObjectArea);
-                Graphics.InitObjectStack.Add(area.RefID, BuildRenderBounds(area));
-            }
-            else if (node.Tag.GetType() == typeof(FrameObjectCamera))
-                newEntry = new FrameObjectCamera((FrameObjectCamera)node.Tag);
-            else if (node.Tag.GetType() == typeof(FrameObjectCollision))
-                newEntry = new FrameObjectCollision((FrameObjectCollision)node.Tag);
-            else if (node.Tag.GetType() == typeof(FrameObjectComponent_U005))
-                newEntry = new FrameObjectComponent_U005((FrameObjectComponent_U005)node.Tag);
-            else if (node.Tag.GetType() == typeof(FrameObjectDummy))
-            {
-                newEntry = new FrameObjectDummy((FrameObjectDummy)node.Tag);
-                FrameObjectDummy dummy = (newEntry as FrameObjectDummy);
-                Graphics.InitObjectStack.Add(dummy.RefID, BuildRenderBounds(dummy));
-            }
-            else if (node.Tag.GetType() == typeof(FrameObjectDeflector))
-                newEntry = new FrameObjectDeflector((FrameObjectDeflector)node.Tag);
-            else if (node.Tag.GetType() == typeof(FrameObjectDummy))
-                newEntry = new FrameObjectDummy((FrameObjectDummy)node.Tag);
-            else if (node.Tag.GetType() == typeof(FrameObjectFrame))
-                newEntry = new FrameObjectFrame((FrameObjectFrame)node.Tag);
-            else if (node.Tag.GetType() == typeof(FrameObjectJoint))
-                newEntry = new FrameObjectJoint((FrameObjectJoint)node.Tag);
-            else if (node.Tag.GetType() == typeof(FrameObjectLight))
-                newEntry = new FrameObjectLight((FrameObjectLight)node.Tag);
-            else if (node.Tag.GetType() == typeof(FrameObjectModel))
-            {
-                newEntry = new FrameObjectModel((FrameObjectModel)node.Tag);
-                FrameObjectSingleMesh mesh = (newEntry as FrameObjectSingleMesh);
-                RenderModel model = BuildRenderModel(mesh);
-                Graphics.InitObjectStack.Add(mesh.RefID, model);
-            }
-            else if (node.Tag.GetType() == typeof(FrameObjectSector))
-                newEntry = new FrameObjectSector((FrameObjectSector)node.Tag);
-            else if (node.Tag.GetType() == typeof(FrameObjectSingleMesh))
-            {
-                newEntry = new FrameObjectSingleMesh((FrameObjectSingleMesh)node.Tag);
-                FrameObjectSingleMesh mesh = (newEntry as FrameObjectSingleMesh);
-                RenderModel model = BuildRenderModel(mesh);
-                Graphics.InitObjectStack.Add(mesh.RefID, model);
-            }
-            else if (node.Tag.GetType() == typeof(FrameObjectTarget))
-                newEntry = new FrameObjectTarget((FrameObjectTarget)node.Tag);
-            else
-                newEntry = new FrameObjectBase((FrameObjectBase)node.Tag);
+                //is this even needed? hmm.
+                if (node.Tag.GetType() == typeof(FrameObjectArea))
+                {
+                    newEntry = new FrameObjectArea((FrameObjectArea)node.Tag);
+                    FrameObjectArea area = (newEntry as FrameObjectArea);
+                    Graphics.InitObjectStack.Add(area.RefID, BuildRenderBounds(area));
+                }
+                else if (node.Tag.GetType() == typeof(FrameObjectCamera))
+                    newEntry = new FrameObjectCamera((FrameObjectCamera)node.Tag);
+                else if (node.Tag.GetType() == typeof(FrameObjectCollision))
+                    newEntry = new FrameObjectCollision((FrameObjectCollision)node.Tag);
+                else if (node.Tag.GetType() == typeof(FrameObjectComponent_U005))
+                    newEntry = new FrameObjectComponent_U005((FrameObjectComponent_U005)node.Tag);
+                else if (node.Tag.GetType() == typeof(FrameObjectDummy))
+                {
+                    newEntry = new FrameObjectDummy((FrameObjectDummy)node.Tag);
+                    FrameObjectDummy dummy = (newEntry as FrameObjectDummy);
+                    Graphics.InitObjectStack.Add(dummy.RefID, BuildRenderBounds(dummy));
+                }
+                else if (node.Tag.GetType() == typeof(FrameObjectDeflector))
+                    newEntry = new FrameObjectDeflector((FrameObjectDeflector)node.Tag);
+                else if (node.Tag.GetType() == typeof(FrameObjectDummy))
+                    newEntry = new FrameObjectDummy((FrameObjectDummy)node.Tag);
+                else if (node.Tag.GetType() == typeof(FrameObjectFrame))
+                    newEntry = new FrameObjectFrame((FrameObjectFrame)node.Tag);
+                else if (node.Tag.GetType() == typeof(FrameObjectJoint))
+                    newEntry = new FrameObjectJoint((FrameObjectJoint)node.Tag);
+                else if (node.Tag.GetType() == typeof(FrameObjectLight))
+                    newEntry = new FrameObjectLight((FrameObjectLight)node.Tag);
+                else if (node.Tag.GetType() == typeof(FrameObjectModel))
+                {
+                    newEntry = new FrameObjectModel((FrameObjectModel)node.Tag);
+                    FrameObjectSingleMesh mesh = (newEntry as FrameObjectSingleMesh);
+                    RenderModel model = BuildRenderModel(mesh);
+                    Graphics.InitObjectStack.Add(mesh.RefID, model);
+                }
+                else if (node.Tag.GetType() == typeof(FrameObjectSector))
+                    newEntry = new FrameObjectSector((FrameObjectSector)node.Tag);
+                else if (node.Tag.GetType() == typeof(FrameObjectSingleMesh))
+                {
+                    newEntry = new FrameObjectSingleMesh((FrameObjectSingleMesh)node.Tag);
+                    FrameObjectSingleMesh mesh = (newEntry as FrameObjectSingleMesh);
+                    RenderModel model = BuildRenderModel(mesh);
+                    Graphics.InitObjectStack.Add(mesh.RefID, model);
+                }
+                else if (node.Tag.GetType() == typeof(FrameObjectTarget))
+                    newEntry = new FrameObjectTarget((FrameObjectTarget)node.Tag);
+                else
+                    newEntry = new FrameObjectBase((FrameObjectBase)node.Tag);
 
-            newEntry.Name.Set(newEntry.Name.String + "_dupe");
-            TreeNode tNode = new TreeNode(newEntry.ToString());
-            tNode.Tag = newEntry;
-            tNode.Name = newEntry.RefID.ToString();
-            dSceneTree.AddToTree(tNode, dSceneTree.treeView1.Nodes.Find(newEntry.ParentIndex2.RefID.ToString(), true)[0]);
-            SceneData.FrameResource.FrameObjects.Add(newEntry.RefID, newEntry);
-            UpdateMatricesRecursive();
+                newEntry.Name.Set(newEntry.Name.String + "_dupe");
+                TreeNode tNode = new TreeNode(newEntry.ToString());
+                tNode.Tag = newEntry;
+                tNode.Name = newEntry.RefID.ToString();
+                dSceneTree.AddToTree(tNode, dSceneTree.treeView1.Nodes.Find(newEntry.ParentIndex2.RefID.ToString(), true)[0]);
+                SceneData.FrameResource.FrameObjects.Add(newEntry.RefID, newEntry);
+                UpdateMatricesRecursive();
+            }
+            else if(node.Tag.GetType() == typeof(Collision.Placement))
+            {
+                Collision.Placement placement = new Collision.Placement((Collision.Placement)node.Tag);
+
+                int pIdxName = 0;
+                int.TryParse(node.Text, out pIdxName);
+                pIdxName++;
+
+                int refID = StringHelpers.RandomGenerator.Next();
+                TreeNode child = new TreeNode();
+                child.Text = pIdxName.ToString();
+                child.Name = refID.ToString();
+                child.Tag = placement;
+                dSceneTree.AddToTree(child, node.Parent);
+
+                RenderInstance instance = new RenderInstance();
+                instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
+                Matrix33 rot = new Matrix33();
+                rot.EulerRotation = placement.Rotation;
+                rot.UpdateMatrixFromEuler();
+                instance.SetTransform(placement.Position, rot);
+                Graphics.InitObjectStack.Add(refID, instance);
+            }
         }
 
         private void Export3DButton_Click(object sender, EventArgs e)

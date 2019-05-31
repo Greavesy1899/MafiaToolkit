@@ -86,6 +86,8 @@
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS">Aktualizuj rodzica</String>
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Wybierz scenę do dodania jako rodzica.</String>
   <String ID="$FRAME_EDITOR_TITLE">Edytor FrameResource</String>
+  <String ID="$FRADD_TYPE">Typ frame’a</String>
+  <String ID="$QUESTION_FRADD">Wpisz nazwę i typ frame’a.</String>
 
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Wpisz nazwę</String>

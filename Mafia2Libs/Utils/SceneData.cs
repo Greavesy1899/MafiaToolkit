@@ -68,6 +68,8 @@ namespace Mafia2Tool
                     ibps.Add(new FileInfo(name));
                 else if (type == "VertexBufferPool")
                     vbps.Add(new FileInfo(name));
+                else if (type == "Actors")
+                    act.Add(new Actor(name));
                 else if (type == "FrameResource")
                     FrameResource = new FrameResource(name);
                 else if (type == "ItemDesc")
@@ -93,7 +95,7 @@ namespace Mafia2Tool
             if (Actors == null)
                 return;
 
-            AttachActors();
+            //AttachActors();
         }
 
         public static void AttachActors()
@@ -105,12 +107,11 @@ namespace Mafia2Tool
                 {
                     for (int c = 0; c != act.Items.Length; c++)
                     {
-                        if (act.Items[c].Hash1 == act.Definitions[i].Hash)
-                        {
-                            FrameObjectFrame frame = FrameResource.FrameObjects[act.Definitions[i].FrameIndex] as FrameObjectFrame;
-                            frame.Item = act.Items[c];
-                            FrameResource.FrameObjects[act.Definitions[i].FrameIndex] = frame;
-                        }
+                        int idx = Math.Abs(FrameResource.FrameObjects.Count - FrameResource.NewFrames.Count);
+                        FrameHolder holder = FrameResource.NewFrames[idx + act.Definitions[i].FrameIndex];
+                        FrameObjectFrame frame = (holder.Data as FrameObjectFrame);
+                        frame.Item = act.Items[c];
+                        FrameResource.NewFrames[idx + act.Definitions[i].FrameIndex] = holder;
                     }
                 }
             }
