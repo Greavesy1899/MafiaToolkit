@@ -210,7 +210,7 @@ namespace Rendering.Graphics
             }
         }
 
-        private void InitTextures(Device d3d)
+        private void InitTextures(Device d3d, DeviceContext d3dContext)
         {
             AOTexture = RenderStorageSingleton.Instance.TextureCache[0];
             for(int i = 0; i < LODs.Length; i++)
@@ -231,7 +231,7 @@ namespace Rendering.Graphics
                             {
                                 if (!string.IsNullOrEmpty(sampler.File))
                                 {
-                                    texture = TextureLoader.LoadTexture(d3d,sampler.File);
+                                    texture = TextureLoader.LoadTexture(d3d, d3dContext, sampler.File);
                                     RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
                                 }
                             }
@@ -248,7 +248,7 @@ namespace Rendering.Graphics
                             {
                                 if (!string.IsNullOrEmpty(sampler.File))
                                 {
-                                    texture = TextureLoader.LoadTexture(d3d, sampler.File);
+                                    texture = TextureLoader.LoadTexture(d3d, d3dContext, sampler.File);
                                     RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
                                 }
                             }
@@ -265,13 +265,13 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void InitBuffers(Device d3d)
+        public override void InitBuffers(Device d3d, DeviceContext d3dContext)
         {
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, LODs[0].Vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, LODs[0].Indices);
 
-            BoundingBox.InitBuffers(d3d);
-            InitTextures(d3d);
+            BoundingBox.InitBuffers(d3d, d3dContext);
+            InitTextures(d3d, d3dContext);
         }
 
         public override void SetTransform(Vector3 position, Matrix33 rotation)
@@ -346,7 +346,7 @@ namespace Rendering.Graphics
             if(isUpdatedNeeded)
             {
                 SetupShaders();
-                InitTextures(device);
+                InitTextures(device, deviceContext);
                 isUpdatedNeeded = false;
             }
         }

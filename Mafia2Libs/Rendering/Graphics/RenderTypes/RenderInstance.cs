@@ -15,9 +15,9 @@ namespace Rendering.Graphics
             collision = col;
         }
 
-        public override void InitBuffers(Device d3d)
+        public override void InitBuffers(Device d3d, DeviceContext context)
         {
-            collision.InitBuffers(d3d);
+            collision.InitBuffers(d3d, context);
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)

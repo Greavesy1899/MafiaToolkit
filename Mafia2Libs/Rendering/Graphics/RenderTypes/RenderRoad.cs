@@ -58,12 +58,12 @@ namespace Rendering.Graphics
             //}
         }
 
-        public override void InitBuffers(Device d3d)
+        public override void InitBuffers(Device d3d, DeviceContext context)
         {
-            Spline.InitBuffers(d3d);
+            Spline.InitBuffers(d3d, context);
 
             foreach (Render2DPlane plane in lanes)
-                plane.InitBuffers(d3d);
+                plane.InitBuffers(d3d, context);
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)

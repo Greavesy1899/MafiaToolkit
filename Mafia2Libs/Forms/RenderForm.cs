@@ -23,6 +23,7 @@ using System.ComponentModel;
 using Utils.Extensions;
 using ResourceTypes.Navigation;
 using ResourceTypes.Materials;
+using Utils.SharpDXExtensions;
 
 namespace Mafia2Tool
 {
@@ -196,19 +197,24 @@ namespace Mafia2Tool
                     Pick(mousePos.X, mousePos.Y);
                 }
 
-                float speed = Graphics.Timer.FrameTime * ToolkitSettings.CameraSpeed;
+                float multiplier = ToolkitSettings.CameraSpeed;
+
+                if (Input.IsKeyDown(Keys.ShiftKey))
+                    multiplier *= 2.0f;
+
+                float speed = Graphics.Timer.FrameTime * multiplier;
 
                 if (Input.IsKeyDown(Keys.A))
-                    Graphics.Camera.Position.X += speed;
+                    Graphics.Camera.Position -= Vector3Extenders.FromVector4(Vector4.Multiply(Graphics.Camera.ViewMatrix.Column1, speed));
 
                 if (Input.IsKeyDown(Keys.D))
-                    Graphics.Camera.Position.X -= speed;
+                    Graphics.Camera.Position += Vector3Extenders.FromVector4(Vector4.Multiply(Graphics.Camera.ViewMatrix.Column1, speed));
 
                 if (Input.IsKeyDown(Keys.W))
-                    Graphics.Camera.Position.Y += speed;
+                    Graphics.Camera.Position -= Vector3Extenders.FromVector4(Vector4.Multiply(Graphics.Camera.ViewMatrix.Column3, speed));
 
                 if (Input.IsKeyDown(Keys.S))
-                    Graphics.Camera.Position.Y -= speed;
+                    Graphics.Camera.Position += Vector3Extenders.FromVector4(Vector4.Multiply(Graphics.Camera.ViewMatrix.Column3, speed));
 
                 if (Input.IsKeyDown(Keys.Q))
                     Graphics.Camera.Position.Z += speed;

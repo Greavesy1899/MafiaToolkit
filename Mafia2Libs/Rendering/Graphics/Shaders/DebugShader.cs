@@ -27,8 +27,8 @@ namespace Rendering.Graphics
             vsFileName = ToolkitSettings.ShaderPath + vsFileName;
             psFileName = ToolkitSettings.ShaderPath + psFileName;
 
-            pixelShaderByteCode = ShaderBytecode.CompileFromFile(psFileName, psEntryPoint, "ps_5_0", ShaderFlags.None, EffectFlags.None);
-            vertexShaderByteCode = ShaderBytecode.CompileFromFile(vsFileName, vsEntryPoint, "vs_5_0", ShaderFlags.None, EffectFlags.None);
+            pixelShaderByteCode = ShaderBytecode.CompileFromFile(psFileName, psEntryPoint, "ps_4_0", ShaderFlags.None, EffectFlags.None);
+            vertexShaderByteCode = ShaderBytecode.CompileFromFile(vsFileName, vsEntryPoint, "vs_4_0", ShaderFlags.None, EffectFlags.None);
             PixelShader = new PixelShader(device, pixelShaderByteCode);
             VertexShader = new VertexShader(device, vertexShaderByteCode);
             Layout = new InputLayout(device, ShaderSignature.GetInputSignature(vertexShaderByteCode), VertexLayouts.BasicLayout.GetLayout());

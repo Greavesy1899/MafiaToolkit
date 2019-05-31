@@ -6,6 +6,16 @@ namespace Utils.SharpDXExtensions
 {
     public static class Vector3Extenders
     {
+
+        public static Vector3 FromVector4(Vector4 vector4)
+        {
+            Vector3 vec = new Vector3();
+            vec.X = vector4.X;
+            vec.Y = vector4.Y;
+            vec.Z = vector4.Z;
+            return vec;
+        }
+
         public static Vector3 ReadFromFile(BinaryReader reader)
         {
             Vector3 vec = new Vector3();

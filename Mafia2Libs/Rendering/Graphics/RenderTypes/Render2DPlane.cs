@@ -100,7 +100,7 @@ namespace Rendering.Graphics
             colour = vec;
         }
 
-        public override void InitBuffers(Device d3d)
+        public override void InitBuffers(Device d3d, DeviceContext context)
         {
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices);

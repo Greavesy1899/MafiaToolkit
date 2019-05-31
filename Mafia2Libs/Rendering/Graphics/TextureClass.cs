@@ -11,26 +11,29 @@ namespace Rendering.Graphics
     {
         private static string GetTextureFromPath(string fileName)
         {
-            string path = Path.Combine(SceneData.ScenePath, fileName);
-            if (File.Exists(path))
+            string path = "";
+            if (!fileName.Contains(".ifl"))
             {
-                string mip = Path.Combine(SceneData.ScenePath, "MIP_" + fileName);
-                if (File.Exists(mip) && ToolkitSettings.UseMIPS)
-                    return mip;
-                else
-                    return path;
-            }
+                path = Path.Combine(SceneData.ScenePath, fileName);
+                if (File.Exists(path))
+                {
+                    string mip = Path.Combine(SceneData.ScenePath, "MIP_" + fileName);
+                    if (File.Exists(mip) && ToolkitSettings.UseMIPS)
+                        return mip;
+                    else
+                        return path;
+                }
 
-            path = Path.Combine(ToolkitSettings.TexturePath, fileName);
-            if (File.Exists(path))
-            {
-                string mip = Path.Combine(ToolkitSettings.TexturePath, "MIP_" + fileName);
-                if (File.Exists(mip) && ToolkitSettings.UseMIPS)
-                    return mip;
-                else
-                    return path;
+                path = Path.Combine(ToolkitSettings.TexturePath, fileName);
+                if (File.Exists(path))
+                {
+                    string mip = Path.Combine(ToolkitSettings.TexturePath, "MIP_" + fileName);
+                    if (File.Exists(mip) && ToolkitSettings.UseMIPS)
+                        return mip;
+                    else
+                        return path;
+                }
             }
-
             path = Path.Combine(ToolkitSettings.TexturePath, "texture.dds");
             if (File.Exists(path))
                 return path;
@@ -41,14 +44,14 @@ namespace Rendering.Graphics
             }
         }
 
-        public static ShaderResourceView LoadTexture(Device d3d, string fileName)
+        public static ShaderResourceView LoadTexture(Device d3d, DeviceContext d3dContext, string fileName)
         {
             Resource ddsResource;
             ShaderResourceView _temp;
             DDSTextureLoader.DDS_ALPHA_MODE mode;
-
+            Debug.WriteLine(fileName);
             string texturePath = GetTextureFromPath(fileName);
-            DDSTextureLoader.CreateDDSTextureFromFile(d3d, texturePath, out ddsResource, out _temp, 4096, out mode);
+            DDSTextureLoader.CreateDDSTextureFromFile(d3d, d3dContext, texturePath, out ddsResource, out _temp, 4096, out mode);
             return _temp;
         }
     }

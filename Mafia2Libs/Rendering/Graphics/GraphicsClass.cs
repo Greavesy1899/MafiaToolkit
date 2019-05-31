@@ -51,7 +51,7 @@ namespace Rendering.Graphics
                 return false;
             }
             //this is backup!
-            RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, "texture.dds"));
+            RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, D3D.DeviceContext, "texture.dds"));
             return true;
         }
 
@@ -111,7 +111,7 @@ namespace Rendering.Graphics
         {
             foreach (KeyValuePair<int, IRenderer> asset in InitObjectStack)
             {
-                asset.Value.InitBuffers(D3D.Device);
+                asset.Value.InitBuffers(D3D.Device, D3D.DeviceContext);
                 Assets.Add(asset.Key, asset.Value);
             }
             InitObjectStack.Clear();

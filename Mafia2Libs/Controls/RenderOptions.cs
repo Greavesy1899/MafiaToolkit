@@ -35,6 +35,7 @@ namespace Forms.OptionControls
             CameraSpeedUpDown.Value = Math.Min((decimal)ToolkitSettings.CameraSpeed, CameraSpeedUpDown.Maximum);
             TexDirectoryBox.Text = ToolkitSettings.TexturePath;
             ExperimentalBox.Checked = ToolkitSettings.Experimental;
+            UseMIPsBox.Checked = ToolkitSettings.UseMIPS;
         }
 
         private void ScreenDepth_Changed(object sender, EventArgs e)

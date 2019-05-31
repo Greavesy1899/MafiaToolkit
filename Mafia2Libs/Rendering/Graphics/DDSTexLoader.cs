@@ -20,14 +20,14 @@
 //--------------------------------------------------------------------------------------
 
 using SharpDX;
-using SharpDX.DXGI;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
+using SharpDX.DXGI;
+using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using Device = SharpDX.Direct3D11.Device;
 using Resource = SharpDX.Direct3D11.Resource;
-using System.IO;
-using System;
 
 namespace Rendering.Graphics
 {

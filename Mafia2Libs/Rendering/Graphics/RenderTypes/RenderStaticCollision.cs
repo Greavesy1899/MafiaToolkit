@@ -25,12 +25,12 @@ namespace Rendering.Graphics
             BoundingBox = new RenderBoundingBox();
         }
 
-        public override void InitBuffers(Device d3d)
+        public override void InitBuffers(Device d3d, DeviceContext context)
         {
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, Vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, Indices);
             Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
-            BoundingBox.InitBuffers(d3d);
+            BoundingBox.InitBuffers(d3d, context);
         }
 
         //TEMP
