@@ -122,7 +122,7 @@ namespace Mafia2Tool
             this.folderView.SelectedImageIndex = 0;
             this.folderView.Size = new System.Drawing.Size(266, 401);
             this.folderView.TabIndex = 0;
-            this.folderView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            this.folderView.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.FolderViewAfterExpand);
             // 
             // imageBank
             // 

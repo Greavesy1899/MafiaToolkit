@@ -48,31 +48,31 @@
             this.DuplicateButton,
             this.Export3DButton});
             this.EntryMenuStrip.Name = "EntryMenuStrip";
-            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 114);
+            this.EntryMenuStrip.Size = new System.Drawing.Size(166, 92);
             this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
             // 
             // JumpToButton
             // 
             this.JumpToButton.Name = "JumpToButton";
-            this.JumpToButton.Size = new System.Drawing.Size(180, 22);
+            this.JumpToButton.Size = new System.Drawing.Size(165, 22);
             this.JumpToButton.Text = "Jump To Position";
             // 
             // DeleteButton
             // 
             this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(180, 22);
+            this.DeleteButton.Size = new System.Drawing.Size(165, 22);
             this.DeleteButton.Text = "Delete";
             // 
             // DuplicateButton
             // 
             this.DuplicateButton.Name = "DuplicateButton";
-            this.DuplicateButton.Size = new System.Drawing.Size(180, 22);
+            this.DuplicateButton.Size = new System.Drawing.Size(165, 22);
             this.DuplicateButton.Text = "Duplicate";
             // 
             // Export3DButton
             // 
             this.Export3DButton.Name = "Export3DButton";
-            this.Export3DButton.Size = new System.Drawing.Size(180, 22);
+            this.Export3DButton.Size = new System.Drawing.Size(165, 22);
             this.Export3DButton.Text = "Export 3D";
             // 
             // imageList1
@@ -95,6 +95,7 @@
             // 
             this.treeView1.ContextMenuStrip = this.EntryMenuStrip;
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.HideSelection = false;
             this.treeView1.ImageIndex = 3;
             this.treeView1.ImageList = this.imageList1;
             this.treeView1.Location = new System.Drawing.Point(0, 0);

@@ -207,6 +207,7 @@
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\ItemDescEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\AnimalTraffic.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\Enums.cs" />
     <Compile Include="MafiaLib\FileTypes\SdsConfigFile.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorParse.cs" />

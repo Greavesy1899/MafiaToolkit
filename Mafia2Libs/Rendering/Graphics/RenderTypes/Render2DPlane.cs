@@ -20,7 +20,7 @@ namespace Rendering.Graphics
             colour = new Vector4(1.0f);
         }
 
-        public void Init(ref Vector3[] points, ResourceTypes.Navigation.unkStruct1Sect1 lane, int roadFlags)
+        public void Init(ref Vector3[] points, ResourceTypes.Navigation.unkStruct1Sect1 lane, ResourceTypes.Navigation.RoadFlags roadFlags)
         {
             vertices = new VertexLayouts.BasicLayout.Vertex[points.Length * 2];
             indices = new ushort[(vertices.Length - 2) * 3];
@@ -49,7 +49,7 @@ namespace Rendering.Graphics
                 float x = 0.0f;
                 float y = 0.0f;
 
-                if (roadFlags >= 4096)
+                if (roadFlags.HasFlag(ResourceTypes.Navigation.RoadFlags.BackwardDirection))
                 {
                     x = (points[i].X + left.X * lane.unk01);
                     y = (points[i].Y + left.Y * lane.unk01);

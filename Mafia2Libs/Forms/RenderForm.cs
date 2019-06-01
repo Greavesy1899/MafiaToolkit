@@ -66,7 +66,6 @@ namespace Mafia2Tool
             PopulateList(info);
             TEMPCameraSpeed.Text = ToolkitSettings.CameraSpeed.ToString();
             KeyPreview = true;
-            RenderPanel.Focus();
             StartD3DPanel();
         }
 
@@ -149,8 +148,8 @@ namespace Mafia2Tool
 
         public void Run()
         {
-            KeyDown += (s, e) => Input.KeyDown(e.KeyCode);
-            KeyUp += (s, e) => Input.KeyUp(e.KeyCode);
+            RenderPanel.KeyDown += (s, e) => Input.KeyDown(e.KeyCode);
+            RenderPanel.KeyUp += (s, e) => Input.KeyUp(e.KeyCode);
             RenderPanel.MouseDown += (s, e) => Input.ButtonDown(e.Button);
             RenderPanel.MouseUp += (s, e) => Input.ButtonUp(e.Button);
             RenderPanel.MouseMove += RenderForm_MouseMove;
@@ -582,7 +581,7 @@ namespace Mafia2Tool
 
             dPropertyGrid.SetObject(dSceneTree.treeView1.SelectedNode.Tag);
             //dPropertyGrid.Show(dockPanel1, DockState.DockRight);
-            RenderPanel.Focus();
+            //RenderPanel.Focus();
         }
 
         private void ApplyEntryChanges(object sender, EventArgs e)
@@ -862,7 +861,6 @@ namespace Mafia2Tool
                     }
                 }
             }
-            toolStripStatusLabel4.Text = ray.Position.ToString();
             TreeNode[] nodes = dSceneTree.treeView1.Nodes.Find(lowestRefID.ToString(), true);
 
             if (nodes.Length > 0)
@@ -1021,7 +1019,7 @@ namespace Mafia2Tool
         {
             TreeNode node = dSceneTree.treeView1.SelectedNode;
 
-            if (node.Tag.GetType() == typeof(FrameEntry))
+            if (FrameResource.IsFrameType(node.Tag))
             {
                 if (node.Nodes.Count > 0)
                 {
@@ -1057,7 +1055,7 @@ namespace Mafia2Tool
                 if (RenderStorageSingleton.Instance.StaticCollisions.ContainsKey(data.Hash))
                     RenderStorageSingleton.Instance.StaticCollisions.Remove(data.Hash);
 
-                for(int i = 0; i != node.Nodes.Count; i++)
+                for (int i = 0; i != node.Nodes.Count; i++)
                 {
                     int iName = Convert.ToInt32(node.Nodes[i].Name);
                     if (Graphics.Assets.ContainsKey(iName))
@@ -1072,7 +1070,7 @@ namespace Mafia2Tool
             FrameObjectBase newEntry = null;
 
             //new safety net
-            if (node.Tag.GetType() == typeof(FrameObjectBase))
+            if (FrameResource.IsFrameType(node.Tag))
             {
                 //is this even needed? hmm.
                 if (node.Tag.GetType() == typeof(FrameObjectArea))
@@ -1132,7 +1130,7 @@ namespace Mafia2Tool
                 SceneData.FrameResource.FrameObjects.Add(newEntry.RefID, newEntry);
                 UpdateMatricesRecursive();
             }
-            else if(node.Tag.GetType() == typeof(Collision.Placement))
+            else if (node.Tag.GetType() == typeof(Collision.Placement))
             {
                 Collision.Placement placement = new Collision.Placement((Collision.Placement)node.Tag);
 
@@ -1159,7 +1157,7 @@ namespace Mafia2Tool
 
         private void Export3DButton_Click(object sender, EventArgs e)
         {
-            if(dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(Collision.Placement))
+            if (dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(Collision.Placement))
                 ExportCollision(dSceneTree.treeView1.SelectedNode.Tag as Collision.Placement);
             else
                 Export3DFrame(dSceneTree.treeView1.SelectedNode.Tag);

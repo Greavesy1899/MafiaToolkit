@@ -100,6 +100,8 @@ namespace Mafia2Tool
         /// </summary>
         public void InitExplorerSettings()
         {
+            folderView.Nodes.Clear();
+
             if (string.IsNullOrEmpty(ToolkitSettings.M2Directory))
                 GetPath();
 
@@ -188,10 +190,6 @@ namespace Mafia2Tool
             }
         }
 
-        /// <summary>
-        /// Clears listView1 and displays the current directory.
-        /// </summary>
-        /// <param name="directory">directory to show</param>
         private void OpenDirectory(DirectoryInfo directory, bool searchMode = false, string filename = null)
         {
             infoText.Text = "Loading Directory..";
@@ -258,9 +256,12 @@ namespace Mafia2Tool
             currentDirectory = directory;
             string directoryPath = directory.FullName.Remove(0, directory.FullName.IndexOf(originalPath.Name)).TrimEnd('\\');
 
+            //god this is terrible but it works.
+            folderView.AfterExpand -= FolderViewAfterExpand;
             TreeNode nodeToExpand = folderView.Nodes.FindTreeNodeByFullPath(directoryPath);
             if (nodeToExpand != null)
                 nodeToExpand.Expand();
+            folderView.AfterExpand += FolderViewAfterExpand;
         }
 
         /// <summary>
@@ -409,15 +410,6 @@ namespace Mafia2Tool
             }
 
             FolderPath.Width = Math.Max(0, width - FolderPath.Margin.Horizontal);
-        }
-
-        void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            if (e.Node != null)
-            {
-                TreeNode selectedNode = e.Node;
-                OpenDirectory((DirectoryInfo)selectedNode.Tag);
-            }
         }
         private void listView1_ItemActivate(object sender, EventArgs e)
         {
@@ -628,11 +620,7 @@ namespace Mafia2Tool
         }
 
         //'File' Button dropdown events.
-        private void OpenMafiaIIClicked(object sender, EventArgs e)
-        {
-            folderView.Nodes.Clear();
-            InitExplorerSettings();
-        }
+        private void OpenMafiaIIClicked(object sender, EventArgs e) => InitExplorerSettings();
         private void ExitToolkitClicked(object sender, EventArgs e) => Application.Exit();
         private void RunMafiaIIClicked(object sender, EventArgs e) => Process.Start(launcher.FullName);
         private void SearchBarOnTextChanged(object sender, EventArgs e) => OpenDirectory(currentDirectory, true, SearchEntryText.Text);
@@ -724,6 +712,17 @@ namespace Mafia2Tool
         {
             if(e.KeyChar == 0x8)
                 OnUpButtonClicked(null, null);
+        }
+
+        private void FolderViewAfterExpand(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node != null)
+            {
+                DirectoryInfo dir = (DirectoryInfo)e.Node.Tag;
+
+                if (currentDirectory != dir)
+                    OpenDirectory(dir);
+            }
         }
     }
 }

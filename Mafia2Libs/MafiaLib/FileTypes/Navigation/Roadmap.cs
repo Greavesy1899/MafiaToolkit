@@ -54,14 +54,14 @@ namespace ResourceTypes.Navigation
         public uint offset1;
         public ushort rangeSize0;
         public ushort rangeSize1;
-        public short unk2;
+        public RoadFlags flags;
         public ushort unk3;
         public unkStruct1Sect1[] lanes;
         public unkStruct1Sect2[] ranges;
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5}, {6}, {7}, {8}, {9}", unk0, unk1, offset0, laneSize0, laneSize1, offset1, rangeSize0, rangeSize1, unk2, unk3);
+            return string.Format("{0} {1} {2} {3} {4} {5}, {6}, {7}, {8}, {9}", unk0, unk1, offset0, laneSize0, laneSize1, offset1, rangeSize0, rangeSize1, flags, unk3);
         }
     }
 
@@ -69,7 +69,7 @@ namespace ResourceTypes.Navigation
     {
         //16 bytes
         public float unk01;
-        public ushort unk02;
+        public LaneTypes flags;
         public ushort unk03;
         public uint unk04;
         public ushort unk05;
@@ -78,7 +78,7 @@ namespace ResourceTypes.Navigation
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5}", unk01, unk02, unk03, unk04, unk05, unk06);
+            return string.Format("{0} {1} {2} {3} {4} {5}", unk01, flags, unk03, unk04, unk05, unk06);
         }
     }
 
@@ -279,7 +279,7 @@ namespace ResourceTypes.Navigation
                 reader.ReadByte();
                 data.rangeSize0 = reader.ReadUInt16();
                 data.rangeSize1 = reader.ReadUInt16();
-                data.unk2 = reader.ReadInt16();
+                data.flags = (RoadFlags)reader.ReadInt16();
                 data.unk3 = reader.ReadUInt16();
                 data3[i] = data;
             }
@@ -293,7 +293,7 @@ namespace ResourceTypes.Navigation
                 {
                     unkStruct1Sect1 sect = new unkStruct1Sect1();
                     sect.unk01 = reader.ReadSingle();
-                    sect.unk02 = reader.ReadUInt16();
+                    sect.flags = (LaneTypes)reader.ReadUInt16();
                     sect.unk03 = reader.ReadUInt16();
                     sect.unk04 = reader.ReadInt24();
                     reader.ReadByte();
@@ -305,7 +305,7 @@ namespace ResourceTypes.Navigation
                     {
                         unkStruct1Sect1 child = new unkStruct1Sect1();
                         child.unk01 = reader.ReadSingle();
-                        child.unk02 = reader.ReadUInt16();
+                        child.flags = (LaneTypes)reader.ReadUInt16();
                         child.unk03 = reader.ReadUInt16();
                         child.unk04 = reader.ReadInt24();
                         reader.ReadByte();
@@ -317,7 +317,7 @@ namespace ResourceTypes.Navigation
                         {
                             unkStruct1Sect1 child2 = new unkStruct1Sect1();
                             child2.unk01 = reader.ReadSingle();
-                            child2.unk02 = reader.ReadUInt16();
+                            child2.flags = (LaneTypes)reader.ReadUInt16();
                             child2.unk03 = reader.ReadUInt16();
                             child2.unk04 = reader.ReadInt24();
                             reader.ReadByte();
@@ -561,9 +561,15 @@ namespace ResourceTypes.Navigation
             WriteUpdatedOffset(writer, 8);
             positions = new long[data3.Length]; //lane offset
             long[] pos2 = new long[data3.Length]; //range offset
+            int laneIDX = 0;
+            int curSpline = 0;
+            int previousSpline = 0;
+            //unk0
+            //unk1
             for (int i = 0; i != data3.Length; i++)
             {
                 SplineProperties data = data3[i];
+                laneIDX += (data.laneSize0-1);
                 writer.Write(data.unk0);
                 writer.Write(data.unk1);
                 positions[i] = writer.BaseStream.Position;
@@ -574,8 +580,9 @@ namespace ResourceTypes.Navigation
                 writer.WriteInt24(data.offset1);
                 writer.Write(data.rangeSize0);
                 writer.Write(data.rangeSize1);
-                writer.Write(data.unk2);
+                writer.Write((short)data.flags);
                 writer.Write(data.unk3);
+                previousSpline = curSpline;
             }
 
             for (int i = 0; i < splinePropertiesCount; i++)
@@ -591,7 +598,7 @@ namespace ResourceTypes.Navigation
                 {
                     unkStruct1Sect1 sect = data3[i].lanes[y];
                     writer.Write(sect.unk01);
-                    writer.Write(sect.unk02);
+                    writer.Write((ushort)sect.flags);
                     writer.Write(sect.unk03);
                     writer.WriteInt24(sect.unk04);
                     writer.Write(sect.unk05);
@@ -601,7 +608,7 @@ namespace ResourceTypes.Navigation
                     {
                         unkStruct1Sect1 child = sect.children[x];
                         writer.Write(child.unk01);
-                        writer.Write(child.unk02);
+                        writer.Write((ushort)child.flags);
                         writer.Write(child.unk03);
                         writer.WriteInt24(child.unk04);
                         writer.Write(child.unk05);
@@ -611,7 +618,7 @@ namespace ResourceTypes.Navigation
                         {
                             unkStruct1Sect1 child2 = child.children[z];
                             writer.Write(child2.unk01);
-                            writer.Write(child2.unk02);
+                            writer.Write((ushort)child.flags);
                             writer.Write(child2.unk03);
                             writer.WriteInt24(child2.unk04);
                             writer.Write(child2.unk05);

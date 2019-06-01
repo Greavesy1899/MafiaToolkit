@@ -733,5 +733,25 @@ namespace ResourceTypes.FrameResource
             header.NumFolderNames = header.SceneFolders.Count;
             NewFrames = updatedFrames;
         }
+
+        public static bool IsFrameType(object entry)
+        {
+            if (entry.GetType() == typeof(FrameObjectJoint) ||
+                entry.GetType() == typeof(FrameObjectSingleMesh) ||
+                entry.GetType() == typeof(FrameObjectFrame) ||
+                entry.GetType() == typeof(FrameObjectLight) ||
+                entry.GetType() == typeof(FrameObjectCamera) ||
+                entry.GetType() == typeof(FrameObjectComponent_U005) ||
+                entry.GetType() == typeof(FrameObjectSector) ||
+                entry.GetType() == typeof(FrameObjectDummy) ||
+                entry.GetType() == typeof(FrameObjectDeflector) ||
+                entry.GetType() == typeof(FrameObjectArea) ||
+                entry.GetType() == typeof(FrameObjectTarget) ||
+                entry.GetType() == typeof(FrameObjectModel) ||
+                entry.GetType() == typeof(FrameObjectCollision))
+                return true;
+
+            return false;
+        }
     }
 }

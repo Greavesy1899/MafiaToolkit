@@ -91,10 +91,7 @@ namespace Forms.Docking
                 EntryMenuStrip.Items[1].Visible = true;
                 EntryMenuStrip.Items[2].Visible = true;
 
-                if (treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectBase) || 
-                    treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement) || 
-                    treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectDummy) ||
-                    treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectJoint))
+                if (FrameResource.IsFrameType(treeView1.SelectedNode.Tag))
                 {
                     EntryMenuStrip.Items[0].Visible = true;
                 }

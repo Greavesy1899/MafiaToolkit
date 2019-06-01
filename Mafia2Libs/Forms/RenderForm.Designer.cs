@@ -44,20 +44,18 @@ namespace Mafia2Tool
             this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewOptionProperties = new System.Windows.Forms.ToolStripMenuItem();
             this.OptionsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ToggleWireframeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToggleCullingButton = new System.Windows.Forms.ToolStripMenuItem();
             this.TEMPCameraSpeed = new System.Windows.Forms.ToolStripTextBox();
             this.StatusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.RenderPanel = new System.Windows.Forms.Panel();
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.ViewOptionProperties = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolbarStrip.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -91,14 +89,14 @@ namespace Mafia2Tool
             // SaveButton
             // 
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(180, 22);
+            this.SaveButton.Size = new System.Drawing.Size(106, 22);
             this.SaveButton.Text = "$SAVE";
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // ExitButton
             // 
             this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(180, 22);
+            this.ExitButton.Size = new System.Drawing.Size(106, 22);
             this.ExitButton.Text = "$EXIT";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -163,6 +161,13 @@ namespace Mafia2Tool
             this.ObjectPropertiesButton.Text = "$VIEW_PROPERTY_GRID";
             this.ObjectPropertiesButton.Click += new System.EventHandler(this.PropertyGridOnClicked);
             // 
+            // ViewOptionProperties
+            // 
+            this.ViewOptionProperties.Name = "ViewOptionProperties";
+            this.ViewOptionProperties.Size = new System.Drawing.Size(199, 22);
+            this.ViewOptionProperties.Text = "$VIEW_OPTIONS";
+            this.ViewOptionProperties.Click += new System.EventHandler(this.ViewOptionProperties_Click);
+            // 
             // OptionsButton
             // 
             this.OptionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -199,9 +204,7 @@ namespace Mafia2Tool
             // 
             this.StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
-            this.toolStripStatusLabel2,
-            this.toolStripStatusLabel3,
-            this.toolStripStatusLabel4});
+            this.toolStripStatusLabel3});
             this.StatusStrip.Location = new System.Drawing.Point(0, 426);
             this.StatusStrip.Name = "StatusStrip";
             this.StatusStrip.Size = new System.Drawing.Size(800, 24);
@@ -215,24 +218,11 @@ namespace Mafia2Tool
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(122, 19);
             this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)));
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(122, 19);
-            this.toolStripStatusLabel2.Text = "toolStripStatusLabel2";
-            // 
             // toolStripStatusLabel3
             // 
             this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
             this.toolStripStatusLabel3.Size = new System.Drawing.Size(118, 19);
             this.toolStripStatusLabel3.Text = "toolStripStatusLabel3";
-            // 
-            // toolStripStatusLabel4
-            // 
-            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
-            this.toolStripStatusLabel4.Size = new System.Drawing.Size(118, 19);
-            this.toolStripStatusLabel4.Text = "toolStripStatusLabel4";
             // 
             // imageList1
             // 
@@ -261,13 +251,6 @@ namespace Mafia2Tool
             // MeshBrowser
             // 
             this.MeshBrowser.Filter = "Meshes|*.m2t|FBX|*.fbx";
-            // 
-            // ViewOptionProperties
-            // 
-            this.ViewOptionProperties.Name = "ViewOptionProperties";
-            this.ViewOptionProperties.Size = new System.Drawing.Size(199, 22);
-            this.ViewOptionProperties.Text = "$VIEW_OPTIONS";
-            this.ViewOptionProperties.Click += new System.EventHandler(this.ViewOptionProperties_Click);
             // 
             // D3DForm
             // 
@@ -305,9 +288,7 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripDropDownButton EditButton;
         private System.Windows.Forms.ToolStripMenuItem AddButton;
         private System.Windows.Forms.OpenFileDialog MeshBrowser;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
         private System.Windows.Forms.ImageList imageList1;
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
         private System.Windows.Forms.ToolStripMenuItem SceneTreeButton;

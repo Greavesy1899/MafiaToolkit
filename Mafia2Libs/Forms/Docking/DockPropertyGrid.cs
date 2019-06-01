@@ -41,7 +41,7 @@ namespace Forms.Docking
         private void SetTransformEdit()
         {
             IsEntryReady = false;
-            if (currentObject is FrameObjectBase)
+            if (FrameResource.IsFrameType(currentObject))
             {
                 FrameObjectBase fObject = (currentObject as FrameObjectBase);
                 CurrentEntry.Text = fObject.Name.String;
@@ -75,7 +75,7 @@ namespace Forms.Docking
         {
             if(IsEntryReady && currentObject != null)
             {
-                if (currentObject is FrameObjectBase)
+                if (FrameResource.IsFrameType(currentObject))
                 {
                     FrameObjectBase fObject = (currentObject as FrameObjectBase);
                     fObject.Matrix.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));

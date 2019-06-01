@@ -10,6 +10,7 @@ namespace Rendering.Graphics
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public RenderLine Spline { get; set; }
+        public BoundingBox BBox { get; set; }
         Render2DPlane[] lanes;
 
         public RenderRoad()
@@ -47,15 +48,16 @@ namespace Rendering.Graphics
             {
                 line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3];
             }
-            //List editPoints = (Vector3[])line.Points.Clone();
-            lanes = new Render2DPlane[0];
+            Vector3[] editPoints = (Vector3[])line.Points.Clone();
+            lanes = new Render2DPlane[properties.laneSize0 / 2];
             Spline = line;
-            //for (int i = 0; i != properties.laneSize0; i++)
-            //{
-            //    Render2DPlane lane = new Render2DPlane();
-            //    lane.Init(ref editPoints, properties.lanes[i], properties.unk2);
-            //    lanes[i] = lane;
-            //}
+            for (int i = 0; i != properties.laneSize0/2; i++)
+            {
+                Render2DPlane lane = new Render2DPlane();
+                lane.Init(ref editPoints, properties.lanes[i], properties.flags);
+                lanes[i] = lane;
+            }
+            BBox = BoundingBox.FromPoints(editPoints);
         }
 
         public override void InitBuffers(Device d3d, DeviceContext context)
