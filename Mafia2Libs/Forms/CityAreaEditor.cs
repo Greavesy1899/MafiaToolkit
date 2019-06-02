@@ -99,5 +99,11 @@ namespace Mafia2Tool
         {
             UpdateAreaData(null, null);
         }
+
+        private void DeleteArea_Click(object sender, EventArgs e)
+        {
+            if(listBox1.SelectedItem != null)
+                listBox1.Items.Remove(listBox1.SelectedItem);
+        }
     }
 }

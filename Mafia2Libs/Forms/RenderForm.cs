@@ -186,8 +186,8 @@ namespace Mafia2Tool
             {
                 if (Input.IsButtonDown(MouseButtons.Right))
                 {
-                    var dx = 0.25f * (mousePos.X - lastMousePos.X);
-                    var dy = 0.25f * (mousePos.Y - lastMousePos.Y);
+                    var dx = -0.25f * (mousePos.X - lastMousePos.X);
+                    var dy = -0.25f * (mousePos.Y - lastMousePos.Y);
                     Graphics.Camera.Pitch(dy);
                     Graphics.Camera.Yaw(dx);
                 }
@@ -304,16 +304,20 @@ namespace Mafia2Tool
                 {
                     List<SplineDefinition> splines = new List<SplineDefinition>();
 
-                    for (int i = 0; i != RenderStorageSingleton.Instance.SplineStorage.Count; i++)
+                    for (int i = 0; i != roadRoot.Nodes.Count; i++)
                     {
-                        RenderLine line = RenderStorageSingleton.Instance.SplineStorage[i];
+                        RenderRoad road = (RenderRoad)roadRoot.Nodes[i].Tag;
                         SplineDefinition spline = new SplineDefinition();
-                        spline.NumSplines1 = spline.NumSplines2 = (short)line.Points.Length;
+                        spline.NumSplines1 = spline.NumSplines2 = (short)road.Spline.Points.Length;
                         spline.unk0 = 128;
-                        spline.points = line.Points;
+                        spline.points = road.Spline.Points;
+                        spline.hasToward = road.HasToward;
+                        spline.hasBackward = road.HasBackward;
+                        spline.backward = road.Backward;
+                        spline.toward = road.Toward;
                         splines.Add(spline);
                     }
-                    SceneData.roadMap.data1 = splines.ToArray();
+                    SceneData.roadMap.splines = splines.ToArray();
                     SceneData.roadMap.WriteToFile();
                 }
 
@@ -446,20 +450,11 @@ namespace Mafia2Tool
                 TreeNode node = new TreeNode("RoadMap Data");
                 roadRoot = node;
 
-                for (int i = 0; i != SceneData.roadMap.data1.Length; i++)
+                for (int i = 0; i != SceneData.roadMap.splines.Length; i++)
                 {
-                    ResourceTypes.Navigation.SplineDefinition definition = SceneData.roadMap.data1[i];
-                    RenderLine line = new RenderLine();
-                    line.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-                    line.Init(definition.points);
-                    RenderStorageSingleton.Instance.SplineStorage.Add(line);
-                }
-                for (int i = 0; i != SceneData.roadMap.data3.Length; i++)
-                {
-                    SplineProperties properties = SceneData.roadMap.data3[i];
                     RenderRoad road = new RenderRoad();
                     int generatedID = StringHelpers.RandomGenerator.Next();
-                    road.Init(properties);
+                    road.Init(SceneData.roadMap.splines[i]);
                     assets.Add(generatedID, road);
                     TreeNode child = new TreeNode(i.ToString());
                     child.Text = "ID: " + i;
@@ -468,12 +463,12 @@ namespace Mafia2Tool
                     node.Nodes.Add(child);
                 }
 
-                for (int i = 0; i < SceneData.roadMap.data4.Length; i++)
+                for (int i = 0; i < SceneData.roadMap.junctionData.Length; i++)
                 {
-                    if (SceneData.roadMap.data4[i].boundaries.Length > 0)
+                    if (SceneData.roadMap.junctionData[i].boundaries.Length > 0)
                     {
-                        Vector3[] extraPoints = new Vector3[SceneData.roadMap.data4[i].boundaries.Length + 1];
-                        Array.Copy(SceneData.roadMap.data4[i].boundaries, extraPoints, SceneData.roadMap.data4[i].boundaries.Length);
+                        Vector3[] extraPoints = new Vector3[SceneData.roadMap.junctionData[i].boundaries.Length + 1];
+                        Array.Copy(SceneData.roadMap.junctionData[i].boundaries, extraPoints, SceneData.roadMap.junctionData[i].boundaries.Length);
                         extraPoints[extraPoints.Length - 1] = extraPoints[0];
                         RenderLine lineBoundary = new RenderLine();
                         lineBoundary.SetColour(new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -481,11 +476,11 @@ namespace Mafia2Tool
                         assets.Add(StringHelpers.RandomGenerator.Next(), lineBoundary);
                     }
 
-                    for (int x = 0; x < SceneData.roadMap.data4[i].splines.Length; x++)
+                    for (int x = 0; x < SceneData.roadMap.junctionData[i].splines.Length; x++)
                     {
                         RenderLine line = new RenderLine();
                         line.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
-                        line.Init(SceneData.roadMap.data4[i].splines[x].path);
+                        line.Init(SceneData.roadMap.junctionData[i].splines[x].path);
                         assets.Add(StringHelpers.RandomGenerator.Next(), line);
                     }
                 }

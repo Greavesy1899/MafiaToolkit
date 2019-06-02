@@ -405,9 +405,6 @@ namespace ResourceTypes.FrameResource
                 node.Tag = fObject;
                 node.Name = fObject.RefID.ToString();
 
-                if (fObject.GetType() == typeof(FrameObjectLight))
-                    node.ImageIndex = 1;
-
                 if (root.Nodes.Find(fObject.RefID.ToString(), true).Length > 0)
                     continue;
 
@@ -419,6 +416,21 @@ namespace ResourceTypes.FrameResource
                     if (p2Nodes.Length > 0)
                     {
                         p2Nodes[0].Nodes.Add(node);
+                    }
+                    else
+                    {
+                        Console.WriteLine("did not add {0}", node.Text);
+                        notAddedNodes.Add(thisKey, node);
+                    }
+                }
+                else if(p1idx != -1)
+                {
+                    FrameEntry pBase1 = (GetEntryFromIdx(p1idx).Data as FrameEntry);
+                    TreeNode[] p1Nodes = root.Nodes.Find(pBase1.RefID.ToString(), true);
+
+                    if (p1Nodes.Length > 0)
+                    {
+                        p1Nodes[0].Nodes.Add(node);
                     }
                     else
                     {
@@ -448,9 +460,6 @@ namespace ResourceTypes.FrameResource
                     TreeNode node = new TreeNode(fObject.ToString());
                     node.Tag = fObject;
                     node.Name = fObject.RefID.ToString();
-
-                    if (fObject.GetType() == typeof(FrameObjectLight))
-                        node.ImageIndex = 1;
 
                     FrameEntry p1Base = GetEntryFromIdx(p1idx).Data as FrameEntry;
                     FrameEntry p2Base = GetEntryFromIdx(p2idx).Data as FrameEntry;
@@ -594,8 +603,12 @@ namespace ResourceTypes.FrameResource
                 else if (entry.Value is FrameObjectSingleMesh)
                 {
                     FrameObjectSingleMesh mesh = (entry.Value as FrameObjectSingleMesh);
-                    isGeomUsed[mesh.Refs["Mesh"]] = true;
-                    isMatUsed[mesh.Refs["Material"]] = true;
+
+                    if(mesh.MeshIndex > -1)
+                        isGeomUsed[mesh.Refs["Mesh"]] = true;
+
+                    if(mesh.MaterialIndex > -1)
+                        isMatUsed[mesh.Refs["Material"]] = true;
                 }
             }
 

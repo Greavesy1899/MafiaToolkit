@@ -20,13 +20,24 @@ namespace Rendering.Graphics
             colour = new Vector4(1.0f);
         }
 
-        public void Init(ref Vector3[] points, ResourceTypes.Navigation.unkStruct1Sect1 lane, ResourceTypes.Navigation.RoadFlags roadFlags)
+        public void Init(ref Vector3[] points, ResourceTypes.Navigation.LaneProperties lane, ResourceTypes.Navigation.RoadFlags roadFlags)
         {
             vertices = new VertexLayouts.BasicLayout.Vertex[points.Length * 2];
             indices = new ushort[(vertices.Length - 2) * 3];
             int idx = 0;
             for (int i = 0; i < points.Length; i++)
             {
+                if (lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.MainRoad) || (lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.IsHighway)))
+                    colour = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+                else if (lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.Parking))
+                    colour = new Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+                else if (lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.ExcludeImpassible))
+                    colour = new Vector4(0.5f, 0.1f, 0f, 1.0f);
+                else if (lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.ExcludeImpassible) && lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.BackRoad))
+                    colour = new Vector4(0.5f, 0.2f, 0.9f, 1.0f);
+                else if (lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.BackRoad))
+                    colour = new Vector4(0.5f, 0.2f, 0.9f, 1.0f);
+
                 vertices[idx] = new VertexLayouts.BasicLayout.Vertex();
                 vertices[idx].Position = points[i];
                 vertices[idx].Colour = colour;
@@ -51,13 +62,13 @@ namespace Rendering.Graphics
 
                 if (roadFlags.HasFlag(ResourceTypes.Navigation.RoadFlags.BackwardDirection))
                 {
-                    x = (points[i].X + left.X * lane.unk01);
-                    y = (points[i].Y + left.Y * lane.unk01);
+                    x = (points[i].X + left.X * lane.Width);
+                    y = (points[i].Y + left.Y * lane.Width);
                 }
                 else
                 {
-                    x = (points[i].X - left.X * lane.unk01);
-                    y = (points[i].Y - left.Y * lane.unk01);
+                    x = (points[i].X - left.X * lane.Width);
+                    y = (points[i].Y - left.Y * lane.Width);
                 }
 
                 vertices[idx].Position = new Vector3(x, y, points[i].Z);

@@ -49,10 +49,11 @@
             this.UnkByteLabel = new System.Windows.Forms.Label();
             this.UnkByteBox = new System.Windows.Forms.CheckBox();
             this.AreaGroupBox = new System.Windows.Forms.GroupBox();
-            this.Area1Box = new System.Windows.Forms.TextBox();
-            this.Area2Box = new System.Windows.Forms.TextBox();
-            this.ReloadAreaButton = new System.Windows.Forms.Button();
             this.SaveAreaButton = new System.Windows.Forms.Button();
+            this.ReloadAreaButton = new System.Windows.Forms.Button();
+            this.Area2Box = new System.Windows.Forms.TextBox();
+            this.Area1Box = new System.Windows.Forms.TextBox();
+            this.DeleteArea = new System.Windows.Forms.ToolStripMenuItem();
             this.CollisionContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.AreaGroupBox.SuspendLayout();
@@ -133,7 +134,8 @@
             // 
             this.toolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AddAreaButton});
+            this.AddAreaButton,
+            this.DeleteArea});
             this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
             this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolButton.Name = "toolButton";
@@ -143,7 +145,8 @@
             // AddAreaButton
             // 
             this.AddAreaButton.Name = "AddAreaButton";
-            this.AddAreaButton.Size = new System.Drawing.Size(138, 22);
+            this.AddAreaButton.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
+            this.AddAreaButton.Size = new System.Drawing.Size(191, 22);
             this.AddAreaButton.Text = "$ADD_AREA";
             this.AddAreaButton.Click += new System.EventHandler(this.AddAreaButton_Click);
             // 
@@ -229,19 +232,15 @@
             this.AreaGroupBox.TabStop = false;
             this.AreaGroupBox.Text = "$AREA_DATA";
             // 
-            // Area1Box
+            // SaveAreaButton
             // 
-            this.Area1Box.Location = new System.Drawing.Point(142, 48);
-            this.Area1Box.Name = "Area1Box";
-            this.Area1Box.Size = new System.Drawing.Size(229, 20);
-            this.Area1Box.TabIndex = 26;
-            // 
-            // Area2Box
-            // 
-            this.Area2Box.Location = new System.Drawing.Point(142, 74);
-            this.Area2Box.Name = "Area2Box";
-            this.Area2Box.Size = new System.Drawing.Size(229, 20);
-            this.Area2Box.TabIndex = 27;
+            this.SaveAreaButton.Location = new System.Drawing.Point(18, 147);
+            this.SaveAreaButton.Name = "SaveAreaButton";
+            this.SaveAreaButton.Size = new System.Drawing.Size(91, 23);
+            this.SaveAreaButton.TabIndex = 29;
+            this.SaveAreaButton.Text = "$SAVE_AREA";
+            this.SaveAreaButton.UseVisualStyleBackColor = true;
+            this.SaveAreaButton.Click += new System.EventHandler(this.SaveArea_Clicked);
             // 
             // ReloadAreaButton
             // 
@@ -253,15 +252,27 @@
             this.ReloadAreaButton.UseVisualStyleBackColor = true;
             this.ReloadAreaButton.Click += new System.EventHandler(this.ReloadArea_Click);
             // 
-            // SaveAreaButton
+            // Area2Box
             // 
-            this.SaveAreaButton.Location = new System.Drawing.Point(18, 147);
-            this.SaveAreaButton.Name = "SaveAreaButton";
-            this.SaveAreaButton.Size = new System.Drawing.Size(91, 23);
-            this.SaveAreaButton.TabIndex = 29;
-            this.SaveAreaButton.Text = "$SAVE_AREA";
-            this.SaveAreaButton.UseVisualStyleBackColor = true;
-            this.SaveAreaButton.Click += new System.EventHandler(this.SaveArea_Clicked);
+            this.Area2Box.Location = new System.Drawing.Point(142, 74);
+            this.Area2Box.Name = "Area2Box";
+            this.Area2Box.Size = new System.Drawing.Size(229, 20);
+            this.Area2Box.TabIndex = 27;
+            // 
+            // Area1Box
+            // 
+            this.Area1Box.Location = new System.Drawing.Point(142, 48);
+            this.Area1Box.Name = "Area1Box";
+            this.Area1Box.Size = new System.Drawing.Size(229, 20);
+            this.Area1Box.TabIndex = 26;
+            // 
+            // DeleteArea
+            // 
+            this.DeleteArea.Name = "DeleteArea";
+            this.DeleteArea.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D)));
+            this.DeleteArea.Size = new System.Drawing.Size(191, 22);
+            this.DeleteArea.Text = "$DELETE_AREA";
+            this.DeleteArea.Click += new System.EventHandler(this.DeleteArea_Click);
             // 
             // CityAreaEditor
             // 
@@ -308,5 +319,6 @@
         private System.Windows.Forms.TextBox Area2Box;
         private System.Windows.Forms.Button SaveAreaButton;
         private System.Windows.Forms.Button ReloadAreaButton;
+        private System.Windows.Forms.ToolStripMenuItem DeleteArea;
     }
 }

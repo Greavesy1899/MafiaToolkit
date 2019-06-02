@@ -1,4 +1,4 @@
-﻿using System;
+﻿using ResourceTypes.Navigation;
 using System.ComponentModel;
 using SharpDX;
 using SharpDX.Direct3D11;
@@ -11,52 +11,66 @@ namespace Rendering.Graphics
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public RenderLine Spline { get; set; }
         public BoundingBox BBox { get; set; }
-        Render2DPlane[] lanes;
+        Render2DPlane[] towardLanes;
+        Render2DPlane[] backwardLanes;
+
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public SplineProperties Toward { get { return toward; } set { toward = value; } }
+        public bool HasToward;
+        private SplineProperties toward;
+
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public SplineProperties Backward { get { return backward; } set { backward = value; } }
+        public bool HasBackward;
+        private SplineProperties backward;
 
         public RenderRoad()
         {
             DoRender = true;
             Transform = Matrix.Identity;
-            lanes = new Render2DPlane[0];
+            towardLanes = new Render2DPlane[0];
+            backwardLanes = new Render2DPlane[0];
+            Spline = new RenderLine();
         }
 
-        public void Init(ResourceTypes.Navigation.SplineProperties properties)
+        public void Init(SplineDefinition data)
         {
-            RenderLine line = null;
+            Spline.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+            Spline.Init(data.points);
+            Vector3[] editPoints = (Vector3[])data.points.Clone();
 
-            if (properties.unk3 > 4096 && properties.unk3 < 4128)
+            if (data.hasToward)
             {
-                line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3 - 4096];
+                towardLanes = new Render2DPlane[data.toward.LaneSize0];
+
+                for (int i = 0; i != data.toward.LaneSize0; i++)
+                {
+                    Render2DPlane lane = new Render2DPlane();
+                    lane.Init(ref editPoints, data.toward.Lanes[i], data.toward.Flags);
+                    towardLanes[i] = lane;
+                }
+
+                Toward = data.toward;
+                HasToward = data.hasToward;
             }
-            else if (properties.unk3 > 24576 && properties.unk3 < 25332)
+
+            editPoints = (Vector3[])data.points.Clone();
+
+            if (data.hasBackward)
             {
-                line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3 - 24576];
+                backwardLanes = new Render2DPlane[data.backward.LaneSize0];
+
+                for (int i = 0; i != data.backward.LaneSize0; i++)
+                {
+                    Render2DPlane lane = new Render2DPlane();
+                    lane.Init(ref editPoints, data.backward.Lanes[i], data.backward.Flags);
+                    backwardLanes[i] = lane;
+                }
+
+                Backward = data.backward;
+                HasBackward = data.hasBackward;
             }
-            else if (properties.unk3 > 16384 && properties.unk3 < 16900)
-            {
-                line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3 - 16384];
-            }
-            else if (properties.unk3 > 32768 && properties.unk3 < 36864)
-            {
-                line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3 - 32768];
-            }
-            else if (properties.unk3 > 36864)
-            {
-                line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3 - 36864];
-            }
-            else
-            {
-                line = RenderStorageSingleton.Instance.SplineStorage[properties.unk3];
-            }
-            Vector3[] editPoints = (Vector3[])line.Points.Clone();
-            lanes = new Render2DPlane[properties.laneSize0 / 2];
-            Spline = line;
-            for (int i = 0; i != properties.laneSize0/2; i++)
-            {
-                Render2DPlane lane = new Render2DPlane();
-                lane.Init(ref editPoints, properties.lanes[i], properties.flags);
-                lanes[i] = lane;
-            }
+
             BBox = BoundingBox.FromPoints(editPoints);
         }
 
@@ -64,7 +78,10 @@ namespace Rendering.Graphics
         {
             Spline.InitBuffers(d3d, context);
 
-            foreach (Render2DPlane plane in lanes)
+            foreach (Render2DPlane plane in towardLanes)
+                plane.InitBuffers(d3d, context);
+
+            foreach (Render2DPlane plane in backwardLanes)
                 plane.InitBuffers(d3d, context);
         }
 
@@ -75,7 +92,10 @@ namespace Rendering.Graphics
 
             Spline.Render(device, deviceContext, camera, light);
 
-            foreach (Render2DPlane plane in lanes)
+            foreach (Render2DPlane plane in towardLanes)
+                plane.Render(device, deviceContext, camera, light);
+
+            foreach (Render2DPlane plane in backwardLanes)
                 plane.Render(device, deviceContext, camera, light);
         }
 
@@ -106,7 +126,10 @@ namespace Rendering.Graphics
         {
             Spline.Shutdown();
 
-            foreach (Render2DPlane plane in lanes)
+            foreach (Render2DPlane plane in towardLanes)
+                plane.Shutdown();
+
+            foreach (Render2DPlane plane in backwardLanes)
                 plane.Shutdown();
         }
 
@@ -114,7 +137,10 @@ namespace Rendering.Graphics
         {
             Spline.UpdateBuffers(device, deviceContext);
 
-            foreach (Render2DPlane plane in lanes)
+            foreach (Render2DPlane plane in towardLanes)
+                plane.UpdateBuffers(device, deviceContext);
+
+            foreach (Render2DPlane plane in backwardLanes)
                 plane.UpdateBuffers(device, deviceContext);
         }
 

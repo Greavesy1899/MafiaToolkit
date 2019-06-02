@@ -29,11 +29,11 @@ namespace ResourceTypes.Navigation
     public enum LaneTypes
     {
         None = 0,
-        flag_1 = 1,
+        BackRoad = 1,
         ExcludeImpassible = 2,
         Parking = 4,
         flag_8 = 8,
-        flag_16 = 16,
+        BusAndTrucks = 16,
         MainRoad = 32,
         IsHighway = 64,
         flag_128 = 128

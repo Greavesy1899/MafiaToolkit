@@ -1,6 +1,7 @@
 ﻿using SharpDX;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
@@ -38,59 +39,198 @@ namespace ResourceTypes.Navigation
         public float roadLength;
         public Vector3[] points;
 
+        public SplineProperties toward;
+        public SplineProperties backward;
+        public bool hasToward;
+        public bool hasBackward;
+        public int idxOffset;
+
+        public void SetSplineData(SplineProperties data, int offset)
+        {
+            if (data.Flags.HasFlag(RoadFlags.BackwardDirection))
+            {
+                backward = data;
+                hasBackward = true;
+            }
+            else
+            {
+                toward = data;
+                hasToward = true;
+            }
+
+            idxOffset = offset;
+        }
+
         public override string ToString()
         {
             return string.Format("{0} {1} {2} {3} {4}", offset, unk0, NumSplines1, NumSplines2, roadLength);
         }
     }
 
-    public struct SplineProperties
+    public class SplineProperties
     {
-        public ushort unk0;
-        public ushort unk1;
-        public uint offset0;
-        public ushort laneSize0;
-        public ushort laneSize1;
-        public uint offset1;
-        public ushort rangeSize0;
-        public ushort rangeSize1;
-        public RoadFlags flags;
-        public ushort unk3;
-        public unkStruct1Sect1[] lanes;
-        public unkStruct1Sect2[] ranges;
+        private ushort laneIDX0;
+        private ushort laneIDX1;
+        private uint offset0;
+        private ushort laneSize0;
+        private ushort laneSize1;
+        private uint offset1;
+        private ushort rangeSize0;
+        private ushort rangeSize1;
+        private RoadFlags flags;
+        private ushort splineIDX;
+        private LaneProperties[] lanes;
+        private RangeProperties[] ranges;
+
+        [Browsable(false)]
+        public ushort LaneIDX0 {
+            get { return laneIDX0; }
+            set { laneIDX0 = value; }
+        }
+        [Browsable(false)]
+        public ushort LaneIDX1 {
+            get { return laneIDX1; }
+            set { laneIDX1 = value; }
+        }
+        [Browsable(false)]
+        public uint Offset0 {
+            get { return offset0; }
+            set { offset0 = value; }
+        }
+        [Browsable(false)]
+        public ushort LaneSize0 {
+            get { return laneSize0; }
+            set { laneSize0 = value; }
+        }
+        [Browsable(false)]
+        public ushort LaneSize1 {
+            get { return laneSize1; }
+            set { laneSize1 = value; }
+        }
+        [Browsable(false)]
+        public uint Offset1 {
+            get { return offset1; }
+            set { offset1 = value; }
+        }
+        [Browsable(false)]
+        public ushort RangeSize0 {
+            get { return rangeSize0; }
+            set { rangeSize0 = value; }
+        }
+        [Browsable(false)]
+        public ushort RangeSize1 {
+            get { return rangeSize1; }
+            set { rangeSize1 = value; }
+        }
+
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public RoadFlags Flags {
+            get { return flags; }
+            set { flags = value; }
+        }
+        [ReadOnly(true)]
+        public ushort SplineIDX {
+            get { return splineIDX; }
+            set { splineIDX = value; }
+        }
+        public LaneProperties[] Lanes {
+            get { return lanes; }
+            set { lanes = value; }
+        }
+        public RangeProperties[] Ranges {
+            get { return ranges; }
+            set { ranges = value; }
+        }
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5}, {6}, {7}, {8}, {9}", unk0, unk1, offset0, laneSize0, laneSize1, offset1, rangeSize0, rangeSize1, flags, unk3);
+            return string.Format("{0} {1} {2} {3} {4} {5}, {6}, {7}, {8}, {9}", laneIDX0, laneIDX1, offset0, laneSize0, laneSize1, offset1, rangeSize0, rangeSize1, flags, splineIDX);
         }
     }
 
-    public struct unkStruct1Sect1
+    public class LaneProperties
     {
         //16 bytes
-        public float unk01;
-        public LaneTypes flags;
-        public ushort unk03;
-        public uint unk04;
-        public ushort unk05;
-        public ushort unk06;
-        public unkStruct1Sect1[] children; //SOMETIMES this is the case.
+        private float width;
+        private LaneTypes flags;
+        private ushort unk03;
+        private uint rangeOffset;
+        private ushort rangeSize0;
+        private ushort rangeSize1;
+        private RangeProperties[] ranges; 
+
+        public float Width {
+            get { return width; }
+            set { width = value; }
+        }
+
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public LaneTypes Flags {
+            get { return flags; }
+            set { flags = value; }
+        }
+        public ushort Unk03 {
+            get { return unk03; }
+            set { unk03 = value; }
+        }
+        [Browsable(false)]
+        public uint RangeOffset {
+            get { return rangeOffset; }
+            set { rangeOffset = value; }
+        }
+
+        [Browsable(false)]
+        public ushort RangeSize0 {
+            get { return rangeSize0; }
+            set { rangeSize0 = value; }
+        }
+
+        [Browsable(false)]
+        public ushort RangeSize1 {
+            get { return rangeSize1; }
+            set { rangeSize1 = value; }
+        }
+
+        public RangeProperties[] Ranges {
+            get { return ranges; }
+            set { ranges = value; }
+        }
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5}", unk01, flags, unk03, unk04, unk05, unk06);
+            return string.Format("{0} {1} {2} {3} {4} {5}", width, flags, unk03, rangeOffset, rangeSize0, rangeSize1);
         }
     }
 
-    public struct unkStruct1Sect2
+    public class RangeProperties
     {
         //16 bytes
-        public float unk01;
-        public float unk02;
-        public short unk03;
-        public short unk04;
-        public float unk05;
+        private float unk01;
+        private float unk02;
+        private short unk03;
+        private short unk04;
+        private float unk05;
 
+        public float Unk01 {
+            get { return unk01; }
+            set { unk01 = value; }
+        }
+        public float Unk02 {
+            get { return unk02; }
+            set { unk02 = value; }
+        }
+        public short Unk03 {
+            get { return unk03; }
+            set { unk03 = value; }
+        }
+        public short Unk04 {
+            get { return unk04; }
+            set { unk04 = value; }
+        }
+        public float Unk05 {
+            get { return unk05; }
+            set { unk05 = value; }
+        }
 
         public override string ToString()
         {
@@ -189,9 +329,9 @@ namespace ResourceTypes.Navigation
         public uint unkDataSet5Offset;
         public ushort unkDataSet6Count;
 
-        public SplineDefinition[] data1;
-        public SplineProperties[] data3;
-        public JunctionDefinition[] data4;
+        public SplineDefinition[] splines;
+        public SplineProperties[] splineData;
+        public JunctionDefinition[] junctionData;
         public ushort[] unkSet3;
         public unkStruct3[] unkSet4;
         public ushort[] unkSet5;
@@ -240,7 +380,7 @@ namespace ResourceTypes.Navigation
             short unkDataSet6Count2 = reader.ReadInt16();
 
             int count1 = reader.ReadInt32();
-            data1 = new SplineDefinition[splineCount];
+            splines = new SplineDefinition[splineCount];
 
             for (int i = 0; i != splineCount; i++)
             {
@@ -250,103 +390,118 @@ namespace ResourceTypes.Navigation
                 data.NumSplines1 = reader.ReadInt16();
                 data.NumSplines2 = reader.ReadInt16();
                 data.roadLength = reader.ReadSingle();
-                data1[i] = data;
+                splines[i] = data;
             }
 
             for (int i = 0; i != splineCount; i++)
             {
-                SplineDefinition data = data1[i];
-                data.points = new Vector3[data1[i].NumSplines1];
-                reader.BaseStream.Position = data1[i].offset - 4;
+                SplineDefinition data = splines[i];
+                data.points = new Vector3[splines[i].NumSplines1];
+                reader.BaseStream.Position = splines[i].offset - 4;
 
-                for (int y = 0; y != data1[i].NumSplines1; y++)
+                for (int y = 0; y != splines[i].NumSplines1; y++)
                     data.points[y] = Vector3Extenders.ReadFromFile(reader);
 
-                data1[i] = data;
+                splines[i] = data;
             }
 
-            data3 = new SplineProperties[splinePropertiesCount];
-            for (int i = 0; i != data3.Length; i++)
+            splineData = new SplineProperties[splinePropertiesCount];
+            for (int i = 0; i != splineData.Length; i++)
             {
                 SplineProperties data = new SplineProperties();
-                data.unk0 = reader.ReadUInt16();
-                data.unk1 = reader.ReadUInt16();
-                data.offset0 = reader.ReadInt24();
+                data.LaneIDX0 = reader.ReadUInt16();
+                data.LaneIDX1 = reader.ReadUInt16();
+                data.Offset0 = reader.ReadInt24();
                 reader.ReadByte();
-                data.laneSize0 = reader.ReadUInt16();
-                data.laneSize1 = reader.ReadUInt16();
-                data.offset1 = reader.ReadInt24();
+                data.LaneSize0 = reader.ReadUInt16();
+                data.LaneSize1 = reader.ReadUInt16();
+                data.Offset1 = reader.ReadInt24();
                 reader.ReadByte();
-                data.rangeSize0 = reader.ReadUInt16();
-                data.rangeSize1 = reader.ReadUInt16();
-                data.flags = (RoadFlags)reader.ReadInt16();
-                data.unk3 = reader.ReadUInt16();
-                data3[i] = data;
+                data.RangeSize0 = reader.ReadUInt16();
+                data.RangeSize1 = reader.ReadUInt16();
+                data.Flags = (RoadFlags)reader.ReadInt16();
+                data.SplineIDX = reader.ReadUInt16();
+                splineData[i] = data;
             }
 
             for (int i = 0; i != splinePropertiesCount; i++)
             {
-                SplineProperties data = data3[i];
-                data.lanes = new unkStruct1Sect1[data.laneSize1];
+                SplineProperties data = splineData[i];
+                data.Lanes = new LaneProperties[data.LaneSize1];
 
-                for (int y = 0; y != data.laneSize1; y++)
+                for (int y = 0; y != data.LaneSize1; y++)
                 {
-                    unkStruct1Sect1 sect = new unkStruct1Sect1();
-                    sect.unk01 = reader.ReadSingle();
-                    sect.flags = (LaneTypes)reader.ReadUInt16();
-                    sect.unk03 = reader.ReadUInt16();
-                    sect.unk04 = reader.ReadInt24();
+                    LaneProperties sect = new LaneProperties();
+                    sect.Width = reader.ReadSingle();
+                    sect.Flags = (LaneTypes)reader.ReadUInt16();
+                    sect.Unk03 = reader.ReadUInt16();
+                    sect.RangeOffset = reader.ReadInt24();
                     reader.ReadByte();
-                    sect.unk05 = reader.ReadUInt16();
-                    sect.unk06 = reader.ReadUInt16();
+                    sect.RangeSize0 = reader.ReadUInt16();
+                    sect.RangeSize1 = reader.ReadUInt16();
 
-                    sect.children = new unkStruct1Sect1[sect.unk05];
-                    for (int x = 0; x != sect.unk05; x++)
-                    {
-                        unkStruct1Sect1 child = new unkStruct1Sect1();
-                        child.unk01 = reader.ReadSingle();
-                        child.flags = (LaneTypes)reader.ReadUInt16();
-                        child.unk03 = reader.ReadUInt16();
-                        child.unk04 = reader.ReadInt24();
-                        reader.ReadByte();
-                        child.unk05 = reader.ReadUInt16();
-                        child.unk06 = reader.ReadUInt16();
-
-                        child.children = new unkStruct1Sect1[child.unk05];
-                        for (int z = 0; z != child.unk05; z++)
-                        {
-                            unkStruct1Sect1 child2 = new unkStruct1Sect1();
-                            child2.unk01 = reader.ReadSingle();
-                            child2.flags = (LaneTypes)reader.ReadUInt16();
-                            child2.unk03 = reader.ReadUInt16();
-                            child2.unk04 = reader.ReadInt24();
-                            reader.ReadByte();
-                            child2.unk05 = reader.ReadUInt16();
-                            child2.unk06 = reader.ReadUInt16();
-                            child.children[z] = child2;
-                        }
-                        sect.children[x] = child;
-                    }
-                    data.lanes[y] = sect;
+                    data.Lanes[y] = sect;
                 }
 
-                data.ranges = new unkStruct1Sect2[data.rangeSize0];
-
-                for (int y = 0; y != data.rangeSize0; y++)
+                for (int y = 0; y != data.LaneSize1; y++)
                 {
-                    unkStruct1Sect2 sect = new unkStruct1Sect2();
-                    sect.unk01 = reader.ReadSingle();
-                    sect.unk02 = reader.ReadSingle();
-                    sect.unk03 = reader.ReadInt16();
-                    sect.unk04 = reader.ReadInt16();
-                    sect.unk05 = reader.ReadSingle();
-                    data.ranges[y] = sect;
+                    if (data.Lanes[y].RangeSize0 > 0)
+                        data.Lanes[y].Ranges = new RangeProperties[data.Lanes[y].RangeSize0];
+
+                    for(int x = 0; x != data.Lanes[y].RangeSize0; x++)
+                    {
+                        RangeProperties sect = new RangeProperties();
+                        sect.Unk01 = reader.ReadSingle();
+                        sect.Unk02 = reader.ReadSingle();
+                        sect.Unk03 = reader.ReadInt16();
+                        sect.Unk04 = reader.ReadInt16();
+                        sect.Unk05 = reader.ReadSingle();
+                        data.Lanes[y].Ranges[x] = sect;
+                    }
                 }
 
-                data3[i] = data;
+                data.Ranges = new RangeProperties[data.RangeSize0];
+
+                for (int y = 0; y != data.RangeSize0; y++)
+                {
+                    RangeProperties sect = new RangeProperties();
+                    sect.Unk01 = reader.ReadSingle();
+                    sect.Unk02 = reader.ReadSingle();
+                    sect.Unk03 = reader.ReadInt16();
+                    sect.Unk04 = reader.ReadInt16();
+                    sect.Unk05 = reader.ReadSingle();
+                    data.Ranges[y] = sect;
+                }
+
+                splineData[i] = data;
+
+                if (data.SplineIDX > 4096 && data.SplineIDX < 4128)
+                {
+                    splines[data.SplineIDX - 4096].SetSplineData(data, 4096);
+                }
+                else if (data.SplineIDX > 24576 && data.SplineIDX < 25332)
+                {
+                    splines[data.SplineIDX - 24576].SetSplineData(data, 24576);
+                }
+                else if (data.SplineIDX > 16384 && data.SplineIDX < 16900)
+                {
+                    splines[data.SplineIDX - 16384].SetSplineData(data, 16384);
+                }
+                else if (data.SplineIDX > 32768 && data.SplineIDX < 36864)
+                {
+                    splines[data.SplineIDX - 32768].SetSplineData(data, 32768);
+                }
+                else if (data.SplineIDX > 36864)
+                {
+                    splines[data.SplineIDX - 36864].SetSplineData(data, 36864);
+                }
+                else
+                {
+                    splines[data.SplineIDX].SetSplineData(data, 0);
+                }
             }
 
-            data4 = new JunctionDefinition[junctionPropertiesCount];
+            junctionData = new JunctionDefinition[junctionPropertiesCount];
             for (int i = 0; i != junctionPropertiesCount; i++)
             {
                 JunctionDefinition data = new JunctionDefinition();
@@ -364,14 +519,14 @@ namespace ResourceTypes.Navigation
                 reader.ReadByte();
                 data.unk5 = reader.ReadInt16();
                 data.unk6 = reader.ReadInt16();
-                data4[i] = data;
+                junctionData[i] = data;
             }
 
             for (int i = 0; i != junctionPropertiesCount; i++)
             {
-                data4[i].splines = new JunctionSpline[data4[i].junctionSize0];
+                junctionData[i].splines = new JunctionSpline[junctionData[i].junctionSize0];
 
-                for (int y = 0; y != data4[i].junctionSize0; y++)
+                for (int y = 0; y != junctionData[i].junctionSize0; y++)
                 {
                     JunctionSpline data4Sect = new JunctionSpline();
                     data4Sect.unk0 = reader.ReadInt16();
@@ -385,59 +540,59 @@ namespace ResourceTypes.Navigation
                     data4Sect.pathSize0 = reader.ReadInt16();
                     data4Sect.pathSize1 = reader.ReadInt16();
                     data4Sect.catmullMod = reader.ReadSingle();
-                    data4[i].splines[y] = data4Sect;
+                    junctionData[i].splines[y] = data4Sect;
                 }
-                for (int y = 0; y != data4[i].junctionSize0; y++)
+                for (int y = 0; y != junctionData[i].junctionSize0; y++)
                 {
-                    data4[i].splines[y].path = new Vector3[data4[i].splines[y].pathSize0];
+                    junctionData[i].splines[y].path = new Vector3[junctionData[i].splines[y].pathSize0];
 
-                    for (int z = 0; z != data4[i].splines[y].pathSize1; z++)
+                    for (int z = 0; z != junctionData[i].splines[y].pathSize1; z++)
                     {
-                        data4[i].splines[y].path[z] = Vector3Extenders.ReadFromFile(reader);
+                        junctionData[i].splines[y].path[z] = Vector3Extenders.ReadFromFile(reader);
                     }
                 }
 
-                data4[i].boundaries = new Vector3[data4[i].boundarySize0];
-                for (int y = 0; y != data4[i].boundarySize0; y++)
+                junctionData[i].boundaries = new Vector3[junctionData[i].boundarySize0];
+                for (int y = 0; y != junctionData[i].boundarySize0; y++)
                 {
-                    data4[i].boundaries[y] = Vector3Extenders.ReadFromFile(reader);
+                    junctionData[i].boundaries[y] = Vector3Extenders.ReadFromFile(reader);
                 }
 
-                if (data4[i].unk5 >= 2)
+                if (junctionData[i].unk5 >= 2)
                 {
-                    data4[i].dataSet2 = new unkStruct2Sect2();
-                    data4[i].dataSet2.unk0 = reader.ReadInt32();
-                    data4[i].dataSet2.offset0 = reader.ReadInt24();
+                    junctionData[i].dataSet2 = new unkStruct2Sect2();
+                    junctionData[i].dataSet2.unk0 = reader.ReadInt32();
+                    junctionData[i].dataSet2.offset0 = reader.ReadInt24();
                     reader.ReadByte();
-                    data4[i].dataSet2.unk1 = reader.ReadInt16();
-                    data4[i].dataSet2.unk2 = reader.ReadInt16();
-                    data4[i].dataSet2.unk3 = reader.ReadInt32();
-                    data4[i].dataSet2.offset1 = reader.ReadInt24();
+                    junctionData[i].dataSet2.unk1 = reader.ReadInt16();
+                    junctionData[i].dataSet2.unk2 = reader.ReadInt16();
+                    junctionData[i].dataSet2.unk3 = reader.ReadInt32();
+                    junctionData[i].dataSet2.offset1 = reader.ReadInt24();
                     reader.ReadByte();
-                    data4[i].dataSet2.unk4 = reader.ReadInt16();
-                    data4[i].dataSet2.unk5 = reader.ReadInt16();
-                    data4[i].dataSet2.unk6 = reader.ReadInt16();
-                    data4[i].dataSet2.unk7 = reader.ReadInt16();
-                    data4[i].dataSet2.unk8 = reader.ReadInt16();
-                    data4[i].dataSet2.unk9 = reader.ReadInt16();
+                    junctionData[i].dataSet2.unk4 = reader.ReadInt16();
+                    junctionData[i].dataSet2.unk5 = reader.ReadInt16();
+                    junctionData[i].dataSet2.unk6 = reader.ReadInt16();
+                    junctionData[i].dataSet2.unk7 = reader.ReadInt16();
+                    junctionData[i].dataSet2.unk8 = reader.ReadInt16();
+                    junctionData[i].dataSet2.unk9 = reader.ReadInt16();
 
-                    if (data4[i].dataSet2.unk1 > 2 && data4[i].dataSet2.unk2 > 2)
+                    if (junctionData[i].dataSet2.unk1 > 2 && junctionData[i].dataSet2.unk2 > 2)
                     {
-                        if (data4[i].dataSet2.unk1 == 4)
+                        if (junctionData[i].dataSet2.unk1 == 4)
                         {
-                            data4[i].dataSet2.unk10_0 = reader.ReadInt32();
-                            data4[i].dataSet2.unk10_1 = -1;
+                            junctionData[i].dataSet2.unk10_0 = reader.ReadInt32();
+                            junctionData[i].dataSet2.unk10_1 = -1;
                         }
                         else
                         {
-                            data4[i].dataSet2.unk10_0 = reader.ReadInt32();
-                            data4[i].dataSet2.unk10_1 = reader.ReadInt32();
+                            junctionData[i].dataSet2.unk10_0 = reader.ReadInt32();
+                            junctionData[i].dataSet2.unk10_1 = reader.ReadInt32();
                         }
                     }
 
 
-                    if (data4[i].unk5 == 3)
-                        data4[i].dataSet2.unk3Bytes = reader.ReadBytes(16);
+                    if (junctionData[i].unk5 == 3)
+                        junctionData[i].dataSet2.unk3Bytes = reader.ReadBytes(16);
                 }
             }
 
@@ -488,14 +643,15 @@ namespace ResourceTypes.Navigation
 
         public void WriteToFile()
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Open(info.FullName + "_dupe", FileMode.Create)))
+            DebugCheckLineIDX();
+            UpdateData();
+            using (BinaryWriter writer = new BinaryWriter(File.Open(info.FullName, FileMode.Create)))
             {
                 WriteToFile(writer);
             }
         }
         public void WriteToFile(BinaryWriter writer)
         {
-            splineCount = (ushort)data1.Length;
             writer.Write(magic);
             writer.Write(splineCount);
             writer.Write(splineCount);
@@ -522,30 +678,15 @@ namespace ResourceTypes.Navigation
             long[] positions = new long[splineCount];
             for (int i = 0; i < splineCount; i++)
             {
-                SplineDefinition data = data1[i];
+                SplineDefinition data = splines[i];
                 positions[i] = writer.BaseStream.Position;
                 writer.WriteInt24(data.offset);
                 writer.Write(data.NumSplines1);
                 writer.Write(data.NumSplines2);
-
-                float curDistance = 0.0f;
-                for (int x = 0; x < data.NumSplines1; x++)
-                {
-                    float temp = 0.0f;
-
-                    if (x < data.NumSplines1 - 1)
-                    {
-                        temp += Vector3.Distance(data.points[x], data.points[x + 1]);
-                    }
-                    if (x > 0)
-                    {
-                        temp += Vector3.Distance(data.points[x], data.points[x - 1]);
-                    }
-                    curDistance += temp;
-                }
-
-                writer.Write(curDistance/=2);
+                writer.Write(data.roadLength);
             }
+
+            List<SplineProperties> splineList = new List<SplineProperties>();
 
             for (int i = 0; i < splineCount; i++)
             {
@@ -553,96 +694,102 @@ namespace ResourceTypes.Navigation
                 writer.BaseStream.Seek(positions[i], SeekOrigin.Begin);
                 writer.WriteInt24((uint)position + 4);
                 writer.BaseStream.Seek(position, SeekOrigin.Begin);
-                SplineDefinition splineData = data1[i];
+                SplineDefinition splineData = splines[i];
                 for (int y = 0; y != splineData.points.Length; y++)
                     Vector3Extenders.WriteToFile(splineData.points[y], writer);
+
+                if (splineData.hasToward)
+                    splineList.Add(splineData.toward);
+
+                if (splineData.hasBackward)
+                    splineList.Add(splineData.backward);
             }
 
             WriteUpdatedOffset(writer, 8);
-            positions = new long[data3.Length]; //lane offset
-            long[] pos2 = new long[data3.Length]; //range offset
-            int laneIDX = 0;
-            int curSpline = 0;
-            int previousSpline = 0;
-            //unk0
-            //unk1
-            for (int i = 0; i != data3.Length; i++)
+            positions = new long[splineData.Length]; //lane offset
+            long[] pos2 = new long[splineData.Length]; //range offset
+
+            for (int i = 0; i != splineList.Count; i++)
             {
-                SplineProperties data = data3[i];
-                laneIDX += (data.laneSize0-1);
-                writer.Write(data.unk0);
-                writer.Write(data.unk1);
+                SplineProperties data = splineData[i];
+                writer.Write(data.LaneIDX0);
+                writer.Write(data.LaneIDX1);
                 positions[i] = writer.BaseStream.Position;
-                writer.WriteInt24(data.offset0);
-                writer.Write(data.laneSize0);
-                writer.Write(data.laneSize1);
+                writer.WriteInt24(data.Offset0);
+                writer.Write(data.LaneSize0);
+                writer.Write(data.LaneSize1);
                 pos2[i] = writer.BaseStream.Position;
-                writer.WriteInt24(data.offset1);
-                writer.Write(data.rangeSize0);
-                writer.Write(data.rangeSize1);
-                writer.Write((short)data.flags);
-                writer.Write(data.unk3);
-                previousSpline = curSpline;
+                writer.WriteInt24(data.Offset1);
+                writer.Write(data.RangeSize0);
+                writer.Write(data.RangeSize1);
+                writer.Write((short)data.Flags);
+                writer.Write(data.SplineIDX);
             }
 
-            for (int i = 0; i < splinePropertiesCount; i++)
+            long[] pos3;
+
+            for (int i = 0; i < splineList.Count; i++)
             {
-                SplineProperties data = data3[i];
+                SplineProperties data = splineData[i];
                 //update lane position
                 long curPosition = writer.BaseStream.Position;
                 writer.BaseStream.Seek(positions[i], SeekOrigin.Begin);
                 writer.WriteInt24((uint)curPosition + 4);
                 writer.BaseStream.Seek(curPosition, SeekOrigin.Begin);
                 //finished
-                for (int y = 0; y < data.laneSize1; y++)
+                //also do rangeoffset
+                pos3 = new long[data.LaneSize0];
+
+                for (int y = 0; y < data.LaneSize1; y++)
                 {
-                    unkStruct1Sect1 sect = data3[i].lanes[y];
-                    writer.Write(sect.unk01);
-                    writer.Write((ushort)sect.flags);
-                    writer.Write(sect.unk03);
-                    writer.WriteInt24(sect.unk04);
-                    writer.Write(sect.unk05);
-                    writer.Write(sect.unk06);
+                    LaneProperties sect = splineData[i].Lanes[y];
+                    writer.Write(sect.Width);
+                    writer.Write((ushort)sect.Flags);
+                    writer.Write(sect.Unk03);
+                    //writer.Write((ushort)0);
+                    pos3[y] = writer.BaseStream.Position;
+                    writer.WriteInt24(sect.RangeOffset);
+                    writer.Write(sect.RangeSize0);
+                    writer.Write(sect.RangeSize1);
+                }
 
-                    for (int x = 0; x < sect.unk05; x++)
+                for (int y = 0; y < data.LaneSize0; y++)
+                {
+                    ////update range for this lane
+                    curPosition = writer.BaseStream.Position;
+                    uint rangeOffset = (uint)(data.Lanes[y].RangeSize0 > 0 ? curPosition + 4 : 0);
+                    writer.BaseStream.Seek(pos3[y], SeekOrigin.Begin);
+                    writer.WriteInt24(rangeOffset);
+                    writer.BaseStream.Seek(curPosition, SeekOrigin.Begin);
+                    //finished
+
+                    for (int x = 0; x < data.Lanes[y].RangeSize0; x++)
                     {
-                        unkStruct1Sect1 child = sect.children[x];
-                        writer.Write(child.unk01);
-                        writer.Write((ushort)child.flags);
-                        writer.Write(child.unk03);
-                        writer.WriteInt24(child.unk04);
-                        writer.Write(child.unk05);
-                        writer.Write(child.unk06);
-
-                        for (int z = 0; z < child.unk05; z++)
-                        {
-                            unkStruct1Sect1 child2 = child.children[z];
-                            writer.Write(child2.unk01);
-                            writer.Write((ushort)child.flags);
-                            writer.Write(child2.unk03);
-                            writer.WriteInt24(child2.unk04);
-                            writer.Write(child2.unk05);
-                            writer.Write(child2.unk06);
-                        }
+                        RangeProperties sect = data.Lanes[y].Ranges[x];
+                        writer.Write(sect.Unk01);
+                        writer.Write(sect.Unk02);
+                        writer.Write(sect.Unk03);
+                        writer.Write(sect.Unk04);
+                        writer.Write(sect.Unk05);
                     }
                 }
 
                 //update range position
                 curPosition = writer.BaseStream.Position;
-                uint laneOffset = (uint)(data.rangeSize0 > 0 ? curPosition + 4 : 0);
+                uint laneOffset = (uint)(data.RangeSize0 > 0 ? curPosition + 4 : 0);
                 writer.BaseStream.Seek(pos2[i], SeekOrigin.Begin);
                 writer.WriteInt24(laneOffset);
                 writer.BaseStream.Seek(curPosition, SeekOrigin.Begin);
                 //finished
 
-                for (int y = 0; y < data.rangeSize0; y++)
+                for (int y = 0; y < data.RangeSize0; y++)
                 {
-                    unkStruct1Sect2 sect = data.ranges[y];
-                    writer.Write(sect.unk01);
-                    writer.Write(sect.unk02);
-                    writer.Write(sect.unk03);
-                    writer.Write(sect.unk04);
-                    writer.Write(sect.unk05);
+                    RangeProperties sect = data.Ranges[y];
+                    writer.Write(sect.Unk01);
+                    writer.Write(sect.Unk02);
+                    writer.Write(sect.Unk03);
+                    writer.Write(sect.Unk04);
+                    writer.Write(sect.Unk05);
                 }
             }
 
@@ -650,10 +797,10 @@ namespace ResourceTypes.Navigation
 
             positions = new long[junctionPropertiesCount];
             pos2 = new long[junctionPropertiesCount];
-            long[] pos3 = new long[junctionPropertiesCount];
+            pos3 = new long[junctionPropertiesCount];
             for (int i = 0; i < junctionPropertiesCount; i++)
             {
-                JunctionDefinition data = data4[i];
+                JunctionDefinition data = junctionData[i];
                 Vector3Extenders.WriteToFile(data.position, writer);
                 positions[i] = writer.BaseStream.Position;
                 writer.WriteInt24(data.offset0);
@@ -674,15 +821,15 @@ namespace ResourceTypes.Navigation
             {
                 //update junction position
                 long curPosition = writer.BaseStream.Position;
-                uint junctionOffset = (uint)(data4[i].junctionSize0 > 0 ? curPosition + 4 : 0);
+                uint junctionOffset = (uint)(junctionData[i].junctionSize0 > 0 ? curPosition + 4 : 0);
                 writer.BaseStream.Seek(positions[i], SeekOrigin.Begin);
                 writer.WriteInt24(junctionOffset);
                 writer.BaseStream.Seek(curPosition, SeekOrigin.Begin);
                 //finished
 
-                for (int y = 0; y < data4[i].junctionSize0; y++)
+                for (int y = 0; y < junctionData[i].junctionSize0; y++)
                 {
-                    JunctionSpline data4Sect = data4[i].splines[y];
+                    JunctionSpline data4Sect = junctionData[i].splines[y];
                     writer.Write(data4Sect.unk0);
                     writer.Write(data4Sect.unk1);
                     writer.Write(data4Sect.unk2);
@@ -694,38 +841,38 @@ namespace ResourceTypes.Navigation
                     writer.Write(data4Sect.pathSize1);
                     writer.Write(data4Sect.catmullMod);
                 }
-                for (int y = 0; y < data4[i].junctionSize0; y++)
+                for (int y = 0; y < junctionData[i].junctionSize0; y++)
                 {
-                    for (int z = 0; z != data4[i].splines[y].pathSize1; z++)
+                    for (int z = 0; z != junctionData[i].splines[y].pathSize1; z++)
                     {
-                        Vector3Extenders.WriteToFile(data4[i].splines[y].path[z], writer);
+                        Vector3Extenders.WriteToFile(junctionData[i].splines[y].path[z], writer);
                     }
                 }
 
                 //update boundary position
                 curPosition = writer.BaseStream.Position;
-                uint boundaryOffset = (uint)(data4[i].boundarySize0 > 0 ? curPosition + 4 : 0);
+                uint boundaryOffset = (uint)(junctionData[i].boundarySize0 > 0 ? curPosition + 4 : 0);
                 writer.BaseStream.Seek(pos2[i], SeekOrigin.Begin);
                 writer.WriteInt24(boundaryOffset);
                 writer.BaseStream.Seek(curPosition, SeekOrigin.Begin);
                 //finished
 
-                for (int y = 0; y < data4[i].boundarySize0; y++)
+                for (int y = 0; y < junctionData[i].boundarySize0; y++)
                 {
-                    Vector3Extenders.WriteToFile(data4[i].boundaries[y], writer);
+                    Vector3Extenders.WriteToFile(junctionData[i].boundaries[y], writer);
                 }
 
                 //update unk position
                 curPosition = writer.BaseStream.Position;
-                uint unkOffset = (uint)(data4[i].unk5 > 0 ? curPosition + 4 : 0);
+                uint unkOffset = (uint)(junctionData[i].unk5 > 0 ? curPosition + 4 : 0);
                 writer.BaseStream.Seek(pos3[i], SeekOrigin.Begin);
                 writer.WriteInt24(unkOffset);
                 writer.BaseStream.Seek(curPosition, SeekOrigin.Begin);
                 //finished
 
-                if (data4[i].unk5 >= 2)
+                if (junctionData[i].unk5 >= 2)
                 {
-                    unkStruct2Sect2 data = data4[i].dataSet2;
+                    unkStruct2Sect2 data = junctionData[i].dataSet2;
 
                     writer.Write(data.unk0);
                     writer.WriteInt24(data.offset0);
@@ -754,7 +901,7 @@ namespace ResourceTypes.Navigation
                     }
 
 
-                    if (data4[i].unk5 == 3)
+                    if (junctionData[i].unk5 == 3)
                         writer.Write(data.unk3Bytes);
                 }
             }
@@ -790,6 +937,80 @@ namespace ResourceTypes.Navigation
             writer.BaseStream.Seek(pos, SeekOrigin.Begin);
             writer.WriteInt24(isZero ? 0 : (uint)jump + 4);
             writer.BaseStream.Seek(jump, SeekOrigin.Begin);
+        }
+
+        public void DebugCheckLineIDX()
+        {
+            int correct = 0;
+            for(int i = 0; i != splineData.Length; i++)
+            {
+                int count = 0;
+                SplineProperties data = splineData[i];
+                
+                foreach(var lane in data.Lanes)
+                {
+                    if (lane.Flags != 0)
+                        count++;
+                    else if (data.Flags.HasFlag(RoadFlags.flag_16))
+                        count++;
+                }
+
+                if(count == Math.Abs(data.LaneIDX0 - data.LaneIDX1))
+                {
+                    correct++;
+                }
+                else
+                {
+                    Console.WriteLine("[" + i + "] " + count + " vs " + Math.Abs(data.LaneIDX0 - data.LaneIDX1));
+                }
+            }
+            Console.WriteLine(correct + "/" + splineData.Length + " = " + Convert.ToSingle(correct / splineData.Length));
+        }
+
+        public void UpdateData()
+        {
+            for (int i = 0; i < splines.Length; i++)
+            {
+                SplineDefinition data = splines[i];
+                float curDistance = 0.0f;
+
+                //int idx1 = -1;
+                //int idx2 = -1;
+
+                //if(data.hasToward && data.hasBackward)
+                //{
+                //    idx2 += (data.toward.laneSize0 - 1);
+                //    data.toward.laneIDX0 = (ushort)idx1;
+                //    data.toward.laneIDX1 = (ushort)idx2;
+                //}
+                //else
+                //{
+                //    idx1 += (data.toward.laneSize0 - 1);
+                //    data.toward.laneIDX0 = (ushort)idx1;
+                //    data.toward.laneIDX1 = ushort.MaxValue;
+                //}
+
+                for (int x = 0; x < data.NumSplines1; x++)
+                {
+                    float temp = 0.0f;
+
+                    if (x < data.NumSplines1 - 1)
+                    {
+                        temp += Vector3.Distance(data.points[x], data.points[x + 1]);
+                    }
+                    if (x > 0)
+                    {
+                        temp += Vector3.Distance(data.points[x], data.points[x - 1]);
+                    }
+                    curDistance += temp;
+                }
+                data.roadLength = curDistance/2;
+                splines[i] = data;
+            }
+
+            splineCount = (ushort)splines.Length;
+
+
         }
     }
 }
