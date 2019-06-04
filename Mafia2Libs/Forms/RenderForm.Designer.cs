@@ -56,6 +56,10 @@ namespace Mafia2Tool
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.RenderPanel = new System.Windows.Forms.Panel();
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.AddSplineTxT = new System.Windows.Forms.ToolStripMenuItem();
+            this.TxtBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
             this.ToolbarStrip.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -67,7 +71,8 @@ namespace Mafia2Tool
             this.EditButton,
             this.ViewButton,
             this.OptionsButton,
-            this.TEMPCameraSpeed});
+            this.TEMPCameraSpeed,
+            this.toolStripTextBox1});
             this.ToolbarStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolbarStrip.Name = "ToolbarStrip";
             this.ToolbarStrip.Size = new System.Drawing.Size(800, 25);
@@ -106,7 +111,8 @@ namespace Mafia2Tool
             this.EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddButton,
             this.AddSceneFolderButton,
-            this.AddRoadSplineButton});
+            this.AddRoadSplineButton,
+            this.AddSplineTxT});
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
             this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EditButton.Name = "EditButton";
@@ -204,7 +210,8 @@ namespace Mafia2Tool
             // 
             this.StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
-            this.toolStripStatusLabel3});
+            this.toolStripStatusLabel3,
+            this.toolStripStatusLabel2});
             this.StatusStrip.Location = new System.Drawing.Point(0, 426);
             this.StatusStrip.Name = "StatusStrip";
             this.StatusStrip.Size = new System.Drawing.Size(800, 24);
@@ -252,6 +259,28 @@ namespace Mafia2Tool
             // 
             this.MeshBrowser.Filter = "Meshes|*.m2t|FBX|*.fbx";
             // 
+            // AddSplineTxT
+            // 
+            this.AddSplineTxT.Name = "AddSplineTxT";
+            this.AddSplineTxT.Size = new System.Drawing.Size(191, 22);
+            this.AddSplineTxT.Text = "$ADD_SPLINE_TXT";
+            this.AddSplineTxT.Click += new System.EventHandler(this.AddSplineTxT_Click);
+            // 
+            // TxtBrowser
+            // 
+            this.TxtBrowser.Filter = "Text Document|*txt";
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(118, 19);
+            this.toolStripStatusLabel2.Text = "toolStripStatusLabel2";
+            // 
+            // toolStripTextBox1
+            // 
+            this.toolStripTextBox1.Name = "toolStripTextBox1";
+            this.toolStripTextBox1.Size = new System.Drawing.Size(100, 25);
+            // 
             // D3DForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -298,5 +327,9 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem AddSceneFolderButton;
         private System.Windows.Forms.ToolStripMenuItem AddRoadSplineButton;
         private System.Windows.Forms.ToolStripMenuItem ViewOptionProperties;
+        private System.Windows.Forms.ToolStripMenuItem AddSplineTxT;
+        private System.Windows.Forms.OpenFileDialog TxtBrowser;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBox1;
     }
 }

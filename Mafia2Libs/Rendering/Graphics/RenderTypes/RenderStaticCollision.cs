@@ -33,21 +33,21 @@ namespace Rendering.Graphics
             BoundingBox.InitBuffers(d3d, context);
         }
 
-        //TEMP
-        public void ConvertNavOBJDataToRender(ResourceTypes.Navigation.NAVData.OBJData data)
-        {
-            SetTransform(new Vector3(), new Matrix33());
-            Indices = data.indices;
-            numTriangles = (uint)(data.indices.Length);
-            Vertices = new VertexLayouts.BasicLayout.Vertex[data.vertices.Length];
-            for (int i = 0; i < data.vertices.Length; i++)
-            {
-                VertexLayouts.BasicLayout.Vertex vertex = new VertexLayouts.BasicLayout.Vertex();
-                vertex.Position = data.vertices[i].position;
-                vertex.Colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-                Vertices[i] = vertex;
-            }
-        }
+        ////TEMP
+        //public void ConvertNavOBJDataToRender(ResourceTypes.Navigation.NAVData.OBJData data)
+        //{
+        //    SetTransform(new Vector3(), new Matrix33());
+        //    Indices = data.indices;
+        //    numTriangles = (uint)(data.indices.Length);
+        //    Vertices = new VertexLayouts.BasicLayout.Vertex[data.vertices.Length];
+        //    for (int i = 0; i < data.vertices.Length; i++)
+        //    {
+        //        VertexLayouts.BasicLayout.Vertex vertex = new VertexLayouts.BasicLayout.Vertex();
+        //        vertex.Position = data.vertices[i].position;
+        //        vertex.Colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+        //        Vertices[i] = vertex;
+        //    }
+        //}
 
         public void ConvertCollisionToRender(MeshData data)
         { 

@@ -158,6 +158,7 @@ namespace Mafia2Tool
         {
             RowIndexLabel.Text = "Row Index: " + e.RowIndex.ToString();
             ColumnIndexLabel.Text = "Column Index: " + e.ColumnIndex.ToString();
+            DataTypeLabel.Text = "Data Type: " + data.Columns[e.ColumnIndex].Type;
         }
     }
 }

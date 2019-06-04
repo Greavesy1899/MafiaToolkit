@@ -45,7 +45,7 @@ namespace Rendering.Graphics
 
                 if (i < points.Length - 1)
                 {
-                    forward += new Vector2(points[(i + 1)%points.Length].X, points[(i + 1) % points.Length].Y) - new Vector2(points[i].X, points[i].Y);
+                    forward += (new Vector2(points[(i + 1)%points.Length].X, points[(i + 1) % points.Length].Y) - new Vector2(points[i].X, points[i].Y));
                 }
                 if (i > 0)
                 {
@@ -62,13 +62,13 @@ namespace Rendering.Graphics
 
                 if (roadFlags.HasFlag(ResourceTypes.Navigation.RoadFlags.BackwardDirection))
                 {
-                    x = (points[i].X + left.X * lane.Width);
-                    y = (points[i].Y + left.Y * lane.Width);
+                    x = (points[i].X - left.X * lane.Width);
+                    y = (points[i].Y - left.Y * lane.Width);
                 }
                 else
                 {
-                    x = (points[i].X - left.X * lane.Width);
-                    y = (points[i].Y - left.Y * lane.Width);
+                    x = (points[i].X + left.X * lane.Width);
+                    y = (points[i].Y + left.Y * lane.Width);
                 }
 
                 vertices[idx].Position = new Vector3(x, y, points[i].Z);
@@ -76,7 +76,7 @@ namespace Rendering.Graphics
                 points[i] = vertices[idx].Position;
 
                 RenderLine line = new RenderLine();
-                line.SetColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+                line.SetUnselectedColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
                 line.Init(new Vector3[2] { vertices[idx - 1].Position, vertices[idx].Position });
                 idx++;
 

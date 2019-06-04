@@ -35,6 +35,7 @@ namespace Mafia2Tool
         public static AnimalTrafficLoader ATLoader;
         public static NAVData[] AIWorlds;
         public static NAVData[] OBJData;
+        public static HPDData HPDData;
         public static string ScenePath;
 
         public static void BuildData()
@@ -82,8 +83,8 @@ namespace Mafia2Tool
                     ATLoader = new AnimalTrafficLoader(new FileInfo(name));
                 else if (nodes.Current.Value == "roadmap.gsd")
                     roadMap = new Roadmap(new FileInfo(name));
-                //else if (type == "NAV_OBJ_DATA")
-                //    obj.Add(new NAVData(new FileInfo(name)));
+                //else if (type == "NAV_HPD_DATA")
+                //    HPDData = new NAVData(new FileInfo(name));
             }
 
             IndexBufferPool = new IndexBufferManager(ibps);

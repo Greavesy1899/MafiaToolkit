@@ -46,6 +46,7 @@ namespace Mafia2Tool
         private TreeNode frameResourceRoot;
         private TreeNode collisionRoot;
         private TreeNode roadRoot;
+        private TreeNode junctionRoot;
         private TreeNode animalTrafficRoot;
 
         public D3DForm(FileInfo info)
@@ -237,6 +238,7 @@ namespace Mafia2Tool
 
             Graphics.Frame();
             toolStripStatusLabel1.Text = Graphics.Camera.Position.ToString();
+            toolStripTextBox1.Text = Graphics.Camera.Position.ToString();
             toolStripStatusLabel3.Text = string.Format("{0} FPS", Graphics.FPS.FPS);
             return true;
         }
@@ -447,8 +449,10 @@ namespace Mafia2Tool
 
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
-                TreeNode node = new TreeNode("RoadMap Data");
+                TreeNode node = new TreeNode("Road Data");
                 roadRoot = node;
+                TreeNode node2 = new TreeNode("Junction Data");
+                junctionRoot = node2;
 
                 for (int i = 0; i != SceneData.roadMap.splines.Length; i++)
                 {
@@ -457,7 +461,7 @@ namespace Mafia2Tool
                     road.Init(SceneData.roadMap.splines[i]);
                     assets.Add(generatedID, road);
                     TreeNode child = new TreeNode(i.ToString());
-                    child.Text = "ID: " + i;
+                    child.Text = "Road ID: " + i;
                     child.Name = generatedID.ToString();
                     child.Tag = road;
                     node.Nodes.Add(child);
@@ -465,26 +469,18 @@ namespace Mafia2Tool
 
                 for (int i = 0; i < SceneData.roadMap.junctionData.Length; i++)
                 {
-                    if (SceneData.roadMap.junctionData[i].boundaries.Length > 0)
-                    {
-                        Vector3[] extraPoints = new Vector3[SceneData.roadMap.junctionData[i].boundaries.Length + 1];
-                        Array.Copy(SceneData.roadMap.junctionData[i].boundaries, extraPoints, SceneData.roadMap.junctionData[i].boundaries.Length);
-                        extraPoints[extraPoints.Length - 1] = extraPoints[0];
-                        RenderLine lineBoundary = new RenderLine();
-                        lineBoundary.SetColour(new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-                        lineBoundary.Init(extraPoints);
-                        assets.Add(StringHelpers.RandomGenerator.Next(), lineBoundary);
-                    }
-
-                    for (int x = 0; x < SceneData.roadMap.junctionData[i].splines.Length; x++)
-                    {
-                        RenderLine line = new RenderLine();
-                        line.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
-                        line.Init(SceneData.roadMap.junctionData[i].splines[x].path);
-                        assets.Add(StringHelpers.RandomGenerator.Next(), line);
-                    }
+                    int generatedID = StringHelpers.RandomGenerator.Next();
+                    RenderJunction junction = new RenderJunction();
+                    junction.Init(SceneData.roadMap.junctionData[i]);
+                    assets.Add(generatedID, junction);
+                    TreeNode child = new TreeNode(i.ToString());
+                    child.Text = "Junction ID: " + i;
+                    child.Name = generatedID.ToString();
+                    child.Tag = junction;
+                    junctionRoot.Nodes.Add(child);
                 }
                 dSceneTree.AddToTree(node);
+                dSceneTree.AddToTree(node2);
             }
             if (SceneData.Collisions != null && ToolkitSettings.Experimental)
             {
@@ -527,7 +523,6 @@ namespace Mafia2Tool
                     }
 
                 }
-
                 dSceneTree.AddToTree(node);
             }
             if (SceneData.ATLoader != null && ToolkitSettings.Experimental)
@@ -553,6 +548,7 @@ namespace Mafia2Tool
                 //    assets.Add(StringHelpers.RandomGenerator.Next(), line);
                 //}
             }
+            collisionRoot.Collapse(false);
             Graphics.InitObjectStack = assets;
         }
 
@@ -562,6 +558,10 @@ namespace Mafia2Tool
                 return;
 
             if (dSceneTree.treeView1.SelectedNode.Tag is RenderRoad)
+            {
+                Graphics.SelectEntry(Convert.ToInt32(dSceneTree.treeView1.SelectedNode.Name));
+            }
+            else if (dSceneTree.treeView1.SelectedNode.Tag is RenderJunction)
             {
                 Graphics.SelectEntry(Convert.ToInt32(dSceneTree.treeView1.SelectedNode.Name));
             }
@@ -788,7 +788,6 @@ namespace Mafia2Tool
             int lowestRefID = -1;
 
             ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(RenderPanel.Size.Width, RenderPanel.Size.Height));
-
             foreach (KeyValuePair<int, IRenderer> model in Graphics.Assets)
             {
                 if (!model.Value.DoRender)
@@ -799,7 +798,6 @@ namespace Mafia2Tool
                     Vector3.TransformCoordinate(ray.Position, vWM),
                     Vector3.TransformNormal(ray.Direction, vWM)
                 );
-
                 if (model.Value is RenderModel)
                 {
                     RenderModel mesh = (model.Value as RenderModel);
@@ -824,6 +822,7 @@ namespace Mafia2Tool
                         {
                             lowest = distance;
                             lowestRefID = model.Key;
+                            toolStripStatusLabel2.Text = localRay.Position.ToString();
                         }
                     }
                 }
@@ -1042,6 +1041,12 @@ namespace Mafia2Tool
                 if (Graphics.Assets.ContainsKey(iName))
                     Graphics.Assets.Remove(iName);
             }
+            else if(node.Tag.GetType() == typeof(RenderRoad))
+            {
+                dSceneTree.treeView1.Nodes.Remove(node);
+                if (Graphics.Assets.ContainsKey(int.Parse(node.Name)))
+                    Graphics.Assets.Remove(int.Parse(node.Name));
+            }
             else if (node.Tag.GetType() == typeof(Collision.NXSStruct))
             {
                 dSceneTree.treeView1.Nodes.Remove(node);
@@ -1236,6 +1241,94 @@ namespace Mafia2Tool
             RenderLine spline = new RenderLine();
             spline.Points = new Vector3[1] { new Vector3(0, 0, 0) };
             road.Spline = spline;
+            road.HasToward = true;
+            road.Toward = new SplineProperties();
+            road.Toward.Flags = 0;
+            road.Toward.LaneSize0 = road.Toward.LaneSize1 = 2;
+            road.Toward.Lanes = new LaneProperties[2];
+            road.Toward.Lanes[0] = new LaneProperties();
+            road.Toward.Lanes[0].Width = 3.5f;
+            road.Toward.Lanes[0].Unk03 = 440;
+            road.Toward.Lanes[0].Flags = LaneTypes.MainRoad;
+            road.Toward.Lanes[1] = new LaneProperties();
+            road.Toward.Lanes[1].Width = 3.5f;
+            road.Toward.Lanes[1].Unk03 = 440;
+            road.Toward.Lanes[1].Flags = LaneTypes.None;
+            road.HasBackward = true;
+            road.Backward = new SplineProperties();
+            road.Backward.Flags = RoadFlags.BackwardDirection;
+            road.Backward.LaneSize0 = road.Backward.LaneSize1 = 2;
+            road.Backward.Lanes = new LaneProperties[2];
+            road.Backward.Lanes[1] = new LaneProperties();
+            road.Backward.Lanes[1].Width = 3.5f;
+            road.Backward.Lanes[1].Unk03 = 440;
+            road.Backward.Lanes[1].Flags = LaneTypes.MainRoad;
+            road.Backward.Lanes[0] = new LaneProperties();
+            road.Backward.Lanes[0].Width = 3.5f;
+            road.Backward.Lanes[0].Unk03 = 440;
+            road.Backward.Lanes[0].Flags = LaneTypes.None;
+
+
+            int generatedID = StringHelpers.RandomGenerator.Next();
+            RenderStorageSingleton.Instance.SplineStorage.Add(spline);
+            Graphics.InitObjectStack.Add(generatedID, road);
+            int nodeID = (roadRoot.Nodes.Count + 1);
+            TreeNode child = new TreeNode(nodeID.ToString());
+            child.Text = "ID: " + nodeID;
+            child.Name = generatedID.ToString();
+            child.Tag = road;
+            roadRoot.Nodes.Add(child);
+        }
+
+        private void AddSplineTxT_Click(object sender, EventArgs e)
+        {
+            if (SceneData.roadMap == null)
+                return;
+
+            if (TxtBrowser.ShowDialog() == DialogResult.Cancel)
+                return;
+
+            RenderRoad road = new RenderRoad();
+            RenderLine spline = new RenderLine();
+
+            string[] content = File.ReadAllLines(TxtBrowser.FileName);
+            int numVertexes = int.Parse(content[0]);
+            spline.Points = new Vector3[numVertexes];
+
+            for (int i = 1; i != numVertexes; i++)
+            {
+                string[] splits = content[i].Split(' ');
+                spline.Points[i - 1] = new Vector3(float.Parse(splits[0]), float.Parse(splits[1]), float.Parse(splits[2]));
+            }
+
+            road.Spline = spline;
+            road.HasToward = true;
+            road.Toward = new SplineProperties();
+            road.Toward.Flags = 0;
+            road.Toward.LaneSize0 = road.Toward.LaneSize1 = 2;
+            road.Toward.Lanes = new LaneProperties[2];
+            road.Toward.Lanes[0] = new LaneProperties();
+            road.Toward.Lanes[0].Width = 3.5f;
+            road.Toward.Lanes[0].Unk03 = 440;
+            road.Toward.Lanes[0].Flags = LaneTypes.MainRoad;
+            road.Toward.Lanes[1] = new LaneProperties();
+            road.Toward.Lanes[1].Width = 3.5f;
+            road.Toward.Lanes[1].Unk03 = 440;
+            road.Toward.Lanes[1].Flags = LaneTypes.None;
+            road.HasBackward = true;
+            road.Backward = new SplineProperties();
+            road.Backward.Flags = RoadFlags.BackwardDirection;
+            road.Backward.LaneSize0 = road.Backward.LaneSize1 = 2;
+            road.Backward.Lanes = new LaneProperties[2];
+            road.Backward.Lanes[1] = new LaneProperties();
+            road.Backward.Lanes[1].Width = 3.5f;
+            road.Backward.Lanes[1].Unk03 = 440;
+            road.Backward.Lanes[1].Flags = LaneTypes.MainRoad;
+            road.Backward.Lanes[0] = new LaneProperties();
+            road.Backward.Lanes[0].Width = 3.5f;
+            road.Backward.Lanes[0].Unk03 = 440;
+            road.Backward.Lanes[0].Flags = LaneTypes.None;
+
 
             int generatedID = StringHelpers.RandomGenerator.Next();
             RenderStorageSingleton.Instance.SplineStorage.Add(spline);

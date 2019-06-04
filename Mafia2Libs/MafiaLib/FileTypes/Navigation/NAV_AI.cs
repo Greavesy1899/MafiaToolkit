@@ -78,7 +78,7 @@ namespace ResourceTypes.Navigation
             string unkString2; //sometimes it can be 1, or 2.
             string typeName; //always AIWORLDPART.
             long unk06; //between the AIWorldPart and the struct.
-            AISegment[] segments;
+            AIChunk[] points;
             string originFile;
             byte[] trailingBytes;
 
@@ -108,246 +108,304 @@ namespace ResourceTypes.Navigation
                     throw new Exception("unk06 was not 1");
 
                 int unkCount = reader.ReadInt32();
-                segments = new AISegment[unkCount];
+                points = new AIChunk[unkCount];
                 for (int i = 0; i != unkCount; i++)
-                {
-                    segments[i] = new AISegment(reader);
-                }
+                    points[i] = new AIChunk(reader);
 
                 originFile = StringHelpers.ReadString(reader);
                 trailingBytes = reader.ReadBytes(8);
             }
 
-            private class AISegment
+            private class AIChunk
             {
-                short unk0;
-                byte unk1;
-                AIChunk[] chunks;
+                private short type;
+                private Type1 type1Data;
+                private Type4 type4Data;
+                private Type7 type7Data;
+                private Type8 type8Data;
+                private int type8Int;
+                private Type11 type11Data;
 
-                public AISegment(BinaryReader reader)
+                public AIChunk(BinaryReader reader)
                 {
-                    unk0 = reader.ReadInt16();
-                    unk1 = reader.ReadByte();
-                    int unkCount = reader.ReadInt32();
-                    chunks = new AIChunk[unkCount];
-                    for (int i = 0; i != unkCount; i++)
+                    type = reader.ReadInt16();
+
+                    switch (type)
                     {
-                        chunks[i] = new AIChunk(reader);
+                        case 1:
+                            type1Data = new Type1();
+                            type1Data.ReadFromFile(reader);
+                            break;
+                        case 4:
+                            type4Data = new Type4();
+                            type4Data.ReadFromFile(reader);
+                            break;
+                        case 7:
+                            type7Data = new Type7();
+                            type7Data.ReadFromFile(reader);
+                            break;
+                        case 8:
+                            type8Data = new Type8();
+                            type8Data.ReadFromFile(reader);
+                            type8Int = reader.ReadInt32();
+                            break;
+                        case 9:
+                            type8Data = new Type8();
+                            type8Data.ReadFromFile(reader);
+                            break;
+                        case 11:
+                            type11Data = new Type11();
+                            type11Data.ReadFromFile(reader);
+                            break;
+                        default:
+                            throw new Exception("Unknown type");
                     }
                 }
 
-                private class AIChunk
+                private struct Type1
                 {
-                    private short type;
-                    private Type4 type4Data;
-                    private Type7 type7Data;
+                    byte unk06;
+                    AIChunk[] points;
 
-                    public AIChunk(BinaryReader reader)
+                    public void ReadFromFile(BinaryReader reader)
                     {
-                        type = reader.ReadInt16();
-
-                        switch (type)
-                        {
-                            case 4:
-                                type4Data = new Type4();
-                                type4Data.ReadFromFile(reader);
-                                break;
-                            case 7:
-                                type7Data = new Type7();
-                                type7Data.ReadFromFile(reader);
-                                break;
-                            default:
-                                throw new Exception("Unknown type");
-                        }
-                    }
-
-                    private struct Type4
-                    {
-                        private byte unk0;
-                        private Vector3 position;
-                        private Vector3 rotation;
-                        private short[] unks1;
-                        private Vector3 unkVector;
-                        private byte[] unkHalfs; //ACTUALLY HALF DATA.
-                        private int[] unkData;
-                        private int trailingUnk;
-
-                        public void ReadFromFile(BinaryReader reader)
-                        {
-                            unk0 = reader.ReadByte();
-                            position = Vector3Extenders.ReadFromFile(reader);
-                            rotation = Vector3Extenders.ReadFromFile(reader);
-
-                            unks1 = new short[6];
-                            for (int i = 0; i != 6; i++)
-                                unks1[i] = reader.ReadInt16();
-
-                            unkVector = Vector3Extenders.ReadFromFile(reader);
-                            unkHalfs = reader.ReadBytes(6);
-
-                            short unkCount = reader.ReadInt16();
-
-                            unkData = new int[unkCount];
-                            for (int i = 0; i != unkCount; i++)
-                                unkData[i] = reader.ReadInt32();
-
-                            trailingUnk = reader.ReadInt32();
-                        }
-                    }
-
-                    private struct Type7
-                    {
-                        private short unk0;
-                        private Vector3 position;
-                        private Vector3 rotation;
-                        private byte[] data;
-
-                        public void ReadFromFile(BinaryReader reader)
-                        {
-                            unk0 = reader.ReadInt16();
-                            position = Vector3Extenders.ReadFromFile(reader);
-                            rotation = Vector3Extenders.ReadFromFile(reader);
-                            data = reader.ReadBytes(16);
-                        }
-                    }
-
-                    public override string ToString()
-                    {
-                        return string.Format("Chunk: {0}", type);
+                        unk06 = reader.ReadByte();
+                        int unkCount = reader.ReadInt32();
+                        points = new AIChunk[unkCount];
+                        for (int i = 0; i != unkCount; i++)
+                            points[i] = new AIChunk(reader);
                     }
                 }
-            }
-        }
 
-        public class HPDData
-        {
-            int unk0;
-            int unk1;
-            byte[] remainingHeader; //132
-            unkStruct[] unkData;
-            string unk2;
-            int unk3;
-            int unk4;
+                private struct Type4
+                {
+                    private byte unk0;
+                    private Vector3 position;
+                    private Vector3 rotation;
+                    private int unk1;
+                    private int unk2;
+                    private int unk3;
+                    private Vector3 unk4;
+                    private int unk5;
+                    private byte unk6;
+                    private byte unk7;
+                    private int[] unk8;
+                    private int unk9;
 
-            public struct unkStruct
-            {
-                public int id;
-                public Vector3 unk0;
-                public Vector3 unk1;
-                public byte[] unkData;
+                    public void ReadFromFile(BinaryReader reader)
+                    {
+                        unk0 = reader.ReadByte();
+                        position = Vector3Extenders.ReadFromFile(reader);
+                        rotation = Vector3Extenders.ReadFromFile(reader);
+                        unk1 = reader.ReadInt32();
+                        unk2 = reader.ReadInt32();
+                        unk3 = reader.ReadInt32();
+                        unk4 = Vector3Extenders.ReadFromFile(reader);
+                        unk5 = reader.ReadInt32();
+                        unk6 = reader.ReadByte();
+                        unk7 = reader.ReadByte();
+                        short count = reader.ReadInt16();
+                        unk8 = new int[count];
+                        for (int i = 0; i != count; i++)
+                            unk8[i] = reader.ReadInt32();
+                        unk9 = reader.ReadInt32();
+                    }
+                }
+
+                private struct Type7
+                {
+                    private short unk0;
+                    private Vector3 position;
+                    private Vector3 rotation;
+                    private Vector3 unk1;
+                    private int unk2;
+
+                    public void ReadFromFile(BinaryReader reader)
+                    {
+                        unk0 = reader.ReadInt16();
+                        position = Vector3Extenders.ReadFromFile(reader);
+                        rotation = Vector3Extenders.ReadFromFile(reader);
+                        unk1 = Vector3Extenders.ReadFromFile(reader);
+                        unk2 = reader.ReadInt32();
+                    }
+                }
+
+                private struct Type8
+                {
+                    private byte unk0;
+                    private int unk1;
+                    private Vector3 unk2;
+                    private float unk3;
+                    private float unk4;
+                    private int[] unk5;
+
+                    public void ReadFromFile(BinaryReader reader)
+                    {
+                        unk0 = reader.ReadByte();
+                        unk1 = reader.ReadInt32();
+                        unk2 = Vector3Extenders.ReadFromFile(reader);
+                        unk3 = reader.ReadSingle();
+                        unk4 = reader.ReadSingle();
+                        short count = reader.ReadInt16();
+                        unk5 = new int[count];
+                        for (int i = 0; i != count; i++)
+                            unk5[i] = reader.ReadInt32();
+                    }
+                }
+
+                private struct Type11
+                {
+                    private byte unk0;
+                    private Vector3 unk1;
+                    private Vector3 unk2;
+                    private Vector3 unk3;
+                    private float unk4;
+
+                    public void ReadFromFile(BinaryReader reader)
+                    {
+                        unk0 = reader.ReadByte();
+                        unk1 = Vector3Extenders.ReadFromFile(reader);
+                        unk2 = Vector3Extenders.ReadFromFile(reader);
+                        unk3 = Vector3Extenders.ReadFromFile(reader);
+                        unk4 = reader.ReadSingle();
+                    }
+                }
 
                 public override string ToString()
                 {
-                    return string.Format("{0} {1} {2}", id, unk0.ToString(), unk1.ToString());
+                    return string.Format("Chunk: {0}", type);
                 }
-            }
-
-            public HPDData(BinaryReader reader)
-            {
-                unk0 = reader.ReadInt32();
-                unk1 = reader.ReadInt32();
-                remainingHeader = reader.ReadBytes(132);
-
-                unkData = new unkStruct[unk1];
-
-                for(int i = 0; i != unkData.Length; i++)
-                {
-                    unkStruct data = new unkStruct();
-                    data.id = reader.ReadInt32();
-                    data.unk0 = Vector3Extenders.ReadFromFile(reader);
-                    data.unk1 = Vector3Extenders.ReadFromFile(reader);
-                    data.unkData = reader.ReadBytes(20);
-                    unkData[i] = data;
-                }
-
-                unk2 = StringHelpers.ReadString(reader);
-                unk3 = reader.ReadInt32();
-                unk4 = reader.ReadInt32();
             }
         }
-        public class OBJData
+    }
+    public class HPDData
+    {
+        int unk0;
+        int unk1;
+        byte[] remainingHeader; //132
+        public unkStruct[] unkData;
+        string unk2;
+        int unk3;
+        int unk4;
+
+        public struct unkStruct
         {
-            public struct VertexStruct
+            public int id;
+            public Vector3 unk0;
+            public Vector3 unk1;
+            public byte[] unkData;
+
+            public override string ToString()
             {
-                public int unk7;
-                public Vector3 position;
-                public int unk0;
-                public float unk1;
-                public int unk2;
-                public short unk3;
-                public short unk4;
-                public int unk5;
-                public int unk6;
+                return string.Format("{0} {1} {2}", id, unk0.ToString(), unk1.ToString());
+            }
+        }
+
+        public HPDData(BinaryReader reader)
+        {
+            unk0 = reader.ReadInt32();
+            unk1 = reader.ReadInt32();
+            remainingHeader = reader.ReadBytes(132);
+
+            unkData = new unkStruct[unk1];
+
+            for (int i = 0; i != unkData.Length; i++)
+            {
+                unkStruct data = new unkStruct();
+                data.id = reader.ReadInt32();
+                data.unk0 = Vector3Extenders.ReadFromFile(reader);
+                data.unk1 = Vector3Extenders.ReadFromFile(reader);
+                data.unkData = reader.ReadBytes(20);
+                unkData[i] = data;
             }
 
-            string fileName;
-            int unk0;
-            byte unk1;
-            int unk2;
-            int unk3;
-            int unk4;
-            int vertSize;
-            int triSize;
-            int unk5;
-            public VertexStruct[] vertices;
-            int unk6;
-            int unk7;
-            short unk8;
-            short unk9;
-            public uint[] indices;
+            unk2 = StringHelpers.ReadString(reader);
+            unk3 = reader.ReadInt32();
+            unk4 = reader.ReadInt32();
+        }
+    }
+    public class OBJData
+    {
+        public struct VertexStruct
+        {
+            public int unk7;
+            public Vector3 position;
+            public int unk0;
+            public float unk1;
+            public int unk2;
+            public short unk3;
+            public short unk4;
+            public int unk5;
+            public int unk6;
+        }
 
-            public OBJData(BinaryReader reader)
+        string fileName;
+        int unk0;
+        byte unk1;
+        int unk2;
+        int unk3;
+        int unk4;
+        int vertSize;
+        int triSize;
+        int unk5;
+        public VertexStruct[] vertices;
+        int unk6;
+        int unk7;
+        short unk8;
+        short unk9;
+        public uint[] indices;
+
+        public OBJData(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
+            unk0 = reader.ReadInt32();
+            unk2 = reader.ReadInt32();
+            unk3 = reader.ReadInt32();
+            unk4 = reader.ReadInt32();
+            vertSize = reader.ReadInt32();
+            triSize = reader.ReadInt32();
+
+            vertices = new VertexStruct[vertSize];
+            for (int i = 0; i < vertSize; i++)
             {
-                ReadFromFile(reader);
+                VertexStruct vertex = new VertexStruct();
+                vertex.unk7 = reader.ReadInt32();
+                vertex.position = Vector3Extenders.ReadFromFile(reader);
+                vertex.unk0 = reader.ReadInt32();
+                vertex.unk1 = reader.ReadSingle();
+                vertex.unk2 = reader.ReadInt32();
+                vertex.unk3 = reader.ReadInt16();
+                vertex.unk4 = reader.ReadInt16();
+                vertex.unk5 = reader.ReadInt32();
+                vertex.unk6 = reader.ReadInt32();
+                vertices[i] = vertex;
             }
+            //unk6 = reader.ReadInt32();
+            //unk7 = reader.ReadInt32();
+            //unk8 = reader.ReadInt16();
+            //unk9 = reader.ReadInt16();
 
-            public void ReadFromFile(BinaryReader reader)
+            int x = 2;
+            indices = new uint[(triSize - 1) * 3];
+            for (int i = 0; i < (triSize - 1) * 3; i++)
             {
-                unk0 = reader.ReadInt32();
-                unk2 = reader.ReadInt32();
-                unk3 = reader.ReadInt32();
-                unk4 = reader.ReadInt32();
-                vertSize = reader.ReadInt32();
-                triSize = reader.ReadInt32();
-
-                vertices = new VertexStruct[vertSize];
-                for (int i = 0; i < vertSize; i++)
+                if (x == 0)
                 {
-                    VertexStruct vertex = new VertexStruct();
-                    vertex.unk7 = reader.ReadInt32();
-                    vertex.position = Vector3Extenders.ReadFromFile(reader);
-                    vertex.unk0 = reader.ReadInt32();
-                    vertex.unk1 = reader.ReadSingle();
-                    vertex.unk2 = reader.ReadInt32();
-                    vertex.unk3 = reader.ReadInt16();
-                    vertex.unk4 = reader.ReadInt16();
-                    vertex.unk5 = reader.ReadInt32();
-                    vertex.unk6 = reader.ReadInt32();
-                    vertices[i] = vertex;
+                    indices[i] = reader.ReadUInt32();
+                    x = 2;
                 }
-                //unk6 = reader.ReadInt32();
-                //unk7 = reader.ReadInt32();
-                //unk8 = reader.ReadInt16();
-                //unk9 = reader.ReadInt16();
-
-                int x = 2;
-                indices = new uint[(triSize-1) * 3];
-                for (int i = 0; i < (triSize-1)*3; i++)
+                else
                 {
-                    if (x == 0)
-                    {
-                        indices[i] = reader.ReadUInt32();
-                        x = 2;
-                    }
-                    else
-                    {
-                        indices[i] = (uint)reader.ReadInt24();
-                        reader.ReadByte();
-                        x--;
-                    }
+                    indices[i] = (uint)reader.ReadInt24();
+                    reader.ReadByte();
+                    x--;
                 }
-                //TODO::
             }
+            //TODO::
         }
     }
 }

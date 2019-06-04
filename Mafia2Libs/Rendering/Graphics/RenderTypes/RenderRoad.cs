@@ -35,7 +35,7 @@ namespace Rendering.Graphics
 
         public void Init(SplineDefinition data)
         {
-            Spline.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+            Spline.SetUnselectedColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
             Spline.Init(data.points);
             Vector3[] editPoints = (Vector3[])data.points.Clone();
 

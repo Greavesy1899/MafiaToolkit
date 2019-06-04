@@ -191,11 +191,10 @@ namespace ResourceTypes.Collisions
             {
                 position.WriteToFile(writer);
                 Vector3 rot = new Vector3();
-                rot.X = 0.0f;//MathUtil.DegreesToRadians(rotation.X);
-                rot.Y = 0.0f;//MathUtil.DegreesToRadians(rotation.Y);
+                //rot.X = MathUtil.DegreesToRadians(rotation.X);
+                //rot.Y = MathUtil.DegreesToRadians(rotation.Y);
                 rot.Z = -MathUtil.DegreesToRadians(rotation.Z);
-                rotation = rot;
-                rotation.WriteToFile(writer);
+                rot.WriteToFile(writer);
                 writer.Write(hash);
                 writer.Write(unk4);
                 writer.Write(unk5);

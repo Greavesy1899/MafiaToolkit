@@ -39,16 +39,12 @@
             this.AddColumnButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DataGrid = new System.Windows.Forms.DataGridView();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.ColumnIndexLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.RowIndexLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.DataTypeLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DataGrid)).BeginInit();
             this.statusStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
-            this.splitContainer.Panel1.SuspendLayout();
-            this.splitContainer.Panel2.SuspendLayout();
-            this.splitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -127,65 +123,56 @@
             // DataGrid
             // 
             this.DataGrid.AllowUserToAddRows = false;
-            this.DataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.DataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.DataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.DataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DataGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.DataGrid.Location = new System.Drawing.Point(0, 0);
+            this.DataGrid.Location = new System.Drawing.Point(0, 28);
             this.DataGrid.Name = "DataGrid";
             this.DataGrid.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.DataGrid.Size = new System.Drawing.Size(800, 421);
+            this.DataGrid.Size = new System.Drawing.Size(800, 397);
             this.DataGrid.TabIndex = 16;
             this.DataGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnCellClick);
             // 
             // statusStrip1
             // 
-            this.statusStrip1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ColumnIndexLabel,
-            this.RowIndexLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 0);
+            this.RowIndexLabel,
+            this.DataTypeLabel});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 428);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(800, 25);
+            this.statusStrip1.Size = new System.Drawing.Size(800, 22);
             this.statusStrip1.TabIndex = 17;
             this.statusStrip1.Text = "statusStrip1";
-            // 
-            // splitContainer
-            // 
-            this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer.Name = "splitContainer";
-            this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer.Panel1
-            // 
-            this.splitContainer.Panel1.Controls.Add(this.DataGrid);
-            // 
-            // splitContainer.Panel2
-            // 
-            this.splitContainer.Panel2.Controls.Add(this.statusStrip1);
-            this.splitContainer.Size = new System.Drawing.Size(800, 450);
-            this.splitContainer.SplitterDistance = 421;
-            this.splitContainer.TabIndex = 18;
             // 
             // ColumnIndexLabel
             // 
             this.ColumnIndexLabel.Name = "ColumnIndexLabel";
-            this.ColumnIndexLabel.Size = new System.Drawing.Size(78, 20);
+            this.ColumnIndexLabel.Size = new System.Drawing.Size(78, 17);
             this.ColumnIndexLabel.Text = "ColumnIndex";
             // 
             // RowIndexLabel
             // 
             this.RowIndexLabel.Name = "RowIndexLabel";
-            this.RowIndexLabel.Size = new System.Drawing.Size(58, 20);
+            this.RowIndexLabel.Size = new System.Drawing.Size(58, 17);
             this.RowIndexLabel.Text = "RowIndex";
+            // 
+            // DataTypeLabel
+            // 
+            this.DataTypeLabel.Name = "DataTypeLabel";
+            this.DataTypeLabel.Size = new System.Drawing.Size(118, 17);
+            this.DataTypeLabel.Text = "toolStripStatusLabel1";
             // 
             // TableEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.splitContainer);
+            this.Controls.Add(this.DataGrid);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TableEditor";
             this.Text = "$TABLE_EDITOR";
@@ -194,11 +181,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.DataGrid)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            this.splitContainer.Panel1.ResumeLayout(false);
-            this.splitContainer.Panel2.ResumeLayout(false);
-            this.splitContainer.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
-            this.splitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -216,8 +198,8 @@
         private System.Windows.Forms.ToolStripMenuItem AddRowButton;
         private System.Windows.Forms.ToolStripMenuItem AddColumnButton;
         private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.ToolStripStatusLabel ColumnIndexLabel;
         private System.Windows.Forms.ToolStripStatusLabel RowIndexLabel;
+        private System.Windows.Forms.ToolStripStatusLabel DataTypeLabel;
     }
 }

@@ -18,14 +18,16 @@ namespace Rendering.Graphics
             }
         }
         private VertexLayouts.BasicLayout.Vertex[] vertices;
-        private Vector4 colour;
+        private Vector4 SelectedColour;
+        private Vector4 UnselectedColour;
 
         public RenderLine()
         {
             DoRender = true;
             shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
             Transform = Matrix.Identity;
-            colour = new Vector4(1.0f);
+            SelectedColour = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+            UnselectedColour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
             points = new Vector3[0];
             vertices = new VertexLayouts.BasicLayout.Vertex[0];
         }
@@ -36,7 +38,7 @@ namespace Rendering.Graphics
             UpdateVertices();
         }
 
-        public void UpdateVertices()
+        public void UpdateVertices(bool selected = false)
         {
             vertices = new VertexLayouts.BasicLayout.Vertex[points.Length];
 
@@ -44,15 +46,19 @@ namespace Rendering.Graphics
             {
                 VertexLayouts.BasicLayout.Vertex vertex = new VertexLayouts.BasicLayout.Vertex();
                 vertex.Position = points[i];
-                vertex.Colour = colour;
+                vertex.Colour = (selected ? SelectedColour : UnselectedColour);
                 vertices[i] = vertex;
             }
             isUpdatedNeeded = true;
         }
 
-        public void SetColour(Vector4 vec)
+        public void SetSelectedColour(Vector4 vec)
         {
-            colour = vec;
+            SelectedColour = vec;
+        }
+        public void SetUnselectedColour(Vector4 vec)
+        {
+            UnselectedColour = vec;
         }
 
         public override void InitBuffers(Device d3d, DeviceContext context)
@@ -113,14 +119,12 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            colour = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
-            UpdateVertices();
+            UpdateVertices(true);
             isUpdatedNeeded = true;
         }
 
         public override void Unselect()
         {
-            colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
             UpdateVertices();
             isUpdatedNeeded = true;
         }
