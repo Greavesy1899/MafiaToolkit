@@ -12,25 +12,23 @@ namespace Forms.Docking
             InitializeComponent();
         }
 
-        public void AddToTree(TreeNode newNode)
+        public void AddToTree(TreeNode newNode, TreeNode parentNode = null)
         {
+            newNode.Checked = true;
             ApplyImageIndex(newNode);
             RecurseChildren(newNode);
-            treeView1.Nodes.Add(newNode);
-        }
 
-        public void AddToTree(TreeNode newNode, TreeNode parentNode)
-        {
-            ApplyImageIndex(newNode);
-            RecurseChildren(newNode);
-            parentNode.Nodes.Add(newNode);
-            treeView1.SelectedNode = newNode;
+            if(parentNode != null)
+                parentNode.Nodes.Add(newNode);
+            else
+                treeView1.Nodes.Add(newNode);
         }
 
         private void RecurseChildren(TreeNode node)
         {
             foreach (TreeNode child in node.Nodes)
             {
+                child.Checked = true;
                 ApplyImageIndex(child);
                 RecurseChildren(child);
             }
@@ -91,11 +89,14 @@ namespace Forms.Docking
                 EntryMenuStrip.Items[1].Visible = true;
                 EntryMenuStrip.Items[2].Visible = true;
 
-                if (FrameResource.IsFrameType(treeView1.SelectedNode.Tag))
+                if (FrameResource.IsFrameType(treeView1.SelectedNode.Tag) ||
+                    treeView1.SelectedNode.Tag.GetType() == typeof(Rendering.Graphics.RenderJunction))
                 {
                     EntryMenuStrip.Items[0].Visible = true;
                 }
-                if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) || treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement)))
+                if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || 
+                    treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) || 
+                    treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement)))
                 {
                     EntryMenuStrip.Items[3].Visible = true;
                 }
@@ -112,7 +113,18 @@ namespace Forms.Docking
             if(data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
                 return (data as ResourceTypes.Collisions.Collision.Placement).Position;
 
+            if(data.GetType() == typeof(Rendering.Graphics.RenderJunction))
+                return (data as Rendering.Graphics.RenderJunction).Data.Position;
+
             return new Vector3(0, 0, 0);
+        }
+
+        private void OnDoubleClick(object sender, System.EventArgs e)
+        {
+            var localPosition = treeView1.PointToClient(Cursor.Position);
+            var hitTestInfo = treeView1.HitTest(localPosition);
+            if (hitTestInfo.Location == TreeViewHitTestLocations.StateImage)
+                return;
         }
     }
 }

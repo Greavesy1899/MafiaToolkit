@@ -440,7 +440,7 @@ namespace ResourceTypes.Navigation
         public uint unkDataSet3Offset;
         public ushort unkDataSet4Count;
         public uint unkDataSet4Offset;
-        public ushort unkDataSet5Count;
+        public ushort unkGPSSize;
         public uint unkDataSet5Offset;
         public ushort unkDataSet6Count;
 
@@ -449,7 +449,7 @@ namespace ResourceTypes.Navigation
         public JunctionDefinition[] junctionData;
         public ushort[] unkSet3;
         public unkStruct3[] unkSet4;
-        public ushort[] unkSet5;
+        public ushort[] unkGPS;
         public ushort[] unkSet6;
 
         private FileInfo info;
@@ -487,7 +487,7 @@ namespace ResourceTypes.Navigation
             short unkDataSet4Count2 = reader.ReadInt16();
             unkDataSet4Offset = reader.ReadInt24();
             reader.ReadByte();
-            unkDataSet5Count = reader.ReadUInt16();
+            unkGPSSize = reader.ReadUInt16();
             short unkDataSet5Count2 = reader.ReadInt16();
             unkDataSet5Offset = reader.ReadInt24();
             reader.ReadByte();
@@ -725,7 +725,7 @@ namespace ResourceTypes.Navigation
 
             unkSet3 = new ushort[unkDataSet3Count];
             unkSet4 = new unkStruct3[unkDataSet4Count];
-            unkSet5 = new ushort[unkDataSet5Count];
+            unkGPS = new ushort[unkGPSSize];
             unkSet6 = new ushort[unkDataSet6Count];
 
             for (int i = 0; i < unkDataSet3Count; i++)
@@ -738,8 +738,8 @@ namespace ResourceTypes.Navigation
                 unkSet4[i].unk1 = reader.ReadUInt16();
             }
 
-            for (int i = 0; i < unkDataSet5Count; i++)
-                unkSet5[i] = reader.ReadUInt16();
+            for (int i = 0; i < unkGPSSize; i++)
+                unkGPS[i] = reader.ReadUInt16();
 
             for (int i = 0; i < unkDataSet6Count; i++)
                 unkSet6[i] = reader.ReadUInt16();
@@ -756,6 +756,9 @@ namespace ResourceTypes.Navigation
             int highestp2 = -1;
             int idxp2 = -1;
 
+            int high5 = -1;
+            int high6 = -1;
+
             for (int i = 0; i < unkDataSet4Count; i++)
             {
                 if (unkSet4[i].unk0 > highestp1)
@@ -766,6 +769,18 @@ namespace ResourceTypes.Navigation
                     highestp2 = unkSet4[i].unk1;
                     idxp2 = i;
                 }
+            }
+
+            for (int i = 0; i < unkGPS.Length; i++)
+            {
+                if (unkGPS[i] > high5)
+                    high5 = unkGPS[i];
+            }
+
+            for (int i = 0; i < unkSet6.Length; i++)
+            {
+                if (unkSet6[i] > high6)
+                    high6 = unkSet6[i];
             }
         }
 
@@ -796,8 +811,8 @@ namespace ResourceTypes.Navigation
             writer.Write(unkDataSet4Count);
             writer.Write(unkDataSet4Count);
             writer.WriteInt24(unkDataSet4Offset);
-            writer.Write(unkDataSet5Count);
-            writer.Write(unkDataSet5Count);
+            writer.Write(unkGPSSize);
+            writer.Write(unkGPSSize);
             writer.WriteInt24(unkDataSet5Offset);
             writer.Write(unkDataSet6Count);
             writer.Write(unkDataSet6Count);
@@ -1066,25 +1081,25 @@ namespace ResourceTypes.Navigation
 
             //related to junctions.
             for (int i = 0; i < unkDataSet3Count; i++)
-                writer.Write(unkSet3[i]);
+                writer.Write(unkSet3[i]); //stops junctions working.
 
             WriteUpdatedOffset(writer, 32);
 
             for (int i = 0; i < unkDataSet4Count; i++)
             {
-                writer.Write(unkSet4[i].unk0);
-                writer.Write(unkSet4[i].unk1);
+                writer.Write(unkSet4[i].unk0);//stops cars spawning
+                writer.Write(unkSet4[i].unk1); //makes certain areas of the roadmap crash
             }
 
             WriteUpdatedOffset(writer, 40);
 
-            for (int i = 0; i < unkDataSet5Count; i++)
-                writer.Write(unkSet5[i]);
+            for (int i = 0; i < unkGPSSize; i++)
+                writer.Write(unkGPS[i]); //traffic works, but no GPS data is available.
 
             WriteUpdatedOffset(writer, 48);
 
             for (int i = 0; i < unkDataSet6Count; i++)
-                writer.Write(unkSet6[i]);
+                writer.Write(unkSet6[i]); //causes crashes, junctions fail to work.
         }
 
         private void WriteUpdatedOffset(BinaryWriter writer, long pos, bool isZero = false)
@@ -1185,7 +1200,7 @@ namespace ResourceTypes.Navigation
             splineCount = (ushort)splines.Length;
             splineData = splineList.ToArray();
             splinePropertiesCount = (ushort)splineData.Length;
-
+            junctionPropertiesCount = (ushort)junctionData.Length;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿namespace Forms.Docking
+﻿
+namespace Forms.Docking
 {
     partial class DockSceneTree
     {
@@ -36,7 +37,7 @@
             this.DuplicateButton = new System.Windows.Forms.ToolStripMenuItem();
             this.Export3DButton = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.treeView1 = new Utils.Extensions.MTreeView();
             this.EntryMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -93,6 +94,7 @@
             // 
             // treeView1
             // 
+            this.treeView1.CheckBoxes = true;
             this.treeView1.ContextMenuStrip = this.EntryMenuStrip;
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.HideSelection = false;
@@ -103,6 +105,7 @@
             this.treeView1.SelectedImageIndex = 0;
             this.treeView1.Size = new System.Drawing.Size(266, 450);
             this.treeView1.TabIndex = 0;
+            this.treeView1.DoubleClick += new System.EventHandler(this.OnDoubleClick);
             // 
             // DockSceneTree
             // 
@@ -112,7 +115,7 @@
             this.Controls.Add(this.treeView1);
             this.HideOnClose = true;
             this.Name = "DockSceneTree";
-            this.TabText = "Scene Tree";
+            this.TabText = "Scene Outliner";
             this.Text = "DockSceneTree";
             this.EntryMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -126,6 +129,6 @@
         public System.Windows.Forms.ToolStripMenuItem DeleteButton;
         public System.Windows.Forms.ToolStripMenuItem DuplicateButton;
         public System.Windows.Forms.ToolStripMenuItem Export3DButton;
-        public System.Windows.Forms.TreeView treeView1;
+        public Utils.Extensions.MTreeView treeView1;
     }
 }

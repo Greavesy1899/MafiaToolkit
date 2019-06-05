@@ -540,6 +540,9 @@ namespace Mafia2Tool
                 case "IFL":
                     ResourceTypes.AnimatedTexture.AnimatedTextureLoader an = new ResourceTypes.AnimatedTexture.AnimatedTextureLoader((FileInfo)item.Tag);
                     return;
+                case "IDS":
+                    ResourceTypes.ItemDesc.ItemDescLoader itemDesc = new ResourceTypes.ItemDesc.ItemDescLoader((item.Tag as FileInfo).FullName);
+                    return;
                 default:
                     Process.Start(((FileInfo)item.Tag).FullName);
                     break;

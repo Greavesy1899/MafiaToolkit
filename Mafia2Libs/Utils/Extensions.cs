@@ -14,6 +14,32 @@ using Rectangle = System.Drawing.Rectangle;
 
 namespace Utils.Extensions
 {
+    public class MTreeView : TreeView
+    {
+        //fix from: (gotta love stack overflow!)
+        //https://stackoverflow.com/questions/14647216/c-sharp-treeview-ignore-double-click-only-at-checkbox
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == 0x0203 && CheckBoxes)
+            {
+                var localPos = this.PointToClient(Cursor.Position);
+                var hitTestInfo = this.HitTest(localPos);
+                if (hitTestInfo.Location == TreeViewHitTestLocations.StateImage)
+                {
+                    m.Msg = 0x0201;
+                }
+            }
+            base.WndProc(ref m);
+        }
+
+        protected override void OnAfterCheck(TreeViewEventArgs e)
+        {
+            base.OnAfterCheck(e);
+            foreach(TreeNode node in e.Node.Nodes)
+                node.Checked = e.Node.Checked;
+        }
+    }
+
     public class MTableColumn : DataGridViewColumn
     {
         private byte unk2;

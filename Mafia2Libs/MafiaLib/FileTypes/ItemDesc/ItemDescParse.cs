@@ -32,8 +32,8 @@ namespace ResourceTypes.ItemDesc
                 collision = new CollisionSphere(reader);
             else if (colType == CollisionTypes.Capsule)
                 collision = new CollisionCapsule(reader);
-            else if (colType == CollisionTypes.Unk7)
-                collision = new CollisionUnk7(reader);
+            else if (colType == CollisionTypes.Convex)
+                collision = new CollisionConvex(reader);
            // else
                 //Console.WriteLine("Unsupported type {0}", colType);
         }

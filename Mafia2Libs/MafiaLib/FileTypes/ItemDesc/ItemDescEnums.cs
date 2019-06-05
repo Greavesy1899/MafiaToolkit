@@ -5,6 +5,6 @@
         Box = 1,
         Sphere,
         Capsule,
-        Unk7 = 7
+        Convex = 7
     }
 }

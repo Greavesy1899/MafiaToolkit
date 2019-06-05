@@ -67,6 +67,7 @@ namespace Mafia2Tool
             PopulateList(info);
             TEMPCameraSpeed.Text = ToolkitSettings.CameraSpeed.ToString();
             KeyPreview = true;
+            Text += " -" + info.Directory.Name;
             StartD3DPanel();
         }
 
@@ -97,12 +98,13 @@ namespace Mafia2Tool
             dViewProperties = new DockViewProperties();
             dPropertyGrid.Show(dockPanel1, DockState.DockRight);
             dSceneTree.Show(dockPanel1, DockState.DockLeft);
-            dViewProperties.Show(dockPanel1, DockState.DockRight);
+            //dViewProperties.Show(dockPanel1, DockState.DockRight);
             dSceneTree.treeView1.AfterSelect += new TreeViewEventHandler(OnAfterSelect);
             dSceneTree.Export3DButton.Click += new EventHandler(Export3DButton_Click);
             dSceneTree.JumpToButton.Click += new EventHandler(JumpButton_Click);
             dSceneTree.DeleteButton.Click += new EventHandler(DeleteButton_Click);
             dSceneTree.DuplicateButton.Click += new EventHandler(DuplicateButton_Click);
+            dSceneTree.treeView1.AfterCheck += new TreeViewEventHandler(OutlinerAfterCheck);
             dPropertyGrid.PropertyGrid.SelectedGridItemChanged += new SelectedGridItemChangedEventHandler(OnPropertyGridSelectChanged);
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyValueChanged);
             dPropertyGrid.PositionXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
@@ -111,6 +113,29 @@ namespace Mafia2Tool
             dPropertyGrid.RotationXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.RotationYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.RotationZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+        }
+
+        private void OutlinerAfterCheck(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node != null)
+            {
+                if (e.Node.Tag != null)
+                {
+                    bool isFrame = FrameResource.IsFrameType(e.Node.Tag);
+
+                    if (isFrame)
+                    {
+                        int refID = (e.Node.Tag as FrameEntry).RefID;
+                        if (Graphics.Assets.ContainsKey(refID))
+                            Graphics.Assets[refID].DoRender = e.Node.Checked;
+                    }
+                    else if (e.Node.Tag.GetType() == typeof(RenderRoad) ||
+                         e.Node.Tag.GetType() == typeof(RenderRoad) ||
+                         e.Node.Tag.GetType() == typeof(RenderRoad) ||
+                         e.Node.Tag.GetType() == typeof(Collision.Placement))
+                        Graphics.Assets[Convert.ToInt32(e.Node.Name)].DoRender = e.Node.Checked;
+                }
+            }
         }
 
         public void PopulateList(FileInfo info)
@@ -225,17 +250,6 @@ namespace Mafia2Tool
             lastMousePos = mousePos;
             Graphics.Timer.Frame2();
             Graphics.FPS.Frame();
-
-            foreach (KeyValuePair<int, IRenderer> render in Graphics.Assets)
-            {
-                if (render.Value.GetType() == typeof(RenderModel))
-                    render.Value.DoRender = dViewProperties.VisibleProperties[0];
-                else if (render.Value.GetType() == typeof(RenderBoundingBox))
-                    render.Value.DoRender = dViewProperties.VisibleProperties[2];
-                else if (render.Value.GetType() == typeof(RenderInstance))
-                    render.Value.DoRender = dViewProperties.VisibleProperties[1];
-            }
-
             Graphics.Frame();
             toolStripStatusLabel1.Text = Graphics.Camera.Position.ToString();
             toolStripTextBox1.Text = Graphics.Camera.Position.ToString();
@@ -305,6 +319,7 @@ namespace Mafia2Tool
                 if (SceneData.roadMap != null && ToolkitSettings.Experimental)
                 {
                     List<SplineDefinition> splines = new List<SplineDefinition>();
+                    List<JunctionDefinition> junctions = new List<JunctionDefinition>();
 
                     for (int i = 0; i != roadRoot.Nodes.Count; i++)
                     {
@@ -319,7 +334,16 @@ namespace Mafia2Tool
                         spline.toward = road.Toward;
                         splines.Add(spline);
                     }
+
+                    for(int i = 0; i < junctionRoot.Nodes.Count; i++)
+                    {
+                        RenderJunction junction = (RenderJunction)junctionRoot.Nodes[i].Tag;
+                        JunctionDefinition definition = junction.Data;
+                        junctions.Add(definition);
+                    }
+
                     SceneData.roadMap.splines = splines.ToArray();
+                    SceneData.roadMap.junctionData = junctions.ToArray();
                     SceneData.roadMap.WriteToFile();
                 }
 
@@ -524,6 +548,7 @@ namespace Mafia2Tool
 
                 }
                 dSceneTree.AddToTree(node);
+                collisionRoot.Collapse(false);
             }
             if (SceneData.ATLoader != null && ToolkitSettings.Experimental)
             {
@@ -548,7 +573,6 @@ namespace Mafia2Tool
                 //    assets.Add(StringHelpers.RandomGenerator.Next(), line);
                 //}
             }
-            collisionRoot.Collapse(false);
             Graphics.InitObjectStack = assets;
         }
 

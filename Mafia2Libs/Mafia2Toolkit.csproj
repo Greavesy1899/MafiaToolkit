@@ -249,7 +249,7 @@
     <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionBox.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionCapsule.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionSphere.cs" />
-    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionUnk7.cs" />
+    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionConvex.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\ItemDescParse.cs" />
     <Compile Include="MafiaLib\FileTypes\AnimatedTexture.cs" />
     <Compile Include="MafiaLib\FileTypes\CityAreas.cs" />
@@ -418,7 +418,9 @@
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
     <Compile Include="Rendering\System\TimerClass.cs" />
-    <Compile Include="Utils\Extensions.cs" />
+    <Compile Include="Utils\Extensions.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Utils\IniFile.cs" />
     <Compile Include="Forms\MaterialTool.cs">
       <SubType>Form</SubType>

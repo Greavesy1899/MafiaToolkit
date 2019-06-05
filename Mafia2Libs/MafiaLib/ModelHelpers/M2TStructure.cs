@@ -481,9 +481,12 @@ namespace Utils.Models
                     errorMessage = "An error ocurred: pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex!";
                     break;
                 case -97:
-                    errorMessage = "An error ocurred: An error ocurred: Boundary Box exceeds Mafia II's limits!";
+                    errorMessage = "An error ocurred: Boundary Box exceeds Mafia II's limits!";
+                    break;
+                case 0:
                     break;
                 default:
+                    errorMessage = "An unknown error occured! \n Error Code: " + exitCode;
                     break;
             }
 
@@ -493,6 +496,7 @@ namespace Utils.Models
                 return -1;
             }
 
+            MessageBox.Show(m2tFile);
             using (BinaryReader reader = new BinaryReader(File.Open(m2tFile, FileMode.Open)))
                 ReadFromM2T(reader);
 

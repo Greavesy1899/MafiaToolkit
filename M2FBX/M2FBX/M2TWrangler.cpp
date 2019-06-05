@@ -183,7 +183,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 
 	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
 	{
-		subNumFacesCount[i] = segments[i].size();
+		subNumFacesCount[i] = segments[i].size();			
 		indices.insert(indices.end(), segments[i].begin(), segments[i].end());
 	}
 

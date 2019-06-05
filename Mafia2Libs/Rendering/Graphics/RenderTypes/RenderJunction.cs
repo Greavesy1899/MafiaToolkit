@@ -118,7 +118,8 @@ namespace Rendering.Graphics
         {
             if(isUpdatedNeeded)
             {
-                Boundary.UpdateBuffers(device, deviceContext);
+                if(Boundary != null)
+                    Boundary.UpdateBuffers(device, deviceContext);
 
                 foreach (var spline in Splines)
                     spline.UpdateBuffers(device, deviceContext);
