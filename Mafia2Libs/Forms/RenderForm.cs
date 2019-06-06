@@ -130,8 +130,7 @@ namespace Mafia2Tool
                             Graphics.Assets[refID].DoRender = e.Node.Checked;
                     }
                     else if (e.Node.Tag.GetType() == typeof(RenderRoad) ||
-                         e.Node.Tag.GetType() == typeof(RenderRoad) ||
-                         e.Node.Tag.GetType() == typeof(RenderRoad) ||
+                         e.Node.Tag.GetType() == typeof(RenderJunction) ||
                          e.Node.Tag.GetType() == typeof(Collision.Placement))
                         Graphics.Assets[Convert.ToInt32(e.Node.Name)].DoRender = e.Node.Checked;
                 }
@@ -282,10 +281,11 @@ namespace Mafia2Tool
             if (obj2 != null)
                 UpdateRenderedObjects(matrix, obj2);
 
+            TransformMatrix mat = matrix;
             foreach (TreeNode cNode in node.Nodes)
             {
-                matrix = ((obj2 != null) ? obj2.Matrix : new TransformMatrix());
-                CallMatricesRecursive(cNode, matrix);
+                mat = matrix + ((obj2 != null) ? obj2.Matrix : new TransformMatrix());
+                CallMatricesRecursive(cNode, mat);
             }
         }
 
@@ -677,7 +677,7 @@ namespace Mafia2Tool
                 model.ModelStructure.ReadFromM2T(new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)));
             else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
             {
-                if (model.ModelStructure.ReadFromFbx(MeshBrowser.FileName) == -1)
+                if (!model.ModelStructure.ReadFromFbx(MeshBrowser.FileName))
                     return null;
             }
 

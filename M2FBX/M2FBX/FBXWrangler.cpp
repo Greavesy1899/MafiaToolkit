@@ -47,13 +47,13 @@ bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFil
 	// Initialize the exporter by providing a filename.
 	if (!lExporter->Initialize(pFilename, pFileFormat, pManager->GetIOSettings()))
 	{
-		FBXSDK_printf("Call to FbxExporter::Initialize() failed.\n");
-		FBXSDK_printf("Error returned: %s\n\n", lExporter->GetStatus().GetErrorString());
+		WriteLine("Call to FbxExporter::Initialize() failed.");
+		WriteLine("Error returned: %s\n", lExporter->GetStatus().GetErrorString());
 		return false;
 	}
 
 	FbxManager::GetFileFormatVersion(lMajor, lMinor, lRevision);
-	FBXSDK_printf("FBX version number for this version of the FBX SDK is %d.%d.%d\n\n", lMajor, lMinor, lRevision);
+	WriteLine("FBX version number for this version of the FBX SDK is %d.%d.%d\n", lMajor, lMinor, lRevision);
 
 	// Export the scene.
 	lStatus = lExporter->Export(pDocument);
@@ -64,7 +64,7 @@ bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFil
 }
 int ConvertM2T(const char* pSource, const char* pDest)
 {
-	FBXSDK_printf("Converting M2T to FBX.\n");
+	WriteLine("Converting M2T to FBX.");
 
 	FbxManager* lSdkManager = nullptr;
 	FbxScene* lScene = nullptr;
@@ -94,9 +94,9 @@ int ConvertM2T(const char* pSource, const char* pDest)
 	{
 		//Save the document
 		lResult = SaveDocument(lSdkManager, lScene, pDest);
-		if (!lResult) FBXSDK_printf("\n\nAn error occurred while saving the document...\n");
+		if (!lResult) WriteLine("\n\nAn error occurred while saving the document...");
 	}
-	else FBXSDK_printf("\n\nAn error occurred while creating the document...\n");
+	else WriteLine("\n\nAn error occurred while creating the document...");
 
 	// Destroy all objects created by the FBX SDK.
 	DestroySdkObjects(lSdkManager, lResult);
@@ -179,7 +179,6 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure mod
 	std::vector<UVVert> uvs1 = part.GetUV1s();
 	std::vector<UVVert> uvs2 = part.GetUV2s();
 	std::vector<UVVert> uvs7 = part.GetUV7s();
-	std::vector<short> matIDs = part.GetMatIDs();
 
 	lMesh->InitControlPoints(vertices.size());
 	FbxVector4* lControlPoints = lMesh->GetControlPoints();

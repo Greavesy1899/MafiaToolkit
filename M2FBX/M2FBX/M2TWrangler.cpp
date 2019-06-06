@@ -20,7 +20,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		double val = pMesh->BBoxMin.Get()[i];
 
 		if (val < -32768 || val > 32768) {
-			FBXSDK_printf("Boundary Box exceeds Mafia II's limits! Cannot continue!\n");
+			WriteLine("Boundary Box exceeds Mafia II's limits! Cannot continue!\n");
 			exit(-100);
 		}
 
@@ -31,7 +31,12 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 			exit(-100);
 		}
 	}
-	
+
+	if (pMesh->GetControlPoints()->Length() > 65535)
+	{
+		FBXSDK_printf("Vertex count > ushort max value! This model cannot be used in Mafia II\n");
+		exit(-97);
+	}
 
 	pPart.SetHasPositions(true);
 	pPart.SetHasNormals(pElementNormal);
@@ -45,11 +50,11 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	{
 		//Gotta make sure the normals are correctly set up.
 		if (pElementNormal->GetReferenceMode() != FbxGeometryElement::eDirect) {
-			FBXSDK_printf("pElementNormal->GetReferenceMode() did not equal eDirect.. Cannot continue.\n");
+			WriteLine("pElementNormal->GetReferenceMode() did not equal eDirect.. Cannot continue.");
 			exit(-99);
 		}
 		if ((pElementNormal->GetMappingMode() <= FbxGeometryElement::eByControlPoint) && (pElementNormal->GetMappingMode() >= FbxGeometryElement::eByPolygonVertex)) {
-			FBXSDK_printf("pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex.. Cannot continue.\n");
+			WriteLine("pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex.. Cannot continue.");
 			exit(-98);
 		}
 	}
@@ -132,7 +137,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 
 	//Gotta be triangulated.
 	if (!pMesh->IsTriangleMesh()) {
-		FBXSDK_printf("pMesh->IsTriangleMesh() did not equal true.. Cannot continue.\n");
+		WriteLine("pMesh->IsTriangleMesh() did not equal true.. Cannot continue.");
 		exit(-97);
 	}
 
@@ -154,7 +159,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	}
 	else
 	{
-		FBXSDK_printf("Missing material nodes on this FBX Model!\n");
+		WriteLine("Missing material nodes on this FBX Model!");
 	}
 
 	int subIDX = 0;
@@ -195,7 +200,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		calcTotal += subNumFacesCount[i];
 
 	if (calcTotal != total)
-		FBXSDK_printf("Potential error when splitting faces!\n");
+		WriteLine("Potential error when splitting faces!");
 
 	int curTotal = 0;
 	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
@@ -207,7 +212,6 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	}
 	//Update data to do with triangles.
 	pPart.SetIndices(indices, true);
-	pPart.SetMatIDs(matIDs);
 	pPart.SetSubMeshes(subMeshes);
 	pPart.SetSubMeshCount(pNode->GetMaterialCount());
 	delete[] subNumFacesCount;
@@ -217,7 +221,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 int DetermineNodeAttribute(FbxNode* node)
 {
 	if (node->GetNodeAttribute() == NULL)
-		FBXSDK_printf("NULL Node Attribute\n\n");
+		WriteLine("NULL Node Attribute\n");
 	else
 		return node->GetNodeAttribute()->GetAttributeType();
 
@@ -230,22 +234,17 @@ void BuildModel(ModelStructure* structure, FbxNode* node)
 	structure->SetPartSize(size);
 	ModelPart* parts = new ModelPart[1];
 	structure->SetName(std::string(node->GetName()));
-	FBXSDK_printf("Converting Mesh..\n");
+	WriteLine("Converting Mesh..");
 	ModelPart Part = ModelPart();
 	BuildModelPart(node, Part);
 	parts[0] = Part;
 	structure->SetParts(parts);
-	FBXSDK_printf("Built Model..\n");
+	WriteLine("Built Model..");
 }
 
-int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
+int ConvertFBX(const char* pSource, const char* pDest)
 {
-	FBXSDK_printf("Converting FBX to M2T.\n");
-
-	if (strcmp(doScene, "1") == 0)
-		FBXSDK_printf("Converting to a scene!\n");
-	else
-		FBXSDK_printf("Converting a single model!\n");
+	WriteLine("Converting FBX to M2T.");
 
 	FbxManager* lSdkManager = NULL;
 	FbxImporter* lImporter = NULL;
@@ -254,15 +253,15 @@ int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 	//Prepare SDK..
 	InitializeSdkObjects(lSdkManager);
 	lImporter = FbxImporter::Create(lSdkManager, "");
-	printf("Loading FBX File.. \n");
+	WriteLine("Loading FBX File..");
 	//Init importer. if it fails, it will print error code.
 	if (!lImporter->Initialize(pSource, -1, lSdkManager->GetIOSettings())) {
-		FBXSDK_printf("Error occured while initializing importer:\n");
-		FBXSDK_printf("%s\n", lImporter->GetStatus().GetErrorString());
+		WriteLine("Error occured while initializing importer:");
+		WriteLine("%s", lImporter->GetStatus().GetErrorString());
 		exit(-1);
 	}
 
-	FBXSDK_printf("Importing %s...\n", pSource);
+	WriteLine("Importing %s...", pSource);
 
 	//Populate scene and destroy importer.
 	lScene = FbxScene::Create(lSdkManager, "scene");
@@ -270,61 +269,36 @@ int ConvertFBX(const char* pSource, const char* pDest, const char* doScene)
 	lImporter->Destroy();
 
 	//dump info for user to see.
-	FBXSDK_printf("Geometry Count: %i\n", lScene->GetGeometryCount());
-	FBXSDK_printf("Material Count: %i\n", lScene->GetMaterialCount());
-	FBXSDK_printf("Node Count: %i\n", lScene->GetNodeCount());
+	WriteLine("Geometry Count: %i", lScene->GetGeometryCount());
+	WriteLine("Material Count: %i", lScene->GetMaterialCount());
+	WriteLine("Node Count: %i", lScene->GetNodeCount());
 
 	//Get Geometry..
 	FbxNode* Root = lScene->GetRootNode();
 
-	if (Root) {
-		FrameClass frame = FrameClass();
-		std::vector<FrameEntry> entries = std::vector<FrameEntry>();
-		
-		for (int i = 0; i != Root->GetChildCount(); i++) {
-			FbxNode* pNode = Root->GetChild(i);
-			FrameEntry entry = FrameEntry();
-			if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
-				ModelStructure* Structure = new ModelStructure();
-				BuildModel(Structure, pNode);
+	for (int i = 0; i != Root->GetChildCount(); i++) {
+		FbxNode* pNode = Root->GetChild(i);
+		if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
+			ModelStructure* Structure = new ModelStructure();
+			BuildModel(Structure, pNode);
 
-				std::vector<std::string> names = std::vector<std::string>();
-				Point3 pos = Point3();
-				pos.x = pNode->LclTranslation.Get().mData[0];
-				pos.z = pNode->LclTranslation.Get().mData[1];
-				pos.y = -pNode->LclTranslation.Get().mData[2];
-				entry.SetPosition(pos);
-				FBXSDK_printf("Position is: %f, %f, %f\n", pos.x, pos.y, pos.z);
+			//Point3 pos = Point3();
+			//pos.x = pNode->LclTranslation.Get().mData[0];
+			//pos.z = pNode->LclTranslation.Get().mData[1];
+			//pos.y = -pNode->LclTranslation.Get().mData[2];
+			//entry.SetPosition(pos);
+			//WriteLine("Position is: %f, %f, %f", pos.x, pos.y, pos.z);
 
-				names.push_back(Structure->GetName());
+			FILE* stream;
+			std::string dest = pDest;
+			if(!dest.find(".m2t"))
+				dest += ".m2t";
+			fopen_s(&stream, dest.c_str(), "wb");
+			Structure->WriteToStream(stream);
+			if (stream != NULL) fclose(stream);
 
-				FILE* stream;
-				std::string dest = pDest;
-				if (strcmp(doScene, "1") == 0) {
-					dest += Structure->GetName();
-					dest += ".m2t";
-				}
-				fopen_s(&stream, dest.c_str(), "wb");
-				Structure->WriteToStream(stream);
-				fclose(stream);
-
-				entry.SetLodNames(names);
-				entries.push_back(entry);
-				FBXSDK_printf("Exported %s\n", Structure->GetName().c_str());
-			}
-		}
-		frame.SetEntries(entries);
-		FILE* frameStream;
-		std::string frameDest = pDest;
-		frameDest += "frame.edd";
-
-		if (strcmp(doScene, "1") == 0) {
-			fopen_s(&frameStream, frameDest.c_str(), "wb");
-			frame.WriteToStream(frameStream);
-			fclose(frameStream);
-			FBXSDK_printf("Saved frame..");
+			WriteLine("Exported %s", Structure->GetName().c_str());
 		}
 	}
-
 	return 0;
 }

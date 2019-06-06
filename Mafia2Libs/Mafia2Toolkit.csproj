@@ -267,7 +267,6 @@
     <Compile Include="MafiaLib\FileTypes\StreamMap.cs" />
     <Compile Include="MafiaLib\FileTypes\Translokator\Translokator.cs" />
     <Compile Include="MafiaLib\FileTypes\BufferTypes\VertexBufferPool.cs" />
-    <Compile Include="MafiaLib\ModelHelpers\CustomEDD.cs" />
     <Compile Include="Gibbed.Illusion.FileFormats\BlockReaderStream.cs" />
     <Compile Include="Gibbed.Illusion.FileFormats\BlockWriterStream.cs" />
     <Compile Include="Gibbed.Illusion.FileFormats\FNV32.cs" />
@@ -307,6 +306,7 @@
     <Compile Include="Rendering\System\FPSClass.cs" />
     <Compile Include="Utils\BoundExtensions.cs" />
     <Compile Include="MafiaLib\ModelHelpers\Enums.cs" />
+    <Compile Include="Utils\FBXHelper.cs" />
     <Compile Include="Utils\LuaHelper.cs" />
     <Compile Include="Utils\StringHelpers.cs" />
     <Compile Include="Utils\Half.cs" />

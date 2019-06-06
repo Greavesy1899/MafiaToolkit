@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using Utils.Settings;
 using Utils.Lang;
+using System.Threading.Tasks;
 
 namespace Mafia2Tool
 {

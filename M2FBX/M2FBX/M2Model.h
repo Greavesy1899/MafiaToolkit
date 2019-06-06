@@ -1,8 +1,6 @@
 #ifndef M2_EDM_HEADER
 #define M2_EDM_HEADER
-#include <fbxsdk.h>
-#include <vector>
-#include <string>
+#include "Common.h"
 
 typedef struct {
 	unsigned short i1;
@@ -98,7 +96,6 @@ public:
 	void SetSubMeshCount(int count);
 	void SetIndicesSize(int count);
 	void SetIndices(std::vector<Int3> indices, bool updateCount = false);
-	void SetMatIDs(std::vector<short> matIDs);
 	bool GetHasPositions();
 	bool GetHasNormals();;
 	bool GetHasTangents();
@@ -123,7 +120,6 @@ public:
 	int GetIndicesSize();
 	SubMesh* GetSubMeshes() const;
 	std::vector<Int3> GetIndices();
-	std::vector<short> GetMatIDs();
 
 	void ReadFromStream(FILE* stream);
 	void WriteToStream(FILE * stream);
@@ -147,42 +143,5 @@ public:
 
 	void ReadFromStream(FILE* stream);
 	void WriteToStream(FILE * stream);
-};
-
-class FrameEntry {
-private:
-	int lodCount;
-	std::vector<std::string> lodNames;
-	Matrix3 matrix;
-	Point3 position;
-public:
-	FrameEntry();
-	~FrameEntry();
-	void SetLodCount(int count);
-	void SetMatrix(Matrix3 matrix);
-	void SetLodNames(std::vector<std::string> lodNames);
-	int GetLodCount();
-	Matrix3 GetMatrix();
-	std::vector<std::string> GetLodNames();
-	void SetPosition(Point3 pos);
-	Point3 GetPosition();
-	void ReadFromStream(FILE* stream);
-	void WriteToStream(FILE* stream);
-};
-
-class FrameClass {
-private:
-	const int magic = 808535109;
-	int entryCount;
-	std::vector<FrameEntry> entries;
-public:
-	FrameClass();
-	~FrameClass();
-	int GetNumEntries();
-	void SetNumEntries(int num);
-	std::vector<FrameEntry> GetEntries();
-	void SetEntries(std::vector<FrameEntry> entries);
-	void ReadFromStream(FILE* stream);
-	void WriteToStream(FILE* stream);
 };
 #endif

@@ -1,8 +1,6 @@
 #ifndef FBX_WRANGER_HEADER
 #define FBX_WRANGER_HEADER
-#include <fbxsdk.h>
-#include <iomanip>
-#include <iostream>
+#include "Common.h"
 #include "M2Model.h"
 
 int ConvertM2T(const char* pSource, const char* pDest);

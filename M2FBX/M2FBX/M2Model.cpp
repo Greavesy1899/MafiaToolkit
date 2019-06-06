@@ -108,10 +108,6 @@ void ModelPart::SetIndices(std::vector<Int3> indices, bool updateCount) {
 		ModelPart::indicesSize = indices.size();
 }
 
-void ModelPart::SetMatIDs(std::vector<short> ids) {
-	ModelPart::matIDs = ids;
-}
-
 bool ModelPart::GetHasPositions() {
 	return ModelPart::hasPosition;
 }
@@ -209,10 +205,6 @@ std::vector<Int3> ModelPart::GetIndices() {
 	return ModelPart::indices;
 }
 
-std::vector<short> ModelPart::GetMatIDs() {
-	return ModelPart::matIDs;
-}
-
 void ModelPart::ReadFromStream(FILE * stream) {
 	fread(&hasPosition, sizeof(bool), 1, stream);
 	fread(&hasNormals, sizeof(bool), 1, stream);
@@ -249,35 +241,25 @@ void ModelPart::ReadFromStream(FILE * stream) {
 
 	for (int i = 0; i != vertSize; i++) {
 		if (hasPosition) {
-			fread(&vertices[i].x, sizeof(float), 1, stream);
-			fread(&vertices[i].y, sizeof(float), 1, stream);
-			fread(&vertices[i].z, sizeof(float), 1, stream);
+			fread(&vertices[i], sizeof(Point3), 1, stream);
 		}
 		if (hasNormals) {
-			fread(&normals[i].x, sizeof(float), 1, stream);
-			fread(&normals[i].y, sizeof(float), 1, stream);
-			fread(&normals[i].z, sizeof(float), 1, stream);
+			fread(&normals[i], sizeof(Point3), 1, stream);
 		}
 		if (hasTangents) {
-			fread(&tangents[i].x, sizeof(float), 1, stream);
-			fread(&tangents[i].y, sizeof(float), 1, stream);
-			fread(&tangents[i].z, sizeof(float), 1, stream);
+			fread(&tangents[i], sizeof(Point3), 1, stream);
 		}
 		if (hasUV0) {
-			fread(&uvs0[i].x, sizeof(float), 1, stream);
-			fread(&uvs0[i].y, sizeof(float), 1, stream);
+			fread(&uvs0[i], sizeof(UVVert), 1, stream);
 		}
 		if (hasUV1) {
-			fread(&uvs1[i].x, sizeof(float), 1, stream);
-			fread(&uvs1[i].y, sizeof(float), 1, stream);
+			fread(&uvs1[i], sizeof(UVVert), 1, stream);
 		}
 		if (hasUV2) {
-			fread(&uvs2[i].x, sizeof(float), 1, stream);
-			fread(&uvs2[i].y, sizeof(float), 1, stream);
+			fread(&uvs2[i], sizeof(UVVert), 1, stream);
 		}
 		if (hasUV7) {
-			fread(&uvs7[i].x, sizeof(float), 1, stream);
-			fread(&uvs7[i].y, sizeof(float), 1, stream);
+			fread(&uvs7[i], sizeof(UVVert), 1, stream);
 		}
 	}
 	fread(&subMeshCount, sizeof(int), 1, stream);
@@ -300,9 +282,7 @@ void ModelPart::ReadFromStream(FILE * stream) {
 	fread(&indicesSize, sizeof(int), 1, stream);
 	for (int x = 0; x != indicesSize/3; x++) {
 		Int3 tri;
-		fread(&tri.i1, sizeof(unsigned short), 1, stream);
-		fread(&tri.i2, sizeof(unsigned short), 1, stream);
-		fread(&tri.i3, sizeof(unsigned short), 1, stream);
+		fread(&tri, sizeof(Int3), 1, stream);
 		indices.push_back(tri);
 	}
 }
@@ -324,35 +304,25 @@ void ModelPart::WriteToStream(FILE * stream) {
 
 	for (int i = 0; i != vertSize; i++) {
 		if (hasPosition) {
-			fwrite(&vertices[i].x, sizeof(float), 1, stream);
-			fwrite(&vertices[i].y, sizeof(float), 1, stream);
-			fwrite(&vertices[i].z, sizeof(float), 1, stream);
+			fwrite(&vertices[i], sizeof(Point3), 1, stream);
 		}
 		if (hasNormals) {
-			fwrite(&normals[i].x, sizeof(float), 1, stream);
-			fwrite(&normals[i].y, sizeof(float), 1, stream);
-			fwrite(&normals[i].z, sizeof(float), 1, stream);
+			fwrite(&normals[i], sizeof(Point3), 1, stream);
 		}
 		if (hasTangents) {
-			fwrite(&tangents[i].x, sizeof(float), 1, stream);
-			fwrite(&tangents[i].y, sizeof(float), 1, stream);
-			fwrite(&tangents[i].z, sizeof(float), 1, stream);
+			fwrite(&tangents[i], sizeof(Point3), 1, stream);
 		}
 		if (hasUV0) {
-			fwrite(&uvs0[i].x, sizeof(float), 1, stream);
-			fwrite(&uvs0[i].y, sizeof(float), 1, stream);
+			fwrite(&uvs0[i], sizeof(UVVert), 1, stream);
 		}
 		if (hasUV1) {
-			fwrite(&uvs1[i].x, sizeof(float), 1, stream);
-			fwrite(&uvs1[i].y, sizeof(float), 1, stream);
+			fwrite(&uvs1[i], sizeof(UVVert), 1, stream);
 		}
 		if (hasUV2) {
-			fwrite(&uvs2[i].x, sizeof(float), 1, stream);
-			fwrite(&uvs2[i].y, sizeof(float), 1, stream);
+			fwrite(&uvs2[i], sizeof(UVVert), 1, stream);
 		}
 		if (hasUV7) {
-			fwrite(&uvs7[i].x, sizeof(float), 1, stream);
-			fwrite(&uvs7[i].y, sizeof(float), 1, stream);
+			fwrite(&uvs7[i], sizeof(UVVert), 1, stream);
 		}
 	}
 	fwrite(&subMeshCount, sizeof(int), 1, stream);
@@ -367,9 +337,7 @@ void ModelPart::WriteToStream(FILE * stream) {
 	int indMult = indicesSize * 3;
 	fwrite(&indMult, sizeof(int), 1, stream);
 	for (int i = 0; i != indices.size(); i++) {
-		fwrite(&indices[i].i1, sizeof(unsigned short), 1, stream);
-		fwrite(&indices[i].i2, sizeof(unsigned short), 1, stream);
-		fwrite(&indices[i].i3, sizeof(unsigned short), 1, stream);
+		fwrite(&indices[i], sizeof(Int3), 1, stream);
 	}
 }
 
@@ -443,167 +411,6 @@ ModelStructure::ModelStructure() {}
 ModelStructure::~ModelStructure()
 {
 	//delete[] this->parts;
-}
-
-//===================================================
-//		FrameEntry
-//===================================================
-FrameEntry::FrameEntry() 
-{ 
-	lodCount = 0; 
-	matrix.m00 = 1.0f;
-	matrix.m11 = 1.0f;
-	matrix.m22 = 1.0f;
-}
-FrameEntry::~FrameEntry() {}
-
-void FrameEntry::SetLodCount(int count)
-{
-	this->lodCount = count;
-}
-
-void FrameEntry::SetMatrix(Matrix3 matrix)
-{
-	this->matrix = matrix;
-}
-
-void FrameEntry::SetLodNames(std::vector<std::string> lodNames)
-{
-	this->lodNames = lodNames;
-	this->lodCount = lodNames.size();
-}
-
-int FrameEntry::GetLodCount()
-{
-	return this->lodCount;
-}
-
-Matrix3 FrameEntry::GetMatrix()
-{
-	return this->matrix;
-}
-
-std::vector<std::string> FrameEntry::GetLodNames()
-{
-	return this->lodNames;
-}
-
-void FrameEntry::SetPosition(Point3 pos)
-{
-	this->position = pos;
-}
-
-Point3 FrameEntry::GetPosition()
-{
-	return this->position;
-}
-
-void FrameEntry::ReadFromStream(FILE * stream)
-{
-	fread(&lodCount, sizeof(int), 1, stream);
-
-	fread(&position.x, sizeof(float), 1, stream);
-	fread(&position.y, sizeof(float), 1, stream);
-	fread(&position.z, sizeof(float), 1, stream);
-
-	fread(&matrix.m00, sizeof(float), 1, stream);
-	fread(&matrix.m01, sizeof(float), 1, stream);
-	fread(&matrix.m02, sizeof(float), 1, stream);
-	fread(&matrix.m10, sizeof(float), 1, stream);
-	fread(&matrix.m11, sizeof(float), 1, stream);
-	fread(&matrix.m12, sizeof(float), 1, stream);
-	fread(&matrix.m20, sizeof(float), 1, stream);
-	fread(&matrix.m21, sizeof(float), 1, stream);
-	fread(&matrix.m22, sizeof(float), 1, stream);
-
-	lodNames = std::vector<std::string>(lodCount);
-	for (int c = 0; c != lodNames.size(); c++) {
-		lodNames[c] = std::string();
-		lodNames[c] = ReadString(stream, lodNames[c]);
-		lodNames[c] += ".m2t";
-	}
-}
-
-void FrameEntry::WriteToStream(FILE * stream)
-{
-	fwrite(&lodCount, sizeof(int), 1, stream);
-
-	fwrite(&position.x, sizeof(float), 1, stream);
-	fwrite(&position.y, sizeof(float), 1, stream);
-	fwrite(&position.z, sizeof(float), 1, stream);
-
-	fwrite(&matrix.m00, sizeof(float), 1, stream);
-	fwrite(&matrix.m01, sizeof(float), 1, stream);
-	fwrite(&matrix.m02, sizeof(float), 1, stream);
-	fwrite(&matrix.m10, sizeof(float), 1, stream);
-	fwrite(&matrix.m11, sizeof(float), 1, stream);
-	fwrite(&matrix.m12, sizeof(float), 1, stream);
-	fwrite(&matrix.m20, sizeof(float), 1, stream);
-	fwrite(&matrix.m21, sizeof(float), 1, stream);
-	fwrite(&matrix.m22, sizeof(float), 1, stream);
-
-	for (int c = 0; c != lodNames.size(); c++) {
-		WriteString(stream, lodNames[c]);
-	}
-}
-
-FrameClass::~FrameClass()
-{
-}
-
-int FrameClass::GetNumEntries()
-{
-	return this->entryCount;
-}
-
-void FrameClass::SetNumEntries(int num)
-{
-	this->entryCount = num;
-}
-
-std::vector<FrameEntry> FrameClass::GetEntries()
-{
-	return this->entries;
-}
-
-void FrameClass::SetEntries(std::vector<FrameEntry> entries)
-{
-	this->entries = entries;
-	this->entryCount = entries.size();
-}
-
-void FrameClass::ReadFromStream(FILE * stream)
-{
-	int tempHeader;
-	fread(&tempHeader, sizeof(int), 1, stream);
-
-	if (tempHeader != magic)
-		return;
-
-	fread(&entryCount, sizeof(int), 1, stream);
-	entries = std::vector<FrameEntry>(entryCount);
-	for (int i = 0; i != entryCount; i++)
-	{
-		FrameEntry entry = FrameEntry();
-		entry.ReadFromStream(stream);
-		entries.push_back(entry);
-	}
-}
-
-void FrameClass::WriteToStream(FILE * stream)
-{
-	fwrite(&magic, sizeof(int), 1, stream);
-
-	fwrite(&entryCount, sizeof(int), 1, stream);
-	for (int i = 0; i != entryCount; i++)
-	{
-		entries.at(i).WriteToStream(stream);
-	}
-}
-
-FrameClass::FrameClass()
-{
-
 }
 
 void SubMesh::SetStartIndex(int& value)

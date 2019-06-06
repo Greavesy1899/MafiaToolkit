@@ -69,8 +69,8 @@ namespace Mafia2Tool
                     ibps.Add(new FileInfo(name));
                 else if (type == "VertexBufferPool")
                     vbps.Add(new FileInfo(name));
-                else if (type == "Actors")
-                    act.Add(new Actor(name));
+                //else if (type == "Actors")
+                //    act.Add(new Actor(name));
                 else if (type == "FrameResource")
                     FrameResource = new FrameResource(name);
                 else if (type == "ItemDesc")

@@ -27,3 +27,15 @@ void WriteString(FILE* stream, std::string string)
 		fwrite(&string[i], sizeof(char), 1, stream);
 	}
 }
+
+void WriteLine(const char *format, ...)
+{
+	char buf[255];
+	va_list va;
+	va_start(va, format);
+	_vsnprintf_s(buf, sizeof(buf), format, va);
+	va_end(va);
+
+	FBXSDK_printf(buf);
+	FBXSDK_printf("\n");
+}

@@ -6,10 +6,10 @@ void InitializeSdkObjects(FbxManager*& pManager)
 	pManager = FbxManager::Create();
 	if (!pManager)
 	{
-		FBXSDK_printf("Error: Unable to create FBX Manager!\n");
+		WriteLine("Error: Unable to create FBX Manager!");
 		exit(1);
 	}
-	else FBXSDK_printf("Autodesk FBX SDK version %s\n", pManager->GetVersion());
+	else WriteLine("Autodesk FBX SDK version %s", pManager->GetVersion());
 
 	//Create an IOSettings object. This object holds all import/export settings.
 	FbxIOSettings* ios = FbxIOSettings::Create(pManager, IOSROOT);
@@ -20,6 +20,6 @@ void DestroySdkObjects(FbxManager* pManager, bool pExitStatus)
 #if _DEBUG
 	//Delete the FBX Manager. All the objects that have been allocated using the FBX Manager and that haven't been explicitly destroyed are also automatically destroyed.
 	if (pManager) pManager->Destroy();
-	if (pExitStatus) FBXSDK_printf("Program Success!\n");
+	if (pExitStatus) WriteLine("Program Success!");
 #endif _DEBUG
 }

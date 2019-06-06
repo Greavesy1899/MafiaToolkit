@@ -346,13 +346,13 @@ namespace ResourceTypes.FrameResource
             {
                 FrameHeaderScene scene = frameScenes.Values.ElementAt(i);
                 TreeNode node = new TreeNode(scene.ToString());
-                node.Tag = scene;
+                node.Tag = scene;   
                 node.Name = scene.RefID.ToString();
-
+                parsedNodes.Add(i, node);
                 root.Nodes.Add(node);
             }
 
-            //add entries from the table, add table data and then add to scene viewer.
+            ////add entries from the table, add table data and then add to scene viewer.
             for (int i = 0; i != table.FrameData.Length; i++)
             {
                 if (table.FrameData[i].FrameIndex == -1)
@@ -389,7 +389,6 @@ namespace ResourceTypes.FrameResource
                     parsedNodes.Add(thisKey, node);
             }
 
-            //add objects from the main dictionary.
             foreach (FrameHolder holder in NewFrames)
             {
                 FrameObjectBase fObject = holder.Data as FrameObjectBase;
@@ -397,129 +396,163 @@ namespace ResourceTypes.FrameResource
                 if (fObject == null)
                     continue;
 
-                int p1idx = fObject.ParentIndex1.Index;
-                int p2idx = fObject.ParentIndex2.Index;
-                int thisKey = holder.Idx;
-
-                TreeNode node = (!parsedNodes.ContainsKey(thisKey)) ? new TreeNode(fObject.ToString()) : parsedNodes[thisKey];
+                TreeNode node = (!parsedNodes.ContainsKey(holder.Idx)) ? new TreeNode(fObject.ToString()) : parsedNodes[holder.Idx];
                 node.Tag = fObject;
                 node.Name = fObject.RefID.ToString();
 
-                if (root.Nodes.Find(fObject.RefID.ToString(), true).Length > 0)
-                    continue;
-
-                if (p2idx != -1)
-                {
-                    FrameEntry pBase2 = (GetEntryFromIdx(p2idx).Data as FrameEntry);
-                    TreeNode[] p2Nodes = root.Nodes.Find(pBase2.RefID.ToString(), true);
-
-                    if (p2Nodes.Length > 0)
-                    {
-                        p2Nodes[0].Nodes.Add(node);
-                    }
-                    else
-                    {
-                        Console.WriteLine("did not add {0}", node.Text);
-                        notAddedNodes.Add(thisKey, node);
-                    }
-                }
-                else if(p1idx != -1)
-                {
-                    FrameEntry pBase1 = (GetEntryFromIdx(p1idx).Data as FrameEntry);
-                    TreeNode[] p1Nodes = root.Nodes.Find(pBase1.RefID.ToString(), true);
-
-                    if (p1Nodes.Length > 0)
-                    {
-                        p1Nodes[0].Nodes.Add(node);
-                    }
-                    else
-                    {
-                        Console.WriteLine("did not add {0}", node.Text);
-                        notAddedNodes.Add(thisKey, node);
-                    }
-                }
-
-                if (!parsedNodes.ContainsKey(thisKey))
-                    parsedNodes.Add(thisKey, node);
+                if (!parsedNodes.ContainsKey(holder.Idx))
+                    parsedNodes.Add(holder.Idx, node);
             }
 
-            //update p1 objects in tree nodes
-            foreach (FrameHolder entry in NewFrames)
+            foreach (FrameHolder holder in NewFrames)
             {
-                FrameObjectBase fObject = (entry.Data as FrameObjectBase);
+                FrameObjectBase fObject = holder.Data as FrameObjectBase;
 
                 if (fObject == null)
                     continue;
 
-                int p1idx = fObject.ParentIndex1.Index;
-                int p2idx = fObject.ParentIndex2.Index;
-                int thisKey = numBlocks + entry.Idx;
-
-                if (p2idx != -1 && p1idx != -1)
-                {
-                    TreeNode node = new TreeNode(fObject.ToString());
-                    node.Tag = fObject;
-                    node.Name = fObject.RefID.ToString();
-
-                    FrameEntry p1Base = GetEntryFromIdx(p1idx).Data as FrameEntry;
-                    FrameEntry p2Base = GetEntryFromIdx(p2idx).Data as FrameEntry;
-
-                    TreeNode[] p2Node = root.Nodes.Find(p2Base.RefID.ToString(), true);
-
-                    if (p2Node.Length > 0)
-                    {
-                        TreeNode[] p1Node = p2Node[0].Nodes.Find(p1Base.RefID.ToString(), true);
-
-                        if (p1Node.Length > 0)
-                        {
-                            p2Node[0].Nodes.RemoveByKey(fObject.RefID.ToString());
-                            p1Node[0].Nodes.Add(node);
-                        }
-                    }
-                }
-            }
-
-            foreach (KeyValuePair<int, TreeNode> entry in parsedNodes)
-            {
-                FrameObjectBase objBase = (entry.Value.Tag as FrameObjectBase);
-
-                if (objBase != null)
-                {
-                    if (objBase.ParentIndex1.Index == -1 && objBase.ParentIndex2.Index == -1)
-                    {
-                        root.Nodes.Add(entry.Value);
-                    }
-                }
-            }
-
-            foreach (KeyValuePair<int, TreeNode> entry in notAddedNodes)
-            {
-                FrameObjectBase objBase = (entry.Value.Tag as FrameObjectBase);
-                TreeNode[] nodes = root.Nodes.Find(objBase.ParentIndex2.RefID.ToString(), true);
-
-                if (nodes.Length > 0)
-                {
-                    //if(objBase.ParentIndex1.Index != objBase.ParentIndex2.Index)
-                    //{
-                    //    TreeNode[] others = nodes[0].Nodes.Find(objBase.ParentIndex1.RefID.ToString(), true);
-                    //    if (others.Length > 0)
-                    //        others[0].Nodes.Add(entry.Value);
-                    //    else
-                    //        nodes[0].Nodes.Add(entry.Value);
-                    //}
-                    //else
-                    //{
-                        nodes[0].Nodes.Add(entry.Value);
-                    //}
-                    
-                    Debug.WriteLine("Added {0}", objBase.Name);
-                }
+                if (fObject.ParentIndex1.Index != -1)
+                    parsedNodes[fObject.ParentIndex1.Index].Nodes.Add(parsedNodes[holder.Idx]);
+                else if (fObject.ParentIndex2.Index != -1)
+                    parsedNodes[fObject.ParentIndex2.Index].Nodes.Add(parsedNodes[holder.Idx]);
+                else if (fObject.ParentIndex1.Index == -1 && fObject.ParentIndex2.Index == -1)
+                    root.Nodes.Add(parsedNodes[holder.Idx]);
                 else
-                {
-                    root.Nodes.Add(entry.Value);
-                }
+                    Debug.WriteLine("Not added {0}", holder.Data);
             }
-            return root;
+
+                ////add objects from the main dictionary.
+                //foreach (FrameHolder holder in NewFrames)
+                //{
+                //    FrameObjectBase fObject = holder.Data as FrameObjectBase;
+
+                //    if (fObject == null)
+                //        continue;
+
+                //    int p1idx = fObject.ParentIndex1.Index;
+                //    int p2idx = fObject.ParentIndex2.Index;
+                //    int thisKey = holder.Idx;
+
+                //    TreeNode node = (!parsedNodes.ContainsKey(thisKey)) ? new TreeNode(fObject.ToString()) : parsedNodes[thisKey];
+                //    node.Tag = fObject;
+                //    node.Name = fObject.RefID.ToString();
+
+                //    if (root.Nodes.Find(fObject.RefID.ToString(), true).Length > 0)
+                //        continue;
+
+                //    if (p2idx != -1)
+                //    {
+                //        FrameEntry pBase2 = (GetEntryFromIdx(p2idx).Data as FrameEntry);
+                //        TreeNode[] p2Nodes = root.Nodes.Find(pBase2.RefID.ToString(), true);
+
+                //        if (p2Nodes.Length > 0)
+                //        {
+                //            p2Nodes[0].Nodes.Add(node);
+                //        }
+                //        else
+                //        {
+                //            Console.WriteLine("did not add {0}", node.Text);
+                //            notAddedNodes.Add(thisKey, node);
+                //        }
+                //    }
+                //    else if(p1idx != -1)
+                //    {
+                //        FrameEntry pBase1 = (GetEntryFromIdx(p1idx).Data as FrameEntry);
+                //        TreeNode[] p1Nodes = root.Nodes.Find(pBase1.RefID.ToString(), true);
+
+                //        if (p1Nodes.Length > 0)
+                //        {
+                //            p1Nodes[0].Nodes.Add(node);
+                //        }
+                //        else
+                //        {
+                //            Console.WriteLine("did not add {0}", node.Text);
+                //            notAddedNodes.Add(thisKey, node);
+                //        }
+                //    }
+
+                //    if (!parsedNodes.ContainsKey(thisKey))
+                //        parsedNodes.Add(thisKey, node);
+                //}
+
+                ////update p1 objects in tree nodes
+                //foreach (FrameHolder entry in NewFrames)
+                //{
+                //    FrameObjectBase fObject = (entry.Data as FrameObjectBase);
+
+                //    if (fObject == null)
+                //        continue;
+
+                //    int p1idx = fObject.ParentIndex1.Index;
+                //    int p2idx = fObject.ParentIndex2.Index;
+                //    int thisKey = numBlocks + entry.Idx;
+
+                //    if (p2idx != -1 && p1idx != -1)
+                //    {
+                //        TreeNode node = new TreeNode(fObject.ToString());
+                //        node.Tag = fObject;
+                //        node.Name = fObject.RefID.ToString();
+
+                //        FrameEntry p1Base = GetEntryFromIdx(p1idx).Data as FrameEntry;
+                //        FrameEntry p2Base = GetEntryFromIdx(p2idx).Data as FrameEntry;
+
+                //        TreeNode[] p2Node = root.Nodes.Find(p2Base.RefID.ToString(), true);
+
+                //        if (p2Node.Length > 0)
+                //        {
+                //            TreeNode[] p1Node = p2Node[0].Nodes.Find(p1Base.RefID.ToString(), true);
+
+                //            if (p1Node.Length > 0)
+                //            {
+                //                p2Node[0].Nodes.RemoveByKey(fObject.RefID.ToString());
+                //                p1Node[0].Nodes.Add(node);
+                //            }
+                //        }
+                //    }
+                //}
+
+                //foreach (KeyValuePair<int, TreeNode> entry in parsedNodes)
+                //{
+                //    FrameObjectBase objBase = (entry.Value.Tag as FrameObjectBase);
+
+                //    if (objBase != null)
+                //    {
+                //        if (objBase.ParentIndex1.Index == -1 && objBase.ParentIndex2.Index == -1)
+                //        {
+                //            root.Nodes.Add(entry.Value);
+                //        }
+                //    }
+                //}
+
+                //foreach (KeyValuePair<int, TreeNode> entry in notAddedNodes)
+                //{
+                //    FrameObjectBase objBase = (entry.Value.Tag as FrameObjectBase);
+                //    TreeNode[] nodes = root.Nodes.Find(objBase.ParentIndex2.RefID.ToString(), true);
+
+                //    if (nodes.Length > 0)
+                //    {
+                //        //if(objBase.ParentIndex1.Index != objBase.ParentIndex2.Index)
+                //        //{
+                //        //    TreeNode[] others = nodes[0].Nodes.Find(objBase.ParentIndex1.RefID.ToString(), true);
+                //        //    if (others.Length > 0)
+                //        //        others[0].Nodes.Add(entry.Value);
+                //        //    else
+                //        //        nodes[0].Nodes.Add(entry.Value);
+                //        //}
+                //        //else
+                //        //{
+                //            nodes[0].Nodes.Add(entry.Value);
+                //        //}
+
+                //        Debug.WriteLine("Added {0}", objBase.Name);
+                //    }
+                //    else
+                //    {
+                //        root.Nodes.Add(entry.Value);
+                //    }
+                //}
+
+                return root;
         }
 
         public void DefineFrameBlockParents()
