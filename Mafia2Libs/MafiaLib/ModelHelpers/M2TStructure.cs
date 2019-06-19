@@ -326,11 +326,7 @@ namespace Utils.Models
 
         public void ExportToFbx(string path, bool saveBinary)
         {
-            string args = "-ConvertToFBX ";
-            args += ("\"" + path + name + ".m2t\" ");
-            args += ("\"" + path + name + ".fbx\"");
-            FBXHelper fbx = new FBXHelper();
-            fbx.Run(args);
+            FBXHelper.ConvertM2T(path + name + ".m2t", path + name + ".fbx");
         }
 
         public void ReadFromM2T(BinaryReader reader)
@@ -451,10 +447,8 @@ namespace Utils.Models
             string m2tFile = file.Remove(file.Length - 4, 4) + ".m2t";
             args += ("\"" + file + "\" ");
             args += ("\"" + m2tFile + "\" ");
-            args += "0";
 
-            FBXHelper fbx = new FBXHelper();
-            if (fbx.Run(args))
+            if (FBXHelper.ConvertFBX(file, m2tFile) == 0)
             {
                 using (BinaryReader reader = new BinaryReader(File.Open(m2tFile, FileMode.Open)))
                     ReadFromM2T(reader);

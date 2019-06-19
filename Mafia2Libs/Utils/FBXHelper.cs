@@ -1,46 +1,65 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace Utils
 {
-    public class FBXHelper
+    public static class FBXHelper
     {
-        private Dictionary<int, string> errors = new Dictionary<int, string>();
+        [DllImport("libs/M2FBX.dll")]
+        private static extern int RunConvertFBX(string source, string dest);
 
-        public FBXHelper()
+        [DllImport("libs/M2FBX.dll")]
+        private static extern int RunConvertM2T(string source, string dest);
+
+        [DllImport("libs/M2FBX.dll")]
+        private static extern int RunCookCollision(string source, string dest);
+
+        public static int ConvertFBX(string source, string dest)
         {
-            errors.Add(-100, "Boundary Box exceeds Mafia II's limits!");
-            errors.Add(-99, "pElementNormal->GetReferenceMode() did not equal eDirect!");
-            errors.Add(-98, "pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex!");
-            errors.Add(-97, "Vertex count > ushort max value! This model cannot be used in Mafia II!");
+            int exitCode = RunConvertFBX(source, dest);
+            ThrowMessageBox(exitCode);
+            return exitCode;
         }
 
-        public bool Run(string args)
+        public static int ConvertM2T(string source, string dest)
         {
-            ProcessStartInfo processStartInfo = new ProcessStartInfo("M2FBX.exe", args)
-            {
-                CreateNoWindow = false,
-                UseShellExecute = false
-            };
-            Process tool = Process.Start(processStartInfo);
-            while (!tool.HasExited) ;
-            int exitCode = tool.ExitCode;
-            tool.Dispose();
+            int exitCode = RunConvertM2T(source, dest);
+            ThrowMessageBox(exitCode);
+            return exitCode;
+        }
 
-            if (errors.ContainsKey(exitCode))
+        public static int CookCollision(string source, string dest)
+        {
+            int exitCode = RunCookCollision(source, dest);
+            ThrowMessageBox(exitCode);
+            return exitCode;
+        }
+
+        private static void ThrowMessageBox(int exitCode)
+        {
+            if (exitCode == 0)
+                return;
+
+            string message = "An Error has Occured: \n";
+            switch(exitCode)
             {
-                ThrowMessageBox(exitCode);
-                return false;
+                case -100:
+                    message += "Boundary Box exceeds Mafia II's limits!";
+                    break;
+                case -98:
+                    message += "pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex!";
+                    break;
+                case -97:
+                    message += "Vertex count > ushort max value! This model cannot be used in Mafia II!";
+                    break;
+                case -99:
+                    message += "pElementNormal->GetReferenceMode() did not equal eDirect!";
+                    break;
+                default:
+                    message += string.Format("Unknown Error {0}", exitCode);
+                    break;
             }
 
-            return true;
-        }
-
-        private void ThrowMessageBox(int exitCode)
-        {
-            string message = "An Error has Occured: \n";
-            message += errors[exitCode];
             MessageBox.Show(message, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }

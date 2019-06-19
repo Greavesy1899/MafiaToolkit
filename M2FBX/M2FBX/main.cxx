@@ -1,6 +1,7 @@
 #include <fbxsdk.h>
 #include "FbxWrangler.h"
 #include "M2TWrangler.h"
+#include "CPhysXCooking.h"
 #include "M2Model.h"
 #include <conio.h>
 
@@ -13,6 +14,9 @@ void PrintHelp()
 	WriteLine(""); //space
 	WriteLine("To convert FBX to M2T:");
 	WriteLine("M2FBX.exe -ConvertToM2T \"model_source\" \"model_destination\"");
+	WriteLine(""); //space
+	WriteLine("To Cook collision data:");
+	WriteLine("M2FBX.exe -CookCollisions \"uncook_source\" \"cook_source\"");
 }
 
 void PrintError(int code)
@@ -31,25 +35,20 @@ void PrintError(int code)
 	PrintHelp();
 	_getch();
 }
-int main(int argc, char** argv)
+
+extern "C" int  __declspec(dllexport) _stdcall RunConvertFBX(const char* source, const char* dest);
+extern "C" int  __declspec(dllexport) _stdcall RunConvertM2T(const char* source, const char* dest);
+extern "C" int  __declspec(dllexport) _stdcall RunCookCollision(const char* source, const char* dest);
+
+extern int _stdcall RunConvertFBX(const char* source, const char* dest)
 {
-	//check argument count.
-	if (argc > 4)
-	{
-		PrintError(0);
-		return 0;
-	}
-
-	//check arguments.
-	if (FBXSDK_stricmp(argv[1], "-ConvertToFBX") == 0)
-		ConvertM2T(argv[2], argv[3]);
-	else if (FBXSDK_stricmp(argv[1], "-ConvertToM2T") == 0)
-		ConvertFBX(argv[2], argv[3]);
-	else
-	{
-		PrintError(1);
-		return 0;
-	}
-
-    return 0;
+	return ConvertFBX(source, dest);
+}
+extern int _stdcall RunConvertM2T(const char* source, const char* dest)
+{
+	return ConvertM2T(source, dest);
+}
+extern int _stdcall RunCookCollision(const char* source, const char* dest)
+{
+	return CookMesh(source, dest);
 }

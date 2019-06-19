@@ -4,8 +4,10 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using SharpDX;
+using Utils;
 using Utils.Models;
 using Utils.SharpDXExtensions;
+using Utils.StringHelpers;
 using static Utils.Models.M2TStructure;
 
 namespace ResourceTypes.Collisions
@@ -81,7 +83,6 @@ namespace ResourceTypes.Collisions
                 NXSStruct data = new NXSStruct(reader);
                 nxsData.Add(data.Hash, data);
             }
-
         }
 
         public void WriteToFile()
@@ -99,7 +100,22 @@ namespace ResourceTypes.Collisions
 
             writer.Write(nxsData.Count);
             for (int i = 0; i != nxsData.Count; i++)
+            {
+                NXSStruct data = nxsData.ElementAt(i).Value;
+                using (BinaryWriter meshWriter = new BinaryWriter(File.Open("mesh.bin", FileMode.Create)))
+                    data.Data.WriteToFile(meshWriter);
+
+                string args = "-CookCollisions ";
+                args += ("\"" + "mesh" + ".bin\" ");
+                args += ("\"" + "cook" + ".bin\"");
+                FBXHelper.CookCollision("mesh.bin", "cook.bin");
+
+                using (BinaryReader meshReader = new BinaryReader(File.Open("cook.bin", FileMode.Open)))
+                    nxsData.ElementAt(i).Value.Data.ReadFromFile(meshReader);
+
                 nxsData.ElementAt(i).Value.WriteToFile(writer);
+                Console.WriteLine(i + "/" + nxsData.Count);
+            }
         }
 
         public override string ToString()
@@ -172,11 +188,11 @@ namespace ResourceTypes.Collisions
             {
                 position = Vector3Extenders.ReadFromFile(reader);
                 rotation = Vector3Extenders.ReadFromFile(reader);
-                Vector3 rot = new Vector3();
-                rot.X = MathUtil.RadiansToDegrees(rotation.X);
-                rot.Y = MathUtil.RadiansToDegrees(rotation.Y);
-                rot.Z = -MathUtil.RadiansToDegrees(rotation.Z);
-                rotation = rot;
+                //Vector3 rot = new Vector3();
+                //rot.X = MathUtil.RadiansToDegrees(rotation.X);
+                //rot.Y = MathUtil.RadiansToDegrees(rotation.Y);
+                //rot.Z = -MathUtil.RadiansToDegrees(rotation.Z);
+                //rotation = rot;
                 hash = reader.ReadUInt64();
                 unk4 = reader.ReadInt32();
                 unk5 = reader.ReadByte();
@@ -190,11 +206,11 @@ namespace ResourceTypes.Collisions
             public void WriteToFile(BinaryWriter writer)
             {
                 position.WriteToFile(writer);
-                Vector3 rot = new Vector3();
-                //rot.X = MathUtil.DegreesToRadians(rotation.X);
-                //rot.Y = MathUtil.DegreesToRadians(rotation.Y);
-                rot.Z = -MathUtil.DegreesToRadians(rotation.Z);
-                rot.WriteToFile(writer);
+                //Vector3 rot = new Vector3();
+                ////rot.X = MathUtil.DegreesToRadians(rotation.X);
+                ////rot.Y = MathUtil.DegreesToRadians(rotation.Y);
+                //rot.Z = -MathUtil.DegreesToRadians(rotation.Z);
+                rotation.WriteToFile(writer);
                 writer.Write(hash);
                 writer.Write(unk4);
                 writer.Write(unk5);
@@ -251,6 +267,7 @@ namespace ResourceTypes.Collisions
                 dataSize = reader.ReadInt32();
                 data = new MeshData(reader, sections);
 
+
                 int length = reader.ReadInt32();
                 sections = new Section[length];
                 for (int i = 0; i != sections.Length; i++)
@@ -263,7 +280,12 @@ namespace ResourceTypes.Collisions
             {
                 Console.WriteLine("saving :" + hash);
                 writer.Write(hash);
-                Console.WriteLine("{0} {1} {2}", dataSize, data.GetMeshSize(), (int)data.Flags);
+
+                if (data.Flags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES))
+                    data.Flags -= MeshSerialFlags.MSF_8BIT_INDICES;
+                if (data.Flags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
+                    data.Flags -= MeshSerialFlags.MSF_16BIT_INDICES;
+
                 writer.Write(data.GetMeshSize());
                 data.WriteToFile(writer);
                 writer.Write(sections.Length);
@@ -416,11 +438,21 @@ namespace ResourceTypes.Collisions
                 for (int i = 0; i != points.Length; i++)
                     points[i] = Vector3Extenders.ReadFromFile(reader);
 
-                if (flags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES) || flags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
-                    throw new Exception("Unsupported! 8bit or 16bit indices");
-
-                for (int i = 0; i != indices.Length; i++)
-                    indices[i] = reader.ReadUInt32();
+                if (flags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES))
+                {
+                    for (int i = 0; i != indices.Length; i++)
+                        indices[i] = reader.ReadByte();
+                }
+                else if (flags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
+                {
+                    for (int i = 0; i != indices.Length; i++)
+                        indices[i] = reader.ReadUInt16();
+                }
+                else
+                {
+                    for (int i = 0; i != indices.Length; i++)
+                        indices[i] = reader.ReadUInt32();
+                }
 
                 if (flags.HasFlag(MeshSerialFlags.MSF_MATERIALS))
                 {
@@ -633,7 +665,7 @@ namespace ResourceTypes.Collisions
                     for (int x = (int)part.StartIndex; x < part.StartIndex+part.NumFaces*3; x++)
                     {
                         indices[x] = model.Indices[x];
-                        materials[x] = (CollisionMaterials)Enum.Parse(typeof(CollisionMaterials), model.Parts[i].Material);
+                        Enum.TryParse(model.Parts[i].Material, true, out materials[x]);
                     }
                 }
 

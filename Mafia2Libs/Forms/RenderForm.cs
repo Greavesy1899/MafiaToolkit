@@ -24,6 +24,8 @@ using Utils.Extensions;
 using ResourceTypes.Navigation;
 using ResourceTypes.Materials;
 using Utils.SharpDXExtensions;
+using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.Collisions;
 
 namespace Mafia2Tool
 {
@@ -335,7 +337,7 @@ namespace Mafia2Tool
                         splines.Add(spline);
                     }
 
-                    for(int i = 0; i < junctionRoot.Nodes.Count; i++)
+                    for (int i = 0; i < junctionRoot.Nodes.Count; i++)
                     {
                         RenderJunction junction = (RenderJunction)junctionRoot.Nodes[i].Tag;
                         JunctionDefinition definition = junction.Data;
@@ -1065,7 +1067,7 @@ namespace Mafia2Tool
                 if (Graphics.Assets.ContainsKey(iName))
                     Graphics.Assets.Remove(iName);
             }
-            else if(node.Tag.GetType() == typeof(RenderRoad))
+            else if (node.Tag.GetType() == typeof(RenderRoad))
             {
                 dSceneTree.treeView1.Nodes.Remove(node);
                 if (Graphics.Assets.ContainsKey(int.Parse(node.Name)))
@@ -1357,12 +1359,243 @@ namespace Mafia2Tool
             int generatedID = StringHelpers.RandomGenerator.Next();
             RenderStorageSingleton.Instance.SplineStorage.Add(spline);
             Graphics.InitObjectStack.Add(generatedID, road);
-            int nodeID = (roadRoot.Nodes.Count + 1);
+            int nodeID = (roadRoot.Nodes.Count);
             TreeNode child = new TreeNode(nodeID.ToString());
-            child.Text = "ID: " + nodeID;
+            child.Text = "Road ID: " + nodeID;
             child.Name = generatedID.ToString();
             child.Tag = road;
             roadRoot.Nodes.Add(child);
         }
+
+        private void AddJunctionOnClick(object sender, EventArgs e)
+        {
+            if (SceneData.roadMap == null)
+                return;
+
+            JunctionDefinition definition = new JunctionDefinition();
+            RenderJunction junction = new RenderJunction();
+            definition.JunctionIDX = junctionRoot.Nodes.Count;
+            junction.Init(definition);
+
+            int generatedID = StringHelpers.RandomGenerator.Next();
+            Graphics.InitObjectStack.Add(generatedID, junction);
+            int nodeID = (junctionRoot.Nodes.Count);
+            TreeNode child = new TreeNode(nodeID.ToString());
+            child.Text = "Junction ID: " + nodeID;
+            child.Name = generatedID.ToString();
+            child.Tag = junction;
+            junctionRoot.Nodes.Add(child);
+        }
+
+        private void EditUnkSet3Click(object sender, EventArgs e)
+        {
+            if (SceneData.roadMap != null)
+                dPropertyGrid.SetObject(SceneData.roadMap);
+        }
+
+        private void AddTowardClick(object sender, EventArgs e)
+        {
+            if (SceneData.roadMap != null && dSceneTree.treeView1.SelectedNode != null)
+            {
+                if (dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(RenderRoad))
+                {
+                    RenderRoad road = (dSceneTree.treeView1.SelectedNode.Tag as RenderRoad);
+                    road.HasToward = true;
+                    road.Toward = new SplineProperties();
+                    road.Toward.Flags = 0;
+                    road.Toward.LaneSize0 = road.Toward.LaneSize1 = 2;
+                    road.Toward.Lanes = new LaneProperties[2];
+                    road.Toward.Lanes[0] = new LaneProperties();
+                    road.Toward.Lanes[0].Width = 3.5f;
+                    road.Toward.Lanes[0].Unk03 = 440;
+                    road.Toward.Lanes[0].Flags = LaneTypes.MainRoad;
+                    road.Toward.Lanes[1] = new LaneProperties();
+                    road.Toward.Lanes[1].Width = 3.5f;
+                    road.Toward.Lanes[1].Unk03 = 440;
+                    road.Toward.Lanes[1].Flags = LaneTypes.None;
+                }
+            }
+        }
+
+        private void AddBackwardClick(object sender, EventArgs e)
+        {
+            if (SceneData.roadMap != null && dSceneTree.treeView1.SelectedNode != null)
+            {
+                if (dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(RenderRoad))
+                {
+                    RenderRoad road = (dSceneTree.treeView1.SelectedNode.Tag as RenderRoad);
+                    road.HasBackward = true;
+                    road.Backward = new SplineProperties();
+                    road.Backward.Flags = RoadFlags.BackwardDirection;
+                    road.Backward.LaneSize0 = road.Backward.LaneSize1 = 2;
+                    road.Backward.Lanes = new LaneProperties[2];
+                    road.Backward.Lanes[1] = new LaneProperties();
+                    road.Backward.Lanes[1].Width = 3.5f;
+                    road.Backward.Lanes[1].Unk03 = 440;
+                    road.Backward.Lanes[1].Flags = LaneTypes.MainRoad;
+                    road.Backward.Lanes[0] = new LaneProperties();
+                    road.Backward.Lanes[0].Width = 3.5f;
+                    road.Backward.Lanes[0].Unk03 = 440;
+                    road.Backward.Lanes[0].Flags = LaneTypes.None;
+                }
+            }
+        }
+
+        private void AddCollisionButton_Click(object sender, EventArgs e)
+        {
+            if (SceneData.Collisions != null && ToolkitSettings.Experimental)
+            {
+                if (MeshBrowser.ShowDialog() != DialogResult.OK)
+                {
+                    MessageBox.Show("Failed to select model.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                M2TStructure colModel = new M2TStructure();
+
+                if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
+                    colModel.ReadFromM2T(new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)));
+                else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
+                    colModel.ReadFromFbx(MeshBrowser.FileName);
+
+                //crash happened/
+                if (colModel.Lods[0] == null)
+                    return;
+
+                Collision.NXSStruct nxsData = new Collision.NXSStruct();
+                nxsData.Hash = FNV64.Hash(colModel.Name);
+                nxsData.Data.BuildBasicCollision(colModel.Lods[0]);
+                nxsData.Sections = new Collision.Section[colModel.Lods[0].Parts.Length];
+
+                int curEdges = 0;
+                for (int i = 0; i != nxsData.Sections.Length; i++)
+                {
+                    nxsData.Sections[i] = new Collision.Section();
+                    nxsData.Sections[i].Unk1 = (int)Enum.Parse(typeof(CollisionMaterials), colModel.Lods[0].Parts[i].Material) - 2;
+                    nxsData.Sections[i].Start = curEdges;
+                    nxsData.Sections[i].NumEdges = (int)colModel.Lods[0].Parts[i].NumFaces * 3;
+                }
+
+                RenderStaticCollision collision = new RenderStaticCollision();
+                collision.ConvertCollisionToRender(nxsData.Data);
+                RenderStorageSingleton.Instance.StaticCollisions.Add(nxsData.Hash, collision);
+
+                Collision.Placement placement = new Collision.Placement();
+                placement.Hash = nxsData.Hash;
+                placement.Unk5 = 128;
+                placement.Unk4 = -1;
+                placement.Position = new Vector3(0, 0, 0);
+                placement.Rotation = new Vector3(0);
+
+                //add to render storage
+                TreeNode treeNode = new TreeNode(nxsData.Hash.ToString());
+                treeNode.Text = nxsData.Hash.ToString();
+                treeNode.Name = nxsData.Hash.ToString();
+                treeNode.Tag = nxsData;
+
+                //add instance of object.
+                int refID = StringHelpers.RandomGenerator.Next();
+                TreeNode child = new TreeNode();
+                child.Text = treeNode.Nodes.Count.ToString();
+                child.Name = refID.ToString();
+                child.Tag = placement;
+                treeNode.Nodes.Add(child);
+
+                //complete
+                RenderInstance instance = new RenderInstance();
+                instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
+                Matrix33 rot = new Matrix33();
+                rot.EulerRotation = placement.Rotation;
+                rot.UpdateMatrixFromEuler();
+                instance.SetTransform(placement.Position, rot);
+                Graphics.InitObjectStack.Add(refID, instance);
+                dSceneTree.AddToTree(treeNode, collisionRoot);
+                SceneData.Collisions.NXSData.Add(nxsData.Hash, nxsData);
+                SceneData.Collisions.Placements.Add(placement);
+            }
+        }
+
+        private void AddCollisionTwo_Click(object sender, EventArgs e)
+        {
+            if (SceneData.Collisions != null && ToolkitSettings.Experimental)
+            {
+                if (MeshBrowser.ShowDialog() != DialogResult.OK)
+                {
+                    MessageBox.Show("Failed to select model.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                M2TStructure colModel = new M2TStructure();
+
+                if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
+                    colModel.ReadFromM2T(new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)));
+                else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
+                    colModel.ReadFromFbx(MeshBrowser.FileName);
+
+                //crash happened/
+                if (colModel.Lods[0] == null)
+                    return;
+
+                Collision.NXSStruct nxsData = new Collision.NXSStruct();
+                nxsData.Hash = FNV64.Hash(colModel.Name);
+                nxsData.Data.BuildBasicCollision(colModel.Lods[0]);
+                nxsData.Sections = new Collision.Section[colModel.Lods[0].Parts.Length];
+
+                if (MeshBrowser.ShowDialog() != DialogResult.OK)
+                {
+                    MessageBox.Show("Failed to select model.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                Collision.MeshData mesh = new Collision.MeshData();
+                mesh.ReadFromFile(new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)));
+                nxsData.Data = mesh;
+                int curEdges = 0;
+                for (int i = 0; i != nxsData.Sections.Length; i++)
+                {
+                    nxsData.Sections[i] = new Collision.Section();
+                    nxsData.Sections[i].Unk1 = (int)Enum.Parse(typeof(CollisionMaterials), colModel.Lods[0].Parts[i].Material) - 2;
+                    nxsData.Sections[i].Start = curEdges;
+                    nxsData.Sections[i].NumEdges = (int)colModel.Lods[0].Parts[i].NumFaces * 3;
+                }
+
+                RenderStaticCollision collision = new RenderStaticCollision();
+                collision.ConvertCollisionToRender(nxsData.Data);
+                RenderStorageSingleton.Instance.StaticCollisions.Add(nxsData.Hash, collision);
+
+                Collision.Placement placement = new Collision.Placement();
+                placement.Hash = nxsData.Hash;
+                placement.Unk5 = 128;
+                placement.Unk4 = -1;
+                placement.Position = new Vector3(0, 0, 0);
+                placement.Rotation = new Vector3(0);
+
+                //add to render storage
+                TreeNode treeNode = new TreeNode(nxsData.Hash.ToString());
+                treeNode.Text = nxsData.Hash.ToString();
+                treeNode.Name = nxsData.Hash.ToString();
+                treeNode.Tag = nxsData;
+
+                //add instance of object.
+                int refID = StringHelpers.RandomGenerator.Next();
+                TreeNode child = new TreeNode();
+                child.Text = treeNode.Nodes.Count.ToString();
+                child.Name = refID.ToString();
+                child.Tag = placement;
+                treeNode.Nodes.Add(child);
+
+                //complete
+                RenderInstance instance = new RenderInstance();
+                instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
+                Matrix33 rot = new Matrix33();
+                rot.EulerRotation = placement.Rotation;
+                rot.UpdateMatrixFromEuler();
+                instance.SetTransform(placement.Position, rot);
+                Graphics.InitObjectStack.Add(refID, instance);
+                dSceneTree.AddToTree(treeNode, collisionRoot);
+                SceneData.Collisions.NXSData.Add(nxsData.Hash, nxsData);
+                SceneData.Collisions.Placements.Add(placement);
+            }
+        }
     }
 }
+

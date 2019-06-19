@@ -192,10 +192,10 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             input.Position += 4; // skip version
-            var platform = (Archive.Platform)input.ReadValueU32(Endian.Big);
-            if (platform != Archive.Platform.PC &&
-                platform != Archive.Platform.Xbox360 &&
-                platform != Archive.Platform.PS3)
+            var platform = (Platform)input.ReadValueU32(Endian.Big);
+            if (platform != Platform.PC &&
+                platform != Platform.Xbox360 &&
+                platform != Platform.PS3)
             {
                 throw new FormatException("unsupported archive platform");
             }
@@ -959,7 +959,7 @@ namespace Gibbed.Mafia2.FileFormats
         {
             //Do resource first..
             SoundResource resource = new SoundResource();
-            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), this.Platform != Platform.PC ? Endian.Big : Endian.Little);
             entry.Data = resource.Data;
 
             string fileName = name + ".fsb";

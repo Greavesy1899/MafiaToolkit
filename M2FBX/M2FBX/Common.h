@@ -8,5 +8,7 @@
 
 #include "fbxsdk.h"
 #include "Utilities.h"
+#define WIN32
+#include "NxPhysics.h"
 
 #endif

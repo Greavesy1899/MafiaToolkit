@@ -22,7 +22,7 @@ namespace Gibbed.Mafia2.ResourceFormats
         {
             byte length = input.ReadValueU8();
             this.Name = input.ReadString(length);
-            this.FileSize = input.ReadValueS32();
+            this.FileSize = input.ReadValueS32(endian);
             this.Data = input.ReadBytes(FileSize);
         }
 

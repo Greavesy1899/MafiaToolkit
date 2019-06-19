@@ -100,6 +100,7 @@ int ConvertM2T(const char* pSource, const char* pDest)
 
 	// Destroy all objects created by the FBX SDK.
 	DestroySdkObjects(lSdkManager, lResult);
+	return 0;
 }
 bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model)
 {

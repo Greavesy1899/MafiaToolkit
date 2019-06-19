@@ -342,24 +342,31 @@ namespace Gibbed.Illusion.FileFormats
         {
             public uint UncompressedSize;
             public uint Unknown04;
-            public uint Unknown08;
-            public uint Unknown0C;
+            public short ChunkSize;
+            public short ChunkCount;
+            public short Unknown0C;
             public uint CompressedSize;
-            public uint Unknown14;
-            public uint Unknown18;
-            public uint Unknown1C;
+            public byte Unknown0E;
+            public byte Unknown0F;
+            public short[] Chunks;
 
             public static CompressedBlockHeader Read(Stream input, Endian endian)
             {
                 CompressedBlockHeader instance;
                 instance.UncompressedSize = input.ReadValueU32(endian);
                 instance.Unknown04 = input.ReadValueU32(endian);
-                instance.Unknown08 = input.ReadValueU32(endian);
-                instance.Unknown0C = input.ReadValueU32(endian);
-                instance.CompressedSize = input.ReadValueU32(endian);
-                instance.Unknown14 = input.ReadValueU32(endian);
-                instance.Unknown18 = input.ReadValueU32(endian);
-                instance.Unknown1C = input.ReadValueU32(endian);
+                instance.ChunkSize = input.ReadValueS16(endian);
+                instance.ChunkCount = input.ReadValueS16(endian);
+                instance.Unknown0C = input.ReadValueS16(endian);
+                instance.Unknown0E = input.ReadValueU8();
+                instance.Unknown0F = input.ReadValueU8();
+                instance.Chunks = new short[8];
+                instance.CompressedSize = 0;
+                for (int i = 0; i < 8; ++i)
+                {
+                    instance.Chunks[i] = input.ReadValueS16(endian);
+                    instance.CompressedSize += (uint)instance.Chunks[i];
+                }
                 return instance;
             }
         }
@@ -394,11 +401,9 @@ namespace Gibbed.Illusion.FileFormats
                 {
                     var compressedBlockHeader = CompressedBlockHeader.Read(baseStream, endian);
                     if (compressedBlockHeader.Unknown04 != 32 ||
-                        compressedBlockHeader.Unknown08 != 81920 ||
-                        compressedBlockHeader.Unknown0C != 135200769 ||
-                        compressedBlockHeader.Unknown14 != 0 ||
-                        compressedBlockHeader.Unknown18 != 0 ||
-                        compressedBlockHeader.Unknown1C != 0)
+                        compressedBlockHeader.Unknown0C != 1 ||
+                        compressedBlockHeader.Unknown0E != 15 ||
+                        compressedBlockHeader.Unknown0F != 8)
                     {
                         throw new InvalidOperationException();
                     }
@@ -408,19 +413,27 @@ namespace Gibbed.Illusion.FileFormats
                         throw new InvalidOperationException();
                     }
 
-                    instance.AddCompressedBlock(virtualOffset,
-                                                compressedBlockHeader.UncompressedSize,
-                                                baseStream.Position,
-                                                compressedBlockHeader.CompressedSize);
+                    long compressedPosition = baseStream.Position;
+                    uint remainingUncompressedSize = compressedBlockHeader.UncompressedSize;
+                    for (int i = 0; i < compressedBlockHeader.ChunkCount; ++i)
+                    {
+                        uint UncompressedSize = Math.Min(alignment, remainingUncompressedSize);
+                        instance.AddCompressedBlock(virtualOffset,
+                                                    UncompressedSize, //compressedBlockHeader.UncompressedSize,
+                                                    compressedPosition,
+                                                    (uint)compressedBlockHeader.Chunks[i]);
+                        compressedPosition += (uint)compressedBlockHeader.Chunks[i];
+                        virtualOffset += UncompressedSize;
+                        remainingUncompressedSize -= alignment;
+                    }
                     baseStream.Seek(compressedBlockHeader.CompressedSize, SeekOrigin.Current);
                 }
                 else
                 {
                     instance.AddUncompressedBlock(virtualOffset, size, baseStream.Position);
                     baseStream.Seek(size, SeekOrigin.Current);
-                }
-
-                virtualOffset += alignment;
+                    virtualOffset += size;
+                }            
             }
 
             return instance;

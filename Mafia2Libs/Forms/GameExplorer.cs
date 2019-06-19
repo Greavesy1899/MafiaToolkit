@@ -340,11 +340,11 @@ namespace Mafia2Tool
             infoText.Text = "Opening PATCH..";
 
             PatchFile patch;
-            using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+            using (var input = File.OpenRead(file.FullName))
             {
                 patch = new PatchFile();
                 patch.file = file;
-                patch.Deserialize(reader, Gibbed.IO.Endian.Little);
+                patch.Deserialize(input, Gibbed.IO.Endian.Big);
             }
         }
 

@@ -18,36 +18,51 @@ namespace Gibbed.Mafia2.FileFormats
         private int[] UnkInts2;
         private int UnkTotal; //UnkCount1 and UnkCount2 added together.
 
-        public void Deserialize(BinaryReader reader, Endian endian)
+        public void Deserialize(Stream reader, Endian endian)
         {
-            if (reader.ReadInt32() != Signature)
+            int magic = reader.ReadValueS32(endian);
+            if (magic != Signature)
+            {
+                reader.Position -= 4;
+                magic = reader.ReadValueS32(endian == Endian.Big ? Endian.Little : Endian.Big);
+
+                if (magic != Signature)
+                    return;
+                else
+                    endian = endian == Endian.Big ? Endian.Little : Endian.Big;
+            }
+
+            int version = reader.ReadValueS32(endian);
+            //if (version > 1)
+            //    return;
+
+            uint magic2 = reader.ReadValueU32(endian);
+            if (magic2 != Signature2)
                 return;
 
-            if (reader.ReadInt32() < 1)
-                return;
-
-            if (reader.ReadInt64() != Signature2)
+            int unk0 = reader.ReadValueS32(endian);
+            if (unk0 != 0)
                 return;
 
             List<string> indexes = new List<string>();
             indexes.Add("UnkSet0:");
-            UnkCount1 = reader.ReadInt32();
+            UnkCount1 = reader.ReadValueS32(endian);
             UnkInts1 = new int[UnkCount1];
             for (int i = 0; i != UnkCount1; i++)
             {
-                UnkInts1[i] = reader.ReadInt32();
+                UnkInts1[i] = reader.ReadValueS32(endian);
                 indexes.Add(UnkInts1[i].ToString());
             }
             indexes.Add("/nUnkSet1:");
-            UnkCount2 = reader.ReadInt32();
+            UnkCount2 = reader.ReadValueS32(endian);
             UnkInts2 = new int[UnkCount2];
             for (int i = 0; i != UnkCount2; i++)
             {
-                UnkInts2[i] = reader.ReadInt32();
+                UnkInts2[i] = reader.ReadValueS32(endian);
                 indexes.Add(UnkInts2[i].ToString());
             }
 
-            UnkTotal = reader.ReadInt32();
+            UnkTotal = reader.ReadValueS32(endian);
 
             //if (UnkCount1 + UnkCount2 != UnkTotal)
             //throw new FormatException();        
@@ -55,9 +70,9 @@ namespace Gibbed.Mafia2.FileFormats
             if (UnkTotal == 0)          
                 return;
 
-            int pos = (int)reader.BaseStream.Position;
+            int pos = (int)reader.Position;
 
-            var blockStream = BlockReaderStream.FromStream(reader.BaseStream, endian);
+            var blockStream = BlockReaderStream.FromStream(reader, endian);
 
             if (!Directory.Exists("patches/"))
                 Directory.CreateDirectory("patches/");
@@ -68,8 +83,8 @@ namespace Gibbed.Mafia2.FileFormats
                 blockStream.SaveUncompressed(writer.BaseStream);
             }
 
-            reader.BaseStream.Position = pos;
-            blockStream = BlockReaderStream.FromStream(reader.BaseStream, endian);
+            reader.Position = pos;
+            blockStream = BlockReaderStream.FromStream(reader, endian);
 
             //return;
 

@@ -3,7 +3,7 @@
 #include "M2Model.h"
 #include <conio.h>
 
-void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
+int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 {
 	FbxMesh* pMesh = (FbxMesh*)pNode->GetNodeAttribute();
 	FbxGeometryElementNormal* pElementNormal = pMesh->GetElementNormal(0);
@@ -21,21 +21,21 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 
 		if (val < -32768 || val > 32768) {
 			WriteLine("Boundary Box exceeds Mafia II's limits! Cannot continue!\n");
-			exit(-100);
+			return -100;
 		}
 
 		val = pMesh->BBoxMax.Get()[i];
 
 		if (val < -32768 || val > 32768) {
 			FBXSDK_printf("Boundary Box exceeds Mafia II's limits! Cannot continue!\n");
-			exit(-100);
+			return -100;
 		}
 	}
 
 	if (pMesh->GetControlPoints()->Length() > 65535)
 	{
 		FBXSDK_printf("Vertex count > ushort max value! This model cannot be used in Mafia II\n");
-		exit(-97);
+		return -97;
 	}
 
 	pPart.SetHasPositions(true);
@@ -51,11 +51,11 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		//Gotta make sure the normals are correctly set up.
 		if (pElementNormal->GetReferenceMode() != FbxGeometryElement::eDirect) {
 			WriteLine("pElementNormal->GetReferenceMode() did not equal eDirect.. Cannot continue.");
-			exit(-99);
+			return -99;
 		}
 		if ((pElementNormal->GetMappingMode() <= FbxGeometryElement::eByControlPoint) && (pElementNormal->GetMappingMode() >= FbxGeometryElement::eByPolygonVertex)) {
 			WriteLine("pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex.. Cannot continue.");
-			exit(-98);
+			return -98;
 		}
 	}
 
@@ -138,7 +138,7 @@ void BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	//Gotta be triangulated.
 	if (!pMesh->IsTriangleMesh()) {
 		WriteLine("pMesh->IsTriangleMesh() did not equal true.. Cannot continue.");
-		exit(-97);
+		return -97;
 	}
 
 	//begin getting triangles
@@ -228,7 +228,7 @@ int DetermineNodeAttribute(FbxNode* node)
 	return NULL;
 }
 
-void BuildModel(ModelStructure* structure, FbxNode* node)
+int BuildModel(ModelStructure* structure, FbxNode* node)
 {
 	char size = 1;
 	structure->SetPartSize(size);
@@ -236,10 +236,15 @@ void BuildModel(ModelStructure* structure, FbxNode* node)
 	structure->SetName(std::string(node->GetName()));
 	WriteLine("Converting Mesh..");
 	ModelPart Part = ModelPart();
-	BuildModelPart(node, Part);
+
+	int result = BuildModelPart(node, Part);
+	if (result != 0)
+		return result;
+
 	parts[0] = Part;
 	structure->SetParts(parts);
 	WriteLine("Built Model..");
+	return 0;
 }
 
 int ConvertFBX(const char* pSource, const char* pDest)
@@ -258,7 +263,7 @@ int ConvertFBX(const char* pSource, const char* pDest)
 	if (!lImporter->Initialize(pSource, -1, lSdkManager->GetIOSettings())) {
 		WriteLine("Error occured while initializing importer:");
 		WriteLine("%s", lImporter->GetStatus().GetErrorString());
-		exit(-1);
+		return -1;
 	}
 
 	WriteLine("Importing %s...", pSource);
