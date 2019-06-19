@@ -12,7 +12,9 @@ namespace Utils
         private static extern int RunConvertM2T(string source, string dest);
 
         [DllImport("libs/M2FBX.dll")]
-        private static extern int RunCookCollision(string source, string dest);
+        private static extern int RunCookTriangleCollision(string source, string dest);
+        [DllImport("libs/M2FBX.dll")]
+        private static extern int RunCookConvexCollision(string source, string dest);
 
         public static int ConvertFBX(string source, string dest)
         {
@@ -28,9 +30,16 @@ namespace Utils
             return exitCode;
         }
 
-        public static int CookCollision(string source, string dest)
+        public static int CookTriangleCollision(string source, string dest)
         {
-            int exitCode = RunCookCollision(source, dest);
+            int exitCode = RunCookTriangleCollision(source, dest);
+            ThrowMessageBox(exitCode);
+            return exitCode;
+        }
+
+        public static int CookConvexCollision(string source, string dest)
+        {
+            int exitCode = RunCookConvexCollision(source, dest);
             ThrowMessageBox(exitCode);
             return exitCode;
         }
@@ -54,6 +63,9 @@ namespace Utils
                     break;
                 case -99:
                     message += "pElementNormal->GetReferenceMode() did not equal eDirect!";
+                    break;
+                case -10:
+                    message += "Failed to initialize the PhysX Cooking library!";
                     break;
                 default:
                     message += string.Format("Unknown Error {0}", exitCode);

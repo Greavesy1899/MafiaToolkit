@@ -40,13 +40,14 @@ namespace Mafia2Tool
             this.EditButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AddButton = new System.Windows.Forms.ToolStripMenuItem();
             this.AddSceneFolderButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.AddCollisionButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.roadDebuggingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AddBackward = new System.Windows.Forms.ToolStripMenuItem();
+            this.AddToward = new System.Windows.Forms.ToolStripMenuItem();
             this.AddRoadSplineButton = new System.Windows.Forms.ToolStripMenuItem();
             this.AddSplineTxT = new System.Windows.Forms.ToolStripMenuItem();
             this.AddJunctionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.EditUnkSet3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddBackward = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddToward = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddCollisionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -65,7 +66,6 @@ namespace Mafia2Tool
             this.RenderPanel = new System.Windows.Forms.Panel();
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
             this.TxtBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.AddCollisionTwo = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolbarStrip.SuspendLayout();
             this.StatusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -117,14 +117,8 @@ namespace Mafia2Tool
             this.EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddButton,
             this.AddSceneFolderButton,
-            this.AddRoadSplineButton,
-            this.AddSplineTxT,
-            this.AddJunctionButton,
-            this.EditUnkSet3,
-            this.AddBackward,
-            this.AddToward,
             this.AddCollisionButton,
-            this.AddCollisionTwo});
+            this.roadDebuggingToolStripMenuItem});
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
             this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EditButton.Name = "EditButton";
@@ -145,54 +139,67 @@ namespace Mafia2Tool
             this.AddSceneFolderButton.Text = "$ADD_SCENE_FOLDER";
             this.AddSceneFolderButton.Click += new System.EventHandler(this.AddSceneFolderButton_Click);
             // 
-            // AddRoadSplineButton
-            // 
-            this.AddRoadSplineButton.Name = "AddRoadSplineButton";
-            this.AddRoadSplineButton.Size = new System.Drawing.Size(191, 22);
-            this.AddRoadSplineButton.Text = "$ADD_ROAD_SPLINE";
-            this.AddRoadSplineButton.Click += new System.EventHandler(this.AddRoadSplineButton_Click);
-            // 
-            // AddSplineTxT
-            // 
-            this.AddSplineTxT.Name = "AddSplineTxT";
-            this.AddSplineTxT.Size = new System.Drawing.Size(191, 22);
-            this.AddSplineTxT.Text = "$ADD_SPLINE_TXT";
-            this.AddSplineTxT.Click += new System.EventHandler(this.AddSplineTxT_Click);
-            // 
-            // AddJunctionButton
-            // 
-            this.AddJunctionButton.Name = "AddJunctionButton";
-            this.AddJunctionButton.Size = new System.Drawing.Size(191, 22);
-            this.AddJunctionButton.Text = "$ADD_JUNCTION";
-            this.AddJunctionButton.Click += new System.EventHandler(this.AddJunctionOnClick);
-            // 
-            // EditUnkSet3
-            // 
-            this.EditUnkSet3.Name = "EditUnkSet3";
-            this.EditUnkSet3.Size = new System.Drawing.Size(191, 22);
-            this.EditUnkSet3.Text = "$EDIT_UNKSET3";
-            this.EditUnkSet3.Click += new System.EventHandler(this.EditUnkSet3Click);
-            // 
-            // AddBackward
-            // 
-            this.AddBackward.Name = "AddBackward";
-            this.AddBackward.Size = new System.Drawing.Size(191, 22);
-            this.AddBackward.Text = "$ADD_BACKWARD";
-            this.AddBackward.Click += new System.EventHandler(this.AddBackwardClick);
-            // 
-            // AddToward
-            // 
-            this.AddToward.Name = "AddToward";
-            this.AddToward.Size = new System.Drawing.Size(191, 22);
-            this.AddToward.Text = "$ADD_TOWARD";
-            this.AddToward.Click += new System.EventHandler(this.AddTowardClick);
-            // 
             // AddCollisionButton
             // 
             this.AddCollisionButton.Name = "AddCollisionButton";
             this.AddCollisionButton.Size = new System.Drawing.Size(191, 22);
             this.AddCollisionButton.Text = "$ADD_COLLISION";
             this.AddCollisionButton.Click += new System.EventHandler(this.AddCollisionButton_Click);
+            // 
+            // roadDebuggingToolStripMenuItem
+            // 
+            this.roadDebuggingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.AddBackward,
+            this.AddToward,
+            this.AddRoadSplineButton,
+            this.AddSplineTxT,
+            this.AddJunctionButton,
+            this.EditUnkSet3});
+            this.roadDebuggingToolStripMenuItem.Name = "roadDebuggingToolStripMenuItem";
+            this.roadDebuggingToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.roadDebuggingToolStripMenuItem.Text = "Road Debugging";
+            // 
+            // AddBackward
+            // 
+            this.AddBackward.Name = "AddBackward";
+            this.AddBackward.Size = new System.Drawing.Size(183, 22);
+            this.AddBackward.Text = "$ADD_BACKWARD";
+            this.AddBackward.Click += new System.EventHandler(this.AddBackwardClick);
+            // 
+            // AddToward
+            // 
+            this.AddToward.Name = "AddToward";
+            this.AddToward.Size = new System.Drawing.Size(183, 22);
+            this.AddToward.Text = "$ADD_TOWARD";
+            this.AddToward.Click += new System.EventHandler(this.AddTowardClick);
+            // 
+            // AddRoadSplineButton
+            // 
+            this.AddRoadSplineButton.Name = "AddRoadSplineButton";
+            this.AddRoadSplineButton.Size = new System.Drawing.Size(183, 22);
+            this.AddRoadSplineButton.Text = "$ADD_ROAD_SPLINE";
+            this.AddRoadSplineButton.Click += new System.EventHandler(this.AddRoadSplineButton_Click);
+            // 
+            // AddSplineTxT
+            // 
+            this.AddSplineTxT.Name = "AddSplineTxT";
+            this.AddSplineTxT.Size = new System.Drawing.Size(183, 22);
+            this.AddSplineTxT.Text = "$ADD_SPLINE_TXT";
+            this.AddSplineTxT.Click += new System.EventHandler(this.AddSplineTxT_Click);
+            // 
+            // AddJunctionButton
+            // 
+            this.AddJunctionButton.Name = "AddJunctionButton";
+            this.AddJunctionButton.Size = new System.Drawing.Size(183, 22);
+            this.AddJunctionButton.Text = "$ADD_JUNCTION";
+            this.AddJunctionButton.Click += new System.EventHandler(this.AddJunctionOnClick);
+            // 
+            // EditUnkSet3
+            // 
+            this.EditUnkSet3.Name = "EditUnkSet3";
+            this.EditUnkSet3.Size = new System.Drawing.Size(183, 22);
+            this.EditUnkSet3.Text = "$EDIT_UNKSET3";
+            this.EditUnkSet3.Click += new System.EventHandler(this.EditUnkSet3Click);
             // 
             // ViewButton
             // 
@@ -328,13 +335,6 @@ namespace Mafia2Tool
             // 
             this.TxtBrowser.Filter = "Text Document|*txt";
             // 
-            // AddCollisionTwo
-            // 
-            this.AddCollisionTwo.Name = "AddCollisionTwo";
-            this.AddCollisionTwo.Size = new System.Drawing.Size(191, 22);
-            this.AddCollisionTwo.Text = "$ADD_COLLISION_2";
-            this.AddCollisionTwo.Click += new System.EventHandler(this.AddCollisionTwo_Click);
-            // 
             // D3DForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -390,6 +390,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem AddBackward;
         private System.Windows.Forms.ToolStripMenuItem AddToward;
         private System.Windows.Forms.ToolStripMenuItem AddCollisionButton;
-        private System.Windows.Forms.ToolStripMenuItem AddCollisionTwo;
+        private System.Windows.Forms.ToolStripMenuItem roadDebuggingToolStripMenuItem;
     }
 }

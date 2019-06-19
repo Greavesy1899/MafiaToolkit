@@ -218,6 +218,26 @@ namespace Mafia2Tool
                     Graphics.Camera.Pitch(dy);
                     Graphics.Camera.Yaw(dx);
                 }
+                else if(Input.IsKeyDown(Keys.Z))
+                {
+                    Graphics.Camera.SetRotation(90.0f, 270.0f);
+                    lastMousePos = new Point(RenderPanel.Height/2, RenderPanel.Width/2);
+                }
+                else if (Input.IsKeyDown(Keys.X))
+                {
+                    Graphics.Camera.SetRotation(180.0f, 0.0f);
+                    lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
+                }
+                else if (Input.IsKeyDown(Keys.C))
+                {
+                    Graphics.Camera.SetRotation(90.0f, 90.0f);
+                    lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
+                }
+                else if (Input.IsKeyDown(Keys.V))
+                {
+                    Graphics.Camera.SetRotation(0.0f, 180.0f);
+                    lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
+                }
                 else if (Input.IsButtonDown(MouseButtons.Left))
                 {
                     Pick(mousePos.X, mousePos.Y);

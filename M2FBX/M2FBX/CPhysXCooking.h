@@ -2,5 +2,6 @@
 #include "NxCooking.h"
 #include "CStream.h"
 
-int CookMesh(const char* source, const char* dest);
+int CookTriangle(const char* source, const char* dest);
+int CookConvex(const char* source, const char* dest);
 

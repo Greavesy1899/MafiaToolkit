@@ -138,6 +138,15 @@ namespace Rendering.Graphics
             ContructFrustrum();
         }
 
+        public void SetRotation(float pitch, float yaw, float roll = 0.0f)
+        {
+            Right = new Vector3(1, 0, 0);
+            Up = new Vector3(0, 1, 0);
+            Look = new Vector3(0, 0, 1);
+            Pitch(pitch);
+            Yaw(yaw);
+        }
+
         public void Pitch(float angle)
         {
             angle = MathUtil.DegreesToRadians(angle);

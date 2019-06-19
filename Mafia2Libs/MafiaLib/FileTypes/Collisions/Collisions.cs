@@ -108,7 +108,7 @@ namespace ResourceTypes.Collisions
                 string args = "-CookCollisions ";
                 args += ("\"" + "mesh" + ".bin\" ");
                 args += ("\"" + "cook" + ".bin\"");
-                FBXHelper.CookCollision("mesh.bin", "cook.bin");
+                FBXHelper.CookTriangleCollision("mesh.bin", "cook.bin");
 
                 using (BinaryReader meshReader = new BinaryReader(File.Open("cook.bin", FileMode.Open)))
                     nxsData.ElementAt(i).Value.Data.ReadFromFile(meshReader);

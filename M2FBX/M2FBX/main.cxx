@@ -38,7 +38,8 @@ void PrintError(int code)
 
 extern "C" int  __declspec(dllexport) _stdcall RunConvertFBX(const char* source, const char* dest);
 extern "C" int  __declspec(dllexport) _stdcall RunConvertM2T(const char* source, const char* dest);
-extern "C" int  __declspec(dllexport) _stdcall RunCookCollision(const char* source, const char* dest);
+extern "C" int  __declspec(dllexport) _stdcall RunCookTriangleCollision(const char* source, const char* dest);
+extern "C" int  __declspec(dllexport) _stdcall RunCookConvexCollision(const char* source, const char* dest);
 
 extern int _stdcall RunConvertFBX(const char* source, const char* dest)
 {
@@ -48,7 +49,11 @@ extern int _stdcall RunConvertM2T(const char* source, const char* dest)
 {
 	return ConvertM2T(source, dest);
 }
-extern int _stdcall RunCookCollision(const char* source, const char* dest)
+extern int _stdcall RunCookTriangleCollision(const char* source, const char* dest)
 {
-	return CookMesh(source, dest);
+	return CookTriangle(source, dest);
+}
+extern int _stdcall RunCookConvexCollision(const char* source, const char* dest)
+{
+	return CookConvex(source, dest);
 }
