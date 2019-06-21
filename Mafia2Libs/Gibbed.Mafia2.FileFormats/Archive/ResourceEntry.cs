@@ -33,7 +33,6 @@ namespace Gibbed.Mafia2.FileFormats.Archive
         public uint SlotVramRequired;
         public uint OtherRamRequired;
         public uint OtherVramRequired;
-        public IResourceType resourceData;
 
         public override string ToString()
         {

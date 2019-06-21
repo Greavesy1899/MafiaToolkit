@@ -40,7 +40,6 @@ namespace Gibbed.Mafia2.FileFormats
     public class ArchiveFile
     {
         public const uint Signature = 0x53445300; // 'SDS\0'
-
         #region Fields
         private Endian _Endian;
         private Archive.Platform _Platform;
@@ -52,7 +51,6 @@ namespace Gibbed.Mafia2.FileFormats
         private readonly List<Archive.ResourceType> _ResourceTypes;
         private string _ResourceInfoXml;
         private readonly List<Archive.ResourceEntry> _ResourceEntries;
-        private Dictionary<ulong, TextureResource> _TextureEntries;
         #endregion
         #region Properties
         public Endian Endian {
@@ -104,6 +102,7 @@ namespace Gibbed.Mafia2.FileFormats
         #region Functions
         public void Serialize(Stream output, ArchiveSerializeOptions options)
         {
+            options = ArchiveSerializeOptions.None;
             var compress = (options & ArchiveSerializeOptions.Compress) != 0;
 
             var basePosition = output.Position;
@@ -131,7 +130,7 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != 0 ? (uint)this._ResourceEntries.Sum(re => 30 + (re.Data == null ? 0 : re.Data.Length)) : 0x4000;
-
+            //uint blockAlignment = 29326611;
             fileHeader.BlockTableOffset = (uint)(output.Position - basePosition);
             fileHeader.ResourceCount = 0;
             var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress);
@@ -679,8 +678,7 @@ namespace Gibbed.Mafia2.FileFormats
                 texData = reader.ReadBytes((int)reader.BaseStream.Length);
 
             resource = new TextureResource(FNV64.Hash(file), hasMIP, texData);
-            if (resource.NameHash == 3235281003379534705)
-                Console.WriteLine("hello");
+
             entry.SlotVramRequired = (uint)(texData.Length - 128);
             if (hasMIP == 1)
             {
@@ -691,7 +689,7 @@ namespace Gibbed.Mafia2.FileFormats
             resource.Serialize(entry.Version, data, Endian.Little);
             descNode.InnerText = file;
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
-            entry.Data = data.GetBuffer();
+            entry.Data = data.ToArray();
             return entry;
         }
         public ResourceEntry ReadMipmapEntry(ResourceEntry entry, XmlWriter resourceXML, string name)

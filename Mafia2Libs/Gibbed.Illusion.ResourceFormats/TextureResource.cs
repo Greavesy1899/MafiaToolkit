@@ -56,6 +56,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             output.WriteValueU8(this.Unknown8);
             if (version == 2)
                 output.WriteValueU8(this.HasMIP);
+
             output.WriteBytes(this.Data);
             Log.WriteLine("Packing: " + ToString());
         }
@@ -65,7 +66,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             output.WriteValueU64(this.NameHash, endian);
             output.WriteValueU8(this.Unknown8);
             output.WriteBytes(this.Data);
-            Log.WriteLine("Packing: " + ToString());
+            Log.WriteLine("Packing Mip: " + ToString());
         }
 
         public void Deserialize(ushort version, Stream input, Endian endian)
@@ -85,12 +86,12 @@ namespace Gibbed.Mafia2.ResourceFormats
             this.NameHash = input.ReadValueU64(endian);
             this.Unknown8 = input.ReadValueU8();
             this.Data = input.ReadBytes((int)(input.Length - input.Position));
-            Log.WriteLine("Unpacking: " + ToString());
+            Log.WriteLine("Unpacking Mip: " + ToString());
         }
 
         public override string ToString()
         {
-            return string.Format("Hash: {0}, Unk1: {1}, HasMIP: {2}", NameHash, Unknown8, HasMIP);
+            return string.Format("Hash: {0}, Unk1: {1}, HasMIP: {2}, Size: {3}", NameHash, Unknown8, HasMIP, Data.Length);
         }
     }
 }

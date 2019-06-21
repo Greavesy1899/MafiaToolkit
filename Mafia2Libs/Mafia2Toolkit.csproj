@@ -269,8 +269,6 @@
     <Compile Include="MafiaLib\FileTypes\Material\MaterialManager.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\NAV_AI.cs" />
     <Compile Include="MafiaLib\FileTypes\PREFAB\Prefab.cs" />
-    <Compile Include="MafiaLib\FileTypes\SDS\FrameManager.cs" />
-    <Compile Include="MafiaLib\FileTypes\SDS\IManager.cs" />
     <Compile Include="MafiaLib\FileTypes\SoundSectors\SoundSector.cs" />
     <Compile Include="MafiaLib\FileTypes\StreamMap.cs" />
     <Compile Include="MafiaLib\FileTypes\Translokator\Translokator.cs" />

@@ -36,6 +36,9 @@ namespace Utils.Logging
         }
         public static void WriteLine(string text, LoggingTypes logType = LoggingTypes.MESSAGE, LogCategoryTypes catType = LogCategoryTypes.FUNCTION, bool append = true)
         {
+            string data = string.Format("[{0}] {1}: {2}", DateTime.Now.TimeOfDay, logType, text);
+            Console.WriteLine(data);
+
             //if (!LoggingEnabled)
                 return;
 
@@ -45,7 +48,7 @@ namespace Utils.Logging
             {
 
                 if (text != "")
-                    Writer.WriteLine(string.Format("[{0}] {1}: {2}", DateTime.Now.TimeOfDay, logType, text));
+                    Writer.WriteLine(data);
             }
         }
     }
