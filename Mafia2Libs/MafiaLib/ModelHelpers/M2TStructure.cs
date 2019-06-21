@@ -95,7 +95,7 @@ namespace Utils.Models
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Color))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Color].Offset;
-                        Int4 colorData = VertexTranslator.ReadColorFromVB(vertexBuffer.Data, startIndex);
+                        vertex.Color0 = VertexTranslator.ReadColorFromVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
@@ -125,13 +125,13 @@ namespace Utils.Models
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Color1))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Color1].Offset;
-                        Int4 colorData = VertexTranslator.ReadColorFromVB(vertexBuffer.Data, startIndex);
+                        vertex.Color1 = VertexTranslator.ReadColorFromVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.BBCoeffs))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.BBCoeffs].Offset;
-                        Vector3 coeffData = VertexTranslator.ReadBBCoeffsVB(vertexBuffer.Data, startIndex);
+                        vertex.BBCoeffs = VertexTranslator.ReadBBCoeffsVB(vertexBuffer.Data, startIndex);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
@@ -284,6 +284,7 @@ namespace Utils.Models
                     for (int x = 0; x != lods[i].Vertices.Length; x++)
                     {
                         Vertex vert = lods[i].Vertices[x];
+                        vert.Normal = new Vector3(vert.Normal.X, vert.Normal.Y, 1.0f);
 
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.Position))
                             vert.Position.WriteToFile(writer);

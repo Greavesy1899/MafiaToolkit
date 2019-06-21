@@ -86,10 +86,10 @@ float4 LightPixelShader(VS_OUTPUT input) : SV_TARGET
 	float4 aoTextureColor;
 
     diffuseTextureColor = textures[0].Sample(SampleType, input.TexCoord0);
-    //aoTextureColor = textures[1].Sample(SampleType, input.TexCoord7);
+    aoTextureColor = textures[2].Sample(SampleType, input.TexCoord7);
 
     color = CalculateColor(input, color);
-	color = color * diffuseTextureColor;
+	color = (color * aoTextureColor * diffuseTextureColor);
 
 	return color;
 }
@@ -109,11 +109,13 @@ float4 PS_50760736(VS_OUTPUT input) : SV_TARGET
 	float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	float4 diffuseTextureColor;
 	float4 emissiveTextureColor;
+	float4 aoTextureColor;
 
 	diffuseTextureColor = textures[0].Sample(SampleType, input.TexCoord0);
+	aoTextureColor = textures[2].Sample(SampleType, input.TexCoord7);
 	emissiveTextureColor = (textures[1].Sample(SampleType, input.TexCoord0)* C005_EmissiveFacadeColorAndIntensity);
 	color = CalculateColor(input, color);
-	color = color * (diffuseTextureColor + emissiveTextureColor);
+	color = (color * aoTextureColor * diffuseTextureColor);
 
 	return color;
 }

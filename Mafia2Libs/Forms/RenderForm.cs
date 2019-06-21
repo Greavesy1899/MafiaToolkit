@@ -67,7 +67,7 @@ namespace Mafia2Tool
             SceneData.BuildData();
             InitDockingControls();
             PopulateList(info);
-            TEMPCameraSpeed.Text = ToolkitSettings.CameraSpeed.ToString();
+            CameraSpeedTool.Value = (decimal)ToolkitSettings.CameraSpeed;
             KeyPreview = true;
             Text += " -" + info.Directory.Name;
             StartD3DPanel();
@@ -77,13 +77,13 @@ namespace Mafia2Tool
         {
             FileButton.Text = Language.GetString("$FILE");
             EditButton.Text = Language.GetString("$CREATE");
-            ViewButton.Text = Language.GetString("$VIEW");
+            WindowButton.Text = Language.GetString("$VIEW");
             OptionsButton.Text = Language.GetString("$OPTIONS");
             ToggleWireframeButton.Text = Language.GetString("$TOGGLE_WIREFRAME");
             ToggleCullingButton.Text = Language.GetString("$TOGGLE_CULLING");
             SceneTreeButton.Text = Language.GetString("$VIEW_SCENE_TREE");
             ObjectPropertiesButton.Text = Language.GetString("$VIEW_PROPERTY_GRID");
-            ViewButton.Text = Language.GetString("$VIEW_OPTIONS");
+            WindowButton.Text = Language.GetString("$VIEW_OPTIONS");
             ViewOptionProperties.Text = Language.GetString("$VIEW_VIS_OPTIONS");
             AddButton.Text = Language.GetString("$ADD");
             AddSceneFolderButton.Text = Language.GetString("$ADD_SCENE_FOLDER");
@@ -209,6 +209,8 @@ namespace Mafia2Tool
 
         public bool Frame()
         {
+            bool camUpdated = false;
+
             if (RenderPanel.Focused)
             {
                 if (Input.IsButtonDown(MouseButtons.Right))
@@ -217,26 +219,7 @@ namespace Mafia2Tool
                     var dy = -0.25f * (mousePos.Y - lastMousePos.Y);
                     Graphics.Camera.Pitch(dy);
                     Graphics.Camera.Yaw(dx);
-                }
-                else if(Input.IsKeyDown(Keys.Z))
-                {
-                    Graphics.Camera.SetRotation(90.0f, 270.0f);
-                    lastMousePos = new Point(RenderPanel.Height/2, RenderPanel.Width/2);
-                }
-                else if (Input.IsKeyDown(Keys.X))
-                {
-                    Graphics.Camera.SetRotation(180.0f, 0.0f);
-                    lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
-                }
-                else if (Input.IsKeyDown(Keys.C))
-                {
-                    Graphics.Camera.SetRotation(90.0f, 90.0f);
-                    lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
-                }
-                else if (Input.IsKeyDown(Keys.V))
-                {
-                    Graphics.Camera.SetRotation(0.0f, 180.0f);
-                    lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
+                    camUpdated = true;
                 }
                 else if (Input.IsButtonDown(MouseButtons.Left))
                 {
@@ -251,29 +234,61 @@ namespace Mafia2Tool
                 float speed = Graphics.Timer.FrameTime * multiplier;
 
                 if (Input.IsKeyDown(Keys.A))
+                {
                     Graphics.Camera.Position -= Vector3Extenders.FromVector4(Vector4.Multiply(Graphics.Camera.ViewMatrix.Column1, speed));
+                    camUpdated = true;
+                }
 
                 if (Input.IsKeyDown(Keys.D))
+                {
                     Graphics.Camera.Position += Vector3Extenders.FromVector4(Vector4.Multiply(Graphics.Camera.ViewMatrix.Column1, speed));
+                    camUpdated = true;
+                }
 
                 if (Input.IsKeyDown(Keys.W))
+                {
                     Graphics.Camera.Position -= Vector3Extenders.FromVector4(Vector4.Multiply(Graphics.Camera.ViewMatrix.Column3, speed));
+                    camUpdated = true;
+                }
 
                 if (Input.IsKeyDown(Keys.S))
+                {
                     Graphics.Camera.Position += Vector3Extenders.FromVector4(Vector4.Multiply(Graphics.Camera.ViewMatrix.Column3, speed));
+                    camUpdated = true;
+                }
 
                 if (Input.IsKeyDown(Keys.Q))
+                {
                     Graphics.Camera.Position.Z += speed;
+                    camUpdated = true;
+                }
 
                 if (Input.IsKeyDown(Keys.E))
+                {
                     Graphics.Camera.Position.Z -= speed;
+                    camUpdated = true;
+                }
             }
             lastMousePos = mousePos;
             Graphics.Timer.Frame2();
             Graphics.FPS.Frame();
             Graphics.Frame();
-            toolStripStatusLabel1.Text = Graphics.Camera.Position.ToString();
-            toolStripTextBox1.Text = Graphics.Camera.Position.ToString();
+
+            if (camUpdated)
+            {
+                PositionXTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
+                PositionYTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
+                PositionZTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
+                PositionXTool.Value = (decimal)Graphics.Camera.Position.X;
+                PositionYTool.Value = (decimal)Graphics.Camera.Position.Y;
+                PositionZTool.Value = (decimal)Graphics.Camera.Position.Z;
+                PositionXTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
+                PositionYTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
+                PositionZTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
+                //RotationXTool.Value = (decimal)Graphics.Camera.Rotation.X;
+                //RotationYTool.Value = (decimal)Graphics.Camera.Rotation.Y;
+                //RotationZTool.Value = (decimal)Graphics.Camera.Rotation.Z;
+            }
             toolStripStatusLabel3.Text = string.Format("{0} FPS", Graphics.FPS.FPS);
             return true;
         }
@@ -868,7 +883,6 @@ namespace Mafia2Tool
                         {
                             lowest = distance;
                             lowestRefID = model.Key;
-                            toolStripStatusLabel2.Text = localRay.Position.ToString();
                         }
                     }
                 }
@@ -1044,14 +1058,7 @@ namespace Mafia2Tool
 
         private void CameraSpeedUpdate(object sender, EventArgs e)
         {
-            float.TryParse(TEMPCameraSpeed.Text, out ToolkitSettings.CameraSpeed);
-
-            if (ToolkitSettings.CameraSpeed == 0.0f)
-            {
-                ToolkitSettings.CameraSpeed = 0.1f;
-                TEMPCameraSpeed.Text = ToolkitSettings.CameraSpeed.ToString();
-            }
-
+            ToolkitSettings.CameraSpeed = Convert.ToSingle(CameraSpeedTool.Value);
             ToolkitSettings.WriteKey("CameraSpeed", "ModelViewer", ToolkitSettings.CameraSpeed.ToString());
         }
 
@@ -1615,6 +1622,42 @@ namespace Mafia2Tool
                 SceneData.Collisions.NXSData.Add(nxsData.Hash, nxsData);
                 SceneData.Collisions.Placements.Add(placement);
             }
+        }
+
+        private void CameraToolsOnValueChanged(object sender, EventArgs e)
+        {
+            Graphics.Camera.Position = new Vector3(Convert.ToSingle(PositionXTool.Value), Convert.ToSingle(PositionYTool.Value), Convert.ToSingle(PositionZTool.Value));
+            //Graphics.Camera.SetRotation(Convert.ToSingle(RotationXTool.Value), Convert.ToSingle(RotationYTool.Value));
+            //lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
+        }
+
+        private void OnViewTopButtonClicked(object sender, EventArgs e)
+        {
+            Graphics.Camera.SetRotation(0.0f, 180.0f);
+            lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
+        }
+
+        private void OnViewFrontButtonClicked(object sender, EventArgs e)
+        {
+            Graphics.Camera.SetRotation(90.0f, 90.0f);
+            lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
+        }
+
+        private void OnViewSideButtonClicked(object sender, EventArgs e)
+        {
+            Graphics.Camera.SetRotation(90.0f, 270.0f);
+            lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
+        }
+
+        private void OnViewBottomButtonClicked(object sender, EventArgs e)
+        {
+            Graphics.Camera.SetRotation(90.0f, 90.0f);
+            lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
+        }
+
+        private void OnViewSide2ButtonClicked(object sender, EventArgs e)
+        {
+
         }
     }
 }

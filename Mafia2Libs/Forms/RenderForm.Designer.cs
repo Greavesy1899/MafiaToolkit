@@ -32,7 +32,15 @@ namespace Mafia2Tool
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.StatusStrip StatusStrip;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(D3DForm));
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.PositionXTool = new Utils.Extensions.NumericUpDownToolStrip();
+            this.PositionYTool = new Utils.Extensions.NumericUpDownToolStrip();
+            this.PositionZTool = new Utils.Extensions.NumericUpDownToolStrip();
+            this.RotationXTool = new Utils.Extensions.NumericUpDownToolStrip();
+            this.RotationYTool = new Utils.Extensions.NumericUpDownToolStrip();
+            this.RotationZTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.ToolbarStrip = new System.Windows.Forms.ToolStrip();
             this.FileButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,27 +56,254 @@ namespace Mafia2Tool
             this.AddSplineTxT = new System.Windows.Forms.ToolStripMenuItem();
             this.AddJunctionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.EditUnkSet3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.WindowButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewOptionProperties = new System.Windows.Forms.ToolStripMenuItem();
             this.OptionsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ToggleWireframeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToggleCullingButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.TEMPCameraSpeed = new System.Windows.Forms.ToolStripTextBox();
-            this.toolStripTextBox1 = new System.Windows.Forms.ToolStripTextBox();
-            this.StatusStrip = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.RenderPanel = new System.Windows.Forms.Panel();
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
             this.TxtBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.CameraSpeedTool = new Utils.Extensions.NumericUpDownToolStrip();
+            this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.ViewTopButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewFrontButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewSideButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewBottomButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewSide2Button = new System.Windows.Forms.ToolStripMenuItem();
+            StatusStrip = new System.Windows.Forms.StatusStrip();
+            StatusStrip.SuspendLayout();
             this.ToolbarStrip.SuspendLayout();
-            this.StatusStrip.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // StatusStrip
+            // 
+            StatusStrip.AutoSize = false;
+            StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel3,
+            this.PositionXTool,
+            this.PositionYTool,
+            this.PositionZTool,
+            this.RotationXTool,
+            this.RotationYTool,
+            this.RotationZTool,
+            this.CameraSpeedTool});
+            StatusStrip.Location = new System.Drawing.Point(0, 600);
+            StatusStrip.Name = "StatusStrip";
+            StatusStrip.Size = new System.Drawing.Size(1217, 24);
+            StatusStrip.TabIndex = 6;
+            StatusStrip.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(118, 19);
+            this.toolStripStatusLabel3.Text = "toolStripStatusLabel3";
+            // 
+            // PositionXTool
+            // 
+            this.PositionXTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.PositionXTool.AutoSize = false;
+            this.PositionXTool.DecimalPlaces = 5;
+            this.PositionXTool.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.PositionXTool.Margin = new System.Windows.Forms.Padding(3, 0, 1, 0);
+            this.PositionXTool.Maximum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            0});
+            this.PositionXTool.Minimum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            -2147483648});
+            this.PositionXTool.Name = "PositionXTool";
+            this.PositionXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            this.PositionXTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.PositionXTool.Size = new System.Drawing.Size(86, 24);
+            this.PositionXTool.Text = "0.00000";
+            this.PositionXTool.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.PositionXTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
+            // 
+            // PositionYTool
+            // 
+            this.PositionYTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.PositionYTool.AutoSize = false;
+            this.PositionYTool.DecimalPlaces = 5;
+            this.PositionYTool.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.PositionYTool.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
+            this.PositionYTool.Maximum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            0});
+            this.PositionYTool.Minimum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            -2147483648});
+            this.PositionYTool.Name = "PositionYTool";
+            this.PositionYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            this.PositionYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.PositionYTool.Size = new System.Drawing.Size(86, 24);
+            this.PositionYTool.Text = "0.00000";
+            this.PositionYTool.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.PositionYTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
+            // 
+            // PositionZTool
+            // 
+            this.PositionZTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.PositionZTool.AutoSize = false;
+            this.PositionZTool.DecimalPlaces = 5;
+            this.PositionZTool.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.PositionZTool.Margin = new System.Windows.Forms.Padding(1, 0, 3, 0);
+            this.PositionZTool.Maximum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            0});
+            this.PositionZTool.Minimum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            -2147483648});
+            this.PositionZTool.Name = "PositionZTool";
+            this.PositionZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            this.PositionZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.PositionZTool.Size = new System.Drawing.Size(86, 24);
+            this.PositionZTool.Text = "0.00000";
+            this.PositionZTool.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.PositionZTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
+            // 
+            // RotationXTool
+            // 
+            this.RotationXTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.RotationXTool.AutoSize = false;
+            this.RotationXTool.DecimalPlaces = 5;
+            this.RotationXTool.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.RotationXTool.Margin = new System.Windows.Forms.Padding(3, 0, 1, 0);
+            this.RotationXTool.Maximum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            0});
+            this.RotationXTool.Minimum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            -2147483648});
+            this.RotationXTool.Name = "RotationXTool";
+            this.RotationXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            this.RotationXTool.Padding = new System.Windows.Forms.Padding(5, 0, 2, 0);
+            this.RotationXTool.Size = new System.Drawing.Size(83, 24);
+            this.RotationXTool.Text = "0.00000";
+            this.RotationXTool.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.RotationXTool.Visible = false;
+            this.RotationXTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
+            // 
+            // RotationYTool
+            // 
+            this.RotationYTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.RotationYTool.AutoSize = false;
+            this.RotationYTool.DecimalPlaces = 5;
+            this.RotationYTool.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.RotationYTool.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
+            this.RotationYTool.Maximum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            0});
+            this.RotationYTool.Minimum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            -2147483648});
+            this.RotationYTool.Name = "RotationYTool";
+            this.RotationYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            this.RotationYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.RotationYTool.Size = new System.Drawing.Size(86, 24);
+            this.RotationYTool.Text = "0.00000";
+            this.RotationYTool.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.RotationYTool.Visible = false;
+            this.RotationYTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
+            // 
+            // RotationZTool
+            // 
+            this.RotationZTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.RotationZTool.AutoSize = false;
+            this.RotationZTool.DecimalPlaces = 5;
+            this.RotationZTool.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.RotationZTool.Margin = new System.Windows.Forms.Padding(1, 0, 3, 0);
+            this.RotationZTool.Maximum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            0});
+            this.RotationZTool.Minimum = new decimal(new int[] {
+            9999999,
+            0,
+            0,
+            -2147483648});
+            this.RotationZTool.Name = "RotationZTool";
+            this.RotationZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            this.RotationZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.RotationZTool.Size = new System.Drawing.Size(86, 24);
+            this.RotationZTool.Text = "0.00000";
+            this.RotationZTool.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.RotationZTool.Visible = false;
+            this.RotationZTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
             // 
             // ToolbarStrip
             // 
@@ -77,11 +312,10 @@ namespace Mafia2Tool
             this.EditButton,
             this.ViewButton,
             this.OptionsButton,
-            this.TEMPCameraSpeed,
-            this.toolStripTextBox1});
+            this.WindowButton});
             this.ToolbarStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolbarStrip.Name = "ToolbarStrip";
-            this.ToolbarStrip.Size = new System.Drawing.Size(800, 25);
+            this.ToolbarStrip.Size = new System.Drawing.Size(1217, 25);
             this.ToolbarStrip.TabIndex = 1;
             this.ToolbarStrip.Text = "toolStrip1";
             // 
@@ -100,14 +334,14 @@ namespace Mafia2Tool
             // SaveButton
             // 
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(106, 22);
+            this.SaveButton.Size = new System.Drawing.Size(180, 22);
             this.SaveButton.Text = "$SAVE";
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // ExitButton
             // 
             this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(106, 22);
+            this.ExitButton.Size = new System.Drawing.Size(180, 22);
             this.ExitButton.Text = "$EXIT";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -201,18 +435,18 @@ namespace Mafia2Tool
             this.EditUnkSet3.Text = "$EDIT_UNKSET3";
             this.EditUnkSet3.Click += new System.EventHandler(this.EditUnkSet3Click);
             // 
-            // ViewButton
+            // WindowButton
             // 
-            this.ViewButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.ViewButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.WindowButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.WindowButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.SceneTreeButton,
             this.ObjectPropertiesButton,
             this.ViewOptionProperties});
-            this.ViewButton.Image = ((System.Drawing.Image)(resources.GetObject("ViewButton.Image")));
-            this.ViewButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ViewButton.Name = "ViewButton";
-            this.ViewButton.Size = new System.Drawing.Size(53, 22);
-            this.ViewButton.Text = "$VIEW";
+            this.WindowButton.Image = ((System.Drawing.Image)(resources.GetObject("WindowButton.Image")));
+            this.WindowButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.WindowButton.Name = "WindowButton";
+            this.WindowButton.Size = new System.Drawing.Size(83, 22);
+            this.WindowButton.Text = "$WINDOWS";
             // 
             // SceneTreeButton
             // 
@@ -261,48 +495,6 @@ namespace Mafia2Tool
             this.ToggleCullingButton.Text = "$TOGGLE_CULLING";
             this.ToggleCullingButton.Click += new System.EventHandler(this.CullModeButton_Click);
             // 
-            // TEMPCameraSpeed
-            // 
-            this.TEMPCameraSpeed.Name = "TEMPCameraSpeed";
-            this.TEMPCameraSpeed.Size = new System.Drawing.Size(100, 25);
-            this.TEMPCameraSpeed.Leave += new System.EventHandler(this.CameraSpeedUpdate);
-            // 
-            // toolStripTextBox1
-            // 
-            this.toolStripTextBox1.Name = "toolStripTextBox1";
-            this.toolStripTextBox1.Size = new System.Drawing.Size(100, 25);
-            // 
-            // StatusStrip
-            // 
-            this.StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1,
-            this.toolStripStatusLabel3,
-            this.toolStripStatusLabel2});
-            this.StatusStrip.Location = new System.Drawing.Point(0, 426);
-            this.StatusStrip.Name = "StatusStrip";
-            this.StatusStrip.Size = new System.Drawing.Size(800, 24);
-            this.StatusStrip.TabIndex = 6;
-            this.StatusStrip.Text = "statusStrip1";
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)));
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(122, 19);
-            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
-            // 
-            // toolStripStatusLabel3
-            // 
-            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(118, 19);
-            this.toolStripStatusLabel3.Text = "toolStripStatusLabel3";
-            // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(118, 19);
-            this.toolStripStatusLabel2.Text = "toolStripStatusLabel2";
-            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -316,7 +508,7 @@ namespace Mafia2Tool
             this.dockPanel1.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.DockingWindow;
             this.dockPanel1.Location = new System.Drawing.Point(0, 25);
             this.dockPanel1.Name = "dockPanel1";
-            this.dockPanel1.Size = new System.Drawing.Size(800, 401);
+            this.dockPanel1.Size = new System.Drawing.Size(1217, 575);
             this.dockPanel1.TabIndex = 0;
             // 
             // RenderPanel
@@ -324,7 +516,7 @@ namespace Mafia2Tool
             this.RenderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RenderPanel.Location = new System.Drawing.Point(0, 25);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(800, 401);
+            this.RenderPanel.Size = new System.Drawing.Size(1217, 575);
             this.RenderPanel.TabIndex = 0;
             // 
             // MeshBrowser
@@ -335,23 +527,112 @@ namespace Mafia2Tool
             // 
             this.TxtBrowser.Filter = "Text Document|*txt";
             // 
+            // CameraSpeedTool
+            // 
+            this.CameraSpeedTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.CameraSpeedTool.AutoSize = false;
+            this.CameraSpeedTool.DecimalPlaces = 5;
+            this.CameraSpeedTool.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.CameraSpeedTool.Margin = new System.Windows.Forms.Padding(1, 0, 3, 0);
+            this.CameraSpeedTool.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.CameraSpeedTool.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            -2147483648});
+            this.CameraSpeedTool.Name = "CameraSpeedTool";
+            this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.CameraSpeedTool.Size = new System.Drawing.Size(86, 24);
+            this.CameraSpeedTool.Text = "0.00000";
+            this.CameraSpeedTool.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.CameraSpeedTool.ValueChanged += new System.EventHandler(this.CameraSpeedUpdate);
+            // 
+            // ViewButton
+            // 
+            this.ViewButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.ViewButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ViewTopButton,
+            this.ViewFrontButton,
+            this.ViewSideButton,
+            this.ViewBottomButton,
+            this.ViewSide2Button});
+            this.ViewButton.Image = ((System.Drawing.Image)(resources.GetObject("ViewButton.Image")));
+            this.ViewButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ViewButton.Name = "ViewButton";
+            this.ViewButton.Size = new System.Drawing.Size(53, 22);
+            this.ViewButton.Text = "$VIEW";
+            // 
+            // ViewTopButton
+            // 
+            this.ViewTopButton.Name = "ViewTopButton";
+            this.ViewTopButton.Size = new System.Drawing.Size(180, 22);
+            this.ViewTopButton.Text = "$TOP";
+            this.ViewTopButton.Click += new System.EventHandler(this.OnViewTopButtonClicked);
+            // 
+            // ViewFrontButton
+            // 
+            this.ViewFrontButton.Name = "ViewFrontButton";
+            this.ViewFrontButton.Size = new System.Drawing.Size(180, 22);
+            this.ViewFrontButton.Text = "$FRONT";
+            this.ViewFrontButton.Click += new System.EventHandler(this.OnViewFrontButtonClicked);
+            // 
+            // ViewSideButton
+            // 
+            this.ViewSideButton.Enabled = false;
+            this.ViewSideButton.Name = "ViewSideButton";
+            this.ViewSideButton.Size = new System.Drawing.Size(180, 22);
+            this.ViewSideButton.Text = "$SIDE";
+            this.ViewSideButton.Visible = false;
+            this.ViewSideButton.Click += new System.EventHandler(this.OnViewSideButtonClicked);
+            // 
+            // ViewBottomButton
+            // 
+            this.ViewBottomButton.Enabled = false;
+            this.ViewBottomButton.Name = "ViewBottomButton";
+            this.ViewBottomButton.Size = new System.Drawing.Size(180, 22);
+            this.ViewBottomButton.Text = "$BOTTOM";
+            this.ViewBottomButton.Visible = false;
+            this.ViewBottomButton.Click += new System.EventHandler(this.OnViewBottomButtonClicked);
+            // 
+            // ViewSide2Button
+            // 
+            this.ViewSide2Button.Enabled = false;
+            this.ViewSide2Button.Name = "ViewSide2Button";
+            this.ViewSide2Button.Size = new System.Drawing.Size(180, 22);
+            this.ViewSide2Button.Text = "$SIDE 2";
+            this.ViewSide2Button.Visible = false;
+            this.ViewSide2Button.Click += new System.EventHandler(this.OnViewSide2ButtonClicked);
+            // 
             // D3DForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1217, 624);
             this.Controls.Add(this.dockPanel1);
             this.Controls.Add(this.RenderPanel);
-            this.Controls.Add(this.StatusStrip);
+            this.Controls.Add(StatusStrip);
             this.Controls.Add(this.ToolbarStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "D3DForm";
             this.Text = "Map Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
+            StatusStrip.ResumeLayout(false);
+            StatusStrip.PerformLayout();
             this.ToolbarStrip.ResumeLayout(false);
             this.ToolbarStrip.PerformLayout();
-            this.StatusStrip.ResumeLayout(false);
-            this.StatusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -362,16 +643,12 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripDropDownButton FileButton;
         private System.Windows.Forms.ToolStripMenuItem SaveButton;
         private System.Windows.Forms.ToolStripMenuItem ExitButton;
-        private System.Windows.Forms.ToolStripDropDownButton ViewButton;
-        private System.Windows.Forms.StatusStrip StatusStrip;
+        private System.Windows.Forms.ToolStripDropDownButton WindowButton;
         private System.Windows.Forms.ToolStripDropDownButton OptionsButton;
         private System.Windows.Forms.Panel RenderPanel;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
-        private System.Windows.Forms.ToolStripTextBox TEMPCameraSpeed;
         private System.Windows.Forms.ToolStripDropDownButton EditButton;
         private System.Windows.Forms.ToolStripMenuItem AddButton;
         private System.Windows.Forms.OpenFileDialog MeshBrowser;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
         private System.Windows.Forms.ImageList imageList1;
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
         private System.Windows.Forms.ToolStripMenuItem SceneTreeButton;
@@ -383,13 +660,25 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem ViewOptionProperties;
         private System.Windows.Forms.ToolStripMenuItem AddSplineTxT;
         private System.Windows.Forms.OpenFileDialog TxtBrowser;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
-        private System.Windows.Forms.ToolStripTextBox toolStripTextBox1;
         private System.Windows.Forms.ToolStripMenuItem AddJunctionButton;
         private System.Windows.Forms.ToolStripMenuItem EditUnkSet3;
         private System.Windows.Forms.ToolStripMenuItem AddBackward;
         private System.Windows.Forms.ToolStripMenuItem AddToward;
         private System.Windows.Forms.ToolStripMenuItem AddCollisionButton;
         private System.Windows.Forms.ToolStripMenuItem roadDebuggingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private NumericUpDownToolStrip PositionYTool;
+        private NumericUpDownToolStrip PositionZTool;
+        private NumericUpDownToolStrip RotationXTool;
+        private NumericUpDownToolStrip RotationYTool;
+        private NumericUpDownToolStrip PositionXTool;
+        private NumericUpDownToolStrip RotationZTool;
+        private NumericUpDownToolStrip CameraSpeedTool;
+        private System.Windows.Forms.ToolStripDropDownButton ViewButton;
+        private System.Windows.Forms.ToolStripMenuItem ViewTopButton;
+        private System.Windows.Forms.ToolStripMenuItem ViewFrontButton;
+        private System.Windows.Forms.ToolStripMenuItem ViewSideButton;
+        private System.Windows.Forms.ToolStripMenuItem ViewBottomButton;
+        private System.Windows.Forms.ToolStripMenuItem ViewSide2Button;
     }
 }

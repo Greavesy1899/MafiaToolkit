@@ -95,6 +95,8 @@
     <Reference Include="ICSharpCode.SharpZipLib, Version=1.1.0.145, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.1.1.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
     </Reference>
@@ -121,11 +123,13 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Messaging" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="UnluacNET, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>libs\UnluacNET.dll</HintPath>
@@ -133,6 +137,8 @@
     <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=3.0.6.0, Culture=neutral, PublicKeyToken=5cded1a1a0a7b481, processorArchitecture=MSIL">
       <HintPath>..\packages\DockPanelSuite.3.0.6\lib\net40\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApexSDK\IOFX\ScaleAlongVelocityModifier.cs" />
@@ -263,6 +269,8 @@
     <Compile Include="MafiaLib\FileTypes\Material\MaterialManager.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\NAV_AI.cs" />
     <Compile Include="MafiaLib\FileTypes\PREFAB\Prefab.cs" />
+    <Compile Include="MafiaLib\FileTypes\SDS\FrameManager.cs" />
+    <Compile Include="MafiaLib\FileTypes\SDS\IManager.cs" />
     <Compile Include="MafiaLib\FileTypes\SoundSectors\SoundSector.cs" />
     <Compile Include="MafiaLib\FileTypes\StreamMap.cs" />
     <Compile Include="MafiaLib\FileTypes\Translokator\Translokator.cs" />

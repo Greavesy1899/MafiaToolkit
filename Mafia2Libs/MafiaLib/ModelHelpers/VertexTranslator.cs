@@ -81,9 +81,14 @@ namespace Utils.Models
             return BitConverter.ToInt32(data, i);
         }
 
-        public static Int4 ReadColorFromVB(byte[] data, int i)
+        public static byte[] ReadColorFromVB(byte[] data, int i)
         {
-            return new Int4(data[i], data[i + 1], data[i + 2], data[i + 3]);
+            byte[] color = new byte[4];
+            color[0] = data[0];
+            color[1] = data[1];
+            color[2] = data[2];
+            color[3] = data[3];
+            return color;
         }
 
         public static Vector3 ReadBBCoeffsVB(byte[] data, int i)

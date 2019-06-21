@@ -27,6 +27,7 @@ namespace Rendering.Graphics
             public BaseShader Shader;
         }
 
+        private Hash aoHash;
         public ShaderResourceView AOTexture { get; set; }
         public RenderBoundingBox BoundingBox { get; set; }
 
@@ -52,6 +53,7 @@ namespace Rendering.Graphics
             if (mesh == null || geom == null || mats == null || indexBuffers == null || vertexBuffers == null)
                 return false;
 
+            aoHash = mesh.OMTextureHash;
             SetTransform(mesh.Matrix.Position, mesh.Matrix.Rotation);
             //DoRender = (mesh.SecondaryFlags == 4097 ? true : false);
             BoundingBox = new RenderBoundingBox();
@@ -212,8 +214,27 @@ namespace Rendering.Graphics
 
         private void InitTextures(Device d3d, DeviceContext d3dContext)
         {
-            AOTexture = RenderStorageSingleton.Instance.TextureCache[0];
-            for(int i = 0; i < LODs.Length; i++)
+            if (aoHash != null)
+            {
+                ShaderResourceView texture;
+
+                if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(aoHash.uHash, out texture))
+                {
+                    if (!string.IsNullOrEmpty(aoHash.String))
+                    {
+                        texture = TextureLoader.LoadTexture(d3d, d3dContext, aoHash.String);
+                        RenderStorageSingleton.Instance.TextureCache.Add(aoHash.uHash, texture);
+                    }
+                }
+
+                AOTexture = texture;
+            }
+            else
+            {
+                AOTexture = RenderStorageSingleton.Instance.TextureCache[0];
+            }
+
+            for (int i = 0; i < LODs.Length; i++)
             {
                 for(int x = 0; x < LODs[i].ModelParts.Length; x++)
                 {
@@ -310,7 +331,7 @@ namespace Rendering.Graphics
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
-
+            deviceContext.PixelShader.SetShaderResource(2, AOTexture);
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
             {
                 LODs[0].ModelParts[i].Shader.SetShaderParamters(device, deviceContext, LODs[0].ModelParts[i].Material);

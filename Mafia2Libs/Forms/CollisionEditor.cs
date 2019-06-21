@@ -24,7 +24,7 @@ namespace Mafia2Tool
             Localise();
             collisionFile = file;
             CheckCollision();
-            ShowDialog();
+            Show();
             ToolkitSettings.UpdateRichPresence("Using the Collision editor.");
         }
 

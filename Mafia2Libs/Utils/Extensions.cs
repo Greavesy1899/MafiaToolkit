@@ -119,22 +119,96 @@ namespace Utils.Extensions
         }
     }
 
-    public class DataGridViewRGBBox : DataGridViewButtonCell
+    [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
+    public class NumericUpDownToolStrip : ToolStripControlHost
     {
-        protected override bool SetValue(int rowIndex, object value)
-        {
-            return base.SetValue(rowIndex, value);
-        }
-        protected override void Paint(Graphics graphics, Rectangle clipBounds, Rectangle cellBounds, int rowIndex, DataGridViewElementStates cellState, object value, object formattedValue, string errorText, DataGridViewCellStyle cellStyle, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewPaintParts paintParts)
-        {
-            base.Paint(graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
+        private Container components = null;
+        private NumericUpDown numericUpDown;
 
+        [Category("Data")]
+        public decimal Value {
+            get { return numericUpDown.Value; }
+            set { numericUpDown.Value = value; }
+        }
+
+        [Category("Data")]
+        public decimal Minimum {
+            get { return numericUpDown.Minimum; }
+            set { numericUpDown.Minimum = value; }
+        }
+
+        [Category("Data")]
+        public decimal Maximum {
+            get { return numericUpDown.Maximum; }
+            set { numericUpDown.Maximum = value; }
+        }
+
+        [Category("Data")]
+        public int DecimalPlaces {
+            get { return numericUpDown.DecimalPlaces; }
+            set { numericUpDown.DecimalPlaces = value; }
+        }
+
+        [Category("Data")]
+        public decimal Increment {
+            get { return numericUpDown.Increment; }
+            set { numericUpDown.Increment = value; }
+        }
+
+        private EventHandler onValueChanged;
+
+        public event EventHandler ValueChanged {
+            add {
+                onValueChanged += value;
+            }
+            remove {
+                onValueChanged -= value;
+            }
+        }
+
+        public NumericUpDownToolStrip() : base(new NumericUpDown())
+        {
+            InitializeComponent();
+            numericUpDown = (NumericUpDown)Control;
+        }
+
+        protected override void OnSubscribeControlEvents(Control c)
+        {
+            base.OnSubscribeControlEvents(c);
+            NumericUpDown nud = (NumericUpDown)c;
+            nud.ValueChanged += new EventHandler(OnValueChanged);
+        }
+
+        protected override void OnUnsubscribeControlEvents(Control c)
+        {
+            base.OnUnsubscribeControlEvents(c);
+            NumericUpDown nud = (NumericUpDown)c;
+            nud.ValueChanged -= new EventHandler(OnValueChanged);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && components != null)
+                components.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        
+        private void OnValueChanged(object sender, EventArgs e)
+        {
+            onValueChanged?.Invoke(this, e);
+        }
+
+        private void InitializeComponent()
+        {
+            components = new Container();
         }
     }
 
     public class FlagCheckedListBox : CheckedListBox
     {
-        private System.ComponentModel.Container components = null;
+        private Container components = null;
 
         public FlagCheckedListBox()
         {
