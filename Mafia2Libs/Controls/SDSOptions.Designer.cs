@@ -52,13 +52,12 @@
             this.CompressionDropdownBox.FormattingEnabled = true;
             this.CompressionDropdownBox.Items.AddRange(new object[] {
             "Uncompressed",
-            "Compression",
-            "One Block"});
+            "Compression"});
             this.CompressionDropdownBox.Location = new System.Drawing.Point(9, 32);
             this.CompressionDropdownBox.Name = "CompressionDropdownBox";
             this.CompressionDropdownBox.Size = new System.Drawing.Size(121, 21);
             this.CompressionDropdownBox.TabIndex = 3;
-            this.CompressionDropdownBox.SelectedIndexChanged += new System.EventHandler(this.ExportModelFormat_IndexChanged);
+            this.CompressionDropdownBox.SelectedIndexChanged += new System.EventHandler(this.SDSCompress_IndexChanged);
             // 
             // M2Label
             // 

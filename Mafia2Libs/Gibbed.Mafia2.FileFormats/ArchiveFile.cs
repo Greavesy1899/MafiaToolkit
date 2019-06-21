@@ -102,7 +102,6 @@ namespace Gibbed.Mafia2.FileFormats
         #region Functions
         public void Serialize(Stream output, ArchiveSerializeOptions options)
         {
-            options = ArchiveSerializeOptions.None;
             var compress = (options & ArchiveSerializeOptions.Compress) != 0;
 
             var basePosition = output.Position;

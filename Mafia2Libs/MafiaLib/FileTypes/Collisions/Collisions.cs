@@ -116,6 +116,9 @@ namespace ResourceTypes.Collisions
                 nxsData.ElementAt(i).Value.WriteToFile(writer);
                 Console.WriteLine(i + "/" + nxsData.Count);
             }
+
+            if (File.Exists("mesh.bin")) File.Delete("mesh.bin");
+            if (File.Exists("cook.bin")) File.Delete("cook.bin");
         }
 
         public override string ToString()

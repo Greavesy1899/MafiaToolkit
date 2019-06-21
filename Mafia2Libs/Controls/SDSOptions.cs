@@ -18,19 +18,17 @@ namespace Forms.OptionControls
         {
             M2Label.Text = Language.GetString("$SDS_COMPRESSION_TYPE");
             CompressionDropdownBox.Items[0] = Language.GetString("$SDS_UNCOMPRESSED");
-            CompressionDropdownBox.Items[0] = Language.GetString("$SDS_COMPRESSED");
-            CompressionDropdownBox.Items[0] = Language.GetString("$SDS_ONEBLOCK");
+            CompressionDropdownBox.Items[1] = Language.GetString("$SDS_COMPRESSED");
         }
 
         private void LoadSettings()
         {
-            CompressionDropdownBox.Enabled = false;
             CompressionDropdownBox.SelectedIndex = ToolkitSettings.SerializeSDSOption;
         }
 
-        private void ExportModelFormat_IndexChanged(object sender, EventArgs e)
+        private void SDSCompress_IndexChanged(object sender, EventArgs e)
         {
-            ToolkitSettings.Format = CompressionDropdownBox.SelectedIndex;
+            ToolkitSettings.SerializeSDSOption = CompressionDropdownBox.SelectedIndex;
             ToolkitSettings.WriteKey("SerializeOption", "SDS", CompressionDropdownBox.SelectedIndex.ToString());
         }
     }
