@@ -15,6 +15,7 @@ namespace ResourceTypes.Actors
         Item = 36,
         Door = 38,
         Tree = 39,
+        Lift = 40,
         Sound = 41,
         SoundMixer = 43,
         Boat = 47,

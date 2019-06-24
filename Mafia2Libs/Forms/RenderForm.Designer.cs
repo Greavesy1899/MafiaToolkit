@@ -34,6 +34,7 @@ namespace Mafia2Tool
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.StatusStrip StatusStrip;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(D3DForm));
+            this.CurrentModeButton = new System.Windows.Forms.ToolStripSplitButton();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.PositionXTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.PositionYTool = new Utils.Extensions.NumericUpDownToolStrip();
@@ -41,6 +42,7 @@ namespace Mafia2Tool
             this.RotationXTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.RotationYTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.RotationZTool = new Utils.Extensions.NumericUpDownToolStrip();
+            this.CameraSpeedTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.ToolbarStrip = new System.Windows.Forms.ToolStrip();
             this.FileButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,25 +58,24 @@ namespace Mafia2Tool
             this.AddSplineTxT = new System.Windows.Forms.ToolStripMenuItem();
             this.AddJunctionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.EditUnkSet3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.WindowButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ViewOptionProperties = new System.Windows.Forms.ToolStripMenuItem();
-            this.OptionsButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.ToggleWireframeButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToggleCullingButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
-            this.RenderPanel = new System.Windows.Forms.Panel();
-            this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.TxtBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.CameraSpeedTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ViewTopButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewFrontButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewSideButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewBottomButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewSide2Button = new System.Windows.Forms.ToolStripMenuItem();
+            this.OptionsButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.ToggleWireframeButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToggleCullingButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.WindowButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ViewOptionProperties = new System.Windows.Forms.ToolStripMenuItem();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.RenderPanel = new System.Windows.Forms.Panel();
+            this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.TxtBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             StatusStrip = new System.Windows.Forms.StatusStrip();
             StatusStrip.SuspendLayout();
             this.ToolbarStrip.SuspendLayout();
@@ -84,6 +85,7 @@ namespace Mafia2Tool
             // 
             StatusStrip.AutoSize = false;
             StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CurrentModeButton,
             this.toolStripStatusLabel3,
             this.PositionXTool,
             this.PositionYTool,
@@ -97,6 +99,16 @@ namespace Mafia2Tool
             StatusStrip.Size = new System.Drawing.Size(1217, 24);
             StatusStrip.TabIndex = 6;
             StatusStrip.Text = "statusStrip1";
+            // 
+            // CurrentModeButton
+            // 
+            this.CurrentModeButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.CurrentModeButton.Image = ((System.Drawing.Image)(resources.GetObject("CurrentModeButton.Image")));
+            this.CurrentModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.CurrentModeButton.Name = "CurrentModeButton";
+            this.CurrentModeButton.Size = new System.Drawing.Size(128, 22);
+            this.CurrentModeButton.Text = "$CurrentModeLabel";
+            this.CurrentModeButton.ButtonClick += new System.EventHandler(this.CurrentModeButton_ButtonClick);
             // 
             // toolStripStatusLabel3
             // 
@@ -128,7 +140,7 @@ namespace Mafia2Tool
             this.PositionXTool.Name = "PositionXTool";
             this.PositionXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionXTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionXTool.Size = new System.Drawing.Size(86, 24);
+            this.PositionXTool.Size = new System.Drawing.Size(38, 24);
             this.PositionXTool.Text = "0.00000";
             this.PositionXTool.Value = new decimal(new int[] {
             0,
@@ -161,7 +173,7 @@ namespace Mafia2Tool
             this.PositionYTool.Name = "PositionYTool";
             this.PositionYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionYTool.Size = new System.Drawing.Size(86, 24);
+            this.PositionYTool.Size = new System.Drawing.Size(38, 24);
             this.PositionYTool.Text = "0.00000";
             this.PositionYTool.Value = new decimal(new int[] {
             0,
@@ -194,7 +206,7 @@ namespace Mafia2Tool
             this.PositionZTool.Name = "PositionZTool";
             this.PositionZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionZTool.Size = new System.Drawing.Size(86, 24);
+            this.PositionZTool.Size = new System.Drawing.Size(38, 24);
             this.PositionZTool.Text = "0.00000";
             this.PositionZTool.Value = new decimal(new int[] {
             0,
@@ -227,7 +239,7 @@ namespace Mafia2Tool
             this.RotationXTool.Name = "RotationXTool";
             this.RotationXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.RotationXTool.Padding = new System.Windows.Forms.Padding(5, 0, 2, 0);
-            this.RotationXTool.Size = new System.Drawing.Size(83, 24);
+            this.RotationXTool.Size = new System.Drawing.Size(0, 24);
             this.RotationXTool.Text = "0.00000";
             this.RotationXTool.Value = new decimal(new int[] {
             0,
@@ -261,7 +273,7 @@ namespace Mafia2Tool
             this.RotationYTool.Name = "RotationYTool";
             this.RotationYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.RotationYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.RotationYTool.Size = new System.Drawing.Size(86, 24);
+            this.RotationYTool.Size = new System.Drawing.Size(38, 24);
             this.RotationYTool.Text = "0.00000";
             this.RotationYTool.Value = new decimal(new int[] {
             0,
@@ -295,7 +307,7 @@ namespace Mafia2Tool
             this.RotationZTool.Name = "RotationZTool";
             this.RotationZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.RotationZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.RotationZTool.Size = new System.Drawing.Size(86, 24);
+            this.RotationZTool.Size = new System.Drawing.Size(38, 24);
             this.RotationZTool.Text = "0.00000";
             this.RotationZTool.Value = new decimal(new int[] {
             0,
@@ -304,6 +316,39 @@ namespace Mafia2Tool
             0});
             this.RotationZTool.Visible = false;
             this.RotationZTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
+            // 
+            // CameraSpeedTool
+            // 
+            this.CameraSpeedTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.CameraSpeedTool.AutoSize = false;
+            this.CameraSpeedTool.DecimalPlaces = 5;
+            this.CameraSpeedTool.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.CameraSpeedTool.Margin = new System.Windows.Forms.Padding(1, 0, 3, 0);
+            this.CameraSpeedTool.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.CameraSpeedTool.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            -2147483648});
+            this.CameraSpeedTool.Name = "CameraSpeedTool";
+            this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
+            this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.CameraSpeedTool.Size = new System.Drawing.Size(38, 24);
+            this.CameraSpeedTool.Text = "0.00000";
+            this.CameraSpeedTool.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.CameraSpeedTool.ValueChanged += new System.EventHandler(this.CameraSpeedUpdate);
             // 
             // ToolbarStrip
             // 
@@ -334,14 +379,14 @@ namespace Mafia2Tool
             // SaveButton
             // 
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(180, 22);
+            this.SaveButton.Size = new System.Drawing.Size(106, 22);
             this.SaveButton.Text = "$SAVE";
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // ExitButton
             // 
             this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(180, 22);
+            this.ExitButton.Size = new System.Drawing.Size(106, 22);
             this.ExitButton.Text = "$EXIT";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -435,6 +480,88 @@ namespace Mafia2Tool
             this.EditUnkSet3.Text = "$EDIT_UNKSET3";
             this.EditUnkSet3.Click += new System.EventHandler(this.EditUnkSet3Click);
             // 
+            // ViewButton
+            // 
+            this.ViewButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.ViewButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ViewTopButton,
+            this.ViewFrontButton,
+            this.ViewSideButton,
+            this.ViewBottomButton,
+            this.ViewSide2Button});
+            this.ViewButton.Image = ((System.Drawing.Image)(resources.GetObject("ViewButton.Image")));
+            this.ViewButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ViewButton.Name = "ViewButton";
+            this.ViewButton.Size = new System.Drawing.Size(53, 22);
+            this.ViewButton.Text = "$VIEW";
+            // 
+            // ViewTopButton
+            // 
+            this.ViewTopButton.Name = "ViewTopButton";
+            this.ViewTopButton.Size = new System.Drawing.Size(128, 22);
+            this.ViewTopButton.Text = "$TOP";
+            this.ViewTopButton.Click += new System.EventHandler(this.OnViewTopButtonClicked);
+            // 
+            // ViewFrontButton
+            // 
+            this.ViewFrontButton.Name = "ViewFrontButton";
+            this.ViewFrontButton.Size = new System.Drawing.Size(128, 22);
+            this.ViewFrontButton.Text = "$FRONT";
+            this.ViewFrontButton.Click += new System.EventHandler(this.OnViewFrontButtonClicked);
+            // 
+            // ViewSideButton
+            // 
+            this.ViewSideButton.Enabled = false;
+            this.ViewSideButton.Name = "ViewSideButton";
+            this.ViewSideButton.Size = new System.Drawing.Size(128, 22);
+            this.ViewSideButton.Text = "$SIDE";
+            this.ViewSideButton.Visible = false;
+            this.ViewSideButton.Click += new System.EventHandler(this.OnViewSideButtonClicked);
+            // 
+            // ViewBottomButton
+            // 
+            this.ViewBottomButton.Enabled = false;
+            this.ViewBottomButton.Name = "ViewBottomButton";
+            this.ViewBottomButton.Size = new System.Drawing.Size(128, 22);
+            this.ViewBottomButton.Text = "$BOTTOM";
+            this.ViewBottomButton.Visible = false;
+            this.ViewBottomButton.Click += new System.EventHandler(this.OnViewBottomButtonClicked);
+            // 
+            // ViewSide2Button
+            // 
+            this.ViewSide2Button.Enabled = false;
+            this.ViewSide2Button.Name = "ViewSide2Button";
+            this.ViewSide2Button.Size = new System.Drawing.Size(128, 22);
+            this.ViewSide2Button.Text = "$SIDE 2";
+            this.ViewSide2Button.Visible = false;
+            this.ViewSide2Button.Click += new System.EventHandler(this.OnViewSide2ButtonClicked);
+            // 
+            // OptionsButton
+            // 
+            this.OptionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.OptionsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToggleWireframeButton,
+            this.ToggleCullingButton});
+            this.OptionsButton.Image = ((System.Drawing.Image)(resources.GetObject("OptionsButton.Image")));
+            this.OptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.OptionsButton.Name = "OptionsButton";
+            this.OptionsButton.Size = new System.Drawing.Size(76, 22);
+            this.OptionsButton.Text = "$OPTIONS";
+            // 
+            // ToggleWireframeButton
+            // 
+            this.ToggleWireframeButton.Name = "ToggleWireframeButton";
+            this.ToggleWireframeButton.Size = new System.Drawing.Size(193, 22);
+            this.ToggleWireframeButton.Text = "$TOGGLE_WIREFRAME";
+            this.ToggleWireframeButton.Click += new System.EventHandler(this.FillModeButton_Click);
+            // 
+            // ToggleCullingButton
+            // 
+            this.ToggleCullingButton.Name = "ToggleCullingButton";
+            this.ToggleCullingButton.Size = new System.Drawing.Size(193, 22);
+            this.ToggleCullingButton.Text = "$TOGGLE_CULLING";
+            this.ToggleCullingButton.Click += new System.EventHandler(this.CullModeButton_Click);
+            // 
             // WindowButton
             // 
             this.WindowButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -469,47 +596,12 @@ namespace Mafia2Tool
             this.ViewOptionProperties.Text = "$VIEW_OPTIONS";
             this.ViewOptionProperties.Click += new System.EventHandler(this.ViewOptionProperties_Click);
             // 
-            // OptionsButton
-            // 
-            this.OptionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.OptionsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ToggleWireframeButton,
-            this.ToggleCullingButton});
-            this.OptionsButton.Image = ((System.Drawing.Image)(resources.GetObject("OptionsButton.Image")));
-            this.OptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.OptionsButton.Name = "OptionsButton";
-            this.OptionsButton.Size = new System.Drawing.Size(76, 22);
-            this.OptionsButton.Text = "$OPTIONS";
-            // 
-            // ToggleWireframeButton
-            // 
-            this.ToggleWireframeButton.Name = "ToggleWireframeButton";
-            this.ToggleWireframeButton.Size = new System.Drawing.Size(193, 22);
-            this.ToggleWireframeButton.Text = "$TOGGLE_WIREFRAME";
-            this.ToggleWireframeButton.Click += new System.EventHandler(this.FillModeButton_Click);
-            // 
-            // ToggleCullingButton
-            // 
-            this.ToggleCullingButton.Name = "ToggleCullingButton";
-            this.ToggleCullingButton.Size = new System.Drawing.Size(193, 22);
-            this.ToggleCullingButton.Text = "$TOGGLE_CULLING";
-            this.ToggleCullingButton.Click += new System.EventHandler(this.CullModeButton_Click);
-            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "StaticIcon");
             this.imageList1.Images.SetKeyName(1, "LightIcon");
-            // 
-            // dockPanel1
-            // 
-            this.dockPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dockPanel1.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.DockingWindow;
-            this.dockPanel1.Location = new System.Drawing.Point(0, 25);
-            this.dockPanel1.Name = "dockPanel1";
-            this.dockPanel1.Size = new System.Drawing.Size(1217, 575);
-            this.dockPanel1.TabIndex = 0;
             // 
             // RenderPanel
             // 
@@ -527,94 +619,14 @@ namespace Mafia2Tool
             // 
             this.TxtBrowser.Filter = "Text Document|*txt";
             // 
-            // CameraSpeedTool
+            // dockPanel1
             // 
-            this.CameraSpeedTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.CameraSpeedTool.AutoSize = false;
-            this.CameraSpeedTool.DecimalPlaces = 5;
-            this.CameraSpeedTool.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.CameraSpeedTool.Margin = new System.Windows.Forms.Padding(1, 0, 3, 0);
-            this.CameraSpeedTool.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.CameraSpeedTool.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            -2147483648});
-            this.CameraSpeedTool.Name = "CameraSpeedTool";
-            this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
-            this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.CameraSpeedTool.Size = new System.Drawing.Size(86, 24);
-            this.CameraSpeedTool.Text = "0.00000";
-            this.CameraSpeedTool.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.CameraSpeedTool.ValueChanged += new System.EventHandler(this.CameraSpeedUpdate);
-            // 
-            // ViewButton
-            // 
-            this.ViewButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.ViewButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ViewTopButton,
-            this.ViewFrontButton,
-            this.ViewSideButton,
-            this.ViewBottomButton,
-            this.ViewSide2Button});
-            this.ViewButton.Image = ((System.Drawing.Image)(resources.GetObject("ViewButton.Image")));
-            this.ViewButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ViewButton.Name = "ViewButton";
-            this.ViewButton.Size = new System.Drawing.Size(53, 22);
-            this.ViewButton.Text = "$VIEW";
-            // 
-            // ViewTopButton
-            // 
-            this.ViewTopButton.Name = "ViewTopButton";
-            this.ViewTopButton.Size = new System.Drawing.Size(180, 22);
-            this.ViewTopButton.Text = "$TOP";
-            this.ViewTopButton.Click += new System.EventHandler(this.OnViewTopButtonClicked);
-            // 
-            // ViewFrontButton
-            // 
-            this.ViewFrontButton.Name = "ViewFrontButton";
-            this.ViewFrontButton.Size = new System.Drawing.Size(180, 22);
-            this.ViewFrontButton.Text = "$FRONT";
-            this.ViewFrontButton.Click += new System.EventHandler(this.OnViewFrontButtonClicked);
-            // 
-            // ViewSideButton
-            // 
-            this.ViewSideButton.Enabled = false;
-            this.ViewSideButton.Name = "ViewSideButton";
-            this.ViewSideButton.Size = new System.Drawing.Size(180, 22);
-            this.ViewSideButton.Text = "$SIDE";
-            this.ViewSideButton.Visible = false;
-            this.ViewSideButton.Click += new System.EventHandler(this.OnViewSideButtonClicked);
-            // 
-            // ViewBottomButton
-            // 
-            this.ViewBottomButton.Enabled = false;
-            this.ViewBottomButton.Name = "ViewBottomButton";
-            this.ViewBottomButton.Size = new System.Drawing.Size(180, 22);
-            this.ViewBottomButton.Text = "$BOTTOM";
-            this.ViewBottomButton.Visible = false;
-            this.ViewBottomButton.Click += new System.EventHandler(this.OnViewBottomButtonClicked);
-            // 
-            // ViewSide2Button
-            // 
-            this.ViewSide2Button.Enabled = false;
-            this.ViewSide2Button.Name = "ViewSide2Button";
-            this.ViewSide2Button.Size = new System.Drawing.Size(180, 22);
-            this.ViewSide2Button.Text = "$SIDE 2";
-            this.ViewSide2Button.Visible = false;
-            this.ViewSide2Button.Click += new System.EventHandler(this.OnViewSide2ButtonClicked);
+            this.dockPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dockPanel1.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.DockingWindow;
+            this.dockPanel1.Location = new System.Drawing.Point(0, 25);
+            this.dockPanel1.Name = "dockPanel1";
+            this.dockPanel1.Size = new System.Drawing.Size(1217, 575);
+            this.dockPanel1.TabIndex = 0;
             // 
             // D3DForm
             // 
@@ -650,7 +662,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem AddButton;
         private System.Windows.Forms.OpenFileDialog MeshBrowser;
         private System.Windows.Forms.ImageList imageList1;
-        private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
         private System.Windows.Forms.ToolStripMenuItem SceneTreeButton;
         private System.Windows.Forms.ToolStripMenuItem ObjectPropertiesButton;
         private System.Windows.Forms.ToolStripMenuItem ToggleWireframeButton;
@@ -680,5 +691,7 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem ViewSideButton;
         private System.Windows.Forms.ToolStripMenuItem ViewBottomButton;
         private System.Windows.Forms.ToolStripMenuItem ViewSide2Button;
+        private System.Windows.Forms.ToolStripSplitButton CurrentModeButton;
+        private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
     }
 }

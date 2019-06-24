@@ -37,7 +37,6 @@ namespace Mafia2Tool
         private Point mousePos;
         private Point lastMousePos;
         private FileInfo fileLocation;
-        private Ray ray;
 
         //docking panels
         private DockPropertyGrid dPropertyGrid;
@@ -50,6 +49,8 @@ namespace Mafia2Tool
         private TreeNode roadRoot;
         private TreeNode junctionRoot;
         private TreeNode animalTrafficRoot;
+
+        private bool bSelectMode = false;
 
         public D3DForm(FileInfo info)
         {
@@ -70,6 +71,7 @@ namespace Mafia2Tool
             CameraSpeedTool.Value = (decimal)ToolkitSettings.CameraSpeed;
             KeyPreview = true;
             Text += " -" + info.Directory.Name;
+            SwitchMode(true);
             StartD3DPanel();
         }
 
@@ -195,6 +197,7 @@ namespace Mafia2Tool
         private void PropertyGridOnClicked(object sender, EventArgs e) => dPropertyGrid.Show(dockPanel1, DockState.DockRight);
         private void SceneTreeOnClicked(object sender, EventArgs e) => dSceneTree.Show(dockPanel1, DockState.DockLeft);
         private void ViewOptionProperties_Click(object sender, EventArgs e) => dSceneTree.Show(dockPanel1, DockState.DockLeft);
+        private void CurrentModeButton_ButtonClick(object sender, EventArgs e) => SwitchMode(!bSelectMode);
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
@@ -221,7 +224,7 @@ namespace Mafia2Tool
                     Graphics.Camera.Yaw(dx);
                     camUpdated = true;
                 }
-                else if (Input.IsButtonDown(MouseButtons.Left))
+                else if (Input.IsButtonDown(MouseButtons.Left) && bSelectMode)
                 {
                     Pick(mousePos.X, mousePos.Y);
                 }
@@ -405,6 +408,8 @@ namespace Mafia2Tool
                     SceneData.Collisions = collision;
                     SceneData.Collisions.WriteToFile();
                 }
+
+              
 
                 Console.WriteLine("Saved Changes Succesfully");
             }
@@ -610,6 +615,31 @@ namespace Mafia2Tool
                 //    assets.Add(StringHelpers.RandomGenerator.Next(), line);
                 //}
             }
+
+            if (SceneData.Actors != null && ToolkitSettings.Experimental)
+            {
+                ResourceTypes.Actors.Actor actor = SceneData.Actors[0];
+                for (int i = 0; i != actor.Definitions.Length; i++)
+                {
+                    for (int c = 0; c != actor.Items.Length; c++)
+                    {
+                        if(actor.Definitions[i].Hash == actor.Items[c].Hash2)
+                        {
+                            FrameObjectFrame frame = (SceneData.FrameResource.FrameObjects.ElementAt(actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
+                            frame.Item = actor.Items[c];
+                            frame.Matrix.Position = actor.Items[c].Position;
+                        }
+                        //FrameObjectFrame frame = (SceneData.FrameResource.FrameObjects[actor.Definitions[i].FrameIndex] as FrameObjectFrame);
+                        //frame.Matrix.Position = 
+                        //int idx = Math.Abs(FrameResource.FrameObjects.Count - FrameResource.NewFrames.Count);
+                        //FrameHolder holder = FrameResource.NewFrames[idx + act.Definitions[i].FrameIndex];
+                        //FrameObjectFrame frame = (holder.Data as FrameObjectFrame);
+                        //frame.Item = act.Items[c];
+                        //FrameResource.NewFrames[idx + act.Definitions[i].FrameIndex] = holder;
+                    }
+                }
+            }
+
             Graphics.InitObjectStack = assets;
         }
 
@@ -644,6 +674,7 @@ namespace Mafia2Tool
         {
             if (dPropertyGrid.IsEntryReady)
             {
+                UpdateMatricesRecursive();
                 TreeNode selected = dSceneTree.treeView1.SelectedNode;
                 if (selected.Tag is FrameObjectBase)
                 {
@@ -848,7 +879,7 @@ namespace Mafia2Tool
             float lowest = float.MaxValue;
             int lowestRefID = -1;
 
-            ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(RenderPanel.Size.Width, RenderPanel.Size.Height));
+            Ray ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(RenderPanel.Size.Width, RenderPanel.Size.Height));
             foreach (KeyValuePair<int, IRenderer> model in Graphics.Assets)
             {
                 if (!model.Value.DoRender)
@@ -1658,6 +1689,12 @@ namespace Mafia2Tool
         private void OnViewSide2ButtonClicked(object sender, EventArgs e)
         {
 
+        }
+
+        private void SwitchMode(bool isSelectMode)
+        {
+            bSelectMode = isSelectMode;
+            CurrentModeButton.Text = (bSelectMode) ? "Select Mode" : "Edit Mode";
         }
     }
 }

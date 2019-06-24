@@ -34,7 +34,7 @@ namespace Mafia2Tool
         {
             actors = new Actor(actorFile.FullName);
 
-            for(int i = 0; i != actors.Definitions.Length; i++)
+            for (int i = 0; i != actors.Definitions.Length; i++)
             {
                 TreeNode node = new TreeNode(actors.Definitions[i].name);
                 node.Name = actors.Definitions[i].Hash.ToString();
@@ -48,10 +48,10 @@ namespace Mafia2Tool
                 node.Tag = actors.Items[i];
 
                 TreeNode child = new TreeNode("Extra Data");
-                child.Tag = actors.UnkSector.TempUnks[actors.Items[i].PropID];
+                child.Tag = actors.TempUnks[actors.Items[i].DataID];
                 node.Nodes.Add(child);
 
-                TreeNode[] nodes = treeView1.Nodes.Find(actors.Items[i].Hash2.ToString(), true);
+                TreeNode[] nodes = treeView1.Nodes.Find(actors.Items[i].ItemType.ToString(), true);
 
                 if (nodes.Length == 0)
                     treeView1.Nodes.Add(node);
@@ -67,10 +67,10 @@ namespace Mafia2Tool
 
                 using (BinaryWriter writer = new BinaryWriter(File.Open(Path.Combine(folder, filename), FileMode.Create)))
                 {
-                    if (actors.UnkSector.TempUnks[actors.Items[i].PropID].Data == null)
-                        writer.Write(actors.UnkSector.TempUnks[actors.Items[i].PropID].Buffer);
+                    if (actors.TempUnks[actors.Items[i].DataID].Data == null)
+                        writer.Write(actors.TempUnks[actors.Items[i].DataID].Buffer);
                     else
-                        actors.UnkSector.TempUnks[actors.Items[i].PropID].Data.WriteToFile(writer);
+                        actors.TempUnks[actors.Items[i].DataID].Data.WriteToFile(writer);
                 }
             }
         }
@@ -92,7 +92,10 @@ namespace Mafia2Tool
 
         private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
-
+            using (BinaryWriter writer = new BinaryWriter(File.Open(actorFile.FullName + "EDIT", FileMode.Create)))
+            {
+                actors.WriteToFile(writer);
+            }
         }
     }
 }

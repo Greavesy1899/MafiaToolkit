@@ -52,10 +52,12 @@ namespace Utils.StringHelpers
 
             writer.Write(new byte[padding]);
         }
-        public static void WriteString(BinaryWriter writer, string text)
+        public static void WriteString(BinaryWriter writer, string text, bool trail = true)
         {
             writer.Write(text.ToCharArray());
-            writer.Write('\0');
+
+            if(trail)
+                writer.Write('\0');
         }
         public static void WriteString8(BinaryWriter writer, string text)
         {

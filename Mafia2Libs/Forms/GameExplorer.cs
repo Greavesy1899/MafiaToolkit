@@ -702,10 +702,12 @@ namespace Mafia2Tool
 
         private void OnCredits_Pressed(object sender, EventArgs e)
         {
-            MessageBox.Show("Toolkit written by Greavesy. \n\n" +
-                "Special thanks to: \nOleg @ ZModeler 3 \nRick 'Gibbed' \nFireboyd for UnluacNET" + 
+            MessageBox.Show("Toolkit developed by Greavesy. \n\n" +
+                "Special thanks to: \nOleg @ ZModeler 3 \nRick 'Gibbed' \nFireboyd for developing UnluacNET" + 
                 "\n\n" + 
-                "Also, a very special thanks to donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider \nNemesis7675", 
+                "Also, a very special thanks to PayPal donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider \nNemesis7675" +
+                "\n\n" +
+                "And Patreons: \nHamAndRock", 
                 "Toolkit", 
                 MessageBoxButtons.OK, 
                 MessageBoxIcon.Information);
@@ -713,7 +715,7 @@ namespace Mafia2Tool
 
         private void OnKeyPressed(object sender, KeyPressEventArgs e)
         {
-            if(e.KeyChar == 0x8)
+            if (e.KeyChar == 0x8)
                 OnUpButtonClicked(null, null);
         }
 

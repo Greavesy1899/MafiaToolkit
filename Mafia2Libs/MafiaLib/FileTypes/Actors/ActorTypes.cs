@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
+using Utils.Types;
 
 namespace ResourceTypes.Actors
 {
@@ -10,6 +11,8 @@ namespace ResourceTypes.Actors
     {
         void ReadFromFile(BinaryReader reader);
         void WriteToFile(BinaryWriter writer);
+
+        int GetSize();
     }
 
     public class ActorUnkBase : IActorExtraDataInterface
@@ -128,6 +131,11 @@ namespace ResourceTypes.Actors
         //int qwordE4;
 
         byte[] data;
+
+        public int GetSize()
+        {
+            return 240;
+        }
 
         public void ReadFromFile(BinaryReader reader)
         {
@@ -278,6 +286,11 @@ namespace ResourceTypes.Actors
             writer.Write(damageMax);
             writer.Write(zero);
         }
+
+        public int GetSize()
+        {
+            return 220;
+        }
     }
 
     public class ActorTrafficHuman : IActorExtraDataInterface
@@ -348,6 +361,11 @@ namespace ResourceTypes.Actors
             writer.Write(agregationRange);
             writer.Write(agregationCount);
         }
+
+        public int GetSize()
+        {
+            return 160;
+        }
     }
 
     public class ActorTrafficTrain : IActorExtraDataInterface
@@ -410,6 +428,11 @@ namespace ResourceTypes.Actors
             StringHelpers.WriteStringBuffer(writer, 64, areaName, '\0');
             StringHelpers.WriteStringBuffer(writer, 32, crewGenerator, '\0');
         }
+
+        public int GetSize()
+        {
+            return 180;
+        }
     }
 
     public class ActorWardrobe : IActorExtraDataInterface
@@ -458,6 +481,334 @@ namespace ResourceTypes.Actors
             writer.Write(unk0);
             writer.Write(testPrimitive);
             writer.Write(posData);
+        }
+
+        public int GetSize()
+        {
+            return 208;
+        }
+    }
+
+    public class ActorLight : IActorExtraDataInterface
+    {
+        int size;
+        byte[] padding;
+        int unk01;
+        byte unk02;
+        Vector3 unk03;
+        Vector3 unk04;
+        Vector3 unk05;
+        Vector3 unk06;
+        int unk07;
+        int unk08;
+        int unk09;
+        byte count;
+        int unk10;
+        Hash[] sceneLinks;
+        Hash[] frameLinks;
+        int[] frameIdxLinks;
+        int flags;
+        float[] unkFloat1 = new float[7];
+        int unk_int;
+        float[] unkFloat2 = new float[5];
+        byte unk_byte1;
+        float[] unkFloat3 = new float[17];
+        byte unk_byte2;
+        float[] unkFloat4 = new float[5];
+        Hash nameLight;
+        int unk_int2;
+        float[] unkFloat5 = new float[20];
+        Hash[] names = new Hash[4];
+        Vector3 unkVector1;
+        Vector3 unkVector2;
+        byte unk_byte3;
+        Vector3 unkVector3;
+        Vector3 unkVector4;
+        Vector3 unkVector5;
+        Vector3 unkVector6;
+        int instanced;
+        int type;
+
+        public int Unk01 {
+            get { return unk01; }
+            set { unk01 = value; }
+        }
+        public byte Unk02 {
+            get { return unk02; }
+            set { unk02 = value; }
+        }
+        public Vector3 Unk3 {
+            get { return unk03; }
+            set { unk03 = value; }
+        }
+        public Vector3 Unk4 {
+            get { return unk04; }
+            set { unk04 = value; }
+        }
+        public Vector3 Unk5 {
+            get { return unk05; }
+            set { unk05 = value; }
+        }
+        public Vector3 Unk6 {
+            get { return unk06; }
+            set { unk06 = value; }
+        }
+        public int Unk07 {
+            get { return unk07; }
+            set { unk07 = value; }
+        }
+        public int Unk08 {
+            get { return unk08; }
+            set { unk08 = value; }
+        }
+        public int Unk09 {
+            get { return unk09; }
+            set { unk09 = value; }
+        }
+        public byte Count {
+            get { return count; }
+            set { count = value; }
+        }
+        public int Unk10 {
+            get { return unk10; }
+            set { unk10 = value; }
+        }
+        public Hash[] SceneLinks {
+            get { return sceneLinks; }
+            set { sceneLinks = value; }
+        }
+        public Hash[] FrameLinks {
+            get { return frameLinks; }
+            set { frameLinks = value; }
+        }
+        public int[] FrameIDXLinks {
+            get { return frameIdxLinks; }
+            set { frameIdxLinks = value; }
+        }
+        public float[] UnkFloats1 {
+            get { return unkFloat1; }
+            set { unkFloat1 = value; }
+        }
+        public int UnkInt1 {
+            get { return unk_int; }
+            set { unk_int = value; }
+        }
+        public float[] UnkFloats2 {
+            get { return unkFloat2; }
+            set { unkFloat2 = value; }
+        }
+        public byte UnkByte1 {
+            get { return unk_byte1; }
+            set { unk_byte1 = value; }
+        }
+        public float[] UnkFloats3 {
+            get { return unkFloat3; }
+            set { unkFloat3 = value; }
+        }
+        public byte UnkByte2 {
+            get { return unk_byte2; }
+            set { unk_byte2 = value; }
+        }
+        public float[] UnkFloats4 {
+            get { return unkFloat4; }
+            set { unkFloat4 = value; }
+        }
+        public Hash NameLight {
+            get { return nameLight; }
+            set { nameLight = value; }
+        }
+        public int UnkInt2 {
+            get { return unk_int2; }
+            set { unk_int2 = value; }
+        }
+        public float[] UnkFloats5 {
+            get { return unkFloat5; }
+            set { unkFloat5 = value; }
+        }
+        public Hash[] UnkHashes {
+            get { return names; }
+            set { names = value; }
+        }
+        public Vector3 UnkVector1 {
+            get { return unkVector1; }
+            set { unkVector1 = value; }
+        }
+        public Vector3 UnkVector2 {
+            get { return unkVector2; }
+            set { unkVector2 = value; }
+        }
+        public byte UnkByte3 {
+            get { return unk_byte3; }
+            set { unk_byte3 = value; }
+        }
+        public Vector3 UnkVector3 {
+            get { return unkVector3; }
+            set { unkVector3 = value; }
+        }
+        public Vector3 UnkVector4 {
+            get { return unkVector4; }
+            set { unkVector4 = value; }
+        }
+        public Vector3 UnkVector5 {
+            get { return unkVector5; }
+            set { unkVector5 = value; }
+        }
+        public Vector3 UnkVector6 {
+            get { return unkVector6; }
+            set { unkVector6 = value; }
+        }
+        public int Instanced {
+            get { return instanced; }
+            set { instanced = value; }
+        }
+        public int Type {
+            get { return type; }
+            set { type = value; }
+        }
+        public ActorLight(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
+            size = reader.ReadInt32();
+            if (size < 2305)
+            {
+                padding = reader.ReadBytes(9);
+                unk01 = reader.ReadInt32();
+                unk02 = reader.ReadByte();
+                unk03 = Vector3Extenders.ReadFromFile(reader);
+                unk04 = Vector3Extenders.ReadFromFile(reader);
+                unk05 = Vector3Extenders.ReadFromFile(reader);
+                unk06 = Vector3Extenders.ReadFromFile(reader);
+                unk07 = reader.ReadInt32();
+                unk08 = reader.ReadInt32();
+                unk09 = reader.ReadInt32();
+                count = reader.ReadByte();
+                unk10 = reader.ReadInt32();
+
+                frameLinks = new Hash[count];
+                sceneLinks = new Hash[count];
+                frameIdxLinks = new int[count];
+                for (int i = 0; i < count; i++)
+                {
+                    sceneLinks[i] = new Hash(reader);
+                    frameLinks[i] = new Hash(reader);
+                    frameIdxLinks[i] = reader.ReadInt32();
+                }
+
+                //flags = reader.ReadInt32();
+
+                for (int i = 0; i < 7; i++)
+                    unkFloat1[i] = reader.ReadSingle();
+
+                unk_int = reader.ReadInt32();
+
+                for (int i = 0; i < 5; i++)
+                    unkFloat2[i] = reader.ReadSingle();
+
+                unk_byte1 = reader.ReadByte();
+
+                for (int i = 0; i < 17; i++)
+                    unkFloat3[i] = reader.ReadSingle();
+
+                unk_byte2 = reader.ReadByte();
+
+                for (int i = 0; i < 5; i++)
+                    unkFloat4[i] = reader.ReadSingle();
+
+                nameLight = new Hash(reader);
+
+                unk_int2 = reader.ReadInt32();
+
+                for (int i = 0; i < 20; i++)
+                    unkFloat5[i] = reader.ReadSingle();
+
+                for (int i = 0; i < 4; i++)
+                    names[i] = new Hash(reader);
+
+                unkVector1 = Vector3Extenders.ReadFromFile(reader);
+                unkVector2 = Vector3Extenders.ReadFromFile(reader);
+                unk_byte3 = reader.ReadByte();
+                unkVector3 = Vector3Extenders.ReadFromFile(reader);
+                unkVector4 = Vector3Extenders.ReadFromFile(reader);
+                unkVector5 = Vector3Extenders.ReadFromFile(reader);
+                unkVector6 = Vector3Extenders.ReadFromFile(reader);
+            }
+            int skip = 2304 - size;
+            reader.BaseStream.Seek(skip, SeekOrigin.Current);
+            instanced = reader.ReadInt32();
+            type = reader.ReadInt32();
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(size);
+            writer.Write(this.padding);
+            writer.Write(unk01);
+            writer.Write(unk02);
+            Vector3Extenders.WriteToFile(unk03, writer);
+            Vector3Extenders.WriteToFile(unk04, writer);
+            Vector3Extenders.WriteToFile(unk05, writer);
+            Vector3Extenders.WriteToFile(unk06, writer);
+            writer.Write(unk07);
+            writer.Write(unk08);
+            writer.Write(unk09);
+            writer.Write(count);
+            writer.Write(unk10);
+
+            for (int i = 0; i < count; i++)
+            {
+                sceneLinks[i].WriteToFile(writer);
+                frameLinks[i].WriteToFile(writer);
+                writer.Write(frameIdxLinks[i]);
+            }
+
+            for (int i = 0; i < 7; i++)
+                writer.Write(unkFloat1[i]);
+
+            writer.Write(unk_int);
+
+            for (int i = 0; i < 5; i++)
+                writer.Write(unkFloat2[i]);
+
+            writer.Write(unk_byte1);
+
+            for (int i = 0; i < 17; i++)
+                writer.Write(unkFloat3[i]);
+
+            writer.Write(unk_byte2);
+
+            for (int i = 0; i < 5; i++)
+                writer.Write(unkFloat4[i]);
+
+            nameLight.WriteToFile(writer);
+
+            writer.Write(unk_int2);
+
+            for (int i = 0; i != 20; i++)
+                writer.Write(unkFloat5[i]);
+
+            for (int i = 0; i != 4; i++)
+                names[i].WriteToFile(writer);
+
+            unkVector1.WriteToFile(writer);
+            unkVector2.WriteToFile(writer);
+            writer.Write(unk_byte3);
+            unkVector3.WriteToFile(writer);
+            unkVector4.WriteToFile(writer);
+            unkVector5.WriteToFile(writer);
+            unkVector6.WriteToFile(writer);
+            byte[] padding = new byte[2304 - size];
+            writer.Write(padding);
+            writer.Write(instanced);
+            writer.Write(type);
+        }
+
+        public int GetSize()
+        {
+            return 2316;
         }
     }
 
@@ -624,6 +975,11 @@ namespace ResourceTypes.Actors
             writer.Write(pushAwayMode);
             writer.Write(pushAwayReaction);
         }
+
+        public int GetSize()
+        {
+            return 364;
+        }
     }
 
     public class ActorSoundEntity : IActorExtraDataInterface
@@ -638,6 +994,12 @@ namespace ResourceTypes.Actors
         {
             ReadFromFile(reader);
         }
+
+        public int GetSize()
+        {
+            return 592;
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             type = reader.ReadInt32();
@@ -712,6 +1074,11 @@ namespace ResourceTypes.Actors
         {
             writer.Write(length);
         }
+
+        public int GetSize()
+        {
+            return 4;
+        }
     }
 
 
@@ -737,6 +1104,11 @@ namespace ResourceTypes.Actors
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(soundMotorID);
+        }
+
+        public int GetSize()
+        {
+            return 4;
         }
     }
 
@@ -767,6 +1139,11 @@ namespace ResourceTypes.Actors
         public override string ToString()
         {
             return string.Format("{0}, {1}", ActorTypes.Pinup, pinupNum);
+        }
+
+        public int GetSize()
+        {
+            return 4;
         }
     }
 
@@ -806,6 +1183,11 @@ namespace ResourceTypes.Actors
         public override string ToString()
         {
             return string.Format("{0}, {1}", ActorTypes.ScriptEntity, scriptName);
+        }
+
+        public int GetSize()
+        {
+            return 100;
         }
     }
 }

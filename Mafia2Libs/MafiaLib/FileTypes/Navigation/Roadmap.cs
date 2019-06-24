@@ -1200,6 +1200,7 @@ namespace ResourceTypes.Navigation
                     splineList.Add(data.toward);
                     data.toward.SplineIDX = (ushort)(i + data.idxOffset);
                     data.toward.LaneSize0 = data.toward.LaneSize1 = (ushort)data.toward.Lanes.Length;
+                    data.toward.RangeSize0 = data.toward.RangeSize1 = (ushort)data.toward.Ranges.Length;
                 }
 
                 if (data.hasBackward)
@@ -1207,6 +1208,7 @@ namespace ResourceTypes.Navigation
                     splineList.Add(data.backward);
                     data.backward.SplineIDX = (ushort)(i + data.idxOffset);
                     data.backward.LaneSize0 = data.backward.LaneSize1 = (ushort)data.backward.Lanes.Length;
+                    data.backward.RangeSize0 = data.backward.RangeSize1 = (ushort)data.backward.Ranges.Length;
                 }
 
                 splines[i] = data;

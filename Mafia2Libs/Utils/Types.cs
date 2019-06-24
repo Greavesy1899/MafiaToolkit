@@ -330,15 +330,15 @@ namespace Utils.Types
         public static Matrix33 operator +(Matrix33 matrix1, Matrix33 matrix2)
         {
             Matrix33 matrix = new Matrix33();
-            matrix.m00 = matrix1.M00 + matrix2.m00;
+            matrix.m00 = 1.0f;
             matrix.m01 = matrix1.M01 + matrix2.m01;
             matrix.m02 = matrix1.M02 + matrix2.m02;
             matrix.m10 = matrix1.M10 + matrix2.m10;
-            matrix.m11 = matrix1.M11 + matrix2.m11;
+            matrix.m11 = 1.0f;
             matrix.m12 = matrix1.M12 + matrix2.m12;
             matrix.m20 = matrix1.M20 + matrix2.m20;
             matrix.m21 = matrix1.M21 + matrix2.m21;
-            matrix.m22 = matrix1.M22 + matrix2.m22;
+            matrix.m22 = 1.0f;
             matrix.ToEuler();
             return matrix;
         }
@@ -503,6 +503,8 @@ namespace Utils.Types
         {
             TransformMatrix matrix = new TransformMatrix();
             matrix.position = matrix1.position + matrix2.position;
+            matrix.Rotation.EulerRotation = matrix1.Rotation.EulerRotation + matrix2.Rotation.EulerRotation;
+            matrix.Rotation.UpdateMatrixFromEuler();
             return matrix;
         }
 

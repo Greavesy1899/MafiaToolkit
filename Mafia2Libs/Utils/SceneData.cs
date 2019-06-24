@@ -69,8 +69,8 @@ namespace Mafia2Tool
                     ibps.Add(new FileInfo(name));
                 else if (type == "VertexBufferPool")
                     vbps.Add(new FileInfo(name));
-                //else if (type == "Actors")
-                //    act.Add(new Actor(name));
+                else if (type == "Actors")
+                    act.Add(new Actor(name));
                 else if (type == "FrameResource")
                     FrameResource = new FrameResource(name);
                 else if (type == "ItemDesc")
@@ -92,30 +92,6 @@ namespace Mafia2Tool
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
             OBJData = obj.ToArray();
-
-            if (Actors == null)
-                return;
-
-            //AttachActors();
-        }
-
-        public static void AttachActors()
-        {
-            for (int y = 0; y != Actors.Length; y++)
-            {
-                Actor act = Actors[y];
-                for (int i = 0; i != act.Definitions.Length; i++)
-                {
-                    for (int c = 0; c != act.Items.Length; c++)
-                    {
-                        int idx = Math.Abs(FrameResource.FrameObjects.Count - FrameResource.NewFrames.Count);
-                        FrameHolder holder = FrameResource.NewFrames[idx + act.Definitions[i].FrameIndex];
-                        FrameObjectFrame frame = (holder.Data as FrameObjectFrame);
-                        frame.Item = act.Items[c];
-                        FrameResource.NewFrames[idx + act.Definitions[i].FrameIndex] = holder;
-                    }
-                }
-            }
         }
 
         public static void Reload()

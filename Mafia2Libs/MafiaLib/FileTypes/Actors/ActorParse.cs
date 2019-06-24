@@ -12,8 +12,18 @@ namespace ResourceTypes.Actors
     {
         ActorDefinition[] definitions;
         ActorItem[] items;
-        ActorExtraData unkSector;
         int unk16;
+        string pool;
+        //temp_unk start
+        int filesize; //size of sector in bits. After this integer (so filesize - 4)
+        short const6; //always 6
+        short const2; //always 2
+        int const16; //always 16
+        int size;
+        int unk12;
+        int unk14;
+        int unk13;
+        temp_unk[] temp_Unks;
 
         public ActorDefinition[] Definitions {
             get { return definitions; }
@@ -21,8 +31,9 @@ namespace ResourceTypes.Actors
         public ActorItem[] Items {
             get { return items; }
         }
-        public ActorExtraData UnkSector {
-            get { return unkSector; }
+        public temp_unk[] TempUnks {
+            get { return temp_Unks; }
+            set { temp_Unks = value; }
         }
 
         public Actor(string file)
@@ -33,15 +44,50 @@ namespace ResourceTypes.Actors
             }
         }
 
+        private string BuildDefinitions()
+        {
+            string pool = "";
+            pool += "<scene>\0";
+            Dictionary<string, int> names = new Dictionary<string, int>();
+            for(int i = 0; i < items.Length; i++)
+            {
+                int startPos = 0;
+
+                if(!string.IsNullOrEmpty(items[i].FrameName))
+                {
+                    if(!names.ContainsKey(items[i].FrameName))
+                    {
+                        startPos = pool.Length;
+                        pool += items[i].FrameName;
+                        pool += '\0';
+                        names.Add(items[i].FrameName, startPos);
+                    }
+                }
+                else
+                {
+                    names.TryGetValue(items[i].FrameName, out startPos);
+                }
+
+                for (int y = 0; y < definitions.Length; y++)
+                {
+                    if (definitions[y].Hash == items[i].Hash2)
+                    {
+                        definitions[y].NamePos = (short)startPos;
+                    }
+                }
+            }
+            return pool;
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             int poolLength = reader.ReadInt32();
-            string pool = new string(reader.ReadChars(poolLength));
+            pool = new string(reader.ReadChars(poolLength));
 
             int hashesLength = reader.ReadInt32();
 
             definitions = new ActorDefinition[hashesLength];
-            
+
             for (int i = 0; i != hashesLength; i++)
             {
                 definitions[i] = new ActorDefinition(reader);
@@ -49,7 +95,34 @@ namespace ResourceTypes.Actors
                 definitions[i].name = pool.Substring(pos, pool.IndexOf('\0', pos) - pos);
             }
 
-            unkSector = new ActorExtraData(reader);
+            filesize = reader.ReadInt32();
+            const6 = reader.ReadInt16();
+            const2 = reader.ReadInt16();
+            const16 = reader.ReadInt32();
+            size = reader.ReadInt32(); //size of sector end.
+            unk12 = reader.ReadInt32();
+            unk13 = reader.ReadInt32();
+
+            if (const2 != 2)
+                throw new Exception("const_6 is not 6");
+
+            if (const6 != 6)
+                throw new Exception("const_2 is not 2");
+
+            if (const16 != 16)
+                throw new Exception("const_16 is not 16");
+
+            unk14 = reader.ReadInt32();
+
+            int newpos = (unk14 / 4 - 2) * 4;
+            if (unk14 - 8 != newpos)
+                throw new FormatException("unk14-8 != newpos");
+
+            int count = (unk14 - 8) / sizeof(int);
+            reader.BaseStream.Seek(unk14 - 12, SeekOrigin.Current);
+            temp_Unks = new temp_unk[count];
+            for (int i = 0; i < count; i++)
+                temp_Unks[i] = new temp_unk(reader);
 
             int itemCount = reader.ReadInt32();
             reader.BaseStream.Seek(itemCount * 4, SeekOrigin.Current);
@@ -63,23 +136,69 @@ namespace ResourceTypes.Actors
             unk16 = reader.ReadInt32();
 
             //if (unk16 != 0)
-                //throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
+            //    throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
-            string pool = "";
-            pool += "<scene>\0";
-            for(int i = 0; i < definitions.Length; i++)
-            {
-                pool += definitions[i].name;
-                pool += '\0';
-            }
             writer.Write(pool.Length);
-            StringHelpers.WriteString(writer, pool);
+            StringHelpers.WriteString(writer, pool, false);
             writer.Write(definitions.Length);
             for (int i = 0; i < definitions.Length; i++)
                 definitions[i].WriteToFile(writer);
+
+            long instancePos = writer.BaseStream.Position;
+            writer.Write(0);
+            writer.Write(const6);
+            writer.Write(const2);
+            writer.Write(const16);
+            writer.Write(int.MinValue); //size
+            writer.Write(int.MinValue); //unk12
+
+            int instanceOffset = ((temp_Unks.Length * sizeof(int)) + 8);
+            writer.Write(0);
+
+            //could do it so we seek to offset and save each one, but that would decrease performance. 
+            for (int i = 0; i < temp_Unks.Length; i++)
+            {
+                writer.Write(instanceOffset);
+                instanceOffset += (temp_Unks[i].Data != null ? temp_Unks[i].Data.GetSize() : temp_Unks[i].Buffer.Length) + 8;
+            }
+            for (int i = 0; i < temp_Unks.Length; i++)
+                temp_Unks[i].WriteToFile(writer);
+
+            int itemOffset = instanceOffset + (items.Length * sizeof(int)) + 16;
+            long itemPos = writer.BaseStream.Position;
+            writer.Write(items.Length);
+            for(int i = 0; i < items.Length; i++)
+            {
+                writer.Write(itemOffset);
+                itemOffset += items[i].CalculateSize();
+            }
+
+            for (int i = 0; i < items.Length; i++)
+                items[i].WriteToFile(writer);
+
+            //for that unknown value.
+            writer.Write(0);
+            long endPos = writer.BaseStream.Position - instancePos-8;
+            long instanceLength = writer.BaseStream.Position - instancePos-4;
+            long unk = writer.BaseStream.Position - itemPos;
+            long size = instanceLength - unk;
+
+            writer.BaseStream.Seek(instancePos, SeekOrigin.Begin);
+            writer.Write((int)(instanceLength));
+            writer.Write(const6);
+            writer.Write(const2);
+            writer.Write(const16);
+            writer.Write((int)size); //size
+            writer.Write((int)(endPos)); //unk12
+            //writer.Write(0); //unk13
+            
+            //unk16 = reader.ReadInt32();
+
+            //if (unk16 != 0)
+            //    throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
         }
 
         public struct ActorDefinition
@@ -103,7 +222,7 @@ namespace ResourceTypes.Actors
                 set { namePos = value; }
             }
 
-            public ActorDefinition (BinaryReader reader)
+            public ActorDefinition(BinaryReader reader)
             {
                 hash = 0;
                 unk01 = 0;
@@ -136,173 +255,6 @@ namespace ResourceTypes.Actors
             }
         }
 
-        public class ActorExtraData
-        {
-            int filesize; //size of sector in bits. After this integer (so filesize - 4)
-            short const6; //always 6
-            short const2; //always 2
-            int const16; //always 16
-            int size;
-            int unk12;
-            
-            int newpos;
-
-            long dataChunkLength;
-            int unk14;
-            int unk13;
-
-            List<temp_unk> temp_Unks = new List<temp_unk>();
-
-            public List<temp_unk> TempUnks {
-                get { return temp_Unks; }
-                set { temp_Unks = value; }
-            }
-
-            public ActorExtraData(BinaryReader reader)
-            {
-                ReadFromFile(reader);
-            }
-
-            public void ReadFromFile(BinaryReader reader)
-            {
-                filesize = reader.ReadInt32();
-                const6 = reader.ReadInt16();
-                const2 = reader.ReadInt16();
-                const16 = reader.ReadInt32();
-                size = reader.ReadInt32(); //size of sector end.
-                unk12 = reader.ReadInt32();
-                unk13 = reader.ReadInt32();
-
-                //if (const2 != 2)
-                //    throw new Exception("const_6 is not 6");
-
-                if (const6 != 6)
-                    throw new Exception("const_2 is not 2");
-
-                if (const16 != 16)
-                    throw new Exception("const_16 is not 16");
-
-                dataChunkLength = reader.BaseStream.Length - (filesize - size);
-                long tempPosition = reader.BaseStream.Position;
-                unk14 = reader.ReadInt32();
-                reader.BaseStream.Seek(tempPosition, SeekOrigin.Begin);
-                newpos = (unk14 / 4 - 2) * 4; //easiest way to get the data.
-                reader.BaseStream.Seek(newpos, SeekOrigin.Current);
-
-                while (reader.BaseStream.Position < dataChunkLength)
-                {
-                    temp_Unks.Add(new temp_unk(reader, temp_Unks.Count));
-                }
-            }
-
-            public void WriteToFile(BinaryWriter writer)
-            {
-                writer.Write(filesize);
-                
-            }
-
-            public struct temp_unk
-            {
-                ActorTypes bufferType;
-                IActorExtraDataInterface data;
-                byte[] buffer;
-
-                public ActorTypes BufferType {
-                    get { return bufferType; }
-                    set { bufferType = value; }
-                }
-
-                [TypeConverter(typeof(ExpandableObjectConverter))]
-                public IActorExtraDataInterface Data {
-                    get { return data; }
-                    set { data = value; }
-                }
-                public byte[] Buffer {
-                    get { return buffer; }
-                    set { buffer = value; }
-                }
-
-                public temp_unk(BinaryReader reader, int num)
-                {
-                    buffer = null;
-                    data = null;
-                    bufferType = 0;
-                    ReadFromFile(reader);
-                }
-
-                public void ReadFromFile(BinaryReader reader)
-                {
-                    buffer = null;
-                    data = null;
-
-                    bufferType = (ActorTypes)reader.ReadInt32();
-
-                    uint bufferLength = reader.ReadUInt32();
-
-                    if (bufferType == ActorTypes.Pinup && bufferLength == 4)
-                    {
-                        data = new ActorPinup(reader);
-                    }
-                    else if (bufferType == ActorTypes.ScriptEntity && bufferLength == 100)
-                    {
-                        data = new ActorScriptEntity(reader);
-                    }
-                    else if (bufferType == ActorTypes.Radio && bufferLength == 1028)
-                    {
-                        data = new ActorRadio(reader);
-                    }
-                    else if (bufferType == ActorTypes.Airplane && bufferLength == 4)
-                    {
-                        data = new ActorAircraft(reader);
-                    }
-                    else if (bufferType == ActorTypes.SpikeStrip && bufferLength == 4)
-                    {
-                        data = new ActorSpikeStrip(reader);
-                    }
-                    else if (bufferType == ActorTypes.Door && bufferLength == 364)
-                    {
-                        data = new ActorDoor(reader);
-                    }
-                    else if (bufferType == ActorTypes.Wardrobe && bufferLength == 208)
-                    {
-                        data = new ActorWardrobe(reader);
-                    }
-                    else if(bufferType == ActorTypes.TrafficTrain && bufferLength == 180)
-                    {
-                        data = new ActorTrafficTrain(reader);
-                    }
-                    else if (bufferType == ActorTypes.TrafficHuman && bufferLength == 160)
-                    {
-                        data = new ActorTrafficHuman(reader);
-                    }
-                    else if (bufferType == ActorTypes.TrafficCar && bufferLength == 220)
-                    {
-                        data = new ActorTrafficCar(reader);
-                    }
-                    else if (bufferType == ActorTypes.Sound && bufferLength == 592)
-                    {
-                        //long pos = reader.BaseStream.Position;
-                        //data = new ActorSoundEntity(reader);
-                        //reader.BaseStream.Position = pos;
-                        buffer = reader.ReadBytes((int)bufferLength);
-                    }
-                    else
-                    {
-                        buffer = reader.ReadBytes((int)bufferLength);
-                    }
-                }
-
-                public override string ToString()
-                {
-                    if(buffer != null)
-                        return string.Format("{0}, {1}", bufferType, buffer.Length);
-                    else
-                        return string.Format("{0}", bufferType);
-                }
-            }
-
-        }
-
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class ActorItem
         {
@@ -321,7 +273,7 @@ namespace ResourceTypes.Actors
             Vector2 direction;
             Vector3 scale;
             ushort unk3;
-            ushort propID;
+            ushort dataID;
 
             public int Size {
                 get { return size; }
@@ -382,9 +334,9 @@ namespace ResourceTypes.Actors
                 get { return unk3; }
                 set { unk3 = value; }
             }
-            public ushort PropID {
-                get { return propID; }
-                set { propID = value; }
+            public ushort DataID {
+                get { return dataID; }
+                set { dataID = value; }
             }
 
             public ActorItem(BinaryReader reader)
@@ -409,41 +361,33 @@ namespace ResourceTypes.Actors
                 direction = Vector2Extenders.ReadFromFile(reader);
                 scale = Vector3Extenders.ReadFromFile(reader);
                 unk3 = reader.ReadUInt16();
-                propID = reader.ReadUInt16();
+                dataID = reader.ReadUInt16();
                 Console.WriteLine("{0} {1}", unkString, (ActorTypes)actortype);
+            }
+
+            public int CalculateSize()
+            {
+                size = 4;
+                size += (itemType.Length + 2);
+                size += (entityType.Length + 2);
+                size += (unkString.Length + 2);
+                size += (unk2String.Length + 2);
+                size += (frameName.Length + 2);
+                size += (frameUnk.Length + 2);
+                size += 64;
+                return size;
             }
 
             public void WriteToFile(BinaryWriter writer)
             {
-                size = 0;
-
                 long pos = writer.BaseStream.Position;
                 writer.Write(0);
-
-                //item type
                 writeString(itemType, writer);
-                size += (itemType.Length+2);
-
-                //entity type
                 writeString(entityType, writer);
-                size += (entityType.Length + 2);
-
-                //unk string
                 writeString(unkString, writer);
-                size += (unkString.Length + 2);
-
-                //unk2 string
                 writeString(unk2String, writer);
-                size += (unk2String.Length + 2);
-
-                //frame name
                 writeString(frameName, writer);
-                size += (frameName.Length + 2);
-
-                //frame unk
                 writeString(frameUnk, writer);
-                size += (frameUnk.Length + 2);
-
                 writer.Write(actortype);
                 writer.Write(hash1);
                 writer.Write(hash2);
@@ -452,9 +396,7 @@ namespace ResourceTypes.Actors
                 direction.WriteToFile(writer);
                 scale.WriteToFile(writer);
                 writer.Write(unk3);
-                writer.Write(propID);
-                size += 68;
-
+                writer.Write(dataID);
                 long pos2 = writer.BaseStream.Position;
                 writer.BaseStream.Position = pos;
                 writer.Write(size);
@@ -471,15 +413,135 @@ namespace ResourceTypes.Actors
 
             private void writeString(string text, BinaryWriter writer)
             {
-                writer.Write((byte)text.Length+2);
+                writer.Write((byte)(text.Length + 2));
                 writer.Write(text.ToCharArray());
                 writer.Write((byte)0);
             }
 
             public override string ToString()
             {
-                return string.Format("{0}, {1}, {2}, {3}", entityType, actortype, itemType, propID);
+                return string.Format("{0}, {1}, {2}, {3}", entityType, actortype, itemType, dataID);
             }
+        }
+    }
+
+    public struct temp_unk
+    {
+        ActorTypes bufferType;
+        IActorExtraDataInterface data;
+        byte[] buffer;
+
+        public ActorTypes BufferType {
+            get { return bufferType; }
+            set { bufferType = value; }
+        }
+
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public IActorExtraDataInterface Data {
+            get { return data; }
+            set { data = value; }
+        }
+        public byte[] Buffer {
+            get { return buffer; }
+            set { buffer = value; }
+        }
+
+        public temp_unk(BinaryReader reader)
+        {
+            buffer = null;
+            data = null;
+            bufferType = 0;
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
+            buffer = null;
+            data = null;
+
+            bufferType = (ActorTypes)reader.ReadInt32();
+
+            uint bufferLength = reader.ReadUInt32();
+
+            if (bufferType == ActorTypes.Pinup && bufferLength == 4)
+            {
+                data = new ActorPinup(reader);
+            }
+            else if (bufferType == ActorTypes.ScriptEntity && bufferLength == 100)
+            {
+                data = new ActorScriptEntity(reader);
+            }
+            else if (bufferType == ActorTypes.Radio && bufferLength == 1028)
+            {
+                data = new ActorRadio(reader);
+            }
+            else if (bufferType == ActorTypes.Airplane && bufferLength == 4)
+            {
+                data = new ActorAircraft(reader);
+            }
+            else if (bufferType == ActorTypes.SpikeStrip && bufferLength == 4)
+            {
+                data = new ActorSpikeStrip(reader);
+            }
+            else if (bufferType == ActorTypes.Door && bufferLength == 364)
+            {
+                data = new ActorDoor(reader);
+            }
+            else if (bufferType == ActorTypes.Wardrobe && bufferLength == 208)
+            {
+                data = new ActorWardrobe(reader);
+            }
+            else if (bufferType == ActorTypes.TrafficTrain && bufferLength == 180)
+            {
+                data = new ActorTrafficTrain(reader);
+            }
+            else if (bufferType == ActorTypes.TrafficHuman && bufferLength == 160)
+            {
+                data = new ActorTrafficHuman(reader);
+            }
+            else if (bufferType == ActorTypes.TrafficCar && bufferLength == 220)
+            {
+                data = new ActorTrafficCar(reader);
+            }
+            else if (bufferType == ActorTypes.LightEntity && bufferLength == 2316)
+            {
+                data = new ActorLight(reader);
+            }
+            else if (bufferType == ActorTypes.Sound && bufferLength == 592)
+            {
+                //long pos = reader.BaseStream.Position;
+                //data = new ActorSoundEntity(reader);
+                //reader.BaseStream.Position = pos;
+                buffer = reader.ReadBytes((int)bufferLength);
+            }
+            else
+            {
+                buffer = reader.ReadBytes((int)bufferLength);
+            }
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write((int)bufferType);
+
+            if (buffer != null)
+            {
+                writer.Write(buffer.Length);
+                writer.Write(buffer);
+            }
+            else
+            {
+                writer.Write(data.GetSize());
+                data.WriteToFile(writer);
+            }
+        }
+
+        public override string ToString()
+        {
+            if (buffer != null)
+                return string.Format("{0}, {1}", bufferType, buffer.Length);
+            else
+                return string.Format("{0}", bufferType);
         }
     }
 }
