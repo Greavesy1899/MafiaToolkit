@@ -107,9 +107,9 @@ namespace Rendering.Graphics
             return true;
         }
 
-        public void SetProjectionMatrix()
+        public void SetProjectionMatrix(int width, int height)
         {
-            ProjectionMatrix = Matrix.PerspectiveFovRH((float)(Math.PI / 4), (ToolkitSettings.Width / ToolkitSettings.Height), ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
+            ProjectionMatrix = Matrix.PerspectiveFovRH((float)(Math.PI / 4), (width / height), ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
         }
 
         public Ray GetPickingRay(Vector2 pos, Vector2 screenDims)

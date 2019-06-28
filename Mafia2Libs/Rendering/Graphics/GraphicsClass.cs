@@ -59,7 +59,7 @@ namespace Rendering.Graphics
         {
             Camera = new Camera();
             Camera.Position = new Vector3(0, 0, 15);
-            Camera.SetProjectionMatrix();
+            Camera.SetProjectionMatrix(ToolkitSettings.Width, ToolkitSettings.Height);
             ClearRenderStack();
             Light = new LightClass();
             Light.SetAmbientColor(0.5f, 0.5f, 0.5f, 1f);

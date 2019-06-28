@@ -462,7 +462,7 @@ namespace Mafia2Tool
             }
             else if (item.SubItems[0].Text.Contains("StreamMapa") && item.SubItems[1].Text == "BIN")
             {
-                StreamMapLoader sm = new StreamMapLoader((item.Tag as FileInfo));
+                StreamEditor se = new StreamEditor((item.Tag as FileInfo));
                 return;
             }
             else if (item.SubItems[0].Text.Contains("sdsconfig") && item.SubItems[1].Text == "BIN")
@@ -537,7 +537,7 @@ namespace Mafia2Tool
                     prefabs = new PrefabLoader((FileInfo)item.Tag);
                     return;
                 case "BIN":
-                    soundSector = new SoundSectorLoader((FileInfo)item.Tag);
+                    CGameData gamedata = new CGameData((FileInfo)item.Tag);
                     return;
                 case "LUA":
                 case "AP":

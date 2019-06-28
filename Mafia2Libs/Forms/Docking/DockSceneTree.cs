@@ -124,9 +124,7 @@ namespace Forms.Docking
                         FrameObjectBase parent = (curNode.Parent.Tag as FrameObjectBase);
                         curNode = curNode.Parent;
                         if (parent != null)
-                        {
                             matrix += parent.Matrix;
-                        }
                     }
 
                 }

@@ -183,8 +183,11 @@ namespace Mafia2Tool
             RenderPanel.MouseUp += (s, e) => Input.ButtonUp(e.Button);
             RenderPanel.MouseMove += RenderForm_MouseMove;
             RenderPanel.MouseEnter += RenderPanel_MouseEnter;
+            RenderPanel.Resize += RenderPanel_Resize;
             RenderLoop.Run(this, () => { if (!Frame()) Shutdown(); });
         }
+
+        private void RenderPanel_Resize(object sender, EventArgs e) => Graphics.Camera.SetProjectionMatrix(RenderPanel.Width, RenderPanel.Height);
 
         private void RenderPanel_MouseEnter(object sender, EventArgs e) => RenderPanel.Focus();
         private void RenderForm_MouseMove(object sender, MouseEventArgs e) => mousePos = new Point(e.Location.X, e.Location.Y);
@@ -616,9 +619,9 @@ namespace Mafia2Tool
                 //}
             }
 
-            //if(SceneData.OBJData.Length > 0 && ToolkitSettings.Experimental)
+            //if (SceneData.OBJData.Length > 0 && ToolkitSettings.Experimental)
             //{
-            //    foreach(var data in SceneData.OBJData)
+            //    foreach (var data in SceneData.OBJData)
             //    {
             //        var objData = (data.data as OBJData);
 

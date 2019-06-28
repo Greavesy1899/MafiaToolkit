@@ -1,72 +1,101 @@
-﻿using SharpDX;
-using System;
+﻿using System;
 using System.IO;
-using Utils.SharpDXExtensions;
-using Utils.Types;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Misc
 {
     public class StreamMapLoader
     {
         private FileInfo file;
-        private StreamMap1[] s1;
-        private ulong[] s2;
-        private StreamMap2[] s3;
-        private StreamMap3[] s4;
+        public StreamGroup[] groups;
+        public string[] groupHeaders;
+        public StreamLine[] lines;
+        public StreamMap3[] loaders;
         private StreamMap4[] s5;
         private ulong[] s6;
-        private string s7;
 
-        public struct StreamMap1
+        public struct StreamGroup
         {
-            public int unk0;
+            public string name;
+            public int nameIDX;
             public int unk1;
             public int unk2;
-            public int unk3;
-            public int unk4;
+            public int startOffset; //start
+            public int endOffset; //end
             public int unk5;
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3} {4} {5}", unk0, unk1, unk2, unk3, unk4, unk5);
+                return string.Format("{0} {1} {2} {3} {4} {5}", nameIDX, unk1, unk2, startOffset, endOffset, unk5);
             }
         }
 
-        public struct StreamMap2
+        public class StreamLine
         {
-            public int unk0;
-            public int unk1;
-            public int unk2;
+            string name;
+            string group;
+            string flags;
+            public int nameIDX;
+            public int lineID;
+            public int groupID;
             public int unk3;
-            public int unk4;
+            public int flagIDX;
             public int unk5;
-            public ulong unk10;
-            public ulong unk11;
+            ulong unk10;
+            ulong unk11;
             public int unk12;
             public int unk13;
             public int unk14;
             public int unk15;
+            public string[] toLoad;
+
+            public string Name {
+                get { return name; }
+                set { name = value; }
+            }
+            public string Group {
+                get { return group; }
+                set { group = value; }
+            }
+            public string Flags {
+                get { return flags; }
+                set { flags = value; }
+            }
+            public ulong Unk10 {
+                get { return unk10; }
+                set { unk10 = value; }
+            }
+            public ulong Unk11 {
+                get { return unk11; }
+                set { unk11 = value; }
+            }
+
+            public string[] ToLoad {
+                get { return toLoad; }
+                set { ToLoad = value; }
+            }
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}", unk0, unk1, unk2, unk3, unk4, unk5, unk10, unk11, unk12, unk13, unk14, unk15);
+                return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}", nameIDX, lineID, groupID, unk3, flagIDX, unk5, unk10, unk11, unk12, unk13, unk14, unk15);
             }
         }
 
         public struct StreamMap3
         {
+            public string path;
             public int unk0;
             public int unk1;
             public int unk2;
             public int unk3;
             public int unk4;
             public int unk5;
-            public int unk6;
+            public int pathIDX;
             public int unk7;
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3} {4} {5} {6} {7}", unk0, unk1, unk2, unk3, unk4, unk5, unk6, unk7);
+                return string.Format("{0} {1} {2} {3} {4} {5} {6} {7}", unk0, unk1, unk2, unk3, unk4, unk5, pathIDX, unk7);
             }
         }
 
@@ -87,6 +116,42 @@ namespace ResourceTypes.Misc
             {
                 ReadFromFile(reader);
             }
+        }
+
+        private string ReadBufferSpecial(long start, long end, BinaryReader reader)
+        {
+            reader.BaseStream.Position = start;
+            string newString = "";
+            int nHitTrail = 0;
+
+            while (nHitTrail != 2)
+            {
+                if(reader.PeekChar() == '\0' && nHitTrail < 2)
+                {
+                    newString += reader.ReadChar();
+                    nHitTrail++;
+                }
+                else if(reader.PeekChar() == '\0')
+                {
+                    nHitTrail++;
+                    reader.ReadByte();
+                }
+                else
+                {
+                    newString += reader.ReadChar();
+                    nHitTrail = 0;
+                }
+            }
+            reader.BaseStream.Position = end;
+            return newString;
+        }
+
+        private string ReadFromBuffer(long start, long end, BinaryReader reader)
+        {
+            reader.BaseStream.Position = start;
+            string result = StringHelpers.ReadString(reader);
+            reader.BaseStream.Position = end;
+            return result;
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -118,54 +183,60 @@ namespace ResourceTypes.Misc
             if (reader.BaseStream.Position != unkOffset1)
                 throw new FormatException();
 
-            s1 = new StreamMap1[unk1];
+            groups = new StreamGroup[unk1];
             for (int i = 0; i < unk1; i++)
             {
-                StreamMap1 map = new StreamMap1();
-                map.unk0 = reader.ReadInt32();
+                StreamGroup map = new StreamGroup();
+                map.nameIDX = reader.ReadInt32();
+                map.name = ReadFromBuffer((long)((ulong)map.nameIDX + (ulong)unkOffset7), reader.BaseStream.Position, reader);
                 map.unk1 = reader.ReadInt32();
                 map.unk2 = reader.ReadInt32();
-                map.unk3 = reader.ReadInt32();
-                map.unk4 = reader.ReadInt32();
+                map.startOffset = reader.ReadInt32();
+                map.endOffset = reader.ReadInt32();
                 map.unk5 = reader.ReadInt32();
-                s1[i] = map;
+                groups[i] = map;
             }
 
             if (reader.BaseStream.Position != unkOffset2)
                 throw new FormatException();
 
-            s2 = new ulong[unk2];
+            groupHeaders = new string[unk2];
 
             for (int i = 0; i < unk2; i++)
-                s2[i] = reader.ReadUInt64();
+                groupHeaders[i] = ReadFromBuffer((long)(reader.ReadUInt64() + (ulong)unkOffset7), reader.BaseStream.Position, reader);
 
             if (reader.BaseStream.Position != unkOffset3)
                 throw new FormatException();
 
-            s3 = new StreamMap2[unk3];
+            lines = new StreamLine[unk3];
 
             for (int i = 0; i < unk3; i++)
             {
-                StreamMap2 map = new StreamMap2();
-                map.unk0 = reader.ReadInt32();
-                map.unk1 = reader.ReadInt32();
-                map.unk2 = reader.ReadInt32();
+                StreamLine map = new StreamLine();
+                map.nameIDX = reader.ReadInt32();
+                map.lineID = reader.ReadInt32();
+                map.groupID = reader.ReadInt32();
                 map.unk3 = reader.ReadInt32();
-                map.unk4 = reader.ReadInt32();
+                map.flagIDX = reader.ReadInt32();
                 map.unk5 = reader.ReadInt32();
-                map.unk10 = reader.ReadUInt64();
-                map.unk11 = reader.ReadUInt64();
+                map.Unk10 = reader.ReadUInt64();
+                map.Unk11 = reader.ReadUInt64();
                 map.unk12 = reader.ReadInt32();
                 map.unk13 = reader.ReadInt32();
                 map.unk14 = reader.ReadInt32();
                 map.unk15 = reader.ReadInt32();
-                s3[i] = map;
+                map.Name = ReadFromBuffer((long)((ulong)map.nameIDX + (ulong)unkOffset7), reader.BaseStream.Position, reader);
+                map.Flags = ReadBufferSpecial((long)((ulong)map.flagIDX + (ulong)unkOffset7), reader.BaseStream.Position, reader).Replace('\0', '|');
+                map.toLoad = new string[2];
+                map.toLoad[0] = "/sds/car/ascot_whatever.sds";
+                map.toLoad[1] = "/sds/car/shove_it_up_your_butt.sds";
+                lines[i] = map;
             }
 
             if (reader.BaseStream.Position != unkOffset4)
                 throw new FormatException();
 
-            s4 = new StreamMap3[unk4];
+            loaders = new StreamMap3[unk4];
 
             for(int i = 0; i < unk4; i++)
             {
@@ -176,9 +247,10 @@ namespace ResourceTypes.Misc
                 map.unk3 = reader.ReadInt32();
                 map.unk4 = reader.ReadInt32();
                 map.unk5 = reader.ReadInt32();
-                map.unk6 = reader.ReadInt32();
+                map.pathIDX = reader.ReadInt32();
                 map.unk7 = reader.ReadInt32();
-                s4[i] = map;
+                map.path = ReadFromBuffer((long)((ulong)map.pathIDX + (ulong)unkOffset7), reader.BaseStream.Position, reader);
+                loaders[i] = map;
             }
 
             if (reader.BaseStream.Position != unkOffset5)
@@ -204,7 +276,10 @@ namespace ResourceTypes.Misc
             if (reader.BaseStream.Position != unkOffset7)
                 throw new FormatException();
 
-            s7 = new string(reader.ReadChars(unk7));
+            reader.BaseStream.Seek(unk7, SeekOrigin.Current);
+
+            if (reader.BaseStream.Position != reader.BaseStream.Length)
+                throw new FormatException("Borked this up");
         }
     }
 }

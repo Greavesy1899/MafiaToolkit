@@ -208,6 +208,12 @@
     <Compile Include="ApexSDK\IOFX\ScaleVsLifeModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SimpleScaleModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SubtextureVsLifeModifier.cs" />
+    <Compile Include="Forms\StreamEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\StreamEditor.Designer.cs">
+      <DependentUpon>StreamEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="MafiaLib\FileTypes\BufferTypes\BufferHelpers.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameNameTable\FrameNameTableEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceEnums.cs" />
@@ -576,6 +582,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SDSContentEditor.resx">
       <DependentUpon>SDSContentEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\StreamEditor.resx">
+      <DependentUpon>StreamEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SpeechEditor.resx">
       <DependentUpon>SpeechEditor.cs</DependentUpon>

@@ -330,7 +330,7 @@ namespace ResourceTypes.Navigation
         {
             public int unk7;
             public Vector3 position;
-            public int unk0;
+            public float unk0;
             public float unk1;
             public int unk2;
             public short unk3;
@@ -380,7 +380,10 @@ namespace ResourceTypes.Navigation
                 VertexStruct vertex = new VertexStruct();
                 vertex.unk7 = reader.ReadInt32();
                 vertex.position = Vector3Extenders.ReadFromFile(reader);
-                vertex.unk0 = reader.ReadInt32();
+                float pos = vertex.position.Y; //fuck the third var thing
+                vertex.position.Y = vertex.position.Z;
+                vertex.position.Z = pos;
+                vertex.unk0 = reader.ReadSingle();
                 vertex.unk1 = reader.ReadSingle();
                 vertex.unk2 = reader.ReadInt32();
                 vertex.unk3 = reader.ReadInt16();
