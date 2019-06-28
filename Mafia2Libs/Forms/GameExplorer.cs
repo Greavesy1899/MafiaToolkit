@@ -17,6 +17,7 @@ using ResourceTypes.Prefab;
 using ResourceTypes.Sound;
 using ResourceTypes.SDSConfig;
 using Utils.Lua;
+using ResourceTypes.Misc;
 
 namespace Mafia2Tool
 {
@@ -457,6 +458,11 @@ namespace Mafia2Tool
             else if (item.SubItems[0].Text.Contains("roadmap") && item.SubItems[1].Text == "GSD")
             {
                 Roadmap roadmap = new Roadmap((item.Tag as FileInfo));
+                return;
+            }
+            else if (item.SubItems[0].Text.Contains("StreamMapa") && item.SubItems[1].Text == "BIN")
+            {
+                StreamMapLoader sm = new StreamMapLoader((item.Tag as FileInfo));
                 return;
             }
             else if (item.SubItems[0].Text.Contains("sdsconfig") && item.SubItems[1].Text == "BIN")

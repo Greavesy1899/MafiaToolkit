@@ -616,26 +616,43 @@ namespace Mafia2Tool
                 //}
             }
 
-            if (SceneData.Actors != null && ToolkitSettings.Experimental)
+            //if(SceneData.OBJData.Length > 0 && ToolkitSettings.Experimental)
+            //{
+            //    foreach(var data in SceneData.OBJData)
+            //    {
+            //        var objData = (data.data as OBJData);
+
+            //        for (int i = 0; i != objData.vertices.Length; i++)
+            //        {
+            //            var nodeData = objData.vertices[i];
+            //            RenderBoundingBox box = new RenderBoundingBox();
+            //            box.Init(new BoundingBox(new Vector3(-1.0f), new Vector3(1.0f)));
+            //            box.SetTransform(nodeData.position, new Matrix33());
+            //            assets.Add(StringHelpers.RandomGenerator.Next(), box);
+
+            //            if (nodeData.unk5 > 0)
+            //            {
+            //                RenderLine line = new RenderLine();
+            //                line.Init(new Vector3[2] { nodeData.position, objData.vertices[nodeData.unk5].position });
+            //                assets.Add(StringHelpers.RandomGenerator.Next(), line);
+            //            }
+            //        }
+            //    }
+            //}
+
+            if (SceneData.Actors.Length > 0 && ToolkitSettings.Experimental)
             {
                 ResourceTypes.Actors.Actor actor = SceneData.Actors[0];
                 for (int i = 0; i != actor.Definitions.Length; i++)
                 {
                     for (int c = 0; c != actor.Items.Length; c++)
                     {
-                        if(actor.Definitions[i].Hash == actor.Items[c].Hash2)
+                        if (actor.Definitions[i].Hash == actor.Items[c].Hash2)
                         {
                             FrameObjectFrame frame = (SceneData.FrameResource.FrameObjects.ElementAt(actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
                             frame.Item = actor.Items[c];
                             frame.Matrix.Position = actor.Items[c].Position;
                         }
-                        //FrameObjectFrame frame = (SceneData.FrameResource.FrameObjects[actor.Definitions[i].FrameIndex] as FrameObjectFrame);
-                        //frame.Matrix.Position = 
-                        //int idx = Math.Abs(FrameResource.FrameObjects.Count - FrameResource.NewFrames.Count);
-                        //FrameHolder holder = FrameResource.NewFrames[idx + act.Definitions[i].FrameIndex];
-                        //FrameObjectFrame frame = (holder.Data as FrameObjectFrame);
-                        //frame.Item = act.Items[c];
-                        //FrameResource.NewFrames[idx + act.Definitions[i].FrameIndex] = holder;
                     }
                 }
             }

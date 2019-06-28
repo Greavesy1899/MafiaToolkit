@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using Utils.Types;
 
 namespace ResourceTypes.FrameResource
@@ -9,10 +10,12 @@ namespace ResourceTypes.FrameResource
         byte dataSize;
         NodeStruct[] nodeData;
 
+        [Browsable(false)]
         public byte DataSize {
             get { return dataSize; }
             set { dataSize = value; }
         }
+        [Browsable(false)]
         public NodeStruct[] Data {
             get { return nodeData; }
             set { nodeData = value; }

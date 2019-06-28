@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using ResourceTypes.FrameResource;
 using SharpDX;
+using Utils.Types;
 
 namespace Forms.Docking
 {
@@ -107,8 +108,30 @@ namespace Forms.Docking
         {
             object data = treeView1.SelectedNode.Tag;
 
-            if(data.GetType() == typeof(FrameObjectBase) || data.GetType() == typeof(FrameObjectDummy) || data.GetType() == typeof(FrameObjectJoint) || data.GetType() == typeof(FrameObjectSingleMesh))
-                return (data as FrameObjectBase).Matrix.Position;
+            if (FrameResource.IsFrameType(data))
+            {
+                bool fin = false;
+                TransformMatrix matrix = (data as FrameObjectBase).Matrix;
+                TreeNode curNode = treeView1.SelectedNode;
+                while (!fin)
+                {
+                    if (curNode.Parent == null)
+                    {
+                        fin = true;
+                    }
+                    else
+                    {
+                        FrameObjectBase parent = (curNode.Parent.Tag as FrameObjectBase);
+                        curNode = curNode.Parent;
+                        if (parent != null)
+                        {
+                            matrix += parent.Matrix;
+                        }
+                    }
+
+                }
+                return matrix.Position;
+            }
 
             if(data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
                 return (data as ResourceTypes.Collisions.Collision.Placement).Position;

@@ -337,6 +337,11 @@ namespace ResourceTypes.Navigation
             public short unk4;
             public int unk5;
             public int unk6;
+
+            public override string ToString()
+            {
+                return string.Format("{0} {1} {2} {3} {4} {5} {6}", unk7, unk0, unk2, unk3, unk4, unk5, unk6);
+            }
         }
 
         string fileName;
