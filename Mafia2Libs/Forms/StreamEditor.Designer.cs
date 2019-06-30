@@ -1,4 +1,6 @@
-﻿namespace Mafia2Tool
+﻿using System.Windows.Forms;
+
+namespace Mafia2Tool
 {
     partial class StreamEditor
     {
@@ -28,69 +30,45 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StreamEditor));
-            this.treeView1 = new System.Windows.Forms.TreeView();
-            this.CollisionContext = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.deletePlacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openM2T = new System.Windows.Forms.OpenFileDialog();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.linesTree = new System.Windows.Forms.TreeView();
+            this.ToolStrip = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
-            this.CollisionContext.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
+            this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
+            this.tabControl = new System.Windows.Forms.TabControl();
+            this.StreamLinesPage = new System.Windows.Forms.TabPage();
+            this.StreamGroupPage = new System.Windows.Forms.TabPage();
+            this.groupTree = new Utils.Extensions.MTreeView();
+            this.StreamBlocksPage = new System.Windows.Forms.TabPage();
+            this.blockView = new Utils.Extensions.MTreeView();
+            this.ToolStrip.SuspendLayout();
+            this.tabControl.SuspendLayout();
+            this.StreamLinesPage.SuspendLayout();
+            this.StreamGroupPage.SuspendLayout();
+            this.StreamBlocksPage.SuspendLayout();
             this.SuspendLayout();
             // 
-            // treeView1
+            // linesTree
             // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.treeView1.ContextMenuStrip = this.CollisionContext;
-            this.treeView1.Location = new System.Drawing.Point(12, 28);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(227, 410);
-            this.treeView1.TabIndex = 11;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
+            this.linesTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.linesTree.Location = new System.Drawing.Point(0, 0);
+            this.linesTree.Name = "linesTree";
+            this.linesTree.Size = new System.Drawing.Size(238, 384);
+            this.linesTree.TabIndex = 11;
+            this.linesTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
             // 
-            // CollisionContext
+            // ToolStrip
             // 
-            this.CollisionContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ContextDelete,
-            this.deletePlacementToolStripMenuItem});
-            this.CollisionContext.Name = "SDSContext";
-            this.CollisionContext.Size = new System.Drawing.Size(167, 48);
-            // 
-            // ContextDelete
-            // 
-            this.ContextDelete.Name = "ContextDelete";
-            this.ContextDelete.Size = new System.Drawing.Size(166, 22);
-            this.ContextDelete.Text = "Delete Collision";
-            // 
-            // deletePlacementToolStripMenuItem
-            // 
-            this.deletePlacementToolStripMenuItem.Name = "deletePlacementToolStripMenuItem";
-            this.deletePlacementToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.deletePlacementToolStripMenuItem.Text = "Delete Placement";
-            // 
-            // openM2T
-            // 
-            this.openM2T.FileName = "Select M2T file.";
-            this.openM2T.Filter = "Model File|*.m2t|All Files|*.*|FBX Model|*.fbx";
-            this.openM2T.Tag = "";
-            // 
-            // toolStrip1
-            // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolButton});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(934, 25);
-            this.toolStrip1.TabIndex = 15;
-            this.toolStrip1.Text = "toolStrip1";
+            this.ToolStrip.Location = new System.Drawing.Point(0, 0);
+            this.ToolStrip.Name = "ToolStrip";
+            this.ToolStrip.Size = new System.Drawing.Size(934, 25);
+            this.ToolStrip.TabIndex = 15;
+            this.ToolStrip.Text = "toolStrip1";
             // 
             // fileToolButton
             // 
@@ -108,62 +86,132 @@
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "$SAVE";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // reloadToolStripMenuItem
             // 
             this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.reloadToolStripMenuItem.Text = "$RELOAD";
             this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "$EXIT";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
-            // FrameResourceGrid
+            // PropertyGrid
             // 
-            this.FrameResourceGrid.Location = new System.Drawing.Point(245, 28);
-            this.FrameResourceGrid.Name = "FrameResourceGrid";
-            this.FrameResourceGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.FrameResourceGrid.Size = new System.Drawing.Size(677, 410);
-            this.FrameResourceGrid.TabIndex = 10;
+            this.PropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PropertyGrid.Location = new System.Drawing.Point(260, 28);
+            this.PropertyGrid.Name = "PropertyGrid";
+            this.PropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
+            this.PropertyGrid.Size = new System.Drawing.Size(662, 410);
+            this.PropertyGrid.TabIndex = 10;
+            // 
+            // tabControl
+            // 
+            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.tabControl.Controls.Add(this.StreamLinesPage);
+            this.tabControl.Controls.Add(this.StreamGroupPage);
+            this.tabControl.Controls.Add(this.StreamBlocksPage);
+            this.tabControl.Location = new System.Drawing.Point(12, 28);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(246, 410);
+            this.tabControl.TabIndex = 16;
+            // 
+            // StreamLinesPage
+            // 
+            this.StreamLinesPage.Controls.Add(this.linesTree);
+            this.StreamLinesPage.Location = new System.Drawing.Point(4, 22);
+            this.StreamLinesPage.Name = "StreamLinesPage";
+            this.StreamLinesPage.Size = new System.Drawing.Size(238, 384);
+            this.StreamLinesPage.TabIndex = 0;
+            this.StreamLinesPage.Text = "Stream Lines";
+            this.StreamLinesPage.UseVisualStyleBackColor = true;
+            // 
+            // StreamGroupPage
+            // 
+            this.StreamGroupPage.Controls.Add(this.groupTree);
+            this.StreamGroupPage.Location = new System.Drawing.Point(4, 22);
+            this.StreamGroupPage.Name = "StreamGroupPage";
+            this.StreamGroupPage.Size = new System.Drawing.Size(238, 384);
+            this.StreamGroupPage.TabIndex = 1;
+            this.StreamGroupPage.Text = "Stream Groups";
+            this.StreamGroupPage.UseVisualStyleBackColor = true;
+            // 
+            // groupTree
+            // 
+            this.groupTree.CheckBoxes = true;
+            this.groupTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupTree.Location = new System.Drawing.Point(0, 0);
+            this.groupTree.Name = "groupTree";
+            this.groupTree.Size = new System.Drawing.Size(238, 384);
+            this.groupTree.TabIndex = 13;
+            this.groupTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
+            // 
+            // StreamBlocksPage
+            // 
+            this.StreamBlocksPage.Controls.Add(this.blockView);
+            this.StreamBlocksPage.Location = new System.Drawing.Point(4, 22);
+            this.StreamBlocksPage.Name = "StreamBlocksPage";
+            this.StreamBlocksPage.Size = new System.Drawing.Size(238, 384);
+            this.StreamBlocksPage.TabIndex = 2;
+            this.StreamBlocksPage.Text = "Stream Blocks";
+            this.StreamBlocksPage.UseVisualStyleBackColor = true;
+            // 
+            // blockView
+            // 
+            this.blockView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.blockView.Location = new System.Drawing.Point(0, 0);
+            this.blockView.Name = "blockView";
+            this.blockView.Size = new System.Drawing.Size(238, 384);
+            this.blockView.TabIndex = 14;
+            this.blockView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
             // 
             // StreamEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(934, 450);
-            this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.treeView1);
-            this.Controls.Add(this.FrameResourceGrid);
+            this.Controls.Add(this.ToolStrip);
+            this.Controls.Add(this.PropertyGrid);
+            this.Controls.Add(this.tabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "StreamEditor";
             this.Text = "$SPEECH_EDITOR_TITLE";
-            this.CollisionContext.ResumeLayout(false);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this.ToolStrip.ResumeLayout(false);
+            this.ToolStrip.PerformLayout();
+            this.tabControl.ResumeLayout(false);
+            this.StreamLinesPage.ResumeLayout(false);
+            this.StreamGroupPage.ResumeLayout(false);
+            this.StreamBlocksPage.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.TreeView treeView1;
-        private System.Windows.Forms.OpenFileDialog openM2T;
-        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.TreeView linesTree;
+        private System.Windows.Forms.ToolStrip ToolStrip;
         private System.Windows.Forms.ToolStripDropDownButton fileToolButton;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ContextMenuStrip CollisionContext;
-        private System.Windows.Forms.ToolStripMenuItem ContextDelete;
-        private System.Windows.Forms.ToolStripMenuItem deletePlacementToolStripMenuItem;
-        private System.Windows.Forms.PropertyGrid FrameResourceGrid;
+        private System.Windows.Forms.PropertyGrid PropertyGrid;
+        private System.Windows.Forms.TabControl tabControl;
+        private TabPage StreamLinesPage;
+        private TabPage StreamGroupPage;
+        private TabPage StreamBlocksPage;
+        private Utils.Extensions.MTreeView groupTree;
+        private Utils.Extensions.MTreeView blockView;
     }
 }

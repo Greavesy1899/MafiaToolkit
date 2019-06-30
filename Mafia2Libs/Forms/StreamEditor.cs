@@ -1,10 +1,10 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.Misc;
-using ResourceTypes.Speech;
 using Utils.Lang;
 using Utils.Settings;
+using static ResourceTypes.Misc.StreamMapLoader;
 
 namespace Mafia2Tool
 {
@@ -40,7 +40,7 @@ namespace Mafia2Tool
             {
                 TreeNode node = new TreeNode("group" + i);
                 node.Text = stream.groupHeaders[i];
-                treeView1.Nodes.Add(node);
+                linesTree.Nodes.Add(node);
             }
             for (int i = 0; i != stream.lines.Length; i++)
             {
@@ -49,25 +49,51 @@ namespace Mafia2Tool
                 node.Name = line.Name;
                 node.Text = line.Name;
                 node.Tag = line;
-                treeView1.Nodes[line.groupID].Nodes.Add(node);
+
+                List<StreamLoader> list = new List<StreamLoader>();
+                for (int x = 0; x < stream.loaders.Length; x++)
+                {
+                    var loader = stream.loaders[x];
+                    if (line.lineID >= loader.start && line.lineID <= loader.end)
+                    {
+                        list.Add(loader);
+                    }
+                }
+                line.loadList = list.ToArray();
+                linesTree.Nodes[line.groupID].Nodes.Add(node);
             }
-            for(int i = 0; i < stream.groups.Length; i++)
+            for (int i = 0; i < stream.groups.Length; i++)
             {
                 var line = stream.groups[i];
                 TreeNode node = new TreeNode();
                 node.Name = "GroupLoader" + i;
-                node.Text = line.name;
+                node.Text = line.Name;
+                node.Tag = line;
 
-                for(int x = line.startOffset; x < line.startOffset+line.endOffset; x++)
-                {
-                    var loader = stream.loaders[x];
-                    TreeNode child = new TreeNode();
-                    child.Name = "Loader" + x;
-                    child.Text = loader.path;
-                    node.Nodes.Add(child);
-                }
+                //for (int x = line.startOffset; x < line.startOffset + line.endOffset; x++)
+                //{
+                //    var loader = stream.loaders[x];
+                //    TreeNode child = new TreeNode();
+                //    child.Name = "Loader" + x;
+                //    child.Text = loader.path;
+                //    node.Nodes.Add(child);
+                //}
 
-                mTreeView1.Nodes.Add(node);
+                groupTree.Nodes.Add(node);
+            }
+            for(int i = 0; i < stream.blocks.Length; i++)
+            {
+                var block = stream.blocks[i];
+                List<ulong> hash = new List<ulong>();
+                for (int x = block.startOffset; x < block.endOffset; x++)
+                    hash.Add(stream.hashes[x]);
+                block.Hashes = hash.ToArray();
+
+                TreeNode node = new TreeNode();
+                node.Name = "Block" + i;
+                node.Text = "Block: " + i;
+                node.Tag = block;
+                blockView.Nodes.Add(node);
             }
 
         }
@@ -92,7 +118,7 @@ namespace Mafia2Tool
 
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
         {
-            FrameResourceGrid.SelectedObject = e.Node.Tag;
+            PropertyGrid.SelectedObject = e.Node.Tag;
         }
 
         private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)

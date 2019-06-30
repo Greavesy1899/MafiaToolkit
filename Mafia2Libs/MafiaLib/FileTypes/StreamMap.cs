@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using Utils.StringHelpers;
 
@@ -10,23 +12,36 @@ namespace ResourceTypes.Misc
         public StreamGroup[] groups;
         public string[] groupHeaders;
         public StreamLine[] lines;
-        public StreamMap3[] loaders;
-        private StreamMap4[] s5;
-        private ulong[] s6;
+        public StreamLoader[] loaders;
+        public StreamBlock[] blocks;
+        public ulong[] hashes;
 
-        public struct StreamGroup
+        public class StreamGroup
         {
-            public string name;
+            string name;
             public int nameIDX;
-            public int unk1;
-            public int unk2;
+            int type;
+            int unk01;
             public int startOffset; //start
             public int endOffset; //end
             public int unk5;
 
+            public string Name {
+                get { return name; }
+                set { name = value; }
+            }
+            public int Type {
+                get { return type; }
+                set { type = value; }
+            }
+            public int Unk01 {
+                get { return unk01; }
+                set { unk01 = value; }
+            }
+
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3} {4} {5}", nameIDX, unk1, unk2, startOffset, endOffset, unk5);
+                return string.Format("{0} {1} {2} {3} {4} {5}", nameIDX, type, unk01, startOffset, endOffset, unk5);
             }
         }
 
@@ -38,16 +53,16 @@ namespace ResourceTypes.Misc
             public int nameIDX;
             public int lineID;
             public int groupID;
-            public int unk3;
+            int loadType;
             public int flagIDX;
-            public int unk5;
+            int unk5;
             ulong unk10;
             ulong unk11;
-            public int unk12;
-            public int unk13;
-            public int unk14;
-            public int unk15;
-            public string[] toLoad;
+            int unk12;
+            int unk13;
+            int unk14;
+            int unk15;
+            public StreamLoader[] loadList;
 
             public string Name {
                 get { return name; }
@@ -56,6 +71,10 @@ namespace ResourceTypes.Misc
             public string Group {
                 get { return group; }
                 set { group = value; }
+            }
+            public int LoadType {
+                get { return loadType; }
+                set { loadType = value; }
             }
             public string Flags {
                 get { return flags; }
@@ -69,44 +88,104 @@ namespace ResourceTypes.Misc
                 get { return unk11; }
                 set { unk11 = value; }
             }
-
-            public string[] ToLoad {
-                get { return toLoad; }
-                set { ToLoad = value; }
+            public StreamLoader[] LoadList {
+                get { return loadList; }
+                set { loadList = value; }
             }
+            public int Unk5 {
+                get { return unk5; }
+                set { unk5 = value; }
+            }
+            public int Unk12 {
+                get { return unk12; }
+                set { unk12 = value; }
+            }
+            public int Unk13 {
+                get { return unk13; }
+                set { unk13 = value; }
+            }
+            public int Unk14 {
+                get { return unk14; }
+                set { unk14 = value; }
+            }
+            public int Unk15 {
+                get { return unk15; }
+                set { unk15 = value; }
+            }
+
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}", nameIDX, lineID, groupID, unk3, flagIDX, unk5, unk10, unk11, unk12, unk13, unk14, unk15);
+                return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}", nameIDX, lineID, groupID, loadType, flagIDX, unk5, unk10, unk11, unk12, unk13, unk14, unk15);
             }
         }
 
-        public struct StreamMap3
+        [TypeConverter(typeof(StreamLoaderConverter))]
+        public class StreamLoader
         {
-            public string path;
-            public int unk0;
-            public int unk1;
-            public int unk2;
-            public int unk3;
-            public int unk4;
-            public int unk5;
+            string path;
+            string entity;
+            public int start;
+            public int end;
+            public int type;
+            public int loaderSubID;
+            public int loaderID;
+            public int loadType;
             public int pathIDX;
-            public int unk7;
+            public int entityIDX;
+            bool isChild;
 
+            public int LoadType {
+                get { return loadType; }
+                set { loadType = value; }
+            }
+            public string Path {
+                get { return path; }
+                set { path = value; }
+            }
+            public string Entity {
+                get { return entity; }
+                set { entity = value; }
+            }
+            [Browsable(false)]
+            public int LoaderSubID {
+                get { return loaderSubID; }
+                set { loaderSubID = value; }
+            }
+            [Browsable(false)]
+            public int LoaderID {
+                get { return loaderID; }
+                set { loaderID = value; }
+            }
+            public bool IsChild {
+                get { return loaderSubID == 1 ? true : false; }
+                set { isChild = value; }
+            }
+
+            public string ToEditorString()
+            {
+                return string.Format("{0}\t{1}\t{2}\t\t{3}", loadType, path, entity, IsChild);
+            }
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3} {4} {5} {6} {7}", unk0, unk1, unk2, unk3, unk4, unk5, pathIDX, unk7);
+                return string.Format("{0} {1} {2} {3} {4} {5} {6} {7}", start, end, type, loaderSubID, loaderID, loadType, pathIDX, entityIDX);
             }
         }
 
-        public struct StreamMap4
+        public class StreamBlock
         {
-            public int unk0;
-            public int unk1;
+            public int startOffset;
+            public int endOffset;
+            ulong[] hashes;
+
+            public ulong[] Hashes {
+                get { return hashes; }
+                set { hashes = value; }
+            }
 
             public override string ToString()
             {
-                return string.Format("{0} {1}", unk0, unk1);
+                return string.Format("{0} {1}", startOffset, endOffset);
             }
         }
         public StreamMapLoader(FileInfo info)
@@ -126,12 +205,12 @@ namespace ResourceTypes.Misc
 
             while (nHitTrail != 2)
             {
-                if(reader.PeekChar() == '\0' && nHitTrail < 2)
+                if (reader.PeekChar() == '\0' && nHitTrail < 2)
                 {
                     newString += reader.ReadChar();
                     nHitTrail++;
                 }
-                else if(reader.PeekChar() == '\0')
+                else if (reader.PeekChar() == '\0')
                 {
                     nHitTrail++;
                     reader.ReadByte();
@@ -165,121 +244,161 @@ namespace ResourceTypes.Misc
             int fileSize = reader.ReadInt32();
             int unk0 = reader.ReadInt32();
 
-            int unk1 = reader.ReadInt32();
-            int unkOffset1 = reader.ReadInt32();
-            int unk2 = reader.ReadInt32();
-            int unkOffset2 = reader.ReadInt32();
-            int unk3 = reader.ReadInt32();
-            int unkOffset3 = reader.ReadInt32();
-            int unk4 = reader.ReadInt32();
-            int unkOffset4 = reader.ReadInt32();
-            int unk5 = reader.ReadInt32();
-            int unkOffset5 = reader.ReadInt32();
-            int unk6 = reader.ReadInt32();
-            int unkOffset6 = reader.ReadInt32();
-            int unk7 = reader.ReadInt32();
-            int unkOffset7 = reader.ReadInt32();
+            int numGroups = reader.ReadInt32();
+            int groupOffset = reader.ReadInt32();
+            int numHeaders = reader.ReadInt32();
+            int headerOffset = reader.ReadInt32();
+            int numLines = reader.ReadInt32();
+            int lineOffset = reader.ReadInt32();
+            int numLoaders = reader.ReadInt32();
+            int loadersOffset = reader.ReadInt32();
+            int numBlocks = reader.ReadInt32();
+            int blockOffset = reader.ReadInt32();
+            int numHashes = reader.ReadInt32();
+            int hashOffset = reader.ReadInt32();
+            int poolSize = reader.ReadInt32();
+            int poolOffset = reader.ReadInt32();
 
-            if (reader.BaseStream.Position != unkOffset1)
+            if (reader.BaseStream.Position != groupOffset)
                 throw new FormatException();
 
-            groups = new StreamGroup[unk1];
-            for (int i = 0; i < unk1; i++)
+            groups = new StreamGroup[numGroups];
+            for (int i = 0; i < numGroups; i++)
             {
                 StreamGroup map = new StreamGroup();
                 map.nameIDX = reader.ReadInt32();
-                map.name = ReadFromBuffer((long)((ulong)map.nameIDX + (ulong)unkOffset7), reader.BaseStream.Position, reader);
-                map.unk1 = reader.ReadInt32();
-                map.unk2 = reader.ReadInt32();
+                map.Name = ReadFromBuffer((long)((ulong)map.nameIDX + (ulong)poolOffset), reader.BaseStream.Position, reader);
+                map.Type = reader.ReadInt32();
+                map.Unk01 = reader.ReadInt32();
                 map.startOffset = reader.ReadInt32();
                 map.endOffset = reader.ReadInt32();
                 map.unk5 = reader.ReadInt32();
                 groups[i] = map;
             }
 
-            if (reader.BaseStream.Position != unkOffset2)
+            if (reader.BaseStream.Position != headerOffset)
                 throw new FormatException();
 
-            groupHeaders = new string[unk2];
+            groupHeaders = new string[numHeaders];
 
-            for (int i = 0; i < unk2; i++)
-                groupHeaders[i] = ReadFromBuffer((long)(reader.ReadUInt64() + (ulong)unkOffset7), reader.BaseStream.Position, reader);
+            for (int i = 0; i < numHeaders; i++)
+                groupHeaders[i] = ReadFromBuffer((long)(reader.ReadUInt64() + (ulong)poolOffset), reader.BaseStream.Position, reader);
 
-            if (reader.BaseStream.Position != unkOffset3)
+            if (reader.BaseStream.Position != lineOffset)
                 throw new FormatException();
 
-            lines = new StreamLine[unk3];
+            lines = new StreamLine[numLines];
 
-            for (int i = 0; i < unk3; i++)
+            for (int i = 0; i < numLines; i++)
             {
                 StreamLine map = new StreamLine();
                 map.nameIDX = reader.ReadInt32();
                 map.lineID = reader.ReadInt32();
                 map.groupID = reader.ReadInt32();
-                map.unk3 = reader.ReadInt32();
+                map.LoadType = reader.ReadInt32();
                 map.flagIDX = reader.ReadInt32();
-                map.unk5 = reader.ReadInt32();
+                map.Unk5 = reader.ReadInt32();
                 map.Unk10 = reader.ReadUInt64();
                 map.Unk11 = reader.ReadUInt64();
-                map.unk12 = reader.ReadInt32();
-                map.unk13 = reader.ReadInt32();
-                map.unk14 = reader.ReadInt32();
-                map.unk15 = reader.ReadInt32();
-                map.Name = ReadFromBuffer((long)((ulong)map.nameIDX + (ulong)unkOffset7), reader.BaseStream.Position, reader);
-                map.Flags = ReadBufferSpecial((long)((ulong)map.flagIDX + (ulong)unkOffset7), reader.BaseStream.Position, reader).Replace('\0', '|');
-                map.toLoad = new string[2];
-                map.toLoad[0] = "/sds/car/ascot_whatever.sds";
-                map.toLoad[1] = "/sds/car/shove_it_up_your_butt.sds";
+                map.Unk12 = reader.ReadInt32();
+                map.Unk13 = reader.ReadInt32();
+                map.Unk14 = reader.ReadInt32();
+                map.Unk15 = reader.ReadInt32();
+                map.Name = ReadFromBuffer((long)((ulong)map.nameIDX + (ulong)poolOffset), reader.BaseStream.Position, reader);
+                map.Flags = ReadBufferSpecial((long)((ulong)map.flagIDX + (ulong)poolOffset), reader.BaseStream.Position, reader).Replace('\0', '|');
                 lines[i] = map;
             }
 
-            if (reader.BaseStream.Position != unkOffset4)
+            if (reader.BaseStream.Position != loadersOffset)
                 throw new FormatException();
 
-            loaders = new StreamMap3[unk4];
+            loaders = new StreamLoader[numLoaders];
 
-            for(int i = 0; i < unk4; i++)
+            for (int i = 0; i < numLoaders; i++)
             {
-                StreamMap3 map = new StreamMap3();
-                map.unk0 = reader.ReadInt32();
-                map.unk1 = reader.ReadInt32();
-                map.unk2 = reader.ReadInt32();
-                map.unk3 = reader.ReadInt32();
-                map.unk4 = reader.ReadInt32();
-                map.unk5 = reader.ReadInt32();
+                StreamLoader map = new StreamLoader();
+                map.start = reader.ReadInt32();
+                map.end = reader.ReadInt32();
+                map.type = reader.ReadInt32(); 
+                map.loaderSubID = reader.ReadInt32(); 
+                map.loaderID = reader.ReadInt32();
+                map.LoadType = reader.ReadInt32();
                 map.pathIDX = reader.ReadInt32();
-                map.unk7 = reader.ReadInt32();
-                map.path = ReadFromBuffer((long)((ulong)map.pathIDX + (ulong)unkOffset7), reader.BaseStream.Position, reader);
+                map.entityIDX = reader.ReadInt32();
+                map.Path = ReadFromBuffer((long)((ulong)map.pathIDX + (ulong)poolOffset), reader.BaseStream.Position, reader);
+                map.Entity = ReadFromBuffer((long)((ulong)map.entityIDX + (ulong)poolOffset), reader.BaseStream.Position, reader);
                 loaders[i] = map;
             }
 
-            if (reader.BaseStream.Position != unkOffset5)
+            if (reader.BaseStream.Position != blockOffset)
                 throw new FormatException();
 
-            s5 = new StreamMap4[unk5];
-            for (int i = 0; i < unk5; i++)
+            blocks = new StreamBlock[numBlocks];
+            for (int i = 0; i < numBlocks; i++)
             {
-                StreamMap4 map = new StreamMap4();
-                map.unk0 = reader.ReadInt32();
-                map.unk1 = reader.ReadInt32();
-                s5[i] = map;
+                StreamBlock map = new StreamBlock();
+                map.startOffset = reader.ReadInt32();
+                map.endOffset = reader.ReadInt32();
+                blocks[i] = map;
             }
 
-            if (reader.BaseStream.Position != unkOffset6)
+            if (reader.BaseStream.Position != hashOffset)
                 throw new FormatException();
 
-            s6 = new ulong[unk6];
+            hashes = new ulong[numHashes];
 
-            for (int i = 0; i < unk6; i++)
-                s6[i] = reader.ReadUInt64();
+            for (int i = 0; i < numHashes; i++)
+                hashes[i] = reader.ReadUInt64();
 
-            if (reader.BaseStream.Position != unkOffset7)
+            if (reader.BaseStream.Position != poolOffset)
                 throw new FormatException();
 
-            reader.BaseStream.Seek(unk7, SeekOrigin.Current);
+            reader.BaseStream.Seek(poolSize, SeekOrigin.Current);
 
             if (reader.BaseStream.Position != reader.BaseStream.Length)
                 throw new FormatException("Borked this up");
+        }
+
+        public class StreamLoaderConverter : TypeConverter
+        {
+            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+            {
+                return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+            }
+
+            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+            {
+                return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+            }
+
+            public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+            {
+                object result = null;
+                string stringValue = value as string;
+
+                if (!string.IsNullOrEmpty(stringValue))
+                {
+                    string[] split = stringValue.Split(' ');
+                    StreamLoader container = new StreamLoader();
+                    container.LoadType = int.Parse(split[0]);
+                    container.Path = split[1];
+                    container.Entity = split[2];
+                    container.IsChild = bool.Parse(split[3]);
+                }
+
+                return result ?? base.ConvertFrom(context, culture, value);
+            }
+
+            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+            {
+                object result = null;
+                StreamLoader container = (StreamLoader)value;
+
+                if (destinationType == typeof(String))
+                    result = container.ToEditorString();
+
+                return result ?? base.ConvertTo(context, culture, value, destinationType);
+            }
         }
     }
 }
