@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
@@ -15,6 +16,11 @@ namespace ResourceTypes.Misc
         public StreamLoader[] loaders;
         public StreamBlock[] blocks;
         public ulong[] hashes;
+
+        //Only used after the streamap has been updated.
+        private ulong[] upGroupHeaders;
+        private string rawPool;
+
 
         public class StreamGroup
         {
@@ -164,7 +170,7 @@ namespace ResourceTypes.Misc
 
             public string ToEditorString()
             {
-                return string.Format("{0}\t{1}\t{2}\t\t{3}", loadType, path, entity, IsChild);
+                return string.Format("{0} {1} {2} {3}", loadType, path, entity, IsChild);
             }
             public override string ToString()
             {
@@ -304,8 +310,9 @@ namespace ResourceTypes.Misc
                 map.Unk13 = reader.ReadInt32();
                 map.Unk14 = reader.ReadInt32();
                 map.Unk15 = reader.ReadInt32();
+                map.Group = groupHeaders[map.groupID];
                 map.Name = ReadFromBuffer((long)((ulong)map.nameIDX + (ulong)poolOffset), reader.BaseStream.Position, reader);
-                map.Flags = ReadBufferSpecial((long)((ulong)map.flagIDX + (ulong)poolOffset), reader.BaseStream.Position, reader).Replace('\0', '|');
+                map.Flags = ReadBufferSpecial((long)((ulong)map.flagIDX + (ulong)poolOffset), reader.BaseStream.Position, reader).TrimEnd('\0').Replace('\0', '|');
                 lines[i] = map;
             }
 
@@ -357,6 +364,219 @@ namespace ResourceTypes.Misc
 
             if (reader.BaseStream.Position != reader.BaseStream.Length)
                 throw new FormatException("Borked this up");
+        }
+
+        private void Update()
+        {
+            Dictionary<string, int> pool = new Dictionary<string, int>();
+            int size = 0;
+            rawPool = "";
+
+            foreach(var group in groups)
+            {
+                int idx = -1;
+                if(!pool.TryGetValue(group.Name, out idx))
+                {
+                    idx = size;
+                    pool.Add(group.Name, size);
+                    size += group.Name.Length+1;
+                    rawPool += (group.Name + '\0');
+                }
+
+                group.nameIDX = idx;
+
+                for (int x = group.startOffset; x < group.startOffset + group.endOffset; x++)
+                {
+                    var loader = loaders[x];
+
+                    idx = -1;
+                    if (!pool.TryGetValue(loader.Path, out idx))
+                    {
+                        idx = size;
+                        pool.Add(loader.Path, size);
+                        size += loader.Path.Length+1;
+                        rawPool += (loader.Path + '\0');
+                    }
+                    loader.pathIDX = idx;
+                    if (!pool.TryGetValue(loader.Entity, out idx))
+                    {
+                        idx = size;
+                        pool.Add(loader.Entity, size);
+                        size += loader.Entity.Length+1;
+                        rawPool += (loader.Entity + '\0');
+                    }
+                    loader.entityIDX = idx;
+
+                }
+            }
+
+            List<string> newGH = new List<string>();
+            List<ulong> hashGH = new List<ulong>();
+            foreach(var line in lines)
+            {
+                int idx = -1;
+                if (!pool.TryGetValue(line.Group, out idx))
+                {
+                    idx = size;
+                    pool.Add(line.Group, size);
+                    size += line.Group.Length+1;
+                    rawPool += (line.Group + '\0');
+                    line.groupID = newGH.Count;
+                    if (!newGH.Contains(line.Group))
+                    {
+                        newGH.Add(line.Group);
+                        hashGH.Add((ulong)idx);
+                    }
+                }
+               else
+                {
+                    line.groupID = newGH.IndexOf(line.Group);
+                }
+                if (!pool.TryGetValue(line.Name, out idx))
+                {
+                    idx = size;
+                    pool.Add(line.Name, size);
+                    size += line.Name.Length+1;
+                    rawPool += (line.Name + '\0');
+                }
+                line.nameIDX = idx;
+                if (!pool.TryGetValue(line.Flags, out idx))
+                {
+                    idx = size;
+                    pool.Add(line.Flags, size);
+                    size += line.Flags.Length+2;
+                    line.Flags = line.Flags.Replace('|', '\0');
+                    rawPool += (line.Flags + '\0' + '\0');
+                }
+                line.flagIDX = idx;
+            }
+            groupHeaders = newGH.ToArray();
+            upGroupHeaders = hashGH.ToArray();
+        }
+
+        public void WriteToFile()
+        {
+            Update();
+            using (BinaryWriter writer = new BinaryWriter(File.Open(file.FullName + "1", FileMode.Create)))
+            {
+                InternalWriteToFile(writer);
+            }
+        }
+        private void InternalWriteToFile(BinaryWriter writer)
+        {
+            long position = 0;
+            int groupOffset = 0;
+            int headerOffset = 0;
+            int lineOffset = 0;
+            int loadersOffset = 0;
+            int blockOffset = 0;
+            int hashOffset = 0;
+            int poolOffset = 0;
+
+            writer.Write(1299346515);
+            writer.Write(0x6);
+            writer.Write(0);
+            writer.Write(0);
+            writer.Write(groups.Length);
+            writer.Write(72);
+            writer.Write(groupHeaders.Length);
+            writer.Write(0);
+            writer.Write(lines.Length);
+            writer.Write(0);
+            writer.Write(loaders.Length);
+            writer.Write(0);
+            writer.Write(blocks.Length);
+            writer.Write(0);
+            writer.Write(hashes.Length);
+            writer.Write(0);
+            writer.Write(rawPool.Length);
+            writer.Write(0);
+
+            groupOffset = 72;
+
+            foreach(var group in groups)
+            {
+                writer.Write(group.nameIDX);
+                writer.Write(group.Type);
+                writer.Write(group.Unk01);
+                writer.Write(group.startOffset);
+                writer.Write(group.endOffset);
+                writer.Write(group.unk5);
+            }
+
+            headerOffset = (int)writer.BaseStream.Position;
+
+            foreach (var value in upGroupHeaders)
+                writer.Write(value);
+
+            lineOffset = (int)writer.BaseStream.Position;
+
+            foreach (var line in lines)
+            {
+                writer.Write(line.nameIDX);
+                writer.Write(line.lineID);
+                writer.Write(line.groupID);
+                writer.Write(line.LoadType);
+                writer.Write(line.flagIDX);
+                writer.Write(line.Unk5);
+                writer.Write(line.Unk10);
+                writer.Write(line.Unk11);
+                writer.Write(line.Unk12);
+                writer.Write(line.Unk13);
+                writer.Write(line.Unk14);
+                writer.Write(line.Unk15);
+            }
+
+            loadersOffset = (int)writer.BaseStream.Position;
+
+            foreach (var loader in loaders)
+            {
+                writer.Write(loader.start);
+                writer.Write(loader.end);
+                writer.Write(loader.type);
+                writer.Write(loader.loaderSubID);
+                writer.Write(loader.loaderID);
+                writer.Write(loader.loadType);
+                writer.Write(loader.pathIDX);
+                writer.Write(loader.entityIDX);
+            }
+
+            blockOffset = (int)writer.BaseStream.Position;
+
+            foreach (var block in blocks)
+            {
+                writer.Write(block.startOffset);
+                writer.Write(block.endOffset);
+            }
+
+            hashOffset = (int)writer.BaseStream.Position;
+
+            foreach (var value in hashes)
+                writer.Write(value);
+
+            poolOffset = (int)writer.BaseStream.Position;
+
+            writer.Write(rawPool.ToCharArray());
+
+            writer.BaseStream.Seek(0, SeekOrigin.Begin);
+            writer.Write(1299346515);
+            writer.Write(0x6);
+            writer.Write((uint)writer.BaseStream.Length);
+            writer.Write(0);
+            writer.Write(groups.Length);
+            writer.Write(groupOffset);
+            writer.Write(groupHeaders.Length);
+            writer.Write(headerOffset);
+            writer.Write(lines.Length);
+            writer.Write(lineOffset);
+            writer.Write(loaders.Length);
+            writer.Write(loadersOffset);
+            writer.Write(blocks.Length);
+            writer.Write(blockOffset);
+            writer.Write(hashes.Length);
+            writer.Write(hashOffset);
+            writer.Write(rawPool.Length);
+            writer.Write(poolOffset);
         }
 
         public class StreamLoaderConverter : TypeConverter

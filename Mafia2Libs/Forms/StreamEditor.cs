@@ -133,7 +133,7 @@ namespace Mafia2Tool
 
         private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
-
+            stream.WriteToFile();
         }
     }
 }

@@ -16,6 +16,7 @@ using ResourceTypes.Sound;
 using ResourceTypes.Actors;
 using ResourceTypes.Collisions;
 using ResourceTypes.Navigation;
+using ResourceTypes.Translokator;
 
 namespace Mafia2Tool
 {
@@ -36,6 +37,7 @@ namespace Mafia2Tool
         public static NAVData[] AIWorlds;
         public static NAVData[] OBJData;
         public static HPDData HPDData;
+        public static TranslokatorLoader Translokator;
         public static string ScenePath;
 
         public static void BuildData()
@@ -85,6 +87,9 @@ namespace Mafia2Tool
                     roadMap = new Roadmap(new FileInfo(name));
                 else if (type == "NAV_OBJ_DATA")
                     obj.Add(new NAVData(new FileInfo(name)));
+                else if (type == "Translokator")
+                    Translokator = new TranslokatorLoader(new FileInfo(name));
+                    
             }
 
             IndexBufferPool = new IndexBufferManager(ibps);

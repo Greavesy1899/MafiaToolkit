@@ -6,7 +6,7 @@ namespace Rendering.Graphics
 {
     public class RenderInstance : IRenderer
     {
-        private RenderStaticCollision collision;
+        private IRenderer instance;
         private bool isSelected;
         
 
@@ -15,12 +15,20 @@ namespace Rendering.Graphics
             DoRender = true;
             isSelected = false;
             Transform = Matrix.Identity;
-            collision = col;
+            instance = col;
+        }
+
+        public void Init(RenderModel model)
+        {
+            DoRender = true;
+            isSelected = false;
+            Transform = Matrix.Identity;
+            instance = model;
         }
 
         public override void InitBuffers(Device d3d, DeviceContext context)
         {
-            collision.InitBuffers(d3d, context);
+            instance.InitBuffers(d3d, context);
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
@@ -28,16 +36,19 @@ namespace Rendering.Graphics
             if (!DoRender)
                 return;
 
-            collision.SetTransform(Transform);
-            collision.Render(device, deviceContext, camera, light);   
+            instance.SetTransform(Transform);
+            instance.Render(device, deviceContext, camera, light);   
 
 
             //unique to instanced collision; we need to do this rather than the usual, because otherwise all instanced collisions will show as being selected.
             if(isSelected)
             {
-                collision.BoundingBox.DoRender = true;
-                collision.BoundingBox.Render(device, deviceContext, camera, light);
-                collision.BoundingBox.DoRender = false;
+                if (instance.GetType() == typeof(RenderStaticCollision) || instance.GetType() == typeof(RenderModel))
+                {
+                    (instance as RenderStaticCollision).BoundingBox.DoRender = true;
+                    (instance as RenderStaticCollision).BoundingBox.Render(device, deviceContext, camera, light);
+                    (instance as RenderStaticCollision).BoundingBox.DoRender = false;
+                }
             }
         }
 
@@ -57,13 +68,13 @@ namespace Rendering.Graphics
             m_trans[3, 1] = position.Y;
             m_trans[3, 2] = position.Z;
             Transform = m_trans;
-            collision.SetTransform(m_trans);
+            instance.SetTransform(m_trans);
         }
 
         public override void SetTransform(Matrix matrix)
         {
             Transform = matrix;
-            collision.SetTransform(matrix);
+            instance.SetTransform(matrix);
         }
 
         public override void Shutdown()
@@ -73,24 +84,24 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
-            collision.UpdateBuffers(device, deviceContext);
+            instance.UpdateBuffers(device, deviceContext);
         }
 
         public RenderStaticCollision GetCollision()
         {
-            return collision;
+            return (instance as RenderStaticCollision);
         }
 
         public override void Select()
         {
             isSelected = true;
-            collision.BoundingBox.Select();
+            (instance as RenderStaticCollision).BoundingBox.Select();
         }
 
         public override void Unselect()
         {
             isSelected = false;
-            collision.BoundingBox.Unselect();
+            (instance as RenderStaticCollision).BoundingBox.Unselect();
         }
     }
 }
