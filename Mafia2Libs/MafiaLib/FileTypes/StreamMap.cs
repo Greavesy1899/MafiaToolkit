@@ -388,6 +388,7 @@ namespace ResourceTypes.Misc
             int size = 0;
             rawPool = "";
 
+            int loaderIDX = 0;
             foreach (var group in groups)
             {
                 int idx = -1;
@@ -399,8 +400,7 @@ namespace ResourceTypes.Misc
                     rawPool += (group.Name + '\0' + '\0');
                 }
 
-                group.nameIDX = idx;
-                int loaderIDX = 0;
+                group.nameIDX = idx;           
                 for (int x = group.startOffset; x < group.startOffset + group.endOffset; x++)
                 {
                     loaderIDX++;
@@ -422,10 +422,17 @@ namespace ResourceTypes.Misc
                     if (!pool.TryGetValue(loader.Entity, out idx))
                     {
                         idx = size;
-                        pool.Add(loader.Entity, size);
-                        size += loader.Entity.Length + 2;
+                        pool.Add(loader.Entity, size);                       
+                        string[] splits = loader.Entity.Split('|');
                         string entity = loader.Entity.Replace('|', '\0');
+
                         rawPool += (entity + '\0' + '\0');
+                        size += loader.Entity.Length + 2;
+                        if (splits.Length > 5)
+                        {
+                            rawPool += ('\0');
+                            size++;
+                        }                      
                     }
                     loader.entityIDX = idx;
 
