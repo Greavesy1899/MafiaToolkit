@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using Gibbed.Illusion.FileFormats;
+using Gibbed.Illusion.FileFormats.Hashing;
 using Gibbed.IO;
 using Utils.StringHelpers;
 
@@ -116,9 +117,10 @@ namespace Gibbed.Mafia2.ResourceFormats
                             writer.Write(float.Parse(colors[2]));
                             break;
                         case ColumnType.Hash64AndString32:
-                            string[] data = (Rows[i].Values[x] as string).Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                            writer.Write(ulong.Parse(data[0]));
-                            StringHelpers.WriteStringBuffer(writer, 32, data.Length == 2 ? data[1] : "");
+                            string name = (string)Rows[i].Values[x];
+                            ulong hash = FNV64.Hash(name);
+                            writer.Write(hash);
+                            StringHelpers.WriteStringBuffer(writer, 32, !string.IsNullOrEmpty(name) ? name : "");
                             break;
                         default:
                             throw new FormatException();
@@ -269,7 +271,7 @@ namespace Gibbed.Mafia2.ResourceFormats
                                 {
                                     var hash = data.ReadValueU64(endian);
                                     string value = data.ReadString(32, true);
-                                    row.Values.Add(hash + " " + value);
+                                    row.Values.Add(value);
                                     break;
                                 }
 

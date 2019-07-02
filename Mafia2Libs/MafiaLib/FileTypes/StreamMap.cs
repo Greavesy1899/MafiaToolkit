@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -78,6 +79,10 @@ namespace ResourceTypes.Misc
                 get { return group; }
                 set { group = value; }
             }
+            public int GroupID {
+                get { return groupID; }
+                set { groupID = value; }
+            }
             public int LoadType {
                 get { return loadType; }
                 set { loadType = value; }
@@ -131,6 +136,7 @@ namespace ResourceTypes.Misc
         {
             string path;
             string entity;
+            string group;
             public int start;
             public int end;
             public int type;
@@ -153,12 +159,16 @@ namespace ResourceTypes.Misc
                 get { return entity; }
                 set { entity = value; }
             }
-            [Browsable(false)]
+            public string Group {
+                get { return group; }
+                set { group = value; }
+            }
+            [Browsable(true)]
             public int LoaderSubID {
                 get { return loaderSubID; }
                 set { loaderSubID = value; }
             }
-            [Browsable(false)]
+            [Browsable(true)]
             public int LoaderID {
                 get { return loaderID; }
                 set { loaderID = value; }
@@ -174,7 +184,7 @@ namespace ResourceTypes.Misc
             }
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3} {4} {5} {6} {7}", start, end, type, loaderSubID, loaderID, loadType, pathIDX, entityIDX);
+                return string.Format("{0} {1} {2} LoaderSubID: {3} LoaderID: {4} {5} {6} {7}", start, end, type, loaderSubID, loaderID, loadType, pathIDX, entityIDX);
             }
         }
 
@@ -286,9 +296,13 @@ namespace ResourceTypes.Misc
                 throw new FormatException();
 
             groupHeaders = new string[numHeaders];
+            ulong[] ulongHeaders = new ulong[numHeaders];
 
             for (int i = 0; i < numHeaders; i++)
-                groupHeaders[i] = ReadFromBuffer((long)(reader.ReadUInt64() + (ulong)poolOffset), reader.BaseStream.Position, reader);
+            {
+                ulongHeaders[i] = reader.ReadUInt64();
+                groupHeaders[i] = ReadFromBuffer((long)(ulongHeaders[i] + (ulong)poolOffset), reader.BaseStream.Position, reader);
+            }
 
             if (reader.BaseStream.Position != lineOffset)
                 throw new FormatException();
@@ -333,7 +347,7 @@ namespace ResourceTypes.Misc
                 map.pathIDX = reader.ReadInt32();
                 map.entityIDX = reader.ReadInt32();
                 map.Path = ReadFromBuffer((long)((ulong)map.pathIDX + (ulong)poolOffset), reader.BaseStream.Position, reader);
-                map.Entity = ReadFromBuffer((long)((ulong)map.entityIDX + (ulong)poolOffset), reader.BaseStream.Position, reader);
+                map.Entity = ReadBufferSpecial((long)((ulong)map.entityIDX + (ulong)poolOffset), reader.BaseStream.Position, reader).TrimEnd('\0').Replace('\0', '|');
                 loaders[i] = map;
             }
 
@@ -366,44 +380,52 @@ namespace ResourceTypes.Misc
                 throw new FormatException("Borked this up");
         }
 
+
+
         private void Update()
         {
             Dictionary<string, int> pool = new Dictionary<string, int>();
             int size = 0;
             rawPool = "";
 
-            foreach(var group in groups)
+            foreach (var group in groups)
             {
                 int idx = -1;
-                if(!pool.TryGetValue(group.Name, out idx))
+                if (!pool.TryGetValue(group.Name, out idx))
                 {
                     idx = size;
                     pool.Add(group.Name, size);
-                    size += group.Name.Length+1;
-                    rawPool += (group.Name + '\0');
+                    size += group.Name.Length + 2;
+                    rawPool += (group.Name + '\0' + '\0');
                 }
 
                 group.nameIDX = idx;
-
+                int loaderIDX = 0;
                 for (int x = group.startOffset; x < group.startOffset + group.endOffset; x++)
                 {
+                    loaderIDX++;
                     var loader = loaders[x];
+                    if (loader.loaderSubID == 1)
+                        loader.loaderID = loaderIDX - 1;
+                    else
+                        loader.loaderID = loaderIDX;
 
                     idx = -1;
                     if (!pool.TryGetValue(loader.Path, out idx))
                     {
                         idx = size;
                         pool.Add(loader.Path, size);
-                        size += loader.Path.Length+1;
-                        rawPool += (loader.Path + '\0');
+                        size += loader.Path.Length + 2;
+                        rawPool += (loader.Path + '\0' + '\0');
                     }
                     loader.pathIDX = idx;
                     if (!pool.TryGetValue(loader.Entity, out idx))
                     {
                         idx = size;
                         pool.Add(loader.Entity, size);
-                        size += loader.Entity.Length+1;
-                        rawPool += (loader.Entity + '\0');
+                        size += loader.Entity.Length + 2;
+                        string entity = loader.Entity.Replace('|', '\0');
+                        rawPool += (entity + '\0' + '\0');
                     }
                     loader.entityIDX = idx;
 
@@ -412,41 +434,43 @@ namespace ResourceTypes.Misc
 
             List<string> newGH = new List<string>();
             List<ulong> hashGH = new List<ulong>();
-            foreach(var line in lines)
+            int curGroupID = -1;
+            foreach (var line in lines)
             {
                 int idx = -1;
-                if (!pool.TryGetValue(line.Group, out idx))
+
+                if(curGroupID != line.groupID)
                 {
-                    idx = size;
-                    pool.Add(line.Group, size);
-                    size += line.Group.Length+1;
-                    rawPool += (line.Group + '\0');
-                    line.groupID = newGH.Count;
-                    if (!newGH.Contains(line.Group))
+                    curGroupID = line.groupID;
+                    if (!pool.TryGetValue(line.Group, out idx))
+                    {
+                        pool.Add(line.Group, size);
+                        newGH.Add(line.Group);
+                        hashGH.Add((ulong)size);
+                        size += line.Group.Length + 2;
+                        rawPool += (line.Group + '\0' + '\0');
+                    }
+                    else
                     {
                         newGH.Add(line.Group);
                         hashGH.Add((ulong)idx);
                     }
                 }
-               else
-                {
-                    line.groupID = newGH.IndexOf(line.Group);
-                }
                 if (!pool.TryGetValue(line.Name, out idx))
                 {
                     idx = size;
                     pool.Add(line.Name, size);
-                    size += line.Name.Length+1;
-                    rawPool += (line.Name + '\0');
+                    size += line.Name.Length + 2;
+                    rawPool += (line.Name + '\0' + '\0');
                 }
                 line.nameIDX = idx;
                 if (!pool.TryGetValue(line.Flags, out idx))
                 {
                     idx = size;
                     pool.Add(line.Flags, size);
-                    size += line.Flags.Length+2;
-                    line.Flags = line.Flags.Replace('|', '\0');
-                    rawPool += (line.Flags + '\0' + '\0');
+                    size += line.Flags.Length + 3;
+                    string flags = line.Flags.Replace('|', '\0');
+                    rawPool += (flags + '\0' + '\0' + '\0');
                 }
                 line.flagIDX = idx;
             }
@@ -473,24 +497,7 @@ namespace ResourceTypes.Misc
             int hashOffset = 0;
             int poolOffset = 0;
 
-            writer.Write(1299346515);
-            writer.Write(0x6);
-            writer.Write(0);
-            writer.Write(0);
-            writer.Write(groups.Length);
-            writer.Write(72);
-            writer.Write(groupHeaders.Length);
-            writer.Write(0);
-            writer.Write(lines.Length);
-            writer.Write(0);
-            writer.Write(loaders.Length);
-            writer.Write(0);
-            writer.Write(blocks.Length);
-            writer.Write(0);
-            writer.Write(hashes.Length);
-            writer.Write(0);
-            writer.Write(rawPool.Length);
-            writer.Write(0);
+            writer.Write(new byte[72]);
 
             groupOffset = 72;
 
