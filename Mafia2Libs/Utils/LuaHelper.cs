@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using System.Text;
 using UnluacNET;
 
@@ -24,12 +25,15 @@ namespace Utils.Lua
             bool isAP = (info.Extension == ".AP" ? true : false);
             string name = info.FullName.Remove(info.FullName.Length - (isAP ? 7 : 4));
             name += "_d.lua"/* + (isAP ? ".ap " : "")*/;
+            var curCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             using (var writer = new StreamWriter(name, false, Encoding.ASCII))
             {
                 Output output = new Output(writer);
                 decompile.Print(output);
                 writer.Flush();
             }
+            System.Threading.Thread.CurrentThread.CurrentCulture = curCulture;
         }
     }
 }

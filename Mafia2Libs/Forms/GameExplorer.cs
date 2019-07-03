@@ -365,6 +365,16 @@ namespace Mafia2Tool
             OnRefreshButtonClicked(null, null);
         }
 
+        private bool HandleStreamMap(FileInfo file)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+            {
+                if (reader.ReadInt32() == 1299346515)
+                    return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// Check extension and return file type string.
         /// </summary>
@@ -460,9 +470,9 @@ namespace Mafia2Tool
                 Roadmap roadmap = new Roadmap((item.Tag as FileInfo));
                 return;
             }
-            else if (item.SubItems[0].Text.Contains("StreamMapa") && item.SubItems[1].Text == "BIN")
+            else if (item.SubItems[1].Text == "BIN" && HandleStreamMap((item.Tag as FileInfo)))
             {
-                StreamEditor se = new StreamEditor((item.Tag as FileInfo));
+                StreamEditor editor = new StreamEditor((item.Tag as FileInfo));
                 return;
             }
             else if (item.SubItems[0].Text.Contains("sdsconfig") && item.SubItems[1].Text == "BIN")

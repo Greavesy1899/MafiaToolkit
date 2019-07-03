@@ -159,6 +159,7 @@ namespace Mafia2Tool
             {
                 TreeNode node = new TreeNode("group" + i);
                 node.Text = stream.groupHeaders[i];
+                node.Tag = "Header";
                 linesTree.Nodes.Add(node);
             }
             for (int i = 0; i < stream.groups.Length; i++)
@@ -251,6 +252,43 @@ namespace Mafia2Tool
         {
             UpdateStream();
             stream.WriteToFile();
+        }
+
+        private void OnContextMenuOpening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            LineContextStrip.Items[0].Visible = false;
+            LineContextStrip.Items[1].Visible = false;
+
+            if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
+            {
+                if(linesTree.SelectedNode.Tag.GetType() == typeof(string) && (linesTree.SelectedNode.Tag as string == "Header"))
+                {
+                    LineContextStrip.Items[0].Visible = true;
+                }
+                else if (linesTree.SelectedNode.Tag.GetType() == typeof(StreamLine))
+                {
+                    LineContextStrip.Items[1].Visible = true;
+                }
+            }
+        }
+
+        private void DeleteLineButtonPressed(object sender, System.EventArgs e)
+        {
+            linesTree?.Nodes.Remove(linesTree.SelectedNode);
+        }
+
+        private void AddLineButtonPressed(object sender, System.EventArgs e)
+        {
+            TreeNode node = linesTree.SelectedNode;
+            StreamLine line = new StreamLine();
+            line.Name = "New_Stream_Line";
+            line.Group = node.Text;
+
+            TreeNode child = new TreeNode();
+            child.Name = "GroupLoader" + node.Index;
+            child.Text = line.Name;
+            child.Tag = line;
+            node.Nodes.Add(child);
         }
     }
 }
