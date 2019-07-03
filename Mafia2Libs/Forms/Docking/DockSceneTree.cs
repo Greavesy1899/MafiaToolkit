@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using ResourceTypes.FrameResource;
 using SharpDX;
 using Utils.Types;
+using Mafia2Tool;
 
 namespace Forms.Docking
 {
@@ -83,6 +84,7 @@ namespace Forms.Docking
             EntryMenuStrip.Items[1].Visible = false;
             EntryMenuStrip.Items[2].Visible = false;
             EntryMenuStrip.Items[3].Visible = false;
+            EntryMenuStrip.Items[4].Visible = false;
 
             if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag != null)
             {
@@ -101,6 +103,9 @@ namespace Forms.Docking
                 {
                     EntryMenuStrip.Items[3].Visible = true;
                 }
+
+                if (FrameResource.IsFrameType(treeView1.SelectedNode.Tag))
+                    EntryMenuStrip.Items[4].Visible = true;
             }
         }
 
@@ -146,6 +151,65 @@ namespace Forms.Docking
             var hitTestInfo = treeView1.HitTest(localPosition);
             if (hitTestInfo.Location == TreeViewHitTestLocations.StateImage)
                 return;
+        }
+
+        private void UpdateParent1Pressed(object sender, System.EventArgs e)
+        {
+            ModifyParents(0);
+        }
+
+        private void UpdateParent2Pressed(object sender, System.EventArgs e)
+        {
+            ModifyParents(1);
+        }
+
+        private void ModifyParents(int parent)
+        {
+            FrameObjectBase obj = treeView1.SelectedNode.Tag as FrameObjectBase;
+            ListWindow window = new ListWindow();
+            window.PopulateForm(parent);
+
+            if (window.ShowDialog() == DialogResult.OK)
+            {
+                int refID = (window.chosenObject as FrameEntry).RefID;
+                obj.IsOnFrameTable = true;
+
+                if (parent == 0)
+                {
+                    obj.ParentIndex1.Index = window.chosenObjectIndex;
+                    obj.ParentIndex1.RefID = refID;
+                    obj.SubRef(FrameEntryRefTypes.Parent1);
+                    obj.AddRef(FrameEntryRefTypes.Parent1, refID);
+                }
+                else if(parent == 1)
+                {
+                    obj.ParentIndex2.Index = window.chosenObjectIndex;
+                    obj.ParentIndex2.RefID = refID;
+                    obj.SubRef(FrameEntryRefTypes.Parent2);
+                    obj.AddRef(FrameEntryRefTypes.Parent2, refID);
+                }
+
+                treeView1.Nodes.Remove(treeView1.SelectedNode);
+                TreeNode newNode = new TreeNode();
+                newNode.Tag = obj;
+                newNode.Name = obj.RefID.ToString();
+                newNode.Text = obj.ToString();
+
+                if (obj.ParentIndex1.Index != -1)
+                {
+                    TreeNode[] nodes = treeView1.Nodes.Find(obj.ParentIndex1.RefID.ToString(), true);
+
+                    if(nodes.Length > 0)
+                        AddToTree(newNode, nodes[0]);
+                }
+                else if (obj.ParentIndex2.Index != -1)
+                {
+                    TreeNode[] nodes = treeView1.Nodes.Find(obj.ParentIndex2.RefID.ToString(), true);
+
+                    if (nodes.Length > 0)
+                        AddToTree(newNode, nodes[0]);
+                }
+            }
         }
     }
 }

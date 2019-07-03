@@ -1096,7 +1096,21 @@ namespace Mafia2Tool
                         TreeNode newNode = new TreeNode(obj.ToString());
                         newNode.Tag = obj;
                         newNode.Name = obj.RefID.ToString();
-                        dSceneTree.AddToTree(newNode, nodes[0]);
+
+                        if (obj.ParentIndex1.Index != -1)
+                        {
+                            nodes = dSceneTree.treeView1.Nodes.Find(obj.ParentIndex1.RefID.ToString(), true);
+
+                            if (nodes.Length > 0)
+                                dSceneTree.AddToTree(newNode, nodes[0]);
+                        }
+                        else if (obj.ParentIndex2.Index != -1)
+                        {
+                            nodes = dSceneTree.treeView1.Nodes.Find(obj.ParentIndex2.RefID.ToString(), true);
+
+                            if (nodes.Length > 0)
+                                dSceneTree.AddToTree(newNode, nodes[0]);
+                        }
                     }
                 }
             }

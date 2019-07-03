@@ -36,6 +36,8 @@ namespace Forms.Docking
             this.DeleteButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DuplicateButton = new System.Windows.Forms.ToolStripMenuItem();
             this.Export3DButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.UpdateParent1Button = new System.Windows.Forms.ToolStripMenuItem();
+            this.UpdateParent2Button = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.treeView1 = new Utils.Extensions.MTreeView();
             this.EntryMenuStrip.SuspendLayout();
@@ -47,34 +49,50 @@ namespace Forms.Docking
             this.JumpToButton,
             this.DeleteButton,
             this.DuplicateButton,
-            this.Export3DButton});
+            this.Export3DButton,
+            this.UpdateParent1Button,
+            this.UpdateParent2Button});
             this.EntryMenuStrip.Name = "EntryMenuStrip";
-            this.EntryMenuStrip.Size = new System.Drawing.Size(166, 92);
+            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 158);
             this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
             // 
             // JumpToButton
             // 
             this.JumpToButton.Name = "JumpToButton";
-            this.JumpToButton.Size = new System.Drawing.Size(165, 22);
+            this.JumpToButton.Size = new System.Drawing.Size(180, 22);
             this.JumpToButton.Text = "Jump To Position";
             // 
             // DeleteButton
             // 
             this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(165, 22);
+            this.DeleteButton.Size = new System.Drawing.Size(180, 22);
             this.DeleteButton.Text = "Delete";
             // 
             // DuplicateButton
             // 
             this.DuplicateButton.Name = "DuplicateButton";
-            this.DuplicateButton.Size = new System.Drawing.Size(165, 22);
+            this.DuplicateButton.Size = new System.Drawing.Size(180, 22);
             this.DuplicateButton.Text = "Duplicate";
             // 
             // Export3DButton
             // 
             this.Export3DButton.Name = "Export3DButton";
-            this.Export3DButton.Size = new System.Drawing.Size(165, 22);
+            this.Export3DButton.Size = new System.Drawing.Size(180, 22);
             this.Export3DButton.Text = "Export 3D";
+            // 
+            // UpdateParent1Button
+            // 
+            this.UpdateParent1Button.Name = "UpdateParent1Button";
+            this.UpdateParent1Button.Size = new System.Drawing.Size(180, 22);
+            this.UpdateParent1Button.Text = "Update Parent 1";
+            this.UpdateParent1Button.Click += new System.EventHandler(this.UpdateParent1Pressed);
+            // 
+            // UpdateParent2Button
+            // 
+            this.UpdateParent2Button.Name = "UpdateParent2Button";
+            this.UpdateParent2Button.Size = new System.Drawing.Size(180, 22);
+            this.UpdateParent2Button.Text = "Update Parent 2";
+            this.UpdateParent2Button.Click += new System.EventHandler(this.UpdateParent2Pressed);
             // 
             // imageList1
             // 
@@ -130,5 +148,7 @@ namespace Forms.Docking
         public System.Windows.Forms.ToolStripMenuItem DuplicateButton;
         public System.Windows.Forms.ToolStripMenuItem Export3DButton;
         public Utils.Extensions.MTreeView treeView1;
+        private System.Windows.Forms.ToolStripMenuItem UpdateParent1Button;
+        private System.Windows.Forms.ToolStripMenuItem UpdateParent2Button;
     }
 }

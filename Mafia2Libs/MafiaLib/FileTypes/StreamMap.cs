@@ -131,7 +131,7 @@ namespace ResourceTypes.Misc
             }
         }
 
-        [TypeConverter(typeof(StreamLoaderConverter))]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
         public class StreamLoader
         {
             string path;
@@ -145,7 +145,6 @@ namespace ResourceTypes.Misc
             public int loadType;
             public int pathIDX;
             public int entityIDX;
-            bool isChild;
 
             public int LoadType {
                 get { return loadType; }
@@ -163,28 +162,20 @@ namespace ResourceTypes.Misc
                 get { return group; }
                 set { group = value; }
             }
-            [Browsable(true)]
+            [Browsable(false)]
             public int LoaderSubID {
                 get { return loaderSubID; }
                 set { loaderSubID = value; }
             }
-            [Browsable(true)]
+            [Browsable(false)]
             public int LoaderID {
                 get { return loaderID; }
                 set { loaderID = value; }
             }
-            public bool IsChild {
-                get { return loaderSubID == 1 ? true : false; }
-                set { isChild = value; }
-            }
 
-            public string ToEditorString()
-            {
-                return string.Format("{0} {1} {2} {3}", loadType, path, entity, IsChild);
-            }
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} LoaderSubID: {3} LoaderID: {4} {5} {6} {7}", start, end, type, loaderSubID, loaderID, loadType, pathIDX, entityIDX);
+                return string.Format("{0} {1} {2} {3}", LoadType, path, entity, group);
             }
         }
 
@@ -441,17 +432,18 @@ namespace ResourceTypes.Misc
 
             List<string> newGH = new List<string>();
             List<ulong> hashGH = new List<ulong>();
-            int curGroupID = -1;
+            string groupName = "";
             foreach (var line in lines)
             {
                 int idx = -1;
 
-                if(curGroupID != line.groupID)
+                if (groupName != line.Group)
                 {
-                    curGroupID = line.groupID;
+                    groupName = line.Group;
                     if (!pool.TryGetValue(line.Group, out idx))
                     {
                         pool.Add(line.Group, size);
+                        line.groupID = newGH.Count;
                         newGH.Add(line.Group);
                         hashGH.Add((ulong)size);
                         size += line.Group.Length + 2;
@@ -459,9 +451,14 @@ namespace ResourceTypes.Misc
                     }
                     else
                     {
+                        line.groupID = newGH.Count;
                         newGH.Add(line.Group);
                         hashGH.Add((ulong)idx);
                     }
+                }
+                else
+                {
+                    line.groupID = newGH.Count-1;
                 }
                 if (!pool.TryGetValue(line.Name, out idx))
                 {
@@ -591,48 +588,6 @@ namespace ResourceTypes.Misc
             writer.Write(hashOffset);
             writer.Write(rawPool.Length);
             writer.Write(poolOffset);
-        }
-
-        public class StreamLoaderConverter : TypeConverter
-        {
-            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-            {
-                return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
-            }
-
-            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-            {
-                return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
-            }
-
-            public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-            {
-                object result = null;
-                string stringValue = value as string;
-
-                if (!string.IsNullOrEmpty(stringValue))
-                {
-                    string[] split = stringValue.Split(' ');
-                    StreamLoader container = new StreamLoader();
-                    container.LoadType = int.Parse(split[0]);
-                    container.Path = split[1];
-                    container.Entity = split[2];
-                    container.IsChild = bool.Parse(split[3]);
-                }
-
-                return result ?? base.ConvertFrom(context, culture, value);
-            }
-
-            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
-            {
-                object result = null;
-                StreamLoader container = (StreamLoader)value;
-
-                if (destinationType == typeof(String))
-                    result = container.ToEditorString();
-
-                return result ?? base.ConvertTo(context, culture, value, destinationType);
-            }
         }
     }
 }

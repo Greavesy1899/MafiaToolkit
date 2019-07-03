@@ -110,6 +110,12 @@ namespace Mafia2Tool
                     }
                 }
             }
+            foreach(var loader in currentLoaders)
+                loaders.Add(loader.Value);
+
+            currentLoaders = null;
+            temp = null;
+
             Sort(loaders);
             Dictionary<string, List<StreamLoader>> organised = new Dictionary<string, List<StreamLoader>>();
             List<StreamGroup> groups = new List<StreamGroup>();
@@ -153,6 +159,9 @@ namespace Mafia2Tool
 
         private void BuildData()
         {
+            linesTree.Nodes.Clear();
+            blockView.Nodes.Clear();
+            groupTree.Nodes.Clear();
             stream = new StreamMapLoader(file);
 
             for(int i = 0; i < stream.groupHeaders.Length; i++)
@@ -233,22 +242,10 @@ namespace Mafia2Tool
             }
         }
 
-        private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
-        {
-            PropertyGrid.SelectedObject = e.Node.Tag;
-        }
-
-        private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)
-        {
-            Close();
-        }
-
-        private void reloadToolStripMenuItem_Click(object sender, System.EventArgs e)
-        {
-
-        }
-
-        private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
+        private void OnNodeSelectSelect(object sender, TreeViewEventArgs e) => PropertyGrid.SelectedObject = e.Node.Tag;
+        private void ExitButtonPressed(object sender, System.EventArgs e) => Close();
+        private void ReloadButtonPressed(object sender, System.EventArgs e) => BuildData();
+        private void SaveButtonPressed(object sender, System.EventArgs e)
         {
             UpdateStream();
             stream.WriteToFile();
@@ -283,6 +280,8 @@ namespace Mafia2Tool
             StreamLine line = new StreamLine();
             line.Name = "New_Stream_Line";
             line.Group = node.Text;
+            line.Flags = "";
+            line.loadList = new StreamLoader[0];
 
             TreeNode child = new TreeNode();
             child.Name = "GroupLoader" + node.Index;

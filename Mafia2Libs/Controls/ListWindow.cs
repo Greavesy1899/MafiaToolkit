@@ -7,7 +7,6 @@ namespace Mafia2Tool
     public partial class ListWindow : Form
     {
         private bool searchMode = false;
-        public int type = -1;
         public object chosenObject = null;
         public int chosenObjectIndex = -1;
 
@@ -17,22 +16,15 @@ namespace Mafia2Tool
         }
 
         //sort this shit out.
-        public void PopulateForm(bool scenes = false)
+        public void PopulateForm(int parent)
         {
-            if (scenes)
+            if (parent == 1)
             {
                 foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
-                {
                     listBox1.Items.Add(entry.Value);
-                }
             }
-            else
-            {
                 foreach (KeyValuePair<int, object> entry in SceneData.FrameResource.FrameObjects)
-                {
                     listBox1.Items.Add(entry.Value);
-                }
-            }
         }
 
         private void SearchForms()
@@ -69,7 +61,7 @@ namespace Mafia2Tool
         {
             chosenObject = listBox1.SelectedItem;
             chosenObjectIndex = listBox1.SelectedIndex;
-            type = 1;
+            DialogResult = DialogResult.OK;
             Close();
         }
     }
