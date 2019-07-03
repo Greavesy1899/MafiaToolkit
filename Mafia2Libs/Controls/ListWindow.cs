@@ -1,6 +1,7 @@
 ﻿using ResourceTypes.FrameResource;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Utils.Lang;
 
 namespace Mafia2Tool
 {
@@ -15,9 +16,9 @@ namespace Mafia2Tool
             InitializeComponent();
         }
 
-        //sort this shit out.
         public void PopulateForm(int parent)
         {
+            labelInfo.Text = Language.GetString("$SELECT_PARENT") + '\n' + Language.GetString("$HOW_TO_SEARCH");
             if (parent == 1)
             {
                 foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)

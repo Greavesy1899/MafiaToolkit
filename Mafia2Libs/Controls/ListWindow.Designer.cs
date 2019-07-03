@@ -58,7 +58,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.listBox1);
             this.splitContainer1.Size = new System.Drawing.Size(334, 388);
-            this.splitContainer1.SplitterDistance = 63;
+            this.splitContainer1.SplitterDistance = 70;
             this.splitContainer1.TabIndex = 0;
             // 
             // splitContainer2
@@ -77,8 +77,8 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.SearchBox);
             this.splitContainer2.Panel2.Padding = new System.Windows.Forms.Padding(5);
-            this.splitContainer2.Size = new System.Drawing.Size(334, 63);
-            this.splitContainer2.SplitterDistance = 25;
+            this.splitContainer2.Size = new System.Drawing.Size(334, 70);
+            this.splitContainer2.SplitterDistance = 39;
             this.splitContainer2.TabIndex = 0;
             // 
             // labelInfo
@@ -87,9 +87,9 @@
             this.labelInfo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelInfo.Location = new System.Drawing.Point(5, 5);
             this.labelInfo.Name = "labelInfo";
-            this.labelInfo.Size = new System.Drawing.Size(147, 13);
+            this.labelInfo.Size = new System.Drawing.Size(147, 26);
             this.labelInfo.TabIndex = 0;
-            this.labelInfo.Text = "Double click on item to copy..";
+            this.labelInfo.Text = "Double click on item to copy..\r\nSearch Help here";
             // 
             // SearchBox
             // 
@@ -108,7 +108,7 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(0, 0);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(334, 321);
+            this.listBox1.Size = new System.Drawing.Size(334, 314);
             this.listBox1.TabIndex = 0;
             this.listBox1.DoubleClick += new System.EventHandler(this.OnItemSelect);
             // 

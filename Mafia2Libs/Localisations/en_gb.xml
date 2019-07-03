@@ -172,4 +172,8 @@
   <String ID="$ROTATION_X">Rotation X</String>
   <String ID="$ROTATION_Y">Rotation Y</String>
   <String ID="$ROTATION_Z">Rotation Z</String>
+  
+  <!-- ListWindow Strings-->
+  <String ID="$SELECT_PARENT">Double click to select the new parent.</String>
+  <String ID="$HOW_TO_SEARCH">To search, type the name of the frame and press the 'enter' key.</String>
 </Localisation>
