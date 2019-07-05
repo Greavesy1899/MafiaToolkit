@@ -9,7 +9,8 @@ namespace Mafia2Tool
     {
         private bool searchMode = false;
         public object chosenObject = null;
-        public int chosenObjectIndex = -1;
+        int type = 0;
+        public string chosenObjectName = "";
 
         public ListWindow()
         {
@@ -19,6 +20,7 @@ namespace Mafia2Tool
         public void PopulateForm(int parent)
         {
             labelInfo.Text = Language.GetString("$SELECT_PARENT") + '\n' + Language.GetString("$HOW_TO_SEARCH");
+            type = parent;
             if (parent == 1)
             {
                 foreach (KeyValuePair<int, FrameHeaderScene> entry in SceneData.FrameResource.FrameScenes)
@@ -60,10 +62,12 @@ namespace Mafia2Tool
 
         private void OnItemSelect(object sender, System.EventArgs e)
         {
-            chosenObject = listBox1.SelectedItem;
-            chosenObjectIndex = listBox1.SelectedIndex;
-            DialogResult = DialogResult.OK;
-            Close();
+            if (listBox1.SelectedItem != null)
+            {
+                chosenObject = listBox1.SelectedItem;
+                DialogResult = DialogResult.OK;
+                Close();
+            }
         }
     }
 }

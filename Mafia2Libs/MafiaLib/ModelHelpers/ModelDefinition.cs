@@ -282,12 +282,14 @@ namespace Utils.Models
                     Convert.ToInt16(model.Lods[x].Parts[i].Bounds.Maximum.Z)
 
                     };
+                    if (model.Lods[x].Parts.Length == 1)
+                        frameGeometry.LOD[x].SplitInfo.Hash = model.Lods[0].Parts[0].Hash;
 
-                    frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].FirstIndex = 0;
+                    frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].FirstIndex = 0;                  
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].LeftIndex = -1;
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].RightIndex = -1;
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].SecondIndex =
-                        Convert.ToInt16(model.Lods[x].Parts[i].NumFaces - 1);
+                        Convert.ToUInt16(model.Lods[x].Parts[i].NumFaces - 1);
                     frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].BaseIndex = baseIndex;
                     frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].FirstBurst = i;
                     frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].NumBurst = 1;
@@ -313,9 +315,6 @@ namespace Utils.Models
             for (int i = 0; i != model.Lods.Length; i++)
             {
                 vertData.Add(model.Lods[i].Vertices);
-
-                if (model.Lods[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
-                    model.Lods[i].VertexDeclaration -= VertexFlags.ShadowTexture;
 
                 if (model.Lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
                     model.Lods[i].VertexDeclaration -= VertexFlags.Tangent;

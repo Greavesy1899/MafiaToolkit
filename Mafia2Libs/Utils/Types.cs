@@ -4,9 +4,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
-using Utils.Extensions;
 using Utils.Models;
-using Utils.SharpDXExtensions;
 
 namespace Utils.Types
 {
@@ -14,7 +12,6 @@ namespace Utils.Types
     public class Hash
     {
         ulong hash;
-        string _hex;
         string _string;
         short size;
 
@@ -30,7 +27,7 @@ namespace Utils.Types
 
         [ReadOnly(true)]
         public string Hex {
-            get { return _hex; }
+            get { return string.Format("{0:X}", hash); }
         }
         public Hash()
         {
@@ -40,6 +37,11 @@ namespace Utils.Types
         public Hash(string name)
         {
             Set(name);
+        }
+        public Hash(Hash other)
+        {
+            this.hash = other.hash;
+            this._string = other._string;
         }
         public Hash(BinaryReader reader)
         {
@@ -55,7 +57,6 @@ namespace Utils.Types
             hash = reader.ReadUInt64();
             size = reader.ReadInt16();
             _string = Encoding.ASCII.GetString(reader.ReadBytes(size));
-            _hex = string.Format("{0:X8}", hash);
         }
 
         /// <summary>
@@ -78,7 +79,6 @@ namespace Utils.Types
             _string = name;
             size = (short)name.Length;
             hash = FNV64.Hash(name);
-            _hex = string.Format("{0:X}", hash);
         }
 
         public override string ToString()

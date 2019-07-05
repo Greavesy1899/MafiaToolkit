@@ -74,6 +74,16 @@ namespace ResourceTypes.FrameResource
             set { newFrames = value; }
         }
 
+        public int GetIndexOfObject(int refID)
+        {
+            for(int i = 0; i != frameObjects.Count; i++)
+            {
+                if (frameObjects.ElementAt(i).Key == refID)
+                    return i;
+            }
+            return -1;
+        }
+
         private FrameHolder GetLocalEntryFromRefID(List<FrameHolder> frames, int refID)
         {
             foreach (FrameHolder holder in frames)

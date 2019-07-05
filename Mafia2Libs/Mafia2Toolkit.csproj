@@ -187,6 +187,12 @@
     <Compile Include="Forms\Docking\DockSceneTree.Designer.cs">
       <DependentUpon>DockSceneTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\M2FBXTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\M2FBXTool.Designer.cs">
+      <DependentUpon>M2FBXTool.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\RenderForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -582,6 +588,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Docking\DockSceneTree.resx">
       <DependentUpon>DockSceneTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\M2FBXTool.resx">
+      <DependentUpon>M2FBXTool.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SDSContentEditor.resx">
       <DependentUpon>SDSContentEditor.cs</DependentUpon>

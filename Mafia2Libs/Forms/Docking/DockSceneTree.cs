@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using ResourceTypes.FrameResource;
 using SharpDX;
+using System.Linq;
 using Utils.Types;
 using Mafia2Tool;
 
@@ -180,19 +181,21 @@ namespace Forms.Docking
 
                 if (parent == 0)
                 {
-                    obj.ParentIndex1.Index = window.chosenObjectIndex;
+                    obj.ParentIndex1.Name = window.chosenObject.ToString();
+                    obj.ParentIndex1.Index = SceneData.FrameResource.GetIndexOfObject(refID);
                     obj.ParentIndex1.RefID = refID;
                     obj.SubRef(FrameEntryRefTypes.Parent1);
                     obj.AddRef(FrameEntryRefTypes.Parent1, refID);
                 }
                 else if(parent == 1)
                 {
-                    obj.ParentIndex2.Index = window.chosenObjectIndex;
+                    obj.ParentIndex2.Name = window.chosenObject.ToString();
+                    obj.ParentIndex1.Index = SceneData.FrameResource.GetIndexOfObject(refID) + SceneData.FrameResource.FrameScenes.Count;
                     obj.ParentIndex2.RefID = refID;
                     obj.SubRef(FrameEntryRefTypes.Parent2);
                     obj.AddRef(FrameEntryRefTypes.Parent2, refID);
                 }
-
+                  
                 treeView1.Nodes.Remove(treeView1.SelectedNode);
                 TreeNode newNode = new TreeNode();
                 newNode.Tag = obj;

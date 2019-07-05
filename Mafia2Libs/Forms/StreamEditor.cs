@@ -31,6 +31,8 @@ namespace Mafia2Tool
             saveToolStripMenuItem.Text = Language.GetString("$SAVE");
             reloadToolStripMenuItem.Text = Language.GetString("$RELOAD");
             exitToolStripMenuItem.Text = Language.GetString("$EXIT");
+            AddLineButton.Text = Language.GetString("$ADD_LINE");
+            DeleteLineButton.Text = Language.GetString("$DELETE_LINE");
         }
 
         private void Sort(List<StreamLoader> loaders)
@@ -288,6 +290,24 @@ namespace Mafia2Tool
             child.Text = line.Name;
             child.Tag = line;
             node.Nodes.Add(child);
+        }
+
+        private void OnKeyPressed(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == 13)
+            {
+                foreach(TreeNode node in linesTree.Nodes)
+                {
+                    if (node.Text.Contains(SearchBox.Text))
+                        linesTree.SelectedNode = node;
+
+                    foreach (TreeNode child in node.Nodes)
+                    {
+                        if (child.Text.Contains(SearchBox.Text))
+                            linesTree.SelectedNode = child;
+                    }
+                }
+            }
         }
     }
 }

@@ -18,6 +18,7 @@ using ResourceTypes.Sound;
 using ResourceTypes.SDSConfig;
 using Utils.Lua;
 using ResourceTypes.Misc;
+using Mafia2Tool.Forms;
 
 namespace Mafia2Tool
 {
@@ -744,6 +745,11 @@ namespace Mafia2Tool
                 if (currentDirectory != dir)
                     OpenDirectory(dir);
             }
+        }
+
+        private void M2FBXButtonClicked(object sender, EventArgs e)
+        {
+            M2FBXTool tool = new M2FBXTool();
         }
     }
 }

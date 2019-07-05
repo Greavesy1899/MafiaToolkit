@@ -814,10 +814,8 @@ namespace Mafia2Tool
                     return null;
             }
 
-            FrameResourceModelOptions options = new FrameResourceModelOptions();
-            options.ShowDialog();
-
-            if (options.type == -1)
+            FrameResourceModelOptions options = new FrameResourceModelOptions(model.ModelStructure.Lods[0].VertexDeclaration);
+            if(options.ShowDialog() != DialogResult.OK)
                 return null;
 
             bool[] data = options.data;
@@ -1291,6 +1289,7 @@ namespace Mafia2Tool
                 tNode.Name = newEntry.RefID.ToString();
                 dSceneTree.AddToTree(tNode, dSceneTree.treeView1.Nodes.Find(newEntry.ParentIndex2.RefID.ToString(), true)[0]);
                 SceneData.FrameResource.FrameObjects.Add(newEntry.RefID, newEntry);
+                dSceneTree.treeView1.SelectedNode = tNode;
                 UpdateMatricesRecursive();
             }
             else if (node.Tag.GetType() == typeof(Collision.Placement))

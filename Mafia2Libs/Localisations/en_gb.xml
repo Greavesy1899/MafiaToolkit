@@ -173,6 +173,11 @@
   <String ID="$ROTATION_Y">Rotation Y</String>
   <String ID="$ROTATION_Z">Rotation Z</String>
   
+  <!-- StreamEditor strings-->
+  <String ID="$STREAM_EDITOR_TITLE">Stream Editor</String>
+  <String ID="$ADD_LINE">Add Line</String>
+  <String ID="$DELETE_LINE">Delete Line</String>
+  
   <!-- ListWindow Strings-->
   <String ID="$SELECT_PARENT">Double click to select the new parent.</String>
   <String ID="$HOW_TO_SEARCH">To search, type the name of the frame and press the 'enter' key.</String>

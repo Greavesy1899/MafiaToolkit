@@ -88,10 +88,12 @@ namespace ResourceTypes.FrameResource
             unk_14_byte = other.unk_14_byte;
             meshIndex = other.meshIndex;
             materialIndex = other.materialIndex;
-            omTextureHash = new Hash(other.omTextureHash.String);
+            omTextureHash = new Hash(other.omTextureHash);
             unk_18_byte1 = other.unk_18_byte1;
             unk_18_byte2 = other.unk_18_byte2;
             unk_18_byte3 = other.unk_18_byte3;
+            material = other.material;
+            geometry = other.geometry;
         }
 
         /// <summary>

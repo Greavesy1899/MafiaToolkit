@@ -162,7 +162,7 @@ namespace ResourceTypes.FrameResource
         {
             short[] bounds;
             ushort firstIndex;
-            short secondIndex;
+            ushort secondIndex;
             short nleftIndex;
             short nrightIndex;
 
@@ -174,7 +174,7 @@ namespace ResourceTypes.FrameResource
                 get { return firstIndex; }
                 set { firstIndex = value; }
             }
-            public short SecondIndex {
+            public ushort SecondIndex {
                 get { return secondIndex; }
                 set { secondIndex = value; }
             }
@@ -195,7 +195,7 @@ namespace ResourceTypes.FrameResource
                     bounds[i] = reader.ReadInt16();
 
                 firstIndex = reader.ReadUInt16();
-                secondIndex = reader.ReadInt16();
+                secondIndex = reader.ReadUInt16();
                 nleftIndex = reader.ReadInt16();
                 nrightIndex = reader.ReadInt16();
             }
@@ -450,7 +450,7 @@ namespace ResourceTypes.FrameResource
             int nSizeOfMatSplitEntries = 0;
             int numMatBurst = 0;
             int numMatSplit = 0;
-            long hash;
+            ulong hash;
             MaterialBurst[] materialBursts;
             MaterialSplit[] materialSplits;
 
@@ -506,7 +506,7 @@ namespace ResourceTypes.FrameResource
                 get { return numSplitGroup; }
                 set { numSplitGroup = value; }
             }
-            public long Hash {
+            public ulong Hash {
                 get { return hash; }
                 set { hash = value; }
             }
@@ -547,9 +547,7 @@ namespace ResourceTypes.FrameResource
                     nSizeOfMatSplitEntries = reader.ReadInt32();
                     numMatBurst = reader.ReadInt32();
                     numMatSplit = reader.ReadInt32();
-
-                    hash = reader.ReadInt64();
-
+                    hash = reader.ReadUInt64();
                     materialBursts = new MaterialBurst[numMatBurst];
                     materialSplits = new MaterialSplit[numMatSplit];
 
