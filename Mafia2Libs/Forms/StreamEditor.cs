@@ -39,11 +39,8 @@ namespace Mafia2Tool
         {
             for (int i = 0; i < loaders.Count - 1; i++)
             {
-                // traverse i+1 to array length 
                 for (int j = i + 1; j < loaders.Count; j++)
                 {
-                    // compare array element with  
-                    // all next element 
                     if (loaders[i].start > loaders[j].start)
                     {
 

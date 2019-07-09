@@ -76,7 +76,7 @@ namespace ResourceTypes.FrameResource
 
         public int GetIndexOfObject(int refID)
         {
-            for(int i = 0; i != frameObjects.Count; i++)
+            for (int i = 0; i != frameObjects.Count; i++)
             {
                 if (frameObjects.ElementAt(i).Key == refID)
                     return i;
@@ -230,12 +230,15 @@ namespace ResourceTypes.FrameResource
                         mesh.ReadFromFile(reader);
                         mesh.ReadFromFilePart2(reader, (FrameSkeleton)GetEntryFromIdx(mesh.SkeletonIndex).Data, (FrameBlendInfo)GetEntryFromIdx(mesh.BlendInfoIndex).Data);
                         mesh.AddRef(FrameEntryRefTypes.Mesh, GetEntryFromIdx(mesh.MeshIndex).Data.RefID);
-                        mesh.Geometry = frameGeometries[mesh.Refs["Mesh"]];
+                        mesh.Geometry = frameGeometries[mesh.Refs[FrameEntry.MeshRef]];
                         mesh.AddRef(FrameEntryRefTypes.Material, GetEntryFromIdx(mesh.MaterialIndex).Data.RefID);
-                        mesh.Material = frameMaterials[mesh.Refs["Material"]];
+                        mesh.Material = frameMaterials[mesh.Refs[FrameEntry.MaterialRef]];
                         mesh.AddRef(FrameEntryRefTypes.BlendInfo, GetEntryFromIdx(mesh.BlendInfoIndex).Data.RefID);
+                        mesh.BlendInfo = frameBlendInfos[mesh.Refs[FrameEntry.BlendInfoRef]];
                         mesh.AddRef(FrameEntryRefTypes.Skeleton, GetEntryFromIdx(mesh.SkeletonIndex).Data.RefID);
+                        mesh.Skeleton = frameSkeletons[mesh.Refs[FrameEntry.SkeletonRef]];
                         mesh.AddRef(FrameEntryRefTypes.SkeletonHierachy, GetEntryFromIdx(mesh.SkeletonHierachyIndex).Data.RefID);
+                        mesh.SkeletonHierarchy = frameSkeletonHierachies[mesh.Refs[FrameEntry.SkeletonHierRef]];
                         newObject = mesh;
                     }
                     else if (objectTypes[i] == (int)ObjectType.Collision)
@@ -502,24 +505,24 @@ namespace ResourceTypes.FrameResource
 
             foreach (KeyValuePair<int, object> entry in frameObjects)
             {
-                if(entry.Value is FrameObjectModel)
+                if (entry.Value is FrameObjectModel)
                 {
                     FrameObjectModel mesh = (entry.Value as FrameObjectModel);
-                    isGeomUsed[mesh.Refs["Mesh"]] = true;
-                    isMatUsed[mesh.Refs["Material"]] = true;
-                    isBlendInfoUsed[mesh.Refs["BlendInfo"]] = true;
-                    isSkelHierUsed[mesh.Refs["SkeletonHierachy"]] = true;
-                    isSkelUsed[mesh.Refs["Skeleton"]] = true;
+                    isGeomUsed[mesh.Refs[FrameEntry.MeshRef]] = true;
+                    isMatUsed[mesh.Refs[FrameEntry.MaterialRef]] = true;
+                    isBlendInfoUsed[mesh.Refs[FrameEntry.BlendInfoRef]] = true;
+                    isSkelHierUsed[mesh.Refs[FrameEntry.SkeletonHierRef]] = true;
+                    isSkelUsed[mesh.Refs[FrameEntry.SkeletonRef]] = true;
                 }
                 else if (entry.Value is FrameObjectSingleMesh)
                 {
                     FrameObjectSingleMesh mesh = (entry.Value as FrameObjectSingleMesh);
 
-                    if(mesh.MeshIndex > -1)
-                        isGeomUsed[mesh.Refs["Mesh"]] = true;
+                    if (mesh.MeshIndex > -1)
+                        isGeomUsed[mesh.Refs[FrameEntry.MeshRef]] = true;
 
-                    if(mesh.MaterialIndex > -1)
-                        isMatUsed[mesh.Refs["Material"]] = true;
+                    if (mesh.MaterialIndex > -1)
+                        isMatUsed[mesh.Refs[FrameEntry.MaterialRef]] = true;
                 }
             }
 
@@ -531,7 +534,7 @@ namespace ResourceTypes.FrameResource
                     frameGeometries.Remove(pair.Key);
                     Console.WriteLine("Deleted with ID: {0}", pair.Key);
                 }
-               
+
             }
             for (int i = 0; i != isMatUsed.Count; i++)
             {

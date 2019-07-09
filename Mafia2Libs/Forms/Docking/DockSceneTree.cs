@@ -86,7 +86,6 @@ namespace Forms.Docking
             EntryMenuStrip.Items[2].Visible = false;
             EntryMenuStrip.Items[3].Visible = false;
             EntryMenuStrip.Items[4].Visible = false;
-            EntryMenuStrip.Items[5].Visible = false;
 
             if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag != null)
             {
@@ -109,7 +108,6 @@ namespace Forms.Docking
                 if (FrameResource.IsFrameType(treeView1.SelectedNode.Tag))
                 {
                     EntryMenuStrip.Items[4].Visible = true;
-                    EntryMenuStrip.Items[5].Visible = true;
                 }
             }
         }

@@ -23,6 +23,14 @@ namespace ResourceTypes.FrameResource
         protected int refID;
         protected Dictionary<string, int> refs = new Dictionary<string, int>();
 
+        public const string MeshRef = "Mesh";
+        public const string MaterialRef = "Material";
+        public const string BlendInfoRef = "BlendInfo";
+        public const string SkeletonRef = "Skeleton";
+        public const string SkeletonHierRef = "SkeletonHierachy";
+        public const string Parent1Ref = "Parent1";
+        public const string Parent2Ref = "Parent2";
+
         [ReadOnly(true)]
         public int RefID {
             set { refID = value; }
@@ -61,25 +69,25 @@ namespace ResourceTypes.FrameResource
             switch (type)
             {
                 case FrameEntryRefTypes.Mesh:
-                    refs.Add("Mesh", objRef);
+                    refs.Add(MeshRef, objRef);
                     break;
                 case FrameEntryRefTypes.Material:
-                    refs.Add("Material", objRef);
+                    refs.Add(MaterialRef, objRef);
                     break;
                 case FrameEntryRefTypes.BlendInfo:
-                    refs.Add("BlendInfo", objRef);
+                    refs.Add(BlendInfoRef, objRef);
                     break;
                 case FrameEntryRefTypes.Skeleton:
-                    refs.Add("Skeleton", objRef);
+                    refs.Add(SkeletonRef, objRef);
                     break;
                 case FrameEntryRefTypes.SkeletonHierachy:
-                    refs.Add("SkeletonHierachy", objRef);
+                    refs.Add(SkeletonHierRef, objRef);
                     break;
                 case FrameEntryRefTypes.Parent1:
-                    refs.Add("Parent1", objRef);
+                    refs.Add(Parent1Ref, objRef);
                     break;
                 case FrameEntryRefTypes.Parent2:
-                    refs.Add("Parent2", objRef);
+                    refs.Add(Parent2Ref, objRef);
                     break;
                 default:
                     refs.Add("UnknownType" + objRef, objRef);
@@ -109,25 +117,25 @@ namespace ResourceTypes.FrameResource
             switch (refType)
             {
                 case FrameEntryRefTypes.Mesh:
-                    removeRef("Mesh");
+                    removeRef(MeshRef);
                     break;
                 case FrameEntryRefTypes.Material:
-                    removeRef("Material");
+                    removeRef(MaterialRef);
                     break;
                 case FrameEntryRefTypes.BlendInfo:
-                    removeRef("BlendInfo");
+                    removeRef(BlendInfoRef);
                     break;
                 case FrameEntryRefTypes.Skeleton:
-                    removeRef("Skeleton");
+                    removeRef(SkeletonRef);
                     break;
                 case FrameEntryRefTypes.SkeletonHierachy:
-                    removeRef("SkeletonHierachy");
+                    removeRef(SkeletonHierRef);
                     break;
                 case FrameEntryRefTypes.Parent1:
-                    removeRef("Parent1");
+                    removeRef(Parent1Ref);
                     break;
                 case FrameEntryRefTypes.Parent2:
-                    removeRef("Parent2");
+                    removeRef(Parent2Ref);
                     break;
                 default:
                     Console.WriteLine("Unknown type: " + refType);

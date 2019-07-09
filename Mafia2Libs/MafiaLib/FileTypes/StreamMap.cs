@@ -71,34 +71,43 @@ namespace ResourceTypes.Misc
             int unk15;
             public StreamLoader[] loadList;
 
+            [Description("Name of line, this will be used in LUA scripts.")]
             public string Name {
                 get { return name; }
                 set { name = value; }
             }
+            [Description("Group this line comes under. This needs to exist of the editor will break!")]
             public string Group {
                 get { return group; }
                 set { group = value; }
             }
+
+            [Browsable(false)]
             public int GroupID {
                 get { return groupID; }
                 set { groupID = value; }
             }
+            [Description("0 - 6, unknown what they do.")]
             public int LoadType {
                 get { return loadType; }
                 set { loadType = value; }
             }
+            [Description("Flags, referencing SDSConfig.bin")]
             public string Flags {
                 get { return flags; }
                 set { flags = value; }
             }
+            [Description("Hash #1")]
             public ulong Unk10 {
                 get { return unk10; }
                 set { unk10 = value; }
             }
+            [Description("Hash #2")]
             public ulong Unk11 {
                 get { return unk11; }
                 set { unk11 = value; }
             }
+            [Description("The assets which will loaded when this line is activated.")]
             public StreamLoader[] LoadList {
                 get { return loadList; }
                 set { loadList = value; }
@@ -107,18 +116,22 @@ namespace ResourceTypes.Misc
                 get { return unk5; }
                 set { unk5 = value; }
             }
+            [Browsable(false)]
             public int Unk12 {
                 get { return unk12; }
                 set { unk12 = value; }
             }
+            [Browsable(false)]
             public int Unk13 {
                 get { return unk13; }
                 set { unk13 = value; }
             }
+            [Browsable(false)]
             public int Unk14 {
                 get { return unk14; }
                 set { unk14 = value; }
             }
+            [Browsable(false)]
             public int Unk15 {
                 get { return unk15; }
                 set { unk15 = value; }
@@ -146,18 +159,22 @@ namespace ResourceTypes.Misc
             public int pathIDX;
             public int entityIDX;
 
+            [Description("Loading type, 0 - 6.")]
             public int LoadType {
                 get { return loadType; }
                 set { loadType = value; }
             }
+            [Description("Path to the asset.")]
             public string Path {
                 get { return path; }
                 set { path = value; }
             }
+            [Description("Entity name to use in scripts or 'City-1'")]
             public string Entity {
                 get { return entity; }
                 set { entity = value; }
             }
+            [Description("The group this assets is under, every group can be seen under 'Stream Groups'")]
             public string Group {
                 get { return group; }
                 set { group = value; }
@@ -331,8 +348,8 @@ namespace ResourceTypes.Misc
                 StreamLoader map = new StreamLoader();
                 map.start = reader.ReadInt32();
                 map.end = reader.ReadInt32();
-                map.type = reader.ReadInt32(); 
-                map.loaderSubID = reader.ReadInt32(); 
+                map.type = reader.ReadInt32();
+                map.loaderSubID = reader.ReadInt32();
                 map.loaderID = reader.ReadInt32();
                 map.LoadType = reader.ReadInt32();
                 map.pathIDX = reader.ReadInt32();
@@ -391,7 +408,7 @@ namespace ResourceTypes.Misc
                     rawPool += (group.Name + '\0' + '\0');
                 }
 
-                group.nameIDX = idx;           
+                group.nameIDX = idx;
                 for (int x = group.startOffset; x < group.startOffset + group.endOffset; x++)
                 {
                     loaderIDX++;
@@ -413,7 +430,7 @@ namespace ResourceTypes.Misc
                     if (!pool.TryGetValue(loader.Entity, out idx))
                     {
                         idx = size;
-                        pool.Add(loader.Entity, size);                       
+                        pool.Add(loader.Entity, size);
                         string[] splits = loader.Entity.Split('|');
                         string entity = loader.Entity.Replace('|', '\0');
 
@@ -423,7 +440,7 @@ namespace ResourceTypes.Misc
                         {
                             rawPool += ('\0');
                             size++;
-                        }                      
+                        }
                     }
                     loader.entityIDX = idx;
 
@@ -458,7 +475,7 @@ namespace ResourceTypes.Misc
                 }
                 else
                 {
-                    line.groupID = newGH.Count-1;
+                    line.groupID = newGH.Count - 1;
                 }
                 if (!pool.TryGetValue(line.Name, out idx))
                 {
@@ -505,7 +522,7 @@ namespace ResourceTypes.Misc
 
             groupOffset = 72;
 
-            foreach(var group in groups)
+            foreach (var group in groups)
             {
                 writer.Write(group.nameIDX);
                 writer.Write(group.Type);

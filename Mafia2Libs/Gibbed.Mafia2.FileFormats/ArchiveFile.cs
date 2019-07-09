@@ -129,7 +129,6 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != 0 ? (uint)this._ResourceEntries.Sum(re => 30 + (re.Data == null ? 0 : re.Data.Length)) : 0x4000;
-            //uint blockAlignment = 29326611;
             fileHeader.BlockTableOffset = (uint)(output.Position - basePosition);
             fileHeader.ResourceCount = 0;
             var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress);
@@ -678,12 +677,12 @@ namespace Gibbed.Mafia2.FileFormats
 
             resource = new TextureResource(FNV64.Hash(file), hasMIP, texData);
 
-            entry.SlotVramRequired = (uint)(texData.Length - 128);
-            if (hasMIP == 1)
-            {
-                using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/MIP_" + file, FileMode.Open)))
-                    entry.SlotVramRequired += (uint)(reader.BaseStream.Length - 128);
-            }
+            //entry.SlotVramRequired = (uint)(texData.Length - 128);
+            //if (hasMIP == 1)
+            //{
+            //    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/MIP_" + file, FileMode.Open)))
+            //        entry.SlotVramRequired += (uint)(reader.BaseStream.Length - 128);
+            //}
 
             resource.Serialize(entry.Version, data, Endian.Little);
             descNode.InnerText = file;
@@ -721,7 +720,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             //finish.
             descNode.InnerText = file.Remove(0, 4);
-            entry.Data = data.GetBuffer();
+            entry.Data = data.ToArray();
             return entry;
         }
         public string ReadBasicEntry(XmlWriter resourceXML, string name)

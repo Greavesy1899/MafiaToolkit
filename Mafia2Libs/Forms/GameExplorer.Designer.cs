@@ -123,7 +123,7 @@ namespace Mafia2Tool
             this.folderView.SelectedImageIndex = 0;
             this.folderView.Size = new System.Drawing.Size(266, 401);
             this.folderView.TabIndex = 0;
-            this.folderView.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.FolderViewAfterExpand);
+            this.folderView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.FolderViewAfterExpand);
             // 
             // imageBank
             // 
@@ -489,14 +489,14 @@ namespace Mafia2Tool
             // OptionsItem
             // 
             this.OptionsItem.Name = "OptionsItem";
-            this.OptionsItem.Size = new System.Drawing.Size(180, 22);
+            this.OptionsItem.Size = new System.Drawing.Size(130, 22);
             this.OptionsItem.Text = "$OPTIONS";
             this.OptionsItem.Click += new System.EventHandler(this.OnOptionsItem_Clicked);
             // 
             // M2FBXButton
             // 
             this.M2FBXButton.Name = "M2FBXButton";
-            this.M2FBXButton.Size = new System.Drawing.Size(180, 22);
+            this.M2FBXButton.Size = new System.Drawing.Size(130, 22);
             this.M2FBXButton.Text = "$M2FBX";
             this.M2FBXButton.Click += new System.EventHandler(this.M2FBXButtonClicked);
             // 

@@ -104,6 +104,7 @@ namespace Mafia2Tool
             dSceneTree.Show(dockPanel1, DockState.DockLeft);
             //dViewProperties.Show(dockPanel1, DockState.DockRight);
             dSceneTree.treeView1.AfterSelect += new TreeViewEventHandler(OnAfterSelect);
+            dSceneTree.ExportFrameButton.Click += new EventHandler(ExportFrame_Click);
             dSceneTree.Export3DButton.Click += new EventHandler(Export3DButton_Click);
             dSceneTree.JumpToButton.Click += new EventHandler(JumpButton_Click);
             dSceneTree.DeleteButton.Click += new EventHandler(DeleteButton_Click);
@@ -117,6 +118,17 @@ namespace Mafia2Tool
             dPropertyGrid.RotationXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.RotationYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.RotationZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+        }
+
+        private void ExportFrame_Click(object sender, EventArgs e)
+        {
+            if(dSceneTree.treeView1.SelectedNode != null)
+            {
+                if(dSceneTree.treeView1.SelectedNode.Tag != null)
+                {
+                    SaveFrame(dSceneTree.treeView1.SelectedNode.Tag);
+                }
+            }        
         }
 
         private void OutlinerAfterCheck(object sender, TreeViewEventArgs e)
@@ -1254,8 +1266,6 @@ namespace Mafia2Tool
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectDeflector))
                     newEntry = new FrameObjectDeflector((FrameObjectDeflector)node.Tag);
-                else if (node.Tag.GetType() == typeof(FrameObjectDummy))
-                    newEntry = new FrameObjectDummy((FrameObjectDummy)node.Tag);
                 else if (node.Tag.GetType() == typeof(FrameObjectFrame))
                     newEntry = new FrameObjectFrame((FrameObjectFrame)node.Tag);
                 else if (node.Tag.GetType() == typeof(FrameObjectJoint))
@@ -1365,6 +1375,109 @@ namespace Mafia2Tool
                         break;
                     default:
                         break;
+                }
+            }
+        }
+
+        private void SaveFrame(object tag)
+        {
+            string filename = (tag as FrameObjectBase).Name.String;
+            using (BinaryWriter writer = new BinaryWriter(File.Open(Path.Combine(ToolkitSettings.ExportPath, filename) + ".framedata", FileMode.Create)))
+            {
+                if (FrameResource.IsFrameType(tag))
+                {
+                    //is this even needed? hmm.
+                    if (tag.GetType() == typeof(FrameObjectArea))
+                    {
+                        writer.Write((ushort)ObjectType.Area);
+                        (tag as FrameObjectArea).WriteToFile(writer);
+                    }
+                    else if (tag.GetType() == typeof(FrameObjectCamera))
+                    {
+                        writer.Write((ushort)ObjectType.Camera);
+                        (tag as FrameObjectCamera).WriteToFile(writer);
+                    }
+                    else if (tag.GetType() == typeof(FrameObjectCollision))
+                    {
+                        writer.Write((ushort)ObjectType.Collision);
+                        (tag as FrameObjectCollision).WriteToFile(writer);
+                    }
+                    else if (tag.GetType() == typeof(FrameObjectComponent_U005))
+                    {
+                        writer.Write((ushort)ObjectType.Collision);
+                        (tag as FrameObjectComponent_U005).WriteToFile(writer);
+                    }
+                    else if (tag.GetType() == typeof(FrameObjectDummy))
+                    {
+                        writer.Write((ushort)ObjectType.Dummy);
+                        (tag as FrameObjectDummy).WriteToFile(writer);
+                    }
+                    else if (tag.GetType() == typeof(FrameObjectDeflector))
+                    {
+                        writer.Write((ushort)ObjectType.ParticleDeflector);
+                        (tag as FrameObjectDeflector).WriteToFile(writer);
+                    }
+                    else if (tag.GetType() == typeof(FrameObjectFrame))
+                    {
+                        writer.Write((ushort)ObjectType.Frame);
+                        (tag as FrameObjectFrame).WriteToFile(writer);
+                    }
+                    else if (tag.GetType() == typeof(FrameObjectJoint))
+                    {
+                        writer.Write((ushort)ObjectType.Joint);
+                        (tag as FrameObjectJoint).WriteToFile(writer);
+                    }
+                    else if (tag.GetType() == typeof(FrameObjectLight))
+                    {
+                        writer.Write((ushort)ObjectType.Light);
+                        (tag as FrameObjectLight).WriteToFile(writer);
+                    }
+                    else if (tag.GetType() == typeof(FrameObjectModel))
+                    {
+                        var mesh = (tag as FrameObjectModel);
+                        writer.Write((ushort)ObjectType.Model);
+                        mesh.WriteToFile(writer);
+                        mesh.Geometry.WriteToFile(writer);
+                        mesh.Material.WriteToFile(writer);
+                        mesh.BlendInfo.WriteToFile(writer);
+                        mesh.Skeleton.WriteToFile(writer);
+                        mesh.SkeletonHierarchy.WriteToFile(writer);
+
+                        foreach(var lod in mesh.Geometry.LOD)
+                        {
+                            SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.uHash).WriteToFile(writer);
+                            SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.uHash).WriteToFile(writer);
+                        }
+                    }
+                    else if (tag.GetType() == typeof(FrameObjectSector))
+                    {
+                        writer.Write((ushort)ObjectType.Sector);
+                        (tag as FrameObjectSector).WriteToFile(writer);
+                    }
+                    else if (tag.GetType() == typeof(FrameObjectSingleMesh))
+                    {
+                        var mesh = (tag as FrameObjectSingleMesh);
+                        writer.Write((ushort)ObjectType.SingleMesh);
+                        mesh.WriteToFile(writer);
+                        mesh.Geometry.WriteToFile(writer);
+                        mesh.Material.WriteToFile(writer);
+
+                        foreach (var lod in mesh.Geometry.LOD)
+                        {
+                            SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.uHash).WriteToFile(writer);
+                            SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.uHash).WriteToFile(writer);
+                        }
+                    }
+                    else if (tag.GetType() == typeof(FrameObjectTarget))
+                    {
+                        writer.Write((ushort)ObjectType.Target);
+                        (tag as FrameObjectTarget).WriteToFile(writer);
+                    }
+                    else
+                    {
+                        writer.Write((ushort)0);
+                        (tag as FrameObjectBase).WriteToFile(writer);
+                    }
                 }
             }
         }

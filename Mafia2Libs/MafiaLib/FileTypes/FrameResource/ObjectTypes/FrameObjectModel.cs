@@ -8,6 +8,7 @@ namespace ResourceTypes.FrameResource
     {
         private FrameSkeleton skeleton;
         private FrameBlendInfo blendInfo;
+        private FrameSkeletonHierachy hierachy;
 
         int blendInfoIndex;
         int skeletonIndex;
@@ -65,6 +66,10 @@ namespace ResourceTypes.FrameResource
         public FrameBlendInfo BlendInfo {
             get { return blendInfo; }
             set { blendInfo = value; }
+        }
+        public FrameSkeletonHierachy SkeletonHierarchy {
+            get { return hierachy; }
+            set { hierachy = value; }
         }
 
         public FrameObjectModel (BinaryReader reader)

@@ -191,11 +191,11 @@ namespace ResourceTypes.Collisions
             {
                 position = Vector3Extenders.ReadFromFile(reader);
                 rotation = Vector3Extenders.ReadFromFile(reader);
-                //Vector3 rot = new Vector3();
-                //rot.X = MathUtil.RadiansToDegrees(rotation.X);
-                //rot.Y = MathUtil.RadiansToDegrees(rotation.Y);
-                //rot.Z = -MathUtil.RadiansToDegrees(rotation.Z);
-                //rotation = rot;
+                Vector3 rot = new Vector3();
+                rot.X = MathUtil.RadiansToDegrees(rotation.X);
+                rot.Y = MathUtil.RadiansToDegrees(rotation.Y);
+                rot.Z = -MathUtil.RadiansToDegrees(rotation.Z);
+                rotation = rot;
                 hash = reader.ReadUInt64();
                 unk4 = reader.ReadInt32();
                 unk5 = reader.ReadByte();
@@ -209,11 +209,11 @@ namespace ResourceTypes.Collisions
             public void WriteToFile(BinaryWriter writer)
             {
                 position.WriteToFile(writer);
-                //Vector3 rot = new Vector3();
-                ////rot.X = MathUtil.DegreesToRadians(rotation.X);
-                ////rot.Y = MathUtil.DegreesToRadians(rotation.Y);
-                //rot.Z = -MathUtil.DegreesToRadians(rotation.Z);
-                rotation.WriteToFile(writer);
+                Vector3 rot = new Vector3();
+                rot.X = MathUtil.DegreesToRadians(rotation.X);
+                rot.Y = MathUtil.DegreesToRadians(rotation.Y);
+                rot.Z = -MathUtil.DegreesToRadians(rotation.Z);
+                rot.WriteToFile(writer);
                 writer.Write(hash);
                 writer.Write(unk4);
                 writer.Write(unk5);

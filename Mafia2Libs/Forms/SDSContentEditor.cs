@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ResourceTypes.FrameResource;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
@@ -32,12 +33,12 @@ namespace Mafia2Tool
 
         }
 
-        private TreeNode BuildTreeNode(string name, DirectoryInfo info)
+        private TreeNode BuildTreeNode(string name, DirectoryInfo info, object data = null)
         {
             TreeNode node = new TreeNode();
             node.Name = name + "Node";
             node.Text = name;
-            node.Tag = new FileInfo(Path.Combine(info.FullName, name));
+            node.Tag = data;
             return node;
         }
 
@@ -64,7 +65,9 @@ namespace Mafia2Tool
                         treeView1.Nodes[0].Nodes.Add(BuildTreeNode(file, info.Directory));
                         break;
                     case "Script":
-                        treeView1.Nodes[1].Nodes.Add(BuildTreeNode(file, info.Directory));
+                        ScriptResource script = new ScriptResource();
+                        script.ReadResourceEntry(nodes);
+                        treeView1.Nodes[1].Nodes.Add(BuildTreeNode(file, info.Directory, script));
                         break;
                     case "ItemDesc":
                         treeView1.Nodes[2].Nodes.Add(BuildTreeNode(file, info.Directory));
@@ -85,7 +88,9 @@ namespace Mafia2Tool
                         treeView1.Nodes[7].Nodes.Add(BuildTreeNode(file, info.Directory));
                         break;
                     case "Texture":
-                        treeView1.Nodes[8].Nodes.Add(BuildTreeNode(file, info.Directory));
+                        TextureResource texture = new TextureResource();
+                        texture.ReadResourceEntry(nodes);
+                        treeView1.Nodes[8].Nodes.Add(BuildTreeNode(file, info.Directory, texture));
                         break;
                     case "Mipmap":
                         treeView1.Nodes[9].Nodes.Add(BuildTreeNode(file, info.Directory));
@@ -165,6 +170,89 @@ namespace Mafia2Tool
                 }
             }
         }
+
+        private void WriteSDSContent(FileInfo info)
+        {
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = ("\t");
+            settings.OmitXmlDeclaration = true;
+
+            XmlWriter resourceXML = XmlWriter.Create(parent.FullName + "/SDSContent_Copy.xml", settings);
+            resourceXML.WriteStartElement("SDSResource");
+            foreach(TreeNode node in treeView1.Nodes[13].Nodes)
+            {
+                resourceXML.WriteStartElement("ResourceEntry");
+                WriteResource(resourceXML, node.Text, "IndexBufferPool", "2");
+                resourceXML.WriteEndElement();
+            }
+            foreach (TreeNode node in treeView1.Nodes[14].Nodes)
+            {
+                resourceXML.WriteStartElement("ResourceEntry");
+                WriteResource(resourceXML, node.Text, "VertexBufferPool", "2");
+                resourceXML.WriteEndElement();
+            }
+            foreach (TreeNode node in treeView1.Nodes[8].Nodes)
+            {
+                resourceXML.WriteStartElement("ResourceEntry");
+                TextureResource resource = (node.Tag as TextureResource);
+                resource.WriteResourceEntry(resourceXML);
+                resourceXML.WriteEndElement();
+            }
+            foreach (TreeNode node in treeView1.Nodes[11].Nodes)
+            {
+                resourceXML.WriteStartElement("ResourceEntry");
+                WriteResource(resourceXML, node.Text, "FrameResource", "28");
+                resourceXML.WriteEndElement();
+            }
+            foreach (TreeNode node in treeView1.Nodes[25].Nodes)
+            {
+                resourceXML.WriteStartElement("ResourceEntry");
+                WriteResource(resourceXML, node.Text, "FrameNameTable", "3");
+                resourceXML.WriteEndElement();
+            }
+            foreach (TreeNode node in treeView1.Nodes[27].Nodes)
+            {
+                resourceXML.WriteStartElement("ResourceEntry");
+                WriteResource(resourceXML, node.Text, "Actors", "4");
+                resourceXML.WriteEndElement();
+            }
+            foreach (TreeNode node in treeView1.Nodes[29].Nodes)
+            {
+                resourceXML.WriteStartElement("ResourceEntry");
+                WriteResource(resourceXML, node.Text, "PREFAB", "0");
+                resourceXML.WriteEndElement();
+            }
+            foreach (TreeNode node in treeView1.Nodes[23].Nodes)
+            {
+                resourceXML.WriteStartElement("ResourceEntry");
+                WriteResource(resourceXML, node.Text, "Animation2", "1");
+                resourceXML.WriteEndElement();
+            }
+            foreach (TreeNode node in treeView1.Nodes[10].Nodes)
+            {
+                resourceXML.WriteStartElement("ResourceEntry");
+                WriteResource(resourceXML, node.Text, MemFileResource.TypeName, MemFileResource.Version.ToString());
+                resourceXML.WriteEndElement();
+            }
+            foreach (TreeNode node in treeView1.Nodes[2].Nodes)
+            {
+                resourceXML.WriteStartElement("ResourceEntry");
+                WriteResource(resourceXML, node.Text, ItemDescResource.TypeName, ItemDescResource.Version.ToString());
+                resourceXML.WriteEndElement();
+            }
+            resourceXML.WriteEndElement();
+            resourceXML.Flush();
+            resourceXML.Dispose();
+        }
+
+        private void WriteResource(XmlWriter writer, string name, string type, string version)
+        {
+            writer.WriteElementString("Type", type);
+            writer.WriteElementString("File", name);
+            writer.WriteElementString("Version", version);
+        }
+
 
         private void AutoAddFilesButton_Click(object sender, EventArgs e)
         {

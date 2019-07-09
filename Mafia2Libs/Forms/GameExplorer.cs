@@ -300,7 +300,7 @@ namespace Mafia2Tool
 
             using (var output = File.Create(file.FullName))
             {
-                archiveFile.Serialize(output, (ArchiveSerializeOptions)ToolkitSettings.SerializeSDSOption);
+                archiveFile.Serialize(output, ToolkitSettings.SerializeSDSOption == 0 ? ArchiveSerializeOptions.OneBlock : ArchiveSerializeOptions.Compress);
             }
             infoText.Text = "Saved SDS.";
         }
