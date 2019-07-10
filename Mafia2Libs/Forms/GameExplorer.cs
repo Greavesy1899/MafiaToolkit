@@ -154,7 +154,7 @@ namespace Mafia2Tool
                 InitTreeView();
             }
             else
-                return;
+                Application.Exit();
         }
 
         private void InitTreeView()

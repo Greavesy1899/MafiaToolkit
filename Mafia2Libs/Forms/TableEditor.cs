@@ -5,6 +5,7 @@ using System;
 using Utils.Lang;
 using Utils.Extensions;
 using System.Collections.Generic;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2Tool
 {
@@ -12,6 +13,7 @@ namespace Mafia2Tool
     {
         private FileInfo file;
         private TableData data;
+        private Dictionary<uint, string> columnNames = new Dictionary<uint, string>();
 
         public TableEditor(FileInfo file)
         {
@@ -37,9 +39,36 @@ namespace Mafia2Tool
         public void Initialise()
         {
             AddColumnButton.Enabled = false;
+            ReadExternalHashes();
             LoadTableData();
-            RowIndexLabel.Text = "Row Index: 0";
-            ColumnIndexLabel.Text = "Column Index: 0";
+            GetCellProperties(0, 0);
+        }
+
+        private void ReadExternalHashes()
+        {
+            try
+            {
+                string[] hashes = File.ReadAllLines(Path.Combine("Resources", "hashes.txt"));
+
+                foreach(var hash in hashes)
+                {
+                    uint key = FNV32.Hash(hash);
+                    columnNames.Add(key, hash);
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Missing hashes.txt, No column names will be present.", "Toolkit", MessageBoxButtons.OK);
+                columnNames = new Dictionary<uint, string>();
+            }
+        }
+
+        private string GetColumnName(uint hash)
+        {
+            if (columnNames.ContainsKey(hash))
+                return columnNames[hash];
+
+            return hash.ToString("X8");
         }
 
         private void LoadTableData()
@@ -57,7 +86,7 @@ namespace Mafia2Tool
             {
                 MTableColumn newCol = new MTableColumn();
                 newCol.NameHash = column.NameHash;
-                newCol.HeaderText = column.NameHash.ToString("X8");
+                newCol.HeaderText = GetColumnName(newCol.NameHash);
                 newCol.Unk2 = column.Unknown2;
                 newCol.Unk3 = column.Unknown3;
                 newCol.TypeM2 = column.Type;
@@ -120,20 +149,16 @@ namespace Mafia2Tool
             data = newData;
         }
 
-        private void ExitButtonOnClick(object sender, EventArgs e)
+        private void GetCellProperties(int r, int c)
         {
-            Close();
+            RowIndexLabel.Text = "Row Index: " + r.ToString();
+            ColumnIndexLabel.Text = "Column Index: " + c.ToString();
+            DataTypeLabel.Text = "Data Type: " + data.Columns[c].Type;
         }
 
-        private void ReloadOnClick(object sender, EventArgs e)
-        {
-            LoadTableData();
-        }
-
-        private void SaveOnClick(object sender, EventArgs e)
-        {
-            SaveTableData();
-        }
+        private void ExitButtonOnClick(object sender, EventArgs e) => Close();
+        private void ReloadOnClick(object sender, EventArgs e) => LoadTableData();
+        private void SaveOnClick(object sender, EventArgs e) => SaveTableData();
 
         private void AddRowOnClick(object sender, EventArgs e)
         {
@@ -154,11 +179,6 @@ namespace Mafia2Tool
 
         }
 
-        private void OnCellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            RowIndexLabel.Text = "Row Index: " + e.RowIndex.ToString();
-            ColumnIndexLabel.Text = "Column Index: " + e.ColumnIndex.ToString();
-            DataTypeLabel.Text = "Data Type: " + data.Columns[e.ColumnIndex].Type;
-        }
+        private void OnCellClick(object sender, DataGridViewCellEventArgs e) => GetCellProperties(e.RowIndex, e.ColumnIndex);
     }
 }
