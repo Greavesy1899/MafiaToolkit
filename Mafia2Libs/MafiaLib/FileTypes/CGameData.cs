@@ -9,8 +9,8 @@ namespace ResourceTypes.Misc
     {
         private FileInfo info;
 
-        private readonly int magic = 0x676D7072;
-        private readonly int version = 6;
+        private const int Magic = 0x676D7072;
+        private const int version = 6;
 
         private string[] slots;
         private string name;
@@ -36,10 +36,21 @@ namespace ResourceTypes.Misc
             }
         }
 
+        public static bool CheckHeader(FileInfo info)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
+            {
+                if (reader.ReadInt32() == Magic)
+                    return true;
+            }
+
+            return false;
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             //see C_Game::ParseData for source code.
-            if (reader.ReadInt32() != magic)
+            if (reader.ReadInt32() != Magic)
                 return;
 
             if (reader.ReadInt32() != version)
@@ -93,7 +104,7 @@ namespace ResourceTypes.Misc
         public void WriteToFile(BinaryWriter writer)
         {
             //see C_Game::ParseData for source code.
-            writer.Write(magic);
+            writer.Write(Magic);
             writer.Write(version);
 
             writer.Write(57345);

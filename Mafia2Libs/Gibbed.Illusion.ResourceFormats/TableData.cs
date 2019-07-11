@@ -105,7 +105,7 @@ namespace Gibbed.Mafia2.ResourceFormats
                             StringHelpers.WriteStringBuffer(writer, 16, (string)Rows[i].Values[x]);
                             break;
                         case ColumnType.String32:
-                            StringHelpers.WriteStringBuffer(writer, 32, (string)Rows[i].Values[x]);
+                            StringHelpers.WriteStringBuffer(writer, 32, (string)Rows[i].Values[x], ' ', System.Text.Encoding.GetEncoding(1250));
                             break;
                         case ColumnType.String64:
                             StringHelpers.WriteStringBuffer(writer, 64, (string)Rows[i].Values[x]);
@@ -244,7 +244,7 @@ namespace Gibbed.Mafia2.ResourceFormats
 
                             case ColumnType.String32:
                                 {
-                                    string value = data.ReadString(32, true);
+                                    string value = data.ReadString(32, true, System.Text.Encoding.GetEncoding(1250));
                                     row.Values.Add(value);
                                     break;
                                 }
@@ -261,8 +261,6 @@ namespace Gibbed.Mafia2.ResourceFormats
                                     float r = data.ReadValueF32(endian);
                                     float g = data.ReadValueF32(endian);
                                     float b = data.ReadValueF32(endian);
-                                    //Color color = Color.FromArgb((int)r, (int)g, (int)b);
-                                    // TODO: de-stupidize this
                                     row.Values.Add(r + " " + g + " " + b);
                                     break;
                                 }

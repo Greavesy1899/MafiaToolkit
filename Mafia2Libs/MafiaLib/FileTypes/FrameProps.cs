@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace ResourceTypes.Misc
 {
@@ -12,7 +14,15 @@ namespace ResourceTypes.Misc
         public ulong[] unks4;
         public uint[] unks5;
 
-        public FrameProps(BinaryReader reader)
+        public FrameProps(FileInfo info)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
+        }
+
+        public void ReadFromFile(BinaryReader reader)
         {
             if (reader.ReadInt32() != Signature)
                 return;
@@ -39,6 +49,29 @@ namespace ResourceTypes.Misc
 
             for (int i = 0; i != unks5.Length; i++)
                 unks5[i] = reader.ReadUInt32();
+
+            WriteToText();
+        }
+
+        private void WriteToText()
+        {
+            List<string> file = new List<string>();
+            for(int i = 0; i != unks.Length; i++)
+                file.Add(i + " " + unks[i].ToString());
+            file.Add("");
+            for (int i = 0; i != unks2.Length; i++)
+                file.Add(i + " " + unks2[i].ToString());
+            file.Add("");
+            for (int i = 0; i != unks3.Length; i++)
+                file.Add(i + " " + unks3[i].ToString());
+            file.Add("");
+            for (int i = 0; i != unks4.Length; i++)
+                file.Add(i + " " + unks4[i].ToString());
+            file.Add("");
+            for (int i = 0; i != unks5.Length; i++)
+                file.Add(i + " " + unks5[i].ToString());
+
+            File.WriteAllLines("FrameProps.txt", file.ToArray());
         }
 
         private string ReadString(BinaryReader reader)

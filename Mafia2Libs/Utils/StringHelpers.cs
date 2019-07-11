@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace Utils.StringHelpers
 {
@@ -38,11 +39,12 @@ namespace Utils.StringHelpers
             reader.ReadByte();
             return newString;
         }
-        public static void WriteStringBuffer(BinaryWriter writer, int size, string text, char trim = ' ')
+        public static void WriteStringBuffer(BinaryWriter writer, int size, string text, char trim = ' ', Encoding encoding = null)
         {
             bool addTrim = (trim == ' ' ? false : true);
             int padding = size - text.Length;
-            writer.Write(text.ToCharArray());
+            var data = encoding == null ? Encoding.ASCII.GetBytes(text) : encoding.GetBytes(text);
+            writer.Write(data);
 
             if (addTrim)
             {

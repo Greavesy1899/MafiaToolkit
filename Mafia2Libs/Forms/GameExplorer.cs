@@ -461,6 +461,11 @@ namespace Mafia2Tool
                 caEditor = new CityAreaEditor((FileInfo)item.Tag);
                 return;
             }
+            else if (item.SubItems[0].Text.Contains("FrameProps") && item.SubItems[1].Text == "BIN")
+            {
+                FrameProps fProps = new FrameProps((FileInfo)item.Tag);
+                return;
+            }
             else if (item.SubItems[0].Text.Contains("cityshop") && item.SubItems[1].Text == "BIN")
             {
                 csEditor = new CityShopEditor((FileInfo)item.Tag);
@@ -474,6 +479,11 @@ namespace Mafia2Tool
             else if (item.SubItems[1].Text == "BIN" && HandleStreamMap((item.Tag as FileInfo)))
             {
                 StreamEditor editor = new StreamEditor((item.Tag as FileInfo));
+                return;
+            }
+            else if (item.SubItems[1].Text == "BIN" && CGameData.CheckHeader((item.Tag as FileInfo)))
+            {
+                CGameData data = new CGameData((item.Tag as FileInfo));
                 return;
             }
             else if (item.SubItems[0].Text.Contains("sdsconfig") && item.SubItems[1].Text == "BIN")
@@ -546,9 +556,6 @@ namespace Mafia2Tool
                     break;
                 case "PRF":
                     prefabs = new PrefabLoader((FileInfo)item.Tag);
-                    return;
-                case "BIN":
-                    CGameData gamedata = new CGameData((FileInfo)item.Tag);
                     return;
                 case "LUA":
                 case "AP":

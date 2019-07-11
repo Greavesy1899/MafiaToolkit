@@ -319,6 +319,7 @@
     <Compile Include="MafiaLib\ModelHelpers\ModelDefinition.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\IRenderer.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\Render2DPlane.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderFrame.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderInstance.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderJunction.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderLine.cs" />
