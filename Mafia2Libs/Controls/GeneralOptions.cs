@@ -31,6 +31,7 @@ namespace Forms.OptionControls
             languageComboBox.Items[2] = Language.GetString("$LANGUAGE_CZECH");
             languageComboBox.Items[3] = Language.GetString("$LANGUAGE_POLISH");
             label1.Text = Language.GetString("$LANGUAGE_OPTION");
+            label2.Text = Language.GetString("$DISCORD_STATE_CUSTOM");
         }
 
         /// <summary>
@@ -39,6 +40,7 @@ namespace Forms.OptionControls
         private void LoadSettings()
         {
             M2DirectoryBox.Text = ToolkitSettings.M2Directory;
+            DiscordStateTextBox.Text = ToolkitSettings.CustomStateText;
             DiscordEnabledCheckBox.Checked = ToolkitSettings.DiscordEnabled;
             DiscordDetailsCheckBox.Checked = ToolkitSettings.DiscordDetailsEnabled;
             DiscordStateCheckBox.Checked = ToolkitSettings.DiscordStateEnabled;
@@ -112,6 +114,12 @@ namespace Forms.OptionControls
         private void M2Label_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void DiscordStateTextBox_TextChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.CustomStateText = DiscordStateTextBox.Text;
+            ToolkitSettings.WriteKey("CustomStateText", "Discord", DiscordStateTextBox.Text);
         }
     }
 }

@@ -559,6 +559,7 @@ namespace Mafia2Tool
                     return;
                 case "LUA":
                 case "AP":
+                case "SHP":
                     HandleLuaFile((FileInfo)item.Tag);
                     return;
                 case "IFL":

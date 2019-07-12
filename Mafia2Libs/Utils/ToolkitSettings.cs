@@ -18,6 +18,7 @@ namespace Utils.Settings
         public static bool DiscordElapsedTimeEnabled;
         public static bool DiscordStateEnabled;
         public static bool DiscordDetailsEnabled;
+        public static string CustomStateText;
 
         //ModelViewer keys;
         public static bool VSync;
@@ -54,6 +55,7 @@ namespace Utils.Settings
 
             M2Directory = ReadKey("MafiaII", "Directories");
             TexturePath = ReadKey("TexturePath", "ModelViewer");
+            CustomStateText = ReadKey("CustomStateText", "Discord", "Developing mods.");
             bool.TryParse(ReadKey("Enabled", "Discord", "True"), out DiscordEnabled);
             bool.TryParse(ReadKey("ElapsedTimeEnabled", "Discord", "True"), out DiscordElapsedTimeEnabled);
             bool.TryParse(ReadKey("StateEmabled", "Discord", "True"), out DiscordStateEnabled);
@@ -129,7 +131,7 @@ namespace Utils.Settings
                     InitRichPresence();
 
                 details = ""; //don't like current imp.
-                string detailsLine = string.IsNullOrEmpty(details) ? "Making mods for Mafia II." : details;
+                string detailsLine = string.IsNullOrEmpty(details) ? ToolkitSettings.CustomStateText : details;
                 controller.presence.state = DiscordStateEnabled ? detailsLine : null;
                 string vString = Debugger.IsAttached ? "DEBUG " : "RELEASE ";
                 vString += Version;
