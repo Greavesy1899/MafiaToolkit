@@ -60,7 +60,7 @@ namespace Mafia2Tool
 
 
                 string folder = "actors_unks/" + (ActorTypes)actors.Items[i].ActorType + "/";
-                string filename = actors.Items[i].FrameUnk + ".dat";
+                string filename = actors.Items[i].EntityType + ".dat";
 
                 if (!Directory.Exists(folder))
                     Directory.CreateDirectory(folder);

@@ -31,7 +31,13 @@ namespace Mafia2Tool
         /// </summary>
         private static void CheckINIExists()
         {
-            if (File.Exists(Path.Combine(Application.ExecutablePath, "Mafia2Tool.ini")))
+            //only here because the exe name was changed, and lots of people had different .ini names.
+            if (File.Exists("Mafia2Toolkit.ini") && !File.Exists("MafiaToolkit.ini"))
+            {
+                File.Move("Mafia2Toolkit.ini", "MafiaToolkit.ini");
+                File.Delete("Mafia2Toolkit.ini");
+            }
+            if (File.Exists(Path.Combine(Application.ExecutablePath, "MafiaToolkit.ini")))
                 return;
             else
                 new IniFile();

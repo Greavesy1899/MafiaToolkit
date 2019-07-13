@@ -568,6 +568,9 @@ namespace Mafia2Tool
                 case "IDS":
                     ResourceTypes.ItemDesc.ItemDescLoader itemDesc = new ResourceTypes.ItemDesc.ItemDescLoader((item.Tag as FileInfo).FullName);
                     return;
+                case "BIN":
+                    SoundSectorLoader sLoader = new SoundSectorLoader(item.Tag as FileInfo);
+                    return;
                 default:
                     Process.Start(((FileInfo)item.Tag).FullName);
                     break;

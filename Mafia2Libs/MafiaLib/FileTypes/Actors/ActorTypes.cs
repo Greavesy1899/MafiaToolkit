@@ -1,6 +1,8 @@
 ﻿using SharpDX;
 using System;
+using System.ComponentModel;
 using System.IO;
+using Utils.Extensions;
 using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 using Utils.Types;
@@ -1109,6 +1111,208 @@ namespace ResourceTypes.Actors
         public int GetSize()
         {
             return 4;
+        }
+    }
+
+    public class ActorItem : IActorExtraDataInterface
+    {
+        public interface IItem { }
+        public class ItemScript : IItem
+        {
+            string scriptEvent;
+            int textID;
+            int sentTestAction;
+
+            public string ScriptEvent {
+                get { return scriptEvent; }
+                set { scriptEvent = value; }
+            }
+            public int TextID {
+                get { return textID; }
+                set { textID = value; }
+            }
+            public int SentTestAction {
+                get { return sentTestAction; }
+                set { sentTestAction = value; }
+            }
+        }
+        public class Type0
+        {
+            int tableID;
+            int textID;
+            int ammo;
+            int ammoAUX;
+
+            public int TableID {
+                get { return tableID; }
+                set { tableID = value; }
+            }
+            public int TextID {
+                get { return textID; }
+                set { textID = value; }
+            }
+            public int Ammo {
+                get { return ammo; }
+                set { ammo = value; }
+            }
+            public int AmmoAUX {
+                get { return ammoAUX; }
+                set { ammoAUX = value; }
+            }
+        }
+
+        ActorItemFlags flags;
+        int type;
+        float respawnTime;
+        int testPrimitive;
+        float range;
+        ItemScript scriptEvent;
+        Type0 type0Data;
+        Vector3 unk1;
+        Vector3 unk2;
+
+        public ActorItemFlags Flags {
+            get { return flags; }
+            set { flags = value; }
+        }
+        public int Type {
+            get { return type; }
+            set { type = value; }
+        }
+        public float RespawnTime {
+            get { return respawnTime; }
+            set { respawnTime = value; }
+        }
+        public int TestPrimitive {
+            get { return testPrimitive; }
+            set { testPrimitive = value; }
+        }
+        public float Range {
+            get { return range; }
+            set { range = value; }
+        }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public ItemScript ScriptEvent {
+            get { return scriptEvent; }
+            set { scriptEvent = value; }
+        }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public Type0 Type0Data {
+            get { return type0Data; }
+            set { type0Data = value; }
+        }
+        [TypeConverter(typeof(Vector3Converter))]
+        public Vector3 Unk1 {
+            get { return unk1; }
+            set { unk1 = value; }
+        }
+        [TypeConverter(typeof(Vector3Converter))]
+        public Vector3 Unk2 {
+            get { return unk2; }
+            set { unk2 = value; }
+        }
+
+        public ActorItem(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+
+        public int GetSize()
+        {
+            return 152;
+        }
+
+        public void ReadFromFile(BinaryReader reader)
+        {
+            reader.ReadInt16();
+            flags = (ActorItemFlags)reader.ReadUInt16();
+            type = reader.ReadInt32();
+            respawnTime = reader.ReadSingle();
+
+            switch(type)
+            {
+                case 0:
+                    type0Data = new Type0();
+                    type0Data.TableID = reader.ReadInt32();
+                    type0Data.TextID = reader.ReadInt32();
+                    type0Data.Ammo = reader.ReadInt32();
+                    type0Data.AmmoAUX = reader.ReadInt32();
+                    reader.BaseStream.Seek(92, SeekOrigin.Current);
+                    break;
+                case 2:
+                    scriptEvent = new ItemScript();
+                    scriptEvent.TextID = reader.ReadInt32();
+                    scriptEvent.SentTestAction = reader.ReadInt32();
+                    reader.BaseStream.Seek(36, SeekOrigin.Current);
+                    scriptEvent.ScriptEvent = StringHelpers.ReadStringBuffer(reader, 64);
+                    scriptEvent.ScriptEvent.TrimEnd('\0');
+                    break;
+                case 3:
+                    throw new Exception();
+                    break;
+                case 7:
+                    throw new Exception();
+                    break;
+                case 8:
+                    throw new Exception();
+                    break;
+                case 9:
+                    reader.BaseStream.Seek(108, SeekOrigin.Current);
+                    break;
+                default:
+                    throw new Exception();
+                    break;
+            }
+
+            testPrimitive = reader.ReadInt32();
+            range = reader.ReadSingle();
+            unk1 = Vector3Extenders.ReadFromFile(reader);
+            unk2 = Vector3Extenders.ReadFromFile(reader);
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write((ushort)0);
+            writer.Write((ushort)flags);
+            writer.Write(type);
+            writer.Write(respawnTime);
+
+            switch (type)
+            {
+                case 0:
+                    writer.Write(type0Data.TableID);
+                    writer.Write(type0Data.TextID);
+                    writer.Write(type0Data.Ammo);
+                    writer.Write(type0Data.AmmoAUX);
+                    writer.Write(new byte[92]);
+                    break;
+                case 2:
+                    writer.Write(scriptEvent.TextID);
+                    writer.Write(scriptEvent.SentTestAction);
+                    writer.Write(new byte[36]);
+                    StringHelpers.WriteStringBuffer(writer, 64, scriptEvent.ScriptEvent);
+                    break;
+                case 3:
+                    throw new Exception();
+                    break;
+                case 7:
+                    throw new Exception();
+                    break;
+                case 8:
+                    throw new Exception();
+                    break;
+                case 9:
+                    writer.Write(new byte[108]);
+                    break;
+                default:
+                    throw new Exception();
+                    break;
+            }
+
+            writer.Write(testPrimitive);
+            writer.Write(range);
+            Vector3Extenders.WriteToFile(unk1, writer);
+            Vector3Extenders.WriteToFile(unk2, writer);
         }
     }
 

@@ -39,6 +39,12 @@ namespace Utils.StringHelpers
             reader.ReadByte();
             return newString;
         }
+
+        public static string ReadStringBuffer(BinaryReader reader, int size)
+        {
+            return new string(reader.ReadChars(size));
+        }
+
         public static void WriteStringBuffer(BinaryWriter writer, int size, string text, char trim = ' ', Encoding encoding = null)
         {
             bool addTrim = (trim == ' ' ? false : true);

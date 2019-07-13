@@ -507,6 +507,10 @@ namespace ResourceTypes.Actors
             {
                 data = new ActorLight(reader);
             }
+            else if (bufferType == ActorTypes.Item && bufferLength == 152)
+            {
+                data = new ActorItem(reader);
+            }
             else if (bufferType == ActorTypes.Sound && bufferLength == 592)
             {
                 //long pos = reader.BaseStream.Position;

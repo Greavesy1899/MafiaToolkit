@@ -54,4 +54,11 @@ namespace ResourceTypes.Actors
         PlayInRain = 64,
         PlayInSummer = 128
     }
+
+    [Flags]
+    public enum ActorItemFlags
+    {
+        Physics = 0x40,
+        AutoUse = 0x80
+    }
 }
