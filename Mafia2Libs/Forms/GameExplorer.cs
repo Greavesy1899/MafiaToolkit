@@ -559,6 +559,7 @@ namespace Mafia2Tool
                     return;
                 case "LUA":
                 case "AP":
+                case "SHP":
                     HandleLuaFile((FileInfo)item.Tag);
                     return;
                 case "IFL":
@@ -566,6 +567,9 @@ namespace Mafia2Tool
                     return;
                 case "IDS":
                     ResourceTypes.ItemDesc.ItemDescLoader itemDesc = new ResourceTypes.ItemDesc.ItemDescLoader((item.Tag as FileInfo).FullName);
+                    return;
+                case "BIN":
+                    SoundSectorLoader sLoader = new SoundSectorLoader(item.Tag as FileInfo);
                     return;
                 default:
                     Process.Start(((FileInfo)item.Tag).FullName);

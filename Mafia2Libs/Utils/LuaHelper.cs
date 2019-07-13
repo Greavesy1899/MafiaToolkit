@@ -24,7 +24,7 @@ namespace Utils.Lua
             decompile.Decompile();
             bool isAP = (info.Extension == ".AP" ? true : false);
             string name = info.FullName.Remove(info.FullName.Length - (isAP ? 7 : 4));
-            name += "_d.lua"/* + (isAP ? ".ap " : "")*/;
+            name += "_d." + info.Extension/* + (isAP ? ".ap " : "")*/;
             var curCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
             System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             using (var writer = new StreamWriter(name, false, Encoding.ASCII))

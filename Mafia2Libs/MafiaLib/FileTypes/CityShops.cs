@@ -121,20 +121,26 @@ namespace ResourceTypes.City
         {
             for (int i = 0; i != areaDatas.Count; i++)
             {
-                for (int y = 0; y != areaDatas[i].Translokators.Count; y++)
+                AreaData data = areaDatas[i];
+
+                for (int y = 0; y != data.Translokators.Count; y++)
                 {
-                    bool fix = false;
-                    if(areaDatas[i].Translokators[y].EntityProperties == null)
-                        fix = true;
-                    else if(areaDatas[i].Translokators[y].EntityProperties.Count != areaDatas[i].Entries.Length)
-                        fix = true;
-
-                    if(fix)
+                    AreaData.TranslokatorData translokator = data.Translokators[y];
+                    if (translokator.EntityProperties == null)
                     {
-                        areaDatas[i].Translokators[y].EntityProperties = new List<short>();
+                        translokator.EntityProperties = new List<short>();
 
-                        for (int z = 0; z != areaDatas[i].Entries.Length; z++)
-                            areaDatas[i].Translokators[y].EntityProperties.Add(1023);
+                        for (int z = 0; z != data.Entries.Length; z++)
+                            translokator.EntityProperties.Add(1023);
+                    }
+                    else if (translokator.EntityProperties.Count > data.Entries.Length)
+                    {
+                        List<short> temp = new List<short>();
+
+                        for (int z = 0; z != data.Entries.Length - translokator.EntityProperties.Count; z++)
+                            temp.Add(1023);
+
+                        translokator.EntityProperties.AddRange(temp);
                     }
                 }
             }
@@ -222,6 +228,13 @@ namespace ResourceTypes.City
 
             public Area()
             {
+            }
+
+            public Area(Area other)
+            {
+                string1 = other.string1;
+                string2 = other.string2;
+                name = other.name;
             }
 
             public void ReadFromFile(BinaryReader reader, int version)
@@ -314,6 +327,19 @@ namespace ResourceTypes.City
                 translokatorName = "";
             }
 
+            public AreaData(AreaData other)
+            {
+                actorFile = other.actorFile;
+                description = other.description;
+                name = other.name;
+                translokatorName = other.translokatorName;
+                entries = new string[other.entries.Length];
+                Array.Copy(other.entries, entries, entries.Length);
+                translokators = new List<TranslokatorData>();
+                foreach (var trans in other.translokators)
+                    translokators.Add(new TranslokatorData(trans));
+            }
+
             public void ReadFromFile(BinaryReader reader, int fileVersion)
             {
                 name = StringHelpers.ReadString(reader);
@@ -353,14 +379,12 @@ namespace ResourceTypes.City
                 writer.Write(unk3);
                 writer.Write(entries.Length);
 
-                for (int i = 0; i != numEntities; i++)
+                for (int i = 0; i != entries.Length; i++)
                     StringHelpers.WriteString(writer, entries[i]);
 
                 writer.Write(translokators.Count);
                 for (int i = 0; i != translokators.Count; i++)
-                {
                     translokators[i].WriteToFile(writer, fileVersion);
-                }
             }
 
             
@@ -403,6 +427,20 @@ namespace ResourceTypes.City
                 public List<short> EntityProperties {
                     get { return entityProperties; }
                     set { entityProperties = value; }
+                }
+
+                public TranslokatorData() { }
+
+                public TranslokatorData(TranslokatorData other)
+                {
+                    name = other.name;
+                    positionX = other.positionX;
+                    positionY = other.positionY;
+                    mapMarkerIconID = other.mapMarkerIconID;
+                    mapMarkerStringID = other.mapMarkerStringID;
+                    entityProperties = new List<short>();
+                    foreach (short val in other.entityProperties)
+                        entityProperties.Add(val);
                 }
 
                 public void ReadFromFile(BinaryReader reader, int numEntities, int fileVersion)

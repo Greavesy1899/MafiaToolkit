@@ -38,6 +38,8 @@
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.groupBoxSplitter = new System.Windows.Forms.SplitContainer();
             this.groupDiscordRPC = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.DiscordStateTextBox = new System.Windows.Forms.TextBox();
             this.DiscordElapsedCheckBox = new System.Windows.Forms.CheckBox();
             this.DiscordStateCheckBox = new System.Windows.Forms.CheckBox();
             this.DiscordDetailsCheckBox = new System.Windows.Forms.CheckBox();
@@ -153,6 +155,8 @@
             // 
             // groupDiscordRPC
             // 
+            this.groupDiscordRPC.Controls.Add(this.label2);
+            this.groupDiscordRPC.Controls.Add(this.DiscordStateTextBox);
             this.groupDiscordRPC.Controls.Add(this.DiscordElapsedCheckBox);
             this.groupDiscordRPC.Controls.Add(this.DiscordStateCheckBox);
             this.groupDiscordRPC.Controls.Add(this.DiscordDetailsCheckBox);
@@ -164,6 +168,23 @@
             this.groupDiscordRPC.TabIndex = 0;
             this.groupDiscordRPC.TabStop = false;
             this.groupDiscordRPC.Text = "$DISCORD_RICH_PRESENCE";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 107);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(130, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "$DISCORDSTATELABEL";
+            // 
+            // DiscordStateTextBox
+            // 
+            this.DiscordStateTextBox.Location = new System.Drawing.Point(6, 123);
+            this.DiscordStateTextBox.Name = "DiscordStateTextBox";
+            this.DiscordStateTextBox.Size = new System.Drawing.Size(365, 20);
+            this.DiscordStateTextBox.TabIndex = 7;
+            this.DiscordStateTextBox.TextChanged += new System.EventHandler(this.DiscordStateTextBox_TextChanged);
             // 
             // DiscordElapsedCheckBox
             // 
@@ -244,5 +265,7 @@
         private System.Windows.Forms.CheckBox debugLoggingCheckbox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox languageComboBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox DiscordStateTextBox;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.City;
@@ -11,6 +12,7 @@ namespace Mafia2Tool
     {
         private FileInfo cityShopsFile;
         private CityShops shopsData;
+        private CityShops.AreaData currentData;
 
         public CityShopEditor(FileInfo file)
         {
@@ -94,9 +96,91 @@ namespace Mafia2Tool
             Close();
         }
 
-        private void OnSelect(object sender, TreeViewEventArgs e)
+        private void OnAfterSelect(object sender, TreeViewEventArgs e)
         {
             propertyGrid1.SelectedObject = e.Node.Tag;
+
+            if (e.Node.Tag != null)
+            {
+                if (e.Node.Tag.GetType() == typeof(CityShops.AreaData))
+                    UpdateDataGrid((CityShops.AreaData)e.Node.Tag);
+            }
+        }
+
+        private void SaveFromDataGrid()
+        {
+            List<string> entities = new List<string>();
+            List<List<short>> translocators = new List<List<short>>();
+            translocators = new List<List<short>>();
+
+            for (int i = 1; i != dataGridView1.Rows[0].Cells.Count; i++)
+                translocators.Add(new List<short>());
+
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (row.Cells[0].GetType() == typeof(DataGridViewTextBoxCell))
+                {
+                    if(row.Cells[0].Value != null)
+                        entities.Add((row.Cells[0] as DataGridViewTextBoxCell).Value.ToString());
+                }
+
+                for (int i = 1; i != dataGridView1.Rows[0].Cells.Count; i++)
+                {
+                    if (row.Cells[0].Value != null)
+                        translocators[i - 1].Add(short.Parse(row.Cells[i].Value.ToString()));
+                }
+            }
+            currentData.Entries = entities.ToArray();
+
+            for(int i = 0; i != currentData.Translokators.Count; i++)
+            {
+                CityShops.AreaData.TranslokatorData data = currentData.Translokators[i];
+                data.EntityProperties = translocators[i];
+            }
+        }
+
+        private void UpdateDataGrid(CityShops.AreaData areaData)
+        {
+            if(currentData == null)
+            {
+                currentData = areaData;
+            }
+            else
+            {
+                dataGridView1.Rows.Clear();
+                dataGridView1.Columns.Clear();
+                currentData = areaData;
+            }
+            List<List<object>> rows = new List<List<object>>();
+            dataGridView1.Columns.Add("Entities", "Entities");
+            foreach (var trans in currentData.Translokators)
+                dataGridView1.Columns.Add(trans.Name, trans.Name);
+
+            foreach (var entity in currentData.Entries)
+            {
+                List<object> row = new List<object>();
+                row.Add(entity);
+                rows.Add(row);
+            }
+
+            foreach (var trans in currentData.Translokators)
+            {
+                if (trans.EntityProperties != null)
+                {
+                    for (int i = 0; i != trans.EntityProperties.Count; i++)
+                        rows[i].Add(trans.EntityProperties[i]);
+                }
+                else
+                {
+                    for (int i = 0; i != currentData.Entries.Length; i++)
+                        rows[i].Add(1023);                      
+                }
+            }
+
+            foreach(var row in rows)
+                dataGridView1.Rows.Add(row.ToArray());
+
+            dataGridView1.AutoResizeColumns();
         }
 
         private void PopulateTranslokatorButton_Click(object sender, EventArgs e)
@@ -120,6 +204,39 @@ namespace Mafia2Tool
         {
             if(e.ChangedItem.Label == "Name")
                 treeView1.SelectedNode.Text = e.ChangedItem.Value.ToString();
+        }
+
+        private void OnTabSelected(object sender, TabControlEventArgs e)
+        {
+            if(e.TabPage == DataGridTab)
+            {
+                if (treeView1.SelectedNode.Tag != null)
+                {
+                    if (treeView1.SelectedNode.Tag.GetType() == typeof(CityShops.AreaData))
+                        UpdateDataGrid((CityShops.AreaData)treeView1.SelectedNode.Tag);
+                }
+            }
+            else if(e.TabPage == PropertyGridTab)
+            {
+                if(currentData != null)
+                    SaveFromDataGrid();
+            }
+        }
+
+        private void DuplicateData_OnClick(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode.Tag != null)
+            {
+                if (treeView1.SelectedNode.Tag.GetType() == typeof(CityShops.AreaData))
+                {
+                    CityShops.AreaData data = new CityShops.AreaData((CityShops.AreaData)treeView1.SelectedNode.Tag);
+                    shopsData.AreaDatas.Add(data);
+                    data.Name += "_dupe";
+                    TreeNode node = new TreeNode(data.Name);
+                    node.Tag = data;
+                    treeView1.Nodes[1].Nodes.Add(node);
+                }
+            }
         }
     }
 }
