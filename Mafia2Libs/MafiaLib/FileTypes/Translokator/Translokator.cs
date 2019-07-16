@@ -1,56 +1,175 @@
 ﻿using SharpDX;
 using System;
+using System.ComponentModel;
 using System.IO;
+using Utils.Extensions;
 using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Translokator
 {
-    public struct structGrid
+    public class Grid
     {
-        public short Key;
-        public Vector3 Origin;
-        public Vector2 CellSize;
-        public int Width;
-        public int Height;
-        public short[] data;
+        short key;
+        Vector3 origin;
+        Vector2 cellSize;
+        int width;
+        int height;
+        short[] data;
+
+        public short Key {
+            get { return key; }
+            set { key = value; }
+        }
+        [TypeConverter(typeof(Vector3Converter))]
+        public Vector3 Origin {
+            get { return origin; }
+            set { origin = value; }
+        }
+        [TypeConverter(typeof(Vector2Converter))]
+        public Vector2 CellSize {
+            get { return cellSize; }
+            set { cellSize = value; }
+        }
+        public int Width {
+            get { return width; }
+            set { width = value; }
+        }
+        public int Height {
+            get { return height; }
+            set { height = value; }
+        }
+        public short[] Data {
+            get { return data; }
+            set { data = value; }
+        }
     }
 
-    public struct structInstance
+    public class Instance
     {
-        public Vector3 Position;
+        Vector3 position;
         public short PositionX;
         public short PositionY;
         public short PositionZ;
         public int Rotation2;
         public short Unk01;
         public int Rotation1;
+
+        [TypeConverter(typeof(Vector3Converter))]
+        public Vector3 Position {
+            get { return position; }
+            set { position = value; }
+        }
     }
 
-    public struct structObject
+    public class Object
     {
-        public short Unk01;
-        public short Unk02;
-        public ulong Hash;
-        public string Name;
-        public byte[] UnkBytes1;
-        public float Unk03;
-        public float Unk04;
-        public int NumInstances;
-        public structInstance[] Instances;
+        short unk01;
+        short unk02;
+        ulong hash;
+        string name;
+        byte[] unkBytes1;
+        float unk03;
+        float unk04;
+        int numInstances;
+        Instance[] instances;
+
+        public short Unk01 {
+            get { return unk01; }
+            set { unk01 = value; }
+        }
+        public short Unk02 {
+            get { return unk02; }
+            set { unk02 = value; }
+        }
+        public ulong Hash {
+            get { return hash; }
+            set { hash = value; }
+        }
+        public string Name {
+            get { return name; }
+            set { name = value; }
+        }
+        public byte[] UnkBytes1 {
+            get { return unkBytes1; }
+            set { unkBytes1 = value; }
+        }
+        public float Unk03 {
+            get { return unk03; }
+            set { unk03 = value; }
+        }
+        public float Unk04 {
+            get { return unk04; }
+            set { unk04 = value; }
+        }
+        [Browsable(false)]
+        public int NumInstances {
+            get { return numInstances; }
+            set { numInstances = value; }
+        }
+        [Browsable(false)]
+        public Instance[] Instances {
+            get { return instances; }
+            set { instances = value; }
+        }
     }
 
-    public struct structObjectGroup
+    public class ObjectGroup
     {
-        public short Unk01;
-        public int NumObjects;
-        public structObject[] Objects;
+        short unk01;
+        int numObjects;
+        Object[] objects;
+
+        public short Unk01 {
+            get { return unk01; }
+            set { unk01 = value; }
+        }
+        [Browsable(false)]
+        public int NumObjects {
+            get { return numObjects; }
+            set { numObjects = value; }
+        }
+        [Browsable(false)]
+        public Object[] Objects {
+            get { return objects; }
+            set { objects = value; }
+        }
     }
 
     public class TranslokatorLoader
     {
-        public structGrid[] Grids;
-        public structObjectGroup[] ObjectGroups;
+        public Grid[] Grids;
+        public ObjectGroup[] ObjectGroups;
+
+        int version;
+        int unk1;
+        short unk2;
+        BoundingBox bounds;
+        int numGrids;
+        int numUnk3;
+        short[] unk3;
+        int numObjectGroups;
+
+        public int Version {
+            get { return version; }
+            set { version = value; }
+        }
+        public int Unk1 {
+            get { return unk1; }
+            set { unk1 = value; }
+        }
+        public short Unk2 {
+            get { return unk2; }
+            set { unk2 = value; }
+        }
+        public BoundingBox Bounds {
+            get { return bounds; }
+            set { bounds = value; }
+        }
+        public short[] Unk3 {
+            get { return unk3; }
+            set { unk3 = value; }
+        }
 
         public TranslokatorLoader(FileInfo info)
         {
@@ -60,7 +179,7 @@ namespace ResourceTypes.Translokator
             }
         }
 
-        private void DecompressRotation(structInstance instance)
+        private void DecompressRotation(Instance instance)
         {
             Vector4 quat = new Vector4();
             float v6 = 0.0f;
@@ -174,56 +293,53 @@ namespace ResourceTypes.Translokator
 
         public void ReadFromFile(BinaryReader reader)
         {
-            int Version = reader.ReadInt32();
-            int unk1 = reader.ReadInt32();
-            short unk2 = reader.ReadInt16();
+            version = reader.ReadInt32();
+            unk1 = reader.ReadInt32();
+            unk2 = reader.ReadInt16();
+            bounds = BoundingBoxExtenders.ReadFromFile(reader);
+            numGrids = reader.ReadInt32();
+            
+            Grids = new Grid[numGrids];
 
-            BoundingBox bounds = BoundingBoxExtenders.ReadFromFile(reader);
-
-            int unk3 = reader.ReadInt32();
-            Grids = new structGrid[unk3];
-
-            for (int i = 0; i != unk3; i++)
+            for (int i = 0; i < numGrids; i++)
             {
-                structGrid grid = new structGrid();
+                Grid grid = new Grid();
                 grid.Key = reader.ReadInt16();
                 grid.Origin = Vector3Extenders.ReadFromFile(reader);
                 grid.CellSize = Vector2Extenders.ReadFromFile(reader);
                 grid.Width = reader.ReadInt32();
                 grid.Height = reader.ReadInt32();
-                grid.data = new short[grid.Width * grid.Height];
+                grid.Data = new short[grid.Width * grid.Height];
 
-                for (int y = 0; y != grid.data.Length; y++)
-                    grid.data[y] = reader.ReadInt16();
+                for (int y = 0; y != grid.Data.Length; y++)
+                    grid.Data[y] = reader.ReadInt16();
 
                 Grids[i] = grid;
             }
 
-            int unk3Count = reader.ReadInt32();
-            short[] unks3 = new short[unk3Count * 2];
+            numUnk3 = reader.ReadInt32();
+            unk3 = new short[numUnk3 * 2];
 
-            for (int i = 0; i != unk3Count * 2; i++)
-            {
-                unks3[i] = reader.ReadInt16();
-            }
+            for (int i = 0; i < numUnk3 * 2; i++)
+                unk3[i] = reader.ReadInt16();
 
-            int numObjectGroups = reader.ReadInt32();
-            ObjectGroups = new structObjectGroup[numObjectGroups];
+            numObjectGroups = reader.ReadInt32();
+            ObjectGroups = new ObjectGroup[numObjectGroups];
             //Console.WriteLine("Num Object Groups: {0}", numObjectGroups);
 
             for (int i = 0; i != numObjectGroups; i++)
             {
                 //Console.WriteLine("Object Groups: {0}", i);
-                structObjectGroup objectGroup = new structObjectGroup();
+                ObjectGroup objectGroup = new ObjectGroup();
                 objectGroup.Unk01 = reader.ReadInt16();
                 objectGroup.NumObjects = reader.ReadInt32();
-                objectGroup.Objects = new structObject[objectGroup.NumObjects];
-               // Console.WriteLine("Num Objects: {0}", objectGroup.NumObjects);
+                objectGroup.Objects = new Object[objectGroup.NumObjects];
+                // Console.WriteLine("Num Objects: {0}", objectGroup.NumObjects);
 
                 for (int x = 0; x != objectGroup.NumObjects; x++)
                 {
                     //Console.WriteLine("Object: {0}", x);
-                    structObject obj = new structObject();
+                    Object obj = new Object();
                     obj.Unk01 = reader.ReadInt16();
                     obj.Unk02 = reader.ReadInt16();
                     obj.Hash = reader.ReadUInt64();
@@ -232,7 +348,7 @@ namespace ResourceTypes.Translokator
                     obj.Unk03 = reader.ReadSingle();
                     obj.Unk04 = reader.ReadSingle();
                     obj.NumInstances = reader.ReadInt32();
-                    obj.Instances = new structInstance[obj.NumInstances];
+                    obj.Instances = new Instance[obj.NumInstances];
                     //Console.WriteLine("Name: {0}", obj.Name);
                     //Console.WriteLine("Num Instances: {0}", obj.NumInstances);
 
@@ -240,13 +356,13 @@ namespace ResourceTypes.Translokator
                     {
                         //Console.WriteLine("Instance: {0}", y);
                         byte[] packed = reader.ReadBytes(14);
-                        structInstance instance = new structInstance();
+                        Instance instance = new Instance();
                         instance.PositionX = BitConverter.ToInt16(packed, 0);
                         instance.PositionY = BitConverter.ToInt16(packed, 2);
                         instance.PositionZ = BitConverter.ToInt16(packed, 4);
                         instance.Rotation2 = BitConverter.ToInt32(packed, 6);
                         instance.Unk01 = BitConverter.ToInt16(packed, 10);
-                        
+
                         instance.Rotation1 = BitConverter.ToInt16(packed, 12);
 
                         //Console.WriteLine("{0:X4}", instance.PositionX);
@@ -261,6 +377,72 @@ namespace ResourceTypes.Translokator
                         obj.Instances[y] = instance;
 
 
+                    }
+                    objectGroup.Objects[x] = obj;
+                }
+                ObjectGroups[i] = objectGroup;
+            }
+        }
+
+        public void WriteToFile(FileInfo info)
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(info.FullName, FileMode.Create)))
+            {
+                InternalWriteToFile(writer);
+            }
+        }
+        private void InternalWriteToFile(BinaryWriter writer)
+        {
+            writer.Write(version);
+            writer.Write(unk1);
+            writer.Write(unk2);
+            BoundingBoxExtenders.WriteToFile(bounds, writer);
+            writer.Write(Grids.Length);
+
+            for (int i = 0; i < Grids.Length; i++)
+            {
+                Grid grid = Grids[i];
+                writer.Write(grid.Key);
+                Vector3Extenders.WriteToFile(grid.Origin, writer);
+                Vector2Extenders.WriteToFile(grid.CellSize, writer);
+                writer.Write(grid.Width);
+                writer.Write(grid.Height);
+
+                for (int y = 0; y != grid.Data.Length; y++)
+                    writer.Write(grid.Data[y]);
+            }
+
+            writer.Write(unk3.Length);
+            for (int i = 0; i < unk3.Length; i++)
+                writer.Write(unk3[i]);
+
+            writer.Write(ObjectGroups.Length);
+            for (int i = 0; i != ObjectGroups.Length; i++)
+            {
+                ObjectGroup objectGroup = ObjectGroups[i];
+                writer.Write(objectGroup.Unk01);
+                writer.Write(objectGroup.Objects.Length);
+
+                for (int x = 0; x != objectGroup.NumObjects; x++)
+                {
+                    Object obj = objectGroup.Objects[x];
+                    writer.Write(obj.Unk01);
+                    writer.Write(obj.Unk02);
+                    writer.Write(obj.Hash);
+                    StringHelpers.WriteString(writer, obj.Name);
+                    writer.Write(obj.UnkBytes1);
+                    writer.Write(obj.Unk03);
+                    writer.Write(obj.Unk04);
+                    writer.Write(obj.NumInstances);
+
+                    for (int y = 0; y != obj.NumInstances; y++)
+                    {
+                        Instance instance = obj.Instances[y];
+                        writer.Write(instance.PositionY);
+                        writer.Write(instance.PositionZ);
+                        writer.Write(instance.Rotation2);
+                        writer.Write(instance.Unk01);
+                        writer.Write(instance.Rotation1);
                     }
                     objectGroup.Objects[x] = obj;
                 }

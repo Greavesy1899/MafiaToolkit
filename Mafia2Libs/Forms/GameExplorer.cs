@@ -549,7 +549,7 @@ namespace Mafia2Tool
                     tTool = new TableEditor((FileInfo)item.Tag);
                     return;
                 case "TRA":
-                    ResourceTypes.Translokator.TranslokatorLoader trans = new ResourceTypes.Translokator.TranslokatorLoader((FileInfo)item.Tag);
+                    TranslokatorEditor editor = new TranslokatorEditor((FileInfo)item.Tag);
                     return;
                 case "ACT":
                     aTool = new ActorEditor((FileInfo)item.Tag);
@@ -761,6 +761,38 @@ namespace Mafia2Tool
         private void M2FBXButtonClicked(object sender, EventArgs e)
         {
             M2FBXTool tool = new M2FBXTool();
+        }
+
+        private void UnpackSDSRecurse(DirectoryInfo info)
+        {
+            foreach (var DirectoryInfo in info.GetDirectories())
+            {
+                foreach (var FileInfo in DirectoryInfo.GetFiles())
+                {
+                    if (FileInfo.Extension.Contains(".sds"))
+                    {
+                        Console.WriteLine("Unpacking " + FileInfo.FullName);
+                        OpenSDS(FileInfo);
+                    }
+                }
+                UnpackSDSRecurse(DirectoryInfo);
+            }
+        }
+
+        private void UnpackAllSDSButton_Click(object sender, EventArgs e)
+        {
+            foreach(var DirectoryInfo in originalPath.GetDirectories())
+            {
+                foreach(var FileInfo in DirectoryInfo.GetFiles())
+                {
+                    if (FileInfo.Extension.Contains(".sds"))
+                    {
+                        Console.WriteLine("Unpacking " + FileInfo.FullName);
+                        OpenSDS(FileInfo);
+                    }
+                }
+                UnpackSDSRecurse(DirectoryInfo);
+            }
         }
     }
 }

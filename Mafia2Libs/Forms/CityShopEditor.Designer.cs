@@ -42,14 +42,16 @@
             this.toolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AddAreaButton = new System.Windows.Forms.ToolStripMenuItem();
             this.AddDataButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.DuplicateDataButton = new System.Windows.Forms.ToolStripMenuItem();
             this.PopulateTranslokatorButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteAreaButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteDataButton = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.TabControl = new System.Windows.Forms.TabControl();
             this.PropertyGridTab = new System.Windows.Forms.TabPage();
             this.DataGridTab = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.DuplicateDataButton = new System.Windows.Forms.ToolStripMenuItem();
             this.CollisionContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.TabControl.SuspendLayout();
@@ -136,7 +138,9 @@
             this.AddAreaButton,
             this.AddDataButton,
             this.DuplicateDataButton,
-            this.PopulateTranslokatorButton});
+            this.PopulateTranslokatorButton,
+            this.DeleteAreaButton,
+            this.DeleteDataButton});
             this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
             this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolButton.Name = "toolButton";
@@ -157,12 +161,33 @@
             this.AddDataButton.Text = "$ADD_DATA";
             this.AddDataButton.Click += new System.EventHandler(this.AddDataButton_Click);
             // 
+            // DuplicateDataButton
+            // 
+            this.DuplicateDataButton.Name = "DuplicateDataButton";
+            this.DuplicateDataButton.Size = new System.Drawing.Size(236, 22);
+            this.DuplicateDataButton.Text = "$DUPLICATE_DATA";
+            this.DuplicateDataButton.Click += new System.EventHandler(this.DuplicateData_OnClick);
+            // 
             // PopulateTranslokatorButton
             // 
             this.PopulateTranslokatorButton.Name = "PopulateTranslokatorButton";
             this.PopulateTranslokatorButton.Size = new System.Drawing.Size(236, 22);
             this.PopulateTranslokatorButton.Text = "$POPULATE_TRANSLOKATORS";
             this.PopulateTranslokatorButton.Click += new System.EventHandler(this.PopulateTranslokatorButton_Click);
+            // 
+            // DeleteAreaButton
+            // 
+            this.DeleteAreaButton.Name = "DeleteAreaButton";
+            this.DeleteAreaButton.Size = new System.Drawing.Size(236, 22);
+            this.DeleteAreaButton.Text = "$DELETE_AREA";
+            this.DeleteAreaButton.Click += new System.EventHandler(this.DeleteArea_Click);
+            // 
+            // DeleteDataButton
+            // 
+            this.DeleteDataButton.Name = "DeleteDataButton";
+            this.DeleteDataButton.Size = new System.Drawing.Size(236, 22);
+            this.DeleteDataButton.Text = "$DELETE_DATA";
+            this.DeleteDataButton.Click += new System.EventHandler(this.DeleteData_Click);
             // 
             // treeView1
             // 
@@ -230,13 +255,6 @@
             this.dataGridView1.Size = new System.Drawing.Size(447, 378);
             this.dataGridView1.TabIndex = 0;
             // 
-            // DuplicateDataButton
-            // 
-            this.DuplicateDataButton.Name = "DuplicateDataButton";
-            this.DuplicateDataButton.Size = new System.Drawing.Size(236, 22);
-            this.DuplicateDataButton.Text = "$DUPLICATE_DATA";
-            this.DuplicateDataButton.Click += new System.EventHandler(this.DuplicateData_OnClick);
-            // 
             // CityShopEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -281,5 +299,7 @@
         private System.Windows.Forms.TabPage DataGridTab;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.ToolStripMenuItem DuplicateDataButton;
+        private System.Windows.Forms.ToolStripMenuItem DeleteAreaButton;
+        private System.Windows.Forms.ToolStripMenuItem DeleteDataButton;
     }
 }

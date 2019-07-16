@@ -37,7 +37,9 @@ namespace Mafia2Tool
             SaveButton.Text = Language.GetString("$SAVE");
             ReloadButton.Text = Language.GetString("$RELOAD");
             PopulateTranslokatorButton.Text = Language.GetString("$POPULATE_TRANSLOKATORS");
-
+            DuplicateDataButton.Text = Language.GetString("$DUPLICATE_DATA");
+            DeleteDataButton.Text = Language.GetString("$DELETE_DATA");
+            DeleteAreaButton.Text = Language.GetString("$DELETE_AREA");
         }
 
         private void BuildData()
@@ -79,6 +81,15 @@ namespace Mafia2Tool
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
+            shopsData.Areas.Clear();
+            shopsData.AreaDatas.Clear();
+
+            foreach(TreeNode node in treeView1.Nodes[0].Nodes)
+                shopsData.Areas.Add((CityShops.Area)node.Tag);
+
+            foreach (TreeNode node in treeView1.Nodes[1].Nodes)
+                shopsData.AreaDatas.Add((CityShops.AreaData)node.Tag);
+
             using (BinaryWriter writer = new BinaryWriter(File.Open(cityShopsFile.FullName, FileMode.Create)))
                 shopsData.WriteToFile(writer);
         }
@@ -235,6 +246,31 @@ namespace Mafia2Tool
                     TreeNode node = new TreeNode(data.Name);
                     node.Tag = data;
                     treeView1.Nodes[1].Nodes.Add(node);
+                    treeView1.SelectedNode = node;
+                }
+            }
+        }
+
+        private void DeleteArea_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode.Tag != null)
+            {
+                if (treeView1.SelectedNode.Tag.GetType() == typeof(CityShops.Area))
+                {
+                    treeView1.Nodes.Remove(treeView1.SelectedNode);
+                    shopsData.Areas.Remove((CityShops.Area)treeView1.SelectedNode.Tag);
+                }
+            }
+        }
+
+        private void DeleteData_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode.Tag != null)
+            {
+                if (treeView1.SelectedNode.Tag.GetType() == typeof(CityShops.AreaData))
+                {
+                    treeView1.Nodes.Remove(treeView1.SelectedNode);
+                    shopsData.AreaDatas.Remove((CityShops.AreaData)treeView1.SelectedNode.Tag);
                 }
             }
         }

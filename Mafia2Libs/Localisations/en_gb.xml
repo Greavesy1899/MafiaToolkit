@@ -141,6 +141,9 @@
   <String ID="$CITY_SHOP_EDITOR_TITLE">CityShop Editor</String>
   <String ID="$ADD_AREA">Add Area</String>
   <String ID="$ADD_DATA">Add Data</String>
+  <String ID="$DELETE_AREA">Delete Area</String>
+  <String ID="$DELETE_DATA">Delete Data</String>
+  <String ID="$DUPLICATE_DATA">Duplicate Data</String>
   <String ID="$POPULATE_TRANSLOKATORS">Populate New Translocators</String>
 
   <!-- Table Editor string -->

@@ -528,50 +528,50 @@ namespace Mafia2Tool
                 }
             }
 
-            if(SceneData.Translokator != null && ToolkitSettings.Experimental)
-            {
-                TreeNode node = new TreeNode("Translokator Data");
+            //if(SceneData.Translokator != null && ToolkitSettings.Experimental)
+            //{
+            //    TreeNode node = new TreeNode("Translokator Data");
 
-                //for(int i = 0; i != SceneData.Translokator.Grids.Length; i++)
-                //{
-                //    var grid = SceneData.Translokator.Grids[i];
-                //    RenderBoundingBox bbox = new RenderBoundingBox();
-                //    bbox.Init(new BoundingBox(new Vector3(grid.Height, grid.Width, grid.Height), new Vector3(-grid.Height, -grid.Width, -grid.Height)));
-                //    bbox.SetTransform(grid.Origin, new Matrix33());
-                //    assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
-                //}
-                //for (int i = 0; i != SceneData.Translokator.ObjectGroups.Length; i++)
-                //{
-                //    var objGroup = SceneData.Translokator.ObjectGroups[i];
+            //    //for(int i = 0; i != SceneData.Translokator.Grids.Length; i++)
+            //    //{
+            //    //    var grid = SceneData.Translokator.Grids[i];
+            //    //    RenderBoundingBox bbox = new RenderBoundingBox();
+            //    //    bbox.Init(new BoundingBox(new Vector3(grid.Height, grid.Width, grid.Height), new Vector3(-grid.Height, -grid.Width, -grid.Height)));
+            //    //    bbox.SetTransform(grid.Origin, new Matrix33());
+            //    //    assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
+            //    //}
+            //    for (int i = 0; i != SceneData.Translokator.ObjectGroups.Length; i++)
+            //    {
+            //        var objGroup = SceneData.Translokator.ObjectGroups[i];
 
-                //    for (int x = 0; x != objGroup.Objects.Length; x++)
-                //    {
-                //        var objects = objGroup.Objects[x];
-                //        RenderModel model = null;
+            //        for (int x = 0; x != objGroup.Objects.Length; x++)
+            //        {
+            //            var objects = objGroup.Objects[x];
+            //            RenderModel model = null;
 
-                //        foreach(KeyValuePair<int, object> pair in SceneData.FrameResource.FrameObjects)
-                //        {
-                //            FrameObjectBase baseObject = (FrameObjectBase)pair.Value;
-                //            if (baseObject.GetType() == typeof(FrameObjectFrame))
-                //            {
-                //                if((baseObject as FrameObjectFrame).ActorHash.uHash == objects.Hash)
-                //                {
-                //                    model = (RenderModel)assets[baseObject.RefID];
-                //                }
-                //            }
-                //        }
+            //            //foreach (KeyValuePair<int, object> pair in SceneData.FrameResource.FrameObjects)
+            //            //{
+            //            //    FrameObjectBase baseObject = (FrameObjectBase)pair.Value;
+            //            //    if (baseObject.GetType() == typeof(FrameObjectFrame))
+            //            //    {
+            //            //        if ((baseObject as FrameObjectFrame).ActorHash.uHash == objects.Hash)
+            //            //        {
+            //            //            model = (RenderModel)assets[baseObject.RefID];
+            //            //        }
+            //            //    }
+            //            //}
 
-                //        for (int z = 0; z != objects.Instances.Length; z++)
-                //        {
-                //            var instance = objects.Instances[z];
-                //            RenderInstance rInstance = new RenderInstance();
-                //            rInstance.Init(model);
-                //            rInstance.SetTransform(instance.Position, new Matrix33());
-                //            assets.Add(i+StringHelpers.RandomGenerator.Next(), rInstance);
-                //        }
-                //    }
-                //}
-            }
+            //            for (int z = 0; z != objects.Instances.Length; z++)
+            //            {
+            //                var instance = objects.Instances[z];
+            //                RenderBoundingBox bbox = new RenderBoundingBox();
+            //                bbox.Init(new BoundingBox(new Vector3(10.0f), new Vector3(10.0f)));
+            //                bbox.SetTransform(instance.Position, new Matrix33());
+            //                assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
+            //            }
+            //        }
+            //    }
+            //}
 
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
