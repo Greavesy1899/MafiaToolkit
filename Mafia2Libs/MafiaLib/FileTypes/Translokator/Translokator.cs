@@ -412,7 +412,7 @@ namespace ResourceTypes.Translokator
                     writer.Write(grid.Data[y]);
             }
 
-            writer.Write(unk3.Length);
+            writer.Write(unk3.Length/2);
             for (int i = 0; i < unk3.Length; i++)
                 writer.Write(unk3[i]);
 

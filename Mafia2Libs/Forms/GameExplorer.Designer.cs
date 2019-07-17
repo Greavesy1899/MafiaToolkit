@@ -75,11 +75,11 @@ namespace Mafia2Tool
             this.dropdownTools = new System.Windows.Forms.ToolStripDropDownButton();
             this.OptionsItem = new System.Windows.Forms.ToolStripMenuItem();
             this.M2FBXButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.UnpackAllSDSButton = new System.Windows.Forms.ToolStripMenuItem();
             this.bottomContainer = new System.Windows.Forms.ToolStripContainer();
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.UnpackAllSDSButton = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -499,8 +499,15 @@ namespace Mafia2Tool
             // 
             this.M2FBXButton.Name = "M2FBXButton";
             this.M2FBXButton.Size = new System.Drawing.Size(180, 22);
-            this.M2FBXButton.Text = "$M2FBX";
+            this.M2FBXButton.Text = "M2 FBX";
             this.M2FBXButton.Click += new System.EventHandler(this.M2FBXButtonClicked);
+            // 
+            // UnpackAllSDSButton
+            // 
+            this.UnpackAllSDSButton.Name = "UnpackAllSDSButton";
+            this.UnpackAllSDSButton.Size = new System.Drawing.Size(180, 22);
+            this.UnpackAllSDSButton.Text = "$UNPACK_ALL_SDS";
+            this.UnpackAllSDSButton.Click += new System.EventHandler(this.UnpackAllSDSButton_Click);
             // 
             // bottomContainer
             // 
@@ -539,13 +546,6 @@ namespace Mafia2Tool
             // MafiaIIBrowser
             // 
             this.MafiaIIBrowser.Description = "$SELECT_MII_FOLDER";
-            // 
-            // UnpackAllSDSButton
-            // 
-            this.UnpackAllSDSButton.Name = "UnpackAllSDSButton";
-            this.UnpackAllSDSButton.Size = new System.Drawing.Size(180, 22);
-            this.UnpackAllSDSButton.Text = "$UNPACK_ALL_SDS";
-            this.UnpackAllSDSButton.Click += new System.EventHandler(this.UnpackAllSDSButton_Click);
             // 
             // GameExplorer
             // 

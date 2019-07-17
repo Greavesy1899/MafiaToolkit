@@ -34,6 +34,8 @@ using Gibbed.IO;
 using Gibbed.Mafia2.FileFormats.Archive;
 using Gibbed.Mafia2.ResourceFormats;
 using Utils.Logging;
+using Utils.Lua;
+using Utils.Settings;
 
 namespace Gibbed.Mafia2.FileFormats
 {
@@ -793,11 +795,14 @@ namespace Gibbed.Mafia2.FileFormats
                     Directory.CreateDirectory(scrdir);
                 }
 
-                using (BinaryWriter writer = new BinaryWriter(
-                    File.Open(scriptDir + "/" + resource.Scripts[x].Name, FileMode.Create)))
+                using (BinaryWriter writer = new BinaryWriter(File.Open(scriptDir + "/" + resource.Scripts[x].Name, FileMode.Create)))
                 {
                     writer.Write(resource.Scripts[x].Data);
                 }
+
+                if(ToolkitSettings.DecompileLUA)
+                    LuaHelper.ReadFile(new FileInfo(scriptDir + "/" + resource.Scripts[x].Name));
+
                 resourceXML.WriteElementString("Name", resource.Scripts[x].Name);
             }
             resourceXML.WriteElementString("Version", entry.Version.ToString());

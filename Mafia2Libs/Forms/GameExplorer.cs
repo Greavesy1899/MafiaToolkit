@@ -281,7 +281,9 @@ namespace Mafia2Tool
                 Directory.CreateDirectory(file.Directory.FullName + "/BackupSDS");
 
             //place copy in new folder.
-            File.Copy(file.FullName, file.Directory.FullName + "/BackupSDS/" + file.Name, true);
+            string time = string.Format("{0}_{1}_{2}_{3}_{4}", DateTime.Now.TimeOfDay.Hours, DateTime.Now.TimeOfDay.Minutes, DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+            string filename = ToolkitSettings.AddTimeDataBackup == true ? file.Name.Insert(file.Name.Length - 4, "_" + time) : file.Name;
+            File.Copy(file.FullName, file.Directory.FullName + "/BackupSDS/" + filename, true);
 
             //begin..
             infoText.Text = "Saving SDS..";

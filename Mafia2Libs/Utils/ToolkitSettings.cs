@@ -46,6 +46,8 @@ namespace Utils.Settings
         public static bool LoggingEnabled;
         public static int Language;
         public static int SerializeSDSOption;
+        public static bool DecompileLUA;
+        public static bool AddTimeDataBackup;
         public static readonly string Version = "2.0 experimental";
 
         public static void ReadINI()
@@ -70,6 +72,8 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
             int.TryParse(ReadKey("Language", "Misc", "0"), out Language);
             int.TryParse(ReadKey("Format", "Exporting", "0"), out Format);
+            bool.TryParse(ReadKey("AddTimeDataBackup", "SDS", "True"), out AddTimeDataBackup);
+            bool.TryParse(ReadKey("DecompileLUA", "SDS", "False"), out DecompileLUA);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
             MaterialLibs = ReadKey("MaterialLibs", "Materials", "");
 
@@ -81,13 +85,6 @@ namespace Utils.Settings
                 InitRichPresence();
         }
 
-        /// <summary>
-        /// Read Key from the ini file and do some checks.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="section"></param>
-        /// <param name="defaultValue"></param>
-        /// <returns></returns>
         private static string ReadKey(string key, string section, string defaultValue = null)
         {
             if (!ini.KeyExists(key, section))
