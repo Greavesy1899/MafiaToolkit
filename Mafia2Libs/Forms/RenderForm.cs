@@ -347,7 +347,7 @@ namespace Mafia2Tool
         private void UpdateRenderedObjects(TransformMatrix obj1Matrix, FrameObjectBase obj)
         {
             if (Graphics.Assets.ContainsKey(obj.RefID))
-                Graphics.Assets[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Rotation);
+                Graphics.Assets[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Matrix);
         }
 
         private void Save()
@@ -433,7 +433,7 @@ namespace Mafia2Tool
         private RenderBoundingBox BuildRenderBounds(FrameObjectDummy dummy)
         {
             RenderBoundingBox dummyBBox = new RenderBoundingBox();
-            dummyBBox.SetTransform(dummy.Matrix.Position, dummy.Matrix.Rotation);
+            dummyBBox.SetTransform(dummy.Matrix.Position, dummy.Matrix.Matrix);
             dummyBBox.Init(dummy.Bounds);
             return dummyBBox;
         }
@@ -441,7 +441,7 @@ namespace Mafia2Tool
         private RenderBoundingBox BuildRenderBounds(FrameObjectArea area)
         {
             RenderBoundingBox areaBBox = new RenderBoundingBox();
-            areaBBox.SetTransform(area.Matrix.Position, area.Matrix.Rotation);
+            areaBBox.SetTransform(area.Matrix.Position, area.Matrix.Matrix);
             areaBBox.Init(area.Bounds);
             return areaBBox;
         }
@@ -449,7 +449,7 @@ namespace Mafia2Tool
         private RenderBoundingBox BuildRenderBounds(FrameObjectSector sector)
         {
             RenderBoundingBox areaBBox = new RenderBoundingBox();
-            areaBBox.SetTransform(sector.Matrix.Position, sector.Matrix.Rotation);
+            areaBBox.SetTransform(sector.Matrix.Position, sector.Matrix.Matrix);
             areaBBox.Init(sector.Bounds);
             return areaBBox;
         }
@@ -457,7 +457,7 @@ namespace Mafia2Tool
         private RenderBoundingBox BuildRenderBounds(FrameObjectFrame frame)
         {
             RenderBoundingBox frameBBox = new RenderBoundingBox();
-            frameBBox.SetTransform(frame.Matrix.Position, frame.Matrix.Rotation);
+            frameBBox.SetTransform(frame.Matrix.Position, frame.Matrix.Matrix);
             frameBBox.Init(new BoundingBox(new Vector3(0.5f), new Vector3(0.5f)));
             return frameBBox;
         }
@@ -1126,10 +1126,11 @@ namespace Mafia2Tool
             }
             if (pGrid.SelectedObject is FrameObjectSingleMesh)
             {
+                FrameObjectSingleMesh obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
+
                 if (e.ChangedItem.Label == "MeshIndex")
                 {
                     int value = (int)e.ChangedItem.Value;
-                    FrameObjectSingleMesh obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
                     obj.Refs["Mesh"] = SceneData.FrameResource.NewFrames[value].Data.RefID;
                     obj.Geometry = SceneData.FrameResource.FrameGeometries[obj.Refs["Mesh"]];
 
@@ -1137,10 +1138,11 @@ namespace Mafia2Tool
                 if (e.ChangedItem.Label == "MaterialIndex")
                 {
                     int value = (int)e.ChangedItem.Value;
-                    FrameObjectSingleMesh obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
                     obj.Refs["Material"] = SceneData.FrameResource.NewFrames[value].Data.RefID;
                     obj.Material = SceneData.FrameResource.FrameMaterials[obj.Refs["Material"]];
                 }
+
+                Graphics.Assets[obj.RefID].SetTransform(obj.Matrix.Position, obj.Matrix.Matrix);
             }
         }
 

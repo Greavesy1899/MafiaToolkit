@@ -32,17 +32,15 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TranslokatorEditor));
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.TranslokatorTree = new System.Windows.Forms.TreeView();
-            this.CollisionContext = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.deletePlacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openM2T = new System.Windows.Forms.OpenFileDialog();
+            this.TranslokatorContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.AddInstance = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SaveToolButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.CollisionContext.SuspendLayout();
+            this.TranslokatorContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -61,38 +59,27 @@
             // 
             this.TranslokatorTree.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.TranslokatorTree.ContextMenuStrip = this.CollisionContext;
+            this.TranslokatorTree.ContextMenuStrip = this.TranslokatorContext;
             this.TranslokatorTree.Location = new System.Drawing.Point(12, 28);
             this.TranslokatorTree.Name = "TranslokatorTree";
             this.TranslokatorTree.Size = new System.Drawing.Size(368, 416);
             this.TranslokatorTree.TabIndex = 17;
             this.TranslokatorTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TranslokatorTree_AfterSelect);
             // 
-            // CollisionContext
+            // TranslokatorContext
             // 
-            this.CollisionContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ContextDelete,
-            this.deletePlacementToolStripMenuItem});
-            this.CollisionContext.Name = "SDSContext";
-            this.CollisionContext.Size = new System.Drawing.Size(167, 48);
+            this.TranslokatorContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.AddInstance});
+            this.TranslokatorContext.Name = "SDSContext";
+            this.TranslokatorContext.Size = new System.Drawing.Size(181, 48);
+            this.TranslokatorContext.Opening += new System.ComponentModel.CancelEventHandler(this.TranslokatorContext_Opening);
             // 
-            // ContextDelete
+            // AddInstance
             // 
-            this.ContextDelete.Name = "ContextDelete";
-            this.ContextDelete.Size = new System.Drawing.Size(166, 22);
-            this.ContextDelete.Text = "Delete Collision";
-            // 
-            // deletePlacementToolStripMenuItem
-            // 
-            this.deletePlacementToolStripMenuItem.Name = "deletePlacementToolStripMenuItem";
-            this.deletePlacementToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.deletePlacementToolStripMenuItem.Text = "Delete Placement";
-            // 
-            // openM2T
-            // 
-            this.openM2T.FileName = "Select M2T file.";
-            this.openM2T.Filter = "Model File|*.m2t|All Files|*.*|FBX Model|*.fbx";
-            this.openM2T.Tag = "";
+            this.AddInstance.Name = "AddInstance";
+            this.AddInstance.Size = new System.Drawing.Size(180, 22);
+            this.AddInstance.Text = "Add Instance";
+            this.AddInstance.Click += new System.EventHandler(this.AddInstance_Click);
             // 
             // toolStrip1
             // 
@@ -121,21 +108,21 @@
             // SaveToolButton
             // 
             this.SaveToolButton.Name = "SaveToolButton";
-            this.SaveToolButton.Size = new System.Drawing.Size(180, 22);
+            this.SaveToolButton.Size = new System.Drawing.Size(110, 22);
             this.SaveToolButton.Text = "Save";
             this.SaveToolButton.Click += new System.EventHandler(this.SaveToolButton_Click);
             // 
             // ReloadButton
             // 
             this.ReloadButton.Name = "ReloadButton";
-            this.ReloadButton.Size = new System.Drawing.Size(180, 22);
+            this.ReloadButton.Size = new System.Drawing.Size(110, 22);
             this.ReloadButton.Text = "Reload";
             this.ReloadButton.Click += new System.EventHandler(this.ReloadButton_Click);
             // 
             // ExitButton
             // 
             this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(180, 22);
+            this.ExitButton.Size = new System.Drawing.Size(110, 22);
             this.ExitButton.Text = "Exit";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -158,7 +145,7 @@
             this.Controls.Add(this.toolStrip1);
             this.Name = "TranslokatorEditor";
             this.Text = "TranslokatorEditor";
-            this.CollisionContext.ResumeLayout(false);
+            this.TranslokatorContext.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -170,10 +157,8 @@
 
         private System.Windows.Forms.PropertyGrid PropertyGrid;
         private System.Windows.Forms.TreeView TranslokatorTree;
-        private System.Windows.Forms.ContextMenuStrip CollisionContext;
-        private System.Windows.Forms.ToolStripMenuItem ContextDelete;
-        private System.Windows.Forms.ToolStripMenuItem deletePlacementToolStripMenuItem;
-        private System.Windows.Forms.OpenFileDialog openM2T;
+        private System.Windows.Forms.ContextMenuStrip TranslokatorContext;
+        private System.Windows.Forms.ToolStripMenuItem AddInstance;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton fileToolButton;
         private System.Windows.Forms.ToolStripMenuItem SaveToolButton;

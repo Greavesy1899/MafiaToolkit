@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ResourceTypes.Translokator;
 using System.Windows.Forms;
 
@@ -130,6 +123,28 @@ namespace Mafia2Tool.Forms
         private void ExitButton_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void TranslokatorContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            TranslokatorContext.Items[0].Visible = false;
+
+            if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
+            {
+                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object))
+                {
+                    TranslokatorContext.Items[0].Visible = true;
+                }
+            }
+        }
+
+        private void AddInstance_Click(object sender, EventArgs e)
+        {
+            ResourceTypes.Translokator.Object obj = (TranslokatorTree.SelectedNode.Tag as ResourceTypes.Translokator.Object);
+            Instance instance = new Instance();
+            TreeNode instanceNode = new TreeNode(obj.Name + " " + TranslokatorTree.SelectedNode.GetNodeCount(false));
+            instanceNode.Tag = instance;
+            TranslokatorTree.SelectedNode.Nodes.Add(instanceNode);
         }
     }
 }
