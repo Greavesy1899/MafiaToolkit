@@ -48,9 +48,9 @@ namespace Forms.Docking
                 PositionXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.X);
                 PositionYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.Y);
                 PositionZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.Z);
-                RotationXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Matrix.EulerRotation.X);
-                RotationYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Matrix.EulerRotation.Y);
-                RotationZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Matrix.EulerRotation.Z);
+                RotationXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.X);
+                RotationYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.Y);
+                RotationZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.Z);
             }
             else if(currentObject is ResourceTypes.Collisions.Collision.Placement)
             {
@@ -79,8 +79,7 @@ namespace Forms.Docking
                 {
                     FrameObjectBase fObject = (currentObject as FrameObjectBase);
                     fObject.Matrix.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
-                    fObject.Matrix.Matrix.EulerRotation = new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value));
-                    fObject.Matrix.Matrix.UpdateMatrixFromEuler();
+                    fObject.Matrix.SetRotationMatrix(new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value)));
                 }
                 else if(currentObject is ResourceTypes.Collisions.Collision.Placement)
                 {
