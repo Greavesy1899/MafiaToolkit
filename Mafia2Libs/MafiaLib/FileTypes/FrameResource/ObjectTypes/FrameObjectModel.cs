@@ -163,10 +163,10 @@ namespace ResourceTypes.FrameResource
 
             //do rest matrices.
             for (int i = 0; i != restPose.Length; i++)
-                restPose[i].WriteToFrame(writer);
+                restPose[i].WriteToFile(writer);
 
             //unknown transform.
-            unkTrasform.WriteToFrame(writer);
+            unkTrasform.WriteToFile(writer);
 
             //attachments.
             writer.Write(attachmentReferences.Length);

@@ -143,13 +143,13 @@ namespace ResourceTypes.FrameResource
                 boneNames[i].WriteToFile(writer);
 
             for (int i = 0; i != matrices1.Length; i++)
-                matrices1[i].WriteToFrame(writer);
+                matrices1[i].WriteToFile(writer);
 
             writer.Write(numUnkCount2);
             writer.Write(boneLODUsage);
 
             for (int i = 0; i != matrices2.Length; i++)
-                matrices2[i].WriteToFrame(writer);
+                matrices2[i].WriteToFile(writer);
 
             //BoneMappings.
             for (int i = 0; i != mappingForBlendingInfos.Length; i++)

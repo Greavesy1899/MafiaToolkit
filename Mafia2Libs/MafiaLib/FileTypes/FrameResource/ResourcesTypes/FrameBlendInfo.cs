@@ -171,7 +171,7 @@ namespace ResourceTypes.FrameResource
 
             public void WriteToFile(BinaryWriter writer)
             {
-                transform.WriteToFrame(writer);
+                transform.WriteToFile(writer);
                 bounds.WriteToFile(writer);
                 writer.Write(IsValid);
             }

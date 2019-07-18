@@ -75,6 +75,7 @@ namespace Mafia2Tool
             this.dropdownTools = new System.Windows.Forms.ToolStripDropDownButton();
             this.OptionsItem = new System.Windows.Forms.ToolStripMenuItem();
             this.M2FBXButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.UnpackAllSDSButton = new System.Windows.Forms.ToolStripMenuItem();
             this.bottomContainer = new System.Windows.Forms.ToolStripContainer();
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
@@ -479,7 +480,8 @@ namespace Mafia2Tool
             this.dropdownTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.dropdownTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.OptionsItem,
-            this.M2FBXButton});
+            this.M2FBXButton,
+            this.UnpackAllSDSButton});
             this.dropdownTools.Image = ((System.Drawing.Image)(resources.GetObject("dropdownTools.Image")));
             this.dropdownTools.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.dropdownTools.Name = "dropdownTools";
@@ -489,16 +491,23 @@ namespace Mafia2Tool
             // OptionsItem
             // 
             this.OptionsItem.Name = "OptionsItem";
-            this.OptionsItem.Size = new System.Drawing.Size(130, 22);
+            this.OptionsItem.Size = new System.Drawing.Size(180, 22);
             this.OptionsItem.Text = "$OPTIONS";
             this.OptionsItem.Click += new System.EventHandler(this.OnOptionsItem_Clicked);
             // 
             // M2FBXButton
             // 
             this.M2FBXButton.Name = "M2FBXButton";
-            this.M2FBXButton.Size = new System.Drawing.Size(130, 22);
-            this.M2FBXButton.Text = "$M2FBX";
+            this.M2FBXButton.Size = new System.Drawing.Size(180, 22);
+            this.M2FBXButton.Text = "M2 FBX";
             this.M2FBXButton.Click += new System.EventHandler(this.M2FBXButtonClicked);
+            // 
+            // UnpackAllSDSButton
+            // 
+            this.UnpackAllSDSButton.Name = "UnpackAllSDSButton";
+            this.UnpackAllSDSButton.Size = new System.Drawing.Size(180, 22);
+            this.UnpackAllSDSButton.Text = "$UNPACK_ALL_SDS";
+            this.UnpackAllSDSButton.Click += new System.EventHandler(this.UnpackAllSDSButton_Click);
             // 
             // bottomContainer
             // 
@@ -626,5 +635,6 @@ namespace Mafia2Tool
         private ToolStripMenuItem creditsToolStripMenuItem;
         private ToolStripMenuItem VersionLabel;
         private ToolStripMenuItem M2FBXButton;
+        private ToolStripMenuItem UnpackAllSDSButton;
     }
 }

@@ -102,97 +102,66 @@ namespace Utils.Types
         private float m20;
         private float m21;
         private float m22;
-        private Vector3 eulerRotation;
 
-        [Browsable(false)]
+        //[Browsable(false)]
         public float M00 {
             get { return m00; }
             set { m00 = value; }
         }
-        [Browsable(false)]
+        //[Browsable(false)]
         public float M01 {
             get { return m01; }
             set { m01 = value; }
         }
-        [Browsable(false)]
+        //[Browsable(false)]
         public float M02 {
             get { return m02; }
             set { m02 = value; }
         }
-        [Browsable(false)]
+        //[Browsable(false)]
         public float M10 {
             get { return m10; }
             set { m10 = value; }
         }
-        [Browsable(false)]
+        //[Browsable(false)]
         public float M11 {
             get { return m11; }
             set { m11 = value; }
         }
-        [Browsable(false)]
+        //[Browsable(false)]
         public float M12 {
             get { return m12; }
             set { m12 = value; }
         }
-        [Browsable(false)]
+        //[Browsable(false)]
         public float M20 {
             get { return m20; }
             set { m20 = value; }
         }
-        [Browsable(false)]
+        //[Browsable(false)]
         public float M21 {
             get { return m21; }
             set { m21 = value; }
         }
-        [Browsable(false)]
+        //[Browsable(false)]
         public float M22 {
             get { return m22; }
             set { m22 = value; }
         }
 
-        public Vector3 EulerRotation {
-            get { return eulerRotation; }
-            set { eulerRotation = value; }
-        }
-
-        /// <summary>
-        /// Construct Matrix33 from three vectors.
-        /// </summary>
-        /// <param name="m1"></param>
-        /// <param name="m2"></param>
-        /// <param name="m3"></param>
-        public Matrix33(Vector3 m1, Vector3 m2, Vector3 m3, bool rowMajor)
+        public Matrix33(Vector3 m1, Vector3 m2, Vector3 m3)
         {
-            if (rowMajor)
-            {
-                m00 = m1.X;
-                m01 = m2.X;
-                m02 = m3.X;
-                m10 = m1.Y;
-                m11 = m2.Y;
-                m12 = m3.Y;
-                m20 = m1.Z;
-                m21 = m2.Z;
-                m22 = m3.Z;
-            }
-            else
-            {
-                m00 = m1.X;
-                m10 = m2.X;
-                m20 = m3.X;
-                m01 = m1.Y;
-                m11 = m2.Y;
-                m21 = m3.Y;
-                m02 = m1.Z;
-                m12 = m2.Z;
-                m22 = m3.Z;
-            }
-            eulerRotation = ToEuler();
+            m00 = m1.X;
+            m01 = m2.X;
+            m02 = m3.X;
+            m10 = m1.Y;
+            m11 = m2.Y;
+            m12 = m3.Y;
+            m20 = m1.Z;
+            m21 = m2.Z;
+            m22 = m3.Z;
         }
 
-        /// <summary>
-        /// Constructs empty Matrix33.
-        /// </summary>
         public Matrix33()
         {
             m00 = 1;
@@ -204,30 +173,26 @@ namespace Utils.Types
             m20 = 0;
             m21 = 0;
             m22 = 1;
-            eulerRotation = ToEuler();
         }
 
-        /// <summary>
-        /// Write matrix to file.
-        /// </summary>
-        /// <param name="writer"></param>
-        public void WriteToFile(BinaryWriter writer)
+        public Matrix33(Matrix33 other)
         {
-            writer.Write(m00);
-            writer.Write(m01);
-            writer.Write(m02);
-            writer.Write(m10);
-            writer.Write(m11);
-            writer.Write(m12);
-            writer.Write(m20);
-            writer.Write(m21);
-            writer.Write(m22);
+            m00 = other.m00;
+            m01 = other.m01;
+            m02 = other.m02;
+            m10 = other.m10;
+            m11 = other.m11;
+            m12 = other.m12;
+            m20 = other.m20;
+            m21 = other.m21;
+            m22 = other.m22;
         }
 
-        /// <summary>
-        /// Convert matrix to euler.
-        /// </summary>
-        /// <returns></returns>
+        public void SetEuler(Vector3 vector)
+        {
+            UpdateMatrixFromEuler(vector);
+        }
+
         public Vector3 ToEuler()
         {
             double x;
@@ -256,15 +221,15 @@ namespace Utils.Types
             return new Vector3((float)x, (float)y, (float)z);
         }
 
-        public void UpdateMatrixFromEuler()
+        private void UpdateMatrixFromEuler(Vector3 vector)
         {
             //x == roll
             //y == pitch
             //z == yaw
 
-            float roll = eulerRotation.X * (float)Math.PI / 180;
-            float pitch = eulerRotation.Y * (float)Math.PI / 180;
-            float yaw = eulerRotation.Z * (float)Math.PI / 180;
+            float roll = vector.X * (float)Math.PI / 180;
+            float pitch = vector.Y * (float)Math.PI / 180;
+            float yaw = vector.Z * (float)Math.PI / 180;
 
             float su = (float)Math.Sin(roll);
             float cu = (float)Math.Cos(roll);
@@ -310,21 +275,20 @@ namespace Utils.Types
             if (m22 > -0.01f && m22 < 0.01f)
                 m22 = 0.0f;
         }
-
-        public Matrix33 ChangeHandedness()
+        
+        public static Matrix33 operator *(Matrix33 matrix1, Matrix33 matrix2)
         {
-            Matrix33 temp = this;
-            m00 = temp.m00;
-            m01 = temp.m10;
-            m02 = temp.m20;
-            m10 = temp.m01;
-            m11 = temp.m11;
-            m12 = temp.m21;
-            m20 = temp.m02;
-            m21 = temp.m12;
-            m22 = temp.m22;
-
-            return this;
+            Matrix33 matrix = new Matrix33();
+            matrix.m00 = matrix1.m00 * matrix2.m00;
+            matrix.m01 = matrix1.m01 * matrix2.m01;
+            matrix.m02 = matrix1.m02 * matrix2.m02;
+            matrix.m10 = matrix1.m10 * matrix2.m10;
+            matrix.m11 = matrix1.m11 * matrix2.m11;
+            matrix.m12 = matrix1.m12 * matrix2.m12;
+            matrix.m20 = matrix1.m20 * matrix2.m20;
+            matrix.m21 = matrix1.m21 * matrix2.m21;
+            matrix.m22 = matrix1.m22 * matrix2.m22;
+            return matrix;
         }
 
         public static Matrix33 operator +(Matrix33 matrix1, Matrix33 matrix2)
@@ -345,15 +309,14 @@ namespace Utils.Types
 
         public override string ToString()
         {
-            return eulerRotation.ToString();
+            return "Matrix";
         }
 
         // Returns a matrix with all elements set to zero (RO).
         public static Matrix33 identity { get; } = new Matrix33(
            new Vector3(1, 0, 0),
            new Vector3(0, 1, 0),
-           new Vector3(0, 0, 1),
-           true);
+           new Vector3(0, 0, 1));
     }
 
     [TypeConverter(typeof(ExpandableObjectConverter))]
@@ -403,24 +366,25 @@ namespace Utils.Types
     public class TransformMatrix
     {
         private Vector3 position;
+        private Matrix33 scale;
+        private Matrix33 rotation;
+        private Matrix33 transformedMatrix;
 
-        public Matrix33 Rotation { get; set; }
+        public Matrix33 Matrix { get { return GetTransformed(); }}
 
         public Vector3 Position { get { return position; } set { position = value; } }
+        public Vector3 Rotation { get { return GetEulerRotation(); } set { SetRotationMatrix(value); } }
+        public Vector3 Scale { get { return GetScale(); } set { SetScaleMatrix(value); } }
+        
 
-        /// <summary>
-        /// Construct empty TransformMatrix.
-        /// </summary>
         public TransformMatrix()
         {
             Position = new Vector3(0);
-            Rotation = new Matrix33();
+            scale = new Matrix33();
+            rotation = new Matrix33();
+            SetTransformed();
         }
 
-        /// <summary>
-        /// Construct TransformMatrix from parsed data.
-        /// </summary>
-        /// <param name="reader"></param>
         public TransformMatrix(BinaryReader reader)
         {
             ReadFromFile(reader);
@@ -428,24 +392,12 @@ namespace Utils.Types
 
         public TransformMatrix(TransformMatrix other)
         {
-            Rotation = new Matrix33();
-            Rotation.M00 = other.Rotation.M00;
-            Rotation.M01 = other.Rotation.M01;
-            Rotation.M02 = other.Rotation.M02;
-            Rotation.M10 = other.Rotation.M10;
-            Rotation.M11 = other.Rotation.M11;
-            Rotation.M12 = other.Rotation.M12;
-            Rotation.M20 = other.Rotation.M20;
-            Rotation.M21 = other.Rotation.M21;
-            Rotation.M22 = other.Rotation.M22;
-            Rotation.EulerRotation = new Vector3(other.Rotation.EulerRotation.X, other.Rotation.EulerRotation.Y, other.Rotation.EulerRotation.Z);
+            rotation = new Matrix33(other.rotation);
+            scale = new Matrix33(other.scale);
+            SetTransformed();
             Position = new Vector3(other.Position.X, other.Position.Y, other.Position.Z);
         }
 
-        /// <summary>
-        /// Read TransformMatrix from the file.
-        /// </summary>
-        /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
             Vector3 m1 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
@@ -454,63 +406,81 @@ namespace Utils.Types
             float y = reader.ReadSingle();
             Vector3 m3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             float z = reader.ReadSingle();
-
-            Rotation = new Matrix33(m1, m2, m3, true);
+            transformedMatrix = new Matrix33(m1, m2, m3);
+            SetRotationMatrix(transformedMatrix.ToEuler());
+            SetScaleMatrix(new Vector3(m1.X, m2.Y, m3.Z));
+            transformedMatrix = new Matrix33(m1, m2, m3);
             Position = new Vector3(x, y, z);
         }
 
-        /// <summary>
-        /// Used for Max.
-        /// </summary>
-        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(Rotation.M00);
-            writer.Write(Rotation.M01);
-            writer.Write(Rotation.M02);
+            writer.Write(Matrix.M00);
+            writer.Write(Matrix.M10);
+            writer.Write(Matrix.M20);
             writer.Write(Position.X);
-            writer.Write(Rotation.M10);
-            writer.Write(Rotation.M11);
-            writer.Write(Rotation.M12);
+            writer.Write(Matrix.M01);
+            writer.Write(Matrix.M11);
+            writer.Write(Matrix.M21);
             writer.Write(Position.Y);
-            writer.Write(Rotation.M20);
-            writer.Write(Rotation.M21);
-            writer.Write(Rotation.M22);
+            writer.Write(Matrix.M02);
+            writer.Write(Matrix.M12);
+            writer.Write(Matrix.M22);
             writer.Write(Position.Z);
         }
 
-        /// <summary>
-        /// Use this to write to the FrameResource.
-        /// </summary>
-        /// <param name="writer"></param>
-        public void WriteToFrame(BinaryWriter writer)
+        public void SetScaleMatrix(Vector3 vector)
         {
-            writer.Write(Rotation.M00);
-            writer.Write(Rotation.M10);
-            writer.Write(Rotation.M20);
-            writer.Write(Position.X);
-            writer.Write(Rotation.M01);
-            writer.Write(Rotation.M11);
-            writer.Write(Rotation.M21);
-            writer.Write(Position.Y);
-            writer.Write(Rotation.M02);
-            writer.Write(Rotation.M12);
-            writer.Write(Rotation.M22);
-            writer.Write(Position.Z);
+            scale = new Matrix33(new Vector3(vector.X, 0.0f, 0.0f), new Vector3(0.0f, vector.Y, 0.0f), new Vector3(0.0f, 0.0f, vector.Z));
+            SetTransformed();
+        }
+
+        private Vector3 GetScale()
+        {
+            return new Vector3(transformedMatrix.M00, transformedMatrix.M11, transformedMatrix.M22);
+        }
+
+        public void SetRotationMatrix(Vector3 vector)
+        {
+            rotation = new Matrix33();
+            rotation.SetEuler(vector);
+            SetTransformed();
+        }
+
+        private Vector3 GetEulerRotation()
+        {
+            return transformedMatrix.ToEuler();
+        }
+
+        private void SetTransformed()
+        {
+            if (rotation != null && scale != null)
+            {
+                transformedMatrix = new Matrix33(rotation);
+                transformedMatrix.M00 *= scale.M00;
+                transformedMatrix.M11 *= scale.M11;
+                transformedMatrix.M22 *= scale.M22;
+            }
+        }
+
+        private Matrix33 GetTransformed()
+        {
+            return transformedMatrix;
         }
 
         public static TransformMatrix operator +(TransformMatrix matrix1, TransformMatrix matrix2)
         {
             TransformMatrix matrix = new TransformMatrix();
             matrix.position = matrix1.position + matrix2.position;
-            matrix.Rotation.EulerRotation = matrix1.Rotation.EulerRotation + matrix2.Rotation.EulerRotation;
-            matrix.Rotation.UpdateMatrixFromEuler();
+            matrix.scale = matrix1.scale + matrix2.scale;
+            matrix.rotation = matrix1.rotation + matrix2.rotation;
+            matrix.transformedMatrix = matrix1.transformedMatrix + matrix2.transformedMatrix;
             return matrix;
         }
 
         public override string ToString()
         {
-            return $"{Rotation} {Position}";
+            return $"{Matrix} {Position}";
         }
     }
 

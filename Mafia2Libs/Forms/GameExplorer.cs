@@ -276,13 +276,6 @@ namespace Mafia2Tool
             if (file == null)
                 MessageBox.Show("File is null");
 
-            //backup file before repacking..
-            if (!Directory.Exists(file.Directory.FullName + "/BackupSDS"))
-                Directory.CreateDirectory(file.Directory.FullName + "/BackupSDS");
-
-            //place copy in new folder.
-            File.Copy(file.FullName, file.Directory.FullName + "/BackupSDS/" + file.Name, true);
-
             //begin..
             infoText.Text = "Saving SDS..";
             ArchiveFile archiveFile = new ArchiveFile
@@ -311,6 +304,15 @@ namespace Mafia2Tool
         /// <param name="file">info of SDS.</param>
         private void OpenSDS(FileInfo file)
         {
+            //backup file before unpacking..
+            if (!Directory.Exists(file.Directory.FullName + "/BackupSDS"))
+                Directory.CreateDirectory(file.Directory.FullName + "/BackupSDS");
+
+            //place copy in new folder.
+            string time = string.Format("{0}_{1}_{2}_{3}_{4}", DateTime.Now.TimeOfDay.Hours, DateTime.Now.TimeOfDay.Minutes, DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+            string filename = ToolkitSettings.AddTimeDataBackup == true ? file.Name.Insert(file.Name.Length - 4, "_" + time) : file.Name;
+            File.Copy(file.FullName, file.Directory.FullName + "/BackupSDS/" + filename, true);
+
             Log.WriteLine("Opening SDS: " + file.Name);
             fileListView.Items.Clear();
             ArchiveFile archiveFile;
@@ -549,7 +551,7 @@ namespace Mafia2Tool
                     tTool = new TableEditor((FileInfo)item.Tag);
                     return;
                 case "TRA":
-                    ResourceTypes.Translokator.TranslokatorLoader trans = new ResourceTypes.Translokator.TranslokatorLoader((FileInfo)item.Tag);
+                    TranslokatorEditor editor = new TranslokatorEditor((FileInfo)item.Tag);
                     return;
                 case "ACT":
                     aTool = new ActorEditor((FileInfo)item.Tag);
@@ -761,6 +763,38 @@ namespace Mafia2Tool
         private void M2FBXButtonClicked(object sender, EventArgs e)
         {
             M2FBXTool tool = new M2FBXTool();
+        }
+
+        private void UnpackSDSRecurse(DirectoryInfo info)
+        {
+            foreach (var DirectoryInfo in info.GetDirectories())
+            {
+                foreach (var FileInfo in DirectoryInfo.GetFiles())
+                {
+                    if (FileInfo.Extension.Contains(".sds"))
+                    {
+                        Console.WriteLine("Unpacking " + FileInfo.FullName);
+                        OpenSDS(FileInfo);
+                    }
+                }
+                UnpackSDSRecurse(DirectoryInfo);
+            }
+        }
+
+        private void UnpackAllSDSButton_Click(object sender, EventArgs e)
+        {
+            foreach(var DirectoryInfo in originalPath.GetDirectories())
+            {
+                foreach(var FileInfo in DirectoryInfo.GetFiles())
+                {
+                    if (FileInfo.Extension.Contains(".sds"))
+                    {
+                        Console.WriteLine("Unpacking " + FileInfo.FullName);
+                        OpenSDS(FileInfo);
+                    }
+                }
+                UnpackSDSRecurse(DirectoryInfo);
+            }
         }
     }
 }

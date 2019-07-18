@@ -103,14 +103,14 @@ namespace ResourceTypes.Actors
             unk12 = reader.ReadInt32();
             unk13 = reader.ReadInt32();
 
-            if (const2 != 2)
-                throw new Exception("const_6 is not 6");
+            //if (const2 != 2)
+            //    throw new Exception("const_6 is not 6");
 
-            if (const6 != 6)
-                throw new Exception("const_2 is not 2");
+            //if (const6 != 6)
+            //    throw new Exception("const_2 is not 2");
 
-            if (const16 != 16)
-                throw new Exception("const_16 is not 16");
+            //if (const16 != 16)
+            //    throw new Exception("const_16 is not 16");
 
             unk14 = reader.ReadInt32();
 

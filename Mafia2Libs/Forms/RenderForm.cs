@@ -118,6 +118,9 @@ namespace Mafia2Tool
             dPropertyGrid.RotationXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.RotationYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.RotationZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.ScaleXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.ScaleYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.ScaleZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
         }
 
         private void ExportFrame_Click(object sender, EventArgs e)
@@ -347,7 +350,7 @@ namespace Mafia2Tool
         private void UpdateRenderedObjects(TransformMatrix obj1Matrix, FrameObjectBase obj)
         {
             if (Graphics.Assets.ContainsKey(obj.RefID))
-                Graphics.Assets[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Rotation);
+                Graphics.Assets[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Matrix);
         }
 
         private void Save()
@@ -433,7 +436,7 @@ namespace Mafia2Tool
         private RenderBoundingBox BuildRenderBounds(FrameObjectDummy dummy)
         {
             RenderBoundingBox dummyBBox = new RenderBoundingBox();
-            dummyBBox.SetTransform(dummy.Matrix.Position, dummy.Matrix.Rotation);
+            dummyBBox.SetTransform(dummy.Matrix.Position, dummy.Matrix.Matrix);
             dummyBBox.Init(dummy.Bounds);
             return dummyBBox;
         }
@@ -441,7 +444,7 @@ namespace Mafia2Tool
         private RenderBoundingBox BuildRenderBounds(FrameObjectArea area)
         {
             RenderBoundingBox areaBBox = new RenderBoundingBox();
-            areaBBox.SetTransform(area.Matrix.Position, area.Matrix.Rotation);
+            areaBBox.SetTransform(area.Matrix.Position, area.Matrix.Matrix);
             areaBBox.Init(area.Bounds);
             return areaBBox;
         }
@@ -449,7 +452,7 @@ namespace Mafia2Tool
         private RenderBoundingBox BuildRenderBounds(FrameObjectSector sector)
         {
             RenderBoundingBox areaBBox = new RenderBoundingBox();
-            areaBBox.SetTransform(sector.Matrix.Position, sector.Matrix.Rotation);
+            areaBBox.SetTransform(sector.Matrix.Position, sector.Matrix.Matrix);
             areaBBox.Init(sector.Bounds);
             return areaBBox;
         }
@@ -457,7 +460,7 @@ namespace Mafia2Tool
         private RenderBoundingBox BuildRenderBounds(FrameObjectFrame frame)
         {
             RenderBoundingBox frameBBox = new RenderBoundingBox();
-            frameBBox.SetTransform(frame.Matrix.Position, frame.Matrix.Rotation);
+            frameBBox.SetTransform(frame.Matrix.Position, frame.Matrix.Matrix);
             frameBBox.Init(new BoundingBox(new Vector3(0.5f), new Vector3(0.5f)));
             return frameBBox;
         }
@@ -528,50 +531,50 @@ namespace Mafia2Tool
                 }
             }
 
-            if(SceneData.Translokator != null && ToolkitSettings.Experimental)
-            {
-                TreeNode node = new TreeNode("Translokator Data");
+            //if(SceneData.Translokator != null && ToolkitSettings.Experimental)
+            //{
+            //    TreeNode node = new TreeNode("Translokator Data");
 
-                //for(int i = 0; i != SceneData.Translokator.Grids.Length; i++)
-                //{
-                //    var grid = SceneData.Translokator.Grids[i];
-                //    RenderBoundingBox bbox = new RenderBoundingBox();
-                //    bbox.Init(new BoundingBox(new Vector3(grid.Height, grid.Width, grid.Height), new Vector3(-grid.Height, -grid.Width, -grid.Height)));
-                //    bbox.SetTransform(grid.Origin, new Matrix33());
-                //    assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
-                //}
-                //for (int i = 0; i != SceneData.Translokator.ObjectGroups.Length; i++)
-                //{
-                //    var objGroup = SceneData.Translokator.ObjectGroups[i];
+            //    //for(int i = 0; i != SceneData.Translokator.Grids.Length; i++)
+            //    //{
+            //    //    var grid = SceneData.Translokator.Grids[i];
+            //    //    RenderBoundingBox bbox = new RenderBoundingBox();
+            //    //    bbox.Init(new BoundingBox(new Vector3(grid.Height, grid.Width, grid.Height), new Vector3(-grid.Height, -grid.Width, -grid.Height)));
+            //    //    bbox.SetTransform(grid.Origin, new Matrix33());
+            //    //    assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
+            //    //}
+            //    for (int i = 0; i != SceneData.Translokator.ObjectGroups.Length; i++)
+            //    {
+            //        var objGroup = SceneData.Translokator.ObjectGroups[i];
 
-                //    for (int x = 0; x != objGroup.Objects.Length; x++)
-                //    {
-                //        var objects = objGroup.Objects[x];
-                //        RenderModel model = null;
+            //        for (int x = 0; x != objGroup.Objects.Length; x++)
+            //        {
+            //            var objects = objGroup.Objects[x];
+            //            RenderModel model = null;
 
-                //        foreach(KeyValuePair<int, object> pair in SceneData.FrameResource.FrameObjects)
-                //        {
-                //            FrameObjectBase baseObject = (FrameObjectBase)pair.Value;
-                //            if (baseObject.GetType() == typeof(FrameObjectFrame))
-                //            {
-                //                if((baseObject as FrameObjectFrame).ActorHash.uHash == objects.Hash)
-                //                {
-                //                    model = (RenderModel)assets[baseObject.RefID];
-                //                }
-                //            }
-                //        }
+            //            //foreach (KeyValuePair<int, object> pair in SceneData.FrameResource.FrameObjects)
+            //            //{
+            //            //    FrameObjectBase baseObject = (FrameObjectBase)pair.Value;
+            //            //    if (baseObject.GetType() == typeof(FrameObjectFrame))
+            //            //    {
+            //            //        if ((baseObject as FrameObjectFrame).ActorHash.uHash == objects.Hash)
+            //            //        {
+            //            //            model = (RenderModel)assets[baseObject.RefID];
+            //            //        }
+            //            //    }
+            //            //}
 
-                //        for (int z = 0; z != objects.Instances.Length; z++)
-                //        {
-                //            var instance = objects.Instances[z];
-                //            RenderInstance rInstance = new RenderInstance();
-                //            rInstance.Init(model);
-                //            rInstance.SetTransform(instance.Position, new Matrix33());
-                //            assets.Add(i+StringHelpers.RandomGenerator.Next(), rInstance);
-                //        }
-                //    }
-                //}
-            }
+            //            for (int z = 0; z != objects.Instances.Length; z++)
+            //            {
+            //                var instance = objects.Instances[z];
+            //                RenderBoundingBox bbox = new RenderBoundingBox();
+            //                bbox.Init(new BoundingBox(new Vector3(10.0f), new Vector3(10.0f)));
+            //                bbox.SetTransform(instance.Position, new Matrix33());
+            //                assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
+            //            }
+            //        }
+            //    }
+            //}
 
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
@@ -637,8 +640,7 @@ namespace Mafia2Tool
                         RenderInstance instance = new RenderInstance();
                         instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
                         Matrix33 rot = new Matrix33();
-                        rot.EulerRotation = placement.Rotation;
-                        rot.UpdateMatrixFromEuler();
+                        rot.SetEuler(placement.Rotation);
                         instance.SetTransform(placement.Position, rot);
                         TreeNode child = new TreeNode();
                         child.Text = nodes[0].Nodes.Count.ToString();
@@ -777,8 +779,7 @@ namespace Mafia2Tool
                     Graphics.Assets.TryGetValue(int.Parse(selected.Name), out asset);
                     instance = (asset as RenderInstance);
                     Matrix33 matrix = new Matrix33();
-                    matrix.EulerRotation = placement.Rotation;
-                    matrix.UpdateMatrixFromEuler();
+                    matrix.SetEuler(placement.Rotation);
                     instance.SetTransform(placement.Position, matrix);
                 }
             }
@@ -1126,10 +1127,11 @@ namespace Mafia2Tool
             }
             if (pGrid.SelectedObject is FrameObjectSingleMesh)
             {
+                FrameObjectSingleMesh obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
+
                 if (e.ChangedItem.Label == "MeshIndex")
                 {
                     int value = (int)e.ChangedItem.Value;
-                    FrameObjectSingleMesh obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
                     obj.Refs["Mesh"] = SceneData.FrameResource.NewFrames[value].Data.RefID;
                     obj.Geometry = SceneData.FrameResource.FrameGeometries[obj.Refs["Mesh"]];
 
@@ -1137,10 +1139,11 @@ namespace Mafia2Tool
                 if (e.ChangedItem.Label == "MaterialIndex")
                 {
                     int value = (int)e.ChangedItem.Value;
-                    FrameObjectSingleMesh obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
                     obj.Refs["Material"] = SceneData.FrameResource.NewFrames[value].Data.RefID;
                     obj.Material = SceneData.FrameResource.FrameMaterials[obj.Refs["Material"]];
                 }
+
+                Graphics.Assets[obj.RefID].SetTransform(obj.Matrix.Position, obj.Matrix.Matrix);
             }
         }
 
@@ -1320,8 +1323,7 @@ namespace Mafia2Tool
                 RenderInstance instance = new RenderInstance();
                 instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
                 Matrix33 rot = new Matrix33();
-                rot.EulerRotation = placement.Rotation;
-                rot.UpdateMatrixFromEuler();
+                rot.SetEuler(placement.Rotation);
                 instance.SetTransform(placement.Position, rot);
                 Graphics.InitObjectStack.Add(refID, instance);
             }
@@ -1754,8 +1756,7 @@ namespace Mafia2Tool
                 RenderInstance instance = new RenderInstance();
                 instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
                 Matrix33 rot = new Matrix33();
-                rot.EulerRotation = placement.Rotation;
-                rot.UpdateMatrixFromEuler();
+                rot.SetEuler(placement.Rotation);
                 instance.SetTransform(placement.Position, rot);
                 Graphics.InitObjectStack.Add(refID, instance);
                 dSceneTree.AddToTree(treeNode, collisionRoot);
@@ -1836,8 +1837,7 @@ namespace Mafia2Tool
                 RenderInstance instance = new RenderInstance();
                 instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
                 Matrix33 rot = new Matrix33();
-                rot.EulerRotation = placement.Rotation;
-                rot.UpdateMatrixFromEuler();
+                rot.SetEuler(placement.Rotation);
                 instance.SetTransform(placement.Position, rot);
                 Graphics.InitObjectStack.Add(refID, instance);
                 dSceneTree.AddToTree(treeNode, collisionRoot);

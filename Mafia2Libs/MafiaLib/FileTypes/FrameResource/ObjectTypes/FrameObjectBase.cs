@@ -106,7 +106,7 @@ namespace ResourceTypes.FrameResource
         {
             name.WriteToFile(writer);
             writer.Write(secondaryFlags);
-            transformMatrix.WriteToFrame(writer);
+            transformMatrix.WriteToFile(writer);
             writer.Write(unk3);
             writer.Write(parentIndex1.Index);
             writer.Write(parentIndex2.Index);

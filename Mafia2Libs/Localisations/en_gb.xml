@@ -71,7 +71,9 @@
   <String ID="$SDS_UNCOMPRESSED">Uncompressed</String>
   <String ID="$SDS_COMPRESSED">Compressed</String>
   <String ID="$SDS_ONEBLOCK">One Block</String>
-
+  <String ID="$ADD_TIME_DATE_BACKUP">Add time and date to backups</String>
+  <String ID="$DECOMPILE_LUA_UNPACK">Decompile lua when unpacking</String>
+  
   <!-- Render Options -->
   <String ID="$RENDER">Render</String>
   <String ID="$RENDER_OPTIONS">Render Options</String>
@@ -141,6 +143,9 @@
   <String ID="$CITY_SHOP_EDITOR_TITLE">CityShop Editor</String>
   <String ID="$ADD_AREA">Add Area</String>
   <String ID="$ADD_DATA">Add Data</String>
+  <String ID="$DELETE_AREA">Delete Area</String>
+  <String ID="$DELETE_DATA">Delete Data</String>
+  <String ID="$DUPLICATE_DATA">Duplicate Data</String>
   <String ID="$POPULATE_TRANSLOKATORS">Populate New Translocators</String>
 
   <!-- Table Editor string -->
@@ -172,6 +177,9 @@
   <String ID="$ROTATION_X">Rotation X</String>
   <String ID="$ROTATION_Y">Rotation Y</String>
   <String ID="$ROTATION_Z">Rotation Z</String>
+  <String ID="$SCALE_X">Scale X</String>
+  <String ID="$SCALE_Y">Scale Y</String>
+  <String ID="$SCALE_Z">Scale Z</String>
   
   <!-- StreamEditor strings-->
   <String ID="$STREAM_EDITOR_TITLE">Stream Editor</String>

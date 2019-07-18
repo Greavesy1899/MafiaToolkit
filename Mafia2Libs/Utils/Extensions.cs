@@ -62,6 +62,58 @@ namespace Utils.Extensions
         }
     }
 
+    public class Vector2Converter : TypeConverter
+    {
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+        }
+
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        {
+            object result = null;
+            string stringValue = value as string;
+
+            if (!string.IsNullOrEmpty(stringValue))
+            {
+                float x, y, z = 0.0f;
+
+                if (stringValue.Contains("X") && stringValue.Contains("Y"))
+                {
+                    string[] components = stringValue.Split(' ');
+                    float.TryParse(components[0].Substring(2), out x);
+                    float.TryParse(components[1].Substring(2), out y);
+                }
+                else
+                {
+                    string[] components = stringValue.Split(' ');
+                    float.TryParse(components[0], out x);
+                    float.TryParse(components[1], out y);
+                }
+
+                result = new Vector2(x, y);
+            }
+
+            return result ?? base.ConvertFrom(context, culture, value);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        {
+            object result = null;
+            Vector2 vector2 = (Vector2)value;
+
+            if (destinationType == typeof(String))
+                result = vector2.ToString();
+
+            return result ?? base.ConvertTo(context, culture, value, destinationType);
+        }
+    }
+
     public class Vector3Converter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
