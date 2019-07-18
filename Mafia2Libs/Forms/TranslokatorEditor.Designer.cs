@@ -40,6 +40,7 @@
             this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.CompressionTest = new System.Windows.Forms.ToolStripMenuItem();
             this.TranslokatorContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -71,13 +72,13 @@
             this.TranslokatorContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddInstance});
             this.TranslokatorContext.Name = "SDSContext";
-            this.TranslokatorContext.Size = new System.Drawing.Size(181, 48);
+            this.TranslokatorContext.Size = new System.Drawing.Size(144, 26);
             this.TranslokatorContext.Opening += new System.ComponentModel.CancelEventHandler(this.TranslokatorContext_Opening);
             // 
             // AddInstance
             // 
             this.AddInstance.Name = "AddInstance";
-            this.AddInstance.Size = new System.Drawing.Size(180, 22);
+            this.AddInstance.Size = new System.Drawing.Size(143, 22);
             this.AddInstance.Text = "Add Instance";
             this.AddInstance.Click += new System.EventHandler(this.AddInstance_Click);
             // 
@@ -129,11 +130,20 @@
             // toolsButton
             // 
             this.toolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CompressionTest});
             this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
             this.toolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolsButton.Name = "toolsButton";
             this.toolsButton.Size = new System.Drawing.Size(48, 22);
             this.toolsButton.Text = "Tools";
+            // 
+            // CompressionTest
+            // 
+            this.CompressionTest.Name = "CompressionTest";
+            this.CompressionTest.Size = new System.Drawing.Size(180, 22);
+            this.CompressionTest.Text = "Compression Test";
+            this.CompressionTest.Click += new System.EventHandler(this.CompressionTest_Click);
             // 
             // TranslokatorEditor
             // 
@@ -165,5 +175,6 @@
         private System.Windows.Forms.ToolStripMenuItem ReloadButton;
         private System.Windows.Forms.ToolStripMenuItem ExitButton;
         private System.Windows.Forms.ToolStripDropDownButton toolsButton;
+        private System.Windows.Forms.ToolStripMenuItem CompressionTest;
     }
 }

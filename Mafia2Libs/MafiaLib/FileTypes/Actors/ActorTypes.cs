@@ -986,11 +986,36 @@ namespace ResourceTypes.Actors
 
     public class ActorSoundEntity : IActorExtraDataInterface
     {
+        int flags;
         int type;
         int behaviourType;
         float volume;
         float pitch;
         string file;
+        float randomPauseMin;
+        float randomPauseMax;
+        float randomGroupPauseMin;
+        float randomGroupPauseMax;
+        int randomGroupSoundsMin;
+        int randomGroupSoundMax;
+        float randomVolumeMin;
+        float randomVolumeMax;
+        float randomPitchMin;
+        float randomPitchMax;
+        float randomPosRangeX;
+        float randomPosRangeY;
+        float randomPosRangeZ;
+        byte flags2;
+        string[] randomWaves;
+
+        float near;
+        float far;
+        //WHEREVER YOU AREEEE!!
+        float monoDistance;
+        int curveID;
+        float innerAngle;
+        float outerAngle;
+        float outerVolume;
 
         public ActorSoundEntity(BinaryReader reader)
         {
@@ -1004,52 +1029,89 @@ namespace ResourceTypes.Actors
 
         public void ReadFromFile(BinaryReader reader)
         {
+            flags = reader.ReadInt32();
             type = reader.ReadInt32();
             behaviourType = reader.ReadInt32();
             volume = reader.ReadSingle();
-            pitch = reader.ReadSingle();  
-            file = StringHelpers.ReadString(reader);
-            ActorSoundEntityFlags tempType = (ActorSoundEntityFlags)type;
+            pitch = reader.ReadSingle();
+            file = new string(reader.ReadChars(80)).TrimEnd('\0');
+            ActorSoundEntityBehaviourFlags tempType = (ActorSoundEntityBehaviourFlags)type;
 
             Console.WriteLine("Sound: Name {0}", file);
-            Console.WriteLine("Sound: Has Flag PlayInWinter {0}", tempType.HasFlag(ActorSoundEntityFlags.PlayInWinter));
-            Console.WriteLine("Sound: Has Flag Loop {0}", tempType.HasFlag(ActorSoundEntityFlags.Loop));
-            Console.WriteLine("Sound: Has Flag UseAdvancedScene {0}", tempType.HasFlag(ActorSoundEntityFlags.UseAdvancedScene));
-            Console.WriteLine("Sound: Has Flag SectorRestricted {0}", tempType.HasFlag(ActorSoundEntityFlags.SectorRestricted));
-            Console.WriteLine("Sound: Has Flag PlayInDay {0}", tempType.HasFlag(ActorSoundEntityFlags.PlayInDay));
-            Console.WriteLine("Sound: Has Flag PlayInNight {0}", tempType.HasFlag(ActorSoundEntityFlags.PlayInNight));
-            Console.WriteLine("Sound: Has Flag PlayInRain {0}", tempType.HasFlag(ActorSoundEntityFlags.PlayInRain));
-            Console.WriteLine("Sound: Has Flag PlayInSummer {0}", tempType.HasFlag(ActorSoundEntityFlags.PlayInSummer));
-            //if(behaviourType == 20)
-            //{
-            //    throw new NotImplementedException();
-            //}
+            Console.WriteLine("Sound: Has Flag PlayInWinter {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.PlayInWinter));
+            Console.WriteLine("Sound: Has Flag Loop {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.Loop));
+            Console.WriteLine("Sound: Has Flag UseAdvancedScene {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.UseAdvancedScene));
+            Console.WriteLine("Sound: Has Flag SectorRestricted {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.SectorRestricted));
+            Console.WriteLine("Sound: Has Flag PlayInDay {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.PlayInDay));
+            Console.WriteLine("Sound: Has Flag PlayInNight {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.PlayInNight));
+            Console.WriteLine("Sound: Has Flag PlayInRain {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.PlayInRain));
+            Console.WriteLine("Sound: Has Flag PlayInSummer {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.PlayInSummer));
 
-            //if(behaviourType > 19)
-            //{
-            //    if(behaviourType == 30)
-            //    {
-            //        throw new NotImplementedException();
-            //    }
+            long position = reader.BaseStream.Position;
+            if(behaviourType != 20)
+            {
+                int seek = 0x21C - 100;
+                reader.BaseStream.Seek(seek, SeekOrigin.Current);
+                randomPauseMin = reader.ReadSingle();
+                randomPauseMax = reader.ReadSingle();
+                randomGroupPauseMin = reader.ReadSingle();
+                randomGroupPauseMax = reader.ReadSingle();
+                randomGroupSoundsMin = reader.ReadInt32();
+                randomGroupSoundMax = reader.ReadInt32();
+                randomVolumeMin = reader.ReadSingle();
+                randomVolumeMax = reader.ReadSingle();
+                randomPitchMin = reader.ReadSingle();
+                randomPitchMax = reader.ReadSingle();
+                randomPosRangeX = reader.ReadSingle();
+                randomPosRangeY = reader.ReadSingle();
+                randomPosRangeZ = reader.ReadSingle();
+                reader.BaseStream.Seek(position, SeekOrigin.Begin);
 
-            //    if(behaviourType == 20)
-            //    {
-            //        throw new NotImplementedException();
-            //    }
-            //}
+                seek = 0x84 - 100;
+                reader.BaseStream.Seek(seek, SeekOrigin.Current);
+                flags2 = reader.ReadByte();
+                randomWaves = new string[5];
 
-            //if(behaviourType != 10)
-            //{
-            //    if(behaviourType == 15)
-            //    {
-            //        throw new NotImplementedException();
-            //    }
-            //}
+                for (int i = 0; i < 5; i++)
+                {
+                    randomWaves[i] = new string(reader.ReadChars(80)).TrimEnd('\0');
+                    reader.ReadByte();
+                }
+            }
+            reader.BaseStream.Seek(position, SeekOrigin.Begin);
+            reader.ReadInt32();
+            switch (type)
+            {
+                case 20:
+                    near = reader.ReadSingle();
+                    far = reader.ReadSingle();
+                    monoDistance = reader.ReadSingle();
+                    break;
+                case 15:
+                    near = reader.ReadSingle();
+                    far = reader.ReadSingle();
+                    curveID = reader.ReadInt32();
+                    break;
+                case 30:
+                    near = reader.ReadSingle();
+                    far = reader.ReadSingle();
+                    curveID = reader.ReadInt32();
+                    innerAngle = reader.ReadSingle();
+                    outerAngle = reader.ReadSingle();
+                    outerVolume = reader.ReadSingle();
+                    break;
+                case 10:
+                    break;
+                default:
+                    break;
+            }
+            reader.BaseStream.Seek(position+492, SeekOrigin.Begin);
+
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 

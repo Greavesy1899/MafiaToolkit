@@ -333,16 +333,16 @@
     <Compile Include="Rendering\Graphics\RenderTypes\RenderStaticCollision.cs" />
     <Compile Include="Rendering\Graphics\Shaders\Shader_50760736.cs" />
     <Compile Include="Rendering\System\FPSClass.cs" />
-    <Compile Include="Utils\BoundExtensions.cs" />
+    <Compile Include="Utils\Helpers\BoundExtensions.cs" />
     <Compile Include="MafiaLib\ModelHelpers\Enums.cs" />
-    <Compile Include="Utils\FBXHelper.cs" />
-    <Compile Include="Utils\LuaHelper.cs" />
-    <Compile Include="Utils\StringHelpers.cs" />
-    <Compile Include="Utils\Half.cs" />
-    <Compile Include="Utils\HalfHelper.cs" />
+    <Compile Include="Utils\Helpers\FBXHelper.cs" />
+    <Compile Include="Utils\Helpers\LuaHelper.cs" />
+    <Compile Include="Utils\Helpers\StringHelpers.cs" />
+    <Compile Include="Utils\Types\Half.cs" />
+    <Compile Include="Utils\Helpers\HalfHelper.cs" />
     <Compile Include="Utils\Logger.cs" />
-    <Compile Include="Utils\Types.cs" />
-    <Compile Include="Utils\VectorExtensions.cs" />
+    <Compile Include="Utils\Types\Types.cs" />
+    <Compile Include="Utils\Helpers\VectorExtensions.cs" />
     <Compile Include="MafiaLib\ModelHelpers\Vertex.cs" />
     <Compile Include="MafiaLib\ModelHelpers\VertexTranslator.cs" />
     <Compile Include="Rendering\Graphics\RenderSingleton.cs" />
@@ -447,10 +447,10 @@
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
     <Compile Include="Rendering\System\TimerClass.cs" />
-    <Compile Include="Utils\Extensions.cs">
+    <Compile Include="Utils\Helpers\Extensions.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Utils\IniFile.cs" />
+    <Compile Include="Utils\Types\IniFile.cs" />
     <Compile Include="Forms\MaterialTool.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -482,9 +482,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Utils\Language.cs" />
+    <Compile Include="Utils\Settings\Language.cs" />
     <Compile Include="Utils\SceneData.cs" />
-    <Compile Include="Utils\ToolkitSettings.cs" />
+    <Compile Include="Utils\Settings\ToolkitSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

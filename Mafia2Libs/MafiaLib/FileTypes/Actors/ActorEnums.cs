@@ -43,7 +43,7 @@ namespace ResourceTypes.Actors
     }
 
     [Flags]
-    public enum ActorSoundEntityFlags
+    public enum ActorSoundEntityBehaviourFlags
     {
         PlayInWinter = 1,
         Loop = 2,
@@ -53,6 +53,13 @@ namespace ResourceTypes.Actors
         PlayInNight = 32,
         PlayInRain = 64,
         PlayInSummer = 128
+    }
+
+    [Flags]
+    public enum ActorSoundEntityPlayType
+    {
+        RandomPosPerGroupOnly = 1,
+        ImmediatePlay = 2,
     }
 
     [Flags]

@@ -513,10 +513,11 @@ namespace ResourceTypes.Actors
             }
             else if (bufferType == ActorTypes.Sound && bufferLength == 592)
             {
+                data = new ActorSoundEntity(reader);
                 //long pos = reader.BaseStream.Position;
                 //data = new ActorSoundEntity(reader);
                 //reader.BaseStream.Position = pos;
-                buffer = reader.ReadBytes((int)bufferLength);
+                //buffer = reader.ReadBytes((int)bufferLength);
             }
             else
             {

@@ -1,5 +1,6 @@
 ﻿using SharpDX;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;
@@ -52,9 +53,9 @@ namespace ResourceTypes.Translokator
         public ushort PositionX;
         public ushort PositionY;
         public ushort PositionZ;
-        public int Rotation2;
-        public ushort Unk01;
-        public int Rotation1;
+        int rotation2;
+        ushort unk01;
+        ushort rotation1;
 
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 Position {
@@ -65,6 +66,21 @@ namespace ResourceTypes.Translokator
         public Vector4 Rotation {
             get { return rotation; }
             set { rotation = value; }
+        }
+
+        public ushort Unk01 {
+            get { return unk01; }
+            set { unk01 = value; }
+        }
+
+        public ushort Rotation1 {
+            get { return rotation1; }
+            set { rotation1 = value; }
+        }
+
+        public int Rotation2 {
+            get { return rotation2; }
+            set { rotation2 = value; }
         }
     }
 
@@ -146,6 +162,7 @@ namespace ResourceTypes.Translokator
     {
         public Grid[] Grids;
         public ObjectGroup[] ObjectGroups;
+        List<ushort> IDs = new List<ushort>();
 
         int version;
         int unk1;
@@ -265,8 +282,11 @@ namespace ResourceTypes.Translokator
             var v7 = (rotation.X + v8) / 2;
         }
 
-        private Vector3 DecompressPosition(byte[] transform, Instance instance, Vector3 tmin, Vector3 tmax)
+        public Vector3 DecompressPosition(byte[] transform, Instance instance, Vector3 tmin, Vector3 tmax, bool debug = false)
         {
+            if(debug)
+                Console.WriteLine("DECOMPRESSING:");
+
             Vector3 position = new Vector3();
             var _1_65535 = 1.0f / 65535.0f;
             ushort x = BitConverter.ToUInt16(transform, 0);
@@ -284,11 +304,20 @@ namespace ResourceTypes.Translokator
             Vector3 tref = new Vector3((xpositive ? tmax.X : -tmin.X) * 0.25f, (ypositive ? tmax.Y : -tmin.Y) * 0.25f, (zpositive ? tmax.Z : -tmin.Z) * 0.25f);
             Vector3 final = new Vector3((xFull + xFrac) * tref.X, (yfull + yFrac) * tref.Y, (zfull + zFrac) * tref.Z);
             position = new Vector3(xpositive ? final.X : -final.X, ypositive ? final.Y : -final.Y, zpositive ? final.Z : -final.Z);
+
+            if (debug)
+            {
+                Console.WriteLine("Instance; {0} {1} {2}", x, y, z);
+                Console.WriteLine("Instance; {0} {1} {2}", xFrac, yFrac, zFrac);
+                Console.WriteLine("Final Position: {0} {1} {2}", position.X, position.Y, position.Z);
+            }
             return position;
         }
 
-        private void CompressPosition(Instance instance, Vector3 tmin, Vector3 tmax)
+        public void CompressPosition(Instance instance, Vector3 tmin, Vector3 tmax, bool debug = false)
         {
+            if(debug)
+                Console.WriteLine("COMPRESSING:");
             var vector = instance.Position;
             var xPositive = vector.X >= 0.0f ? true : false;
             var yPositive = vector.Y >= 0.0f ? true : false;
@@ -307,10 +336,18 @@ namespace ResourceTypes.Translokator
             instance.PositionX = Convert.ToUInt16(preX);
             instance.PositionY = Convert.ToUInt16(preY);
             instance.PositionZ = Convert.ToUInt16(preZ);
+
+            if (debug)
+            {
+                Console.WriteLine("Frac: {0} {1} {2}", xFrac, yFrac, zFrac);
+                Console.WriteLine("Final: {0} {1} {2}", instance.Position.X, instance.Position.Y, instance.Position.Z);
+                Console.WriteLine("Final Instance: {0} {1} {2}", instance.PositionX, instance.PositionY, instance.PositionZ);
+            }
         }
 
         private void CompressInstances()
         {
+            ushort numInstance = 0;
             for (int i = 0; i != ObjectGroups.Length; i++)
             {
                 ObjectGroup objectGroup = ObjectGroups[i];
@@ -322,7 +359,9 @@ namespace ResourceTypes.Translokator
                     for (int y = 0; y != obj.NumInstances; y++)
                     {
                         Instance instance = obj.Instances[y];
+                        instance.Unk01 = numInstance;
                         CompressPosition(instance, bounds.Minimum, bounds.Maximum);
+                        numInstance++;
                     }
                 }
             }
@@ -400,7 +439,12 @@ namespace ResourceTypes.Translokator
                         instance.Rotation2 = BitConverter.ToInt32(packed, 6);
                         instance.Unk01 = BitConverter.ToUInt16(packed, 10);
 
-                        instance.Rotation1 = BitConverter.ToInt16(packed, 12);
+                        instance.Rotation1 = BitConverter.ToUInt16(packed, 12);
+
+                        if (!IDs.Contains(instance.Unk01))
+                            IDs.Add(instance.Unk01);
+                        else
+                            Console.WriteLine("Duplication!! {0} {1}", obj.Name, instance.Unk01);
 
                         //Console.WriteLine("{0:X4}", instance.PositionX);
                         //Console.WriteLine("{0:X4}", instance.PositionY);
@@ -420,6 +464,7 @@ namespace ResourceTypes.Translokator
                 }
                 ObjectGroups[i] = objectGroup;
             }
+            IDs.Sort();
         }
 
         public void WriteToFile(FileInfo info)
@@ -479,6 +524,7 @@ namespace ResourceTypes.Translokator
                     for (int y = 0; y != obj.NumInstances; y++)
                     {
                         Instance instance = obj.Instances[y];
+                        writer.Write(instance.PositionX);
                         writer.Write(instance.PositionY);
                         writer.Write(instance.PositionZ);
                         writer.Write(instance.Rotation2);

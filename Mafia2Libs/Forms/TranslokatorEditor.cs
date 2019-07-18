@@ -2,6 +2,7 @@
 using System.IO;
 using ResourceTypes.Translokator;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace Mafia2Tool.Forms
 {
@@ -145,6 +146,26 @@ namespace Mafia2Tool.Forms
             TreeNode instanceNode = new TreeNode(obj.Name + " " + TranslokatorTree.SelectedNode.GetNodeCount(false));
             instanceNode.Tag = instance;
             TranslokatorTree.SelectedNode.Nodes.Add(instanceNode);
+        }
+
+        private void CompressionTest_Click(object sender, EventArgs e)
+        {
+            if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
+            {
+                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(Instance))
+                {
+                    Instance instance = (TranslokatorTree.SelectedNode.Tag as Instance);
+                    translokator.CompressPosition(instance, translokator.Bounds.Minimum, translokator.Bounds.Maximum, true);
+                    List<byte> packed = new List<byte>();
+                    packed.AddRange(BitConverter.GetBytes(instance.PositionX));
+                    packed.AddRange(BitConverter.GetBytes(instance.PositionY));
+                    packed.AddRange(BitConverter.GetBytes(instance.PositionZ));
+                    packed.AddRange(BitConverter.GetBytes(instance.Rotation2));
+                    packed.AddRange(BitConverter.GetBytes(instance.Unk01));
+                    packed.AddRange(BitConverter.GetBytes(instance.Rotation1));
+                    translokator.DecompressPosition(packed.ToArray(), instance, translokator.Bounds.Minimum, translokator.Bounds.Maximum, true);
+                }
+            }
         }
     }
 }
