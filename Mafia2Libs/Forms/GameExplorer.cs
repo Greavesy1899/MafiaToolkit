@@ -276,15 +276,6 @@ namespace Mafia2Tool
             if (file == null)
                 MessageBox.Show("File is null");
 
-            //backup file before repacking..
-            if (!Directory.Exists(file.Directory.FullName + "/BackupSDS"))
-                Directory.CreateDirectory(file.Directory.FullName + "/BackupSDS");
-
-            //place copy in new folder.
-            string time = string.Format("{0}_{1}_{2}_{3}_{4}", DateTime.Now.TimeOfDay.Hours, DateTime.Now.TimeOfDay.Minutes, DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
-            string filename = ToolkitSettings.AddTimeDataBackup == true ? file.Name.Insert(file.Name.Length - 4, "_" + time) : file.Name;
-            File.Copy(file.FullName, file.Directory.FullName + "/BackupSDS/" + filename, true);
-
             //begin..
             infoText.Text = "Saving SDS..";
             ArchiveFile archiveFile = new ArchiveFile
@@ -313,6 +304,15 @@ namespace Mafia2Tool
         /// <param name="file">info of SDS.</param>
         private void OpenSDS(FileInfo file)
         {
+            //backup file before unpacking..
+            if (!Directory.Exists(file.Directory.FullName + "/BackupSDS"))
+                Directory.CreateDirectory(file.Directory.FullName + "/BackupSDS");
+
+            //place copy in new folder.
+            string time = string.Format("{0}_{1}_{2}_{3}_{4}", DateTime.Now.TimeOfDay.Hours, DateTime.Now.TimeOfDay.Minutes, DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+            string filename = ToolkitSettings.AddTimeDataBackup == true ? file.Name.Insert(file.Name.Length - 4, "_" + time) : file.Name;
+            File.Copy(file.FullName, file.Directory.FullName + "/BackupSDS/" + filename, true);
+
             Log.WriteLine("Opening SDS: " + file.Name);
             fileListView.Items.Clear();
             ArchiveFile archiveFile;
