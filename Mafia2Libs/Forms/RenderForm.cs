@@ -118,6 +118,9 @@ namespace Mafia2Tool
             dPropertyGrid.RotationXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.RotationYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.RotationZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.ScaleXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.ScaleYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.ScaleZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
         }
 
         private void ExportFrame_Click(object sender, EventArgs e)

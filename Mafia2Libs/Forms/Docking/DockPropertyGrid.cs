@@ -29,6 +29,9 @@ namespace Forms.Docking
             RotationXLabel.Text = Language.GetString("$ROTATION_X");
             RotationYLabel.Text = Language.GetString("$ROTATION_Y");
             RotationZLabel.Text = Language.GetString("$ROTATION_Z");
+            ScaleXLabel.Text = Language.GetString("$SCALE_X");
+            ScaleYLabel.Text = Language.GetString("$SCALE_Y");
+            ScaleZLabel.Text = Language.GetString("$SCALE_Z");
         }
 
         public void SetObject(object obj)
@@ -51,6 +54,10 @@ namespace Forms.Docking
                 RotationXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.X);
                 RotationYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.Y);
                 RotationZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.Z);
+                ScaleXNumeric.Enabled = ScaleYNumeric.Enabled = ScaleZNumeric.Enabled = true;
+                ScaleXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Scale.X);
+                ScaleYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Scale.Y);
+                ScaleZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Scale.Z);
             }
             else if(currentObject is ResourceTypes.Collisions.Collision.Placement)
             {
@@ -62,6 +69,8 @@ namespace Forms.Docking
                 RotationXNumeric.Value = Convert.ToDecimal(placement.Rotation.X);
                 RotationYNumeric.Value = Convert.ToDecimal(placement.Rotation.Y);
                 RotationZNumeric.Value = Convert.ToDecimal(placement.Rotation.Z);
+                ScaleXNumeric.Value = ScaleYNumeric.Value = ScaleZNumeric.Value = 0.0M;
+                ScaleXNumeric.Enabled = ScaleYNumeric.Enabled = ScaleZNumeric.Enabled = false;
             }
             IsEntryReady = true;
         }
@@ -80,6 +89,7 @@ namespace Forms.Docking
                     FrameObjectBase fObject = (currentObject as FrameObjectBase);
                     fObject.Matrix.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
                     fObject.Matrix.SetRotationMatrix(new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value)));
+                    fObject.Matrix.SetScaleMatrix(new Vector3(Convert.ToSingle(ScaleXNumeric.Value), Convert.ToSingle(ScaleYNumeric.Value), Convert.ToSingle(ScaleZNumeric.Value)));
                 }
                 else if(currentObject is ResourceTypes.Collisions.Collision.Placement)
                 {
