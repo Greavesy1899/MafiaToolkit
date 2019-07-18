@@ -986,7 +986,7 @@ namespace ResourceTypes.Actors
 
     public class ActorSoundEntity : IActorExtraDataInterface
     {
-        int flags;
+        ActorSoundEntityBehaviourFlags behFlags;
         int type;
         int behaviourType;
         float volume;
@@ -997,7 +997,7 @@ namespace ResourceTypes.Actors
         float randomGroupPauseMin;
         float randomGroupPauseMax;
         int randomGroupSoundsMin;
-        int randomGroupSoundMax;
+        int randomGroupSoundsMax;
         float randomVolumeMin;
         float randomVolumeMax;
         float randomPitchMin;
@@ -1005,7 +1005,7 @@ namespace ResourceTypes.Actors
         float randomPosRangeX;
         float randomPosRangeY;
         float randomPosRangeZ;
-        byte flags2;
+        ActorSoundEntityPlayType playFlags;
         string[] randomWaves;
 
         float near;
@@ -1016,6 +1016,122 @@ namespace ResourceTypes.Actors
         float innerAngle;
         float outerAngle;
         float outerVolume;
+
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public ActorSoundEntityBehaviourFlags BehaviourFlags {
+            get { return behFlags; }
+            set { behFlags = value; }
+        }
+        public int Type {
+            get { return type; }
+            set { type = value; }
+        }
+        public int BehaviourType {
+            get { return behaviourType; }
+            set { behaviourType = value; }
+        }
+        public float Volume {
+            get { return volume; }
+            set { volume = value; }
+        }
+        public float Pitch {
+            get { return pitch; }
+            set { pitch = value; }
+        }
+        public string File {
+            get { return file; }
+            set { file = value; }
+        }
+        public float RandomGroupPauseMax {
+            get { return randomGroupPauseMax; }
+            set { randomGroupPauseMax = value; }
+        }
+        public float RandomGroupPauseMin {
+            get { return randomGroupPauseMin; }
+            set { randomGroupPauseMin = value; }
+        }
+        public float RandomPauseMin {
+            get { return randomPauseMin; }
+            set { randomPauseMin = value; }
+        }
+        public float RandomPauseMax {
+            get { return randomPauseMax; }
+            set { randomPauseMax = value; }
+        }
+        public int RandomGroupSoundsMax {
+            get { return randomGroupSoundsMax; }
+            set { randomGroupSoundsMax = value; }
+        }
+        public int RandomGroupSoundsMin {
+            get { return randomGroupSoundsMin; }
+            set { randomGroupSoundsMin = value; }
+        }
+        public float RandomVolumeMin {
+            get { return randomVolumeMin; }
+            set { randomVolumeMin = value; }
+        }
+        public float RandomVolumeMax {
+            get { return randomVolumeMax; }
+            set { randomVolumeMax = value; }
+        }
+        public float RandomPitchMin {
+            get { return randomPitchMin; }
+            set { randomPitchMin = value; }
+        }
+        public float RandomPitchMax {
+            get { return randomPitchMax; }
+            set { randomPitchMax = value; }
+        }
+        public float RandomPosRangeX {
+            get { return randomPosRangeX; }
+            set { randomPosRangeX = value; }
+        }
+        public float RandomPosRangeY {
+            get { return randomPosRangeY; }
+            set { randomPosRangeY = value; }
+        }
+        public float RandomPosRangeZ {
+            get { return randomPosRangeZ; }
+            set { randomPosRangeZ = value; }
+        }
+
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public ActorSoundEntityPlayType PlayFlags {
+            get { return playFlags; }
+            set { playFlags = value; }
+        }
+        public string[] RandomWaves {
+            get { return randomWaves; }
+            set { randomWaves = value; }
+        }
+        public float Near {
+            get { return near; }
+            set { near = value; }
+        }
+        public float Far {
+            get { return far; }
+            set { far = value; }
+        }
+        public float MonoDistance {
+            get { return monoDistance; }
+            set { monoDistance = value; }
+        }
+        public int CurveID {
+            get { return curveID; }
+            set { curveID = value; }
+        }
+        public float InnerAngle {
+            get { return innerAngle; }
+            set { innerAngle = value; }
+        }
+        public float OuterAngle {
+            get { return outerAngle; }
+            set { outerAngle = value; }
+        }
+        public float OuterVolume {
+            get { return outerVolume; }
+            set { outerVolume = value; }
+        }
 
         public ActorSoundEntity(BinaryReader reader)
         {
@@ -1029,24 +1145,13 @@ namespace ResourceTypes.Actors
 
         public void ReadFromFile(BinaryReader reader)
         {
-            flags = reader.ReadInt32();
+            behFlags = (ActorSoundEntityBehaviourFlags)reader.ReadInt32();
             type = reader.ReadInt32();
             behaviourType = reader.ReadInt32();
             volume = reader.ReadSingle();
             pitch = reader.ReadSingle();
             file = new string(reader.ReadChars(80)).TrimEnd('\0');
             ActorSoundEntityBehaviourFlags tempType = (ActorSoundEntityBehaviourFlags)type;
-
-            Console.WriteLine("Sound: Name {0}", file);
-            Console.WriteLine("Sound: Has Flag PlayInWinter {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.PlayInWinter));
-            Console.WriteLine("Sound: Has Flag Loop {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.Loop));
-            Console.WriteLine("Sound: Has Flag UseAdvancedScene {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.UseAdvancedScene));
-            Console.WriteLine("Sound: Has Flag SectorRestricted {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.SectorRestricted));
-            Console.WriteLine("Sound: Has Flag PlayInDay {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.PlayInDay));
-            Console.WriteLine("Sound: Has Flag PlayInNight {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.PlayInNight));
-            Console.WriteLine("Sound: Has Flag PlayInRain {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.PlayInRain));
-            Console.WriteLine("Sound: Has Flag PlayInSummer {0}", tempType.HasFlag(ActorSoundEntityBehaviourFlags.PlayInSummer));
-
             long position = reader.BaseStream.Position;
             if(behaviourType != 20)
             {
@@ -1057,7 +1162,7 @@ namespace ResourceTypes.Actors
                 randomGroupPauseMin = reader.ReadSingle();
                 randomGroupPauseMax = reader.ReadSingle();
                 randomGroupSoundsMin = reader.ReadInt32();
-                randomGroupSoundMax = reader.ReadInt32();
+                randomGroupSoundsMax = reader.ReadInt32();
                 randomVolumeMin = reader.ReadSingle();
                 randomVolumeMax = reader.ReadSingle();
                 randomPitchMin = reader.ReadSingle();
@@ -1069,7 +1174,7 @@ namespace ResourceTypes.Actors
 
                 seek = 0x84 - 100;
                 reader.BaseStream.Seek(seek, SeekOrigin.Current);
-                flags2 = reader.ReadByte();
+                playFlags = (ActorSoundEntityPlayType)reader.ReadByte();
                 randomWaves = new string[5];
 
                 for (int i = 0; i < 5; i++)
@@ -1106,12 +1211,75 @@ namespace ResourceTypes.Actors
                     break;
             }
             reader.BaseStream.Seek(position+492, SeekOrigin.Begin);
-
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
-            //throw new NotImplementedException();
+            writer.Write(new byte[592]);
+            writer.Seek(-592, SeekOrigin.Current);
+            writer.Write((int)behFlags);
+            writer.Write(type);
+            writer.Write(behaviourType);
+            writer.Write(volume);
+            writer.Write(pitch);
+            StringHelpers.WriteStringBuffer(writer, 80, file);
+            long position = writer.BaseStream.Position;
+            if (behaviourType != 20)
+            {
+                int seek = 0x21C + 100;
+                writer.BaseStream.Seek(seek, SeekOrigin.Current);
+                writer.Write(randomPauseMin);
+                writer.Write(randomPauseMax);
+                writer.Write(randomGroupPauseMin);
+                writer.Write(randomGroupPauseMax);
+                writer.Write(randomGroupSoundsMin);
+                writer.Write(randomGroupSoundsMax);
+                writer.Write(randomVolumeMin);
+                writer.Write(randomVolumeMax);
+                writer.Write(randomPitchMin);
+                writer.Write(randomPitchMax);
+                writer.Write(randomPosRangeX);
+                writer.Write(randomPosRangeY);
+                writer.Write(randomPosRangeZ);
+                writer.BaseStream.Seek(position, SeekOrigin.Begin);
+
+                seek = 0x84 - 100;
+                writer.BaseStream.Seek(seek, SeekOrigin.Current);
+                writer.Write((byte)playFlags);
+                for (int i = 0; i < 5; i++)
+                {
+                    StringHelpers.WriteStringBuffer(writer, 80, randomWaves[i]);
+                    writer.Write((byte)0);
+                }
+            }
+            writer.BaseStream.Seek(position, SeekOrigin.Begin);
+            writer.Write(0);
+            switch (type)
+            {
+                case 20:
+                    writer.Write(near);
+                    writer.Write(far);
+                    writer.Write(monoDistance);
+                    break;
+                case 15:
+                    writer.Write(near);
+                    writer.Write(far);
+                    writer.Write(curveID);
+                    break;
+                case 30:
+                    writer.Write(near);
+                    writer.Write(far);
+                    writer.Write(curveID);
+                    writer.Write(innerAngle);
+                    writer.Write(outerAngle);
+                    writer.Write(outerVolume);
+                    break;
+                case 10:
+                    break;
+                default:
+                    break;
+            }
+            writer.BaseStream.Seek(position+492, SeekOrigin.Begin);
         }
     }
 
