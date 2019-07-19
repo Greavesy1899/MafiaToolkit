@@ -522,6 +522,8 @@ namespace Gibbed.Mafia2.FileFormats
             XmlWriter resourceXML = XmlWriter.Create(extractedPath + file.Name + "/SDSContent.xml", settings);
             resourceXML.WriteStartElement("SDSResource");
 
+            int[] counts = new int[ResourceTypes.Count];
+
             //TODO Cleanup this code. It's awful. (V2 26/08/18, improved to use switch)
             for (int i = 0; i != ResourceEntries.Count; i++)
             {
@@ -532,6 +534,7 @@ namespace Gibbed.Mafia2.FileFormats
                 string saveName = "";
                 Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
 
+                string sdsToolName = ResourceTypes[entry.TypeId].Name + "_" + counts[entry.TypeId] + ".bin";
                 switch (ResourceTypes[entry.TypeId].Name)
                 {
                     case "Texture":
@@ -543,37 +546,37 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = "MIP_" + itemNames[i];
                         break;
                     case "IndexBufferPool":
-                        saveName = ReadBasicEntry(resourceXML, "IndexBufferPool_" + i + ".ibp");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "IndexBufferPool_" + i + ".ibp" : sdsToolName);
                         break;
                     case "VertexBufferPool":
-                        saveName = ReadBasicEntry(resourceXML, "VertexBufferPool_" + i + ".vbp");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "VertexBufferPool_" + i + ".vbp" : sdsToolName);
                         break;
                     case "AnimalTrafficPaths":
-                        saveName = ReadBasicEntry(resourceXML, "AnimalTrafficPaths" + i + ".atp");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "AnimalTrafficPaths" + i + ".atp" : sdsToolName);
                         break;
                     case "FrameResource":
-                        saveName = ReadBasicEntry(resourceXML, "FrameResource_" + i + ".fr");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "FrameResource_" + i + ".fr" : sdsToolName);
                         break;
                     case "Effects":
-                        saveName = ReadBasicEntry(resourceXML, "Effects_" + i + ".eff");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Effects_" + i + ".eff" : sdsToolName);
                         break;
                     case "FrameNameTable":
-                        saveName = ReadBasicEntry(resourceXML, "FrameNameTable_" + i + ".fnt");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "FrameNameTable_" + i + ".fnt" : sdsToolName);
                         break;
                     case "EntityDataStorage":
-                        saveName = ReadBasicEntry(resourceXML, "EntityDataStorage_" + i + ".eds");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "EntityDataStorage_" + i + ".eds" : sdsToolName);
                         break;
                     case "PREFAB":
-                        saveName = ReadBasicEntry(resourceXML, "PREFAB_" + i + ".prf");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "PREFAB_" + i + ".prf" : sdsToolName);
                         break;
                     case "ItemDesc":
-                        saveName = ReadBasicEntry(resourceXML, "ItemDesc_" + i + ".ids");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "ItemDesc_" + i + ".ids" : sdsToolName);
                         break;
                     case "Actors":
-                        saveName = ReadBasicEntry(resourceXML, "Actors_" + i + ".act");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Actors_" + i + ".act" : sdsToolName);
                         break;
                     case "Collisions":
-                        saveName = ReadBasicEntry(resourceXML, "Collisions_" + i + ".col");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Collisions_" + i + ".col" : sdsToolName);
                         break;
                     case "AudioSectors":
                         ReadAudioSectorEntry(entry, resourceXML, itemNames[i], extractedPath + file.Name);
@@ -631,10 +634,10 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = ReadBasicEntry(resourceXML, itemNames[i]);
                         break;
                     default:
-                        MessageBox.Show("Found unknown type: " + ResourceTypes[(int)entry.TypeId].Name);
+                        MessageBox.Show("Found unknown type: " + ResourceTypes[entry.TypeId].Name);
                         break;
                 }
-
+                counts[ResourceTypes[entry.TypeId].Id]++;
                 resourceXML.WriteElementString("Version", entry.Version.ToString());
                 using (BinaryWriter writer = new BinaryWriter(File.Open(extractedPath + file.Name + "/" + saveName, FileMode.Create)))
                 {

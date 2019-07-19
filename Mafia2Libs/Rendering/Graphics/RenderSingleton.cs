@@ -9,6 +9,7 @@ namespace Rendering.Graphics
         public Dictionary<ulong, RenderStaticCollision> StaticCollisions;
         public Dictionary<ulong, ShaderResourceView> TextureCache;
         public ShaderManager ShaderManager;
+        public RenderPrefabs Prefabs;
 
         RenderStorageSingleton()
         {
@@ -16,6 +17,7 @@ namespace Rendering.Graphics
             StaticCollisions = new Dictionary<ulong, RenderStaticCollision>();
             TextureCache = new Dictionary<ulong, ShaderResourceView>();
             ShaderManager = new ShaderManager();
+            Prefabs = new RenderPrefabs();
         }
 
         public void Shutdown()
@@ -33,6 +35,7 @@ namespace Rendering.Graphics
             StaticCollisions.Clear();
             TextureCache.Clear();
             ShaderManager.Shutdown();
+            Prefabs.Shutdown();
         }
 
         public static RenderStorageSingleton Instance {

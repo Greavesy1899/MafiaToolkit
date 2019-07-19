@@ -21,6 +21,7 @@ namespace Forms.OptionControls
             CompressionDropdownBox.Items[1] = Language.GetString("$SDS_COMPRESSED");
             AddTimeDateBackupsBox.Text = Language.GetString("$ADD_TIME_DATE_BACKUP");
             UnpackLUABox.Text = Language.GetString("$DECOMPILE_LUA_UNPACK");
+            SDSToolFormat.Text = Language.GetString("$USE_SDS_TOOL_FORMAT");
         }
 
         private void LoadSettings()
@@ -46,6 +47,12 @@ namespace Forms.OptionControls
         {
             ToolkitSettings.DecompileLUA = UnpackLUABox.Checked;
             ToolkitSettings.WriteKey("DecompileLUA", "SDS", ToolkitSettings.DecompileLUA.ToString());
+        }
+
+        private void SDSToolFormat_CheckedChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.UseSDSToolFormat = SDSToolFormat.Checked;
+            ToolkitSettings.WriteKey("UseSDSToolFormat", "SDS", ToolkitSettings.UseSDSToolFormat.ToString());
         }
     }
 }

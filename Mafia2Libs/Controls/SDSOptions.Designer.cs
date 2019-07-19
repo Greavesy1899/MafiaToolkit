@@ -29,16 +29,18 @@
         private void InitializeComponent()
         {
             this.groupSDS = new System.Windows.Forms.GroupBox();
+            this.UnpackLUABox = new System.Windows.Forms.CheckBox();
+            this.AddTimeDateBackupsBox = new System.Windows.Forms.CheckBox();
             this.CompressionDropdownBox = new System.Windows.Forms.ComboBox();
             this.M2Label = new System.Windows.Forms.Label();
-            this.AddTimeDateBackupsBox = new System.Windows.Forms.CheckBox();
-            this.UnpackLUABox = new System.Windows.Forms.CheckBox();
+            this.SDSToolFormat = new System.Windows.Forms.CheckBox();
             this.groupSDS.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupSDS
             // 
             this.groupSDS.AutoSize = true;
+            this.groupSDS.Controls.Add(this.SDSToolFormat);
             this.groupSDS.Controls.Add(this.UnpackLUABox);
             this.groupSDS.Controls.Add(this.AddTimeDateBackupsBox);
             this.groupSDS.Controls.Add(this.CompressionDropdownBox);
@@ -50,6 +52,28 @@
             this.groupSDS.TabIndex = 0;
             this.groupSDS.TabStop = false;
             this.groupSDS.Text = "SDS Options";
+            // 
+            // UnpackLUABox
+            // 
+            this.UnpackLUABox.AutoSize = true;
+            this.UnpackLUABox.Location = new System.Drawing.Point(9, 82);
+            this.UnpackLUABox.Name = "UnpackLUABox";
+            this.UnpackLUABox.Size = new System.Drawing.Size(182, 17);
+            this.UnpackLUABox.TabIndex = 5;
+            this.UnpackLUABox.Text = "Decompile LUA when unpacking";
+            this.UnpackLUABox.UseVisualStyleBackColor = true;
+            this.UnpackLUABox.CheckedChanged += new System.EventHandler(this.UnpackLUABox_CheckedChanged);
+            // 
+            // AddTimeDateBackupsBox
+            // 
+            this.AddTimeDateBackupsBox.AutoSize = true;
+            this.AddTimeDateBackupsBox.Location = new System.Drawing.Point(9, 59);
+            this.AddTimeDateBackupsBox.Name = "AddTimeDateBackupsBox";
+            this.AddTimeDateBackupsBox.Size = new System.Drawing.Size(175, 17);
+            this.AddTimeDateBackupsBox.TabIndex = 4;
+            this.AddTimeDateBackupsBox.Text = "Add Time and Date to Backups";
+            this.AddTimeDateBackupsBox.UseVisualStyleBackColor = true;
+            this.AddTimeDateBackupsBox.CheckedChanged += new System.EventHandler(this.AddTimeDateBackupsBox_CheckedChanged);
             // 
             // CompressionDropdownBox
             // 
@@ -72,27 +96,16 @@
             this.M2Label.TabIndex = 2;
             this.M2Label.Text = "$SDS_COMPRESSION_TYPE";
             // 
-            // AddTimeDateBackupsBox
+            // SDSToolFormat
             // 
-            this.AddTimeDateBackupsBox.AutoSize = true;
-            this.AddTimeDateBackupsBox.Location = new System.Drawing.Point(9, 59);
-            this.AddTimeDateBackupsBox.Name = "AddTimeDateBackupsBox";
-            this.AddTimeDateBackupsBox.Size = new System.Drawing.Size(175, 17);
-            this.AddTimeDateBackupsBox.TabIndex = 4;
-            this.AddTimeDateBackupsBox.Text = "Add Time and Date to Backups";
-            this.AddTimeDateBackupsBox.UseVisualStyleBackColor = true;
-            this.AddTimeDateBackupsBox.CheckedChanged += new System.EventHandler(this.AddTimeDateBackupsBox_CheckedChanged);
-            // 
-            // UnpackLUABox
-            // 
-            this.UnpackLUABox.AutoSize = true;
-            this.UnpackLUABox.Location = new System.Drawing.Point(9, 82);
-            this.UnpackLUABox.Name = "UnpackLUABox";
-            this.UnpackLUABox.Size = new System.Drawing.Size(182, 17);
-            this.UnpackLUABox.TabIndex = 5;
-            this.UnpackLUABox.Text = "Decompile LUA when unpacking";
-            this.UnpackLUABox.UseVisualStyleBackColor = true;
-            this.UnpackLUABox.CheckedChanged += new System.EventHandler(this.UnpackLUABox_CheckedChanged);
+            this.SDSToolFormat.AutoSize = true;
+            this.SDSToolFormat.Location = new System.Drawing.Point(9, 105);
+            this.SDSToolFormat.Name = "SDSToolFormat";
+            this.SDSToolFormat.Size = new System.Drawing.Size(129, 17);
+            this.SDSToolFormat.TabIndex = 6;
+            this.SDSToolFormat.Text = "Use SDS Tool Format";
+            this.SDSToolFormat.UseVisualStyleBackColor = true;
+            this.SDSToolFormat.CheckedChanged += new System.EventHandler(this.SDSToolFormat_CheckedChanged);
             // 
             // SDSOptions
             // 
@@ -115,5 +128,6 @@
         private System.Windows.Forms.Label M2Label;
         private System.Windows.Forms.CheckBox UnpackLUABox;
         private System.Windows.Forms.CheckBox AddTimeDateBackupsBox;
+        private System.Windows.Forms.CheckBox SDSToolFormat;
     }
 }

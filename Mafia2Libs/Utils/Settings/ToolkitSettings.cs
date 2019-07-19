@@ -48,6 +48,7 @@ namespace Utils.Settings
         public static int SerializeSDSOption;
         public static bool DecompileLUA;
         public static bool AddTimeDataBackup;
+        public static bool UseSDSToolFormat;
         public static readonly string Version = "2.0 experimental";
 
         public static void ReadINI()
@@ -74,6 +75,7 @@ namespace Utils.Settings
             int.TryParse(ReadKey("Format", "Exporting", "0"), out Format);
             bool.TryParse(ReadKey("AddTimeDataBackup", "SDS", "True"), out AddTimeDataBackup);
             bool.TryParse(ReadKey("DecompileLUA", "SDS", "False"), out DecompileLUA);
+            bool.TryParse(ReadKey("UseSDSToolFormat", "SDS", "False"), out UseSDSToolFormat);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
             MaterialLibs = ReadKey("MaterialLibs", "Materials", "");
 

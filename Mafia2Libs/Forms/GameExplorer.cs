@@ -203,6 +203,7 @@ namespace Mafia2Tool
             {
                 MessageBox.Show("Could not find directory! Returning to original path..", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 OpenDirectory(originalPath, false);
+                return;
             }
 
             foreach (DirectoryInfo dir in directory.GetDirectories())
@@ -431,8 +432,27 @@ namespace Mafia2Tool
                 HandleFile(fileListView.SelectedItems[0]);
         }
 
+
+        //Improve this, its bad.
         private void HandleFile(ListViewItem item)
         {
+            if(ToolkitSettings.UseSDSToolFormat)
+            {
+                switch (item.SubItems[1].Text)
+                {
+                    case "Directory":
+                        OpenDirectory((DirectoryInfo)item.Tag);
+                        return;
+                    case "SDS Archive":
+                        OpenSDS((FileInfo)item.Tag);
+                        break;
+                    default:
+                        Process.Start(((FileInfo)item.Tag).FullName);
+                        break;
+                }
+                return;
+            }
+
             MaterialTool mTool;
             CollisionEditor cTool;
             ActorEditor aTool;

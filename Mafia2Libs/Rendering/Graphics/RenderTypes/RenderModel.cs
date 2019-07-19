@@ -6,12 +6,9 @@ using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using ResourceTypes.BufferPools;
 using Utils.Types;
-using System;
 using Buffer = SharpDX.Direct3D11.Buffer;
-using System.IO;
-using Utils.Settings;
 using Utils.Models;
-using Mafia2Tool;
+using Utils.SharpDXExtensions;
 
 namespace Rendering.Graphics
 {
@@ -46,6 +43,58 @@ namespace Rendering.Graphics
             isUpdatedNeeded = false;
             Transform = Matrix.Identity;
             BoundingBox = new RenderBoundingBox();
+        }
+
+        public void ConvertMTKToRenderModel(M2TStructure structure)
+        {
+            List<Vertex[]> vertices = new List<Vertex[]>();
+            LODs = new LOD[structure.Lods.Length];
+            for(int i = 0; i != structure.Lods.Length; i++)
+            {
+                M2TStructure.Lod lod = structure.Lods[i];
+                vertices.Add(lod.Vertices);
+                LOD lod2 = new LOD();
+                lod2.Indices = lod.Indices;
+                lod2.ModelParts = new ModelPart[lod.Parts.Length];
+                for (int y = 0; y != lod.Parts.Length; y++)
+                {
+                    ModelPart part = new ModelPart();
+                    part.NumFaces = lod.Parts[y].NumFaces;
+                    part.StartIndex = lod.Parts[y].StartIndex;
+                    part.MaterialHash = lod.Parts[y].Hash;
+                    
+                    switch(part.MaterialHash)
+                    {
+                        case 1337:
+                            part.Material = RenderStorageSingleton.Instance.Prefabs.GizmoRed;
+                            break;
+                        case 1338:
+                            part.Material = RenderStorageSingleton.Instance.Prefabs.GizmoBlue;
+                            break;
+                        case 1339:
+                            part.Material = RenderStorageSingleton.Instance.Prefabs.GizmoGreen;
+                            break;
+                    }
+                    lod2.ModelParts[y] = part;
+                }
+
+                lod2.Vertices = new VertexLayouts.NormalLayout.Vertex[lod.Vertices.Length];
+                for (int y = 0; y != lod.Vertices.Length; y++)
+                {
+                    var vertice = new VertexLayouts.NormalLayout.Vertex();
+                    vertice.Position = lod.Vertices[y].Position;
+                    vertice.Normal = lod.Vertices[y].Normal;
+                    vertice.TexCoord0 = lod.Vertices[y].UVs[0];
+                    vertice.TexCoord7 = lod.Vertices[y].UVs[3];
+                    lod2.Vertices[y] = vertice;
+                }
+                LODs[i] = lod2;
+            }
+            BoundingBox = new RenderBoundingBox();
+            BoundingBox.Init(BoundingBoxExtenders.CalculateBounds(vertices));
+            BoundingBox.SetTransform(Transform);
+            BoundingBox.DoRender = false;
+            SetupShaders();
         }
 
         public bool ConvertFrameToRenderModel(FrameObjectSingleMesh mesh, FrameGeometry geom, FrameMaterial mats, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)

@@ -78,7 +78,11 @@ namespace Utils.Types
         {
             _string = name;
             size = (short)name.Length;
-            hash = FNV64.Hash(name);
+
+            if (_string == "")
+                hash = 0;
+            else
+                hash = FNV64.Hash(name);
         }
 
         public override string ToString()

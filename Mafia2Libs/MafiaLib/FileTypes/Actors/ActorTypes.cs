@@ -19,120 +19,22 @@ namespace ResourceTypes.Actors
 
     public class ActorUnkBase : IActorExtraDataInterface
     {
-        /*
-         * signed int __usercall sub_3F9D50@<eax>(long double a1@<st0>, int a2, UnkPropData *a3)
-{
-  int v3; // edi@1
-  int v4; // esi@1
-  int v5; // edi@3
-  signed int result; // eax@3
-  __int64 v7; // [sp+38h] [bp-B0h]@1
-  int v8; // [sp+40h] [bp-A8h]@1
-  __int64 v9; // [sp+48h] [bp-A0h]@1
-  int v10; // [sp+50h] [bp-98h]@1
-  char v11; // [sp+58h] [bp-90h]@2
-  int v12; // [sp+D8h] [bp-10h]@1
+        public int MoveOnInit {get; set;}
+        public float ActivateImpulse { get; set; }
+        public float DeactivateThreshold { get; set; }
+        public float HitPoints { get; set; }
+        public int MaterialID { get; set; }
+        public float StaticFriction { get; set; }
+        public float DynamicFriction { get; set; }
+        public float Restitution { get; set; }
 
-  v3 = a2;
-  v12 = __stack_chk_guard;
-  a3->byte0 = (*(int (__stdcall **)(int))(*(_DWORD *)a2 + 28))(a2);
-  (*(void (__cdecl **)(int, signed int))(*(_DWORD *)v3 + 12))(v3, 31894661);
-  a3->float4 = a1;
-  (*(void (__cdecl **)(int, signed int))(*(_DWORD *)v3 + 12))(v3, 31894677);
-  a3->floatC = a1;
-  (*(void (__cdecl **)(int, char *))(*(_DWORD *)v3 + 12))(v3, (char *)&loc_1A70F49 + 4169058);
-  a3->float8 = a1;
-  a3->dword10 = (*(int (__cdecl **)(int, signed int))(*(_DWORD *)v3 + 8))(v3, 31894709);
-  (*(void (__cdecl **)(int, char *))(*(_DWORD *)v3 + 12))(v3, (char *)&loc_1A687A6 + 4169057);
-  a3->float14 = a1;
-  (*(void (__cdecl **)(int, char *))(*(_DWORD *)v3 + 12))(v3, (char *)&loc_1A70F5F + 4169057);
-  a3->float18 = a1;
-  (*(void (__cdecl **)(int, signed int))(*(_DWORD *)v3 + 12))(v3, 31859990);
-  a3->float1C = a1;
-  a3->dwordD4 = (*(int (__cdecl **)(int, char *))(*(_DWORD *)v3 + 8))(v3, (char *)&loc_1A70F6F + 4169057);
-  (*(void (__cdecl **)(__int64 *, int, char *))(*(_DWORD *)v3 + 24))(&v9, v3, (char *)&loc_1A70F76 + 4169057);
-  a3->dwordE0 = v10;
-  a3->qwordD8 = v9;
-  (*(void (__stdcall **)(__int64 *))(*(_DWORD *)a2 + 24))(&v7);
-  a3->dwordEC = v8;
-  a3->qwordE4 = v7;
-  v4 = 0;
-  do
-  {
-    sprintf(&v11, "Hit%dId", v4 + 3);
-    *(_DWORD *)&a3->gap20[4 * v4 + 8] = (*(int (__cdecl **)(int, char *))(*(_DWORD *)a2 + 8))(a2, &v11);
-    sprintf(&v11, (const char *)&loc_1A70F8B + 4169057, v4 + 3);
-    (*(void (__cdecl **)(int, char *))(*(_DWORD *)a2 + 12))(a2, &v11);
-    *(float *)&a3->gap20[4 * v4 + 20] = a1;
-    sprintf(&v11, (const char *)&loc_1A70F98 + 4169058, v4 + 3);
-    (*(void (__cdecl **)(int, char *))(*(_DWORD *)a2 + 12))(a2, &v11);
-    *(float *)&a3->gap20[4 * v4 + 32] = a1;
-    sprintf(&v11, (const char *)&loc_1A70FA8 + 4169059, v4 + 3);
-    *(_DWORD *)&a3->gap20[4 * v4 + 44] = (*(int (__cdecl **)(int, char *))(*(_DWORD *)a2 + 8))(a2, &v11);
-    sprintf(&v11, (const char *)&unk_1A70FB6 + 4169057, v4 + 3);
-    *(_DWORD *)&a3->gap20[4 * v4 + 56] = (*(int (__cdecl **)(int, char *))(*(_DWORD *)a2 + 8))(a2, &v11);
-    sprintf(&v11, "Hit%dFreqLow", v4 + 3);
-    (*(void (__cdecl **)(int, char *))(*(_DWORD *)a2 + 12))(a2, &v11);
-    *(float *)&a3->gap20[4 * v4 + 68] = a1;
-    sprintf(&v11, "Hit%dFreqHi", v4 + 3);
-    (*(void (__cdecl **)(int, char *))(*(_DWORD *)a2 + 12))(a2, &v11);
-    *(float *)&a3->gap20[4 * v4-- + 80] = a1;
-  }
-  while ( v4 != -3 );
-  v5 = a2;
-  a3->dword74 = (*(int (__cdecl **)(int, char *))(*(_DWORD *)a2 + 8))(a2, (char *)&locret_1A70FDB + 4169057);
-  (*(void (__cdecl **)(int, char *))(*(_DWORD *)v5 + 12))(v5, (char *)&loc_1A70FE3 + 4169057);
-  a3->float78 = a1;
-  (*(void (__cdecl **)(int, signed int))(*(_DWORD *)v5 + 12))(v5, 31894866);
-  a3->float7C = a1;
-  a3->dword80 = (*(int (__cdecl **)(int, char *))(*(_DWORD *)v5 + 8))(v5, (char *)&loc_1A71002 + 4169057);
-  a3->dword84 = (*(int (__cdecl **)(int, char *))(*(_DWORD *)v5 + 8))(v5, (char *)&loc_1A7100E + 4169057);
-  (*(void (__cdecl **)(int, signed int))(*(_DWORD *)v5 + 12))(v5, 31894907);
-  a3->float88 = a1;
-  (*(void (__cdecl **)(int, signed int))(*(_DWORD *)v5 + 12))(v5, 31894920);
-  a3->float8C = a1;
-  a3->dword90 = (*(int (__cdecl **)(int, signed int))(*(_DWORD *)v5 + 8))(v5, 31894932);
-  (*(void (__cdecl **)(int, char *))(*(_DWORD *)v5 + 12))(v5, (char *)&loc_1A7103A + 4169057);
-  a3->float94 = a1;
-  (*(void (__cdecl **)(int, signed int))(*(_DWORD *)v5 + 12))(v5, 31894952);
-  a3->float98 = a1;
-  a3->dword9C = (*(int (__cdecl **)(int, signed int))(*(_DWORD *)v5 + 8))(v5, 31894968);
-  a3->dwordA0 = (*(int (__cdecl **)(int, signed int))(*(_DWORD *)v5 + 8))(v5, 31894979);
-  (*(void (__cdecl **)(int, char *))(*(_DWORD *)v5 + 12))(v5, (char *)&loc_1A7106D + 4169057);
-  a3->floatA4 = a1;
-  (*(void (__cdecl **)(int, char *))(*(_DWORD *)v5 + 12))(v5, (char *)&loc_1A71079 + 4169057);
-  a3->floatA8 = a1;
-  a3->dwordAC = (*(int (__cdecl **)(int, signed int))(*(_DWORD *)v5 + 8))(v5, 31895013);
-  a3->dwordB0 = (*(int (__cdecl **)(_DWORD, signed int))(*(_DWORD *)v5 + 8))(v5, 31895030);
-  a3->dwordB4 = (*(int (__cdecl **)(_DWORD, signed int))(*(_DWORD *)v5 + 8))(v5, 31895041);
-  a3->dwordB8 = (*(int (__cdecl **)(_DWORD, signed int))(*(_DWORD *)v5 + 8))(v5, 31895052);
-  a3->dwordBC = (*(int (__cdecl **)(int, char *))(*(_DWORD *)v5 + 8))(v5, (char *)&loc_1A710B9 + 4169057);
-  a3->dwordC0 = (*(int (__cdecl **)(_DWORD, signed int))(*(_DWORD *)v5 + 8))(v5, 31895080);
-  a3->dwordC4 = (*(int (__cdecl **)(_DWORD, signed int))(*(_DWORD *)v5 + 8))(v5, 31895096);
-  a3->dwordC8 = (*(int (__cdecl **)(_DWORD, signed int))(*(_DWORD *)v5 + 8))(v5, 31895118);
-  (*(void (__cdecl **)(int, char *))(*(_DWORD *)v5 + 12))(v5, (char *)&locret_1A710FD + 4169057);
-  a3->floatD0 = a1;
-  a3->dwordCC = (*(int (__cdecl **)(int, char *))(*(_DWORD *)v5 + 8))(v5, (char *)&loc_1A7110F + 4169059);
-  result = __stack_chk_guard;
-  if ( __stack_chk_guard == v12 )
-    result = 1;
-  return result;
-}*/
-        //float float4;
-        //float float8;
-        //float floatC;
-        //int dword10;
-        //float float10;
-        //float float14;
-        //float float18;
-        //float float1C;
-        //int dwordD4;
-        //int dwordD0;
-        //long qwordD8;
-        //int dwordEC;
-        //int qwordE4;
+        [TypeConverter(typeof(Vector3Converter))]
+        public Vector3 POPos { get; set; }
 
-        byte[] data;
+        [TypeConverter(typeof(Vector3Converter))]
+        public Vector3 POSize { get; set; }
+
+        public byte[] data;
 
         public int GetSize()
         {

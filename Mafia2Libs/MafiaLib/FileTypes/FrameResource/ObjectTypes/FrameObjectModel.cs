@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using Utils.Models;
 using Utils.Types;
 
@@ -67,6 +68,8 @@ namespace ResourceTypes.FrameResource
             get { return blendInfo; }
             set { blendInfo = value; }
         }
+
+        [TypeConverter(typeof(ExpandableObjectConverter))]
         public FrameSkeletonHierachy SkeletonHierarchy {
             get { return hierachy; }
             set { hierachy = value; }

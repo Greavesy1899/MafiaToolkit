@@ -52,6 +52,10 @@ namespace Rendering.Graphics
             }
             //this is backup!
             RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, D3D.DeviceContext, "texture.dds"));
+            RenderModel model = new RenderModel();
+            model.ConvertMTKToRenderModel(RenderStorageSingleton.Instance.Prefabs.GizmoModel);
+            model.InitBuffers(D3D.Device, D3D.DeviceContext);
+            Assets.Add(1, model);
             return true;
         }
 
@@ -119,9 +123,10 @@ namespace Rendering.Graphics
 
         public void SelectEntry(int id)
         {
-            IRenderer newObj, oldObj;
+            IRenderer newObj, oldObj, gizmo;
             Assets.TryGetValue(id, out newObj);
             Assets.TryGetValue(selectedID, out oldObj);
+            gizmo = Assets[1];
 
             if (selectedID == id)
                 return;
@@ -131,6 +136,8 @@ namespace Rendering.Graphics
                 if (oldObj != null)
                     oldObj.Unselect();
 
+                gizmo.SetTransform(newObj.Transform);
+                gizmo.DoRender = true;
                 newObj.Select();
                 selectedID = id;
             }

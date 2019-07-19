@@ -26,3 +26,10 @@ extern int _stdcall RunCookConvexCollision(const char* source, const char* dest)
 {
 	return CookConvex(source, dest);
 }
+
+int main(int argc, char** argv)
+{
+	printf("Working?");
+	_getch();
+	return 0;
+}

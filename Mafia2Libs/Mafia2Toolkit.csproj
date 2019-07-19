@@ -332,6 +332,7 @@
     <Compile Include="Rendering\Graphics\RenderTypes\RenderRoad.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderStaticCollision.cs" />
     <Compile Include="Rendering\Graphics\Shaders\Shader_50760736.cs" />
+    <Compile Include="Rendering\RenderPrefabs.cs" />
     <Compile Include="Rendering\System\FPSClass.cs" />
     <Compile Include="Utils\Helpers\BoundExtensions.cs" />
     <Compile Include="MafiaLib\ModelHelpers\Enums.cs" />

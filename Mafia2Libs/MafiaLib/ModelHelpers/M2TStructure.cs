@@ -330,6 +330,14 @@ namespace Utils.Models
             FBXHelper.ConvertM2T(path + name + ".m2t", path + name + ".fbx");
         }
 
+        public void ReadFromM2T(string file)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
+            {
+                ReadFromM2T(reader);
+            }
+        }
+
         public void ReadFromM2T(BinaryReader reader)
         {
             if (new string(reader.ReadChars(3)) != fileHeader)
