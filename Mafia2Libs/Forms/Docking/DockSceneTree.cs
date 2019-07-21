@@ -2,9 +2,9 @@
 using System.Windows.Forms;
 using ResourceTypes.FrameResource;
 using SharpDX;
-using System.Linq;
 using Utils.Types;
 using Mafia2Tool;
+using System;
 
 namespace Forms.Docking
 {
@@ -21,7 +21,7 @@ namespace Forms.Docking
             ApplyImageIndex(newNode);
             RecurseChildren(newNode);
 
-            if(parentNode != null)
+            if (parentNode != null)
                 parentNode.Nodes.Add(newNode);
             else
                 treeView1.Nodes.Add(newNode);
@@ -188,7 +188,7 @@ namespace Forms.Docking
                 else if(parent == 1)
                 {
                     obj.ParentIndex2.Name = window.chosenObject.ToString();
-                    obj.ParentIndex1.Index = SceneData.FrameResource.GetIndexOfObject(refID) + SceneData.FrameResource.FrameScenes.Count;
+                    obj.ParentIndex2.Index = SceneData.FrameResource.GetIndexOfObject(refID) + SceneData.FrameResource.FrameScenes.Count;
                     obj.ParentIndex2.RefID = refID;
                     obj.SubRef(FrameEntryRefTypes.Parent2);
                     obj.AddRef(FrameEntryRefTypes.Parent2, refID);
@@ -204,7 +204,7 @@ namespace Forms.Docking
                 {
                     TreeNode[] nodes = treeView1.Nodes.Find(obj.ParentIndex1.RefID.ToString(), true);
 
-                    if(nodes.Length > 0)
+                    if (nodes.Length > 0)
                         AddToTree(newNode, nodes[0]);
                 }
                 else if (obj.ParentIndex2.Index != -1)
@@ -213,6 +213,9 @@ namespace Forms.Docking
 
                     if (nodes.Length > 0)
                         AddToTree(newNode, nodes[0]);
+                }
+                else
+                {
                 }
             }
         }

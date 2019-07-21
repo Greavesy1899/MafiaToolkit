@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Utils.Settings;
 using System.IO;
 using Rendering.Sys;
+using Utils.Models;
 
 namespace Rendering.Graphics
 {
@@ -45,6 +46,7 @@ namespace Rendering.Graphics
             Timer.Init();
             FPS.Init();
 
+            RenderStorageSingleton.Instance.Prefabs = new RenderPrefabs();
             if (!RenderStorageSingleton.Instance.ShaderManager.Init(D3D.Device))
             {
                 MessageBox.Show("Failed to initialize Shader Manager!");
@@ -52,9 +54,14 @@ namespace Rendering.Graphics
             }
             //this is backup!
             RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, D3D.DeviceContext, "texture.dds"));
+
+            //import gizmo
             RenderModel model = new RenderModel();
-            model.ConvertMTKToRenderModel(RenderStorageSingleton.Instance.Prefabs.GizmoModel);
+            var GizmoModel = new M2TStructure();
+            GizmoModel.ReadFromM2T("Resources/GizmoModel.m2t");
+            model.ConvertMTKToRenderModel(GizmoModel);
             model.InitBuffers(D3D.Device, D3D.DeviceContext);
+            model.DoRender = false;
             Assets.Add(1, model);
             return true;
         }
@@ -137,7 +144,7 @@ namespace Rendering.Graphics
                     oldObj.Unselect();
 
                 gizmo.SetTransform(newObj.Transform);
-                gizmo.DoRender = true;
+                gizmo.DoRender = false;
                 newObj.Select();
                 selectedID = id;
             }

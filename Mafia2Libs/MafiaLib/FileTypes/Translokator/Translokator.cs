@@ -50,6 +50,7 @@ namespace ResourceTypes.Translokator
     {
         Vector3 position;
         Vector4 rotation;
+        float scale;
         public ushort PositionX;
         public ushort PositionY;
         public ushort PositionZ;
@@ -66,6 +67,11 @@ namespace ResourceTypes.Translokator
         public Vector4 Rotation {
             get { return rotation; }
             set { rotation = value; }
+        }
+
+        public float Scale {
+            get { return scale; }
+            set { scale = value; }
         }
 
         public ushort Unk01 {
@@ -232,54 +238,24 @@ namespace ResourceTypes.Translokator
             var Z = 2.0f * v7 - v8;
             CompressRotation(new Vector3((float)X, (float)Y, (float)Z), instance);
         }
-
-        //private void DecompressRotation(Instance instance)
-        //{
-        //    Vector4 quat = new Vector4();
-        //    float v6 = 0.0f;
-        //    float v7 = 0.0f;
-        //    float v8 = 0.0f;
-        //    float v9 = 0.0f;
-
-        //    if ((instance.Rotation2 & 0x10) != 0)
-        //    {
-        //        int val = instance.Rotation2 & 0x1FF;
-        //        v7 = 0.0019569471f;
-        //        v6 = val * 0.0019569471f;
-        //        v8 = ((instance.Rotation2 >> 9) & 0x1FF) * v7;
-        //        v9 = (instance.Rotation2 >> 18) & 0x1FF;
-        //    }
-        //    else
-        //    {
-        //        int val = ((instance.Rotation1 & 0xE0) << 4) | (instance.Rotation2 & 0x1FF);
-        //        v6 = val * 0.00024420026f;
-        //        v7 = 0.00012208521f;
-        //        v8 = Convert.ToSingle((((instance.Rotation2 >> 9) & 0x1FF) + 2 * (instance.Rotation1 & 0xF00)) * 0.00012208521);
-        //        v9 = ((instance.Rotation2 >> 18) & 0x1FF | (instance.Rotation1 >> 3) & 0x1E00);
-        //    }
-        //    Vector3 euler = new Vector3(v6, v7, v8);
-        //    double v11 = (v6 * Math.PI) * 2;
-        //    double v12 = Math.Sin(v11 + -Math.PI) * 0.5f;
-        //    double v13 = Math.Cos(v11 + -Math.PI) * 0.5f;
-        //    double v14 = (((v8 * Math.PI) + (v8 * Math.PI)) + -Math.PI) * 0.5f;
-        //    double v15 = Math.Sin(v14);
-        //    double v16 = Math.Cos(v14);
-        //    double v17 = ((((v9 * v7) * Math.PI) + ((v9 * v7) * Math.PI)) + -Math.PI) * 0.5;
-        //    double v18 = Math.Sin(v17);
-        //    double v19 = Math.Cos(v17);
-        //    quat.X = Convert.ToSingle((v13 * (v15 * v18)) + (v12 * (v16 * v19)));
-        //    quat.Y = Convert.ToSingle((v13 * (v15 * v19)) + (v12 * (v16 * v18)));
-        //    quat.Z = Convert.ToSingle(((v16 * v18) * v13) - ((v15 * v19) * v12));
-        //    quat.W = Convert.ToSingle(((v16 * v19) * v13) - ((v15 * v18) * v12));
-        //    instance.Rotation = quat;
-        //    Console.WriteLine("ACTUAL ROTATION: {0}", quat);
-        //}
-
         private void CompressRotation(Vector3 rotation, Instance instance)
         {
-            var v8 = 3.141592741012573;
+            double x;
+            double y;
+            double z;
 
-            var v7 = (rotation.X + v8) / 2;
+            if(instance.Scale == 1)
+            {
+                x = ((rotation.X / Math.PI + 1.0f) / 2.0f) * 8191.0f;
+                y = ((rotation.Y / Math.PI + 1.0f) / 2.0f) * 4095.0f;
+                z = ((rotation.Z / Math.PI + 1.0f) / 2.0f) * 4095.0f;
+            }
+            else
+            {
+                x = (rotation.X / Math.PI + 1.0f) / 2.0f * 511.0f;
+                y = (rotation.Y / Math.PI + 1.0f) / 2.0f * 511.0f;
+                z = (rotation.Z / Math.PI + 1.0f) / 2.0f * 511.0f;
+            }
         }
 
         public Vector3 DecompressPosition(byte[] transform, Instance instance, Vector3 tmin, Vector3 tmax, bool debug = false)
@@ -313,7 +289,6 @@ namespace ResourceTypes.Translokator
             }
             return position;
         }
-
         public void CompressPosition(Instance instance, Vector3 tmin, Vector3 tmax, bool debug = false)
         {
             if(debug)
@@ -343,6 +318,26 @@ namespace ResourceTypes.Translokator
                 Console.WriteLine("Final: {0} {1} {2}", instance.Position.X, instance.Position.Y, instance.Position.Z);
                 Console.WriteLine("Final Instance: {0} {1} {2}", instance.PositionX, instance.PositionY, instance.PositionZ);
             }
+        }
+        public void DecompressScale(Instance transform)
+        {
+            var scale = 1.0f;
+
+            if ((transform.Rotation2 & 0x10) != 0)
+            {
+                var s = transform.Rotation2 & 0xFFE0;
+                var e = (s >> 10) & 0x1F;
+                if (e != 0)
+                {
+                    var sign = (s << 16) & 0x80000000;
+                    var exponent = ((e + 127 - 15) << 23);
+                    var mantissa = (s << 13) & 0x7C0000;
+                    var t = sign | exponent | mantissa;
+                    scale = t;
+                }
+            }
+            Console.WriteLine(scale);
+            transform.Scale = scale;
         }
 
         private void CompressInstances()
@@ -453,6 +448,7 @@ namespace ResourceTypes.Translokator
                         //Console.WriteLine("{0:X4}", instance.Unk01);
                         //Console.WriteLine("{0:X4}", instance.Rotation1);
 
+                        DecompressScale(instance);
                         DecompressRotation(instance);                    
                         instance.Position = DecompressPosition(packed, instance, bounds.Minimum, bounds.Maximum);
                         //Console.WriteLine(instance.Position);

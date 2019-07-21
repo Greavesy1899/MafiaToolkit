@@ -510,16 +510,17 @@ namespace Gibbed.Mafia2.FileFormats
             settings.IndentChars = ("\t");
             settings.OmitXmlDeclaration = true;
 
-            string extractedPath = file.Directory.FullName + "/extracted/";
+            string extractedPath = Path.Combine(file.Directory.FullName, "extracted");
 
             if (!Directory.Exists(extractedPath))
                 Directory.CreateDirectory(extractedPath);
 
-            Directory.CreateDirectory(extractedPath + file.Name);
+            string finalPath = Path.Combine(extractedPath, file.Name);
+            Directory.CreateDirectory(finalPath);
 
             Log.WriteLine("Begin unpacking and saving files..");
 
-            XmlWriter resourceXML = XmlWriter.Create(extractedPath + file.Name + "/SDSContent.xml", settings);
+            XmlWriter resourceXML = XmlWriter.Create(finalPath + "/SDSContent.xml", settings);
             resourceXML.WriteStartElement("SDSResource");
 
             int[] counts = new int[ResourceTypes.Count];
@@ -579,7 +580,7 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Collisions_" + i + ".col" : sdsToolName);
                         break;
                     case "AudioSectors":
-                        ReadAudioSectorEntry(entry, resourceXML, itemNames[i], extractedPath + file.Name);
+                        ReadAudioSectorEntry(entry, resourceXML, itemNames[i], finalPath);
                         saveName = itemNames[i];
                         break;
                     case "SoundTable":
@@ -613,21 +614,21 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = ReadBasicEntry(resourceXML, "NAV_HPD_DATA_" + i + ".nhv");
                         break;
                     case "Script":
-                        ReadScriptEntry(entry, resourceXML, extractedPath + file.Name);
+                        ReadScriptEntry(entry, resourceXML, finalPath);
                         continue;
                     case "XML":
-                        ReadXMLEntry(entry, resourceXML, itemNames[i], extractedPath + file.Name);
+                        ReadXMLEntry(entry, resourceXML, itemNames[i], finalPath);
                         continue;
                     case "Sound":
-                        ReadSoundEntry(entry, resourceXML, itemNames[i], extractedPath + file.Name);
+                        ReadSoundEntry(entry, resourceXML, itemNames[i], finalPath);
                         saveName = itemNames[i] + ".fsb";
                         break;
                     case "MemFile":
-                        ReadMemEntry(entry, resourceXML, itemNames[i], extractedPath + file.Name);
+                        ReadMemEntry(entry, resourceXML, itemNames[i], finalPath);
                         saveName = itemNames[i];
                         break;
                     case "Table":
-                        ReadTableEntry(entry, resourceXML, "", extractedPath + file.Name);
+                        ReadTableEntry(entry, resourceXML, "", finalPath);
                         saveName = "Tables.tbl";
                         break;
                     case "Animated Texture":
@@ -639,7 +640,7 @@ namespace Gibbed.Mafia2.FileFormats
                 }
                 counts[ResourceTypes[entry.TypeId].Id]++;
                 resourceXML.WriteElementString("Version", entry.Version.ToString());
-                using (BinaryWriter writer = new BinaryWriter(File.Open(extractedPath + file.Name + "/" + saveName, FileMode.Create)))
+                using (BinaryWriter writer = new BinaryWriter(File.Open(finalPath + "/" + saveName, FileMode.Create)))
                 {
                     writer.Write(entry.Data);
                 }

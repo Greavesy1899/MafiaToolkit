@@ -397,22 +397,22 @@ namespace ResourceTypes.Navigation
             //unk8 = reader.ReadInt16();
             //unk9 = reader.ReadInt16();
 
-            int x = 2;
-            indices = new uint[(triSize - 1) * 3];
-            for (int i = 0; i < (triSize - 1) * 3; i++)
-            {
-                if (x == 0)
-                {
-                    indices[i] = reader.ReadUInt32();
-                    x = 2;
-                }
-                else
-                {
-                    indices[i] = (uint)reader.ReadInt24();
-                    reader.ReadByte();
-                    x--;
-                }
-            }
+            //int x = 2;
+            //indices = new uint[(triSize - 1) * 3];
+            //for (int i = 0; i < (triSize - 1) * 3; i++)
+            //{
+            //    if (x == 0)
+            //    {
+            //        indices[i] = reader.ReadUInt32();
+            //        x = 2;
+            //    }
+            //    else
+            //    {
+            //        indices[i] = (uint)reader.ReadInt24();
+            //        reader.ReadByte();
+            //        x--;
+            //    }
+            //}
             //TODO::
         }
     }

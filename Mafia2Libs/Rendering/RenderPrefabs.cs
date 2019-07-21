@@ -1,10 +1,5 @@
 ﻿using ResourceTypes.Materials;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utils.Models;
 
 namespace Rendering
 {
@@ -13,7 +8,6 @@ namespace Rendering
         public Material GizmoRed { get; set; }
         public Material GizmoBlue { get; set; }
         public Material GizmoGreen { get; set; }
-        public M2TStructure GizmoModel { get; set; }
 
         public RenderPrefabs()
         {
@@ -50,15 +44,11 @@ namespace Rendering
             param.ID = "C002";
             param.Paramaters = new float[4] { 0.0f, 0.0f, 1.0f, 1.0f };
             GizmoGreen.Parameters.Add("C002", param);
-
-            GizmoModel = new M2TStructure();
-            GizmoModel.ReadFromM2T("Resources/GizmoModel.m2t");
         }
 
         public void Shutdown()
         {
             GizmoRed = GizmoGreen = GizmoBlue = null;
-            GizmoModel = null;
         }
     }
 }
