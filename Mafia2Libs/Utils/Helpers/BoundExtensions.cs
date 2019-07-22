@@ -15,10 +15,24 @@ namespace Utils.SharpDXExtensions
             return bbox;
         }
 
+        public static BoundingBox ReadFromFile(MemoryStream reader, bool isBigEndian)
+        {
+            BoundingBox bbox = new BoundingBox();
+            bbox.Minimum = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            bbox.Maximum = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            return bbox;
+        }
+
         public static void WriteToFile(this BoundingBox bbox, BinaryWriter writer)
         {
             bbox.Minimum.WriteToFile(writer);
             bbox.Maximum.WriteToFile(writer);
+        }
+
+        public static void WriteToFile(this BoundingBox bbox, MemoryStream writer, bool isBigEndian)
+        {
+            bbox.Minimum.WriteToFile(writer, isBigEndian);
+            bbox.Maximum.WriteToFile(writer, isBigEndian);
         }
 
         public static BoundingBox CalculateBounds(List<Vertex[]> data)

@@ -51,7 +51,7 @@ namespace Mafia2Tool
                 child.Tag = actors.TempUnks[actors.Items[i].DataID];
                 node.Nodes.Add(child);
 
-                TreeNode[] nodes = treeView1.Nodes.Find(actors.Items[i].ItemType.ToString(), true);
+                TreeNode[] nodes = treeView1.Nodes.Find(actors.Items[i].Hash2.ToString(), true);
 
                 if (nodes.Length == 0)
                     treeView1.Nodes.Add(node);
@@ -59,7 +59,7 @@ namespace Mafia2Tool
                     nodes[0].Nodes.Add(node);
 
 
-                string folder = "actors_unks/" + (ActorTypes)actors.Items[i].ActorType + "/";
+                string folder = "actors_unks/" + (ActorTypes)actors.Items[i].ActorType+"1" + "/";
                 string filename = actors.Items[i].EntityType + ".dat";
 
                 if (!Directory.Exists(folder))
@@ -68,9 +68,17 @@ namespace Mafia2Tool
                 using (BinaryWriter writer = new BinaryWriter(File.Open(Path.Combine(folder, filename), FileMode.Create)))
                 {
                     if (actors.TempUnks[actors.Items[i].DataID].Data == null)
+                    {
                         writer.Write(actors.TempUnks[actors.Items[i].DataID].Buffer);
+                    }
                     else
-                        actors.TempUnks[actors.Items[i].DataID].Data.WriteToFile(writer);
+                    {
+                        using (MemoryStream stream = new MemoryStream())
+                        {
+                            actors.TempUnks[actors.Items[i].DataID].Data.WriteToFile(stream, false);
+                            writer.Write(stream.GetBuffer());
+                        }
+                    }
                 }
             }
         }

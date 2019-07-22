@@ -68,4 +68,13 @@ namespace ResourceTypes.Actors
         Physics = 0x40,
         AutoUse = 0x80
     }
+
+    [Flags]
+    public enum ActorCleanEntityFlags
+    {
+        ClearOnInit = 1,
+        BlockPedestrians = 2,
+        BlockTraffic = 4,
+        PrimitiveType = 8,
+    }
 }

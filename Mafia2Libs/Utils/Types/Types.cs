@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using Utils.Extensions;
 using Utils.Models;
 
 namespace Utils.Types
@@ -47,22 +48,24 @@ namespace Utils.Types
         {
             ReadFromFile(reader);
         }
+        public Hash(MemoryStream stream, bool isBigEndian)
+        {
+            ReadFromFile(stream, isBigEndian);
+        }
 
-        /// <summary>
-        /// read name from file.
-        /// </summary>
-        /// <param name="reader"></param>
         public void ReadFromFile(BinaryReader reader)
         {
             hash = reader.ReadUInt64();
             size = reader.ReadInt16();
             _string = Encoding.ASCII.GetString(reader.ReadBytes(size));
         }
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            hash = stream.ReadUInt64(isBigEndian);
+            size = stream.ReadInt16(isBigEndian);
+            _string = Encoding.ASCII.GetString(stream.ReadBytes(size));
+        }
 
-        /// <summary>
-        /// save hash to file.
-        /// </summary>
-        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(hash);
@@ -70,10 +73,13 @@ namespace Utils.Types
             writer.Write(_string.ToCharArray());
         }
 
-        /// <summary>
-        /// Sets hash name and updates hash automatically.
-        /// </summary>
-        /// <param name="name"></param>
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            writer.Write(hash, isBigEndian);
+            writer.Write(size, isBigEndian);
+            writer.Write(_string.ToCharArray());
+        }
+
         public void Set(string name)
         {
             _string = name;

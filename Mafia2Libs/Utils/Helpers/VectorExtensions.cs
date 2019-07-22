@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using SharpDX;
+using Utils.Extensions;
 
 namespace Utils.SharpDXExtensions
 {
@@ -25,11 +26,27 @@ namespace Utils.SharpDXExtensions
             return vec;
         }
 
+        public static Vector3 ReadFromFile(MemoryStream reader, bool isBigEndian)
+        {
+            Vector3 vec = new Vector3();
+            vec.X = reader.ReadSingle(isBigEndian);
+            vec.Y = reader.ReadSingle(isBigEndian);
+            vec.Z = reader.ReadSingle(isBigEndian);
+            return vec;
+        }
+
         public static void WriteToFile(this Vector3 vec, BinaryWriter writer)
         {
             writer.Write(vec.X);
             writer.Write(vec.Y);
             writer.Write(vec.Z);
+        }
+
+        public static void WriteToFile(this Vector3 vec, MemoryStream writer, bool isBigEndian)
+        {
+            writer.Write(vec.X, isBigEndian);
+            writer.Write(vec.Y, isBigEndian);
+            writer.Write(vec.Z, isBigEndian);
         }
     }
 
