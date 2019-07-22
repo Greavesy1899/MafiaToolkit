@@ -29,6 +29,7 @@ namespace Forms.OptionControls
             CompressionDropdownBox.SelectedIndex = ToolkitSettings.SerializeSDSOption;
             AddTimeDateBackupsBox.Checked = ToolkitSettings.AddTimeDataBackup;
             UnpackLUABox.Checked = ToolkitSettings.DecompileLUA;
+            SDSToolFormat.Checked = ToolkitSettings.UseSDSToolFormat;
         }
 
         private void SDSCompress_IndexChanged(object sender, EventArgs e)

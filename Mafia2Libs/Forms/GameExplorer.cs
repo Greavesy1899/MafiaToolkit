@@ -87,6 +87,7 @@ namespace Mafia2Tool
             dropdownTools.Text = Language.GetString("$TOOLS");
             OptionsItem.Text = Language.GetString("$OPTIONS");
             MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
+            UnpackAllSDSButton.Text = Language.GetString("$UNPACK_ALL_SDS");
             VersionLabel.Text += ToolkitSettings.Version;
             return true;
         }

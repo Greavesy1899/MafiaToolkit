@@ -17,7 +17,8 @@ namespace ResourceTypes.Actors
         //temp_unk start
         int filesize; //size of sector in bits. After this integer (so filesize - 4)
         short const6; //always 6
-        short const2; //always 2
+        short const2; //2 or 0
+        byte[] unk02; //only full when const 2 == 0;
         int const16; //always 16
         int size;
         int unk12;
@@ -114,15 +115,22 @@ namespace ResourceTypes.Actors
 
             unk14 = reader.ReadInt32();
 
-            int newpos = (unk14 / 4 - 2) * 4;
-            if (unk14 - 8 != newpos)
-                throw new FormatException("unk14-8 != newpos");
+            if (const2 == 2)
+            {
+                int newpos = (unk14 / 4 - 2) * 4;
+                if (unk14 - 8 != newpos)
+                    throw new FormatException("unk14-8 != newpos");
 
-            int count = (unk14 - 8) / sizeof(int);
-            reader.BaseStream.Seek(unk14 - 12, SeekOrigin.Current);
-            temp_Unks = new temp_unk[count];
-            for (int i = 0; i < count; i++)
-                temp_Unks[i] = new temp_unk(reader);
+                int count = (unk14 - 8) / sizeof(int);
+                reader.BaseStream.Seek(unk14 - 12, SeekOrigin.Current);
+                temp_Unks = new temp_unk[count];
+                for (int i = 0; i < count; i++)
+                    temp_Unks[i] = new temp_unk(reader);
+            }
+            else
+            {
+                unk02 = reader.ReadBytes(size - unk14);
+            }
 
             int itemCount = reader.ReadInt32();
             reader.BaseStream.Seek(itemCount * 4, SeekOrigin.Current);
@@ -406,8 +414,17 @@ namespace ResourceTypes.Actors
             private string readString(BinaryReader reader)
             {
                 byte length = reader.ReadByte();
-                string text = new string(reader.ReadChars(length - 2));
-                reader.ReadByte();
+                string text = "";
+                //if(length > 30)
+                //{
+                //    reader.BaseStream.Position--;
+                //    text = StringHelpers.ReadString(reader);
+                //}
+                //else if(length > 0)
+                //{
+                    text = new string(reader.ReadChars(length - 2));
+                    reader.ReadByte();
+                //}
                 return text;
             }
 

@@ -151,7 +151,7 @@ namespace ResourceTypes.Sound
 
                 data1[i] = subData;
             }
-            DumpToSound();
+             DumpToSound();
         }
 
         private void DumpToSound()
@@ -235,7 +235,7 @@ namespace ResourceTypes.Sound
                 dump.Add("");
                 dump.Add("");
             }
-            File.WriteAllLines("SoundSectors/"+(fileName.Replace("/", "").Trim('\0')) + ".txt", dump.ToArray());
+            //File.WriteAllLines("SoundSectors/"+(fileName.Replace("/", "").Trim('\0')) + ".txt", dump.ToArray());
         }
 
         public void WriteToFile(BinaryWriter writer)

@@ -55,6 +55,7 @@
   <String ID="$LANGUAGE_CZECH">čeština</String>
   <String ID="$LANGUAGE_POLISH">Polish</String>
   <String ID="$LANGUAGE_OPTION">Interface Language</String>
+  <String ID="$DISCORD_STATE_CUSTOM">Use a custom discord state.</String>
   
   <!-- Model/Exporting Option Strings-->
   <String ID="$EXPORT_PATH_TITLE">Export Path:</String>
@@ -71,9 +72,9 @@
   <String ID="$SDS_UNCOMPRESSED">Uncompressed</String>
   <String ID="$SDS_COMPRESSED">Compressed</String>
   <String ID="$SDS_ONEBLOCK">One Block</String>
-  <String ID="$ADD_TIME_DATE_BACKUP">Add time and date to backups</String>
-  <String ID="$DECOMPILE_LUA_UNPACK">Decompile lua when unpacking</String>
-  
+  <String ID="$ADD_TIME_DATE_BACKUP">Add time and date to backups.</String>
+  <String ID="$DECOMPILE_LUA_UNPACK">Decompile lua when unpacking.</String>
+  <String ID="$USE_SDS_TOOL_FORMAT">Use SDS Tool GUI Format when unpacking.</String>
   <!-- Render Options -->
   <String ID="$RENDER">Render</String>
   <String ID="$RENDER_OPTIONS">Render Options</String>

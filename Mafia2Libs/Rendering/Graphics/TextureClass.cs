@@ -34,12 +34,12 @@ namespace Rendering.Graphics
                         return path;
                 }
             }
-            path = Path.Combine(ToolkitSettings.TexturePath, "texture.dds");
+            path = Path.Combine("Resources", "texture.dds");
             if (File.Exists(path))
                 return path;
             else
             {
-                Debug.WriteLine("FAILED TO LOAD: {0}", fileName);
+                Debug.WriteLine("FAILED TO LOAD: {0}", path);
                 throw new System.Exception("Unable to locate texture.dds! This should be located in the texture folder assigned. You can assign it in Options > Render > Texture Directory.");
             }
         }

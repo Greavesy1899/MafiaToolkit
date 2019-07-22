@@ -217,22 +217,22 @@ namespace ResourceTypes.Translokator
             var Y = 0.0;
             var X = 0.0;
 
-            if ((instance.Rotation2 & 0x10) != 0)
+            if ((instance.Rotation1 & 0x10) != 0)
             {
-                var v4 = instance.Rotation1 >> 9;
+                var v4 = instance.Rotation2 >> 9;
                 var v5 = v4 & 0x1FF;
-                X = (instance.Rotation1 & 0x1FF) * 0.001956947147846222 * v8 * 2.0 - v8;
+                X = (instance.Rotation2 & 0x1FF) * 0.001956947147846222 * v8 * 2.0 - v8;
                 Y = v5 * 0.001956947147846222 * v8 * 2.0 - v8; //0.001956947147846222 == 1.0f/511.0f
                 v7 = 0.001956947147846222 * ((v4 >> 9) & 0x1FF) * v8;
             }
             else
             {
-                var v9 = instance.Rotation1 & 0x1FF | 16 * (instance.Rotation2 & 0xE0);
+                var v9 = instance.Rotation2 & 0x1FF | 16 * (instance.Rotation1 & 0xE0);
                 var v10 = instance.Rotation2 >> 9;
                 var v5 = v10 & 0x1FF | 2 * (instance.Rotation1 & 0xF00);
                 X = v9 * 0.0002442002587486058 * v8 * 2.0 - v8; //0.0002442002587486058 == 1.0f/8191.0f
                 Y = v5 * 0.0001220852136611938 * v8 * 2.0 - v8; //0.0001220852136611938 == 1.0f/4095.0f
-                v7 = 0.0001220852136611938 * ((instance.Rotation2 & 0xF000 | (v10 >> 6) & 0xFF8) >> 3) * v8;
+                v7 = 0.0001220852136611938 * ((instance.Rotation1 & 0xF000 | (v10 >> 6) & 0xFF8) >> 3) * v8;
             }
 
             var Z = 2.0f * v7 - v8;
@@ -244,17 +244,17 @@ namespace ResourceTypes.Translokator
             double y;
             double z;
 
-            if(instance.Scale == 1)
-            {
-                x = ((rotation.X / Math.PI + 1.0f) / 2.0f) * 8191.0f;
-                y = ((rotation.Y / Math.PI + 1.0f) / 2.0f) * 4095.0f;
-                z = ((rotation.Z / Math.PI + 1.0f) / 2.0f) * 4095.0f;
-            }
-            else
+            if (instance.Scale == 1)
             {
                 x = (rotation.X / Math.PI + 1.0f) / 2.0f * 511.0f;
                 y = (rotation.Y / Math.PI + 1.0f) / 2.0f * 511.0f;
                 z = (rotation.Z / Math.PI + 1.0f) / 2.0f * 511.0f;
+            }
+            else
+            {
+                x = (rotation.X / Math.PI + 1.0f) / 2.0f * 8191.0f;
+                y = (rotation.Y / Math.PI + 1.0f) / 2.0f * 4095.0f;
+                z = (rotation.Z / Math.PI + 1.0f) / 2.0f * 4095.0f;
             }
         }
 
@@ -323,9 +323,9 @@ namespace ResourceTypes.Translokator
         {
             var scale = 1.0f;
 
-            if ((transform.Rotation2 & 0x10) != 0)
+            if ((transform.Rotation1 & 0x10) != 0)
             {
-                var s = transform.Rotation2 & 0xFFE0;
+                var s = transform.Rotation1 & 0xFFE0;
                 var e = (s >> 10) & 0x1F;
                 if (e != 0)
                 {
@@ -333,7 +333,7 @@ namespace ResourceTypes.Translokator
                     var exponent = ((e + 127 - 15) << 23);
                     var mantissa = (s << 13) & 0x7C0000;
                     var t = sign | exponent | mantissa;
-                    scale = t;
+                    scale = Convert.ToSingle(t);
                 }
             }
             Console.WriteLine(scale);
@@ -433,7 +433,6 @@ namespace ResourceTypes.Translokator
                         instance.PositionZ = BitConverter.ToUInt16(packed, 4);
                         instance.Rotation2 = BitConverter.ToInt32(packed, 6);
                         instance.Unk01 = BitConverter.ToUInt16(packed, 10);
-
                         instance.Rotation1 = BitConverter.ToUInt16(packed, 12);
 
                         if (!IDs.Contains(instance.Unk01))

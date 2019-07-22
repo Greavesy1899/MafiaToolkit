@@ -113,47 +113,56 @@ namespace Utils.Types
         private float m21;
         private float m22;
 
-        //[Browsable(false)]
+        public Vector3 Row1 {
+            get { return new Vector3(m00, m01, m02); }
+        }
+        public Vector3 Row2 {
+            get { return new Vector3(m10, m11, m12); }
+        }
+        public Vector3 Row3 {
+            get { return new Vector3(m20, m21, m22); }
+        }
+        [Browsable(false)]
         public float M00 {
             get { return m00; }
             set { m00 = value; }
         }
-        //[Browsable(false)]
+        [Browsable(false)]
         public float M01 {
             get { return m01; }
             set { m01 = value; }
         }
-        //[Browsable(false)]
+        [Browsable(false)]
         public float M02 {
             get { return m02; }
             set { m02 = value; }
         }
-        //[Browsable(false)]
+        [Browsable(false)]
         public float M10 {
             get { return m10; }
             set { m10 = value; }
         }
-        //[Browsable(false)]
+        [Browsable(false)]
         public float M11 {
             get { return m11; }
             set { m11 = value; }
         }
-        //[Browsable(false)]
+        [Browsable(false)]
         public float M12 {
             get { return m12; }
             set { m12 = value; }
         }
-        //[Browsable(false)]
+        [Browsable(false)]
         public float M20 {
             get { return m20; }
             set { m20 = value; }
         }
-        //[Browsable(false)]
+        [Browsable(false)]
         public float M21 {
             get { return m21; }
             set { m21 = value; }
         }
-        //[Browsable(false)]
+        [Browsable(false)]
         public float M22 {
             get { return m22; }
             set { m22 = value; }
@@ -205,30 +214,36 @@ namespace Utils.Types
 
         public Vector3 ToEuler()
         {
-            double x;
-            double z;
-            double y = Math.Asin(m02);
+            Vector3 rotation = new Vector3();
+            rotation.Y = (float)-Math.Asin(m20);
 
-            if (Math.Abs(m02) < 0.99999)
+            //Gymbal lock: pitch = -90
+            if (m02 == 1)
             {
-                x = Math.Atan2(m12, m22);
-                z = Math.Atan2(m01, m00);
+                rotation.Z = 0.0f;
+                rotation.X = (float)Math.Atan2(-m01, -m02);
             }
+
+            //Gymbal lock: pitch = 90
+            else if (m20 == -1)
+            {
+                rotation.Z = 0.0f;
+                rotation.X = (float)Math.Atan2(m01, m02);
+            }
+            //General solution
             else
             {
-                x = Math.Atan2(m21, m11);
-                z = 0;
+                rotation.Z = (float)Math.Atan2(m10, m00);
+                rotation.X = (float)Math.Atan2(m21, m22);
             }
+            rotation.X = MathUtil.RadiansToDegrees(rotation.X);
+            rotation.Y = MathUtil.RadiansToDegrees(rotation.Y);
+            rotation.Z = MathUtil.RadiansToDegrees(rotation.Z);
+            rotation.X = float.IsNaN(rotation.X) ? 0.0f : rotation.X;
+            rotation.Y = float.IsNaN(rotation.Y) ? 0.0f : rotation.Y;
+            rotation.Z = float.IsNaN(rotation.Z) ? 0.0f : rotation.Z;
 
-            //BLENDER USES RADIANS, MAX USES DEGREES
-            x = x * 180 / Math.PI;
-            y = y * 180 / Math.PI;
-            z = z * 180 / Math.PI;
-
-            x = double.IsNaN(x) ? 0 : x;
-            y = double.IsNaN(y) ? 0 : y;
-            z = double.IsNaN(z) ? 0 : z;
-            return new Vector3((float)x, (float)y, (float)z);
+            return rotation;
         }
 
         private void UpdateMatrixFromEuler(Vector3 vector)
@@ -237,9 +252,9 @@ namespace Utils.Types
             //y == pitch
             //z == yaw
 
-            float roll = vector.X * (float)Math.PI / 180;
-            float pitch = vector.Y * (float)Math.PI / 180;
-            float yaw = vector.Z * (float)Math.PI / 180;
+            float roll = MathUtil.DegreesToRadians(vector.X);
+            float pitch = MathUtil.DegreesToRadians(vector.Y);
+            float yaw = MathUtil.DegreesToRadians(vector.Z);
 
             float su = (float)Math.Sin(roll);
             float cu = (float)Math.Cos(roll);
@@ -248,13 +263,13 @@ namespace Utils.Types
             float sw = (float)Math.Sin(yaw);
             float cw = (float)Math.Cos(yaw);
             m00 = cv * cw;
-            m10 = su * sv * cw - cu * sw;
-            m20 = su * sw + cu * sv * cw;
-            m01 = cv * sw;
+            m01 = su * sv * cw - cu * sw;
+            m02 = su * sw + cu * sv * cw;
+            m10 = cv * sw;
             m11 = cu * cw + su * sv * sw;
-            m21 = cu * sv * sw - su * cw;
-            m02 = -sv;
-            m12 = su * cv;
+            m12 = cu * sv * sw - su * cw;
+            m20 = -sv;
+            m21 = su * cv;
             m22 = cu * cv;
 
             //Remove exponents.
@@ -417,9 +432,17 @@ namespace Utils.Types
             Vector3 m3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             float z = reader.ReadSingle();
             transformedMatrix = new Matrix33(m1, m2, m3);
-            SetRotationMatrix(transformedMatrix.ToEuler());
-            SetScaleMatrix(new Vector3(m1.X, m2.Y, m3.Z));
-            transformedMatrix = new Matrix33(m1, m2, m3);
+            scale = new Matrix33(new Vector3(m1.Length(), 0.0f, 0.0f), new Vector3(0.0f, m2.Length(), 0.0f), new Vector3(0.0f, 0.0f, m3.Length()));
+            rotation = new Matrix33();
+            transformedMatrix.M00 = transformedMatrix.M00 / scale.M00;
+            transformedMatrix.M01 = transformedMatrix.M01 / scale.M00;
+            transformedMatrix.M02 = transformedMatrix.M02 / scale.M00;
+            transformedMatrix.M10 = transformedMatrix.M10 / scale.M11;
+            transformedMatrix.M11 = transformedMatrix.M11 / scale.M11;
+            transformedMatrix.M12 = transformedMatrix.M12 / scale.M11;
+            transformedMatrix.M20 = transformedMatrix.M20 / scale.M22;
+            transformedMatrix.M21 = transformedMatrix.M21 / scale.M22;
+            transformedMatrix.M22 = transformedMatrix.M22 / scale.M22;
             Position = new Vector3(x, y, z);
         }
 

@@ -291,6 +291,11 @@ namespace Gibbed.Mafia2.FileFormats
             XmlDocument xmlDoc = new XmlDocument();
             XmlNode rootNode;
 
+            if(!File.Exists(sdsFolder + "/SDSContent.xml"))
+            {
+                MessageBox.Show("Could not find 'SDSContent.xml'. Folder Path: " + sdsFolder + "/SDSContent.xml", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             try
             {
                 document = new XmlDocument();
@@ -298,9 +303,9 @@ namespace Gibbed.Mafia2.FileFormats
                 xmlDoc = new XmlDocument();
                 rootNode = xmlDoc.CreateElement("xml");
             }
-            catch
+            catch(Exception ex)
             {
-                MessageBox.Show("Could not find 'SDSContent.xml'. Folder Path: " + sdsFolder + "/SDSContent.xml", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("Error while parsing SDSContent.XML. \n{0}", ex.Message));
                 return;
             }
 
@@ -584,34 +589,34 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = itemNames[i];
                         break;
                     case "SoundTable":
-                        saveName = ReadBasicEntry(resourceXML, "SoundTable_" + i + ".stbl");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "SoundTable_" + i + ".stbl" : sdsToolName);
                         break;
                     case "Speech":
-                        saveName = ReadBasicEntry(resourceXML, "Speech_" + i + ".spe");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Speech_" + i + ".spe" : sdsToolName);
                         break;
                     case "FxAnimSet":
-                        saveName = ReadBasicEntry(resourceXML, "FxAnimSet_" + i + ".fas");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "FxAnimSet_" + i + ".fas" : sdsToolName);
                         break;
                     case "FxActor":
-                        saveName = ReadBasicEntry(resourceXML, "FxActor_" + i + ".fxa");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "FxActor_" + i + ".fxa" : sdsToolName);
                         break;
                     case "Cutscene":
-                        saveName = ReadBasicEntry(resourceXML, "Cutscene_" + i + ".cut");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Cutscene_" + i + ".cut" : sdsToolName);
                         break;
                     case "Translokator":
-                        saveName = ReadBasicEntry(resourceXML, "Translokator_" + i + ".tra");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Translokator_" + i + ".tra" : sdsToolName);
                         break;
                     case "Animation2":
                         saveName = ReadBasicEntry(resourceXML, itemNames[i] + ".an2");
                         break;
                     case "NAV_AIWORLD_DATA":
-                        saveName = ReadBasicEntry(resourceXML, "NAV_AIWORLD_DATA_" + i + ".nav");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "NAV_AIWORLD_DATA_" + i + ".nav" : sdsToolName);
                         break;
                     case "NAV_OBJ_DATA":
-                        saveName = ReadBasicEntry(resourceXML, "NAV_OBJ_DATA_" + i + ".nov");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "NAV_OBJ_DATA_" + i + ".nov" : sdsToolName);
                         break;
                     case "NAV_HPD_DATA":
-                        saveName = ReadBasicEntry(resourceXML, "NAV_HPD_DATA_" + i + ".nhv");
+                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "NAV_HPD_DATA_" + i + ".nhv" : sdsToolName);
                         break;
                     case "Script":
                         ReadScriptEntry(entry, resourceXML, finalPath);

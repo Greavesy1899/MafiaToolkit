@@ -712,8 +712,11 @@ namespace Mafia2Tool
                         if (actor.Definitions[i].Hash == actor.Items[c].Hash2)
                         {
                             FrameObjectFrame frame = (SceneData.FrameResource.FrameObjects.ElementAt(actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
-                            frame.Item = actor.Items[c];
-                            frame.Matrix.Position = actor.Items[c].Position;
+                            if (frame != null)
+                            {
+                                frame.Item = actor.Items[c];
+                                frame.Matrix.Position = actor.Items[c].Position;
+                            }
                         }
                     }
                 }

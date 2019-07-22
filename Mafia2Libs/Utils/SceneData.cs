@@ -72,7 +72,16 @@ namespace Mafia2Tool
                 else if (type == "VertexBufferPool")
                     vbps.Add(new FileInfo(name));
                 else if (type == "Actors")
-                    act.Add(new Actor(name));
+                {
+                    try
+                    {
+                        act.Add(new Actor(name));
+                    }
+                   catch(Exception ex)
+                    {
+                        Console.WriteLine("Failed to read actor {0}", name);
+                    }
+                }
                 else if (type == "FrameResource")
                     FrameResource = new FrameResource(name);
                 else if (type == "ItemDesc")
