@@ -50,6 +50,8 @@ namespace Mafia2Tool
             this.blockView = new Utils.Extensions.MTreeView();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.SearchBox = new System.Windows.Forms.TextBox();
+            this.MoveItemUp = new System.Windows.Forms.ToolStripMenuItem();
+            this.MoveItemDown = new System.Windows.Forms.ToolStripMenuItem();
             this.LineContextStrip.SuspendLayout();
             this.ToolStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -74,9 +76,11 @@ namespace Mafia2Tool
             // 
             this.LineContextStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddLineButton,
-            this.DeleteLineButton});
+            this.DeleteLineButton,
+            this.MoveItemUp,
+            this.MoveItemDown});
             this.LineContextStrip.Name = "AddLineButton";
-            this.LineContextStrip.Size = new System.Drawing.Size(181, 70);
+            this.LineContextStrip.Size = new System.Drawing.Size(181, 114);
             this.LineContextStrip.Text = "Context Strip";
             this.LineContextStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OnContextMenuOpening);
             // 
@@ -218,6 +222,20 @@ namespace Mafia2Tool
             this.SearchBox.TabIndex = 28;
             this.SearchBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
             // 
+            // MoveItemUp
+            // 
+            this.MoveItemUp.Name = "MoveItemUp";
+            this.MoveItemUp.Size = new System.Drawing.Size(180, 22);
+            this.MoveItemUp.Text = "$MOVE_UP";
+            this.MoveItemUp.Click += new System.EventHandler(this.MoveItemUp_Click);
+            // 
+            // MoveItemDown
+            // 
+            this.MoveItemDown.Name = "MoveItemDown";
+            this.MoveItemDown.Size = new System.Drawing.Size(180, 22);
+            this.MoveItemDown.Text = "$MOVE_DOWN";
+            this.MoveItemDown.Click += new System.EventHandler(this.MoveItemDown_Click);
+            // 
             // StreamEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -261,5 +279,7 @@ namespace Mafia2Tool
         private ToolStripMenuItem AddLineButton;
         private ToolStripMenuItem DeleteLineButton;
         private TextBox SearchBox;
+        private ToolStripMenuItem MoveItemUp;
+        private ToolStripMenuItem MoveItemDown;
     }
 }

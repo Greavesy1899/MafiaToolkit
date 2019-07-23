@@ -186,6 +186,8 @@
   <String ID="$STREAM_EDITOR_TITLE">Stream Editor</String>
   <String ID="$ADD_LINE">Add Line</String>
   <String ID="$DELETE_LINE">Delete Line</String>
+  <String ID="$MOVE_UP">Move Up</String>
+  <String ID="$MOVE_DOWN">Move Down</String>
   
   <!-- ListWindow Strings-->
   <String ID="$SELECT_PARENT">Double click to select the new parent.</String>

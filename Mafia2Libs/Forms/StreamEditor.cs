@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -33,6 +34,8 @@ namespace Mafia2Tool
             exitToolStripMenuItem.Text = Language.GetString("$EXIT");
             AddLineButton.Text = Language.GetString("$ADD_LINE");
             DeleteLineButton.Text = Language.GetString("$DELETE_LINE");
+            MoveItemDown.Text = Language.GetString("$MOVE_DOWN");
+            MoveItemUp.Text = Language.GetString("$MOVE_UP");
         }
 
         private void Sort(List<StreamLoader> loaders)
@@ -254,6 +257,8 @@ namespace Mafia2Tool
         {
             LineContextStrip.Items[0].Visible = false;
             LineContextStrip.Items[1].Visible = false;
+            LineContextStrip.Items[2].Visible = false;
+            LineContextStrip.Items[3].Visible = false;
 
             if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
             {
@@ -264,6 +269,8 @@ namespace Mafia2Tool
                 else if (linesTree.SelectedNode.Tag.GetType() == typeof(StreamLine))
                 {
                     LineContextStrip.Items[1].Visible = true;
+                    LineContextStrip.Items[2].Visible = true;
+                    LineContextStrip.Items[3].Visible = true;
                 }
             }
         }
@@ -302,6 +309,46 @@ namespace Mafia2Tool
                     {
                         if (child.Text.Contains(SearchBox.Text))
                             linesTree.SelectedNode = child;
+                    }
+                }
+            }
+        }
+
+        private void MoveItemUp_Click(object sender, System.EventArgs e)
+        {
+            if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
+            {
+                if (linesTree.SelectedNode.Tag.GetType() == typeof(StreamLine))
+                {
+                    TreeNode parent = linesTree.SelectedNode.Parent;
+                    TreeNode node = linesTree.SelectedNode;
+
+                    int index = parent.Nodes.IndexOf(node);
+                    if (index > 0)
+                    {
+                        parent.Nodes.RemoveAt(index);
+                        parent.Nodes.Insert(index - 1, node);
+                        node.TreeView.SelectedNode = node;
+                    }
+                }
+            }
+        }
+
+        private void MoveItemDown_Click(object sender, System.EventArgs e)
+        {
+            if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
+            {
+                if (linesTree.SelectedNode.Tag.GetType() == typeof(StreamLine))
+                {
+                    TreeNode parent = linesTree.SelectedNode.Parent;
+                    TreeNode node = linesTree.SelectedNode;
+
+                    int index = parent.Nodes.IndexOf(node);
+                    if (index < parent.Nodes.Count - 1)
+                    {
+                        parent.Nodes.RemoveAt(index);
+                        parent.Nodes.Insert(index + 1, node);
+                        node.TreeView.SelectedNode = node;
                     }
                 }
             }
