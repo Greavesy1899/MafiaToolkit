@@ -704,18 +704,21 @@ namespace Mafia2Tool
 
             if (SceneData.Actors.Length > 0 && ToolkitSettings.Experimental)
             {
-                ResourceTypes.Actors.Actor actor = SceneData.Actors[0];
-                for (int i = 0; i != actor.Definitions.Length; i++)
+                for (int z = 0; z < SceneData.Actors.Length; z++)
                 {
-                    for (int c = 0; c != actor.Items.Length; c++)
+                    ResourceTypes.Actors.Actor actor = SceneData.Actors[z];
+                    for (int i = 0; i != actor.Definitions.Length; i++)
                     {
-                        if (actor.Definitions[i].Hash == actor.Items[c].Hash2)
+                        for (int c = 0; c != actor.Items.Length; c++)
                         {
-                            FrameObjectFrame frame = (SceneData.FrameResource.FrameObjects.ElementAt(actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
-                            if (frame != null)
+                            if (actor.Definitions[i].Hash == actor.Items[c].Hash2)
                             {
-                                frame.Item = actor.Items[c];
-                                frame.Matrix.Position = actor.Items[c].Position;
+                                FrameObjectFrame frame = (SceneData.FrameResource.FrameObjects.ElementAt(actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
+                                if (frame != null)
+                                {
+                                    frame.Item = actor.Items[c];
+                                    frame.Matrix.Position = actor.Items[c].Position;
+                                }
                             }
                         }
                     }
