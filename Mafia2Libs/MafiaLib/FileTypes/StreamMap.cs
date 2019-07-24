@@ -190,6 +190,16 @@ namespace ResourceTypes.Misc
                 set { loaderID = value; }
             }
 
+
+            public StreamLoader() { }
+            public StreamLoader(StreamLoader other)
+            {
+                path = other.path;
+                entity = other.entity;
+                group = other.group;
+                loadType = other.loadType;
+            }
+
             public override string ToString()
             {
                 return string.Format("{0} {1} {2} {3}", LoadType, path, entity, group);

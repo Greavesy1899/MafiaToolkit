@@ -470,17 +470,11 @@ namespace Utils.Models
             return false;
         }
 
-        public void ExportCollisionToM2T(string name)
+        public void ExportCollisionToM2T(string directory, string name)
         {
             this.name = name;
 
-            if (!Directory.Exists("Collisions"))
-                Directory.CreateDirectory("Collisions");
-
-            if (File.Exists("Collisions/" + name + ".m2t"))
-                return;
-
-            using (BinaryWriter writer = new BinaryWriter(File.Create("Collisions/" + name + ".m2t")))
+            using (BinaryWriter writer = new BinaryWriter(File.Create(directory + name + ".m2t")))
             {
                 //An absolute overhaul on the mesh exportation.
                 writer.Write(fileHeader.ToCharArray());

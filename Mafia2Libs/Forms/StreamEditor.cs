@@ -78,7 +78,7 @@ namespace Mafia2Tool
                     {
                         foreach (var load in line.loadList)
                         {
-                            if (loader.Value == load)
+                            if (loader.Value.Path == load.Path)
                             {
                                 temp[loader.Key] = true;
                             }
@@ -203,7 +203,8 @@ namespace Mafia2Tool
                     var loader = stream.loaders[x];
                     if (line.lineID >= loader.start && line.lineID <= loader.end)
                     {
-                        list.Add(loader);
+                        var newLoader = new StreamLoader(loader);
+                        list.Add(newLoader);
                     }
                 }
                 line.loadList = list.ToArray();

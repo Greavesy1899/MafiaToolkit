@@ -1337,18 +1337,18 @@ namespace Mafia2Tool
 
         private void Export3DButton_Click(object sender, EventArgs e)
         {
-            if (dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(Collision.Placement))
-                ExportCollision(dSceneTree.treeView1.SelectedNode.Tag as Collision.Placement);
+            if (dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(Collision.NXSStruct))
+                ExportCollision(dSceneTree.treeView1.SelectedNode.Tag as Collision.NXSStruct);
             else
                 Export3DFrame(dSceneTree.treeView1.SelectedNode.Tag);
         }
 
-        private void ExportCollision(Collision.Placement data)
+        private void ExportCollision(Collision.NXSStruct data)
         {
             M2TStructure structure = new M2TStructure();
-            structure.BuildCollision(SceneData.Collisions.NXSData[data.Hash], dSceneTree.treeView1.SelectedNode.Name);
-            structure.ExportCollisionToM2T(data.Hash.ToString());
-            structure.ExportToFbx("Collisions/", false);
+            structure.BuildCollision(data, dSceneTree.treeView1.SelectedNode.Name);
+            structure.ExportCollisionToM2T(ToolkitSettings.ExportPath, data.Hash.ToString());
+            structure.ExportToFbx(ToolkitSettings.ExportPath, false);
         }
         private void Export3DFrame(object tag)
         {
