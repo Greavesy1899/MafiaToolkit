@@ -1,4 +1,5 @@
 ﻿using SharpDX;
+using System.ComponentModel;
 using System.IO;
 using Utils.SharpDXExtensions;
 using Utils.Types;
@@ -9,7 +10,7 @@ namespace ResourceTypes.Navigation
     {
         private FileInfo file;
 
-        public struct PathVectors
+        public class PathVectors
         {
             //sometimes a path can have three vectors with one byte; this is just helpful i guess.
             public Vector3[] vectors;
@@ -20,7 +21,9 @@ namespace ResourceTypes.Navigation
                 return string.Format("{0} {1} {2}", vectors[0], vectors[1], unk0);
             }
         }
-        public struct AnimalTrafficPath
+
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public class AnimalTrafficPath
         {
             public byte numPaths;
             public byte[] unkSet0;
@@ -28,16 +31,16 @@ namespace ResourceTypes.Navigation
             public byte[] unkSet2;
             public BoundingBox bbox;
             public Hash unkHash;
-            public float unk0;
-            public float unk1;
-            public short unk2;
+            public float Unk0 { get; set; }
+            public float Unk1 { get; set; }
+            public short Unk2 { get; set; }
             public PathVectors[] vectors;
             public byte unk3;
 
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3} {4}, {5}", unkHash.ToString(), unk0, unk1, unk2, unk3, bbox);
+                return string.Format("{0} {1} {2} {3} {4}, {5}", unkHash.ToString(), Unk0, Unk1, Unk2, unk3, bbox);
             }
         }
         public struct AnimalTrafficInstance
@@ -58,7 +61,7 @@ namespace ResourceTypes.Navigation
             file = info;
             using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
             {
-                //ReadFromFile(reader);
+                ReadFromFile(reader);
             }
             //WriteToFile();
         }
@@ -98,9 +101,9 @@ namespace ResourceTypes.Navigation
                 path.bbox = BoundingBoxExtenders.ReadFromFile(reader);
                 path.unkHash = new Hash();
                 path.unkHash.ReadFromFile(reader); //decompiled exe says this is a hash but its always empty
-                path.unk0 = reader.ReadSingle(); //5
-                path.unk1 = reader.ReadSingle(); //15
-                path.unk2 = reader.ReadInt16(); //1 257 or 513.
+                path.Unk0 = reader.ReadSingle(); //5
+                path.Unk1 = reader.ReadSingle(); //15
+                path.Unk2 = reader.ReadInt16(); //1 257 or 513.
                 path.vectors = new PathVectors[path.numPaths];
 
                 for(int x = 0; x < path.numPaths; x++)
@@ -112,7 +115,7 @@ namespace ResourceTypes.Navigation
                     vector.unk0 = reader.ReadByte(); //7 or 4
                     path.vectors[x] = vector;
                 }
-                if (path.unk2 == 2)
+                if (path.Unk2 == 2)
                     path.unk3 = reader.ReadByte();
 
                 paths[i] = path;
@@ -144,9 +147,9 @@ namespace ResourceTypes.Navigation
                     writer.Write(path.unkSet2);
                     BoundingBoxExtenders.WriteToFile(path.bbox, writer);
                     path.unkHash.WriteToFile(writer);
-                    writer.Write(path.unk0);
-                    writer.Write(path.unk1);
-                    writer.Write(path.unk2);
+                    writer.Write(path.Unk0);
+                    writer.Write(path.Unk1);
+                    writer.Write(path.Unk2);
 
                     for (int x = 0; x < path.numPaths; x++)
                     {
@@ -154,7 +157,7 @@ namespace ResourceTypes.Navigation
                         Vector3Extenders.WriteToFile(path.vectors[x].vectors[1], writer);
                         writer.Write(path.vectors[x].unk0);
                     }
-                    if (path.unk2 == 2)
+                    if (path.Unk2 == 2)
                         writer.Write(path.unk3);
                 }
             }

@@ -2,10 +2,12 @@
   <!-- Generic String -->
   <String ID="$CONTINUE">Pokračovat</String>
   <String ID="$CANCEL">Zrušit</String>
+  <String ID="$EDIT">Upravit</String>
   <String ID="$INDEX">Index</String>
   <String ID="$ENTRY_NAME">Entry Name</String>
   
   <!-- Game Explorer Strings -->
+  <String ID="$CREDITS">Poděkování</String>
   <String ID="$VIEW">Zobrazení</String>
   <String ID="$FILE">Soubor</String>
   <String ID="$TOOLS">Nástroje</String>
@@ -51,7 +53,9 @@
   <String ID="$LANGUAGE_ENGLISH">English</String>
   <String ID="$LANGUAGE_RUSSIAN">русский</String>
   <String ID="$LANGUAGE_CZECH">Česky</String>
+  <String ID="$LANGUAGE_POLISH">Polština</String>
   <String ID="$LANGUAGE_OPTION">Jazyk</String>
+  <String ID="$DISCORD_STATE_CUSTOM">Použít vlastní status v discordu.</String>
   
   <!-- Model/Exporting Option Strings-->
   <String ID="$EXPORT_PATH_TITLE">Umístění exportu:</String>
@@ -62,7 +66,24 @@
   <String ID="$MATERIAL_LIB_REMOVE">Odstranit vybranou knihovnu</String>
   <String ID="$MATERIAL_LIB_ADD">Přidat knihovu</String>
   <String ID="$MATERIAL_LIB_SELECTED">Vybrané knihovny</String>
-
+  
+  <!-- SDS Options -->
+  <String ID="$SDS_COMPRESSION_TYPE">Typ komprese</String>
+  <String ID="$SDS_UNCOMPRESSED">Bez komprese</String>
+  <String ID="$SDS_COMPRESSED">Komprese</String>
+  <String ID="$SDS_ONEBLOCK">Jeden blok</String>
+  <String ID="$ADD_TIME_DATE_BACKUP">Přidání času a data k zálohám.</String>
+  <String ID="$DECOMPILE_LUA_UNPACK">Rozšifrovat lua při extrahování</String>
+  <String ID="$USE_SDS_TOOL_FORMAT">Použít SDS Tool GUI Formát při extrahování.</String>
+  <!-- Render Options -->
+  <String ID="$RENDER">Render</String>
+  <String ID="$RENDER_OPTIONS">Možnosti vykreslování</String>
+  <String ID="$RENDER_SCREENFAR">Screen Far</String>
+  <String ID="$RENDER_SCREENEAR">Screen Near</String>
+  <String ID="$RENDER_CAMERASPEED">Rychlost kamery</String>
+  <String ID="$TEXTURE_DIRECTORY">Adresář složky textur</String>
+  <String ID="$SELECT_TEX_FOLDER">Vyberte složku v které se nachází textury.</String>
+  
   <!-- Collision Editor Form Strings-->
   <String ID="$SAVE">Uložit</String>
   <String ID="$RELOAD">Obnovit</String>
@@ -122,6 +143,10 @@
   <!-- CityShop Strings -->
   <String ID="$CITY_SHOP_EDITOR_TITLE">CityShop Editor</String>
   <String ID="$ADD_AREA">Přidat Area</String>
+  <String ID="$ADD_DATA">Přidat Data</String>
+  <String ID="$DELETE_AREA">Smazat Area</String>
+  <String ID="$DELETE_DATA">Smazat Data</String>
+  <String ID="$DUPLICATE_DATA">Duplikovat Data</String>
   <String ID="$POPULATE_TRANSLOKATORS">Oživit nové Translocatory (potřebné pro nové Translocatory)</String>
   
     <!-- Table Editor string -->
@@ -153,11 +178,16 @@
   <String ID="$ROTATION_X">Rotace X</String>
   <String ID="$ROTATION_Y">Rotace Y</String>
   <String ID="$ROTATION_Z">Rotace Z</String>
-
+  <String ID="$SCALE_X">Velikost X</String>
+  <String ID="$SCALE_Y">Velikost Y</String>
+  <String ID="$SCALE_Z">Velikost Z</String>
+  
   <!-- StreamEditor strings-->
   <String ID="$STREAM_EDITOR_TITLE">Stream Editor</String>
   <String ID="$ADD_LINE">Přidat řádek</String>
   <String ID="$DELETE_LINE">Smazat řádek</String>
+  <String ID="$MOVE_UP">Posunout nahoru</String>
+  <String ID="$MOVE_DOWN">Posunout dolů</String>
 
   <!-- ListWindow Strings-->
   <String ID="$SELECT_PARENT">Dvojklikem vyberete nový parent.</String>

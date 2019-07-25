@@ -49,6 +49,7 @@ namespace Mafia2Tool
         private TreeNode roadRoot;
         private TreeNode junctionRoot;
         private TreeNode animalTrafficRoot;
+        private TreeNode actorRoot;
 
         private bool bSelectMode = false;
 
@@ -654,28 +655,25 @@ namespace Mafia2Tool
                 dSceneTree.AddToTree(node);
                 collisionRoot.Collapse(false);
             }
-            if (SceneData.ATLoader != null && ToolkitSettings.Experimental)
+            if (SceneData.ATLoader != null && SceneData.ATLoader.paths != null && ToolkitSettings.Experimental)
             {
-                //for (int i = 0; i != SceneData.ATLoader.paths.Length; i++)
-                //{
-                //    AnimalTrafficLoader.AnimalTrafficPath path = SceneData.ATLoader.paths[i];
-                //    RenderBoundingBox bbox = new RenderBoundingBox();
-                //    bbox.SetTransform(new Vector3(0.0f), new Matrix33());
-                //    bbox.Init(path.bbox);
+                TreeNode node = new TreeNode("Animal Traffic");
+                animalTrafficRoot = node;
+                for (int i = 0; i != SceneData.ATLoader.paths.Length; i++)
+                {
+                    AnimalTrafficLoader.AnimalTrafficPath path = SceneData.ATLoader.paths[i];
+                    RenderATP atp = new RenderATP();
+                    atp.Init(path);
 
-                //    RenderLine line = new RenderLine();
-                //    line.SetTransform(new Vector3(0.0f), new Matrix33());
-                //    List<Vector3> points = new List<Vector3>();
-                //    points.Add(path.bbox.Center);
-
-                //    for (int x = 0; x < path.vectors.Length; x++)
-                //        points.Add(path.vectors[x].vectors[0]);
-
-                //    line.SetColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-                //    line.Init(points.ToArray());
-                //    assets.Add(StringHelpers.RandomGenerator.Next(), bbox);
-                //    assets.Add(StringHelpers.RandomGenerator.Next(), line);
-                //}
+                    int refID = StringHelpers.RandomGenerator.Next();
+                    TreeNode child = new TreeNode("Path: " + i);
+                    child.Name = refID.ToString();
+                    child.Text = "Path: " + i;
+                    child.Tag = atp;
+                    animalTrafficRoot.Nodes.Add(child);
+                    assets.Add(refID, atp);
+                }
+                dSceneTree.AddToTree(animalTrafficRoot);
             }
 
             //if (SceneData.OBJData.Length > 0 && ToolkitSettings.Experimental)
@@ -704,25 +702,55 @@ namespace Mafia2Tool
 
             if (SceneData.Actors.Length > 0 && ToolkitSettings.Experimental)
             {
+                actorRoot = new TreeNode("Actor Items");
                 for (int z = 0; z < SceneData.Actors.Length; z++)
                 {
                     ResourceTypes.Actors.Actor actor = SceneData.Actors[z];
-                    for (int i = 0; i != actor.Definitions.Length; i++)
+                    for (int c = 0; c != actor.Items.Length; c++)
                     {
-                        for (int c = 0; c != actor.Items.Length; c++)
+                        var item = actor.Items[c];
+                        TreeNode itemNode = new TreeNode("actor_" + z + "-" + c);
+                        itemNode.Text = item.EntityType;
+                        itemNode.Tag = item;
+
+                        var typeString = string.Format("actorType_" + item.ItemType);
+                        var foundnodes = actorRoot.Nodes.Find(typeString, false);
+                        if(foundnodes.Length > 0)
                         {
-                            if (actor.Definitions[i].Hash == actor.Items[c].Hash2)
-                            {
-                                FrameObjectFrame frame = (SceneData.FrameResource.FrameObjects.ElementAt(actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
-                                if (frame != null)
-                                {
-                                    frame.Item = actor.Items[c];
-                                    frame.Matrix.Position = actor.Items[c].Position;
-                                }
-                            }
+                            foundnodes[0].Nodes.Add(itemNode);
+                        }
+                        else
+                        {
+                            TreeNode typeNode = new TreeNode(typeString);
+                            typeNode.Name = typeString;
+                            typeNode.Text = item.ItemType;
+                            typeNode.Nodes.Add(itemNode);
+                            actorRoot.Nodes.Add(typeNode);
                         }
                     }
+                    
+
+                    //for (int i = 0; i != actor.Definitions.Length; i++)
+                    //{
+                    //    bool sorted = false;
+
+                    //    for (int c = 0; c != actor.Items.Length; c++)
+                    //    {
+                    //        if (actor.Definitions[i].Hash == actor.Items[c].Hash2)
+                    //        {
+                    //            FrameObjectFrame frame = (SceneData.FrameResource.FrameObjects.ElementAt(actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
+                    //            if (frame != null)
+                    //            {
+                    //                frame.Item = actor.Items[c];
+                    //                frame.Matrix.Position = actor.Items[c].Position;
+                    //                sorted = true;
+                    //            }
+                    //        }
+                    //    }
+                    //    Console.WriteLine("Sorted: {0}", sorted);
+                    //}
                 }
+                dSceneTree.AddToTree(actorRoot);
             }
 
             Graphics.InitObjectStack = assets;

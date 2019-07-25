@@ -77,7 +77,7 @@ namespace Mafia2Tool
                     {
                         act.Add(new Actor(name));
                     }
-                   catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Console.WriteLine("Failed to read actor {0}", name);
                     }
@@ -91,7 +91,16 @@ namespace Mafia2Tool
                 else if (type == "Collisions")
                     Collisions = new Collision(name);
                 else if (type == "AnimalTrafficPaths")
-                    ATLoader = new AnimalTrafficLoader(new FileInfo(name));
+                {
+                    try
+                    {
+                        ATLoader = new AnimalTrafficLoader(new FileInfo(name));
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine("Failed to read AnimalTrafficPaths {0}", ATLoader);
+                    }
+                }
                 else if (nodes.Current.Value == "roadmap.gsd")
                     roadMap = new Roadmap(new FileInfo(name));
                 else if (type == "NAV_OBJ_DATA")

@@ -85,7 +85,7 @@ namespace Mafia2Tool
                         }
                     }
 
-                    for(int i = 0; i != temp.Count;)
+                    for (int i = 0; i != temp.Count;)
                     {
                         if (temp.ElementAt(i).Value == false)
                         {
@@ -112,7 +112,7 @@ namespace Mafia2Tool
                     }
                 }
             }
-            foreach(var loader in currentLoaders)
+            foreach (var loader in currentLoaders)
                 loaders.Add(loader.Value);
 
             currentLoaders = null;
@@ -166,7 +166,7 @@ namespace Mafia2Tool
             groupTree.Nodes.Clear();
             stream = new StreamMapLoader(file);
 
-            for(int i = 0; i < stream.groupHeaders.Length; i++)
+            for (int i = 0; i < stream.groupHeaders.Length; i++)
             {
                 TreeNode node = new TreeNode("group" + i);
                 node.Text = stream.groupHeaders[i];
@@ -210,7 +210,7 @@ namespace Mafia2Tool
                 line.loadList = list.ToArray();
                 linesTree.Nodes[line.groupID].Nodes.Add(node);
             }
-            for(int i = 0; i < stream.blocks.Length; i++)
+            for (int i = 0; i < stream.blocks.Length; i++)
             {
                 var block = stream.blocks[i];
                 List<ulong> hash = new List<ulong>();
@@ -260,10 +260,11 @@ namespace Mafia2Tool
             LineContextStrip.Items[1].Visible = false;
             LineContextStrip.Items[2].Visible = false;
             LineContextStrip.Items[3].Visible = false;
+            LineContextStrip.Items[4].Visible = false;
 
             if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
             {
-                if(linesTree.SelectedNode.Tag.GetType() == typeof(string) && (linesTree.SelectedNode.Tag as string == "Header"))
+                if (linesTree.SelectedNode.Tag.GetType() == typeof(string) && (linesTree.SelectedNode.Tag as string == "Header"))
                 {
                     LineContextStrip.Items[0].Visible = true;
                 }
@@ -272,6 +273,7 @@ namespace Mafia2Tool
                     LineContextStrip.Items[1].Visible = true;
                     LineContextStrip.Items[2].Visible = true;
                     LineContextStrip.Items[3].Visible = true;
+                    LineContextStrip.Items[4].Visible = true;
                 }
             }
         }
@@ -299,9 +301,9 @@ namespace Mafia2Tool
 
         private void OnKeyPressed(object sender, KeyPressEventArgs e)
         {
-            if(e.KeyChar == 13)
+            if (e.KeyChar == 13)
             {
-                foreach(TreeNode node in linesTree.Nodes)
+                foreach (TreeNode node in linesTree.Nodes)
                 {
                     if (node.Text.Contains(SearchBox.Text))
                         linesTree.SelectedNode = node;
@@ -350,6 +352,29 @@ namespace Mafia2Tool
                         parent.Nodes.RemoveAt(index);
                         parent.Nodes.Insert(index + 1, node);
                         node.TreeView.SelectedNode = node;
+                    }
+                }
+            }
+        }
+
+        private void CopyLoadListAbove_Click(object sender, EventArgs e)
+        {
+            if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
+            {
+                if (linesTree.SelectedNode.Tag.GetType() == typeof(StreamLine))
+                {
+                    TreeNode parent = linesTree.SelectedNode.Parent;
+                    TreeNode node = linesTree.SelectedNode;
+
+                    int index = parent.Nodes.IndexOf(node);
+                    if (index > 0)
+                    {
+                        TreeNode toCopy = parent.Nodes[index];
+
+                        StreamLine line = (linesTree.SelectedNode.Tag as StreamLine);
+                        StreamLine toCopyLine = (parent.Nodes[index-1].Tag as StreamLine);
+                        line.loadList = toCopyLine.loadList;
+                        linesTree.SelectedNode.Tag = line;
                     }
                 }
             }

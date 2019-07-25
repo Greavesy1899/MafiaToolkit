@@ -139,6 +139,7 @@ namespace ResourceTypes.Actors
             for (int i = 0; i != itemCount; i++)
             {
                 items[i] = new ActorItem(reader);
+                items[i].Data = TempUnks[items[i].DataID];
             }
 
             unk16 = reader.ReadInt32();
@@ -277,11 +278,14 @@ namespace ResourceTypes.Actors
             ulong hash1;
             ulong hash2;
             Vector3 position;
+            Vector4 quat;
+            Vector3 euler;
             Vector2 rotation;
             Vector2 direction;
             Vector3 scale;
             ushort unk3;
             ushort dataID;
+            temp_unk data;
 
             public int Size {
                 get { return size; }
@@ -326,13 +330,13 @@ namespace ResourceTypes.Actors
                 get { return position; }
                 set { position = value; }
             }
-            public Vector2 Rotation {
-                get { return rotation; }
-                set { rotation = value; }
+            public Vector4 Quaternion {
+                get { return quat; }
+                set { quat = value; }
             }
-            public Vector2 Direction {
-                get { return direction; }
-                set { direction = value; }
+            public Vector3 Rotation {
+                get { return euler; }
+                set { euler = value; }
             }
             public Vector3 Scale {
                 get { return scale; }
@@ -347,9 +351,49 @@ namespace ResourceTypes.Actors
                 set { dataID = value; }
             }
 
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public temp_unk Data {
+                get { return data; }
+                set { data = value; }
+            }
+
             public ActorItem(BinaryReader reader)
             {
                 ReadFromFile(reader);
+                ConvertQuaternion();
+            }
+
+            private void ConvertQuaternion()
+            {
+                euler = new Vector3();
+                var qw = quat.W;
+                var qx = quat.X;
+                var qy = quat.Y;
+                var qz = quat.Z;
+                var test = qx * qy + qz * qw;
+                if (test > 0.499)
+                {
+                    euler.X = (float)(2*  Math.Atan2(qx, qw));
+                    euler.Y = (float)(Math.PI / 2);
+                    euler.Z = 0;
+                    return;
+                }
+                if (test < -0.499)
+                {
+                    euler.X = (float)(-2 * Math.Atan2(qx, qw));
+                    euler.Y = (float)(Math.PI / 2);
+                    euler.Z = 0;
+                    return;
+                }
+                var squareX = qx * qx;
+                var squarey = qy * qy;
+                var squarez = qz * qz;
+                var h = (float)Math.Atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * squarey - 2 * squarez);
+               var p = (float)Math.Asin(2 * test);
+                var b = (float)Math.Atan2(2 * qx * qw - 2 * qy * qz, 1 - 2 * squareX - 2 * squarez);
+                euler.Z = (float)Math.Round(h * 180 / Math.PI);
+                euler.Y = (float)Math.Round(p * 180 / Math.PI);
+                euler.X = (float)Math.Round(b * 180 / Math.PI);
             }
 
             public void ReadFromFile(BinaryReader reader)
@@ -365,12 +409,10 @@ namespace ResourceTypes.Actors
                 hash1 = reader.ReadUInt64();
                 hash2 = reader.ReadUInt64();
                 position = Vector3Extenders.ReadFromFile(reader);
-                rotation = Vector2Extenders.ReadFromFile(reader);
-                direction = Vector2Extenders.ReadFromFile(reader);
+                quat = Vector4Extenders.ReadFromFile(reader);
                 scale = Vector3Extenders.ReadFromFile(reader);
                 unk3 = reader.ReadUInt16();
                 dataID = reader.ReadUInt16();
-                Console.WriteLine("{0} {1}", unkString, (ActorTypes)actortype);
             }
 
             public int CalculateSize()
@@ -400,8 +442,7 @@ namespace ResourceTypes.Actors
                 writer.Write(hash1);
                 writer.Write(hash2);
                 position.WriteToFile(writer);
-                rotation.WriteToFile(writer);
-                direction.WriteToFile(writer);
+                quat.WriteToFile(writer);
                 scale.WriteToFile(writer);
                 writer.Write(unk3);
                 writer.Write(dataID);

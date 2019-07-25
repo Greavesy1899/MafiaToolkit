@@ -192,9 +192,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             input.Position += 4; // skip version
             var platform = (Platform)input.ReadValueU32(Endian.Big);
-            if (platform != Platform.PC &&
-                platform != Platform.Xbox360 &&
-                platform != Platform.PS3)
+            if (platform != Platform.PC && platform != Platform.Xbox360 && platform != Platform.PS3)
             {
                 throw new FormatException("unsupported archive platform");
             }
