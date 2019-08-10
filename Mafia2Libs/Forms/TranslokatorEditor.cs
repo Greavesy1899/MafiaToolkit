@@ -157,12 +157,12 @@ namespace Mafia2Tool.Forms
                     Instance instance = (TranslokatorTree.SelectedNode.Tag as Instance);
                     translokator.CompressPosition(instance, translokator.Bounds.Minimum, translokator.Bounds.Maximum, true);
                     List<byte> packed = new List<byte>();
-                    packed.AddRange(BitConverter.GetBytes(instance.PositionX));
-                    packed.AddRange(BitConverter.GetBytes(instance.PositionY));
-                    packed.AddRange(BitConverter.GetBytes(instance.PositionZ));
-                    packed.AddRange(BitConverter.GetBytes(instance.Rotation2));
-                    packed.AddRange(BitConverter.GetBytes(instance.Unk01));
-                    packed.AddRange(BitConverter.GetBytes(instance.Rotation1));
+                    packed.AddRange(BitConverter.GetBytes(instance.w0));
+                    packed.AddRange(BitConverter.GetBytes(instance.w1));
+                    packed.AddRange(BitConverter.GetBytes(instance.w2));
+                    packed.AddRange(BitConverter.GetBytes(instance.D5));
+                    packed.AddRange(BitConverter.GetBytes(instance.ID));
+                    packed.AddRange(BitConverter.GetBytes(instance.D4));
                     translokator.DecompressPosition(packed.ToArray(), instance, translokator.Bounds.Minimum, translokator.Bounds.Maximum, true);
                 }
             }

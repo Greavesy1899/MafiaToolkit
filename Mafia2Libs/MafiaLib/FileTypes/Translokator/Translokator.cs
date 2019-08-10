@@ -51,12 +51,12 @@ namespace ResourceTypes.Translokator
         Vector3 position;
         Vector4 rotation;
         float scale;
-        public ushort PositionX;
-        public ushort PositionY;
-        public ushort PositionZ;
-        int rotation2;
-        ushort unk01;
-        ushort rotation1;
+        public ushort w0;
+        public ushort w1;
+        public ushort w2;
+        int d5;
+        ushort id;
+        ushort d4;
 
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 Position {
@@ -74,19 +74,19 @@ namespace ResourceTypes.Translokator
             set { scale = value; }
         }
 
-        public ushort Unk01 {
-            get { return unk01; }
-            set { unk01 = value; }
+        public ushort ID {
+            get { return id; }
+            set { id = value; }
         }
 
-        public ushort Rotation1 {
-            get { return rotation1; }
-            set { rotation1 = value; }
+        public ushort D4 {
+            get { return d4; }
+            set { d4 = value; }
         }
 
-        public int Rotation2 {
-            get { return rotation2; }
-            set { rotation2 = value; }
+        public int D5 {
+            get { return d5; }
+            set { d5 = value; }
         }
     }
 
@@ -210,54 +210,78 @@ namespace ResourceTypes.Translokator
 
         private void DecompressRotation(Instance instance)
         {
-            Vector4 quat = new Vector4();
             var v6 = 0.0f;
             var v7 = 0.0;
             var v8 = 3.141592741012573;
             var Y = 0.0;
             var X = 0.0;
 
-            if ((instance.Rotation1 & 0x10) != 0)
+            if ((instance.D4 & 0x10) != 0)
             {
-                var v4 = instance.Rotation2 >> 9;
+                var v4 = instance.D5 >> 9;
                 var v5 = v4 & 0x1FF;
-                X = (instance.Rotation2 & 0x1FF) * 0.001956947147846222 * v8 * 2.0 - v8;
+                X = (instance.D5 & 0x1FF) * 0.001956947147846222 * v8 * 2.0 - v8;
                 Y = v5 * 0.001956947147846222 * v8 * 2.0 - v8; //0.001956947147846222 == 1.0f/511.0f
                 v7 = 0.001956947147846222 * ((v4 >> 9) & 0x1FF) * v8;
             }
             else
             {
-                var v9 = instance.Rotation2 & 0x1FF | 16 * (instance.Rotation1 & 0xE0);
-                var v10 = instance.Rotation2 >> 9;
-                var v5 = v10 & 0x1FF | 2 * (instance.Rotation1 & 0xF00);
-                X = v9 * 0.0002442002587486058 * v8 * 2.0 - v8; //0.0002442002587486058 == 1.0f/8191.0f
-                Y = v5 * 0.0001220852136611938 * v8 * 2.0 - v8; //0.0001220852136611938 == 1.0f/4095.0f
-                v7 = 0.0001220852136611938 * ((instance.Rotation1 & 0xF000 | (v10 >> 6) & 0xFF8) >> 3) * v8;
+                var v9 = instance.D5 & 0x1FF | 16 * (instance.D4 & 0xE0);
+                var v10 = instance.D4 >> 9;
+                var v5 = v10 & 0x1FF | 2 * (instance.D4 & 0xF00);
+                X = v9 * 0.0002442002587486058 * v8 * 2.0 - v8; //0.0002442002587486058 == 1.0f/4095.0f
+                Y = v5 * 0.0001220852136611938 * v8 * 2.0 - v8; //0.0001220852136611938 == 1.0f/8191.0f
+                v7 = 0.0001220852136611938 * ((instance.D4 & 0xF000 | (v10 >> 6) & 0xFF8) >> 3) * v8;
             }
-
             var Z = 2.0f * v7 - v8;
-            CompressRotation(new Vector3((float)X, (float)Y, (float)Z), instance);
+            instance.Rotation = new Vector4((float)X, (float)Y, (float)Z, 1);
+            //X = MathUtil.RadiansToDegrees((float)X);
+            //Y = MathUtil.RadiansToDegrees((float)Y);
+            //Z = MathUtil.RadiansToDegrees((float)Z);
         }
-        private void CompressRotation(Vector3 rotation, Instance instance)
+        private void CompressRotation(Instance instance)
         {
             double x;
             double y;
             double z;
+            var v8 = 3.141592741012573;
 
-            if (instance.Scale == 1)
+            if (instance.Scale != 1)
             {
-                x = (rotation.X / Math.PI + 1.0f) / 2.0f * 511.0f;
-                y = (rotation.Y / Math.PI + 1.0f) / 2.0f * 511.0f;
-                z = (rotation.Z / Math.PI + 1.0f) / 2.0f * 511.0f;
+                x = (instance.Rotation.X / Math.PI + 1.0f) / 2.0f * 511.0f;
+                y = (instance.Rotation.Y / Math.PI + 1.0f) / 2.0f * 511.0f;
+                z = (instance.Rotation.Z / Math.PI + 1.0f) / 2.0f * 511.0f;
             }
             else
             {
-                x = (rotation.X / Math.PI + 1.0f) / 2.0f * 8191.0f;
-                y = (rotation.Y / Math.PI + 1.0f) / 2.0f * 4095.0f;
-                z = (rotation.Z / Math.PI + 1.0f) / 2.0f * 4095.0f;
+                x = (instance.Rotation.X / Math.PI + 1.0f) / 2.0f * 4095.0f;
+                y = (instance.Rotation.Y / Math.PI + 1.0f) / 2.0f * 8191.0f;
+                z = (instance.Rotation.Z / Math.PI + 1.0f) / 2.0f * 8191.0f;
+                var xxs = Convert.ToUInt16(x);
+                var yys = Convert.ToUInt16(y);
+                var zzs = Convert.ToUInt16(z);
+                var higherX = (xxs >> 9);            
+                var higherY = (yys >> 8);
+                var higherZ = (zzs >> 8);
+                var calc1 = 0;
+                calc1 |= (higherX << 5);
+                calc1 |= (higherY << 8);
+                calc1 |= (higherZ << 12);
+                instance.D4 |= (ushort)calc1;
             }
-        }
 
+            var xs = Convert.ToUInt16(x);
+            var lowerX = (ushort)(xs & 0x1FF);
+            var ys = Convert.ToUInt16(y);
+            var lowerY = (ushort)(ys & 0x1FF);
+            var zs = Convert.ToUInt16(z);
+            var lowerZ = (ushort)(zs & 0x1FF);
+            var calc = 0;
+            calc |= (lowerX);
+            calc |= (lowerY << 9);
+            calc |= (lowerZ << 18);
+            instance.D5 |= (ushort)calc;
+        }
         public Vector3 DecompressPosition(byte[] transform, Instance instance, Vector3 tmin, Vector3 tmax, bool debug = false)
         {
             if(debug)
@@ -302,30 +326,42 @@ namespace ResourceTypes.Translokator
             preFinal.X = Math.Abs(preFinal.X);
             preFinal.Y = Math.Abs(preFinal.Y);
             preFinal.Z = Math.Abs(preFinal.Z);
+            var xFull = Convert.ToInt32(Math.Floor(preFinal.X));
+            var yFull = Convert.ToInt32(Math.Floor(preFinal.Y));
+            var zFull = Convert.ToInt32(Math.Floor(preFinal.Z));
+            var iXPos = xPositive == true ? 1 : 0;
+            var iYPos = yPositive == true ? 1 : 0;
+            var iZPos = zPositive == true ? 1 : 0;
+            instance.D4 |= (ushort)(zFull << 2);
+            instance.D4 |= (ushort)(yFull);
+            instance.D5 |= (iXPos << 27);
+            instance.D5 |= (iYPos << 28);
+            instance.D5 |= (iZPos << 29);
+            instance.D5 |= (xFull << 30);
             var xFrac = preFinal.X > 1.0f ? preFinal.X - Math.Floor(preFinal.X) : preFinal.X;
             var yFrac = preFinal.Y > 1.0f ? preFinal.Y - Math.Floor(preFinal.Y) : preFinal.Y;
             var zFrac = preFinal.Z > 1.0f ? preFinal.Z - Math.Floor(preFinal.Z) : preFinal.Z;
             var preX = xFrac * 65535.0f;
             var preY = yFrac * 65535.0f;
             var preZ = zFrac * 65535.0f;
-            instance.PositionX = Convert.ToUInt16(preX);
-            instance.PositionY = Convert.ToUInt16(preY);
-            instance.PositionZ = Convert.ToUInt16(preZ);
+            instance.w0 = Convert.ToUInt16(preX);
+            instance.w1 = Convert.ToUInt16(preY);
+            instance.w2 = Convert.ToUInt16(preZ);
 
             if (debug)
             {
                 Console.WriteLine("Frac: {0} {1} {2}", xFrac, yFrac, zFrac);
                 Console.WriteLine("Final: {0} {1} {2}", instance.Position.X, instance.Position.Y, instance.Position.Z);
-                Console.WriteLine("Final Instance: {0} {1} {2}", instance.PositionX, instance.PositionY, instance.PositionZ);
+                Console.WriteLine("Final Instance: {0} {1} {2}", instance.w0, instance.w1, instance.w2);
             }
         }
         public void DecompressScale(Instance transform)
         {
             var scale = 1.0f;
 
-            if ((transform.Rotation1 & 0x10) != 0)
+            if ((transform.D4 & 0x10) != 0)
             {
-                var s = transform.Rotation1 & 0xFFE0;
+                var s = transform.D4 & 0xFFE0;
                 var e = (s >> 10) & 0x1F;
                 if (e != 0)
                 {
@@ -333,11 +369,21 @@ namespace ResourceTypes.Translokator
                     var exponent = ((e + 127 - 15) << 23);
                     var mantissa = (s << 13) & 0x7C0000;
                     var t = sign | exponent | mantissa;
-                    scale = Convert.ToSingle(t);
+                    var bytes = BitConverter.GetBytes(t);
+                    scale = BitConverter.ToSingle(bytes, 0);
                 }
             }
-            Console.WriteLine(scale);
             transform.Scale = scale;
+        }
+        public void CompressScale(Instance transform)
+        {
+            byte[] data = BitConverter.GetBytes(transform.Scale);
+            var scalei = BitConverter.ToInt32(data, 0);
+            var sign = scalei >> 31;
+            var exponent = ((scalei >> 23) - 127 + 15) & 0x1F;
+            var mantissa = (scalei >> 18) & 0x1F;
+
+            transform.D4 |= (ushort)((sign << 15) | (exponent << 10) | (mantissa << 5) | (1u << 4));
         }
 
         private void CompressInstances()
@@ -354,8 +400,16 @@ namespace ResourceTypes.Translokator
                     for (int y = 0; y != obj.NumInstances; y++)
                     {
                         Instance instance = obj.Instances[y];
-                        instance.Unk01 = numInstance;
+                        instance.D4 = 0;
+                        instance.D5 = 0;
+                        instance.w0 = 0;
+                        instance.w1 = 0;
+                        instance.w2 = 0;
+                        instance.ID = numInstance;
                         CompressPosition(instance, bounds.Minimum, bounds.Maximum);
+                        if(instance.Scale != 1)
+                            CompressScale(instance);
+                        CompressRotation(instance);
                         numInstance++;
                     }
                 }
@@ -428,17 +482,18 @@ namespace ResourceTypes.Translokator
                         //Console.WriteLine("Instance: {0}", y);
                         byte[] packed = reader.ReadBytes(14);
                         Instance instance = new Instance();
-                        instance.PositionX = BitConverter.ToUInt16(packed, 0);
-                        instance.PositionY = BitConverter.ToUInt16(packed, 2);
-                        instance.PositionZ = BitConverter.ToUInt16(packed, 4);
-                        instance.Rotation2 = BitConverter.ToInt32(packed, 6);
-                        instance.Unk01 = BitConverter.ToUInt16(packed, 10);
-                        instance.Rotation1 = BitConverter.ToUInt16(packed, 12);
+                        instance.Scale = 1;
+                        instance.w0 = BitConverter.ToUInt16(packed, 0);
+                        instance.w1 = BitConverter.ToUInt16(packed, 2);
+                        instance.w2 = BitConverter.ToUInt16(packed, 4);
+                        instance.D5 = BitConverter.ToInt32(packed, 6);
+                        instance.ID = BitConverter.ToUInt16(packed, 10);
+                        instance.D4 = BitConverter.ToUInt16(packed, 12);
 
-                        if (!IDs.Contains(instance.Unk01))
-                            IDs.Add(instance.Unk01);
+                        if (!IDs.Contains(instance.ID))
+                            IDs.Add(instance.ID);
                         else
-                            Console.WriteLine("Duplication!! {0} {1}", obj.Name, instance.Unk01);
+                            Console.WriteLine("Duplication!! {0} {1}", obj.Name, instance.ID);
 
                         //Console.WriteLine("{0:X4}", instance.PositionX);
                         //Console.WriteLine("{0:X4}", instance.PositionY);
@@ -519,12 +574,12 @@ namespace ResourceTypes.Translokator
                     for (int y = 0; y != obj.NumInstances; y++)
                     {
                         Instance instance = obj.Instances[y];
-                        writer.Write(instance.PositionX);
-                        writer.Write(instance.PositionY);
-                        writer.Write(instance.PositionZ);
-                        writer.Write(instance.Rotation2);
-                        writer.Write(instance.Unk01);
-                        writer.Write(instance.Rotation1);
+                        writer.Write(instance.w0);
+                        writer.Write(instance.w1);
+                        writer.Write(instance.w2);
+                        writer.Write(instance.D5);
+                        writer.Write(instance.ID);
+                        writer.Write(instance.D4);
                     }
                     objectGroup.Objects[x] = obj;
                 }

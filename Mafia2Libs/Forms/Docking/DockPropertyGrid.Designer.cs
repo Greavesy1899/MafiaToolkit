@@ -29,6 +29,12 @@
         private void InitializeComponent()
         {
             this.QuickEditTab = new System.Windows.Forms.TabPage();
+            this.ScaleZNumeric = new System.Windows.Forms.NumericUpDown();
+            this.ScaleYNumeric = new System.Windows.Forms.NumericUpDown();
+            this.ScaleXNumeric = new System.Windows.Forms.NumericUpDown();
+            this.ScaleZLabel = new System.Windows.Forms.Label();
+            this.ScaleYLabel = new System.Windows.Forms.Label();
+            this.ScaleXLabel = new System.Windows.Forms.Label();
             this.RotationZNumeric = new System.Windows.Forms.NumericUpDown();
             this.RotationYNumeric = new System.Windows.Forms.NumericUpDown();
             this.RotationXNumeric = new System.Windows.Forms.NumericUpDown();
@@ -45,13 +51,14 @@
             this.PropertyTab = new System.Windows.Forms.TabPage();
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.MainTabControl = new System.Windows.Forms.TabControl();
-            this.ScaleZNumeric = new System.Windows.Forms.NumericUpDown();
-            this.ScaleYNumeric = new System.Windows.Forms.NumericUpDown();
-            this.ScaleXNumeric = new System.Windows.Forms.NumericUpDown();
-            this.ScaleZLabel = new System.Windows.Forms.Label();
-            this.ScaleYLabel = new System.Windows.Forms.Label();
-            this.ScaleXLabel = new System.Windows.Forms.Label();
+            this.MaterialPage = new System.Windows.Forms.TabPage();
+            this.DataGrid = new System.Windows.Forms.DataGridView();
+            this.label1 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.QuickEditTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ScaleZNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ScaleYNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ScaleXNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RotationZNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RotationYNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.RotationXNumeric)).BeginInit();
@@ -60,9 +67,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.PositionXNumeric)).BeginInit();
             this.PropertyTab.SuspendLayout();
             this.MainTabControl.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ScaleZNumeric)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ScaleYNumeric)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ScaleXNumeric)).BeginInit();
+            this.MaterialPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DataGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // QuickEditTab
@@ -93,6 +99,102 @@
             this.QuickEditTab.TabIndex = 1;
             this.QuickEditTab.Text = "Edit Transform";
             this.QuickEditTab.UseVisualStyleBackColor = true;
+            // 
+            // ScaleZNumeric
+            // 
+            this.ScaleZNumeric.DecimalPlaces = 5;
+            this.ScaleZNumeric.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ScaleZNumeric.Location = new System.Drawing.Point(67, 240);
+            this.ScaleZNumeric.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ScaleZNumeric.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            -2147483648});
+            this.ScaleZNumeric.Name = "ScaleZNumeric";
+            this.ScaleZNumeric.Size = new System.Drawing.Size(185, 20);
+            this.ScaleZNumeric.TabIndex = 29;
+            // 
+            // ScaleYNumeric
+            // 
+            this.ScaleYNumeric.DecimalPlaces = 5;
+            this.ScaleYNumeric.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ScaleYNumeric.Location = new System.Drawing.Point(67, 214);
+            this.ScaleYNumeric.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ScaleYNumeric.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            -2147483648});
+            this.ScaleYNumeric.Name = "ScaleYNumeric";
+            this.ScaleYNumeric.Size = new System.Drawing.Size(185, 20);
+            this.ScaleYNumeric.TabIndex = 28;
+            // 
+            // ScaleXNumeric
+            // 
+            this.ScaleXNumeric.DecimalPlaces = 5;
+            this.ScaleXNumeric.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ScaleXNumeric.Location = new System.Drawing.Point(67, 188);
+            this.ScaleXNumeric.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ScaleXNumeric.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            -2147483648});
+            this.ScaleXNumeric.Name = "ScaleXNumeric";
+            this.ScaleXNumeric.Size = new System.Drawing.Size(185, 20);
+            this.ScaleXNumeric.TabIndex = 27;
+            // 
+            // ScaleZLabel
+            // 
+            this.ScaleZLabel.AutoSize = true;
+            this.ScaleZLabel.Location = new System.Drawing.Point(10, 242);
+            this.ScaleZLabel.Name = "ScaleZLabel";
+            this.ScaleZLabel.Size = new System.Drawing.Size(44, 13);
+            this.ScaleZLabel.TabIndex = 26;
+            this.ScaleZLabel.Text = "Scale Z";
+            // 
+            // ScaleYLabel
+            // 
+            this.ScaleYLabel.AutoSize = true;
+            this.ScaleYLabel.Location = new System.Drawing.Point(10, 216);
+            this.ScaleYLabel.Name = "ScaleYLabel";
+            this.ScaleYLabel.Size = new System.Drawing.Size(44, 13);
+            this.ScaleYLabel.TabIndex = 25;
+            this.ScaleYLabel.Text = "Scale Y";
+            // 
+            // ScaleXLabel
+            // 
+            this.ScaleXLabel.AutoSize = true;
+            this.ScaleXLabel.Location = new System.Drawing.Point(10, 190);
+            this.ScaleXLabel.Name = "ScaleXLabel";
+            this.ScaleXLabel.Size = new System.Drawing.Size(44, 13);
+            this.ScaleXLabel.TabIndex = 24;
+            this.ScaleXLabel.Text = "Scale X";
             // 
             // RotationZNumeric
             // 
@@ -289,108 +391,59 @@
             // 
             this.MainTabControl.Controls.Add(this.PropertyTab);
             this.MainTabControl.Controls.Add(this.QuickEditTab);
+            this.MainTabControl.Controls.Add(this.MaterialPage);
             this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainTabControl.Enabled = false;
             this.MainTabControl.Location = new System.Drawing.Point(0, 0);
             this.MainTabControl.Name = "MainTabControl";
             this.MainTabControl.SelectedIndex = 0;
             this.MainTabControl.Size = new System.Drawing.Size(267, 450);
             this.MainTabControl.TabIndex = 7;
             // 
-            // ScaleZNumeric
+            // MaterialPage
             // 
-            this.ScaleZNumeric.DecimalPlaces = 5;
-            this.ScaleZNumeric.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ScaleZNumeric.Location = new System.Drawing.Point(67, 240);
-            this.ScaleZNumeric.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ScaleZNumeric.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            -2147483648});
-            this.ScaleZNumeric.Name = "ScaleZNumeric";
-            this.ScaleZNumeric.Size = new System.Drawing.Size(185, 20);
-            this.ScaleZNumeric.TabIndex = 29;
+            this.MaterialPage.Controls.Add(this.DataGrid);
+            this.MaterialPage.Controls.Add(this.label1);
+            this.MaterialPage.Controls.Add(this.comboBox1);
+            this.MaterialPage.Location = new System.Drawing.Point(4, 22);
+            this.MaterialPage.Name = "MaterialPage";
+            this.MaterialPage.Padding = new System.Windows.Forms.Padding(3);
+            this.MaterialPage.Size = new System.Drawing.Size(259, 424);
+            this.MaterialPage.TabIndex = 2;
+            this.MaterialPage.Text = "Model Materials";
+            this.MaterialPage.UseVisualStyleBackColor = true;
             // 
-            // ScaleYNumeric
+            // DataGrid
             // 
-            this.ScaleYNumeric.DecimalPlaces = 5;
-            this.ScaleYNumeric.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ScaleYNumeric.Location = new System.Drawing.Point(67, 214);
-            this.ScaleYNumeric.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ScaleYNumeric.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            -2147483648});
-            this.ScaleYNumeric.Name = "ScaleYNumeric";
-            this.ScaleYNumeric.Size = new System.Drawing.Size(185, 20);
-            this.ScaleYNumeric.TabIndex = 28;
+            this.DataGrid.AllowUserToAddRows = false;
+            this.DataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.DataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.DataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DataGrid.Location = new System.Drawing.Point(8, 51);
+            this.DataGrid.Name = "DataGrid";
+            this.DataGrid.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.DataGrid.RowTemplate.ReadOnly = true;
+            this.DataGrid.Size = new System.Drawing.Size(243, 365);
+            this.DataGrid.TabIndex = 17;
             // 
-            // ScaleXNumeric
+            // label1
             // 
-            this.ScaleXNumeric.DecimalPlaces = 5;
-            this.ScaleXNumeric.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ScaleXNumeric.Location = new System.Drawing.Point(67, 188);
-            this.ScaleXNumeric.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ScaleXNumeric.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            -2147483648});
-            this.ScaleXNumeric.Name = "ScaleXNumeric";
-            this.ScaleXNumeric.Size = new System.Drawing.Size(185, 20);
-            this.ScaleXNumeric.TabIndex = 27;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(9, 7);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(62, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Select LOD";
             // 
-            // ScaleZLabel
+            // comboBox1
             // 
-            this.ScaleZLabel.AutoSize = true;
-            this.ScaleZLabel.Location = new System.Drawing.Point(10, 242);
-            this.ScaleZLabel.Name = "ScaleZLabel";
-            this.ScaleZLabel.Size = new System.Drawing.Size(44, 13);
-            this.ScaleZLabel.TabIndex = 26;
-            this.ScaleZLabel.Text = "Scale Z";
-            // 
-            // ScaleYLabel
-            // 
-            this.ScaleYLabel.AutoSize = true;
-            this.ScaleYLabel.Location = new System.Drawing.Point(10, 216);
-            this.ScaleYLabel.Name = "ScaleYLabel";
-            this.ScaleYLabel.Size = new System.Drawing.Size(44, 13);
-            this.ScaleYLabel.TabIndex = 25;
-            this.ScaleYLabel.Text = "Scale Y";
-            // 
-            // ScaleXLabel
-            // 
-            this.ScaleXLabel.AutoSize = true;
-            this.ScaleXLabel.Location = new System.Drawing.Point(10, 190);
-            this.ScaleXLabel.Name = "ScaleXLabel";
-            this.ScaleXLabel.Size = new System.Drawing.Size(44, 13);
-            this.ScaleXLabel.TabIndex = 24;
-            this.ScaleXLabel.Text = "Scale X";
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(8, 24);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(243, 21);
+            this.comboBox1.TabIndex = 0;
             // 
             // DockPropertyGrid
             // 
@@ -409,6 +462,9 @@
             this.Text = "PropertyGrid";
             this.QuickEditTab.ResumeLayout(false);
             this.QuickEditTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ScaleZNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ScaleYNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ScaleXNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RotationZNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RotationYNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.RotationXNumeric)).EndInit();
@@ -417,9 +473,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.PositionXNumeric)).EndInit();
             this.PropertyTab.ResumeLayout(false);
             this.MainTabControl.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.ScaleZNumeric)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ScaleYNumeric)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ScaleXNumeric)).EndInit();
+            this.MaterialPage.ResumeLayout(false);
+            this.MaterialPage.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DataGrid)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -448,5 +504,9 @@
         private System.Windows.Forms.Label ScaleZLabel;
         private System.Windows.Forms.Label ScaleYLabel;
         private System.Windows.Forms.Label ScaleXLabel;
+        private System.Windows.Forms.TabPage MaterialPage;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.DataGridView DataGrid;
     }
 }

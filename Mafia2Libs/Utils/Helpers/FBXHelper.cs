@@ -64,6 +64,9 @@ namespace Utils
                 case -99:
                     message += "pElementNormal->GetReferenceMode() did not equal eDirect!";
                     break;
+                case -95:
+                    message += "Failed to convert part during FBX > M2T";
+                    break;
                 case -10:
                     message += "Failed to initialize the PhysX Cooking library!";
                     break;

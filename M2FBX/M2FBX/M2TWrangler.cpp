@@ -145,11 +145,12 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	std::vector<Int3> indices = std::vector<Int3>();
 	std::vector<short> matIDs = std::vector<short>();
 
-	SubMesh* subMeshes = new SubMesh[pNode->GetMaterialCount()];
+	auto matCount = pNode->GetMaterialCount() == 0 ? 1 : pNode->GetMaterialCount();
+	SubMesh* subMeshes = new SubMesh[matCount];
 
-	if (pNode->GetMaterialCount() != 0)
+	if (pNode->GetMaterialCount() > 0)
 	{
-		for (int i = 0; i != pNode->GetMaterialCount(); i++)
+		for (int i = 0; i != matCount; i++)
 		{
 			SubMesh sub = SubMesh();
 			FbxSurfaceMaterial* mat = pNode->GetMaterial(i);
@@ -159,13 +160,16 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	}
 	else
 	{
-		WriteLine("Missing material nodes on this FBX Model!");
+		SubMesh sub = SubMesh();
+		sub.SetMatName("Material0");
+		subMeshes[0] = sub;
+		WriteLine("Missing material nodes on this FBX Model, Implemented whole material");
 	}
 
 	int subIDX = 0;
 	std::vector<std::vector<Int3>> segments = std::vector<std::vector<Int3>>();
-	int* subNumFacesCount = new int[pNode->GetMaterialCount()];
-	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+	int* subNumFacesCount = new int[matCount];
+	for (size_t i = 0; i != matCount; i++)
 	{
 		subNumFacesCount[i] = 0;
 		segments.push_back(std::vector<Int3>());
@@ -178,15 +182,19 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		triangle.i2 = pMesh->GetPolygonVertex(i, 1);
 		triangle.i3 = pMesh->GetPolygonVertex(i, 2);
 
-		if (pElementMaterial != NULL)
+		if (pElementMaterial != nullptr)
 		{
 			auto matID = pElementMaterial->GetIndexArray().GetAt(i);
 			segments[matID].push_back(triangle);
 		}
+		else
+		{
+			segments[0].push_back(triangle);
+		}
 		matIDs.push_back(0);
 	}
 
-	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+	for (size_t i = 0; i != matCount; i++)
 	{
 		subNumFacesCount[i] = segments[i].size();			
 		indices.insert(indices.end(), segments[i].begin(), segments[i].end());
@@ -196,14 +204,14 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	int total = pMesh->GetPolygonCount();
 	int calcTotal = 0;
 
-	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+	for (size_t i = 0; i != matCount; i++)
 		calcTotal += subNumFacesCount[i];
 
 	if (calcTotal != total)
 		WriteLine("Potential error when splitting faces!");
 
 	int curTotal = 0;
-	for (size_t i = 0; i != pNode->GetMaterialCount(); i++)
+	for (size_t i = 0; i != matCount; i++)
 	{
 		int faces = subNumFacesCount[i];
 		subMeshes[i].SetNumFaces(faces);
@@ -213,8 +221,9 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	//Update data to do with triangles.
 	pPart.SetIndices(indices, true);
 	pPart.SetSubMeshes(subMeshes);
-	pPart.SetSubMeshCount(pNode->GetMaterialCount());
+	pPart.SetSubMeshCount(matCount);
 	delete[] subNumFacesCount;
+	return 0;
 }
 
 
@@ -239,7 +248,7 @@ int BuildModel(ModelStructure* structure, FbxNode* node)
 
 	int result = BuildModelPart(node, Part);
 	if (result != 0)
-		return result;
+		return -95;
 
 	parts[0] = Part;
 	structure->SetParts(parts);
@@ -285,7 +294,11 @@ int ConvertFBX(const char* pSource, const char* pDest)
 		FbxNode* pNode = Root->GetChild(i);
 		if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
 			ModelStructure* Structure = new ModelStructure();
-			BuildModel(Structure, pNode);
+			
+			int result = BuildModel(Structure, pNode);
+
+			if (result != 0)
+				return -95;
 
 			//Point3 pos = Point3();
 			//pos.x = pNode->LclTranslation.Get().mData[0];
@@ -303,7 +316,9 @@ int ConvertFBX(const char* pSource, const char* pDest)
 			if (stream != NULL) fclose(stream);
 
 			WriteLine("Exported %s", Structure->GetName().c_str());
+			delete Structure;
 		}
 	}
+	lScene->Destroy(true);
 	return 0;
 }

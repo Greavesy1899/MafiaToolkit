@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene
 {
@@ -127,7 +128,7 @@ namespace ResourceTypes.Cutscene
 
                 //size of next set of data.
                 private int size2;
-                private int unkCount1; //camera count - 1?
+                private short unkCount1; //camera count - 1?
                 private int unkCount10; //126
                 private int unkCount11; //14
                 private int unkCount12; //18
@@ -155,6 +156,33 @@ namespace ResourceTypes.Cutscene
                         strings[i] = new string(reader.ReadChars(len));
                     }
                     faceUnk0 = reader.ReadInt32();
+                    size2 = reader.ReadInt32();
+                    unkCount1 = reader.ReadInt16(); //camera count - 1?
+                    unkCount10 = reader.ReadInt32(); //126
+                    unkCount11 = reader.ReadInt32(); //14
+                    unkCount12 = reader.ReadInt32(); //18
+                    unkCount13 = reader.ReadInt16(); //0;
+                    unkCount14 = reader.ReadInt32(); //126;
+                    unkCount2 = reader.ReadInt32(); //entity count - 1?
+                    unkCount21 = reader.ReadInt32(); //0x5;
+                    unkCount22 = reader.ReadInt32(); //0x2;
+                    int unkZero = reader.ReadInt16();
+                    for (int i = 0; i != unkCount1; i++)
+                    {
+                        ulong hash = reader.ReadUInt64();
+                        ulong hash2 = reader.ReadUInt64();
+                        GCSCamera camera = new GCSCamera();
+                        camera.Name = StringHelpers.ReadString16(reader);
+                        camera.Unk0 = reader.ReadInt32();
+                        camera.Unk1 = reader.ReadInt32();
+                        camera.UnkType = reader.ReadInt32();
+                        camera.Padding = reader.ReadBytes(9);
+                        camera.Matrix = new Utils.Types.TransformMatrix();
+                        camera.Matrix.ReadFromFile(reader);
+                        camera.Unk2 = reader.ReadSingle();
+                        camera.Unk3 = reader.ReadSingle();
+                        camera.Unk4 = reader.ReadSingle();
+                    }
                 }
             }
 

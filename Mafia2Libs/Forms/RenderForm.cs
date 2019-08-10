@@ -655,26 +655,26 @@ namespace Mafia2Tool
                 dSceneTree.AddToTree(node);
                 collisionRoot.Collapse(false);
             }
-            if (SceneData.ATLoader != null && SceneData.ATLoader.paths != null && ToolkitSettings.Experimental)
-            {
-                TreeNode node = new TreeNode("Animal Traffic");
-                animalTrafficRoot = node;
-                for (int i = 0; i != SceneData.ATLoader.paths.Length; i++)
-                {
-                    AnimalTrafficLoader.AnimalTrafficPath path = SceneData.ATLoader.paths[i];
-                    RenderATP atp = new RenderATP();
-                    atp.Init(path);
+            //if (SceneData.ATLoader != null && SceneData.ATLoader.paths != null && ToolkitSettings.Experimental)
+            //{
+            //    TreeNode node = new TreeNode("Animal Traffic");
+            //    animalTrafficRoot = node;
+            //    for (int i = 0; i != SceneData.ATLoader.paths.Length; i++)
+            //    {
+            //        AnimalTrafficLoader.AnimalTrafficPath path = SceneData.ATLoader.paths[i];
+            //        RenderATP atp = new RenderATP();
+            //        atp.Init(path);
 
-                    int refID = StringHelpers.RandomGenerator.Next();
-                    TreeNode child = new TreeNode("Path: " + i);
-                    child.Name = refID.ToString();
-                    child.Text = "Path: " + i;
-                    child.Tag = atp;
-                    animalTrafficRoot.Nodes.Add(child);
-                    assets.Add(refID, atp);
-                }
-                dSceneTree.AddToTree(animalTrafficRoot);
-            }
+            //        int refID = StringHelpers.RandomGenerator.Next();
+            //        TreeNode child = new TreeNode("Path: " + i);
+            //        child.Name = refID.ToString();
+            //        child.Text = "Path: " + i;
+            //        child.Tag = atp;
+            //        animalTrafficRoot.Nodes.Add(child);
+            //        assets.Add(refID, atp);
+            //    }
+            //    dSceneTree.AddToTree(animalTrafficRoot);
+            //}
 
             //if (SceneData.OBJData.Length > 0 && ToolkitSettings.Experimental)
             //{
@@ -1756,88 +1756,13 @@ namespace Mafia2Tool
                 for (int i = 0; i != nxsData.Sections.Length; i++)
                 {
                     nxsData.Sections[i] = new Collision.Section();
-                    nxsData.Sections[i].Unk1 = (int)Enum.Parse(typeof(CollisionMaterials), colModel.Lods[0].Parts[i].Material) - 2;
-                    nxsData.Sections[i].Start = curEdges;
-                    nxsData.Sections[i].NumEdges = (int)colModel.Lods[0].Parts[i].NumFaces * 3;
-                }
 
-                RenderStaticCollision collision = new RenderStaticCollision();
-                collision.ConvertCollisionToRender(nxsData.Data);
-                RenderStorageSingleton.Instance.StaticCollisions.Add(nxsData.Hash, collision);
+                    //handle collision type.
+                    var result = CollisionMaterials.Concrete;
+                    if (!Enum.TryParse(colModel.Lods[0].Parts[i].Material, out result))
+                        result = CollisionMaterials.Concrete;
 
-                Collision.Placement placement = new Collision.Placement();
-                placement.Hash = nxsData.Hash;
-                placement.Unk5 = 128;
-                placement.Unk4 = -1;
-                placement.Position = new Vector3(0, 0, 0);
-                placement.Rotation = new Vector3(0);
-
-                //add to render storage
-                TreeNode treeNode = new TreeNode(nxsData.Hash.ToString());
-                treeNode.Text = nxsData.Hash.ToString();
-                treeNode.Name = nxsData.Hash.ToString();
-                treeNode.Tag = nxsData;
-
-                //add instance of object.
-                int refID = StringHelpers.RandomGenerator.Next();
-                TreeNode child = new TreeNode();
-                child.Text = treeNode.Nodes.Count.ToString();
-                child.Name = refID.ToString();
-                child.Tag = placement;
-                treeNode.Nodes.Add(child);
-
-                //complete
-                RenderInstance instance = new RenderInstance();
-                instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
-                Matrix33 rot = new Matrix33();
-                rot.SetEuler(placement.Rotation);
-                instance.SetTransform(placement.Position, rot);
-                Graphics.InitObjectStack.Add(refID, instance);
-                dSceneTree.AddToTree(treeNode, collisionRoot);
-                SceneData.Collisions.NXSData.Add(nxsData.Hash, nxsData);
-                SceneData.Collisions.Placements.Add(placement);
-            }
-        }
-
-        private void AddCollisionTwo_Click(object sender, EventArgs e)
-        {
-            if (SceneData.Collisions != null && ToolkitSettings.Experimental)
-            {
-                if (MeshBrowser.ShowDialog() != DialogResult.OK)
-                {
-                    MessageBox.Show("Failed to select model.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                M2TStructure colModel = new M2TStructure();
-
-                if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
-                    colModel.ReadFromM2T(new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)));
-                else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
-                    colModel.ReadFromFbx(MeshBrowser.FileName);
-
-                //crash happened/
-                if (colModel.Lods[0] == null)
-                    return;
-
-                Collision.NXSStruct nxsData = new Collision.NXSStruct();
-                nxsData.Hash = FNV64.Hash(colModel.Name);
-                nxsData.Data.BuildBasicCollision(colModel.Lods[0]);
-                nxsData.Sections = new Collision.Section[colModel.Lods[0].Parts.Length];
-
-                if (MeshBrowser.ShowDialog() != DialogResult.OK)
-                {
-                    MessageBox.Show("Failed to select model.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                Collision.MeshData mesh = new Collision.MeshData();
-                mesh.ReadFromFile(new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)));
-                nxsData.Data = mesh;
-                int curEdges = 0;
-                for (int i = 0; i != nxsData.Sections.Length; i++)
-                {
-                    nxsData.Sections[i] = new Collision.Section();
-                    nxsData.Sections[i].Unk1 = (int)Enum.Parse(typeof(CollisionMaterials), colModel.Lods[0].Parts[i].Material) - 2;
+                    nxsData.Sections[i].Unk1 = (int)result - 2;
                     nxsData.Sections[i].Start = curEdges;
                     nxsData.Sections[i].NumEdges = (int)colModel.Lods[0].Parts[i].NumFaces * 3;
                 }

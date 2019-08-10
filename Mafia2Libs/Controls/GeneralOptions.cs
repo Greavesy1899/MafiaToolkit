@@ -47,6 +47,12 @@ namespace Forms.OptionControls
             DiscordElapsedCheckBox.Checked = ToolkitSettings.DiscordElapsedTimeEnabled;
             debugLoggingCheckbox.Checked = ToolkitSettings.LoggingEnabled;
             languageComboBox.SelectedIndex = ToolkitSettings.Language;
+
+            //handle discord area
+            DiscordDetailsCheckBox.Enabled = DiscordEnabledCheckBox.Checked ? true : false;
+            DiscordStateCheckBox.Enabled = DiscordEnabledCheckBox.Checked ? true : false;
+            DiscordElapsedCheckBox.Enabled = DiscordEnabledCheckBox.Checked ? true : false;
+            DiscordStateTextBox.Enabled = DiscordEnabledCheckBox.Checked ? true : false;
         }
 
         private void BrowseButton_Click(object sender, EventArgs e)
@@ -73,6 +79,7 @@ namespace Forms.OptionControls
             DiscordDetailsCheckBox.Enabled = DiscordEnabledCheckBox.Checked ? true : false;
             DiscordStateCheckBox.Enabled = DiscordEnabledCheckBox.Checked ? true : false;
             DiscordElapsedCheckBox.Enabled = DiscordEnabledCheckBox.Checked ? true : false;
+            DiscordStateTextBox.Enabled = DiscordEnabledCheckBox.Checked ? true : false;
             ToolkitSettings.UpdateRichPresence();
         }
 
