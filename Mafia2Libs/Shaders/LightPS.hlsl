@@ -61,19 +61,16 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
 	// Calculate the amount of the light on this pixel.
     lightIntensity = saturate(dot(input.Normal, lightDir));
 
-    if (lightIntensity > 0.0f)
-    {
-		// Determine the final diffuse color based on the diffuse color and the amount of the light intensity.
-        color += (diffuseColor * lightIntensity);
-		// Saturate the ambient and diffuse color.
-		color = saturate(color);
+	// Determine the final diffuse color based on the diffuse color and the amount of the light intensity.
+	color += (diffuseColor * lightIntensity);
+	// Saturate the ambient and diffuse color.
+	color = saturate(color);
 
-		// Calculate the reflection vector based on the light intensity, normal vector, and light direction.
-		reflection = normalize(2 * lightIntensity * input.Normal - lightDir);
+	// Calculate the reflection vector based on the light intensity, normal vector, and light direction.
+	reflection = normalize(2 * lightIntensity * input.Normal - lightDir);
 
-		// Determine the amount of the specular light based on the reflection vector, viewing direction, and specular power.
-		specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
-    }
+	// Determine the amount of the specular light based on the reflection vector, viewing direction, and specular power.
+	specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
 
     color = saturate(color + specular);
     return color;

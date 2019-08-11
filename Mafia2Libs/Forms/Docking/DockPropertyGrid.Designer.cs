@@ -52,9 +52,9 @@
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.MainTabControl = new System.Windows.Forms.TabControl();
             this.MaterialPage = new System.Windows.Forms.TabPage();
-            this.DataGrid = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.LODComboBox = new System.Windows.Forms.ComboBox();
+            this.Panel = new System.Windows.Forms.FlowLayoutPanel();
             this.QuickEditTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScaleZNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScaleYNumeric)).BeginInit();
@@ -68,7 +68,6 @@
             this.PropertyTab.SuspendLayout();
             this.MainTabControl.SuspendLayout();
             this.MaterialPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DataGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // QuickEditTab
@@ -373,7 +372,7 @@
             this.PropertyTab.Location = new System.Drawing.Point(4, 22);
             this.PropertyTab.Name = "PropertyTab";
             this.PropertyTab.Padding = new System.Windows.Forms.Padding(3);
-            this.PropertyTab.Size = new System.Drawing.Size(259, 424);
+            this.PropertyTab.Size = new System.Drawing.Size(261, 435);
             this.PropertyTab.TabIndex = 0;
             this.PropertyTab.Text = "Property Grid";
             this.PropertyTab.UseVisualStyleBackColor = true;
@@ -384,7 +383,7 @@
             this.PropertyGrid.LineColor = System.Drawing.SystemColors.ScrollBar;
             this.PropertyGrid.Location = new System.Drawing.Point(3, 3);
             this.PropertyGrid.Name = "PropertyGrid";
-            this.PropertyGrid.Size = new System.Drawing.Size(253, 418);
+            this.PropertyGrid.Size = new System.Drawing.Size(255, 429);
             this.PropertyGrid.TabIndex = 2;
             // 
             // MainTabControl
@@ -393,40 +392,24 @@
             this.MainTabControl.Controls.Add(this.QuickEditTab);
             this.MainTabControl.Controls.Add(this.MaterialPage);
             this.MainTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainTabControl.Enabled = false;
             this.MainTabControl.Location = new System.Drawing.Point(0, 0);
             this.MainTabControl.Name = "MainTabControl";
             this.MainTabControl.SelectedIndex = 0;
-            this.MainTabControl.Size = new System.Drawing.Size(267, 450);
+            this.MainTabControl.Size = new System.Drawing.Size(269, 461);
             this.MainTabControl.TabIndex = 7;
             // 
             // MaterialPage
             // 
-            this.MaterialPage.Controls.Add(this.DataGrid);
+            this.MaterialPage.Controls.Add(this.Panel);
             this.MaterialPage.Controls.Add(this.label1);
-            this.MaterialPage.Controls.Add(this.comboBox1);
+            this.MaterialPage.Controls.Add(this.LODComboBox);
             this.MaterialPage.Location = new System.Drawing.Point(4, 22);
             this.MaterialPage.Name = "MaterialPage";
             this.MaterialPage.Padding = new System.Windows.Forms.Padding(3);
-            this.MaterialPage.Size = new System.Drawing.Size(259, 424);
+            this.MaterialPage.Size = new System.Drawing.Size(261, 435);
             this.MaterialPage.TabIndex = 2;
             this.MaterialPage.Text = "Model Materials";
             this.MaterialPage.UseVisualStyleBackColor = true;
-            // 
-            // DataGrid
-            // 
-            this.DataGrid.AllowUserToAddRows = false;
-            this.DataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.DataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.DataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DataGrid.Location = new System.Drawing.Point(8, 51);
-            this.DataGrid.Name = "DataGrid";
-            this.DataGrid.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.DataGrid.RowTemplate.ReadOnly = true;
-            this.DataGrid.Size = new System.Drawing.Size(243, 365);
-            this.DataGrid.TabIndex = 17;
             // 
             // label1
             // 
@@ -437,19 +420,32 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Select LOD";
             // 
-            // comboBox1
+            // LODComboBox
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(8, 24);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(243, 21);
-            this.comboBox1.TabIndex = 0;
+            this.LODComboBox.FormattingEnabled = true;
+            this.LODComboBox.Location = new System.Drawing.Point(8, 24);
+            this.LODComboBox.Name = "LODComboBox";
+            this.LODComboBox.Size = new System.Drawing.Size(243, 21);
+            this.LODComboBox.TabIndex = 0;
+            this.LODComboBox.SelectedIndexChanged += new System.EventHandler(this.SelectedIndexChanged);
+            // 
+            // Panel
+            // 
+            this.Panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel.AutoScroll = true;
+            this.Panel.Location = new System.Drawing.Point(12, 51);
+            this.Panel.Name = "Panel";
+            this.Panel.Size = new System.Drawing.Size(239, 376);
+            this.Panel.TabIndex = 2;
             // 
             // DockPropertyGrid
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(267, 450);
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.ClientSize = new System.Drawing.Size(269, 461);
             this.Controls.Add(this.MainTabControl);
             this.DockAreas = ((WeifenLuo.WinFormsUI.Docking.DockAreas)(((((WeifenLuo.WinFormsUI.Docking.DockAreas.Float | WeifenLuo.WinFormsUI.Docking.DockAreas.DockLeft) 
             | WeifenLuo.WinFormsUI.Docking.DockAreas.DockRight) 
@@ -475,7 +471,6 @@
             this.MainTabControl.ResumeLayout(false);
             this.MaterialPage.ResumeLayout(false);
             this.MaterialPage.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DataGrid)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -506,7 +501,7 @@
         private System.Windows.Forms.Label ScaleXLabel;
         private System.Windows.Forms.TabPage MaterialPage;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.DataGridView DataGrid;
+        private System.Windows.Forms.ComboBox LODComboBox;
+        private System.Windows.Forms.FlowLayoutPanel Panel;
     }
 }

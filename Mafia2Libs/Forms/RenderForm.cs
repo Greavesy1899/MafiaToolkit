@@ -52,6 +52,7 @@ namespace Mafia2Tool
         private TreeNode actorRoot;
 
         private bool bSelectMode = false;
+        private float selectTimer = 0.0f;
 
         public D3DForm(FileInfo info)
         {
@@ -185,7 +186,7 @@ namespace Mafia2Tool
                 Graphics = new GraphicsClass();
                 Graphics.PreInit(handle);
                 BuildRenderObjects();
-                result = Graphics.InitScene();
+                result = Graphics.InitScene(RenderPanel.Width, RenderPanel.Height);
                 UpdateMatricesRecursive();
             }
             return result;
@@ -199,11 +200,8 @@ namespace Mafia2Tool
             RenderPanel.MouseUp += (s, e) => Input.ButtonUp(e.Button);
             RenderPanel.MouseMove += RenderForm_MouseMove;
             RenderPanel.MouseEnter += RenderPanel_MouseEnter;
-            RenderPanel.Resize += RenderPanel_Resize;
             RenderLoop.Run(this, () => { if (!Frame()) Shutdown(); });
         }
-
-        private void RenderPanel_Resize(object sender, EventArgs e) => Graphics.Camera.SetProjectionMatrix(RenderPanel.Width, RenderPanel.Height);
 
         private void RenderPanel_MouseEnter(object sender, EventArgs e) => RenderPanel.Focus();
         private void RenderForm_MouseMove(object sender, MouseEventArgs e) => mousePos = new Point(e.Location.X, e.Location.Y);
@@ -242,11 +240,16 @@ namespace Mafia2Tool
                     Graphics.Camera.Pitch(dy);
                     Graphics.Camera.Yaw(dx);
                     camUpdated = true;
+                    
                 }
-                else if (Input.IsButtonDown(MouseButtons.Left) && bSelectMode)
+                else if (Input.IsButtonDown(MouseButtons.Left) && bSelectMode && selectTimer <= 0.0f)
                 {
                     Pick(mousePos.X, mousePos.Y);
+                    selectTimer = 1.0f;
                 }
+
+                Ray ray = Graphics.Camera.GetPickingRay(new Vector2(mousePos.X, mousePos.Y), new Vector2(RenderPanel.Size.Width, RenderPanel.Size.Height));
+                Graphics.Light.Direction = new Vector3(-0.2f, -1f, -0.3f);
 
                 float multiplier = ToolkitSettings.CameraSpeed;
 
@@ -290,6 +293,11 @@ namespace Mafia2Tool
                     Graphics.Camera.Position.Z -= speed;
                     camUpdated = true;
                 }
+
+                if (selectTimer > 0.0f)
+                    selectTimer -= 0.1f;
+
+                Graphics.Camera.SetProjectionMatrix(RenderPanel.Width, RenderPanel.Height);
             }
             lastMousePos = mousePos;
             Graphics.Timer.Frame2();

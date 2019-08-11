@@ -188,8 +188,6 @@ namespace ResourceTypes.BufferPools
                 expectedSize += buffer.Data.Length;
                 buffers.Add(buffer.Hash, buffer);
             }
-
-            Console.WriteLine("{0} AGAINST {1}", expectedSize, size);
         }
 
         /// <summary>

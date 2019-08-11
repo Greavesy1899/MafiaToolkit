@@ -49,7 +49,6 @@ namespace Rendering.Graphics
             Resource ddsResource;
             ShaderResourceView _temp;
             DDSTextureLoader.DDS_ALPHA_MODE mode;
-            Debug.WriteLine(fileName);
             string texturePath = GetTextureFromPath(fileName);
             DDSTextureLoader.CreateDDSTextureFromFile(d3d, d3dContext, texturePath, out ddsResource, out _temp, 4096, out mode);
             return _temp;

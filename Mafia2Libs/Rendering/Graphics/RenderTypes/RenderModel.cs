@@ -63,7 +63,8 @@ namespace Rendering.Graphics
                     part.StartIndex = lod.Parts[y].StartIndex;
                     part.MaterialHash = lod.Parts[y].Hash;
                     
-                    switch(part.MaterialHash)
+
+                    switch (part.MaterialHash)
                     {
                         case 1337:
                             part.Material = RenderStorageSingleton.Instance.Prefabs.GizmoRed;
@@ -73,6 +74,9 @@ namespace Rendering.Graphics
                             break;
                         case 1339:
                             part.Material = RenderStorageSingleton.Instance.Prefabs.GizmoGreen;
+                            break;
+                        default:
+                            part.Material = MaterialsManager.LookupMaterialByHash(part.MaterialHash);
                             break;
                     }
                     lod2.ModelParts[y] = part;
@@ -227,22 +231,6 @@ namespace Rendering.Graphics
             isUpdatedNeeded = true;
         }
 
-        private bool InitializePartShaders(Device device)
-        {
-            //TextureLoader AOTextureClass = new TextureLoader();
-            //ShaderResourceView m_Temp;
-
-            //RenderStorageSingleton.Instance.TextureCache.TryGetValue(0, out m_Temp);
-            //AOTexture = m_Temp;
-
-            //if (m_Temp == null)
-            //{
-            //    AOTextureClass.Init(device, "texture.dds");
-            //    RenderStorageSingleton.Instance.TextureCache.Add(0, AOTextureClass.TextureResource);
-            //    AOTexture = AOTextureClass.TextureResource;
-            //}
-            return true;
-        }
         private void SetupShaders()
         {
             for (int x = 0; x != LODs[0].ModelParts.Length; x++)

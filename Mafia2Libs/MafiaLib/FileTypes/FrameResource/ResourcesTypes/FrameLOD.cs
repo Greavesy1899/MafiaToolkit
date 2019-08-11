@@ -76,7 +76,6 @@ namespace ResourceTypes.FrameResource
             distance = reader.ReadSingle();
             indexBufferRef = new Hash(reader);
             vertexDeclaration = (VertexFlags)reader.ReadUInt32();
-            Console.WriteLine(vertexDeclaration);
             vertexBufferRef = new Hash(reader);
             numVerts = reader.ReadInt32();
             nZero1 = reader.ReadInt32();

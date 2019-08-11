@@ -1,6 +1,11 @@
-﻿using ResourceTypes.FrameResource;
+﻿using Gibbed.Squish;
+using Mafia2Tool;
+using ResourceTypes.FrameResource;
+using ResourceTypes.Materials;
 using SharpDX;
 using System;
+using System.Drawing;
+using System.IO;
 using Utils.Lang;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -38,7 +43,23 @@ namespace Forms.Docking
         {
             currentObject = obj;
             SetTransformEdit();
+            SetMaterialTab();
             SetPropertyGrid();
+        }
+
+        private void SetMaterialTab()
+        {
+            LODComboBox.Items.Clear();
+            if (FrameResource.IsFrameType(currentObject))
+            {
+                if (currentObject is FrameObjectSingleMesh)
+                {
+                    var entry = (currentObject as FrameObjectSingleMesh);
+                    for (int i = 0; i != entry.Geometry.NumLods; i++)
+                        LODComboBox.Items.Add("LOD #" + i);
+                    LODComboBox.SelectedIndex = 0;
+                }
+            }
         }
 
         private void SetTransformEdit()
@@ -59,7 +80,7 @@ namespace Forms.Docking
                 ScaleYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Scale.Y);
                 ScaleZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Scale.Z);
             }
-            else if(currentObject is ResourceTypes.Collisions.Collision.Placement)
+            else if (currentObject is ResourceTypes.Collisions.Collision.Placement)
             {
                 ResourceTypes.Collisions.Collision.Placement placement = (currentObject as ResourceTypes.Collisions.Collision.Placement);
                 CurrentEntry.Text = placement.Hash.ToString();
@@ -82,7 +103,7 @@ namespace Forms.Docking
 
         public void UpdateObject()
         {
-            if(IsEntryReady && currentObject != null)
+            if (IsEntryReady && currentObject != null)
             {
                 if (FrameResource.IsFrameType(currentObject))
                 {
@@ -91,11 +112,78 @@ namespace Forms.Docking
                     fObject.Matrix.SetRotationMatrix(new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value)));
                     fObject.Matrix.SetScaleMatrix(new Vector3(Convert.ToSingle(ScaleXNumeric.Value), Convert.ToSingle(ScaleYNumeric.Value), Convert.ToSingle(ScaleZNumeric.Value)));
                 }
-                else if(currentObject is ResourceTypes.Collisions.Collision.Placement)
+                else if (currentObject is ResourceTypes.Collisions.Collision.Placement)
                 {
                     ResourceTypes.Collisions.Collision.Placement placement = (currentObject as ResourceTypes.Collisions.Collision.Placement);
                     placement.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
                     placement.Rotation = new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value));
+                }
+            }
+        }
+
+        public bool ThumbnailCallback()
+        {
+            return false;
+        }
+
+        private Image LoadDDSSquish(string name)
+        {
+            Image.GetThumbnailImageAbort myCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
+            DdsFile dds = new DdsFile();
+
+            name = File.Exists(name) == false ? "Resources/texture.dds" : name;
+
+            using (var stream = File.Open(name, FileMode.Open))
+            {
+                dds.Load(stream);
+            }
+            var thumbnail = dds.Image().GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
+            dds = null;
+            return thumbnail;
+        }
+
+        private Image GetThumbnail(MaterialStruct material)
+        {
+            Material mat = MaterialsManager.LookupMaterialByHash(material.MaterialHash);
+            Image thumbnail = null;
+            if (mat != null)
+            {
+                if(mat.Samplers.ContainsKey("S000"))
+                {
+                    thumbnail = LoadDDSSquish(Path.Combine(SceneData.ScenePath, mat.Samplers["S000"].File));
+                }
+                else
+                {
+                    thumbnail = LoadDDSSquish("Resources/texture.dds");
+                }
+            }
+            else
+            {
+                thumbnail = LoadDDSSquish("Resources/MissingMaterial.dds");
+            }
+            return thumbnail;
+        }
+
+        private void SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Panel.Controls.Clear();
+            if (FrameResource.IsFrameType(currentObject))
+            {
+                if (currentObject is FrameObjectSingleMesh)
+                {
+                    var entry = (currentObject as FrameObjectSingleMesh);
+                    for (int i = 0; i != entry.Material.NumLods; i++)
+                    {
+                        for (int x = 0; x != entry.Material.Materials[i].Length; x++)
+                        {
+                            var mat = entry.Material.Materials[i][x];
+                            TextureEntry textEntry = new TextureEntry();
+
+                            textEntry.SetMaterialName(mat.MaterialName);
+                            textEntry.SetMaterialTexture(GetThumbnail(mat));
+                            Panel.Controls.Add(textEntry);
+                        }
+                    }
                 }
             }
         }

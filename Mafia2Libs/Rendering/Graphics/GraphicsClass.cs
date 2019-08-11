@@ -23,7 +23,7 @@ namespace Rendering.Graphics
 
         private int selectedID;
         private DirectX11Class D3D;
-        private LightClass Light;
+        public LightClass Light;
 
         public GraphicsClass()
         {
@@ -55,26 +55,41 @@ namespace Rendering.Graphics
             //this is backup!
             RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, D3D.DeviceContext, "texture.dds"));
 
+            var structure = new M2TStructure();
             //import gizmo
             RenderModel model = new RenderModel();
-            var GizmoModel = new M2TStructure();
-            GizmoModel.ReadFromM2T("Resources/GizmoModel.m2t");
-            model.ConvertMTKToRenderModel(GizmoModel);
+            structure.ReadFromM2T("Resources/GizmoModel.m2t");
+            model.ConvertMTKToRenderModel(structure);
             model.InitBuffers(D3D.Device, D3D.DeviceContext);
             model.DoRender = false;
-            Assets.Add(1, model);
+
+            RenderModel sky = new RenderModel();
+            structure = new M2TStructure();
+            structure.ReadFromM2T("Resources/sky_backdrop.m2t");
+            sky.ConvertMTKToRenderModel(structure);
+            sky.InitBuffers(D3D.Device, D3D.DeviceContext);
+            sky.DoRender = true;
+            Assets.Add(1, sky);
+
+            RenderModel clouds = new RenderModel();
+            structure = new M2TStructure();
+            structure.ReadFromM2T("Resources/weather_clouds.m2t");
+            clouds.ConvertMTKToRenderModel(structure);
+            clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
+            clouds.DoRender = false;
+            Assets.Add(2, clouds);
             return true;
         }
 
-        public bool InitScene()
+        public bool InitScene(int width, int height)
         {
             Camera = new Camera();
             Camera.Position = new Vector3(0, 0, 15);
-            Camera.SetProjectionMatrix(ToolkitSettings.Width, ToolkitSettings.Height);
+            Camera.SetProjectionMatrix(width, height);
             ClearRenderStack();
             Light = new LightClass();
             Light.SetAmbientColor(0.5f, 0.5f, 0.5f, 1f);
-            Light.SetDiffuseColour(0f, 0f, 0f, 0);
+            Light.SetDiffuseColour(0.5f, 0.5f, 0.5f, 1f);
             Light.Direction = new Vector3(0, 0, 1.0f);
             Light.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
             Light.SetSpecularPower(255.0f);

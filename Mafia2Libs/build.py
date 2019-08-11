@@ -42,6 +42,9 @@ remove_dll("SharpDX.DXGI.dll");
 remove_dll("WeifenLuo.WinFormsUI.Docking.dll");
 remove_dll("UnluacNET.dll");
 remove_dll("BitStreams.dll");
+remove_dll("Gibbed.Squish.dll");
+remove_dll("squish_32.dll");
+remove_dll("squish_64.dll");
 
 #remove files
 remove_file("ToolkitUpdater.pdb")

@@ -114,7 +114,6 @@ namespace ResourceTypes.Collisions
                     nxsData.ElementAt(i).Value.Data.ReadFromFile(meshReader);
 
                 nxsData.ElementAt(i).Value.WriteToFile(writer);
-                Console.WriteLine(i + "/" + nxsData.Count);
             }
 
             if (File.Exists("mesh.bin")) File.Delete("mesh.bin");
@@ -199,7 +198,6 @@ namespace ResourceTypes.Collisions
                 hash = reader.ReadUInt64();
                 unk4 = reader.ReadInt32();
                 unk5 = reader.ReadByte();
-                Console.WriteLine(string.Format("hash {0}, unk4 {1}, unk5 {2}", hash, unk4, unk5));
             }
 
             /// <summary>
@@ -275,13 +273,10 @@ namespace ResourceTypes.Collisions
                 sections = new Section[length];
                 for (int i = 0; i != sections.Length; i++)
                     sections[i] = new Section(reader);
-
-                Console.WriteLine("Passed Collision: {0}", hash);
             }
 
             public void WriteToFile(BinaryWriter writer)
             {
-                Console.WriteLine("saving :" + hash);
                 writer.Write(hash);
 
                 if (data.Flags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES))

@@ -109,6 +109,11 @@ namespace Rendering.Graphics
 
         public void SetProjectionMatrix(int width, int height)
         {
+            if(width == 0 || height == 0)
+            {
+                width = 1024;
+                height = 768;
+            }
             ProjectionMatrix = Matrix.PerspectiveFovRH((float)(Math.PI / 4), (width / height), ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
         }
 

@@ -117,6 +117,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>libs\Gibbed.IO.dll</HintPath>
     </Reference>
+    <Reference Include="Gibbed.Squish, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\Gibbed.Squish.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=1.1.0.145, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.1.1.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
@@ -190,6 +194,12 @@
     </Compile>
     <Compile Include="Controls\NewObjectWindow.Designer.cs">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TextureEntry.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TextureEntry.Designer.cs">
+      <DependentUpon>TextureEntry.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Docking\DockPropertyGrid.cs">
       <SubType>Form</SubType>
@@ -531,7 +541,16 @@
     <Content Include="libs\Gibbed.IO.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="libs\Gibbed.Squish.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="libs\ICSharpCode.SharpZipLib.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\squish_32.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\squish_64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="libs\UnluacNET.dll">
@@ -555,6 +574,9 @@
     </Content>
     <Content Include="Resources\hashes.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\MissingMaterial.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\texture.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -600,6 +622,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\NewObjectWindow.resx">
       <DependentUpon>NewObjectWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TextureEntry.resx">
+      <DependentUpon>TextureEntry.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CityShopEditor.resx">
       <DependentUpon>CityShopEditor.cs</DependentUpon>
