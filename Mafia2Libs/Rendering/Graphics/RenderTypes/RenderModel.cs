@@ -18,7 +18,6 @@ namespace Rendering.Graphics
         {
             public Material Material;
             public ulong MaterialHash;
-            public ShaderResourceView Texture;
             public uint StartIndex;
             public uint NumFaces;
             public BaseShader Shader;
@@ -146,8 +145,8 @@ namespace Rendering.Graphics
 
                     if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
                     {
-                        //int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                       // vertex.Tangent = VertexTranslator.ReadTangentDataFromVB(vertexBuffers[i].Data, startIndex);
+                        int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
+                        vertex.Tangent = VertexTranslator.ReadTangentDataFromVB(vertexBuffers[i].Data, startIndex);
                     }
 
                     if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
@@ -293,8 +292,21 @@ namespace Rendering.Graphics
                                     RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
                                 }
                             }
+                        }
 
-                            part.Texture = texture;
+                        if (part.Material.Samplers.TryGetValue("S001", out sampler))
+                        {
+
+                            ShaderResourceView texture;
+
+                            if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(sampler.TextureHash, out texture))
+                            {
+                                if (!string.IsNullOrEmpty(sampler.File))
+                                {
+                                    texture = TextureLoader.LoadTexture(d3d, d3dContext, sampler.File);
+                                    RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
+                                }
+                            }
                         }
 
                         if (part.Material.Samplers.TryGetValue("S011", out sampler))
@@ -310,14 +322,7 @@ namespace Rendering.Graphics
                                     RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
                                 }
                             }
-
-                            part.Texture = texture;
                         }
-                    }
-                    else
-                    {
-                        //blank white
-                        part.Texture = RenderStorageSingleton.Instance.TextureCache[0];
                     }
                 }
             }
@@ -383,11 +388,6 @@ namespace Rendering.Graphics
             LODs[0].Vertices = null;
             LODs[0].Indices = null;
             BoundingBox.Shutdown();
-            for (int x = 0; x != LODs[0].ModelParts.Length; x++)
-            {
-                LODs[0].ModelParts[x].Texture?.Dispose();
-                LODs[0].ModelParts[x].Texture = null;
-            }
             AOTexture?.Dispose();
             AOTexture = null;
             BoundingBox.Shutdown();

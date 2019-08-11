@@ -42,12 +42,36 @@ struct VS_OUTPUT
 	float3 viewDirection : TEXCOORD2;
 };
 
+void CalculateFromNormalMap(VS_OUTPUT input)
+{
+	//Load normal from normal map
+	float4 normalMap = textures[1].Sample(SampleType, input.TexCoord0);
+
+	//Change normal map range from [0, 1] to [-1, 1]
+	normalMap = (2.0f * normalMap) - 1.0f;
+
+	//Make sure tangent is completely orthogonal to normal
+	input.Tangent = normalize(input.Tangent - dot(input.Tangent, input.Normal) * input.Normal);
+
+	//Create the biTangent
+	float3 biTangent = cross(input.Normal, input.Tangent);
+
+	//Create the "Texture Space"
+	float3x3 texSpace = float3x3(input.Tangent, biTangent, input.Normal);
+
+	//Convert normal from normal map to texture space and store in input.normal
+	input.Normal = normalize(mul(normalMap, texSpace));
+}
+
 float4 CalculateColor(VS_OUTPUT input, float4 color)
 {
+	CalculateFromNormalMap(input);
+
     float3 lightDir;
     float lightIntensity;
     float3 reflection;
     float4 specular;
+
 
     // Set the default output color to the ambient light value for all pixels.
     color = ambientColor;
@@ -87,7 +111,7 @@ float4 LightPixelShader(VS_OUTPUT input) : SV_TARGET
 
     color = CalculateColor(input, color);
 	color = (color * aoTextureColor * diffuseTextureColor);
-
+	
 	return color;
 }
 

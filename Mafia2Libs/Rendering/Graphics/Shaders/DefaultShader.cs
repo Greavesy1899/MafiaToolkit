@@ -231,6 +231,15 @@ namespace Rendering.Graphics
 
                 context.PixelShader.SetShaderResource(0, texture);
 
+                if (material.Samplers.TryGetValue("S001", out sampler))
+                {
+                    texture = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
+                }
+                else
+                {
+                    texture = RenderStorageSingleton.Instance.TextureCache[0];
+                }
+                context.PixelShader.SetShaderResource(1, texture);
             }
 
             ShaderParams = parameters;
