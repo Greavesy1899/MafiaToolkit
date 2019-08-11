@@ -79,6 +79,16 @@ namespace Utils.SharpDXExtensions
             return vec;
         }
 
+        public static Vector4 ReadFromFile(MemoryStream reader, bool isBigEndian)
+        {
+            Vector4 vec = new Vector4();
+            vec.X = reader.ReadSingle(isBigEndian);
+            vec.Y = reader.ReadSingle(isBigEndian);
+            vec.Z = reader.ReadSingle(isBigEndian);
+            vec.W = reader.ReadSingle(isBigEndian);
+            return vec;
+        }
+
         public static void WriteToFile(this Vector4 vec, BinaryWriter writer)
         {
             writer.Write(vec.X);

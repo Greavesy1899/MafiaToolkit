@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Utils.Extensions;
 
 namespace ResourceTypes.FrameResource
 {
@@ -108,9 +109,9 @@ namespace ResourceTypes.FrameResource
 
         public FrameResource(string file)
         {
-            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
+            using (MemoryStream reader = new MemoryStream(File.ReadAllBytes(file), false))
             {
-                ReadFromFile(reader);
+                ReadFromFile(reader, false);
             }
         }
 
@@ -123,10 +124,10 @@ namespace ResourceTypes.FrameResource
             return scene;
         }
 
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             header = new FrameHeader();
-            header.ReadFromFile(reader);
+            header.ReadFromFile(reader, isBigEndian);
 
             int j = 0;
 
@@ -137,31 +138,31 @@ namespace ResourceTypes.FrameResource
             }
             for (int i = 0; i != header.NumGeometries; i++)
             {
-                FrameGeometry geo = new FrameGeometry(reader);
+                FrameGeometry geo = new FrameGeometry(reader, isBigEndian);
                 frameGeometries.Add(geo.RefID, geo);
                 NewFrames.Add(new FrameHolder(j++, geo));
             }
             for (int i = 0; i != header.NumMaterialResources; i++)
             {
-                FrameMaterial mat = new FrameMaterial(reader);
+                FrameMaterial mat = new FrameMaterial(reader, isBigEndian);
                 frameMaterials.Add(mat.RefID, mat);
                 NewFrames.Add(new FrameHolder(j++, mat));
             }
             for (int i = 0; i != header.NumBlendInfos; i++)
             {
-                FrameBlendInfo blendInfo = new FrameBlendInfo(reader);
+                FrameBlendInfo blendInfo = new FrameBlendInfo(reader, isBigEndian);
                 frameBlendInfos.Add(blendInfo.RefID, blendInfo);
                 NewFrames.Add(new FrameHolder(j++, blendInfo));
             }
             for (int i = 0; i != header.NumSkeletons; i++)
             {
-                FrameSkeleton skeleton = new FrameSkeleton(reader);
+                FrameSkeleton skeleton = new FrameSkeleton(reader, isBigEndian);
                 frameSkeletons.Add(skeleton.RefID, skeleton);
                 NewFrames.Add(new FrameHolder(j++, skeleton));
             }
             for (int i = 0; i != header.NumSkelHierachies; i++)
             {
-                FrameSkeletonHierachy skeletonHierachy = new FrameSkeletonHierachy(reader);
+                FrameSkeletonHierachy skeletonHierachy = new FrameSkeletonHierachy(reader, isBigEndian);
                 frameSkeletonHierachies.Add(skeletonHierachy.RefID, skeletonHierachy);
                 NewFrames.Add(new FrameHolder(j++, skeletonHierachy));
             }
@@ -172,17 +173,17 @@ namespace ResourceTypes.FrameResource
             if (header.NumObjects > 0)
             {
                 for (int i = 0; i != header.NumObjects; i++)
-                    objectTypes[i] = reader.ReadInt32();
+                    objectTypes[i] = reader.ReadInt32(isBigEndian);
 
                 for (int i = 0; i != header.NumObjects; i++)
                 {
                     FrameObjectBase newObject = new FrameObjectBase();
                     if (objectTypes[i] == (int)ObjectType.Joint)
-                        newObject = new FrameObjectJoint(reader);
+                        newObject = new FrameObjectJoint(reader, isBigEndian);
 
                     else if (objectTypes[i] == (int)ObjectType.SingleMesh)
                     {
-                        newObject = new FrameObjectSingleMesh(reader);
+                        newObject = new FrameObjectSingleMesh(reader, isBigEndian);
                         FrameObjectSingleMesh mesh = newObject as FrameObjectSingleMesh;
 
                         if (mesh.MeshIndex != -1)
@@ -198,37 +199,37 @@ namespace ResourceTypes.FrameResource
                         }
                     }
                     else if (objectTypes[i] == (int)ObjectType.Frame)
-                        newObject = new FrameObjectFrame(reader);
+                        newObject = new FrameObjectFrame(reader, isBigEndian);
 
                     else if (objectTypes[i] == (int)ObjectType.Light)
-                        newObject = new FrameObjectLight(reader);
+                        newObject = new FrameObjectLight(reader, isBigEndian);
 
                     else if (objectTypes[i] == (int)ObjectType.Camera)
-                        newObject = new FrameObjectCamera(reader);
+                        newObject = new FrameObjectCamera(reader, isBigEndian);
 
                     else if (objectTypes[i] == (int)ObjectType.Component_U00000005)
-                        newObject = new FrameObjectComponent_U005(reader);
+                        newObject = new FrameObjectComponent_U005(reader, isBigEndian);
 
                     else if (objectTypes[i] == (int)ObjectType.Sector)
-                        newObject = new FrameObjectSector(reader);
+                        newObject = new FrameObjectSector(reader, isBigEndian);
 
                     else if (objectTypes[i] == (int)ObjectType.Dummy)
-                        newObject = new FrameObjectDummy(reader);
+                        newObject = new FrameObjectDummy(reader, isBigEndian);
 
                     else if (objectTypes[i] == (int)ObjectType.ParticleDeflector)
-                        newObject = new FrameObjectDeflector(reader);
+                        newObject = new FrameObjectDeflector(reader, isBigEndian);
 
                     else if (objectTypes[i] == (int)ObjectType.Area)
-                        newObject = new FrameObjectArea(reader);
+                        newObject = new FrameObjectArea(reader, isBigEndian);
 
                     else if (objectTypes[i] == (int)ObjectType.Target)
-                        newObject = new FrameObjectTarget(reader);
+                        newObject = new FrameObjectTarget(reader, isBigEndian);
 
                     else if (objectTypes[i] == (int)ObjectType.Model)
                     {
-                        FrameObjectModel mesh = new FrameObjectModel(reader);
-                        mesh.ReadFromFile(reader);
-                        mesh.ReadFromFilePart2(reader, (FrameSkeleton)GetEntryFromIdx(mesh.SkeletonIndex).Data, (FrameBlendInfo)GetEntryFromIdx(mesh.BlendInfoIndex).Data);
+                        FrameObjectModel mesh = new FrameObjectModel(reader, isBigEndian);
+                        mesh.ReadFromFile(reader, isBigEndian);
+                        mesh.ReadFromFilePart2(reader, isBigEndian, (FrameSkeleton)GetEntryFromIdx(mesh.SkeletonIndex).Data, (FrameBlendInfo)GetEntryFromIdx(mesh.BlendInfoIndex).Data);
                         mesh.AddRef(FrameEntryRefTypes.Mesh, GetEntryFromIdx(mesh.MeshIndex).Data.RefID);
                         mesh.Geometry = frameGeometries[mesh.Refs[FrameEntry.MeshRef]];
                         mesh.AddRef(FrameEntryRefTypes.Material, GetEntryFromIdx(mesh.MaterialIndex).Data.RefID);
@@ -242,7 +243,7 @@ namespace ResourceTypes.FrameResource
                         newObject = mesh;
                     }
                     else if (objectTypes[i] == (int)ObjectType.Collision)
-                        newObject = new FrameObjectCollision(reader);
+                        newObject = new FrameObjectCollision(reader, isBigEndian);
 
                     frameObjects.Add(newObject.RefID, newObject);
                     NewFrames.Add(new FrameHolder(i + numBlocks, newObject));

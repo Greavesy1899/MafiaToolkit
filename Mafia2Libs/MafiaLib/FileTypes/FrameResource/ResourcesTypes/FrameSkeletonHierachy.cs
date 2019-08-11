@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Utils.Extensions;
 
 namespace ResourceTypes.FrameResource
 {
@@ -27,16 +28,16 @@ namespace ResourceTypes.FrameResource
             set { unkData = value; }
         }
 
-        public FrameSkeletonHierachy(BinaryReader reader) : base()
+        public FrameSkeletonHierachy(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            int count = reader.ReadInt32(); //usually matches amount of nodes
+            int count = reader.ReadInt32(isBigEndian); //usually matches amount of nodes
             parentIndices = reader.ReadBytes(count); //[m_numRefs]; 0xFF == root;
-            unkNum = reader.ReadByte(); //always 0?
+            unkNum = reader.ReadByte8(); //always 0?
             lastChildIndices = reader.ReadBytes(count); //[m_numRefs]; last child index. If respective item has no child, the previouse value is copied [n-1], so the array is sorted in increase;
             unkData = reader.ReadBytes(count + 1); //[m_numRefs+1]; always [num+1, 1,2,3,...,num,0]
         }

@@ -39,9 +39,9 @@ namespace ResourceTypes.FrameResource
             set { bounds.Maximum.Z = value; }
         }
 
-        public FrameObjectDummy(BinaryReader reader) : base()
+        public FrameObjectDummy(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
         public FrameObjectDummy(FrameObjectDummy other) : base(other)
@@ -54,10 +54,10 @@ namespace ResourceTypes.FrameResource
             bounds = new BoundingBox();
         }
 
-        public override void ReadFromFile(BinaryReader reader)
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            base.ReadFromFile(reader);
-            bounds = BoundingBoxExtenders.ReadFromFile(reader);
+            base.ReadFromFile(reader, isBigEndian);
+            bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
         }
 
         public override void WriteToFile(BinaryWriter writer)

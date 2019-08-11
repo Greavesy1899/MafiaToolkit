@@ -1223,6 +1223,16 @@ namespace Mafia2Tool
 
         private void CameraSpeedUpdate(object sender, EventArgs e)
         {
+            if (CameraSpeedTool.Value == CameraSpeedTool.Increment)
+            {
+                CameraSpeedTool.Increment = CameraSpeedTool.Increment * Convert.ToDecimal(0.1);
+            }
+            else if (CameraSpeedTool.Value == (CameraSpeedTool.Increment * 10) + CameraSpeedTool.Increment)
+            {
+                CameraSpeedTool.Value = CameraSpeedTool.Increment * 20;
+                CameraSpeedTool.Increment = CameraSpeedTool.Increment * 10;
+            }
+
             ToolkitSettings.CameraSpeed = Convert.ToSingle(CameraSpeedTool.Value);
             ToolkitSettings.WriteKey("CameraSpeed", "ModelViewer", ToolkitSettings.CameraSpeed.ToString());
         }

@@ -71,25 +71,25 @@ namespace ResourceTypes.FrameResource
             set { partitionInfo = value; }
         }
 
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            distance = reader.ReadSingle();
-            indexBufferRef = new Hash(reader);
-            vertexDeclaration = (VertexFlags)reader.ReadUInt32();
-            vertexBufferRef = new Hash(reader);
-            numVerts = reader.ReadInt32();
-            nZero1 = reader.ReadInt32();
+            distance = reader.ReadSingle(isBigEndian);
+            indexBufferRef = new Hash(reader, isBigEndian);
+            vertexDeclaration = (VertexFlags)reader.ReadUInt32(isBigEndian);
+            vertexBufferRef = new Hash(reader, isBigEndian);
+            numVerts = reader.ReadInt32(isBigEndian);
+            nZero1 = reader.ReadInt32(isBigEndian);
 
-            nPartition = reader.ReadInt32();
+            nPartition = reader.ReadInt32(isBigEndian);
             if (nPartition != 0)
-                partitionInfo.ReadFromFile(reader);
+                partitionInfo.ReadFromFile(reader, isBigEndian);
 
-            matSplitType = reader.ReadInt32();
+            matSplitType = reader.ReadInt32(isBigEndian);
 
             if (matSplitType != 0)
-                splitInfo.ReadFromFile(reader, matSplitType);
+                splitInfo.ReadFromFile(reader, isBigEndian, matSplitType);
 
-            zeroTail = reader.ReadInt32();
+            zeroTail = reader.ReadInt32(isBigEndian);
         }
 
         public void WriteToFile(BinaryWriter writer)
@@ -143,11 +143,11 @@ namespace ResourceTypes.FrameResource
                 set { baseIndex = value; }
             }
 
-            public MaterialSplit(BinaryReader reader)
+            public MaterialSplit(MemoryStream reader, bool isBigEndian)
             {
-                firstBurst = reader.ReadInt32();
-                numBurst = reader.ReadInt32();
-                baseIndex = reader.ReadInt32();
+                firstBurst = reader.ReadInt32(isBigEndian);
+                numBurst = reader.ReadInt32(isBigEndian);
+                baseIndex = reader.ReadInt32(isBigEndian);
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -186,17 +186,17 @@ namespace ResourceTypes.FrameResource
                 set { nrightIndex = value; }
             }
 
-            public MaterialBurst(BinaryReader reader)
+            public MaterialBurst(MemoryStream reader, bool isBigEndian)
             {
                 bounds = new short[6];
 
                 for (int i = 0; i != 6; i++)
-                    bounds[i] = reader.ReadInt16();
+                    bounds[i] = reader.ReadInt16(isBigEndian);
 
-                firstIndex = reader.ReadUInt16();
-                secondIndex = reader.ReadUInt16();
-                nleftIndex = reader.ReadInt16();
-                nrightIndex = reader.ReadInt16();
+                firstIndex = reader.ReadUInt16(isBigEndian);
+                secondIndex = reader.ReadUInt16(isBigEndian);
+                nleftIndex = reader.ReadInt16(isBigEndian);
+                nrightIndex = reader.ReadInt16(isBigEndian);
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -235,12 +235,12 @@ namespace ResourceTypes.FrameResource
                 set { p1 = value; }
             }
 
-            public Descriptor(BinaryReader reader)
+            public Descriptor(MemoryStream reader, bool isBigEndian)
             {
-                num1 = reader.ReadInt32();
-                p0 = new short[3] { reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16()}; //packed
-                p1 = new short[3] { reader.ReadInt16(), reader.ReadInt16(), reader.ReadInt16()}; //packed
-                num2 = reader.ReadInt32();
+                num1 = reader.ReadInt32(isBigEndian);
+                p0 = new short[3] { reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian) }; //packed
+                p1 = new short[3] { reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian) }; //packed
+                num2 = reader.ReadInt32(isBigEndian);
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -334,26 +334,26 @@ namespace ResourceTypes.FrameResource
                 set { scaleVector = value; }
             }
 
-            public void ReadFromFile(BinaryReader reader)
+            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
-                memRequireA = reader.ReadInt32();
-                memRequireB = reader.ReadInt32();
-                partitionType = reader.ReadInt32();
+                memRequireA = reader.ReadInt32(isBigEndian);
+                memRequireB = reader.ReadInt32(isBigEndian);
+                partitionType = reader.ReadInt32(isBigEndian);
                 isBone = reader.ReadBoolean();
 
                 if (isBone)
                 {
-                    offsetVector = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-                    scaleVector = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                    offsetVector = new Vector3(reader.ReadSingle(isBigEndian), reader.ReadSingle(isBigEndian), reader.ReadSingle(isBigEndian));
+                    scaleVector = new Vector3(reader.ReadSingle(isBigEndian), reader.ReadSingle(isBigEndian), reader.ReadSingle(isBigEndian));
 
-                    numDesc1Length = reader.ReadInt32();
+                    numDesc1Length = reader.ReadInt32(isBigEndian);
                     numDesc1 = new Descriptor[numDesc1Length];
                     for (int i = 0; i != numDesc1.Length; i++)
                     {
-                        numDesc1[i] = new Descriptor(reader);
+                        numDesc1[i] = new Descriptor(reader, isBigEndian);
                     }
                 }
-                numLongs1Length = reader.ReadInt32();
+                numLongs1Length = reader.ReadInt32(isBigEndian);
                 isAvailB = reader.ReadBoolean();
                 if (isAvailB)
                 {
@@ -361,17 +361,17 @@ namespace ResourceTypes.FrameResource
                     numLongs1 = new int[numLongs1Length];
                     for (int i = 0; i != numLongs1.Length; i++)
                     {
-                        numLongs1[i] = reader.ReadInt32();
+                        numLongs1[i] = reader.ReadInt32(isBigEndian);
                     }
                 }
-                numLongs2Length = reader.ReadInt32();
+                numLongs2Length = reader.ReadInt32(isBigEndian);
                 isAvailC = reader.ReadBoolean();
                 if(isAvailC)
                 { 
                     numLongs2 = new int[numLongs2Length];
                     for (int i = 0; i != numLongs2.Length; i++)
                     {
-                        numLongs2[i] = reader.ReadInt32();
+                        numLongs2[i] = reader.ReadInt32(isBigEndian);
                     }
                 }
             }
@@ -518,16 +518,16 @@ namespace ResourceTypes.FrameResource
                 set { materialSplits = value; }
             }
 
-            public void ReadFromFile(BinaryReader reader, int type)
+            public void ReadFromFile(MemoryStream reader, bool isBigEndian, int type)
             {
                 if (type == 12)
                 {
-                    unk18 = reader.ReadInt32();
-                    numVerts = reader.ReadInt32();
-                    numFaces = reader.ReadInt32();
-                    unk20 = reader.ReadInt32();
-                    unk21 = reader.ReadInt32();
-                    numSplitGroup = reader.ReadInt32();
+                    unk18 = reader.ReadInt32(isBigEndian);
+                    numVerts = reader.ReadInt32(isBigEndian);
+                    numFaces = reader.ReadInt32(isBigEndian);
+                    unk20 = reader.ReadInt32(isBigEndian);
+                    unk21 = reader.ReadInt32(isBigEndian);
+                    numSplitGroup = reader.ReadInt32(isBigEndian);
 
                     if (unk18 + unk20 + unk21 + nSizeOfMatBurstEntries + nSizeOfMatSplitEntries != 0xE)
                         throw new Exception("does not equal 14");
@@ -541,23 +541,23 @@ namespace ResourceTypes.FrameResource
                 if (numSplitGroup == 1)
                 {
                     availD = reader.ReadBoolean();
-                    unk24 = reader.ReadInt32();
-                    nSizeOfMatBurstEntries = reader.ReadInt32();
-                    nSizeOfMatSplitEntries = reader.ReadInt32();
-                    numMatBurst = reader.ReadInt32();
-                    numMatSplit = reader.ReadInt32();
-                    hash = reader.ReadUInt64();
+                    unk24 = reader.ReadInt32(isBigEndian);
+                    nSizeOfMatBurstEntries = reader.ReadInt32(isBigEndian);
+                    nSizeOfMatSplitEntries = reader.ReadInt32(isBigEndian);
+                    numMatBurst = reader.ReadInt32(isBigEndian);
+                    numMatSplit = reader.ReadInt32(isBigEndian);
+                    hash = reader.ReadUInt64(isBigEndian);
                     materialBursts = new MaterialBurst[numMatBurst];
                     materialSplits = new MaterialSplit[numMatSplit];
 
 
                     for (int i = 0; i != materialBursts.Length; i++)
                     {
-                        materialBursts[i] = new MaterialBurst(reader);
+                        materialBursts[i] = new MaterialBurst(reader, isBigEndian);
                     }
                     for (int i = 0; i != materialSplits.Length; i++)
                     {
-                        materialSplits[i] = new MaterialSplit(reader);
+                        materialSplits[i] = new MaterialSplit(reader, isBigEndian);
                     }
                 }
             }

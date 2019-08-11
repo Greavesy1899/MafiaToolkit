@@ -18,9 +18,9 @@ namespace ResourceTypes.FrameResource
             this.name = name;
 
         }
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            name = new Hash(reader);
+            name = new Hash(reader, isBigEndian);
         }
 
         public void WriteToFile(BinaryWriter writer)

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.IO;
 using SharpDX;
+using Utils.Extensions;
 using Utils.SharpDXExtensions;
 using Utils.Types;
 
@@ -66,44 +67,44 @@ namespace ResourceTypes.FrameResource
             set { mappingForBlendingInfos = value; }
         }
 
-        public FrameSkeleton(BinaryReader reader) : base()
+        public FrameSkeleton(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             //all the same values?
             for (int i = 0; i != numBones.Length; i++)
-                numBones[i] = reader.ReadInt32();
+                numBones[i] = reader.ReadInt32(isBigEndian);
 
-            numBlendIDs = reader.ReadInt32();
-            numLods = reader.ReadInt32();
+            numBlendIDs = reader.ReadInt32(isBigEndian);
+            numLods = reader.ReadInt32(isBigEndian);
 
             //unknown lod data; 
             unkLodData = new int[numLods];
             for (int i = 0; i != unkLodData.Length; i++)
-                unkLodData[i] = reader.ReadInt32();
+                unkLodData[i] = reader.ReadInt32(isBigEndian);
 
-            idType = reader.ReadByte();
+            idType = reader.ReadByte8();
 
             //Bone Names and LOD data.
             boneNames = new Hash[numBones[0]];
             for (int i = 0; i != boneNames.Length; i++)
-                boneNames[i] = new Hash(reader);
+                boneNames[i] = new Hash(reader, isBigEndian);
 
             //Matrices;
             matrices1 = new TransformMatrix[numBones[1]];
             matrices2 = new TransformMatrix[numBones[3]];
 
             for (int i = 0; i != matrices1.Length; i++)
-                matrices1[i] = new TransformMatrix(reader);
+                matrices1[i] = new TransformMatrix(reader, isBigEndian);
 
-            numUnkCount2 = reader.ReadInt32();
+            numUnkCount2 = reader.ReadInt32(isBigEndian);
             boneLODUsage = reader.ReadBytes(numUnkCount2);
 
             for (int i = 0; i != matrices2.Length; i++)
-                matrices2[i] = new TransformMatrix(reader);
+                matrices2[i] = new TransformMatrix(reader, isBigEndian);
 
             //BoneMappings.
             mappingForBlendingInfos = new MappingForBlendingInfo[numLods];
@@ -113,7 +114,7 @@ namespace ResourceTypes.FrameResource
 
                 for (int x = 0; x != mappingForBlendingInfos[i].Bounds.Length; x++)
                 {
-                    mappingForBlendingInfos[i].Bounds[x] = BoundingBoxExtenders.ReadFromFile(reader);
+                    mappingForBlendingInfos[i].Bounds[x] = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
                 }
                 if (reader.ReadByte() != 0)
                     throw new System.Exception("oops");

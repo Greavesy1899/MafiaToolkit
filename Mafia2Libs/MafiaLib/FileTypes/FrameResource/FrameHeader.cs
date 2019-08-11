@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using Utils.Extensions;
 using Utils.Types;
 
 namespace ResourceTypes.FrameResource
@@ -99,26 +100,26 @@ namespace ResourceTypes.FrameResource
         /// Read data from file.
         /// </summary>
         /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             isScene = reader.ReadBoolean();
-            numFolderNames = reader.ReadInt32();
-            numGeometries = reader.ReadInt32();
-            numMaterialResources = reader.ReadInt32();
-            numBlendInfos = reader.ReadInt32();
-            numSkeletons = reader.ReadInt32();
-            numSkelHierachies = reader.ReadInt32();
-            numObjects = reader.ReadInt32();
+            numFolderNames = reader.ReadInt32(isBigEndian);
+            numGeometries = reader.ReadInt32(isBigEndian);
+            numMaterialResources = reader.ReadInt32(isBigEndian);
+            numBlendInfos = reader.ReadInt32(isBigEndian);
+            numSkeletons = reader.ReadInt32(isBigEndian);
+            numSkelHierachies = reader.ReadInt32(isBigEndian);
+            numObjects = reader.ReadInt32(isBigEndian);
 
             if (isScene)
             {
-                unk1 = reader.ReadSingle();
-                unk2 = reader.ReadSingle();
-                sceneName = new Hash(reader);
+                unk1 = reader.ReadSingle(isBigEndian);
+                unk2 = reader.ReadSingle(isBigEndian);
+                sceneName = new Hash(reader, isBigEndian);
 
                 for (int i = 0; i < (4 * 3); i++)
                 {
-                    unkData[i] = reader.ReadSingle();
+                    unkData[i] = reader.ReadSingle(isBigEndian);
                 }
                 unk3 = reader.ReadBoolean();
             }
@@ -126,7 +127,7 @@ namespace ResourceTypes.FrameResource
             for (int i = 0; i != numFolderNames; i++)
             {
                 FrameHeaderScene scene = new FrameHeaderScene();
-                scene.ReadFromFile(reader);
+                scene.ReadFromFile(reader, isBigEndian);
                 sceneFolders.Add(scene);
             }
         }

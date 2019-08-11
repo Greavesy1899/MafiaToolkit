@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using ResourceTypes.Actors;
 using Utils.Types;
 
@@ -20,9 +18,9 @@ namespace ResourceTypes.FrameResource
             set { item = value; }
         }
 
-        public FrameObjectFrame(BinaryReader reader) : base()
+        public FrameObjectFrame(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
         public FrameObjectFrame(FrameObjectFrame other) : base(other)
@@ -35,10 +33,10 @@ namespace ResourceTypes.FrameResource
             actorHash = new Hash();
         }
 
-        public override void ReadFromFile(BinaryReader reader)
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            base.ReadFromFile(reader);
-            actorHash = new Hash(reader);
+            base.ReadFromFile(reader, isBigEndian);
+            actorHash = new Hash(reader, isBigEndian);
         }
 
         public override void WriteToFile(BinaryWriter writer)

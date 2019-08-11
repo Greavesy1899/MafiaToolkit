@@ -26,7 +26,7 @@ namespace Gibbed.Mafia2.FileFormats.Archive
     {
         // ReSharper disable InconsistentNaming
         PC = 0x50430000, // 'PC\0\0'
-        Xbox360 = 0x30363358, // 'X360'
+        Xbox360 = 1479751216, // 'X360'
         PS3 = 1347629824, // 'PS3\0'
         // ReSharper restore InconsistentNaming
     }

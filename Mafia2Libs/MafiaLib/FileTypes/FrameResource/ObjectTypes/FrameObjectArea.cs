@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.IO;
 using SharpDX;
+using Utils.Extensions;
 using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.FrameResource
@@ -57,9 +58,9 @@ namespace ResourceTypes.FrameResource
             set { bounds.Maximum.Z = value; }
         }
 
-        public FrameObjectArea(BinaryReader reader) : base()
+        public FrameObjectArea(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
         public FrameObjectArea() : base()
@@ -78,17 +79,17 @@ namespace ResourceTypes.FrameResource
             bounds = other.bounds;
         }
 
-        public override void ReadFromFile(BinaryReader reader)
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            base.ReadFromFile(reader);
-            unk01 = reader.ReadInt32();
-            planesSize = reader.ReadInt32();
+            base.ReadFromFile(reader, isBigEndian);
+            unk01 = reader.ReadInt32(isBigEndian);
+            planesSize = reader.ReadInt32(isBigEndian);
             planes = new Vector4[planesSize];
 
             for (int i = 0; i != planes.Length; i++)
-                planes[i] = Vector4Extenders.ReadFromFile(reader);
+                planes[i] = Vector4Extenders.ReadFromFile(reader, isBigEndian);
 
-            bounds = BoundingBoxExtenders.ReadFromFile(reader);
+            bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
         }
 
         public override void WriteToFile(BinaryWriter writer)

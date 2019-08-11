@@ -91,15 +91,15 @@ namespace ResourceTypes.FrameResource
             nameTableFlags = other.nameTableFlags;
         }
 
-        public virtual void ReadFromFile(BinaryReader reader)
+        public virtual void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            name = new Hash(reader);
-            secondaryFlags = reader.ReadInt32();
-            transformMatrix = new TransformMatrix(reader);
-            unk3 = reader.ReadInt16();
-            parentIndex1 = new ParentStruct(reader.ReadInt32());
-            parentIndex2 = new ParentStruct(reader.ReadInt32());
-            unk6 = reader.ReadInt16();
+            name = new Hash(reader, isBigEndian);
+            secondaryFlags = reader.ReadInt32(isBigEndian);
+            transformMatrix = new TransformMatrix(reader, isBigEndian);
+            unk3 = reader.ReadInt16(isBigEndian);
+            parentIndex1 = new ParentStruct(reader.ReadInt32(isBigEndian));
+            parentIndex2 = new ParentStruct(reader.ReadInt32(isBigEndian));
+            unk6 = reader.ReadInt16(isBigEndian);
         }
 
         public virtual void WriteToFile(BinaryWriter writer)

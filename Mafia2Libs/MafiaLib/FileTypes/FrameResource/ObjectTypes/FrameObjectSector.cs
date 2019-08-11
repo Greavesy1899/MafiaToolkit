@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using SharpDX;
+using Utils.Extensions;
 using Utils.SharpDXExtensions;
 using Utils.Types;
 
@@ -89,25 +90,25 @@ namespace ResourceTypes.FrameResource
             sectorName = new Hash(sectorName.String);
         }
 
-        public FrameObjectSector(BinaryReader reader) : base()
+        public FrameObjectSector(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
-        public override void ReadFromFile(BinaryReader reader)
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            base.ReadFromFile(reader);
-            unk_08_int = reader.ReadInt32();
-            planesSize = reader.ReadInt32();
+            base.ReadFromFile(reader, isBigEndian);
+            unk_08_int = reader.ReadInt32(isBigEndian);
+            planesSize = reader.ReadInt32(isBigEndian);
 
             planes = new Vector4[planesSize];
             for (int i = 0; i != planes.Length; i++)
-                planes[i] = Vector4Extenders.ReadFromFile(reader);
+                planes[i] = Vector4Extenders.ReadFromFile(reader, isBigEndian);
 
-            bounds = BoundingBoxExtenders.ReadFromFile(reader);
-            unk_13_vector3 = Vector3Extenders.ReadFromFile(reader);
-            unk_14_vector3 = Vector3Extenders.ReadFromFile(reader);
-            sectorName = new Hash(reader);
+            bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
+            unk_13_vector3 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            unk_14_vector3 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            sectorName = new Hash(reader, isBigEndian);
 
         }
 

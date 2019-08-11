@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.IO;
 using SharpDX;
+using Utils.Extensions;
 using Utils.SharpDXExtensions;
 using Utils.Types;
 
@@ -26,33 +27,33 @@ namespace ResourceTypes.FrameResource
             set { bounds = value; }
         }
 
-        public FrameBlendInfo(BinaryReader reader) : base()
+        public FrameBlendInfo(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            int numBones = reader.ReadInt32();
-            byte numLods = reader.ReadByte();
+            int numBones = reader.ReadInt32(isBigEndian);
+            byte numLods = reader.ReadByte8();
 
             //index infos
             boneIndexInfos = new BoneIndexInfo[numLods];
             for (int i = 0; i != boneIndexInfos.Length; i++)
             {
-                boneIndexInfos[i].NumIDs = reader.ReadInt32();
-                boneIndexInfos[i].NumMaterials = reader.ReadInt32();
+                boneIndexInfos[i].NumIDs = reader.ReadInt32(isBigEndian);
+                boneIndexInfos[i].NumMaterials = reader.ReadInt32(isBigEndian);
             }
 
             //bounds for all bones together?
-            bounds = BoundingBoxExtenders.ReadFromFile(reader);
+            bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
 
             //Bone Transforms
             boneTransforms = new BoneTransform[numBones];
             for (int i = 0; i != boneTransforms.Length; i++)
             {
                 boneTransforms[i] = new BoneTransform();
-                boneTransforms[i].ReadFromFile(reader);
+                boneTransforms[i].ReadFromFile(reader, isBigEndian);
             }
 
             for (int i = 0; i != boneIndexInfos.Length; i++)
@@ -61,12 +62,12 @@ namespace ResourceTypes.FrameResource
 
                 //IDs..
                 boneIndexInfos[i].IDs = reader.ReadBytes(boneIndexInfos[i].NumIDs);
-                boneIndexInfos[i].Unk01 = reader.ReadInt32();
+                boneIndexInfos[i].Unk01 = reader.ReadInt32(isBigEndian);
 
                 //Material blendings..
                 boneIndexInfos[i].MatBlends = new ushort[boneIndexInfos[i].NumMaterials];
                 for (int x = 0; x != boneIndexInfos[i].NumMaterials; x++)
-                    boneIndexInfos[i].MatBlends[x] = reader.ReadUInt16();
+                    boneIndexInfos[i].MatBlends[x] = reader.ReadUInt16(isBigEndian);
             }
         }
 
@@ -162,11 +163,11 @@ namespace ResourceTypes.FrameResource
                 set { isValid = value; }
             }
 
-            public void ReadFromFile(BinaryReader reader)
+            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
-                transform = new TransformMatrix(reader);
-                bounds = BoundingBoxExtenders.ReadFromFile(reader);
-                isValid = reader.ReadByte();
+                transform = new TransformMatrix(reader, isBigEndian);
+                bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
+                isValid = reader.ReadByte8();
             }
 
             public void WriteToFile(BinaryWriter writer)

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Utils.Extensions;
 
 namespace ResourceTypes.FrameResource
 {
@@ -12,9 +13,9 @@ namespace ResourceTypes.FrameResource
             set { hash = value; }
         }
 
-        public FrameObjectCollision(BinaryReader reader) : base()
+        public FrameObjectCollision(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
         public FrameObjectCollision() : base()
@@ -27,10 +28,10 @@ namespace ResourceTypes.FrameResource
             hash = other.hash;
         }
 
-        public override void ReadFromFile(BinaryReader reader)
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            base.ReadFromFile(reader);
-            hash = reader.ReadUInt64();
+            base.ReadFromFile(reader, isBigEndian);
+            hash = reader.ReadUInt64(isBigEndian);
         }
 
         public override void WriteToFile(BinaryWriter writer)

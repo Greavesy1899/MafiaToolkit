@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO;
+using Utils.Extensions;
 using Utils.Models;
 using Utils.Types;
 
@@ -75,7 +76,7 @@ namespace ResourceTypes.FrameResource
             set { hierachy = value; }
         }
 
-        public FrameObjectModel (BinaryReader reader)
+        public FrameObjectModel (MemoryStream reader, bool isBigEndian)
         {
         }
 
@@ -105,16 +106,16 @@ namespace ResourceTypes.FrameResource
                 hitBoxInfo[i] = new HitBoxInfo(hitBoxInfo[i]);
         }
 
-        public override void ReadFromFile(BinaryReader reader)
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            base.ReadFromFile(reader);
+            base.ReadFromFile(reader, isBigEndian);
 
-            blendInfoIndex = reader.ReadInt32();
-            skeletonIndex = reader.ReadInt32();
-            skeletonHierachyIndex = reader.ReadInt32();
+            blendInfoIndex = reader.ReadInt32(isBigEndian);
+            skeletonIndex = reader.ReadInt32(isBigEndian);
+            skeletonHierachyIndex = reader.ReadInt32(isBigEndian);
         }
 
-        public void ReadFromFilePart2(BinaryReader reader, FrameSkeleton skeleton, FrameBlendInfo blendInfo)
+        public void ReadFromFilePart2(MemoryStream reader, bool isBigEndian, FrameSkeleton skeleton, FrameBlendInfo blendInfo)
         {
             this.skeleton = skeleton;
             this.blendInfo = blendInfo;
@@ -122,25 +123,25 @@ namespace ResourceTypes.FrameResource
             //do rest matrices.
             restPose = new TransformMatrix[skeleton.NumBones[0]];
             for (int i = 0; i != restPose.Length; i++)
-                restPose[i] = new TransformMatrix(reader);
+                restPose[i] = new TransformMatrix(reader, isBigEndian);
 
             //unknown transform.
-            unkTrasform = new TransformMatrix(reader);
+            unkTrasform = new TransformMatrix(reader, isBigEndian);
 
             //attachments.
-            int length1 = reader.ReadInt32();
+            int length1 = reader.ReadInt32(isBigEndian);
             attachmentReferences = new AttachmentReference[length1];
 
             for (int i = 0; i != length1; i++)
-                attachmentReferences[i] = new AttachmentReference(reader);
+                attachmentReferences[i] = new AttachmentReference(reader, isBigEndian);
 
             //unknwon.
-            unkFlags = reader.ReadUInt32();
-            physSplitSize = reader.ReadInt32();
-            hitBoxSize = reader.ReadInt32();
+            unkFlags = reader.ReadUInt32(isBigEndian);
+            physSplitSize = reader.ReadInt32(isBigEndian);
+            hitBoxSize = reader.ReadInt32(isBigEndian);
 
             if (physSplitSize > 0)
-                nPhysSplits = reader.ReadInt16();
+                nPhysSplits = reader.ReadInt16(isBigEndian);
             else
                 nPhysSplits = 0;
 
@@ -148,13 +149,13 @@ namespace ResourceTypes.FrameResource
             blendMeshSplits = new WeightedByMeshSplit[nPhysSplits];
             for (int i = 0; i != nPhysSplits; i++)
             {
-                blendMeshSplits[i] = new WeightedByMeshSplit(reader);
+                blendMeshSplits[i] = new WeightedByMeshSplit(reader, isBigEndian);
                 totalSplits += blendMeshSplits[i].Data.Length;
             }
 
             hitBoxInfo = new HitBoxInfo[totalSplits];
             for (int i = 0; i != hitBoxInfo.Length; i++)
-                hitBoxInfo[i] = new HitBoxInfo(reader);
+                hitBoxInfo[i] = new HitBoxInfo(reader, isBigEndian);
         }
 
         public override void WriteToFile(BinaryWriter writer)
@@ -211,9 +212,9 @@ namespace ResourceTypes.FrameResource
                 set { jointIndex = value; }
             }
 
-            public AttachmentReference(BinaryReader reader)
+            public AttachmentReference(MemoryStream reader, bool isBigEndian)
             {
-                ReadFromFile(reader);
+                ReadFromFile(reader, isBigEndian);
             }
 
             public AttachmentReference(AttachmentReference other)
@@ -222,10 +223,10 @@ namespace ResourceTypes.FrameResource
                 jointIndex = other.jointIndex;
             }
 
-            public void ReadFromFile(BinaryReader reader)
+            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
-                attachmentIndex = reader.ReadInt32();
-                jointIndex = reader.ReadByte();
+                attachmentIndex = reader.ReadInt32(isBigEndian);
+                jointIndex = reader.ReadByte8();
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -255,9 +256,9 @@ namespace ResourceTypes.FrameResource
                 set { size = value; }
             }
 
-            public HitBoxInfo(BinaryReader reader)
+            public HitBoxInfo(MemoryStream reader, bool isBigEndian)
             {
-                ReadFromFile(reader);
+                ReadFromFile(reader, isBigEndian);
             }
 
             public HitBoxInfo(HitBoxInfo other)
@@ -267,11 +268,11 @@ namespace ResourceTypes.FrameResource
                 size = new Short3(other.size);
             }
 
-            public void ReadFromFile(BinaryReader reader)
+            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
-                unk = reader.ReadUInt32();
-                pos = new Short3(reader);
-                size = new Short3(reader);
+                unk = reader.ReadUInt32(isBigEndian);
+                pos = new Short3(reader, isBigEndian);
+                size = new Short3(reader, isBigEndian);
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -300,9 +301,9 @@ namespace ResourceTypes.FrameResource
                 set { jointName = value; }
             }
 
-            public WeightedByMeshSplit(BinaryReader reader)
+            public WeightedByMeshSplit(MemoryStream reader, bool isBigEndian)
             {
-                ReadFromFile(reader);
+                ReadFromFile(reader, isBigEndian);
             }
 
             public WeightedByMeshSplit(WeightedByMeshSplit other)
@@ -314,15 +315,15 @@ namespace ResourceTypes.FrameResource
                 jointName = other.jointName;
             }
 
-            public void ReadFromFile(BinaryReader reader)
+            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
-                blendIndex = reader.ReadUInt16();
+                blendIndex = reader.ReadUInt16(isBigEndian);
 
-                ushort num = reader.ReadUInt16();
+                ushort num = reader.ReadUInt16(isBigEndian);
                 data = new BlendMeshSplitInfo[num];
 
                 for (int i = 0; i != num; i++)
-                    data[i] = new BlendMeshSplitInfo(reader);
+                    data[i] = new BlendMeshSplitInfo(reader, isBigEndian);
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -349,9 +350,9 @@ namespace ResourceTypes.FrameResource
                 set { data = value; }
             }
 
-            public BlendMeshSplitInfo(BinaryReader reader)
+            public BlendMeshSplitInfo(MemoryStream reader, bool isBigEndian)
             {
-                ReadFromFile(reader);
+                ReadFromFile(reader, isBigEndian);
             }
 
             public BlendMeshSplitInfo(BlendMeshSplitInfo other)
@@ -361,13 +362,13 @@ namespace ResourceTypes.FrameResource
                     data[i] = other.data[i];
             }
 
-            public void ReadFromFile(BinaryReader reader)
+            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
-                short num = reader.ReadInt16();
+                short num = reader.ReadInt16(isBigEndian);
                 data = new MiniMaterialBurst[num];
 
                 for (int i = 0; i != num; i++)
-                    data[i] = new MiniMaterialBurst(reader);
+                    data[i] = new MiniMaterialBurst(reader, isBigEndian);
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -392,9 +393,9 @@ namespace ResourceTypes.FrameResource
                 set { data = value; }
             }
 
-            public MiniMaterialBurst(BinaryReader reader)
+            public MiniMaterialBurst(MemoryStream reader, bool isBigEndian)
             {
-                ReadFromFile(reader);
+                ReadFromFile(reader, isBigEndian);
             }
 
             public MiniMaterialBurst(MiniMaterialBurst other)
@@ -405,15 +406,15 @@ namespace ResourceTypes.FrameResource
                     data[i] = other.data[i];
             }
 
-            public void ReadFromFile(BinaryReader reader)
+            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
-                materialIndex = reader.ReadUInt16();
+                materialIndex = reader.ReadUInt16(isBigEndian);
 
-                ushort num = reader.ReadUInt16();
+                ushort num = reader.ReadUInt16(isBigEndian);
                 data = new FacesBurst[num];
 
                 for (int i = 0; i != num; i++)
-                    data[i] = new FacesBurst(reader);
+                    data[i] = new FacesBurst(reader, isBigEndian);
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -439,9 +440,9 @@ namespace ResourceTypes.FrameResource
                 set { numFaces = value; }
             }
 
-            public FacesBurst(BinaryReader reader)
+            public FacesBurst(MemoryStream reader, bool isBigEndian)
             {
-                ReadFromFile(reader);
+                ReadFromFile(reader, isBigEndian);
             }
 
             public FacesBurst(FacesBurst other)
@@ -450,10 +451,10 @@ namespace ResourceTypes.FrameResource
                 numFaces = other.numFaces;
             }
 
-            public void ReadFromFile(BinaryReader reader)
+            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
-                startIndex = reader.ReadUInt16();
-                numFaces = reader.ReadUInt16();
+                startIndex = reader.ReadUInt16(isBigEndian);
+                numFaces = reader.ReadUInt16(isBigEndian);
             }
             public void WriteToFile(BinaryWriter writer)
             {

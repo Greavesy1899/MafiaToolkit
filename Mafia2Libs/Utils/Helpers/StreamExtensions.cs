@@ -8,6 +8,10 @@ namespace Utils.Extensions
     //Some may think (why not use gibbed?) my answer is: idk.
     public static class StreamHelpers
     {
+        public static bool ReadBoolean(this Stream stream)
+        {
+            return Convert.ToBoolean(stream.ReadByte8());
+        }
         public static char[] ReadChars(this Stream stream, int size)
         {
             char[] data = new char[size];

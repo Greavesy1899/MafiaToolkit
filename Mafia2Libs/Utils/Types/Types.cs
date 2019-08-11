@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using Utils.Extensions;
 using Utils.Models;
+using Utils.SharpDXExtensions;
 
 namespace Utils.Types
 {
@@ -415,12 +416,40 @@ namespace Utils.Types
             ReadFromFile(reader);
         }
 
+        public TransformMatrix(MemoryStream reader, bool isBigEndian)
+        {
+            ReadFromFile(reader, isBigEndian);
+        }
+
         public TransformMatrix(TransformMatrix other)
         {
             rotation = new Matrix33(other.rotation);
             scale = new Matrix33(other.scale);
             SetTransformed();
             Position = new Vector3(other.Position.X, other.Position.Y, other.Position.Z);
+        }
+
+        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        {
+            Vector3 m1 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            float x = reader.ReadSingle(isBigEndian);
+            Vector3 m2 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            float y = reader.ReadSingle(isBigEndian);
+            Vector3 m3 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            float z = reader.ReadSingle(isBigEndian);
+            transformedMatrix = new Matrix33(m1, m2, m3);
+            scale = new Matrix33(new Vector3(m1.Length(), 0.0f, 0.0f), new Vector3(0.0f, m2.Length(), 0.0f), new Vector3(0.0f, 0.0f, m3.Length()));
+            rotation = new Matrix33();
+            transformedMatrix.M00 = transformedMatrix.M00 / scale.M00;
+            transformedMatrix.M01 = transformedMatrix.M01 / scale.M00;
+            transformedMatrix.M02 = transformedMatrix.M02 / scale.M00;
+            transformedMatrix.M10 = transformedMatrix.M10 / scale.M11;
+            transformedMatrix.M11 = transformedMatrix.M11 / scale.M11;
+            transformedMatrix.M12 = transformedMatrix.M12 / scale.M11;
+            transformedMatrix.M20 = transformedMatrix.M20 / scale.M22;
+            transformedMatrix.M21 = transformedMatrix.M21 / scale.M22;
+            transformedMatrix.M22 = transformedMatrix.M22 / scale.M22;
+            Position = new Vector3(x, y, z);
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -544,6 +573,13 @@ namespace Utils.Types
         /// Construct Short3 from file data.
         /// </summary>
         /// <param name="reader"></param>
+        public Short3(MemoryStream reader, bool isBigEndian)
+        {
+            S1 = reader.ReadUInt16(isBigEndian);
+            S2 = reader.ReadUInt16(isBigEndian);
+            S3 = reader.ReadUInt16(isBigEndian);
+        }
+
         public Short3(BinaryReader reader)
         {
             S1 = reader.ReadUInt16();

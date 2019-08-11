@@ -11,13 +11,13 @@ namespace ResourceTypes.FrameResource
     {
         SingleMeshFlags flags;
         BoundingBox bounds;
-        byte unk_14_byte;
+        byte unk14;
         int meshIndex;
         int materialIndex;
         Hash omTextureHash;
-        byte unk_18_byte1;
-        byte unk_18_byte2;
-        byte unk_18_byte3;
+        byte unk18_1;
+        byte unk18_2;
+        byte unk18_3;
 
         private FrameMaterial material;
         private FrameGeometry geometry;
@@ -32,8 +32,8 @@ namespace ResourceTypes.FrameResource
             set { bounds = value; }
         }
         public byte Unk_14 {
-            get { return unk_14_byte; }
-            set { unk_14_byte = value; }
+            get { return unk14; }
+            set { unk14 = value; }
         }
         public int MeshIndex {
             get { return meshIndex; }
@@ -48,16 +48,16 @@ namespace ResourceTypes.FrameResource
             set { omTextureHash = value; }
         }
         public byte Unk_18_1 {
-            get { return unk_18_byte1; }
-            set { unk_18_byte1 = value; }
+            get { return unk18_1; }
+            set { unk18_1 = value; }
         }
         public byte Unk_18_2 {
-            get { return unk_18_byte2; }
-            set { unk_18_byte2 = value; }
+            get { return unk18_2; }
+            set { unk18_2 = value; }
         }
         public byte Unk_18_3 {
-            get { return unk_18_byte3; }
-            set { unk_18_byte3 = value; }
+            get { return unk18_3; }
+            set { unk18_3 = value; }
         }
 
         [TypeConverter(typeof(ExpandableObjectConverter)), Category("Debug"), Description("Avoid editing!")]
@@ -72,59 +72,52 @@ namespace ResourceTypes.FrameResource
             set { material = value; }
         }
 
-        /// <summary>
-        /// Read single mesh data from reader.
-        /// </summary>
-        /// <param name="reader"></param>
-        public FrameObjectSingleMesh(BinaryReader reader) : base()
+        public FrameObjectSingleMesh(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
         public FrameObjectSingleMesh(FrameObjectSingleMesh other) : base(other)
         {
             flags = other.flags;
             bounds = other.bounds;
-            unk_14_byte = other.unk_14_byte;
+            unk14 = other.unk14;
             meshIndex = other.meshIndex;
             materialIndex = other.materialIndex;
             omTextureHash = new Hash(other.omTextureHash);
-            unk_18_byte1 = other.unk_18_byte1;
-            unk_18_byte2 = other.unk_18_byte2;
-            unk_18_byte3 = other.unk_18_byte3;
+            unk18_1 = other.unk18_1;
+            unk18_2 = other.unk18_2;
+            unk18_3 = other.unk18_3;
             material = other.material;
             geometry = other.geometry;
         }
 
-        /// <summary>
-        /// Build basic singleMesh data.
-        /// </summary>
         public FrameObjectSingleMesh() : base()
         {
             flags = SingleMeshFlags.Unk14_Flag | SingleMeshFlags.flag_32 | SingleMeshFlags.flag_67108864;
             bounds = new BoundingBox();
-            unk_14_byte = 255;
+            unk14 = 255;
             meshIndex = 0;
             materialIndex = 0;
             transformMatrix = new TransformMatrix();
             omTextureHash = new Hash();
-            unk_18_byte1 = 0;
-            unk_18_byte2 = 0;
-            unk_18_byte3 = 0;
+            unk18_1 = 0;
+            unk18_2 = 0;
+            unk18_3 = 0;
         }
 
-        public override void ReadFromFile(BinaryReader reader)
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            base.ReadFromFile(reader);
-            flags = (SingleMeshFlags)reader.ReadInt32();
-            bounds = BoundingBoxExtenders.ReadFromFile(reader);
-            unk_14_byte = reader.ReadByte();
-            meshIndex = reader.ReadInt32();
-            materialIndex = reader.ReadInt32();
-            omTextureHash = new Hash(reader);
-            unk_18_byte1 = reader.ReadByte();
-            unk_18_byte2 = reader.ReadByte();
-            unk_18_byte3 = reader.ReadByte();
+            base.ReadFromFile(reader, isBigEndian);
+            flags = (SingleMeshFlags)reader.ReadInt32(isBigEndian);
+            bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
+            unk14 = reader.ReadByte8();
+            meshIndex = reader.ReadInt32(isBigEndian);
+            materialIndex = reader.ReadInt32(isBigEndian);
+            omTextureHash = new Hash(reader, isBigEndian);
+            unk18_1 = reader.ReadByte8();
+            unk18_2 = reader.ReadByte8();
+            unk18_3 = reader.ReadByte8();
         }
 
         public override void WriteToFile(BinaryWriter writer)
@@ -132,13 +125,13 @@ namespace ResourceTypes.FrameResource
             base.WriteToFile(writer);
             writer.Write((int)flags);
             bounds.WriteToFile(writer);
-            writer.Write(unk_14_byte);
+            writer.Write(unk14);
             writer.Write(meshIndex);
             writer.Write(materialIndex);
             omTextureHash.WriteToFile(writer);
-            writer.Write(unk_18_byte1);
-            writer.Write(unk_18_byte2);
-            writer.Write(unk_18_byte3);
+            writer.Write(unk18_1);
+            writer.Write(unk18_2);
+            writer.Write(unk18_3);
         }
 
         public override string ToString()

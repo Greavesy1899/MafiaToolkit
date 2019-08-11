@@ -6,6 +6,7 @@ using SharpDX;
 using Utils.SharpDXExtensions;
 using ResourceTypes.Materials;
 using System.ComponentModel;
+using Utils.Extensions;
 
 namespace ResourceTypes.FrameResource
 {
@@ -36,9 +37,9 @@ namespace ResourceTypes.FrameResource
             set { materials = value; }
         }
 
-        public FrameMaterial(BinaryReader reader) : base()
+        public FrameMaterial(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
         public FrameMaterial() : base()
@@ -49,23 +50,23 @@ namespace ResourceTypes.FrameResource
             bounds = new BoundingBox();
         }
 
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            numLods = reader.ReadByte();
+            numLods = reader.ReadByte8();
             lodMatCount = new int[numLods];
             for (int i = 0; i != numLods; i++)
-                lodMatCount[i] = reader.ReadInt32();
+                lodMatCount[i] = reader.ReadInt32(isBigEndian);
 
             materials = new List<MaterialStruct[]>();
 
-            bounds = BoundingBoxExtenders.ReadFromFile(reader);
+            bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
 
             for (int i = 0; i != numLods; i++)
             {
                 MaterialStruct[] array = new MaterialStruct[lodMatCount[i]];
                 for (int d = 0; d != array.Length; d++)
                 {
-                    array[d] = new MaterialStruct(reader);
+                    array[d] = new MaterialStruct(reader, isBigEndian);
                 }
                 materials.Add(array);
             }
@@ -122,9 +123,9 @@ namespace ResourceTypes.FrameResource
             set { unk3 = value; }
         }
 
-        public MaterialStruct(BinaryReader reader)
+        public MaterialStruct(MemoryStream reader, bool isBigEndian)
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
         public MaterialStruct()
@@ -136,12 +137,12 @@ namespace ResourceTypes.FrameResource
             unk3 = 0;
         }
 
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            numFaces = reader.ReadInt32();
-            startIndex = reader.ReadInt32();
-            materialHash = reader.ReadUInt64();
-            unk3 = reader.ReadInt32();
+            numFaces = reader.ReadInt32(isBigEndian);
+            startIndex = reader.ReadInt32(isBigEndian);
+            materialHash = reader.ReadUInt64(isBigEndian);
+            unk3 = reader.ReadInt32(isBigEndian);
 
             Material mat = MaterialsManager.LookupMaterialByHash(materialHash);
 

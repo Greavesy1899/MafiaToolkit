@@ -1,5 +1,6 @@
 ﻿using SharpDX;
 using System.IO;
+using Utils.Extensions;
 using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.FrameResource
@@ -7,7 +8,7 @@ namespace ResourceTypes.FrameResource
     public class FrameGeometry : FrameEntry
     {
         byte numLods;
-        short unk01_short = 0;
+        short unk01 = 0;
         Vector3 decompressionOffset;
         float decompressionFactor;
         FrameLOD[] lod;
@@ -18,8 +19,8 @@ namespace ResourceTypes.FrameResource
             set { numLods = value; }
         }
         public short Unk01 {
-            get { return unk01_short; }
-            set { unk01_short = value; }
+            get { return unk01; }
+            set { unk01 = value; }
         }
         public Vector3 DecompressionOffset {
             get { return decompressionOffset; }
@@ -42,9 +43,9 @@ namespace ResourceTypes.FrameResource
         /// Construct FrameGeometry from stream data.
         /// </summary>
         /// <param name="reader"></param>
-        public FrameGeometry(BinaryReader reader) : base()
+        public FrameGeometry(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
         /// <summary>
@@ -59,20 +60,20 @@ namespace ResourceTypes.FrameResource
         /// Read data from stream.
         /// </summary>
         /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            numLods = reader.ReadByte();
-            unk01_short = reader.ReadInt16();
+            numLods = reader.ReadByte8();
+            unk01 = reader.ReadInt16(isBigEndian);
 
-            decompressionOffset = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-            decompressionFactor = reader.ReadSingle();
+            decompressionOffset = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            decompressionFactor = reader.ReadSingle(isBigEndian);
 
             LOD = new FrameLOD[numLods];
 
             for (int i = 0; i < numLods; i++)
             {
                 LOD[i] = new FrameLOD();
-                LOD[i].ReadFromFile(reader);
+                LOD[i].ReadFromFile(reader, isBigEndian);
             }
         }
 
@@ -84,7 +85,7 @@ namespace ResourceTypes.FrameResource
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(numLods);
-            writer.Write(unk01_short);
+            writer.Write(unk01);
             decompressionOffset.WriteToFile(writer);
             writer.Write(decompressionFactor);
 

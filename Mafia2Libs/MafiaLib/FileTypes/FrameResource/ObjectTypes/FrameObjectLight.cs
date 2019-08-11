@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using SharpDX;
+using Utils.Extensions;
 using Utils.SharpDXExtensions;
 using Utils.Types;
 
@@ -158,51 +159,51 @@ namespace ResourceTypes.FrameResource
             unkVector6 = other.unkVector6;
         }
 
-        public FrameObjectLight(BinaryReader reader) : base()
+        public FrameObjectLight(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
-        public override void ReadFromFile(BinaryReader reader)
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            base.ReadFromFile(reader);
-            flags = reader.ReadInt32();
+            base.ReadFromFile(reader, isBigEndian);
+            flags = reader.ReadInt32(isBigEndian);
 
             for (int i = 0; i < 7; i++)
-                unkFloat1[i] = reader.ReadSingle();
+                unkFloat1[i] = reader.ReadSingle(isBigEndian);
 
-            unk_int = reader.ReadInt32();
+            unk_int = reader.ReadInt32(isBigEndian);
 
             for (int i = 0; i < 5; i++)
-                unkFloat2[i] = reader.ReadSingle();
+                unkFloat2[i] = reader.ReadSingle(isBigEndian);
 
-            unk_byte1 = reader.ReadByte();
+            unk_byte1 = reader.ReadByte8();
 
             for (int i = 0; i < 17; i++)
-                unkFloat3[i] = reader.ReadSingle();
+                unkFloat3[i] = reader.ReadSingle(isBigEndian);
 
-            unk_byte2 = reader.ReadByte();
+            unk_byte2 = reader.ReadByte8();
 
             for (int i = 0; i < 5; i++)
-                unkFloat4[i] = reader.ReadSingle();
+                unkFloat4[i] = reader.ReadSingle(isBigEndian);
 
-            nameLight = new Hash(reader);
+            nameLight = new Hash(reader, isBigEndian);
 
-            unk_int2 = reader.ReadInt32();
+            unk_int2 = reader.ReadInt32(isBigEndian);
 
             for (int i = 0; i < 20; i++)
-                unkFloat5[i] = reader.ReadSingle();
+                unkFloat5[i] = reader.ReadSingle(isBigEndian);
 
             for (int i = 0; i < 4; i++)
-                names[i] = new Hash(reader);
+                names[i] = new Hash(reader, isBigEndian);
 
-            unkVector1 = Vector3Extenders.ReadFromFile(reader);
-            unkVector2 = Vector3Extenders.ReadFromFile(reader);
-            unk_byte3 = reader.ReadByte();
-            unkVector3 = Vector3Extenders.ReadFromFile(reader);
-            unkVector4 = Vector3Extenders.ReadFromFile(reader);
-            unkVector5 = Vector3Extenders.ReadFromFile(reader);
-            unkVector6 = Vector3Extenders.ReadFromFile(reader);
+            unkVector1 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            unkVector2 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            unk_byte3 = reader.ReadByte8();
+            unkVector3 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            unkVector4 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            unkVector5 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            unkVector6 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
         }
         public override void WriteToFile(BinaryWriter writer)
         {

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Utils.Extensions;
 using Utils.Types;
 
 namespace ResourceTypes.FrameResource
@@ -22,9 +23,9 @@ namespace ResourceTypes.FrameResource
             unk01 = 0;
         }
 
-        public FrameObjectCamera(BinaryReader reader) : base()
+        public FrameObjectCamera(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
         public FrameObjectCamera(FrameObjectCamera other) : base(other)
@@ -33,18 +34,15 @@ namespace ResourceTypes.FrameResource
             unkData = other.unkData;
         }
 
-        public override void ReadFromFile(BinaryReader reader)
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            base.ReadFromFile(reader);
-            unk01 = reader.ReadInt32();
-
-            if (unk01 <= 0)
-                return;
+            base.ReadFromFile(reader, isBigEndian);
+            unk01 = reader.ReadInt32(isBigEndian);
 
             unkData = new unkStruct[unk01];
 
             for (int i = 0; i != unk01; i++)
-                unkData[i] = new unkStruct(reader);
+                unkData[i] = new unkStruct(reader, isBigEndian);
         }
 
         public override void WriteToFile(BinaryWriter writer)
@@ -71,14 +69,14 @@ namespace ResourceTypes.FrameResource
             float[] unkFloats;
             Hash unkHash;
 
-            public unkStruct(BinaryReader reader)
+            public unkStruct(MemoryStream reader, bool isBigEndian)
             {
                 unkFloats = new float[5];
 
                 for (int i = 0; i != 5; i++)
-                    unkFloats[i] = reader.ReadSingle();
+                    unkFloats[i] = reader.ReadSingle(isBigEndian);
 
-                unkHash = new Hash(reader);
+                unkHash = new Hash(reader, isBigEndian);
             }
 
             public void WriteToFile(BinaryWriter writer)

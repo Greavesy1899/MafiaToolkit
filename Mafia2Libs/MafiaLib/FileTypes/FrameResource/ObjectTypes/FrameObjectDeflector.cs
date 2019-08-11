@@ -14,14 +14,14 @@ namespace ResourceTypes.FrameResource
 
         }
 
-        public FrameObjectDeflector(BinaryReader reader) : base()
+        public FrameObjectDeflector(MemoryStream reader, bool isBigEndian) : base()
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, isBigEndian);
         }
 
-        public override void ReadFromFile(BinaryReader reader)
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            base.ReadFromFile(reader);
+            base.ReadFromFile(reader, isBigEndian);
         }
 
         public override void WriteToFile(BinaryWriter writer)
