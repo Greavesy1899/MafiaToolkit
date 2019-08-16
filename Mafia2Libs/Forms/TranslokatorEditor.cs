@@ -2,7 +2,7 @@
 using System.IO;
 using ResourceTypes.Translokator;
 using System.Windows.Forms;
-using System.Collections.Generic;
+using Utils.Lang;
 
 namespace Mafia2Tool.Forms
 {
@@ -10,6 +10,7 @@ namespace Mafia2Tool.Forms
     {
         private FileInfo file;
         private TranslokatorLoader translokator;
+
         public TranslokatorEditor(FileInfo info)
         {
             InitializeComponent();
@@ -21,7 +22,15 @@ namespace Mafia2Tool.Forms
 
         private void Localise()
         {
-
+            ExitButton.Text = Language.GetString("$EXIT");
+            fileToolButton.Text = Language.GetString("$FILE");
+            SaveToolButton.Text = Language.GetString("$SAVE");
+            ReloadButton.Text = Language.GetString("$RELOAD");
+            AddInstance.Text = Language.GetString("$ADD_INSTANCE");
+            AddObject.Text = Language.GetString("$ADD_OBJECT");
+            DeleteInstance.Text = Language.GetString("$DELETE_INSTANCE");
+            DeleteObject.Text = Language.GetString("$DELETE_OBJECT");
+            Text = Language.GetString("$TRANSLOKATOR_EDITOR");
         }
 
         private void LoadFile()
@@ -47,14 +56,14 @@ namespace Mafia2Tool.Forms
                 TreeNode objectGroupNode = new TreeNode("Object Group " + i);
                 objectGroupNode.Tag = objectGroup;
 
-                for(int y = 0; y < objectGroup.Objects.Length; y++)
+                for (int y = 0; y < objectGroup.Objects.Length; y++)
                 {
                     ResourceTypes.Translokator.Object obj = objectGroup.Objects[y];
                     TreeNode objNode = new TreeNode(obj.Name);
                     objNode.Tag = obj;
                     objectGroupNode.Nodes.Add(objNode);
 
-                    for(int x = 0; x < obj.Instances.Length; x++)
+                    for (int x = 0; x < obj.Instances.Length; x++)
                     {
                         Instance instance = obj.Instances[x];
                         TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
@@ -129,13 +138,20 @@ namespace Mafia2Tool.Forms
         private void TranslokatorContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             TranslokatorContext.Items[0].Visible = false;
+            TranslokatorContext.Items[1].Visible = false;
+            TranslokatorContext.Items[2].Visible = false;
+            TranslokatorContext.Items[3].Visible = false;
 
             if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
             {
                 if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object))
-                {
                     TranslokatorContext.Items[0].Visible = true;
-                }
+                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ObjectGroup))
+                    TranslokatorContext.Items[1].Visible = true;
+                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(Instance))
+                    TranslokatorContext.Items[2].Visible = true;
+                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object))
+                    TranslokatorContext.Items[3].Visible = true;
             }
         }
 
@@ -148,24 +164,34 @@ namespace Mafia2Tool.Forms
             TranslokatorTree.SelectedNode.Nodes.Add(instanceNode);
         }
 
-        private void CompressionTest_Click(object sender, EventArgs e)
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
+                    TranslokatorTree.Nodes.Remove(TranslokatorTree.SelectedNode);
+            }
+        }
+
+        private void AddObjectOnClick(object sender, EventArgs e)
+        {
+            ObjectGroup group = (TranslokatorTree.SelectedNode.Tag as ObjectGroup);
+            ResourceTypes.Translokator.Object obj = new ResourceTypes.Translokator.Object();
+            TreeNode instanceNode = new TreeNode(obj.Name + " " + TranslokatorTree.SelectedNode.GetNodeCount(false));
+            instanceNode.Tag = obj;
+            TranslokatorTree.SelectedNode.Nodes.Add(instanceNode);
+        }
+
+        private void DeleteInstance_Click(object sender, EventArgs e)
         {
             if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
-            {
-                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(Instance))
-                {
-                    Instance instance = (TranslokatorTree.SelectedNode.Tag as Instance);
-                    translokator.CompressPosition(instance, translokator.Bounds.Minimum, translokator.Bounds.Maximum, true);
-                    List<byte> packed = new List<byte>();
-                    packed.AddRange(BitConverter.GetBytes(instance.w0));
-                    packed.AddRange(BitConverter.GetBytes(instance.w1));
-                    packed.AddRange(BitConverter.GetBytes(instance.w2));
-                    packed.AddRange(BitConverter.GetBytes(instance.D5));
-                    packed.AddRange(BitConverter.GetBytes(instance.ID));
-                    packed.AddRange(BitConverter.GetBytes(instance.D4));
-                    translokator.DecompressPosition(packed.ToArray(), instance, translokator.Bounds.Minimum, translokator.Bounds.Maximum, true);
-                }
-            }
+                TranslokatorTree.Nodes.Remove(TranslokatorTree.SelectedNode);
+        }
+
+        private void DeleteObject_Click(object sender, EventArgs e)
+        {
+            if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
+                TranslokatorTree.Nodes.Remove(TranslokatorTree.SelectedNode);
         }
     }
 }

@@ -31,13 +31,13 @@
             this.ImportBox = new System.Windows.Forms.TextBox();
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
             this.M2FBXGroup = new System.Windows.Forms.GroupBox();
+            this.ImportButton = new System.Windows.Forms.Button();
+            this.ExportButton = new System.Windows.Forms.Button();
             this.M2FBXLabel = new System.Windows.Forms.Label();
             this.ConvertButton = new System.Windows.Forms.Button();
             this.ExportBox = new System.Windows.Forms.TextBox();
             this.ExportLabel = new System.Windows.Forms.Label();
             this.ImportLabel = new System.Windows.Forms.Label();
-            this.ExportButton = new System.Windows.Forms.Button();
-            this.ImportButton = new System.Windows.Forms.Button();
             this.M2FBXGroup.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,7 +47,6 @@
             this.ImportBox.Name = "ImportBox";
             this.ImportBox.Size = new System.Drawing.Size(311, 20);
             this.ImportBox.TabIndex = 3;
-            this.ImportBox.Text = "0";
             // 
             // MeshBrowser
             // 
@@ -72,12 +71,31 @@
             this.M2FBXGroup.TabStop = false;
             this.M2FBXGroup.Text = "M2 FBX ";
             // 
+            // ImportButton
+            // 
+            this.ImportButton.Location = new System.Drawing.Point(9, 72);
+            this.ImportButton.Name = "ImportButton";
+            this.ImportButton.Size = new System.Drawing.Size(93, 20);
+            this.ImportButton.TabIndex = 9;
+            this.ImportButton.Text = "Select Mesh";
+            this.ImportButton.UseVisualStyleBackColor = true;
+            this.ImportButton.Click += new System.EventHandler(this.ImportButton_Click);
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Location = new System.Drawing.Point(9, 122);
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.Size = new System.Drawing.Size(93, 20);
+            this.ExportButton.TabIndex = 8;
+            this.ExportButton.Text = "Select Mesh";
+            this.ExportButton.UseVisualStyleBackColor = true;
+            this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
+            // 
             // M2FBXLabel
             // 
-            this.M2FBXLabel.AutoSize = true;
-            this.M2FBXLabel.Location = new System.Drawing.Point(8, 27);
+            this.M2FBXLabel.Location = new System.Drawing.Point(6, 21);
             this.M2FBXLabel.Name = "M2FBXLabel";
-            this.M2FBXLabel.Size = new System.Drawing.Size(135, 13);
+            this.M2FBXLabel.Size = new System.Drawing.Size(410, 35);
             this.M2FBXLabel.TabIndex = 7;
             this.M2FBXLabel.Text = "$M2FBX_INSTRUCTIONS";
             // 
@@ -97,7 +115,6 @@
             this.ExportBox.Name = "ExportBox";
             this.ExportBox.Size = new System.Drawing.Size(311, 20);
             this.ExportBox.TabIndex = 5;
-            this.ExportBox.Text = "0";
             // 
             // ExportLabel
             // 
@@ -117,32 +134,14 @@
             this.ImportLabel.TabIndex = 2;
             this.ImportLabel.Text = "$IMPORT_LABEL";
             // 
-            // ExportButton
-            // 
-            this.ExportButton.Location = new System.Drawing.Point(9, 122);
-            this.ExportButton.Name = "ExportButton";
-            this.ExportButton.Size = new System.Drawing.Size(93, 20);
-            this.ExportButton.TabIndex = 8;
-            this.ExportButton.Text = "Select Mesh";
-            this.ExportButton.UseVisualStyleBackColor = true;
-            this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
-            // 
-            // ImportButton
-            // 
-            this.ImportButton.Location = new System.Drawing.Point(9, 72);
-            this.ImportButton.Name = "ImportButton";
-            this.ImportButton.Size = new System.Drawing.Size(93, 20);
-            this.ImportButton.TabIndex = 9;
-            this.ImportButton.Text = "Select Mesh";
-            this.ImportButton.UseVisualStyleBackColor = true;
-            this.ImportButton.Click += new System.EventHandler(this.ImportButton_Click);
-            // 
             // M2FBXTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(428, 188);
             this.Controls.Add(this.M2FBXGroup);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "M2FBXTool";
             this.Text = "M2FBXTool";
             this.M2FBXGroup.ResumeLayout(false);

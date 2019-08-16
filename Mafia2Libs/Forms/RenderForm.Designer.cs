@@ -40,8 +40,6 @@ namespace Mafia2Tool
             this.PositionYTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.PositionZTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.RotationXTool = new Utils.Extensions.NumericUpDownToolStrip();
-            this.RotationYTool = new Utils.Extensions.NumericUpDownToolStrip();
-            this.RotationZTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.CameraSpeedTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.ToolbarStrip = new System.Windows.Forms.ToolStrip();
             this.FileButton = new System.Windows.Forms.ToolStripDropDownButton();
@@ -91,8 +89,6 @@ namespace Mafia2Tool
             this.PositionYTool,
             this.PositionZTool,
             this.RotationXTool,
-            this.RotationYTool,
-            this.RotationZTool,
             this.CameraSpeedTool});
             StatusStrip.Location = new System.Drawing.Point(0, 600);
             StatusStrip.Name = "StatusStrip";
@@ -140,7 +136,7 @@ namespace Mafia2Tool
             this.PositionXTool.Name = "PositionXTool";
             this.PositionXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionXTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionXTool.Size = new System.Drawing.Size(54, 24);
+            this.PositionXTool.Size = new System.Drawing.Size(75, 24);
             this.PositionXTool.Text = "0.00000";
             this.PositionXTool.Value = new decimal(new int[] {
             0,
@@ -173,7 +169,7 @@ namespace Mafia2Tool
             this.PositionYTool.Name = "PositionYTool";
             this.PositionYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionYTool.Size = new System.Drawing.Size(54, 24);
+            this.PositionYTool.Size = new System.Drawing.Size(75, 24);
             this.PositionYTool.Text = "0.00000";
             this.PositionYTool.Value = new decimal(new int[] {
             0,
@@ -206,7 +202,7 @@ namespace Mafia2Tool
             this.PositionZTool.Name = "PositionZTool";
             this.PositionZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionZTool.Size = new System.Drawing.Size(54, 24);
+            this.PositionZTool.Size = new System.Drawing.Size(75, 24);
             this.PositionZTool.Text = "0.00000";
             this.PositionZTool.Value = new decimal(new int[] {
             0,
@@ -249,74 +245,6 @@ namespace Mafia2Tool
             this.RotationXTool.Visible = false;
             this.RotationXTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
             // 
-            // RotationYTool
-            // 
-            this.RotationYTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.RotationYTool.AutoSize = false;
-            this.RotationYTool.DecimalPlaces = 5;
-            this.RotationYTool.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.RotationYTool.Margin = new System.Windows.Forms.Padding(1, 0, 1, 0);
-            this.RotationYTool.Maximum = new decimal(new int[] {
-            9999999,
-            0,
-            0,
-            0});
-            this.RotationYTool.Minimum = new decimal(new int[] {
-            9999999,
-            0,
-            0,
-            -2147483648});
-            this.RotationYTool.Name = "RotationYTool";
-            this.RotationYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
-            this.RotationYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.RotationYTool.Size = new System.Drawing.Size(54, 24);
-            this.RotationYTool.Text = "0.00000";
-            this.RotationYTool.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.RotationYTool.Visible = false;
-            this.RotationYTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
-            // 
-            // RotationZTool
-            // 
-            this.RotationZTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.RotationZTool.AutoSize = false;
-            this.RotationZTool.DecimalPlaces = 5;
-            this.RotationZTool.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.RotationZTool.Margin = new System.Windows.Forms.Padding(1, 0, 3, 0);
-            this.RotationZTool.Maximum = new decimal(new int[] {
-            9999999,
-            0,
-            0,
-            0});
-            this.RotationZTool.Minimum = new decimal(new int[] {
-            9999999,
-            0,
-            0,
-            -2147483648});
-            this.RotationZTool.Name = "RotationZTool";
-            this.RotationZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
-            this.RotationZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.RotationZTool.Size = new System.Drawing.Size(54, 24);
-            this.RotationZTool.Text = "0.00000";
-            this.RotationZTool.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.RotationZTool.Visible = false;
-            this.RotationZTool.ValueChanged += new System.EventHandler(this.CameraToolsOnValueChanged);
-            // 
             // CameraSpeedTool
             // 
             this.CameraSpeedTool.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -341,7 +269,7 @@ namespace Mafia2Tool
             this.CameraSpeedTool.Name = "CameraSpeedTool";
             this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.CameraSpeedTool.Size = new System.Drawing.Size(54, 24);
+            this.CameraSpeedTool.Size = new System.Drawing.Size(75, 24);
             this.CameraSpeedTool.Text = "0.00000";
             this.CameraSpeedTool.Value = new decimal(new int[] {
             0,
@@ -681,9 +609,7 @@ namespace Mafia2Tool
         private NumericUpDownToolStrip PositionYTool;
         private NumericUpDownToolStrip PositionZTool;
         private NumericUpDownToolStrip RotationXTool;
-        private NumericUpDownToolStrip RotationYTool;
         private NumericUpDownToolStrip PositionXTool;
-        private NumericUpDownToolStrip RotationZTool;
         private NumericUpDownToolStrip CameraSpeedTool;
         private System.Windows.Forms.ToolStripDropDownButton ViewButton;
         private System.Windows.Forms.ToolStripMenuItem ViewTopButton;

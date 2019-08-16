@@ -34,13 +34,14 @@
             this.TranslokatorTree = new System.Windows.Forms.TreeView();
             this.TranslokatorContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.AddInstance = new System.Windows.Forms.ToolStripMenuItem();
+            this.AddObject = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SaveToolButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolsButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.CompressionTest = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteInstance = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteObject = new System.Windows.Forms.ToolStripMenuItem();
             this.TranslokatorContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -66,27 +67,37 @@
             this.TranslokatorTree.Size = new System.Drawing.Size(368, 416);
             this.TranslokatorTree.TabIndex = 17;
             this.TranslokatorTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TranslokatorTree_AfterSelect);
+            this.TranslokatorTree.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnKeyUp);
             // 
             // TranslokatorContext
             // 
             this.TranslokatorContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AddInstance});
+            this.AddInstance,
+            this.AddObject,
+            this.DeleteInstance,
+            this.DeleteObject});
             this.TranslokatorContext.Name = "SDSContext";
-            this.TranslokatorContext.Size = new System.Drawing.Size(144, 26);
+            this.TranslokatorContext.Size = new System.Drawing.Size(205, 92);
             this.TranslokatorContext.Opening += new System.ComponentModel.CancelEventHandler(this.TranslokatorContext_Opening);
             // 
             // AddInstance
             // 
             this.AddInstance.Name = "AddInstance";
-            this.AddInstance.Size = new System.Drawing.Size(143, 22);
-            this.AddInstance.Text = "Add Instance";
+            this.AddInstance.Size = new System.Drawing.Size(244, 22);
+            this.AddInstance.Text = "$ADD_INSTANCE";
             this.AddInstance.Click += new System.EventHandler(this.AddInstance_Click);
+            // 
+            // AddObject
+            // 
+            this.AddObject.Name = "AddObject";
+            this.AddObject.Size = new System.Drawing.Size(244, 22);
+            this.AddObject.Text = "$ADD_OBJECT";
+            this.AddObject.Click += new System.EventHandler(this.AddObjectOnClick);
             // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolButton,
-            this.toolsButton});
+            this.fileToolButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(800, 25);
@@ -103,47 +114,45 @@
             this.fileToolButton.Image = ((System.Drawing.Image)(resources.GetObject("fileToolButton.Image")));
             this.fileToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.fileToolButton.Name = "fileToolButton";
-            this.fileToolButton.Size = new System.Drawing.Size(38, 22);
-            this.fileToolButton.Text = "File";
+            this.fileToolButton.Size = new System.Drawing.Size(47, 22);
+            this.fileToolButton.Text = "$FILE";
             // 
             // SaveToolButton
             // 
             this.SaveToolButton.Name = "SaveToolButton";
-            this.SaveToolButton.Size = new System.Drawing.Size(110, 22);
-            this.SaveToolButton.Text = "Save";
+            this.SaveToolButton.Size = new System.Drawing.Size(180, 22);
+            this.SaveToolButton.Text = "$SAVE";
             this.SaveToolButton.Click += new System.EventHandler(this.SaveToolButton_Click);
             // 
             // ReloadButton
             // 
             this.ReloadButton.Name = "ReloadButton";
-            this.ReloadButton.Size = new System.Drawing.Size(110, 22);
-            this.ReloadButton.Text = "Reload";
+            this.ReloadButton.Size = new System.Drawing.Size(180, 22);
+            this.ReloadButton.Text = "$RELOAD";
             this.ReloadButton.Click += new System.EventHandler(this.ReloadButton_Click);
             // 
             // ExitButton
             // 
             this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(110, 22);
-            this.ExitButton.Text = "Exit";
+            this.ExitButton.Size = new System.Drawing.Size(180, 22);
+            this.ExitButton.Text = "$EXIT";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
-            // toolsButton
+            // DeleteInstance
             // 
-            this.toolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CompressionTest});
-            this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
-            this.toolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolsButton.Name = "toolsButton";
-            this.toolsButton.Size = new System.Drawing.Size(48, 22);
-            this.toolsButton.Text = "Tools";
+            this.DeleteInstance.Name = "DeleteInstance";
+            this.DeleteInstance.ShortcutKeyDisplayString = "DEL";
+            this.DeleteInstance.Size = new System.Drawing.Size(204, 22);
+            this.DeleteInstance.Text = "$DELETE_INSTANCE";
+            this.DeleteInstance.Click += new System.EventHandler(this.DeleteInstance_Click);
             // 
-            // CompressionTest
+            // DeleteObject
             // 
-            this.CompressionTest.Name = "CompressionTest";
-            this.CompressionTest.Size = new System.Drawing.Size(180, 22);
-            this.CompressionTest.Text = "Compression Test";
-            this.CompressionTest.Click += new System.EventHandler(this.CompressionTest_Click);
+            this.DeleteObject.Name = "DeleteObject";
+            this.DeleteObject.ShortcutKeyDisplayString = "DEL";
+            this.DeleteObject.Size = new System.Drawing.Size(204, 22);
+            this.DeleteObject.Text = "$DELETE_OBJECT";
+            this.DeleteObject.Click += new System.EventHandler(this.DeleteObject_Click);
             // 
             // TranslokatorEditor
             // 
@@ -154,7 +163,7 @@
             this.Controls.Add(this.TranslokatorTree);
             this.Controls.Add(this.toolStrip1);
             this.Name = "TranslokatorEditor";
-            this.Text = "TranslokatorEditor";
+            this.Text = "$TRANSLOKATOR_EDITOR";
             this.TranslokatorContext.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
@@ -174,7 +183,8 @@
         private System.Windows.Forms.ToolStripMenuItem SaveToolButton;
         private System.Windows.Forms.ToolStripMenuItem ReloadButton;
         private System.Windows.Forms.ToolStripMenuItem ExitButton;
-        private System.Windows.Forms.ToolStripDropDownButton toolsButton;
-        private System.Windows.Forms.ToolStripMenuItem CompressionTest;
+        private System.Windows.Forms.ToolStripMenuItem AddObject;
+        private System.Windows.Forms.ToolStripMenuItem DeleteInstance;
+        private System.Windows.Forms.ToolStripMenuItem DeleteObject;
     }
 }

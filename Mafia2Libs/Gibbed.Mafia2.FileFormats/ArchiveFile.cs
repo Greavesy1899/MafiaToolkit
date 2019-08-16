@@ -862,7 +862,7 @@ namespace Gibbed.Mafia2.FileFormats
             //{
                 string[] dirs = name.Split('/');
                 resource = new XmlResource();
-                resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+                resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian);
                 string xmldir = xmlDir;
                 for (int z = 0; z != dirs.Length - 1; z++)
                 {
@@ -1052,7 +1052,7 @@ namespace Gibbed.Mafia2.FileFormats
         public ResourceEntry ReadTableEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string tableDIR)
         {
             TableResource resource = new TableResource();
-            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian);
             if (!Directory.Exists(tableDIR + "/tables"))
                 Directory.CreateDirectory(tableDIR + "/tables");
 
@@ -1086,7 +1086,7 @@ namespace Gibbed.Mafia2.FileFormats
 
                 //now read..
                 using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + file, FileMode.Open)))
-                    data.Deserialize(0, reader.BaseStream, Endian.Little);
+                    data.Deserialize(0, reader.BaseStream, Endian);
 
                 resource.Tables.Add(data);
             }
