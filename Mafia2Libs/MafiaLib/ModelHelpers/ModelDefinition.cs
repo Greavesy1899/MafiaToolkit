@@ -236,7 +236,15 @@ namespace Utils.Models
 
             if (frameGeometry.LOD == null)
                 frameGeometry.LOD = new FrameLOD[model.Lods.Length];
-                
+
+            frameMaterial.NumLods = (byte)model.Lods.Length;
+            frameMaterial.LodMatCount = new int[model.Lods.Length];
+            frameMaterial.Materials = new List<MaterialStruct[]>();
+
+            for (int x = 0; x < model.Lods.Length; x++)
+            {
+                frameMaterial.Materials.Add(new MaterialStruct[frameMaterial.LodMatCount[x]]);
+            }
             for (int x = 0; x < model.Lods.Length; x++)
             {
                 frameGeometry.LOD[x] = new FrameLOD();
@@ -251,15 +259,11 @@ namespace Utils.Models
                 //burst split info.
                 frameGeometry.LOD[x].SplitInfo.NumMatSplit = model.Lods[x].Parts.Length;
                 frameGeometry.LOD[x].SplitInfo.NumMatBurst = model.Lods[x].Parts.Length;
-                frameGeometry.LOD[x].SplitInfo.MaterialSplits = new FrameLOD.MaterialSplit[model.Lods[0].Parts.Length];
-                frameGeometry.LOD[x].SplitInfo.MaterialBursts = new FrameLOD.MaterialBurst[model.Lods[0].Parts.Length];
+                frameGeometry.LOD[x].SplitInfo.MaterialSplits = new FrameLOD.MaterialSplit[model.Lods[x].Parts.Length];
+                frameGeometry.LOD[x].SplitInfo.MaterialBursts = new FrameLOD.MaterialBurst[model.Lods[x].Parts.Length];
 
                 int faceIndex = 0;
                 int baseIndex = 0;
-                frameMaterial.NumLods = (byte)model.Lods.Length;
-                frameMaterial.LodMatCount = new int[model.Lods.Length];
-                frameMaterial.Materials = new List<MaterialStruct[]>();
-                FrameMaterial.Materials.Add(new MaterialStruct[frameMaterial.LodMatCount[x]]);
                 frameMaterial.LodMatCount[x] = model.Lods[x].Parts.Length;
                 frameMaterial.Materials[x] = new MaterialStruct[model.Lods[x].Parts.Length];
                 for (int i = 0; i != model.Lods[x].Parts.Length; i++)

@@ -960,16 +960,19 @@ namespace Mafia2Tool
             SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
             SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
 
-            //Check for existing buffer; if it exists, remove so we can add one later.
-            if (SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[0].Hash) != null)
-                SceneData.IndexBufferPool.RemoveBuffer(model.IndexBuffers[0]);
+            for (int i = 0; i < model.FrameGeometry.NumLods; i++)
+            {
+                //Check for existing buffer; if it exists, remove so we can add one later.
+                if (SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[i].Hash) != null)
+                    SceneData.IndexBufferPool.RemoveBuffer(model.IndexBuffers[i]);
 
-            //do the same for vertexbuffer pools.
-            if (SceneData.VertexBufferPool.SearchBuffer(model.VertexBuffers[0].Hash) != null)
-                SceneData.VertexBufferPool.RemoveBuffer(model.VertexBuffers[0]);
+                //do the same for vertexbuffer pools.
+                if (SceneData.VertexBufferPool.SearchBuffer(model.VertexBuffers[i].Hash) != null)
+                    SceneData.VertexBufferPool.RemoveBuffer(model.VertexBuffers[i]);
 
-            SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[0]);
-            SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[0]);
+                SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[i]);
+                SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[i]);
+            }
 
             return mesh;
         }

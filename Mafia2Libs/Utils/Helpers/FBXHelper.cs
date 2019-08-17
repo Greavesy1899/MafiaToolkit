@@ -67,6 +67,9 @@ namespace Utils
                 case -95:
                     message += "Failed to convert part during FBX > M2T";
                     break;
+                case -94:
+                    message += "Could not find standalone mesh or LOD Group!";
+                    break;
                 case -10:
                     message += "Failed to initialize the PhysX Cooking library!";
                     break;

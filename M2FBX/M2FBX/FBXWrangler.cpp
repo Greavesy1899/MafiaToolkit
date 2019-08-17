@@ -108,12 +108,12 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 
 	// create document info
 	FbxDocumentInfo* lDocInfo = FbxDocumentInfo::Create(pManager, "DocInfo");
-	lDocInfo->mTitle = "Example document";
-	lDocInfo->mSubject = "Illustrates the creation of FbxDocument with geometries, materials and lights.";
-	lDocInfo->mAuthor = "ExportDocument.exe sample program.";
-	lDocInfo->mRevision = "rev. 1.0";
-	lDocInfo->mKeywords = "Fbx document";
-	lDocInfo->mComment = "no particular comments required.";
+	lDocInfo->mTitle = "FBX Model";
+	lDocInfo->mSubject = "FBX Created by M2FBX - Used by MafiaToolkit.";
+	lDocInfo->mAuthor = "Greavesy";
+	lDocInfo->mRevision = "rev. 0.12";
+	lDocInfo->mKeywords = "";
+	lDocInfo->mComment = "";
 
 	// add the documentInfo
 	pScene->SetDocumentInfo(lDocInfo);
@@ -123,12 +123,26 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 	// during the creation of objects so they are automatically connected and become visible
 	// to the disk save routines.
 
-	FbxNode* lPlane = CreatePlane(pManager, model.GetName().c_str(), model);
+	FbxNode* lLodNode = FbxNode::Create(pManager, model.GetName().c_str());
+	std::string nodeName = model.GetName();
+	nodeName += "_LODNODE";
+	FbxLODGroup* lLodGroup = FbxLODGroup::Create(pManager, nodeName.c_str());
+	lLodNode->SetNodeAttribute(lLodGroup);
+	for (int i = 0; i < model.GetPartSize(); i++)
+	{
+		std::string name = "LOD";
+		name += std::to_string(i);
+		FbxNode* lModel = CreatePlane(pManager, name.c_str(), model.GetParts()[i]);
+		lLodNode->AddChild(lModel);
+	}
 
 	// add the geometry to the main document.	
-	FbxNode* node = pScene->GetRootNode();
-	node->AddChild(lPlane);
-	pScene->AddRootMember(lPlane);
+	//FbxNode* node = pScene->GetRootNode();
+	//node->AddChild(lLodGroup);
+	FbxNode* rootNode = pScene->GetRootNode();
+	rootNode->AddChild(lLodNode);
+	pScene->AddNode(rootNode);
+	pScene->AddRootMember(rootNode);
 
 	lCount = pScene->GetRootMemberCount();  // lCount = 1: only the lPlane
 	lCount = pScene->GetMemberCount();      // lCount = 3: the FbxNode - lPlane; FbxMesh belongs to lPlane; Material that connect to lPlane
@@ -167,11 +181,9 @@ void CreateLightDocument(FbxManager* pManager, FbxDocument* pLightDocument)
 	pLightDocument->AddMember(CreateLight(pManager, FbxLight::eSpot));
 	pLightDocument->AddMember(CreateLight(pManager, FbxLight::ePoint));
 }
-FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelStructure model)
+FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 {
 	FbxMesh* lMesh = FbxMesh::Create(pManager, pName);
-
-	ModelPart part = model.GetParts()[0];
 	std::vector<Point3> vertices = part.GetVertices();
 	std::vector<Int3> triangles = part.GetIndices();
 	std::vector<Point3> normals = part.GetNormals();

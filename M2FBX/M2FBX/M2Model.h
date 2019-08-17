@@ -68,7 +68,6 @@ private:
 	SubMesh* submeshes;
 	int indicesSize;
 	std::vector<Int3> indices;
-	std::vector<short> matIDs;
 public:
 	ModelPart();
 	~ModelPart();

@@ -53,9 +53,11 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 			WriteLine("pElementNormal->GetReferenceMode() did not equal eDirect.. Cannot continue.");
 			return -99;
 		}
-		if ((pElementNormal->GetMappingMode() <= FbxGeometryElement::eByControlPoint) && (pElementNormal->GetMappingMode() >= FbxGeometryElement::eByPolygonVertex)) {
-			WriteLine("pElementNormal->GetMappingMode() did not equal eByControlPoint or eByPolygonVertex.. Cannot continue.");
-			return -98;
+		if ((pElementNormal->GetMappingMode() != FbxGeometryElement::eByControlPoint)) {
+			pMesh->SetBoundaryRule(FbxMesh::EBoundaryRule::eCreaseEdge);
+			pMesh->SetMeshSmoothness(FbxMesh::ESmoothness::eFine);
+			pMesh->BuildMeshEdgeArray();
+			pMesh->GenerateNormals(true, true, false);
 		}
 	}
 
@@ -237,6 +239,28 @@ int DetermineNodeAttribute(FbxNode* node)
 	return NULL;
 }
 
+int BuildLodGroup(ModelStructure* structure, FbxNode* node)
+{
+	char numModels = node->GetChildCount();
+	structure->SetPartSize(numModels);
+	ModelPart* parts = new ModelPart[numModels];
+	structure->SetName(std::string(node->GetName()));
+	printf("%i", numModels);
+
+	for (int i = 0; i < numModels; i++)
+	{
+		WriteLine("Converting Mesh %i", i);
+		ModelPart Part = ModelPart();
+		FbxNode* child = node->GetChild(i);
+		int result = BuildModelPart(child, Part);
+		if (result != 0)
+			return -95;
+		parts[i] = Part;
+	}
+	structure->SetParts(parts);
+	WriteLine("Converted Model!");
+	return 0;
+}
 int BuildModel(ModelStructure* structure, FbxNode* node)
 {
 	char size = 1;
@@ -252,7 +276,7 @@ int BuildModel(ModelStructure* structure, FbxNode* node)
 
 	parts[0] = Part;
 	structure->SetParts(parts);
-	WriteLine("Built Model..");
+	WriteLine("Converted Model!");
 	return 0;
 }
 
@@ -287,38 +311,41 @@ int ConvertFBX(const char* pSource, const char* pDest)
 	WriteLine("Material Count: %i", lScene->GetMaterialCount());
 	WriteLine("Node Count: %i", lScene->GetNodeCount());
 
-	//Get Geometry..
-	FbxNode* Root = lScene->GetRootNode();
 
+	ModelStructure* Structure = new ModelStructure();
+
+	//Get Geometry or LODGroup..
+	FbxNode* Root = lScene->GetRootNode();
 	for (int i = 0; i != Root->GetChildCount(); i++) {
 		FbxNode* pNode = Root->GetChild(i);
-		if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
-			ModelStructure* Structure = new ModelStructure();
-			
-			int result = BuildModel(Structure, pNode);
-
+		if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eLODGroup) {
+			int result = BuildLodGroup(Structure, pNode);
 			if (result != 0)
 				return -95;
-
-			//Point3 pos = Point3();
-			//pos.x = pNode->LclTranslation.Get().mData[0];
-			//pos.z = pNode->LclTranslation.Get().mData[1];
-			//pos.y = -pNode->LclTranslation.Get().mData[2];
-			//entry.SetPosition(pos);
-			//WriteLine("Position is: %f, %f, %f", pos.x, pos.y, pos.z);
-
-			FILE* stream;
-			std::string dest = pDest;
-			if(!dest.find(".m2t"))
-				dest += ".m2t";
-			fopen_s(&stream, dest.c_str(), "wb");
-			Structure->WriteToStream(stream);
-			if (stream != NULL) fclose(stream);
-
-			WriteLine("Exported %s", Structure->GetName().c_str());
-			delete Structure;
+			break;
+		}
+		else if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
+			int result = BuildModel(Structure, pNode);
+			if (result != 0)
+				return -95;
+			break;
 		}
 	}
+
+	if (Structure->GetPartSize() == 0)
+		return -94;
+
+	FILE* stream;
+	std::string dest = pDest;
+	if (!dest.find(".m2t"))
+		dest += ".m2t";
+	fopen_s(&stream, dest.c_str(), "wb");
+	Structure->WriteToStream(stream);
+	if (stream != NULL) fclose(stream);
+
+	WriteLine("Exported %s", Structure->GetName().c_str());
+	delete Structure;
+	fclose(stream);
 	lScene->Destroy(true);
 	return 0;
 }
