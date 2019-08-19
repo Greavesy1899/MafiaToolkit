@@ -4,6 +4,8 @@
   <String ID="$CANCEL">Cancel</String>
   <String ID="$EDIT">Edit</String>
   <String ID="$INDEX">Index</String>
+  <String ID="$COPY">Copy</String>
+  <String ID="$PASTE">Paste</String>
   <String ID="$ENTRY_NAME">Entry Name</String>
   
   <!-- Game Explorer Strings -->
@@ -66,6 +68,12 @@
   <String ID="$MATERIAL_LIB_REMOVE">Remove Selected Library</String>
   <String ID="$MATERIAL_LIB_ADD">Add Library</String>
   <String ID="$MATERIAL_LIB_SELECTED">Selected Libraries</String>
+  <String ID="$CONFLICTING_MATS">Conflicting Materials</String>
+  <String ID="$NEW_MATS">New Materials</String>
+  <String ID="$MERGE">Merge</String>
+  <String ID="$MERGE_MTL">Merge MTL</String>
+  <String ID="$DELETE_SEL_MAT">Delete Selected Material</String>
+  <String ID="$SELECT_ALL">Select All</String>
   
   <!-- SDS Options -->
   <String ID="$SDS_COMPRESSION_TYPE">Compression Type</String>
@@ -75,6 +83,7 @@
   <String ID="$ADD_TIME_DATE_BACKUP">Add time and date to backups.</String>
   <String ID="$DECOMPILE_LUA_UNPACK">Decompile lua when unpacking.</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Use SDS Tool GUI Format when unpacking.</String>
+  
   <!-- Render Options -->
   <String ID="$RENDER">Render</String>
   <String ID="$RENDER_OPTIONS">Render Options</String>

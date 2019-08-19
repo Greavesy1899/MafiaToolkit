@@ -35,13 +35,15 @@
             this.TranslokatorContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.AddInstance = new System.Windows.Forms.ToolStripMenuItem();
             this.AddObject = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteInstance = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteObject = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SaveToolButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.DeleteInstance = new System.Windows.Forms.ToolStripMenuItem();
-            this.DeleteObject = new System.Windows.Forms.ToolStripMenuItem();
+            this.CopyButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.PasteButton = new System.Windows.Forms.ToolStripMenuItem();
             this.TranslokatorContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -62,6 +64,7 @@
             this.TranslokatorTree.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.TranslokatorTree.ContextMenuStrip = this.TranslokatorContext;
+            this.TranslokatorTree.HideSelection = false;
             this.TranslokatorTree.Location = new System.Drawing.Point(12, 28);
             this.TranslokatorTree.Name = "TranslokatorTree";
             this.TranslokatorTree.Size = new System.Drawing.Size(368, 416);
@@ -75,24 +78,42 @@
             this.AddInstance,
             this.AddObject,
             this.DeleteInstance,
-            this.DeleteObject});
+            this.DeleteObject,
+            this.CopyButton,
+            this.PasteButton});
             this.TranslokatorContext.Name = "SDSContext";
-            this.TranslokatorContext.Size = new System.Drawing.Size(205, 92);
+            this.TranslokatorContext.Size = new System.Drawing.Size(205, 158);
             this.TranslokatorContext.Opening += new System.ComponentModel.CancelEventHandler(this.TranslokatorContext_Opening);
             // 
             // AddInstance
             // 
             this.AddInstance.Name = "AddInstance";
-            this.AddInstance.Size = new System.Drawing.Size(244, 22);
+            this.AddInstance.Size = new System.Drawing.Size(204, 22);
             this.AddInstance.Text = "$ADD_INSTANCE";
             this.AddInstance.Click += new System.EventHandler(this.AddInstance_Click);
             // 
             // AddObject
             // 
             this.AddObject.Name = "AddObject";
-            this.AddObject.Size = new System.Drawing.Size(244, 22);
+            this.AddObject.Size = new System.Drawing.Size(204, 22);
             this.AddObject.Text = "$ADD_OBJECT";
             this.AddObject.Click += new System.EventHandler(this.AddObjectOnClick);
+            // 
+            // DeleteInstance
+            // 
+            this.DeleteInstance.Name = "DeleteInstance";
+            this.DeleteInstance.ShortcutKeyDisplayString = "DEL";
+            this.DeleteInstance.Size = new System.Drawing.Size(204, 22);
+            this.DeleteInstance.Text = "$DELETE_INSTANCE";
+            this.DeleteInstance.Click += new System.EventHandler(this.DeleteInstance_Click);
+            // 
+            // DeleteObject
+            // 
+            this.DeleteObject.Name = "DeleteObject";
+            this.DeleteObject.ShortcutKeyDisplayString = "DEL";
+            this.DeleteObject.Size = new System.Drawing.Size(204, 22);
+            this.DeleteObject.Text = "$DELETE_OBJECT";
+            this.DeleteObject.Click += new System.EventHandler(this.DeleteObject_Click);
             // 
             // toolStrip1
             // 
@@ -120,39 +141,37 @@
             // SaveToolButton
             // 
             this.SaveToolButton.Name = "SaveToolButton";
-            this.SaveToolButton.Size = new System.Drawing.Size(180, 22);
+            this.SaveToolButton.Size = new System.Drawing.Size(124, 22);
             this.SaveToolButton.Text = "$SAVE";
             this.SaveToolButton.Click += new System.EventHandler(this.SaveToolButton_Click);
             // 
             // ReloadButton
             // 
             this.ReloadButton.Name = "ReloadButton";
-            this.ReloadButton.Size = new System.Drawing.Size(180, 22);
+            this.ReloadButton.Size = new System.Drawing.Size(124, 22);
             this.ReloadButton.Text = "$RELOAD";
             this.ReloadButton.Click += new System.EventHandler(this.ReloadButton_Click);
             // 
             // ExitButton
             // 
             this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(180, 22);
+            this.ExitButton.Size = new System.Drawing.Size(124, 22);
             this.ExitButton.Text = "$EXIT";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
-            // DeleteInstance
+            // CopyButton
             // 
-            this.DeleteInstance.Name = "DeleteInstance";
-            this.DeleteInstance.ShortcutKeyDisplayString = "DEL";
-            this.DeleteInstance.Size = new System.Drawing.Size(204, 22);
-            this.DeleteInstance.Text = "$DELETE_INSTANCE";
-            this.DeleteInstance.Click += new System.EventHandler(this.DeleteInstance_Click);
+            this.CopyButton.Name = "CopyButton";
+            this.CopyButton.Size = new System.Drawing.Size(204, 22);
+            this.CopyButton.Text = "$COPY";
+            this.CopyButton.Click += new System.EventHandler(this.CopyButton_Click);
             // 
-            // DeleteObject
+            // PasteButton
             // 
-            this.DeleteObject.Name = "DeleteObject";
-            this.DeleteObject.ShortcutKeyDisplayString = "DEL";
-            this.DeleteObject.Size = new System.Drawing.Size(204, 22);
-            this.DeleteObject.Text = "$DELETE_OBJECT";
-            this.DeleteObject.Click += new System.EventHandler(this.DeleteObject_Click);
+            this.PasteButton.Name = "PasteButton";
+            this.PasteButton.Size = new System.Drawing.Size(204, 22);
+            this.PasteButton.Text = "$PASTE";
+            this.PasteButton.Click += new System.EventHandler(this.PasteButton_Click);
             // 
             // TranslokatorEditor
             // 
@@ -186,5 +205,7 @@
         private System.Windows.Forms.ToolStripMenuItem AddObject;
         private System.Windows.Forms.ToolStripMenuItem DeleteInstance;
         private System.Windows.Forms.ToolStripMenuItem DeleteObject;
+        private System.Windows.Forms.ToolStripMenuItem CopyButton;
+        private System.Windows.Forms.ToolStripMenuItem PasteButton;
     }
 }

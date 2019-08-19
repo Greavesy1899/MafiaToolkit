@@ -10,6 +10,7 @@ namespace Mafia2Tool.Forms
     {
         private FileInfo file;
         private TranslokatorLoader translokator;
+        private object clipboard;
 
         public TranslokatorEditor(FileInfo info)
         {
@@ -31,6 +32,8 @@ namespace Mafia2Tool.Forms
             DeleteInstance.Text = Language.GetString("$DELETE_INSTANCE");
             DeleteObject.Text = Language.GetString("$DELETE_OBJECT");
             Text = Language.GetString("$TRANSLOKATOR_EDITOR");
+            CopyButton.Text = Language.GetString("$COPY");
+            PasteButton.Text = Language.GetString("$PASTE");
         }
 
         private void LoadFile()
@@ -137,10 +140,8 @@ namespace Mafia2Tool.Forms
 
         private void TranslokatorContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            TranslokatorContext.Items[0].Visible = false;
-            TranslokatorContext.Items[1].Visible = false;
-            TranslokatorContext.Items[2].Visible = false;
-            TranslokatorContext.Items[3].Visible = false;
+            for (int i = 0; i != TranslokatorContext.Items.Count; i++)
+                TranslokatorContext.Items[i].Visible = false;
 
             if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
             {
@@ -152,7 +153,24 @@ namespace Mafia2Tool.Forms
                     TranslokatorContext.Items[2].Visible = true;
                 if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object))
                     TranslokatorContext.Items[3].Visible = true;
+
+                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object) ||
+                    TranslokatorTree.SelectedNode.Tag.GetType() == typeof(Instance))
+                {
+                    TranslokatorContext.Items[4].Visible = true;
+                    TranslokatorContext.Items[5].Visible = true;
+                }
             }
+
+            bool nonVisible = true;
+            for (int i = 0; i != TranslokatorContext.Items.Count; i++)
+            {
+                if (TranslokatorContext.Items[i].Visible)
+                    nonVisible = false;
+            }
+
+            if(nonVisible)
+                e.Cancel = true;
         }
 
         private void AddInstance_Click(object sender, EventArgs e)
@@ -192,6 +210,33 @@ namespace Mafia2Tool.Forms
         {
             if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
                 TranslokatorTree.Nodes.Remove(TranslokatorTree.SelectedNode);
+        }
+
+        private void CopyButton_Click(object sender, EventArgs e)
+        {
+            if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
+            {
+                if(TranslokatorTree.SelectedNode.Tag is Instance || TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object)
+                {
+                    clipboard = TranslokatorTree.SelectedNode.Tag;
+                }
+            }
+        }
+
+        private void PasteButton_Click(object sender, EventArgs e)
+        {
+            var data = clipboard;
+            if (data != null)
+            {      
+                if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
+                {
+                    if(TranslokatorTree.SelectedNode.Tag is Instance && data is Instance)
+                        TranslokatorTree.SelectedNode.Tag = data;
+                    if (TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object && data is ResourceTypes.Translokator.Object)
+                        TranslokatorTree.SelectedNode.Tag = data;
+                }
+            }
+            PropertyGrid.SelectedObject = TranslokatorTree?.SelectedNode.Tag;
         }
     }
 }

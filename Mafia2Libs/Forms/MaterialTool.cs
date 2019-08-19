@@ -7,6 +7,7 @@ using Forms.EditorControls;
 using ResourceTypes.Materials;
 using Utils.Lang;
 using Utils.Settings;
+using System.Linq;
 
 namespace Mafia2Tool
 {
@@ -32,6 +33,8 @@ namespace Mafia2Tool
 
             FetchMaterials();
             Show();
+            MainPanel.Visible = true;
+            MergePanel.Visible = false;
             ToolkitSettings.UpdateRichPresence("Using the Material Library editor.");
         }
 
@@ -45,6 +48,12 @@ namespace Mafia2Tool
             addMaterialToolStripMenuItem.Text = Language.GetString("$MATERIAL_ADD");
             Text = Language.GetString("$MATERIAL_EDITOR_TITLE");
             DeleteSelectedMaterialButton.Text = Language.GetString("$MATERIAL_DELETE");
+            CancelButton.Text = Language.GetString("$CANCEL");
+            MergeButton.Text = Language.GetString("$MERGE");
+            MergeMTLButton.Text = Language.GetString("$MERGE_MTL");
+            OverWriteLabel.Text = Language.GetString("$CONFLICTING_MATS");
+            NewMaterialLabel.Text = Language.GetString("$NEW_MATS");
+            SelectAllNewButton.Text = SelectAllOverwriteButton.Text = Language.GetString("$SELECT_ALL");
         }
 
         public void FetchMaterials(bool searchMode = false, string text = null)
@@ -88,11 +97,20 @@ namespace Mafia2Tool
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
+            if (!MainPanel.Visible)
+            {
+                MessageBox.Show("Complete the merge to save!");
+                return;
+            }
+
             mtl.WriteMatFile(mtl.Name);
         }
 
         private void AddMaterial(object sender, EventArgs e)
         {
+            if (!MainPanel.Visible)
+                return;
+
             //ask user for material name.
             NewObjectForm form = new NewObjectForm(true);
             form.SetLabel(Language.GetString("$QUESTION_NAME_OF_MAT"));
@@ -119,8 +137,7 @@ namespace Mafia2Tool
 
         private void DeleteMaterial(object sender, EventArgs e)
         {
-
-            if (dataGridView1.SelectedCells[0] == null)
+            if (dataGridView1.SelectedCells[0] == null || !MainPanel.Visible)
                 return;
 
             int index = dataGridView1.SelectedCells[0].RowIndex;
@@ -135,6 +152,9 @@ namespace Mafia2Tool
 
         private void UpdateList(object sender, EventArgs e)
         {
+            if (!MainPanel.Visible)
+                return;
+
             FetchMaterials(false, null);
         }
 
@@ -146,36 +166,6 @@ namespace Mafia2Tool
                 Material mat = (dataGridView1.Rows[e.RowIndex].Tag as Material);
                 Console.WriteLine(string.Format("{0} {1}", mat.MaterialName, (int)mat.Flags));
             }
-        }
-
-        private void DumpSpecificMaterialNames()
-        {
-            int countForShaderID = 0;
-            int countForShaderHash = 0;
-            int countForBoth = 0;
-            foreach (KeyValuePair<ulong, Material> mat in mtl.Materials)
-            {
-                if (mat.Value.ShaderID == 3854590933660942049)
-                {
-                    Console.WriteLine("Material {0} has ShaderID", mat.Value.MaterialName);
-                    countForShaderID++;
-                }
-
-                if (mat.Value.ShaderHash == 601151254)
-                {
-                    Console.WriteLine("Material {0} has ShaderHash", mat.Value.MaterialName);
-                    countForShaderHash++;
-                }
-
-                if (mat.Value.ShaderID == 3854590933660942049 && mat.Value.ShaderHash == 601151254)
-                {
-                    Console.WriteLine("Material {0} has both ShaderID and ShaderHash", mat.Value.MaterialName);
-                    countForBoth++;
-                }
-            }
-            Console.WriteLine(countForShaderID);
-            Console.WriteLine(countForShaderHash);
-            Console.WriteLine(countForBoth);
         }
 
         private DataGridViewRow BuildRowData(KeyValuePair<ulong, Material> mat)
@@ -194,9 +184,97 @@ namespace Mafia2Tool
             return row;
         }
 
-        private void DumpInfo_Clicked(object sender, EventArgs e)
+        private void MergeMTLButton_Click(object sender, EventArgs e)
         {
-            DumpSpecificMaterialNames();
+            if (!MainPanel.Visible)
+                return;
+
+            MaterialLibrary matLib = new MaterialLibrary();
+            if(MTLBrowser.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    matLib.ReadMatFile(MTLBrowser.FileName);
+                }
+                catch
+                {
+                    MessageBox.Show("Failed to load the selected .MTL!");
+                }
+            }
+
+            if (matLib.Materials.Count == 0)
+            {
+                MessageBox.Show("Failed to load the selected .MTL!");
+                return;
+            }
+
+            MergePanel.Visible = true;
+            MainPanel.Visible = false;
+            OverwriteListBox.Items.Clear();
+            NewMatListBox.Items.Clear();
+
+            for(int i = 0; i < matLib.Materials.Count; i++)
+            {
+                var mat = matLib.Materials.ElementAt(i).Value;
+                if (mtl.Materials.ContainsKey(mat.MaterialHash))
+                {
+                    OverwriteListBox.Items.Add(mat);
+                }
+                else
+                {
+                    NewMatListBox.Items.Add(mat);
+                }
+            }
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            if(MergePanel.Visible)
+            {
+                MainPanel.Visible = true;
+                MergePanel.Visible = false;
+                OverwriteListBox.Items.Clear();
+                NewMatListBox.Items.Clear();
+            }
+        }
+
+        private void MergeButton_Click(object sender, EventArgs e)
+        {
+            if(MergePanel.Visible)
+            {
+                MainPanel.Visible = true;
+                MergePanel.Visible = false;
+
+                for(int i = 0; i < NewMatListBox.CheckedItems.Count; i++)
+                {
+                    var mat = (NewMatListBox.CheckedItems[i] as Material);
+                    mtl.Materials.Add(mat.MaterialHash, mat);
+                }
+
+                for(int i = 0; i < OverwriteListBox.CheckedItems.Count; i++)
+                {
+                    var mat = (OverwriteListBox.CheckedItems[i] as Material);
+                    mtl.Materials[mat.MaterialHash] = mat;
+                }
+
+                OverwriteListBox.Items.Clear();
+                NewMatListBox.Items.Clear();
+            }
+        }
+
+        private void SelectAllOverwriteButton_Click(object sender, EventArgs e)
+        {
+            if(MergePanel.Visible)
+            {
+                for (int i = 0; i < OverwriteListBox.Items.Count; i++)
+                    OverwriteListBox.SetItemChecked(i, true);
+            }
+        }
+
+        private void SelectAllNewButton_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < NewMatListBox.Items.Count; i++)
+                NewMatListBox.SetItemChecked(i, true);
         }
     }
 }
