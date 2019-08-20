@@ -1308,12 +1308,6 @@ namespace Mafia2Tool
 
             if (FrameResource.IsFrameType(node.Tag))
             {
-                if (node.Nodes.Count > 0)
-                {
-                    MessageBox.Show("Cannot delete a node with children!", "Warning!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-                    return;
-                }
-
                 FrameEntry obj = node.Tag as FrameEntry;
 
                 if (obj != null)
@@ -1324,6 +1318,17 @@ namespace Mafia2Tool
 
                     if (Graphics.Assets.ContainsKey(obj.RefID))
                         Graphics.Assets.Remove(obj.RefID);
+                }
+
+                for (int i = 0; i < node.Nodes.Count; i++)
+                {
+                    if (FrameResource.IsFrameType(node.Nodes[i].Tag))
+                    {
+                        FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
+                        SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
+                        if (Graphics.Assets.ContainsKey(entry.RefID))
+                            Graphics.Assets.Remove(entry.RefID);
+                    }
                 }
             }
             else if (node.Tag.GetType() == typeof(Collision.Placement))

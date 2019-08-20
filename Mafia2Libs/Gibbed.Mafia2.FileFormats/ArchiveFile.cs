@@ -643,11 +643,7 @@ namespace Gibbed.Mafia2.FileFormats
                 }
                 counts[ResourceTypes[entry.TypeId].Id]++;
                 resourceXML.WriteElementString("Version", entry.Version.ToString());
-                using (BinaryWriter writer = new BinaryWriter(File.Open(finalPath + "/" + saveName, FileMode.Create)))
-                {
-                    writer.Write(entry.Data);
-                }
-
+                File.WriteAllBytes(finalPath + "/" + saveName, entry.Data);
                 resourceXML.WriteEndElement();
             }
 
@@ -681,9 +677,7 @@ namespace Gibbed.Mafia2.FileFormats
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
 
             //do main stuff
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                texData = reader.ReadBytes((int)reader.BaseStream.Length);
-
+            texData = File.ReadAllBytes(sdsFolder + "/" + file);
             resource = new TextureResource(FNV64.Hash(file), hasMIP, texData);
 
             //entry.SlotVramRequired = (uint)(texData.Length - 128);
@@ -719,11 +713,7 @@ namespace Gibbed.Mafia2.FileFormats
             string file = nodes.Current.Value;
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-            //read file data.
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                texData = reader.ReadBytes((int)reader.BaseStream.Length);
-
+            texData = File.ReadAllBytes(sdsFolder + "/" + file);
             resource = new TextureResource(FNV64.Hash(file.Remove(0, 4)), 0, texData);
             resource.SerializeMIP(entry.Version, data, Endian.Little);
 
@@ -745,11 +735,8 @@ namespace Gibbed.Mafia2.FileFormats
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
 
-            //set up data.
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-
             //finish
+            entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
             descNode.InnerText = "not available";
             return entry;
         }
@@ -761,11 +748,8 @@ namespace Gibbed.Mafia2.FileFormats
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
 
-            //set up data.
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-
             //finish
+            entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
             descNode.InnerText = file;
             return entry;
         }
@@ -776,10 +760,7 @@ namespace Gibbed.Mafia2.FileFormats
             string file = nodes.Current.Value;
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-            //set up data.
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+            entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
 
             //finish
             entry.SlotRamRequired = (uint)entry.Data.Length + 1;
@@ -802,10 +783,7 @@ namespace Gibbed.Mafia2.FileFormats
                     Directory.CreateDirectory(scrdir);
                 }
 
-                using (BinaryWriter writer = new BinaryWriter(File.Open(scriptDir + "/" + resource.Scripts[x].Name, FileMode.Create)))
-                {
-                    writer.Write(resource.Scripts[x].Data);
-                }
+                File.WriteAllBytes(scriptDir + "/" + resource.Scripts[x].Name, resource.Scripts[x].Data);
 
                 if(ToolkitSettings.DecompileLUA)
                     LuaHelper.ReadFile(new FileInfo(scriptDir + "/" + resource.Scripts[x].Name));
@@ -832,9 +810,7 @@ namespace Gibbed.Mafia2.FileFormats
                 ScriptData data = new ScriptData();
                 nodes.Current.MoveToNext();
                 data.Name = nodes.Current.Value;
-                using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + data.Name, FileMode.Open)))
-                    data.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-
+                data.Data = File.ReadAllBytes(sdsFolder + data.Name);
                 resource.Scripts.Add(data);
             }
 
@@ -853,31 +829,23 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteElementString("File", name);
             XmlResource resource = new XmlResource();
 
-            if (name == "/config/gui/Screens/MainMenu/TheStory")
-            {
-                using (BinaryWriter writer = new BinaryWriter(File.Open("file2.bin", FileMode.Create)))
-                    writer.Write(entry.Data);
-            }
             //try
             //{
-                string[] dirs = name.Split('/');
-                resource = new XmlResource();
-                resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian);
-                string xmldir = xmlDir;
-                for (int z = 0; z != dirs.Length - 1; z++)
-                {
-                    xmldir += "/" + dirs[z];
-                    Directory.CreateDirectory(xmldir);
-                }
-                if (!resource.Unk3)
-                    File.WriteAllText(xmlDir + "/" + name + ".xml", resource.Content);
-                else
-                {
-                    using (BinaryWriter writer = new BinaryWriter(File.Open(xmlDir + "/" + name + ".xml", FileMode.Create)))
-                    {
-                        writer.Write(entry.Data);
-                    }
-                }
+            string[] dirs = name.Split('/');
+            resource = new XmlResource();
+            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian);
+            string xmldir = xmlDir;
+            for (int z = 0; z != dirs.Length - 1; z++)
+            {
+                xmldir += "/" + dirs[z];
+                Directory.CreateDirectory(xmldir);
+            }
+            if (!resource.Unk3)
+                File.WriteAllText(xmlDir + "/" + name + ".xml", resource.Content);
+            else
+            {
+                File.WriteAllBytes(xmlDir + "/" + name + ".xml", entry.Data);
+            }
             //}
             //catch (Exception ex)
             //{
@@ -922,8 +890,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             if (resource.Unk3)
             {
-                using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file + ".xml", FileMode.Open)))
-                    entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
+                entry.Data = File.ReadAllBytes(sdsFolder + "/" + file + ".xml");
             }
             else
             {
@@ -943,9 +910,7 @@ namespace Gibbed.Mafia2.FileFormats
                 Directory.CreateDirectory(sounddir);
             }
             sounddir += "/" + dirs[dirs.Length-1];
-            using (BinaryWriter writer = new BinaryWriter(File.Open(sounddir, FileMode.Create)))
-                writer.Write(entry.Data);
-
+            File.WriteAllBytes(sounddir, entry.Data);
             resourceXML.WriteElementString("File", name);
         }
         public ResourceEntry WriteAudioSectorEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
@@ -953,11 +918,7 @@ namespace Gibbed.Mafia2.FileFormats
             string file;
             nodes.Current.MoveToNext();
             file = nodes.Current.Value;
-
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-            {
-                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-            }
+            entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
             descNode.InnerText = file;
@@ -1034,11 +995,8 @@ namespace Gibbed.Mafia2.FileFormats
                 Name = file,
                 Unk1 = 1
             };
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-            {
-                resource.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-                entry.SlotRamRequired = (uint)reader.BaseStream.Length;
-            }
+            resource.Data = File.ReadAllBytes(sdsFolder + "/" + file);
+            entry.SlotRamRequired = (uint)resource.Data.Length;
 
             //serialize.
             MemoryStream stream = new MemoryStream();
@@ -1097,9 +1055,7 @@ namespace Gibbed.Mafia2.FileFormats
                 resource.Serialize(1, stream, Endian.Little);
                 entry.Data = stream.ToArray();
                 entry.SlotRamRequired = (uint)entry.Data.Length + 128;
-
-                using (BinaryWriter writer = new BinaryWriter(File.Open(sdsFolder + "/Tables.tbl", FileMode.Create)))
-                    writer.Write(entry.Data);
+                File.WriteAllBytes(sdsFolder + "/Tables.tbl", entry.Data);
             }
 
             //get version, always 1?
@@ -1137,13 +1093,8 @@ namespace Gibbed.Mafia2.FileFormats
             string file = nodes.Current.Value;
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-            //read into data.
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-            {
-                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-                entry.SlotRamRequired = (uint)reader.BaseStream.Length + 30;
-            }
+            entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
+            entry.SlotRamRequired = (uint)(entry.Data.Length + 30);
 
             //finish
             descNode.InnerText = "not available";
@@ -1156,11 +1107,7 @@ namespace Gibbed.Mafia2.FileFormats
             string file = nodes.Current.Value;
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-            //do file data.
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-
+            entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
             //finish
             descNode.InnerText = file.Remove(file.Length - 4, 4);
             return entry;
