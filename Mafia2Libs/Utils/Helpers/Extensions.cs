@@ -73,7 +73,6 @@ namespace Utils.Extensions
         {
             return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
         }
-
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             object result = null;

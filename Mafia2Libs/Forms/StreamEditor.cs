@@ -59,8 +59,8 @@ namespace Mafia2Tool
         {
             List<StreamLine> lines = new List<StreamLine>();
             List<StreamLoader> loaders = new List<StreamLoader>();
-            Dictionary<string, StreamLoader> currentLoaders = new Dictionary<string, StreamLoader>();
-            Dictionary<string, bool> temp = new Dictionary<string, bool>();
+            Dictionary<int, StreamLoader> currentLoaders = new Dictionary<int, StreamLoader>();
+            Dictionary<int, bool> temp = new Dictionary<int, bool>();
 
             foreach (TreeNode node in linesTree.Nodes)
             {
@@ -68,17 +68,18 @@ namespace Mafia2Tool
                 {
                     StreamLine line = (child.Tag as StreamLine);
                     line.lineID = lines.Count;
+                    
                     lines.Add(line);
-                    temp = new Dictionary<string, bool>();
+                    temp = new Dictionary<int, bool>();
 
                     for (int i = 0; i != currentLoaders.Count; i++)
-                        temp.Add(currentLoaders.ElementAt(i).Key, false);
+                        temp.Add(currentLoaders.ElementAt(i).Key.GetHashCode(), false);
 
                     foreach (var loader in currentLoaders)
                     {
                         foreach (var load in line.loadList)
                         {
-                            if (loader.Value.Path == load.Path)
+                            if (loader.Key == load.GetHashCode())
                             {
                                 temp[loader.Key] = true;
                             }
@@ -98,16 +99,16 @@ namespace Mafia2Tool
 
                     foreach (StreamLoader loader in line.loadList)
                     {
-                        if (!currentLoaders.ContainsKey(loader.Path))
+                        if (!currentLoaders.ContainsKey(loader.GetHashCode()))
                         {
                             loader.start = line.lineID;
                             loader.end = line.lineID;
-                            currentLoaders.Add(loader.Path, loader);
-                            temp.Add(loader.Path, true);
+                            currentLoaders.Add(loader.GetHashCode(), loader);
+                            temp.Add(loader.GetHashCode(), true);
                         }
                         else
                         {
-                            currentLoaders[loader.Path].end = line.lineID;
+                            currentLoaders[loader.GetHashCode()].end = line.lineID;
                         }
                     }
                 }
@@ -119,38 +120,57 @@ namespace Mafia2Tool
             temp = null;
 
             Sort(loaders);
-            Dictionary<string, List<StreamLoader>> organised = new Dictionary<string, List<StreamLoader>>();
+            Dictionary<int, List<StreamLoader>> organised = new Dictionary<int, List<StreamLoader>>();
             List<StreamGroup> groups = new List<StreamGroup>();
 
-            foreach (TreeNode node in groupTree.Nodes)
+            for(int i = 0; i < groupTree.Nodes.Count; i++)
             {
-                if (!organised.ContainsKey(node.Text))
+                var group = (groupTree.Nodes[i].Tag as StreamGroup);
+                if (!organised.ContainsKey(i))
                 {
-                    organised.Add(node.Text, new List<StreamLoader>());
-                    groups.Add((StreamGroup)node.Tag);
+                    organised.Add(i, new List<StreamLoader>());
+                    groups.Add(group);
                 }
             }
 
             foreach (StreamLoader pair in loaders)
             {
-                if (!organised.ContainsKey(pair.Group))
+                if(string.IsNullOrEmpty(pair.AssignedGroup) && pair.GroupID == -1)
                 {
-                    organised.Add(pair.Group, new List<StreamLoader>());
-                    organised[pair.Group].Add(pair);
+                    if(pair.type != GroupTypes.Null)
+                    {
+                        for(int i = 0; i < groups.Count; i++)
+                        {
+                            var group = groups[i];
+                            if(group.Type == pair.type)
+                            {
+                                pair.GroupID = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (!organised.ContainsKey(pair.GroupID))
+                {
+                    organised.Add(pair.GroupID, new List<StreamLoader>());
+                    organised[pair.GroupID].Add(pair);
                 }
                 else
                 {
-                    organised[pair.Group].Add(pair);
+                    organised[pair.GroupID].Add(pair);
                 }
             }
 
             List<StreamLoader> streamLoaders = new List<StreamLoader>();
             int idx = 0;
-            foreach (KeyValuePair<string, List<StreamLoader>> pair in organised)
+            foreach (KeyValuePair<int, List<StreamLoader>> pair in organised)
             {
-                groups[idx].startOffset = streamLoaders.Count;
+
+                var group = groups[idx];
+                group.startOffset = streamLoaders.Count;
                 streamLoaders.AddRange(pair.Value);
-                groups[idx].endOffset = streamLoaders.Count - groups[idx].startOffset;
+                group.endOffset = streamLoaders.Count - group.startOffset;
                 idx++;
             }
 
@@ -184,7 +204,8 @@ namespace Mafia2Tool
                 for (int x = line.startOffset; x < line.startOffset + line.endOffset; x++)
                 {
                     var loader = stream.loaders[x];
-                    loader.Group = line.Name;
+                    loader.AssignedGroup = line.Name;
+                    loader.GroupID = i;
                 }
 
                 groupTree.Nodes.Add(node);
@@ -227,24 +248,6 @@ namespace Mafia2Tool
 
         }
 
-        public void UncheckAllNodes(TreeNodeCollection nodes)
-        {
-            foreach (TreeNode node in nodes)
-            {
-                node.Checked = false;
-                CheckChildren(node, false);
-            }
-        }
-
-        private void CheckChildren(TreeNode rootNode, bool isChecked)
-        {
-            foreach (TreeNode node in rootNode.Nodes)
-            {
-                CheckChildren(node, isChecked);
-                node.Checked = isChecked;
-            }
-        }
-
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e) => PropertyGrid.SelectedObject = e.Node.Tag;
         private void ExitButtonPressed(object sender, System.EventArgs e) => Close();
         private void ReloadButtonPressed(object sender, System.EventArgs e) => BuildData();
@@ -256,11 +259,8 @@ namespace Mafia2Tool
 
         private void OnContextMenuOpening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            LineContextStrip.Items[0].Visible = false;
-            LineContextStrip.Items[1].Visible = false;
-            LineContextStrip.Items[2].Visible = false;
-            LineContextStrip.Items[3].Visible = false;
-            LineContextStrip.Items[4].Visible = false;
+            for(int i = 0; i != LineContextStrip.Items.Count; i++)
+            LineContextStrip.Items[i].Visible = false;
 
             if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
             {
@@ -270,10 +270,8 @@ namespace Mafia2Tool
                 }
                 else if (linesTree.SelectedNode.Tag.GetType() == typeof(StreamLine))
                 {
-                    LineContextStrip.Items[1].Visible = true;
-                    LineContextStrip.Items[2].Visible = true;
-                    LineContextStrip.Items[3].Visible = true;
-                    LineContextStrip.Items[4].Visible = true;
+                    for (int i = 1; i != 4; i++)
+                        LineContextStrip.Items[i].Visible = true;
                 }
             }
         }

@@ -2,12 +2,60 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
+using Utils.Extensions;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Misc
 {
+    public enum GroupTypes
+    {
+        Null = 0,
+        City = 1,
+        City_Ground = 2,
+        //City_Univers = 3,
+        Shop = 4,
+        //Char_Universe = 5,
+        //Player = 6,
+        H_Char = 7,
+        L_Char = 8,
+        Police_Char = 9,
+        //Car_Universe = 10,
+        Car = 11,
+        //Base_Anim = 15,
+        //Weapons = 16,
+        //GUI = 17,
+        Sky = 18,
+        //Tables = 19,
+        //Default_Sound = 20,
+        //Particles = 21,
+        Game_Script = 23,
+        Mission_Script = 24,
+        Script = 25,
+        TwoH_Char_In_One = 26,
+        FiveL_Char_In_One = 27,
+        ThreeCar_In_One = 28,
+        City_Crash = 31,
+        Small = 33,
+        Generate = 32,
+        Script_Sounds = 34,
+        Director_Lua = 35,
+        //Mapa = 36,
+        Sound_City = 37,
+        Anims_City = 38,
+        //Generic_Speech_Normal = 41,
+        //Generic_Speech_Gangster = 42,
+        Generic_Speeh_Various = 43,
+        //Generic_Speech_Story = 44,
+        Big_Script = 45,
+        Big_Mission_Scrippt = 46,
+        //Generic_Speech_Police = 47,
+        //Text = 48,
+        //Ingame = 50,
+        //Ingame_GUI = 51,
+        Dabing = 52,
+        
+    }
     public class StreamMapLoader
     {
         private FileInfo file;
@@ -27,7 +75,7 @@ namespace ResourceTypes.Misc
         {
             string name;
             public int nameIDX;
-            int type;
+            GroupTypes type;
             int unk01;
             public int startOffset; //start
             public int endOffset; //end
@@ -37,7 +85,8 @@ namespace ResourceTypes.Misc
                 get { return name; }
                 set { name = value; }
             }
-            public int Type {
+            [ReadOnly(true)]
+            public GroupTypes Type {
                 get { return type; }
                 set { type = value; }
             }
@@ -45,13 +94,16 @@ namespace ResourceTypes.Misc
                 get { return unk01; }
                 set { unk01 = value; }
             }
+            public int Unk05 {
+                get { return unk5; }
+                set { unk5 = value; }
+            }
 
             public override string ToString()
             {
                 return string.Format("{0} {1} {2} {3} {4} {5}", nameIDX, type, unk01, startOffset, endOffset, unk5);
             }
         }
-
         public class StreamLine
         {
             string name;
@@ -80,12 +132,6 @@ namespace ResourceTypes.Misc
             public string Group {
                 get { return group; }
                 set { group = value; }
-            }
-
-            [Browsable(false)]
-            public int GroupID {
-                get { return groupID; }
-                set { groupID = value; }
             }
             [Description("0 - 6, unknown what they do.")]
             public int LoadType {
@@ -143,16 +189,14 @@ namespace ResourceTypes.Misc
                 return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}", nameIDX, lineID, groupID, loadType, flagIDX, unk5, unk10, unk11, unk12, unk13, unk14, unk15);
             }
         }
-
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class StreamLoader
         {
             string path;
             string entity;
-            string group;
             public int start;
             public int end;
-            public int type;
+            public GroupTypes type;
             public int loaderSubID;
             public int loaderID;
             public int loadType;
@@ -174,11 +218,6 @@ namespace ResourceTypes.Misc
                 get { return entity; }
                 set { entity = value; }
             }
-            [Description("The group this assets is under, every group can be seen under 'Stream Groups'")]
-            public string Group {
-                get { return group; }
-                set { group = value; }
-            }
             [Browsable(false)]
             public int LoaderSubID {
                 get { return loaderSubID; }
@@ -189,23 +228,48 @@ namespace ResourceTypes.Misc
                 get { return loaderID; }
                 set { loaderID = value; }
             }
+            [Browsable(false)]
+            public int GroupID { get; set; }
+            [ReadOnly(true)]
+            public string AssignedGroup { get; set; }
+
+            [Description("The group this assets is under, every group can be seen under 'Stream Groups'")]
+            public GroupTypes Type {
+                get { return type; }
+                set { type = value; }
+            }
 
 
-            public StreamLoader() { }
+            public StreamLoader()
+            {
+                GroupID = -1;
+            }
             public StreamLoader(StreamLoader other)
             {
                 path = other.path;
                 entity = other.entity;
-                group = other.group;
+                GroupID = other.GroupID;
                 loadType = other.loadType;
+                loaderSubID = other.loaderSubID;
+                AssignedGroup = other.AssignedGroup;
+                type = other.type;
             }
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3}", LoadType, path, entity, group);
+                return string.Format("{0} {1} {2} {3}", LoadType, path, entity, Type);
+            }
+
+            public override int GetHashCode()
+            {
+                var hashCode = 1843194125;
+                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(path);
+                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(entity);
+                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(AssignedGroup);
+                hashCode = hashCode * -1521134295 + loadType.GetHashCode();
+                return hashCode;
             }
         }
-
         public class StreamBlock
         {
             public int startOffset;
@@ -222,6 +286,7 @@ namespace ResourceTypes.Misc
                 return string.Format("{0} {1}", startOffset, endOffset);
             }
         }
+
         public StreamMapLoader(FileInfo info)
         {
             file = info;
@@ -302,7 +367,7 @@ namespace ResourceTypes.Misc
                 StreamGroup map = new StreamGroup();
                 map.nameIDX = reader.ReadInt32();
                 map.Name = ReadFromBuffer((long)((ulong)map.nameIDX + (ulong)poolOffset), reader.BaseStream.Position, reader);
-                map.Type = reader.ReadInt32();
+                map.Type = (GroupTypes)reader.ReadInt32();
                 map.Unk01 = reader.ReadInt32();
                 map.startOffset = reader.ReadInt32();
                 map.endOffset = reader.ReadInt32();
@@ -358,7 +423,8 @@ namespace ResourceTypes.Misc
                 StreamLoader map = new StreamLoader();
                 map.start = reader.ReadInt32();
                 map.end = reader.ReadInt32();
-                map.type = reader.ReadInt32();
+                map.type = (GroupTypes)reader.ReadInt32();
+                
                 map.loaderSubID = reader.ReadInt32();
                 map.loaderID = reader.ReadInt32();
                 map.LoadType = reader.ReadInt32();
@@ -424,7 +490,7 @@ namespace ResourceTypes.Misc
                     loaderIDX++;
                     var loader = loaders[x];
                     if (loader.loaderSubID == 1)
-                        loader.loaderID = loaderIDX - 1;
+                        loader.loaderID = x != 0 ? loaders[x - 1].loaderID : 1;
                     else
                         loader.loaderID = loaderIDX;
 
@@ -535,7 +601,7 @@ namespace ResourceTypes.Misc
             foreach (var group in groups)
             {
                 writer.Write(group.nameIDX);
-                writer.Write(group.Type);
+                writer.Write((int)group.Type);
                 writer.Write(group.Unk01);
                 writer.Write(group.startOffset);
                 writer.Write(group.endOffset);
@@ -571,7 +637,7 @@ namespace ResourceTypes.Misc
             {
                 writer.Write(loader.start);
                 writer.Write(loader.end);
-                writer.Write(loader.type);
+                writer.Write((int)loader.type);
                 writer.Write(loader.loaderSubID);
                 writer.Write(loader.loaderID);
                 writer.Write(loader.loadType);
