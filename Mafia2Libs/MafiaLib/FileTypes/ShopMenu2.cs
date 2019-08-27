@@ -6,11 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.ComponentModel;
 
 namespace ResourceTypes.City
 {
     public class ShopMenu2
     {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
         public class LocalisedString
         {
             int id;
@@ -32,6 +34,7 @@ namespace ResourceTypes.City
                 return string.Format("{0} {1}", ID, Text);
             }
         }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
         public class Shop
         {
             string name;
@@ -55,7 +58,7 @@ namespace ResourceTypes.City
                 return string.Format("{0} {1} {2}", ID, Name, Unk0);
             }
         }
-        public class ShopMetaInfo
+        public class ShopMenu
         {
             int id;
             int unk0;
@@ -68,7 +71,7 @@ namespace ResourceTypes.City
             int unkZero01;
             int unkZero02;
 
-            List<ShopItem> items = new List<ShopItem>();
+            List<ItemConfig> items = new List<ItemConfig>();
 
             public int ID {
                 get { return id; }
@@ -110,7 +113,7 @@ namespace ResourceTypes.City
                 get { return unkZero02; }
                 set { unkZero02 = value; }
             }
-            public List<ShopItem> Items {
+            public List<ItemConfig> Items {
                 get { return items; }
                 set { items = value; }
             }
@@ -120,7 +123,28 @@ namespace ResourceTypes.City
                 return string.Format("{3} {0} {1} {2}", Unk1, Path, Items.Count, ID);
             }
         }
-        public class ShopItem
+        public class Item
+        {
+            string name;
+            ushort key;
+            byte unk0;
+
+            public string Name {
+                get { return name; }
+                set { name = value; }
+            }
+            [Browsable(false)]
+            public ushort Key {
+                get { return key; }
+                set { key = value; }
+            }
+            public byte Unk0 {
+                get { return unk0; }
+                set { unk0 = value; }
+            }
+        }
+
+        public class ItemConfig
         {
             LocalisedString unkDB0;
             LocalisedString unkDB1;
@@ -134,13 +158,9 @@ namespace ResourceTypes.City
             float[] unkMatrix;
 
             int count1;
-            string[] section1;
-            ushort[] section1Keys;
-            byte[] section1Byte;
+            Item[] section1;
             int count2;
-            string[] section2;
-            ushort[] section2Keys;
-            byte[] section2Byte;
+            Item[] section2;
 
             public LocalisedString UnkDB0 {
                 get { return unkDB0; }
@@ -183,37 +203,24 @@ namespace ResourceTypes.City
                 set { unkMatrix = value; }
             }
 
+            [Browsable(false)]
             public int Count1 {
                 get { return count1; }
                 set { count1 = value; }
             }
-            public string[] Section1 {
+            public Item[] Section1 {
                 get { return section1; }
                 set { section1 = value; }
             }
-            public ushort[] Section1Keys {
-                get { return section1Keys; }
-                set { section1Keys = value; }
-            }
-            public byte[] Section1Byte {
-                get { return section1Byte; }
-                set { section1Byte = value; }
-            }
+
+            [Browsable(false)]
             public int Count2 {
                 get { return count2; }
                 set { count2 = value; }
             }
-            public string[] Section2 {
+            public Item[] Section2 {
                 get { return section2; }
                 set { section2 = value; }
-            }
-            public ushort[] Section2Keys {
-                get { return section2Keys; }
-                set { section2Keys = value; }
-            }
-            public byte[] Section2Byte {
-                get { return section2Byte; }
-                set { section2Byte = value; }
             }
         }
 
@@ -225,7 +232,7 @@ namespace ResourceTypes.City
         public List<Shop> shops = new List<Shop>();
         int[] unkOffsets;
         int[] unkIDs;
-        public List<ShopMetaInfo> shopItems = new List<ShopMetaInfo>();
+        public List<ShopMenu> shopItems = new List<ShopMenu>();
         Dictionary<int, string> textDB = new Dictionary<int, string>();
 
         public ShopMenu2()
@@ -250,7 +257,11 @@ namespace ResourceTypes.City
         {
             string result;
             textDB.TryGetValue(loc.ID, out result);
-            loc.Text = result;
+
+            if (string.IsNullOrEmpty(result))
+                loc.Text = "TextDatabase is not loaded!";
+            else
+                loc.Text = result;
         }
 
         public void ReadFromFile(string file)
@@ -303,7 +314,7 @@ namespace ResourceTypes.City
 
                 for (int i = 0; i < num; i++)
                 {
-                    var metaInfo = new ShopMetaInfo();
+                    var metaInfo = new ShopMenu();
                     metaInfo.ID = stream.ReadInt32(isBigEndian);
                     metaInfo.Unk0 = stream.ReadInt32(isBigEndian);
                     metaInfo.Unk1 = stream.ReadString();
@@ -320,7 +331,7 @@ namespace ResourceTypes.City
 
                     for (int x = 0; x < itemNum; x++)
                     {
-                        var item = new ShopItem();
+                        var item = new ItemConfig();
                         item.UnkDB0 = new LocalisedString(stream.ReadInt32(isBigEndian));
                         GetFromDB(item.UnkDB0);
                         item.UnkDB1 = new LocalisedString(stream.ReadInt32(isBigEndian));
@@ -348,31 +359,31 @@ namespace ResourceTypes.City
                             item.UnkMatrixFloats[z] = stream.ReadSingle(isBigEndian);
 
                         item.Count1 = stream.ReadInt32(isBigEndian);
-                        item.Section1 = new string[item.Count1];
-                        item.Section1Byte = new byte[item.Count1];
-                        item.Section1Keys = new ushort[item.Count1];
+                        item.Section1 = new Item[item.Count1];
                         for (int z = 0; z < item.Count1; z++)
                         {
-                            item.Section1Keys[z] = stream.ReadUInt16(isBigEndian);
+                            var it = new Item();
+                            it.Key = stream.ReadUInt16(isBigEndian);
                             var text = "";
-                            dicPool.TryGetValue(item.Section1Keys[z], out text);
-                            item.Section1[z] = text;
-                            item.Section1Byte[z] = stream.ReadByte8();
+                            dicPool.TryGetValue(it.Key, out text);
+                            it.Name = text;
+                            it.Unk0 = stream.ReadByte8();
+                            item.Section1[z] = it;
                         }
 
                         item.Count2 = stream.ReadInt32(isBigEndian);
-                        item.Section2 = new string[item.Count2];
-                        item.Section2Byte = new byte[item.Count2];
-                        item.Section2Keys = new ushort[item.Count2];
+                        item.Section2 = new Item[item.Count2];
                         for (int z = 0; z < item.Count2; z++)
                         {
-                            item.Section2Keys[z] = stream.ReadUInt16(isBigEndian);
+                            var it = new Item();
+                            it.Key = stream.ReadUInt16(isBigEndian);
                             var text = "";
-                            dicPool.TryGetValue(item.Section2Keys[z], out text);
-                            item.Section2[z] = text;
-                            item.Section2Byte[z] = stream.ReadByte8();
+                            dicPool.TryGetValue(it.Key, out text);
+                            it.Name = text;
+                            it.Unk0 = stream.ReadByte8();
+                            item.Section2[z] = it;
                         }
-                        metaInfo.Items.Add(item);
+                            metaInfo.Items.Add(item);
                     }
                     shopItems.Add(metaInfo);
                 }
@@ -457,15 +468,17 @@ namespace ResourceTypes.City
                         stream.Write(item.Section1.Length, isBigEndian);
                         for (int z = 0; z < item.Section1.Length; z++)
                         {
-                            stream.Write(item.Section1Keys[z], isBigEndian);
-                            stream.WriteByte(item.Section1Byte[z]);
+                            var it = item.Section1[z];
+                            stream.Write(it.Key, isBigEndian);
+                            stream.WriteByte(it.Unk0);
                         }
 
                         stream.Write(item.Section2.Length, isBigEndian);
                         for (int z = 0; z < item.Section2.Length; z++)
                         {
-                            stream.Write(item.Section2Keys[z], isBigEndian);
-                            stream.WriteByte(item.Section2Byte[z]);
+                            var it = item.Section2[z];
+                            stream.Write(it.Key, isBigEndian);
+                            stream.WriteByte(it.Unk0);
                         }
                     }
                 }
@@ -488,32 +501,32 @@ namespace ResourceTypes.City
                     var itemd = shop.Items[y];
                     for (int x = 0; x != itemd.Section1.Length; x++)
                     {
-                        int index = addedNames.IndexOf(itemd.Section1[x]);
+                        int index = addedNames.IndexOf(itemd.Section1[x].Name);
                         if (index == -1)
                         {
-                            addedNames.Add(itemd.Section1[x]);
+                            addedNames.Add(itemd.Section1[x].Name);
                             addedPos.Add((ushort)stringPool.Length);
-                            itemd.Section1Keys[x] = (ushort)stringPool.Length;
+                            itemd.Section1[x].Key = (ushort)stringPool.Length;
                             stringPool += itemd.Section1[x] + "\0";
                         }
                         else
                         {
-                            itemd.Section1Keys[x] = addedPos[index];
+                            itemd.Section1[x].Key = addedPos[index];
                         }
                     }
                     for (int x = 0; x != itemd.Section2.Length; x++)
                     {
-                        int index = addedNames.IndexOf(itemd.Section2[x]);
+                        int index = addedNames.IndexOf(itemd.Section2[x].Name);
                         if (index == -1)
                         {
-                            addedNames.Add(itemd.Section2[x]);
+                            addedNames.Add(itemd.Section2[x].Name);
                             addedPos.Add((ushort)stringPool.Length);
-                            itemd.Section2Keys[x] = (ushort)stringPool.Length;
+                            itemd.Section2[x].Key = (ushort)stringPool.Length;
                             stringPool += itemd.Section2[x] + "\0";
                         }
                         else
                         {
-                            itemd.Section2Keys[x] = addedPos[index];
+                            itemd.Section2[x].Key = addedPos[index];
                         }
                     }
                 }

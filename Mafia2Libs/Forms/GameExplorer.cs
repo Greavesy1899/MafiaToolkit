@@ -499,6 +499,11 @@ namespace Mafia2Tool
                 Roadmap roadmap = new Roadmap((item.Tag as FileInfo));
                 return;
             }
+            else if(item.SubItems[0].Text.Contains("shopmenu2") && item.SubItems[1].Text == "BIN")
+            {
+                ShopMenu2Editor editor = new ShopMenu2Editor((item.Tag as FileInfo));
+                return;
+            }
             else if (item.SubItems[1].Text == "BIN" && HandleStreamMap((item.Tag as FileInfo)))
             {
                 StreamEditor editor = new StreamEditor((item.Tag as FileInfo));
