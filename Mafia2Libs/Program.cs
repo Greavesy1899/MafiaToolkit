@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using Utils.Settings;
 using Utils.Lang;
 using System.Threading.Tasks;
+using ResourceTypes.City;
 
 namespace Mafia2Tool
 {
@@ -23,6 +24,10 @@ namespace Mafia2Tool
             CheckINIExists();
             ToolkitSettings.ReadINI();
             Language.ReadLanguageXML();
+
+            Application.Run(new ShopMenu2Editor(new FileInfo("shopmenu2.bin")));
+            //ShopMenu2 shop = new ShopMenu2();
+            //shop.ReadFromFile(new MemoryStream(File.ReadAllBytes("shopmenu2.bin")));
             Application.Run(new GameExplorer());
         }
 

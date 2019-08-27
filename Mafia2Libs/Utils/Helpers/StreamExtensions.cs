@@ -24,9 +24,26 @@ namespace Utils.Extensions
             char c = (char)stream.ReadByte();
             return c;
         }
+        public static char PeekChar(this Stream stream)
+        {
+            char c = (char)stream.ReadByte();
+            stream.Position--;
+            return c;
+        }
         public static string ReadStringBuffer(this Stream stream, int size)
         {
             return new string(stream.ReadChars(size));
+        }
+        public static string ReadString(this Stream reader)
+        {
+            string newString = "";
+
+            while (reader.PeekChar() != '\0')
+            {
+                newString += reader.ReadChar();
+            }
+            reader.ReadByte();
+            return newString;
         }
         public static byte[] ReadBytes(this Stream stream, int num)
         {
@@ -123,6 +140,11 @@ namespace Utils.Extensions
             }
 
             writer.Write(new byte[padding]);
+        }
+        public static void WriteString(this Stream stream, string text)
+        {
+            stream.Write(text.ToCharArray());
+            stream.Write('\0');
         }
         public static void Write(this Stream stream, float value, bool bigEndian)
         {

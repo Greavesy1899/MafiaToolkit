@@ -249,6 +249,12 @@
     <Compile Include="ApexSDK\IOFX\ScaleVsLifeModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SimpleScaleModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SubtextureVsLifeModifier.cs" />
+    <Compile Include="Forms\ShopMenu2Editor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ShopMenu2Editor.Designer.cs">
+      <DependentUpon>ShopMenu2Editor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\StreamEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -324,6 +330,7 @@
     <Compile Include="MafiaLib\FileTypes\Material\MaterialManager.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\NAV_AI.cs" />
     <Compile Include="MafiaLib\FileTypes\PREFAB\Prefab.cs" />
+    <Compile Include="MafiaLib\FileTypes\ShopMenu2.cs" />
     <Compile Include="MafiaLib\FileTypes\SoundSectors\SoundSector.cs" />
     <Compile Include="MafiaLib\FileTypes\StreamMap.cs" />
     <Compile Include="MafiaLib\FileTypes\Translokator\Translokator.cs" />
@@ -659,6 +666,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SDSContentEditor.resx">
       <DependentUpon>SDSContentEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ShopMenu2Editor.resx">
+      <DependentUpon>ShopMenu2Editor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\StreamEditor.resx">
       <DependentUpon>StreamEditor.cs</DependentUpon>
