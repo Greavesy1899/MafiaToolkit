@@ -66,8 +66,8 @@ namespace ResourceTypes.City
             string path;
             LocalisedString unkDB0;
             int unkZero0;
-            float unkFloat0;
             int unk2;
+            int unk3;
             int unkZero01;
             int unkZero02;
 
@@ -97,13 +97,13 @@ namespace ResourceTypes.City
                 get { return unkZero0; }
                 set { unkZero0 = value; }
             }
-            public float UnkFloat0 {
-                get { return unkFloat0; }
-                set { unkFloat0 = value; }
-            }
             public int Unk2 {
                 get { return unk2; }
                 set { unk2 = value; }
+            }
+            public int Unk3 {
+                get { return unk3; }
+                set { unk3 = value; }
             }
             public int UnkZero01 {
                 get { return unkZero01; }
@@ -242,15 +242,18 @@ namespace ResourceTypes.City
 
         private void ReadTextDB()
         {
-            string[] lines = File.ReadAllLines("TextDatabase.dat");
-
-            foreach (var line in lines)
+            if (File.Exists("TextDatabase.dat"))
             {
-                string[] split = line.Split(':');
-                split[0] = Regex.Replace(split[0], @"_", "");
-                textDB.Add(int.Parse(split[0]), split[1]);
+                string[] lines = File.ReadAllLines("TextDatabase.dat");
+
+                foreach (var line in lines)
+                {
+                    string[] split = line.Split(':');
+                    split[0] = Regex.Replace(split[0], @"_", "");
+                    textDB.Add(int.Parse(split[0]), split[1]);
+                }
+                lines = null;
             }
-            lines = null;
         }
 
         private void GetFromDB(LocalisedString loc)
@@ -258,7 +261,7 @@ namespace ResourceTypes.City
             string result;
             textDB.TryGetValue(loc.ID, out result);
 
-            if (string.IsNullOrEmpty(result))
+            if (textDB.Count == 0)
                 loc.Text = "TextDatabase is not loaded!";
             else
                 loc.Text = result;
@@ -322,8 +325,8 @@ namespace ResourceTypes.City
                     metaInfo.UnkDB0 = new LocalisedString(stream.ReadInt32(isBigEndian));
                     GetFromDB(metaInfo.UnkDB0);
                     metaInfo.UnkZero0 = stream.ReadInt32(isBigEndian);
-                    metaInfo.UnkFloat0 = stream.ReadSingle(isBigEndian);
                     metaInfo.Unk2 = stream.ReadInt32(isBigEndian);
+                    metaInfo.Unk3 = stream.ReadInt32(isBigEndian);
                     metaInfo.UnkZero01 = stream.ReadInt32(isBigEndian);
                     metaInfo.UnkZero02 = stream.ReadInt32(isBigEndian);
 
@@ -439,8 +442,8 @@ namespace ResourceTypes.City
                     stream.WriteString(metaInfo.Path);
                     stream.Write(metaInfo.UnkDB0.ID, isBigEndian);
                     stream.Write(metaInfo.UnkZero0, isBigEndian);
-                    stream.Write(metaInfo.UnkFloat0, isBigEndian);
                     stream.Write(metaInfo.Unk2, isBigEndian);
+                    stream.Write(metaInfo.Unk3, isBigEndian);
                     stream.Write(metaInfo.UnkZero01, isBigEndian);
                     stream.Write(metaInfo.UnkZero02, isBigEndian);
                     stream.Write(metaInfo.Items.Count, isBigEndian);
