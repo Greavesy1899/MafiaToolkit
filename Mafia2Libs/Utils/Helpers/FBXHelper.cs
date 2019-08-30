@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using Utils.Settings;
 
 namespace Utils
 {
@@ -9,7 +10,7 @@ namespace Utils
         private static extern int RunConvertFBX(string source, string dest);
 
         [DllImport("libs/M2FBX.dll")]
-        private static extern int RunConvertM2T(string source, string dest);
+        private static extern int RunConvertM2T(string source, string dest, byte extDesc);
 
         [DllImport("libs/M2FBX.dll")]
         private static extern int RunCookTriangleCollision(string source, string dest);
@@ -25,7 +26,7 @@ namespace Utils
 
         public static int ConvertM2T(string source, string dest)
         {
-            int exitCode = RunConvertM2T(source, dest);
+            int exitCode = RunConvertM2T(source, dest, (byte)ToolkitSettings.Format);
             ThrowMessageBox(exitCode);
             return exitCode;
         }

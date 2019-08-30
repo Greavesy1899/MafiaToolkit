@@ -53,7 +53,7 @@ namespace Forms.OptionControls
             this.groupGeneral.Size = new System.Drawing.Size(390, 193);
             this.groupGeneral.TabIndex = 2;
             this.groupGeneral.TabStop = false;
-            this.groupGeneral.Text = Language.GetString("$MODEL_EXPORTING");
+            this.groupGeneral.Text = "$MODEL_EXPORTING";
             // 
             // exportPathBrowser
             // 
@@ -78,16 +78,16 @@ namespace Forms.OptionControls
             this.exportPathLabel.AutoSize = true;
             this.exportPathLabel.Location = new System.Drawing.Point(4, 65);
             this.exportPathLabel.Name = "exportPathLabel";
-            this.exportPathLabel.Size = new System.Drawing.Size(65, 13);
+            this.exportPathLabel.Size = new System.Drawing.Size(128, 13);
             this.exportPathLabel.TabIndex = 2;
-            this.exportPathLabel.Text = Language.GetString("$EXPORT_PATH_TITLE");
+            this.exportPathLabel.Text = "$EXPORT_PATH_TITLE";
             // 
             // modelFormatDropdownBox
             // 
             this.modelFormatDropdownBox.FormattingEnabled = true;
             this.modelFormatDropdownBox.Items.AddRange(new object[] {
-            "FBX Ascii",
             "FBX Binary",
+            "FBX Ascii",
             "M2T"});
             this.modelFormatDropdownBox.Location = new System.Drawing.Point(7, 37);
             this.modelFormatDropdownBox.Name = "modelFormatDropdownBox";
@@ -100,13 +100,13 @@ namespace Forms.OptionControls
             this.M2Label.AutoSize = true;
             this.M2Label.Location = new System.Drawing.Point(4, 21);
             this.M2Label.Name = "M2Label";
-            this.M2Label.Size = new System.Drawing.Size(107, 13);
+            this.M2Label.Size = new System.Drawing.Size(165, 13);
             this.M2Label.TabIndex = 0;
-            this.M2Label.Text = Language.GetString("$EXPORT_MODELTYPE_TITLE");
+            this.M2Label.Text = "$EXPORT_MODELTYPE_TITLE";
             // 
             // ExportPathButton
             // 
-            this.ExportPathButton.Description = Language.GetString("$EXPORT_PATH_DESC");
+            this.ExportPathButton.Description = "$EXPORT_PATH_DESC";
             // 
             // ModelOptions
             // 

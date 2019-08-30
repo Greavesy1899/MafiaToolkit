@@ -6,7 +6,7 @@
 #include <conio.h>
 
 extern "C" int  __declspec(dllexport) _stdcall RunConvertFBX(const char* source, const char* dest);
-extern "C" int  __declspec(dllexport) _stdcall RunConvertM2T(const char* source, const char* dest);
+extern "C" int  __declspec(dllexport) _stdcall RunConvertM2T(const char* source, const char* dest, unsigned char isBin);
 extern "C" int  __declspec(dllexport) _stdcall RunCookTriangleCollision(const char* source, const char* dest);
 extern "C" int  __declspec(dllexport) _stdcall RunCookConvexCollision(const char* source, const char* dest);
 
@@ -15,10 +15,10 @@ extern int _stdcall RunConvertFBX(const char* source, const char* dest)
 	WriteLine("Called RunConvertFBX");
 	return ConvertFBX(source, dest);
 }
-extern int _stdcall RunConvertM2T(const char* source, const char* dest)
+extern int _stdcall RunConvertM2T(const char* source, const char* dest, unsigned char isBin)
 {
 	WriteLine("Called RunConvertM2T");
-	return ConvertM2T(source, dest);
+	return ConvertM2T(source, dest, isBin);
 }
 extern int _stdcall RunCookTriangleCollision(const char* source, const char* dest)
 {
@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 {
 	if ((strcmp(argv[1], "-ConvertM2T") == 0) && (argc == 4))
 	{
-		ConvertM2T(argv[2], argv[3]);
+		ConvertM2T(argv[2], argv[3], 0);
 	}
 	else if ((strcmp(argv[1], "-ConvertFBX") == 0) && (argc == 4))
 	{

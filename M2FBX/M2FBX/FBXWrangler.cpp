@@ -1,39 +1,13 @@
 #include "FbxWrangler.h"
 #include "FbxUtilities.h"
 
-bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFilename, int pFileFormat = -1, bool pEmbedMedia = false)
+bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFilename, int pFileFormat = 0, bool pEmbedMedia = false)
 {
 	int lMajor, lMinor, lRevision;
 	bool lStatus = true;
 
 	// Create an exporter.
 	FbxExporter* lExporter = FbxExporter::Create(pManager, "");
-
-	if (pFileFormat < 0 || pFileFormat >= pManager->GetIOPluginRegistry()->GetWriterFormatCount())
-	{
-		// Write in fall back format if pEmbedMedia is true
-		pFileFormat = pManager->GetIOPluginRegistry()->GetNativeWriterFormat();
-
-		if (!pEmbedMedia)
-		{
-			//Try to export in ASCII if possible
-			int lFormatIndex, lFormatCount = pManager->GetIOPluginRegistry()->GetWriterFormatCount();
-
-			for (lFormatIndex = 0; lFormatIndex < lFormatCount; lFormatIndex++)
-			{
-				if (pManager->GetIOPluginRegistry()->WriterIsFBX(lFormatIndex))
-				{
-					FbxString lDesc = pManager->GetIOPluginRegistry()->GetWriterFormatDescription(lFormatIndex);
-					const char *lASCII = "ascii";
-					if (lDesc.Find(lASCII) >= 0)
-					{
-						pFileFormat = lFormatIndex;
-						break;
-					}
-				}
-			}
-		}
-	}
 
 	// Set the export states. By default, the export states are always set to 
 	// true except for the option eEXPORT_TEXTURE_AS_EMBEDDED. The code below 
@@ -62,7 +36,7 @@ bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFil
 	lExporter->Destroy();
 	return lStatus;
 }
-int ConvertM2T(const char* pSource, const char* pDest)
+int ConvertM2T(const char* pSource, const char* pDest, unsigned char isBin)
 {
 	WriteLine("Converting M2T to FBX.");
 
@@ -93,7 +67,7 @@ int ConvertM2T(const char* pSource, const char* pDest)
 	if (lResult)
 	{
 		//Save the document
-		lResult = SaveDocument(lSdkManager, lScene, pDest);
+		lResult = SaveDocument(lSdkManager, lScene, pDest, isBin);
 		if (!lResult) WriteLine("\n\nAn error occurred while saving the document...");
 	}
 	else WriteLine("\n\nAn error occurred while creating the document...");

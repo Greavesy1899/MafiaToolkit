@@ -3,7 +3,7 @@
 #include "Common.h"
 #include "M2Model.h"
 
-int ConvertM2T(const char* pSource, const char* pDest);
+int ConvertM2T(const char* pSource, const char* pDest, unsigned char isBin);
 bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model);
 void CreateLightDocument(FbxManager* pManager, FbxDocument* pLightDocument);
 FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart model);
