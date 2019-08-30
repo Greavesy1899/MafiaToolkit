@@ -36,7 +36,6 @@ bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFil
 	lExporter->Destroy();
 	return lStatus;
 }
-
 int ConvertM2T(const char* pSource, const char* pDest, unsigned char isBin)
 {
 	WriteLine("Converting M2T to FBX.");
@@ -65,74 +64,6 @@ int ConvertM2T(const char* pSource, const char* pDest, unsigned char isBin)
 
 	// Create the scene.
 	lResult = CreateDocument(lSdkManager, lScene, file);
-
-	/*auto nodes = file.GetSkeletonNodes();
-	std::vector<FbxCluster*> clusters = std::vector<FbxCluster*>();
-	std::vector<FbxNode*> collectedNodes = std::vector<FbxNode*>();
-
-	for (int i = 0; i < file.GetSkeletonNodeCount(); i++)
-	{
-		auto parentID = nodes[i].GetParentID();
-		auto name = nodes[i].GetName();
-		auto position = nodes[i].GetPosition();
-		auto rotation = nodes[i].GetRotation();
-		auto clusterName = name + "_CLUSTER";
-		FbxNode* lNode = FbxNode::Create(lSdkManager, name.c_str());
-		lNode->LclTranslation.Set(FbxDouble3(position.x, position.y, position.z));
-		lNode->LclRotation.Set(FbxDouble3(rotation.x, rotation.y, rotation.z));
-
-		FbxSkeleton* lSkeletonNode = FbxSkeleton::Create(lSdkManager, name.c_str());
-		
-		lSkeletonNode->SetSkeletonType(parentID == -1 ? FbxSkeleton::eRoot : FbxSkeleton::eLimbNode);
-		collectedNodes.push_back(lNode);
-
-		FbxCluster* lCluster = FbxCluster::Create(lSdkManager, clusterName.c_str());
-		lCluster->SetLink(lNode);
-		lCluster->SetLinkMode(FbxCluster::eTotalOne);
-		
-		FbxAMatrix clusterTransform;
-		FbxAMatrix clusterJointTransform;
-		clusterTransform.SetT(FbxVector4(position.x, position.y, position.z, 1));
-		clusterTransform.SetS(FbxVector4(1.0f, 1.0f, 1.0f, 1.0f));
-		clusterJointTransform = lNode->EvaluateGlobalTransform();
-		lCluster->SetTransformMatrix(clusterTransform.Inverse());
-		lCluster->SetTransformLinkMatrix(clusterJointTransform);
-		clusters.push_back(lCluster);
-
-		if (parentID > -1)
-		{
-			collectedNodes[parentID]->AddChild(lNode);
-		}
-		else
-		{
-			lNode->LclRotation.Set(FbxVector4(-90, 0, 0));
-			lScene->GetRootNode()->AddChild(lNode);
-		}
-	}
-
-	for (int i = 0; i < 1; i++)
-	{
-		FbxSkin* skin = FbxSkin::Create(lSdkManager, "_SKIN");
-		skin->SetSkinningType(FbxSkin::eBlend);
-		auto vertices = file.GetParts()[i].GetVertices();
-		auto size = file.GetParts()[i].GetVertSize();
-		for(int x = 0; x < size; x++)
-		{
-			for (int y = 0; y < 4; y++)
-			{
-				if (vertices[x].boneIDs[y] != 0 && vertices[x].weights[y] != 0.0f)
-				{
-					clusters[vertices[x].boneIDs[y]]->AddControlPointIndex(x, vertices[x].weights[y]);
-				}
-			}
-		}
-		for (auto cluster : clusters)
-		{
-			skin->AddCluster(cluster);
-		}
-		majorNodes[i]->GetMesh()->AddDeformer(skin);*/
-	//}
-
 	if (lResult)
 	{
 		//Save the document
@@ -176,11 +107,12 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 		std::string name = "LOD";
 		name += std::to_string(i);
 		FbxNode* lModel = CreatePlane(pManager, name.c_str(), model.GetParts()[i]);
-		//majorNodes.push_back(lModel);
 		lLodNode->AddChild(lModel);
 	}
 
 	// add the geometry to the main document.	
+	//FbxNode* node = pScene->GetRootNode();
+	//node->AddChild(lLodGroup);
 	FbxNode* rootNode = pScene->GetRootNode();
 	rootNode->AddChild(lLodNode);
 	pScene->AddNode(rootNode);
@@ -205,21 +137,44 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 
 	return true;
 }
+void CreateLightDocument(FbxManager* pManager, FbxDocument* pLightDocument)
+{
+	// create document info
+	FbxDocumentInfo* lDocInfo = FbxDocumentInfo::Create(pManager, "DocInfo");
+	lDocInfo->mTitle = "";
+	lDocInfo->mSubject = "";
+	lDocInfo->mAuthor = "Mafia II: Toolkit";
+	lDocInfo->mRevision = "rev. 1.0";
+	lDocInfo->mKeywords = "";
+	lDocInfo->mComment = "";
+
+	// add the documentInfo
+	pLightDocument->SetDocumentInfo(lDocInfo);
+
+	// add light objects to the sub document
+	pLightDocument->AddMember(CreateLight(pManager, FbxLight::eSpot));
+	pLightDocument->AddMember(CreateLight(pManager, FbxLight::ePoint));
+}
 FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 {
 	FbxMesh* lMesh = FbxMesh::Create(pManager, pName);
-	Vertex* vertices = part.GetVertices();
-	auto numVertices = part.GetVertSize();
+	std::vector<Point3> vertices = part.GetVertices();
 	std::vector<Int3> triangles = part.GetIndices();
+	std::vector<Point3> normals = part.GetNormals();
+	std::vector<Point3> tangents = part.GetTangents();
+	std::vector<UVVert> uvs0 = part.GetUV0s();
+	std::vector<UVVert> uvs1 = part.GetUV1s();
+	std::vector<UVVert> uvs2 = part.GetUV2s();
+	std::vector<UVVert> uvs7 = part.GetUV7s();
 
-	lMesh->InitControlPoints(numVertices);
+	lMesh->InitControlPoints(vertices.size());
 	FbxVector4* lControlPoints = lMesh->GetControlPoints();
 
 	FbxGeometryElementVertexColor* lUVVCElement = nullptr;
 	FbxGeometryElementUV* lUVOMElement = nullptr;
 
-	for (size_t i = 0; i < numVertices; i++)
-		lControlPoints[i] = FbxVector4(vertices[i].position.x, vertices[i].position.y, vertices[i].position.z);
+	for (size_t i = 0; i < vertices.size(); i++)
+		lControlPoints[i] = FbxVector4(vertices[i].x, vertices[i].y, vertices[i].z);
 
 	// We want to have one normal for each vertex (or control point),
 	// so we set the mapping mode to eByControlPoint.
@@ -228,16 +183,16 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 		FbxGeometryElementNormal* lElementNormal = lMesh->CreateElementNormal();
 		lElementNormal->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lElementNormal->SetReferenceMode(FbxGeometryElement::eDirect);
-		for (size_t i = 0; i < numVertices; i++)
-			lElementNormal->GetDirectArray().Add(FbxVector4(vertices[i].normals.x, vertices[i].normals.y, vertices[i].normals.z));
+		for (size_t i = 0; i < vertices.size(); i++)
+			lElementNormal->GetDirectArray().Add(FbxVector4(normals[i].x, normals[i].y, normals[i].z));
 	}
 	if (part.GetHasTangents())
 	{
 		FbxGeometryElementTangent* lElementTangent = lMesh->CreateElementTangent();
 		lElementTangent->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lElementTangent->SetReferenceMode(FbxGeometryElement::eDirect);
-		for (size_t i = 0; i < numVertices; i++)
-			lElementTangent->GetDirectArray().Add(FbxVector4(vertices[i].tangent.x, vertices[i].tangent.y, vertices[i].tangent.z));
+		for (size_t i = 0; i < vertices.size(); i++)
+			lElementTangent->GetDirectArray().Add(FbxVector4(tangents[i].x, tangents[i].y, tangents[i].z));
 	}
 
 	// Create UV for Diffuse channel.
@@ -246,10 +201,10 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 	lUVDiffuseElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
 	lUVDiffuseElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-	for (size_t i = 0; i < numVertices; i++)
+	for (size_t i = 0; i < vertices.size(); i++)
 	{
 		if(part.GetHasUV0())
-			lUVDiffuseElement->GetDirectArray().Add(FbxVector2(vertices[i].uv0.x, vertices[i].uv0.y));
+			lUVDiffuseElement->GetDirectArray().Add(FbxVector2(uvs0[i].x, uvs0[i].y));
 		else
 			lUVDiffuseElement->GetDirectArray().Add(FbxVector2(0.0, 1.0));
 	}
@@ -266,8 +221,8 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 		lUVVCElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lUVVCElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-		for (size_t i = 0; i < numVertices; i++)
-			lUVVCElement->GetDirectArray().Add(FbxColor(vertices[i].uv1.x, vertices[i].uv1.y, vertices[i].uv2.x, vertices[i].uv2.y));
+		for (size_t i = 0; i < vertices.size(); i++)
+			lUVVCElement->GetDirectArray().Add(FbxColor(uvs1[i].x, uvs1[i].y, uvs2[i].x, uvs2[i].y));
 
 	}
 
@@ -279,8 +234,8 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 		lUVOMElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lUVOMElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-		for (size_t i = 0; i < numVertices; i++)
-			lUVOMElement->GetDirectArray().Add(FbxVector2(vertices[i].uv7.x, vertices[i].uv7.y));
+		for (size_t i = 0; i < vertices.size(); i++)
+			lUVOMElement->GetDirectArray().Add(FbxVector2(uvs7[i].x, uvs7[i].y));
 
 		//Now we have set the UVs as eIndexToDirect reference and in eByPolygonVertex  mapping mode
 		//we must update the size of the index array.
@@ -370,6 +325,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 		SubMesh sub = part.GetSubMeshes()[i];
 		lNode->AddMaterial(CreateMaterial(pManager, sub.GetMatName().c_str()));
 	}
+
 	// return the FbxNode
 	return lNode;
 }
@@ -425,4 +381,66 @@ FbxSurfacePhong* CreateMaterial(FbxManager* pManager, const char* pName)
 	lMaterial->SpecularFactor.Set(0.3);
 
 	return lMaterial;
+}
+
+// Create light.
+FbxNode* CreateLight(FbxManager* pManager, FbxLight::EType pType)
+{
+	FbxString lLightName;
+	FbxDouble val;
+
+	switch (pType)
+	{
+	case FbxLight::eSpot:
+		lLightName = "SpotLight";
+		break;
+	case FbxLight::ePoint:
+		lLightName = "PointLight";
+		break;
+	case FbxLight::eDirectional:
+		lLightName = "DirectionalLight";
+		break;
+	default:
+		break;
+	}
+
+	FbxLight* lFbxLight = FbxLight::Create(pManager, lLightName.Buffer());
+
+	lFbxLight->LightType.Set(pType);
+
+	// parameters for spot light
+	if (pType == FbxLight::eSpot)
+	{
+		lFbxLight->InnerAngle.Set(40.0);
+		val = lFbxLight->InnerAngle.Get(); // val = 40
+
+		lFbxLight->OuterAngle.Set(40);
+		val = lFbxLight->OuterAngle.Get(); // val = 40
+	}
+
+	//
+	// Light Color...
+	//
+	FbxDouble3 lColor;
+	lColor[0] = 0.0;
+	lColor[1] = 1.0;
+	lColor[2] = 0.5;
+	lFbxLight->Color.Set(lColor);
+	FbxDouble3 val3 = lFbxLight->Color.Get(); // val3 = (0, 1, 0.5) 
+
+	//
+	// Light Intensity...
+	//
+	lFbxLight->Intensity.Set(100.0);
+	val = lFbxLight->Intensity.Get(); // val = 100
+
+	// create a FbxNode
+	FbxNode* lNode = FbxNode::Create(pManager, lLightName + "Node");
+
+	// set the node attribute
+	lNode->SetNodeAttribute(lFbxLight);
+	lNode->LclTranslation.Set(FbxDouble3(20, 30, 100));
+	val3 = lNode->LclTranslation.Get(); // val3 = (20, 30, 100) 
+
+	return lNode;
 }
