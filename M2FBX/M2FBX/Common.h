@@ -11,4 +11,6 @@
 #define WIN32
 #include "NxPhysics.h"
 
+typedef char byte;
+typedef unsigned char ubyte;
 #endif
