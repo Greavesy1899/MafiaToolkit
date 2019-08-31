@@ -237,9 +237,13 @@ namespace Mafia2Tool.Forms
         {
             if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
             {
-                if (TranslokatorTree.SelectedNode.Tag is Instance || TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object)
+                if(TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object)
                 {
-                    clipboard = TranslokatorTree.SelectedNode.Tag;
+                    clipboard = new ResourceTypes.Translokator.Object((ResourceTypes.Translokator.Object)TranslokatorTree.SelectedNode.Tag);
+                }
+                else if (TranslokatorTree.SelectedNode.Tag is Instance)
+                {
+                    clipboard = new Instance((Instance)TranslokatorTree.SelectedNode.Tag);
                 }
             }
         }

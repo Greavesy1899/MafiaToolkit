@@ -176,6 +176,24 @@ namespace ResourceTypes.Translokator
             get { return instances; }
             set { instances = value; }
         }
+
+        public Object()
+        {
+
+        }
+
+        public Object(Object other)
+        {
+            numInstance2 = 0;
+            numInstances = 0;
+            instances = new Instance[0];
+            unk02 = other.unk02;
+            hash = other.hash;
+            name = other.name;
+            unkBytes1 = other.unkBytes1;
+            gridMax = other.gridMax;
+            gridMin = other.gridMin;
+        }
     }
 
     public class ObjectGroup

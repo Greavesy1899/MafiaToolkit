@@ -158,23 +158,15 @@ void CreateLightDocument(FbxManager* pManager, FbxDocument* pLightDocument)
 FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 {
 	FbxMesh* lMesh = FbxMesh::Create(pManager, pName);
-	std::vector<Point3> vertices = part.GetVertices();
-	std::vector<Int3> triangles = part.GetIndices();
-	std::vector<Point3> normals = part.GetNormals();
-	std::vector<Point3> tangents = part.GetTangents();
-	std::vector<UVVert> uvs0 = part.GetUV0s();
-	std::vector<UVVert> uvs1 = part.GetUV1s();
-	std::vector<UVVert> uvs2 = part.GetUV2s();
-	std::vector<UVVert> uvs7 = part.GetUV7s();
-
-	lMesh->InitControlPoints(vertices.size());
+	Vertex* vertices = part.GetVertices();
+	lMesh->InitControlPoints(part.GetVertSize());
 	FbxVector4* lControlPoints = lMesh->GetControlPoints();
 
 	FbxGeometryElementVertexColor* lUVVCElement = nullptr;
 	FbxGeometryElementUV* lUVOMElement = nullptr;
 
-	for (size_t i = 0; i < vertices.size(); i++)
-		lControlPoints[i] = FbxVector4(vertices[i].x, vertices[i].y, vertices[i].z);
+	for (size_t i = 0; i < part.GetVertSize(); i++)
+		lControlPoints[i] = FbxVector4(vertices[i].position.x, vertices[i].position.y, vertices[i].position.z);
 
 	// We want to have one normal for each vertex (or control point),
 	// so we set the mapping mode to eByControlPoint.
@@ -183,16 +175,16 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 		FbxGeometryElementNormal* lElementNormal = lMesh->CreateElementNormal();
 		lElementNormal->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lElementNormal->SetReferenceMode(FbxGeometryElement::eDirect);
-		for (size_t i = 0; i < vertices.size(); i++)
-			lElementNormal->GetDirectArray().Add(FbxVector4(normals[i].x, normals[i].y, normals[i].z));
+		for (size_t i = 0; i < part.GetVertSize(); i++)
+			lElementNormal->GetDirectArray().Add(FbxVector4(vertices[i].normals.x, vertices[i].normals.y, vertices[i].normals.z));
 	}
 	if (part.GetHasTangents())
 	{
 		FbxGeometryElementTangent* lElementTangent = lMesh->CreateElementTangent();
 		lElementTangent->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lElementTangent->SetReferenceMode(FbxGeometryElement::eDirect);
-		for (size_t i = 0; i < vertices.size(); i++)
-			lElementTangent->GetDirectArray().Add(FbxVector4(tangents[i].x, tangents[i].y, tangents[i].z));
+		for (size_t i = 0; i < part.GetVertSize(); i++)
+			lElementTangent->GetDirectArray().Add(FbxVector4(vertices[i].tangent.x, vertices[i].tangent.y, vertices[i].tangent.z));
 	}
 
 	// Create UV for Diffuse channel.
@@ -201,17 +193,17 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 	lUVDiffuseElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
 	lUVDiffuseElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-	for (size_t i = 0; i < vertices.size(); i++)
+	for (size_t i = 0; i < part.GetVertSize(); i++)
 	{
 		if(part.GetHasUV0())
-			lUVDiffuseElement->GetDirectArray().Add(FbxVector2(uvs0[i].x, uvs0[i].y));
+			lUVDiffuseElement->GetDirectArray().Add(FbxVector2(vertices[i].uv0.x, vertices[i].uv0.y));
 		else
 			lUVDiffuseElement->GetDirectArray().Add(FbxVector2(0.0, 1.0));
 	}
 
 	//Now we have set the UVs as eIndexToDirect reference and in eByPolygonVertex  mapping mode
 	//we must update the size of the index array.
-	lUVDiffuseElement->GetIndexArray().SetCount(triangles.size() * 3);
+	lUVDiffuseElement->GetIndexArray().SetCount(part.GetIndicesSize());
 
 	if (part.GetHasUV1() && part.GetHasUV2())
 	{
@@ -221,8 +213,8 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 		lUVVCElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lUVVCElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-		for (size_t i = 0; i < vertices.size(); i++)
-			lUVVCElement->GetDirectArray().Add(FbxColor(uvs1[i].x, uvs1[i].y, uvs2[i].x, uvs2[i].y));
+		for (size_t i = 0; i < part.GetVertSize(); i++)
+			lUVVCElement->GetDirectArray().Add(FbxColor(vertices[i].uv1.x, vertices[i].uv1.y, vertices[i].uv2.x, vertices[i].uv2.y));
 
 	}
 
@@ -234,8 +226,8 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 		lUVOMElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
 		lUVOMElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-		for (size_t i = 0; i < vertices.size(); i++)
-			lUVOMElement->GetDirectArray().Add(FbxVector2(uvs7[i].x, uvs7[i].y));
+		for (size_t i = 0; i < part.GetVertSize(); i++)
+			lUVOMElement->GetDirectArray().Add(FbxVector2(vertices[i].uv3.x, vertices[i].uv3.y));
 
 		//Now we have set the UVs as eIndexToDirect reference and in eByPolygonVertex  mapping mode
 		//we must update the size of the index array.
@@ -250,9 +242,10 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 	// all faces of the cube have the same texture
 
 	lMesh->BeginPolygon(-1, -1, -1, false);
-
-	for (size_t i = 0; i != triangles.size(); i++)
+	std::vector<Int3> triangles = part.GetIndices();
+	for (size_t i = 0; i < triangles.size(); i++)
 	{
+		
 		// Control point index
 		lMesh->AddPolygon(triangles[i].i1);
 		lMesh->AddPolygon(triangles[i].i2);

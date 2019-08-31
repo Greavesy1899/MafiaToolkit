@@ -369,6 +369,94 @@ namespace Mafia2Tool
                 Graphics.Assets[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Matrix);
         }
 
+        private void SanitizeBuffers()
+        {
+            #region vertex sanitize;
+            //vertex pool check
+            List<Dictionary<ulong, bool>> bufferPools = new List<Dictionary<ulong, bool>>();
+            
+            foreach(var pool in SceneData.VertexBufferPool.BufferPools)
+            {
+                var checkPool = new Dictionary<ulong, bool>();
+                foreach (KeyValuePair<ulong, VertexBuffer> pair in pool.Buffers)
+                    checkPool.Add(pair.Key, false);
+
+                bufferPools.Add(checkPool);
+            }
+
+            foreach(KeyValuePair<int, FrameGeometry> pair in SceneData.FrameResource.FrameGeometries)
+            {
+                foreach(var lod in pair.Value.LOD)
+                {
+                    foreach(var pool in bufferPools)
+                    {
+                        if (pool.ContainsKey(lod.VertexBufferRef.uHash))
+                            pool[lod.VertexBufferRef.uHash] = true;
+                    }
+                }
+            }
+
+            for(int x = 0; x < bufferPools.Count; x++)
+            {
+                var pool = bufferPools[x];
+                for(int i = 0; i < pool.Count;)
+                {
+                    KeyValuePair<ulong, bool> pair = pool.ElementAt(i);
+                    if (!pair.Value)
+                    {
+                        pool.Remove(pair.Key);
+                        SceneData.VertexBufferPool.BufferPools[x].Buffers.Remove(pair.Key);
+                        Console.WriteLine("Removed Vertex Buffer {0}", pair.Key);
+                    }
+                    else i++;
+                }
+            }
+
+            #endregion vertex sanitize;
+            #region index sanitize;
+            //vertex pool check
+            bufferPools = new List<Dictionary<ulong, bool>>();
+
+            foreach (var pool in SceneData.IndexBufferPool.BufferPools)
+            {
+                var checkPool = new Dictionary<ulong, bool>();
+                foreach (KeyValuePair<ulong, IndexBuffer> pair in pool.Buffers)
+                    checkPool.Add(pair.Key, false);
+
+                bufferPools.Add(checkPool);
+            }
+
+            foreach (KeyValuePair<int, FrameGeometry> pair in SceneData.FrameResource.FrameGeometries)
+            {
+                foreach (var lod in pair.Value.LOD)
+                {
+                    foreach (var pool in bufferPools)
+                    {
+                        if (pool.ContainsKey(lod.IndexBufferRef.uHash))
+                            pool[lod.IndexBufferRef.uHash] = true;
+                    }
+                }
+            }
+
+            for (int x = 0; x < bufferPools.Count; x++)
+            {
+                var pool = bufferPools[x];
+                for (int i = 0; i < pool.Count;)
+                {
+                    KeyValuePair<ulong, bool> pair = pool.ElementAt(i);
+                    if (!pair.Value)
+                    {
+                        pool.Remove(pair.Key);
+                        SceneData.IndexBufferPool.BufferPools[x].Buffers.Remove(pair.Key);
+                        Console.WriteLine("Removed Index Buffer {0}", pair.Key);
+                    }
+                    else i++;
+                }
+            }
+
+            #endregion index sanitize;
+        }
+
         private void Save()
         {
             DialogResult result = MessageBox.Show("Do you want to save your changes?", "Save Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -387,6 +475,7 @@ namespace Mafia2Tool
                     nameTable.WriteToFile(writer);
                     SceneData.FrameNameTable = nameTable;
                 }
+                SanitizeBuffers();
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
 

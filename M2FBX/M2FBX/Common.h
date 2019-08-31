@@ -11,4 +11,6 @@
 #define WIN32
 #include "NxPhysics.h"
 
+typedef unsigned int uint;
+
 #endif
