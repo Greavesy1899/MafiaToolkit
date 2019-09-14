@@ -215,4 +215,5 @@
   <String ID="$ADD_INSTANCE">Add Instance</String>
   <String ID="$DELETE_OBJECT">Delete Object</String>
   <String ID="$DELETE_INSTANCE">Delete Instance</String>
+  <String ID="$VIEW_NUM_INST">View Number of Instances</String>
 </Localisation>

@@ -225,6 +225,12 @@
     <Compile Include="Forms\M2FBXTool.Designer.cs">
       <DependentUpon>M2FBXTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\MatBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MatBrowser.Designer.cs">
+      <DependentUpon>MatBrowser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\RenderForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -663,6 +669,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\M2FBXTool.resx">
       <DependentUpon>M2FBXTool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MatBrowser.resx">
+      <DependentUpon>MatBrowser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SDSContentEditor.resx">
       <DependentUpon>SDSContentEditor.cs</DependentUpon>

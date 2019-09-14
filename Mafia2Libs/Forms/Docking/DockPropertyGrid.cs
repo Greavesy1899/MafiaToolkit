@@ -4,6 +4,7 @@ using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using SharpDX;
 using System;
+using Mafia2Tool.Forms;
 using System.Drawing;
 using System.IO;
 using Utils.Lang;
@@ -166,7 +167,7 @@ namespace Forms.Docking
 
         private void SelectedIndexChanged(object sender, EventArgs e)
         {
-            Panel.Controls.Clear();
+            MatViewPanel.Controls.Clear();
             if (FrameResource.IsFrameType(currentObject))
             {
                 if (currentObject is FrameObjectSingleMesh)
@@ -178,12 +179,25 @@ namespace Forms.Docking
                         {
                             var mat = entry.Material.Materials[i][x];
                             TextureEntry textEntry = new TextureEntry();
-
+                            textEntry.WasClicked += MatViewerPanel_WasClicked;
                             textEntry.SetMaterialName(mat.MaterialName);
                             textEntry.SetMaterialTexture(GetThumbnail(mat));
-                            Panel.Controls.Add(textEntry);
+                            MatViewPanel.Controls.Add(textEntry);
                         }
                     }
+                }
+            }
+        }
+
+        void MatViewerPanel_WasClicked(object sender, EventArgs e)
+        {
+            // Set IsSelected for all UCs in the FlowLayoutPanel to false. 
+            foreach (var c in MatViewPanel.Controls)
+            {
+                if (c is TextureEntry)
+                {
+                    ((TextureEntry)c).IsSelected = false;
+                    MatBrowser browser = new MatBrowser();
                 }
             }
         }

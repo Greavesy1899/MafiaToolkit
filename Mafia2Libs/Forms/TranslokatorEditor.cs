@@ -34,6 +34,8 @@ namespace Mafia2Tool.Forms
             Text = Language.GetString("$TRANSLOKATOR_EDITOR");
             CopyButton.Text = Language.GetString("$COPY");
             PasteButton.Text = Language.GetString("$PASTE");
+            ToolsButton.Text = Language.GetString("$TOOLS");
+            ViewNumInstButton.Text = Language.GetString("$VIEW_NUM_INST");
         }
 
         private void LoadFile()
@@ -239,11 +241,11 @@ namespace Mafia2Tool.Forms
             {
                 if(TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object)
                 {
-                    clipboard = new ResourceTypes.Translokator.Object((ResourceTypes.Translokator.Object)TranslokatorTree.SelectedNode.Tag);
+                    clipboard = TranslokatorTree.SelectedNode.Tag;
                 }
                 else if (TranslokatorTree.SelectedNode.Tag is Instance)
                 {
-                    clipboard = new Instance((Instance)TranslokatorTree.SelectedNode.Tag);
+                    clipboard = TranslokatorTree.SelectedNode.Tag;
                 }
             }
         }
@@ -254,10 +256,14 @@ namespace Mafia2Tool.Forms
             {
                 if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
                 {
-                    if (TranslokatorTree.SelectedNode.Tag is Instance && data is Instance)
-                        TranslokatorTree.SelectedNode.Tag = data;
-                    if (TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object && data is ResourceTypes.Translokator.Object)
-                        TranslokatorTree.SelectedNode.Tag = data;
+                    if (TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object)
+                    {
+                        TranslokatorTree.SelectedNode.Tag = new ResourceTypes.Translokator.Object((ResourceTypes.Translokator.Object)clipboard);
+                    }
+                    else if (TranslokatorTree.SelectedNode.Tag is Instance)
+                    {
+                        TranslokatorTree.SelectedNode.Tag = new Instance((Instance)clipboard);
+                    }
                 }
             }
             PropertyGrid.SelectedObject = TranslokatorTree?.SelectedNode.Tag;
@@ -269,5 +275,23 @@ namespace Mafia2Tool.Forms
         private void DeleteObject_Click(object sender, EventArgs e) => DeleteNode();
         private void CopyButton_Click(object sender, EventArgs e) => Copy();
         private void PasteButton_Click(object sender, EventArgs e) => Paste();
+
+        private void ViewNumInstButton_Click(object sender, EventArgs e)
+        {
+            var num = 0;
+
+            for (int i = 0; i < TranslokatorTree.Nodes[2].GetNodeCount(false); i++)
+            {
+                for (int y = 0; y < TranslokatorTree.Nodes[2].Nodes[i].GetNodeCount(false); y++)
+                {
+                    for (int z = 0; z < (TranslokatorTree.Nodes[2].Nodes[i].Nodes[y].GetNodeCount(false)); z++)
+                    {
+                        if (TranslokatorTree.Nodes[2].Nodes[i].Nodes[y].Nodes[z].Tag is Instance)
+                            num++;
+                    }
+                }
+            }
+            MessageBox.Show(string.Format("Number of Instances: {0}", num), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
     }
 }

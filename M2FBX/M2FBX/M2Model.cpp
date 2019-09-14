@@ -196,7 +196,6 @@ void ModelPart::ReadFromStream(FILE * stream) {
 		vertices[i] = vertex;
 	}
 	fread(&numSubMeshes, sizeof(int), 1, stream);
-	long pos = ftell(stream);
 	this->submeshes = new SubMesh[numSubMeshes];
 
 	for (uint i = 0; i < this->numSubMeshes; i++) {

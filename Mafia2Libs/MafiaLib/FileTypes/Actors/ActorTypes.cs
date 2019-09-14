@@ -429,10 +429,7 @@ namespace ResourceTypes.Actors
         byte[] padding;
         int unk01;
         byte unk02;
-        Vector3 unk03;
-        Vector3 unk04;
-        Vector3 unk05;
-        Vector3 unk06;
+        TransformMatrix uMatrix0;
         int unk07;
         int unk08;
         int unk09;
@@ -453,13 +450,9 @@ namespace ResourceTypes.Actors
         int unk_int2;
         float[] unkFloat5 = new float[20];
         Hash[] names = new Hash[4];
-        Vector3 unkVector1;
-        Vector3 unkVector2;
+        BoundingBox boundingBox;
         byte unk_byte3;
-        Vector3 unkVector3;
-        Vector3 unkVector4;
-        Vector3 unkVector5;
-        Vector3 unkVector6;
+        TransformMatrix uMatrix1;
         int instanced;
         int type;
 
@@ -471,21 +464,10 @@ namespace ResourceTypes.Actors
             get { return unk02; }
             set { unk02 = value; }
         }
-        public Vector3 Unk3 {
-            get { return unk03; }
-            set { unk03 = value; }
-        }
-        public Vector3 Unk4 {
-            get { return unk04; }
-            set { unk04 = value; }
-        }
-        public Vector3 Unk5 {
-            get { return unk05; }
-            set { unk05 = value; }
-        }
-        public Vector3 Unk6 {
-            get { return unk06; }
-            set { unk06 = value; }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public TransformMatrix UnkMatrix0 {
+            get { return uMatrix0; }
+            set { uMatrix0 = value; }
         }
         public int Unk07 {
             get { return unk07; }
@@ -563,33 +545,24 @@ namespace ResourceTypes.Actors
             get { return names; }
             set { names = value; }
         }
-        public Vector3 UnkVector1 {
-            get { return unkVector1; }
-            set { unkVector1 = value; }
+        [TypeConverter(typeof(Vector3Converter))]
+        public Vector3 BoundaryBoxMinimum {
+            get { return boundingBox.Minimum; }
+            set { boundingBox.Minimum = value; }
         }
-        public Vector3 UnkVector2 {
-            get { return unkVector2; }
-            set { unkVector2 = value; }
+        [TypeConverter(typeof(Vector3Converter))]
+        public Vector3 BoundaryBoxMaximum {
+            get { return boundingBox.Maximum; }
+            set { boundingBox.Maximum = value; }
         }
         public byte UnkByte3 {
             get { return unk_byte3; }
             set { unk_byte3 = value; }
         }
-        public Vector3 UnkVector3 {
-            get { return unkVector3; }
-            set { unkVector3 = value; }
-        }
-        public Vector3 UnkVector4 {
-            get { return unkVector4; }
-            set { unkVector4 = value; }
-        }
-        public Vector3 UnkVector5 {
-            get { return unkVector5; }
-            set { unkVector5 = value; }
-        }
-        public Vector3 UnkVector6 {
-            get { return unkVector6; }
-            set { unkVector6 = value; }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public TransformMatrix UnkMatrix1 {
+            get { return uMatrix1; }
+            set { uMatrix1 = value; }
         }
         public int Instanced {
             get { return instanced; }
@@ -612,10 +585,7 @@ namespace ResourceTypes.Actors
                 padding = reader.ReadBytes(9);
                 unk01 = reader.ReadInt32(isBigEndian);
                 unk02 = reader.ReadByte8();
-                unk03 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-                unk04 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-                unk05 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-                unk06 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+                uMatrix0 = new TransformMatrix(reader, isBigEndian);
                 unk07 = reader.ReadInt32(isBigEndian);
                 unk08 = reader.ReadInt32(isBigEndian);
                 unk09 = reader.ReadInt32(isBigEndian);
@@ -662,13 +632,9 @@ namespace ResourceTypes.Actors
                 for (int i = 0; i < 4; i++)
                     names[i] = new Hash(reader, isBigEndian);
 
-                unkVector1 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-                unkVector2 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+                boundingBox = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
                 unk_byte3 = reader.ReadByte8();
-                unkVector3 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-                unkVector4 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-                unkVector5 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-                unkVector6 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+                uMatrix1 = new TransformMatrix(reader, isBigEndian);
             }
             reader.Seek(2308, SeekOrigin.Begin);
             instanced = reader.ReadInt32(isBigEndian);
@@ -683,10 +649,7 @@ namespace ResourceTypes.Actors
             writer.Write(this.padding);
             writer.Write(unk01, isBigEndian);
             writer.WriteByte(unk02);
-            Vector3Extenders.WriteToFile(unk03, writer, isBigEndian);
-            Vector3Extenders.WriteToFile(unk04, writer, isBigEndian);
-            Vector3Extenders.WriteToFile(unk05, writer, isBigEndian);
-            Vector3Extenders.WriteToFile(unk06, writer, isBigEndian);
+            uMatrix0.WriteToFile(writer, isBigEndian);
             writer.Write(unk07, isBigEndian);
             writer.Write(unk08, isBigEndian);
             writer.Write(unk09, isBigEndian);
@@ -728,13 +691,9 @@ namespace ResourceTypes.Actors
             for (int i = 0; i != 4; i++)
                 names[i].WriteToFile(writer, isBigEndian);
 
-            unkVector1.WriteToFile(writer, isBigEndian);
-            unkVector2.WriteToFile(writer, isBigEndian);
+            boundingBox.WriteToFile(writer, isBigEndian);
             writer.WriteByte(unk_byte3);
-            unkVector3.WriteToFile(writer, isBigEndian);
-            unkVector4.WriteToFile(writer, isBigEndian);
-            unkVector5.WriteToFile(writer, isBigEndian);
-            unkVector6.WriteToFile(writer, isBigEndian);
+            uMatrix1.WriteToFile(writer, isBigEndian);
             writer.Seek(2308, SeekOrigin.Begin);
             writer.Write(instanced, isBigEndian);
             writer.Write(type, isBigEndian);

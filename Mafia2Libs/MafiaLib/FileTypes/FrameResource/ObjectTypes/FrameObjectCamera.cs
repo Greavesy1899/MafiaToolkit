@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using Utils.Extensions;
 using Utils.Types;
 
@@ -6,21 +7,18 @@ namespace ResourceTypes.FrameResource
 {
     public class FrameObjectCamera : FrameObjectJoint
     {
-        int unk01;
-        unkStruct[] unkData;
+        int numLens;
+        LensData[] lens;
 
-        public int Unk01 {
-            get { return unk01; }
-            set { unk01 = value; }
-        }
-        public unkStruct[] UnkData {
-            get { return unkData; }
-            set { unkData = value; }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public LensData[] Lens {
+            get { return lens; }
+            set { lens = value; }
         }
 
         public FrameObjectCamera() : base()
         {
-            unk01 = 0;
+            numLens = 0;
         }
 
         public FrameObjectCamera(MemoryStream reader, bool isBigEndian) : base()
@@ -30,33 +28,33 @@ namespace ResourceTypes.FrameResource
 
         public FrameObjectCamera(FrameObjectCamera other) : base(other)
         {
-            unk01 = other.unk01;
-            unkData = other.unkData;
+            numLens = other.numLens;
+            lens = other.lens;
         }
 
         public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             base.ReadFromFile(reader, isBigEndian);
-            unk01 = reader.ReadInt32(isBigEndian);
+            numLens = reader.ReadInt32(isBigEndian);
 
-            unkData = new unkStruct[unk01];
+            lens = new LensData[numLens];
 
-            for (int i = 0; i != unk01; i++)
-                unkData[i] = new unkStruct(reader, isBigEndian);
+            for (int i = 0; i != numLens; i++)
+                lens[i] = new LensData(reader, isBigEndian);
         }
 
         public override void WriteToFile(BinaryWriter writer)
         {
             base.WriteToFile(writer);
-            writer.Write(unk01);
+            writer.Write(numLens);
 
-            if (unk01 <= 0)
+            if (numLens <= 0)
                 return;
 
-            unkData = new unkStruct[unk01];
+            lens = new LensData[numLens];
 
-            for (int i = 0; i != unk01; i++)
-                unkData[i].WriteToFile(writer);
+            for (int i = 0; i != numLens; i++)
+                lens[i].WriteToFile(writer);
         }
 
         public override string ToString()
@@ -64,12 +62,21 @@ namespace ResourceTypes.FrameResource
             return string.Format("Camera Block");
         }
 
-        public struct unkStruct
+        public class LensData
         {
             float[] unkFloats;
             Hash unkHash;
 
-            public unkStruct(MemoryStream reader, bool isBigEndian)
+            public float[] UnkFloats {
+                get { return unkFloats; }
+                set { unkFloats = value; }
+            }
+            public Hash UnkHash {
+                get { return unkHash; }
+                set { unkHash = value; }
+            }
+
+            public LensData(MemoryStream reader, bool isBigEndian)
             {
                 unkFloats = new float[5];
 

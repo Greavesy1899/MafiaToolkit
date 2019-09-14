@@ -1,13 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace ResourceTypes.Navigation
 {
     public class TAPIndices
     {
-        private TAP0Chunk tapChunk;
-        private UAP0Chunk uapChunk;
-        private VAP0Chunk vapChunk;
+        public struct VAPSegment
+        {
+            public int Unk01;
+            public int Unk02;
+            public int Unk03;
+
+            public override string ToString()
+            {
+                return string.Format("{0} {1} {2}", Unk01, Unk02, Unk03);
+            }
+
+        }
+
+        private const int magicTAP0 = 0x30504154;
+        private const int magicUAP0 = 0x30504155;
+        private const int magicVAP0 = 0x30504156;
+        private VAPSegment[] mappingData;
 
         public TAPIndices(BinaryReader reader)
         {
@@ -16,127 +31,35 @@ namespace ResourceTypes.Navigation
 
         public void ReadFromFile(BinaryReader reader)
         {
-            tapChunk = new TAP0Chunk(reader);
-
-            if (!tapChunk.Valid)
-                return;
-
-            uapChunk = new UAP0Chunk(reader);
-
-            if (!uapChunk.Valid)
-                return;
-
-            vapChunk = new VAP0Chunk(reader);
-
-            if (!vapChunk.Valid)
-                return;
-        }
-
-        public class TAP0Chunk
-        {
-            private int signature = 0x30504154;
-            private int chunkSize;
-            private bool valid;
-
-            public int ChunkSize {
-                get { return chunkSize; }
-                set { chunkSize = value; }
-            }
-            public bool Valid {
-                get { return valid; }
-            }
-
-            public TAP0Chunk(BinaryReader reader)
+            List<string> mappings = new List<string>();
+            if (reader.ReadInt32() == magicTAP0)
             {
-                if (reader.ReadInt32() == signature)
+                var size = reader.ReadInt32();
+
+                if (reader.ReadInt32() == magicUAP0)
                 {
-                    chunkSize = reader.ReadInt32();
-                    valid = true;
-                }
-                else
-                {
-                    valid = false;
-                }
-            }
-        }
+                    var unk0 = reader.ReadInt32();
+                    var unk1 = reader.ReadInt32();
 
-        public class UAP0Chunk
-        {
-            private int signature = 0x30504155;
-            private int chunkSize;
-            private int unk0;
-            private bool valid;
-
-            public int ChunkSize {
-                get { return chunkSize; }
-                set { chunkSize = value; }
-            }
-            public int Unk0 {
-                get { return unk0; }
-                set { unk0 = value; }
-            }
-            public bool Valid {
-                get { return valid; }
-            }
-
-            public UAP0Chunk(BinaryReader reader)
-            {
-                if (reader.ReadInt32() == signature)
-                {
-                    chunkSize = reader.ReadInt32();
-                    unk0 = reader.ReadInt32();
-                    valid = true;
-                }
-                else
-                {
-                    valid = false;
-                }
-            }
-        }
-
-        public class VAP0Chunk
-        {
-            private int signature = 0x30504156;
-            private int chunkSize;
-            private int unk0size;
-            private int[] unk0;
-            private bool valid;
-
-            public int ChunkSize {
-                get { return chunkSize; }
-                set { chunkSize = value; }
-            }
-            public int Unk0Size {
-                get { return unk0size; }
-                set { unk0size = value; }
-            }
-            public int[] Unk0 {
-                get { return unk0; }
-                set { unk0 = value; }
-            }
-            public bool Valid {
-                get { return valid; }
-            }
-
-            public VAP0Chunk(BinaryReader reader)
-            {
-                if (reader.ReadInt32() == signature)
-                {
-                    chunkSize = reader.ReadInt32();
-                    unk0size = reader.ReadInt32();
-                    unk0 = new int[unk0size * 3];
-
-                    for (int i = 0; i != unk0.Length; i++)
+                    if (reader.ReadInt32() == magicVAP0)
                     {
-                        unk0[i] = reader.ReadInt32();
+                        var chunkSize = reader.ReadInt32();
+                        var numMappings = reader.ReadInt32();
+                        mappingData = new VAPSegment[numMappings];
+
+                        for (int i = 0; i != numMappings; i++)
+                        {
+                            var data = new VAPSegment();
+                            data.Unk01 = reader.ReadInt32();
+                            data.Unk02 = reader.ReadInt32();
+                            data.Unk03 = reader.ReadInt32();
+                            mappings.Add(string.Format("{0} {1} {2} {3}", i, data.Unk01, data.Unk02, data.Unk03));
+                            mappingData[i] = data;
+                        }
                     }
-                    valid = true;
-                }
-                else
-                {
-                    valid = false;
                 }
             }
+            File.WriteAllLines("MappingData.txt", mappings);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using Utils.Settings;
 using Utils.Lang;
 using System.Threading.Tasks;
-using ResourceTypes.City;
+using ResourceTypes.Navigation;
 
 namespace Mafia2Tool
 {
@@ -16,7 +16,7 @@ namespace Mafia2Tool
             //begin form inits;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
+                
             //Log.DeleteOldLog();
             //Log.CreateFile();
 

@@ -52,9 +52,9 @@
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.MainTabControl = new System.Windows.Forms.TabControl();
             this.MaterialPage = new System.Windows.Forms.TabPage();
+            this.MatViewPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.LODComboBox = new System.Windows.Forms.ComboBox();
-            this.Panel = new System.Windows.Forms.FlowLayoutPanel();
             this.QuickEditTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScaleZNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScaleYNumeric)).BeginInit();
@@ -94,7 +94,7 @@
             this.QuickEditTab.Location = new System.Drawing.Point(4, 22);
             this.QuickEditTab.Name = "QuickEditTab";
             this.QuickEditTab.Padding = new System.Windows.Forms.Padding(3);
-            this.QuickEditTab.Size = new System.Drawing.Size(259, 424);
+            this.QuickEditTab.Size = new System.Drawing.Size(261, 435);
             this.QuickEditTab.TabIndex = 1;
             this.QuickEditTab.Text = "Edit Transform";
             this.QuickEditTab.UseVisualStyleBackColor = true;
@@ -400,7 +400,7 @@
             // 
             // MaterialPage
             // 
-            this.MaterialPage.Controls.Add(this.Panel);
+            this.MaterialPage.Controls.Add(this.MatViewPanel);
             this.MaterialPage.Controls.Add(this.label1);
             this.MaterialPage.Controls.Add(this.LODComboBox);
             this.MaterialPage.Location = new System.Drawing.Point(4, 22);
@@ -410,6 +410,17 @@
             this.MaterialPage.TabIndex = 2;
             this.MaterialPage.Text = "Model Materials";
             this.MaterialPage.UseVisualStyleBackColor = true;
+            // 
+            // MatViewPanel
+            // 
+            this.MatViewPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.MatViewPanel.AutoScroll = true;
+            this.MatViewPanel.Location = new System.Drawing.Point(12, 51);
+            this.MatViewPanel.Name = "MatViewPanel";
+            this.MatViewPanel.Size = new System.Drawing.Size(239, 376);
+            this.MatViewPanel.TabIndex = 2;
             // 
             // label1
             // 
@@ -428,17 +439,6 @@
             this.LODComboBox.Size = new System.Drawing.Size(243, 21);
             this.LODComboBox.TabIndex = 0;
             this.LODComboBox.SelectedIndexChanged += new System.EventHandler(this.SelectedIndexChanged);
-            // 
-            // Panel
-            // 
-            this.Panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.Panel.AutoScroll = true;
-            this.Panel.Location = new System.Drawing.Point(12, 51);
-            this.Panel.Name = "Panel";
-            this.Panel.Size = new System.Drawing.Size(239, 376);
-            this.Panel.TabIndex = 2;
             // 
             // DockPropertyGrid
             // 
@@ -502,6 +502,6 @@
         private System.Windows.Forms.TabPage MaterialPage;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox LODComboBox;
-        private System.Windows.Forms.FlowLayoutPanel Panel;
+        private System.Windows.Forms.FlowLayoutPanel MatViewPanel;
     }
 }

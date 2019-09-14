@@ -26,6 +26,7 @@ using ResourceTypes.Materials;
 using Utils.SharpDXExtensions;
 using Gibbed.Illusion.FileFormats.Hashing;
 using ResourceTypes.Collisions;
+using System.Diagnostics;
 
 namespace Mafia2Tool
 {
@@ -256,7 +257,6 @@ namespace Mafia2Tool
                 }
 
                 Ray ray = Graphics.Camera.GetPickingRay(new Vector2(mousePos.X, mousePos.Y), new Vector2(RenderPanel.Size.Width, RenderPanel.Size.Height));
-                Graphics.Light.Direction = new Vector3(-0.2f, -1f, -0.3f);
 
                 float multiplier = ToolkitSettings.CameraSpeed;
 
@@ -322,9 +322,6 @@ namespace Mafia2Tool
                 PositionXTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
                 PositionYTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
                 PositionZTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
-                //RotationXTool.Value = (decimal)Graphics.Camera.Rotation.X;
-                //RotationYTool.Value = (decimal)Graphics.Camera.Rotation.Y;
-                //RotationZTool.Value = (decimal)Graphics.Camera.Rotation.Z;
             }
             toolStripStatusLabel3.Text = string.Format("{0} FPS", Graphics.FPS.FPS);
             return true;
@@ -872,7 +869,7 @@ namespace Mafia2Tool
                         itemNode.Text = item.EntityType;
                         itemNode.Tag = item;
 
-                        var typeString = string.Format("actorType_" + item.ItemType);
+                        var typeString = string.Format("actorType_" + item.ActorTypeName);
                         var foundnodes = actorRoot.Nodes.Find(typeString, false);
                         if(foundnodes.Length > 0)
                         {
@@ -882,7 +879,7 @@ namespace Mafia2Tool
                         {
                             TreeNode typeNode = new TreeNode(typeString);
                             typeNode.Name = typeString;
-                            typeNode.Text = item.ItemType;
+                            typeNode.Text = item.ActorTypeName;
                             typeNode.Nodes.Add(itemNode);
                             actorRoot.Nodes.Add(typeNode);
                         }
@@ -895,7 +892,7 @@ namespace Mafia2Tool
 
                         for (int c = 0; c != actor.Items.Length; c++)
                         {
-                            if (actor.Definitions[i].Hash == actor.Items[c].Hash2)
+                            if (actor.Definitions[i].Hash == actor.Items[c].FrameNameHash)
                             {
                                 FrameObjectFrame frame = (SceneData.FrameResource.FrameObjects.ElementAt(actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
                                 if (frame != null)
@@ -1122,7 +1119,7 @@ namespace Mafia2Tool
             TreeNode node = new TreeNode(frame.Name.String);
             node.Tag = frame;
             node.Name = frame.RefID.ToString();
-            dSceneTree.AddToTree(node);
+            dSceneTree.AddToTree(node, frameResourceRoot);
 
             if (frame.GetType() == typeof(FrameObjectSingleMesh) || frame.GetType() == typeof(FrameObjectModel))
             {
@@ -1135,6 +1132,12 @@ namespace Mafia2Tool
             if (frame.GetType() == typeof(FrameObjectArea))
             {
                 FrameObjectArea area = (frame as FrameObjectArea);
+                Graphics.InitObjectStack.Add(frame.RefID, BuildRenderBounds(area));
+            }
+
+            if (frame.GetType() == typeof(FrameObjectSector))
+            {
+                FrameObjectSector area = (frame as FrameObjectSector);
                 Graphics.InitObjectStack.Add(frame.RefID, BuildRenderBounds(area));
             }
 
@@ -1391,6 +1394,22 @@ namespace Mafia2Tool
             ToolkitSettings.WriteKey("CameraSpeed", "ModelViewer", ToolkitSettings.CameraSpeed.ToString());
         }
 
+        private void DeleteFrames(TreeNode node)
+        {
+            for (int i = 0; i < node.Nodes.Count; i++)
+            {
+                if (FrameResource.IsFrameType(node.Nodes[i].Tag))
+                {
+                    FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
+                    Debug.WriteLine("Deleted Frame: {0}", node.Nodes[i].Tag.ToString());
+                    SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
+                    if (Graphics.Assets.ContainsKey(entry.RefID))
+                        Graphics.Assets.Remove(entry.RefID);
+
+                    DeleteFrames(node.Nodes[i]);
+                }
+            }
+        }
         private void DeleteButton_Click(object sender, EventArgs e)
         {
             TreeNode node = dSceneTree.treeView1.SelectedNode;
@@ -1408,17 +1427,7 @@ namespace Mafia2Tool
                     if (Graphics.Assets.ContainsKey(obj.RefID))
                         Graphics.Assets.Remove(obj.RefID);
                 }
-
-                for (int i = 0; i < node.Nodes.Count; i++)
-                {
-                    if (FrameResource.IsFrameType(node.Nodes[i].Tag))
-                    {
-                        FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
-                        SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
-                        if (Graphics.Assets.ContainsKey(entry.RefID))
-                            Graphics.Assets.Remove(entry.RefID);
-                    }
-                }
+                DeleteFrames(node);
             }
             else if (node.Tag.GetType() == typeof(Collision.Placement))
             {
@@ -1727,7 +1736,7 @@ namespace Mafia2Tool
 
             RenderRoad road = new RenderRoad();
             RenderLine spline = new RenderLine();
-            spline.Points = new Vector3[1] { new Vector3(0, 0, 0) };
+            spline.Points = new Vector3[2] { new Vector3(0, 0, 0), new Vector3(10, 10, 10) };
             road.Spline = spline;
             road.HasToward = true;
             road.Toward = new SplineProperties();
@@ -1760,12 +1769,12 @@ namespace Mafia2Tool
             int generatedID = StringHelpers.RandomGenerator.Next();
             RenderStorageSingleton.Instance.SplineStorage.Add(spline);
             Graphics.InitObjectStack.Add(generatedID, road);
-            int nodeID = (roadRoot.Nodes.Count + 1);
+            int nodeID = (roadRoot.Nodes.Count);
             TreeNode child = new TreeNode(nodeID.ToString());
-            child.Text = "ID: " + nodeID;
+            child.Text = "Road ID: " + nodeID;
             child.Name = generatedID.ToString();
             child.Tag = road;
-            roadRoot.Nodes.Add(child);
+            dSceneTree.AddToTree(child, roadRoot);
         }
 
         private void AddSplineTxT_Click(object sender, EventArgs e)
@@ -1826,7 +1835,7 @@ namespace Mafia2Tool
             child.Text = "Road ID: " + nodeID;
             child.Name = generatedID.ToString();
             child.Tag = road;
-            roadRoot.Nodes.Add(child);
+            dSceneTree.AddToTree(child, roadRoot);
         }
 
         private void AddJunctionOnClick(object sender, EventArgs e)
@@ -1846,7 +1855,7 @@ namespace Mafia2Tool
             child.Text = "Junction ID: " + nodeID;
             child.Name = generatedID.ToString();
             child.Tag = junction;
-            junctionRoot.Nodes.Add(child);
+            dSceneTree.AddToTree(child, junctionRoot);
         }
 
         private void EditUnkSet3Click(object sender, EventArgs e)
@@ -1942,6 +1951,7 @@ namespace Mafia2Tool
                     nxsData.Sections[i].Unk1 = (int)result - 2;
                     nxsData.Sections[i].Start = curEdges;
                     nxsData.Sections[i].NumEdges = (int)colModel.Lods[0].Parts[i].NumFaces * 3;
+                    curEdges += nxsData.Sections[i].NumEdges; //fix for collisions not working correctly
                 }
 
                 RenderStaticCollision collision = new RenderStaticCollision();

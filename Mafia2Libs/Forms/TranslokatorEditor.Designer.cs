@@ -37,13 +37,15 @@
             this.AddObject = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteInstance = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteObject = new System.Windows.Forms.ToolStripMenuItem();
+            this.CopyButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.PasteButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SaveToolButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.CopyButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.PasteButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolsButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.ViewNumInstButton = new System.Windows.Forms.ToolStripMenuItem();
             this.TranslokatorContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -82,7 +84,7 @@
             this.CopyButton,
             this.PasteButton});
             this.TranslokatorContext.Name = "SDSContext";
-            this.TranslokatorContext.Size = new System.Drawing.Size(205, 158);
+            this.TranslokatorContext.Size = new System.Drawing.Size(205, 136);
             this.TranslokatorContext.Opening += new System.ComponentModel.CancelEventHandler(this.TranslokatorContext_Opening);
             // 
             // AddInstance
@@ -115,10 +117,25 @@
             this.DeleteObject.Text = "$DELETE_OBJECT";
             this.DeleteObject.Click += new System.EventHandler(this.DeleteObject_Click);
             // 
+            // CopyButton
+            // 
+            this.CopyButton.Name = "CopyButton";
+            this.CopyButton.Size = new System.Drawing.Size(204, 22);
+            this.CopyButton.Text = "$COPY";
+            this.CopyButton.Click += new System.EventHandler(this.CopyButton_Click);
+            // 
+            // PasteButton
+            // 
+            this.PasteButton.Name = "PasteButton";
+            this.PasteButton.Size = new System.Drawing.Size(204, 22);
+            this.PasteButton.Text = "$PASTE";
+            this.PasteButton.Click += new System.EventHandler(this.PasteButton_Click);
+            // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolButton});
+            this.fileToolButton,
+            this.ToolsButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(800, 25);
@@ -159,19 +176,23 @@
             this.ExitButton.Text = "$EXIT";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
-            // CopyButton
+            // ToolsButton
             // 
-            this.CopyButton.Name = "CopyButton";
-            this.CopyButton.Size = new System.Drawing.Size(204, 22);
-            this.CopyButton.Text = "$COPY";
-            this.CopyButton.Click += new System.EventHandler(this.CopyButton_Click);
+            this.ToolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.ToolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ViewNumInstButton});
+            this.ToolsButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsButton.Image")));
+            this.ToolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolsButton.Name = "ToolsButton";
+            this.ToolsButton.Size = new System.Drawing.Size(61, 22);
+            this.ToolsButton.Text = "$TOOLS";
             // 
-            // PasteButton
+            // ViewNumInstButton
             // 
-            this.PasteButton.Name = "PasteButton";
-            this.PasteButton.Size = new System.Drawing.Size(204, 22);
-            this.PasteButton.Text = "$PASTE";
-            this.PasteButton.Click += new System.EventHandler(this.PasteButton_Click);
+            this.ViewNumInstButton.Name = "ViewNumInstButton";
+            this.ViewNumInstButton.Size = new System.Drawing.Size(180, 22);
+            this.ViewNumInstButton.Text = "$VIEW_NUM_INST";
+            this.ViewNumInstButton.Click += new System.EventHandler(this.ViewNumInstButton_Click);
             // 
             // TranslokatorEditor
             // 
@@ -207,5 +228,7 @@
         private System.Windows.Forms.ToolStripMenuItem DeleteObject;
         private System.Windows.Forms.ToolStripMenuItem CopyButton;
         private System.Windows.Forms.ToolStripMenuItem PasteButton;
+        private System.Windows.Forms.ToolStripDropDownButton ToolsButton;
+        private System.Windows.Forms.ToolStripMenuItem ViewNumInstButton;
     }
 }

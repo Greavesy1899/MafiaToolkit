@@ -398,8 +398,11 @@ namespace Utils.Types
 
         public Matrix33 Matrix { get { return GetTransformed(); }}
 
+        [TypeConverter(typeof(Vector3Converter))]
         public Vector3 Position { get { return position; } set { position = value; } }
+        [TypeConverter(typeof(Vector3Converter))]
         public Vector3 Rotation { get { return GetEulerRotation(); } set { SetRotationMatrix(value); } }
+        [TypeConverter(typeof(Vector3Converter))]
         public Vector3 Scale { get { return GetScale(); } set { SetScaleMatrix(value); } }
         
 
@@ -489,6 +492,22 @@ namespace Utils.Types
             writer.Write(Matrix.M12);
             writer.Write(Matrix.M22);
             writer.Write(Position.Z);
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            writer.Write(Matrix.M00, isBigEndian);
+            writer.Write(Matrix.M10, isBigEndian);
+            writer.Write(Matrix.M20, isBigEndian);
+            writer.Write(Position.X, isBigEndian);
+            writer.Write(Matrix.M01, isBigEndian);
+            writer.Write(Matrix.M11, isBigEndian);
+            writer.Write(Matrix.M21, isBigEndian);
+            writer.Write(Position.Y, isBigEndian);
+            writer.Write(Matrix.M02, isBigEndian);
+            writer.Write(Matrix.M12, isBigEndian);
+            writer.Write(Matrix.M22, isBigEndian);
+            writer.Write(Position.Z, isBigEndian);
         }
 
         public void SetScaleMatrix(Vector3 vector)
