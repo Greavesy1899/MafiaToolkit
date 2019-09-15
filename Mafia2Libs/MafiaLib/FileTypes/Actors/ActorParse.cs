@@ -370,30 +370,12 @@ namespace ResourceTypes.Actors
                 var qx = quat.X;
                 var qy = quat.Y;
                 var qz = quat.Z;
-                var test = qx * qy + qz * qw;
-                if (test > 0.499)
-                {
-                    euler.X = (float)(2*  Math.Atan2(qx, qw));
-                    euler.Y = (float)(Math.PI / 2);
-                    euler.Z = 0;
-                    return;
-                }
-                if (test < -0.499)
-                {
-                    euler.X = (float)(-2 * Math.Atan2(qx, qw));
-                    euler.Y = (float)(Math.PI / 2);
-                    euler.Z = 0;
-                    return;
-                }
-                var squareX = qx * qx;
-                var squarey = qy * qy;
-                var squarez = qz * qz;
-                var h = (float)Math.Atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * squarey - 2 * squarez);
-               var p = (float)Math.Asin(2 * test);
-                var b = (float)Math.Atan2(2 * qx * qw - 2 * qy * qz, 1 - 2 * squareX - 2 * squarez);
-                euler.Z = (float)Math.Round(h * 180 / Math.PI);
-                euler.Y = (float)Math.Round(p * 180 / Math.PI);
-                euler.X = (float)Math.Round(b * 180 / Math.PI);
+                var eX = Math.Atan2(-2 * ((qy * qz) - (qw * qx)), (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
+                var eY = Math.Asin(2 * ((qx * qz) + (qw * qy)));
+                var eZ = Math.Atan2(-2 * ((qx * qy) - (qw * qz)), (qw * qw) + (qx * qx) - (qy * qy) - (qz * qz));
+                euler.Z = (float)Math.Round(eZ * 180 / Math.PI);
+                euler.Y = (float)Math.Round(eY * 180 / Math.PI);
+                euler.X = (float)Math.Round(eX * 180 / Math.PI);
             }
 
             public void ReadFromFile(BinaryReader reader)

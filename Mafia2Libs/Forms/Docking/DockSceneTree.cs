@@ -100,6 +100,7 @@ namespace Forms.Docking
                 }
                 if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || 
                     treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) || 
+                    treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement) ||
                     treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.NXSStruct)))
                 {
                     EntryMenuStrip.Items[3].Visible = true;

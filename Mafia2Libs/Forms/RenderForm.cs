@@ -898,6 +898,8 @@ namespace Mafia2Tool
                                 if (frame != null)
                                 {
                                     frame.Item = actor.Items[c];
+                                    frame.Matrix.SetRotationMatrix(actor.Items[c].Rotation);
+                                    frame.Matrix.SetScaleMatrix(actor.Items[c].Scale);
                                     frame.Matrix.Position = actor.Items[c].Position;
                                     sorted = true;
                                 }

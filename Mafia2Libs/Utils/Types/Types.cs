@@ -320,15 +320,15 @@ namespace Utils.Types
         public static Matrix33 operator +(Matrix33 matrix1, Matrix33 matrix2)
         {
             Matrix33 matrix = new Matrix33();
-            matrix.m00 = 1.0f;
+            matrix.m00 = matrix1.M00 + matrix2.m00;
             matrix.m01 = matrix1.M01 + matrix2.m01;
             matrix.m02 = matrix1.M02 + matrix2.m02;
             matrix.m10 = matrix1.M10 + matrix2.m10;
-            matrix.m11 = 1.0f;
+            matrix.m11 = matrix1.M11 + matrix2.m11;
             matrix.m12 = matrix1.M12 + matrix2.m12;
             matrix.m20 = matrix1.M20 + matrix2.m20;
             matrix.m21 = matrix1.M21 + matrix2.m21;
-            matrix.m22 = 1.0f;
+            matrix.m22 = matrix1.M22 + matrix2.m22;
             matrix.ToEuler();
             return matrix;
         }
@@ -417,11 +417,13 @@ namespace Utils.Types
         public TransformMatrix(BinaryReader reader)
         {
             ReadFromFile(reader);
+            SetTransformed();
         }
 
         public TransformMatrix(MemoryStream reader, bool isBigEndian)
         {
             ReadFromFile(reader, isBigEndian);
+            SetTransformed();
         }
 
         public TransformMatrix(TransformMatrix other)
@@ -431,7 +433,6 @@ namespace Utils.Types
             SetTransformed();
             Position = new Vector3(other.Position.X, other.Position.Y, other.Position.Z);
         }
-
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             Vector3 m1 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
@@ -443,38 +444,38 @@ namespace Utils.Types
             transformedMatrix = new Matrix33(m1, m2, m3);
             scale = new Matrix33(new Vector3(m1.Length(), 0.0f, 0.0f), new Vector3(0.0f, m2.Length(), 0.0f), new Vector3(0.0f, 0.0f, m3.Length()));
             rotation = new Matrix33();
-            transformedMatrix.M00 = transformedMatrix.M00 / scale.M00;
-            transformedMatrix.M01 = transformedMatrix.M01 / scale.M00;
-            transformedMatrix.M02 = transformedMatrix.M02 / scale.M00;
-            transformedMatrix.M10 = transformedMatrix.M10 / scale.M11;
-            transformedMatrix.M11 = transformedMatrix.M11 / scale.M11;
-            transformedMatrix.M12 = transformedMatrix.M12 / scale.M11;
-            transformedMatrix.M20 = transformedMatrix.M20 / scale.M22;
-            transformedMatrix.M21 = transformedMatrix.M21 / scale.M22;
-            transformedMatrix.M22 = transformedMatrix.M22 / scale.M22;
+            rotation.M00 = transformedMatrix.M00 / scale.M00;
+            rotation.M01 = transformedMatrix.M01 / scale.M00;
+            rotation.M02 = transformedMatrix.M02 / scale.M00;
+            rotation.M10 = transformedMatrix.M10 / scale.M11;
+            rotation.M11 = transformedMatrix.M11 / scale.M11;
+            rotation.M12 = transformedMatrix.M12 / scale.M11;
+            rotation.M20 = transformedMatrix.M20 / scale.M22;
+            rotation.M21 = transformedMatrix.M21 / scale.M22;
+            rotation.M22 = transformedMatrix.M22 / scale.M22;
             Position = new Vector3(x, y, z);
         }
 
         public void ReadFromFile(BinaryReader reader)
         {
-            Vector3 m1 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+            Vector3 m1 = Vector3Extenders.ReadFromFile(reader);
             float x = reader.ReadSingle();
-            Vector3 m2 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+            Vector3 m2 = Vector3Extenders.ReadFromFile(reader);
             float y = reader.ReadSingle();
-            Vector3 m3 = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+            Vector3 m3 = Vector3Extenders.ReadFromFile(reader);
             float z = reader.ReadSingle();
             transformedMatrix = new Matrix33(m1, m2, m3);
             scale = new Matrix33(new Vector3(m1.Length(), 0.0f, 0.0f), new Vector3(0.0f, m2.Length(), 0.0f), new Vector3(0.0f, 0.0f, m3.Length()));
             rotation = new Matrix33();
-            transformedMatrix.M00 = transformedMatrix.M00 / scale.M00;
-            transformedMatrix.M01 = transformedMatrix.M01 / scale.M00;
-            transformedMatrix.M02 = transformedMatrix.M02 / scale.M00;
-            transformedMatrix.M10 = transformedMatrix.M10 / scale.M11;
-            transformedMatrix.M11 = transformedMatrix.M11 / scale.M11;
-            transformedMatrix.M12 = transformedMatrix.M12 / scale.M11;
-            transformedMatrix.M20 = transformedMatrix.M20 / scale.M22;
-            transformedMatrix.M21 = transformedMatrix.M21 / scale.M22;
-            transformedMatrix.M22 = transformedMatrix.M22 / scale.M22;
+            rotation.M00 = transformedMatrix.M00 / scale.M00;
+            rotation.M01 = transformedMatrix.M01 / scale.M00;
+            rotation.M02 = transformedMatrix.M02 / scale.M00;
+            rotation.M10 = transformedMatrix.M10 / scale.M11;
+            rotation.M11 = transformedMatrix.M11 / scale.M11;
+            rotation.M12 = transformedMatrix.M12 / scale.M11;
+            rotation.M20 = transformedMatrix.M20 / scale.M22;
+            rotation.M21 = transformedMatrix.M21 / scale.M22;
+            rotation.M22 = transformedMatrix.M22 / scale.M22;
             Position = new Vector3(x, y, z);
         }
 
@@ -537,10 +538,9 @@ namespace Utils.Types
         {
             if (rotation != null && scale != null)
             {
-                transformedMatrix = new Matrix33(rotation);
-                transformedMatrix.M00 *= scale.M00;
-                transformedMatrix.M11 *= scale.M11;
-                transformedMatrix.M22 *= scale.M22;
+                transformedMatrix = new Matrix33();
+                transformedMatrix = scale;
+                transformedMatrix *= rotation;
             }
         }
 
@@ -553,15 +553,12 @@ namespace Utils.Types
         {
             TransformMatrix matrix = new TransformMatrix();
             matrix.position = matrix1.position + matrix2.position;
-            matrix.scale = matrix1.scale + matrix2.scale;
-            matrix.rotation = matrix1.rotation + matrix2.rotation;
-            matrix.transformedMatrix = matrix1.transformedMatrix + matrix2.transformedMatrix;
             return matrix;
         }
 
         public override string ToString()
         {
-            return $"{Matrix} {Position}";
+            return "Transformation";
         }
     }
 
