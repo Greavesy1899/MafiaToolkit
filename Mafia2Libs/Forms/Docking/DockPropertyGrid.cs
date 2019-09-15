@@ -111,7 +111,7 @@ namespace Forms.Docking
                     FrameObjectBase fObject = (currentObject as FrameObjectBase);
                     fObject.Matrix.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
                     fObject.Matrix.SetRotationMatrix(new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value)));
-                    fObject.Matrix.SetScaleMatrix(new Vector3(Convert.ToSingle(ScaleXNumeric.Value), Convert.ToSingle(ScaleYNumeric.Value), Convert.ToSingle(ScaleZNumeric.Value)));
+                    fObject.Matrix.Scale = new Vector3(Convert.ToSingle(ScaleXNumeric.Value), Convert.ToSingle(ScaleYNumeric.Value), Convert.ToSingle(ScaleZNumeric.Value));
                 }
                 else if (currentObject is ResourceTypes.Collisions.Collision.Placement)
                 {

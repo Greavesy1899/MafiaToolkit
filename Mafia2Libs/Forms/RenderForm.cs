@@ -363,7 +363,7 @@ namespace Mafia2Tool
         private void UpdateRenderedObjects(TransformMatrix obj1Matrix, FrameObjectBase obj)
         {
             if (Graphics.Assets.ContainsKey(obj.RefID))
-                Graphics.Assets[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Matrix);
+                Graphics.Assets[obj.RefID].SetTransform(obj1Matrix.Position + obj.Matrix.Position, obj.Matrix.Matrix + obj1Matrix.Matrix);
         }
 
         private void SanitizeBuffers()
@@ -899,7 +899,7 @@ namespace Mafia2Tool
                                 {
                                     frame.Item = actor.Items[c];
                                     frame.Matrix.SetRotationMatrix(actor.Items[c].Rotation);
-                                    frame.Matrix.SetScaleMatrix(actor.Items[c].Scale);
+                                    frame.Matrix.Scale = actor.Items[c].Scale;
                                     frame.Matrix.Position = actor.Items[c].Position;
                                     sorted = true;
                                 }

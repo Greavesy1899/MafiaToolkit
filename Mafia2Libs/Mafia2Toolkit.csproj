@@ -390,6 +390,8 @@
     <Compile Include="Utils\Types\Half.cs" />
     <Compile Include="Utils\Helpers\HalfHelper.cs" />
     <Compile Include="Utils\Logger.cs" />
+    <Compile Include="Utils\Types\Matrix3x3.cs" />
+    <Compile Include="Utils\Types\TransformMatrix.cs" />
     <Compile Include="Utils\Types\Types.cs" />
     <Compile Include="Utils\Helpers\VectorExtensions.cs" />
     <Compile Include="MafiaLib\ModelHelpers\Vertex.cs" />
