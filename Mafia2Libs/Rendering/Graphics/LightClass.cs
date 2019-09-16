@@ -26,5 +26,16 @@ namespace Rendering.Graphics
         {
             SpecularPower = power;
         }
+
+        public override bool Equals(object obj)
+        {
+            var @class = obj as LightClass;
+            return @class != null &&
+                   AmbientColor.Equals(@class.AmbientColor) &&
+                   DiffuseColour.Equals(@class.DiffuseColour) &&
+                   Direction.Equals(@class.Direction) &&
+                   SpecularColor.Equals(@class.SpecularColor) &&
+                   SpecularPower == @class.SpecularPower;
+        }
     }
 }

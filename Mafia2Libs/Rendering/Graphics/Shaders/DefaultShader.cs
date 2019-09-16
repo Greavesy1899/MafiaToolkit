@@ -25,6 +25,8 @@ namespace Rendering.Graphics
         public SamplerState SamplerState { get; set; }
         public DefaultShaderParams ShaderParams { get; private set; }
 
+        private LightClass lighting = null;
+
         public DefaultShader(Device device, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
         {
             if (!Init(device, vsPath, psPath, vsEntryPoint, psEntryPoint))
@@ -149,19 +151,23 @@ namespace Rendering.Graphics
             deviceContext.VertexShader.SetConstantBuffer(bufferSlotNumber, ConstantCameraBuffer);
             #endregion
             #region Constant Light Buffer
-            deviceContext.MapSubresource(ConstantLightBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
-            LightBuffer lightbuffer = new LightBuffer()
+            if(lighting == null || !lighting.Equals(light))
             {
-                ambientColor = light.AmbientColor,
-                diffuseColor = light.DiffuseColour,
-                LightDirection = light.Direction,
-                specularColor = light.SpecularColor,
-                specularPower = light.SpecularPower
-            };
-            mappedResource.Write(lightbuffer);
-            deviceContext.UnmapSubresource(ConstantLightBuffer, 0);
-            bufferSlotNumber = 0;
-            deviceContext.PixelShader.SetConstantBuffer(bufferSlotNumber, ConstantLightBuffer);
+                deviceContext.MapSubresource(ConstantLightBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
+                LightBuffer lightbuffer = new LightBuffer()
+                {
+                    ambientColor = light.AmbientColor,
+                    diffuseColor = light.DiffuseColour,
+                    LightDirection = light.Direction,
+                    specularColor = light.SpecularColor,
+                    specularPower = light.SpecularPower
+                };
+                mappedResource.Write(lightbuffer);
+                deviceContext.UnmapSubresource(ConstantLightBuffer, 0);
+                bufferSlotNumber = 0;
+                deviceContext.PixelShader.SetConstantBuffer(bufferSlotNumber, ConstantLightBuffer);
+                lighting = light;
+            }
             #endregion
         }
 
