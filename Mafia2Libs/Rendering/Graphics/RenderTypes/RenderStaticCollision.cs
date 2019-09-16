@@ -6,16 +6,16 @@ using Utils.Types;
 using ResourceTypes.Collisions;
 using static ResourceTypes.Collisions.Collision;
 using Buffer = SharpDX.Direct3D11.Buffer;
+using System.Collections.Generic;
 
 namespace Rendering.Graphics
 {
     public class RenderStaticCollision : IRenderer
     {
         public RenderBoundingBox BoundingBox { get; set; }
-        public VertexLayouts.BasicLayout.Vertex[] Vertices { get; private set; }
+        public VertexLayouts.CollisionLayout.Vertex[] Vertices { get; private set; }
         public uint[] Indices { get; private set; }
         public BaseShader Shader;
-        private uint numTriangles;
         private CollisionMaterials[] materials;
 
         public RenderStaticCollision()
@@ -29,25 +29,9 @@ namespace Rendering.Graphics
         {
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, Vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, Indices);
-            Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
+            Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[2];
             BoundingBox.InitBuffers(d3d, context);
         }
-
-        ////TEMP
-        //public void ConvertNavOBJDataToRender(ResourceTypes.Navigation.NAVData.OBJData data)
-        //{
-        //    SetTransform(new Vector3(), new Matrix33());
-        //    Indices = data.indices;
-        //    numTriangles = (uint)(data.indices.Length);
-        //    Vertices = new VertexLayouts.BasicLayout.Vertex[data.vertices.Length];
-        //    for (int i = 0; i < data.vertices.Length; i++)
-        //    {
-        //        VertexLayouts.BasicLayout.Vertex vertex = new VertexLayouts.BasicLayout.Vertex();
-        //        vertex.Position = data.vertices[i].position;
-        //        vertex.Colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-        //        Vertices[i] = vertex;
-        //    }
-        //}
 
         public void ConvertCollisionToRender(MeshData data)
         { 
@@ -57,13 +41,13 @@ namespace Rendering.Graphics
             BoundingBox.DoRender = false;
 
             Indices = data.Indices;
-            numTriangles = Convert.ToUInt32(data.Indices.Length * 3);
-            Vertices = new VertexLayouts.BasicLayout.Vertex[data.Vertices.Length];
+            Vertices = new VertexLayouts.CollisionLayout.Vertex[data.Vertices.Length];
             materials = data.Materials;
             for (int i = 0; i != data.Vertices.Length; i++)
             {
-                VertexLayouts.BasicLayout.Vertex vertex = new VertexLayouts.BasicLayout.Vertex();
+                VertexLayouts.CollisionLayout.Vertex vertex = new VertexLayouts.CollisionLayout.Vertex();
                 vertex.Position = data.Vertices[i];
+                vertex.Normal = new Vector3(0.0f);
                 vertex.Colour = new Vector4(1.0f);
                 Vertices[i] = vertex;
             }
@@ -101,8 +85,42 @@ namespace Rendering.Graphics
                         Vertices[data.Indices[i + 1]].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
                         Vertices[data.Indices[i + 2]].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
                         break;
+                    default:
+                        Vertices[data.Indices[i]].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        Vertices[data.Indices[i + 1]].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        Vertices[data.Indices[i + 2]].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        break;
+
                 }
                 materialIDX++;
+            }
+            CalculateNormals();
+        }
+
+        private void CalculateNormals()
+        {
+            List<Vector3> surfaceNormals = new List<Vector3>();
+            Vector3[] normals = new Vector3[Vertices.Length];
+            int index = 0;
+            var normal = new Vector3();
+            while (index < Indices.Length)
+            {
+                var edge1 = Vertices[Indices[index]].Position - Vertices[Indices[index + 1]].Position;
+                var edge2 = Vertices[Indices[index]].Position - Vertices[Indices[index + 2]].Position;
+                normal = Vector3.Cross(edge1, edge2);
+                normals[Indices[index]] += normal;
+                normals[Indices[index + 1]] += normal;
+                normals[Indices[index + 2]] += normal;
+                surfaceNormals.Add(normal);
+                index += 3;
+            }
+            surfaceNormals.Add(normal);
+
+
+            for (int i = 0; i < Vertices.Length; i++)
+            {
+                normals[i].Normalize();
+                Vertices[i].Normal = normals[i];
             }
         }
 
@@ -112,11 +130,11 @@ namespace Rendering.Graphics
                 return;
 
             BoundingBox.Render(device, deviceContext, camera, light);
-            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0));
+            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.CollisionLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             Shader.SetSceneVariables(deviceContext, Transform, camera);
-            Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)numTriangles, 0);
+            Shader.Render(deviceContext, PrimitiveTopology.TriangleList, Indices.Length, 0);
         }
 
         public override void SetTransform(Vector3 position, Matrix33 rotation)

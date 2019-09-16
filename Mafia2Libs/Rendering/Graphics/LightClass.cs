@@ -4,11 +4,11 @@ namespace Rendering.Graphics
 {
     public class LightClass
     {
-        public Vector4 AmbientColor { get; private set; }
-        public Vector4 DiffuseColour { get; private set; }
+        public Vector4 AmbientColor { get; set; }
+        public Vector4 DiffuseColour { get; set; }
         public Vector3 Direction { get; set; }
-        public Vector4 SpecularColor { get; private set; }
-        public float SpecularPower { get; private set; }
+        public Vector4 SpecularColor { get; set; }
+        public float SpecularPower { get; set; }
 
         public void SetAmbientColor(float red, float green, float blue, float alpha)
         {

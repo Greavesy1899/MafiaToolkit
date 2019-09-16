@@ -66,6 +66,7 @@ namespace Mafia2Tool
                 MessageBox.Show("No material libraries have loaded, make sure they are set up correctly in the options window!", "Warning!", MessageBoxButtons.OK);
 
             TypeDescriptor.AddAttributes(typeof(Vector3), new TypeConverterAttribute(typeof(Vector3Converter)));
+            TypeDescriptor.AddAttributes(typeof(Vector4), new TypeConverterAttribute(typeof(Vector4Converter)));
             ToolkitSettings.UpdateRichPresence(string.Format("Editing '{0}'", info.Directory.Name));
             SceneData.ScenePath = info.DirectoryName;
             fileLocation = info;
@@ -2040,6 +2041,11 @@ namespace Mafia2Tool
         {
             bSelectMode = isSelectMode;
             CurrentModeButton.Text = (bSelectMode) ? "Select Mode" : "Edit Mode";
+        }
+
+        private void EditLighting_Click(object sender, EventArgs e)
+        {
+            dPropertyGrid.SetObject(Graphics.Light);
         }
     }
 }

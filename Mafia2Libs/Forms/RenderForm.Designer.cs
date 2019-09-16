@@ -65,6 +65,7 @@ namespace Mafia2Tool
             this.OptionsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ToggleWireframeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToggleCullingButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditLighting = new System.Windows.Forms.ToolStripMenuItem();
             this.WindowButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -136,7 +137,7 @@ namespace Mafia2Tool
             this.PositionXTool.Name = "PositionXTool";
             this.PositionXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionXTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionXTool.Size = new System.Drawing.Size(71, 24);
+            this.PositionXTool.Size = new System.Drawing.Size(63, 24);
             this.PositionXTool.Text = "0.00000";
             this.PositionXTool.Value = new decimal(new int[] {
             0,
@@ -169,7 +170,7 @@ namespace Mafia2Tool
             this.PositionYTool.Name = "PositionYTool";
             this.PositionYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionYTool.Size = new System.Drawing.Size(71, 24);
+            this.PositionYTool.Size = new System.Drawing.Size(63, 24);
             this.PositionYTool.Text = "0.00000";
             this.PositionYTool.Value = new decimal(new int[] {
             0,
@@ -202,7 +203,7 @@ namespace Mafia2Tool
             this.PositionZTool.Name = "PositionZTool";
             this.PositionZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionZTool.Size = new System.Drawing.Size(71, 24);
+            this.PositionZTool.Size = new System.Drawing.Size(63, 24);
             this.PositionZTool.Text = "0.00000";
             this.PositionZTool.Value = new decimal(new int[] {
             0,
@@ -269,7 +270,7 @@ namespace Mafia2Tool
             this.CameraSpeedTool.Name = "CameraSpeedTool";
             this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.CameraSpeedTool.Size = new System.Drawing.Size(71, 24);
+            this.CameraSpeedTool.Size = new System.Drawing.Size(63, 24);
             this.CameraSpeedTool.Text = "0.00000";
             this.CameraSpeedTool.Value = new decimal(new int[] {
             0,
@@ -469,7 +470,8 @@ namespace Mafia2Tool
             this.OptionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.OptionsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToggleWireframeButton,
-            this.ToggleCullingButton});
+            this.ToggleCullingButton,
+            this.EditLighting});
             this.OptionsButton.Image = ((System.Drawing.Image)(resources.GetObject("OptionsButton.Image")));
             this.OptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.OptionsButton.Name = "OptionsButton";
@@ -489,6 +491,13 @@ namespace Mafia2Tool
             this.ToggleCullingButton.Size = new System.Drawing.Size(192, 22);
             this.ToggleCullingButton.Text = "$TOGGLE_CULLING";
             this.ToggleCullingButton.Click += new System.EventHandler(this.CullModeButton_Click);
+            // 
+            // EditLighting
+            // 
+            this.EditLighting.Name = "EditLighting";
+            this.EditLighting.Size = new System.Drawing.Size(192, 22);
+            this.EditLighting.Text = "$EDIT_LIGHTING";
+            this.EditLighting.Click += new System.EventHandler(this.EditLighting_Click);
             // 
             // WindowButton
             // 
@@ -619,5 +628,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem ViewSide2Button;
         private System.Windows.Forms.ToolStripSplitButton CurrentModeButton;
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
+        private System.Windows.Forms.ToolStripMenuItem EditLighting;
     }
 }
