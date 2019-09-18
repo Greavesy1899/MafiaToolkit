@@ -141,7 +141,7 @@ namespace Rendering.Graphics
             #region Constant Light Buffer
             if (lighting == null || !lighting.Equals(light))
             {
-                context.MapSubresource(ConstantLightBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
+                deviceContext.MapSubresource(ConstantLightBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
                 LightBuffer lightbuffer = new LightBuffer()
                 {
                     ambientColor = light.AmbientColor,
@@ -151,9 +151,9 @@ namespace Rendering.Graphics
                     specularPower = light.SpecularPower
                 };
                 mappedResource.Write(lightbuffer);
-                context.UnmapSubresource(ConstantLightBuffer, 0);
+                deviceContext.UnmapSubresource(ConstantLightBuffer, 0);
                 bufferSlotNumber = 0;
-                context.PixelShader.SetConstantBuffer(bufferSlotNumber, ConstantLightBuffer);
+                deviceContext.PixelShader.SetConstantBuffer(bufferSlotNumber, ConstantLightBuffer);
                 lighting = light;
             }
             #endregion

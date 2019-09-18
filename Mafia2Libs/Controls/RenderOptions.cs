@@ -19,20 +19,19 @@ namespace Forms.OptionControls
             RenderGroup.Text = Language.GetString("$RENDER_OPTIONS");
             ScreenFarLabel.Text = Language.GetString("$RENDER_SCREENFAR");
             ScreenNearLabel.Text = Language.GetString("$RENDER_SCREENEAR");
+            RenderFieldOfView.Text = Language.GetString("$RENDER_FOV");
             TexLabel.Text = Language.GetString("$TEXTURE_DIRECTORY");
             CameraSpeedLabel.Text = Language.GetString("$RENDER_CAMERASPEED");
             TexBrowser.Description = Language.GetString("$SELECT_TEX_FOLDER");
             ExperimentalBox.Text = Language.GetString("$ENABLE_EXPERIMENTAL");
         }
         
-        /// <summary>
-        /// Read Settings from INI and populate controls.
-        /// </summary>
         private void LoadSettings()
         {
             ScreenFarUpDown.Value = Math.Min(Convert.ToInt16(ToolkitSettings.ScreenDepth), ScreenFarUpDown.Maximum);
             ScreenNearUpDown.Value = Math.Min(Convert.ToInt16(ToolkitSettings.ScreenNear), ScreenNearUpDown.Maximum);
             CameraSpeedUpDown.Value = Math.Min((decimal)ToolkitSettings.CameraSpeed, CameraSpeedUpDown.Maximum);
+            FieldOfViewNumDown.Value = Math.Min(Math.Max(Convert.ToInt16(ToolkitSettings.FieldOfView), FieldOfViewNumDown.Minimum), FieldOfViewNumDown.Maximum);
             TexDirectoryBox.Text = ToolkitSettings.TexturePath;
             ExperimentalBox.Checked = ToolkitSettings.Experimental;
             UseMIPsBox.Checked = ToolkitSettings.UseMIPS;
@@ -83,6 +82,12 @@ namespace Forms.OptionControls
         {
             ToolkitSettings.UseMIPS = UseMIPsBox.Checked;
             ToolkitSettings.WriteKey("UseMIPs", "ModelViewer", ToolkitSettings.UseMIPS.ToString());
+        }
+
+        private void FieldOfViewNumDown_ValueChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.FieldOfView = (float)FieldOfViewNumDown.Value;
+            ToolkitSettings.WriteKey("FieldOfView", "ModelViewer", ToolkitSettings.FieldOfView.ToString());
         }
     }
 }

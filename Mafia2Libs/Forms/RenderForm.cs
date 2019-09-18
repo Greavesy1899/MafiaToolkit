@@ -84,7 +84,7 @@ namespace Mafia2Tool
         {
             FileButton.Text = Language.GetString("$FILE");
             EditButton.Text = Language.GetString("$CREATE");
-            WindowButton.Text = Language.GetString("$VIEW");
+            ViewButton.Text = Language.GetString("$VIEW");
             OptionsButton.Text = Language.GetString("$OPTIONS");
             ToggleWireframeButton.Text = Language.GetString("$TOGGLE_WIREFRAME");
             ToggleCullingButton.Text = Language.GetString("$TOGGLE_CULLING");

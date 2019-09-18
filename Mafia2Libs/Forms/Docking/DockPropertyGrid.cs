@@ -134,11 +134,26 @@ namespace Forms.Docking
 
             name = File.Exists(name) == false ? "Resources/texture.dds" : name;
 
+            var bLoaded = false;
             using (var stream = File.Open(name, FileMode.Open))
             {
-                dds.Load(stream);
+                try
+                {
+                    dds.Load(stream);
+                    bLoaded = true;
+                }
+                catch(Exception ex)
+                {
+                    Utils.Logging.Log.WriteLine("Failed to load DDS: " + name, Utils.Logging.LoggingTypes.WARNING);
+                }
             }
-            var thumbnail = dds.Image().GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
+
+            Image thumbnail = null;
+            if (bLoaded)
+                thumbnail = dds.Image().GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
+            else
+                thumbnail = LoadDDSSquish("Resources/texture.dds");
+
             dds = null;
             return thumbnail;
         }

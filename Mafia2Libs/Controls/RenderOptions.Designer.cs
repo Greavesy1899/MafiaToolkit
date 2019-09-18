@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.RenderGroup = new System.Windows.Forms.GroupBox();
+            this.UseMIPsBox = new System.Windows.Forms.CheckBox();
             this.ExperimentalBox = new System.Windows.Forms.CheckBox();
             this.BrowseButton = new System.Windows.Forms.Button();
             this.TexDirectoryBox = new System.Windows.Forms.TextBox();
@@ -40,15 +41,19 @@
             this.ScreenFarLabel = new System.Windows.Forms.Label();
             this.ScreenNearLabel = new System.Windows.Forms.Label();
             this.TexBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.UseMIPsBox = new System.Windows.Forms.CheckBox();
+            this.FieldOfViewNumDown = new System.Windows.Forms.NumericUpDown();
+            this.RenderFieldOfView = new System.Windows.Forms.Label();
             this.RenderGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenFarUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenNearUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FieldOfViewNumDown)).BeginInit();
             this.SuspendLayout();
             // 
             // RenderGroup
             // 
+            this.RenderGroup.Controls.Add(this.FieldOfViewNumDown);
+            this.RenderGroup.Controls.Add(this.RenderFieldOfView);
             this.RenderGroup.Controls.Add(this.UseMIPsBox);
             this.RenderGroup.Controls.Add(this.ExperimentalBox);
             this.RenderGroup.Controls.Add(this.BrowseButton);
@@ -67,6 +72,17 @@
             this.RenderGroup.TabIndex = 2;
             this.RenderGroup.TabStop = false;
             this.RenderGroup.Text = "$RENDER_OPTIONS";
+            // 
+            // UseMIPsBox
+            // 
+            this.UseMIPsBox.AutoSize = true;
+            this.UseMIPsBox.Location = new System.Drawing.Point(235, 61);
+            this.UseMIPsBox.Name = "UseMIPsBox";
+            this.UseMIPsBox.Size = new System.Drawing.Size(72, 17);
+            this.UseMIPsBox.TabIndex = 11;
+            this.UseMIPsBox.Text = "Use MIPs";
+            this.UseMIPsBox.UseVisualStyleBackColor = true;
+            this.UseMIPsBox.CheckedChanged += new System.EventHandler(this.UseMIPsBox_CheckedChanged);
             // 
             // ExperimentalBox
             // 
@@ -202,16 +218,43 @@
             // 
             this.TexBrowser.Description = "$SELECT_TEX_FOLDER";
             // 
-            // UseMIPsBox
+            // FieldOfViewNumDown
             // 
-            this.UseMIPsBox.AutoSize = true;
-            this.UseMIPsBox.Location = new System.Drawing.Point(235, 61);
-            this.UseMIPsBox.Name = "UseMIPsBox";
-            this.UseMIPsBox.Size = new System.Drawing.Size(72, 17);
-            this.UseMIPsBox.TabIndex = 11;
-            this.UseMIPsBox.Text = "Use MIPs";
-            this.UseMIPsBox.UseVisualStyleBackColor = true;
-            this.UseMIPsBox.CheckedChanged += new System.EventHandler(this.UseMIPsBox_CheckedChanged);
+            this.FieldOfViewNumDown.DecimalPlaces = 1;
+            this.FieldOfViewNumDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.FieldOfViewNumDown.Location = new System.Drawing.Point(235, 126);
+            this.FieldOfViewNumDown.Maximum = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
+            this.FieldOfViewNumDown.Minimum = new decimal(new int[] {
+            40,
+            0,
+            0,
+            0});
+            this.FieldOfViewNumDown.Name = "FieldOfViewNumDown";
+            this.FieldOfViewNumDown.Size = new System.Drawing.Size(120, 20);
+            this.FieldOfViewNumDown.TabIndex = 13;
+            this.FieldOfViewNumDown.Value = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
+            this.FieldOfViewNumDown.ValueChanged += new System.EventHandler(this.FieldOfViewNumDown_ValueChanged);
+            // 
+            // RenderFieldOfView
+            // 
+            this.RenderFieldOfView.AutoSize = true;
+            this.RenderFieldOfView.Location = new System.Drawing.Point(232, 110);
+            this.RenderFieldOfView.Name = "RenderFieldOfView";
+            this.RenderFieldOfView.Size = new System.Drawing.Size(137, 13);
+            this.RenderFieldOfView.TabIndex = 12;
+            this.RenderFieldOfView.Text = "$RENDER_FIELDOFVIEW";
             // 
             // RenderOptions
             // 
@@ -225,6 +268,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenFarUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenNearUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FieldOfViewNumDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -244,5 +288,7 @@
         private System.Windows.Forms.FolderBrowserDialog TexBrowser;
         private System.Windows.Forms.CheckBox ExperimentalBox;
         private System.Windows.Forms.CheckBox UseMIPsBox;
+        private System.Windows.Forms.NumericUpDown FieldOfViewNumDown;
+        private System.Windows.Forms.Label RenderFieldOfView;
     }
 }
