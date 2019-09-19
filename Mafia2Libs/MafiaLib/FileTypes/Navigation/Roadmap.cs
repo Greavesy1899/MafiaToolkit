@@ -64,7 +64,7 @@ namespace ResourceTypes.Navigation
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4}", offset, unk0, NumSplines1, NumSplines2, roadLength);
+            return string.Format("{0} {1} {2} {3}", unk0, NumSplines1, NumSplines2, roadLength);
         }
     }
 
@@ -145,7 +145,7 @@ namespace ResourceTypes.Navigation
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5}, {6}, {7}, {8}, {9}", laneIDX0, laneIDX1, offset0, laneSize0, laneSize1, offset1, rangeSize0, rangeSize1, flags, splineIDX);
+            return string.Format("{0} {1} {2} {3} {4} {5}, {6}, {7}", laneIDX0, laneIDX1, laneSize0, laneSize1, rangeSize0, rangeSize1, flags, splineIDX);
         }
     }
 
@@ -199,7 +199,7 @@ namespace ResourceTypes.Navigation
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5}", width, flags, unk03, rangeOffset, rangeSize0, rangeSize1);
+            return string.Format("{0} {1} {2} {3} {4}", width, flags, unk03, rangeSize0, rangeSize1);
         }
     }
 
@@ -299,7 +299,7 @@ namespace ResourceTypes.Navigation
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9}", offset0, junctionSize0, junctionSize1, offset1, boundarySize0, boundarySize1, junctionIdx, offset2, unk5, unk6);
+            return string.Format("{0} {1} {2} {3} {4} {5} {6}", junctionSize0, junctionSize1, boundarySize0, boundarySize1, junctionIdx, unk5, unk6);
         }
     }
 

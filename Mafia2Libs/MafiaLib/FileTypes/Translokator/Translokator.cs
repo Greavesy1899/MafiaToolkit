@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Windows.Forms;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
@@ -176,6 +177,24 @@ namespace ResourceTypes.Translokator
             get { return instances; }
             set { instances = value; }
         }
+
+        public Object()
+        {
+
+        }
+
+        public Object(Object other)
+        {
+            numInstance2 = 0;
+            numInstances = 0;
+            instances = new Instance[0];
+            unk02 = other.unk02;
+            hash = other.hash;
+            name = other.name;
+            unkBytes1 = other.unkBytes1;
+            gridMax = other.gridMax;
+            gridMin = other.gridMin;
+        }
     }
 
     public class ObjectGroup
@@ -204,7 +223,6 @@ namespace ResourceTypes.Translokator
     {
         public Grid[] Grids;
         public ObjectGroup[] ObjectGroups;
-        List<ushort> IDs = new List<ushort>();
 
         int version;
         int unk1;
@@ -589,12 +607,6 @@ namespace ResourceTypes.Translokator
                         instance.D5 = BitConverter.ToInt32(packed, 6);
                         instance.ID = BitConverter.ToUInt16(packed, 10);
                         instance.D4 = BitConverter.ToUInt16(packed, 12);
-
-                        if (!IDs.Contains(instance.ID))
-                            IDs.Add(instance.ID);
-                        else
-                            Console.WriteLine("Duplication!! {0} {1}", obj.Name, instance.ID);
-
                         DecompressScale(instance);
                         DecompressRotation(instance);                    
                         instance.Position = DecompressPosition(packed, instance, bounds.Minimum, bounds.Maximum);
@@ -606,7 +618,6 @@ namespace ResourceTypes.Translokator
                 }
                 ObjectGroups[i] = objectGroup;
             }
-            IDs.Sort();
         }
 
         public void WriteToFile(FileInfo info)

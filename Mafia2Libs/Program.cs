@@ -4,7 +4,8 @@ using System.Windows.Forms;
 using Utils.Settings;
 using Utils.Lang;
 using System.Threading.Tasks;
-using ResourceTypes.City;
+using ResourceTypes.Navigation;
+using ResourceTypes.EntityDataStorage;
 
 namespace Mafia2Tool
 {
@@ -17,6 +18,8 @@ namespace Mafia2Tool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            //EntityDataStorageLoader entityDataStorageLoader = new EntityDataStorageLoader();
+            //entityDataStorageLoader.ReadFromFile("EntityDataStorage_16.eds", false);
             //Log.DeleteOldLog();
             //Log.CreateFile();
 

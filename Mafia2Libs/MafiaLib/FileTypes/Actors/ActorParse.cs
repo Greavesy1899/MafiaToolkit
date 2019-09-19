@@ -24,7 +24,7 @@ namespace ResourceTypes.Actors
         int unk12;
         int unk14;
         int unk13;
-        temp_unk[] temp_Unks;
+        ActorExtraData[] extraData;
 
         public ActorDefinition[] Definitions {
             get { return definitions; }
@@ -32,9 +32,9 @@ namespace ResourceTypes.Actors
         public ActorItem[] Items {
             get { return items; }
         }
-        public temp_unk[] TempUnks {
-            get { return temp_Unks; }
-            set { temp_Unks = value; }
+        public ActorExtraData[] ExtraData {
+            get { return extraData; }
+            set { extraData = value; }
         }
 
         public Actor(string file)
@@ -54,24 +54,24 @@ namespace ResourceTypes.Actors
             {
                 int startPos = 0;
 
-                if(!string.IsNullOrEmpty(items[i].FrameName))
+                if(!string.IsNullOrEmpty(items[i].DefinitionName))
                 {
-                    if(!names.ContainsKey(items[i].FrameName))
+                    if(!names.ContainsKey(items[i].DefinitionName))
                     {
                         startPos = pool.Length;
-                        pool += items[i].FrameName;
+                        pool += items[i].DefinitionName;
                         pool += '\0';
-                        names.Add(items[i].FrameName, startPos);
+                        names.Add(items[i].DefinitionName, startPos);
                     }
                 }
                 else
                 {
-                    names.TryGetValue(items[i].FrameName, out startPos);
+                    names.TryGetValue(items[i].DefinitionName, out startPos);
                 }
 
                 for (int y = 0; y < definitions.Length; y++)
                 {
-                    if (definitions[y].Hash == items[i].Hash2)
+                    if (definitions[y].Hash == items[i].FrameNameHash)
                     {
                         definitions[y].NamePos = (short)startPos;
                     }
@@ -123,9 +123,9 @@ namespace ResourceTypes.Actors
 
                 int count = (unk14 - 8) / sizeof(int);
                 reader.BaseStream.Seek(unk14 - 12, SeekOrigin.Current);
-                temp_Unks = new temp_unk[count];
+                extraData = new ActorExtraData[count];
                 for (int i = 0; i < count; i++)
-                    temp_Unks[i] = new temp_unk(reader);
+                    extraData[i] = new ActorExtraData(reader);
             }
             else
             {
@@ -139,7 +139,7 @@ namespace ResourceTypes.Actors
             for (int i = 0; i != itemCount; i++)
             {
                 items[i] = new ActorItem(reader);
-                items[i].Data = TempUnks[items[i].DataID];
+                items[i].Data = ExtraData[items[i].DataID];
             }
 
             unk16 = reader.ReadInt32();
@@ -164,17 +164,17 @@ namespace ResourceTypes.Actors
             writer.Write(int.MinValue); //size
             writer.Write(int.MinValue); //unk12
 
-            int instanceOffset = ((temp_Unks.Length * sizeof(int)) + 8);
+            int instanceOffset = ((extraData.Length * sizeof(int)) + 8);
             writer.Write(0);
 
             //could do it so we seek to offset and save each one, but that would decrease performance. 
-            for (int i = 0; i < temp_Unks.Length; i++)
+            for (int i = 0; i < extraData.Length; i++)
             {
                 writer.Write(instanceOffset);
-                instanceOffset += (temp_Unks[i].Data != null ? temp_Unks[i].Data.GetSize() : temp_Unks[i].Buffer.Length) + 8;
+                instanceOffset += (extraData[i].Data != null ? extraData[i].Data.GetSize() : extraData[i].Buffer.Length) + 8;
             }
-            for (int i = 0; i < temp_Unks.Length; i++)
-                temp_Unks[i].WriteToFile(writer);
+            for (int i = 0; i < extraData.Length; i++)
+                extraData[i].WriteToFile(writer);
 
             int itemOffset = instanceOffset + (items.Length * sizeof(int)) + 16;
             long itemPos = writer.BaseStream.Position;
@@ -210,7 +210,7 @@ namespace ResourceTypes.Actors
             //    throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
         }
 
-        public struct ActorDefinition
+        public class ActorDefinition
         {
             ulong hash; //hash, this is the same as in the frame.
             short unk01; //always zero
@@ -268,15 +268,15 @@ namespace ResourceTypes.Actors
         public class ActorItem
         {
             int size; //item size in bytes;
-            string itemType;
-            string entityType;
+            string actorTypeName; //actor type (string)
+            string entityType; //entity name
             string unkString;
             string unk2String;
-            string frameName;
-            string frameUnk;
-            int actortype;
-            ulong hash1;
-            ulong hash2;
+            string definitionName; //actor name
+            string frameName; //frame name
+            int actortypeID;
+            ulong defintionHash; //definition hash
+            ulong frameNameHash; //frame name hash
             Vector3 position;
             Vector4 quat;
             Vector3 euler;
@@ -285,7 +285,7 @@ namespace ResourceTypes.Actors
             Vector3 scale;
             ushort unk3;
             ushort dataID;
-            temp_unk data;
+            ActorExtraData data;
 
             public int Size {
                 get { return size; }
@@ -294,9 +294,9 @@ namespace ResourceTypes.Actors
                 get { return entityType; }
                 set { entityType = value; }
             }
-            public string ItemType {
-                get { return itemType; }
-                set { itemType = value; }
+            public string ActorTypeName {
+                get { return actorTypeName; }
+                set { actorTypeName = value; }
             }
             public string UnkString {
                 get { return unkString; }
@@ -306,25 +306,25 @@ namespace ResourceTypes.Actors
                 get { return unk2String; }
                 set { unk2String = value; }
             }
+            public string DefinitionName {
+                get { return definitionName; }
+                set { definitionName = value; }
+            }
             public string FrameName {
                 get { return frameName; }
                 set { frameName = value; }
             }
-            public string FrameUnk {
-                get { return frameUnk; }
-                set { frameUnk = value; }
+            public int ActorTypeID {
+                get { return actortypeID; }
+                set { actortypeID = value; }
             }
-            public int ActorType {
-                get { return actortype; }
-                set { actortype = value; }
+            public ulong DefinitionHash {
+                get { return defintionHash; }
+                set { defintionHash = value; }
             }
-            public ulong Hash1 {
-                get { return hash1; }
-                set { hash1 = value; }
-            }
-            public ulong Hash2 {
-                get { return hash2; }
-                set { hash2 = value; }
+            public ulong FrameNameHash {
+                get { return frameNameHash; }
+                set { frameNameHash = value; }
             }
             public Vector3 Position {
                 get { return position; }
@@ -352,7 +352,7 @@ namespace ResourceTypes.Actors
             }
 
             [TypeConverter(typeof(ExpandableObjectConverter))]
-            public temp_unk Data {
+            public ActorExtraData Data {
                 get { return data; }
                 set { data = value; }
             }
@@ -370,44 +370,26 @@ namespace ResourceTypes.Actors
                 var qx = quat.X;
                 var qy = quat.Y;
                 var qz = quat.Z;
-                var test = qx * qy + qz * qw;
-                if (test > 0.499)
-                {
-                    euler.X = (float)(2*  Math.Atan2(qx, qw));
-                    euler.Y = (float)(Math.PI / 2);
-                    euler.Z = 0;
-                    return;
-                }
-                if (test < -0.499)
-                {
-                    euler.X = (float)(-2 * Math.Atan2(qx, qw));
-                    euler.Y = (float)(Math.PI / 2);
-                    euler.Z = 0;
-                    return;
-                }
-                var squareX = qx * qx;
-                var squarey = qy * qy;
-                var squarez = qz * qz;
-                var h = (float)Math.Atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * squarey - 2 * squarez);
-               var p = (float)Math.Asin(2 * test);
-                var b = (float)Math.Atan2(2 * qx * qw - 2 * qy * qz, 1 - 2 * squareX - 2 * squarez);
-                euler.Z = (float)Math.Round(h * 180 / Math.PI);
-                euler.Y = (float)Math.Round(p * 180 / Math.PI);
-                euler.X = (float)Math.Round(b * 180 / Math.PI);
+                var eX = Math.Atan2(-2 * ((qy * qz) - (qw * qx)), (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
+                var eY = Math.Asin(2 * ((qx * qz) + (qw * qy)));
+                var eZ = Math.Atan2(-2 * ((qx * qy) - (qw * qz)), (qw * qw) + (qx * qx) - (qy * qy) - (qz * qz));
+                euler.Z = (float)Math.Round(eZ * 180 / Math.PI);
+                euler.Y = (float)Math.Round(eY * 180 / Math.PI);
+                euler.X = (float)Math.Round(eX * 180 / Math.PI);
             }
 
             public void ReadFromFile(BinaryReader reader)
             {
                 size = reader.ReadInt32();
-                itemType = readString(reader);
+                actorTypeName = readString(reader);
                 entityType = readString(reader);
                 unkString = readString(reader);
                 unk2String = readString(reader);
+                definitionName = readString(reader);
                 frameName = readString(reader);
-                frameUnk = readString(reader);
-                actortype = reader.ReadInt32();
-                hash1 = reader.ReadUInt64();
-                hash2 = reader.ReadUInt64();
+                actortypeID = reader.ReadInt32();
+                defintionHash = reader.ReadUInt64();
+                frameNameHash = reader.ReadUInt64();
                 position = Vector3Extenders.ReadFromFile(reader);
                 quat = Vector4Extenders.ReadFromFile(reader);
                 scale = Vector3Extenders.ReadFromFile(reader);
@@ -418,12 +400,12 @@ namespace ResourceTypes.Actors
             public int CalculateSize()
             {
                 size = 4;
-                size += (itemType.Length + 2);
+                size += (actorTypeName.Length + 2);
                 size += (entityType.Length + 2);
                 size += (unkString.Length + 2);
                 size += (unk2String.Length + 2);
+                size += (definitionName.Length + 2);
                 size += (frameName.Length + 2);
-                size += (frameUnk.Length + 2);
                 size += 64;
                 return size;
             }
@@ -432,15 +414,15 @@ namespace ResourceTypes.Actors
             {
                 long pos = writer.BaseStream.Position;
                 writer.Write(0);
-                writeString(itemType, writer);
+                writeString(actorTypeName, writer);
                 writeString(entityType, writer);
                 writeString(unkString, writer);
                 writeString(unk2String, writer);
+                writeString(definitionName, writer);
                 writeString(frameName, writer);
-                writeString(frameUnk, writer);
-                writer.Write(actortype);
-                writer.Write(hash1);
-                writer.Write(hash2);
+                writer.Write(actortypeID);
+                writer.Write(defintionHash);
+                writer.Write(frameNameHash);
                 position.WriteToFile(writer);
                 quat.WriteToFile(writer);
                 scale.WriteToFile(writer);
@@ -478,12 +460,12 @@ namespace ResourceTypes.Actors
 
             public override string ToString()
             {
-                return string.Format("{0}, {1}, {2}, {3}", entityType, actortype, itemType, dataID);
+                return string.Format("{0}, {1}, {2}, {3}", entityType, actortypeID, actorTypeName, dataID);
             }
         }
     }
 
-    public struct temp_unk
+    public struct ActorExtraData
     {
         ActorTypes bufferType;
         IActorExtraDataInterface data;
@@ -505,7 +487,7 @@ namespace ResourceTypes.Actors
             set { buffer = value; }
         }
 
-        public temp_unk(BinaryReader reader)
+        public ActorExtraData(BinaryReader reader)
         {
             buffer = null;
             data = null;

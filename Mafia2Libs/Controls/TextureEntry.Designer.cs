@@ -82,6 +82,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.Container);
             this.Name = "TextureEntry";
+            this.Load += new System.EventHandler(this.OnLoad);
             this.Container.Panel1.ResumeLayout(false);
             this.Container.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Container)).EndInit();

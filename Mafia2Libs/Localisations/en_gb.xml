@@ -90,6 +90,7 @@
   <String ID="$RENDER_SCREENFAR">Screen Far</String>
   <String ID="$RENDER_SCREENEAR">Screen Near</String>
   <String ID="$RENDER_CAMERASPEED">Camera Speed</String>
+  <String ID="$RENDER_FOV">Field of View</String>
   <String ID="$TEXTURE_DIRECTORY">Texture Directory</String>
   <String ID="$SELECT_TEX_FOLDER">Select the folder which contains textures.</String>
   
@@ -215,4 +216,5 @@
   <String ID="$ADD_INSTANCE">Add Instance</String>
   <String ID="$DELETE_OBJECT">Delete Object</String>
   <String ID="$DELETE_INSTANCE">Delete Instance</String>
+  <String ID="$VIEW_NUM_INST">View Number of Instances</String>
 </Localisation>

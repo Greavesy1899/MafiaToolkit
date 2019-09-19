@@ -4,6 +4,7 @@ using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using SharpDX;
 using System;
+using Mafia2Tool.Forms;
 using System.Drawing;
 using System.IO;
 using Utils.Lang;
@@ -110,7 +111,7 @@ namespace Forms.Docking
                     FrameObjectBase fObject = (currentObject as FrameObjectBase);
                     fObject.Matrix.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
                     fObject.Matrix.SetRotationMatrix(new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value)));
-                    fObject.Matrix.SetScaleMatrix(new Vector3(Convert.ToSingle(ScaleXNumeric.Value), Convert.ToSingle(ScaleYNumeric.Value), Convert.ToSingle(ScaleZNumeric.Value)));
+                    fObject.Matrix.Scale = new Vector3(Convert.ToSingle(ScaleXNumeric.Value), Convert.ToSingle(ScaleYNumeric.Value), Convert.ToSingle(ScaleZNumeric.Value));
                 }
                 else if (currentObject is ResourceTypes.Collisions.Collision.Placement)
                 {
@@ -133,11 +134,26 @@ namespace Forms.Docking
 
             name = File.Exists(name) == false ? "Resources/texture.dds" : name;
 
+            var bLoaded = false;
             using (var stream = File.Open(name, FileMode.Open))
             {
-                dds.Load(stream);
+                try
+                {
+                    dds.Load(stream);
+                    bLoaded = true;
+                }
+                catch(Exception ex)
+                {
+                    Utils.Logging.Log.WriteLine("Failed to load DDS: " + name, Utils.Logging.LoggingTypes.WARNING);
+                }
             }
-            var thumbnail = dds.Image().GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
+
+            Image thumbnail = null;
+            if (bLoaded)
+                thumbnail = dds.Image().GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
+            else
+                thumbnail = LoadDDSSquish("Resources/texture.dds");
+
             dds = null;
             return thumbnail;
         }
@@ -166,7 +182,7 @@ namespace Forms.Docking
 
         private void SelectedIndexChanged(object sender, EventArgs e)
         {
-            Panel.Controls.Clear();
+            MatViewPanel.Controls.Clear();
             if (FrameResource.IsFrameType(currentObject))
             {
                 if (currentObject is FrameObjectSingleMesh)
@@ -178,12 +194,25 @@ namespace Forms.Docking
                         {
                             var mat = entry.Material.Materials[i][x];
                             TextureEntry textEntry = new TextureEntry();
-
+                            textEntry.WasClicked += MatViewerPanel_WasClicked;
                             textEntry.SetMaterialName(mat.MaterialName);
                             textEntry.SetMaterialTexture(GetThumbnail(mat));
-                            Panel.Controls.Add(textEntry);
+                            MatViewPanel.Controls.Add(textEntry);
                         }
                     }
+                }
+            }
+        }
+
+        void MatViewerPanel_WasClicked(object sender, EventArgs e)
+        {
+            // Set IsSelected for all UCs in the FlowLayoutPanel to false. 
+            foreach (var c in MatViewPanel.Controls)
+            {
+                if (c is TextureEntry)
+                {
+                    ((TextureEntry)c).IsSelected = false;
+                    MatBrowser browser = new MatBrowser();
                 }
             }
         }

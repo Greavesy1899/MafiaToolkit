@@ -167,6 +167,62 @@ namespace Utils.Extensions
         }
     }
 
+    public class Vector4Converter : TypeConverter
+    {
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+        }
+
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        {
+            object result = null;
+            string stringValue = value as string;
+
+            if (!string.IsNullOrEmpty(stringValue))
+            {
+                float x, y, z, w = 0.0f;
+
+                if (stringValue.Contains("X") && stringValue.Contains("Y") && stringValue.Contains("Z") && stringValue.Contains("W"))
+                {
+                    string[] components = stringValue.Split(' ');
+                    float.TryParse(components[0].Substring(2), out x);
+                    float.TryParse(components[1].Substring(2), out y);
+                    float.TryParse(components[2].Substring(2), out z);
+                    float.TryParse(components[3].Substring(2), out w);
+                }
+                else
+                {
+                    string[] components = stringValue.Split(' ');
+                    float.TryParse(components[0], out x);
+                    float.TryParse(components[1], out y);
+                    float.TryParse(components[2], out z);
+                    float.TryParse(components[3], out w);
+                }
+
+                result = new Vector4(x, y, z, w);
+            }
+
+            return result ?? base.ConvertFrom(context, culture, value);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        {
+            object result = null;
+            Vector4 vector4 = (Vector4)value;
+
+            if (destinationType == typeof(string))
+                result = vector4.ToString();
+
+            return result ?? base.ConvertTo(context, culture, value, destinationType);
+        }
+    }
+
     [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
     public class NumericUpDownToolStrip : ToolStripControlHost
     {

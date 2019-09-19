@@ -206,11 +206,6 @@ namespace Rendering.Graphics
 
             DeviceContext.Rasterizer.SetViewport(0, 0, ToolkitSettings.Width, ToolkitSettings.Height, 0, 1);
         }
-        public void SwapFillMode(FillMode mode)
-        {
-            m_FillMode = mode;
-            UpdateRasterizer(); 
-        }
         public void Shutdown()
         {
             SwapChain?.SetFullscreenState(false, null);

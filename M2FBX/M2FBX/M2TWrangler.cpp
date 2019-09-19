@@ -61,15 +61,11 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		}
 	}
 
-	std::vector<Point3> vertices = std::vector<Point3>();
-	std::vector<Point3> normals = std::vector<Point3>();
-	std::vector<Point3> tangents = std::vector<Point3>();
-	std::vector<UVVert> uvs = std::vector<UVVert>();
-	std::vector<UVVert> uvs1 = std::vector<UVVert>();
-	std::vector<UVVert> uvs2 = std::vector<UVVert>();
-	std::vector<UVVert> uvs7 = std::vector<UVVert>();
+	uint numVertices = pMesh->GetControlPointsCount();
+	Vertex* vertices = new Vertex[numVertices];
 
-	for (int i = 0; i != pMesh->GetControlPointsCount(); i++) {
+	for (int i = 0; i != numVertices; i++) {
+		Vertex vertice;
 		Point3 vert;
 		UVVert uvCoords;
 		FbxVector4 vec4 = pMesh->GetControlPointAt(i);
@@ -79,7 +75,7 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		vert.x = vec4.mData[0];
 		vert.y = vec4.mData[1];
 		vert.z = vec4.mData[2];
-		vertices.push_back(vert);
+		vertice.position = vert;
 
 		//do normal stuff.
 		if (pPart.GetHasNormals()) {
@@ -87,7 +83,7 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 			vert.x = vec4.mData[0];
 			vert.y = vec4.mData[1];
 			vert.z = vec4.mData[2];
-			normals.push_back(vert);
+			vertice.normals = vert;
 		}
 
 		//do tangent stuff.
@@ -96,7 +92,7 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 			vert.x = vec4.mData[0];
 			vert.y = vec4.mData[1];
 			vert.z = vec4.mData[2];
-			tangents.push_back(vert);
+			vertice.tangent = vert;
 		}
 
 		//do UV stuff.
@@ -104,7 +100,7 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 			vec4 = pElementUV->GetDirectArray().GetAt(i);
 			uvCoords.x = vec4.mData[0];
 			uvCoords.y = vec4.mData[1];
-			uvs.push_back(uvCoords);
+			vertice.uv0 = uvCoords;
 		}
 
 		//Colours
@@ -112,30 +108,25 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 			color = pElementVC->GetDirectArray().GetAt(i);
 			uvCoords.x = color.mRed;
 			uvCoords.y = color.mBlue;
-			uvs1.push_back(uvCoords);
+			vertice.uv1 = uvCoords;
 		}
 		if (pPart.GetHasUV2()) {
 			color = pElementVC->GetDirectArray().GetAt(i);
 			uvCoords.x = color.mBlue;
 			uvCoords.y = color.mAlpha;
-			uvs2.push_back(uvCoords);
+			vertice.uv2 = uvCoords;
 		}
 		if (pPart.GetHasUV7()) {
 			vec4 = pElementOM->GetDirectArray().GetAt(i);
 			uvCoords.x = vec4.mData[0];
 			uvCoords.y = vec4.mData[1];
-			uvs7.push_back(uvCoords);
+			vertice.uv3 = uvCoords;
 		}
+		vertices[i] = vertice;
 	}
 
 	//update the part with the latest data.
-	pPart.SetVertices(vertices, true);
-	pPart.SetNormals(normals);
-	pPart.SetTangents(tangents);
-	pPart.SetUV0s(uvs);
-	pPart.SetUV1s(uvs1);
-	pPart.SetUV2s(uvs2);
-	pPart.SetUV7s(uvs7);
+	pPart.SetVertices(vertices, numVertices);
 
 	//Gotta be triangulated.
 	if (!pMesh->IsTriangleMesh()) {
@@ -221,8 +212,8 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		curTotal += faces*3;
 	}
 	//Update data to do with triangles.
-	pPart.SetIndices(indices, true);
-	pPart.SetSubMeshes(subMeshes);
+	pPart.SetIndices(indices, indices.size());
+	pPart.SetSubMeshes(subMeshes, matCount);
 	pPart.SetSubMeshCount(matCount);
 	delete[] subNumFacesCount;
 	return 0;

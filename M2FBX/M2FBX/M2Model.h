@@ -27,6 +27,15 @@ typedef struct {
 	float m21;
 	float m22;
 } Matrix3;
+typedef struct {
+	Point3 position;
+	Point3 normals;
+	Point3 tangent;
+	UVVert uv0;
+	UVVert uv1;
+	UVVert uv2;
+	UVVert uv3;
+} Vertex;
 
 class SubMesh {
 private:
@@ -56,17 +65,11 @@ private:
 	bool hasFlag0x20000;
 	bool hasFlag0x40000;
 	bool hasDamageGroup;
-	int vertSize;
-	std::vector<Point3> vertices;
-	std::vector<Point3> normals;
-	std::vector<Point3> tangents;
-	std::vector<UVVert> uvs0;
-	std::vector<UVVert> uvs1;
-	std::vector<UVVert> uvs2;
-	std::vector<UVVert> uvs7;
-	int subMeshCount;
+	uint numVertices;
+	Vertex* vertices;
+	uint numSubMeshes;
 	SubMesh* submeshes;
-	int indicesSize;
+	uint numIndices;
 	std::vector<Int3> indices;
 public:
 	ModelPart();
@@ -84,17 +87,11 @@ public:
 	void SetHasFlag0x40000(bool b);
 	void SetHasDamage(bool b);
 	void SetVertSize(int count);
-	void SetVertices(std::vector<Point3> vertices, bool updateCount = false);
-	void SetNormals(std::vector<Point3> normals);
-	void SetTangents(std::vector<Point3> tangents);
-	void SetUV0s(std::vector<UVVert> uvs);
-	void SetUV1s(std::vector<UVVert> uvs);
-	void SetUV2s(std::vector<UVVert> uvs);
-	void SetUV7s(std::vector<UVVert> uvs);
-	void SetSubMeshes(SubMesh* subMeshes);
+	void SetVertices(Vertex* vertices, unsigned int count);
+	void SetSubMeshes(SubMesh* subMeshes, unsigned int count);
 	void SetSubMeshCount(int count);
 	void SetIndicesSize(int count);
-	void SetIndices(std::vector<Int3> indices, bool updateCount = false);
+	void SetIndices(std::vector<Int3> indices, unsigned int count);
 	bool GetHasPositions();
 	bool GetHasNormals();;
 	bool GetHasTangents();
@@ -107,19 +104,13 @@ public:
 	bool GetHasFlag0x20000();
 	bool GetHasFlag0x40000();
 	bool GetHasDamage();
-	int GetVertSize();
-	std::vector<Point3> GetVertices();
-	std::vector<Point3> GetNormals();
-	std::vector<Point3> GetTangents();
-	std::vector<UVVert> GetUV0s();
-	std::vector<UVVert> GetUV1s();
-	std::vector<UVVert> GetUV2s();
-	std::vector<UVVert> GetUV7s();
-	int GetSubMeshCount();
-	int GetIndicesSize();
+	uint GetVertSize();
+	Vertex* GetVertices();
+	uint GetSubMeshCount();
+	uint GetIndicesSize();
 	SubMesh* GetSubMeshes() const;
 	std::vector<Int3> GetIndices();
-
+	
 	void ReadFromStream(FILE* stream);
 	void WriteToStream(FILE * stream);
 };

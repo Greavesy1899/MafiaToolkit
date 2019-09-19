@@ -90,7 +90,7 @@ namespace Rendering.Graphics
             Light = new LightClass();
             Light.SetAmbientColor(0.5f, 0.5f, 0.5f, 1f);
             Light.SetDiffuseColour(0.5f, 0.5f, 0.5f, 1f);
-            Light.Direction = new Vector3(0, 0, 1.0f);
+            Light.Direction = new Vector3(-0.2f, -1f, -0.3f);
             Light.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
             Light.SetSpecularPower(255.0f);
             Input = new InputClass();

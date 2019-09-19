@@ -65,6 +65,7 @@ namespace Mafia2Tool
             this.OptionsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ToggleWireframeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToggleCullingButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditLighting = new System.Windows.Forms.ToolStripMenuItem();
             this.WindowButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -254,7 +255,7 @@ namespace Mafia2Tool
             1,
             0,
             0,
-            65536});
+            131072});
             this.CameraSpeedTool.Margin = new System.Windows.Forms.Padding(1, 0, 3, 0);
             this.CameraSpeedTool.Maximum = new decimal(new int[] {
             10,
@@ -262,10 +263,10 @@ namespace Mafia2Tool
             0,
             0});
             this.CameraSpeedTool.Minimum = new decimal(new int[] {
-            10,
             0,
             0,
-            -2147483648});
+            0,
+            0});
             this.CameraSpeedTool.Name = "CameraSpeedTool";
             this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -329,7 +330,7 @@ namespace Mafia2Tool
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
             this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EditButton.Name = "EditButton";
-            this.EditButton.Size = new System.Drawing.Size(67, 22);
+            this.EditButton.Size = new System.Drawing.Size(66, 22);
             this.EditButton.Text = "$CREATE";
             // 
             // AddButton
@@ -426,14 +427,14 @@ namespace Mafia2Tool
             // ViewTopButton
             // 
             this.ViewTopButton.Name = "ViewTopButton";
-            this.ViewTopButton.Size = new System.Drawing.Size(128, 22);
+            this.ViewTopButton.Size = new System.Drawing.Size(126, 22);
             this.ViewTopButton.Text = "$TOP";
             this.ViewTopButton.Click += new System.EventHandler(this.OnViewTopButtonClicked);
             // 
             // ViewFrontButton
             // 
             this.ViewFrontButton.Name = "ViewFrontButton";
-            this.ViewFrontButton.Size = new System.Drawing.Size(128, 22);
+            this.ViewFrontButton.Size = new System.Drawing.Size(126, 22);
             this.ViewFrontButton.Text = "$FRONT";
             this.ViewFrontButton.Click += new System.EventHandler(this.OnViewFrontButtonClicked);
             // 
@@ -441,7 +442,7 @@ namespace Mafia2Tool
             // 
             this.ViewSideButton.Enabled = false;
             this.ViewSideButton.Name = "ViewSideButton";
-            this.ViewSideButton.Size = new System.Drawing.Size(128, 22);
+            this.ViewSideButton.Size = new System.Drawing.Size(126, 22);
             this.ViewSideButton.Text = "$SIDE";
             this.ViewSideButton.Visible = false;
             this.ViewSideButton.Click += new System.EventHandler(this.OnViewSideButtonClicked);
@@ -450,7 +451,7 @@ namespace Mafia2Tool
             // 
             this.ViewBottomButton.Enabled = false;
             this.ViewBottomButton.Name = "ViewBottomButton";
-            this.ViewBottomButton.Size = new System.Drawing.Size(128, 22);
+            this.ViewBottomButton.Size = new System.Drawing.Size(126, 22);
             this.ViewBottomButton.Text = "$BOTTOM";
             this.ViewBottomButton.Visible = false;
             this.ViewBottomButton.Click += new System.EventHandler(this.OnViewBottomButtonClicked);
@@ -459,7 +460,7 @@ namespace Mafia2Tool
             // 
             this.ViewSide2Button.Enabled = false;
             this.ViewSide2Button.Name = "ViewSide2Button";
-            this.ViewSide2Button.Size = new System.Drawing.Size(128, 22);
+            this.ViewSide2Button.Size = new System.Drawing.Size(126, 22);
             this.ViewSide2Button.Text = "$SIDE 2";
             this.ViewSide2Button.Visible = false;
             this.ViewSide2Button.Click += new System.EventHandler(this.OnViewSide2ButtonClicked);
@@ -469,26 +470,34 @@ namespace Mafia2Tool
             this.OptionsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.OptionsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToggleWireframeButton,
-            this.ToggleCullingButton});
+            this.ToggleCullingButton,
+            this.EditLighting});
             this.OptionsButton.Image = ((System.Drawing.Image)(resources.GetObject("OptionsButton.Image")));
             this.OptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.OptionsButton.Name = "OptionsButton";
-            this.OptionsButton.Size = new System.Drawing.Size(76, 22);
+            this.OptionsButton.Size = new System.Drawing.Size(75, 22);
             this.OptionsButton.Text = "$OPTIONS";
             // 
             // ToggleWireframeButton
             // 
             this.ToggleWireframeButton.Name = "ToggleWireframeButton";
-            this.ToggleWireframeButton.Size = new System.Drawing.Size(193, 22);
+            this.ToggleWireframeButton.Size = new System.Drawing.Size(192, 22);
             this.ToggleWireframeButton.Text = "$TOGGLE_WIREFRAME";
             this.ToggleWireframeButton.Click += new System.EventHandler(this.FillModeButton_Click);
             // 
             // ToggleCullingButton
             // 
             this.ToggleCullingButton.Name = "ToggleCullingButton";
-            this.ToggleCullingButton.Size = new System.Drawing.Size(193, 22);
+            this.ToggleCullingButton.Size = new System.Drawing.Size(192, 22);
             this.ToggleCullingButton.Text = "$TOGGLE_CULLING";
             this.ToggleCullingButton.Click += new System.EventHandler(this.CullModeButton_Click);
+            // 
+            // EditLighting
+            // 
+            this.EditLighting.Name = "EditLighting";
+            this.EditLighting.Size = new System.Drawing.Size(192, 22);
+            this.EditLighting.Text = "$EDIT_LIGHTING";
+            this.EditLighting.Click += new System.EventHandler(this.EditLighting_Click);
             // 
             // WindowButton
             // 
@@ -506,21 +515,21 @@ namespace Mafia2Tool
             // SceneTreeButton
             // 
             this.SceneTreeButton.Name = "SceneTreeButton";
-            this.SceneTreeButton.Size = new System.Drawing.Size(199, 22);
+            this.SceneTreeButton.Size = new System.Drawing.Size(198, 22);
             this.SceneTreeButton.Text = "$VIEW_SCENE_TREE";
             this.SceneTreeButton.Click += new System.EventHandler(this.SceneTreeOnClicked);
             // 
             // ObjectPropertiesButton
             // 
             this.ObjectPropertiesButton.Name = "ObjectPropertiesButton";
-            this.ObjectPropertiesButton.Size = new System.Drawing.Size(199, 22);
+            this.ObjectPropertiesButton.Size = new System.Drawing.Size(198, 22);
             this.ObjectPropertiesButton.Text = "$VIEW_PROPERTY_GRID";
             this.ObjectPropertiesButton.Click += new System.EventHandler(this.PropertyGridOnClicked);
             // 
             // ViewOptionProperties
             // 
             this.ViewOptionProperties.Name = "ViewOptionProperties";
-            this.ViewOptionProperties.Size = new System.Drawing.Size(199, 22);
+            this.ViewOptionProperties.Size = new System.Drawing.Size(198, 22);
             this.ViewOptionProperties.Text = "$VIEW_OPTIONS";
             this.ViewOptionProperties.Click += new System.EventHandler(this.ViewOptionProperties_Click);
             // 
@@ -619,5 +628,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem ViewSide2Button;
         private System.Windows.Forms.ToolStripSplitButton CurrentModeButton;
         private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel1;
+        private System.Windows.Forms.ToolStripMenuItem EditLighting;
     }
 }

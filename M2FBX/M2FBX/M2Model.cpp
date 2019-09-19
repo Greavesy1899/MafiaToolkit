@@ -54,58 +54,30 @@ void ModelPart::SetHasDamage(bool b) {
 }
 
 void ModelPart::SetVertSize(int count) {
-	ModelPart::vertSize = count;
+	ModelPart::numVertices = count;
 }
 
-void ModelPart::SetVertices(std::vector<Point3> vertices, bool updateCount) {
+void ModelPart::SetVertices(Vertex* vertices, unsigned int count) {
 	ModelPart::vertices = vertices;
-
-	if(updateCount)
-		ModelPart::vertSize = vertices.size();
+	ModelPart::numVertices = count;
 }
 
-void ModelPart::SetNormals(std::vector<Point3> normals) {
-	ModelPart::normals = normals;
-}
-
-void ModelPart::SetTangents(std::vector<Point3> tangents) {
-	ModelPart::tangents = tangents;
-}
-
-void ModelPart::SetUV0s(std::vector<UVVert> uvs) {
-	ModelPart::uvs0 = uvs;
-}
-
-void ModelPart::SetUV1s(std::vector<UVVert> uvs) {
-	ModelPart::uvs1 = uvs;
-}
-
-void ModelPart::SetUV2s(std::vector<UVVert> uvs) {
-	ModelPart::uvs2 = uvs;
-}
-
-void ModelPart::SetUV7s(std::vector<UVVert> uvs) {
-	ModelPart::uvs7 = uvs;
-}
-
-void ModelPart::SetSubMeshes(SubMesh* subMeshes)
-{
+void ModelPart::SetSubMeshes(SubMesh* subMeshes, unsigned int count) {
 	this->submeshes = subMeshes;
+	this->numSubMeshes = count;
 }
 
 void ModelPart::SetSubMeshCount(int count) {
-	ModelPart::subMeshCount = count;
+	this->numSubMeshes = count;
 }
 
 void ModelPart::SetIndicesSize(int count) {
-	ModelPart::indicesSize = count;
+	this->numIndices = count;
 }
 
-void ModelPart::SetIndices(std::vector<Int3> indices, bool updateCount) {
-	ModelPart::indices = indices;
-
-	if (updateCount)
-		ModelPart::indicesSize = indices.size();
+void ModelPart::SetIndices(std::vector<Int3> indices, unsigned int count) {
+	this->indices = indices;
+	this->numIndices = count;
 }
 
 bool ModelPart::GetHasPositions() {
@@ -156,44 +128,20 @@ bool ModelPart::GetHasDamage() {
 	return ModelPart::hasDamageGroup;
 }
 
-int ModelPart::GetVertSize() {
-	return ModelPart::vertSize;
+uint ModelPart::GetVertSize() {
+	return this->numVertices;
 }
 
-std::vector<Point3> ModelPart::GetVertices() {
-	return ModelPart::vertices;
+Vertex* ModelPart::GetVertices() {
+	return this->vertices;
 }
 
-std::vector<Point3> ModelPart::GetNormals() {
-	return ModelPart::normals;
+uint ModelPart::GetSubMeshCount() {
+	return this->numSubMeshes;
 }
 
-std::vector<Point3> ModelPart::GetTangents() {
-	return ModelPart::tangents;
-}
-
-std::vector<UVVert> ModelPart::GetUV0s() {
-	return ModelPart::uvs0;
-}
-
-std::vector<UVVert> ModelPart::GetUV1s() {
-	return ModelPart::uvs1;
-}
-
-std::vector<UVVert> ModelPart::GetUV2s() {
-	return ModelPart::uvs2;
-}
-
-std::vector<UVVert> ModelPart::GetUV7s() {
-	return ModelPart::uvs7;
-}
-
-int ModelPart::GetSubMeshCount() {
-	return ModelPart::subMeshCount;
-}
-
-int ModelPart::GetIndicesSize() {
-	return ModelPart::indicesSize;
+uint ModelPart::GetIndicesSize() {
+	return this->numIndices;
 }
 
 SubMesh* ModelPart::GetSubMeshes() const
@@ -202,7 +150,7 @@ SubMesh* ModelPart::GetSubMeshes() const
 }
 
 std::vector<Int3> ModelPart::GetIndices() {
-	return ModelPart::indices;
+	return this->indices;
 }
 
 void ModelPart::ReadFromStream(FILE * stream) {
@@ -218,55 +166,39 @@ void ModelPart::ReadFromStream(FILE * stream) {
 	fread(&hasFlag0x20000, sizeof(bool), 1, stream);
 	fread(&hasFlag0x40000, sizeof(bool), 1, stream);
 	fread(&hasDamageGroup, sizeof(bool), 1, stream);
-	fread(&vertSize, sizeof(int), 1, stream);
-	vertices = std::vector<Point3>(vertSize);
+	fread(&numVertices, sizeof(int), 1, stream);
+	vertices = new Vertex[numVertices];
+	indices = std::vector<Int3>();
 
-	if(hasNormals)
-		normals = std::vector<Point3>(vertSize);
-
-	if(hasTangents)
-		tangents = std::vector<Point3>(vertSize);
-
-	if(hasUV0)
-		uvs0 = std::vector<UVVert>(vertSize);
-
-	if(hasUV1)
-		uvs1 = std::vector<UVVert>(vertSize);
-
-	if (hasUV2)
-		uvs2 = std::vector<UVVert>(vertSize);
-
-	if (hasUV7)
-		uvs7 = std::vector<UVVert>(vertSize);
-
-	for (int i = 0; i != vertSize; i++) {
+	for (uint i = 0; i < numVertices; i++) {
+		Vertex vertex;
 		if (hasPosition) {
-			fread(&vertices[i], sizeof(Point3), 1, stream);
+			fread(&vertex.position, sizeof(Point3), 1, stream);
 		}
 		if (hasNormals) {
-			fread(&normals[i], sizeof(Point3), 1, stream);
+			fread(&vertex.normals, sizeof(Point3), 1, stream);
 		}
 		if (hasTangents) {
-			fread(&tangents[i], sizeof(Point3), 1, stream);
+			fread(&vertex.tangent, sizeof(Point3), 1, stream);
 		}
 		if (hasUV0) {
-			fread(&uvs0[i], sizeof(UVVert), 1, stream);
+			fread(&vertex.uv0, sizeof(UVVert), 1, stream);
 		}
 		if (hasUV1) {
-			fread(&uvs1[i], sizeof(UVVert), 1, stream);
+			fread(&vertex.uv1, sizeof(UVVert), 1, stream);
 		}
 		if (hasUV2) {
-			fread(&uvs2[i], sizeof(UVVert), 1, stream);
+			fread(&vertex.uv2, sizeof(UVVert), 1, stream);
 		}
 		if (hasUV7) {
-			fread(&uvs7[i], sizeof(UVVert), 1, stream);
+			fread(&vertex.uv3, sizeof(UVVert), 1, stream);
 		}
+		vertices[i] = vertex;
 	}
-	fread(&subMeshCount, sizeof(int), 1, stream);
-	long pos = ftell(stream);
-	this->submeshes = new SubMesh[subMeshCount];
+	fread(&numSubMeshes, sizeof(int), 1, stream);
+	this->submeshes = new SubMesh[numSubMeshes];
 
-	for (int i = 0; i != subMeshCount; i++) {
+	for (uint i = 0; i < this->numSubMeshes; i++) {
 		SubMesh subMesh = SubMesh();
 		std::string name = std::string();
 		int startIndex, numFaces;
@@ -279,11 +211,11 @@ void ModelPart::ReadFromStream(FILE * stream) {
 		subMesh.SetNumFaces(numFaces);
 		this->submeshes[i] = subMesh;
 	}
-	fread(&indicesSize, sizeof(int), 1, stream);
-	for (int x = 0; x != indicesSize/3; x++) {
+	fread(&numIndices, sizeof(int), 1, stream);
+	for (int x = 0; x != numIndices/3; x++) {
 		Int3 tri;
 		fread(&tri, sizeof(Int3), 1, stream);
-		indices.push_back(tri);
+		this->indices.push_back(tri);
 	}
 }
 
@@ -300,33 +232,33 @@ void ModelPart::WriteToStream(FILE * stream) {
 	fwrite(&hasFlag0x20000, sizeof(bool), 1, stream);
 	fwrite(&hasFlag0x40000, sizeof(bool), 1, stream);
 	fwrite(&hasDamageGroup, sizeof(bool), 1, stream);
-	fwrite(&vertSize, sizeof(int), 1, stream);
+	fwrite(&numVertices, sizeof(int), 1, stream);
 
-	for (int i = 0; i != vertSize; i++) {
+	for (uint i = 0; i < numVertices; i++) {
 		if (hasPosition) {
-			fwrite(&vertices[i], sizeof(Point3), 1, stream);
+			fwrite(&this->vertices[i].position, sizeof(Point3), 1, stream);
 		}
 		if (hasNormals) {
-			fwrite(&normals[i], sizeof(Point3), 1, stream);
+			fwrite(&this->vertices[i].normals, sizeof(Point3), 1, stream);
 		}
 		if (hasTangents) {
-			fwrite(&tangents[i], sizeof(Point3), 1, stream);
+			fwrite(&this->vertices[i].tangent, sizeof(Point3), 1, stream);
 		}
 		if (hasUV0) {
-			fwrite(&uvs0[i], sizeof(UVVert), 1, stream);
+			fwrite(&this->vertices[i].uv0, sizeof(UVVert), 1, stream);
 		}
 		if (hasUV1) {
-			fwrite(&uvs1[i], sizeof(UVVert), 1, stream);
+			fwrite(&this->vertices[i].uv1, sizeof(UVVert), 1, stream);
 		}
 		if (hasUV2) {
-			fwrite(&uvs2[i], sizeof(UVVert), 1, stream);
+			fwrite(&this->vertices[i].uv2, sizeof(UVVert), 1, stream);
 		}
 		if (hasUV7) {
-			fwrite(&uvs7[i], sizeof(UVVert), 1, stream);
+			fwrite(&this->vertices[i].uv3, sizeof(UVVert), 1, stream);
 		}
 	}
-	fwrite(&subMeshCount, sizeof(int), 1, stream);
-	for (int i = 0; i != subMeshCount; i++) {
+	fwrite(&numSubMeshes, sizeof(int), 1, stream);
+	for (uint i = 0; i < numSubMeshes; i++) {
 		SubMesh subMesh = this->submeshes[i];
 		WriteString(stream, subMesh.GetMatName());
 		int startIndex = subMesh.GetStartIndex();
@@ -334,9 +266,9 @@ void ModelPart::WriteToStream(FILE * stream) {
 		fwrite(&startIndex, sizeof(int), 1, stream);
 		fwrite(&numFaces, sizeof(int), 1, stream);
 	}
-	int indMult = indicesSize * 3;
+	int indMult = numIndices * 3;
 	fwrite(&indMult, sizeof(int), 1, stream);
-	for (int i = 0; i != indices.size(); i++) {
+	for (uint i = 0; i < numIndices; i++) {
 		fwrite(&indices[i], sizeof(Int3), 1, stream);
 	}
 }
@@ -344,7 +276,6 @@ void ModelPart::WriteToStream(FILE * stream) {
 ModelPart::ModelPart() {}
 ModelPart::~ModelPart() 
 {
-	//delete[] this->submeshes;
 }
 
 //===================================================
@@ -410,7 +341,6 @@ void ModelStructure::WriteToStream(FILE * stream) {
 ModelStructure::ModelStructure() {}
 ModelStructure::~ModelStructure()
 {
-	//delete[] this->parts;
 }
 
 void SubMesh::SetStartIndex(int& value)
