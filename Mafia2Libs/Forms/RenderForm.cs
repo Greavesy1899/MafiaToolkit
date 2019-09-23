@@ -568,6 +568,24 @@ namespace Mafia2Tool
             return frameBBox;
         }
 
+        private RenderStaticCollision BuildRenderItemDesc(ulong refID)
+        {
+            foreach(var itemDesc in SceneData.ItemDescs)
+            {
+                if(itemDesc.frameRef == refID)
+                {
+                    if (itemDesc.colType == ResourceTypes.ItemDesc.CollisionTypes.Convex)
+                    {
+                        RenderStaticCollision iDesc = new RenderStaticCollision();
+                        iDesc.SetTransform(itemDesc.Matrix.Position, itemDesc.Matrix.Matrix);
+                        iDesc.ConvertCollisionToRender((ResourceTypes.ItemDesc.CollisionConvex)itemDesc.collision);
+                        return iDesc;
+                    }
+                }
+            }
+            return null;
+        }
+
         private RenderModel BuildRenderModel(FrameObjectSingleMesh mesh)
         {
             if (mesh.MaterialIndex == -1 && mesh.MeshIndex == -1)
@@ -633,6 +651,14 @@ namespace Mafia2Tool
                     {
                         FrameObjectFrame frame = (fObject as FrameObjectFrame);
                         assets.Add(fObject.RefID, BuildRenderBounds(frame));
+                    }
+
+                    if(fObject.GetType() == typeof(FrameObjectCollision))
+                    {
+                        FrameObjectCollision frame = (fObject as FrameObjectCollision);
+                        var mesh = BuildRenderItemDesc(frame.Hash);
+                        if(mesh != null)
+                            assets.Add(fObject.RefID, mesh);
                     }
                 }
             }

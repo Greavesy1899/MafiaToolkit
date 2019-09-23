@@ -279,6 +279,7 @@ namespace ResourceTypes.Collisions
             {
                 writer.Write(hash);
 
+                //only 32bit indices are supported i think.
                 if (data.Flags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES))
                     data.Flags -= MeshSerialFlags.MSF_8BIT_INDICES;
                 if (data.Flags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))

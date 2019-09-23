@@ -6,6 +6,7 @@ using Utils.Lang;
 using System.Threading.Tasks;
 using ResourceTypes.Navigation;
 using ResourceTypes.EntityDataStorage;
+using ResourceTypes.ItemDesc;
 
 namespace Mafia2Tool
 {
@@ -22,6 +23,9 @@ namespace Mafia2Tool
             //entityDataStorageLoader.ReadFromFile("EntityDataStorage_16.eds", false);
             //Log.DeleteOldLog();
             //Log.CreateFile();
+
+            //ItemDescLoader descLoader = new ItemDescLoader("ItemDesc_25.ids");
+            //descLoader.OverwriteConvexWithCooked("cooked.bin");
 
             ////do vital inits;
             CheckINIExists();
