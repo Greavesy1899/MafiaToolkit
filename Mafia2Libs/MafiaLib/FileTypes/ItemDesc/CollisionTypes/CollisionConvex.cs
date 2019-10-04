@@ -241,7 +241,7 @@ namespace ResourceTypes.ItemDesc
             for (int i = 0; i < 24; i++)
                 unkTailFloats[i] = reader.ReadSingle();
 
-            CookConvexCollision();
+            //CookConvexCollision();
         }
 
         public void CookConvexCollision()

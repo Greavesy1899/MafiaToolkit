@@ -100,8 +100,8 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 	FbxNode* lLodNode = FbxNode::Create(pManager, model.GetName().c_str());
 	std::string nodeName = model.GetName();
 	nodeName += "_LODNODE";
-	FbxLODGroup* lLodGroup = FbxLODGroup::Create(pManager, nodeName.c_str());
-	lLodNode->SetNodeAttribute(lLodGroup);
+	//FbxLODGroup* lLodGroup = FbxLODGroup::Create(pManager, nodeName.c_str());
+	//lLodNode->SetNodeAttribute(lLodGroup);
 	for (int i = 0; i < model.GetPartSize(); i++)
 	{
 		std::string name = "LOD";

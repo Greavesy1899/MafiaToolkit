@@ -13,11 +13,6 @@ cbuffer LightBuffer
 	float4 specularColor;
 };
 
-cbuffer ShaderParams
-{
-    int EnableTexture;
-};
-
 cbuffer Shader_601151254Params
 {
     float4 C002MaterialColour;
@@ -60,7 +55,7 @@ void CalculateFromNormalMap(VS_OUTPUT input)
 	float3x3 texSpace = float3x3(input.Tangent, biTangent, input.Normal);
 
 	//Convert normal from normal map to texture space and store in input.normal
-	input.Normal = normalize(mul(normalMap, texSpace));
+	input.Normal = normalize(mul(normalMap.xyz, texSpace));
 }
 
 float4 CalculateColor(VS_OUTPUT input, float4 color)

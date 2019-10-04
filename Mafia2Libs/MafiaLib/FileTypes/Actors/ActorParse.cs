@@ -25,6 +25,7 @@ namespace ResourceTypes.Actors
         int unk14;
         int unk13;
         ActorExtraData[] extraData;
+        string fileName;
 
         public ActorDefinition[] Definitions {
             get { return definitions; }
@@ -39,6 +40,7 @@ namespace ResourceTypes.Actors
 
         public Actor(string file)
         {
+            fileName = file;
             using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
             {
                 ReadFromFile(reader);
@@ -146,6 +148,14 @@ namespace ResourceTypes.Actors
 
             //if (unk16 != 0)
             //    throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
+        }
+
+        public void WriteToFile()
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Open)))
+            {
+                WriteToFile(writer);
+            }
         }
 
         public void WriteToFile(BinaryWriter writer)

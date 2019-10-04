@@ -878,7 +878,7 @@ namespace ResourceTypes.Actors
     public class ActorSoundEntity : IActorExtraDataInterface
     {
         ActorSoundEntityBehaviourFlags behFlags;
-        int type;
+        int audioType;
         int behaviourType;
         float volume;
         float pitch;
@@ -913,9 +913,9 @@ namespace ResourceTypes.Actors
             get { return behFlags; }
             set { behFlags = value; }
         }
-        public int Type {
-            get { return type; }
-            set { type = value; }
+        public int AudioType {
+            get { return audioType; }
+            set { audioType = value; }
         }
         public int BehaviourType {
             get { return behaviourType; }
@@ -933,54 +933,67 @@ namespace ResourceTypes.Actors
             get { return file; }
             set { file = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomGroupPauseMax {
             get { return randomGroupPauseMax; }
             set { randomGroupPauseMax = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomGroupPauseMin {
             get { return randomGroupPauseMin; }
             set { randomGroupPauseMin = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPauseMin {
             get { return randomPauseMin; }
             set { randomPauseMin = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPauseMax {
             get { return randomPauseMax; }
             set { randomPauseMax = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public int RandomGroupSoundsMax {
             get { return randomGroupSoundsMax; }
             set { randomGroupSoundsMax = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public int RandomGroupSoundsMin {
             get { return randomGroupSoundsMin; }
             set { randomGroupSoundsMin = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomVolumeMin {
             get { return randomVolumeMin; }
             set { randomVolumeMin = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomVolumeMax {
             get { return randomVolumeMax; }
             set { randomVolumeMax = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPitchMin {
             get { return randomPitchMin; }
             set { randomPitchMin = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPitchMax {
             get { return randomPitchMax; }
             set { randomPitchMax = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPosRangeX {
             get { return randomPosRangeX; }
             set { randomPosRangeX = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPosRangeY {
             get { return randomPosRangeY; }
             set { randomPosRangeY = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPosRangeZ {
             get { return randomPosRangeZ; }
             set { randomPosRangeZ = value; }
@@ -995,30 +1008,37 @@ namespace ResourceTypes.Actors
             get { return randomWaves; }
             set { randomWaves = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is 15 or above.")]
         public float Near {
             get { return near; }
             set { near = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is 15 or above.")]
         public float Far {
             get { return far; }
             set { far = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is 15 or above.")]
         public float MonoDistance {
             get { return monoDistance; }
             set { monoDistance = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is 20 or above.")]
         public int CurveID {
             get { return curveID; }
             set { curveID = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is 30 or above.")]
         public float InnerAngle {
             get { return innerAngle; }
             set { innerAngle = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is 30 or above.")]
         public float OuterAngle {
             get { return outerAngle; }
             set { outerAngle = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is  30 or above.")]
         public float OuterVolume {
             get { return outerVolume; }
             set { outerVolume = value; }
@@ -1037,7 +1057,7 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             behFlags = (ActorSoundEntityBehaviourFlags)reader.ReadInt32(isBigEndian);
-            type = reader.ReadInt32(isBigEndian);
+            audioType = reader.ReadInt32(isBigEndian);
             behaviourType = reader.ReadInt32(isBigEndian);
             volume = reader.ReadSingle(isBigEndian);
             pitch = reader.ReadSingle(isBigEndian);
@@ -1073,7 +1093,7 @@ namespace ResourceTypes.Actors
             }
             reader.Seek(100, SeekOrigin.Begin);
             reader.ReadInt32(isBigEndian);
-            switch (type)
+            switch (audioType)
             {
                 case 20:
                     near = reader.ReadSingle(isBigEndian);
@@ -1107,7 +1127,7 @@ namespace ResourceTypes.Actors
             writer.Write(new byte[592]);
             writer.Seek(0, SeekOrigin.Begin);
             writer.Write((int)behFlags, isBigEndian);
-            writer.Write(type, isBigEndian);
+            writer.Write(audioType, isBigEndian);
             writer.Write(behaviourType, isBigEndian);
             writer.Write(volume, isBigEndian);
             writer.Write(pitch, isBigEndian);
@@ -1139,7 +1159,7 @@ namespace ResourceTypes.Actors
             }
             writer.Seek(100, SeekOrigin.Begin);
             writer.Write(0, isBigEndian);
-            switch (type)
+            switch (audioType)
             {
                 case 20:
                     writer.Write(near, isBigEndian);

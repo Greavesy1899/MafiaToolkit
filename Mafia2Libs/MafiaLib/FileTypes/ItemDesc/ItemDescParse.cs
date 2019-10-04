@@ -23,7 +23,7 @@ namespace ResourceTypes.ItemDesc
             {
                 ReadFromFile(reader);
             }
-            OverwriteConvexWithCooked("cooked.bin", fileName);
+            //OverwriteConvexWithCooked("cooked.bin", fileName);
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -45,7 +45,7 @@ namespace ResourceTypes.ItemDesc
             else if (colType == CollisionTypes.Convex)
                 collision = new CollisionConvex(reader);
             else
-                throw new Exception("Unsupported colType: " + colType);
+                Log.WriteLine("Failed to parse collision type " + colType, LoggingTypes.WARNING, LogCategoryTypes.FUNCTION);
         }
 
         public void OverwriteConvexWithCooked(string cookedName, string output)

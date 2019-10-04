@@ -207,12 +207,15 @@ namespace Forms.Docking
         void MatViewerPanel_WasClicked(object sender, EventArgs e)
         {
             // Set IsSelected for all UCs in the FlowLayoutPanel to false. 
+            MatBrowser browser = null;
             foreach (var c in MatViewPanel.Controls)
             {
                 if (c is TextureEntry)
                 {
+                    if(((TextureEntry)c).IsSelected)
+                        browser = new MatBrowser();
+
                     ((TextureEntry)c).IsSelected = false;
-                    MatBrowser browser = new MatBrowser();
                 }
             }
         }

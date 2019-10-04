@@ -65,8 +65,6 @@ namespace Mafia2Tool
             if (MaterialsManager.MTLs.Count == 0)
                 MessageBox.Show("No material libraries have loaded, make sure they are set up correctly in the options window!", "Warning!", MessageBoxButtons.OK);
 
-            TypeDescriptor.AddAttributes(typeof(Vector3), new TypeConverterAttribute(typeof(Vector3Converter)));
-            TypeDescriptor.AddAttributes(typeof(Vector4), new TypeConverterAttribute(typeof(Vector4Converter)));
             ToolkitSettings.UpdateRichPresence(string.Format("Editing '{0}'", info.Directory.Name));
             SceneData.ScenePath = info.DirectoryName;
             fileLocation = info;
@@ -132,11 +130,12 @@ namespace Mafia2Tool
 
         private void ExportFrame_Click(object sender, EventArgs e)
         {
-            if(dSceneTree.treeView1.SelectedNode != null)
+            var node = dSceneTree.treeView1.SelectedNode;
+            if (node != null)
             {
-                if(dSceneTree.treeView1.SelectedNode.Tag != null)
+                if(node.Tag != null)
                 {
-                    SaveFrame(dSceneTree.treeView1.SelectedNode.Tag);
+                    SaveFrame(node.Tag);
                 }
             }        
         }
@@ -257,6 +256,7 @@ namespace Mafia2Tool
                     selectTimer = 1.0f;
                 }
 
+                Graphics.Camera.SetProjectionMatrix(RenderPanel.Width, RenderPanel.Height);
                 Ray ray = Graphics.Camera.GetPickingRay(new Vector2(mousePos.X, mousePos.Y), new Vector2(RenderPanel.Size.Width, RenderPanel.Size.Height));
 
                 float multiplier = ToolkitSettings.CameraSpeed;
@@ -838,56 +838,12 @@ namespace Mafia2Tool
                 dSceneTree.AddToTree(node);
                 collisionRoot.Collapse(false);
             }
-            //if (SceneData.ATLoader != null && SceneData.ATLoader.paths != null && ToolkitSettings.Experimental)
-            //{
-            //    TreeNode node = new TreeNode("Animal Traffic");
-            //    animalTrafficRoot = node;
-            //    for (int i = 0; i != SceneData.ATLoader.paths.Length; i++)
-            //    {
-            //        AnimalTrafficLoader.AnimalTrafficPath path = SceneData.ATLoader.paths[i];
-            //        RenderATP atp = new RenderATP();
-            //        atp.Init(path);
-
-            //        int refID = StringHelpers.RandomGenerator.Next();
-            //        TreeNode child = new TreeNode("Path: " + i);
-            //        child.Name = refID.ToString();
-            //        child.Text = "Path: " + i;
-            //        child.Tag = atp;
-            //        animalTrafficRoot.Nodes.Add(child);
-            //        assets.Add(refID, atp);
-            //    }
-            //    dSceneTree.AddToTree(animalTrafficRoot);
-            //}
-
-            //if (SceneData.OBJData.Length > 0 && ToolkitSettings.Experimental)
-            //{
-            //    foreach (var data in SceneData.OBJData)
-            //    {
-            //        var objData = (data.data as OBJData);
-
-            //        for (int i = 0; i != objData.vertices.Length; i++)
-            //        {
-            //            var nodeData = objData.vertices[i];
-            //            RenderBoundingBox box = new RenderBoundingBox();
-            //            box.Init(new BoundingBox(new Vector3(-1.0f), new Vector3(1.0f)));
-            //            box.SetTransform(nodeData.position, new Matrix33());
-            //            assets.Add(StringHelpers.RandomGenerator.Next(), box);
-
-            //            if (nodeData.unk5 > 0)
-            //            {
-            //                RenderLine line = new RenderLine();
-            //                line.Init(new Vector3[2] { nodeData.position, objData.vertices[nodeData.unk5].position });
-            //                assets.Add(StringHelpers.RandomGenerator.Next(), line);
-            //            }
-            //        }
-            //    }
-            //}
-
             if (SceneData.Actors.Length > 0 && ToolkitSettings.Experimental)
             {
                 actorRoot = new TreeNode("Actor Items");
                 for (int z = 0; z < SceneData.Actors.Length; z++)
                 {
+                    bool modified = false;
                     ResourceTypes.Actors.Actor actor = SceneData.Actors[z];
                     for (int c = 0; c != actor.Items.Length; c++)
                     {
@@ -912,28 +868,52 @@ namespace Mafia2Tool
                         }
                     }
 
-
+                    //TreeNode defNode = new TreeNode("Definitions");
+                    //actorRoot.Nodes.Add(defNode);
                     for (int i = 0; i != actor.Definitions.Length; i++)
                     {
-                        bool sorted = false;
+                        FrameObjectFrame frame = null;
+                        //TreeNode def = new TreeNode();
+                        //def.Name = actor.Definitions[i].name;
+                        //def.Text = actor.Definitions[i].name+i;
+                        //def.Tag = actor.Definitions[i];
+                        //defNode.Nodes.Add(def);
 
                         for (int c = 0; c != actor.Items.Length; c++)
                         {
                             if (actor.Definitions[i].Hash == actor.Items[c].FrameNameHash)
                             {
-                                FrameObjectFrame frame = (SceneData.FrameResource.FrameObjects.ElementAt(actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
-                                if (frame != null)
+                                frame = (SceneData.FrameResource.FrameObjects.ElementAt(actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
+                                if (frame == null)
+                                {
+                                    for (int x = 0; x < SceneData.FrameResource.FrameObjects.Count; x++)
+                                    {
+                                        var obj = (SceneData.FrameResource.FrameObjects.ElementAt(x).Value as FrameObjectBase);
+                                        if (obj.GetType() == typeof(FrameObjectFrame))
+                                        {
+                                            var nFrame = (obj as FrameObjectFrame);
+                                            if (nFrame.ActorHash.uHash == actor.Items[c].FrameNameHash)
+                                            {
+                                                actor.Definitions[i].FrameIndex = x;
+                                                frame = nFrame;
+                                                modified = true;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if(frame != null)
                                 {
                                     frame.Item = actor.Items[c];
                                     frame.Matrix.SetRotationMatrix(actor.Items[c].Rotation);
                                     frame.Matrix.Scale = actor.Items[c].Scale;
                                     frame.Matrix.Position = actor.Items[c].Position;
-                                    sorted = true;
                                 }
                             }
                         }
-                        //Console.WriteLine("Sorted: {0}", sorted);
                     }
+
+                    if (modified) actor.WriteToFile();
                 }
                 dSceneTree.AddToTree(actorRoot);
             }
@@ -1209,7 +1189,7 @@ namespace Mafia2Tool
                         float t;
 
                         if (!localRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-                        System.Diagnostics.Debug.Assert(t > 0f);
+                        Debug.Assert(t > 0f);
 
                         var worldPosition = ray.Position + t * ray.Direction;
                         var distance = (worldPosition - ray.Position).LengthSquared();
@@ -1237,7 +1217,7 @@ namespace Mafia2Tool
                         float t;
 
                         if (!localRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-                        System.Diagnostics.Debug.Assert(t > 0f);
+                        Debug.Assert(t > 0f);
 
                         var worldPosition = ray.Position + t * ray.Direction;
                         var distance = (worldPosition - ray.Position).LengthSquared();

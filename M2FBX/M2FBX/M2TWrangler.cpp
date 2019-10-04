@@ -136,7 +136,6 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 
 	//begin getting triangles
 	std::vector<Int3> indices = std::vector<Int3>();
-	std::vector<short> matIDs = std::vector<short>();
 
 	auto matCount = pNode->GetMaterialCount() == 0 ? 1 : pNode->GetMaterialCount();
 	SubMesh* subMeshes = new SubMesh[matCount];
@@ -184,7 +183,6 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		{
 			segments[0].push_back(triangle);
 		}
-		matIDs.push_back(0);
 	}
 
 	for (size_t i = 0; i != matCount; i++)
