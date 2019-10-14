@@ -85,6 +85,7 @@ namespace ResourceTypes.Collisions.Opcode
             serialFlags = (MeshSerialFlags)ReadDword(reader, platformMismatch);
             convexEdgeThreshold = ReadFloat(reader, platformMismatch);
             heightFieldVerticalAxis = ReadDword(reader, platformMismatch);
+            heightFieldVerticalExtent = ReadFloat(reader, platformMismatch);
             numVertices = ReadDword(reader, platformMismatch);
             numTriangles = ReadDword(reader, platformMismatch);
 

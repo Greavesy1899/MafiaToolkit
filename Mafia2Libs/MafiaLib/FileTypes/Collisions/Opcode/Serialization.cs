@@ -30,6 +30,16 @@ namespace ResourceTypes.Collisions.Opcode
             return value;
         }
 
+        public static short ReadShort(BinaryReader reader, bool endianMismatch = false)
+        {
+            short value = reader.ReadInt16();
+            if (endianMismatch)
+            {
+                value = value.Swap();
+            }
+            return value;
+        }
+
         public static float ReadFloat(BinaryReader reader, bool endianMismatch = false)
         {
             float value = reader.ReadSingle();
@@ -72,7 +82,6 @@ namespace ResourceTypes.Collisions.Opcode
             c = Convert.ToChar(reader.ReadByte());
             d = Convert.ToBoolean(reader.ReadByte());
         }
-
 
         public static IList<uint> ReadIndices(uint maxIndex, uint numIndices,  BinaryReader reader, bool endianMismatch = false)
         {
