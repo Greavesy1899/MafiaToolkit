@@ -277,6 +277,7 @@
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Model.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\OpcodeException.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Serialization.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Trees.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\TriangleMesh.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\CutsceneTypes.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameNameTable\FrameNameTableEnums.cs" />

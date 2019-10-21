@@ -1,10 +1,6 @@
 ﻿using SharpDX;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static ResourceTypes.Collisions.Opcode.SerializationUtils;
 
 namespace ResourceTypes.Collisions.Opcode
@@ -12,6 +8,8 @@ namespace ResourceTypes.Collisions.Opcode
     interface AABBOptimizedTree
     {
         void Load(BinaryReader reader, bool endianMismatch = false);
+        void Save(BinaryWriter writer, bool endianMismatch = false);
+        uint GetUsedBytes();
     }
 
     class DummyTree : AABBOptimizedTree
@@ -19,6 +17,16 @@ namespace ResourceTypes.Collisions.Opcode
         public void Load(BinaryReader reader, bool endianMismatch = false)
         {
             // do nothing
+        }
+
+        public void Save(BinaryWriter writer, bool endianMismatch = false)
+        {
+            // do nothing
+        }
+
+        public uint GetUsedBytes()
+        {
+            return 0;
         }
     }
 
@@ -34,9 +42,9 @@ namespace ResourceTypes.Collisions.Opcode
 
     struct AABBQuantizedNoLeafNode
     {
-        QuantizedAABB aabb;
-        uint posData;
-        uint negData;
+        public QuantizedAABB aabb;
+        public uint posData;
+        public uint negData;
 
         public AABBQuantizedNoLeafNode(QuantizedAABB aabb, uint posData, uint negData)
         {
@@ -79,5 +87,38 @@ namespace ResourceTypes.Collisions.Opcode
             extentsCoeff.Y = ReadFloat(reader, endianMismatch);
             extentsCoeff.Z = ReadFloat(reader, endianMismatch);
         }
+
+        public void Save(BinaryWriter writer, bool endianMismatch = false)
+        {
+            WriteDword((uint)nodes.Count, writer, endianMismatch);
+
+            foreach(AABBQuantizedNoLeafNode node in nodes)
+            {
+                WriteShort(node.aabb.centerX, writer, endianMismatch);
+                WriteShort(node.aabb.centerY, writer, endianMismatch);
+                WriteShort(node.aabb.centerZ, writer, endianMismatch);
+                WriteWord(node.aabb.extentsX, writer, endianMismatch);
+                WriteWord(node.aabb.extentsY, writer, endianMismatch);
+                WriteWord(node.aabb.extentsZ, writer, endianMismatch);
+                WriteDword(node.posData, writer, endianMismatch);
+                WriteDword(node.negData, writer, endianMismatch);
+            }
+
+            WriteFloat(centerCoeff.X, writer, endianMismatch);
+            WriteFloat(centerCoeff.Y, writer, endianMismatch);
+            WriteFloat(centerCoeff.Z, writer, endianMismatch);
+            WriteFloat(extentsCoeff.X, writer, endianMismatch);
+            WriteFloat(extentsCoeff.Y, writer, endianMismatch);
+            WriteFloat(extentsCoeff.Z, writer, endianMismatch);
+        }
+
+        public uint GetUsedBytes()
+        {
+            return 4 // numNodes
+                + (uint)nodes.Count * 20 // nodes
+                + 12  // centerCoeff
+                + 12; // extentsCoeff
+        }
+
     };
 }
