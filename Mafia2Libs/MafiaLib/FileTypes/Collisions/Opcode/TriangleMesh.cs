@@ -21,6 +21,18 @@ namespace ResourceTypes.Collisions.Opcode
             // ReSharper restore InconsistentNaming
         }
 
+        /// <summary>Specifies which axis is the "up" direction for a heightfield.</summary>
+        enum NxHeightFieldAxis : uint
+        {
+            // ReSharper disable InconsistentNaming
+            NX_X = 0, //!< X Axis
+            NX_Y = 1, //!< Y Axis
+            NX_Z = 2, //!< Z Axis
+            NX_NOT_HEIGHTFIELD = 0xff //!< Not a heightfield
+            // ReSharper restore InconsistentNaming
+        };
+
+        /// <summary>Structure used to store indices for a triangles points.</summary>
         struct Triangle
         {
             public uint v0;
@@ -38,8 +50,8 @@ namespace ResourceTypes.Collisions.Opcode
         private const uint SUPPORTED_MESH_VERSION = 1;
 
         private MeshSerialFlags serialFlags;
-        private float convexEdgeThreshold;
-        private uint heightFieldVerticalAxis; // TODO: make enum
+        private float convexEdgeThreshold = 0.001f;
+        private NxHeightFieldAxis heightFieldVerticalAxis = NxHeightFieldAxis.NX_NOT_HEIGHTFIELD;
         private float heightFieldVerticalExtent;
         private uint numVertices; // TODO: remove and use vertices.Count ?
         private uint numTriangles; // TODO: remove and use triangles.Count ?
@@ -85,7 +97,7 @@ namespace ResourceTypes.Collisions.Opcode
 
             serialFlags = (MeshSerialFlags)ReadDword(reader, platformMismatch);
             convexEdgeThreshold = ReadFloat(reader, platformMismatch);
-            heightFieldVerticalAxis = ReadDword(reader, platformMismatch);
+            heightFieldVerticalAxis = (NxHeightFieldAxis) ReadDword(reader, platformMismatch);
             heightFieldVerticalExtent = ReadFloat(reader, platformMismatch);
             numVertices = ReadDword(reader, platformMismatch);
             numTriangles = ReadDword(reader, platformMismatch);
@@ -330,9 +342,9 @@ namespace ResourceTypes.Collisions.Opcode
 
             WriteHeader('M', 'E', 'S', 'H', SUPPORTED_MESH_VERSION, isLittleEndian, writer);
 
-            WriteDword((uint)serialFlags, writer, platformMismatch);
+            WriteDword((uint) serialFlags, writer, platformMismatch);
             WriteFloat(convexEdgeThreshold, writer, platformMismatch);
-            WriteDword(heightFieldVerticalAxis, writer, platformMismatch);
+            WriteDword((uint) heightFieldVerticalAxis, writer, platformMismatch);
             WriteFloat(heightFieldVerticalExtent, writer, platformMismatch);
 
             WriteDword(numVertices, writer, platformMismatch);
