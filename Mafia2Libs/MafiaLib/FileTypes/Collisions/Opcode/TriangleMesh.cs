@@ -520,7 +520,7 @@ namespace ResourceTypes.Collisions.Opcode
                 + numVertices * 12 // vertices
                 + numTriangles * triangleStride // triangles
                 + (serialFlags.HasFlag(MeshSerialFlags.MSF_MATERIALS) ? numTriangles * 2 : 0) // material indices
-                + (serialFlags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP) ? GetUsesBytesByIndices(remapIndices) : 0) // remap indices
+                + (serialFlags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP) ? GetUsedBytesByIndices(remapIndices) : 0) // remap indices
                 + 4 // numConvexParts
                 + 4 // numFlatParts
                 + (numConvexParts > 0 ? ((uint)convexParts.Count) * 2 : 0) // convexParts

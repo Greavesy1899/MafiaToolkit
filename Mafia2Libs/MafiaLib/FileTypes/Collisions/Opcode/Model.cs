@@ -190,7 +190,7 @@ namespace ResourceTypes.Collisions.Opcode
                 + 4 // magic + endian flag
                 + 4 // version
                 + 4 // numLeaves
-                + (numLeaves > 1 ? GetUsesBytesByIndices(leafTriangles.Select(lt => (uint)lt).ToList()) : 0) // leafTriangles
+                + (numLeaves > 1 ? GetUsedBytesByIndices(leafTriangles.Select(lt => (uint)lt).ToList()) : 0) // leafTriangles
                 + 4 // numPrimitives
                 ; // TODO: primitives
         }

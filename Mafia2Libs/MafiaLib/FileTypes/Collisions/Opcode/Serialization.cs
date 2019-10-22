@@ -212,7 +212,7 @@ namespace ResourceTypes.Collisions.Opcode
             }
         }
 
-        public static uint GetUsesBytesByIndices(IList<uint> indices)
+        public static uint GetUsedBytesByIndices(IList<uint> indices)
         {
             uint maxIndex = indices.Max();
             uint indexStride;
