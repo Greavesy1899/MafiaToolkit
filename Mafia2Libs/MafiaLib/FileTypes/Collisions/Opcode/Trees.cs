@@ -35,9 +35,9 @@ namespace ResourceTypes.Collisions.Opcode
         public short centerX; //!< Quantized center
         public short centerY; //!< Quantized center
         public short centerZ; //!< Quantized center
-        public ushort extentsX;  //!< Quantized extents
-        public ushort extentsY;  //!< Quantized extents
-        public ushort extentsZ;  //!< Quantized extents
+        public ushort extentsX; //!< Quantized extents
+        public ushort extentsY; //!< Quantized extents
+        public ushort extentsZ; //!< Quantized extents
     }
 
     struct AABBQuantizedNoLeafNode
@@ -63,8 +63,8 @@ namespace ResourceTypes.Collisions.Opcode
         public void Load(BinaryReader reader, bool endianMismatch = false)
         {
             uint numNodes = ReadDword(reader, endianMismatch);
-            nodes = new List<AABBQuantizedNoLeafNode>((int)numNodes);
-            for(int i = 0; i < numNodes; i++)
+            nodes = new List<AABBQuantizedNoLeafNode>((int) numNodes);
+            for (int i = 0; i < numNodes; i++)
             {
                 QuantizedAABB aabb = new QuantizedAABB();
                 aabb.centerX = ReadShort(reader, endianMismatch);
@@ -90,9 +90,9 @@ namespace ResourceTypes.Collisions.Opcode
 
         public void Save(BinaryWriter writer, bool endianMismatch = false)
         {
-            WriteDword((uint)nodes.Count, writer, endianMismatch);
+            WriteDword((uint) nodes.Count, writer, endianMismatch);
 
-            foreach(AABBQuantizedNoLeafNode node in nodes)
+            foreach (AABBQuantizedNoLeafNode node in nodes)
             {
                 WriteShort(node.aabb.centerX, writer, endianMismatch);
                 WriteShort(node.aabb.centerY, writer, endianMismatch);

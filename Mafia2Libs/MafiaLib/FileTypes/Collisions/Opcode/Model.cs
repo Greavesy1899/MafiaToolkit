@@ -12,9 +12,9 @@ namespace ResourceTypes.Collisions.Opcode
         enum ModelFlag
         {
             // ReSharper disable InconsistentNaming
-            OPC_QUANTIZED = (1 << 0),   //!< Compressed/uncompressed tree
+            OPC_QUANTIZED = (1 << 0), //!< Compressed/uncompressed tree
             OPC_NO_LEAF = (1 << 1), //!< Leaf/NoLeaf tree
-            OPC_SINGLE_NODE = (1 << 2)  //!< Special case for 1-node models
+            OPC_SINGLE_NODE = (1 << 2) //!< Special case for 1-node models
             // ReSharper restore InconsistentNaming
         };
 
@@ -42,7 +42,7 @@ namespace ResourceTypes.Collisions.Opcode
                 throw new OpcodeException($"Unsupported model version {version}");
             }
 
-            modelCode = (ModelFlag)ReadDword(reader, platformMismatch);
+            modelCode = (ModelFlag) ReadDword(reader, platformMismatch);
 
             CreateTree();
             tree.Load(reader, platformMismatch);
@@ -75,7 +75,7 @@ namespace ResourceTypes.Collisions.Opcode
                     throw new NotImplementedException("AABBQuantizedTree is not implemented yet");
                 }
                 else
-                { 
+                {
                     //tree = new AABBCollisionTree();
                     throw new NotImplementedException("AABBCollisionTree is not implemented yet");
                 }
@@ -91,7 +91,7 @@ namespace ResourceTypes.Collisions.Opcode
             WriteChunk('O', 'P', 'C', isLittleEndian, writer);
             WriteDword(SUPPORTED_MODEL_VERSION, writer, platformMismatch);
 
-            WriteDword((uint)modelCode, writer, platformMismatch);
+            WriteDword((uint) modelCode, writer, platformMismatch);
 
             tree.Save(writer, platformMismatch);
         }
@@ -153,7 +153,7 @@ namespace ResourceTypes.Collisions.Opcode
             {
                 uint leafTrianglesMaxIndex = ReadDword(reader, platformMismatch);
                 IList<uint> leafTrianglesAsUints = ReadIndices(leafTrianglesMaxIndex, numLeaves, reader, platformMismatch);
-                leafTriangles = leafTrianglesAsUints.Select(elem => (LeafTriangles)elem).ToList();
+                leafTriangles = leafTrianglesAsUints.Select(elem => (LeafTriangles) elem).ToList();
             }
 
             numPrimitives = ReadDword(reader, platformMismatch);
@@ -168,7 +168,7 @@ namespace ResourceTypes.Collisions.Opcode
         {
             base.Save(writer, endian);
             // TODO: validation
-            
+
             bool isLittleEndian = endian == Endian.LITTLE;
             bool platformMismatch = endian == Endian.BIG;
 
@@ -178,7 +178,7 @@ namespace ResourceTypes.Collisions.Opcode
             WriteDword(numLeaves, writer, platformMismatch);
             if (numLeaves > 1)
             {
-                WriteIndices(leafTriangles.Select(lt => (uint)lt).ToList(), writer, platformMismatch);
+                WriteIndices(leafTriangles.Select(lt => (uint) lt).ToList(), writer, platformMismatch);
             }
 
             WriteDword(numPrimitives, writer, platformMismatch);

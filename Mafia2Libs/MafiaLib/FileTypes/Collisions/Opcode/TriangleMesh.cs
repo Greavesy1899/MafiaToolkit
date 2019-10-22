@@ -320,6 +320,7 @@ namespace ResourceTypes.Collisions.Opcode
             }
         }
 
+        #region Save
         public void Save(BinaryWriter writer, Endian endian = Endian.LITTLE)
         {
             ValidateTriangleMesh();
@@ -363,7 +364,7 @@ namespace ResourceTypes.Collisions.Opcode
 
         private void WriteVertices(BinaryWriter writer, bool platformMismatch)
         {
-            foreach(Vector3 vertex in vertices)
+            foreach (Vector3 vertex in vertices)
             {
                 WriteFloat(vertex.X, writer, platformMismatch);
                 WriteFloat(vertex.Y, writer, platformMismatch);
@@ -380,7 +381,7 @@ namespace ResourceTypes.Collisions.Opcode
 
             if (serialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES))
             {
-                foreach(Triangle triangle in triangles)
+                foreach (Triangle triangle in triangles)
                 {
                     writer.Write((byte)triangle.v0);
                     writer.Write((byte)triangle.v1);
@@ -411,7 +412,7 @@ namespace ResourceTypes.Collisions.Opcode
         {
             if (serialFlags.HasFlag(MeshSerialFlags.MSF_MATERIALS))
             {
-                foreach(ushort materialIndex in materialIndices)
+                foreach (ushort materialIndex in materialIndices)
                 {
                     WriteWord(materialIndex, writer, platformMismatch);
                 }
@@ -430,7 +431,7 @@ namespace ResourceTypes.Collisions.Opcode
         {
             if (numConvexParts > 0)
             {
-                foreach(ushort partId in convexParts)
+                foreach (ushort partId in convexParts)
                 {
                     WriteWord(partId, writer, platformMismatch);
                 }
@@ -490,7 +491,8 @@ namespace ResourceTypes.Collisions.Opcode
         {
             WriteDword((uint)extraTriangleData.Count, writer, platformMismatch);
             writer.Write(extraTriangleData.ToArray());
-        }
+        } 
+        #endregion
 
         public uint GetUsedBytes()
         {
