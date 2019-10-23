@@ -8,6 +8,7 @@ using SharpDX;
 using ResourceTypes.FrameResource;
 using Utils.SharpDXExtensions;
 using ResourceTypes.BufferPools;
+using System.Linq;
 
 namespace Utils.Models
 {
@@ -177,37 +178,41 @@ namespace Utils.Models
                 lods[0].Vertices[x].Position = nxsData.Data.Vertices[x];
             }
 
-            string[] matNames = new string[nxsData.Sections.Length];
-            List<ushort>[] matInds = new List<ushort>[nxsData.Sections.Length];
-
-            for (int t = 0; t != matInds.Length; t++)
-                matInds[t] = new List<ushort>();
-
-            lods[0].Parts = new ModelPart[nxsData.Sections.Length];
-            int indIDX = 0;
-            for (int t = 0; t != nxsData.Data.Materials.Length; t++)
+            //sort materials in order:
+            //M2T doesn't support unorganised triangles, only triangles in order by material.
+            //basically like mafia itself, so we have to reorder them and then save.
+            //this doesn't mess anything up, just takes a little longer :)
+            Dictionary<string, List<ushort>> sortedMats = new Dictionary<string, List<ushort>>();
+            uint index = 0;
+            for(int i = 0; i < nxsData.Data.Materials.Length; i++)
             {
-                for (int g = 0; g != nxsData.Sections.Length; g++)
+                string mat = nxsData.Data.Materials[i].ToString();
+                if(!sortedMats.ContainsKey(mat))
                 {
-                    if ((int)nxsData.Data.Materials[t] == (nxsData.Sections[g].Unk1 + 2))
-                    {
-                        matNames[g] = nxsData.Data.Materials[t].ToString();
-                        matInds[g].Add((ushort)nxsData.Data.Indices[indIDX]);
-                        matInds[g].Add((ushort)nxsData.Data.Indices[indIDX + 1]);
-                        matInds[g].Add((ushort)nxsData.Data.Indices[indIDX + 2]);
-                        indIDX += 3;
-                    }
+                    List<ushort> list = new List<ushort>();
+                    list.Add((ushort)nxsData.Data.Indices[index]);
+                    list.Add((ushort)nxsData.Data.Indices[index+1]);
+                    list.Add((ushort)nxsData.Data.Indices[index+2]);
+                    sortedMats.Add(mat, list);
                 }
+                else
+                {
+                    sortedMats[mat].Add((ushort)nxsData.Data.Indices[index]);
+                    sortedMats[mat].Add((ushort)nxsData.Data.Indices[index + 1]);
+                    sortedMats[mat].Add((ushort)nxsData.Data.Indices[index + 2]);
+                }
+                index += 3;
             }
 
+            lods[0].Parts = new ModelPart[sortedMats.Count];
             List<ushort> inds = new List<ushort>();
             for (int x = 0; x != lods[0].Parts.Length; x++)
             {
                 lods[0].Parts[x] = new ModelPart();
-                lods[0].Parts[x].Material = matNames[x];
+                lods[0].Parts[x].Material = sortedMats.ElementAt(x).Key;
                 lods[0].Parts[x].StartIndex = (uint)inds.Count;
-                inds.AddRange(matInds[x]);
-                lods[0].Parts[x].NumFaces = (uint)Math.Abs(inds.Count - (matInds[x].Count / 3));
+                inds.AddRange(sortedMats.ElementAt(x).Value);
+                lods[0].Parts[x].NumFaces = (uint)Math.Abs(inds.Count - (sortedMats.ElementAt(x).Value.Count / 3));
             }
             this.name = name;
             lods[0].Indices = inds.ToArray();

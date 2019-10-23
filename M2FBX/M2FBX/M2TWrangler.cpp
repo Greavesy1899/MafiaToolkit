@@ -307,7 +307,7 @@ int ConvertFBX(const char* pSource, const char* pDest)
 	FbxNode* Root = lScene->GetRootNode();
 	for (int i = 0; i != Root->GetChildCount(); i++) {
 		FbxNode* pNode = Root->GetChild(i);
-		if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eLODGroup) {
+		if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eNull) {
 			int result = BuildLodGroup(Structure, pNode);
 			if (result != 0)
 				return -95;
@@ -315,6 +315,13 @@ int ConvertFBX(const char* pSource, const char* pDest)
 		}
 		else if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
 			int result = BuildModel(Structure, pNode);
+			if (result != 0)
+				return -95;
+			break;
+		}
+		else if (pNode->FindChild("LOD0"))
+		{
+			int result = BuildLodGroup(Structure, pNode);
 			if (result != 0)
 				return -95;
 			break;
