@@ -71,7 +71,7 @@ namespace Utils.Settings
             float.TryParse(ReadKey("ScreenNear", "ModelViewer", "1"), out ScreenNear);
             float.TryParse(ReadKey("CameraSpeed", "ModelViewer", "1"), out CameraSpeed);
             bool.TryParse(ReadKey("EnableExperimental", "ModelViewer", "0"), out Experimental);
-            float.TryParse(ReadKey("FieldOfView", "ModelViewer", "60.0"), out FieldOfView);
+            float.TryParse(ReadKey("FieldOfView", "ModelViewer", "60"), out FieldOfView);
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
             int.TryParse(ReadKey("Language", "Misc", "0"), out Language);
             int.TryParse(ReadKey("Format", "Exporting", "0"), out Format);

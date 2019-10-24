@@ -47,7 +47,7 @@ namespace Mafia2Tool
             this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnLastModified = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.SDSContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.GEContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextSDSUnpack = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextSDSPack = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextOpenFolder = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,6 +58,9 @@ namespace Mafia2Tool
             this.ContextViewSmallIcon = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextViewList = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextViewTile = new System.Windows.Forms.ToolStripMenuItem();
+            this.CreateFileButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.CreateFrameResourceButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.CreateSDSContentButton = new System.Windows.Forms.ToolStripMenuItem();
             this.topContainer = new System.Windows.Forms.ToolStripContainer();
             this.tools = new System.Windows.Forms.ToolStrip();
             this.dropdownFile = new System.Windows.Forms.ToolStripDropDownButton();
@@ -80,6 +83,7 @@ namespace Mafia2Tool
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            this.CreateCollisionButton = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -87,7 +91,7 @@ namespace Mafia2Tool
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
             this.toolStrip2.SuspendLayout();
-            this.SDSContext.SuspendLayout();
+            this.GEContext.SuspendLayout();
             this.topContainer.ContentPanel.SuspendLayout();
             this.topContainer.SuspendLayout();
             this.tools.SuspendLayout();
@@ -213,7 +217,8 @@ namespace Mafia2Tool
             this.columnType,
             this.columnSize,
             this.columnLastModified});
-            this.fileListView.ContextMenuStrip = this.SDSContext;
+            this.fileListView.ContextMenuStrip = this.GEContext;
+            this.fileListView.HideSelection = false;
             this.fileListView.LargeImageList = this.imageBank;
             this.fileListView.Location = new System.Drawing.Point(3, 30);
             this.fileListView.Name = "fileListView";
@@ -244,18 +249,19 @@ namespace Mafia2Tool
             this.columnLastModified.Text = "$LAST_MODIFIED";
             this.columnLastModified.Width = 281;
             // 
-            // SDSContext
+            // GEContext
             // 
-            this.SDSContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.GEContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ContextSDSUnpack,
             this.ContextSDSPack,
             this.ContextOpenFolder,
             this.ContextSDSUnpackAll,
-            this.ContextView});
-            this.SDSContext.Name = "SDSContext";
-            this.SDSContext.Size = new System.Drawing.Size(219, 114);
-            this.SDSContext.Text = "$VIEW";
-            this.SDSContext.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpening);
+            this.ContextView,
+            this.CreateFileButton});
+            this.GEContext.Name = "SDSContext";
+            this.GEContext.Size = new System.Drawing.Size(219, 158);
+            this.GEContext.Text = "$VIEW";
+            this.GEContext.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpening);
             // 
             // ContextSDSUnpack
             // 
@@ -339,6 +345,30 @@ namespace Mafia2Tool
             this.ContextViewTile.Text = "$TILE";
             this.ContextViewTile.Click += new System.EventHandler(this.OnViewTileClicked);
             // 
+            // CreateFileButton
+            // 
+            this.CreateFileButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CreateFrameResourceButton,
+            this.CreateSDSContentButton,
+            this.CreateCollisionButton});
+            this.CreateFileButton.Name = "CreateFileButton";
+            this.CreateFileButton.Size = new System.Drawing.Size(218, 22);
+            this.CreateFileButton.Text = "$CREATE FILE";
+            // 
+            // CreateFrameResourceButton
+            // 
+            this.CreateFrameResourceButton.Name = "CreateFrameResourceButton";
+            this.CreateFrameResourceButton.Size = new System.Drawing.Size(180, 22);
+            this.CreateFrameResourceButton.Text = "FrameResource";
+            this.CreateFrameResourceButton.Click += new System.EventHandler(this.CreateFrameResource_OnClick);
+            // 
+            // CreateSDSContentButton
+            // 
+            this.CreateSDSContentButton.Name = "CreateSDSContentButton";
+            this.CreateSDSContentButton.Size = new System.Drawing.Size(180, 22);
+            this.CreateSDSContentButton.Text = "SDSContent";
+            this.CreateSDSContentButton.Click += new System.EventHandler(this.CreateSDSContentButton_Click);
+            // 
             // topContainer
             // 
             this.topContainer.BottomToolStripPanelVisible = false;
@@ -388,28 +418,28 @@ namespace Mafia2Tool
             // openMafiaIIToolStripMenuItem
             // 
             this.openMafiaIIToolStripMenuItem.Name = "openMafiaIIToolStripMenuItem";
-            this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.openMafiaIIToolStripMenuItem.Text = "$BTN_OPEN_MII";
             this.openMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.OpenMafiaIIClicked);
             // 
             // runMafiaIIToolStripMenuItem
             // 
             this.runMafiaIIToolStripMenuItem.Name = "runMafiaIIToolStripMenuItem";
-            this.runMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.runMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.runMafiaIIToolStripMenuItem.Text = "$BTN_RUN_MII";
             this.runMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.RunMafiaIIClicked);
             // 
             // creditsToolStripMenuItem
             // 
             this.creditsToolStripMenuItem.Name = "creditsToolStripMenuItem";
-            this.creditsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.creditsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.creditsToolStripMenuItem.Text = "$CREDITS";
             this.creditsToolStripMenuItem.Click += new System.EventHandler(this.OnCredits_Pressed);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.exitToolStripMenuItem.Text = "$EXIT";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolkitClicked);
             // 
@@ -417,7 +447,7 @@ namespace Mafia2Tool
             // 
             this.VersionLabel.Enabled = false;
             this.VersionLabel.Name = "VersionLabel";
-            this.VersionLabel.Size = new System.Drawing.Size(160, 22);
+            this.VersionLabel.Size = new System.Drawing.Size(159, 22);
             this.VersionLabel.Text = "Toolkit v";
             // 
             // dropdownView
@@ -485,7 +515,7 @@ namespace Mafia2Tool
             this.dropdownTools.Image = ((System.Drawing.Image)(resources.GetObject("dropdownTools.Image")));
             this.dropdownTools.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.dropdownTools.Name = "dropdownTools";
-            this.dropdownTools.Size = new System.Drawing.Size(62, 19);
+            this.dropdownTools.Size = new System.Drawing.Size(61, 19);
             this.dropdownTools.Text = "$TOOLS";
             // 
             // OptionsItem
@@ -547,6 +577,13 @@ namespace Mafia2Tool
             // 
             this.MafiaIIBrowser.Description = "$SELECT_MII_FOLDER";
             // 
+            // CreateCollisionButton
+            // 
+            this.CreateCollisionButton.Name = "CreateCollisionButton";
+            this.CreateCollisionButton.Size = new System.Drawing.Size(180, 22);
+            this.CreateCollisionButton.Text = "Collision";
+            this.CreateCollisionButton.Click += new System.EventHandler(this.CreateCollisionButton_Click);
+            // 
             // GameExplorer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -570,7 +607,7 @@ namespace Mafia2Tool
             this.toolStripContainer1.PerformLayout();
             this.toolStrip2.ResumeLayout(false);
             this.toolStrip2.PerformLayout();
-            this.SDSContext.ResumeLayout(false);
+            this.GEContext.ResumeLayout(false);
             this.topContainer.ContentPanel.ResumeLayout(false);
             this.topContainer.ContentPanel.PerformLayout();
             this.topContainer.ResumeLayout(false);
@@ -601,7 +638,7 @@ namespace Mafia2Tool
         private ToolStripContainer bottomContainer;
         private StatusStrip status;
         private ToolStripStatusLabel infoText;
-        private ContextMenuStrip SDSContext;
+        private ContextMenuStrip GEContext;
         private ToolStripMenuItem ContextSDSUnpack;
         private ToolStripMenuItem ContextSDSPack;
         private FolderBrowserDialog MafiaIIBrowser;
@@ -636,5 +673,9 @@ namespace Mafia2Tool
         private ToolStripMenuItem VersionLabel;
         private ToolStripMenuItem M2FBXButton;
         private ToolStripMenuItem UnpackAllSDSButton;
+        private ToolStripMenuItem CreateFileButton;
+        private ToolStripMenuItem CreateFrameResourceButton;
+        private ToolStripMenuItem CreateSDSContentButton;
+        private ToolStripMenuItem CreateCollisionButton;
     }
 }

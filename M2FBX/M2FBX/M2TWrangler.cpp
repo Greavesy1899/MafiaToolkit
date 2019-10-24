@@ -136,7 +136,6 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 
 	//begin getting triangles
 	std::vector<Int3> indices = std::vector<Int3>();
-	std::vector<short> matIDs = std::vector<short>();
 
 	auto matCount = pNode->GetMaterialCount() == 0 ? 1 : pNode->GetMaterialCount();
 	SubMesh* subMeshes = new SubMesh[matCount];
@@ -184,7 +183,6 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		{
 			segments[0].push_back(triangle);
 		}
-		matIDs.push_back(0);
 	}
 
 	for (size_t i = 0; i != matCount; i++)
@@ -309,7 +307,7 @@ int ConvertFBX(const char* pSource, const char* pDest)
 	FbxNode* Root = lScene->GetRootNode();
 	for (int i = 0; i != Root->GetChildCount(); i++) {
 		FbxNode* pNode = Root->GetChild(i);
-		if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eLODGroup) {
+		if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eNull) {
 			int result = BuildLodGroup(Structure, pNode);
 			if (result != 0)
 				return -95;
@@ -317,6 +315,13 @@ int ConvertFBX(const char* pSource, const char* pDest)
 		}
 		else if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
 			int result = BuildModel(Structure, pNode);
+			if (result != 0)
+				return -95;
+			break;
+		}
+		else if (pNode->FindChild("LOD0"))
+		{
+			int result = BuildLodGroup(Structure, pNode);
 			if (result != 0)
 				return -95;
 			break;

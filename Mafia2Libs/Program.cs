@@ -3,9 +3,6 @@ using System.IO;
 using System.Windows.Forms;
 using Utils.Settings;
 using Utils.Lang;
-using System.Threading.Tasks;
-using ResourceTypes.Navigation;
-using ResourceTypes.EntityDataStorage;
 
 namespace Mafia2Tool
 {
@@ -14,20 +11,11 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
-            //begin form inits;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
-            //EntityDataStorageLoader entityDataStorageLoader = new EntityDataStorageLoader();
-            //entityDataStorageLoader.ReadFromFile("EntityDataStorage_16.eds", false);
-            //Log.DeleteOldLog();
-            //Log.CreateFile();
-
-            ////do vital inits;
             CheckINIExists();
             ToolkitSettings.ReadINI();
             Language.ReadLanguageXML();
-
             Application.Run(new GameExplorer());
         }
 

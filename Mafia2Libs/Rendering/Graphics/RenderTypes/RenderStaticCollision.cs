@@ -33,6 +33,26 @@ namespace Rendering.Graphics
             BoundingBox.InitBuffers(d3d, context);
         }
 
+        public void ConvertCollisionToRender(ResourceTypes.ItemDesc.CollisionConvex convex)
+        {
+            DoRender = true;
+            BoundingBox = new RenderBoundingBox();
+            BoundingBox.Init(new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f)));
+            BoundingBox.DoRender = false;
+
+            Indices = convex.indices;
+            Vertices = new VertexLayouts.CollisionLayout.Vertex[convex.vertices.Length];
+            materials = new CollisionMaterials[convex.vertices.Length];
+            for (int i = 0; i != convex.vertices.Length; i++)
+            {
+                VertexLayouts.CollisionLayout.Vertex vertex = new VertexLayouts.CollisionLayout.Vertex();
+                vertex.Position = convex.vertices[i];
+                vertex.Normal = new Vector3(0.0f);
+                vertex.Colour = new Vector4(1.0f);
+                Vertices[i] = vertex;
+            }
+            CalculateNormals();
+        }
         public void ConvertCollisionToRender(MeshData data)
         { 
             DoRender = true;

@@ -14,16 +14,12 @@ namespace ResourceTypes.Collisions
 {
     public class Collision
     {
-        int version;
-        int unk0;
+        private const int Version = 0x11;
+        private const int Unk0 = 0;
+        private string fileName;
 
-        int count1;
-       List<Placement> placementData;
-
-        int count2;
+        List<Placement> placementData;
         Dictionary<ulong, NXSStruct> nxsData;
-
-        string name;
 
         public Dictionary<ulong, NXSStruct> NXSData
         {
@@ -38,14 +34,14 @@ namespace ResourceTypes.Collisions
         }
 
         public string Name {
-            get { return name; }
-            set { name = value; }
+            get { return fileName; }
+            set { fileName = value; }
         }
 
         public Collision(string fileName)
         {
-            name = fileName;
-            using (BinaryReader reader = new BinaryReader(File.Open(name, FileMode.Open)))
+            this.fileName = fileName;
+            using (BinaryReader reader = new BinaryReader(File.Open(this.fileName, FileMode.Open)))
             {
                 ReadFromFile(reader);
             }
@@ -53,53 +49,62 @@ namespace ResourceTypes.Collisions
 
         public Collision()
         {
-            version = 17;
-            unk0 = 0;
             nxsData = new Dictionary<ulong, NXSStruct>();
             placementData = new List<Placement>();
         }
 
         public void ReadFromFile(BinaryReader reader)
         {
-            version = reader.ReadInt32();
-
-            if (version != 17)
+            if(reader.ReadInt32() != Version)
                 throw new Exception("Unknown collision version");
 
-            unk0 = reader.ReadInt32();
-            count1 = reader.ReadInt32();
+            if(reader.ReadInt32() != Unk0)
+                throw new Exception("Unknown collision header");
 
-            placementData = new List<Placement>(count1);
-            for (int i = 0; i != count1; i++)
-            {
+            int numPlacements = reader.ReadInt32();
+            placementData = new List<Placement>(numPlacements);
+            for (int i = 0; i < numPlacements; i++)
                 placementData.Add(new Placement(reader));
-            }
 
-            count2 = reader.ReadInt32();
+            int numMeshes = reader.ReadInt32();
             nxsData = new Dictionary<ulong, NXSStruct>();
-
-            for (int i = 0; i != count2; i++)
+            for (int i = 0; i < numMeshes; i++)
             {
                 NXSStruct data = new NXSStruct(reader);
                 nxsData.Add(data.Hash, data);
             }
         }
 
+        public void WriteToFile(string name)
+        {
+            this.fileName = name;
+            CookCollisions();
+            WriteToFile();
+        }
+
         public void WriteToFile()
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Open(name, FileMode.Create)))
-                WriteToFile(writer);
+            CookCollisions();
+            using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Create)))
+                WriteToFileInternal(writer);
         }
-        public void WriteToFile(BinaryWriter writer)
+
+        public void WriteToFileInternal(BinaryWriter writer)
         {
-            writer.Write(version);
-            writer.Write(unk0);
+            writer.Write(Version);
+            writer.Write(Unk0);
             writer.Write(placementData.Count);
             for (int i = 0; i != placementData.Count; i++)
                 placementData[i].WriteToFile(writer);
 
             writer.Write(nxsData.Count);
-            for (int i = 0; i != nxsData.Count; i++)
+            for (int i = 0; i < nxsData.Count; i++)
+                nxsData.ElementAt(i).Value.WriteToFile(writer);
+        }
+
+        public void CookCollisions()
+        {
+            for (int i = 0; i < nxsData.Count; i++)
             {
                 NXSStruct data = nxsData.ElementAt(i).Value;
                 using (BinaryWriter meshWriter = new BinaryWriter(File.Open("mesh.bin", FileMode.Create)))
@@ -112,17 +117,10 @@ namespace ResourceTypes.Collisions
 
                 using (BinaryReader meshReader = new BinaryReader(File.Open("cook.bin", FileMode.Open)))
                     nxsData.ElementAt(i).Value.Data.ReadFromFile(meshReader);
-
-                nxsData.ElementAt(i).Value.WriteToFile(writer);
             }
 
             if (File.Exists("mesh.bin")) File.Delete("mesh.bin");
             if (File.Exists("cook.bin")) File.Delete("cook.bin");
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0}, {1}", 1, 2);
         }
 
         public class Placement
@@ -182,10 +180,6 @@ namespace ResourceTypes.Collisions
                 unk5 = other.unk5;
             }
 
-            /// <summary>
-            /// Read data from file.
-            /// </summary>
-            /// <param name="reader">stream</param>
             public void ReadFromFile(BinaryReader reader)
             {
                 position = Vector3Extenders.ReadFromFile(reader);
@@ -200,10 +194,6 @@ namespace ResourceTypes.Collisions
                 unk5 = reader.ReadByte();
             }
 
-            /// <summary>
-            /// Write Data to file
-            /// </summary>
-            /// <param name="writer">stream</param>
             public void WriteToFile(BinaryWriter writer)
             {
                 position.WriteToFile(writer);
@@ -227,7 +217,6 @@ namespace ResourceTypes.Collisions
         {
             ulong hash;
             private int dataSize;
-            private byte[] bytes;
             protected MeshData data;
             protected Section[] sections;
 
@@ -279,6 +268,7 @@ namespace ResourceTypes.Collisions
             {
                 writer.Write(hash);
 
+                //only 32bit indices are supported i think.
                 if (data.Flags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES))
                     data.Flags -= MeshSerialFlags.MSF_8BIT_INDICES;
                 if (data.Flags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))

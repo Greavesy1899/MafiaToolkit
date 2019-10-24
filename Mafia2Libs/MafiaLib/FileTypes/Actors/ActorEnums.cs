@@ -77,4 +77,12 @@ namespace ResourceTypes.Actors
         BlockTraffic = 4,
         PrimitiveType = 8,
     }
+
+    [Flags]
+    public enum ActorRadioFlags : int
+    {
+        Enabled = 1,
+        Interactive = 2,
+        Hidden = 4,
+    }
 }

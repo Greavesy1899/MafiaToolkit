@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using Utils;
+using Utils.Logging;
+using Utils.Types;
 
 namespace ResourceTypes.ItemDesc
 {
@@ -8,7 +11,10 @@ namespace ResourceTypes.ItemDesc
         public ulong frameRef; //links into FrameResources. Only checked collisions.
         public byte unk_byte; //ALWAYS 2
         public CollisionTypes colType;
-        public CollisionBase cBase;
+        public ulong idHash;
+        public short colMaterial;
+        public TransformMatrix Matrix;
+        public byte unkByte;
         public object collision;
 
         public ItemDescLoader(string fileName)
@@ -17,6 +23,7 @@ namespace ResourceTypes.ItemDesc
             {
                 ReadFromFile(reader);
             }
+            //OverwriteConvexWithCooked("cooked.bin", fileName);
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -24,7 +31,10 @@ namespace ResourceTypes.ItemDesc
             frameRef = reader.ReadUInt64();
             unk_byte = reader.ReadByte();
             colType = (CollisionTypes)reader.ReadByte();
-            cBase = new CollisionBase(reader);
+            idHash = reader.ReadUInt64();
+            colMaterial = reader.ReadInt16();
+            Matrix = new TransformMatrix(reader);
+            unkByte = reader.ReadByte();
 
             if (colType == CollisionTypes.Box)
                 collision = new CollisionBox(reader);
@@ -34,29 +44,34 @@ namespace ResourceTypes.ItemDesc
                 collision = new CollisionCapsule(reader);
             else if (colType == CollisionTypes.Convex)
                 collision = new CollisionConvex(reader);
-           // else
-                //Console.WriteLine("Unsupported type {0}", colType);
+            else
+                Log.WriteLine("Failed to parse collision type " + colType, LoggingTypes.WARNING, LogCategoryTypes.FUNCTION);
         }
 
-        public void WriteToEDC()
+        public void OverwriteConvexWithCooked(string cookedName, string output)
         {
-            //if ((int)colType > 3)
-            //    return;
+            if (colType == CollisionTypes.Convex)
+            {
+                FBXHelper.CookConvexCollision("uncooked.bin", "cooked.bin");
+                byte[] data = File.ReadAllBytes(cookedName);
 
-            //CustomEDC edc = new CustomEDC(colType, collision, cBase.Matrix);
-
-            //using (BinaryWriter writer = new BinaryWriter(File.Create("collisions/" + frameRef + ".edc")))
-            //{
-            //    writer.Write(frameRef.ToString());
-            //    writer.Write(cBase.Matrix.Position.X);
-            //    writer.Write(cBase.Matrix.Position.Y);
-            //    writer.Write(cBase.Matrix.Position.Z);
-            //    writer.Write(cBase.Matrix.Rotation.Euler.X);
-            //    writer.Write(cBase.Matrix.Rotation.Euler.Y);
-            //    writer.Write(cBase.Matrix.Rotation.Euler.Z);
-            //    writer.Write((byte)colType);
-            //    edc.WriteToFile(writer);
-            //}
+                using (BinaryWriter writer = new BinaryWriter(File.Open(output, FileMode.Create)))
+                {
+                    writer.Write(frameRef);
+                    writer.Write(unk_byte);
+                    writer.Write((byte)colType);
+                    writer.Write(idHash);
+                    writer.Write(colMaterial);
+                    Matrix.WriteToFile(writer);
+                    writer.Write(unkByte);
+                    writer.Write((ushort)data.Length);
+                    writer.Write(data);
+                }
+                if (File.Exists("cooked.bin")) File.Delete("cooked.bin");
+                if (File.Exists("uncooked.bin")) File.Delete("uncooked.bin");
+                Log.WriteLine("Recooked ItemDesc", LoggingTypes.MESSAGE, LogCategoryTypes.APPLICATION);
+            }
+            
         }
 
         public override string ToString()

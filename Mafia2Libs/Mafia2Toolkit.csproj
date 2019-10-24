@@ -323,7 +323,6 @@
     <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameSkeleton.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameSkeletonHierachy.cs" />
     <Compile Include="MafiaLib\FileTypes\BufferTypes\IndexBufferPool.cs" />
-    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionBase.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionBox.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionCapsule.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionSphere.cs" />

@@ -75,6 +75,19 @@ namespace ResourceTypes.FrameResource
             set { newFrames = value; }
         }
 
+        public FrameResource()
+        {
+            header = new FrameHeader();
+            frameScenes = new Dictionary<int, FrameHeaderScene>();
+            frameGeometries = new Dictionary<int, FrameGeometry>();
+            frameMaterials = new Dictionary<int, FrameMaterial>();
+            frameBlendInfos = new Dictionary<int, FrameBlendInfo>();
+            frameSkeletons = new Dictionary<int, FrameSkeleton>();
+            frameSkeletonHierachies = new Dictionary<int, FrameSkeletonHierachy>();
+            frameObjects = new Dictionary<int, object>();
+            newFrames = new List<FrameHolder>();
+        }
+
         public int GetIndexOfObject(int refID)
         {
             for (int i = 0; i != frameObjects.Count; i++)
@@ -251,6 +264,14 @@ namespace ResourceTypes.FrameResource
             }
             objectTypes = null;
             DefineFrameBlockParents();
+        }
+
+        public void WriteToFile(string name)
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(name, FileMode.Create)))
+            {
+                WriteToFile(writer);
+            }
         }
 
         public void WriteToFile(BinaryWriter writer)

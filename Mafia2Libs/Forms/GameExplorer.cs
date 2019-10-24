@@ -19,6 +19,10 @@ using ResourceTypes.SDSConfig;
 using Utils.Lua;
 using ResourceTypes.Misc;
 using Mafia2Tool.Forms;
+using ResourceTypes.FrameResource;
+using ResourceTypes.Collisions;
+using SharpDX;
+using Collision = ResourceTypes.Collisions.Collision;
 
 namespace Mafia2Tool
 {
@@ -49,6 +53,8 @@ namespace Mafia2Tool
             InitExplorerSettings();
             FileListViewTypeController(1);
             infoText.Text = "Ready..";
+            TypeDescriptor.AddAttributes(typeof(Vector3), new TypeConverterAttribute(typeof(Vector3Converter)));
+            TypeDescriptor.AddAttributes(typeof(Vector4), new TypeConverterAttribute(typeof(Vector4Converter)));
         }
 
         private bool Localise()
@@ -63,7 +69,7 @@ namespace Mafia2Tool
             columnType.Text = Language.GetString("$TYPE");
             columnSize.Text = Language.GetString("$SIZE");
             columnLastModified.Text = Language.GetString("$LAST_MODIFIED");
-            SDSContext.Text = Language.GetString("$VIEW");
+            GEContext.Text = Language.GetString("$VIEW");
             ContextSDSUnpack.Text = Language.GetString("$UNPACK");
             ContextSDSPack.Text = Language.GetString("$PACK");
             ContextOpenFolder.Text = Language.GetString("$OPEN_FOLDER_EXPLORER");
@@ -645,8 +651,8 @@ namespace Mafia2Tool
         }
         private void OnOpening(object sender, CancelEventArgs e)
         {
-            SDSContext.Items[0].Visible = false;
-            SDSContext.Items[1].Visible = false;
+            GEContext.Items[0].Visible = false;
+            GEContext.Items[1].Visible = false;
 
             if (fileListView.SelectedItems.Count == 0)
                 return;
@@ -657,8 +663,8 @@ namespace Mafia2Tool
 
                 if (extension == ".sds")
                 {
-                    SDSContext.Items[0].Visible = true;
-                    SDSContext.Items[1].Visible = true;
+                    GEContext.Items[0].Visible = true;
+                    GEContext.Items[1].Visible = true;
                 }
             }
         }
@@ -821,6 +827,23 @@ namespace Mafia2Tool
                 }
                 UnpackSDSRecurse(DirectoryInfo);
             }
+        }
+
+        private void CreateFrameResource_OnClick(object sender, EventArgs e)
+        {
+            FrameResource fr = new FrameResource();
+            fr.WriteToFile(Path.Combine(currentDirectory.FullName, "FrameResource_0.fr"));
+        }
+
+        private void CreateSDSContentButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CreateCollisionButton_Click(object sender, EventArgs e)
+        {
+            Collision collision = new Collision();
+            collision.WriteToFile(Path.Combine(currentDirectory.FullName, "Collision_0.col"));
         }
     }
 }

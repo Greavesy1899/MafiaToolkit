@@ -25,6 +25,7 @@ namespace ResourceTypes.Actors
         int unk14;
         int unk13;
         ActorExtraData[] extraData;
+        string fileName;
 
         public ActorDefinition[] Definitions {
             get { return definitions; }
@@ -39,6 +40,7 @@ namespace ResourceTypes.Actors
 
         public Actor(string file)
         {
+            fileName = file;
             using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
             {
                 ReadFromFile(reader);
@@ -146,6 +148,14 @@ namespace ResourceTypes.Actors
 
             //if (unk16 != 0)
             //    throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
+        }
+
+        public void WriteToFile()
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Open)))
+            {
+                WriteToFile(writer);
+            }
         }
 
         public void WriteToFile(BinaryWriter writer)
@@ -280,8 +290,6 @@ namespace ResourceTypes.Actors
             Vector3 position;
             Vector4 quat;
             Vector3 euler;
-            Vector2 rotation;
-            Vector2 direction;
             Vector3 scale;
             ushort unk3;
             ushort dataID;
@@ -518,10 +526,11 @@ namespace ResourceTypes.Actors
                     data = new ActorScriptEntity(stream, isBigEndian);
                     parsed = true;
                 }
-                //else if (bufferType == ActorTypes.Radio && bufferLength == 1028)
-                //{
-                //    data = new ActorRadio(stream, isBigEndian);
-                //}
+                else if (bufferType == ActorTypes.Radio && bufferLength == 1028)
+                {
+                    data = new ActorRadio(stream, isBigEndian);
+                    parsed = true;
+                }
                 else if (bufferType == ActorTypes.Airplane && bufferLength == 4)
                 {
                     data = new ActorAircraft(stream, isBigEndian);
