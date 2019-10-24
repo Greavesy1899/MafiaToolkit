@@ -290,8 +290,6 @@ namespace ResourceTypes.Actors
             Vector3 position;
             Vector4 quat;
             Vector3 euler;
-            Vector2 rotation;
-            Vector2 direction;
             Vector3 scale;
             ushort unk3;
             ushort dataID;
@@ -528,10 +526,11 @@ namespace ResourceTypes.Actors
                     data = new ActorScriptEntity(stream, isBigEndian);
                     parsed = true;
                 }
-                //else if (bufferType == ActorTypes.Radio && bufferLength == 1028)
-                //{
-                //    data = new ActorRadio(stream, isBigEndian);
-                //}
+                else if (bufferType == ActorTypes.Radio && bufferLength == 1028)
+                {
+                    data = new ActorRadio(stream, isBigEndian);
+                    parsed = true;
+                }
                 else if (bufferType == ActorTypes.Airplane && bufferLength == 4)
                 {
                     data = new ActorAircraft(stream, isBigEndian);
