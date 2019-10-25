@@ -632,8 +632,7 @@ namespace Gibbed.Mafia2.FileFormats
                         break;
                     case "Table":
                         ReadTableEntry(entry, resourceXML, "", finalPath);
-                        saveName = "Tables.tbl";
-                        break;
+                        continue;
                     case "Animated Texture":
                         saveName = ReadBasicEntry(resourceXML, itemNames[i]);
                         break;
@@ -1055,7 +1054,6 @@ namespace Gibbed.Mafia2.FileFormats
                 resource.Serialize(1, stream, Endian.Little);
                 entry.Data = stream.ToArray();
                 entry.SlotRamRequired = (uint)entry.Data.Length + 128;
-                File.WriteAllBytes(sdsFolder + "/Tables.tbl", entry.Data);
             }
 
             //get version, always 1?

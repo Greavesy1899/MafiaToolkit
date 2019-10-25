@@ -129,11 +129,12 @@
             this.DataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.DataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DataGrid.Location = new System.Drawing.Point(0, 28);
+            this.DataGrid.MultiSelect = false;
             this.DataGrid.Name = "DataGrid";
             this.DataGrid.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.DataGrid.Size = new System.Drawing.Size(800, 397);
             this.DataGrid.TabIndex = 16;
-            this.DataGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnCellClick);
+            this.DataGrid.SelectionChanged += new System.EventHandler(this.OnSelectedChange);
             // 
             // statusStrip1
             // 
