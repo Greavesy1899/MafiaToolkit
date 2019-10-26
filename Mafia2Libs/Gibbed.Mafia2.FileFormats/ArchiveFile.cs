@@ -537,7 +537,6 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
                 string saveName = "";
                 Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
-
                 string sdsToolName = ResourceTypes[entry.TypeId].Name + "_" + counts[entry.TypeId] + ".bin";
                 switch (ResourceTypes[entry.TypeId].Name)
                 {
@@ -632,6 +631,9 @@ namespace Gibbed.Mafia2.FileFormats
                         break;
                     case "Table":
                         ReadTableEntry(entry, resourceXML, "", finalPath);
+                        counts[ResourceTypes[entry.TypeId].Id]++;
+                        resourceXML.WriteElementString("Version", entry.Version.ToString());
+                        resourceXML.WriteEndElement();
                         continue;
                     case "Animated Texture":
                         saveName = ReadBasicEntry(resourceXML, itemNames[i]);

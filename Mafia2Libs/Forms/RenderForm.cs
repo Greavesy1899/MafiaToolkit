@@ -653,13 +653,13 @@ namespace Mafia2Tool
                         assets.Add(fObject.RefID, BuildRenderBounds(frame));
                     }
 
-                    if(fObject.GetType() == typeof(FrameObjectCollision))
-                    {
-                        FrameObjectCollision frame = (fObject as FrameObjectCollision);
-                        var mesh = BuildRenderItemDesc(frame.Hash);
-                        if(mesh != null)
-                            assets.Add(fObject.RefID, mesh);
-                    }
+                    //if(fObject.GetType() == typeof(FrameObjectCollision))
+                    //{
+                    //    FrameObjectCollision frame = (fObject as FrameObjectCollision);
+                    //    var mesh = BuildRenderItemDesc(frame.Hash);
+                    //    if(mesh != null)
+                    //        assets.Add(fObject.RefID, mesh);
+                    //}
                 }
             }
 
