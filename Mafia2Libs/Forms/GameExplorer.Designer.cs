@@ -355,6 +355,7 @@ namespace Mafia2Tool
             this.CreateFileButton.Name = "CreateFileButton";
             this.CreateFileButton.Size = new System.Drawing.Size(218, 22);
             this.CreateFileButton.Text = "$CREATE FILE";
+            this.CreateFileButton.Visible = false;
             // 
             // CreateFrameResourceButton
             // 
@@ -426,28 +427,28 @@ namespace Mafia2Tool
             // openMafiaIIToolStripMenuItem
             // 
             this.openMafiaIIToolStripMenuItem.Name = "openMafiaIIToolStripMenuItem";
-            this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.openMafiaIIToolStripMenuItem.Text = "$BTN_OPEN_MII";
             this.openMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.OpenMafiaIIClicked);
             // 
             // runMafiaIIToolStripMenuItem
             // 
             this.runMafiaIIToolStripMenuItem.Name = "runMafiaIIToolStripMenuItem";
-            this.runMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.runMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.runMafiaIIToolStripMenuItem.Text = "$BTN_RUN_MII";
             this.runMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.RunMafiaIIClicked);
             // 
             // creditsToolStripMenuItem
             // 
             this.creditsToolStripMenuItem.Name = "creditsToolStripMenuItem";
-            this.creditsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.creditsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.creditsToolStripMenuItem.Text = "$CREDITS";
             this.creditsToolStripMenuItem.Click += new System.EventHandler(this.OnCredits_Pressed);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exitToolStripMenuItem.Text = "$EXIT";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolkitClicked);
             // 
@@ -455,7 +456,7 @@ namespace Mafia2Tool
             // 
             this.VersionLabel.Enabled = false;
             this.VersionLabel.Name = "VersionLabel";
-            this.VersionLabel.Size = new System.Drawing.Size(159, 22);
+            this.VersionLabel.Size = new System.Drawing.Size(160, 22);
             this.VersionLabel.Text = "Toolkit v";
             // 
             // dropdownView
@@ -523,7 +524,7 @@ namespace Mafia2Tool
             this.dropdownTools.Image = ((System.Drawing.Image)(resources.GetObject("dropdownTools.Image")));
             this.dropdownTools.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.dropdownTools.Name = "dropdownTools";
-            this.dropdownTools.Size = new System.Drawing.Size(61, 19);
+            this.dropdownTools.Size = new System.Drawing.Size(62, 19);
             this.dropdownTools.Text = "$TOOLS";
             // 
             // OptionsItem

@@ -654,13 +654,13 @@ namespace Mafia2Tool
                         assets.Add(fObject.RefID, BuildRenderBounds(frame));
                     }
 
-                    if(fObject.GetType() == typeof(FrameObjectCollision))
-                    {
-                        FrameObjectCollision frame = (fObject as FrameObjectCollision);
-                        var mesh = BuildRenderItemDesc(frame.Hash);
-                        if(mesh != null)
-                            assets.Add(fObject.RefID, mesh);
-                    }
+                    //if(fObject.GetType() == typeof(FrameObjectCollision))
+                    //{
+                    //    FrameObjectCollision frame = (fObject as FrameObjectCollision);
+                    //    var mesh = BuildRenderItemDesc(frame.Hash);
+                    //    if(mesh != null)
+                    //        assets.Add(fObject.RefID, mesh);
+                    //}
                 }
             }
 
@@ -887,7 +887,9 @@ namespace Mafia2Tool
                         {
                             if (actor.Definitions[i].Hash == actor.Items[c].FrameNameHash)
                             {
-                                frame = (SceneData.FrameResource.FrameObjects.ElementAt(actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
+                                if (SceneData.FrameResource.FrameObjects.Count > actor.Definitions[i].FrameIndex)
+                                    frame = (SceneData.FrameResource.FrameObjects.ElementAt(actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
+
                                 if (frame == null)
                                 {
                                     for (int x = 0; x < SceneData.FrameResource.FrameObjects.Count; x++)
@@ -905,8 +907,7 @@ namespace Mafia2Tool
                                         }
                                     }
                                 }
-
-                                if(frame != null)
+                                else
                                 {
                                     frame.Item = actor.Items[c];
                                     frame.Matrix.SetRotationMatrix(actor.Items[c].Rotation);
