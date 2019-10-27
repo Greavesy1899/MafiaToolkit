@@ -166,6 +166,7 @@ namespace Mafia2Tool
         public void PopulateList(FileInfo info)
         {
             TreeNode tree = SceneData.FrameResource.BuildTree(SceneData.FrameNameTable);
+            tree.Tag = "Folder";
             frameResourceRoot = tree;
             dSceneTree.AddToTree(tree);
         }
@@ -763,8 +764,9 @@ namespace Mafia2Tool
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
                 TreeNode node = new TreeNode("Road Data");
-                roadRoot = node;
                 TreeNode node2 = new TreeNode("Junction Data");
+                node.Tag = node2.Tag = "Folder";
+                roadRoot = node;             
                 junctionRoot = node2;
 
                 for (int i = 0; i != SceneData.roadMap.splines.Length; i++)
@@ -798,6 +800,7 @@ namespace Mafia2Tool
             if (SceneData.Collisions != null)
             {
                 TreeNode node = new TreeNode("Collision Data");
+                node.Tag = "Folder";
                 collisionRoot = node;
 
                 for (int i = 0; i != SceneData.Collisions.NXSData.Count; i++)
@@ -841,6 +844,7 @@ namespace Mafia2Tool
             if (SceneData.Actors.Length > 0 && ToolkitSettings.Experimental)
             {
                 actorRoot = new TreeNode("Actor Items");
+                actorRoot.Tag = "Folder";
                 for (int z = 0; z < SceneData.Actors.Length; z++)
                 {
                     bool modified = false;
@@ -1529,7 +1533,11 @@ namespace Mafia2Tool
                 TreeNode tNode = new TreeNode(newEntry.ToString());
                 tNode.Tag = newEntry;
                 tNode.Name = newEntry.RefID.ToString();
-                dSceneTree.AddToTree(tNode, dSceneTree.treeView1.Nodes.Find(newEntry.ParentIndex2.RefID.ToString(), true)[0]);
+                //fix for objects with -1 on root.
+                if (newEntry.ParentIndex2.Index == -1)
+                    dSceneTree.AddToTree(tNode, frameResourceRoot);
+                else
+                    dSceneTree.AddToTree(tNode, dSceneTree.treeView1.Nodes.Find(newEntry.ParentIndex2.RefID.ToString(), true)[0]);
                 SceneData.FrameResource.FrameObjects.Add(newEntry.RefID, newEntry);
                 dSceneTree.treeView1.SelectedNode = tNode;
                 UpdateMatricesRecursive();

@@ -61,6 +61,7 @@ namespace Mafia2Tool
             this.CreateFileButton = new System.Windows.Forms.ToolStripMenuItem();
             this.CreateFrameResourceButton = new System.Windows.Forms.ToolStripMenuItem();
             this.CreateSDSContentButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.CreateCollisionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.topContainer = new System.Windows.Forms.ToolStripContainer();
             this.tools = new System.Windows.Forms.ToolStrip();
             this.dropdownFile = new System.Windows.Forms.ToolStripDropDownButton();
@@ -83,7 +84,6 @@ namespace Mafia2Tool
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.CreateCollisionButton = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -351,6 +351,7 @@ namespace Mafia2Tool
             this.CreateFrameResourceButton,
             this.CreateSDSContentButton,
             this.CreateCollisionButton});
+            this.CreateFileButton.Enabled = false;
             this.CreateFileButton.Name = "CreateFileButton";
             this.CreateFileButton.Size = new System.Drawing.Size(218, 22);
             this.CreateFileButton.Text = "$CREATE FILE";
@@ -358,16 +359,23 @@ namespace Mafia2Tool
             // CreateFrameResourceButton
             // 
             this.CreateFrameResourceButton.Name = "CreateFrameResourceButton";
-            this.CreateFrameResourceButton.Size = new System.Drawing.Size(180, 22);
+            this.CreateFrameResourceButton.Size = new System.Drawing.Size(155, 22);
             this.CreateFrameResourceButton.Text = "FrameResource";
             this.CreateFrameResourceButton.Click += new System.EventHandler(this.CreateFrameResource_OnClick);
             // 
             // CreateSDSContentButton
             // 
             this.CreateSDSContentButton.Name = "CreateSDSContentButton";
-            this.CreateSDSContentButton.Size = new System.Drawing.Size(180, 22);
+            this.CreateSDSContentButton.Size = new System.Drawing.Size(155, 22);
             this.CreateSDSContentButton.Text = "SDSContent";
             this.CreateSDSContentButton.Click += new System.EventHandler(this.CreateSDSContentButton_Click);
+            // 
+            // CreateCollisionButton
+            // 
+            this.CreateCollisionButton.Name = "CreateCollisionButton";
+            this.CreateCollisionButton.Size = new System.Drawing.Size(155, 22);
+            this.CreateCollisionButton.Text = "Collision";
+            this.CreateCollisionButton.Click += new System.EventHandler(this.CreateCollisionButton_Click);
             // 
             // topContainer
             // 
@@ -521,21 +529,21 @@ namespace Mafia2Tool
             // OptionsItem
             // 
             this.OptionsItem.Name = "OptionsItem";
-            this.OptionsItem.Size = new System.Drawing.Size(180, 22);
+            this.OptionsItem.Size = new System.Drawing.Size(176, 22);
             this.OptionsItem.Text = "$OPTIONS";
             this.OptionsItem.Click += new System.EventHandler(this.OnOptionsItem_Clicked);
             // 
             // M2FBXButton
             // 
             this.M2FBXButton.Name = "M2FBXButton";
-            this.M2FBXButton.Size = new System.Drawing.Size(180, 22);
+            this.M2FBXButton.Size = new System.Drawing.Size(176, 22);
             this.M2FBXButton.Text = "M2 FBX";
             this.M2FBXButton.Click += new System.EventHandler(this.M2FBXButtonClicked);
             // 
             // UnpackAllSDSButton
             // 
             this.UnpackAllSDSButton.Name = "UnpackAllSDSButton";
-            this.UnpackAllSDSButton.Size = new System.Drawing.Size(180, 22);
+            this.UnpackAllSDSButton.Size = new System.Drawing.Size(176, 22);
             this.UnpackAllSDSButton.Text = "$UNPACK_ALL_SDS";
             this.UnpackAllSDSButton.Click += new System.EventHandler(this.UnpackAllSDSButton_Click);
             // 
@@ -576,13 +584,6 @@ namespace Mafia2Tool
             // MafiaIIBrowser
             // 
             this.MafiaIIBrowser.Description = "$SELECT_MII_FOLDER";
-            // 
-            // CreateCollisionButton
-            // 
-            this.CreateCollisionButton.Name = "CreateCollisionButton";
-            this.CreateCollisionButton.Size = new System.Drawing.Size(180, 22);
-            this.CreateCollisionButton.Text = "Collision";
-            this.CreateCollisionButton.Click += new System.EventHandler(this.CreateCollisionButton_Click);
             // 
             // GameExplorer
             // 
