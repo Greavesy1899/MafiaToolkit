@@ -20,7 +20,7 @@ namespace ResourceTypes.Collisions.Opcode
 
         private const uint SUPPORTED_MODEL_VERSION = 1;
 
-        private ModelFlag modelCode;
+        private ModelFlag modelCode = ModelFlag.OPC_SINGLE_NODE;
         private AABBOptimizedTree tree = new DummyTree();
 
         public virtual void Load(BinaryReader reader)
@@ -124,7 +124,7 @@ namespace ResourceTypes.Collisions.Opcode
 
         private bool littleEndian = true;
 
-        private uint numLeaves;
+        private uint numLeaves = 1;
         private IList<LeafTriangles> leafTriangles = new List<LeafTriangles>();
         private uint numPrimitives;
         private IList<uint> primitiveIndices = new List<uint>();

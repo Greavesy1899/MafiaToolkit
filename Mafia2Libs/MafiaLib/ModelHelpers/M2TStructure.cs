@@ -9,6 +9,8 @@ using ResourceTypes.FrameResource;
 using Utils.SharpDXExtensions;
 using ResourceTypes.BufferPools;
 using System.Linq;
+using ResourceTypes.Collisions;
+using ResourceTypes.Collisions.Opcode;
 
 namespace Utils.Models
 {
@@ -161,21 +163,26 @@ namespace Utils.Models
             }
         }
 
-        public void BuildCollision(ResourceTypes.Collisions.Collision.NXSStruct nxsData, string name)
+        public void BuildCollision(ResourceTypes.Collisions.Collision.CollisionModel collisionModel, string name)
         {
             lods = new Lod[1];
             lods[0] = new Lod();
 
-            lods[0].Vertices = new Vertex[nxsData.Data.Vertices.Length];
-            lods[0].Indices = new ushort[nxsData.Data.Indices.Length];
+            TriangleMesh triangleMesh = collisionModel.Mesh;
+            lods[0].Vertices = new Vertex[triangleMesh.Vertices.Count];
+            lods[0].Indices = new ushort[triangleMesh.Triangles.Count * 3];
 
-            for (int x = 0; x != nxsData.Data.Indices.Length; x++)
-                lods[0].Indices[x] = (ushort)nxsData.Data.Indices[x];
+            for (int triIdx = 0, idxIdx = 0; triIdx < triangleMesh.Triangles.Count; triIdx++, idxIdx += 3)
+            {
+                lods[0].Indices[idxIdx] = (ushort) triangleMesh.Triangles[triIdx].v0;
+                lods[0].Indices[idxIdx + 1] = (ushort) triangleMesh.Triangles[triIdx].v1;
+                lods[0].Indices[idxIdx + 2] = (ushort) triangleMesh.Triangles[triIdx].v2;
+            }
 
             for (int x = 0; x != lods[0].Vertices.Length; x++)
             {
                 lods[0].Vertices[x] = new Vertex();
-                lods[0].Vertices[x].Position = nxsData.Data.Vertices[x];
+                lods[0].Vertices[x].Position = triangleMesh.Vertices[x];
             }
 
             //sort materials in order:
@@ -183,25 +190,23 @@ namespace Utils.Models
             //basically like mafia itself, so we have to reorder them and then save.
             //this doesn't mess anything up, just takes a little longer :)
             Dictionary<string, List<ushort>> sortedMats = new Dictionary<string, List<ushort>>();
-            uint index = 0;
-            for(int i = 0; i < nxsData.Data.Materials.Length; i++)
+            for(int i = 0; i < triangleMesh.MaterialIndices.Count; i++)
             {
-                string mat = nxsData.Data.Materials[i].ToString();
+                string mat = ((CollisionMaterials)triangleMesh.MaterialIndices[i]).ToString();
                 if(!sortedMats.ContainsKey(mat))
                 {
                     List<ushort> list = new List<ushort>();
-                    list.Add((ushort)nxsData.Data.Indices[index]);
-                    list.Add((ushort)nxsData.Data.Indices[index+1]);
-                    list.Add((ushort)nxsData.Data.Indices[index+2]);
+                    list.Add((ushort)collisionModel.Mesh.Triangles[i].v0);
+                    list.Add((ushort)collisionModel.Mesh.Triangles[i].v1);
+                    list.Add((ushort)collisionModel.Mesh.Triangles[i].v2);
                     sortedMats.Add(mat, list);
                 }
                 else
                 {
-                    sortedMats[mat].Add((ushort)nxsData.Data.Indices[index]);
-                    sortedMats[mat].Add((ushort)nxsData.Data.Indices[index + 1]);
-                    sortedMats[mat].Add((ushort)nxsData.Data.Indices[index + 2]);
+                    sortedMats[mat].Add((ushort)collisionModel.Mesh.Triangles[i].v0);
+                    sortedMats[mat].Add((ushort)collisionModel.Mesh.Triangles[i].v1);
+                    sortedMats[mat].Add((ushort)collisionModel.Mesh.Triangles[i].v2);
                 }
-                index += 3;
             }
 
             lods[0].Parts = new ModelPart[sortedMats.Count];

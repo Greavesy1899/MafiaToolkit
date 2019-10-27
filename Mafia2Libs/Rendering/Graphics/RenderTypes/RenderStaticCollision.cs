@@ -7,6 +7,8 @@ using ResourceTypes.Collisions;
 using static ResourceTypes.Collisions.Collision;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using System.Collections.Generic;
+using System.Linq;
+using ResourceTypes.Collisions.Opcode;
 
 namespace Rendering.Graphics
 {
@@ -53,62 +55,62 @@ namespace Rendering.Graphics
             }
             CalculateNormals();
         }
-        public void ConvertCollisionToRender(MeshData data)
+        public void ConvertCollisionToRender(TriangleMesh triangleMesh)
         { 
             DoRender = true;
             BoundingBox = new RenderBoundingBox();
-            BoundingBox.Init(data.BoundingBox);
+            BoundingBox.Init(triangleMesh.BoundingBox);
             BoundingBox.DoRender = false;
 
-            Indices = data.Indices;
-            Vertices = new VertexLayouts.CollisionLayout.Vertex[data.Vertices.Length];
-            materials = data.Materials;
-            for (int i = 0; i != data.Vertices.Length; i++)
+            Indices = triangleMesh.Triangles.SelectMany(t => new[] { t.v0, t.v1, t.v2 }).ToArray();
+            Vertices = new VertexLayouts.CollisionLayout.Vertex[triangleMesh.Vertices.Count];
+            materials = triangleMesh.MaterialIndices.Select(m => (CollisionMaterials)m).ToArray();
+            for (int i = 0; i != triangleMesh.Vertices.Count; i++)
             {
                 VertexLayouts.CollisionLayout.Vertex vertex = new VertexLayouts.CollisionLayout.Vertex();
-                vertex.Position = data.Vertices[i];
+                vertex.Position = triangleMesh.Vertices[i];
                 vertex.Normal = new Vector3(0.0f);
                 vertex.Colour = new Vector4(1.0f);
                 Vertices[i] = vertex;
             }
 
             int materialIDX = 0;
-            for(int i = 0; i != data.Indices.Length; i+=3)
+            for(int i = 0; i != triangleMesh.Triangles.Count; i++)
             {
                 switch(materials[materialIDX])
                 {
                     case CollisionMaterials.GrassAndSnow:
-                        Vertices[data.Indices[i]].Colour = new Vector4(0, 0.4f, 0, 1.0f);
-                        Vertices[data.Indices[i+1]].Colour = new Vector4(0, 0.4f, 0, 1.0f);
-                        Vertices[data.Indices[i+2]].Colour = new Vector4(0, 0.4f, 0, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v0].Colour = new Vector4(0, 0.4f, 0, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v1].Colour = new Vector4(0, 0.4f, 0, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v2].Colour = new Vector4(0, 0.4f, 0, 1.0f);
                         break;
                     case CollisionMaterials.Water:
-                        Vertices[data.Indices[i]].Colour = new Vector4(0, 0.3f, 0.8f, 1.0f);
-                        Vertices[data.Indices[i + 1]].Colour = new Vector4(0, 0.3f, 0.8f, 1.0f);
-                        Vertices[data.Indices[i + 2]].Colour = new Vector4(0, 0.3f, 0.8f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v0].Colour = new Vector4(0, 0.3f, 0.8f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v1].Colour = new Vector4(0, 0.3f, 0.8f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v2].Colour = new Vector4(0, 0.3f, 0.8f, 1.0f);
                         break;
                     case CollisionMaterials.Gravel:
                     case CollisionMaterials.Tarmac:
                     case CollisionMaterials.Sidewalk:
                     case CollisionMaterials.SidewalkEdge:
-                        Vertices[data.Indices[i]].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
-                        Vertices[data.Indices[i + 1]].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
-                        Vertices[data.Indices[i + 2]].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v0].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v1].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v2].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
                         break;
                     case CollisionMaterials.Mud:
-                        Vertices[data.Indices[i]].Colour = new Vector4(0.4f, 0.2f, 0.0f, 1.0f);
-                        Vertices[data.Indices[i + 1]].Colour = new Vector4(0.4f, 0.2f, 0.0f, 1.0f);
-                        Vertices[data.Indices[i + 2]].Colour = new Vector4(0.4f, 0.2f, 0.0f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v0].Colour = new Vector4(0.4f, 0.2f, 0.0f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v1].Colour = new Vector4(0.4f, 0.2f, 0.0f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v2].Colour = new Vector4(0.4f, 0.2f, 0.0f, 1.0f);
                         break;
                     case CollisionMaterials.PlayerCollision:
-                        Vertices[data.Indices[i]].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-                        Vertices[data.Indices[i + 1]].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-                        Vertices[data.Indices[i + 2]].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v0].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v1].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v2].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
                         break;
                     default:
-                        Vertices[data.Indices[i]].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
-                        Vertices[data.Indices[i + 1]].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
-                        Vertices[data.Indices[i + 2]].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v0].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v1].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v2].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
                         break;
 
                 }

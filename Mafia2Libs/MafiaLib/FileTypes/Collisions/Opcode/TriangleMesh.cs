@@ -1,16 +1,19 @@
 ﻿using SharpDX;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using static ResourceTypes.Collisions.Opcode.SerializationUtils;
 
 namespace ResourceTypes.Collisions.Opcode
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class TriangleMesh : IOpcodeSerializable
     {
         [Flags]
-        enum MeshSerialFlags
+        public enum MeshSerialFlags
         {
             // ReSharper disable InconsistentNaming
             MSF_MATERIALS = (1 << 0),
@@ -33,7 +36,7 @@ namespace ResourceTypes.Collisions.Opcode
         };
 
         /// <summary>Structure used to store indices for a triangles points.</summary>
-        struct Triangle
+        public struct Triangle
         {
             public uint v0;
             public uint v1;
@@ -49,15 +52,15 @@ namespace ResourceTypes.Collisions.Opcode
 
         private const uint SUPPORTED_MESH_VERSION = 1;
 
-        private MeshSerialFlags serialFlags;
+        public MeshSerialFlags SerialFlags { get; protected set; }
         private float convexEdgeThreshold = 0.001f;
         private NxHeightFieldAxis heightFieldVerticalAxis = NxHeightFieldAxis.NX_NOT_HEIGHTFIELD;
         private float heightFieldVerticalExtent;
-        private uint numVertices; // TODO: remove and use vertices.Count ?
-        private uint numTriangles; // TODO: remove and use triangles.Count ?
-        private IList<Vector3> vertices = new List<Vector3>();
-        private IList<Triangle> triangles = new List<Triangle>(); 
-        private IList<ushort> materialIndices = new List<ushort>();
+        public uint NumVertices => (uint)Vertices.Count;
+        public uint NumTriangles => (uint)Triangles.Count;
+        public IList<Vector3> Vertices { get; protected set; } = new List<Vector3>();
+        public IList<Triangle> Triangles { get; protected set; } = new List<Triangle>(); 
+        public IList<ushort> MaterialIndices { get; protected set; } = new List<ushort>();
         private IList<uint> remapIndices = new List<uint>();
         private uint numConvexParts;
         private uint numFlatParts;
@@ -65,12 +68,12 @@ namespace ResourceTypes.Collisions.Opcode
         private IList<ushort> flatParts = new List<ushort>();
         private HybridModel hybridModel = new HybridModel();
         private float geomEpsilon;
-        private BoundingBox boundingBox = new BoundingBox(Vector3.Zero, Vector3.Zero);
+        public BoundingBox BoundingBox { get; private set; } = new BoundingBox(Vector3.Zero, Vector3.Zero);
         private BoundingSphere boundingSphere = new BoundingSphere(Vector3.Zero, 0.0f);
         private float mass;
         private Matrix3x3 inertiaTensor = Matrix3x3.Zero;
         private Vector3 centerOfMass = Vector3.Zero;
-        private IList<byte> extraTriangleData = new List<byte>(); // TODO: flags enum
+        public IList<byte> ExtraTriangleData { get; protected set; } = new List<byte>(); // TODO: flags enum
 
 
         #region Load 
@@ -95,17 +98,17 @@ namespace ResourceTypes.Collisions.Opcode
 
             bool platformMismatch = !littleEndian;
 
-            serialFlags = (MeshSerialFlags)ReadDword(reader, platformMismatch);
+            SerialFlags = (MeshSerialFlags)ReadDword(reader, platformMismatch);
             convexEdgeThreshold = ReadFloat(reader, platformMismatch);
             heightFieldVerticalAxis = (NxHeightFieldAxis) ReadDword(reader, platformMismatch);
             heightFieldVerticalExtent = ReadFloat(reader, platformMismatch);
-            numVertices = ReadDword(reader, platformMismatch);
-            numTriangles = ReadDword(reader, platformMismatch);
+            uint numVertices = ReadDword(reader, platformMismatch);
+            uint numTriangles = ReadDword(reader, platformMismatch);
 
             ReadVertices(numVertices, reader, platformMismatch);
-            ReadTriangles(numTriangles, serialFlags, reader, platformMismatch);
-            ReadMaterialIndices(numTriangles, serialFlags, reader, platformMismatch);
-            ReadRemapIndices(numTriangles, serialFlags, reader, platformMismatch);
+            ReadTriangles(numTriangles, SerialFlags, reader, platformMismatch);
+            ReadMaterialIndices(numTriangles, SerialFlags, reader, platformMismatch);
+            ReadRemapIndices(numTriangles, SerialFlags, reader, platformMismatch);
 
             numConvexParts = ReadDword(reader, platformMismatch);
             numFlatParts = ReadDword(reader, platformMismatch);
@@ -123,13 +126,13 @@ namespace ResourceTypes.Collisions.Opcode
 
         private void ReadVertices(uint numVertices, BinaryReader reader, bool platformMismatch)
         {
-            vertices = new List<Vector3>((int)numVertices);
+            Vertices = new List<Vector3>((int)numVertices);
             for (int i = 0; i < numVertices; i++)
             {
                 float x = ReadFloat(reader, platformMismatch);
                 float y = ReadFloat(reader, platformMismatch);
                 float z = ReadFloat(reader, platformMismatch);
-                vertices.Add(new Vector3(x, y, z));
+                Vertices.Add(new Vector3(x, y, z));
             }
         }
 
@@ -140,7 +143,7 @@ namespace ResourceTypes.Collisions.Opcode
                 throw new OpcodeException($"Invalid serial flags {serialFlags}");
             }
 
-            triangles = new List<Triangle>((int)numTriangles);
+            Triangles = new List<Triangle>((int)numTriangles);
 
             if (serialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES))
             {
@@ -149,7 +152,7 @@ namespace ResourceTypes.Collisions.Opcode
                     uint v0 = reader.ReadByte();
                     uint v1 = reader.ReadByte();
                     uint v2 = reader.ReadByte();
-                    triangles.Add(new Triangle(v0, v1, v2));
+                    Triangles.Add(new Triangle(v0, v1, v2));
                 }
             }
             else if (serialFlags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
@@ -159,7 +162,7 @@ namespace ResourceTypes.Collisions.Opcode
                     uint v0 = ReadWord(reader, platformMismatch);
                     uint v1 = ReadWord(reader, platformMismatch);
                     uint v2 = ReadWord(reader, platformMismatch);
-                    triangles.Add(new Triangle(v0, v1, v2));
+                    Triangles.Add(new Triangle(v0, v1, v2));
                 }
             }
             else
@@ -169,7 +172,7 @@ namespace ResourceTypes.Collisions.Opcode
                     uint v0 = ReadDword(reader, platformMismatch);
                     uint v1 = ReadDword(reader, platformMismatch);
                     uint v2 = ReadDword(reader, platformMismatch);
-                    triangles.Add(new Triangle(v0, v1, v2));
+                    Triangles.Add(new Triangle(v0, v1, v2));
                 }
             }
         }
@@ -178,16 +181,16 @@ namespace ResourceTypes.Collisions.Opcode
         {
             if (serialFlags.HasFlag(MeshSerialFlags.MSF_MATERIALS))
             {
-                materialIndices = new List<ushort>((int)numTriangles);
+                MaterialIndices = new List<ushort>((int)numTriangles);
                 for (int i = 0; i < numTriangles; i++)
                 {
                     ushort mi = ReadWord(reader, platformMismatch);
-                    materialIndices.Add(mi);
+                    MaterialIndices.Add(mi);
                 }
             }
             else
             {
-                materialIndices.Clear();
+                MaterialIndices.Clear();
             }
         }
 
@@ -255,12 +258,22 @@ namespace ResourceTypes.Collisions.Opcode
             boundingSphere.Center.Y = ReadFloat(reader, platformMismatch);
             boundingSphere.Center.Z = ReadFloat(reader, platformMismatch);
             boundingSphere.Radius = ReadFloat(reader, platformMismatch);
-            boundingBox.Minimum.X = ReadFloat(reader, platformMismatch);
-            boundingBox.Minimum.Y = ReadFloat(reader, platformMismatch);
-            boundingBox.Minimum.Z = ReadFloat(reader, platformMismatch);
-            boundingBox.Maximum.X = ReadFloat(reader, platformMismatch);
-            boundingBox.Maximum.Y = ReadFloat(reader, platformMismatch);
-            boundingBox.Maximum.Z = ReadFloat(reader, platformMismatch);
+
+            this.BoundingBox = new BoundingBox
+            {
+                Minimum =
+                {
+                    X = ReadFloat(reader, platformMismatch),
+                    Y = ReadFloat(reader, platformMismatch),
+                    Z = ReadFloat(reader, platformMismatch)
+                },
+                Maximum =
+                {
+                    X = ReadFloat(reader, platformMismatch),
+                    Y = ReadFloat(reader, platformMismatch),
+                    Z = ReadFloat(reader, platformMismatch)
+                }
+            };
         }
 
         private void ReadPhysProperties(BinaryReader reader, bool platformMismatch)
@@ -291,45 +304,42 @@ namespace ResourceTypes.Collisions.Opcode
             List<byte> data = new List<byte>((int)numExtraTriangleData);
             byte[] bytes = reader.ReadBytes((int)numExtraTriangleData);
             data.AddRange(bytes);
-            extraTriangleData = data;
+            ExtraTriangleData = data;
         } 
         #endregion
 
         private void ValidateTriangleMesh()
         {
-            if (vertices.Count != numVertices)
+            if (SerialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES) && SerialFlags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
             {
-                throw new OpcodeException($"Number of vertices ({numVertices}) does not match actual count in the vertices list ({vertices.Count})");
+                throw new OpcodeException($"Invalid serial flags {SerialFlags}");
             }
-            if (triangles.Count != numTriangles)
+            if (SerialFlags.HasFlag(MeshSerialFlags.MSF_MATERIALS) && MaterialIndices.Count != NumTriangles)
             {
-                throw new OpcodeException($"Number of triangles ({numTriangles}) does not match actual count in the triangle list ({triangles.Count})");
+                throw new OpcodeException($"Number of material indices ({MaterialIndices.Count}) does not match the number of triangles ({Triangles.Count})");
             }
+            if (SerialFlags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP) && remapIndices.Count != NumTriangles)
+            {
+                throw new OpcodeException($"Number of remap indices ({remapIndices.Count}) does not match the number of triangles ({Triangles.Count})");
+            }
+            if (numConvexParts > 0 && convexParts.Count != NumTriangles)
+            {
+                throw new OpcodeException($"Number of convex parts elements ({convexParts.Count}) does not match the number of triangles ({Triangles.Count})");
+            }
+            if (numFlatParts > 0 && flatParts.Count != NumTriangles)
+            {
+                throw new OpcodeException($"Number of flat parts elements ({flatParts.Count}) does not match the number of triangles ({Triangles.Count})");
+            }
+            if (ExtraTriangleData.Count != NumTriangles)
+            {
+                throw new OpcodeException($"Number of extra triangle data({ExtraTriangleData.Count}) does not match the number of triangles ({Triangles.Count})");
+            }
+        }
 
-            if (serialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES) && serialFlags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
-            {
-                throw new OpcodeException($"Invalid serial flags {serialFlags}");
-            }
-            if (serialFlags.HasFlag(MeshSerialFlags.MSF_MATERIALS) && materialIndices.Count != numTriangles)
-            {
-                throw new OpcodeException($"Number of material indices ({materialIndices.Count}) does not match the number of triangles ({triangles.Count})");
-            }
-            if (serialFlags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP) && remapIndices.Count != numTriangles)
-            {
-                throw new OpcodeException($"Number of remap indices ({remapIndices.Count}) does not match the number of triangles ({triangles.Count})");
-            }
-            if (numConvexParts > 0 && convexParts.Count != numTriangles)
-            {
-                throw new OpcodeException($"Number of convex parts elements ({convexParts.Count}) does not match the number of triangles ({triangles.Count})");
-            }
-            if (numFlatParts > 0 && flatParts.Count != numTriangles)
-            {
-                throw new OpcodeException($"Number of flat parts elements ({flatParts.Count}) does not match the number of triangles ({triangles.Count})");
-            }
-            if (extraTriangleData.Count != numTriangles)
-            {
-                throw new OpcodeException($"Number of extra triangle data({extraTriangleData.Count}) does not match the number of triangles ({triangles.Count})");
-            }
+        public void Force32BitIndices()
+        {
+            SerialFlags &= ~MeshSerialFlags.MSF_8BIT_INDICES;
+            SerialFlags &= ~MeshSerialFlags.MSF_16BIT_INDICES;
         }
 
         #region Save
@@ -342,13 +352,13 @@ namespace ResourceTypes.Collisions.Opcode
 
             WriteHeader('M', 'E', 'S', 'H', SUPPORTED_MESH_VERSION, isLittleEndian, writer);
 
-            WriteDword((uint) serialFlags, writer, platformMismatch);
+            WriteDword((uint)SerialFlags, writer, platformMismatch);
             WriteFloat(convexEdgeThreshold, writer, platformMismatch);
             WriteDword((uint) heightFieldVerticalAxis, writer, platformMismatch);
             WriteFloat(heightFieldVerticalExtent, writer, platformMismatch);
 
-            WriteDword(numVertices, writer, platformMismatch);
-            WriteDword(numTriangles, writer, platformMismatch);
+            WriteDword(NumVertices, writer, platformMismatch);
+            WriteDword(NumTriangles, writer, platformMismatch);
 
             WriteVertices(writer, platformMismatch);
             WriteTriangles(writer, platformMismatch);
@@ -376,7 +386,7 @@ namespace ResourceTypes.Collisions.Opcode
 
         private void WriteVertices(BinaryWriter writer, bool platformMismatch)
         {
-            foreach (Vector3 vertex in vertices)
+            foreach (Vector3 vertex in Vertices)
             {
                 WriteFloat(vertex.X, writer, platformMismatch);
                 WriteFloat(vertex.Y, writer, platformMismatch);
@@ -386,23 +396,23 @@ namespace ResourceTypes.Collisions.Opcode
 
         private void WriteTriangles(BinaryWriter writer, bool platformMismatch)
         {
-            if (serialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES) && serialFlags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
+            if (SerialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES) && SerialFlags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
             {
-                throw new OpcodeException($"Invalid serial flags {serialFlags}");
+                throw new OpcodeException($"Invalid serial flags {SerialFlags}");
             }
 
-            if (serialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES))
+            if (SerialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES))
             {
-                foreach (Triangle triangle in triangles)
+                foreach (Triangle triangle in Triangles)
                 {
                     writer.Write((byte)triangle.v0);
                     writer.Write((byte)triangle.v1);
                     writer.Write((byte)triangle.v2);
                 }
             }
-            else if (serialFlags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
+            else if (SerialFlags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
             {
-                foreach (Triangle triangle in triangles)
+                foreach (Triangle triangle in Triangles)
                 {
                     WriteWord((ushort)triangle.v0, writer, platformMismatch);
                     WriteWord((ushort)triangle.v1, writer, platformMismatch);
@@ -411,7 +421,7 @@ namespace ResourceTypes.Collisions.Opcode
             }
             else
             {
-                foreach (Triangle triangle in triangles)
+                foreach (Triangle triangle in Triangles)
                 {
                     WriteDword(triangle.v0, writer, platformMismatch);
                     WriteDword(triangle.v1, writer, platformMismatch);
@@ -422,9 +432,9 @@ namespace ResourceTypes.Collisions.Opcode
 
         private void WriteMaterialIndices(BinaryWriter writer, bool platformMismatch)
         {
-            if (serialFlags.HasFlag(MeshSerialFlags.MSF_MATERIALS))
+            if (SerialFlags.HasFlag(MeshSerialFlags.MSF_MATERIALS))
             {
-                foreach (ushort materialIndex in materialIndices)
+                foreach (ushort materialIndex in MaterialIndices)
                 {
                     WriteWord(materialIndex, writer, platformMismatch);
                 }
@@ -433,7 +443,7 @@ namespace ResourceTypes.Collisions.Opcode
 
         private void WriteRemapIndices(BinaryWriter writer, bool platformMismatch)
         {
-            if (serialFlags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP))
+            if (SerialFlags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP))
             {
                 WriteIndices(remapIndices, writer, platformMismatch);
             }
@@ -474,12 +484,13 @@ namespace ResourceTypes.Collisions.Opcode
             WriteFloat(boundingSphere.Center.Y, writer, platformMismatch);
             WriteFloat(boundingSphere.Center.Z, writer, platformMismatch);
             WriteFloat(boundingSphere.Radius, writer, platformMismatch);
-            WriteFloat(boundingBox.Minimum.X, writer, platformMismatch);
-            WriteFloat(boundingBox.Minimum.Y, writer, platformMismatch);
-            WriteFloat(boundingBox.Minimum.Z, writer, platformMismatch);
-            WriteFloat(boundingBox.Maximum.X, writer, platformMismatch);
-            WriteFloat(boundingBox.Maximum.Y, writer, platformMismatch);
-            WriteFloat(boundingBox.Maximum.Z, writer, platformMismatch);
+
+            WriteFloat(BoundingBox.Minimum.X, writer, platformMismatch);
+            WriteFloat(BoundingBox.Minimum.Y, writer, platformMismatch);
+            WriteFloat(BoundingBox.Minimum.Z, writer, platformMismatch);
+            WriteFloat(BoundingBox.Maximum.X, writer, platformMismatch);
+            WriteFloat(BoundingBox.Maximum.Y, writer, platformMismatch);
+            WriteFloat(BoundingBox.Maximum.Z, writer, platformMismatch);
         }
 
         private void WritePhysProperties(BinaryWriter writer, bool platformMismatch)
@@ -501,19 +512,19 @@ namespace ResourceTypes.Collisions.Opcode
 
         private void WriteExtraTriangleData(BinaryWriter writer, bool platformMismatch)
         {
-            WriteDword((uint)extraTriangleData.Count, writer, platformMismatch);
-            writer.Write(extraTriangleData.ToArray());
+            WriteDword((uint)ExtraTriangleData.Count, writer, platformMismatch);
+            writer.Write(ExtraTriangleData.ToArray());
         } 
         #endregion
 
         public uint GetUsedBytes()
         {
             uint triangleStride;
-            if (serialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES))
+            if (SerialFlags.HasFlag(MeshSerialFlags.MSF_8BIT_INDICES))
             {
                 triangleStride = 3;
             }
-            else if (serialFlags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
+            else if (SerialFlags.HasFlag(MeshSerialFlags.MSF_16BIT_INDICES))
             {
                 triangleStride = 3 * 2;
             }
@@ -529,10 +540,10 @@ namespace ResourceTypes.Collisions.Opcode
                 + 4 // heightFieldVerticalExtent
                 + 4 // numVertices
                 + 4 // numTriangles
-                + numVertices * 12 // vertices
-                + numTriangles * triangleStride // triangles
-                + (serialFlags.HasFlag(MeshSerialFlags.MSF_MATERIALS) ? numTriangles * 2 : 0) // material indices
-                + (serialFlags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP) ? GetUsedBytesByIndices(remapIndices) : 0) // remap indices
+                + NumVertices * 12 // vertices
+                + NumTriangles * triangleStride // triangles
+                + (SerialFlags.HasFlag(MeshSerialFlags.MSF_MATERIALS) ? NumTriangles * 2 : 0) // material indices
+                + (SerialFlags.HasFlag(MeshSerialFlags.MSF_FACE_REMAP) ? GetUsedBytesByIndices(remapIndices) : 0) // remap indices
                 + 4 // numConvexParts
                 + 4 // numFlatParts
                 + (numConvexParts > 0 ? ((uint)convexParts.Count) * 2 : 0) // convexParts
@@ -543,7 +554,7 @@ namespace ResourceTypes.Collisions.Opcode
                 + 4 * 10 // bounds
                 + 4 * 13 // mass + inertia tensor + center of mass
                 + 4 // numExtraTriangleData
-                + ((uint)extraTriangleData.Count) * 1 // extraTriangleData
+                + ((uint)ExtraTriangleData.Count) * 1 // extraTriangleData
                 ;
         }
     }

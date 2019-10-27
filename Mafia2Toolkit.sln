@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mafia2Toolkit", "Mafia2Libs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolkitUpdater", "ToolkitUpdater\ToolkitUpdater.csproj", "{6AE7172A-B4DC-4588-890F-881AF2B31431}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mafia2ToolkitTests", "Mafia2ToolkitTests\Mafia2ToolkitTests.csproj", "{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{6AE7172A-B4DC-4588-890F-881AF2B31431}.Release|x64.Build.0 = Release|Any CPU
 		{6AE7172A-B4DC-4588-890F-881AF2B31431}.Release|x86.ActiveCfg = Release|x86
 		{6AE7172A-B4DC-4588-890F-881AF2B31431}.Release|x86.Build.0 = Release|x86
+		{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}.Debug|x64.Build.0 = Debug|Any CPU
+		{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}.Debug|x86.Build.0 = Debug|Any CPU
+		{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}.Release|x64.ActiveCfg = Release|Any CPU
+		{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}.Release|x64.Build.0 = Release|Any CPU
+		{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}.Release|x86.ActiveCfg = Release|Any CPU
+		{989E2AC5-F564-4A88-938A-EE5B4F47CB3B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -515,8 +515,8 @@ namespace Mafia2Tool
                     for (int i = 0; i != collisionRoot.Nodes.Count; i++)
                     {
                         TreeNode node = collisionRoot.Nodes[i];
-                        Collision.NXSStruct nxsData = (node.Tag as Collision.NXSStruct);
-                        collision.NXSData.Add(nxsData.Hash, nxsData);
+                        Collision.CollisionModel collisionModel = (node.Tag as Collision.CollisionModel);
+                        collision.Models.Add(collisionModel.Hash, collisionModel);
 
                         for (int x = 0; x != node.Nodes.Count; x++)
                         {
@@ -800,12 +800,12 @@ namespace Mafia2Tool
                 TreeNode node = new TreeNode("Collision Data");
                 collisionRoot = node;
 
-                for (int i = 0; i != SceneData.Collisions.NXSData.Count; i++)
+                for (int i = 0; i != SceneData.Collisions.Models.Count; i++)
                 {
-                    Collision.NXSStruct data = SceneData.Collisions.NXSData.ElementAt(i).Value;
+                    Collision.CollisionModel data = SceneData.Collisions.Models.ElementAt(i).Value;
                     RenderStaticCollision collision = new RenderStaticCollision();
-                    collision.ConvertCollisionToRender(data.Data);
-                    RenderStorageSingleton.Instance.StaticCollisions.Add(SceneData.Collisions.NXSData.ElementAt(i).Key, collision);
+                    collision.ConvertCollisionToRender(data.Mesh);
+                    RenderStorageSingleton.Instance.StaticCollisions.Add(SceneData.Collisions.Models.ElementAt(i).Key, collision);
                     TreeNode treeNode = new TreeNode(data.Hash.ToString());
                     treeNode.Text = data.Hash.ToString();
                     treeNode.Name = data.Hash.ToString();
@@ -1452,11 +1452,11 @@ namespace Mafia2Tool
                 if (Graphics.Assets.ContainsKey(int.Parse(node.Name)))
                     Graphics.Assets.Remove(int.Parse(node.Name));
             }
-            else if (node.Tag.GetType() == typeof(Collision.NXSStruct))
+            else if (node.Tag.GetType() == typeof(Collision.CollisionModel))
             {
                 dSceneTree.treeView1.Nodes.Remove(node);
 
-                Collision.NXSStruct data = (node.Tag as Collision.NXSStruct);
+                Collision.CollisionModel data = (node.Tag as Collision.CollisionModel);
                 if (RenderStorageSingleton.Instance.StaticCollisions.ContainsKey(data.Hash))
                     RenderStorageSingleton.Instance.StaticCollisions.Remove(data.Hash);
 
@@ -1560,13 +1560,13 @@ namespace Mafia2Tool
 
         private void Export3DButton_Click(object sender, EventArgs e)
         {
-            if (dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(Collision.NXSStruct))
-                ExportCollision(dSceneTree.treeView1.SelectedNode.Tag as Collision.NXSStruct);
+            if (dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(Collision.CollisionModel))
+                ExportCollision(dSceneTree.treeView1.SelectedNode.Tag as Collision.CollisionModel);
             else
                 Export3DFrame(dSceneTree.treeView1.SelectedNode.Tag);
         }
 
-        private void ExportCollision(Collision.NXSStruct data)
+        private void ExportCollision(Collision.CollisionModel data)
         {
             M2TStructure structure = new M2TStructure();
             structure.BuildCollision(data, dSceneTree.treeView1.SelectedNode.Name);
@@ -1931,54 +1931,54 @@ namespace Mafia2Tool
                     return;
                 }
 
-                M2TStructure colModel = new M2TStructure();
+                M2TStructure m2tColModel = new M2TStructure();
 
                 if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
-                    colModel.ReadFromM2T(new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)));
+                    m2tColModel.ReadFromM2T(new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)));
                 else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
-                    colModel.ReadFromFbx(MeshBrowser.FileName);
+                    m2tColModel.ReadFromFbx(MeshBrowser.FileName);
 
                 //crash happened/
-                if (colModel.Lods[0] == null)
+                if (m2tColModel.Lods[0] == null)
                     return;
 
-                Collision.NXSStruct nxsData = new Collision.NXSStruct();
-                nxsData.Hash = FNV64.Hash(colModel.Name);
-                nxsData.Data.BuildBasicCollision(colModel.Lods[0]);
-                nxsData.Sections = new Collision.Section[colModel.Lods[0].Parts.Length];
+                Collision.CollisionModel collisionModel = new Collision.CollisionModel();
+                collisionModel.Hash = FNV64.Hash(m2tColModel.Name);
+                collisionModel.Mesh = new TriangleMeshBuilderFromM2TStructure(m2tColModel.Lods[0]).Build();
+                collisionModel.Sections = new Collision.Section[m2tColModel.Lods[0].Parts.Length];
 
                 int curEdges = 0;
-                for (int i = 0; i != nxsData.Sections.Length; i++)
+                for (int i = 0; i != collisionModel.Sections.Length; i++)
                 {
-                    nxsData.Sections[i] = new Collision.Section();
+                    collisionModel.Sections[i] = new Collision.Section();
 
                     //handle collision type.
                     var result = CollisionMaterials.Concrete;
-                    if (!Enum.TryParse(colModel.Lods[0].Parts[i].Material, out result))
+                    if (!Enum.TryParse(m2tColModel.Lods[0].Parts[i].Material, out result))
                         result = CollisionMaterials.Concrete;
 
-                    nxsData.Sections[i].Unk1 = (int)result - 2;
-                    nxsData.Sections[i].Start = curEdges;
-                    nxsData.Sections[i].NumEdges = (int)colModel.Lods[0].Parts[i].NumFaces * 3;
-                    curEdges += nxsData.Sections[i].NumEdges; //fix for collisions not working correctly
+                    collisionModel.Sections[i].Material = (int)result - 2;
+                    collisionModel.Sections[i].Start = curEdges;
+                    collisionModel.Sections[i].NumEdges = (int)m2tColModel.Lods[0].Parts[i].NumFaces * 3;
+                    curEdges += collisionModel.Sections[i].NumEdges; //fix for collisions not working correctly
                 }
 
                 RenderStaticCollision collision = new RenderStaticCollision();
-                collision.ConvertCollisionToRender(nxsData.Data);
-                RenderStorageSingleton.Instance.StaticCollisions.Add(nxsData.Hash, collision);
+                collision.ConvertCollisionToRender(collisionModel.Mesh);
+                RenderStorageSingleton.Instance.StaticCollisions.Add(collisionModel.Hash, collision);
 
                 Collision.Placement placement = new Collision.Placement();
-                placement.Hash = nxsData.Hash;
+                placement.Hash = collisionModel.Hash;
                 placement.Unk5 = 128;
                 placement.Unk4 = -1;
                 placement.Position = new Vector3(0, 0, 0);
                 placement.Rotation = new Vector3(0);
 
                 //add to render storage
-                TreeNode treeNode = new TreeNode(nxsData.Hash.ToString());
-                treeNode.Text = nxsData.Hash.ToString();
-                treeNode.Name = nxsData.Hash.ToString();
-                treeNode.Tag = nxsData;
+                TreeNode treeNode = new TreeNode(collisionModel.Hash.ToString());
+                treeNode.Text = collisionModel.Hash.ToString();
+                treeNode.Name = collisionModel.Hash.ToString();
+                treeNode.Tag = collisionModel;
 
                 //add instance of object.
                 int refID = StringHelpers.RandomGenerator.Next();
@@ -1996,7 +1996,7 @@ namespace Mafia2Tool
                 instance.SetTransform(placement.Position, rot);
                 Graphics.InitObjectStack.Add(refID, instance);
                 dSceneTree.AddToTree(treeNode, collisionRoot);
-                SceneData.Collisions.NXSData.Add(nxsData.Hash, nxsData);
+                SceneData.Collisions.Models.Add(collisionModel.Hash, collisionModel);
                 SceneData.Collisions.Placements.Add(placement);
             }
         }
