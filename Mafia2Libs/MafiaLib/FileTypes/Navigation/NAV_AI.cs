@@ -7,6 +7,19 @@ using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
 {
+    //For AIWorld
+    //Type 1: AI Group
+    //Type 2: AI World Part
+    //Type 3: AI Nav Point
+    //Type 4: AI Cover Part
+    //Type 5: AI Anim Point
+    //Type 6: AI User Area
+    //Type 7: AI Path Object
+    //Type 8: AI Action Point
+    //Type 9: AI Action Point 2?
+    //Type 10: AI Action Point 3?
+    //Type 11: AI Hiding Place
+    //Type 12: AI Action Point 4?
     public class NAVData
     {
         //unk01_flags could be types; AIWORLDS seem to have 1005, while OBJDATA is 3604410608.
