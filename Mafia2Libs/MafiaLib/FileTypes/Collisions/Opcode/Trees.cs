@@ -54,6 +54,12 @@ namespace ResourceTypes.Collisions.Opcode
         }
     }
 
+    /// <summary>
+    /// A quantized no-leaf AABB tree.
+    /// </summary>
+    /// <remarks>
+    /// See also original sources (<c>OPC_OptimizedTree.cpp</c>)
+    /// </remarks>
     class AABBQuantizedNoLeafTree : AABBOptimizedTree
     {
         private IList<AABBQuantizedNoLeafNode> nodes = new List<AABBQuantizedNoLeafNode>();

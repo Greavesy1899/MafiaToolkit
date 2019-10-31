@@ -2,17 +2,6 @@
 
 namespace ResourceTypes.Collisions
 {
-    //taken from PhysX sdk
-    [Flags]
-    public enum MeshSerialFlags
-    {
-        MSF_MATERIALS = (1 << 0),
-        MSF_FACE_REMAP = (1 << 1),
-        MSF_HARDWARE_MESH = (1 << 2),
-        MSF_8BIT_INDICES = (1 << 3),
-        MSF_16BIT_INDICES = (1 << 4),
-    }
-
     //sand = grass/snow;
     //plaster is some kind of concrete.
     //car = concrete again?

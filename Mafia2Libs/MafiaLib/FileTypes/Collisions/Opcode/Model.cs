@@ -6,15 +6,27 @@ using static ResourceTypes.Collisions.Opcode.SerializationUtils;
 
 namespace ResourceTypes.Collisions.Opcode
 {
+    /// <summary>
+    /// The base class for collision models
+    /// </summary>
     abstract class ModelBase : IOpcodeSerializable
     {
         [Flags]
         enum ModelFlag
         {
             // ReSharper disable InconsistentNaming
-            OPC_QUANTIZED = (1 << 0), //!< Compressed/uncompressed tree
-            OPC_NO_LEAF = (1 << 1), //!< Leaf/NoLeaf tree
-            OPC_SINGLE_NODE = (1 << 2) //!< Special case for 1-node models
+            /// <summary>
+            /// Compressed/uncompressed tree
+            /// </summary>
+            OPC_QUANTIZED = (1 << 0),
+            /// <summary>
+            /// Leaf/NoLeaf tree
+            /// </summary>
+            OPC_NO_LEAF = (1 << 1),
+            /// <summary>
+            /// Special case for 1-node models
+            /// </summary>
+            OPC_SINGLE_NODE = (1 << 2)
             // ReSharper restore InconsistentNaming
         };
 
@@ -48,6 +60,9 @@ namespace ResourceTypes.Collisions.Opcode
             tree.Load(reader, platformMismatch);
         }
 
+        /// <summary>
+        /// Creates an optimized tree according to the modelCode flags
+        /// </summary>
         private void CreateTree()
         {
             if (modelCode.HasFlag(ModelFlag.OPC_SINGLE_NODE))
@@ -105,11 +120,23 @@ namespace ResourceTypes.Collisions.Opcode
         }
     }
 
+    /// <summary>
+    /// An hybrid collision model
+    /// </summary>
+    /// <remarks>
+    /// See full description in the original sources to get a general idea (<c>OPC_HybridModel.cpp</c>)
+    /// </remarks>
     class HybridModel : ModelBase
     {
+        /// <summary>
+        /// Leaf descriptor
+        /// </summary>
         struct LeafTriangles
         {
-            uint data;
+            /// <summary>
+            /// Packed data. Contains number of triangles in the leaf and triangle index for this leaf.  
+            /// </summary>
+            private uint data;
 
             public LeafTriangles(uint data)
             {
@@ -184,6 +211,10 @@ namespace ResourceTypes.Collisions.Opcode
             WriteDword(numPrimitives, writer, platformMismatch);
         }
 
+        /// <summary>
+        /// Gets the number of bytes used by the tree.
+        /// </summary>
+        /// <returns>Amount of bytes used</returns>
         public override uint GetUsedBytes()
         {
             return base.GetUsedBytes()

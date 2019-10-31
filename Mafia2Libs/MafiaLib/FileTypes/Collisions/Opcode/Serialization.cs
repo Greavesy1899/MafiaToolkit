@@ -121,7 +121,7 @@ namespace ResourceTypes.Collisions.Opcode
 
         public static void WriteHeader(char a, char b, char c, char d, uint version, bool isLittleEndian, BinaryWriter writer)
         {
-            WriteChunk('N', 'X', 'S', isLittleEndian, writer);
+            WriteChunk('N', 'X', 'S', isLittleEndian, writer); // "Novodex stream" identifier
             WriteChunk(a, b, c, d, writer);
             WriteDword(version, writer, !isLittleEndian);
         }

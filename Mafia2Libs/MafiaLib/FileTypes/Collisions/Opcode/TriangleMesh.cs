@@ -9,6 +9,9 @@ using static ResourceTypes.Collisions.Opcode.SerializationUtils;
 
 namespace ResourceTypes.Collisions.Opcode
 {
+    /// <summary>
+    /// A triangle mesh, also called a 'polygon soup'.
+    /// </summary>
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public class TriangleMesh : IOpcodeSerializable
     {
@@ -24,7 +27,9 @@ namespace ResourceTypes.Collisions.Opcode
             // ReSharper restore InconsistentNaming
         }
 
-        /// <summary>Specifies which axis is the "up" direction for a heightfield.</summary>
+        /// <summary>
+        /// Specifies which axis is the "up" direction for a heightfield.
+        /// </summary>
         enum NxHeightFieldAxis : uint
         {
             // ReSharper disable InconsistentNaming
@@ -35,7 +40,9 @@ namespace ResourceTypes.Collisions.Opcode
             // ReSharper restore InconsistentNaming
         };
 
-        /// <summary>Structure used to store indices for a triangles points.</summary>
+        /// <summary>
+        /// Structure used to store indices for a triangles points.
+        /// </summary>
         public struct Triangle
         {
             public uint v0;
@@ -53,30 +60,106 @@ namespace ResourceTypes.Collisions.Opcode
         private const uint SUPPORTED_MESH_VERSION = 1;
 
         public MeshSerialFlags SerialFlags { get; protected set; }
+        /// <summary>
+        /// The SDK computes convex edges of a mesh and use them for collision detection. This parameter allows you to
+        /// setup a tolerance for the convex edge detector.
+        /// Default value is <c>0.001f</c>, in Mafia 2 it is always used.
+        /// </summary>
         private float convexEdgeThreshold = 0.001f;
+        /// <summary>
+        /// The mesh may represent either an arbitrary mesh or a height field.
+        /// Height fields are not used in Mafia 2, so the value always is <c>NX_NOT_HEIGHTFIELD</c>.
+        /// </summary>
         private NxHeightFieldAxis heightFieldVerticalAxis = NxHeightFieldAxis.NX_NOT_HEIGHTFIELD;
+        /// <summary>
+        /// If this mesh is a height field, this sets how far 'below ground' the height volume extends.
+        /// Height fields are not used in Mafia 2, so the value always is set to 0.
+        /// </summary>
         private float heightFieldVerticalExtent;
         public uint NumVertices => (uint)Vertices.Count;
         public uint NumTriangles => (uint)Triangles.Count;
+        /// <summary>
+        /// Mesh vertices
+        /// </summary>
         public IList<Vector3> Vertices { get; protected set; } = new List<Vector3>();
-        public IList<Triangle> Triangles { get; protected set; } = new List<Triangle>(); 
+        /// <summary>
+        /// Mesh triangles (3 indices per triangle)
+        /// </summary>
+        public IList<Triangle> Triangles { get; protected set; } = new List<Triangle>();
+        /// <summary>
+        ///  Material indices for each triangle
+        /// </summary>
+        /// <remarks>
+        /// In Mafia 2 most likely this list contains indices from the 
+        /// <c>"pc\sds\tables\tables.sds\tables\MaterialsPhysics.tbl"</c> table
+        /// </remarks>
         public IList<ushort> MaterialIndices { get; protected set; } = new List<ushort>();
+        /// <summary>
+        /// The triangles are internally sorted according to various criteria. Hence the internal triangle order
+        /// does not always match the original(user-defined) order.The remapping table helps finding the old
+        /// indices knowing the new ones:
+        ///
+        /// <code>remapTable[internalTriangleIndex] = originalTriangleIndex</code>
+        /// </summary>
         private IList<uint> remapIndices = new List<uint>();
+        /// <summary>
+        /// Number of convex patches in the mesh
+        /// </summary>
         private uint numConvexParts;
+        /// <summary>
+        /// Number of flat polygons in the mesh
+        /// </summary>
         private uint numFlatParts;
+        /// <summary>
+        /// List of convex IDs
+        /// </summary>
         private IList<ushort> convexParts = new List<ushort>();
+        /// <summary>
+        /// List of flat IDs
+        /// </summary>
         private IList<ushort> flatParts = new List<ushort>();
+        /// <summary>
+        /// An hybrid collision model
+        /// </summary>
         private HybridModel hybridModel = new HybridModel();
+        /// <summary>
+        /// Geometric epsilon from local bounds
+        /// </summary>
+        /// <remarks>
+        /// As reference see technical description of <c>TriangleMeshBuilder::computeLocalBounds</c> method in original <c>TriangleMeshBuilder.cpp</c> source file of PhysX-3.3 SDK. 
+        /// </remarks>
         private float geomEpsilon;
+        /// <summary>
+        /// AABB of the mesh
+        /// </summary>
         public BoundingBox BoundingBox { get; private set; } = new BoundingBox(Vector3.Zero, Vector3.Zero);
+        /// <summary>
+        /// Bounding sphere of the mesh
+        /// </summary>
         private BoundingSphere boundingSphere = new BoundingSphere(Vector3.Zero, 0.0f);
+        /// <summary>
+        /// Total mass of the mesh
+        /// </summary>
         private float mass;
+        /// <summary>
+        /// Inertia tensor (mass matrix)
+        /// </summary>
         private Matrix3x3 inertiaTensor = Matrix3x3.Zero;
+        /// <summary>
+        /// Center of mass
+        /// </summary>
         private Vector3 centerOfMass = Vector3.Zero;
+        /// <summary>
+        /// Extra triangle data for each triangle. Contains edge flags. 
+        /// </summary>
         public IList<byte> ExtraTriangleData { get; protected set; } = new List<byte>(); // TODO: flags enum
 
 
         #region Load 
+        /// <summary>
+        /// Load the triangle mesh from a stream.
+        /// </summary>
+        /// <param name="reader">A stream reader</param>
         public void Load(BinaryReader reader)
         {
             char h0, h1, h2, h3;
@@ -118,7 +201,6 @@ namespace ResourceTypes.Collisions.Opcode
             uint modelSize = ReadDword(reader, platformMismatch); // TODO: do we need to keep it as field?
             hybridModel.Load(reader);
 
-            geomEpsilon = ReadFloat(reader, platformMismatch);
             ReadBounds(reader, platformMismatch);
             ReadPhysProperties(reader, platformMismatch);
             ReadExtraTriangleData(numTriangles, reader, platformMismatch);
@@ -254,6 +336,8 @@ namespace ResourceTypes.Collisions.Opcode
 
         private void ReadBounds(BinaryReader reader, bool platformMismatch)
         {
+            geomEpsilon = ReadFloat(reader, platformMismatch);
+
             boundingSphere.Center.X = ReadFloat(reader, platformMismatch);
             boundingSphere.Center.Y = ReadFloat(reader, platformMismatch);
             boundingSphere.Center.Z = ReadFloat(reader, platformMismatch);
@@ -343,6 +427,11 @@ namespace ResourceTypes.Collisions.Opcode
         }
 
         #region Save
+        /// <summary>
+        /// Save the triangle mesh to a stream
+        /// </summary>
+        /// <param name="writer">A stream writer</param>
+        /// <param name="endian">Endian</param>
         public void Save(BinaryWriter writer, Endian endian = Endian.LITTLE)
         {
             ValidateTriangleMesh();
@@ -375,7 +464,6 @@ namespace ResourceTypes.Collisions.Opcode
             WriteDword(modelSize, writer, platformMismatch);
             hybridModel.Save(writer, endian);
 
-            WriteFloat(geomEpsilon, writer, platformMismatch);
             WriteBounds(writer, platformMismatch);
             // TODO: do extra check - original code checks the TriangleMeshBuilder::computeMassInfo result 
             // and in case of null just writes single -1.0f float (just mass??, without tensor matrix and COM) to stream
@@ -480,6 +568,8 @@ namespace ResourceTypes.Collisions.Opcode
 
         private void WriteBounds(BinaryWriter writer, bool platformMismatch)
         {
+            WriteFloat(geomEpsilon, writer, platformMismatch);
+
             WriteFloat(boundingSphere.Center.X, writer, platformMismatch);
             WriteFloat(boundingSphere.Center.Y, writer, platformMismatch);
             WriteFloat(boundingSphere.Center.Z, writer, platformMismatch);

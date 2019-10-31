@@ -16,7 +16,7 @@ namespace ResourceTypes.Collisions
         public string Name { get; set; }
 
         public List<Placement> Placements { get; private set; }  = new List<Placement>(); 
-        public Dictionary<ulong, CollisionModel> Models { get; private set; } = new Dictionary<ulong,CollisionModel>();
+        public Dictionary<ulong, CollisionModel> Models { get; private set; } = new Dictionary<ulong, CollisionModel>();
 
 
         public Collision()
