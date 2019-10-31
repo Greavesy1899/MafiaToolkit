@@ -67,24 +67,29 @@ namespace ResourceTypes.Collisions
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(Name, FileMode.Create)))
             {
-                writer.Write(Version);
-                writer.Write(Unk0);
+                WriteToFile(writer);
+            }
+        }
 
-                writer.Write(Placements.Count);
-                foreach (Placement placement in Placements)
-                {
-                    placement.WriteToFile(writer);
-                }
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(Version);
+            writer.Write(Unk0);
 
-                writer.Write(Models.Count);
-                // NOTE: Models should be sorted by hash (ascending)
-                // TODO rtfm and maybe migrate to System.Collections.Generic.SortedList<TKey,TValue>
-                List<ulong> keys = new List<ulong>(Models.Keys);
-                keys.Sort();
-                foreach (var key in keys)
-                {
-                    Models[key].WriteToFile(writer);
-                }
+            writer.Write(Placements.Count);
+            foreach (Placement placement in Placements)
+            {
+                placement.WriteToFile(writer);
+            }
+
+            writer.Write(Models.Count);
+            // NOTE: Models should be sorted by hash (ascending)
+            // TODO rtfm and maybe migrate to System.Collections.Generic.SortedList<TKey,TValue>
+            List<ulong> keys = new List<ulong>(Models.Keys);
+            keys.Sort();
+            foreach (var key in keys)
+            {
+                Models[key].WriteToFile(writer);
             }
         }
 
@@ -98,16 +103,37 @@ namespace ResourceTypes.Collisions
         {
             public Vector3 Position { get; set; }
 
-            private Vector3 rotation;
-            public Vector3 Rotation
-            {
-                get { return rotation; }
-                set { rotation = value; }
-            }
+            public Vector3 Rotation { get; set; }
 
             public ulong Hash { get; set; }
             public int Unk4 { get; set; }
             public byte Unk5 { get; set; }
+
+            /// <summary>
+            /// Helper property to get/set rotation in degrees (with Z axes adopted to the Toolkit render coordinate system)
+            /// instead of original rotation which is stored in radians
+            /// </summary>
+            public Vector3 RotationDegrees
+            {
+                get
+                {
+                    return new Vector3()
+                    {
+                        X = MathUtil.RadiansToDegrees(Rotation.X),
+                        Y = MathUtil.RadiansToDegrees(Rotation.Y),
+                        Z = -MathUtil.RadiansToDegrees(Rotation.Z)
+                    };
+                }
+                set
+                {
+                    Rotation = new Vector3()
+                    {
+                        X = MathUtil.DegreesToRadians(value.X),
+                        Y = MathUtil.DegreesToRadians(value.Y),
+                        Z = -MathUtil.DegreesToRadians(value.Z)
+                    };
+                }
+            }
 
             public Placement(BinaryReader reader)
             {
@@ -121,7 +147,7 @@ namespace ResourceTypes.Collisions
             public Placement(Placement other)
             {
                 Position = other.Position;
-                rotation = other.rotation;
+                Rotation = other.Rotation;
                 Hash = other.Hash;
                 Unk4 = other.Unk4;
                 Unk5 = other.Unk5;
@@ -130,12 +156,7 @@ namespace ResourceTypes.Collisions
             public void ReadFromFile(BinaryReader reader)
             {
                 Position = Vector3Extenders.ReadFromFile(reader);
-                rotation = Vector3Extenders.ReadFromFile(reader);
-                Vector3 rot = new Vector3();
-                rot.X = MathUtil.RadiansToDegrees(rotation.X);
-                rot.Y = MathUtil.RadiansToDegrees(rotation.Y);
-                rot.Z = -MathUtil.RadiansToDegrees(rotation.Z);
-                rotation = rot;
+                Rotation = Vector3Extenders.ReadFromFile(reader);
                 Hash = reader.ReadUInt64();
                 Unk4 = reader.ReadInt32();
                 Unk5 = reader.ReadByte();
@@ -144,11 +165,7 @@ namespace ResourceTypes.Collisions
             public void WriteToFile(BinaryWriter writer)
             {
                 Position.WriteToFile(writer);
-                Vector3 rot = new Vector3();
-                rot.X = MathUtil.DegreesToRadians(rotation.X);
-                rot.Y = MathUtil.DegreesToRadians(rotation.Y);
-                rot.Z = -MathUtil.DegreesToRadians(rotation.Z);
-                rot.WriteToFile(writer);
+                Rotation.WriteToFile(writer);
                 writer.Write(Hash);
                 writer.Write(Unk4);
                 writer.Write(Unk5);

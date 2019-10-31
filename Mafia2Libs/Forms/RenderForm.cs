@@ -827,7 +827,7 @@ namespace Mafia2Tool
                         RenderInstance instance = new RenderInstance();
                         instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
                         Matrix33 rot = new Matrix33();
-                        rot.SetEuler(placement.Rotation);
+                        rot.SetEuler(placement.RotationDegrees);
                         instance.SetTransform(placement.Position, rot);
                         TreeNode child = new TreeNode();
                         child.Text = nodes[0].Nodes.Count.ToString();
@@ -983,7 +983,7 @@ namespace Mafia2Tool
                     Graphics.Assets.TryGetValue(int.Parse(selected.Name), out asset);
                     instance = (asset as RenderInstance);
                     Matrix33 matrix = new Matrix33();
-                    matrix.SetEuler(placement.Rotation);
+                    matrix.SetEuler(placement.RotationDegrees);
                     instance.SetTransform(placement.Position, matrix);
                 }
             }
@@ -1561,7 +1561,7 @@ namespace Mafia2Tool
                 RenderInstance instance = new RenderInstance();
                 instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
                 Matrix33 rot = new Matrix33();
-                rot.SetEuler(placement.Rotation);
+                rot.SetEuler(placement.RotationDegrees);
                 instance.SetTransform(placement.Position, rot);
                 Graphics.InitObjectStack.Add(refID, instance);
             }
@@ -2001,7 +2001,7 @@ namespace Mafia2Tool
                 RenderInstance instance = new RenderInstance();
                 instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
                 Matrix33 rot = new Matrix33();
-                rot.SetEuler(placement.Rotation);
+                rot.SetEuler(placement.RotationDegrees);
                 instance.SetTransform(placement.Position, rot);
                 Graphics.InitObjectStack.Add(refID, instance);
                 dSceneTree.AddToTree(treeNode, collisionRoot);

@@ -88,9 +88,10 @@ namespace Forms.Docking
                 PositionXNumeric.Value = Convert.ToDecimal(placement.Position.X);
                 PositionYNumeric.Value = Convert.ToDecimal(placement.Position.Y);
                 PositionZNumeric.Value = Convert.ToDecimal(placement.Position.Z);
-                RotationXNumeric.Value = Convert.ToDecimal(placement.Rotation.X);
-                RotationYNumeric.Value = Convert.ToDecimal(placement.Rotation.Y);
-                RotationZNumeric.Value = Convert.ToDecimal(placement.Rotation.Z);
+                Vector3 placementRotation = placement.RotationDegrees;
+                RotationXNumeric.Value = Convert.ToDecimal(placementRotation.X);
+                RotationYNumeric.Value = Convert.ToDecimal(placementRotation.Y);
+                RotationZNumeric.Value = Convert.ToDecimal(placementRotation.Z);
                 ScaleXNumeric.Value = ScaleYNumeric.Value = ScaleZNumeric.Value = 0.0M;
                 ScaleXNumeric.Enabled = ScaleYNumeric.Enabled = ScaleZNumeric.Enabled = false;
             }
@@ -117,7 +118,7 @@ namespace Forms.Docking
                 {
                     ResourceTypes.Collisions.Collision.Placement placement = (currentObject as ResourceTypes.Collisions.Collision.Placement);
                     placement.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
-                    placement.Rotation = new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value));
+                    placement.RotationDegrees = new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value));
                 }
             }
         }
