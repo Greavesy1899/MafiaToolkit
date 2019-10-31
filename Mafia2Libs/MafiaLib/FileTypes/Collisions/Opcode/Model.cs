@@ -63,6 +63,9 @@ namespace ResourceTypes.Collisions.Opcode
         /// <summary>
         /// Creates an optimized tree according to the modelCode flags
         /// </summary>
+        /// <remarks>
+        /// Actually only AABBQuantizedNoLeafTree is used in Mafia 2
+        /// </remarks>
         private void CreateTree()
         {
             if (modelCode.HasFlag(ModelFlag.OPC_SINGLE_NODE))
