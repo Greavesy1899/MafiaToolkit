@@ -19,12 +19,9 @@ using Utils.StringHelpers;
 using Forms.Docking;
 using WeifenLuo.WinFormsUI.Docking;
 using Utils.Models;
-using System.ComponentModel;
-using Utils.Extensions;
 using ResourceTypes.Navigation;
 using ResourceTypes.Materials;
 using Utils.SharpDXExtensions;
-using Gibbed.Illusion.FileFormats.Hashing;
 using ResourceTypes.Collisions;
 using System.Diagnostics;
 
@@ -1951,26 +1948,7 @@ namespace Mafia2Tool
                 if (m2tColModel.Lods[0] == null)
                     return;
 
-                Collision.CollisionModel collisionModel = new Collision.CollisionModel();
-                collisionModel.Hash = FNV64.Hash(m2tColModel.Name);
-                collisionModel.Mesh = new TriangleMeshBuilderFromM2TStructure(m2tColModel.Lods[0]).Build();
-                collisionModel.Sections = new Collision.Section[m2tColModel.Lods[0].Parts.Length];
-
-                int curEdges = 0;
-                for (int i = 0; i != collisionModel.Sections.Length; i++)
-                {
-                    collisionModel.Sections[i] = new Collision.Section();
-
-                    //handle collision type.
-                    var result = CollisionMaterials.Concrete;
-                    if (!Enum.TryParse(m2tColModel.Lods[0].Parts[i].Material, out result))
-                        result = CollisionMaterials.Concrete;
-
-                    collisionModel.Sections[i].Material = (int)result - 2;
-                    collisionModel.Sections[i].Start = curEdges;
-                    collisionModel.Sections[i].NumEdges = (int)m2tColModel.Lods[0].Parts[i].NumFaces * 3;
-                    curEdges += collisionModel.Sections[i].NumEdges; //fix for collisions not working correctly
-                }
+                Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromM2TStructure(m2tColModel);
 
                 RenderStaticCollision collision = new RenderStaticCollision();
                 collision.ConvertCollisionToRender(collisionModel.Mesh);

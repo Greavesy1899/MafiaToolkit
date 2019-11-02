@@ -1,7 +1,5 @@
-﻿using Gibbed.Illusion.FileFormats.Hashing;
-using ResourceTypes.Collisions;
+﻿using ResourceTypes.Collisions;
 using SharpDX;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -129,19 +127,7 @@ namespace Mafia2Tool
             if (m2tColModel.Lods[0] == null)
                 return;
 
-            Collision.CollisionModel collisionModel = new Collision.CollisionModel();
-            collisionModel.Hash = FNV64.Hash(m2tColModel.Name);
-            collisionModel.Mesh = new TriangleMeshBuilderFromM2TStructure(m2tColModel.Lods[0]).Build();
-            collisionModel.Sections = new Collision.Section[m2tColModel.Lods[0].Parts.Length];
-
-            int curEdges = 0;
-            for (int i = 0; i != collisionModel.Sections.Length; i++)
-            {
-                collisionModel.Sections[i] = new Collision.Section();
-                collisionModel.Sections[i].Material = (int)Enum.Parse(typeof(CollisionMaterials), m2tColModel.Lods[0].Parts[i].Material)-2;
-                collisionModel.Sections[i].Start = curEdges;
-                collisionModel.Sections[i].NumEdges = (int)m2tColModel.Lods[0].Parts[i].NumFaces*3;
-            }
+            Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromM2TStructure(m2tColModel);
 
             Collision.Placement placement = new Collision.Placement();
             placement.Hash = collisionModel.Hash;
@@ -149,7 +135,6 @@ namespace Mafia2Tool
             placement.Unk4 = -1;
             placement.Position = new Vector3(0, 0, 0);
             placement.Rotation = new Vector3(0);
-
 
             SceneData.Collisions.Models.Add(collisionModel.Hash, collisionModel);
             SceneData.Collisions.Placements.Add(placement);

@@ -91,7 +91,8 @@ namespace ResourceTypes.Collisions.Opcode
         /// </summary>
         /// <remarks>
         /// In Mafia 2 most likely this list contains indices from the 
-        /// <c>"pc\sds\tables\tables.sds\tables\MaterialsPhysics.tbl"</c> table
+        /// <c>"pc/sds/tables/tables.sds/tables/MaterialsPhysics.tbl"</c> table
+        /// (LO part of "guid" column)
         /// </remarks>
         public IList<ushort> MaterialIndices { get; protected set; } = new List<ushort>();
         /// <summary>
