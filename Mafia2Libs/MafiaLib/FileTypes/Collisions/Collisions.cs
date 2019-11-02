@@ -84,7 +84,8 @@ namespace ResourceTypes.Collisions
             }
 
             writer.Write(Models.Count);
-
+            // NOTE: Models should be sorted by hash (ascending)
+            // that's why SortedDictionary is used
             foreach (var collisionModel in Models)
             {
                 collisionModel.Value.WriteToFile(writer);
