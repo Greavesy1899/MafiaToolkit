@@ -16,7 +16,7 @@ namespace ResourceTypes.Collisions
         public string Name { get; set; }
 
         public List<Placement> Placements { get; private set; }  = new List<Placement>(); 
-        public Dictionary<ulong, CollisionModel> Models { get; private set; } = new Dictionary<ulong, CollisionModel>();
+        public SortedDictionary<ulong, CollisionModel> Models { get; private set; } = new SortedDictionary<ulong, CollisionModel>();
 
 
         public Collision()
@@ -50,7 +50,8 @@ namespace ResourceTypes.Collisions
                 Placements.Add(new Placement(reader));
 
             int numModels = reader.ReadInt32();
-            Models = new Dictionary<ulong, CollisionModel>();
+
+            Models = new SortedDictionary<ulong, CollisionModel>();
             for (int i = 0; i < numModels; i++)
             {
                 CollisionModel model = new CollisionModel(reader);
@@ -77,19 +78,16 @@ namespace ResourceTypes.Collisions
             writer.Write(Unk0);
 
             writer.Write(Placements.Count);
-            foreach (Placement placement in Placements)
+            foreach (var placement in Placements)
             {
                 placement.WriteToFile(writer);
             }
 
             writer.Write(Models.Count);
-            // NOTE: Models should be sorted by hash (ascending)
-            // TODO rtfm and maybe migrate to System.Collections.Generic.SortedList<TKey,TValue>
-            List<ulong> keys = new List<ulong>(Models.Keys);
-            keys.Sort();
-            foreach (var key in keys)
+
+            foreach (var collisionModel in Models)
             {
-                Models[key].WriteToFile(writer);
+                collisionModel.Value.WriteToFile(writer);
             }
         }
 
@@ -181,13 +179,7 @@ namespace ResourceTypes.Collisions
         {
             public ulong Hash { get; set; }
             public TriangleMesh Mesh { get; set; }
-            
-            protected Section[] sections;
-            public Section[] Sections
-            {
-                get { return sections; }
-                set { sections = value; }
-            }
+            public IList<Section> Sections { get; set; } 
 
             public CollisionModel(BinaryReader reader)
             {
@@ -197,8 +189,8 @@ namespace ResourceTypes.Collisions
             public CollisionModel()
             {
                 Hash = 0;
-                Mesh = new TriangleMesh();;
-                sections = new Section[1];
+                Mesh = new TriangleMesh();
+                Sections = new List<Section>();
             }
 
             public void ReadFromFile(BinaryReader reader)
@@ -209,10 +201,12 @@ namespace ResourceTypes.Collisions
                 Mesh = new TriangleMesh();
                 Mesh.Load(reader);
 
-                int length = reader.ReadInt32();
-                sections = new Section[length];
-                for (int i = 0; i != sections.Length; i++)
-                    sections[i] = new Section(reader);
+                int numSections = reader.ReadInt32();
+                Sections = new List<Section>();
+                for (int i = 0; i < numSections; i++)
+                {
+                    Sections.Add(new Section(reader));
+                }
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -222,9 +216,11 @@ namespace ResourceTypes.Collisions
                 writer.Write(Mesh.GetUsedBytes());
                 Mesh.Save(writer);
 
-                writer.Write(sections.Length);
-                for (int i = 0; i != sections.Length; i++)
-                    sections[i].WriteToFile(writer);
+                writer.Write(Sections.Count);
+                foreach (var section in Sections)
+                {
+                    section.WriteToFile(writer);
+                }
             }
         }
 
@@ -244,16 +240,16 @@ namespace ResourceTypes.Collisions
             /// </summary>
             public int Unk2 { get; set; }
 
+            public Section()
+            {
+            }
+
             public Section(BinaryReader reader)
             {
                 Start = reader.ReadInt32();
                 NumEdges = reader.ReadInt32();
                 Material = reader.ReadInt32();
                 Unk2 = reader.ReadInt32();
-            }
-
-            public Section()
-            {
             }
 
             public void WriteToFile(BinaryWriter writer)

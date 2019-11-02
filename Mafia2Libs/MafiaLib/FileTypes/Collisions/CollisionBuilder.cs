@@ -29,7 +29,7 @@ namespace ResourceTypes.Collisions
                     .GroupBy(p => MaterialToIndex(p.Material))
                     .ToDictionary(p => p.Key, p => p.ToList())
             );
-            collisionModel.Sections = new Collision.Section[sortedParts.Count];
+            collisionModel.Sections = new List<Collision.Section>(sortedParts.Count);
 
             IList<TriangleMesh.Triangle> orderedTriangles = new List<TriangleMesh.Triangle>(modelLod.Indices.Length);
             IList<ushort> materials = new List<ushort>();
@@ -38,12 +38,12 @@ namespace ResourceTypes.Collisions
             foreach (var part in sortedParts)
             {
                 var sameMaterialParts = part.Value;
-                collisionModel.Sections[currentSection] = new Collision.Section
+                collisionModel.Sections.Add(new Collision.Section
                 {
                     Material = part.Key - 2,
                     Start = orderedTriangles.Count * 3,
-                    NumEdges = (int)sameMaterialParts.Sum(p => p.NumFaces) * 3
-                };
+                    NumEdges = (int) sameMaterialParts.Sum(p => p.NumFaces) * 3
+                });
 
                 foreach (var sameMaterialPart in sameMaterialParts)
                 {
@@ -69,12 +69,11 @@ namespace ResourceTypes.Collisions
 
         private ushort MaterialToIndex(string material)
         {
-            var result = CollisionMaterials.Concrete;
-            if (!Enum.TryParse(material, true, out result))
-                result = CollisionMaterials.Concrete; // fallback material
-            return (ushort)result;
+            CollisionMaterials parsedMaterial;
+            if (!Enum.TryParse(material, true, out parsedMaterial))
+                parsedMaterial = CollisionMaterials.Concrete; // fallback material
+            return (ushort) parsedMaterial;
         }
-
     }
 
     public class TriangleMeshBuilder : TriangleMesh
