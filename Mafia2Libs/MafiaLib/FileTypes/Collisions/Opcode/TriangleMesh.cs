@@ -485,8 +485,6 @@ namespace ResourceTypes.Collisions.Opcode
             hybridModel.Save(writer, endian);
 
             WriteBounds(writer, platformMismatch);
-            // TODO: do extra check - original code checks the TriangleMeshBuilder::computeMassInfo result 
-            // and in case of null just writes single -1.0f float (just mass??, without tensor matrix and COM) to stream
             WritePhysProperties(writer, platformMismatch);
 
             WriteExtraTriangleData(writer, platformMismatch);
@@ -605,6 +603,12 @@ namespace ResourceTypes.Collisions.Opcode
 
         private void WritePhysProperties(BinaryWriter writer, bool platformMismatch)
         {
+            // NOTE: While saving triangle mesh the original code in <c>TriangleMeshBuilder::save</c> method
+            // checks the <c>TriangleMeshBuilder::computeMassInfo</c> result and in case of failure
+            // just writes single -1.0f float as mass and skip writing tensor matrix and COM to the stream.
+            // There is no such collision files (with mass == -1.0f) in the original Mafia 2 game 
+            // but theoretically it can issue for user-created collisions.
+            // So we can process this thing here in future if we really need it (and reading code also).
             WriteFloat(mass, writer, platformMismatch);
             WriteFloat(inertiaTensor.M11, writer, platformMismatch);
             WriteFloat(inertiaTensor.M12, writer, platformMismatch);
