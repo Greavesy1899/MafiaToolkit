@@ -202,9 +202,10 @@ namespace ResourceTypes.Collisions.Opcode
                 throw new OpcodeException("HybridModel model should contain at least one leaf");
             }
 
-            if (numLeaves > 1 && leafTriangles.Count > 1)
+            uint actualNumLeaves = (uint) leafTriangles.Count;
+            if (numLeaves > 1 && actualNumLeaves > 1 && numLeaves != actualNumLeaves)
             {
-                throw new OpcodeException($"Number of leaves {numLeaves} does not match actual number of leaves {leafTriangles.Count}");
+                throw new OpcodeException($"Number of leaves {numLeaves} does not match actual number of leaves {actualNumLeaves}");
             }
 
             bool isLittleEndian = endian == Endian.Little;
@@ -219,9 +220,9 @@ namespace ResourceTypes.Collisions.Opcode
                 WriteIndices(leafTriangles.Select(lt => (uint) lt).ToList(), writer, platformMismatch);
             }
 
+            WriteDword((uint)primitiveIndices.Count, writer, platformMismatch);
             if (primitiveIndices.Count > 0)
             {
-                WriteDword((uint) primitiveIndices.Count, writer, platformMismatch);
                 WriteIndices(primitiveIndices, writer, platformMismatch);
             }
         }

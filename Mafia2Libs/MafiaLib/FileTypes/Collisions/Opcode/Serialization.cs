@@ -218,6 +218,11 @@ namespace ResourceTypes.Collisions.Opcode
 
         public static uint GetUsedBytesByIndices(IList<uint> indices)
         {
+            if (indices.Count == 0)
+            {
+                return 0;
+            }
+
             uint maxIndex = indices.Max();
             uint indexStride;
             if (maxIndex <= 0xff)
