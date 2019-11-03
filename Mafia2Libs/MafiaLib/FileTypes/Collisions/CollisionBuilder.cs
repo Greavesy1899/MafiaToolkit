@@ -109,7 +109,7 @@ namespace ResourceTypes.Collisions
             Vertices = vertexList;
             Triangles = triangleList;
             MaterialIndices = materialsList;
-            ExtraTriangleData = new List<byte>(new byte[Triangles.Count]);
+            ExtraTriangleData = new List<ExtraTrigDataFlag>(new ExtraTrigDataFlag[Triangles.Count]);
         }
     }
 }

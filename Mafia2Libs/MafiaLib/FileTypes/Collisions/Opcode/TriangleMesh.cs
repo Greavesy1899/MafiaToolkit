@@ -57,7 +57,21 @@ namespace ResourceTypes.Collisions.Opcode
             }
         }
 
-        private const uint SUPPORTED_MESH_VERSION = 1;
+        [Flags]
+        public enum ExtraTrigDataFlag : byte
+        {
+            // ReSharper disable InconsistentNaming
+            ETD_IGNORE_EDGE_01 = (1 << 0),
+            ETD_IGNORE_EDGE_12 = (1 << 1),
+            ETD_IGNORE_EDGE_20 = (1 << 2),
+
+            ETD_CONVEX_EDGE_01 = (1 << 3),  // PT: important value, don't change
+            ETD_CONVEX_EDGE_12 = (1 << 4),  // PT: important value, don't change
+            ETD_CONVEX_EDGE_20 = (1 << 5),	// PT: important value, don't change
+            // ReSharper restore InconsistentNaming
+        }
+
+        private const uint SupportedMeshVersion = 1;
 
         public MeshSerialFlags SerialFlags { get; protected set; }
         /// <summary>
@@ -153,7 +167,7 @@ namespace ResourceTypes.Collisions.Opcode
         /// <summary>
         /// Extra triangle data for each triangle. Contains edge flags. 
         /// </summary>
-        public IList<byte> ExtraTriangleData { get; protected set; } = new List<byte>(); // TODO: flags enum
+        public IList<ExtraTrigDataFlag> ExtraTriangleData { get; protected set; } = new List<ExtraTrigDataFlag>();
 
 
         #region Load 
@@ -175,7 +189,7 @@ namespace ResourceTypes.Collisions.Opcode
             {
                 throw new OpcodeException("Invalid 'MESH' header");
             }
-            if (version != SUPPORTED_MESH_VERSION)
+            if (version != SupportedMeshVersion)
             {
                 throw new OpcodeException($"Unsupported mesh version {version}");
             }
@@ -393,10 +407,8 @@ namespace ResourceTypes.Collisions.Opcode
                 throw new OpcodeException($"Number of ExtraTriangleData {numExtraTriangleData} does not match the number of triangles {numTriangles}");
             }
 
-            List<byte> data = new List<byte>((int)numExtraTriangleData);
-            byte[] bytes = reader.ReadBytes((int)numExtraTriangleData);
-            data.AddRange(bytes);
-            ExtraTriangleData = data;
+            byte[] extraTrigDataBytes = reader.ReadBytes((int)numExtraTriangleData);
+            ExtraTriangleData = extraTrigDataBytes.Select(b => (ExtraTrigDataFlag)b).ToList();
         } 
         #endregion
 
@@ -447,7 +459,7 @@ namespace ResourceTypes.Collisions.Opcode
             bool isLittleEndian = endian == Endian.Little;
             bool platformMismatch = endian == Endian.Big;
 
-            WriteHeader('M', 'E', 'S', 'H', SUPPORTED_MESH_VERSION, isLittleEndian, writer);
+            WriteHeader('M', 'E', 'S', 'H', SupportedMeshVersion, isLittleEndian, writer);
 
             WriteDword((uint)SerialFlags, writer, platformMismatch);
             WriteFloat(convexEdgeThreshold, writer, platformMismatch);
@@ -611,7 +623,7 @@ namespace ResourceTypes.Collisions.Opcode
         private void WriteExtraTriangleData(BinaryWriter writer, bool platformMismatch)
         {
             WriteDword((uint)ExtraTriangleData.Count, writer, platformMismatch);
-            writer.Write(ExtraTriangleData.ToArray());
+            writer.Write(ExtraTriangleData.Select(etd => (byte) etd).ToArray());
         } 
         #endregion
 
