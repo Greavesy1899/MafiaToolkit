@@ -6,21 +6,25 @@ using Gibbed.IO;
 
 namespace ResourceTypes.Collisions.Opcode
 {
+    // NOTE: Could be migrated to Gibbed.IO.Endian to reduce
+    // the number of semantically identical types
     public enum Endian
     {
-        // ReSharper disable InconsistentNaming
-        LITTLE,
-        BIG
-        // ReSharper restore InconsistentNaming
+        Little,
+        Big
     }
 
     public interface IOpcodeSerializable
     {
         void Load(BinaryReader reader);
-        void Save(BinaryWriter writer, Endian endian = Endian.LITTLE);
+        void Save(BinaryWriter writer, Endian endian = Endian.Little);
         uint GetUsedBytes();
     }
 
+    /// <summary>
+    /// In general class contains some kind of reflection to the utility methods
+    /// located in the <c>Serialize.h</c> and <c>Serialize.cpp</c> of the original SDK 
+    /// </summary>
     static class SerializationUtils
     {
         public static uint ReadDword(BinaryReader reader, bool endianMismatch = false)

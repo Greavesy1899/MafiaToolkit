@@ -30,7 +30,7 @@ namespace ResourceTypes.Collisions.Opcode
             // ReSharper restore InconsistentNaming
         };
 
-        private const uint SUPPORTED_MODEL_VERSION = 1;
+        private const uint SupportedModelVersion = 1;
 
         private ModelFlag modelCode = ModelFlag.OPC_SINGLE_NODE;
         private AABBOptimizedTree tree = new DummyTree();
@@ -49,7 +49,7 @@ namespace ResourceTypes.Collisions.Opcode
             bool platformMismatch = !littleEndian;
 
             uint version = ReadDword(reader, platformMismatch);
-            if (version != SUPPORTED_MODEL_VERSION)
+            if (version != SupportedModelVersion)
             {
                 throw new OpcodeException($"Unsupported model version {version}");
             }
@@ -100,14 +100,13 @@ namespace ResourceTypes.Collisions.Opcode
             }
         }
 
-        public virtual void Save(BinaryWriter writer, Endian endian = Endian.LITTLE)
+        public virtual void Save(BinaryWriter writer, Endian endian = Endian.Little)
         {
-            // TODO: validation
-            bool isLittleEndian = endian == Endian.LITTLE;
-            bool platformMismatch = endian == Endian.BIG;
+            bool isLittleEndian = endian == Endian.Little;
+            bool platformMismatch = endian == Endian.Big;
 
             WriteChunk('O', 'P', 'C', isLittleEndian, writer);
-            WriteDword(SUPPORTED_MODEL_VERSION, writer, platformMismatch);
+            WriteDword(SupportedModelVersion, writer, platformMismatch);
 
             WriteDword((uint) modelCode, writer, platformMismatch);
 
@@ -150,13 +149,12 @@ namespace ResourceTypes.Collisions.Opcode
             public static implicit operator LeafTriangles(uint val) => new LeafTriangles(val);
         }
 
-        private const uint SUPPORTED_HYBRID_MODEL_VERSION = 0;
+        private const uint SupportedHybridModelVersion = 0;
 
         private bool littleEndian = true;
 
         private uint numLeaves = 1;
         private IList<LeafTriangles> leafTriangles = new List<LeafTriangles>();
-        private uint numPrimitives;
         private IList<uint> primitiveIndices = new List<uint>();
 
         public override void Load(BinaryReader reader)
@@ -173,7 +171,7 @@ namespace ResourceTypes.Collisions.Opcode
             bool platformMismatch = !littleEndian;
 
             uint version = ReadDword(reader, platformMismatch);
-            if (version != SUPPORTED_HYBRID_MODEL_VERSION)
+            if (version != SupportedHybridModelVersion)
             {
                 throw new OpcodeException($"Unsupported hybrid model version {version}");
             }
@@ -186,24 +184,34 @@ namespace ResourceTypes.Collisions.Opcode
                 leafTriangles = leafTrianglesAsUints.Select(elem => (LeafTriangles) elem).ToList();
             }
 
-            numPrimitives = ReadDword(reader, platformMismatch);
-            if (numPrimitives != 0)
+            uint numPrimitives = ReadDword(reader, platformMismatch);
+            // NOTE: In Mafia 2 numPrimitives always == 0
+            if (numPrimitives > 0)
             {
-                // TODO: implement with ReadIndices (for now I didn't see any file that contains primitives)
-                throw new NotImplementedException("Haha, here we have primitives in HBM!");
+                uint primitiveMaxIndex = ReadDword(reader, platformMismatch);
+                primitiveIndices = ReadIndices(primitiveMaxIndex, numPrimitives, reader, platformMismatch);
             }
         }
 
-        public override void Save(BinaryWriter writer, Endian endian = Endian.LITTLE)
+        public override void Save(BinaryWriter writer, Endian endian = Endian.Little)
         {
             base.Save(writer, endian);
-            // TODO: validation
 
-            bool isLittleEndian = endian == Endian.LITTLE;
-            bool platformMismatch = endian == Endian.BIG;
+            if (numLeaves == 0)
+            {
+                throw new OpcodeException("HybridModel model should contain at least one leaf");
+            }
+
+            if (numLeaves > 1 && leafTriangles.Count > 1)
+            {
+                throw new OpcodeException($"Number of leaves {numLeaves} does not match actual number of leaves {leafTriangles.Count}");
+            }
+
+            bool isLittleEndian = endian == Endian.Little;
+            bool platformMismatch = endian == Endian.Big;
 
             WriteChunk('H', 'B', 'M', isLittleEndian, writer);
-            WriteDword(SUPPORTED_HYBRID_MODEL_VERSION, writer, platformMismatch);
+            WriteDword(SupportedHybridModelVersion, writer, platformMismatch);
 
             WriteDword(numLeaves, writer, platformMismatch);
             if (numLeaves > 1)
@@ -211,7 +219,11 @@ namespace ResourceTypes.Collisions.Opcode
                 WriteIndices(leafTriangles.Select(lt => (uint) lt).ToList(), writer, platformMismatch);
             }
 
-            WriteDword(numPrimitives, writer, platformMismatch);
+            if (primitiveIndices.Count > 0)
+            {
+                WriteDword((uint) primitiveIndices.Count, writer, platformMismatch);
+                WriteIndices(primitiveIndices, writer, platformMismatch);
+            }
         }
 
         /// <summary>
@@ -226,7 +238,7 @@ namespace ResourceTypes.Collisions.Opcode
                 + 4 // numLeaves
                 + (numLeaves > 1 ? GetUsedBytesByIndices(leafTriangles.Select(lt => (uint)lt).ToList()) : 0) // leafTriangles
                 + 4 // numPrimitives
-                ; // TODO: primitives
+                + GetUsedBytesByIndices(primitiveIndices); // primitiveIndices
         }
     }
 }

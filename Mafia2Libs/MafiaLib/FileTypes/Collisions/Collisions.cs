@@ -9,12 +9,14 @@ namespace ResourceTypes.Collisions
 {
     public class Collision
     {
-        private const int Version = 0x11;
-        // TODO: Most likely it's platform (== 0 on PC/Mac, == 1 on XBox360, == 2 on PS3)
-        private const int Unk0 = 0;
-
+        private const int Version = 0x11; // 17
+ 
         public string Name { get; set; }
-
+        /// <summary>
+        /// Platform (== 0 on PC/Mac, == 1 on XBox360, == 2 on PS3)
+        /// </summary>
+        /// <remarks>Could be <c>NxPlatform</c> type, enum values are match</remarks>
+        public uint Platform { get; set; } = 0;
         public List<Placement> Placements { get; private set; }  = new List<Placement>(); 
         public SortedDictionary<ulong, CollisionModel> Models { get; private set; } = new SortedDictionary<ulong, CollisionModel>();
 
@@ -39,9 +41,10 @@ namespace ResourceTypes.Collisions
                 throw new Exception("Unknown collision version");
             }
 
-            if (reader.ReadInt32() != Unk0)
+            Platform = reader.ReadUInt32();
+            if (Platform > 2)
             { 
-                throw new Exception("Unknown collision header");
+                throw new Exception($"Unknown platform {Platform}");
             }
 
             int numPlacements = reader.ReadInt32();
@@ -75,7 +78,7 @@ namespace ResourceTypes.Collisions
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(Version);
-            writer.Write(Unk0);
+            writer.Write(Platform);
 
             writer.Write(Placements.Count);
             foreach (var placement in Placements)

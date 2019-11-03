@@ -199,8 +199,15 @@ namespace ResourceTypes.Collisions.Opcode
             ReadConvexParts(numConvexParts, numTriangles, reader, platformMismatch);
             ReadFlatParts(numFlatParts, numTriangles, reader, platformMismatch);
 
-            uint modelSize = ReadDword(reader, platformMismatch); // TODO: do we need to keep it as field?
+            uint readModelSize = ReadDword(reader, platformMismatch);
             hybridModel.Load(reader);
+            
+            // just extra check
+            uint calculatedModelSize = hybridModel.GetUsedBytes();
+            if (calculatedModelSize != readModelSize)
+            {
+                throw new OpcodeException($"Read {readModelSize} and calculated {calculatedModelSize} model sizes do not match");
+            }
 
             ReadBounds(reader, platformMismatch);
             ReadPhysProperties(reader, platformMismatch);
@@ -433,12 +440,12 @@ namespace ResourceTypes.Collisions.Opcode
         /// </summary>
         /// <param name="writer">A stream writer</param>
         /// <param name="endian">Endian</param>
-        public void Save(BinaryWriter writer, Endian endian = Endian.LITTLE)
+        public void Save(BinaryWriter writer, Endian endian = Endian.Little)
         {
             ValidateTriangleMesh();
 
-            bool isLittleEndian = endian == Endian.LITTLE;
-            bool platformMismatch = endian == Endian.BIG;
+            bool isLittleEndian = endian == Endian.Little;
+            bool platformMismatch = endian == Endian.Big;
 
             WriteHeader('M', 'E', 'S', 'H', SUPPORTED_MESH_VERSION, isLittleEndian, writer);
 
