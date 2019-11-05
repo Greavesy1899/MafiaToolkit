@@ -31,10 +31,9 @@ namespace ResourceTypes.Collisions
             );
             collisionModel.Sections = new List<Collision.Section>(sortedParts.Count);
 
-            IList<TriangleMesh.Triangle> orderedTriangles = new List<TriangleMesh.Triangle>(modelLod.Indices.Length);
+            IList<TriangleMesh.Triangle> orderedTriangles = new List<TriangleMesh.Triangle>(modelLod.Indices.Length / 3);
             IList<ushort> materials = new List<ushort>();
 
-            int currentSection = 0;
             foreach (var part in sortedParts)
             {
                 var sameMaterialParts = part.Value;
@@ -59,8 +58,6 @@ namespace ResourceTypes.Collisions
                         materials.Add(part.Key);
                     }
                 }
-
-                currentSection++;
             }
 
             collisionModel.Mesh = new TriangleMeshBuilder().Build(vertexList, orderedTriangles, materials);
