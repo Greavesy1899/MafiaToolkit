@@ -64,6 +64,17 @@ namespace ResourceTypes.Materials
             }
         }
 
+        public void BuildMatLibraryFromList(string name, List<Material> materials)
+        {
+            this.name = name;
+            this.materials = new Dictionary<ulong, Material>();
+            foreach (var mat in materials)
+            {
+                if (!this.materials.ContainsKey(mat.MaterialHash))
+                    this.materials.Add(mat.MaterialHash, mat);
+            }
+        }
+
         /// <summary>
         /// Get material via hash.
         /// </summary>

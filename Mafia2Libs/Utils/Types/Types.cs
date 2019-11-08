@@ -17,7 +17,7 @@ namespace Utils.Types
         string _string;
         short size;
 
-        [ReadOnly(true)]
+        //[ReadOnly(true)]
         public ulong uHash {
             get { return hash; }
             set { hash = value; }

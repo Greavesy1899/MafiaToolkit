@@ -159,7 +159,7 @@ namespace Utils.Models
         OpenLeft = 2011,
         MuzzleLeft = 2012,
         ShellLeft = 2013,
-        andle_RLeft = 2014,
+        Handle_RLeft = 2014,
         Handle_LLeft = 2015,
 
         //WEAPONS RIGHT

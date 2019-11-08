@@ -66,6 +66,8 @@ namespace Utils.Models
                 lods[i].NumUVChannels = 4;
                 lods[i].Vertices = new Vertex[frameLod.NumVertsPr];
 
+                if (vertexSize * frameLod.NumVertsPr != vertexBuffer.Data.Length) throw new System.Exception();
+
                 for (int v = 0; v != lods[i].Vertices.Length; v++)
                 {
                     Vertex vertex = new Vertex();
@@ -590,26 +592,26 @@ namespace Utils.Models
                 List<Vector3> surfaceNormals = new List<Vector3>();
                 Vector3[] normals = new Vector3[vertices.Length];
 
-                for (int i = 0; i < parts.Length; i++)
+                for(int i = 0; i < parts.Length; i++)
                 {
                     var normal = new Vector3();
 
                     var index = parts[i].StartIndex;
-                    while (index < parts[i].StartIndex + parts[i].NumFaces * 3)
+                    while(index < parts[i].StartIndex+parts[i].NumFaces*3)
                     {
                         var edge1 = vertices[indices[index]].Position - vertices[indices[index + 1]].Position;
                         var edge2 = vertices[indices[index]].Position - vertices[indices[index + 2]].Position;
                         normal = Vector3.Cross(edge1, edge2);
                         normals[indices[index]] += normal;
-                        normals[indices[index + 1]] += normal;
-                        normals[indices[index + 2]] += normal;
+                        normals[indices[index+1]] += normal;
+                        normals[indices[index+2]] += normal;
                         surfaceNormals.Add(normal);
                         index += 3;
                     }
                     surfaceNormals.Add(normal);
                 }
 
-                for (int i = 0; i < vertices.Length; i++)
+                for(int i = 0; i < vertices.Length; i++)
                 {
                     normals[i].Normalize();
                     vertices[i].Normal = normals[i];

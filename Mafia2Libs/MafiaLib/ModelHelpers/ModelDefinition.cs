@@ -69,7 +69,7 @@ namespace Utils.Models
             this.frameMaterial = frameMaterial;
             model = new M2TStructure();
             model.IsSkinned = false;
-            model.Name = frameMesh.Name.String;
+            model.Name = frameMesh.Name.ToString();
             model.AOTexture = frameMesh.OMTextureHash.String;
             model.BuildLods(frameGeometry, frameMaterial, vertexBuffers, indexBuffers);
         }
@@ -87,7 +87,7 @@ namespace Utils.Models
             this.frameMaterial = frameMaterial;
             model = new M2TStructure();
             model.IsSkinned = true;
-            model.Name = frameMesh.Name.String;
+            model.Name = frameMesh.Name.ToString();
             model.AOTexture = frameMesh.OMTextureHash.String;
             model.BuildLods(frameGeometry, frameMaterial, vertexBuffers, indexBuffers);
         }
@@ -333,8 +333,13 @@ namespace Utils.Models
 
             for(int i = 0; i < model.Lods.Length; i++)
             {
-                frameGeometry.LOD[i].IndexBufferRef = new Hash("M2TK." + model.Name + ".IB"+i);
-                frameGeometry.LOD[i].VertexBufferRef = new Hash("M2TK." + model.Name + ".VB"+i);
+                var lod = frameGeometry.LOD[i];
+
+                var size = 0;
+                lod.GetVertexOffsets(out size);
+                if (vertexBuffers[i].Data.Length != (size * lod.NumVertsPr)) throw new SystemException();
+                lod.IndexBufferRef = new Hash("M2TK." + model.Name + ".IB" + i);
+                lod.VertexBufferRef = new Hash("M2TK." + model.Name + ".VB" + i);
             }
         }
     }
