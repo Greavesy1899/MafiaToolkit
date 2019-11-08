@@ -274,6 +274,12 @@
       <DependentUpon>TranslokatorEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="MafiaLib\FileTypes\BufferTypes\BufferHelpers.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Model.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\OpcodeException.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Serialization.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Trees.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\TriangleMesh.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\CollisionBuilder.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\CutsceneTypes.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameNameTable\FrameNameTableEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceEnums.cs" />
@@ -734,6 +740,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>call "$(TargetDir)build.cmd"

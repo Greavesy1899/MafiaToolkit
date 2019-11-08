@@ -55,6 +55,8 @@ Range
 Reaction
 receiver
 restitution
+staticFriction
+dynamicFriction
 RideId
 Right
 RoughnessType

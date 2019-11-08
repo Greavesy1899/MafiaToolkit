@@ -1,7 +1,5 @@
-﻿using Gibbed.Illusion.FileFormats.Hashing;
-using ResourceTypes.Collisions;
+﻿using ResourceTypes.Collisions;
 using SharpDX;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -58,13 +56,13 @@ namespace Mafia2Tool
         public void LoadInCollision()
         {
             treeView1.Nodes.Clear();
-            for (int i = 0; i != SceneData.Collisions.NXSData.Count; i++)
+            for (int i = 0; i != SceneData.Collisions.Models.Count; i++)
             {
-                Collision.NXSStruct nxsData = SceneData.Collisions.NXSData.ElementAt(i).Value;
+                Collision.CollisionModel collisionModel = SceneData.Collisions.Models.ElementAt(i).Value;
 
-                TreeNode node = new TreeNode(nxsData.Hash.ToString());
-                node.Tag = nxsData;
-                node.Name = nxsData.Hash.ToString();
+                TreeNode node = new TreeNode(collisionModel.Hash.ToString());
+                node.Tag = collisionModel;
+                node.Name = collisionModel.Hash.ToString();
                 //M2TStructure structure = new M2TStructure();
                 //structure.BuildCollision(nxsData, node.Name);
                 //structure.ExportCollisionToM2T(node.Name);
@@ -118,40 +116,27 @@ namespace Mafia2Tool
                 return;
             }
 
-            M2TStructure colModel = new M2TStructure();
+            M2TStructure m2tColModel = new M2TStructure();
 
             if (openM2T.FileName.ToLower().EndsWith(".m2t"))
-                colModel.ReadFromM2T(new BinaryReader(File.Open(openM2T.FileName, FileMode.Open)));
+                m2tColModel.ReadFromM2T(new BinaryReader(File.Open(openM2T.FileName, FileMode.Open)));
             else if (openM2T.FileName.ToLower().EndsWith(".fbx"))
-                colModel.ReadFromFbx(openM2T.FileName);
+                m2tColModel.ReadFromFbx(openM2T.FileName);
 
             //crash happened/
-            if (colModel.Lods[0] == null)
+            if (m2tColModel.Lods[0] == null)
                 return;
 
-            Collision.NXSStruct nxsData = new Collision.NXSStruct();
-            nxsData.Hash = FNV64.Hash(colModel.Name);
-            nxsData.Data.BuildBasicCollision(colModel.Lods[0]);
-            nxsData.Sections = new Collision.Section[colModel.Lods[0].Parts.Length];
-
-            int curEdges = 0;
-            for (int i = 0; i != nxsData.Sections.Length; i++)
-            {
-                nxsData.Sections[i] = new Collision.Section();
-                nxsData.Sections[i].Unk1 = (int)Enum.Parse(typeof(CollisionMaterials), colModel.Lods[0].Parts[i].Material)-2;
-                nxsData.Sections[i].Start = curEdges;
-                nxsData.Sections[i].NumEdges = (int)colModel.Lods[0].Parts[i].NumFaces*3;
-            }
+            Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromM2TStructure(m2tColModel);
 
             Collision.Placement placement = new Collision.Placement();
-            placement.Hash = nxsData.Hash;
+            placement.Hash = collisionModel.Hash;
             placement.Unk5 = 128;
             placement.Unk4 = -1;
             placement.Position = new Vector3(0, 0, 0);
             placement.Rotation = new Vector3(0);
 
-
-            SceneData.Collisions.NXSData.Add(nxsData.Hash, nxsData);
+            SceneData.Collisions.Models.Add(collisionModel.Hash, collisionModel);
             SceneData.Collisions.Placements.Add(placement);
             treeView1.Nodes.Clear();
             LoadInCollision();
@@ -162,11 +147,11 @@ namespace Mafia2Tool
             if (treeView1.SelectedNode.Tag == null)
                 return;
 
-            if (treeView1.SelectedNode.Tag.GetType() != typeof(Collision.NXSStruct))
+            if (treeView1.SelectedNode.Tag.GetType() != typeof(Collision.CollisionModel))
                 return;
 
-            Collision.NXSStruct data = (Collision.NXSStruct)treeView1.SelectedNode.Tag;
-            CollisionMaterials[] mats = data.Data.Materials;
+            Collision.CollisionModel data = (Collision.CollisionModel)treeView1.SelectedNode.Tag;
+            CollisionMaterials[] mats = data.Mesh.MaterialIndices.Select(mi => (CollisionMaterials)mi).ToArray();
             List<CollisionMaterials> typeList = new List<CollisionMaterials>();
             List<int> values = new List<int>();
 
@@ -235,8 +220,8 @@ namespace Mafia2Tool
             if (treeView1.SelectedNode == null)
                 return;
 
-            Collision.NXSStruct col = treeView1.SelectedNode.Tag as Collision.NXSStruct;
-            SceneData.Collisions.NXSData.Remove(col.Hash);
+            Collision.CollisionModel col = treeView1.SelectedNode.Tag as Collision.CollisionModel;
+            SceneData.Collisions.Models.Remove(col.Hash);
 
             for(int i = 0; i != SceneData.Collisions.Placements.Count; i++)
             {
@@ -275,7 +260,7 @@ namespace Mafia2Tool
             CollisionContext.Items[0].Visible = false;
             CollisionContext.Items[1].Visible = false;
 
-            if (treeView1.SelectedNode.Tag.GetType() == typeof(Collision.NXSStruct))
+            if (treeView1.SelectedNode.Tag.GetType() == typeof(Collision.CollisionModel))
             {
                 CollisionContext.Items[0].Visible = true;
             }
