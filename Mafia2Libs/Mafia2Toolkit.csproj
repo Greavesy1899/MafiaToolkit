@@ -381,6 +381,7 @@
     <Compile Include="Rendering\Graphics\RenderTypes\RenderInstance.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderJunction.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderLine.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderNav.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderRoad.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderStaticCollision.cs" />
     <Compile Include="Rendering\Graphics\Shaders\CollisionShader.cs" />

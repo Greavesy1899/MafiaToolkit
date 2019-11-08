@@ -9,6 +9,7 @@ using Utils.Types;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using Utils.Models;
 using Utils.SharpDXExtensions;
+using System.Diagnostics;
 
 namespace Rendering.Graphics
 {
@@ -132,82 +133,88 @@ namespace Rendering.Graphics
                 lod.Vertices = new VertexLayouts.NormalLayout.Vertex[geom.LOD[i].NumVertsPr];
                 int vertexSize;
                 Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = geom.LOD[i].GetVertexOffsets(out vertexSize);
-
-                for (int x = 0; x != lod.Vertices.Length; x++)
+                try
                 {
-                    VertexLayouts.NormalLayout.Vertex vertex = new VertexLayouts.NormalLayout.Vertex();
-
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Position))
+                    for (int x = 0; x != lod.Vertices.Length; x++)
                     {
-                        int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                        vertex.Position = VertexTranslator.ReadPositionDataFromVB(vertexBuffers[i].Data, startIndex, geom.DecompressionFactor, geom.DecompressionOffset);
-                    }
+                        VertexLayouts.NormalLayout.Vertex vertex = new VertexLayouts.NormalLayout.Vertex();
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
-                    {
-                        int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                        vertex.Tangent = VertexTranslator.ReadTangentDataFromVB(vertexBuffers[i].Data, startIndex);
-                    }
+                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Position))
+                        {
+                            int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
+                            vertex.Position = VertexTranslator.ReadPositionDataFromVB(vertexBuffers[i].Data, startIndex, geom.DecompressionFactor, geom.DecompressionOffset);
+                        }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
-                    {
-                        int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Normals].Offset;
-                        vertex.Normal = VertexTranslator.ReadNormalDataFromVB(vertexBuffers[i].Data, startIndex);
-                    }
+                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                        {
+                            int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
+                            vertex.Tangent = VertexTranslator.ReadTangentDataFromVB(vertexBuffers[i].Data, startIndex);
+                        }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Skin))
-                    {
-                        //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.BlendData].Offset;
-                       // vertex.BlendWeight = VertexTranslator.ReadBlendWeightFromVB(vertexBuffer.Data, startIndex);
-                       // vertex.BoneID = VertexTranslator.ReadBlendIDFromVB(vertexBuffer.Data, startIndex);
-                    }
+                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
+                        {
+                            int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Normals].Offset;
+                            vertex.Normal = VertexTranslator.ReadNormalDataFromVB(vertexBuffers[i].Data, startIndex);
+                        }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Color))
-                    {
-                        //unknown
-                    }
+                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Skin))
+                        {
+                            //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.BlendData].Offset;
+                            // vertex.BlendWeight = VertexTranslator.ReadBlendWeightFromVB(vertexBuffer.Data, startIndex);
+                            // vertex.BoneID = VertexTranslator.ReadBlendIDFromVB(vertexBuffer.Data, startIndex);
+                        }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
-                    {
-                        int startIndex = x * vertexSize + vertexOffsets[VertexFlags.TexCoords0].Offset;
-                        vertex.TexCoord0 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
-                    }
+                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Color))
+                        {
+                            //unknown
+                        }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
-                    {
-                        //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords1].Offset;
-                        //vertex.UVs[1] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
-                    }
+                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                        {
+                            int startIndex = x * vertexSize + vertexOffsets[VertexFlags.TexCoords0].Offset;
+                            vertex.TexCoord0 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
+                        }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
-                    {
-                        //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords2].Offset;
-                        //vertex.UVs[2] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
-                    }
+                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                        {
+                            //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords1].Offset;
+                            //vertex.UVs[1] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
+                        }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
-                    {
-                        int startIndex = x * vertexSize + vertexOffsets[VertexFlags.ShadowTexture].Offset;
-                        vertex.TexCoord7 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
-                    }
+                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                        {
+                            //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords2].Offset;
+                            //vertex.UVs[2] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
+                        }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Color1))
-                    {
-                        //unknown
-                    }
+                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
+                        {
+                            int startIndex = x * vertexSize + vertexOffsets[VertexFlags.ShadowTexture].Offset;
+                            vertex.TexCoord7 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
+                        }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.BBCoeffs))
-                    {
-                        //unknown
-                    }
+                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Color1))
+                        {
+                            //unknown
+                        }
 
-                    if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
-                    {
-                        //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.DamageGroup].Offset;
-                        //vertex.DamageGroup = VertexTranslator.ReadDamageGroupFromVB(vertexBuffer.Data, startIndex);
-                    }
+                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.BBCoeffs))
+                        {
+                            //unknown
+                        }
 
-                    lod.Vertices[x] = vertex;
+                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
+                        {
+                            //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.DamageGroup].Offset;
+                            //vertex.DamageGroup = VertexTranslator.ReadDamageGroupFromVB(vertexBuffer.Data, startIndex);
+                        }
+
+                        lod.Vertices[x] = vertex;
+                    }
+                }
+                catch
+                {
+                    throw new System.Exception("Failed to build renderable!");
                 }
                 LODs[i] = lod;
             }

@@ -354,7 +354,7 @@ namespace Mafia2Tool
             TransformMatrix mat = matrix;
             foreach (TreeNode cNode in node.Nodes)
             {
-                mat = matrix + ((obj2 != null) ? obj2.Matrix : new TransformMatrix());
+                mat = matrix * ((obj2 != null) ? obj2.Matrix : new TransformMatrix());
                 CallMatricesRecursive(cNode, mat);
             }
         }
@@ -527,6 +527,7 @@ namespace Mafia2Tool
                     SceneData.Collisions = collision;
                     SceneData.Collisions.WriteToFile();
                 }
+
 
               
 
@@ -757,7 +758,21 @@ namespace Mafia2Tool
             //    }
             //    dSceneTree.AddToTree(node);
             //}
+            //if (SceneData.OBJData != null)
+            //{
+            //    for (int y = 0; y < SceneData.OBJData.Length; y++)
+            //    {
+            //        OBJData data = (OBJData)SceneData.OBJData[y].data;
 
+            //        for (int i = 0; i < data.vertices.Length; i++)
+            //        {
+            //            RenderNav nav = new RenderNav();
+            //            nav.Init(data, i);
+            //            int generatedID = StringHelpers.RandomGenerator.Next();
+            //            assets.Add(generatedID, nav);
+            //        }
+            //    }
+            //}
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
                 TreeNode node = new TreeNode("Road Data");

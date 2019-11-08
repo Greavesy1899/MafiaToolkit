@@ -210,6 +210,21 @@ namespace Utils.Types
             return matrix;
         }
 
+        public static Matrix33 operator *(Matrix33 left, Matrix33 right)
+        {
+            Matrix33 temp = new Matrix33();
+            temp.M00 = (left.M00 * right.M00) + (left.M01 * right.M10) + (left.M02 * right.M20);
+            temp.M01 = (left.M00 * right.M01) + (left.M01 * right.M11) + (left.M02 * right.M21);
+            temp.M02 = (left.M00 * right.M02) + (left.M01 * right.M12) + (left.M02 * right.M22);
+            temp.M10 = (left.M10 * right.M00) + (left.M11 * right.M10) + (left.M12 * right.M20);
+            temp.M11 = (left.M10 * right.M01) + (left.M11 * right.M11) + (left.M12 * right.M21);
+            temp.M12 = (left.M10 * right.M02) + (left.M11 * right.M12) + (left.M12 * right.M22);
+            temp.M20 = (left.M20 * right.M00) + (left.M21 * right.M10) + (left.M22 * right.M20);
+            temp.M21 = (left.M20 * right.M01) + (left.M21 * right.M11) + (left.M22 * right.M21);
+            temp.M22 = (left.M20 * right.M02) + (left.M21 * right.M12) + (left.M22 * right.M22);
+            return temp;
+        }
+
         public override string ToString()
         {
             return "Matrix";
