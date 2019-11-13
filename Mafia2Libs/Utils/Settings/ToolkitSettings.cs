@@ -50,6 +50,7 @@ namespace Utils.Settings
         public static bool DecompileLUA;
         public static bool AddTimeDataBackup;
         public static bool UseSDSToolFormat;
+        public static bool CookCollisions;
         public static readonly string Version = "2.0 experimental";
 
         public static void ReadINI()
@@ -78,6 +79,7 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("AddTimeDataBackup", "SDS", "True"), out AddTimeDataBackup);
             bool.TryParse(ReadKey("DecompileLUA", "SDS", "False"), out DecompileLUA);
             bool.TryParse(ReadKey("UseSDSToolFormat", "SDS", "False"), out UseSDSToolFormat);
+            bool.TryParse(ReadKey("CookCollisions", "SDS", "False"), out CookCollisions);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
             MaterialLibs = ReadKey("MaterialLibs", "Materials", "");
 

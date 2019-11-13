@@ -1427,7 +1427,6 @@ namespace Mafia2Tool
                 if (FrameResource.IsFrameType(node.Nodes[i].Tag))
                 {
                     FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
-                    Debug.WriteLine("Deleted Frame: {0}", node.Nodes[i].Tag.ToString());
                     SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
                     if (Graphics.Assets.ContainsKey(entry.RefID))
                         Graphics.Assets.Remove(entry.RefID);
@@ -1453,6 +1452,13 @@ namespace Mafia2Tool
                     if (Graphics.Assets.ContainsKey(obj.RefID))
                         Graphics.Assets.Remove(obj.RefID);
                 }
+                DeleteFrames(node);
+            }
+            else if(node.Tag.GetType() == typeof(FrameHeaderScene))
+            {
+                var scene = (node.Tag as FrameHeaderScene);
+                dSceneTree.treeView1.Nodes.Remove(node);
+                SceneData.FrameResource.FrameScenes.Remove(scene.RefID);
                 DeleteFrames(node);
             }
             else if (node.Tag.GetType() == typeof(Collision.Placement))

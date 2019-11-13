@@ -83,6 +83,7 @@
   <String ID="$ADD_TIME_DATE_BACKUP">Add time and date to backups.</String>
   <String ID="$DECOMPILE_LUA_UNPACK">Decompile lua when unpacking.</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Use SDS Tool GUI Format when unpacking.</String>
+  <String ID="$COOK_COLLISIONS">Cook collisions when saving.</String>
   
   <!-- Render Options -->
   <String ID="$RENDER">Render</String>

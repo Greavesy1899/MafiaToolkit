@@ -670,6 +670,8 @@ namespace ResourceTypes.FrameResource
                 }
             }
 
+            header.SceneFolders = frameScenes.Values.ToList();
+
             header.NumFolderNames = frameScenes.Count;
             header.NumGeometries = frameGeometries.Count;
             header.NumMaterialResources = frameMaterials.Count;
@@ -677,7 +679,7 @@ namespace ResourceTypes.FrameResource
             header.NumSkeletons = frameSkeletons.Count;
             header.NumSkelHierachies = frameSkeletonHierachies.Count;
             header.NumObjects = frameObjects.Count;
-            header.NumFolderNames = header.SceneFolders.Count;
+            header.NumFolderNames = frameScenes.Count;
             NewFrames = updatedFrames;
         }
 

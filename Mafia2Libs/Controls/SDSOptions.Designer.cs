@@ -29,17 +29,19 @@
         private void InitializeComponent()
         {
             this.groupSDS = new System.Windows.Forms.GroupBox();
+            this.SDSToolFormat = new System.Windows.Forms.CheckBox();
             this.UnpackLUABox = new System.Windows.Forms.CheckBox();
             this.AddTimeDateBackupsBox = new System.Windows.Forms.CheckBox();
             this.CompressionDropdownBox = new System.Windows.Forms.ComboBox();
             this.M2Label = new System.Windows.Forms.Label();
-            this.SDSToolFormat = new System.Windows.Forms.CheckBox();
+            this.CookCollisionsBox = new System.Windows.Forms.CheckBox();
             this.groupSDS.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupSDS
             // 
             this.groupSDS.AutoSize = true;
+            this.groupSDS.Controls.Add(this.CookCollisionsBox);
             this.groupSDS.Controls.Add(this.SDSToolFormat);
             this.groupSDS.Controls.Add(this.UnpackLUABox);
             this.groupSDS.Controls.Add(this.AddTimeDateBackupsBox);
@@ -52,6 +54,17 @@
             this.groupSDS.TabIndex = 0;
             this.groupSDS.TabStop = false;
             this.groupSDS.Text = "SDS Options";
+            // 
+            // SDSToolFormat
+            // 
+            this.SDSToolFormat.AutoSize = true;
+            this.SDSToolFormat.Location = new System.Drawing.Point(9, 105);
+            this.SDSToolFormat.Name = "SDSToolFormat";
+            this.SDSToolFormat.Size = new System.Drawing.Size(129, 17);
+            this.SDSToolFormat.TabIndex = 6;
+            this.SDSToolFormat.Text = "Use SDS Tool Format";
+            this.SDSToolFormat.UseVisualStyleBackColor = true;
+            this.SDSToolFormat.CheckedChanged += new System.EventHandler(this.SDSToolFormat_CheckedChanged);
             // 
             // UnpackLUABox
             // 
@@ -96,16 +109,16 @@
             this.M2Label.TabIndex = 2;
             this.M2Label.Text = "$SDS_COMPRESSION_TYPE";
             // 
-            // SDSToolFormat
+            // CookCollisionsBox
             // 
-            this.SDSToolFormat.AutoSize = true;
-            this.SDSToolFormat.Location = new System.Drawing.Point(9, 105);
-            this.SDSToolFormat.Name = "SDSToolFormat";
-            this.SDSToolFormat.Size = new System.Drawing.Size(129, 17);
-            this.SDSToolFormat.TabIndex = 6;
-            this.SDSToolFormat.Text = "Use SDS Tool Format";
-            this.SDSToolFormat.UseVisualStyleBackColor = true;
-            this.SDSToolFormat.CheckedChanged += new System.EventHandler(this.SDSToolFormat_CheckedChanged);
+            this.CookCollisionsBox.AutoSize = true;
+            this.CookCollisionsBox.Location = new System.Drawing.Point(9, 127);
+            this.CookCollisionsBox.Name = "CookCollisionsBox";
+            this.CookCollisionsBox.Size = new System.Drawing.Size(124, 17);
+            this.CookCollisionsBox.TabIndex = 7;
+            this.CookCollisionsBox.Text = "$COOK_COLLISION";
+            this.CookCollisionsBox.UseVisualStyleBackColor = true;
+            this.CookCollisionsBox.CheckedChanged += new System.EventHandler(this.CookCollisionsBox_CheckedChanged);
             // 
             // SDSOptions
             // 
@@ -129,5 +142,6 @@
         private System.Windows.Forms.CheckBox UnpackLUABox;
         private System.Windows.Forms.CheckBox AddTimeDateBackupsBox;
         private System.Windows.Forms.CheckBox SDSToolFormat;
+        private System.Windows.Forms.CheckBox CookCollisionsBox;
     }
 }
