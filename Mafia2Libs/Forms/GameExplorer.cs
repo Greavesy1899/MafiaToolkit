@@ -104,9 +104,6 @@ namespace Mafia2Tool
             Log.WriteLine("$ERROR_DID_NOT_FIND_LAUNCHER", LoggingTypes.ERROR);
         }
 
-        /// <summary>
-        /// Build TreeView from Mafia II's main directory.
-        /// </summary>
         public void InitExplorerSettings()
         {
             folderView.Nodes.Clear();
@@ -132,11 +129,8 @@ namespace Mafia2Tool
                 {
                     hasLauncher = true;
                     launcher = file;
-                }
-
-                //stop early if needed
-                if (hasLauncher)
                     break;
+                }
             }
 
             if (!hasLauncher)
@@ -145,12 +139,10 @@ namespace Mafia2Tool
                 GetPath();
                 return;
             }
+
             InitTreeView();
         }
 
-        /// <summary>
-        /// If the program has errored it will run this.. It's to get a new path.
-        /// </summary>
         private void GetPath()
         {
             MafiaIIBrowser.SelectedPath = "";
@@ -158,42 +150,37 @@ namespace Mafia2Tool
             {
                 ToolkitSettings.M2Directory = MafiaIIBrowser.SelectedPath;
                 ToolkitSettings.WriteKey("MafiaII", "Directories", MafiaIIBrowser.SelectedPath);
+                originalPath = new DirectoryInfo(ToolkitSettings.M2Directory);
                 InitTreeView();
             }
             else
+            {
                 Application.Exit();
+            }
         }
 
         private void InitTreeView()
         {
             infoText.Text = "Building folders..";
-            //build treeView.
             TreeNode rootTreeNode = new TreeNode(originalPath.Name);
             rootTreeNode.Tag = originalPath;
-            GetSubFolders(originalPath.GetDirectories(), rootTreeNode);
             folderView.Nodes.Add(rootTreeNode);
             infoText.Text = "Done builidng folders..";
             OpenDirectory(originalPath);
         }
 
-        /// <summary>
-        /// Build tree by adding sub folders to treeView1.
-        /// </summary>
-        /// <param name="directories">sub directories of root.</param>
-        /// <param name="rootTreeNode">Node to apply the children</param>
-        public void GetSubFolders(DirectoryInfo[] directories, TreeNode rootTreeNode)
+        private void GetSubdirectories(DirectoryInfo directory, TreeNode rootTreeNode)
         {
-            TreeNode node;
-            DirectoryInfo[] dirs;
-
-            foreach (DirectoryInfo directory in directories)
+            foreach (DirectoryInfo subDirectory in directory.GetDirectories())
             {
-                node = new TreeNode(directory.Name);
-                node.Tag = directory;
+                TreeNode node = new TreeNode(subDirectory.Name);
+                node.Tag = subDirectory;
                 node.ImageIndex = 0;
-                dirs = directory.GetDirectories();
-                if (dirs.Length != 0)
-                    GetSubFolders(dirs, node);
+                
+                if(subDirectory.GetDirectories().Length > 0)
+                {
+                    node.Nodes.Add("Dummy Node");
+                }
 
                 rootTreeNode.Nodes.Add(node);
             }
@@ -237,8 +224,6 @@ namespace Mafia2Tool
                 if (!imageBank.Images.ContainsKey(file.Extension))
                     imageBank.Images.Add(file.Extension, Icon.ExtractAssociatedIcon(file.FullName));
 
-                //Icon.ExtractAssociatedIcon(file.FullName).ToBitmap().Save(file.Name + ".bmp");
-
                 if (searchMode && !string.IsNullOrEmpty(filename))
                 {
                     if (!file.Name.Contains(filename))
@@ -269,6 +254,8 @@ namespace Mafia2Tool
             //god this is terrible but it works.
             folderView.AfterExpand -= FolderViewAfterExpand;
             TreeNode nodeToExpand = folderView.Nodes.FindTreeNodeByFullPath(directoryPath);
+            nodeToExpand.Nodes.Clear();
+            GetSubdirectories(currentDirectory, nodeToExpand);
             if (nodeToExpand != null)
                 nodeToExpand.Expand();
             folderView.AfterExpand += FolderViewAfterExpand;
