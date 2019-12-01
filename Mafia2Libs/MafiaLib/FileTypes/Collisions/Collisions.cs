@@ -88,8 +88,14 @@ namespace ResourceTypes.Collisions
                     }
 
 
-                    if (File.Exists("mesh.bin")) File.Delete("mesh.bin");
-                    if (File.Exists("cook.bin")) File.Delete("cook.bin");
+                    if (File.Exists("mesh.bin"))
+                    {
+                        File.Delete("mesh.bin");
+                    }
+                    if (File.Exists("cook.bin"))
+                    {
+                        File.Delete("cook.bin");
+                    }
 
                     cookedTriangleMesh.Force32BitIndices();
                     collisionModel.Value.Mesh = cookedTriangleMesh;

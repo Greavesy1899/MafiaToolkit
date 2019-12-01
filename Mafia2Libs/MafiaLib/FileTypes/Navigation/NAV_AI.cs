@@ -388,14 +388,14 @@ namespace ResourceTypes.Navigation
             vertSize = reader.ReadInt32();
             triSize = reader.ReadInt32();
 
-            List<string> data = new List<string>();
+            //List<string> data = new List<string>();
             vertices = new VertexStruct[vertSize];
             for (int i = 0; i < vertSize; i++)
             {
                 VertexStruct vertex = new VertexStruct();
                 vertex.unk7 = reader.ReadUInt32() & 0x7FFFFFFF;
                 vertex.position = Vector3Extenders.ReadFromFile(reader);
-                //float pos = vertex.position.Y; //fuck the third var thing
+                //float pos = vertex.position.Y;
                 //vertex.position.Y = vertex.position.Z;
                 //vertex.position.Z = pos;
                 vertex.unk0 = reader.ReadSingle();
@@ -405,27 +405,22 @@ namespace ResourceTypes.Navigation
                 vertex.unk4 = reader.ReadInt16();
                 vertex.unk5 = reader.ReadInt32();
                 vertex.unk6 = reader.ReadInt32();
-                data.Add(string.Format("v {0} {1} {2}", vertex.position.X, vertex.position.Z, vertex.position.Y));
+                //data.Add(string.Format("v {0} {1} {2}", vertex.position.X, vertex.position.Z, vertex.position.Y));
                 vertices[i] = vertex;
             }
-            data.Add("");
-            data.Add("g mesh");
-            indices = new uint[triSize*3];
-            int index = 0;
-            for(int i = 0; i < triSize; i++)
-            {
-                indices[index] = reader.ReadUInt32() & 0x7FFFFFFF;
-                indices[index+1] = reader.ReadUInt32() & 0x7FFFFFFF;
-                indices[index+2] = reader.ReadUInt32() & 0x7FFFFFFF;
-                data.Add(string.Format("f {0} {1} {2}", indices[index] + 1, indices[index + 1] + 1, indices[index + 2] + 1));
-                index += 3;
-            }
-            File.WriteAllLines("model.obj", data.ToArray());
-
-
-            
-
-
+            //data.Add("");
+            //data.Add("g mesh");
+            //indices = new uint[triSize*3];
+            //int index = 0;
+            //for(int i = 0; i < triSize; i++)
+            //{
+            //    indices[index] = reader.ReadUInt32() & 0x7FFFFFFF;
+            //    indices[index+1] = reader.ReadUInt32() & 0x7FFFFFFF;
+            //    indices[index+2] = reader.ReadUInt32() & 0x7FFFFFFF;
+            //    data.Add(string.Format("f {0} {1} {2}", indices[index] + 1, indices[index + 1] + 1, indices[index + 2] + 1));
+            //    index += 3;
+            //}
+            //File.WriteAllLines("model.obj", data.ToArray());
         }
     }
 }

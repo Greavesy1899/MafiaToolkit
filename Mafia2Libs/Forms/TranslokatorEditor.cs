@@ -239,14 +239,7 @@ namespace Mafia2Tool.Forms
         {
             if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
             {
-                if(TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object)
-                {
-                    clipboard = TranslokatorTree.SelectedNode.Tag;
-                }
-                else if (TranslokatorTree.SelectedNode.Tag is Instance)
-                {
-                    clipboard = TranslokatorTree.SelectedNode.Tag;
-                }
+                clipboard = TranslokatorTree.SelectedNode.Tag;
             }
         }
         private void Paste()
@@ -256,11 +249,12 @@ namespace Mafia2Tool.Forms
             {
                 if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
                 {
-                    if (TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object)
+                    var tag = TranslokatorTree.SelectedNode.Tag;
+                    if (tag is ResourceTypes.Translokator.Object && data is ResourceTypes.Translokator.Object)
                     {
                         TranslokatorTree.SelectedNode.Tag = new ResourceTypes.Translokator.Object((ResourceTypes.Translokator.Object)clipboard);
                     }
-                    else if (TranslokatorTree.SelectedNode.Tag is Instance)
+                    else if (tag is Instance && data is Instance)
                     {
                         TranslokatorTree.SelectedNode.Tag = new Instance((Instance)clipboard);
                     }

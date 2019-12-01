@@ -23,6 +23,7 @@ using ResourceTypes.FrameResource;
 using ResourceTypes.Collisions;
 using SharpDX;
 using Collision = ResourceTypes.Collisions.Collision;
+using System.Text;
 
 namespace Mafia2Tool
 {
@@ -48,7 +49,7 @@ namespace Mafia2Tool
         public void LoadForm()
         {
             toolStrip1_Resize(this, null);
-            Localise();            
+            Localise();
             infoText.Text = "Loading..";
             InitExplorerSettings();
             FileListViewTypeController(1);
@@ -57,7 +58,7 @@ namespace Mafia2Tool
             TypeDescriptor.AddAttributes(typeof(Vector4), new TypeConverterAttribute(typeof(Vector4Converter)));
         }
 
-        private bool Localise()
+        private void Localise()
         {
             creditsToolStripMenuItem.Text = Language.GetString("$CREDITS");
             Text = Language.GetString("$MII_TK_GAME_EXPLORER");
@@ -94,8 +95,10 @@ namespace Mafia2Tool
             OptionsItem.Text = Language.GetString("$OPTIONS");
             MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
             UnpackAllSDSButton.Text = Language.GetString("$UNPACK_ALL_SDS");
-            VersionLabel.Text += ToolkitSettings.Version;
-            return true;
+
+            StringBuilder builder = new StringBuilder("Toolkit v");
+            builder.Append(ToolkitSettings.Version);
+            VersionLabel.Text = builder.ToString();
         }
 
         private void PrintErrorLauncher()
@@ -174,10 +177,11 @@ namespace Mafia2Tool
             foreach (DirectoryInfo subDirectory in directory.GetDirectories())
             {
                 TreeNode node = new TreeNode(subDirectory.Name);
+                node.Name = subDirectory.Name;
                 node.Tag = subDirectory;
                 node.ImageIndex = 0;
-                
-                if(subDirectory.GetDirectories().Length > 0)
+
+                if (subDirectory.GetDirectories().Length > 0)
                 {
                     node.Nodes.Add("Dummy Node");
                 }
@@ -193,7 +197,7 @@ namespace Mafia2Tool
             ListViewItem.ListViewSubItem[] subItems;
             ListViewItem item = null;
 
-            if(!directory.Exists)
+            if (!directory.Exists)
             {
                 MessageBox.Show("Could not find directory! Returning to original path..", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 OpenDirectory(originalPath, false);
@@ -205,7 +209,9 @@ namespace Mafia2Tool
                 if (searchMode && !string.IsNullOrEmpty(filename))
                 {
                     if (!dir.Name.Contains(filename))
+                    {
                         continue;
+                    }
                 }
                 item = new ListViewItem(dir.Name, 0);
                 item.Tag = dir;
@@ -222,12 +228,16 @@ namespace Mafia2Tool
             foreach (FileInfo file in directory.GetFiles())
             {
                 if (!imageBank.Images.ContainsKey(file.Extension))
+                {
                     imageBank.Images.Add(file.Extension, Icon.ExtractAssociatedIcon(file.FullName));
+                }
 
                 if (searchMode && !string.IsNullOrEmpty(filename))
                 {
                     if (!file.Name.Contains(filename))
+                    {
                         continue;
+                    }
                 }
 
                 item = new ListViewItem(file.Name, imageBank.Images.IndexOfKey(file.Extension));
@@ -244,20 +254,28 @@ namespace Mafia2Tool
             }
 
             infoText.Text = "Done loading directory.";
-            FolderPath.Text = directory.FullName.Remove(0, directory.FullName.IndexOf(originalPath.Name));
-            fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-
-            //sort out treeview stuff.
             currentDirectory = directory;
             string directoryPath = directory.FullName.Remove(0, directory.FullName.IndexOf(originalPath.Name)).TrimEnd('\\');
 
-            //god this is terrible but it works.
+            FolderPath.Text = directoryPath;
+            fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
+            //we have to remove the AfterExpand event before we expand the node.
             folderView.AfterExpand -= FolderViewAfterExpand;
-            TreeNode nodeToExpand = folderView.Nodes.FindTreeNodeByFullPath(directoryPath);
-            nodeToExpand.Nodes.Clear();
-            GetSubdirectories(currentDirectory, nodeToExpand);
-            if (nodeToExpand != null)
-                nodeToExpand.Expand();
+            TreeNode folderNode = folderView.Nodes.FindTreeNodeByFullPath(directoryPath);
+
+            if (folderNode != null)
+            {
+                folderNode.Nodes.Clear();
+                GetSubdirectories(currentDirectory, folderNode);
+                folderNode.Expand();
+            }
+            else
+            {
+
+                MessageBox.Show("Failed to find directory in FolderView!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
             folderView.AfterExpand += FolderViewAfterExpand;
         }
 
@@ -283,7 +301,9 @@ namespace Mafia2Tool
             foreach (ResourceEntry entry in archiveFile.ResourceEntries)
             {
                 if (entry.Data == null)
+                {
                     throw new FormatException();
+                }
             }
 
             using (var output = File.Create(file.FullName))
@@ -293,11 +313,7 @@ namespace Mafia2Tool
             infoText.Text = "Saved SDS.";
         }
 
-        /// <summary>
-        /// Open an SDS from the FileInfo given.
-        /// </summary>
-        /// <param name="file">info of SDS.</param>
-        private void OpenSDS(FileInfo file)
+        private void OpenSDS(FileInfo file, bool openDirectory = true)
         {
             //backup file before unpacking..
             if (!Directory.Exists(file.Directory.FullName + "/BackupSDS"))
@@ -324,14 +340,30 @@ namespace Mafia2Tool
 
             archiveFile.SaveResources(file);
 
-            OpenDirectory(new DirectoryInfo(file.Directory.FullName + "/extracted/" + file.Name));
-            infoText.Text = "Opened SDS..";
+            if (openDirectory)
+            {
+                var directory = file.Directory;
+                string path = directory.FullName.Remove(0, directory.FullName.IndexOf(originalPath.Name)).TrimEnd('\\');
+                TreeNode node = folderView.Nodes.FindTreeNodeByFullPath(path);
+
+                if(!node.Nodes.ContainsKey("extracted"))
+                {
+                    var extracted = new TreeNode("extracted");
+                    extracted.Tag = file.Directory.FullName + "/extracted/";
+                    extracted.Name = "extracted";
+                    extracted.Nodes.Add(file.Name);
+                    node.Nodes.Add(extracted);
+                }
+                else
+                {
+                    node.Nodes["extracted"].Nodes.Add(file.Name);
+                }
+
+                OpenDirectory(new DirectoryInfo(file.Directory.FullName + "/extracted/" + file.Name));
+                infoText.Text = "Opened SDS..";
+            }
         }
 
-        /// <summary>
-        /// Open a PATCH file from the FileInfo given.
-        /// </summary>
-        /// <param name="file"></param>
         private void OpenPATCH(FileInfo file)
         {
             Log.WriteLine("Opening PATCH: " + file.Name);
@@ -411,7 +443,7 @@ namespace Mafia2Tool
 
             foreach (ToolStripItem tsi in toolStrip2.Items)
             {
-                if (!(tsi == FolderPath))
+                if (tsi != FolderPath)
                 {
                     width -= tsi.Width;
                     width -= tsi.Margin.Horizontal;
@@ -422,7 +454,7 @@ namespace Mafia2Tool
         }
         private void listView1_ItemActivate(object sender, EventArgs e)
         {
-            if(fileListView.SelectedItems.Count > 0)
+            if (fileListView.SelectedItems.Count > 0)
                 HandleFile(fileListView.SelectedItems[0]);
         }
 
@@ -430,7 +462,7 @@ namespace Mafia2Tool
         //Improve this, its bad.
         private void HandleFile(ListViewItem item)
         {
-            if(ToolkitSettings.UseSDSToolFormat)
+            if (ToolkitSettings.UseSDSToolFormat)
             {
                 switch (item.SubItems[1].Text)
                 {
@@ -462,8 +494,6 @@ namespace Mafia2Tool
             CityAreaEditor caEditor;
             CityShopEditor csEditor;
             SoundSectorLoader soundSector;
-
-            //DEBUG
             D3DForm d3dForm;
 
             //special case:
@@ -492,7 +522,7 @@ namespace Mafia2Tool
                 Roadmap roadmap = new Roadmap((item.Tag as FileInfo));
                 return;
             }
-            else if(item.SubItems[0].Text.Contains("shopmenu2") && item.SubItems[1].Text == "BIN")
+            else if (item.SubItems[0].Text.Contains("shopmenu2") && item.SubItems[1].Text == "BIN")
             {
                 ShopMenu2Editor editor = new ShopMenu2Editor((item.Tag as FileInfo));
                 return;
@@ -626,7 +656,7 @@ namespace Mafia2Tool
                 if (newDir.IndexOf(originalPath.Name) == 0)
                     newDir = Path.Combine(originalPath.Parent.FullName, FolderPath.Text);
 
-               if (Directory.Exists(newDir) && FolderPath.Text.Contains(currentDirectory.Name))
+                if (Directory.Exists(newDir) && FolderPath.Text.Contains(currentDirectory.Name))
                     OpenDirectory(new DirectoryInfo(newDir));
                 else
                     MessageBox.Show("Game Explorer cannot find path '" + newDir + "'. Make sure the path exists and try again.", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -642,7 +672,9 @@ namespace Mafia2Tool
             GEContext.Items[1].Visible = false;
 
             if (fileListView.SelectedItems.Count == 0)
+            {
                 return;
+            }
 
             if (fileListView.SelectedItems[0].Tag.GetType() == typeof(FileInfo))
             {
@@ -748,17 +780,18 @@ namespace Mafia2Tool
         private void OnViewSmallIconClicked(object sender, EventArgs e) => FileListViewTypeController(2);
         private void OnViewListClicked(object sender, EventArgs e) => FileListViewTypeController(3);
         private void OnViewTileClicked(object sender, EventArgs e) => FileListViewTypeController(4);
+        private void UnpackAllSDSButton_Click(object sender, EventArgs e) => UnpackSDSRecurse(originalPath);
 
         private void OnCredits_Pressed(object sender, EventArgs e)
         {
             MessageBox.Show("Toolkit developed by Greavesy. \n\n" +
-                "Special thanks to: \nOleg @ ZModeler 3 \nRick 'Gibbed' \nFireboyd for developing UnluacNET" + 
-                "\n\n" + 
+                "Special thanks to: \nOleg @ ZModeler 3 \nRick 'Gibbed' \nFireboyd for developing UnluacNET" +
+                "\n\n" +
                 "Also, a very special thanks to PayPal donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider \nNemesis7675" +
                 "\n\n" +
-                "And Patreons: \nHamAndRock", 
-                "Toolkit", 
-                MessageBoxButtons.OK, 
+                "And Patreons: \nHamAndRock",
+                "Toolkit",
+                MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
 
@@ -784,36 +817,27 @@ namespace Mafia2Tool
             M2FBXTool tool = new M2FBXTool();
         }
 
-        private void UnpackSDSRecurse(DirectoryInfo info)
+        private void CheckValidSDS(FileInfo info)
         {
-            foreach (var DirectoryInfo in info.GetDirectories())
+            if (info.Extension.Contains(".sds"))
             {
-                foreach (var FileInfo in DirectoryInfo.GetFiles())
-                {
-                    if (FileInfo.Extension.Contains(".sds"))
-                    {
-                        Console.WriteLine("Unpacking " + FileInfo.FullName);
-                        OpenSDS(FileInfo);
-                    }
-                }
-                UnpackSDSRecurse(DirectoryInfo);
+                Debug.WriteLine("Unpacking " + info.FullName);
+                OpenSDS(info, false);
             }
         }
-
-        private void UnpackAllSDSButton_Click(object sender, EventArgs e)
+        private void UnpackSDSRecurse(DirectoryInfo info)
         {
-            foreach(var DirectoryInfo in originalPath.GetDirectories())
+            foreach (var file in info.GetFiles())
             {
-                foreach(var FileInfo in DirectoryInfo.GetFiles())
-                {
-                    if (FileInfo.Extension.Contains(".sds"))
-                    {
-                        Console.WriteLine("Unpacking " + FileInfo.FullName);
-                        OpenSDS(FileInfo);
-                    }
-                }
-                UnpackSDSRecurse(DirectoryInfo);
+                CheckValidSDS(file);
             }
+
+            foreach (var directory in info.GetDirectories())
+            {
+                UnpackSDSRecurse(directory);
+            }
+
+            Debug.WriteLine("Finished Unpack All SDS Function");
         }
 
         private void CreateFrameResource_OnClick(object sender, EventArgs e)
