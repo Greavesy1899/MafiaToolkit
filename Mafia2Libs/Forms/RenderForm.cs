@@ -176,6 +176,8 @@ namespace Mafia2Tool
 
         public bool Init(IntPtr handle)
         {
+            //ToolkitSettings.Width = RenderPanel.Size.Width;
+            //ToolkitSettings.Height = RenderPanel.Size.Height;
             bool result = false;
 
             if (Input == null)
@@ -255,7 +257,6 @@ namespace Mafia2Tool
                 }
 
                 Graphics.Camera.SetProjectionMatrix(RenderPanel.Width, RenderPanel.Height);
-                Ray ray = Graphics.Camera.GetPickingRay(new Vector2(mousePos.X, mousePos.Y), new Vector2(RenderPanel.Size.Width, RenderPanel.Size.Height));
 
                 float multiplier = ToolkitSettings.CameraSpeed;
 
@@ -1184,7 +1185,14 @@ namespace Mafia2Tool
             foreach (KeyValuePair<int, IRenderer> model in Graphics.Assets)
             {
                 if (!model.Value.DoRender)
+                {
                     continue;
+                }
+
+                if (float.IsNaN(model.Value.Transform[0, 0]) || float.IsNaN(model.Value.Transform[0, 1]) || float.IsNaN(model.Value.Transform[0, 2])) continue;
+                if (float.IsNaN(model.Value.Transform[1, 0]) || float.IsNaN(model.Value.Transform[1, 1]) || float.IsNaN(model.Value.Transform[1, 2])) continue;
+                if (float.IsNaN(model.Value.Transform[2, 0]) || float.IsNaN(model.Value.Transform[2, 1]) || float.IsNaN(model.Value.Transform[2, 2])) continue;
+                if (float.IsNaN(model.Value.Transform[3, 0]) || float.IsNaN(model.Value.Transform[3, 1]) || float.IsNaN(model.Value.Transform[3, 2])) continue;
 
                 var vWM = Matrix.Invert(model.Value.Transform);
                 var localRay = new Ray(

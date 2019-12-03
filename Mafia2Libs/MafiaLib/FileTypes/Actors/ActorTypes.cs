@@ -126,7 +126,7 @@ namespace ResourceTypes.Actors
 
         public virtual void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
-            writer.Write(new byte[GetSize()]);
+            //writer.Write(new byte[this.GetSize()]);
             writer.Write(MoveOnInit, isBigEndian);
             writer.Write(ActivateImpulse, isBigEndian);
             writer.Write(HitPoints, isBigEndian);

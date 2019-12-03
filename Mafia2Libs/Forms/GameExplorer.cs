@@ -343,7 +343,7 @@ namespace Mafia2Tool
             if (openDirectory)
             {
                 var directory = file.Directory;
-                string path = directory.FullName.Remove(0, directory.FullName.IndexOf(originalPath.Name)).TrimEnd('\\');
+                string path = directory.FullName.Remove(0, directory.FullName.IndexOf(originalPath.Name, StringComparison.InvariantCultureIgnoreCase)).TrimEnd('\\');
                 TreeNode node = folderView.Nodes.FindTreeNodeByFullPath(path);
 
                 if(!node.Nodes.ContainsKey("extracted"))
