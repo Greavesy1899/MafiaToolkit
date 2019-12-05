@@ -259,7 +259,8 @@ namespace ResourceTypes.Actors
     public class ActorTrafficCar : IActorExtraDataInterface
     {
         int type;
-        BoundingBox bbox;
+        Vector3 bboxMin;
+        Vector3 bboxMax;
         float unk0;
         float unk1;
         float unk2;
@@ -282,7 +283,8 @@ namespace ResourceTypes.Actors
 
 
         public int Type { get { return type; } set { type = value; } }
-        public BoundingBox BoundingBox { get { return bbox; } set { bbox = value; } }
+        public Vector3 BoundingBoxMinimum { get { return bboxMin; } set { bboxMin = value; } }
+        public Vector3 BoundingBoxMaximum { get { return bboxMax; } set { bboxMax = value; } }
         public float Unk0 { get { return unk0; } set { unk0 = value; } }
         public float Unk1 { get { return unk1; } set { unk1 = value; } }
         public float Unk2 { get { return unk2; } set { unk2 = value; } }
@@ -310,7 +312,8 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             type = reader.ReadInt32(isBigEndian);
-            bbox = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
+            bboxMin = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            bboxMax = Vector3Extenders.ReadFromFile(reader, isBigEndian);
             unk0 = reader.ReadSingle(isBigEndian);
             unk1 = reader.ReadSingle(isBigEndian);
             unk2 = reader.ReadSingle(isBigEndian);
@@ -335,7 +338,8 @@ namespace ResourceTypes.Actors
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(type, isBigEndian);
-            BoundingBoxExtenders.WriteToFile(bbox, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(bboxMin, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(bboxMax, writer, isBigEndian);
             writer.Write(unk0, isBigEndian);
             writer.Write(unk1, isBigEndian);
             writer.Write(unk2, isBigEndian);
@@ -366,7 +370,8 @@ namespace ResourceTypes.Actors
     public class ActorTrafficHuman : IActorExtraDataInterface
     {
         int type;
-        BoundingBox bbox;
+        Vector3 bboxMin;
+        Vector3 bboxMax;
         float unk0;
         float unk1;
         float unk2;
@@ -380,7 +385,8 @@ namespace ResourceTypes.Actors
         int agregationCount;
 
         public int Type { get { return type; } set { type = value; } }
-        public BoundingBox BoundingBox { get { return bbox; } set { bbox = value; } }
+        public Vector3 BoundingBoxMinimum { get { return bboxMin; } set { bboxMin = value; } }
+        public Vector3 BoundingBoxMaximum { get { return bboxMax; } set { bboxMax = value; } }
         public float Unk0 { get { return unk0; } set { unk0 = value; } }
         public float Unk1 { get { return unk1; } set { unk1 = value; } }
         public float Unk2 { get { return unk2; } set { unk2 = value; } }
@@ -401,7 +407,8 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             type = reader.ReadInt32(isBigEndian);
-            bbox = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
+            bboxMin = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            bboxMax = Vector3Extenders.ReadFromFile(reader, isBigEndian);
             unk0 = reader.ReadSingle(isBigEndian);
             unk1 = reader.ReadSingle(isBigEndian);
             unk2 = reader.ReadSingle(isBigEndian);
@@ -418,7 +425,8 @@ namespace ResourceTypes.Actors
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(type, isBigEndian);
-            BoundingBoxExtenders.WriteToFile(bbox, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(bboxMin, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(bboxMax, writer, isBigEndian);
             writer.Write(unk0, isBigEndian);
             writer.Write(unk1, isBigEndian);
             writer.Write(unk2, isBigEndian);
@@ -441,7 +449,8 @@ namespace ResourceTypes.Actors
     public class ActorTrafficTrain : IActorExtraDataInterface
     {
         int type;
-        BoundingBox bbox;
+        Vector3 bboxMin;
+        Vector3 bboxMax;
         float unk0;
         float unk1;
         float unk2;
@@ -453,7 +462,8 @@ namespace ResourceTypes.Actors
         string crewGenerator;
 
         public int Type { get { return type; } set { type = value; } }
-        public BoundingBox BoundingBox { get { return bbox; } set { bbox = value; } }
+        public Vector3 BoundingBoxMinimum { get { return bboxMin; } set { bboxMin = value; } }
+        public Vector3 BoundingBoxMaximum { get { return bboxMax; } set { bboxMax = value; } }
         public float Unk0 { get { return unk0; } set { unk0 = value; } }
         public float Unk1 { get { return unk1; } set { unk1 = value; } }
         public float Unk2 { get { return unk2; } set { unk2 = value; } }
@@ -472,7 +482,8 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             type = reader.ReadInt32(isBigEndian);
-            bbox = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
+            bboxMin = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            bboxMax = Vector3Extenders.ReadFromFile(reader, isBigEndian);
             unk0 = reader.ReadSingle(isBigEndian);
             unk1 = reader.ReadSingle(isBigEndian);
             unk2 = reader.ReadSingle(isBigEndian);
@@ -487,7 +498,8 @@ namespace ResourceTypes.Actors
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(type, isBigEndian);
-            BoundingBoxExtenders.WriteToFile(bbox, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(bboxMin, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(bboxMax, writer, isBigEndian);
             writer.Write(unk0, isBigEndian);
             writer.Write(unk1, isBigEndian);
             writer.Write(unk2, isBigEndian);

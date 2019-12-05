@@ -1045,7 +1045,11 @@ namespace Gibbed.Mafia2.FileFormats
 
                 //now read..
                 using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + file, FileMode.Open)))
+                {
                     data.Deserialize(0, reader.BaseStream, Endian);
+                    data.Name = file;
+                    data.NameHash = FNV64.Hash(data.Name);
+                }
 
                 resource.Tables.Add(data);
             }
@@ -1072,15 +1076,10 @@ namespace Gibbed.Mafia2.FileFormats
             string file = nodes.Current.Value;
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-            //read buffers
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-            {
-                reader.BaseStream.Position = 5;
-                entry.SlotVramRequired = (uint)reader.ReadInt32();
-                reader.BaseStream.Position = 0;
-                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-            }
+            
+            //load buffers.
+            entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
+            entry.SlotVramRequired = BitConverter.ToUInt32(entry.Data, 5);
 
             //finish
             descNode.InnerText = "not available";
