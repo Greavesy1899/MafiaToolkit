@@ -75,6 +75,8 @@ namespace Forms.Docking
                 node.SelectedImageIndex = node.ImageIndex = 4;
             else if (node.Tag.GetType() == typeof(FrameHeaderScene))
                 node.SelectedImageIndex = node.ImageIndex = 8;
+            else if ((node.Tag is string) && ((node.Tag as string) == "Folder"))
+                node.SelectedImageKey = node.ImageKey = "SceneObject.png";
             else
                 node.SelectedImageIndex = node.ImageIndex = 7;
         }
@@ -101,7 +103,7 @@ namespace Forms.Docking
                 }
                 if ((treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectSingleMesh) || 
                     treeView1.SelectedNode.Tag.GetType() == typeof(FrameObjectModel) ||                   
-                    treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.NXSStruct)))
+                    treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.CollisionModel)))
                 {
                     EntryMenuStrip.Items[3].Visible = true;
                 }

@@ -15,12 +15,12 @@ namespace ResourceTypes.City
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class LocalisedString
         {
-            int id;
+            uint id;
             string text;
 
-            public LocalisedString(int id) { this.id = id; }
+            public LocalisedString(uint id) { this.id = id; }
 
-            public int ID {
+            public uint ID {
                 get { return id; }
                 set { id = value; }
             }
@@ -233,7 +233,7 @@ namespace ResourceTypes.City
         int[] unkOffsets;
         int[] unkIDs;
         public List<ShopMenu> shopItems = new List<ShopMenu>();
-        Dictionary<int, string> textDB = new Dictionary<int, string>();
+        Dictionary<uint, string> textDB = new Dictionary<uint, string>();
 
         public ShopMenu2()
         {
@@ -248,9 +248,12 @@ namespace ResourceTypes.City
 
                 foreach (var line in lines)
                 {
-                    string[] split = line.Split(':');
-                    split[0] = Regex.Replace(split[0], @"_", "");
-                    textDB.Add(int.Parse(split[0]), split[1]);
+                    if (!string.IsNullOrEmpty(line))
+                    {
+                        string[] split = line.Split(':');
+                        split[0] = Regex.Replace(split[0], @"_", "");
+                        textDB.Add(uint.Parse(split[0]), split[1]);
+                    }
                 }
                 lines = null;
             }
@@ -298,7 +301,7 @@ namespace ResourceTypes.City
                 {
                     Shop shop = new Shop();
                     shop.Name = stream.ReadString();
-                    shop.Unk0 = new LocalisedString(stream.ReadInt32(isBigEndian));
+                    shop.Unk0 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                     GetFromDB(shop.Unk0);
                     shop.ID = stream.ReadInt32(isBigEndian);
                     shops.Add(shop);
@@ -322,7 +325,7 @@ namespace ResourceTypes.City
                     metaInfo.Unk0 = stream.ReadInt32(isBigEndian);
                     metaInfo.Unk1 = stream.ReadString();
                     metaInfo.Path = stream.ReadString();
-                    metaInfo.UnkDB0 = new LocalisedString(stream.ReadInt32(isBigEndian));
+                    metaInfo.UnkDB0 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                     GetFromDB(metaInfo.UnkDB0);
                     metaInfo.UnkZero0 = stream.ReadInt32(isBigEndian);
                     metaInfo.Unk2 = stream.ReadInt32(isBigEndian);
@@ -335,17 +338,17 @@ namespace ResourceTypes.City
                     for (int x = 0; x < itemNum; x++)
                     {
                         var item = new ItemConfig();
-                        item.UnkDB0 = new LocalisedString(stream.ReadInt32(isBigEndian));
+                        item.UnkDB0 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                         GetFromDB(item.UnkDB0);
-                        item.UnkDB1 = new LocalisedString(stream.ReadInt32(isBigEndian));
+                        item.UnkDB1 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                         GetFromDB(item.UnkDB1);
-                        item.UnkDB2 = new LocalisedString(stream.ReadInt32(isBigEndian));
+                        item.UnkDB2 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                         GetFromDB(item.UnkDB2);
-                        item.UnkDB3 = new LocalisedString(stream.ReadInt32(isBigEndian));
+                        item.UnkDB3 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                         GetFromDB(item.UnkDB3);
-                        item.UnkDB4 = new LocalisedString(stream.ReadInt32(isBigEndian));
+                        item.UnkDB4 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                         GetFromDB(item.UnkDB4);
-                        item.UnkDB5 = new LocalisedString(stream.ReadInt32(isBigEndian));
+                        item.UnkDB5 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                         GetFromDB(item.UnkDB5);
 
                         item.UnkInts = new int[5];

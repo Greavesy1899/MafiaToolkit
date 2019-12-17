@@ -170,7 +170,17 @@ namespace Utils.Types
             TransformMatrix tm = new TransformMatrix();
             tm.rotation = left.rotation + right.rotation;
             tm.position = left.position + right.position;
-            tm.scale = left.scale * right.scale;
+            //tm.scale = left.scale * right.scale;
+            tm.SetTransformed();
+            return tm;
+        }
+
+        public static TransformMatrix operator *(TransformMatrix left, TransformMatrix right)
+        {
+            TransformMatrix tm = new TransformMatrix();
+            tm.rotation = left.rotation * right.rotation;
+            tm.position = left.position + right.position;
+            //tm.scale = left.scale * right.scale;
             tm.SetTransformed();
             return tm;
         }

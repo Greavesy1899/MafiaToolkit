@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using SharpDX;
 using Utils.SharpDXExtensions;
@@ -25,6 +26,7 @@ namespace ResourceTypes.Actors
         int unk14;
         int unk13;
         ActorExtraData[] extraData;
+        string fileName;
 
         public ActorDefinition[] Definitions {
             get { return definitions; }
@@ -39,6 +41,7 @@ namespace ResourceTypes.Actors
 
         public Actor(string file)
         {
+            fileName = file;
             using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
             {
                 ReadFromFile(reader);
@@ -148,6 +151,14 @@ namespace ResourceTypes.Actors
             //    throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
         }
 
+        public void WriteToFile()
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Open)))
+            {
+                WriteToFile(writer);
+            }
+        }
+
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(pool.Length);
@@ -171,7 +182,7 @@ namespace ResourceTypes.Actors
             for (int i = 0; i < extraData.Length; i++)
             {
                 writer.Write(instanceOffset);
-                instanceOffset += (extraData[i].Data != null ? extraData[i].Data.GetSize() : extraData[i].Buffer.Length) + 8;
+                instanceOffset += (extraData[i].Data != null ? extraData[i].Data.GetSize() : extraData[i].GetDataInBytes().Length) + 8;
             }
             for (int i = 0; i < extraData.Length; i++)
                 extraData[i].WriteToFile(writer);
@@ -280,8 +291,6 @@ namespace ResourceTypes.Actors
             Vector3 position;
             Vector4 quat;
             Vector3 euler;
-            Vector2 rotation;
-            Vector2 direction;
             Vector3 scale;
             ushort unk3;
             ushort dataID;
@@ -481,11 +490,6 @@ namespace ResourceTypes.Actors
             get { return data; }
             set { data = value; }
         }
-        [Browsable(false)]
-        public byte[] Buffer {
-            get { return buffer; }
-            set { buffer = value; }
-        }
 
         public ActorExtraData(BinaryReader reader)
         {
@@ -518,10 +522,11 @@ namespace ResourceTypes.Actors
                     data = new ActorScriptEntity(stream, isBigEndian);
                     parsed = true;
                 }
-                //else if (bufferType == ActorTypes.Radio && bufferLength == 1028)
-                //{
-                //    data = new ActorRadio(stream, isBigEndian);
-                //}
+                else if (bufferType == ActorTypes.Radio && bufferLength == 1028)
+                {
+                    data = new ActorRadio(stream, isBigEndian);
+                    parsed = true;
+                }
                 else if (bufferType == ActorTypes.Airplane && bufferLength == 4)
                 {
                     data = new ActorAircraft(stream, isBigEndian);
@@ -577,12 +582,13 @@ namespace ResourceTypes.Actors
                     data = new ActorCleanEntity(stream, isBigEndian);
                     parsed = true;
                 }
+
+                Debug.Assert(bufferLength == stream.Length);
             }
 
             if (parsed)
                 buffer = null;
         }
-
         public void WriteToFile(BinaryWriter writer)
         {
             bool isBigEndian = false;
@@ -600,7 +606,23 @@ namespace ResourceTypes.Actors
                 using (MemoryStream stream = new MemoryStream())
                 {
                     data.WriteToFile(stream, isBigEndian);
+                    Debug.Assert(data.GetSize() == stream.Length);
                     stream.WriteTo(writer.BaseStream);
+                }
+            }
+        }
+        public byte[] GetDataInBytes()
+        {
+            if (data == null)
+            {
+                return buffer;
+            }
+            else
+            {
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    data.WriteToFile(stream, false);
+                    return stream.ToArray();
                 }
             }
         }

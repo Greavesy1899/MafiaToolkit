@@ -8,6 +8,9 @@ using SharpDX;
 using ResourceTypes.FrameResource;
 using Utils.SharpDXExtensions;
 using ResourceTypes.BufferPools;
+using System.Linq;
+using ResourceTypes.Collisions;
+using ResourceTypes.Collisions.Opcode;
 
 namespace Utils.Models
 {
@@ -62,6 +65,8 @@ namespace Utils.Models
 
                 lods[i].NumUVChannels = 4;
                 lods[i].Vertices = new Vertex[frameLod.NumVertsPr];
+
+                if (vertexSize * frameLod.NumVertsPr != vertexBuffer.Data.Length) throw new System.Exception();
 
                 for (int v = 0; v != lods[i].Vertices.Length; v++)
                 {
@@ -160,54 +165,61 @@ namespace Utils.Models
             }
         }
 
-        public void BuildCollision(ResourceTypes.Collisions.Collision.NXSStruct nxsData, string name)
+        public void BuildCollision(ResourceTypes.Collisions.Collision.CollisionModel collisionModel, string name)
         {
             lods = new Lod[1];
             lods[0] = new Lod();
 
-            lods[0].Vertices = new Vertex[nxsData.Data.Vertices.Length];
-            lods[0].Indices = new ushort[nxsData.Data.Indices.Length];
+            TriangleMesh triangleMesh = collisionModel.Mesh;
+            lods[0].Vertices = new Vertex[triangleMesh.Vertices.Count];
+            lods[0].Indices = new ushort[triangleMesh.Triangles.Count * 3];
 
-            for (int x = 0; x != nxsData.Data.Indices.Length; x++)
-                lods[0].Indices[x] = (ushort)nxsData.Data.Indices[x];
+            for (int triIdx = 0, idxIdx = 0; triIdx < triangleMesh.Triangles.Count; triIdx++, idxIdx += 3)
+            {
+                lods[0].Indices[idxIdx] = (ushort) triangleMesh.Triangles[triIdx].v0;
+                lods[0].Indices[idxIdx + 1] = (ushort) triangleMesh.Triangles[triIdx].v1;
+                lods[0].Indices[idxIdx + 2] = (ushort) triangleMesh.Triangles[triIdx].v2;
+            }
 
             for (int x = 0; x != lods[0].Vertices.Length; x++)
             {
                 lods[0].Vertices[x] = new Vertex();
-                lods[0].Vertices[x].Position = nxsData.Data.Vertices[x];
+                lods[0].Vertices[x].Position = triangleMesh.Vertices[x];
             }
 
-            string[] matNames = new string[nxsData.Sections.Length];
-            List<ushort>[] matInds = new List<ushort>[nxsData.Sections.Length];
-
-            for (int t = 0; t != matInds.Length; t++)
-                matInds[t] = new List<ushort>();
-
-            lods[0].Parts = new ModelPart[nxsData.Sections.Length];
-            int indIDX = 0;
-            for (int t = 0; t != nxsData.Data.Materials.Length; t++)
+            //sort materials in order:
+            //M2T doesn't support unorganised triangles, only triangles in order by material.
+            //basically like mafia itself, so we have to reorder them and then save.
+            //this doesn't mess anything up, just takes a little longer :)
+            Dictionary<string, List<ushort>> sortedMats = new Dictionary<string, List<ushort>>();
+            for(int i = 0; i < triangleMesh.MaterialIndices.Count; i++)
             {
-                for (int g = 0; g != nxsData.Sections.Length; g++)
+                string mat = ((CollisionMaterials)triangleMesh.MaterialIndices[i]).ToString();
+                if(!sortedMats.ContainsKey(mat))
                 {
-                    if ((int)nxsData.Data.Materials[t] == (nxsData.Sections[g].Unk1 + 2))
-                    {
-                        matNames[g] = nxsData.Data.Materials[t].ToString();
-                        matInds[g].Add((ushort)nxsData.Data.Indices[indIDX]);
-                        matInds[g].Add((ushort)nxsData.Data.Indices[indIDX + 1]);
-                        matInds[g].Add((ushort)nxsData.Data.Indices[indIDX + 2]);
-                        indIDX += 3;
-                    }
+                    List<ushort> list = new List<ushort>();
+                    list.Add((ushort)collisionModel.Mesh.Triangles[i].v0);
+                    list.Add((ushort)collisionModel.Mesh.Triangles[i].v1);
+                    list.Add((ushort)collisionModel.Mesh.Triangles[i].v2);
+                    sortedMats.Add(mat, list);
+                }
+                else
+                {
+                    sortedMats[mat].Add((ushort)collisionModel.Mesh.Triangles[i].v0);
+                    sortedMats[mat].Add((ushort)collisionModel.Mesh.Triangles[i].v1);
+                    sortedMats[mat].Add((ushort)collisionModel.Mesh.Triangles[i].v2);
                 }
             }
 
+            lods[0].Parts = new ModelPart[sortedMats.Count];
             List<ushort> inds = new List<ushort>();
             for (int x = 0; x != lods[0].Parts.Length; x++)
             {
                 lods[0].Parts[x] = new ModelPart();
-                lods[0].Parts[x].Material = matNames[x];
+                lods[0].Parts[x].Material = sortedMats.ElementAt(x).Key;
                 lods[0].Parts[x].StartIndex = (uint)inds.Count;
-                inds.AddRange(matInds[x]);
-                lods[0].Parts[x].NumFaces = (uint)Math.Abs(inds.Count - (matInds[x].Count / 3));
+                inds.AddRange(sortedMats.ElementAt(x).Value);
+                lods[0].Parts[x].NumFaces = (uint)Math.Abs(inds.Count - (sortedMats.ElementAt(x).Value.Count / 3));
             }
             this.name = name;
             lods[0].Indices = inds.ToArray();
@@ -580,26 +592,26 @@ namespace Utils.Models
                 List<Vector3> surfaceNormals = new List<Vector3>();
                 Vector3[] normals = new Vector3[vertices.Length];
 
-                for (int i = 0; i < parts.Length; i++)
+                for(int i = 0; i < parts.Length; i++)
                 {
                     var normal = new Vector3();
 
                     var index = parts[i].StartIndex;
-                    while (index < parts[i].StartIndex + parts[i].NumFaces * 3)
+                    while(index < parts[i].StartIndex+parts[i].NumFaces*3)
                     {
                         var edge1 = vertices[indices[index]].Position - vertices[indices[index + 1]].Position;
                         var edge2 = vertices[indices[index]].Position - vertices[indices[index + 2]].Position;
                         normal = Vector3.Cross(edge1, edge2);
                         normals[indices[index]] += normal;
-                        normals[indices[index + 1]] += normal;
-                        normals[indices[index + 2]] += normal;
+                        normals[indices[index+1]] += normal;
+                        normals[indices[index+2]] += normal;
                         surfaceNormals.Add(normal);
                         index += 3;
                     }
                     surfaceNormals.Add(normal);
                 }
 
-                for (int i = 0; i < vertices.Length; i++)
+                for(int i = 0; i < vertices.Length; i++)
                 {
                     normals[i].Normalize();
                     vertices[i].Normal = normals[i];

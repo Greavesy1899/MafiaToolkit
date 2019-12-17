@@ -537,7 +537,6 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
                 string saveName = "";
                 Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
-
                 string sdsToolName = ResourceTypes[entry.TypeId].Name + "_" + counts[entry.TypeId] + ".bin";
                 switch (ResourceTypes[entry.TypeId].Name)
                 {
@@ -632,8 +631,10 @@ namespace Gibbed.Mafia2.FileFormats
                         break;
                     case "Table":
                         ReadTableEntry(entry, resourceXML, "", finalPath);
-                        saveName = "Tables.tbl";
-                        break;
+                        counts[ResourceTypes[entry.TypeId].Id]++;
+                        resourceXML.WriteElementString("Version", entry.Version.ToString());
+                        resourceXML.WriteEndElement();
+                        continue;
                     case "Animated Texture":
                         saveName = ReadBasicEntry(resourceXML, itemNames[i]);
                         break;
@@ -1044,7 +1045,11 @@ namespace Gibbed.Mafia2.FileFormats
 
                 //now read..
                 using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + file, FileMode.Open)))
+                {
                     data.Deserialize(0, reader.BaseStream, Endian);
+                    data.Name = file;
+                    data.NameHash = FNV64.Hash(data.Name);
+                }
 
                 resource.Tables.Add(data);
             }
@@ -1055,7 +1060,6 @@ namespace Gibbed.Mafia2.FileFormats
                 resource.Serialize(1, stream, Endian.Little);
                 entry.Data = stream.ToArray();
                 entry.SlotRamRequired = (uint)entry.Data.Length + 128;
-                File.WriteAllBytes(sdsFolder + "/Tables.tbl", entry.Data);
             }
 
             //get version, always 1?
@@ -1072,15 +1076,10 @@ namespace Gibbed.Mafia2.FileFormats
             string file = nodes.Current.Value;
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
-
-            //read buffers
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file, FileMode.Open)))
-            {
-                reader.BaseStream.Position = 5;
-                entry.SlotVramRequired = (uint)reader.ReadInt32();
-                reader.BaseStream.Position = 0;
-                entry.Data = reader.ReadBytes((int)reader.BaseStream.Length);
-            }
+            
+            //load buffers.
+            entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
+            entry.SlotVramRequired = BitConverter.ToUInt32(entry.Data, 5);
 
             //finish
             descNode.InnerText = "not available";

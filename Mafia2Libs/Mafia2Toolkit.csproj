@@ -274,6 +274,12 @@
       <DependentUpon>TranslokatorEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="MafiaLib\FileTypes\BufferTypes\BufferHelpers.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Model.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\OpcodeException.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Serialization.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Trees.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\TriangleMesh.cs" />
+    <Compile Include="MafiaLib\FileTypes\Collisions\CollisionBuilder.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\CutsceneTypes.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameNameTable\FrameNameTableEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceEnums.cs" />
@@ -318,7 +324,6 @@
     <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameSkeleton.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameSkeletonHierachy.cs" />
     <Compile Include="MafiaLib\FileTypes\BufferTypes\IndexBufferPool.cs" />
-    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionBase.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionBox.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionCapsule.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionSphere.cs" />
@@ -376,6 +381,7 @@
     <Compile Include="Rendering\Graphics\RenderTypes\RenderInstance.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderJunction.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderLine.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderNav.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderRoad.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderStaticCollision.cs" />
     <Compile Include="Rendering\Graphics\Shaders\CollisionShader.cs" />
@@ -735,6 +741,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>call "$(TargetDir)build.cmd"

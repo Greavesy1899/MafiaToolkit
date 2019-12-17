@@ -29,10 +29,10 @@ namespace Mafia2Tool
         private void Localise()
         {
             Text = Language.GetString("$ACTOR_EDITOR_TITLE");
-            fileToolButton.Text = Language.GetString("$FILE");
-            saveToolStripMenuItem.Text = Language.GetString("$SAVE");
-            reloadToolStripMenuItem.Text = Language.GetString("$RELOAD");
-            exitToolStripMenuItem.Text = Language.GetString("$EXIT");
+            FileButton.Text = Language.GetString("$FILE");
+            SaveButton.Text = Language.GetString("$SAVE");
+            ReloadButton.Text = Language.GetString("$RELOAD");
+            ExitButton.Text = Language.GetString("$EXIT");
         }
 
         private void BuildData()
@@ -58,58 +58,35 @@ namespace Mafia2Tool
                 child.Tag = actors.ExtraData[actors.Items[i].DataID];
                 node.Nodes.Add(child);
                 items.Nodes.Add(node);
-                //TreeNode[] nodes = treeView1.Nodes.Find(actors.Items[i].Hash2.ToString(), true);
-
-                //if (nodes.Length == 0)
-                //    items.Nodes.Add(node);
-                //else
-                //    nodes[0].Nodes.Add(node);
 
                 if (Debugger.IsAttached)
                 {
-                    string folder = "actors_unks/" + (ActorTypes)actors.Items[i].ActorTypeID + "1" + "/";
+                    string folder = "actors_unks/" + (ActorTypes)actors.Items[i].ActorTypeID + "/";
                     string filename = actors.Items[i].EntityType + ".dat";
 
                     if (!Directory.Exists(folder))
-                        Directory.CreateDirectory(folder);
-
-                    using (BinaryWriter writer = new BinaryWriter(File.Open(Path.Combine(folder, filename), FileMode.Create)))
                     {
-                        if (actors.ExtraData[actors.Items[i].DataID].Data == null)
-                        {
-                            writer.Write(actors.ExtraData[actors.Items[i].DataID].Buffer);
-                        }
-                        else
-                        {
-                            using (MemoryStream stream = new MemoryStream())
-                            {
-                                actors.ExtraData[actors.Items[i].DataID].Data.WriteToFile(stream, false);
-                                writer.Write(stream.GetBuffer());
-                            }
-                        }
+                        Directory.CreateDirectory(folder);
                     }
+
+                    File.WriteAllBytes(Path.Combine(folder, filename), actors.Items[i].Data.GetDataInBytes());
                 }
             }
-            treeView1.Nodes.Add(definitions);
-            treeView1.Nodes.Add(items);
+            ActorTreeView.Nodes.Add(definitions);
+            ActorTreeView.Nodes.Add(items);
         }
 
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
         {
-            FrameResourceGrid.SelectedObject = e.Node.Tag;
+            ActorGrid.SelectedObject = e.Node.Tag;
         }
 
-        private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)
+        private void ContextDelete_Click(object sender, System.EventArgs e)
         {
-            Close();
+            throw new System.NotImplementedException();
         }
 
-        private void reloadToolStripMenuItem_Click(object sender, System.EventArgs e)
-        {
-
-        }
-
-        private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
+        private void SaveButton_OnClick(object sender, System.EventArgs e)
         {
             using (BinaryWriter writer = new BinaryWriter(File.Open(actorFile.FullName + "EDIT", FileMode.Create)))
             {
@@ -117,9 +94,15 @@ namespace Mafia2Tool
             }
         }
 
-        private void ContextDelete_Click(object sender, System.EventArgs e)
+        private void ReloadButton_OnClick(object sender, System.EventArgs e)
         {
+            ActorTreeView.Nodes.Clear();
+            BuildData();
+        }
 
+        private void ExitButton_OnClick(object sender, System.EventArgs e)
+        {
+            Close();
         }
     }
 }

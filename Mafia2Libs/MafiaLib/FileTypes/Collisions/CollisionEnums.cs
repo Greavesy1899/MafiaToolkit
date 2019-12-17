@@ -2,16 +2,87 @@
 
 namespace ResourceTypes.Collisions
 {
-    //taken from PhysX sdk
-    [Flags]
-    public enum MeshSerialFlags
+
+    // TODO: most likely material indices/names should be taken
+    // from the "pc/sds/tables/tables.sds/tables/MaterialsPhysics.tbl" table,
+    // where materialIndex = guid & 0xFFFFFFFF; (see list below)
+    // This list should be tested in game.
+
+    // One more research note: 
+    // if indices from the list and actual result in the game are not match (at least for static collisions),
+    // try to add or subtract 2, because in ResourceTypes.Collisions.Collision.Section type
+    // the material index is subtracted by 2 for some unknown reason... it can do some trick)
+
+    /*
+    // Ultimately the names must be translated into English I guess)
+    enum MaterialsFromMaterialsPhysicsTbl
     {
-        MSF_MATERIALS = (1 << 0),
-        MSF_FACE_REMAP = (1 << 1),
-        MSF_HARDWARE_MESH = (1 << 2),
-        MSF_8BIT_INDICES = (1 << 3),
-        MSF_16BIT_INDICES = (1 << 4),
+        undefined = -1,
+        silnice = 1,
+        silnice_prasna = 2,
+        prechod_pro_chodce = 3,
+        kocici_hlavy = 4,
+        chodnik = 5,
+        dlazdice = 6,
+        trava = 7,
+        hlina = 8,
+        sterk = 9,
+        pisek = 10,
+        blato = 11,
+        kaluz = 12,
+        voda = 13,
+        snih = 14,
+        kov = 15,
+        plech = 16,
+        pletivo = 17,
+        zabradli = 18,
+        drevo = 19,
+        koberec = 20,
+        drevo_prkna = 21,
+        parkety = 22,
+        skripavy_beton = 23,
+        kachlicky = 24,
+        zed = 25,
+        omitka = 26,
+        cihly = 27,
+        sklo_rozbitelne_1 = 28,
+        sklo_rozbitelne_2 = 29,
+        sklo_neprustrelne = 30,
+        kere_stromy = 31,
+        universal_tvrdy = 32,
+        universal_meky = 33,
+        panak = 34,
+        no_shot_coll = 35,
+        papir = 36,
+        calouneni = 37,
+        platena_latka = 38,
+        camera_coll = 39,
+        player_coll = 40,
+        sicily_zed = 41,
+        trava_trashy = 42,
+        trava_negen = 43,
+        trava_trashy_negen = 44,
+        chodnik_human = 45,
+        auto = 46,
+        panak_headshot = 47,
+        panak_noha = 48,
+        panak_ruka = 49,
+        trava_sicily = 50,
+        hedgerow = 51,
+        dno = 52,
+        kanal = 53,
+        silnice_ky = 54,
+        silnice_prasna_ky = 55,
+        kocici_hlavy_ky = 56,
+        chodnik_ky = 57,
+        dlazdice_ky = 58,
+        drevo_prkna_ky = 59,
+        silnice_tunel = 60,
+        zabradli_beton = 61,
+        zabradli_drevo = 62,
+        papunddeckel = 63
     }
+    */
 
     //sand = grass/snow;
     //plaster is some kind of concrete.

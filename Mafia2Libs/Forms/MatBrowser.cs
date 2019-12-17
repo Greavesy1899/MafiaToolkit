@@ -13,8 +13,8 @@ namespace Mafia2Tool.Forms
         public MatBrowser()
         {
             InitializeComponent();
-            //Show();
             //Init();
+            //ShowDialog();
         }
 
         public bool ThumbnailCallback()
@@ -28,14 +28,13 @@ namespace Mafia2Tool.Forms
             {
                 var mtl = MaterialsManager.MTLs.ElementAt(i).Value;
 
-                foreach(var mat in mtl.Materials)
+                for (int x = 0; x < 20; x++)
                 {
-                    var matValue = mat.Value;
+                    var mat = mtl.Materials.ElementAt(x).Value;
                     TextureEntry textEntry = new TextureEntry();
-                    textEntry.SetMaterialName(matValue.MaterialName);
-                    textEntry.SetMaterialTexture(GetThumbnail(matValue));
+                    textEntry.SetMaterialName(mat.MaterialName);
+                    textEntry.SetMaterialTexture(GetThumbnail(mat));
                     flowLayoutPanel1.Controls.Add(textEntry);
-
                 }
             }
         }

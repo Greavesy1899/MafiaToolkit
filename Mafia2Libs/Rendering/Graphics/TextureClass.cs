@@ -24,14 +24,17 @@ namespace Rendering.Graphics
                         return path;
                 }
 
-                path = Path.Combine(ToolkitSettings.TexturePath, fileName);
-                if (File.Exists(path))
+                if (!string.IsNullOrEmpty(ToolkitSettings.TexturePath) || Directory.Exists(ToolkitSettings.TexturePath))
                 {
-                    string mip = Path.Combine(ToolkitSettings.TexturePath, "MIP_" + fileName);
-                    if (File.Exists(mip) && ToolkitSettings.UseMIPS)
-                        return mip;
-                    else
-                        return path;
+                    path = Path.Combine(ToolkitSettings.TexturePath, fileName);
+                    if (File.Exists(path))
+                    {
+                        string mip = Path.Combine(ToolkitSettings.TexturePath, "MIP_" + fileName);
+                        if (File.Exists(mip) && ToolkitSettings.UseMIPS)
+                            return mip;
+                        else
+                            return path;
+                    }
                 }
             }
             path = Path.Combine("Resources", "texture.dds");

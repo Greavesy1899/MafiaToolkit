@@ -115,6 +115,19 @@ namespace ResourceTypes.FrameResource
             }
         }
 
+        public FrameResource()
+        {
+            header = new FrameHeader();
+            frameScenes = new Dictionary<int, FrameHeaderScene>();
+            frameGeometries = new Dictionary<int, FrameGeometry>();
+            frameMaterials = new Dictionary<int, FrameMaterial>();
+            frameBlendInfos = new Dictionary<int, FrameBlendInfo>();
+            frameSkeletons = new Dictionary<int, FrameSkeleton>();
+            frameSkeletonHierachies = new Dictionary<int, FrameSkeletonHierachy>();
+            frameObjects = new Dictionary<int, object>();
+            newFrames = new List<FrameHolder>();
+        }
+
         public FrameHeaderScene AddSceneFolder(string name)
         {
             FrameHeaderScene scene = new FrameHeaderScene();
@@ -251,6 +264,12 @@ namespace ResourceTypes.FrameResource
             }
             objectTypes = null;
             DefineFrameBlockParents();
+        }
+
+        public void WriteToFile(string name)
+        {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(name, FileMode.Create)))
+                WriteToFile(writer);
         }
 
         public void WriteToFile(BinaryWriter writer)
@@ -453,12 +472,12 @@ namespace ResourceTypes.FrameResource
                     if (obj.ParentIndex1.Index <= (frameScenes.Count - 1) && (frameScenes.Count - 1) != -1)
                     {
                         obj.ParentIndex1.RefID = (frameScenes.ElementAt(obj.ParentIndex1.Index).Value as FrameHeaderScene).RefID;
-                        obj.ParentIndex1.Name = (frameScenes.ElementAt(obj.ParentIndex1.Index).Value as FrameHeaderScene).Name.String;
+                        obj.ParentIndex1.Name = (frameScenes.ElementAt(obj.ParentIndex1.Index).Value as FrameHeaderScene).Name.ToString();
                     }
                     else if (obj.ParentIndex1.Index >= numBlocks)
                     {
                         obj.ParentIndex1.RefID = (GetEntryFromIdx(obj.ParentIndex1.Index).Data as FrameObjectBase).RefID;
-                        obj.ParentIndex1.Name = (GetEntryFromIdx(obj.ParentIndex1.Index).Data as FrameObjectBase).Name.String;
+                        obj.ParentIndex1.Name = (GetEntryFromIdx(obj.ParentIndex1.Index).Data as FrameObjectBase).Name.ToString();
                     }
                     obj.AddRef(FrameEntryRefTypes.Parent1, obj.ParentIndex1.RefID);
                 }
@@ -468,12 +487,12 @@ namespace ResourceTypes.FrameResource
                     if (obj.ParentIndex2.Index <= (frameScenes.Count - 1) && (frameScenes.Count - 1) != -1)
                     {
                         obj.ParentIndex2.RefID = (frameScenes.ElementAt(obj.ParentIndex2.Index).Value as FrameHeaderScene).RefID;
-                        obj.ParentIndex2.Name = (frameScenes.ElementAt(obj.ParentIndex2.Index).Value as FrameHeaderScene).Name.String;
+                        obj.ParentIndex2.Name = (frameScenes.ElementAt(obj.ParentIndex2.Index).Value as FrameHeaderScene).Name.ToString();
                     }
                     else if (obj.ParentIndex2.Index >= numBlocks)
                     {
                         obj.ParentIndex2.RefID = (GetEntryFromIdx(obj.ParentIndex2.Index).Data as FrameObjectBase).RefID;
-                        obj.ParentIndex2.Name = (GetEntryFromIdx(obj.ParentIndex2.Index).Data as FrameObjectBase).Name.String;
+                        obj.ParentIndex2.Name = (GetEntryFromIdx(obj.ParentIndex2.Index).Data as FrameObjectBase).Name.ToString();
                     }
 
                     obj.AddRef(FrameEntryRefTypes.Parent2, obj.ParentIndex2.RefID);
@@ -651,6 +670,8 @@ namespace ResourceTypes.FrameResource
                 }
             }
 
+            header.SceneFolders = frameScenes.Values.ToList();
+
             header.NumFolderNames = frameScenes.Count;
             header.NumGeometries = frameGeometries.Count;
             header.NumMaterialResources = frameMaterials.Count;
@@ -658,7 +679,7 @@ namespace ResourceTypes.FrameResource
             header.NumSkeletons = frameSkeletons.Count;
             header.NumSkelHierachies = frameSkeletonHierachies.Count;
             header.NumObjects = frameObjects.Count;
-            header.NumFolderNames = header.SceneFolders.Count;
+            header.NumFolderNames = frameScenes.Count;
             NewFrames = updatedFrames;
         }
 

@@ -130,13 +130,6 @@ namespace Rendering.Graphics
             return ray;
         }
 
-        public Ray GetPickingRay(int x, int y, int height, int width, Matrix wMatrix)
-        {
-            Matrix matrix = wMatrix * ProjectionMatrix * ViewMatrix;
-            Ray ray = Ray.GetPickRay(x, y, new ViewportF(0, 0, width, height, ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth), matrix);
-            return ray;
-        }
-
         public void Render()
         {
             UpdateViewMatrix();

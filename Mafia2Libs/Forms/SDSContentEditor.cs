@@ -264,6 +264,9 @@ namespace Mafia2Tool
 
                 if (info.Extension.Contains("ibp"))
                     newBuffers.Add(info.Name);
+
+                if (info.Extension.Contains("dds"))
+                    newBuffers.Add(info.Name);
             }
 
             XmlWriterSettings settings = new XmlWriterSettings();
@@ -288,6 +291,13 @@ namespace Mafia2Tool
                 {
                     resourceXML.WriteElementString("Type", "VertexBufferPool");
                     resourceXML.WriteElementString("File", newBuffers[i]);
+                    resourceXML.WriteElementString("Version", "2");
+                }
+                else if(newBuffers[i].Contains(".dds"))
+                {
+                    resourceXML.WriteElementString("Type", "Texture");
+                    resourceXML.WriteElementString("File", newBuffers[i]);
+                    resourceXML.WriteElementString("HasMIP", "0");
                     resourceXML.WriteElementString("Version", "2");
                 }
                 resourceXML.WriteEndElement();

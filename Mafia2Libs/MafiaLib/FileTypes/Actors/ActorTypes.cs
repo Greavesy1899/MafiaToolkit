@@ -1,6 +1,7 @@
 ﻿using SharpDX;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
@@ -16,8 +17,18 @@ namespace ResourceTypes.Actors
         int GetSize();
     }
 
-    public class ActorUnkBase : IActorExtraDataInterface
+    public class ActorPhysicsBase : IActorExtraDataInterface
     {
+        public class HitData
+        {
+            public float SpeedMax { get; set; }
+            public float SpeedVolMax { get; set; }
+            public int MinVol { get; set; }
+            public int MaxVol { get; set; }
+            public float FrequencyLow { get; set; }
+            public float FrequencyHigh { get; set; }
+        }
+
         public int MoveOnInit { get; set; }
         public float ActivateImpulse { get; set; }
         public float DeactivateThreshold { get; set; }
@@ -26,37 +37,138 @@ namespace ResourceTypes.Actors
         public float StaticFriction { get; set; }
         public float DynamicFriction { get; set; }
         public float Restitution { get; set; }
-
+        public int POType { get; set; }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 POPos { get; set; }
 
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 POSize { get; set; }
+        public HitData[] HitInfo { get; set; }
+        public int SlideID { get; set; }
+        public float SlideSpeedMax { get; set; }
+        public float SlideSpeedVolMax { get; set; }
+        public int SlideMinVol { get; set; }
+        public int SlideMaxVol { get; set; }
+        public float SlideFrequencyLow { get; set; }
+        public float SlideFrequencyHigh { get; set; }
+        public int RollID { get; set; }
+        public float RollSpeedMax { get; set; }
+        public float RollSpeedVolMax { get; set; }
+        public int RollMinVol { get; set; }
+        public int RollMaxVol { get; set; }
+        public float RollFrequencyLow { get; set; }
+        public float RollFrequencyHigh { get; set; }
+        public int SndChngVersionID { get; set; }
+        public int SndBreakID { get; set; }
+        public int SndDelayID { get; set; }
+        public int SndDelayDelay { get; set; }
+        public int ParticleHitID { get; set; }
+        public int ParticleBreakID { get; set; }
+        public int ParticleChngVersionID { get; set; }
+        public int ParticleSlideID { get; set; }
+        public float ParticleHitSpeedMin { get; set; }
+        public int GarbageID { get; set; }
 
-        public byte[] data;
-
-        public int GetSize()
+        public virtual int GetSize()
         {
             return 240;
         }
 
-        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        public virtual void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            //float4 = reader.ReadSingle();
-            //float8 = reader.ReadSingle();
-            //floatC = reader.ReadSingle();
-            //dword10 = Convert.ToInt32(reader.ReadSingle());
-            //float14 = reader.ReadSingle();
-            //float18 = reader.ReadSingle();
-            //float1C = reader.ReadSingle();
-            //dwordD4 = Convert.ToInt32(reader.ReadSingle());
+            MoveOnInit = reader.ReadInt32(isBigEndian);
+            ActivateImpulse = reader.ReadSingle(isBigEndian);
+            HitPoints = reader.ReadSingle(isBigEndian);
+            DeactivateThreshold = reader.ReadSingle(isBigEndian);
+            StaticFriction = reader.ReadInt32(isBigEndian);
+            DynamicFriction = reader.ReadSingle(isBigEndian);
+            Restitution = reader.ReadSingle(isBigEndian);
+            reader.Seek(212, SeekOrigin.Begin);
+            POType = reader.ReadInt32(isBigEndian);
+            POPos = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            POSize = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            reader.Seek(44, SeekOrigin.Begin);
+            HitInfo = new HitData[3];
 
-            data = reader.ReadBytes(240);
+            for (int i = 0; i < 3; i++) HitInfo[i] = new HitData();
+            for (int i = 0; i < 3; i++) HitInfo[i].SpeedMax = reader.ReadSingle(isBigEndian);
+            for (int i = 0; i < 3; i++) HitInfo[i].SpeedVolMax = reader.ReadSingle(isBigEndian);
+            for (int i = 0; i < 3; i++) HitInfo[i].MinVol = reader.ReadInt32(isBigEndian);
+            for (int i = 0; i < 3; i++) HitInfo[i].MaxVol = reader.ReadInt32(isBigEndian);
+            for (int i = 0; i < 3; i++) HitInfo[i].FrequencyLow = reader.ReadSingle(isBigEndian);
+            for (int i = 0; i < 3; i++) HitInfo[i].FrequencyHigh = reader.ReadSingle(isBigEndian);
+
+            SlideID = reader.ReadInt32(isBigEndian);
+            SlideSpeedMax = reader.ReadSingle(isBigEndian);
+            SlideSpeedVolMax = reader.ReadSingle(isBigEndian);
+            SlideMinVol = reader.ReadInt32(isBigEndian);
+            SlideMaxVol = reader.ReadInt32(isBigEndian);
+            SlideFrequencyHigh = reader.ReadSingle(isBigEndian);
+            SlideFrequencyLow = reader.ReadSingle(isBigEndian);
+            RollID = reader.ReadInt32(isBigEndian);
+            RollSpeedMax = reader.ReadSingle(isBigEndian);
+            RollSpeedVolMax = reader.ReadSingle(isBigEndian);
+            RollMinVol = reader.ReadInt32(isBigEndian);
+            RollMaxVol = reader.ReadInt32(isBigEndian);
+            RollFrequencyLow = reader.ReadSingle(isBigEndian);
+            RollFrequencyHigh = reader.ReadSingle(isBigEndian);
+            SndChngVersionID = reader.ReadInt32(isBigEndian);
+            SndBreakID = reader.ReadInt32(isBigEndian);
+            SndDelayID = reader.ReadInt32(isBigEndian);
+            SndDelayDelay = reader.ReadInt32(isBigEndian);
+            ParticleHitID = reader.ReadInt32(isBigEndian);
+            ParticleBreakID = reader.ReadInt32(isBigEndian);
+            ParticleChngVersionID = reader.ReadInt32(isBigEndian);
+            ParticleSlideID = reader.ReadInt32(isBigEndian);
+            ParticleHitSpeedMin = reader.ReadSingle(isBigEndian);
+            GarbageID = reader.ReadInt32(isBigEndian);
         }
 
-        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        public virtual void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
-            writer.Write(data);
+            //writer.Write(new byte[this.GetSize()]);
+            writer.Write(MoveOnInit, isBigEndian);
+            writer.Write(ActivateImpulse, isBigEndian);
+            writer.Write(HitPoints, isBigEndian);
+            writer.Write(DeactivateThreshold, isBigEndian);
+            writer.Write(StaticFriction, isBigEndian);
+            writer.Write(DynamicFriction, isBigEndian);
+            writer.Write(Restitution, isBigEndian);
+            writer.Seek(212, SeekOrigin.Begin);
+            writer.Write(POType, isBigEndian);
+            Vector3Extenders.WriteToFile(POPos, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(POSize, writer, isBigEndian);
+            writer.Seek(44, SeekOrigin.Begin);
+            for (int i = 0; i < 3; i++) writer.Write(HitInfo[i].SpeedMax, isBigEndian);
+            for (int i = 0; i < 3; i++) writer.Write(HitInfo[i].SpeedVolMax, isBigEndian);
+            for (int i = 0; i < 3; i++) writer.Write(HitInfo[i].MinVol, isBigEndian);
+            for (int i = 0; i < 3; i++) writer.Write(HitInfo[i].MaxVol, isBigEndian);
+            for (int i = 0; i < 3; i++) writer.Write(HitInfo[i].FrequencyLow, isBigEndian);
+            for (int i = 0; i < 3; i++) writer.Write(HitInfo[i].FrequencyHigh, isBigEndian);
+            writer.Write(SlideID, isBigEndian);
+            writer.Write(SlideSpeedMax, isBigEndian);
+            writer.Write(SlideSpeedVolMax, isBigEndian);
+            writer.Write(SlideMinVol, isBigEndian);
+            writer.Write(SlideMaxVol, isBigEndian);
+            writer.Write(SlideFrequencyHigh, isBigEndian);
+            writer.Write(SlideFrequencyLow, isBigEndian);
+            writer.Write(RollID, isBigEndian);
+            writer.Write(RollSpeedMax, isBigEndian);
+            writer.Write(RollSpeedVolMax, isBigEndian);
+            writer.Write(RollMinVol, isBigEndian);
+            writer.Write(RollMaxVol, isBigEndian);
+            writer.Write(RollFrequencyLow, isBigEndian);
+            writer.Write(RollFrequencyHigh, isBigEndian);
+            writer.Write(SndChngVersionID, isBigEndian);
+            writer.Write(SndBreakID, isBigEndian);
+            writer.Write(SndDelayID, isBigEndian);
+            writer.Write(SndDelayDelay, isBigEndian);
+            writer.Write(ParticleHitID, isBigEndian);
+            writer.Write(ParticleBreakID, isBigEndian);
+            writer.Write(ParticleChngVersionID, isBigEndian);
+            writer.Write(ParticleSlideID, isBigEndian);
+            writer.Write(ParticleHitSpeedMin, isBigEndian);
+            writer.Write(GarbageID, isBigEndian);
         }
     }
 
@@ -65,6 +177,7 @@ namespace ResourceTypes.Actors
         public float Radius { get; set; }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 BBoxSize { get; set; }
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public ActorCleanEntityFlags flags { get; set; }
 
         public int GetSize()
@@ -91,39 +204,63 @@ namespace ResourceTypes.Actors
         }
     }
 
-    public class ActorRadio : ActorUnkBase
+    public class ActorRadio : ActorPhysicsBase
     {
-        int flags;
-        float range;
-        float nearRange;
-        float volume;
-        int curveID;
-        string program;
-        string playlist;
-        string station;
+        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
+        public ActorRadioFlags Flags { get; set; }
+        public float Range { get; set; }
+        public float NearRange { get; set; }
+        public float Volume { get; set; }
+        public int CurveID { get; set; }
+        public string Program { get; set; }
+        public string Playlist { get; set; }
+        public string Station { get; set; }
 
         public ActorRadio(MemoryStream reader, bool isBigEndian)
         {
             ReadFromFile(reader, isBigEndian);
         }
-        public new void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             base.ReadFromFile(reader, isBigEndian);
-            flags = reader.ReadInt32(isBigEndian);
-            range = reader.ReadSingle(isBigEndian);
-            nearRange = reader.ReadSingle(isBigEndian);
-            volume = reader.ReadSingle(isBigEndian);
-            curveID = reader.ReadInt32(isBigEndian);
-            program = reader.ReadStringBuffer(256);
-            playlist = reader.ReadStringBuffer(256);
-            station = reader.ReadStringBuffer(256);
+            reader.Seek(240, SeekOrigin.Begin);
+            Flags = (ActorRadioFlags)reader.ReadInt32(isBigEndian);
+            Range = reader.ReadSingle(isBigEndian);
+            NearRange = reader.ReadSingle(isBigEndian);
+            Volume = reader.ReadSingle(isBigEndian);
+            Volume /= 100.0f;
+            CurveID = reader.ReadInt32(isBigEndian);
+            Program = reader.ReadStringBuffer(256);
+            Playlist = reader.ReadStringBuffer(256);
+            Station = reader.ReadStringBuffer(256);
+        }
+
+        public override void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            base.WriteToFile(writer, isBigEndian);
+            writer.Seek(240, SeekOrigin.Begin);
+            writer.Write((int)Flags, isBigEndian);
+            writer.Write(Range, isBigEndian);
+            writer.Write(NearRange, isBigEndian);
+            Volume *= 100.0f;
+            writer.Write(Volume, isBigEndian);
+            writer.Write(CurveID, isBigEndian);
+            writer.WriteStringBuffer(256, Program, '\0');
+            writer.WriteStringBuffer(256, Playlist, '\0');
+            writer.WriteStringBuffer(256, Station, '\0');
+        }
+
+        public override int GetSize()
+        {
+            return 1028;
         }
     }
 
     public class ActorTrafficCar : IActorExtraDataInterface
     {
         int type;
-        BoundingBox bbox;
+        Vector3 bboxMin;
+        Vector3 bboxMax;
         float unk0;
         float unk1;
         float unk2;
@@ -146,7 +283,8 @@ namespace ResourceTypes.Actors
 
 
         public int Type { get { return type; } set { type = value; } }
-        public BoundingBox BoundingBox { get { return bbox; } set { bbox = value; } }
+        public Vector3 BoundingBoxMinimum { get { return bboxMin; } set { bboxMin = value; } }
+        public Vector3 BoundingBoxMaximum { get { return bboxMax; } set { bboxMax = value; } }
         public float Unk0 { get { return unk0; } set { unk0 = value; } }
         public float Unk1 { get { return unk1; } set { unk1 = value; } }
         public float Unk2 { get { return unk2; } set { unk2 = value; } }
@@ -174,7 +312,8 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             type = reader.ReadInt32(isBigEndian);
-            bbox = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
+            bboxMin = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            bboxMax = Vector3Extenders.ReadFromFile(reader, isBigEndian);
             unk0 = reader.ReadSingle(isBigEndian);
             unk1 = reader.ReadSingle(isBigEndian);
             unk2 = reader.ReadSingle(isBigEndian);
@@ -199,7 +338,8 @@ namespace ResourceTypes.Actors
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(type, isBigEndian);
-            BoundingBoxExtenders.WriteToFile(bbox, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(bboxMin, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(bboxMax, writer, isBigEndian);
             writer.Write(unk0, isBigEndian);
             writer.Write(unk1, isBigEndian);
             writer.Write(unk2, isBigEndian);
@@ -230,7 +370,8 @@ namespace ResourceTypes.Actors
     public class ActorTrafficHuman : IActorExtraDataInterface
     {
         int type;
-        BoundingBox bbox;
+        Vector3 bboxMin;
+        Vector3 bboxMax;
         float unk0;
         float unk1;
         float unk2;
@@ -244,7 +385,8 @@ namespace ResourceTypes.Actors
         int agregationCount;
 
         public int Type { get { return type; } set { type = value; } }
-        public BoundingBox BoundingBox { get { return bbox; } set { bbox = value; } }
+        public Vector3 BoundingBoxMinimum { get { return bboxMin; } set { bboxMin = value; } }
+        public Vector3 BoundingBoxMaximum { get { return bboxMax; } set { bboxMax = value; } }
         public float Unk0 { get { return unk0; } set { unk0 = value; } }
         public float Unk1 { get { return unk1; } set { unk1 = value; } }
         public float Unk2 { get { return unk2; } set { unk2 = value; } }
@@ -265,7 +407,8 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             type = reader.ReadInt32(isBigEndian);
-            bbox = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
+            bboxMin = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            bboxMax = Vector3Extenders.ReadFromFile(reader, isBigEndian);
             unk0 = reader.ReadSingle(isBigEndian);
             unk1 = reader.ReadSingle(isBigEndian);
             unk2 = reader.ReadSingle(isBigEndian);
@@ -282,7 +425,8 @@ namespace ResourceTypes.Actors
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(type, isBigEndian);
-            BoundingBoxExtenders.WriteToFile(bbox, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(bboxMin, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(bboxMax, writer, isBigEndian);
             writer.Write(unk0, isBigEndian);
             writer.Write(unk1, isBigEndian);
             writer.Write(unk2, isBigEndian);
@@ -305,7 +449,8 @@ namespace ResourceTypes.Actors
     public class ActorTrafficTrain : IActorExtraDataInterface
     {
         int type;
-        BoundingBox bbox;
+        Vector3 bboxMin;
+        Vector3 bboxMax;
         float unk0;
         float unk1;
         float unk2;
@@ -317,7 +462,8 @@ namespace ResourceTypes.Actors
         string crewGenerator;
 
         public int Type { get { return type; } set { type = value; } }
-        public BoundingBox BoundingBox { get { return bbox; } set { bbox = value; } }
+        public Vector3 BoundingBoxMinimum { get { return bboxMin; } set { bboxMin = value; } }
+        public Vector3 BoundingBoxMaximum { get { return bboxMax; } set { bboxMax = value; } }
         public float Unk0 { get { return unk0; } set { unk0 = value; } }
         public float Unk1 { get { return unk1; } set { unk1 = value; } }
         public float Unk2 { get { return unk2; } set { unk2 = value; } }
@@ -336,7 +482,8 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             type = reader.ReadInt32(isBigEndian);
-            bbox = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
+            bboxMin = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            bboxMax = Vector3Extenders.ReadFromFile(reader, isBigEndian);
             unk0 = reader.ReadSingle(isBigEndian);
             unk1 = reader.ReadSingle(isBigEndian);
             unk2 = reader.ReadSingle(isBigEndian);
@@ -351,7 +498,8 @@ namespace ResourceTypes.Actors
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(type, isBigEndian);
-            BoundingBoxExtenders.WriteToFile(bbox, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(bboxMin, writer, isBigEndian);
+            Vector3Extenders.WriteToFile(bboxMax, writer, isBigEndian);
             writer.Write(unk0, isBigEndian);
             writer.Write(unk1, isBigEndian);
             writer.Write(unk2, isBigEndian);
@@ -705,9 +853,8 @@ namespace ResourceTypes.Actors
         }
     }
 
-    public class ActorDoor : IActorExtraDataInterface
+    public class ActorDoor : ActorPhysicsBase
     {
-        byte[] data;
         byte disabled;
         byte closesPortals;
         byte physicalOpen;
@@ -744,8 +891,6 @@ namespace ResourceTypes.Actors
         int actorActionsEnabled;
         int pushAwayMode;
         int pushAwayReaction;
-
-        public byte[] Data { get { return data; } set { data = value; } }
         public byte Disabled { get { return disabled; } set { disabled = value; } }
         public byte ClosesPortals { get { return closesPortals; } set { closesPortals = value; } }
         public byte PhysicalOpen { get { return physicalOpen; } set { physicalOpen = value; } }
@@ -787,9 +932,10 @@ namespace ResourceTypes.Actors
         {
             ReadFromFile(reader, isBigEndian);
         }
-        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            data = reader.ReadBytes(240);
+            base.ReadFromFile(reader, isBigEndian);
+            reader.Seek(240, SeekOrigin.Begin);
             disabled = reader.ReadByte8();
             closesPortals = reader.ReadByte8();
             physicalOpen = reader.ReadByte8();
@@ -828,9 +974,10 @@ namespace ResourceTypes.Actors
             pushAwayReaction = reader.ReadInt32(isBigEndian);
         }
 
-        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        public override void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
-            writer.Write(data);
+            base.WriteToFile(writer, isBigEndian);
+            writer.Seek(240, SeekOrigin.Begin);
             writer.WriteByte(disabled);
             writer.WriteByte(closesPortals);
             writer.WriteByte(physicalOpen);
@@ -869,7 +1016,7 @@ namespace ResourceTypes.Actors
             writer.Write(pushAwayReaction, isBigEndian);
         }
 
-        public int GetSize()
+        public override int GetSize()
         {
             return 364;
         }
@@ -878,7 +1025,7 @@ namespace ResourceTypes.Actors
     public class ActorSoundEntity : IActorExtraDataInterface
     {
         ActorSoundEntityBehaviourFlags behFlags;
-        int type;
+        int audioType;
         int behaviourType;
         float volume;
         float pitch;
@@ -902,7 +1049,7 @@ namespace ResourceTypes.Actors
         float near;
         float far;
         //WHEREVER YOU AREEEE!!
-        float monoDistance;
+        int monoDistance;
         int curveID;
         float innerAngle;
         float outerAngle;
@@ -913,9 +1060,9 @@ namespace ResourceTypes.Actors
             get { return behFlags; }
             set { behFlags = value; }
         }
-        public int Type {
-            get { return type; }
-            set { type = value; }
+        public int AudioType {
+            get { return audioType; }
+            set { audioType = value; }
         }
         public int BehaviourType {
             get { return behaviourType; }
@@ -933,54 +1080,67 @@ namespace ResourceTypes.Actors
             get { return file; }
             set { file = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomGroupPauseMax {
             get { return randomGroupPauseMax; }
             set { randomGroupPauseMax = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomGroupPauseMin {
             get { return randomGroupPauseMin; }
             set { randomGroupPauseMin = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPauseMin {
             get { return randomPauseMin; }
             set { randomPauseMin = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPauseMax {
             get { return randomPauseMax; }
             set { randomPauseMax = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public int RandomGroupSoundsMax {
             get { return randomGroupSoundsMax; }
             set { randomGroupSoundsMax = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public int RandomGroupSoundsMin {
             get { return randomGroupSoundsMin; }
             set { randomGroupSoundsMin = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomVolumeMin {
             get { return randomVolumeMin; }
             set { randomVolumeMin = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomVolumeMax {
             get { return randomVolumeMax; }
             set { randomVolumeMax = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPitchMin {
             get { return randomPitchMin; }
             set { randomPitchMin = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPitchMax {
             get { return randomPitchMax; }
             set { randomPitchMax = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPosRangeX {
             get { return randomPosRangeX; }
             set { randomPosRangeX = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPosRangeY {
             get { return randomPosRangeY; }
             set { randomPosRangeY = value; }
         }
+        [Category("BehaviourType 20"), Description("These are only saved if \"BehaviourType\" is set to 20.")]
         public float RandomPosRangeZ {
             get { return randomPosRangeZ; }
             set { randomPosRangeZ = value; }
@@ -995,30 +1155,37 @@ namespace ResourceTypes.Actors
             get { return randomWaves; }
             set { randomWaves = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is 15 or above.")]
         public float Near {
             get { return near; }
             set { near = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is 15 or above.")]
         public float Far {
             get { return far; }
             set { far = value; }
         }
-        public float MonoDistance {
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is 15 or above.")]
+        public int MonoDistance {
             get { return monoDistance; }
             set { monoDistance = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is 20 or above.")]
         public int CurveID {
             get { return curveID; }
             set { curveID = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is 30 or above.")]
         public float InnerAngle {
             get { return innerAngle; }
             set { innerAngle = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is 30 or above.")]
         public float OuterAngle {
             get { return outerAngle; }
             set { outerAngle = value; }
         }
+        [Category("AudioType"), Description("These are only saved if \"AudioType\" is  30 or above.")]
         public float OuterVolume {
             get { return outerVolume; }
             set { outerVolume = value; }
@@ -1026,6 +1193,7 @@ namespace ResourceTypes.Actors
 
         public ActorSoundEntity(MemoryStream reader, bool isBigEndian)
         {
+            randomWaves = new string[5];
             ReadFromFile(reader, isBigEndian);
         }
 
@@ -1037,7 +1205,7 @@ namespace ResourceTypes.Actors
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             behFlags = (ActorSoundEntityBehaviourFlags)reader.ReadInt32(isBigEndian);
-            type = reader.ReadInt32(isBigEndian);
+            audioType = reader.ReadInt32(isBigEndian);
             behaviourType = reader.ReadInt32(isBigEndian);
             volume = reader.ReadSingle(isBigEndian);
             pitch = reader.ReadSingle(isBigEndian);
@@ -1073,12 +1241,12 @@ namespace ResourceTypes.Actors
             }
             reader.Seek(100, SeekOrigin.Begin);
             reader.ReadInt32(isBigEndian);
-            switch (type)
+            switch (audioType)
             {
                 case 20:
                     near = reader.ReadSingle(isBigEndian);
                     far = reader.ReadSingle(isBigEndian);
-                    monoDistance = reader.ReadSingle(isBigEndian);
+                    monoDistance = reader.ReadInt32(isBigEndian);
                     curveID = reader.ReadInt32(isBigEndian);
                     break;
                 case 15:
@@ -1107,7 +1275,7 @@ namespace ResourceTypes.Actors
             writer.Write(new byte[592]);
             writer.Seek(0, SeekOrigin.Begin);
             writer.Write((int)behFlags, isBigEndian);
-            writer.Write(type, isBigEndian);
+            writer.Write(audioType, isBigEndian);
             writer.Write(behaviourType, isBigEndian);
             writer.Write(volume, isBigEndian);
             writer.Write(pitch, isBigEndian);
@@ -1139,7 +1307,7 @@ namespace ResourceTypes.Actors
             }
             writer.Seek(100, SeekOrigin.Begin);
             writer.Write(0, isBigEndian);
-            switch (type)
+            switch (audioType)
             {
                 case 20:
                     writer.Write(near, isBigEndian);

@@ -176,9 +176,12 @@ namespace Mafia2Tool
 
         private void AddColumnOnClick(object sender, EventArgs e)
         {
-
         }
 
-        private void OnCellClick(object sender, DataGridViewCellEventArgs e) => GetCellProperties(e.RowIndex, e.ColumnIndex);
+        private void OnSelectedChange(object sender, EventArgs e)
+        {
+            if(DataGrid.SelectedCells.Count > 0)
+                GetCellProperties(DataGrid.SelectedCells[0].RowIndex, DataGrid.SelectedCells[0].ColumnIndex);
+        }
     }
 }

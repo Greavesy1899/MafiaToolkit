@@ -9,21 +9,13 @@ namespace Rendering.Graphics
 {
     public class DefaultShader : BaseShader
     {
-        [StructLayout(LayoutKind.Sequential)]
-        public struct DefaultShaderParams
-        {
-            public int EnableTexture;
-        }
-
         public VertexShader VertexShader { get; set; }
         public PixelShader PixelShader { get; set; }
         public InputLayout Layout { get; set; }
         public Buffer ConstantMatrixBuffer { get; set; }
         public Buffer ConstantLightBuffer { get; set; }
         public Buffer ConstantCameraBuffer { get; set; }
-        public Buffer ConstantShaderParamBuffer { get; set; }
         public SamplerState SamplerState { get; set; }
-        public DefaultShaderParams ShaderParams { get; private set; }
 
         private LightClass lighting = null;
 
@@ -97,18 +89,6 @@ namespace Rendering.Graphics
 
             ConstantLightBuffer = new Buffer(device, LightBuffDesc);
 
-            var shaderParamDesc = new BufferDescription()
-            {
-                Usage = ResourceUsage.Dynamic,
-                SizeInBytes = Utilities.SizeOf<LightBuffer>(),
-                BindFlags = BindFlags.ConstantBuffer,
-                CpuAccessFlags = CpuAccessFlags.Write,
-                OptionFlags = ResourceOptionFlags.None,
-                StructureByteStride = 0
-            };
-
-            ConstantShaderParamBuffer = new Buffer(device, shaderParamDesc);
-
             pixelShaderByteCode.Dispose();
             vertexShaderByteCode.Dispose();
 
@@ -123,8 +103,6 @@ namespace Rendering.Graphics
             ConstantCameraBuffer = null;
             ConstantMatrixBuffer?.Dispose();
             ConstantMatrixBuffer = null;
-            ConstantShaderParamBuffer?.Dispose();
-            ConstantShaderParamBuffer = null;
             SamplerState?.Dispose();
             SamplerState = null;
             Layout?.Dispose();
@@ -195,11 +173,6 @@ namespace Rendering.Graphics
             int bufferSlotNumber = 0;
             deviceContext.VertexShader.SetConstantBuffer(bufferSlotNumber, ConstantMatrixBuffer);
             #endregion
-            deviceContext.MapSubresource(ConstantShaderParamBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
-            mappedResource.Write(ShaderParams);
-            deviceContext.UnmapSubresource(ConstantShaderParamBuffer, 0);
-            bufferSlotNumber = 1;
-            deviceContext.PixelShader.SetConstantBuffer(bufferSlotNumber, ConstantShaderParamBuffer);
         }
 
         public override void Render(DeviceContext deviceContext, SharpDX.Direct3D.PrimitiveTopology type, int numTriangles, uint offset)
@@ -208,18 +181,15 @@ namespace Rendering.Graphics
             deviceContext.VertexShader.Set(VertexShader);
             deviceContext.PixelShader.Set(PixelShader);
             deviceContext.PixelShader.SetSampler(0, SamplerState);
-            deviceContext.DrawIndexed((int)numTriangles, (int)offset, 0);
+            deviceContext.DrawIndexed(numTriangles, (int)offset, 0);
         }
 
         public override void SetShaderParamters(Device device, DeviceContext context, Material material)
         {
-            DefaultShaderParams parameters = new DefaultShaderParams();
-
             if (material == null)
             {
                 ShaderResourceView texture = RenderStorageSingleton.Instance.TextureCache[0];
                 context.PixelShader.SetShaderResource(0, texture);
-                ShaderParams = parameters;
             }
             else
             {
@@ -247,8 +217,6 @@ namespace Rendering.Graphics
                 }
                 context.PixelShader.SetShaderResource(1, texture);
             }
-
-            ShaderParams = parameters;
         }
     }
 }

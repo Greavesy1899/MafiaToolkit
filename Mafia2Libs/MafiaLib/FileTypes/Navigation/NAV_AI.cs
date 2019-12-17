@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using SharpDX;
 using Utils.Extensions;
@@ -7,6 +8,19 @@ using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
 {
+    //For AIWorld
+    //Type 1: AI Group
+    //Type 2: AI World Part
+    //Type 3: AI Nav Point
+    //Type 4: AI Cover Part
+    //Type 5: AI Anim Point
+    //Type 6: AI User Area
+    //Type 7: AI Path Object
+    //Type 8: AI Action Point
+    //Type 9: AI Action Point 2?
+    //Type 10: AI Action Point 3?
+    //Type 11: AI Hiding Place
+    //Type 12: AI Action Point 4?
     public class NAVData
     {
         //unk01_flags could be types; AIWORLDS seem to have 1005, while OBJDATA is 3604410608.
@@ -328,7 +342,7 @@ namespace ResourceTypes.Navigation
     {
         public struct VertexStruct
         {
-            public int unk7;
+            public uint unk7;
             public Vector3 position;
             public float unk0;
             public float unk1;
@@ -374,15 +388,16 @@ namespace ResourceTypes.Navigation
             vertSize = reader.ReadInt32();
             triSize = reader.ReadInt32();
 
+            //List<string> data = new List<string>();
             vertices = new VertexStruct[vertSize];
             for (int i = 0; i < vertSize; i++)
             {
                 VertexStruct vertex = new VertexStruct();
-                vertex.unk7 = reader.ReadInt32();
+                vertex.unk7 = reader.ReadUInt32() & 0x7FFFFFFF;
                 vertex.position = Vector3Extenders.ReadFromFile(reader);
-                float pos = vertex.position.Y; //fuck the third var thing
-                vertex.position.Y = vertex.position.Z;
-                vertex.position.Z = pos;
+                //float pos = vertex.position.Y;
+                //vertex.position.Y = vertex.position.Z;
+                //vertex.position.Z = pos;
                 vertex.unk0 = reader.ReadSingle();
                 vertex.unk1 = reader.ReadSingle();
                 vertex.unk2 = reader.ReadInt32();
@@ -390,30 +405,22 @@ namespace ResourceTypes.Navigation
                 vertex.unk4 = reader.ReadInt16();
                 vertex.unk5 = reader.ReadInt32();
                 vertex.unk6 = reader.ReadInt32();
+                //data.Add(string.Format("v {0} {1} {2}", vertex.position.X, vertex.position.Z, vertex.position.Y));
                 vertices[i] = vertex;
             }
-            //unk6 = reader.ReadInt32();
-            //unk7 = reader.ReadInt32();
-            //unk8 = reader.ReadInt16();
-            //unk9 = reader.ReadInt16();
-
-            //int x = 2;
-            //indices = new uint[(triSize - 1) * 3];
-            //for (int i = 0; i < (triSize - 1) * 3; i++)
+            //data.Add("");
+            //data.Add("g mesh");
+            //indices = new uint[triSize*3];
+            //int index = 0;
+            //for(int i = 0; i < triSize; i++)
             //{
-            //    if (x == 0)
-            //    {
-            //        indices[i] = reader.ReadUInt32();
-            //        x = 2;
-            //    }
-            //    else
-            //    {
-            //        indices[i] = (uint)reader.ReadInt24();
-            //        reader.ReadByte();
-            //        x--;
-            //    }
+            //    indices[index] = reader.ReadUInt32() & 0x7FFFFFFF;
+            //    indices[index+1] = reader.ReadUInt32() & 0x7FFFFFFF;
+            //    indices[index+2] = reader.ReadUInt32() & 0x7FFFFFFF;
+            //    data.Add(string.Format("f {0} {1} {2}", indices[index] + 1, indices[index + 1] + 1, indices[index + 2] + 1));
+            //    index += 3;
             //}
-            //TODO::
+            //File.WriteAllLines("model.obj", data.ToArray());
         }
     }
 }

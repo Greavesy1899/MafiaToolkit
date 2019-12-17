@@ -22,6 +22,7 @@ namespace Forms.OptionControls
             AddTimeDateBackupsBox.Text = Language.GetString("$ADD_TIME_DATE_BACKUP");
             UnpackLUABox.Text = Language.GetString("$DECOMPILE_LUA_UNPACK");
             SDSToolFormat.Text = Language.GetString("$USE_SDS_TOOL_FORMAT");
+            CookCollisionsBox.Text = Language.GetString("$COOK_COLLISIONS");
         }
 
         private void LoadSettings()
@@ -30,6 +31,7 @@ namespace Forms.OptionControls
             AddTimeDateBackupsBox.Checked = ToolkitSettings.AddTimeDataBackup;
             UnpackLUABox.Checked = ToolkitSettings.DecompileLUA;
             SDSToolFormat.Checked = ToolkitSettings.UseSDSToolFormat;
+            CookCollisionsBox.Checked = ToolkitSettings.CookCollisions;
         }
 
         private void SDSCompress_IndexChanged(object sender, EventArgs e)
@@ -54,6 +56,12 @@ namespace Forms.OptionControls
         {
             ToolkitSettings.UseSDSToolFormat = SDSToolFormat.Checked;
             ToolkitSettings.WriteKey("UseSDSToolFormat", "SDS", ToolkitSettings.UseSDSToolFormat.ToString());
+        }
+
+        private void CookCollisionsBox_CheckedChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.CookCollisions = CookCollisionsBox.Checked;
+            ToolkitSettings.WriteKey("CookCollisions", "SDS", ToolkitSettings.CookCollisions.ToString());
         }
     }
 }

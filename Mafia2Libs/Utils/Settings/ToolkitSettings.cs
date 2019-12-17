@@ -50,6 +50,7 @@ namespace Utils.Settings
         public static bool DecompileLUA;
         public static bool AddTimeDataBackup;
         public static bool UseSDSToolFormat;
+        public static bool CookCollisions;
         public static readonly string Version = "2.0 experimental";
 
         public static void ReadINI()
@@ -71,13 +72,14 @@ namespace Utils.Settings
             float.TryParse(ReadKey("ScreenNear", "ModelViewer", "1"), out ScreenNear);
             float.TryParse(ReadKey("CameraSpeed", "ModelViewer", "1"), out CameraSpeed);
             bool.TryParse(ReadKey("EnableExperimental", "ModelViewer", "0"), out Experimental);
-            float.TryParse(ReadKey("FieldOfView", "ModelViewer", "60.0"), out FieldOfView);
+            float.TryParse(ReadKey("FieldOfView", "ModelViewer", "60"), out FieldOfView);
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
             int.TryParse(ReadKey("Language", "Misc", "0"), out Language);
             int.TryParse(ReadKey("Format", "Exporting", "0"), out Format);
             bool.TryParse(ReadKey("AddTimeDataBackup", "SDS", "True"), out AddTimeDataBackup);
             bool.TryParse(ReadKey("DecompileLUA", "SDS", "False"), out DecompileLUA);
             bool.TryParse(ReadKey("UseSDSToolFormat", "SDS", "False"), out UseSDSToolFormat);
+            bool.TryParse(ReadKey("CookCollisions", "SDS", "False"), out CookCollisions);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
             MaterialLibs = ReadKey("MaterialLibs", "Materials", "");
 
