@@ -839,9 +839,7 @@ namespace Mafia2Tool
                         int refID = StringHelpers.RandomGenerator.Next();
                         RenderInstance instance = new RenderInstance();
                         instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
-                        Matrix33 rot = new Matrix33();
-                        rot.SetEuler(placement.RotationDegrees);
-                        instance.SetTransform(placement.Position, rot);
+                        instance.SetTransform(placement.Transform);
                         TreeNode child = new TreeNode();
                         child.Text = nodes[0].Nodes.Count.ToString();
                         child.Name = refID.ToString();
@@ -995,9 +993,7 @@ namespace Mafia2Tool
                     IRenderer asset;
                     Graphics.Assets.TryGetValue(int.Parse(selected.Name), out asset);
                     instance = (asset as RenderInstance);
-                    Matrix33 matrix = new Matrix33();
-                    matrix.SetEuler(placement.RotationDegrees);
-                    instance.SetTransform(placement.Position, matrix);
+                    instance.SetTransform(placement.Transform);
                 }
             }
         }
@@ -1587,9 +1583,7 @@ namespace Mafia2Tool
 
                 RenderInstance instance = new RenderInstance();
                 instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
-                Matrix33 rot = new Matrix33();
-                rot.SetEuler(placement.RotationDegrees);
-                instance.SetTransform(placement.Position, rot);
+                instance.SetTransform(placement.Transform);
                 Graphics.InitObjectStack.Add(refID, instance);
             }
         }
@@ -2008,9 +2002,7 @@ namespace Mafia2Tool
                 //complete
                 RenderInstance instance = new RenderInstance();
                 instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
-                Matrix33 rot = new Matrix33();
-                rot.SetEuler(placement.RotationDegrees);
-                instance.SetTransform(placement.Position, rot);
+                instance.SetTransform(placement.Transform);
                 Graphics.InitObjectStack.Add(refID, instance);
                 dSceneTree.AddToTree(treeNode, collisionRoot);
                 SceneData.Collisions.Models.Add(collisionModel.Hash, collisionModel);

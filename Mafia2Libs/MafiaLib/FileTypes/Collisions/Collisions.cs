@@ -150,27 +150,34 @@ namespace ResourceTypes.Collisions
             /// Helper property to get/set rotation in degrees (with Z axes adopted to the Toolkit render coordinate system)
             /// instead of original rotation which is stored in radians
             /// </summary>
-            public Vector3 RotationDegrees
-            {
-                get
-                {
-                    return new Vector3()
-                    {
-                        X = MathUtil.RadiansToDegrees(Rotation.X),
-                        Y = MathUtil.RadiansToDegrees(Rotation.Y),
-                        Z = -MathUtil.RadiansToDegrees(Rotation.Z)
-                    };
+            public Vector3 RotationDegrees {
+                get {
+                    Vector3 vec = new Vector3();
+                    vec.X = MathUtil.RadiansToDegrees(Rotation.X);
+                    vec.Y = MathUtil.RadiansToDegrees(Rotation.Y);
+                    vec.Z = /*Unk5 != 128 ? MathUtil.RadiansToDegrees(Rotation.Z) : */-MathUtil.RadiansToDegrees(Rotation.Z);
+                    return vec;
                 }
-                set
-                {
-                    Rotation = new Vector3()
-                    {
-                        X = MathUtil.DegreesToRadians(value.X),
-                        Y = MathUtil.DegreesToRadians(value.Y),
-                        Z = -MathUtil.DegreesToRadians(value.Z)
-                    };
+                set {
+                    Vector3 vec = new Vector3();
+                    vec.X = MathUtil.DegreesToRadians(value.X);
+                    vec.Y = MathUtil.DegreesToRadians(value.Y);
+                    vec.Z = /*Unk5 != 128 ? MathUtil.DegreesToRadians(value.Z) : */-MathUtil.DegreesToRadians(value.Z);
+                    Rotation = vec;
                 }
             }
+
+            /// <summary>
+            /// Helper property to easily build the transform for the Toolkit render system.
+            /// </summary>
+            public Matrix Transform { 
+                get {
+                    Matrix transform = Matrix.RotationYawPitchRoll(MathUtil.DegreesToRadians(RotationDegrees.X), MathUtil.DegreesToRadians(RotationDegrees.Y), MathUtil.DegreesToRadians(RotationDegrees.Z));
+                    transform.TranslationVector = Position;
+                    return transform;
+                }
+            }
+
 
             public Placement(BinaryReader reader)
             {

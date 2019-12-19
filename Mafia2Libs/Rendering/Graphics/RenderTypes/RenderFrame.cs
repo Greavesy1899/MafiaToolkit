@@ -27,11 +27,6 @@ namespace Rendering.Graphics
             throw new NotImplementedException();
         }
 
-        public override void SetTransform(Vector3 position, Matrix33 rotation)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void SetTransform(Matrix matrix)
         {
             throw new NotImplementedException();
