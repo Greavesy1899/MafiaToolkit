@@ -1,6 +1,7 @@
 ﻿using SharpDX;
 using System;
 using System.IO;
+using Utils.Extensions;
 
 namespace Utils.SharpDXExtensions
 {
@@ -37,13 +38,19 @@ namespace Utils.SharpDXExtensions
             Vector4Extenders.WriteToFile(matrix.Column2, stream, isBigEndian);
             Vector4Extenders.WriteToFile(matrix.Column3, stream, isBigEndian);
         }
-        public static Matrix SetMatrix(this Matrix transform, Vector3 rotation, Vector3 scale, Vector3 position)
+
+        public static Matrix SetMatrix(Quaternion rotation, Vector3 scale, Vector3 position)
         {
-            Quaternion quaternion = Quaternion.RotationYawPitchRoll(MathUtil.DegreesToRadians(rotation.X), MathUtil.DegreesToRadians(rotation.Y), MathUtil.DegreesToRadians(rotation.Z));
-            Matrix r = Matrix.RotationQuaternion(quaternion);
+            Matrix r = Matrix.RotationQuaternion(rotation);
             Matrix s = Matrix.Scaling(scale);
             Matrix t = Matrix.Translation(position);
             return r * s * t;
+        }
+        public static Matrix SetMatrix(Vector3 rotation, Vector3 scale, Vector3 position)
+        {
+            Quaternion quaternion = Quaternion.RotationYawPitchRoll(MathUtil.DegreesToRadians(rotation.X), MathUtil.DegreesToRadians(rotation.Y), MathUtil.DegreesToRadians(rotation.Z));
+            Matrix matrix = SetMatrix(quaternion, scale, position);
+            return matrix;
         }
     }
 
@@ -74,6 +81,42 @@ namespace Utils.SharpDXExtensions
             euler.Z = -MathUtil.RadiansToDegrees((float)Math.Asin(2 * test));
             euler.Y = -MathUtil.RadiansToDegrees((float)Math.Atan2(2 * quat.X * quat.W - 2 * quat.Y * quat.Z, 1 - 2 * sqx - 2 * sqz));
             return euler;
+        }
+
+        public static Quaternion ReadFromFile(BinaryReader reader)
+        {
+            Quaternion quaternion = new Quaternion();
+            quaternion.X = reader.ReadSingle();
+            quaternion.Y = reader.ReadSingle();
+            quaternion.Z = reader.ReadSingle();
+            quaternion.W = reader.ReadSingle();
+            return quaternion;
+        }
+
+        public static Quaternion ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            Quaternion quaternion = new Quaternion();
+            quaternion.X = stream.ReadSingle(isBigEndian);
+            quaternion.Y = stream.ReadSingle(isBigEndian);
+            quaternion.Z = stream.ReadSingle(isBigEndian);
+            quaternion.W = stream.ReadSingle(isBigEndian);
+            return quaternion;
+        }
+
+        public static void WriteToFile(this Quaternion quaternion, BinaryWriter writer)
+        {
+            writer.Write(quaternion.X);
+            writer.Write(quaternion.Y);
+            writer.Write(quaternion.Z);
+            writer.Write(quaternion.W);
+        }
+
+        public static void WriteToFile(this Quaternion quaternion, MemoryStream stream, bool isBigEndian)
+        {
+            stream.Write(quaternion.X, isBigEndian);
+            stream.Write(quaternion.Y, isBigEndian);
+            stream.Write(quaternion.Z, isBigEndian);
+            stream.Write(quaternion.W, isBigEndian);
         }
     }
 }

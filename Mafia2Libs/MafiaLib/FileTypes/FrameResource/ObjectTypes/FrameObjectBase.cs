@@ -5,6 +5,7 @@ using Utils.Extensions;
 using Utils.Types;
 using SharpDX;
 using Utils.SharpDXExtensions;
+using System.Collections.Generic;
 
 namespace ResourceTypes.FrameResource
 {
@@ -19,6 +20,9 @@ namespace ResourceTypes.FrameResource
         protected short unk6;
         protected bool isOnTable;
         protected NameTableFlags nameTableFlags;
+
+        public FrameObjectBase parent;
+        public List<FrameObjectBase> children;
 
 
         public Hash Name {

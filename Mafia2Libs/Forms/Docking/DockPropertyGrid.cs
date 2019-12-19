@@ -122,7 +122,7 @@ namespace Forms.Docking
                 if (FrameResource.IsFrameType(currentObject))
                 {
                     FrameObjectBase fObject = (currentObject as FrameObjectBase);
-                    fObject.Transform = fObject.Transform.SetMatrix(rotation, Vector3.One, position);
+                    fObject.Transform = MatrixExtensions.SetMatrix(rotation, scale, position);
                 }
                 else if (currentObject is ResourceTypes.Collisions.Collision.Placement)
                 {

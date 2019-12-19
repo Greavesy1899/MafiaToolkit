@@ -176,8 +176,6 @@ namespace Mafia2Tool
 
         public bool Init(IntPtr handle)
         {
-            //ToolkitSettings.Width = RenderPanel.Size.Width;
-            //ToolkitSettings.Height = RenderPanel.Size.Height;
             bool result = false;
 
             if (Input == null)
@@ -352,11 +350,25 @@ namespace Mafia2Tool
             if (obj2 != null)
                 UpdateRenderedObjects(matrix, obj2);
 
-            Matrix mat = matrix;
             foreach (TreeNode cNode in node.Nodes)
             {
-                mat = Matrix.Multiply(matrix, (obj2 != null) ? obj2.Transform : new Matrix());
-                CallMatricesRecursive(cNode, mat);
+                Matrix other = (obj2 != null) ? obj2.Transform : new Matrix();
+
+                Vector3 otherScale;
+                Quaternion otherRotation;
+                Vector3 otherPosition;
+                other.Decompose(out otherScale, out otherRotation, out otherPosition);
+
+                Vector3 scale;
+                Quaternion rotation;
+                Vector3 position;
+                matrix.Decompose(out scale, out rotation, out position);
+
+                var r = Matrix.RotationQuaternion(rotation * otherRotation);
+                var s = Matrix.Scaling(otherScale);
+                var t = Matrix.Translation(matrix.TranslationVector + other.TranslationVector);
+                matrix = r * s * t;
+                CallMatricesRecursive(cNode, matrix);
             }
         }
 
@@ -921,9 +933,8 @@ namespace Mafia2Tool
                                 else
                                 {
                                     frame.Item = actor.Items[c];
-                                    //frame.Transform.SetRotationMatrix(actor.Items[c].Rotation);
-                                    //frame.Transform.Scale = actor.Items[c].Scale;
-                                    //frame.Transform.Position = actor.Items[c].Position;
+
+                                    frame.Transform = MatrixExtensions.SetMatrix(actor.Items[c].Quaternion, actor.Items[c].Scale, actor.Items[c].Position);
                                 }
                             }
                         }
@@ -1185,11 +1196,6 @@ namespace Mafia2Tool
                 {
                     continue;
                 }
-
-                if (float.IsNaN(model.Value.Transform[0, 0]) || float.IsNaN(model.Value.Transform[0, 1]) || float.IsNaN(model.Value.Transform[0, 2])) continue;
-                if (float.IsNaN(model.Value.Transform[1, 0]) || float.IsNaN(model.Value.Transform[1, 1]) || float.IsNaN(model.Value.Transform[1, 2])) continue;
-                if (float.IsNaN(model.Value.Transform[2, 0]) || float.IsNaN(model.Value.Transform[2, 1]) || float.IsNaN(model.Value.Transform[2, 2])) continue;
-                if (float.IsNaN(model.Value.Transform[3, 0]) || float.IsNaN(model.Value.Transform[3, 1]) || float.IsNaN(model.Value.Transform[3, 2])) continue;
 
                 var vWM = Matrix.Invert(model.Value.Transform);
                 var localRay = new Ray(

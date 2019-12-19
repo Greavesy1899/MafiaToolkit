@@ -289,7 +289,7 @@ namespace ResourceTypes.Actors
             ulong defintionHash; //definition hash
             ulong frameNameHash; //frame name hash
             Vector3 position;
-            Vector4 quat;
+            Quaternion quat;
             Vector3 euler;
             Vector3 scale;
             ushort unk3;
@@ -339,7 +339,7 @@ namespace ResourceTypes.Actors
                 get { return position; }
                 set { position = value; }
             }
-            public Vector4 Quaternion {
+            public Quaternion Quaternion {
                 get { return quat; }
                 set { quat = value; }
             }
@@ -400,7 +400,7 @@ namespace ResourceTypes.Actors
                 defintionHash = reader.ReadUInt64();
                 frameNameHash = reader.ReadUInt64();
                 position = Vector3Extenders.ReadFromFile(reader);
-                quat = Vector4Extenders.ReadFromFile(reader);
+                quat = QuaternionExtensions.ReadFromFile(reader);
                 scale = Vector3Extenders.ReadFromFile(reader);
                 unk3 = reader.ReadUInt16();
                 dataID = reader.ReadUInt16();
@@ -433,6 +433,7 @@ namespace ResourceTypes.Actors
                 writer.Write(defintionHash);
                 writer.Write(frameNameHash);
                 position.WriteToFile(writer);
+                QuaternionExtensions.WriteToFile(quat, writer);
                 quat.WriteToFile(writer);
                 scale.WriteToFile(writer);
                 writer.Write(unk3);
