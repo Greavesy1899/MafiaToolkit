@@ -1,5 +1,7 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.IO;
+using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene
@@ -177,8 +179,8 @@ namespace ResourceTypes.Cutscene
                         camera.Unk1 = reader.ReadInt32();
                         camera.UnkType = reader.ReadInt32();
                         camera.Padding = reader.ReadBytes(9);
-                        camera.Matrix = new Utils.Types.TransformMatrix();
-                        camera.Matrix.ReadFromFile(reader);
+                        camera.Matrix = new Matrix();
+                        camera.Matrix = MatrixExtensions.ReadFromFile(reader);
                         camera.Unk2 = reader.ReadSingle();
                         camera.Unk3 = reader.ReadSingle();
                         camera.Unk4 = reader.ReadSingle();

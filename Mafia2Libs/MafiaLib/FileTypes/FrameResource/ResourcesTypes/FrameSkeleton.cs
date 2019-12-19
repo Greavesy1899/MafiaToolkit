@@ -16,10 +16,10 @@ namespace ResourceTypes.FrameResource
         int[] unkLodData;
         byte idType;
         Hash[] boneNames;
-        TransformMatrix[] matrices1;
+        Matrix[] matrices1;
         int numUnkCount2;
         byte[] boneLODUsage;
-        TransformMatrix[] matrices2;
+        Matrix[] matrices2;
         MappingForBlendingInfo[] mappingForBlendingInfos;
 
         public int[] NumBones {
@@ -46,7 +46,7 @@ namespace ResourceTypes.FrameResource
             get { return boneNames; }
             set { boneNames = value; }
         }
-        public TransformMatrix[] Matrices1 {
+        public Matrix[] Matrices1 {
             get { return matrices1; }
             set { matrices1 = value; }
         }
@@ -58,7 +58,7 @@ namespace ResourceTypes.FrameResource
             get { return boneLODUsage; }
             set { boneLODUsage = value; }
         }
-        public TransformMatrix[] Matrices2 {
+        public Matrix[] Matrices2 {
             get { return matrices2; }
             set { matrices2 = value; }
         }
@@ -72,39 +72,39 @@ namespace ResourceTypes.FrameResource
             ReadFromFile(reader, isBigEndian);
         }
 
-        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             //all the same values?
             for (int i = 0; i != numBones.Length; i++)
-                numBones[i] = reader.ReadInt32(isBigEndian);
+                numBones[i] = stream.ReadInt32(isBigEndian);
 
-            numBlendIDs = reader.ReadInt32(isBigEndian);
-            numLods = reader.ReadInt32(isBigEndian);
+            numBlendIDs = stream.ReadInt32(isBigEndian);
+            numLods = stream.ReadInt32(isBigEndian);
 
             //unknown lod data; 
             unkLodData = new int[numLods];
             for (int i = 0; i != unkLodData.Length; i++)
-                unkLodData[i] = reader.ReadInt32(isBigEndian);
+                unkLodData[i] = stream.ReadInt32(isBigEndian);
 
-            idType = reader.ReadByte8();
+            idType = stream.ReadByte8();
 
             //Bone Names and LOD data.
             boneNames = new Hash[numBones[0]];
             for (int i = 0; i != boneNames.Length; i++)
-                boneNames[i] = new Hash(reader, isBigEndian);
+                boneNames[i] = new Hash(stream, isBigEndian);
 
             //Matrices;
-            matrices1 = new TransformMatrix[numBones[1]];
-            matrices2 = new TransformMatrix[numBones[3]];
+            matrices1 = new Matrix[numBones[1]];
+            matrices2 = new Matrix[numBones[3]];
 
             for (int i = 0; i != matrices1.Length; i++)
-                matrices1[i] = new TransformMatrix(reader, isBigEndian);
+                matrices1[i] = MatrixExtensions.ReadFromFile(stream, isBigEndian);
 
-            numUnkCount2 = reader.ReadInt32(isBigEndian);
-            boneLODUsage = reader.ReadBytes(numUnkCount2);
+            numUnkCount2 = stream.ReadInt32(isBigEndian);
+            boneLODUsage = stream.ReadBytes(numUnkCount2);
 
             for (int i = 0; i != matrices2.Length; i++)
-                matrices2[i] = new TransformMatrix(reader, isBigEndian);
+                matrices2[i] = MatrixExtensions.ReadFromFile(stream, isBigEndian);
 
             //BoneMappings.
             mappingForBlendingInfos = new MappingForBlendingInfo[numLods];
@@ -114,13 +114,13 @@ namespace ResourceTypes.FrameResource
 
                 for (int x = 0; x != mappingForBlendingInfos[i].Bounds.Length; x++)
                 {
-                    mappingForBlendingInfos[i].Bounds[x] = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
+                    mappingForBlendingInfos[i].Bounds[x] = BoundingBoxExtenders.ReadFromFile(stream, isBigEndian);
                 }
-                if (reader.ReadByte() != 0)
+                if (stream.ReadByte() != 0)
                     throw new System.Exception("oops");
 
-                mappingForBlendingInfos[i].RefToUsageArray = reader.ReadBytes(numBones[2]);
-                mappingForBlendingInfos[i].UsageArray = reader.ReadBytes(unkLodData[i]);
+                mappingForBlendingInfos[i].RefToUsageArray = stream.ReadBytes(numBones[2]);
+                mappingForBlendingInfos[i].UsageArray = stream.ReadBytes(unkLodData[i]);
             }
         }
 

@@ -146,11 +146,11 @@ namespace ResourceTypes.FrameResource
 
         public struct BoneTransform
         {
-            TransformMatrix transform;
+            Matrix transform;
             BoundingBox bounds;
             byte isValid;
 
-            public TransformMatrix Transform {
+            public Matrix Transform {
                 get { return transform; }
                 set { transform = value; }
             }
@@ -163,11 +163,11 @@ namespace ResourceTypes.FrameResource
                 set { isValid = value; }
             }
 
-            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
+            public void ReadFromFile(MemoryStream stream, bool isBigEndian)
             {
-                transform = new TransformMatrix(reader, isBigEndian);
-                bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
-                isValid = reader.ReadByte8();
+                transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+                bounds = BoundingBoxExtenders.ReadFromFile(stream, isBigEndian);
+                isValid = stream.ReadByte8();
             }
 
             public void WriteToFile(BinaryWriter writer)

@@ -3,6 +3,8 @@ using System.ComponentModel;
 using ResourceTypes.FrameNameTable;
 using Utils.Extensions;
 using Utils.Types;
+using SharpDX;
+using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.FrameResource
 {
@@ -10,7 +12,7 @@ namespace ResourceTypes.FrameResource
     {
         protected Hash name;
         protected int secondaryFlags;
-        protected TransformMatrix transformMatrix;
+        protected Matrix transform;
         protected short unk3;
         protected ParentStruct parentIndex1;
         protected ParentStruct parentIndex2;
@@ -28,9 +30,9 @@ namespace ResourceTypes.FrameResource
             set { secondaryFlags = value; }
         }
         //[Browsable(false)]
-        public TransformMatrix Matrix {
-            get { return transformMatrix; }
-            set { transformMatrix = value; }
+        public Matrix Transform {
+            get { return transform; }
+            set { transform = value; }
         }
         [Browsable(false)]
         public short Unk3 {
@@ -71,7 +73,7 @@ namespace ResourceTypes.FrameResource
             //do example name.
             name = new Hash("NewObject");
             secondaryFlags = 1;
-            transformMatrix = new TransformMatrix();
+            transform = new Matrix();
             unk3 = -1;
             parentIndex1 = new ParentStruct(-1);
             parentIndex2 = new ParentStruct(-1);
@@ -82,7 +84,7 @@ namespace ResourceTypes.FrameResource
         {
             name = new Hash(other.name.String);
             secondaryFlags = other.secondaryFlags;
-            transformMatrix = new TransformMatrix(other.transformMatrix);
+            transform = new Matrix(other.transform.ToArray());
             unk3 = other.unk3;
             parentIndex1 = new ParentStruct(other.parentIndex1);
             parentIndex2 = new ParentStruct(other.parentIndex2);
@@ -91,22 +93,22 @@ namespace ResourceTypes.FrameResource
             nameTableFlags = other.nameTableFlags;
         }
 
-        public virtual void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        public virtual void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            name = new Hash(reader, isBigEndian);
-            secondaryFlags = reader.ReadInt32(isBigEndian);
-            transformMatrix = new TransformMatrix(reader, isBigEndian);
-            unk3 = reader.ReadInt16(isBigEndian);
-            parentIndex1 = new ParentStruct(reader.ReadInt32(isBigEndian));
-            parentIndex2 = new ParentStruct(reader.ReadInt32(isBigEndian));
-            unk6 = reader.ReadInt16(isBigEndian);
+            name = new Hash(stream, isBigEndian);
+            secondaryFlags = stream.ReadInt32(isBigEndian);
+            transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            unk3 = stream.ReadInt16(isBigEndian);
+            parentIndex1 = new ParentStruct(stream.ReadInt32(isBigEndian));
+            parentIndex2 = new ParentStruct(stream.ReadInt32(isBigEndian));
+            unk6 = stream.ReadInt16(isBigEndian);
         }
 
         public virtual void WriteToFile(BinaryWriter writer)
         {
             name.WriteToFile(writer);
             writer.Write(secondaryFlags);
-            transformMatrix.WriteToFile(writer);
+            MatrixExtensions.WriteToFile(transform, writer);
             writer.Write(unk3);
             writer.Write(parentIndex1.Index);
             writer.Write(parentIndex2.Index);

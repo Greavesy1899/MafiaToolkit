@@ -565,7 +565,7 @@ namespace ResourceTypes.Actors
         byte[] padding;
         int unk01;
         byte unk02;
-        TransformMatrix uMatrix0;
+        Matrix uMatrix0;
         int unk07;
         int unk08;
         int unk09;
@@ -588,7 +588,7 @@ namespace ResourceTypes.Actors
         Hash[] names = new Hash[4];
         BoundingBox boundingBox;
         byte unk_byte3;
-        TransformMatrix uMatrix1;
+        Matrix uMatrix1;
         int instanced;
         int type;
 
@@ -601,7 +601,7 @@ namespace ResourceTypes.Actors
             set { unk02 = value; }
         }
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public TransformMatrix UnkMatrix0 {
+        public Matrix UnkMatrix0 {
             get { return uMatrix0; }
             set { uMatrix0 = value; }
         }
@@ -696,7 +696,7 @@ namespace ResourceTypes.Actors
             set { unk_byte3 = value; }
         }
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public TransformMatrix UnkMatrix1 {
+        public Matrix UnkMatrix1 {
             get { return uMatrix1; }
             set { uMatrix1 = value; }
         }
@@ -713,68 +713,68 @@ namespace ResourceTypes.Actors
             ReadFromFile(reader, isBigEndian);
         }
 
-        public void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            size = reader.ReadInt32(isBigEndian);
+            size = stream.ReadInt32(isBigEndian);
             if (size < 2305)
             {
-                padding = reader.ReadBytes(9);
-                unk01 = reader.ReadInt32(isBigEndian);
-                unk02 = reader.ReadByte8();
-                uMatrix0 = new TransformMatrix(reader, isBigEndian);
-                unk07 = reader.ReadInt32(isBigEndian);
-                unk08 = reader.ReadInt32(isBigEndian);
-                unk09 = reader.ReadInt32(isBigEndian);
-                count = reader.ReadByte8();
-                unk10 = reader.ReadInt32(isBigEndian);
+                padding = stream.ReadBytes(9);
+                unk01 = stream.ReadInt32(isBigEndian);
+                unk02 = stream.ReadByte8();
+                uMatrix0 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+                unk07 = stream.ReadInt32(isBigEndian);
+                unk08 = stream.ReadInt32(isBigEndian);
+                unk09 = stream.ReadInt32(isBigEndian);
+                count = stream.ReadByte8();
+                unk10 = stream.ReadInt32(isBigEndian);
 
                 frameLinks = new Hash[count];
                 sceneLinks = new Hash[count];
                 frameIdxLinks = new int[count];
                 for (int i = 0; i < count; i++)
                 {
-                    sceneLinks[i] = new Hash(reader, isBigEndian);
-                    frameLinks[i] = new Hash(reader, isBigEndian);
-                    frameIdxLinks[i] = reader.ReadInt32(isBigEndian);
+                    sceneLinks[i] = new Hash(stream, isBigEndian);
+                    frameLinks[i] = new Hash(stream, isBigEndian);
+                    frameIdxLinks[i] = stream.ReadInt32(isBigEndian);
                 }
 
                 //flags = reader.ReadInt32();
 
                 for (int i = 0; i < 7; i++)
-                    unkFloat1[i] = reader.ReadSingle(isBigEndian);
+                    unkFloat1[i] = stream.ReadSingle(isBigEndian);
 
-                unk_int = reader.ReadInt32(isBigEndian);
+                unk_int = stream.ReadInt32(isBigEndian);
 
                 for (int i = 0; i < 5; i++)
-                    unkFloat2[i] = reader.ReadSingle(isBigEndian);
+                    unkFloat2[i] = stream.ReadSingle(isBigEndian);
 
-                unk_byte1 = reader.ReadByte8();
+                unk_byte1 = stream.ReadByte8();
 
                 for (int i = 0; i < 17; i++)
-                    unkFloat3[i] = reader.ReadSingle(isBigEndian);
+                    unkFloat3[i] = stream.ReadSingle(isBigEndian);
 
-                unk_byte2 = reader.ReadByte8();
+                unk_byte2 = stream.ReadByte8();
 
                 for (int i = 0; i < 5; i++)
-                    unkFloat4[i] = reader.ReadSingle(isBigEndian);
+                    unkFloat4[i] = stream.ReadSingle(isBigEndian);
 
-                nameLight = new Hash(reader, isBigEndian);
+                nameLight = new Hash(stream, isBigEndian);
 
-                unk_int2 = reader.ReadInt32(isBigEndian);
+                unk_int2 = stream.ReadInt32(isBigEndian);
 
                 for (int i = 0; i < 20; i++)
-                    unkFloat5[i] = reader.ReadSingle(isBigEndian);
+                    unkFloat5[i] = stream.ReadSingle(isBigEndian);
 
                 for (int i = 0; i < 4; i++)
-                    names[i] = new Hash(reader, isBigEndian);
+                    names[i] = new Hash(stream, isBigEndian);
 
-                boundingBox = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
-                unk_byte3 = reader.ReadByte8();
-                uMatrix1 = new TransformMatrix(reader, isBigEndian);
+                boundingBox = BoundingBoxExtenders.ReadFromFile(stream, isBigEndian);
+                unk_byte3 = stream.ReadByte8();
+                uMatrix1 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
             }
-            reader.Seek(2308, SeekOrigin.Begin);
-            instanced = reader.ReadInt32(isBigEndian);
-            type = reader.ReadInt32(isBigEndian);
+            stream.Seek(2308, SeekOrigin.Begin);
+            instanced = stream.ReadInt32(isBigEndian);
+            type = stream.ReadInt32(isBigEndian);
         }
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)

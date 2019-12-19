@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,7 @@ namespace ResourceTypes.Cutscene
         public int Unk1;
         public int UnkType;
         public byte[] Padding;
-        public TransformMatrix Matrix;
+        public Matrix Matrix;
         public float Unk2;
         public float Unk3;
         public float Unk4;
