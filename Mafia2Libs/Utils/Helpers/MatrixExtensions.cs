@@ -46,6 +46,15 @@ namespace Utils.SharpDXExtensions
             Matrix t = Matrix.Translation(position);
             return r * s * t;
         }
+        public static Vector3 RotatePoint(this Matrix matrix, Vector3 position)
+        {
+            Vector3 vector = new Vector3();
+            vector.X = matrix.M11 * position.X + matrix.M12 * position.Y + matrix.M13 * position.Z;
+            vector.Y = matrix.M21 * position.X + matrix.M22 * position.Y + matrix.M23 * position.Z;
+            vector.Z = matrix.M31 * position.X + matrix.M32 * position.Y + matrix.M33 * position.Z;
+            return vector; //Output coords in order (x,y,z)
+        }
+
         public static Matrix SetMatrix(Vector3 rotation, Vector3 scale, Vector3 position)
         {
             Quaternion quaternion = Quaternion.RotationYawPitchRoll(MathUtil.DegreesToRadians(rotation.X), MathUtil.DegreesToRadians(rotation.Y), MathUtil.DegreesToRadians(rotation.Z));
@@ -77,9 +86,9 @@ namespace Utils.SharpDXExtensions
             double sqx = quat.X * quat.X;
             double sqy = quat.Y * quat.Y;
             double sqz = quat.Z * quat.Z;
-            euler.X = -MathUtil.RadiansToDegrees((float)Math.Atan2(2 * quat.Y * quat.W - 2 * quat.X * quat.Z, 1 - 2 * sqy - 2 * sqz));
-            euler.Z = -MathUtil.RadiansToDegrees((float)Math.Asin(2 * test));
-            euler.Y = -MathUtil.RadiansToDegrees((float)Math.Atan2(2 * quat.X * quat.W - 2 * quat.Y * quat.Z, 1 - 2 * sqx - 2 * sqz));
+            euler.X = MathUtil.RadiansToDegrees((float)Math.Atan2(2 * quat.Y * quat.W - 2 * quat.X * quat.Z, 1 - 2 * sqy - 2 * sqz));
+            euler.Z = MathUtil.RadiansToDegrees((float)Math.Asin(2 * test));
+            euler.Y = MathUtil.RadiansToDegrees((float)Math.Atan2(2 * quat.X * quat.W - 2 * quat.Y * quat.Z, 1 - 2 * sqx - 2 * sqz));
             return euler;
         }
 

@@ -365,6 +365,23 @@ namespace ResourceTypes.FrameResource
             }
         }
 
+        private void AddChildren(Dictionary<int, TreeNode> parsedNodes, List<FrameObjectBase> children, TreeNode parentNode)
+        {
+            foreach (var child in children)
+            {
+                if (parsedNodes.ContainsKey(child.RefID))
+                {
+                    continue;
+                }
+
+                TreeNode node = new TreeNode(child.ToString());
+                node.Tag = child;
+                node.Name = child.RefID.ToString();
+                parentNode.Nodes.Add(node);
+                parsedNodes.Add(child.RefID, node);
+                AddChildren(parsedNodes, child.Children, node);
+            }
+        }
         public TreeNode BuildTree(FrameNameTable.FrameNameTable table)
         {
             TreeNode root = new TreeNode("FrameResource Contents");
@@ -381,77 +398,35 @@ namespace ResourceTypes.FrameResource
                 TreeNode node = new TreeNode(scene.ToString());
                 node.Tag = scene;
                 node.Name = scene.RefID.ToString();
-                parsedNodes.Add(i, node);
+                parsedNodes.Add(scene.RefID, node);
                 root.Nodes.Add(node);
+
+                AddChildren(parsedNodes, scene.Children, node);
             }
 
-            ////add entries from the table, add table data and then add to scene viewer.
-            for (int i = 0; i != table.FrameData.Length; i++)
+            foreach (var pair in frameObjects)
             {
-                if (table.FrameData[i].FrameIndex == -1)
-                    continue;
+                FrameObjectBase frame = (pair.Value as FrameObjectBase);
+                TreeNode node;
 
-                var frameData = table.FrameData[i];
-                FrameObjectBase fObject = (GetEntryFromIdx(numBlocks + frameData.FrameIndex).Data as FrameObjectBase);
-                fObject.IsOnFrameTable = true;
-                fObject.FrameNameTableFlags = table.FrameData[i].Flags;
-                int p1idx = numBlocks + fObject.ParentIndex1.Index;
-                int p2idx = numBlocks + fObject.ParentIndex2.Index;
-                int thisKey = numBlocks + table.FrameData[i].FrameIndex;
-
-                TreeNode node = (!parsedNodes.ContainsKey(thisKey)) ? new TreeNode(fObject.ToString()) : parsedNodes[thisKey];
-                node.Tag = fObject;
-                node.Name = fObject.RefID.ToString();
-
-                if (p1idx == -1 && p2idx == -1)
+                if (parsedNodes.ContainsKey(pair.Key))
                 {
-                    //might be temp? it fixes cars loading in or non binded entries.
+                    continue;
+                }
+
+                if(pair.Value is FrameObjectFrame)
+                {
+                    node = new TreeNode(frame.ToString());
+                    node.Tag = frame;
+                    node.Name = frame.RefID.ToString();
                     root.Nodes.Add(node);
-                    continue;
+                    parsedNodes.Add(frame.RefID, node);
+                    AddChildren(parsedNodes, frame.Children, node);
                 }
                 else
                 {
-                    FrameEntry pBase = (GetEntryFromIdx(p2idx).Data as FrameEntry);
-                    TreeNode[] nodes = root.Nodes.Find(pBase.RefID.ToString(), true);
-
-                    if (nodes.Length > 0)
-                        nodes[0].Nodes.Add(node);
+                    //throw new FormatException("Skipped frame!");
                 }
-
-                if (!parsedNodes.ContainsKey(thisKey))
-                    parsedNodes.Add(thisKey, node);
-            }
-
-            foreach (FrameHolder holder in NewFrames)
-            {
-                FrameObjectBase fObject = holder.Data as FrameObjectBase;
-
-                if (fObject == null)
-                    continue;
-
-                TreeNode node = (!parsedNodes.ContainsKey(holder.Idx)) ? new TreeNode(fObject.ToString()) : parsedNodes[holder.Idx];
-                node.Tag = fObject;
-                node.Name = fObject.RefID.ToString();
-
-                if (!parsedNodes.ContainsKey(holder.Idx))
-                    parsedNodes.Add(holder.Idx, node);
-            }
-
-            foreach (FrameHolder holder in NewFrames)
-            {
-                FrameObjectBase fObject = holder.Data as FrameObjectBase;
-
-                if (fObject == null)
-                    continue;
-
-                if (fObject.ParentIndex1.Index != -1)
-                    parsedNodes[fObject.ParentIndex1.Index].Nodes.Add(parsedNodes[holder.Idx]);
-                else if (fObject.ParentIndex2.Index != -1)
-                    parsedNodes[fObject.ParentIndex2.Index].Nodes.Add(parsedNodes[holder.Idx]);
-                else if (fObject.ParentIndex1.Index == -1 && fObject.ParentIndex2.Index == -1)
-                    root.Nodes.Add(parsedNodes[holder.Idx]);
-                else
-                    Debug.WriteLine("Not added {0}", holder.Data);
             }
             return root;
         }
@@ -462,7 +437,8 @@ namespace ResourceTypes.FrameResource
 
             for (int i = 0; i != NewFrames.Count; i++)
             {
-                FrameObjectBase obj = (GetEntryFromIdx(i).Data as FrameObjectBase);
+                var entry = (GetEntryFromIdx(i).Data);
+                FrameObjectBase obj = (entry as FrameObjectBase);
 
                 if (obj == null)
                     continue;
@@ -471,13 +447,18 @@ namespace ResourceTypes.FrameResource
                 {
                     if (obj.ParentIndex1.Index <= (frameScenes.Count - 1) && (frameScenes.Count - 1) != -1)
                     {
-                        obj.ParentIndex1.RefID = (frameScenes.ElementAt(obj.ParentIndex1.Index).Value as FrameHeaderScene).RefID;
-                        obj.ParentIndex1.Name = (frameScenes.ElementAt(obj.ParentIndex1.Index).Value as FrameHeaderScene).Name.ToString();
+                        FrameHeaderScene scene = (frameScenes.ElementAt(obj.ParentIndex1.Index).Value as FrameHeaderScene);
+                        obj.ParentIndex1.RefID = scene.RefID;
+                        obj.ParentIndex1.Name = scene.Name.ToString();
+                        scene.Children.Add(obj);
                     }
                     else if (obj.ParentIndex1.Index >= numBlocks)
                     {
-                        obj.ParentIndex1.RefID = (GetEntryFromIdx(obj.ParentIndex1.Index).Data as FrameObjectBase).RefID;
-                        obj.ParentIndex1.Name = (GetEntryFromIdx(obj.ParentIndex1.Index).Data as FrameObjectBase).Name.ToString();
+                        FrameObjectBase parent = (GetEntryFromIdx(obj.ParentIndex1.Index).Data as FrameObjectBase);
+                        obj.ParentIndex1.RefID = parent.RefID;
+                        obj.ParentIndex1.Name = parent.Name.ToString();
+                        obj.Parent = parent;
+                        parent.Children.Add(obj);
                     }
                     obj.AddRef(FrameEntryRefTypes.Parent1, obj.ParentIndex1.RefID);
                 }
@@ -486,17 +467,23 @@ namespace ResourceTypes.FrameResource
                 {
                     if (obj.ParentIndex2.Index <= (frameScenes.Count - 1) && (frameScenes.Count - 1) != -1)
                     {
-                        obj.ParentIndex2.RefID = (frameScenes.ElementAt(obj.ParentIndex2.Index).Value as FrameHeaderScene).RefID;
-                        obj.ParentIndex2.Name = (frameScenes.ElementAt(obj.ParentIndex2.Index).Value as FrameHeaderScene).Name.ToString();
+                        FrameHeaderScene scene = (frameScenes.ElementAt(obj.ParentIndex2.Index).Value as FrameHeaderScene);
+                        obj.ParentIndex2.RefID = scene.RefID;
+                        obj.ParentIndex2.Name = scene.Name.ToString();
+                        if (obj.Parent == null) scene.Children.Add(obj);
                     }
                     else if (obj.ParentIndex2.Index >= numBlocks)
                     {
-                        obj.ParentIndex2.RefID = (GetEntryFromIdx(obj.ParentIndex2.Index).Data as FrameObjectBase).RefID;
-                        obj.ParentIndex2.Name = (GetEntryFromIdx(obj.ParentIndex2.Index).Data as FrameObjectBase).Name.ToString();
+                        FrameObjectBase parent = (GetEntryFromIdx(obj.ParentIndex2.Index).Data as FrameObjectBase);
+                        obj.ParentIndex2.RefID = parent.RefID;
+                        obj.ParentIndex2.Name = parent.Name.ToString();
+                        obj.Root = parent;
+                        if (obj.Parent == null) parent.Children.Add(obj);
                     }
 
                     obj.AddRef(FrameEntryRefTypes.Parent2, obj.ParentIndex2.RefID);
                 }
+                obj.SetWorldTransform();
             }
         }
 

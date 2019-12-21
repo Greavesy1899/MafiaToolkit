@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Utils.Types;
 
 namespace ResourceTypes.FrameResource
@@ -6,6 +7,13 @@ namespace ResourceTypes.FrameResource
     public class FrameHeaderScene : FrameEntry
     {
         Hash name;
+
+        List<FrameObjectBase> children = new List<FrameObjectBase>();
+
+        public List<FrameObjectBase> Children {
+            get { return children; }
+            set { children = value; }
+        }
 
         public Hash Name {
             get { return name; }

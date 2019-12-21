@@ -99,7 +99,7 @@ namespace ResourceTypes.FrameResource
             unk14 = 255;
             meshIndex = 0;
             materialIndex = 0;
-            transform = new Matrix();
+            localTransform = new Matrix();
             omTextureHash = new Hash();
             unk18_1 = 0;
             unk18_2 = 0;

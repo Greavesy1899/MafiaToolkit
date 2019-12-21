@@ -107,7 +107,7 @@ namespace Rendering.Graphics
                 return false;
 
             aoHash = mesh.OMTextureHash;
-            SetTransform(mesh.Transform);
+            SetTransform(mesh.WorldTransform);
             //DoRender = (mesh.SecondaryFlags == 4097 ? true : false);
             BoundingBox = new RenderBoundingBox();
             BoundingBox.Init(mesh.Boundings);

@@ -73,7 +73,7 @@ namespace Forms.Docking
                 Vector3 position;
                 Quaternion rotation2;
                 Vector3 scale;
-                fObject.Transform.Decompose(out scale, out rotation2, out position);
+                fObject.LocalTransform.Decompose(out scale, out rotation2, out position);
 
                 CurrentEntry.Text = fObject.Name.String;
                 PositionXNumeric.Value = Convert.ToDecimal(position.X);
@@ -122,7 +122,7 @@ namespace Forms.Docking
                 if (FrameResource.IsFrameType(currentObject))
                 {
                     FrameObjectBase fObject = (currentObject as FrameObjectBase);
-                    fObject.Transform = MatrixExtensions.SetMatrix(rotation, scale, position);
+                    fObject.LocalTransform = MatrixExtensions.SetMatrix(rotation, scale, position);
                 }
                 else if (currentObject is ResourceTypes.Collisions.Collision.Placement)
                 {
