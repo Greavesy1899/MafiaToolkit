@@ -3,6 +3,10 @@ using System.ComponentModel;
 using ResourceTypes.FrameNameTable;
 using Utils.Extensions;
 using Utils.Types;
+using SharpDX;
+using Utils.SharpDXExtensions;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -10,7 +14,6 @@ namespace ResourceTypes.FrameResource
     {
         protected Hash name;
         protected int secondaryFlags;
-        protected TransformMatrix transformMatrix;
         protected short unk3;
         protected ParentStruct parentIndex1;
         protected ParentStruct parentIndex2;
@@ -18,6 +21,25 @@ namespace ResourceTypes.FrameResource
         protected bool isOnTable;
         protected NameTableFlags nameTableFlags;
 
+        protected Matrix worldTransform = Matrix.Identity;
+        protected Matrix localTransform = Matrix.Identity;
+
+        FrameObjectBase parent;
+        FrameObjectBase root;
+        List<FrameObjectBase> children = new List<FrameObjectBase>();
+
+        public FrameObjectBase Parent {
+            get { return parent; }
+            set { parent = value; }
+        }
+        public FrameObjectBase Root {
+            get { return root; }
+            set { root = value; }
+        }
+        public List<FrameObjectBase> Children {
+            get { return children; }
+            set { children = value; }
+        }
 
         public Hash Name {
             get { return name; }
@@ -28,9 +50,13 @@ namespace ResourceTypes.FrameResource
             set { secondaryFlags = value; }
         }
         //[Browsable(false)]
-        public TransformMatrix Matrix {
-            get { return transformMatrix; }
-            set { transformMatrix = value; }
+        public Matrix LocalTransform {
+            get { return localTransform; }
+            set { localTransform = value; SetWorldTransform(); }
+        }
+        public Matrix WorldTransform {
+            get { SetWorldTransform(); return worldTransform; }
+            set { worldTransform = value; }
         }
         [Browsable(false)]
         public short Unk3 {
@@ -71,7 +97,7 @@ namespace ResourceTypes.FrameResource
             //do example name.
             name = new Hash("NewObject");
             secondaryFlags = 1;
-            transformMatrix = new TransformMatrix();
+            localTransform = new Matrix();
             unk3 = -1;
             parentIndex1 = new ParentStruct(-1);
             parentIndex2 = new ParentStruct(-1);
@@ -82,7 +108,7 @@ namespace ResourceTypes.FrameResource
         {
             name = new Hash(other.name.String);
             secondaryFlags = other.secondaryFlags;
-            transformMatrix = new TransformMatrix(other.transformMatrix);
+            localTransform = new Matrix(other.localTransform.ToArray());
             unk3 = other.unk3;
             parentIndex1 = new ParentStruct(other.parentIndex1);
             parentIndex2 = new ParentStruct(other.parentIndex2);
@@ -91,26 +117,62 @@ namespace ResourceTypes.FrameResource
             nameTableFlags = other.nameTableFlags;
         }
 
-        public virtual void ReadFromFile(MemoryStream reader, bool isBigEndian)
+        public virtual void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            name = new Hash(reader, isBigEndian);
-            secondaryFlags = reader.ReadInt32(isBigEndian);
-            transformMatrix = new TransformMatrix(reader, isBigEndian);
-            unk3 = reader.ReadInt16(isBigEndian);
-            parentIndex1 = new ParentStruct(reader.ReadInt32(isBigEndian));
-            parentIndex2 = new ParentStruct(reader.ReadInt32(isBigEndian));
-            unk6 = reader.ReadInt16(isBigEndian);
+            name = new Hash(stream, isBigEndian);
+            secondaryFlags = stream.ReadInt32(isBigEndian);
+            localTransform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            unk3 = stream.ReadInt16(isBigEndian);
+            parentIndex1 = new ParentStruct(stream.ReadInt32(isBigEndian));
+            parentIndex2 = new ParentStruct(stream.ReadInt32(isBigEndian));
+            unk6 = stream.ReadInt16(isBigEndian);
         }
 
         public virtual void WriteToFile(BinaryWriter writer)
         {
             name.WriteToFile(writer);
             writer.Write(secondaryFlags);
-            transformMatrix.WriteToFile(writer);
+            MatrixExtensions.WriteToFile(localTransform, writer);
             writer.Write(unk3);
             writer.Write(parentIndex1.Index);
             writer.Write(parentIndex2.Index);
             writer.Write(unk6);
+        }
+
+        public void SetWorldTransform()
+        {
+            //The world transform is calculated and then decomposed because some reason,
+            //the renderer does not update on the first startup of the editor.
+            Vector3 position, scale;
+            Quaternion rotation;
+            localTransform.Decompose(out scale, out rotation, out position);
+            worldTransform = Matrix.Identity;
+
+            if (parent != null)
+            {
+                Matrix.Multiply(ref parent.worldTransform, ref localTransform, out worldTransform);
+                worldTransform.Decompose(out scale, out rotation, out position);
+            }
+            else if(root != null)
+            {
+                Matrix.Multiply(ref root.worldTransform, ref localTransform, out worldTransform);
+                worldTransform.Decompose(out scale, out rotation, out position);
+            }
+            else
+            {
+                localTransform.Decompose(out scale, out rotation, out position);
+            }
+
+            worldTransform = Matrix.Identity;
+            Matrix r = Matrix.RotationQuaternion(rotation);
+            Matrix s = Matrix.Scaling(scale);
+            Matrix t = Matrix.Translation(position);
+            worldTransform = r * s * t;
+
+            foreach (var child in children)
+            {
+                child.SetWorldTransform();
+            }
         }
     }
 }

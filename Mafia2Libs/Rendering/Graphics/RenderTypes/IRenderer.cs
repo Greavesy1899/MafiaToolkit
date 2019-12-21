@@ -16,7 +16,6 @@ namespace Rendering.Graphics
         public abstract void Select();
         public abstract void Unselect();
         public abstract void InitBuffers(Device d3d, DeviceContext deviceContext);
-        public abstract void SetTransform(Vector3 position, Matrix33 rotation);
         public abstract void SetTransform(Matrix matrix);
         public abstract void UpdateBuffers(Device device, DeviceContext deviceContext);
         public abstract void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light);

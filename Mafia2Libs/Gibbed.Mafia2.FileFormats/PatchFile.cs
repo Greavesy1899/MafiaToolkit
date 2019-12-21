@@ -1,5 +1,6 @@
 ﻿using Gibbed.Illusion.FileFormats;
 using Gibbed.IO;
+using Gibbed.Mafia2.FileFormats.Archive;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +18,9 @@ namespace Gibbed.Mafia2.FileFormats
         private int UnkCount2;
         private int[] UnkInts2;
         private int UnkTotal; //UnkCount1 and UnkCount2 added together.
+
+        private int numTypes;
+        private ResourceType[] Types;
 
         public void Deserialize(Stream reader, Endian endian)
         {
@@ -40,9 +44,12 @@ namespace Gibbed.Mafia2.FileFormats
             if (magic2 != Signature2)
                 return;
 
-            int unk0 = reader.ReadValueS32(endian);
-            if (unk0 != 0)
-                return;
+            int numTypes = reader.ReadValueS32(endian);
+            Types = new ResourceType[numTypes];
+            for(int i = 0; i < numTypes; i++)
+            {
+                Types[i] = ResourceType.Read(reader, endian);
+            }
 
             List<string> indexes = new List<string>();
             indexes.Add("UnkSet0:");

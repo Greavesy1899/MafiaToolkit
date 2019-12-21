@@ -52,7 +52,8 @@ namespace ResourceTypes.Actors
         PlayInDay = 16,
         PlayInNight = 32,
         PlayInRain = 64,
-        PlayInSummer = 128
+        PlayInSummer = 128,
+        Unk0 = 256
     }
 
     [Flags]
