@@ -84,10 +84,10 @@ namespace Utils.Models
         public static byte[] ReadColorFromVB(byte[] data, int i)
         {
             byte[] color = new byte[4];
-            color[0] = data[0];
-            color[1] = data[1];
-            color[2] = data[2];
-            color[3] = data[3];
+            color[0] = data[i + 0];
+            color[1] = data[i + 1];
+            color[2] = data[i + 2];
+            color[3] = data[i + 3];
             return color;
         }
 
@@ -100,16 +100,21 @@ namespace Utils.Models
             return vec;
         }
 
-        public static float ReadBlendWeightFromVB(byte[] data, int i)
+        public static float[] ReadWeightsFromVB(byte[] data, int i)
         {
-            //todo; work on skeleton models.
-            return (BitConverter.ToSingle(data, i) / byte.MaxValue);
+            float[] weights = new float[4];
+            weights[0] = (data[i + 0] / 255.0f);
+            weights[1] = (data[i + 1] / 255.0f);
+            weights[2] = (data[i + 2] / 255.0f);
+            weights[3] = (data[i + 3] / 255.0f);
+            return weights;
         }
 
-        public static int ReadBlendIDFromVB(byte[] data, int i)
+        public static byte[] ReadBonesFromVB(byte[] data, int i)
         {
-            //todo; work on skeleton models.
-            return BitConverter.ToInt32(data, i + 4);
+            byte[] bones = new byte[4];
+            Array.Copy(data, i, bones, 0, 4);
+            return bones;
         }
     }
 }

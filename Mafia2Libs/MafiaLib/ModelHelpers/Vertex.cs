@@ -10,8 +10,8 @@ namespace Utils.Models
         Vector3 normal;
         Vector3 tangent;
         Vector3 binormal;
-        float blendWeight;
-        int boneID;
+        float[] boneWeights;
+        byte[] boneIDs;
         Half2[] uvs;
         int damageGroup;
         byte[] color0;
@@ -38,13 +38,13 @@ namespace Utils.Models
             get { return uvs; }
             set { uvs = value; }
         }
-        public float BlendWeight {
-            get { return blendWeight; }
-            set { blendWeight = value; }
+        public float[] BoneWeights {
+            get { return boneWeights; }
+            set { boneWeights = value; }
         }
-        public int BoneID {
-            get { return boneID; }
-            set { boneID = value; }
+        public byte[] BoneIDs {
+            get { return boneIDs; }
+            set { boneIDs = value; }
         }
         public int DamageGroup {
             get { return damageGroup; }

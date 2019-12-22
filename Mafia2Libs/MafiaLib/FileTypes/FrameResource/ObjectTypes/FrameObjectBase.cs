@@ -144,27 +144,32 @@ namespace ResourceTypes.FrameResource
             //The world transform is calculated and then decomposed because some reason,
             //the renderer does not update on the first startup of the editor.
             Vector3 position, scale;
-            Quaternion rotation;
+            Quaternion rotation, otherRotation;
             localTransform.Decompose(out scale, out rotation, out position);
             worldTransform = Matrix.Identity;
 
+            Matrix transform = Matrix.Translation(position);
+            Matrix r = Matrix.Identity;
+
             if (parent != null)
             {
-                Matrix.Multiply(ref parent.worldTransform, ref localTransform, out worldTransform);
-                worldTransform.Decompose(out scale, out rotation, out position);
+                Matrix.Multiply(ref parent.worldTransform, ref transform, out worldTransform);
+                worldTransform.Decompose(out scale, out otherRotation, out position);
+                r = Matrix.RotationQuaternion(otherRotation * rotation);
             }
             else if(root != null)
-            {
-                Matrix.Multiply(ref root.worldTransform, ref localTransform, out worldTransform);
-                worldTransform.Decompose(out scale, out rotation, out position);
+            { 
+                Matrix.Multiply(ref root.worldTransform, ref transform, out worldTransform);
+                worldTransform.Decompose(out scale, out otherRotation, out position);
+                r = Matrix.RotationQuaternion(otherRotation * rotation);
             }
             else
             {
                 localTransform.Decompose(out scale, out rotation, out position);
+                r = Matrix.RotationQuaternion(rotation);
             }
 
             worldTransform = Matrix.Identity;
-            Matrix r = Matrix.RotationQuaternion(rotation);
             Matrix s = Matrix.Scaling(scale);
             Matrix t = Matrix.Translation(position);
             worldTransform = r * s * t;

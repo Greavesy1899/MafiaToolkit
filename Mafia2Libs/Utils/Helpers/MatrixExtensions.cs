@@ -68,27 +68,21 @@ namespace Utils.SharpDXExtensions
         public static Vector3 ToEuler(this Quaternion quat)
         {
             Vector3 euler = new Vector3();
-            double test = quat.X * quat.Y + quat.Z * quat.W;
-            if (test > 0.499)
-            { // singularity at north pole
-                euler.X = MathUtil.RadiansToDegrees((float)(2 * Math.Atan2(quat.X, quat.W)));
-                euler.Z = MathUtil.RadiansToDegrees((float)(Math.PI / 2));
-                euler.Y = MathUtil.RadiansToDegrees(0);
-                return euler;
-            }
-            if (test < -0.499)
-            { // singularity at south pole
-                euler.X = MathUtil.RadiansToDegrees((float)(-2 * Math.Atan2(quat.X, quat.W)));
-                euler.Z = MathUtil.RadiansToDegrees((float)(-Math.PI / 2));
-                euler.Y = MathUtil.RadiansToDegrees(0);
-                return euler;
-            }
-            double sqx = quat.X * quat.X;
-            double sqy = quat.Y * quat.Y;
-            double sqz = quat.Z * quat.Z;
-            euler.X = MathUtil.RadiansToDegrees((float)Math.Atan2(2 * quat.Y * quat.W - 2 * quat.X * quat.Z, 1 - 2 * sqy - 2 * sqz));
-            euler.Z = MathUtil.RadiansToDegrees((float)Math.Asin(2 * test));
-            euler.Y = MathUtil.RadiansToDegrees((float)Math.Atan2(2 * quat.X * quat.W - 2 * quat.Y * quat.Z, 1 - 2 * sqx - 2 * sqz));
+            var qw = quat.W;
+            var qx = quat.X;
+            var qy = quat.Y;
+            var qz = quat.Z;
+            var eX = Math.Atan2(-2 * ((qy * qz) - (qw * qx)), (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
+            var eY = Math.Asin(2 * ((qx * qz) + (qw * qy)));
+            var eZ = Math.Atan2(-2 * ((qx * qy) - (qw * qz)), (qw * qw) + (qx * qx) - (qy * qy) - (qz * qz));
+            euler.Z = (float)Math.Round(eZ * 180 / Math.PI);
+            euler.Y = (float)Math.Round(eY * 180 / Math.PI);
+            euler.X = (float)Math.Round(eX * 180 / Math.PI);
+
+            //temp
+            if (float.IsNaN(euler.X)) euler.X = 0.0f;
+            if (float.IsNaN(euler.Y)) euler.Y = 0.0f;
+            if (float.IsNaN(euler.Z)) euler.Z = 0.0f;
             return euler;
         }
 

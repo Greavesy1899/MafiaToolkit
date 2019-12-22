@@ -343,10 +343,6 @@ namespace ResourceTypes.Actors
                 get { return quat; }
                 set { quat = value; }
             }
-            public Vector3 Rotation {
-                get { return euler; }
-                set { euler = value; }
-            }
             public Vector3 Scale {
                 get { return scale; }
                 set { scale = value; }
@@ -369,22 +365,6 @@ namespace ResourceTypes.Actors
             public ActorItem(BinaryReader reader)
             {
                 ReadFromFile(reader);
-                ConvertQuaternion();
-            }
-
-            private void ConvertQuaternion()
-            {
-                euler = new Vector3();
-                var qw = quat.W;
-                var qx = quat.X;
-                var qy = quat.Y;
-                var qz = quat.Z;
-                var eX = Math.Atan2(-2 * ((qy * qz) - (qw * qx)), (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
-                var eY = Math.Asin(2 * ((qx * qz) + (qw * qy)));
-                var eZ = Math.Atan2(-2 * ((qx * qy) - (qw * qz)), (qw * qw) + (qx * qx) - (qy * qy) - (qz * qz));
-                euler.Z = (float)Math.Round(eZ * 180 / Math.PI);
-                euler.Y = (float)Math.Round(eY * 180 / Math.PI);
-                euler.X = (float)Math.Round(eX * 180 / Math.PI);
             }
 
             public void ReadFromFile(BinaryReader reader)

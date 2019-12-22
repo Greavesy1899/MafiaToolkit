@@ -93,10 +93,10 @@ namespace Utils.Models
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Skin))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Skin].Offset;
-                        vertex.BlendWeight = VertexTranslator.ReadBlendWeightFromVB(vertexBuffer.Data, startIndex);
-                        vertex.BoneID = VertexTranslator.ReadBlendIDFromVB(vertexBuffer.Data, startIndex);
+                        vertex.BoneWeights = VertexTranslator.ReadWeightsFromVB(vertexBuffer.Data, startIndex);
+                        vertex.BoneIDs = VertexTranslator.ReadBonesFromVB(vertexBuffer.Data, startIndex+4);
                     }
-
+                    
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Color))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Color].Offset;
