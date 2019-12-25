@@ -1,7 +1,7 @@
 #include "FbxWrangler.h"
 #include "FbxUtilities.h"
 
-bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFilename, int pFileFormat = 0, bool pEmbedMedia = false)
+bool SaveDocument(FbxManager* pManager, FbxDocument* pDocument, const char* pFilename, int pFileFormat = 1, bool pEmbedMedia = false)
 {
 	int lMajor, lMinor, lRevision;
 	bool lStatus = true;
@@ -66,6 +66,7 @@ int ConvertM2T(const char* pSource, const char* pDest, unsigned char isBin)
 	lResult = CreateDocument(lSdkManager, lScene, file);
 	if (lResult)
 	{
+		isBin = 0;
 		//Save the document
 		lResult = SaveDocument(lSdkManager, lScene, pDest, isBin);
 		if (!lResult) WriteLine("\n\nAn error occurred while saving the document...");
@@ -85,7 +86,7 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 	lDocInfo->mTitle = "FBX Model";
 	lDocInfo->mSubject = "FBX Created by M2FBX - Used by MafiaToolkit.";
 	lDocInfo->mAuthor = "Greavesy";
-	lDocInfo->mRevision = "rev. 0.12";
+	lDocInfo->mRevision = "rev. 0.13";
 	lDocInfo->mKeywords = "";
 	lDocInfo->mComment = "";
 
@@ -118,6 +119,64 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 	pScene->AddNode(rootNode);
 	pScene->AddRootMember(rootNode);
 
+	if (model.GetIsSkinned())
+	{
+		auto ids = model.GetBoneIDs();
+		auto names = model.GetBoneNames();
+		ModelPart* parts = model.GetParts();
+		FbxSkin* skin = FbxSkin::Create(pManager, "Skin");
+		std::vector<FbxNode*> nodes = std::vector<FbxNode*>();
+		std::vector<FbxCluster*> clusters = std::vector<FbxCluster*>();
+		for (int i = 0; i < names.size(); i++)
+		{
+			FbxString skeletonName = names[i].c_str();
+			FbxString clusterName = names[i].c_str();
+			FbxString nodeName = names[i].c_str();
+			skeletonName.Append("_Skeleton", 9);
+			clusterName.Append("_Cluster", 8);
+			nodeName.Append("_Node", 5);
+
+			FbxSkeleton* skeleton = FbxSkeleton::Create(pManager, skeletonName.Buffer());
+			skeleton->SetSkeletonType(FbxSkeleton::eLimbNode);
+			FbxCluster* cluster = FbxCluster::Create(pManager, clusterName.Buffer());
+			FbxNode* node = FbxNode::Create(pManager, nodeName.Buffer());
+			cluster->SetLinkMode(FbxCluster::ELinkMode::eTotalOne);
+			cluster->SetLink(node);
+			node->SetNodeAttribute(skeleton);
+			nodes.push_back(node);
+			clusters.push_back(cluster);
+			skin->AddCluster(cluster);
+
+			if (ids[i] != 255)
+			{
+				nodes[ids[i]]->AddChild(node);
+			}
+			else
+			{
+				rootNode->AddChild(node);
+			}
+		}
+
+		for (int i = 0; i < model.GetPartSize(); i++)
+		{
+			auto vertices = parts[i].GetVertices();
+			for (int x = 0; x < parts[i].GetVertSize(); x++)
+			{
+				auto vertex = vertices[x];
+				for (int z = 0; z < 4; z++)
+				{
+					if (vertex.boneWeights[z] != 0.0f)
+					{
+						clusters[vertex.boneIDs[z]]->AddControlPointIndex(x, vertex.boneWeights[z]);
+					}
+				}
+			}
+			auto attribute = lLodNode->GetChild(i)->GetNodeAttribute();
+			FbxGeometry* geometry = (FbxGeometry*)attribute;
+			geometry->AddDeformer(skin);
+		}
+
+	}
 	lCount = pScene->GetRootMemberCount();  // lCount = 1: only the lPlane
 	lCount = pScene->GetMemberCount();      // lCount = 3: the FbxNode - lPlane; FbxMesh belongs to lPlane; Material that connect to lPlane
 
@@ -170,7 +229,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 
 	// We want to have one normal for each vertex (or control point),
 	// so we set the mapping mode to eByControlPoint.
-	if (part.GetHasNormals())
+	if (part.HasVertexFlag(VertexFlags::Normals))
 	{
 		FbxGeometryElementNormal* lElementNormal = lMesh->CreateElementNormal();
 		lElementNormal->SetMappingMode(FbxGeometryElement::eByControlPoint);
@@ -178,7 +237,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 		for (size_t i = 0; i < part.GetVertSize(); i++)
 			lElementNormal->GetDirectArray().Add(FbxVector4(vertices[i].normals.x, vertices[i].normals.y, vertices[i].normals.z));
 	}
-	if (part.GetHasTangents())
+	if (part.HasVertexFlag(VertexFlags::Tangent))
 	{
 		FbxGeometryElementTangent* lElementTangent = lMesh->CreateElementTangent();
 		lElementTangent->SetMappingMode(FbxGeometryElement::eByControlPoint);
@@ -195,7 +254,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 
 	for (size_t i = 0; i < part.GetVertSize(); i++)
 	{
-		if(part.GetHasUV0())
+		if(part.HasVertexFlag(VertexFlags::TexCoords0))
 			lUVDiffuseElement->GetDirectArray().Add(FbxVector2(vertices[i].uv0.x, vertices[i].uv0.y));
 		else
 			lUVDiffuseElement->GetDirectArray().Add(FbxVector2(0.0, 1.0));
@@ -205,7 +264,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 	//we must update the size of the index array.
 	lUVDiffuseElement->GetIndexArray().SetCount(part.GetIndicesSize());
 
-	if (part.GetHasUV1() && part.GetHasUV2())
+	if (part.HasVertexFlag(VertexFlags::TexCoords1) && part.HasVertexFlag(VertexFlags::TexCoords2))
 	{
 		//Create VC in channels;
 		lUVVCElement = lMesh->CreateElementVertexColor();
@@ -218,7 +277,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 
 	}
 
-	if (part.GetHasUV7())
+	if (part.HasVertexFlag(VertexFlags::ShadowTexture))
 	{
 		// Create UV for OM channel.
 		lUVOMElement = lMesh->CreateElementUV("OMUV", FbxLayerElement::eTextureAmbient);
@@ -254,7 +313,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 		// update the index array of the UVs that map the texture to the face
 		//lUVDiffuseElement->GetIndexArray().SetAt(i, 0);
 
-		if(part.GetHasUV1() && part.GetHasUV2())
+		if(part.HasVertexFlag(VertexFlags::TexCoords1) && part.HasVertexFlag(VertexFlags::TexCoords2))
 			lUVVCElement->GetIndexArray().SetAt(i, 0);
 	}
 
@@ -287,7 +346,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 	// We are in eByPolygon, so there's only need for index (a plane has 1 polygon).
 	lMaterialElement->GetIndexArray().SetCount(lMesh->GetPolygonSize(0)/3);
 
-	if (part.GetHasUV7())
+	if (part.HasVertexFlag(VertexFlags::ShadowTexture))
 	{
 		lOMElement = lMesh->CreateElementMaterial();
 		lOMElement->SetName("AO/OM Mapping");
@@ -307,7 +366,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 			lMaterialElement->GetIndexArray().SetAt(x, i);
 	}
 
-	if (part.GetHasUV7())
+	if (part.HasVertexFlag(VertexFlags::ShadowTexture))
 	{
 		for (int i = 0; i < lMesh->GetPolygonSize(0) / 3; ++i)
 			lOMElement->GetIndexArray().SetAt(i, 0);

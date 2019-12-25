@@ -97,7 +97,8 @@ namespace ResourceTypes.FrameResource
             //do example name.
             name = new Hash("NewObject");
             secondaryFlags = 1;
-            localTransform = new Matrix();
+            localTransform = Matrix.Identity;
+            worldTransform = Matrix.Identity;
             unk3 = -1;
             parentIndex1 = new ParentStruct(-1);
             parentIndex2 = new ParentStruct(-1);
@@ -149,7 +150,7 @@ namespace ResourceTypes.FrameResource
             worldTransform = Matrix.Identity;
 
             Matrix transform = Matrix.Translation(position);
-            Matrix r = Matrix.Identity;
+            Matrix r;
 
             if (parent != null)
             {

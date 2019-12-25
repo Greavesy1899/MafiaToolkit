@@ -16,6 +16,9 @@ namespace Utils.Models
         FrameObjectModel frameModel; //Or "FrameObjectModel"
         FrameGeometry frameGeometry; //Holds geometry data, all content is built into here.
         FrameMaterial frameMaterial; //Data related to material goes into here.
+        FrameBlendInfo blendInfo;
+        FrameSkeleton skeleton;
+        FrameSkeletonHierachy skeletonHierarchy;
         IndexBuffer[] indexBuffers; //Holds the buffer which will then be saved/replaced later
         VertexBuffer[] vertexBuffers; //Holds the buffers which will then be saved/replaced later
         M2TStructure model; //split from this file; it now includes M2T format.
@@ -56,17 +59,13 @@ namespace Utils.Models
             set { model = value; }
         }
 
-        /// <summary>
-        /// Constructor used to build Lods. This is used when you want to compile all mesh data together, ready for exporting.
-        /// </summary>
-        public Model(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers,
-            FrameGeometry frameGeometry, FrameMaterial frameMaterial)
+        public Model(FrameObjectSingleMesh frameMesh, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
             this.frameMesh = frameMesh;
             this.indexBuffers = indexBuffers;
             this.vertexBuffers = vertexBuffers;
-            this.frameGeometry = frameGeometry;
-            this.frameMaterial = frameMaterial;
+            frameGeometry = frameMesh.Geometry;
+            frameMaterial = frameMesh.Material;
             model = new M2TStructure();
             model.IsSkinned = false;
             model.Name = frameMesh.Name.ToString();
@@ -74,22 +73,21 @@ namespace Utils.Models
             model.BuildLods(frameGeometry, frameMaterial, vertexBuffers, indexBuffers);
         }
 
-        /// <summary>
-        /// Constructor used to build Lods. This is used when you want to compile all mesh data together, ready for exporting.
-        /// </summary>
-        public Model(FrameObjectModel frameModel, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers,
-            FrameGeometry frameGeometry, FrameMaterial frameMaterial)
+        public Model(FrameObjectModel frameModel, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
             this.frameModel = frameModel;
             this.indexBuffers = indexBuffers;
             this.vertexBuffers = vertexBuffers;
-            this.frameGeometry = frameGeometry;
-            this.frameMaterial = frameMaterial;
+            frameGeometry = frameModel.Geometry;
+            frameMaterial = frameModel.Material;
+            blendInfo = frameModel.BlendInfo;
+            skeleton = frameModel.Skeleton;
+            skeletonHierarchy = frameModel.SkeletonHierarchy;
             model = new M2TStructure();
             model.IsSkinned = true;
-            model.Name = frameMesh.Name.ToString();
-            model.AOTexture = frameMesh.OMTextureHash.String;
-            model.BuildLods(frameGeometry, frameMaterial, vertexBuffers, indexBuffers);
+            model.Name = frameModel.Name.ToString();
+            model.AOTexture = frameModel.OMTextureHash.String;
+            model.BuildLods(indexBuffers, vertexBuffers, frameGeometry, frameMaterial, blendInfo, skeleton, skeletonHierarchy);
         }
 
         /// <summary>

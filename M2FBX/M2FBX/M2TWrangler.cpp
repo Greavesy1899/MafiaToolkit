@@ -38,15 +38,15 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		return -97;
 	}
 
-	pPart.SetHasPositions(true);
-	pPart.SetHasNormals(pElementNormal);
-	pPart.SetHasTangents(pElementTangent);
-	pPart.SetHasUV0(pElementUV && pElementMaterial);
-	pPart.SetHasUV1(pElementVC);
-	pPart.SetHasUV2(pElementVC);
-	pPart.SetHasUV7(pElementOM);
+	pPart.SetVertexFlag(VertexFlags::Position);
+	pPart.SetVertexFlag(pElementNormal ? VertexFlags::Normals : VertexFlags::None);
+	pPart.SetVertexFlag(pElementTangent ? VertexFlags::Tangent : VertexFlags::None);
+	pPart.SetVertexFlag((pElementUV && pElementMaterial) ? VertexFlags::TexCoords0 : VertexFlags::None);
+	pPart.SetVertexFlag(pElementVC ? VertexFlags::TexCoords1 : VertexFlags::None);
+	pPart.SetVertexFlag(pElementVC ? VertexFlags::TexCoords2 : VertexFlags::None);
+	pPart.SetVertexFlag(pElementOM ? VertexFlags::ShadowTexture : VertexFlags::None);
 
-	if (pPart.GetHasNormals())
+	if (pPart.HasVertexFlag(VertexFlags::Normals))
 	{
 		//Gotta make sure the normals are correctly set up.
 		if (pElementNormal->GetReferenceMode() != FbxGeometryElement::eDirect) {
@@ -78,7 +78,7 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		vertice.position = vert;
 
 		//do normal stuff.
-		if (pPart.GetHasNormals()) {
+		if (pPart.HasVertexFlag(VertexFlags::Normals)) {
 			vec4 = pElementNormal->GetDirectArray().GetAt(i);
 			vert.x = vec4.mData[0];
 			vert.y = vec4.mData[1];
@@ -87,7 +87,7 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		}
 
 		//do tangent stuff.
-		if (pPart.GetHasTangents()) {
+		if (pPart.HasVertexFlag(VertexFlags::Tangent)) {
 			vec4 = pElementTangent->GetDirectArray().GetAt(i);
 			vert.x = vec4.mData[0];
 			vert.y = vec4.mData[1];
@@ -96,7 +96,7 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		}
 
 		//do UV stuff.
-		if (pPart.GetHasUV0()) {
+		if (pPart.HasVertexFlag(VertexFlags::TexCoords0)) {
 			vec4 = pElementUV->GetDirectArray().GetAt(i);
 			uvCoords.x = vec4.mData[0];
 			uvCoords.y = vec4.mData[1];
@@ -104,19 +104,19 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		}
 
 		//Colours
-		if (pPart.GetHasUV1()) {
+		if (pPart.HasVertexFlag(VertexFlags::TexCoords1)) {
 			color = pElementVC->GetDirectArray().GetAt(i);
 			uvCoords.x = color.mRed;
 			uvCoords.y = color.mBlue;
 			vertice.uv1 = uvCoords;
 		}
-		if (pPart.GetHasUV2()) {
+		if (pPart.HasVertexFlag(VertexFlags::TexCoords2)) {
 			color = pElementVC->GetDirectArray().GetAt(i);
 			uvCoords.x = color.mBlue;
 			uvCoords.y = color.mAlpha;
 			vertice.uv2 = uvCoords;
 		}
-		if (pPart.GetHasUV7()) {
+		if (pPart.HasVertexFlag(VertexFlags::ShadowTexture)) {
 			vec4 = pElementOM->GetDirectArray().GetAt(i);
 			uvCoords.x = vec4.mData[0];
 			uvCoords.y = vec4.mData[1];

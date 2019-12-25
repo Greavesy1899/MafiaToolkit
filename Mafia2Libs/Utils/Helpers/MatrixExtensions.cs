@@ -80,9 +80,18 @@ namespace Utils.SharpDXExtensions
             euler.X = (float)Math.Round(eX * 180 / Math.PI);
 
             //temp
-            if (float.IsNaN(euler.X)) euler.X = 0.0f;
-            if (float.IsNaN(euler.Y)) euler.Y = 0.0f;
-            if (float.IsNaN(euler.Z)) euler.Z = 0.0f;
+            if (float.IsNaN(euler.X))
+            {
+                euler.X = 0.0f;
+            }
+            if (float.IsNaN(euler.Y))
+            {
+                euler.Y = 0.0f;
+            }
+            if (float.IsNaN(euler.Z))
+            {
+                euler.Z = 0.0f;
+            }
             return euler;
         }
 

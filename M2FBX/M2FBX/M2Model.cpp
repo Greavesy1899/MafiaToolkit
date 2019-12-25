@@ -5,54 +5,6 @@
 //===================================================
 //		ModelPart
 //===================================================
-void ModelPart::SetHasPositions(bool b) {
-	ModelPart::hasPosition = b;
-}
-
-void ModelPart::SetHasNormals(bool b) {
-	ModelPart::hasNormals = b;
-}
-
-void ModelPart::SetHasTangents(bool b) {
-	ModelPart::hasTangents = b;
-}
-
-void ModelPart::SetHasBlendData(bool b) {
-	ModelPart::hasBlendData = b;
-}
-
-void ModelPart::SetHasFlag0x80(bool b) {
-	ModelPart::hasFlag0x80 = b;
-}
-
-void ModelPart::SetHasUV0(bool b) {
-	ModelPart::hasUV0 = b;
-}
-
-void ModelPart::SetHasUV1(bool b) {
-	ModelPart::hasUV1 = b;
-}
-
-void ModelPart::SetHasUV2(bool b) {
-	ModelPart::hasUV2 = b;
-}
-
-void ModelPart::SetHasUV7(bool b) {
-	ModelPart::hasUV7 = b;
-}
-
-void ModelPart::SetHasFlag0x20000(bool b) {
-	ModelPart::hasFlag0x20000 = b;
-}
-
-void ModelPart::SetHasFlag0x40000(bool b) {
-	ModelPart::hasFlag0x40000 = b;
-}
-
-void ModelPart::SetHasDamage(bool b) {
-	ModelPart::hasDamageGroup = b;
-}
-
 void ModelPart::SetVertSize(int count) {
 	ModelPart::numVertices = count;
 }
@@ -80,52 +32,9 @@ void ModelPart::SetIndices(std::vector<Int3> indices, unsigned int count) {
 	this->numIndices = count;
 }
 
-bool ModelPart::GetHasPositions() {
-	return ModelPart::hasPosition;
-}
-
-bool ModelPart::GetHasNormals() {
-	return ModelPart::hasNormals;
-}
-
-bool ModelPart::GetHasTangents() {
-	return ModelPart::hasTangents;
-}
-
-bool ModelPart::GetHasBlendData() {
-	return ModelPart::hasBlendData;
-}
-
-bool ModelPart::GetHasFlag0x80() {
-	return ModelPart::hasFlag0x80;
-}
-
-bool ModelPart::GetHasUV0() {
-	return ModelPart::hasUV0;
-}
-
-bool ModelPart::GetHasUV1() {
-	return ModelPart::hasUV1;
-}
-
-bool ModelPart::GetHasUV2() {
-	return ModelPart::hasUV2;
-}
-
-bool ModelPart::GetHasUV7() {
-	return ModelPart::hasUV7;
-}
-
-bool ModelPart::GetHasFlag0x20000() {
-	return ModelPart::hasFlag0x20000;
-}
-
-bool ModelPart::GetHasFlag0x40000() {
-	return ModelPart::hasFlag0x40000;
-}
-
-bool ModelPart::GetHasDamage() {
-	return ModelPart::hasDamageGroup;
+bool ModelPart::HasVertexFlag(VertexFlags flag)
+{
+	return (this->flags & flag);
 }
 
 uint ModelPart::GetVertSize() {
@@ -153,7 +62,11 @@ std::vector<Int3> ModelPart::GetIndices() {
 	return this->indices;
 }
 
+//Version 1. Hacky but support is needed for older versions.
 void ModelPart::ReadFromStream(FILE * stream) {
+	bool hasPosition, hasNormals, hasTangents, hasBlendData, hasFlag0x80,
+		hasUV0, hasUV1, hasUV2, hasUV7, hasFlag0x20000, hasFlag0x40000,
+		hasDamageGroup;
 	fread(&hasPosition, sizeof(bool), 1, stream);
 	fread(&hasNormals, sizeof(bool), 1, stream);
 	fread(&hasTangents, sizeof(bool), 1, stream);
@@ -219,41 +132,94 @@ void ModelPart::ReadFromStream(FILE * stream) {
 	}
 }
 
+void ModelPart::ReadFromStream2(FILE* stream)
+{
+	fread(&this->flags, sizeof(int), 1, stream);
+	fread(&numVertices, sizeof(int), 1, stream);
+	vertices = new Vertex[numVertices];
+	indices = std::vector<Int3>();
+
+	for (uint i = 0; i < numVertices; i++) {
+		Vertex vertex;
+		if (HasVertexFlag(VertexFlags::Position)) {
+			fread(&vertex.position, sizeof(Point3), 1, stream);
+		}
+		if (HasVertexFlag(VertexFlags::Normals)) {
+			fread(&vertex.normals, sizeof(Point3), 1, stream);
+		}
+		if (HasVertexFlag(VertexFlags::Tangent)) {
+			fread(&vertex.tangent, sizeof(Point3), 1, stream);
+		}
+		if (HasVertexFlag(VertexFlags::Skin)) {
+			fread(&vertex.boneIDs, sizeof(byte), 4, stream);
+			fread(&vertex.boneWeights, sizeof(float), 4, stream);
+		}
+		if (HasVertexFlag(VertexFlags::TexCoords0)) {
+			fread(&vertex.uv0, sizeof(UVVert), 1, stream);
+		}
+		if (HasVertexFlag(VertexFlags::TexCoords1)) {
+			fread(&vertex.uv1, sizeof(UVVert), 1, stream);
+		}
+		if (HasVertexFlag(VertexFlags::TexCoords2)) {
+			fread(&vertex.uv2, sizeof(UVVert), 1, stream);
+		}
+		if (HasVertexFlag(VertexFlags::ShadowTexture)) {
+			fread(&vertex.uv3, sizeof(UVVert), 1, stream);
+		}
+		vertices[i] = vertex;
+	}
+	fread(&numSubMeshes, sizeof(int), 1, stream);
+	this->submeshes = new SubMesh[numSubMeshes];
+
+	for (uint i = 0; i < this->numSubMeshes; i++) {
+		SubMesh subMesh = SubMesh();
+		std::string name = std::string();
+		int startIndex, numFaces;
+
+		name = ReadString(stream, name);
+		subMesh.SetMatName(name);
+		fread(&startIndex, sizeof(int), 1, stream);
+		fread(&numFaces, sizeof(int), 1, stream);
+		subMesh.SetStartIndex(startIndex);
+		subMesh.SetNumFaces(numFaces);
+		this->submeshes[i] = subMesh;
+	}
+	fread(&numIndices, sizeof(int), 1, stream);
+	for (int x = 0; x != numIndices / 3; x++) {
+		Int3 tri;
+		fread(&tri, sizeof(Int3), 1, stream);
+		this->indices.push_back(tri);
+	}
+}
+
 void ModelPart::WriteToStream(FILE * stream) {
-	fwrite(&hasPosition, sizeof(bool), 1, stream);
-	fwrite(&hasNormals, sizeof(bool), 1, stream);
-	fwrite(&hasTangents, sizeof(bool), 1, stream);
-	fwrite(&hasBlendData, sizeof(bool), 1, stream);
-	fwrite(&hasFlag0x80, sizeof(bool), 1, stream);
-	fwrite(&hasUV0, sizeof(bool), 1, stream);
-	fwrite(&hasUV1, sizeof(bool), 1, stream);
-	fwrite(&hasUV2, sizeof(bool), 1, stream);
-	fwrite(&hasUV7, sizeof(bool), 1, stream);
-	fwrite(&hasFlag0x20000, sizeof(bool), 1, stream);
-	fwrite(&hasFlag0x40000, sizeof(bool), 1, stream);
-	fwrite(&hasDamageGroup, sizeof(bool), 1, stream);
+	fwrite(&this->flags, sizeof(int), 1, stream);
 	fwrite(&numVertices, sizeof(int), 1, stream);
 
 	for (uint i = 0; i < numVertices; i++) {
-		if (hasPosition) {
+		if (HasVertexFlag(VertexFlags::Position)) {
 			fwrite(&this->vertices[i].position, sizeof(Point3), 1, stream);
 		}
-		if (hasNormals) {
+		if (HasVertexFlag(VertexFlags::Normals)) {
 			fwrite(&this->vertices[i].normals, sizeof(Point3), 1, stream);
 		}
-		if (hasTangents) {
+		if (HasVertexFlag(VertexFlags::Tangent)) {
 			fwrite(&this->vertices[i].tangent, sizeof(Point3), 1, stream);
 		}
-		if (hasUV0) {
+		if (HasVertexFlag(VertexFlags::Skin)) {
+			fwrite(&this->vertices[i].boneIDs, sizeof(int), 1, stream);
+			fwrite(&this->vertices[i].boneWeights, sizeof(float), 1, stream);
+		}
+		if (HasVertexFlag(VertexFlags::TexCoords0)) {
 			fwrite(&this->vertices[i].uv0, sizeof(UVVert), 1, stream);
 		}
-		if (hasUV1) {
+		if (HasVertexFlag(VertexFlags::TexCoords1)) {
 			fwrite(&this->vertices[i].uv1, sizeof(UVVert), 1, stream);
 		}
-		if (hasUV2) {
+		if (HasVertexFlag(VertexFlags::TexCoords2)) {
 			fwrite(&this->vertices[i].uv2, sizeof(UVVert), 1, stream);
 		}
-		if (hasUV7) {
+		if (HasVertexFlag(VertexFlags::ShadowTexture)) {
 			fwrite(&this->vertices[i].uv3, sizeof(UVVert), 1, stream);
 		}
 	}
@@ -278,6 +244,11 @@ ModelPart::~ModelPart()
 {
 }
 
+void ModelPart::SetVertexFlag(VertexFlags flag)
+{
+	this->flags = (VertexFlags)(this->flags | flag);
+}
+
 //===================================================
 //		ModelStructure
 //===================================================
@@ -294,6 +265,21 @@ void ModelStructure::SetParts(ModelPart* parts) {
 	ModelStructure::parts = parts;
 }
 
+void ModelStructure::SetBoneNames(std::vector<std::string>& names)
+{
+	this->boneNames = names;
+}
+
+void ModelStructure::SetBoneIDs(std::vector<byte>& boneIDs)
+{
+	this->boneIDs = boneIDs;
+}
+
+void ModelStructure::SetIsSkinned(bool skinned)
+{
+	this->isSkinned = skinned;
+}
+
 std::string ModelStructure::GetName() const {
 	return name;
 }
@@ -306,30 +292,100 @@ ModelPart* ModelStructure::GetParts() const {
 	return parts;
 }
 
+std::vector<std::string>& ModelStructure::GetBoneNames()
+{
+	return boneNames;
+}
+
+std::vector<byte>& ModelStructure::GetBoneIDs()
+{
+	return boneIDs;
+}
+
+bool ModelStructure::GetIsSkinned()
+{
+	return this->isSkinned;
+}
+
 void ModelStructure::ReadFromStream(FILE * stream) {
-	int header;
+	int header, version;
 	fread(&header, sizeof(int), 1, stream); //header
 
-	if (header != magic)
+	if (header == magicVersion1)
+	{
+		version = 1;
+	}
+	else if (header == magicVersion2)
+	{
+		version = 2;
+	}
+	else
+	{
 		exit(0);
+	}
 
 	this->name = ReadString(stream, this->name);
+	if (version == 2)
+	{
+		fread(&this->isSkinned, sizeof(byte), 1, stream);
+
+		if (isSkinned)
+		{
+			byte numBones;
+			fread(&numBones, sizeof(byte), 1, stream);
+			std::vector<std::string> names = std::vector<std::string>();
+			std::vector<byte> parents = std::vector<byte>();
+			for (int i = 0; i < numBones; i++)
+			{
+				byte id;
+				std::string boneName;
+				boneName = ReadString(stream, boneName);
+				fread(&id, sizeof(byte), 1, stream);
+				names.push_back(boneName);
+				parents.push_back(id);
+			}
+			SetBoneIDs(parents);
+			SetBoneNames(names);
+		}
+	}
+
 	fread(&this->partSize, sizeof(char), 1, stream);
 	this->parts = new ModelPart[this->partSize];
 
-	for (int i = 0; i != this->partSize; i++)
+	for (int i = 0; i < this->partSize; i++)
 	{
 		ModelPart part = ModelPart();
-		part.ReadFromStream(stream);
+
+		if (version == 2)
+		{
+			part.ReadFromStream2(stream);
+		}
+		else
+		{
+			part.ReadFromStream(stream);
+		}
 		this->parts[i] = part;
 	}
 		
 	fclose(stream);
 }
 
-void ModelStructure::WriteToStream(FILE * stream) {
-	fwrite(&magic, sizeof(int), 1, stream);
-	WriteString(stream, this->name);
+void ModelStructure::WriteToStream(FILE* stream) {
+	fwrite(&magicVersion2, sizeof(int), 1, stream);
+	fwrite(&this->isSkinned, sizeof(byte), 1, stream);
+
+	if (isSkinned)
+	{
+		int numBones;
+		fwrite(&numBones, sizeof(byte), 1, stream);
+		std::vector<std::string> names = GetBoneNames();
+		std::vector<byte> parents = GetBoneIDs();
+		for (int i = 0; i < numBones; i++)
+		{
+			WriteString(stream, names[i]);
+			fwrite(&parents[i], sizeof(byte), 1, stream);
+		}
+	}
 	fwrite(&this->partSize, sizeof(char), 1, stream);
 
 	for (int x = 0; x != this->partSize; x++)

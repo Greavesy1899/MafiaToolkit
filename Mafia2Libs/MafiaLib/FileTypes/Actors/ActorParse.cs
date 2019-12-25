@@ -290,7 +290,6 @@ namespace ResourceTypes.Actors
             ulong frameNameHash; //frame name hash
             Vector3 position;
             Quaternion quat;
-            Vector3 euler;
             Vector3 scale;
             ushort unk3;
             ushort dataID;

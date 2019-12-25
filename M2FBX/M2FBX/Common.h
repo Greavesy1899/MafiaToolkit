@@ -8,9 +8,11 @@
 
 #include "fbxsdk.h"
 #include "Utilities.h"
+#include "DataTypes.h"
 #define WIN32
 #include "NxPhysics.h"
 
 typedef unsigned int uint;
+typedef unsigned char byte;
 
 #endif

@@ -34,15 +34,20 @@ namespace Utils.Extensions
         {
             return new string(stream.ReadChars(size));
         }
-        public static string ReadString(this Stream reader)
+        public static string ReadString16(this Stream stream, bool isBigEndian)
+        {
+            ushort size = stream.ReadUInt16(isBigEndian);
+            return ReadStringBuffer(stream, size);
+        }
+        public static string ReadString(this Stream stream)
         {
             string newString = "";
 
-            while (reader.PeekChar() != '\0')
+            while (stream.PeekChar() != '\0')
             {
-                newString += reader.ReadChar();
+                newString += stream.ReadChar();
             }
-            reader.ReadByte();
+            stream.ReadByte();
             return newString;
         }
         public static byte[] ReadBytes(this Stream stream, int num)

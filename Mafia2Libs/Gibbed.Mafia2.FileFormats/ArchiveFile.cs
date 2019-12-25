@@ -821,7 +821,7 @@ namespace Gibbed.Mafia2.FileFormats
             MemoryStream stream = new MemoryStream();
             resource.Serialize(version, stream, Endian.Little);
             entry.Version = version;
-            entry.Data = stream.GetBuffer();
+            entry.Data = stream.ToArray();
             descNode.InnerText = path;
             return entry;
         }
@@ -895,7 +895,7 @@ namespace Gibbed.Mafia2.FileFormats
             }
             else
             {
-                entry.Data = stream.GetBuffer();
+                entry.Data = stream.ToArray();
             }
 
             return entry;
@@ -1004,7 +1004,7 @@ namespace Gibbed.Mafia2.FileFormats
             resource.Serialize(entry.Version, stream, Endian.Little);
 
             //set the data.
-            entry.Data = stream.GetBuffer();
+            entry.Data = stream.ToArray();
             descNode.InnerText = file;
             return entry;
         }

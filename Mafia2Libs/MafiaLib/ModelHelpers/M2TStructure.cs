@@ -1,9 +1,6 @@
-﻿using Gibbed.Illusion.FileFormats.Hashing;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Windows.Forms;
 using SharpDX;
 using ResourceTypes.FrameResource;
 using Utils.SharpDXExtensions;
@@ -18,11 +15,12 @@ namespace Utils.Models
     {
         //cannot change.
         private const string fileHeader = "M2T";
-        private const byte fileVersion = 1;
+        private const byte fileVersion = 2;
 
         //main header data of the file.
         private string name; //name of model.
         private bool isSkinned;
+        Skeleton skeleton;
         Lod[] lods; //Holds the models which can be exported, all EDM content is saved here.
 
         private string aoTexture;
@@ -165,6 +163,52 @@ namespace Utils.Models
             }
         }
 
+        public void BuildLods(IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers, FrameGeometry frameGeometry, FrameMaterial frameMaterial, 
+            FrameBlendInfo blendInfo, FrameSkeleton skeleton, FrameSkeletonHierachy skeletonHierarchy)
+        {
+            BuildLods(frameGeometry, frameMaterial, vertexBuffers, indexBuffers);
+
+            if(skeleton != null && skeletonHierarchy != null && blendInfo != null)
+            {
+                this.skeleton = new Skeleton();
+                this.skeleton.BoneNames = new string[skeleton.BoneNames.Length];
+                this.skeleton.Parents = new byte[skeletonHierarchy.ParentIndices.Length];
+                for (int i = 0; i < skeleton.BoneNames.Length; i++)
+                {
+                    this.skeleton.BoneNames[i] = skeleton.BoneNames[i].ToString();
+                    this.skeleton.Parents[i] = skeletonHierarchy.ParentIndices[i];
+                }
+            }
+
+            for(int i = 0; i < blendInfo.BoneIndexInfos.Length; i++)
+            {
+                var indexInfos = blendInfo.BoneIndexInfos[i];
+                var lod = lods[i];
+                for(int x = 0; x < indexInfos.NumMaterials; x++)
+                {
+                    var part = lod.Parts[x];
+                    byte offset = 0;
+                    for(int s = 0; s < indexInfos.BonesSlot[x]; s++)
+                    {
+                        offset += indexInfos.BonesPerPool[s];
+                    }
+
+                    for(uint z = part.StartIndex; z < part.StartIndex+(part.NumFaces*3); z++)
+                    {
+                        for (uint f = 0; f < indexInfos.NumWeightsPerVertex[x]; f++)
+                        {
+                            var previousBoneID = lod.Vertices[lod.Indices[z]].BoneIDs[f];
+
+                            if (skeleton.IDType == 3)
+                            {
+                                //lod.Vertices[lod.Indices[z]].BoneIDs[f] = indexInfos.IDs[offset + previousBoneID];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public void BuildCollision(ResourceTypes.Collisions.Collision.CollisionModel collisionModel, string name)
         {
             lods = new Lod[1];
@@ -249,8 +293,6 @@ namespace Utils.Models
 
         public void ExportToM2T(string exportPath)
         {
-            if (File.Exists(exportPath + name + ".m2t"))
-                return;
 
             using (BinaryWriter writer = new BinaryWriter(File.Create(exportPath + name + ".m2t")))
             {
@@ -260,25 +302,26 @@ namespace Utils.Models
                 //mesh name
                 writer.Write(name);
 
+                writer.Write(isSkinned);
+                if (isSkinned)
+                {
+                    writer.Write((byte)skeleton.BoneNames.Length);
+                    for (int i = 0; i < skeleton.BoneNames.Length; i++)
+                    {
+                        StringHelpers.StringHelpers.WriteString8(writer, skeleton.BoneNames[i]);
+                        writer.Write(skeleton.Parents[i]);
+                    }
+                }
+
                 //Number of Lods
                 writer.Write((byte)lods.Length);
 
                 for (int i = 0; i != lods.Length; i++)
                 {
+                    List<string> exportLog = new List<string>();
                     Lod lod = lods[i];
                     //Write section for VertexFlags. 
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Position));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Normals));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Tangent));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Skin));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Color));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.ShadowTexture));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.Color1));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.BBCoeffs));
-                    writer.Write(lod.VertexDeclaration.HasFlag(VertexFlags.DamageGroup));
+                    writer.Write((int)lod.VertexDeclaration);
 
                     //write length and then all vertices.
                     writer.Write(lods[i].Vertices.Length);
@@ -295,6 +338,14 @@ namespace Utils.Models
 
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.Tangent))
                             vert.Tangent.WriteToFile(writer);
+
+                        if(lod.VertexDeclaration.HasFlag(VertexFlags.Skin))
+                        {
+                            writer.Write(vert.BoneIDs);
+                            exportLog.Add(string.Format("{0} {1} {2} {3}", vert.BoneIDs[0], vert.BoneIDs[1], vert.BoneIDs[2], vert.BoneIDs[3]));
+                            for (int z = 0; z < 4; z++)
+                                writer.Write(vert.BoneWeights[z]);
+                        }
 
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                             vert.UVs[0].WriteToFile(writer);
@@ -322,6 +373,8 @@ namespace Utils.Models
                     writer.Write(lod.Indices.Length);
                     for(int x = 0; x != lod.Indices.Length; x++)
                         writer.Write(lods[i].Indices[x]);
+
+                    File.WriteAllLines("ExportLog"+i+".txt", exportLog.ToArray());
                 }
             }
         }
@@ -344,9 +397,22 @@ namespace Utils.Models
             if (new string(reader.ReadChars(3)) != fileHeader)
                 return;
 
-            if (reader.ReadByte() != fileVersion)
+            var version = reader.ReadByte();
+            if (version > 2)
                 return;
 
+            if(version == 1)
+            {
+                ReadM2TVersionOne(reader);
+            }
+            else
+            {
+                ReadM2TVersionTwo(reader);
+            }        
+        }
+
+        private void ReadM2TVersionOne(BinaryReader reader)
+        {
             //mesh name
             name = reader.ReadString();
 
@@ -451,6 +517,86 @@ namespace Utils.Models
             }
         }
 
+        private void ReadM2TVersionTwo(BinaryReader reader)
+        {
+            //mesh name
+            name = reader.ReadString();
+
+            //Number of Lods
+            Lods = new Lod[reader.ReadByte()];
+
+            for (int i = 0; i != Lods.Length; i++)
+            {
+                Lods[i] = new Lod
+                {
+                    VertexDeclaration = 0
+                };
+
+                lods[i].VertexDeclaration = (VertexFlags)reader.ReadInt32();
+
+                //write length and then all vertices.
+                lods[i].Vertices = new Vertex[reader.ReadInt32()];
+                lods[i].NumUVChannels = 4;
+                for (int x = 0; x != lods[i].Vertices.Length; x++)
+                {
+                    Vertex vert = new Vertex();
+                    vert.UVs = new Half2[lods[i].NumUVChannels];
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
+                        vert.Position = Vector3Extenders.ReadFromFile(reader);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
+                        vert.Normal = Vector3Extenders.ReadFromFile(reader);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                        vert.Tangent = Vector3Extenders.ReadFromFile(reader);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Skin))
+                    {
+                        vert.BoneIDs = reader.ReadBytes(4);
+                        vert.BoneWeights = new float[4];
+                        for (int z = 0; z < 4; z++)
+                            vert.BoneWeights[z] = reader.ReadSingle();
+                    }
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                        vert.UVs[0] = Half2Extenders.ReadFromFile(reader);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                        vert.UVs[1] = Half2Extenders.ReadFromFile(reader);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                        vert.UVs[2] = Half2Extenders.ReadFromFile(reader);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
+                        vert.UVs[3] = Half2Extenders.ReadFromFile(reader);
+
+                    lods[i].Vertices[x] = vert;
+                }
+
+                //write mesh count and texture names.
+                Lods[i].Parts = new ModelPart[reader.ReadInt32()];
+                for (int x = 0; x != Lods[i].Parts.Length; x++)
+                {
+                    Lods[i].Parts[x] = new ModelPart();
+                    Lods[i].Parts[x].Material = reader.ReadString();
+                    ulong hash = 0;
+                    ulong.TryParse(Lods[i].Parts[x].Material, out hash);
+                    Lods[i].Parts[x].Hash = hash;
+                    Lods[i].Parts[x].StartIndex = reader.ReadUInt32();
+                    Lods[i].Parts[x].NumFaces = reader.ReadUInt32();
+                }
+
+                int numIndices = reader.ReadInt32();
+                Lods[i].Indices = new ushort[numIndices];
+                for (int x = 0; x != Lods[i].Indices.Length; x++)
+                    Lods[i].Indices[x] = reader.ReadUInt16();
+
+                Lods[i].CalculatePartBounds();
+
+            }
+        }
+
         public bool ReadFromFbx(string file)
         {
             string args = "-ConvertToM2T ";
@@ -490,18 +636,7 @@ namespace Utils.Models
                 for (int i = 0; i != 1; i++)
                 {
                     //Write section for VertexFlags. 
-                    writer.Write((byte)1);
-                    writer.Write((byte)0);
-                    writer.Write((byte)0);
-                    writer.Write((byte)0);
-                    writer.Write((byte)0);
-                    writer.Write((byte)0);
-                    writer.Write((byte)0);
-                    writer.Write((byte)0);
-                    writer.Write((byte)0);
-                    writer.Write((byte)0);
-                    writer.Write((byte)0);
-                    writer.Write((byte)0);
+                    writer.Write((byte)VertexFlags.Position);
 
                     //write length and then all vertices.
                     writer.Write(lods[i].Vertices.Length);
@@ -527,7 +662,21 @@ namespace Utils.Models
                 }
             }
         }
+        public class Skeleton
+        {
+            string[] boneNames;
+            byte[] parents;
 
+            public string[] BoneNames {
+                get { return boneNames; }
+                set { boneNames = value; }
+            }
+
+            public byte[] Parents {
+                get { return parents; }
+                set { parents = value; }
+            }
+        }
         public class Lod
         {
             private VertexFlags vertexDeclaration;

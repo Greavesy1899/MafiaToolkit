@@ -1052,6 +1052,8 @@ namespace Mafia2Tool
             sm.Geometry = model.FrameGeometry;
             sm.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
             sm.Material = model.FrameMaterial;
+            sm.LocalTransform = Matrix.Identity;
+            sm.WorldTransform = Matrix.Identity;
             SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
             SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
 
@@ -1572,7 +1574,7 @@ namespace Mafia2Tool
             if (dSceneTree.treeView1.SelectedNode.Tag.GetType() == typeof(Collision.CollisionModel))
                 ExportCollision(dSceneTree.treeView1.SelectedNode.Tag as Collision.CollisionModel);
             else
-                Export3DFrame(dSceneTree.treeView1.SelectedNode.Tag);
+                Export3DFrame();
         }
 
         private void ExportCollision(Collision.CollisionModel data)
@@ -1582,22 +1584,39 @@ namespace Mafia2Tool
             structure.ExportCollisionToM2T(ToolkitSettings.ExportPath, data.Hash.ToString());
             structure.ExportToFbx(ToolkitSettings.ExportPath, false);
         }
-        private void Export3DFrame(object tag)
+        private void Export3DFrame()
         {
-            FrameObjectSingleMesh mesh = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
-            FrameGeometry geom = SceneData.FrameResource.FrameGeometries[mesh.Refs["Mesh"]];
-            FrameMaterial mat = SceneData.FrameResource.FrameMaterials[mesh.Refs["Material"]];
-            IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
-            VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
-
-            //we need to retrieve buffers first.
-            for (int c = 0; c != geom.LOD.Length; c++)
+            var tag = dSceneTree.treeView1.SelectedNode.Tag;
+            FrameObjectSingleMesh model;
+            if(tag is FrameObjectSingleMesh)
             {
-                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
-                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
+                model = (tag as FrameObjectSingleMesh);
+            }
+            else
+            {
+                //enter message here
+                return;
             }
 
-            Model newModel = new Model(mesh, indexBuffers, vertexBuffers, geom, mat);
+            IndexBuffer[] indexBuffers = new IndexBuffer[model.Geometry.LOD.Length];
+            VertexBuffer[] vertexBuffers = new VertexBuffer[model.Geometry.LOD.Length];
+
+            //we need to retrieve buffers first.
+            for (int c = 0; c != model.Geometry.LOD.Length; c++)
+            {
+                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(model.Geometry.LOD[c].IndexBufferRef.uHash);
+                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(model.Geometry.LOD[c].VertexBufferRef.uHash);
+            }
+
+            Model newModel = null;
+            if (tag is FrameObjectModel)
+            {
+                newModel = new Model(tag as FrameObjectModel, indexBuffers, vertexBuffers);
+            }
+            else
+            {
+                newModel = new Model(tag as FrameObjectSingleMesh, indexBuffers, vertexBuffers);
+            }
 
             for (int c = 0; c != newModel.ModelStructure.Lods.Length; c++)
             {

@@ -78,6 +78,11 @@ namespace ResourceTypes.FrameResource
             set { hierachy = value; }
         }
 
+        public FrameObjectModel() : base()
+        {
+
+
+        }
         public FrameObjectModel (MemoryStream reader, bool isBigEndian)
         {
         }
