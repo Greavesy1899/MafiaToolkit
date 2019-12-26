@@ -265,6 +265,7 @@ int BuildModel(ModelStructure* structure, FbxNode* node)
 
 	parts[0] = Part;
 	structure->SetParts(parts);
+	structure->SetIsSkinned(false);
 	WriteLine("Converted Model!");
 	return 0;
 }

@@ -1221,10 +1221,10 @@ namespace ResourceTypes.Navigation
             for(int i = 0; i < junctionData.Length; i++)
             {
                 JunctionDefinition data = junctionData[i];
-                data.boundarySize0 = data.boundarySize1 = (short)data.Boundaries.Length;
-                data.junctionSize0 = data.junctionSize1 = (short)data.Splines.Length;
+                data.boundarySize0 = data.boundarySize1 = (short)(data.Boundaries != null ? data.Boundaries.Length : 0);
+                data.junctionSize0 = data.junctionSize1 = (short)(data.Splines != null ? data.Splines.Length : 0);
 
-                if(data.Splines != null)
+                if (data.Splines != null)
                 {
                     for (int x = 0; x < data.Splines.Length; x++)
                     {

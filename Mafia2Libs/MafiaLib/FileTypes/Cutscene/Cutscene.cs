@@ -1,5 +1,6 @@
 ﻿using SharpDX;
 using System;
+using System.Diagnostics;
 using System.IO;
 using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
@@ -160,12 +161,18 @@ namespace ResourceTypes.Cutscene
                                 model.ReadFromFile(stream, true);
                                 entities[i] = model;
                             }
-                            //else if (type == AeOmniLight.Type)
-                            //{
-                            //    AeOmniLight omniLight = new AeOmniLight();
-                            //    omniLight.ReadFromFile(stream, true);
-                            //    entities[i] = omniLight;
-                            //}
+                            else if (type == AeSpotLight.Type)
+                            {
+                                AeSpotLight spotLight = new AeSpotLight();
+                                spotLight.ReadFromFile(stream, true);
+                                entities[i] = spotLight;
+                            }
+                            else if (type == AeOmniLight.Type)
+                            {
+                                AeOmniLight omniLight = new AeOmniLight();
+                                omniLight.ReadFromFile(stream, true);
+                                entities[i] = omniLight;
+                            }
                             else if (type == AeUnk4.Type)
                             {
                                 AeUnk4 unk4 = new AeUnk4();
@@ -217,8 +224,10 @@ namespace ResourceTypes.Cutscene
                             else
                             {
                                 Console.WriteLine("Unknown type");
+                                stream.Position = stream.Length;
                                 File.WriteAllBytes("Entitiy" + type + "_" + i + ".bin", data);
                             }
+                            Debug.Assert(stream.Position == stream.Length);
                         }
                     }
 

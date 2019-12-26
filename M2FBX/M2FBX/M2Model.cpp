@@ -331,7 +331,7 @@ void ModelStructure::ReadFromStream(FILE * stream) {
 
 		if (isSkinned)
 		{
-			byte numBones;
+			byte numBones = 0;
 			fread(&numBones, sizeof(byte), 1, stream);
 			std::vector<std::string> names = std::vector<std::string>();
 			std::vector<byte> parents = std::vector<byte>();
@@ -376,7 +376,7 @@ void ModelStructure::WriteToStream(FILE* stream) {
 
 	if (isSkinned)
 	{
-		int numBones;
+		int numBones = 0;
 		fwrite(&numBones, sizeof(byte), 1, stream);
 		std::vector<std::string> names = GetBoneNames();
 		std::vector<byte> parents = GetBoneIDs();

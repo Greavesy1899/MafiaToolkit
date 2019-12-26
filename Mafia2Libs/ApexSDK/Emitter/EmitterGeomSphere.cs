@@ -37,12 +37,15 @@ namespace ApexSDK
 
         public void WriteToFile(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            string type = Enum.GetName(typeof(EmitterType), emitterType);
+            StringHelpers.WriteString32(writer, type);
+            writer.Write(radius);
+            writer.Write(hemisphere);
         }
 
         public override string ToString()
         {
-            return string.Format("EmitterGeomSphereParams");
+            return "EmitterGeomSphereParams";
         }
     }
 }

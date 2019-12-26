@@ -1462,6 +1462,12 @@ namespace Mafia2Tool
                 if (Graphics.Assets.ContainsKey(int.Parse(node.Name)))
                     Graphics.Assets.Remove(int.Parse(node.Name));
             }
+            else if (node.Tag.GetType() == typeof(RenderJunction))
+            {
+                dSceneTree.treeView1.Nodes.Remove(node);
+                if (Graphics.Assets.ContainsKey(int.Parse(node.Name)))
+                    Graphics.Assets.Remove(int.Parse(node.Name));
+            }
             else if (node.Tag.GetType() == typeof(Collision.CollisionModel))
             {
                 dSceneTree.treeView1.Nodes.Remove(node);
