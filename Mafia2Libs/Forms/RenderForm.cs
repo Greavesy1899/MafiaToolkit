@@ -443,13 +443,13 @@ namespace Mafia2Tool
                     {
                         RenderRoad road = (RenderRoad)roadRoot.Nodes[i].Tag;
                         SplineDefinition spline = new SplineDefinition();
-                        spline.NumSplines1 = spline.NumSplines2 = (short)road.Spline.Points.Length;
-                        spline.unk0 = 128;
-                        spline.points = road.Spline.Points;
-                        spline.hasToward = road.HasToward;
-                        spline.hasBackward = road.HasBackward;
-                        spline.backward = road.Backward;
-                        spline.toward = road.Toward;
+                        spline.NumSplines1 = spline.NumSplines2 = (ushort)road.Spline.Points.Length;
+                        spline.Points = road.Spline.Points;
+                        spline.HasToward = road.HasToward;
+                        spline.HasBackward = road.HasBackward;
+                        spline.Backward = road.Backward;
+                        spline.Toward = road.Toward;
+                        spline.IndexOffset = road.IndexOffset;
                         splines.Add(spline);
                     }
 
