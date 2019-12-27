@@ -7,6 +7,7 @@ using SharpDX;
 using Utils.SharpDXExtensions;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Mafia2Tool;
 
 namespace ResourceTypes.FrameResource
 {
@@ -20,6 +21,7 @@ namespace ResourceTypes.FrameResource
         protected short unk6;
         protected bool isOnTable;
         protected NameTableFlags nameTableFlags;
+        protected string[] extraData;
 
         protected Matrix worldTransform = Matrix.Identity;
         protected Matrix localTransform = Matrix.Identity;
@@ -76,6 +78,11 @@ namespace ResourceTypes.FrameResource
             get { return unk6; }
             set { unk6 = value; }
         }
+        [Category("Frame Properties"), Description("Data stored in FrameProps.bin")]
+        public string[] ExtraData {
+            get { return extraData; }
+            set { extraData = value; }
+        }
 
         [Description("Only use this if the object is going to be saved in the FrameNameTable"), Category("FrameNameTable Data"), Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public NameTableFlags FrameNameTableFlags {
@@ -127,6 +134,14 @@ namespace ResourceTypes.FrameResource
             parentIndex1 = new ParentStruct(stream.ReadInt32(isBigEndian));
             parentIndex2 = new ParentStruct(stream.ReadInt32(isBigEndian));
             unk6 = stream.ReadInt16(isBigEndian);
+
+            if (SceneData.FrameProperties != null)
+            {
+                if (SceneData.FrameProperties.FrameExtraData.ContainsKey(name.uHash))
+                {
+                    extraData = SceneData.FrameProperties.FrameExtraData[name.uHash].Data;
+                }
+            }
         }
 
         public virtual void WriteToFile(BinaryWriter writer)

@@ -830,28 +830,29 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteElementString("File", name);
             XmlResource resource = new XmlResource();
 
-            //try
-            //{
             string[] dirs = name.Split('/');
-            resource = new XmlResource();
-            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian);
             string xmldir = xmlDir;
             for (int z = 0; z != dirs.Length - 1; z++)
             {
                 xmldir += "/" + dirs[z];
                 Directory.CreateDirectory(xmldir);
             }
-            if (!resource.Unk3)
-                File.WriteAllText(xmlDir + "/" + name + ".xml", resource.Content);
-            else
+
+            using(MemoryStream stream = new MemoryStream(entry.Data))
             {
-                File.WriteAllBytes(xmlDir + "/" + name + ".xml", entry.Data);
+                resource = new XmlResource();
+                resource.Deserialize(entry.Version, stream, Endian);
+
+                if (Endian == Endian.Big || !resource.Unk3)
+                {
+                    File.WriteAllBytes(xmlDir + "/" + name + ".xml", entry.Data);
+                }
+                else
+                {
+                    File.WriteAllText(xmlDir + "/" + name + ".xml", resource.Content);
+                }
             }
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(string.Format("ERROR CONVERTING XML: \nFile{0} \nError: {1}", name, ex.Message));
-            //}
+
             resourceXML.WriteElementString("XMLTag", resource.Tag);
             resourceXML.WriteElementString("Unk1", Convert.ToByte(resource.Unk1).ToString());
             resourceXML.WriteElementString("Unk3", Convert.ToByte(resource.Unk3).ToString());

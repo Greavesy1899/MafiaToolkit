@@ -17,6 +17,7 @@ using ResourceTypes.Actors;
 using ResourceTypes.Collisions;
 using ResourceTypes.Navigation;
 using ResourceTypes.Translokator;
+using ResourceTypes.Misc;
 
 namespace Mafia2Tool
 {
@@ -38,6 +39,7 @@ namespace Mafia2Tool
         public static NAVData[] OBJData;
         public static HPDData HPDData;
         public static TranslokatorLoader Translokator;
+        public static FrameProps FrameProperties;
         public static string ScenePath;
 
         public static void BuildData()

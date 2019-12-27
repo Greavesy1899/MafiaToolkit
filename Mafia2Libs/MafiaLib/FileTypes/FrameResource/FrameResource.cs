@@ -483,6 +483,7 @@ namespace ResourceTypes.FrameResource
 
                     obj.AddRef(FrameEntryRefTypes.Parent2, obj.ParentIndex2.RefID);
                 }
+
                 obj.SetWorldTransform();
             }
         }

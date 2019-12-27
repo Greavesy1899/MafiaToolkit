@@ -144,6 +144,15 @@ namespace Mafia2Tool
             }
 
             InitTreeView();
+
+            string path = originalPath.FullName + "/edit/tables/FrameProps.bin";
+            if(File.Exists(path))
+            {
+                FileInfo info = new FileInfo(path);
+                FrameProps props = new FrameProps(info);
+                SceneData.FrameProperties = props;
+            }
+
         }
 
         private void GetPath()
