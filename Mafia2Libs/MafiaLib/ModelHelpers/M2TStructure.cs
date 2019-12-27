@@ -101,6 +101,12 @@ namespace Utils.Models
                         vertex.Color0 = VertexTranslator.ReadColorFromVB(vertexBuffer.Data, startIndex);
                     }
 
+                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Color1))
+                    {
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Color1].Offset;
+                        vertex.Color1 = VertexTranslator.ReadColorFromVB(vertexBuffer.Data, startIndex);
+                    }
+
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords0].Offset;
@@ -342,9 +348,20 @@ namespace Utils.Models
                         if(lod.VertexDeclaration.HasFlag(VertexFlags.Skin))
                         {
                             writer.Write(vert.BoneIDs);
-                            exportLog.Add(string.Format("{0} {1} {2} {3}", vert.BoneIDs[0], vert.BoneIDs[1], vert.BoneIDs[2], vert.BoneIDs[3]));
                             for (int z = 0; z < 4; z++)
                                 writer.Write(vert.BoneWeights[z]);
+                        }
+
+                        if (lod.VertexDeclaration.HasFlag(VertexFlags.Color))
+                        {
+                            exportLog.Add(string.Format("{0} {1} {2} {3}", vert.Color0[0], vert.Color0[1], vert.Color0[2], vert.Color0[3]));
+                            writer.Write(vert.Color0);
+                        }
+
+                        if (lod.VertexDeclaration.HasFlag(VertexFlags.Color1))
+                        {
+                            exportLog.Add(string.Format("{0} {1} {2} {3}", vert.Color1[0], vert.Color1[1], vert.Color1[2], vert.Color1[3]));
+                            writer.Write(vert.Color1);
                         }
 
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
@@ -558,6 +575,12 @@ namespace Utils.Models
                         for (int z = 0; z < 4; z++)
                             vert.BoneWeights[z] = reader.ReadSingle();
                     }
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Color))
+                        vert.Color0 = reader.ReadBytes(4);
+
+                    if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Color1))
+                        vert.Color1 = reader.ReadBytes(4);
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                         vert.UVs[0] = Half2Extenders.ReadFromFile(reader);

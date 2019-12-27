@@ -123,12 +123,10 @@ namespace ResourceTypes.Navigation
         private LaneProperties[] lanes;
         private RangeProperties[] ranges;
 
-        //[Browsable(false)]
         public ushort LaneIDX0 {
             get { return laneIDX0; }
             set { laneIDX0 = value; }
         }
-        //[Browsable(false)]
         public ushort LaneIDX1 {
             get { return laneIDX1; }
             set { laneIDX1 = value; }
@@ -324,14 +322,17 @@ namespace ResourceTypes.Navigation
             get { return junctionIdx; }
             set { junctionIdx = value; }
         }
+        [Browsable(false)]
         public uint Offset0 {
             get { return offset0; }
             set { offset0 = value; }
         }
+        [Browsable(false)]
         public uint Offset1 {
             get { return offset1; }
             set { offset1 = value; }
         }
+        [Browsable(false)]
         public uint Offset2 {
             get { return offset2; }
             set { offset2 = value; }
@@ -351,10 +352,10 @@ namespace ResourceTypes.Navigation
         short unk3;
         short unk4;
         short unk5;
-        public uint offset0;
-        public short pathSize0;
-        public short pathSize1;
-        public float length;
+        private uint offset0;
+        private short pathSize0;
+        private short pathSize1;
+        private float length;
         Vector3[] path;
 
         public short Unk0 {
@@ -381,6 +382,22 @@ namespace ResourceTypes.Navigation
             get { return unk5; }
             set { unk5 = value; }
         }
+        public uint Offset0 {
+            get { return offset0; }
+            set { offset0 = value; }
+        }
+        public short PathSize0 {
+            get { return pathSize0; }
+            set { pathSize0 = value; }
+        }
+        public short PathSize1 {
+            get { return pathSize1; }
+            set { pathSize1 = value; }
+        }
+        public float Length {
+            get { return length; }
+            set { length = value; }
+        }
         public Vector3[] Path {
             get { return path; }
             set { path = value; }
@@ -388,7 +405,7 @@ namespace ResourceTypes.Navigation
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}", unk0, unk1, unk2, unk3, unk4, unk5, unk4, offset0, unk5, pathSize0, pathSize1, length);
+            return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10}", unk0, unk1, unk2, unk3, unk4, unk5, unk4, unk5, pathSize0, pathSize1, length);
         }
     }
 
@@ -727,18 +744,18 @@ namespace ResourceTypes.Navigation
                     data4Sect.Unk3 = reader.ReadInt16();
                     data4Sect.Unk4 = reader.ReadInt16();
                     data4Sect.Unk5 = reader.ReadInt16();
-                    data4Sect.offset0 = reader.ReadInt24();
+                    data4Sect.Offset0 = reader.ReadInt24();
                     reader.ReadByte();
-                    data4Sect.pathSize0 = reader.ReadInt16();
-                    data4Sect.pathSize1 = reader.ReadInt16();
-                    data4Sect.length = reader.ReadSingle();
+                    data4Sect.PathSize0 = reader.ReadInt16();
+                    data4Sect.PathSize1 = reader.ReadInt16();
+                    data4Sect.Length = reader.ReadSingle();
                     junctionData[i].Splines[y] = data4Sect;
                 }
                 for (int y = 0; y != junctionData[i].junctionSize0; y++)
                 {
-                    junctionData[i].Splines[y].Path = new Vector3[junctionData[i].Splines[y].pathSize0];
+                    junctionData[i].Splines[y].Path = new Vector3[junctionData[i].Splines[y].PathSize0];
 
-                    for (int z = 0; z != junctionData[i].Splines[y].pathSize1; z++)
+                    for (int z = 0; z != junctionData[i].Splines[y].PathSize0; z++)
                     {
                         junctionData[i].Splines[y].Path[z] = Vector3Extenders.ReadFromFile(reader);
                     }
@@ -1069,22 +1086,22 @@ namespace ResourceTypes.Navigation
                     writer.Write(data4Sect.Unk4);
                     writer.Write(data4Sect.Unk5);
                     junctionPos[y] = writer.BaseStream.Position;
-                    writer.WriteInt24(data4Sect.offset0);
-                    writer.Write(data4Sect.pathSize0);
-                    writer.Write(data4Sect.pathSize1);
-                    writer.Write(data4Sect.length);
+                    writer.WriteInt24(data4Sect.Offset0);
+                    writer.Write(data4Sect.PathSize0);
+                    writer.Write(data4Sect.PathSize1);
+                    writer.Write(data4Sect.Length);
                 }
                 for (int y = 0; y < junctionData[i].junctionSize0; y++)
                 {
                     //update path vectors
                     curPosition = writer.BaseStream.Position;
-                    uint pathOffset = (uint)(junctionData[i].Splines[y].pathSize0 > 0 ? curPosition + 4 : 0);
+                    uint pathOffset = (uint)(junctionData[i].Splines[y].PathSize0 > 0 ? curPosition + 4 : 0);
                     writer.BaseStream.Seek(junctionPos[y], SeekOrigin.Begin);
                     writer.WriteInt24(pathOffset);
                     writer.BaseStream.Seek(curPosition, SeekOrigin.Begin);
                     //finished
 
-                    for (int z = 0; z != junctionData[i].Splines[y].pathSize1; z++)
+                    for (int z = 0; z != junctionData[i].Splines[y].PathSize0; z++)
                     {
                         Vector3Extenders.WriteToFile(junctionData[i].Splines[y].Path[z], writer);
                     }
@@ -1305,22 +1322,26 @@ namespace ResourceTypes.Navigation
                 {
                     for (int x = 0; x < data.Splines.Length; x++)
                     {
-                        data.Splines[x].pathSize0 = data.Splines[x].pathSize1 = (short)data.Splines[x].Path.Length;
+                        data.Splines[x].PathSize0 = data.Splines[x].PathSize1 = (short)data.Splines[x].Path.Length;
 
                         float curDistance = 0.0f;
-                        for (int z = 0; z < data.Splines[x].pathSize0; z++)
+                        for (int z = 0; z < data.Splines[x].PathSize0; z++)
                         {
                             float temp = 0.0f;
 
-                            if (z < data.Splines[x].pathSize0 - 1)
+                            if (z < data.Splines[x].PathSize0 - 1)
+                            {
                                 temp += Vector3.Distance(data.Splines[x].Path[z], data.Splines[x].Path[z + 1]);
+                            }
 
                             if (z > 0)
+                            {
                                 temp += Vector3.Distance(data.Splines[x].Path[z], data.Splines[x].Path[z - 1]);
+                            }
 
                             curDistance += temp;
                         }
-                        data.Splines[x].length = curDistance / 2;
+                        data.Splines[x].Length = curDistance / 2;
                     }
                 }
             }

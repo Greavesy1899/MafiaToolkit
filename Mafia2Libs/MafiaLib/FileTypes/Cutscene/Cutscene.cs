@@ -73,6 +73,7 @@ namespace ResourceTypes.Cutscene
             for(int i = 0; i != cutscenes.Length; i++)
             {
                 cutscenes[i] = new Cutscene(reader);
+                return;
             }
         }
 
@@ -209,6 +210,12 @@ namespace ResourceTypes.Cutscene
                                 unk13.ReadFromFile(stream, true);
                                 entities[i] = unk13;
                             }
+                            else if (type == AeVehicle.Type)
+                            {
+                                AeVehicle vehicle = new AeVehicle();
+                                vehicle.ReadFromFile(stream, true);
+                                entities[i] = vehicle;
+                            }
                             else if (type == AeUnk18.Type)
                             {
                                 AeUnk18 unk18 = new AeUnk18();
@@ -220,6 +227,18 @@ namespace ResourceTypes.Cutscene
                                 AeUnk23 unk23 = new AeUnk23();
                                 unk23.ReadFromFile(stream, true);
                                 entities[i] = unk23;
+                            }
+                            else if (type == AeEffects.Type)
+                            {
+                                AeEffects effects = new AeEffects();
+                                effects.ReadFromFile(stream, true);
+                                entities[i] = effects;
+                            }
+                            else if (type == AeSunLight.Type)
+                            {
+                                AeSunLight sunlight = new AeSunLight();
+                                sunlight.ReadFromFile(stream, true);
+                                entities[i] = sunlight;
                             }
                             else
                             {

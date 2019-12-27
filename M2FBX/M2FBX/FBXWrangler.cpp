@@ -66,7 +66,6 @@ int ConvertM2T(const char* pSource, const char* pDest, unsigned char isBin)
 	lResult = CreateDocument(lSdkManager, lScene, file);
 	if (lResult)
 	{
-		isBin = 0;
 		//Save the document
 		lResult = SaveDocument(lSdkManager, lScene, pDest, isBin);
 		if (!lResult) WriteLine("\n\nAn error occurred while saving the document...");
@@ -221,7 +220,8 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 	lMesh->InitControlPoints(part.GetVertSize());
 	FbxVector4* lControlPoints = lMesh->GetControlPoints();
 
-	FbxGeometryElementVertexColor* lUVVCElement = nullptr;
+	FbxGeometryElementVertexColor* lColor0Element = nullptr;
+	FbxGeometryElementVertexColor* lColor1Element = nullptr;
 	FbxGeometryElementUV* lUVOMElement = nullptr;
 
 	for (size_t i = 0; i < part.GetVertSize(); i++)
@@ -264,17 +264,44 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 	//we must update the size of the index array.
 	lUVDiffuseElement->GetIndexArray().SetCount(part.GetIndicesSize());
 
-	if (part.HasVertexFlag(VertexFlags::TexCoords1) && part.HasVertexFlag(VertexFlags::TexCoords2))
+	if (part.HasVertexFlag(VertexFlags::Color))
 	{
 		//Create VC in channels;
-		lUVVCElement = lMesh->CreateElementVertexColor();
-		FBX_ASSERT(lUVVCElement != nullptr);
-		lUVVCElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
-		lUVVCElement->SetReferenceMode(FbxGeometryElement::eDirect);
+		lColor0Element = lMesh->CreateElementVertexColor();
+		lColor0Element->SetName("ColorMap0");
+		FBX_ASSERT(lColor0Element != nullptr);
+		lColor0Element->SetMappingMode(FbxGeometryElement::eByControlPoint);
+		lColor0Element->SetReferenceMode(FbxGeometryElement::eDirect);
 
 		for (size_t i = 0; i < part.GetVertSize(); i++)
-			lUVVCElement->GetDirectArray().Add(FbxColor(vertices[i].uv1.x, vertices[i].uv1.y, vertices[i].uv2.x, vertices[i].uv2.y));
+		{
+			FbxColor color;
+			color.mRed = part.GetVertices()[i].color0[0] / 255.0f;
+			color.mGreen = part.GetVertices()[i].color0[1] / 255.0f;
+			color.mBlue = part.GetVertices()[i].color0[2] / 255.0f;
+			color.mAlpha = part.GetVertices()[i].color0[3] / 255.0f;
+			lColor0Element->GetDirectArray().Add(color);
+		}
+	}
 
+	if (part.HasVertexFlag(VertexFlags::Color1))
+	{
+		//Create VC in channels;
+		lColor1Element = lMesh->CreateElementVertexColor();
+		lColor1Element->SetName("ColorMap1");
+		FBX_ASSERT(lColor1Element != nullptr);
+		lColor1Element->SetMappingMode(FbxGeometryElement::eByControlPoint);
+		lColor1Element->SetReferenceMode(FbxGeometryElement::eDirect);
+
+		for (size_t i = 0; i < part.GetVertSize(); i++)
+		{
+			FbxColor color;
+			color.mRed = part.GetVertices()[i].color1[0] / 255.0f;
+			color.mGreen = part.GetVertices()[i].color1[1] / 255.0f;
+			color.mBlue = part.GetVertices()[i].color1[2] / 255.0f;
+			color.mAlpha = part.GetVertices()[i].color1[3] / 255.0f;
+			lColor1Element->GetDirectArray().Add(color);
+		}
 	}
 
 	if (part.HasVertexFlag(VertexFlags::ShadowTexture))
@@ -313,8 +340,15 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 		// update the index array of the UVs that map the texture to the face
 		//lUVDiffuseElement->GetIndexArray().SetAt(i, 0);
 
-		if(part.HasVertexFlag(VertexFlags::TexCoords1) && part.HasVertexFlag(VertexFlags::TexCoords2))
-			lUVVCElement->GetIndexArray().SetAt(i, 0);
+		if (part.HasVertexFlag(VertexFlags::Color))
+		{
+			lColor0Element->GetIndexArray().SetAt(i, 0);
+		}
+
+		if (part.HasVertexFlag(VertexFlags::Color1))
+		{
+			lColor1Element->GetIndexArray().SetAt(i, 0);
+		}
 	}
 
 	lMesh->EndPolygon();

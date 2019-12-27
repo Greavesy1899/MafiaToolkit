@@ -154,6 +154,12 @@ void ModelPart::ReadFromStream2(FILE* stream)
 			fread(&vertex.boneIDs, sizeof(byte), 4, stream);
 			fread(&vertex.boneWeights, sizeof(float), 4, stream);
 		}
+		if (HasVertexFlag(VertexFlags::Color)) {
+			fread(&vertex.color0, sizeof(byte), 4, stream);
+		}
+		if (HasVertexFlag(VertexFlags::Color1)) {
+			fread(&vertex.color1, sizeof(byte), 4, stream);
+		}
 		if (HasVertexFlag(VertexFlags::TexCoords0)) {
 			fread(&vertex.uv0, sizeof(UVVert), 1, stream);
 		}
@@ -209,6 +215,12 @@ void ModelPart::WriteToStream(FILE * stream) {
 		if (HasVertexFlag(VertexFlags::Skin)) {
 			fwrite(&this->vertices[i].boneIDs, sizeof(int), 1, stream);
 			fwrite(&this->vertices[i].boneWeights, sizeof(float), 1, stream);
+		}
+		if (HasVertexFlag(VertexFlags::Color)) {
+			fwrite(&this->vertices[i].color0, sizeof(byte), 4, stream);
+		}
+		if (HasVertexFlag(VertexFlags::Color1)) {
+			fwrite(&this->vertices[i].color1, sizeof(byte), 4, stream);
 		}
 		if (HasVertexFlag(VertexFlags::TexCoords0)) {
 			fwrite(&this->vertices[i].uv0, sizeof(UVVert), 1, stream);
