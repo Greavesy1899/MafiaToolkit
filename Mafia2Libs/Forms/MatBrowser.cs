@@ -26,7 +26,7 @@ namespace Mafia2Tool.Forms
         {
             for(int i = 0; i < 1; i++)
             {
-                var mtl = MaterialsManager.MTLs.ElementAt(i).Value;
+                var mtl = MaterialsManager.MaterialLibraries.ElementAt(i).Value;
 
                 for (int x = 0; x < 20; x++)
                 {

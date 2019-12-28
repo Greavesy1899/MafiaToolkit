@@ -58,7 +58,7 @@ SubMesh* ModelPart::GetSubMeshes() const
 	return this->submeshes;
 }
 
-std::vector<Int3> ModelPart::GetIndices() {
+std::vector<Int3>& ModelPart::GetIndices() {
 	return this->indices;
 }
 
@@ -384,6 +384,7 @@ void ModelStructure::ReadFromStream(FILE * stream) {
 
 void ModelStructure::WriteToStream(FILE* stream) {
 	fwrite(&magicVersion2, sizeof(int), 1, stream);
+	WriteString(stream, this->name);
 	fwrite(&this->isSkinned, sizeof(byte), 1, stream);
 
 	if (isSkinned)
@@ -401,7 +402,9 @@ void ModelStructure::WriteToStream(FILE* stream) {
 	fwrite(&this->partSize, sizeof(char), 1, stream);
 
 	for (int x = 0; x != this->partSize; x++)
+	{
 		this->parts[x].WriteToStream(stream);
+	}
 
 	fclose(stream);
 }

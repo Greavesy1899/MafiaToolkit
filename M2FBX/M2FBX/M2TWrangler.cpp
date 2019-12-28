@@ -8,6 +8,7 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	FbxMesh* pMesh = (FbxMesh*)pNode->GetNodeAttribute();
 	FbxGeometryElementNormal* pElementNormal = pMesh->GetElementNormal(0);
 	FbxGeometryElementTangent* pElementTangent = pMesh->GetElementTangent(0);
+	FbxGeometryElementUV* pElementUV = pMesh->GetElementUV(0);
 	FbxGeometryElementUV* pElementOM = pMesh->GetElementUV("OMUV");
 	FbxGeometryElementMaterial* pElementMaterial = pMesh->GetElementMaterial(0);
 	FbxGeometryElementVertexColor* pElementColor0 = pMesh->GetElementVertexColor(0);
@@ -37,7 +38,6 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		FBXSDK_printf("Vertex count > ushort max value! This model cannot be used in Mafia II\n");
 		return -97;
 	}
-
 	pPart.SetVertexFlag(VertexFlags::Position);
 	pPart.SetVertexFlag(pElementNormal ? VertexFlags::Normals : VertexFlags::None);
 	pPart.SetVertexFlag(pElementTangent ? VertexFlags::Tangent : VertexFlags::None);
@@ -72,10 +72,12 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		FbxColor color;
 
 		//do vert stuff.
-		vert.x = vec4.mData[0];
-		vert.y = vec4.mData[1];
-		vert.z = vec4.mData[2];
-		vertice.position = vert;
+		if (pPart.HasVertexFlag(VertexFlags::Position)) {
+			vert.x = vec4.mData[0];
+			vert.y = vec4.mData[1];
+			vert.z = vec4.mData[2];
+			vertice.position = vert;
+		}
 
 		//do normal stuff.
 		if (pPart.HasVertexFlag(VertexFlags::Normals)) {
@@ -196,10 +198,14 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	int calcTotal = 0;
 
 	for (size_t i = 0; i != matCount; i++)
+	{
 		calcTotal += subNumFacesCount[i];
+	}
 
 	if (calcTotal != total)
+	{
 		WriteLine("Potential error when splitting faces!");
+	}
 
 	int curTotal = 0;
 	for (size_t i = 0; i != matCount; i++)
@@ -221,9 +227,13 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 int DetermineNodeAttribute(FbxNode* node)
 {
 	if (node->GetNodeAttribute() == NULL)
+	{
 		WriteLine("NULL Node Attribute\n");
+	}
 	else
+	{
 		return node->GetNodeAttribute()->GetAttributeType();
+	}
 
 	return NULL;
 }

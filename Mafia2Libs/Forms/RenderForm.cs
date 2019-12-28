@@ -59,8 +59,10 @@ namespace Mafia2Tool
             Localise();
             MaterialData.Load();
 
-            if (MaterialsManager.MTLs.Count == 0)
+            if (MaterialsManager.MaterialLibraries.Count == 0)
+            {
                 MessageBox.Show("No material libraries have loaded, make sure they are set up correctly in the options window!", "Warning!", MessageBoxButtons.OK);
+            }
 
             ToolkitSettings.UpdateRichPresence(string.Format("Editing '{0}'", info.Directory.Name));
             SceneData.ScenePath = info.DirectoryName;

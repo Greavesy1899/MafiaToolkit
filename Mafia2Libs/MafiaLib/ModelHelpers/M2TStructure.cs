@@ -6,6 +6,7 @@ using ResourceTypes.FrameResource;
 using Utils.SharpDXExtensions;
 using ResourceTypes.BufferPools;
 using System.Linq;
+using ResourceTypes.Materials;
 using ResourceTypes.Collisions;
 using ResourceTypes.Collisions.Opcode;
 
@@ -159,8 +160,14 @@ namespace Utils.Models
                     for (int x = 0; x != materials.Length; x++)
                     {
 
+                        if(string.IsNullOrEmpty(materials[x].MaterialName))
+                        {
+                            var material = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
+                            materials[x].MaterialName = material.MaterialName;
+                        }
+
                         ModelPart modelPart = new ModelPart();
-                        modelPart.Material = materials[x].MaterialHash.ToString();
+                        modelPart.Material = materials[x].MaterialName;
                         modelPart.StartIndex = (uint)materials[x].StartIndex;
                         modelPart.NumFaces = (uint)materials[x].NumFaces;
                         lods[i].Parts[x] = modelPart;
@@ -283,16 +290,24 @@ namespace Utils.Models
                 {
                     Vertex vert = lods[i].Vertices[x];
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                    {
                         vert.UVs[0].Y = (1f - vert.UVs[0].Y);
+                    }
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                    {
                         vert.UVs[1].Y = (1f - vert.UVs[1].Y);
+                    }
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                    {
                         vert.UVs[2].Y = (1f - vert.UVs[2].Y);
+                    }
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
+                    {
                         vert.UVs[3].Y = (1f - vert.UVs[3].Y);
+                    }
                 }
             }
         }
@@ -337,19 +352,24 @@ namespace Utils.Models
                         vert.Normal = new Vector3(vert.Normal.X, vert.Normal.Y, vert.Normal.Z);
 
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.Position))
+                        {
                             vert.Position.WriteToFile(writer);
-
+                        }
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.Normals))
+                        {
                             vert.Normal.WriteToFile(writer);
-
+                        }
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                        {
                             vert.Tangent.WriteToFile(writer);
-
+                        }
                         if(lod.VertexDeclaration.HasFlag(VertexFlags.Skin))
                         {
                             writer.Write(vert.BoneIDs);
                             for (int z = 0; z < 4; z++)
+                            {
                                 writer.Write(vert.BoneWeights[z]);
+                            }
                         }
 
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.Color))
@@ -365,16 +385,21 @@ namespace Utils.Models
                         }
 
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                        {
                             vert.UVs[0].WriteToFile(writer);
-
-                        if(lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                        }
+                        if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                        {
                             vert.UVs[1].WriteToFile(writer);
-
+                        }
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                        {
                             vert.UVs[2].WriteToFile(writer);
-
+                        }
                         if (lod.VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
+                        {
                             vert.UVs[3].WriteToFile(writer);
+                        }
                     }
 
                     //write mesh count and texture names.
@@ -388,10 +413,12 @@ namespace Utils.Models
 
                     //write triangle data.
                     writer.Write(lod.Indices.Length);
-                    for(int x = 0; x != lod.Indices.Length; x++)
+                    for (int x = 0; x != lod.Indices.Length; x++)
+                    {
                         writer.Write(lods[i].Indices[x]);
+                    }
 
-                    File.WriteAllLines("ExportLog"+i+".txt", exportLog.ToArray());
+                    //File.WriteAllLines("ExportLog"+i+".txt", exportLog.ToArray());
                 }
             }
         }
@@ -412,12 +439,15 @@ namespace Utils.Models
         public void ReadFromM2T(BinaryReader reader)
         {
             if (new string(reader.ReadChars(3)) != fileHeader)
+            {
                 return;
+            }
 
             var version = reader.ReadByte();
             if (version > 2)
+            {
                 return;
-
+            }
             if(version == 1)
             {
                 ReadM2TVersionOne(reader);
@@ -450,34 +480,45 @@ namespace Utils.Models
                     Lods[i].VertexDeclaration += (int)VertexFlags.Normals;
 
                 if (reader.ReadBoolean())
+                {
                     Lods[i].VertexDeclaration += (int)VertexFlags.Tangent;
-
+                }
                 if (reader.ReadBoolean())
+                {
                     Lods[i].VertexDeclaration += (int)VertexFlags.Skin;
-
+                }
                 if (reader.ReadBoolean())
+                {
                     Lods[i].VertexDeclaration += (int)VertexFlags.Color;
-
+                }
                 if (reader.ReadBoolean())
+                {
                     Lods[i].VertexDeclaration += (int)VertexFlags.TexCoords0;
-
+                }
                 if (reader.ReadBoolean())
+                {
                     Lods[i].VertexDeclaration += (int)VertexFlags.TexCoords1;
-
+                }
                 if (reader.ReadBoolean())
+                {
                     Lods[i].VertexDeclaration += (int)VertexFlags.TexCoords2;
-
+                }
                 if (reader.ReadBoolean())
+                {
                     Lods[i].VertexDeclaration += (int)VertexFlags.ShadowTexture;
-
+                }
                 if (reader.ReadBoolean())
+                {
                     Lods[i].VertexDeclaration += (int)VertexFlags.Color1;
-
+                }
                 if (reader.ReadBoolean())
+                {
                     Lods[i].VertexDeclaration += (int)VertexFlags.BBCoeffs;
-
+                }
                 if (reader.ReadBoolean())
+                {
                     Lods[i].VertexDeclaration += (int)VertexFlags.DamageGroup;
+                }
 
                 //write length and then all vertices.
                 lods[i].Vertices = new Vertex[reader.ReadInt32()];
@@ -488,26 +529,33 @@ namespace Utils.Models
                     vert.UVs = new Half2[lods[i].NumUVChannels];
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
+                    {
                         vert.Position = Vector3Extenders.ReadFromFile(reader);
-
+                    }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
+                    {
                         vert.Normal = Vector3Extenders.ReadFromFile(reader);
-
+                    }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                    {
                         vert.Tangent = Vector3Extenders.ReadFromFile(reader);
-
+                    }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                    {
                         vert.UVs[0] = Half2Extenders.ReadFromFile(reader);
-
+                    }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                    {
                         vert.UVs[1] = Half2Extenders.ReadFromFile(reader);
-
+                    }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                    {
                         vert.UVs[2] = Half2Extenders.ReadFromFile(reader);
-
+                    }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
+                    {
                         vert.UVs[3] = Half2Extenders.ReadFromFile(reader);
-
+                    }
                     lods[i].Vertices[x] = vert;
                 }
 
@@ -527,8 +575,9 @@ namespace Utils.Models
                 int numIndices = reader.ReadInt32();
                 Lods[i].Indices = new ushort[numIndices];
                 for (int x = 0; x != Lods[i].Indices.Length; x++)
+                {
                     Lods[i].Indices[x] = reader.ReadUInt16();
-
+                }
                 Lods[i].CalculatePartBounds();
 
             }
@@ -538,6 +587,12 @@ namespace Utils.Models
         {
             //mesh name
             name = reader.ReadString();
+
+            isSkinned = reader.ReadBoolean();
+            if(isSkinned)
+            {
+                throw new FormatException();
+            }
 
             //Number of Lods
             Lods = new Lod[reader.ReadByte()];
@@ -560,40 +615,54 @@ namespace Utils.Models
                     vert.UVs = new Half2[lods[i].NumUVChannels];
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
+                    {
                         vert.Position = Vector3Extenders.ReadFromFile(reader);
+                    }
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
+                    {
                         vert.Normal = Vector3Extenders.ReadFromFile(reader);
+                    }
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
+                    {
                         vert.Tangent = Vector3Extenders.ReadFromFile(reader);
+                    }
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Skin))
                     {
                         vert.BoneIDs = reader.ReadBytes(4);
                         vert.BoneWeights = new float[4];
                         for (int z = 0; z < 4; z++)
+                        {
                             vert.BoneWeights[z] = reader.ReadSingle();
+                        }
                     }
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Color))
+                    {
                         vert.Color0 = reader.ReadBytes(4);
-
+                    }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Color1))
+                    {
                         vert.Color1 = reader.ReadBytes(4);
-
+                    }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
+                    {
                         vert.UVs[0] = Half2Extenders.ReadFromFile(reader);
-
+                    }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
+                    {
                         vert.UVs[1] = Half2Extenders.ReadFromFile(reader);
-
+                    }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
+                    {
                         vert.UVs[2] = Half2Extenders.ReadFromFile(reader);
-
+                    }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
+                    {
                         vert.UVs[3] = Half2Extenders.ReadFromFile(reader);
-
+                    }
                     lods[i].Vertices[x] = vert;
                 }
 
@@ -603,18 +672,19 @@ namespace Utils.Models
                 {
                     Lods[i].Parts[x] = new ModelPart();
                     Lods[i].Parts[x].Material = reader.ReadString();
-                    ulong hash = 0;
-                    ulong.TryParse(Lods[i].Parts[x].Material, out hash);
-                    Lods[i].Parts[x].Hash = hash;
                     Lods[i].Parts[x].StartIndex = reader.ReadUInt32();
                     Lods[i].Parts[x].NumFaces = reader.ReadUInt32();
+
+                    var material = MaterialsManager.LookupMaterialByName(Lods[i].Parts[x].Material);
+                    Lods[i].Parts[x].Hash = material.MaterialHash;
                 }
 
                 int numIndices = reader.ReadInt32();
                 Lods[i].Indices = new ushort[numIndices];
                 for (int x = 0; x != Lods[i].Indices.Length; x++)
+                {
                     Lods[i].Indices[x] = reader.ReadUInt16();
-
+                }
                 Lods[i].CalculatePartBounds();
 
             }
@@ -630,11 +700,13 @@ namespace Utils.Models
             if (FBXHelper.ConvertFBX(file, m2tFile) == 0)
             {
                 using (BinaryReader reader = new BinaryReader(File.Open(m2tFile, FileMode.Open)))
+                {
                     ReadFromM2T(reader);
-
+                }
                 if (File.Exists(m2tFile))
+                {
                     File.Delete(m2tFile);
-
+                }
                 return true;
             }
             return false;
@@ -659,7 +731,7 @@ namespace Utils.Models
                 for (int i = 0; i != 1; i++)
                 {
                     //Write section for VertexFlags. 
-                    writer.Write((byte)VertexFlags.Position);
+                    writer.Write((int)VertexFlags.Position);
 
                     //write length and then all vertices.
                     writer.Write(lods[i].Vertices.Length);
@@ -681,7 +753,9 @@ namespace Utils.Models
                     //write triangle data.
                     writer.Write(lods[i].Indices.Length);
                     for (int x = 0; x != lods[i].Indices.Length; x++)
+                    {
                         writer.Write(lods[i].Indices[x]);
+                    }
                 }
             }
         }
@@ -752,7 +826,9 @@ namespace Utils.Models
                 {
                     List<Vector3> partVerts = new List<Vector3>();
                     for (int x = 0; x != indices.Length; x++)
+                    {
                         partVerts.Add(vertices[indices[i]].Position);
+                    }
                     BoundingBox bounds;
                     BoundingBox.FromPoints(partVerts.ToArray(), out bounds);
                     parts[i].Bounds = bounds;

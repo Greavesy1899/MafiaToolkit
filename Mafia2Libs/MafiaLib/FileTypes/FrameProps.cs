@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Misc
 {
@@ -118,7 +119,7 @@ namespace ResourceTypes.Misc
 
             for (int i = 0; i != properties.Length; i++)
             {
-                properties[i] = ReadString(reader);
+                properties[i] = StringHelpers.ReadString(reader);
             }
 
             for (int i = 0; i != actorHashes.Length; i++)
@@ -218,18 +219,6 @@ namespace ResourceTypes.Misc
             }
 
             File.WriteAllLines("FrameProps.txt", file.ToArray());
-        }
-
-        private string ReadString(BinaryReader reader)
-        {
-            string newString = "";
-
-            while (reader.PeekChar() != '\0')
-            {
-                newString += reader.ReadChar();
-            }
-            reader.ReadByte();
-            return newString;
         }
     }
 }

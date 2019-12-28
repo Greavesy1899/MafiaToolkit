@@ -6,7 +6,12 @@ namespace ResourceTypes.Materials
 {
     public class MaterialsManager
     {
-        public static Dictionary<string, MaterialLibrary> MTLs = new Dictionary<string, MaterialLibrary>();
+        private static Dictionary<string, MaterialLibrary> matLibs = new Dictionary<string, MaterialLibrary>();
+
+        public static Dictionary<string, MaterialLibrary> MaterialLibraries {
+            get { return matLibs; }
+            set { matLibs = value; }
+        }
 
         /// <summary>
         /// Read all mat files in an array and add to dictionary.
@@ -18,7 +23,7 @@ namespace ResourceTypes.Materials
             {
                 MaterialLibrary mtl = new MaterialLibrary();
                 mtl.ReadMatFile(names[i]);
-                MTLs.Add(mtl.Name, mtl);
+                matLibs.Add(mtl.Name, mtl);
                 Log.WriteLine("Succesfully read MTL: " + names[i]);
             }
         }
@@ -32,12 +37,31 @@ namespace ResourceTypes.Materials
         {
             Material mat = null;
 
-            for (int i = 0; i != MTLs.Count; i++)
+            for (int i = 0; i != matLibs.Count; i++)
             {
                 if (mat != null)
+                {
                     return mat;
+                }
 
-                mat = MTLs.ElementAt(i).Value.LookupMaterialByHash(hash);
+                mat = matLibs.ElementAt(i).Value.LookupMaterialByHash(hash);
+            }
+
+            return mat;
+        }
+
+        public static Material LookupMaterialByName(string name)
+        {
+            Material mat = null;
+
+            for(int i = 0; i < matLibs.Count; i++)
+            {
+                if (mat != null)
+                {
+                    return mat;
+                }
+
+                mat = matLibs.ElementAt(i).Value.LookupMaterialByName(name);
             }
 
             return mat;
@@ -45,7 +69,7 @@ namespace ResourceTypes.Materials
 
         public static void ClearLoadedMTLs()
         {
-            MTLs.Clear();
+            matLibs.Clear();
         }
     }
 }

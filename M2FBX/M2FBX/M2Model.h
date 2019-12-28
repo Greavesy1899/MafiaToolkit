@@ -40,7 +40,7 @@ public:
 	uint GetSubMeshCount();
 	uint GetIndicesSize();
 	SubMesh* GetSubMeshes() const;
-	std::vector<Int3> GetIndices();
+	std::vector<Int3>& GetIndices();
 	
 	void ReadFromStream(FILE* stream);
 	void ReadFromStream2(FILE* stream);
