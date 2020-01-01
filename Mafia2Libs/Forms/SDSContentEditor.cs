@@ -244,7 +244,7 @@ namespace Mafia2Tool
 
         private void SaveButtonOnClick(object sender, EventArgs e)
         {
-            resources.OrderBy(d => SortList.IndexOf(d.Key)).ToList();
+            resources = resources.OrderBy(d => SortList.IndexOf(d.Key)).ToDictionary(x => x.Key, x => x.Value);
             WriteNewSDSContent();
         }
     }

@@ -1604,7 +1604,11 @@ namespace Mafia2Tool
             M2TStructure structure = new M2TStructure();
             structure.BuildCollision(data, dSceneTree.treeView1.SelectedNode.Name);
             structure.ExportCollisionToM2T(ToolkitSettings.ExportPath, data.Hash.ToString());
-            structure.ExportToFbx(ToolkitSettings.ExportPath, false);
+
+            if (ToolkitSettings.Format == 2)
+            {
+                structure.ExportToFbx(ToolkitSettings.ExportPath, false);
+            }
         }
         private void Export3DFrame()
         {

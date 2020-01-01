@@ -270,7 +270,7 @@ namespace Utils.Models
                 lods[0].Parts[x].Material = sortedMats.ElementAt(x).Key;
                 lods[0].Parts[x].StartIndex = (uint)inds.Count;
                 inds.AddRange(sortedMats.ElementAt(x).Value);
-                lods[0].Parts[x].NumFaces = (uint)Math.Abs(inds.Count - (sortedMats.ElementAt(x).Value.Count / 3));
+                lods[0].Parts[x].NumFaces = (uint)(sortedMats.ElementAt(x).Value.Count / 3);
             }
             this.name = name;
             lods[0].Indices = inds.ToArray();
@@ -417,15 +417,13 @@ namespace Utils.Models
                     {
                         writer.Write(lods[i].Indices[x]);
                     }
-
-                    //File.WriteAllLines("ExportLog"+i+".txt", exportLog.ToArray());
                 }
             }
         }
 
         public void ExportToFbx(string path, bool saveBinary)
         {
-            FBXHelper.ConvertM2T(path + name + ".m2t", path + name + ".fbx");
+            FBXHelper.ConvertM2T(path + "\\" + name + ".m2t", path + "\\" + name + ".fbx");
         }
 
         public void ReadFromM2T(string file)
@@ -686,7 +684,11 @@ namespace Utils.Models
                     Lods[i].Parts[x].NumFaces = reader.ReadUInt32();
 
                     var material = MaterialsManager.LookupMaterialByName(Lods[i].Parts[x].Material);
-                    Lods[i].Parts[x].Hash = material.MaterialHash;
+
+                    if (material != null)
+                    {
+                        Lods[i].Parts[x].Hash = material.MaterialHash;
+                    }
                 }
 
                 int numIndices = reader.ReadInt32();
@@ -719,21 +721,21 @@ namespace Utils.Models
         {
             this.name = name;
 
-            using (BinaryWriter writer = new BinaryWriter(File.Create(directory + name + ".m2t")))
+            using (BinaryWriter writer = new BinaryWriter(File.Create(directory + "\\" + name + ".m2t")))
             {
                 writer.Write(fileHeader.ToCharArray());
                 writer.Write(fileVersion);
 
                 //mesh name
                 writer.Write(name);
-
+                writer.Write(isSkinned);
                 //Number of Lods
                 writer.Write((byte)1);
 
                 for (int i = 0; i != 1; i++)
                 {
                     //Write section for VertexFlags. 
-                    writer.Write((int)VertexFlags.Position);
+                    writer.Write(257);
 
                     //write length and then all vertices.
                     writer.Write(lods[i].Vertices.Length);
@@ -742,6 +744,7 @@ namespace Utils.Models
                         Vertex vert = lods[i].Vertices[x];
 
                         vert.Position.WriteToFile(writer);
+                        Half2Extenders.WriteToFile(new Half2(0.0f, 0.0f), writer);
                     }
 
                     writer.Write(lods[i].Parts.Length);
