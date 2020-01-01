@@ -55,6 +55,7 @@ private:
 	bool isSkinned;
 	std::vector<std::string> boneNames;
 	std::vector<byte> boneIDs;
+	std::vector<Matrix> transforms;
 	char partSize;
 	ModelPart* parts;
 public:
@@ -65,12 +66,14 @@ public:
 	void SetParts(ModelPart* parts);
 	void SetBoneNames(std::vector<std::string>& names);
 	void SetBoneIDs(std::vector<byte>& boneIDs);
+	void SetBoneMatrices(std::vector<Matrix>& transforms);
 	void SetIsSkinned(bool skinned);
 	std::string GetName() const;
 	char GetPartSize() const;
 	ModelPart* GetParts() const;
 	std::vector<std::string>& GetBoneNames();
 	std::vector<byte>& GetBoneIDs();
+	std::vector<Matrix>& GetBoneMatrices();
 	bool GetIsSkinned();
 
 	void ReadFromStream(FILE* stream);

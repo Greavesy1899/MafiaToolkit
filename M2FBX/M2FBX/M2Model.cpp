@@ -287,6 +287,11 @@ void ModelStructure::SetBoneIDs(std::vector<byte>& boneIDs)
 	this->boneIDs = boneIDs;
 }
 
+void ModelStructure::SetBoneMatrices(std::vector<Matrix>& transforms)
+{
+	this->transforms = transforms;
+}
+
 void ModelStructure::SetIsSkinned(bool skinned)
 {
 	this->isSkinned = skinned;
@@ -312,6 +317,11 @@ std::vector<std::string>& ModelStructure::GetBoneNames()
 std::vector<byte>& ModelStructure::GetBoneIDs()
 {
 	return boneIDs;
+}
+
+std::vector<Matrix>& ModelStructure::GetBoneMatrices()
+{
+	return transforms;
 }
 
 bool ModelStructure::GetIsSkinned()
@@ -347,17 +357,22 @@ void ModelStructure::ReadFromStream(FILE * stream) {
 			fread(&numBones, sizeof(byte), 1, stream);
 			std::vector<std::string> names = std::vector<std::string>();
 			std::vector<byte> parents = std::vector<byte>();
+			std::vector<Matrix> transforms = std::vector<Matrix>();
 			for (int i = 0; i < numBones; i++)
 			{
 				byte id;
 				std::string boneName;
+				Matrix transform;
 				boneName = ReadString(stream, boneName);
 				fread(&id, sizeof(byte), 1, stream);
+				fread(&transform, sizeof(Matrix), 1, stream);
 				names.push_back(boneName);
 				parents.push_back(id);
+				transforms.push_back(transform);
 			}
 			SetBoneIDs(parents);
 			SetBoneNames(names);
+			SetBoneMatrices(transforms);
 		}
 	}
 
@@ -391,12 +406,14 @@ void ModelStructure::WriteToStream(FILE* stream) {
 	{
 		int numBones = 0;
 		fwrite(&numBones, sizeof(byte), 1, stream);
-		std::vector<std::string> names = GetBoneNames();
-		std::vector<byte> parents = GetBoneIDs();
+		std::vector<std::string>& names = GetBoneNames();
+		std::vector<byte>& parents = GetBoneIDs();
+		std::vector<Matrix>& transforms = GetBoneMatrices();
 		for (int i = 0; i < numBones; i++)
 		{
 			WriteString(stream, names[i]);
 			fwrite(&parents[i], sizeof(byte), 1, stream);
+			fwrite(&transforms[i], sizeof(Matrix), 1, stream);
 		}
 	}
 	fwrite(&this->partSize, sizeof(char), 1, stream);

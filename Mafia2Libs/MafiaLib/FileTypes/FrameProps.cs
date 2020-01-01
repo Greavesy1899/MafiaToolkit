@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Misc
@@ -64,7 +65,7 @@ namespace ResourceTypes.Misc
         private const int Signature = 1718775152;
         private const int Version = 3;
         private int[] unks;
-        private int[] propertiesIndexes;
+        private uint[] propertiesIndexes;
         private string[] properties;
         private ulong[] actorHashes;
         private uint[] unks5;
@@ -105,7 +106,7 @@ namespace ResourceTypes.Misc
                 unks[i] = reader.ReadInt32();
             }
 
-            propertiesIndexes = new int[unks[0]];
+            propertiesIndexes = new uint[unks[0]];
             properties = new string[unks[0]];
             actorHashes = new ulong[unks[2]];
             unks5 = new uint[unks[2]];
@@ -114,7 +115,7 @@ namespace ResourceTypes.Misc
 
             for (int i = 0; i != propertiesIndexes.Length; i++)
             {
-                propertiesIndexes[i] = reader.ReadInt32();
+                propertiesIndexes[i] = reader.ReadUInt32();
             }
 
             for (int i = 0; i != properties.Length; i++)
@@ -170,6 +171,28 @@ namespace ResourceTypes.Misc
             }
 
             WriteToText();
+        }
+
+        public void WriteToFile(string name)
+        {
+
+        }
+        public void WriteToFile(MemoryStream stream)
+        {
+
+        }
+
+        private void RebuildStringSection(ref string final)
+        {
+            StringBuilder builder = new StringBuilder();
+            uint[] newIndexes = new uint[properties.Length];
+            for (int i = 0; i < properties.Length; i++)
+            {
+                builder.AppendLine(properties[i]);
+                newIndexes[i] = (uint)builder.Length;
+            }
+            final = builder.ToString();
+            propertiesIndexes = newIndexes;
         }
 
         private void WriteToText()

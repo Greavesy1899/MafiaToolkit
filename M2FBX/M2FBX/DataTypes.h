@@ -36,6 +36,11 @@ typedef struct {
 } UVVert;
 typedef struct {
 	Point3 position;
+	Point3 rotation;
+	Point3 scale;
+} Matrix;
+typedef struct {
+	Point3 position;
 	Point3 normals;
 	Point3 tangent;
 	unsigned char boneIDs[4];

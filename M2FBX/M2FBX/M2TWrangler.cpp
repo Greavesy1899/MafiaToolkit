@@ -1,6 +1,5 @@
 #include "M2TWrangler.h"
 #include "FbxUtilities.h"
-#include "M2Model.h"
 #include <conio.h>
 
 int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
@@ -8,8 +7,10 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	FbxMesh* pMesh = (FbxMesh*)pNode->GetNodeAttribute();
 	FbxGeometryElementNormal* pElementNormal = pMesh->GetElementNormal(0);
 	FbxGeometryElementTangent* pElementTangent = pMesh->GetElementTangent(0);
-	FbxGeometryElementUV* pElementUV = pMesh->GetElementUV(0);
-	FbxGeometryElementUV* pElementOM = pMesh->GetElementUV("OMUV");
+	FbxGeometryElementUV* pElementDiffuseUV = pMesh->GetElementUV("DiffuseUV");
+	FbxGeometryElementUV* pElementOneUV = pMesh->GetElementUV("UV1");
+	FbxGeometryElementUV* pElementTwoUV = pMesh->GetElementUV("UV2");
+	FbxGeometryElementUV* pElementOMUV = pMesh->GetElementUV("OMUV");
 	FbxGeometryElementMaterial* pElementMaterial = pMesh->GetElementMaterial(0);
 	FbxGeometryElementVertexColor* pElementColor0 = pMesh->GetElementVertexColor(0);
 	FbxGeometryElementVertexColor* pElementColor1 = pMesh->GetElementVertexColor(1);
@@ -41,10 +42,12 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	pPart.SetVertexFlag(VertexFlags::Position);
 	pPart.SetVertexFlag(pElementNormal ? VertexFlags::Normals : VertexFlags::None);
 	pPart.SetVertexFlag(pElementTangent ? VertexFlags::Tangent : VertexFlags::None);
-	pPart.SetVertexFlag((pElementUV && pElementMaterial) ? VertexFlags::TexCoords0 : VertexFlags::None);
+	pPart.SetVertexFlag((pElementDiffuseUV && pElementMaterial) ? VertexFlags::TexCoords0 : VertexFlags::None);
+	pPart.SetVertexFlag(pElementOneUV ? VertexFlags::TexCoords1 : VertexFlags::None);
+	pPart.SetVertexFlag(pElementTwoUV ? VertexFlags::TexCoords2 : VertexFlags::None);
+	pPart.SetVertexFlag(pElementOMUV ? VertexFlags::ShadowTexture : VertexFlags::None);
 	pPart.SetVertexFlag(pElementColor0 ? VertexFlags::Color : VertexFlags::None);
 	pPart.SetVertexFlag(pElementColor1 ? VertexFlags::Color1 : VertexFlags::None);
-	pPart.SetVertexFlag(pElementOM ? VertexFlags::ShadowTexture : VertexFlags::None);
 
 	if (pPart.HasVertexFlag(VertexFlags::Normals))
 	{
@@ -112,23 +115,32 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 			vertice.color1[3] = (color.mAlpha * 255.0f);
 		}
 		//do UV stuff.
-		if (pPart.HasVertexFlag(VertexFlags::TexCoords0)) {
-			vec4 = pElementUV->GetDirectArray().GetAt(i);
+		if (pPart.HasVertexFlag(VertexFlags::TexCoords0) && (pElementDiffuseUV->GetMappingMode() == FbxGeometryElement::eByControlPoint)) {
+			vec4 = pElementDiffuseUV->GetDirectArray().GetAt(i);
 			uvCoords.x = vec4.mData[0];
 			uvCoords.y = vec4.mData[1];
 			vertice.uv0 = uvCoords;
 		}
-		if (pPart.HasVertexFlag(VertexFlags::ShadowTexture)) {
-			vec4 = pElementOM->GetDirectArray().GetAt(i);
+		if (pPart.HasVertexFlag(VertexFlags::TexCoords1) && (pElementOneUV->GetMappingMode() == FbxGeometryElement::eByControlPoint)) {
+			vec4 = pElementOneUV->GetDirectArray().GetAt(i);
+			uvCoords.x = vec4.mData[0];
+			uvCoords.y = vec4.mData[1];
+			vertice.uv1 = uvCoords;
+		}
+		if (pPart.HasVertexFlag(VertexFlags::TexCoords2) && (pElementTwoUV->GetMappingMode() == FbxGeometryElement::eByControlPoint)) {
+			vec4 = pElementTwoUV->GetDirectArray().GetAt(i);
+			uvCoords.x = vec4.mData[0];
+			uvCoords.y = vec4.mData[1];
+			vertice.uv2 = uvCoords;
+		}
+		if (pPart.HasVertexFlag(VertexFlags::ShadowTexture) && (pElementOMUV->GetMappingMode() == FbxGeometryElement::eByControlPoint)) {
+			vec4 = pElementOMUV->GetDirectArray().GetAt(i);
 			uvCoords.x = vec4.mData[0];
 			uvCoords.y = vec4.mData[1];
 			vertice.uv3 = uvCoords;
 		}
 		vertices[i] = vertice;
 	}
-
-	//update the part with the latest data.
-	pPart.SetVertices(vertices, numVertices);
 
 	//Gotta be triangulated.
 	if (!pMesh->IsTriangleMesh()) {
@@ -175,7 +187,9 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		triangle.i1 = pMesh->GetPolygonVertex(i, 0);
 		triangle.i2 = pMesh->GetPolygonVertex(i, 1);
 		triangle.i3 = pMesh->GetPolygonVertex(i, 2);
-
+		if (pElementDiffuseUV->GetMappingMode() != FbxGeometryElement::eByControlPoint) {
+			BuildUVsFromMesh(pMesh, vertices, i, pPart);
+		}
 		if (pElementMaterial != nullptr)
 		{
 			auto matID = pElementMaterial->GetIndexArray().GetAt(i);
@@ -215,7 +229,8 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		subMeshes[i].SetStartIndex(curTotal);
 		curTotal += faces*3;
 	}
-	//Update data to do with triangles.
+	//Update data to do with triangles and vertices
+	pPart.SetVertices(vertices, numVertices);
 	pPart.SetIndices(indices, indices.size());
 	pPart.SetSubMeshes(subMeshes, matCount);
 	pPart.SetSubMeshCount(matCount);
@@ -355,4 +370,42 @@ int ConvertFBX(const char* pSource, const char* pDest)
 	fclose(stream);
 	lScene->Destroy(true);
 	return 0;
+}
+
+void BuildUVsFromMesh(FbxMesh* pMesh, Vertex* vertices, int index, ModelPart& pPart)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		FbxVector2 vector;
+		UVVert uv;
+		bool isUnmapped;
+		if (pPart.HasVertexFlag(VertexFlags::TexCoords0)) {
+			bool result = pMesh->GetPolygonVertexUV(index, i, "DiffuseUV", vector, isUnmapped);
+			int vertIndex = pMesh->GetPolygonVertex(index, i);
+			uv.x = vector[0];
+			uv.y = vector[1];
+			vertices[vertIndex].uv0 = uv;
+		}
+		if (pPart.HasVertexFlag(VertexFlags::TexCoords1)) {
+			bool result = pMesh->GetPolygonVertexUV(index, i, "UV1", vector, isUnmapped);
+			int vertIndex = pMesh->GetPolygonVertex(index, i);
+			uv.x = vector[0];
+			uv.y = vector[1];
+			vertices[vertIndex].uv1 = uv;
+		}
+		if (pPart.HasVertexFlag(VertexFlags::TexCoords2)) {
+			bool result = pMesh->GetPolygonVertexUV(index, i, "UV2", vector, isUnmapped);
+			int vertIndex = pMesh->GetPolygonVertex(index, i);
+			uv.x = vector[0];
+			uv.y = vector[1];
+			vertices[vertIndex].uv2 = uv;
+		}		
+		if (pPart.HasVertexFlag(VertexFlags::ShadowTexture)) {
+			bool result = pMesh->GetPolygonVertexUV(index, i, "OMUV", vector, isUnmapped);
+			int vertIndex = pMesh->GetPolygonVertex(index, i);
+			uv.x = vector[0];
+			uv.y = vector[1];
+			vertices[vertIndex].uv3 = uv;
+		}
+	}
 }

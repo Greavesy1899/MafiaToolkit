@@ -58,11 +58,10 @@ namespace ResourceTypes.FrameResource
 
             for (int i = 0; i != boneIndexInfos.Length; i++)
             {
-                boneIndexInfos[i].BonesPerPool = reader.ReadBytes(4);
+                boneIndexInfos[i].BonesPerPool = reader.ReadBytes(8);
 
                 //IDs..
                 boneIndexInfos[i].IDs = reader.ReadBytes(boneIndexInfos[i].NumIDs);
-                boneIndexInfos[i].Unk01 = reader.ReadInt32(isBigEndian);
 
                 //Material blendings..
                 boneIndexInfos[i].MatBlends = new ushort[boneIndexInfos[i].NumMaterials];
@@ -103,7 +102,6 @@ namespace ResourceTypes.FrameResource
 
                 //IDs..
                 writer.Write(boneIndexInfos[i].IDs);
-                writer.Write(boneIndexInfos[i].Unk01);
 
                 //Material blendings..
                 for (int x = 0; x != boneIndexInfos[i].NumMaterials; x++)
@@ -122,7 +120,6 @@ namespace ResourceTypes.FrameResource
             int numMaterials;
             byte[] bonesPerPool;
             byte[] ids;
-            int unk01;
             ushort[] matBlends;
 
             byte[] bBonesSlot;
@@ -152,10 +149,6 @@ namespace ResourceTypes.FrameResource
             public byte[] IDs {
                 get { return ids; }
                 set { ids = value; }
-            }
-            public int Unk01 {
-                get { return unk01; }
-                set { unk01 = value; }
             }
             public ushort[] MatBlends {
                 get { return matBlends; }

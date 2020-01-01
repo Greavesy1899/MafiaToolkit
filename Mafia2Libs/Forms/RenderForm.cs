@@ -899,8 +899,11 @@ namespace Mafia2Tool
                 if (data.FrameIndex != -1)
                 {
                     FrameObjectBase frame = (SceneData.FrameResource.NewFrames[numBlocks + data.FrameIndex].Data as FrameObjectBase);
-                    frame.FrameNameTableFlags = data.Flags;
-                    frame.IsOnFrameTable = true;
+                    if (frame != null)
+                    {
+                        frame.FrameNameTableFlags = data.Flags;
+                        frame.IsOnFrameTable = true;
+                    }
                 }
             }
 
@@ -1018,34 +1021,44 @@ namespace Mafia2Tool
             model.FrameMesh = (mesh as FrameObjectSingleMesh);
 
             if (MeshBrowser.ShowDialog() == DialogResult.Cancel)
-                return null;
-
-            if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
-                model.ModelStructure.ReadFromM2T(new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)));
-            else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
             {
-                if (!model.ModelStructure.ReadFromFbx(MeshBrowser.FileName))
-                    return null;
+                return null;
             }
 
-            FrameResourceModelOptions options = new FrameResourceModelOptions(model.ModelStructure.Lods[0].VertexDeclaration);
-            if(options.ShowDialog() != DialogResult.OK)
-                return null;
+            using (BinaryReader reader = new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)))
+            {
+                if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
+                {
+                    model.ModelStructure.ReadFromM2T(reader);
+                }
+                else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
+                {
+                    if (!model.ModelStructure.ReadFromFbx(MeshBrowser.FileName))
+                    {
+                        return null;
+                    }
+                }
+            }
 
-            bool[] data = options.data;
-            options.Dispose();
-
-            //for (int i = 0; i != model.ModelStructure.Lods.Length; i++)
-            //{
-            //    if (data[0])
-            //    {
-            //        model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.Normals;
-            //        model.ModelStructure.Lods[i].VertexDeclaration -= VertexFlags.Tangent;
-            //    }
-
-            //    if (data[5])
-            //        model.ModelStructure.FlipUVs();
-            //}
+            for (int i = 0; i < model.ModelStructure.Lods.Length; i++)
+            {
+                var lod = model.ModelStructure.Lods[i];
+                FrameResourceModelOptions modelForm = new FrameResourceModelOptions(lod.VertexDeclaration, i);
+                if (modelForm.ShowDialog() != DialogResult.OK)
+                {
+                    return null;
+                }
+                var options = modelForm.Options;
+                modelForm.Dispose();               
+                lod.VertexDeclaration &= (options["NORMALS"] == true ? ~VertexFlags.Normals : 0);
+                lod.VertexDeclaration &= (options["TANGENTS"] == true ? ~VertexFlags.Tangent : 0);
+                lod.VertexDeclaration &= (options["DIFFUSE"] == true ? ~VertexFlags.TexCoords0 : 0);
+                lod.VertexDeclaration &= (options["UV0"] == true ? ~VertexFlags.TexCoords1 : 0);
+                lod.VertexDeclaration &= (options["UV1"] == true ? ~VertexFlags.TexCoords2 : 0);
+                lod.VertexDeclaration &= (options["AO"] == true ? ~VertexFlags.ShadowTexture : 0);
+                lod.VertexDeclaration &= (options["COLOR0"] == true ? ~VertexFlags.Color : 0);
+                lod.VertexDeclaration &= (options["COLOR1"] == true ? ~VertexFlags.Color1 : 0);
+            }
 
             FrameObjectSingleMesh sm = (mesh as FrameObjectSingleMesh);
             sm.Name.Set(model.ModelStructure.Name);

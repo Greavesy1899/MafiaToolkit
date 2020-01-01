@@ -2,18 +2,19 @@
 using Utils.Lang;
 using Utils.Models;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace Mafia2Tool
 {
     public partial class FrameResourceModelOptions : Form
     {
-        public bool[] data = new bool[6];
-        public Control control;
+        private Dictionary<string, bool> options;
+        public Dictionary<string, bool> Options { get; set; }
 
-        public FrameResourceModelOptions(VertexFlags flags)
+        public FrameResourceModelOptions(VertexFlags flags, int i)
         {
             InitializeComponent();
-            Init(flags);
+            Init(flags, i);
             Localise();
         }
 
@@ -21,28 +22,58 @@ namespace Mafia2Tool
         {
             buttonCancel.Text = Language.GetString("$CANCEL");
             buttonContinue.Text = Language.GetString("$CONTINUE");
-            Text = Language.GetString("$NEWOBJFORM_TITLE");
+            Text = Language.GetString("$MODEL_OPTIONS_TITLE");
+            ModelOptionsText.Text = Language.GetString("$MODEL_OPTIONS_TEXT");
+            ImportNormalBox.Text = Language.GetString("$IMPORT_NORMAL");
+            ImportTangentBox.Text = Language.GetString("$IMPORT_TANGENT");
+            ImportDiffuseBox.Text = Language.GetString("$IMPORT_DIFFUSE");
+            ImportUV1Box.Text = Language.GetString("$IMPORT_UV0");
+            ImportUV2Box.Text = Language.GetString("$IMPORT_UV1");
+            ImportAOBox.Text = Language.GetString("$IMPORT_AO");
+            ImportColor0Box.Text = Language.GetString("$IMPORT_COLOR0");
+            ImportColor1Box.Text = Language.GetString("$IMPORT_COLOR1");
+            FlipUVBox.Text = Language.GetString("$FLIP_UV");
         }
 
-        private void Init(VertexFlags flags)
+        private void Init(VertexFlags flags, int i)
         {
+            ModelOptionsText.Text = string.Format("{0} LOD: {1}", Language.GetString("$MODEL_OPTIONS_TEXT"), i);
+
+            options = new Dictionary<string, bool>();
+            options.Add("NORMALS", false);
+            options.Add("TANGENTS", false);
+            options.Add("DIFFUSE", false);
+            options.Add("UV1", false);
+            options.Add("UV2", false);
+            options.Add("AO", false);
+            options.Add("FLIP_UV", false);
+            options.Add("COLOR0", false);
+            options.Add("COLOR1", false);
+
             ImportNormalBox.Enabled = flags.HasFlag(VertexFlags.Normals);
-            ImportUV0Box.Enabled = flags.HasFlag(VertexFlags.TexCoords0);
+            ImportTangentBox.Enabled = flags.HasFlag(VertexFlags.Tangent);
+            ImportDiffuseBox.Enabled = flags.HasFlag(VertexFlags.TexCoords0);
             ImportUV1Box.Enabled = flags.HasFlag(VertexFlags.TexCoords1);
             ImportUV2Box.Enabled = flags.HasFlag(VertexFlags.TexCoords2);
-            ImportUV7Box.Enabled = flags.HasFlag(VertexFlags.ShadowTexture);
+            ImportAOBox.Enabled = flags.HasFlag(VertexFlags.ShadowTexture);
+            ImportColor0Box.Enabled = flags.HasFlag(VertexFlags.Color);
+            ImportColor1Box.Enabled = flags.HasFlag(VertexFlags.Color1);
             FlipUVBox.Enabled = false;
         }
 
         public void OnButtonClickContinue(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
-            data[0] = ImportNormalBox.Checked;
-            data[1] = ImportUV0Box.Checked;
-            data[2] = ImportUV1Box.Checked;
-            data[3] = ImportUV2Box.Checked;
-            data[4] = ImportUV7Box.Checked;
-            data[5] = FlipUVBox.Checked;
+            options["NORMALS"] = ImportNormalBox.Checked;
+            options["TANGENTS"] = (ImportTangentBox.Enabled ? ImportTangentBox.Checked : false);
+            options["DIFFUSE"] = ImportDiffuseBox.Checked;
+            options["UV1"] = ImportUV1Box.Checked;
+            options["UV2"] = ImportUV2Box.Checked;
+            options["AO"] = ImportAOBox.Checked;
+            options["FLIP_UV"] = FlipUVBox.Checked;
+            options["COLOR0"] = ImportColor0Box.Checked;
+            options["COLOR1"] = ImportColor1Box.Checked;
+            DialogResult = DialogResult.OK;
             Close();
         }
 
@@ -50,6 +81,11 @@ namespace Mafia2Tool
         {
             DialogResult = DialogResult.Cancel;
             Close();
+        }
+
+        private void ImportNormalOnCheckedChanged(object sender, EventArgs e)
+        {
+            ImportTangentBox.Enabled = (ImportNormalBox.Checked ? true : false);
         }
     }
 }

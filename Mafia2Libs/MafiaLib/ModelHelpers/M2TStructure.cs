@@ -61,16 +61,16 @@ namespace Utils.Models
 
                 int vertexSize;
                 Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = frameLod.GetVertexOffsets(out vertexSize);
-
-                lods[i].NumUVChannels = 4;
                 lods[i].Vertices = new Vertex[frameLod.NumVertsPr];
 
                 if (vertexSize * frameLod.NumVertsPr != vertexBuffer.Data.Length) throw new System.Exception();
-
+                int maxBone = 0;
+                List<string> exportLog = new List<string>();
                 for (int v = 0; v != lods[i].Vertices.Length; v++)
                 {
                     Vertex vertex = new Vertex();
-                    vertex.UVs = new Half2[lods[i].NumUVChannels];
+                    vertex.UVs = new Half2[4];
+
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
@@ -94,6 +94,12 @@ namespace Utils.Models
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Skin].Offset;
                         vertex.BoneWeights = VertexTranslator.ReadWeightsFromVB(vertexBuffer.Data, startIndex);
                         vertex.BoneIDs = VertexTranslator.ReadBonesFromVB(vertexBuffer.Data, startIndex+4);
+                        foreach(var id in vertex.BoneIDs)
+                        {
+                            if (id > maxBone)
+                                maxBone = id;
+                        }
+                        exportLog.Add(string.Format("{0} {1} {2} {3}", vertex.BoneIDs[0], vertex.BoneIDs[1], vertex.BoneIDs[2], vertex.BoneIDs[3]));
                     }
                     
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Color))
@@ -132,12 +138,6 @@ namespace Utils.Models
                         vertex.UVs[3] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
                     }
 
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Color1))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Color1].Offset;
-                        vertex.Color1 = VertexTranslator.ReadColorFromVB(vertexBuffer.Data, startIndex);
-                    }
-
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.BBCoeffs))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.BBCoeffs].Offset;
@@ -150,72 +150,75 @@ namespace Utils.Models
                         vertex.DamageGroup = VertexTranslator.ReadDamageGroupFromVB(vertexBuffer.Data, startIndex);
                     }
 
-                    if (lods[i].NormalMapInfoPresent)
-                        vertex.BuildBinormals();
-
                     lods[i].Vertices[v] = vertex;
-                    lods[i].Indices = indexBuffer.Data;
-                    MaterialStruct[] materials = frameMaterial.Materials[i];
-                    lods[i].Parts = new ModelPart[materials.Length];
-                    for (int x = 0; x != materials.Length; x++)
-                    {
-
-                        if(string.IsNullOrEmpty(materials[x].MaterialName))
-                        {
-                            var material = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
-                            materials[x].MaterialName = material.MaterialName;
-                        }
-
-                        ModelPart modelPart = new ModelPart();
-                        modelPart.Material = materials[x].MaterialName;
-                        modelPart.StartIndex = (uint)materials[x].StartIndex;
-                        modelPart.NumFaces = (uint)materials[x].NumFaces;
-                        lods[i].Parts[x] = modelPart;
-                    }
                 }
+
+                lods[i].Indices = indexBuffer.Data;
+                MaterialStruct[] materials = frameMaterial.Materials[i];
+                lods[i].Parts = new ModelPart[materials.Length];
+                for (int x = 0; x != materials.Length; x++)
+                {
+
+                    if (string.IsNullOrEmpty(materials[x].MaterialName))
+                    {
+                        var material = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
+                        materials[x].MaterialName = material.MaterialName;
+                    }
+
+                    ModelPart modelPart = new ModelPart();
+                    modelPart.Material = materials[x].MaterialName;
+                    modelPart.StartIndex = (uint)materials[x].StartIndex;
+                    modelPart.NumFaces = (uint)materials[x].NumFaces;
+                    lods[i].Parts[x] = modelPart;
+                }
+                Console.Write(string.Format("LOD: {0} {1}", i, maxBone));
+                File.WriteAllLines("ExportLog" + i + ".txt", exportLog.ToArray());
             }
         }
 
-        public void BuildLods(IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers, FrameGeometry frameGeometry, FrameMaterial frameMaterial, 
-            FrameBlendInfo blendInfo, FrameSkeleton skeleton, FrameSkeletonHierachy skeletonHierarchy)
+        public void BuildLods(FrameObjectModel model, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
-            BuildLods(frameGeometry, frameMaterial, vertexBuffers, indexBuffers);
+            BuildLods(model.Geometry, model.Material, vertexBuffers, indexBuffers);
 
-            if(skeleton != null && skeletonHierarchy != null && blendInfo != null)
+            if(model.Skeleton != null && model.SkeletonHierarchy != null && model.BlendInfo != null)
             {
-                this.skeleton = new Skeleton();
-                this.skeleton.BoneNames = new string[skeleton.BoneNames.Length];
-                this.skeleton.Parents = new byte[skeletonHierarchy.ParentIndices.Length];
-                for (int i = 0; i < skeleton.BoneNames.Length; i++)
+                skeleton = new Skeleton();
+                skeleton.BoneNames = new string[model.Skeleton.BoneNames.Length];
+                skeleton.Parents = new byte[model.SkeletonHierarchy.ParentIndices.Length];
+                skeleton.Transform = new Matrix[model.RestTransform.Length];
+                for (int i = 0; i < model.Skeleton.BoneNames.Length; i++)
                 {
-                    this.skeleton.BoneNames[i] = skeleton.BoneNames[i].ToString();
-                    this.skeleton.Parents[i] = skeletonHierarchy.ParentIndices[i];
+                    skeleton.BoneNames[i] = model.Skeleton.BoneNames[i].ToString();
+                    skeleton.Parents[i] = model.SkeletonHierarchy.ParentIndices[i];
+                    skeleton.Transform[i] = model.RestTransform[i];
                 }
             }
 
-            for(int i = 0; i < blendInfo.BoneIndexInfos.Length; i++)
+            for(int i = 0; i < model.BlendInfo.BoneIndexInfos.Length; i++)
             {
-                var indexInfos = blendInfo.BoneIndexInfos[i];
+                var indexInfos = model.BlendInfo.BoneIndexInfos[i];
                 var lod = lods[i];
+                bool[] remapped = new bool[lod.Vertices.Length];
                 for(int x = 0; x < indexInfos.NumMaterials; x++)
                 {
                     var part = lod.Parts[x];
                     byte offset = 0;
                     for(int s = 0; s < indexInfos.BonesSlot[x]; s++)
                     {
-                        offset += indexInfos.BonesPerPool[s];
+                        offset += (byte)(indexInfos.BonesPerPool[s]);
                     }
 
                     for(uint z = part.StartIndex; z < part.StartIndex+(part.NumFaces*3); z++)
                     {
-                        for (uint f = 0; f < indexInfos.NumWeightsPerVertex[x]; f++)
+                        int index = lod.Indices[z];
+                        if (!remapped[index])
                         {
-                            var previousBoneID = lod.Vertices[lod.Indices[z]].BoneIDs[f];
-
-                            if (skeleton.IDType == 3)
+                            for (uint f = 0; f < indexInfos.NumWeightsPerVertex[x]; f++)
                             {
-                                //lod.Vertices[lod.Indices[z]].BoneIDs[f] = indexInfos.IDs[offset + previousBoneID];
+                                var previousBoneID = lod.Vertices[index].BoneIDs[f];
+                                lod.Vertices[index].BoneIDs[f] = indexInfos.IDs[offset + previousBoneID];
                             }
+                            remapped[index] = true;                      
                         }
                     }
                 }
@@ -331,6 +334,12 @@ namespace Utils.Models
                     {
                         StringHelpers.StringHelpers.WriteString8(writer, skeleton.BoneNames[i]);
                         writer.Write(skeleton.Parents[i]);
+                        Quaternion rotation;
+                        Vector3 position, scale;
+                        skeleton.Transform[i].Decompose(out scale, out rotation, out position);
+                        position.WriteToFile(writer);
+                        rotation.ToEuler().WriteToFile(writer);
+                        scale.WriteToFile(writer);
                     }
                 }
 
@@ -522,11 +531,10 @@ namespace Utils.Models
 
                 //write length and then all vertices.
                 lods[i].Vertices = new Vertex[reader.ReadInt32()];
-                lods[i].NumUVChannels = 4;
                 for (int x = 0; x != lods[i].Vertices.Length; x++)
                 {
                     Vertex vert = new Vertex();
-                    vert.UVs = new Half2[lods[i].NumUVChannels];
+                    vert.UVs = new Half2[4];
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
@@ -591,7 +599,19 @@ namespace Utils.Models
             isSkinned = reader.ReadBoolean();
             if(isSkinned)
             {
-                throw new FormatException();
+                byte size = reader.ReadByte();
+                skeleton.BoneNames = new string[size];
+                skeleton.Parents = new byte[size];
+                skeleton.Transform = new Matrix[size];
+                for (int i = 0; i < size; i++)
+                {
+                    skeleton.BoneNames[i] = StringHelpers.StringHelpers.ReadString8(reader);
+                    skeleton.Parents[i] = reader.ReadByte();
+                    Vector3 position = Vector3Extenders.ReadFromFile(reader);
+                    Vector3 rotation = Vector3Extenders.ReadFromFile(reader);
+                    Vector3 scale = Vector3Extenders.ReadFromFile(reader);
+                    skeleton.Transform[i] = MatrixExtensions.SetMatrix(rotation, scale, position);
+                }
             }
 
             //Number of Lods
@@ -608,11 +628,10 @@ namespace Utils.Models
 
                 //write length and then all vertices.
                 lods[i].Vertices = new Vertex[reader.ReadInt32()];
-                lods[i].NumUVChannels = 4;
                 for (int x = 0; x != lods[i].Vertices.Length; x++)
                 {
                     Vertex vert = new Vertex();
-                    vert.UVs = new Half2[lods[i].NumUVChannels];
+                    vert.UVs = new Half2[4];
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
@@ -718,7 +737,6 @@ namespace Utils.Models
 
             using (BinaryWriter writer = new BinaryWriter(File.Create(directory + name + ".m2t")))
             {
-                //An absolute overhaul on the mesh exportation.
                 writer.Write(fileHeader.ToCharArray());
                 writer.Write(fileVersion);
 
@@ -763,23 +781,25 @@ namespace Utils.Models
         {
             string[] boneNames;
             byte[] parents;
+            Matrix[] transform;
 
             public string[] BoneNames {
                 get { return boneNames; }
                 set { boneNames = value; }
             }
-
             public byte[] Parents {
                 get { return parents; }
                 set { parents = value; }
+            }
+            public Matrix[] Transform {
+                get { return transform; }
+                set { transform = value; }
             }
         }
         public class Lod
         {
             private VertexFlags vertexDeclaration;
             Vertex[] vertices;
-            int numUVChannels;
-            bool normalMapInfoPresent;
             ModelPart[] parts;
             ushort[] indices;
 
@@ -792,22 +812,10 @@ namespace Utils.Models
                 get { return vertices; }
                 set { vertices = value; }
             }
-
             public ushort[] Indices {
                 get { return indices; }
                 set { indices = value; }
             }
-
-            public int NumUVChannels {
-                get { return numUVChannels; }
-                set { numUVChannels = value; }
-            }
-
-            public bool NormalMapInfoPresent {
-                get { return normalMapInfoPresent; }
-                set { normalMapInfoPresent = value; }
-            }
-
             public ModelPart[] Parts {
                 get { return parts; }
                 set { parts = value; }
@@ -816,7 +824,6 @@ namespace Utils.Models
             public Lod()
             {
                 vertexDeclaration = 0;
-                numUVChannels = 4;
             }
 
 

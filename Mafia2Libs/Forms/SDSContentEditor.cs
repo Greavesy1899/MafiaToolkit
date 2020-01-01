@@ -5,13 +5,17 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
+using System.Linq;
 
 namespace Mafia2Tool
 {
     public partial class SDSContentEditor : Form
     {
         DirectoryInfo parent;
-
+        FileInfo file;
+        Dictionary<string, List<TreeNode>> resources;
+        Dictionary<string, BaseResource> types;
+        List<string> SortList;
         public SDSContentEditor()
         {
             InitializeComponent();
@@ -21,10 +25,49 @@ namespace Mafia2Tool
         public SDSContentEditor(FileInfo info)
         {
             InitializeComponent();
+            resources = new Dictionary<string, List<TreeNode>>();
             parent = info.Directory;
+            file = info;
+            SortList = new List<string>();
+            SortList.AddRange(new string[] {"IndexBufferPool", "VertexBufferPool", "Texture", "FrameResource", "Effects", "FrameNameTable",
+               "Actors", "EntityDataStorage",  "PREFAB", "Animation2",  "AnimalTrafficPaths", "Table", "NAV_OBJ_DATA", "NAV_AIWORLD_DATA", "NAV_HPD_DATA",
+                "AudioSectors", "MemFile", "Collisions", "ItemDesc", "FxActor", "Script", "Sound", "Speech", "Cutscene", "SoundTable", "XML", "Translokator", "Mipmap" });
+
+            InitTypes();
             Localise();
             LoadSDSContent(info);
             ShowDialog();
+        }
+
+        private void InitTypes()
+        {
+            types = new Dictionary<string, BaseResource>();
+            types.Add("IndexBufferPool", new BaseResource(2, "IndexBufferPool"));
+            types.Add("VertexBufferPool", new BaseResource(2, "VertexBufferPool"));
+            types.Add("Texture", new TextureResource(2, "Texture"));
+            types.Add("FrameResource", new BaseResource(28, "FrameResource"));
+            types.Add("Effects", new BaseResource(2, "Effects"));
+            types.Add("FrameNameTable", new BaseResource(3, "FrameNameTable"));
+            types.Add("Actors", new BaseResource(4, "Actors"));
+            types.Add("EntityDataStorage", new BaseResource(2, "EntityDataStorage"));
+            types.Add("PREFAB", new BaseResource(0, "PREFAB"));
+            types.Add("Animation2", new BaseResource(1, "Animation2"));
+            types.Add("Tables", new TableResource(1, "Tables"));
+            types.Add("NAV_OBJ_DATA", new BaseResource(0, "NAV_OBJ_DATA"));
+            types.Add("NAV_AIWORLD_DATA", new BaseResource(1, "NAV_AIWORLD_DATA"));
+            types.Add("NAV_HPD_DATA", new BaseResource(1, "NAV_HPD_DATA"));
+            types.Add("AnimalTrafficPaths", new BaseResource(0, "AnimalTrafficPaths"));
+            types.Add("AudioSectors", new BaseResource(6, "AudioSectors"));
+            types.Add("MemFile", new BaseResource(2, "MemFile"));
+            types.Add("Collisions", new BaseResource(2, "Collisions"));
+            types.Add("Sound", new BaseResource(5, "Sound"));
+            types.Add("Cutscene", new BaseResource(3, "Cutscene"));
+            types.Add("ItemDesc", new BaseResource(3, "ItemDesc"));
+            types.Add("Script", new ScriptResource(2, "Script"));
+            types.Add("SoundTable", new BaseResource(2, "SoundTable"));
+            types.Add("XML", new XMLResource(3, "XML"));
+            types.Add("Translokator", new BaseResource(1, "Translokator"));
+            types.Add("Mipmap", new BaseResource(2, "Mipmap"));
         }
 
         private void Localise()
@@ -33,7 +76,7 @@ namespace Mafia2Tool
 
         }
 
-        private TreeNode BuildTreeNode(string name, DirectoryInfo info, object data = null)
+        private TreeNode BuildTreeNode(string name, object data = null)
         {
             TreeNode node = new TreeNode();
             node.Name = name + "Node";
@@ -56,118 +99,67 @@ namespace Mafia2Tool
             {
                 nodes.Current.MoveToFirstChild();
                 string resourceType = nodes.Current.Value;
-                nodes.Current.MoveToNext();
-                string file = nodes.Current.Value;
+                BaseResource resource = null;
+
+                if(!resources.ContainsKey(resourceType))
+                {
+                    resources.Add(resourceType, new List<TreeNode>());
+                }
 
                 switch (resourceType)
                 {
-                    case "Video":
-                        treeView1.Nodes[0].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "Script":
-                        ScriptResource script = new ScriptResource();
-                        script.ReadResourceEntry(nodes);
-                        treeView1.Nodes[1].Nodes.Add(BuildTreeNode(file, info.Directory, script));
-                        break;
+                    case "FrameResource":
+                    case "Effects":
+                    case "PREFAB":
                     case "ItemDesc":
-                        treeView1.Nodes[2].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "Collisions":
-                        treeView1.Nodes[3].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "FxAnimSet":
-                        treeView1.Nodes[4].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
+                    case "FrameNameTable":
+                    case "Actors":
+                    case "NAV_AIWORLD_DATA":
+                    case "NAV_OBJ_DATA":
+                    case "NAV_HPD_DATA":
+                    case "Cutscene":
                     case "FxActor":
-                        treeView1.Nodes[5].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "Tables":
-                        treeView1.Nodes[6].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "XML":
-                        treeView1.Nodes[7].Nodes.Add(BuildTreeNode(file, info.Directory));
+                    case "FxAnimSet":
+                    case "Translokator":
+                    case "Speech":
+                    case "SoundTable":
+                    case "AnimalTrafficPaths":
+                    case "AudioSectors":
+                    case "Animated Texture":
+                    case "Collisions":
+                    case "IndexBufferPool":
+                    case "VertexBufferPool":
+                    case "EntityDataStorage":
+                    case "Animation2":
+                    case "Mipmap":
+                    case "Sound":
+                    case "MemFile":
+                        resource = new BaseResource();
+                        resource.ReadResourceEntry(nodes);
                         break;
                     case "Texture":
-                        TextureResource texture = new TextureResource();
-                        texture.ReadResourceEntry(nodes);
-                        treeView1.Nodes[8].Nodes.Add(BuildTreeNode(file, info.Directory, texture));
+                        resource = new TextureResource();
+                        resource.ReadResourceEntry(nodes);
                         break;
-                    case "Mipmap":
-                        treeView1.Nodes[9].Nodes.Add(BuildTreeNode(file, info.Directory));
+                    case "XML":
+                        resource = new XMLResource();
+                        resource.ReadResourceEntry(nodes);
                         break;
-                    case "MemFile":
-                        treeView1.Nodes[10].Nodes.Add(BuildTreeNode(file, info.Directory));
+                    case "Script":
+                        resource = new ScriptResource();
+                        resource.ReadResourceEntry(nodes);
                         break;
-                    case "FrameResource":
-                        treeView1.Nodes[11].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "ExtraData":
-                        treeView1.Nodes[12].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "IndexBufferPool":
-                        treeView1.Nodes[13].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "VertexBufferPool":
-                        treeView1.Nodes[14].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "Animated Texture":
-                        treeView1.Nodes[15].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "AnimSet":
-                        treeView1.Nodes[16].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "Effects":
-                        treeView1.Nodes[17].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "Translokator":
-                        treeView1.Nodes[18].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "Cutscene":
-                        treeView1.Nodes[19].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "SoundTable":
-                        treeView1.Nodes[20].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "Sound":
-                        treeView1.Nodes[21].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "AudioSectors":
-                        treeView1.Nodes[22].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "Animation2":
-                        treeView1.Nodes[23].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "AnimalTrafficPaths":
-                        treeView1.Nodes[24].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "FrameNameTable":
-                        treeView1.Nodes[25].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "EntityDataStorage":
-                        treeView1.Nodes[26].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "Actors":
-                        treeView1.Nodes[27].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "Speech":
-                        treeView1.Nodes[28].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "PREFAB":
-                        treeView1.Nodes[29].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "NAV_AIWORLD_DATA":
-                        treeView1.Nodes[30].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "NAV_OBJ_DATA":
-                        treeView1.Nodes[31].Nodes.Add(BuildTreeNode(file, info.Directory));
-                        break;
-                    case "NAV_HPD_DATA":
-                        treeView1.Nodes[32].Nodes.Add(BuildTreeNode(file, info.Directory));
+                    case "Table":
+                        resource = new TableResource();
+                        resource.ReadResourceEntry(nodes);
                         break;
                     default:
-                        Console.WriteLine("Failed to add " + file);
+                        MessageBox.Show("Did not pack type: " + resourceType, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         break;
                 }
+
+                TreeNode node = BuildTreeNode(resource.GetFileName(), resource);
+                resources[resourceType].Add(node);
             }
         }
 
@@ -232,18 +224,51 @@ namespace Mafia2Tool
             foreach (TreeNode node in treeView1.Nodes[10].Nodes)
             {
                 resourceXML.WriteStartElement("ResourceEntry");
-                WriteResource(resourceXML, node.Text, MemFileResource.TypeName, MemFileResource.Version.ToString());
+                //WriteResource(resourceXML, node.Text, MemFileResource.TypeName, MemFileResource.Version.ToString());
                 resourceXML.WriteEndElement();
             }
             foreach (TreeNode node in treeView1.Nodes[2].Nodes)
             {
                 resourceXML.WriteStartElement("ResourceEntry");
-                WriteResource(resourceXML, node.Text, ItemDescResource.TypeName, ItemDescResource.Version.ToString());
+                //WriteResource(resourceXML, node.Text, ItemDescResource.TypeName, ItemDescResource.Version.ToString());
                 resourceXML.WriteEndElement();
             }
             resourceXML.WriteEndElement();
             resourceXML.Flush();
             resourceXML.Dispose();
+        }
+
+        private void WriteNewSDSContent()
+        {
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = ("\t");
+            settings.OmitXmlDeclaration = true;
+
+            XmlWriter writer = XmlWriter.Create(parent.FullName + "/SDSContent_Copy.xml", settings);
+            writer.WriteStartElement("SDSResource");
+
+            foreach(var pair in resources)
+            {
+                var list = pair.Value;
+
+                foreach(var entry in list)
+                {
+                    writer.WriteStartElement("ResourceEntry");
+                    writer.WriteElementString("Type", pair.Key);
+                    (entry.Tag as BaseResource).WriteResourceEntry(writer);
+                    writer.WriteEndElement();
+                }
+            }
+
+            writer.WriteEndElement();
+            writer.Close();
+            writer.Dispose();
+        }
+
+        private void WriteResources(XmlWriter writer, List<TreeNode> nodes, string type, string version)
+        {
+
         }
 
         private void WriteResource(XmlWriter writer, string name, string type, string version)
@@ -306,5 +331,31 @@ namespace Mafia2Tool
             resourceXML.Flush();
             resourceXML.Dispose();
         }
+
+        private void FixResourceOrderOnClick(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SaveButtonOnClick(object sender, EventArgs e)
+        {
+            resources.OrderBy(d => SortList.IndexOf(d.Key)).ToList();
+            WriteNewSDSContent();
+        }
     }
 }
+
+//_ResourceTypes = ResourceTypes.OrderBy(d => SortList.IndexOf(d.Name)).ToList();
+//_ResourceEntries = new List<ResourceEntry>();
+//for (int i = 0; i < _ResourceTypes.Count; i++)
+//{
+//    var type = _ResourceTypes[i];
+//    type.Id = (uint)i;
+//    _ResourceTypes[i] = type;
+//    List<ResourceEntry> currentEntries = entries[type.Name];
+//    for(int z = 0; z < currentEntries.Count; z++)
+//    {
+//        currentEntries[z].TypeId = i;
+//    }
+//    _ResourceEntries.AddRange(currentEntries);
+//}

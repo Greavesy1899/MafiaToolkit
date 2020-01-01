@@ -28,49 +28,50 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode34 = new System.Windows.Forms.TreeNode("Video");
-            System.Windows.Forms.TreeNode treeNode35 = new System.Windows.Forms.TreeNode("Script");
-            System.Windows.Forms.TreeNode treeNode36 = new System.Windows.Forms.TreeNode("ItemDesc");
-            System.Windows.Forms.TreeNode treeNode37 = new System.Windows.Forms.TreeNode("Collisions");
-            System.Windows.Forms.TreeNode treeNode38 = new System.Windows.Forms.TreeNode("FxAnimSet");
-            System.Windows.Forms.TreeNode treeNode39 = new System.Windows.Forms.TreeNode("FxActor");
-            System.Windows.Forms.TreeNode treeNode40 = new System.Windows.Forms.TreeNode("Tables");
-            System.Windows.Forms.TreeNode treeNode41 = new System.Windows.Forms.TreeNode("XML");
-            System.Windows.Forms.TreeNode treeNode42 = new System.Windows.Forms.TreeNode("Texture");
-            System.Windows.Forms.TreeNode treeNode43 = new System.Windows.Forms.TreeNode("MipMap");
-            System.Windows.Forms.TreeNode treeNode44 = new System.Windows.Forms.TreeNode("MemFile");
-            System.Windows.Forms.TreeNode treeNode45 = new System.Windows.Forms.TreeNode("FrameResource");
-            System.Windows.Forms.TreeNode treeNode46 = new System.Windows.Forms.TreeNode("ExtraData");
-            System.Windows.Forms.TreeNode treeNode47 = new System.Windows.Forms.TreeNode("IndexBufferPool");
-            System.Windows.Forms.TreeNode treeNode48 = new System.Windows.Forms.TreeNode("VertexBufferPool");
-            System.Windows.Forms.TreeNode treeNode49 = new System.Windows.Forms.TreeNode("AnimTexture");
-            System.Windows.Forms.TreeNode treeNode50 = new System.Windows.Forms.TreeNode("AnimSet");
-            System.Windows.Forms.TreeNode treeNode51 = new System.Windows.Forms.TreeNode("Effects");
-            System.Windows.Forms.TreeNode treeNode52 = new System.Windows.Forms.TreeNode("Translokator");
-            System.Windows.Forms.TreeNode treeNode53 = new System.Windows.Forms.TreeNode("Cutscene");
-            System.Windows.Forms.TreeNode treeNode54 = new System.Windows.Forms.TreeNode("SoundTable");
-            System.Windows.Forms.TreeNode treeNode55 = new System.Windows.Forms.TreeNode("Sound");
-            System.Windows.Forms.TreeNode treeNode56 = new System.Windows.Forms.TreeNode("AudioSectors");
-            System.Windows.Forms.TreeNode treeNode57 = new System.Windows.Forms.TreeNode("Animation2");
-            System.Windows.Forms.TreeNode treeNode58 = new System.Windows.Forms.TreeNode("AnimalTrafficPaths");
-            System.Windows.Forms.TreeNode treeNode59 = new System.Windows.Forms.TreeNode("FrameNameTable");
-            System.Windows.Forms.TreeNode treeNode60 = new System.Windows.Forms.TreeNode("EntityDataStorage");
-            System.Windows.Forms.TreeNode treeNode61 = new System.Windows.Forms.TreeNode("Actors");
-            System.Windows.Forms.TreeNode treeNode62 = new System.Windows.Forms.TreeNode("Speech");
-            System.Windows.Forms.TreeNode treeNode63 = new System.Windows.Forms.TreeNode("PREFAB");
-            System.Windows.Forms.TreeNode treeNode64 = new System.Windows.Forms.TreeNode("NAV_AIWORLD_DATA");
-            System.Windows.Forms.TreeNode treeNode65 = new System.Windows.Forms.TreeNode("NAV_OBJ_DATA");
-            System.Windows.Forms.TreeNode treeNode66 = new System.Windows.Forms.TreeNode("NAV_HPD_DATA");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Video");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Script");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("ItemDesc");
+            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Collisions");
+            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("FxAnimSet");
+            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("FxActor");
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Tables");
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("XML");
+            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Texture");
+            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("MipMap");
+            System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("MemFile");
+            System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("FrameResource");
+            System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("ExtraData");
+            System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("IndexBufferPool");
+            System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("VertexBufferPool");
+            System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("AnimTexture");
+            System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("AnimSet");
+            System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Effects");
+            System.Windows.Forms.TreeNode treeNode19 = new System.Windows.Forms.TreeNode("Translokator");
+            System.Windows.Forms.TreeNode treeNode20 = new System.Windows.Forms.TreeNode("Cutscene");
+            System.Windows.Forms.TreeNode treeNode21 = new System.Windows.Forms.TreeNode("SoundTable");
+            System.Windows.Forms.TreeNode treeNode22 = new System.Windows.Forms.TreeNode("Sound");
+            System.Windows.Forms.TreeNode treeNode23 = new System.Windows.Forms.TreeNode("AudioSectors");
+            System.Windows.Forms.TreeNode treeNode24 = new System.Windows.Forms.TreeNode("Animation2");
+            System.Windows.Forms.TreeNode treeNode25 = new System.Windows.Forms.TreeNode("AnimalTrafficPaths");
+            System.Windows.Forms.TreeNode treeNode26 = new System.Windows.Forms.TreeNode("FrameNameTable");
+            System.Windows.Forms.TreeNode treeNode27 = new System.Windows.Forms.TreeNode("EntityDataStorage");
+            System.Windows.Forms.TreeNode treeNode28 = new System.Windows.Forms.TreeNode("Actors");
+            System.Windows.Forms.TreeNode treeNode29 = new System.Windows.Forms.TreeNode("Speech");
+            System.Windows.Forms.TreeNode treeNode30 = new System.Windows.Forms.TreeNode("PREFAB");
+            System.Windows.Forms.TreeNode treeNode31 = new System.Windows.Forms.TreeNode("NAV_AIWORLD_DATA");
+            System.Windows.Forms.TreeNode treeNode32 = new System.Windows.Forms.TreeNode("NAV_OBJ_DATA");
+            System.Windows.Forms.TreeNode treeNode33 = new System.Windows.Forms.TreeNode("NAV_HPD_DATA");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SDSContentEditor));
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AutoAddFilesButton = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.FixResourceOrderButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -80,106 +81,106 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView1.Location = new System.Drawing.Point(12, 28);
             this.treeView1.Name = "treeView1";
-            treeNode34.Name = "VideoNode";
-            treeNode34.Text = "Video";
-            treeNode35.Name = "ScriptNode";
-            treeNode35.Text = "Script";
-            treeNode36.Name = "ItemDescNode";
-            treeNode36.Text = "ItemDesc";
-            treeNode37.Name = "CollisionsNode";
-            treeNode37.Text = "Collisions";
-            treeNode38.Name = "FxAnimSetNode";
-            treeNode38.Text = "FxAnimSet";
-            treeNode39.Name = "FxActorNode";
-            treeNode39.Text = "FxActor";
-            treeNode40.Name = "TablesNode";
-            treeNode40.Text = "Tables";
-            treeNode41.Name = "XMLNode";
-            treeNode41.Text = "XML";
-            treeNode42.Name = "TextureNode";
-            treeNode42.Text = "Texture";
-            treeNode43.Name = "MipMapNode";
-            treeNode43.Text = "MipMap";
-            treeNode44.Name = "MemFileNode";
-            treeNode44.Text = "MemFile";
-            treeNode45.Name = "FrameResourceNode";
-            treeNode45.Text = "FrameResource";
-            treeNode46.Name = "ExtraDataNode";
-            treeNode46.Text = "ExtraData";
-            treeNode47.Name = "IndexBufferNode";
-            treeNode47.Text = "IndexBufferPool";
-            treeNode48.Name = "VertexBufferNode";
-            treeNode48.Text = "VertexBufferPool";
-            treeNode49.Name = "AnimTextureNode";
-            treeNode49.Text = "AnimTexture";
-            treeNode50.Name = "AnimSetNode";
-            treeNode50.Text = "AnimSet";
-            treeNode51.Name = "EffectsNode";
-            treeNode51.Text = "Effects";
-            treeNode52.Name = "TranslokatorNode";
-            treeNode52.Text = "Translokator";
-            treeNode53.Name = "CutsceneNode";
-            treeNode53.Text = "Cutscene";
-            treeNode54.Name = "SoundTableNode";
-            treeNode54.Text = "SoundTable";
-            treeNode55.Name = "SoundNode";
-            treeNode55.Text = "Sound";
-            treeNode56.Name = "AudioSectorsNode";
-            treeNode56.Text = "AudioSectors";
-            treeNode57.Name = "Animation2Node";
-            treeNode57.Text = "Animation2";
-            treeNode58.Name = "AnimalTrafficNode";
-            treeNode58.Text = "AnimalTrafficPaths";
-            treeNode59.Name = "FrameNameTableNode";
-            treeNode59.Text = "FrameNameTable";
-            treeNode60.Name = "EntityDataStorageNode";
-            treeNode60.Text = "EntityDataStorage";
-            treeNode61.Name = "ActorsNode";
-            treeNode61.Text = "Actors";
-            treeNode62.Name = "SpeechNode";
-            treeNode62.Text = "Speech";
-            treeNode63.Name = "PREFABNode";
-            treeNode63.Text = "PREFAB";
-            treeNode64.Name = "NAV_AIWORLD_DATANode";
-            treeNode64.Text = "NAV_AIWORLD_DATA";
-            treeNode65.Name = "NAV_OBJ_DATA_Node";
-            treeNode65.Text = "NAV_OBJ_DATA";
-            treeNode66.Name = "NAV_HPD_DATA_Node";
-            treeNode66.Text = "NAV_HPD_DATA";
+            treeNode1.Name = "VideoNode";
+            treeNode1.Text = "Video";
+            treeNode2.Name = "ScriptNode";
+            treeNode2.Text = "Script";
+            treeNode3.Name = "ItemDescNode";
+            treeNode3.Text = "ItemDesc";
+            treeNode4.Name = "CollisionsNode";
+            treeNode4.Text = "Collisions";
+            treeNode5.Name = "FxAnimSetNode";
+            treeNode5.Text = "FxAnimSet";
+            treeNode6.Name = "FxActorNode";
+            treeNode6.Text = "FxActor";
+            treeNode7.Name = "TablesNode";
+            treeNode7.Text = "Tables";
+            treeNode8.Name = "XMLNode";
+            treeNode8.Text = "XML";
+            treeNode9.Name = "TextureNode";
+            treeNode9.Text = "Texture";
+            treeNode10.Name = "MipMapNode";
+            treeNode10.Text = "MipMap";
+            treeNode11.Name = "MemFileNode";
+            treeNode11.Text = "MemFile";
+            treeNode12.Name = "FrameResourceNode";
+            treeNode12.Text = "FrameResource";
+            treeNode13.Name = "ExtraDataNode";
+            treeNode13.Text = "ExtraData";
+            treeNode14.Name = "IndexBufferNode";
+            treeNode14.Text = "IndexBufferPool";
+            treeNode15.Name = "VertexBufferNode";
+            treeNode15.Text = "VertexBufferPool";
+            treeNode16.Name = "AnimTextureNode";
+            treeNode16.Text = "AnimTexture";
+            treeNode17.Name = "AnimSetNode";
+            treeNode17.Text = "AnimSet";
+            treeNode18.Name = "EffectsNode";
+            treeNode18.Text = "Effects";
+            treeNode19.Name = "TranslokatorNode";
+            treeNode19.Text = "Translokator";
+            treeNode20.Name = "CutsceneNode";
+            treeNode20.Text = "Cutscene";
+            treeNode21.Name = "SoundTableNode";
+            treeNode21.Text = "SoundTable";
+            treeNode22.Name = "SoundNode";
+            treeNode22.Text = "Sound";
+            treeNode23.Name = "AudioSectorsNode";
+            treeNode23.Text = "AudioSectors";
+            treeNode24.Name = "Animation2Node";
+            treeNode24.Text = "Animation2";
+            treeNode25.Name = "AnimalTrafficNode";
+            treeNode25.Text = "AnimalTrafficPaths";
+            treeNode26.Name = "FrameNameTableNode";
+            treeNode26.Text = "FrameNameTable";
+            treeNode27.Name = "EntityDataStorageNode";
+            treeNode27.Text = "EntityDataStorage";
+            treeNode28.Name = "ActorsNode";
+            treeNode28.Text = "Actors";
+            treeNode29.Name = "SpeechNode";
+            treeNode29.Text = "Speech";
+            treeNode30.Name = "PREFABNode";
+            treeNode30.Text = "PREFAB";
+            treeNode31.Name = "NAV_AIWORLD_DATANode";
+            treeNode31.Text = "NAV_AIWORLD_DATA";
+            treeNode32.Name = "NAV_OBJ_DATA_Node";
+            treeNode32.Text = "NAV_OBJ_DATA";
+            treeNode33.Name = "NAV_HPD_DATA_Node";
+            treeNode33.Text = "NAV_HPD_DATA";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode34,
-            treeNode35,
-            treeNode36,
-            treeNode37,
-            treeNode38,
-            treeNode39,
-            treeNode40,
-            treeNode41,
-            treeNode42,
-            treeNode43,
-            treeNode44,
-            treeNode45,
-            treeNode46,
-            treeNode47,
-            treeNode48,
-            treeNode49,
-            treeNode50,
-            treeNode51,
-            treeNode52,
-            treeNode53,
-            treeNode54,
-            treeNode55,
-            treeNode56,
-            treeNode57,
-            treeNode58,
-            treeNode59,
-            treeNode60,
-            treeNode61,
-            treeNode62,
-            treeNode63,
-            treeNode64,
-            treeNode65,
-            treeNode66});
+            treeNode1,
+            treeNode2,
+            treeNode3,
+            treeNode4,
+            treeNode5,
+            treeNode6,
+            treeNode7,
+            treeNode8,
+            treeNode9,
+            treeNode10,
+            treeNode11,
+            treeNode12,
+            treeNode13,
+            treeNode14,
+            treeNode15,
+            treeNode16,
+            treeNode17,
+            treeNode18,
+            treeNode19,
+            treeNode20,
+            treeNode21,
+            treeNode22,
+            treeNode23,
+            treeNode24,
+            treeNode25,
+            treeNode26,
+            treeNode27,
+            treeNode28,
+            treeNode29,
+            treeNode30,
+            treeNode31,
+            treeNode32,
+            treeNode33});
             this.treeView1.Size = new System.Drawing.Size(184, 410);
             this.treeView1.TabIndex = 0;
             // 
@@ -198,7 +199,7 @@
             // 
             this.fileToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.fileToolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem,
+            this.SaveButton,
             this.reloadToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolButton.Image = ((System.Drawing.Image)(resources.GetObject("fileToolButton.Image")));
@@ -207,33 +208,35 @@
             this.fileToolButton.Size = new System.Drawing.Size(38, 22);
             this.fileToolButton.Text = "File";
             // 
-            // saveToolStripMenuItem
+            // SaveButton
             // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
-            this.saveToolStripMenuItem.Text = "Save";
+            this.SaveButton.Name = "SaveButton";
+            this.SaveButton.Size = new System.Drawing.Size(180, 22);
+            this.SaveButton.Text = "Save";
+            this.SaveButton.Click += new System.EventHandler(this.SaveButtonOnClick);
             // 
             // reloadToolStripMenuItem
             // 
             this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.reloadToolStripMenuItem.Text = "Reload";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // toolsButton
             // 
             this.toolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AutoAddFilesButton});
+            this.AutoAddFilesButton,
+            this.FixResourceOrderButton});
             this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
             this.toolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolsButton.Name = "toolsButton";
-            this.toolsButton.Size = new System.Drawing.Size(48, 22);
+            this.toolsButton.Size = new System.Drawing.Size(47, 22);
             this.toolsButton.Text = "Tools";
             // 
             // AutoAddFilesButton
@@ -251,6 +254,13 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(585, 410);
             this.panel1.TabIndex = 16;
+            // 
+            // FixResourceOrderButton
+            // 
+            this.FixResourceOrderButton.Name = "FixResourceOrderButton";
+            this.FixResourceOrderButton.Size = new System.Drawing.Size(180, 22);
+            this.FixResourceOrderButton.Text = "Fix Resource Order";
+            this.FixResourceOrderButton.Click += new System.EventHandler(this.FixResourceOrderOnClick);
             // 
             // SDSContentEditor
             // 
@@ -274,11 +284,12 @@
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton fileToolButton;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SaveButton;
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton toolsButton;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ToolStripMenuItem AutoAddFilesButton;
+        private System.Windows.Forms.ToolStripMenuItem FixResourceOrderButton;
     }
 }

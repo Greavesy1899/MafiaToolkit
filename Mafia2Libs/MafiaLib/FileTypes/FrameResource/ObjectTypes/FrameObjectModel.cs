@@ -158,6 +158,8 @@ namespace ResourceTypes.FrameResource
             for (int i = 0; i != nPhysSplits; i++)
             {
                 blendMeshSplits[i] = new WeightedByMeshSplit(stream, isBigEndian);
+                int index = blendInfo.BoneIndexInfos[0].IDs[blendMeshSplits[i].BlendIndex];
+                blendMeshSplits[i].JointName = skeleton.BoneNames[index].ToString();
                 totalSplits += blendMeshSplits[i].Data.Length;
             }
 
@@ -294,7 +296,7 @@ namespace ResourceTypes.FrameResource
         {
             ushort blendIndex;
             BlendMeshSplitInfo[] data;
-            SkeletonBoneIDs jointName;
+            string jointName;
 
             public ushort BlendIndex {
                 get { return blendIndex; }
@@ -304,7 +306,7 @@ namespace ResourceTypes.FrameResource
                 get { return data; }
                 set { data = value; }
             }
-            public SkeletonBoneIDs JointName {
+            public string JointName {
                 get { return jointName; }
                 set { jointName = value; }
             }
@@ -326,7 +328,6 @@ namespace ResourceTypes.FrameResource
             public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
                 blendIndex = reader.ReadUInt16(isBigEndian);
-
                 ushort num = reader.ReadUInt16(isBigEndian);
                 data = new BlendMeshSplitInfo[num];
 

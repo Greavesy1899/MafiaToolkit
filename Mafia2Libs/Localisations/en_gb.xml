@@ -207,9 +207,22 @@
   <!-- M2FBX Strings-->
   <String ID="$SELECT_MESH">Select Mesh</String>
   <String ID="$CONVERT">Convert</String>
-  <String ID="$Import">Import</String>
+  <String ID="$IMPORT">Import</String>
   <String ID="$EXPORT">Export</String>
   <String ID="$M2FBX_INSTRUCTIONS">Utilise M2FBX Functions below. Any new files will be saved in the same location as the inputted file.</String>
+  
+  <!-- NewObjectEntry Form -->
+  <String ID="$IMPORT_NORMAL">Import Normals</String>
+  <String ID="$IMPORT_TANGENT">Import Tangents</String>
+  <String ID="$IMPORT_DIFFUSE">Import Diffuse UV</String>
+  <String ID="$IMPORT_UV1">Import UV1</String>
+  <String ID="$IMPORT_UV2">Import UV2</String>
+  <String ID="$IMPORT_AO">Import AO UV</String>
+  <String ID="$IMPORT_COLOR0">Import Color0</String>
+  <String ID="$IMPORT_COLOR1">Import Color1</String>
+  <String ID="$FLIP_UV">Flip UV Coordinates</String>
+  <String ID="$MODEL_OPTIONS_TITLE">Model Options</String>
+  <String ID="$MODEL_OPTIONS_TEXT">Select which properties should be imported for </String>
 
   <!-- Translokator Strings-->
   <String ID="$TRANSLOKATOR_EDITOR">Translokator Editor</String>

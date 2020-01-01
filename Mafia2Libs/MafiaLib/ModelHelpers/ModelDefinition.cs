@@ -87,7 +87,7 @@ namespace Utils.Models
             model.IsSkinned = true;
             model.Name = frameModel.Name.ToString();
             model.AOTexture = frameModel.OMTextureHash.String;
-            model.BuildLods(indexBuffers, vertexBuffers, frameGeometry, frameMaterial, blendInfo, skeleton, skeletonHierarchy);
+            model.BuildLods(frameModel, indexBuffers, vertexBuffers);
         }
 
         /// <summary>
