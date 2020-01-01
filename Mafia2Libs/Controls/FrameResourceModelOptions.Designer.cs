@@ -65,10 +65,9 @@
             // 
             // ModelOptionsText
             // 
-            this.ModelOptionsText.AutoSize = true;
             this.ModelOptionsText.Location = new System.Drawing.Point(13, 13);
             this.ModelOptionsText.Name = "ModelOptionsText";
-            this.ModelOptionsText.Size = new System.Drawing.Size(139, 13);
+            this.ModelOptionsText.Size = new System.Drawing.Size(290, 13);
             this.ModelOptionsText.TabIndex = 4;
             this.ModelOptionsText.Text = "$MODEL_OPTIONS_TEXT";
             // 
@@ -81,7 +80,6 @@
             this.ImportNormalBox.TabIndex = 6;
             this.ImportNormalBox.Text = "$IMPORT_NORMALS";
             this.ImportNormalBox.UseVisualStyleBackColor = true;
-            this.ImportNormalBox.CheckedChanged += new System.EventHandler(this.ImportNormalOnCheckedChanged);
             // 
             // ImportUV1Box
             // 
@@ -136,6 +134,7 @@
             // ImportTangentBox
             // 
             this.ImportTangentBox.AutoSize = true;
+            this.ImportTangentBox.Enabled = false;
             this.ImportTangentBox.Location = new System.Drawing.Point(15, 60);
             this.ImportTangentBox.Name = "ImportTangentBox";
             this.ImportTangentBox.Size = new System.Drawing.Size(139, 17);

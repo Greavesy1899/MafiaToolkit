@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupGeneral = new System.Windows.Forms.GroupBox();
+            this.CheckForUpdatesBox = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.languageComboBox = new System.Windows.Forms.ComboBox();
             this.debugLoggingCheckbox = new System.Windows.Forms.CheckBox();
@@ -54,6 +55,7 @@
             // 
             // groupGeneral
             // 
+            this.groupGeneral.Controls.Add(this.CheckForUpdatesBox);
             this.groupGeneral.Controls.Add(this.label1);
             this.groupGeneral.Controls.Add(this.languageComboBox);
             this.groupGeneral.Controls.Add(this.debugLoggingCheckbox);
@@ -68,10 +70,21 @@
             this.groupGeneral.TabStop = false;
             this.groupGeneral.Text = "$GENERAL";
             // 
+            // CheckForUpdatesBox
+            // 
+            this.CheckForUpdatesBox.AutoSize = true;
+            this.CheckForUpdatesBox.Location = new System.Drawing.Point(9, 126);
+            this.CheckForUpdatesBox.Name = "CheckForUpdatesBox";
+            this.CheckForUpdatesBox.Size = new System.Drawing.Size(153, 17);
+            this.CheckForUpdatesBox.TabIndex = 7;
+            this.CheckForUpdatesBox.Text = "$CHECK_FOR_UPDATES";
+            this.CheckForUpdatesBox.UseVisualStyleBackColor = true;
+            this.CheckForUpdatesBox.CheckedChanged += new System.EventHandler(this.CheckForUpdatesBoxChanged);
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 60);
+            this.label1.Location = new System.Drawing.Point(8, 60);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(119, 13);
             this.label1.TabIndex = 6;
@@ -86,7 +99,7 @@
             "$LANGUAGE_CZECH",
             "$LANGUAGE_POLISH",
             "French"});
-            this.languageComboBox.Location = new System.Drawing.Point(7, 76);
+            this.languageComboBox.Location = new System.Drawing.Point(9, 76);
             this.languageComboBox.Name = "languageComboBox";
             this.languageComboBox.Size = new System.Drawing.Size(121, 21);
             this.languageComboBox.TabIndex = 5;
@@ -95,7 +108,7 @@
             // debugLoggingCheckbox
             // 
             this.debugLoggingCheckbox.AutoSize = true;
-            this.debugLoggingCheckbox.Location = new System.Drawing.Point(6, 103);
+            this.debugLoggingCheckbox.Location = new System.Drawing.Point(9, 103);
             this.debugLoggingCheckbox.Name = "debugLoggingCheckbox";
             this.debugLoggingCheckbox.Size = new System.Drawing.Size(173, 17);
             this.debugLoggingCheckbox.TabIndex = 4;
@@ -105,7 +118,7 @@
             // 
             // browseButton
             // 
-            this.browseButton.Location = new System.Drawing.Point(345, 37);
+            this.browseButton.Location = new System.Drawing.Point(347, 37);
             this.browseButton.Name = "browseButton";
             this.browseButton.Size = new System.Drawing.Size(26, 20);
             this.browseButton.TabIndex = 2;
@@ -115,7 +128,7 @@
             // 
             // M2DirectoryBox
             // 
-            this.M2DirectoryBox.Location = new System.Drawing.Point(7, 37);
+            this.M2DirectoryBox.Location = new System.Drawing.Point(9, 37);
             this.M2DirectoryBox.Name = "M2DirectoryBox";
             this.M2DirectoryBox.Size = new System.Drawing.Size(332, 20);
             this.M2DirectoryBox.TabIndex = 1;
@@ -124,7 +137,7 @@
             // M2Label
             // 
             this.M2Label.AutoSize = true;
-            this.M2Label.Location = new System.Drawing.Point(4, 21);
+            this.M2Label.Location = new System.Drawing.Point(6, 21);
             this.M2Label.Name = "M2Label";
             this.M2Label.Size = new System.Drawing.Size(97, 13);
             this.M2Label.TabIndex = 0;
@@ -267,5 +280,6 @@
         private System.Windows.Forms.ComboBox languageComboBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox DiscordStateTextBox;
+        private System.Windows.Forms.CheckBox CheckForUpdatesBox;
     }
 }

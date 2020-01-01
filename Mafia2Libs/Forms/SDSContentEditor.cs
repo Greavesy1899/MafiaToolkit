@@ -12,10 +12,9 @@ namespace Mafia2Tool
     public partial class SDSContentEditor : Form
     {
         DirectoryInfo parent;
-        FileInfo file;
         Dictionary<string, List<TreeNode>> resources;
         Dictionary<string, BaseResource> types;
-        List<string> SortList;
+        readonly List<string> SortList;
         public SDSContentEditor()
         {
             InitializeComponent();
@@ -27,7 +26,6 @@ namespace Mafia2Tool
             InitializeComponent();
             resources = new Dictionary<string, List<TreeNode>>();
             parent = info.Directory;
-            file = info;
             SortList = new List<string>();
             SortList.AddRange(new string[] {"IndexBufferPool", "VertexBufferPool", "Texture", "FrameResource", "Effects", "FrameNameTable",
                "Actors", "EntityDataStorage",  "PREFAB", "Animation2",  "AnimalTrafficPaths", "Table", "NAV_OBJ_DATA", "NAV_AIWORLD_DATA", "NAV_HPD_DATA",
@@ -163,81 +161,6 @@ namespace Mafia2Tool
             }
         }
 
-        private void WriteSDSContent(FileInfo info)
-        {
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.IndentChars = ("\t");
-            settings.OmitXmlDeclaration = true;
-
-            XmlWriter resourceXML = XmlWriter.Create(parent.FullName + "/SDSContent_Copy.xml", settings);
-            resourceXML.WriteStartElement("SDSResource");
-            foreach(TreeNode node in treeView1.Nodes[13].Nodes)
-            {
-                resourceXML.WriteStartElement("ResourceEntry");
-                WriteResource(resourceXML, node.Text, "IndexBufferPool", "2");
-                resourceXML.WriteEndElement();
-            }
-            foreach (TreeNode node in treeView1.Nodes[14].Nodes)
-            {
-                resourceXML.WriteStartElement("ResourceEntry");
-                WriteResource(resourceXML, node.Text, "VertexBufferPool", "2");
-                resourceXML.WriteEndElement();
-            }
-            foreach (TreeNode node in treeView1.Nodes[8].Nodes)
-            {
-                resourceXML.WriteStartElement("ResourceEntry");
-                TextureResource resource = (node.Tag as TextureResource);
-                resource.WriteResourceEntry(resourceXML);
-                resourceXML.WriteEndElement();
-            }
-            foreach (TreeNode node in treeView1.Nodes[11].Nodes)
-            {
-                resourceXML.WriteStartElement("ResourceEntry");
-                WriteResource(resourceXML, node.Text, "FrameResource", "28");
-                resourceXML.WriteEndElement();
-            }
-            foreach (TreeNode node in treeView1.Nodes[25].Nodes)
-            {
-                resourceXML.WriteStartElement("ResourceEntry");
-                WriteResource(resourceXML, node.Text, "FrameNameTable", "3");
-                resourceXML.WriteEndElement();
-            }
-            foreach (TreeNode node in treeView1.Nodes[27].Nodes)
-            {
-                resourceXML.WriteStartElement("ResourceEntry");
-                WriteResource(resourceXML, node.Text, "Actors", "4");
-                resourceXML.WriteEndElement();
-            }
-            foreach (TreeNode node in treeView1.Nodes[29].Nodes)
-            {
-                resourceXML.WriteStartElement("ResourceEntry");
-                WriteResource(resourceXML, node.Text, "PREFAB", "0");
-                resourceXML.WriteEndElement();
-            }
-            foreach (TreeNode node in treeView1.Nodes[23].Nodes)
-            {
-                resourceXML.WriteStartElement("ResourceEntry");
-                WriteResource(resourceXML, node.Text, "Animation2", "1");
-                resourceXML.WriteEndElement();
-            }
-            foreach (TreeNode node in treeView1.Nodes[10].Nodes)
-            {
-                resourceXML.WriteStartElement("ResourceEntry");
-                //WriteResource(resourceXML, node.Text, MemFileResource.TypeName, MemFileResource.Version.ToString());
-                resourceXML.WriteEndElement();
-            }
-            foreach (TreeNode node in treeView1.Nodes[2].Nodes)
-            {
-                resourceXML.WriteStartElement("ResourceEntry");
-                //WriteResource(resourceXML, node.Text, ItemDescResource.TypeName, ItemDescResource.Version.ToString());
-                resourceXML.WriteEndElement();
-            }
-            resourceXML.WriteEndElement();
-            resourceXML.Flush();
-            resourceXML.Dispose();
-        }
-
         private void WriteNewSDSContent()
         {
             XmlWriterSettings settings = new XmlWriterSettings();
@@ -265,19 +188,6 @@ namespace Mafia2Tool
             writer.Close();
             writer.Dispose();
         }
-
-        private void WriteResources(XmlWriter writer, List<TreeNode> nodes, string type, string version)
-        {
-
-        }
-
-        private void WriteResource(XmlWriter writer, string name, string type, string version)
-        {
-            writer.WriteElementString("Type", type);
-            writer.WriteElementString("File", name);
-            writer.WriteElementString("Version", version);
-        }
-
 
         private void AutoAddFilesButton_Click(object sender, EventArgs e)
         {
@@ -332,11 +242,6 @@ namespace Mafia2Tool
             resourceXML.Dispose();
         }
 
-        private void FixResourceOrderOnClick(object sender, EventArgs e)
-        {
-
-        }
-
         private void SaveButtonOnClick(object sender, EventArgs e)
         {
             resources.OrderBy(d => SortList.IndexOf(d.Key)).ToList();
@@ -344,18 +249,3 @@ namespace Mafia2Tool
         }
     }
 }
-
-//_ResourceTypes = ResourceTypes.OrderBy(d => SortList.IndexOf(d.Name)).ToList();
-//_ResourceEntries = new List<ResourceEntry>();
-//for (int i = 0; i < _ResourceTypes.Count; i++)
-//{
-//    var type = _ResourceTypes[i];
-//    type.Id = (uint)i;
-//    _ResourceTypes[i] = type;
-//    List<ResourceEntry> currentEntries = entries[type.Name];
-//    for(int z = 0; z < currentEntries.Count; z++)
-//    {
-//        currentEntries[z].TypeId = i;
-//    }
-//    _ResourceEntries.AddRange(currentEntries);
-//}

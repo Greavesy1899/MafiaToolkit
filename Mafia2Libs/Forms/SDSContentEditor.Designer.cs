@@ -68,10 +68,7 @@
             this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolsButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.AutoAddFilesButton = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.FixResourceOrderButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -187,8 +184,7 @@
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolButton,
-            this.toolsButton});
+            this.fileToolButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(800, 25);
@@ -227,25 +223,6 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
-            // toolsButton
-            // 
-            this.toolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AutoAddFilesButton,
-            this.FixResourceOrderButton});
-            this.toolsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolsButton.Image")));
-            this.toolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolsButton.Name = "toolsButton";
-            this.toolsButton.Size = new System.Drawing.Size(47, 22);
-            this.toolsButton.Text = "Tools";
-            // 
-            // AutoAddFilesButton
-            // 
-            this.AutoAddFilesButton.Name = "AutoAddFilesButton";
-            this.AutoAddFilesButton.Size = new System.Drawing.Size(180, 22);
-            this.AutoAddFilesButton.Text = "Auto-Add Files";
-            this.AutoAddFilesButton.Click += new System.EventHandler(this.AutoAddFilesButton_Click);
-            // 
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -254,13 +231,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(585, 410);
             this.panel1.TabIndex = 16;
-            // 
-            // FixResourceOrderButton
-            // 
-            this.FixResourceOrderButton.Name = "FixResourceOrderButton";
-            this.FixResourceOrderButton.Size = new System.Drawing.Size(180, 22);
-            this.FixResourceOrderButton.Text = "Fix Resource Order";
-            this.FixResourceOrderButton.Click += new System.EventHandler(this.FixResourceOrderOnClick);
             // 
             // SDSContentEditor
             // 
@@ -287,9 +257,6 @@
         private System.Windows.Forms.ToolStripMenuItem SaveButton;
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripDropDownButton toolsButton;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.ToolStripMenuItem AutoAddFilesButton;
-        private System.Windows.Forms.ToolStripMenuItem FixResourceOrderButton;
     }
 }

@@ -8,10 +8,8 @@ namespace Utils
     {
         [DllImport("libs/M2FBX.dll")]
         private static extern int RunConvertFBX(string source, string dest);
-
         [DllImport("libs/M2FBX.dll")]
         private static extern int RunConvertM2T(string source, string dest, byte extDesc);
-
         [DllImport("libs/M2FBX.dll")]
         private static extern int RunCookTriangleCollision(string source, string dest);
         [DllImport("libs/M2FBX.dll")]

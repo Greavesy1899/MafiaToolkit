@@ -175,11 +175,11 @@ namespace ResourceTypes.Misc
 
         public void WriteToFile(string name)
         {
-
+            throw new System.NotImplementedException();
         }
         public void WriteToFile(MemoryStream stream)
         {
-
+            throw new System.NotImplementedException();
         }
 
         private void RebuildStringSection(ref string final)

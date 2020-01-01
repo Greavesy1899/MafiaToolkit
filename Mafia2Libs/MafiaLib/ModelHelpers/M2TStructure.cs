@@ -9,6 +9,7 @@ using System.Linq;
 using ResourceTypes.Materials;
 using ResourceTypes.Collisions;
 using ResourceTypes.Collisions.Opcode;
+using System.Text;
 
 namespace Utils.Models
 {
@@ -64,8 +65,6 @@ namespace Utils.Models
                 lods[i].Vertices = new Vertex[frameLod.NumVertsPr];
 
                 if (vertexSize * frameLod.NumVertsPr != vertexBuffer.Data.Length) throw new System.Exception();
-                int maxBone = 0;
-                List<string> exportLog = new List<string>();
                 for (int v = 0; v != lods[i].Vertices.Length; v++)
                 {
                     Vertex vertex = new Vertex();
@@ -94,12 +93,6 @@ namespace Utils.Models
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Skin].Offset;
                         vertex.BoneWeights = VertexTranslator.ReadWeightsFromVB(vertexBuffer.Data, startIndex);
                         vertex.BoneIDs = VertexTranslator.ReadBonesFromVB(vertexBuffer.Data, startIndex+4);
-                        foreach(var id in vertex.BoneIDs)
-                        {
-                            if (id > maxBone)
-                                maxBone = id;
-                        }
-                        exportLog.Add(string.Format("{0} {1} {2} {3}", vertex.BoneIDs[0], vertex.BoneIDs[1], vertex.BoneIDs[2], vertex.BoneIDs[3]));
                     }
                     
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Color))
@@ -171,8 +164,6 @@ namespace Utils.Models
                     modelPart.NumFaces = (uint)materials[x].NumFaces;
                     lods[i].Parts[x] = modelPart;
                 }
-                Console.Write(string.Format("LOD: {0} {1}", i, maxBone));
-                File.WriteAllLines("ExportLog" + i + ".txt", exportLog.ToArray());
             }
         }
 
@@ -711,24 +702,17 @@ namespace Utils.Models
 
         public bool ReadFromFbx(string file)
         {
-            string args = "-ConvertToM2T ";
             string m2tFile = file.Remove(file.Length - 4, 4) + ".m2t";
-            args += ("\"" + file + "\" ");
-            args += ("\"" + m2tFile + "\" ");
-
-            if (FBXHelper.ConvertFBX(file, m2tFile) == 0)
+            int result = FBXHelper.ConvertFBX(file, m2tFile);
+            using (BinaryReader reader = new BinaryReader(File.Open(m2tFile, FileMode.Open)))
             {
-                using (BinaryReader reader = new BinaryReader(File.Open(m2tFile, FileMode.Open)))
-                {
-                    ReadFromM2T(reader);
-                }
-                if (File.Exists(m2tFile))
-                {
-                    File.Delete(m2tFile);
-                }
-                return true;
+                ReadFromM2T(reader);
             }
-            return false;
+            if (File.Exists(m2tFile))
+            {
+                File.Delete(m2tFile);
+            }
+            return true;
         }
 
         public void ExportCollisionToM2T(string directory, string name)

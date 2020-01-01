@@ -62,8 +62,7 @@ int ConvertType(const char* pSource, const char* pDest)
 	lImporter->Destroy();
 
 	WriteLine("Format is %i", format);
-	bool lResult = SaveDocument(lSdkManager, lScene, pDest, 0);
-	// Destroy all objects created by the FBX SDK.
+	bool lResult = SaveDocument(lSdkManager, lScene, pDest, format == 0 ? 1 : 0);
 	DestroySdkObjects(lSdkManager, lResult);
 	return 1;
 }
@@ -260,22 +259,17 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 	FbxNode* lNode = FbxNode::Create(pManager, pName);
 	lNode->SetNodeAttribute(lMesh);
 	lNode->SetShadingMode(FbxNode::eTextureShading);
-	//lNode->LclRotation.Set(FbxVector4(-90, 0, 0));
+	lNode->LclRotation.Set(FbxVector4(-90, 0, 0));
+
 
 	Vertex* vertices = part.GetVertices();
 	lMesh->InitControlPoints(part.GetVertSize());
 	FbxVector4* lControlPoints = lMesh->GetControlPoints();
 
-	FbxGeometryElementVertexColor* lColor0Element = nullptr;
-	FbxGeometryElementVertexColor* lColor1Element = nullptr;
 	FbxGeometryElementUV* lUVDiffuseElement = nullptr;
 	FbxGeometryElementUV* lUVOneElement = nullptr;
 	FbxGeometryElementUV* lUVTwoElement = nullptr;
 	FbxGeometryElementUV* lUVOMElement = nullptr;
-	FbxGeometryElementMaterial* lDiffuseElement = nullptr;
-	FbxGeometryElementMaterial* lOneElement = nullptr;
-	FbxGeometryElementMaterial* lTwoElement = nullptr;
-	FbxGeometryElementMaterial* lOMElement = nullptr;
 
 	for (size_t i = 0; i < part.GetVertSize(); i++)
 	{
@@ -307,33 +301,32 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 	if (part.HasVertexFlag(VertexFlags::TexCoords0))
 	{
 		lUVDiffuseElement = CreateUVElement(lMesh, "DiffuseUV", part);
-		lDiffuseElement = CreateMaterialElement(lMesh, "Diffuse Mapping", part);
+		CreateMaterialElement(lMesh, "Diffuse Mapping", part);
 	}
 	if (part.HasVertexFlag(VertexFlags::TexCoords1))
 	{
 		lUVOneElement = CreateUVElement(lMesh, "UV1", part);
-		lOneElement = CreateMaterialElement(lMesh, "UV1 Mapping", part);
+		CreateMaterialElement(lMesh, "UV1 Mapping", part);
 	}
 	if (part.HasVertexFlag(VertexFlags::TexCoords2))
 	{
 		lUVTwoElement = CreateUVElement(lMesh, "UV2", part);
-		lTwoElement = CreateMaterialElement(lMesh, "UV2 Mapping", part);
+		CreateMaterialElement(lMesh, "UV2 Mapping", part);
 	}
 	if (part.HasVertexFlag(VertexFlags::ShadowTexture))
 	{
 		lUVOMElement = CreateUVElement(lMesh, "OMUV", part);
-		lOMElement = CreateMaterialElement(lMesh, "AO/OM Mapping", part);
+		CreateMaterialElement(lMesh, "AO/OM Mapping", part);
 	}
 	if (part.HasVertexFlag(VertexFlags::Color))
 	{
-		lColor0Element = CreateVertexColor(lMesh, "ColorMap0", part);
+		CreateVertexColor(lMesh, "ColorMap0", part);
 	}
 	if (part.HasVertexFlag(VertexFlags::Color1))
 	{
-		lColor1Element = CreateVertexColor(lMesh, "ColorMap1", part);
+		CreateVertexColor(lMesh, "ColorMap1", part);
 	}
 
-	std::vector<Int3> triangles = part.GetIndices();
 	for (int i = 0; i < part.GetSubMeshCount(); i++)
 	{
 		SubMesh sub = part.GetSubMeshes()[i];

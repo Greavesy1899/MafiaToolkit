@@ -21,10 +21,10 @@ namespace ToolkitUpdater
                 Console.WriteLine("WARNING: Did not find folder in arguments[0]. Checking parent directory.");
             if (toolkitFolder == null)
             {
-                if (!File.Exists("Mafia2Toolkit.exe"))
+                if (!File.Exists("MafiaToolkit.exe"))
                     return;
 
-                Console.WriteLine("Found Mafia2Toolkit.exe!");
+                Console.WriteLine("Found MafiaToolkit.exe!");
             }
 
             //checks complete.. now to get the actual download package...

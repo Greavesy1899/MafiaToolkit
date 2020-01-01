@@ -1025,18 +1025,18 @@ namespace Mafia2Tool
                 return null;
             }
 
-            using (BinaryReader reader = new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)))
+            if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
             {
-                if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
+                if (!model.ModelStructure.ReadFromFbx(MeshBrowser.FileName))
+                {
+                    return null;
+                }
+            }
+            else if(MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)))
                 {
                     model.ModelStructure.ReadFromM2T(reader);
-                }
-                else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
-                {
-                    if (!model.ModelStructure.ReadFromFbx(MeshBrowser.FileName))
-                    {
-                        return null;
-                    }
                 }
             }
 
@@ -1049,15 +1049,16 @@ namespace Mafia2Tool
                     return null;
                 }
                 var options = modelForm.Options;
-                modelForm.Dispose();               
-                lod.VertexDeclaration &= (options["NORMALS"] == true ? ~VertexFlags.Normals : 0);
-                lod.VertexDeclaration &= (options["TANGENTS"] == true ? ~VertexFlags.Tangent : 0);
-                lod.VertexDeclaration &= (options["DIFFUSE"] == true ? ~VertexFlags.TexCoords0 : 0);
-                lod.VertexDeclaration &= (options["UV0"] == true ? ~VertexFlags.TexCoords1 : 0);
-                lod.VertexDeclaration &= (options["UV1"] == true ? ~VertexFlags.TexCoords2 : 0);
-                lod.VertexDeclaration &= (options["AO"] == true ? ~VertexFlags.ShadowTexture : 0);
-                lod.VertexDeclaration &= (options["COLOR0"] == true ? ~VertexFlags.Color : 0);
-                lod.VertexDeclaration &= (options["COLOR1"] == true ? ~VertexFlags.Color1 : 0);
+                modelForm.Dispose();
+                lod.VertexDeclaration = VertexFlags.Position;
+                lod.VertexDeclaration |= (options["NORMALS"] == true ? VertexFlags.Normals : 0);
+                lod.VertexDeclaration |= (options["TANGENTS"] == true ? VertexFlags.Tangent : 0);
+                lod.VertexDeclaration |= (options["DIFFUSE"] == true ? VertexFlags.TexCoords0 : 0);
+                lod.VertexDeclaration |= (options["UV1"] == true ? VertexFlags.TexCoords1 : 0);
+                lod.VertexDeclaration |= (options["UV2"] == true ? VertexFlags.TexCoords2 : 0);
+                lod.VertexDeclaration |= (options["AO"] == true ? VertexFlags.ShadowTexture : 0);
+                lod.VertexDeclaration |= (options["COLOR0"] == true ? VertexFlags.Color : 0);
+                lod.VertexDeclaration |= (options["COLOR1"] == true ? VertexFlags.Color1 : 0);
             }
 
             FrameObjectSingleMesh sm = (mesh as FrameObjectSingleMesh);

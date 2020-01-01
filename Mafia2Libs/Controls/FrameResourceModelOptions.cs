@@ -9,7 +9,10 @@ namespace Mafia2Tool
     public partial class FrameResourceModelOptions : Form
     {
         private Dictionary<string, bool> options;
-        public Dictionary<string, bool> Options { get; set; }
+        public Dictionary<string, bool> Options {
+            get { return options; }
+            set { options = value; }
+        }
 
         public FrameResourceModelOptions(VertexFlags flags, int i)
         {
@@ -27,8 +30,8 @@ namespace Mafia2Tool
             ImportNormalBox.Text = Language.GetString("$IMPORT_NORMAL");
             ImportTangentBox.Text = Language.GetString("$IMPORT_TANGENT");
             ImportDiffuseBox.Text = Language.GetString("$IMPORT_DIFFUSE");
-            ImportUV1Box.Text = Language.GetString("$IMPORT_UV0");
-            ImportUV2Box.Text = Language.GetString("$IMPORT_UV1");
+            ImportUV1Box.Text = Language.GetString("$IMPORT_UV1");
+            ImportUV2Box.Text = Language.GetString("$IMPORT_UV2");
             ImportAOBox.Text = Language.GetString("$IMPORT_AO");
             ImportColor0Box.Text = Language.GetString("$IMPORT_COLOR0");
             ImportColor1Box.Text = Language.GetString("$IMPORT_COLOR1");
@@ -37,7 +40,8 @@ namespace Mafia2Tool
 
         private void Init(VertexFlags flags, int i)
         {
-            ModelOptionsText.Text = string.Format("{0} LOD: {1}", Language.GetString("$MODEL_OPTIONS_TEXT"), i);
+            string text = string.Format("{0} LOD: {1}", Language.GetString("$MODEL_OPTIONS_TEXT"), i);
+            ModelOptionsText.Text = text;
 
             options = new Dictionary<string, bool>();
             options.Add("NORMALS", false);
@@ -51,7 +55,6 @@ namespace Mafia2Tool
             options.Add("COLOR1", false);
 
             ImportNormalBox.Enabled = flags.HasFlag(VertexFlags.Normals);
-            ImportTangentBox.Enabled = flags.HasFlag(VertexFlags.Tangent);
             ImportDiffuseBox.Enabled = flags.HasFlag(VertexFlags.TexCoords0);
             ImportUV1Box.Enabled = flags.HasFlag(VertexFlags.TexCoords1);
             ImportUV2Box.Enabled = flags.HasFlag(VertexFlags.TexCoords2);
@@ -65,7 +68,6 @@ namespace Mafia2Tool
         {
             DialogResult = DialogResult.OK;
             options["NORMALS"] = ImportNormalBox.Checked;
-            options["TANGENTS"] = (ImportTangentBox.Enabled ? ImportTangentBox.Checked : false);
             options["DIFFUSE"] = ImportDiffuseBox.Checked;
             options["UV1"] = ImportUV1Box.Checked;
             options["UV2"] = ImportUV2Box.Checked;
@@ -81,11 +83,6 @@ namespace Mafia2Tool
         {
             DialogResult = DialogResult.Cancel;
             Close();
-        }
-
-        private void ImportNormalOnCheckedChanged(object sender, EventArgs e)
-        {
-            ImportTangentBox.Enabled = (ImportNormalBox.Checked ? true : false);
         }
     }
 }

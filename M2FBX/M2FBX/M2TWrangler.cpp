@@ -241,15 +241,11 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 
 int DetermineNodeAttribute(FbxNode* node)
 {
-	if (node->GetNodeAttribute() == NULL)
-	{
-		WriteLine("NULL Node Attribute\n");
-	}
-	else
+	WriteLine("%s node has attribute of: %s", node->GetName(), node->GetNodeAttribute());
+	if (node->GetNodeAttribute() != NULL)
 	{
 		return node->GetNodeAttribute()->GetAttributeType();
 	}
-
 	return NULL;
 }
 
@@ -311,7 +307,7 @@ int ConvertFBX(const char* pSource, const char* pDest)
 	if (!lImporter->Initialize(pSource, -1, lSdkManager->GetIOSettings())) {
 		WriteLine("Error occured while initializing importer:");
 		WriteLine("%s", lImporter->GetStatus().GetErrorString());
-		return -1;
+		return -50;
 	}
 
 	WriteLine("Importing %s...", pSource);

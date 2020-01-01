@@ -71,9 +71,13 @@ namespace ResourceTypes.FrameResource
     }
     public class TableResource : BaseResource
     {
-        public string[] Tables;
+        private string[] tables;
 
-        public TableResource() : base()
+        public string[] Tables {
+            get { return tables; }
+            set { tables = value; }
+        }
+        public TableResource()
         {
 
         }
@@ -108,9 +112,14 @@ namespace ResourceTypes.FrameResource
     }
     public class ScriptResource : BaseResource
     {
-        public string[] Scripts = null;
+        private string[] scripts = null;
 
-        public ScriptResource() : base()
+        public string[] Scripts {
+            get { return scripts; }
+            set { scripts = value; }
+        }
+
+        public ScriptResource()
         {
 
         }
@@ -149,11 +158,24 @@ namespace ResourceTypes.FrameResource
     }
     public class XMLResource : BaseResource
     {
-        public string XMLTag;
-        public int Unk1;
-        public int Unk3;
+        private string xmlTag;
+        private int unk1;
+        private int unk3;
 
-        public XMLResource() : base()
+        public string XMLTag {
+            get { return xmlTag; }
+            set { xmlTag = value; }
+        }
+        public int Unk1 {
+            get { return unk1; }
+            set { unk1 = value; }
+        }
+        public int Unk3 {
+            get { return unk3; }
+            set { unk3 = value; }
+        }
+
+        public XMLResource()
         {
 
         }
@@ -185,8 +207,12 @@ namespace ResourceTypes.FrameResource
     }
     public class TextureResource : BaseResource
     {
-        public string Name = "";
-        public int HasMIP;
+        private int hasMIP;
+
+        public int HasMIP {
+            get { return hasMIP; }
+            set { hasMIP = value; }
+        }
 
         public TextureResource()
         {
