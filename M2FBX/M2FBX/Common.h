@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-#include "fbxsdk.h"
+#include <fbxsdk.h>
 #include "Utilities.h"
 #include "DataTypes.h"
 #define WIN32

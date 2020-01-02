@@ -69,6 +69,8 @@
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.ToolsButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.AutoAddFilesBUtton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -184,7 +186,8 @@
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolButton});
+            this.fileToolButton,
+            this.ToolsButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(800, 25);
@@ -207,20 +210,20 @@
             // SaveButton
             // 
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(180, 22);
+            this.SaveButton.Size = new System.Drawing.Size(110, 22);
             this.SaveButton.Text = "Save";
             this.SaveButton.Click += new System.EventHandler(this.SaveButtonOnClick);
             // 
             // reloadToolStripMenuItem
             // 
             this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.reloadToolStripMenuItem.Text = "Reload";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // panel1
@@ -231,6 +234,24 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(585, 410);
             this.panel1.TabIndex = 16;
+            // 
+            // ToolsButton
+            // 
+            this.ToolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.ToolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.AutoAddFilesBUtton});
+            this.ToolsButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsButton.Image")));
+            this.ToolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolsButton.Name = "ToolsButton";
+            this.ToolsButton.Size = new System.Drawing.Size(47, 22);
+            this.ToolsButton.Text = "Tools";
+            // 
+            // AutoAddFilesBUtton
+            // 
+            this.AutoAddFilesBUtton.Name = "AutoAddFilesBUtton";
+            this.AutoAddFilesBUtton.Size = new System.Drawing.Size(180, 22);
+            this.AutoAddFilesBUtton.Text = "Auto-Add Files";
+            this.AutoAddFilesBUtton.Click += new System.EventHandler(this.AutoAddFilesButton_Click);
             // 
             // SDSContentEditor
             // 
@@ -258,5 +279,7 @@
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.ToolStripDropDownButton ToolsButton;
+        private System.Windows.Forms.ToolStripMenuItem AutoAddFilesBUtton;
     }
 }

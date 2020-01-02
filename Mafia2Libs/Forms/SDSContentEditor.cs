@@ -191,55 +191,42 @@ namespace Mafia2Tool
 
         private void AutoAddFilesButton_Click(object sender, EventArgs e)
         {
-            List<string> newBuffers = new List<string>();
-            foreach(FileInfo info in parent.GetFiles())
+            resources["VertexBufferPool"].Clear();
+            resources["IndexBufferPool"].Clear();
+            resources["Texture"].Clear();
+            foreach (FileInfo info in parent.GetFiles())
             {
                 if (info.Extension.Contains("vbp"))
-                    newBuffers.Add(info.Name);
+                {
+                    var typeResource = types["VertexBufferPool"];
+                    var version = typeResource.GetSerializationVersion();
+                    BaseResource resource = new BaseResource();
+                    resource.SetFileName(info.Name);
+                    resource.SetEntryVersion(version);
+                    resources[typeResource.GetTypeName()].Add(BuildTreeNode(info.Name, resource));
+                }
 
                 if (info.Extension.Contains("ibp"))
-                    newBuffers.Add(info.Name);
+                {
+                    var typeResource = types["IndexBufferPool"];
+                    var version = typeResource.GetSerializationVersion();
+                    BaseResource resource = new BaseResource();
+                    resource.SetFileName(info.Name);
+                    resource.SetEntryVersion(version);
+                    resources[typeResource.GetTypeName()].Add(BuildTreeNode(info.Name, resource));
+                }
 
-                if (info.Extension.Contains("dds"))
-                    newBuffers.Add(info.Name);
+                if (info.Extension.Contains("dds") && !info.Extension.Contains("MIP_"))
+                {
+                    var typeResource = types["Texture"];
+                    var version = typeResource.GetSerializationVersion();
+                    TextureResource resource = new TextureResource();
+                    resource.SetFileName(info.Name);
+                    resource.SetEntryVersion(version);
+                    resource.HasMIP = 0;
+                    resources[typeResource.GetTypeName()].Add(BuildTreeNode(info.Name, resource));
+                }
             }
-
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.IndentChars = ("\t");
-            settings.OmitXmlDeclaration = true;
-
-            XmlWriter resourceXML = XmlWriter.Create(parent.FullName + "/SDSContent_BUFFERS.xml", settings);
-            resourceXML.WriteStartElement("SDSResource");
-            for (int i = 0; i != newBuffers.Count; i++)
-            {
-                resourceXML.WriteStartElement("ResourceEntry");
-                
-
-                if (newBuffers[i].Contains(".ibp"))
-                {
-                    resourceXML.WriteElementString("Type", "IndexBufferPool");
-                    resourceXML.WriteElementString("File", newBuffers[i]);
-                    resourceXML.WriteElementString ("Version", "2");
-                }
-                else if(newBuffers[i].Contains(".vbp"))
-                {
-                    resourceXML.WriteElementString("Type", "VertexBufferPool");
-                    resourceXML.WriteElementString("File", newBuffers[i]);
-                    resourceXML.WriteElementString("Version", "2");
-                }
-                else if(newBuffers[i].Contains(".dds"))
-                {
-                    resourceXML.WriteElementString("Type", "Texture");
-                    resourceXML.WriteElementString("File", newBuffers[i]);
-                    resourceXML.WriteElementString("HasMIP", "0");
-                    resourceXML.WriteElementString("Version", "2");
-                }
-                resourceXML.WriteEndElement();
-            }
-            resourceXML.WriteEndElement();
-            resourceXML.Flush();
-            resourceXML.Dispose();
         }
 
         private void SaveButtonOnClick(object sender, EventArgs e)

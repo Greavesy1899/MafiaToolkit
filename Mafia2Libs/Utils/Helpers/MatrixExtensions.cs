@@ -46,6 +46,18 @@ namespace Utils.SharpDXExtensions
             Matrix t = Matrix.Translation(position);
             return r * s * t;
         }
+
+        public static Matrix RowEchelon(Matrix other)
+        {
+            Matrix matrix = new Matrix();
+            matrix.Row1 = other.Column1;
+            matrix.Row2 = other.Column2;
+            matrix.Row3 = other.Column3;
+            matrix.Row4 = other.Row4;
+            matrix.Column4 = Vector4.Zero;
+            return matrix;
+        }
+
         public static Vector3 RotatePoint(this Matrix matrix, Vector3 position)
         {
             Vector3 vector = new Vector3();

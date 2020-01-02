@@ -818,12 +818,12 @@ namespace Gibbed.Mafia2.FileFormats
                 Directory.CreateDirectory(xmldir);
             }
 
-            using(MemoryStream stream = new MemoryStream(entry.Data))
+            using (MemoryStream stream = new MemoryStream(entry.Data))
             {
                 resource = new XmlResource();
                 resource.Deserialize(entry.Version, stream, Endian);
 
-                if (Endian == Endian.Big || !resource.Unk3)
+                if (Endian == Endian.Big || resource.Unk3)
                 {
                     File.WriteAllBytes(xmlDir + "/" + name + ".xml", entry.Data);
                 }

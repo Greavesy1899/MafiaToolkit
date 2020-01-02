@@ -35,6 +35,11 @@ namespace ResourceTypes.FrameResource
             return EntryVersion.ToString();
         }
 
+        public virtual void SetEntryVersion(int version)
+        {
+            EntryVersion = version;
+        }
+
         public virtual int GetSerializationVersion()
         {
             return SerialVersion;
@@ -53,6 +58,11 @@ namespace ResourceTypes.FrameResource
         public virtual string GetFileName()
         {
             return FileName;
+        }
+
+        public virtual void SetFileName(string file)
+        {
+            FileName = file;
         }
 
         public virtual void ReadResourceEntry(XPathNodeIterator iterator)
