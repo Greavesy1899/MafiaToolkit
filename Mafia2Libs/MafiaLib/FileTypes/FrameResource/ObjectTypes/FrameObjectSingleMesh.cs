@@ -84,7 +84,7 @@ namespace ResourceTypes.FrameResource
             unk14 = other.unk14;
             meshIndex = other.meshIndex;
             materialIndex = other.materialIndex;
-            omTextureHash = new Hash(other.omTextureHash);
+            omTextureHash = new Hash(other.omTextureHash.String);
             unk18_1 = other.unk18_1;
             unk18_2 = other.unk18_2;
             unk18_3 = other.unk18_3;

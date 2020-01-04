@@ -798,7 +798,7 @@ namespace Mafia2Tool
                 "\n\n" +
                 "Also, a very special thanks to PayPal donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider \nNemesis7675" +
                 "\n\n" +
-                "And Patreons: \nHamAndRock",
+                "And Patreons: \nHamAndRock \nMelber", 
                 "Toolkit",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);

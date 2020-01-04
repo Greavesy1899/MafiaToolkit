@@ -4,7 +4,12 @@
   <String ID="$CANCEL">Zrušit</String>
   <String ID="$EDIT">Upravit</String>
   <String ID="$INDEX">Index</String>
+  <String ID="$COPY">Kopírovat</String>
+  <String ID="$PASTE">Vložit</String>
   <String ID="$ENTRY_NAME">Entry Name</String>
+  <String ID="$UPDATE_MESSAGE1">K dispozici je nová verze Toolkitu.</String>
+  <String ID="$UPDATE_MESSAGE2">Chcete-li stáhnout novou verzi, stiskněte tlačítko OK.</String>
+  <String ID="$UPDATE_MESSAGE3">Chcete-li použít aktuální verzi, stiskněte Storno.</String>
   
   <!-- Game Explorer Strings -->
   <String ID="$CREDITS">Poděkování</String>
@@ -56,6 +61,7 @@
   <String ID="$LANGUAGE_POLISH">Polština</String>
   <String ID="$LANGUAGE_OPTION">Jazyk</String>
   <String ID="$DISCORD_STATE_CUSTOM">Použít vlastní status v discordu.</String>
+  <String ID="$CHECK_FOR_UPDATES">Vyhledat aktualizace.</String>
   
   <!-- Model/Exporting Option Strings-->
   <String ID="$EXPORT_PATH_TITLE">Umístění exportu:</String>
@@ -66,6 +72,12 @@
   <String ID="$MATERIAL_LIB_REMOVE">Odstranit vybranou knihovnu</String>
   <String ID="$MATERIAL_LIB_ADD">Přidat knihovu</String>
   <String ID="$MATERIAL_LIB_SELECTED">Vybrané knihovny</String>
+  <String ID="$CONFLICTING_MATS">Konfliktní materiály</String>
+  <String ID="$NEW_MATS">Nové materiály</String>
+  <String ID="$MERGE">Sloučit</String>
+  <String ID="$MERGE_MTL">Sloučit MTL</String>
+  <String ID="$DELETE_SEL_MAT">Smazat vybraný materiál</String>
+  <String ID="$SELECT_ALL">Vybrat vše</String>
   
   <!-- SDS Options -->
   <String ID="$SDS_COMPRESSION_TYPE">Typ komprese</String>
@@ -75,12 +87,15 @@
   <String ID="$ADD_TIME_DATE_BACKUP">Přidání času a data k zálohám.</String>
   <String ID="$DECOMPILE_LUA_UNPACK">Rozšifrovat lua při extrahování</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Použít SDS Tool GUI Formát při extrahování.</String>
+  <String ID="$COOK_COLLISIONS">Cook kolize při ukládání.</String>
+  
   <!-- Render Options -->
   <String ID="$RENDER">Render</String>
   <String ID="$RENDER_OPTIONS">Možnosti vykreslování</String>
   <String ID="$RENDER_SCREENFAR">Screen Far</String>
   <String ID="$RENDER_SCREENEAR">Screen Near</String>
   <String ID="$RENDER_CAMERASPEED">Rychlost kamery</String>
+  <String ID="$RENDER_FOV">Zorné pole</String>
   <String ID="$TEXTURE_DIRECTORY">Adresář složky textur</String>
   <String ID="$SELECT_TEX_FOLDER">Vyberte složku v které se nachází textury.</String>
   
@@ -193,4 +208,31 @@
   <String ID="$SELECT_PARENT">Dvojklikem vyberete nový parent.</String>
   <String ID="$HOW_TO_SEARCH">Pro vyhledávání napište název frame a zmáčkněte 'enter'.</String>
   
+  <!-- M2FBX Strings-->
+  <String ID="$SELECT_MESH">Vybrat Mesh</String>
+  <String ID="$CONVERT">Konvertovat</String>
+  <String ID="$IMPORT">Importovat</String>
+  <String ID="$EXPORT">Exportovat</String>
+  <String ID="$M2FBX_INSTRUCTIONS">Využijte níže uvedené funkce M2FBX. Všechny nové soubory budou uloženy ve stejném adresáři jako zadaný soubor.</String>
+   
+  <!-- NewObjectEntry Form -->
+  <String ID="$IMPORT_NORMAL">Importovat Normals</String>
+  <String ID="$IMPORT_TANGENT">Importovat Tangents</String>
+  <String ID="$IMPORT_DIFFUSE">Importovat Diffuse UV</String>
+  <String ID="$IMPORT_UV1">Importovat UV1</String>
+  <String ID="$IMPORT_UV2">Importovat UV2</String>
+  <String ID="$IMPORT_AO">Importovat AO UV</String>
+  <String ID="$IMPORT_COLOR0">Importovat Color0</String>
+  <String ID="$IMPORT_COLOR1">Importovat Color1</String>
+  <String ID="$FLIP_UV">Převrátit UV Coordinates</String>
+  <String ID="$MODEL_OPTIONS_TITLE">Možnosti modelu</String>
+  <String ID="$MODEL_OPTIONS_TEXT">Vyberte, které vlastnosti se mají importovat</String>
+
+  <!-- Translokator Strings-->
+  <String ID="$TRANSLOKATOR_EDITOR">Translokator Editor</String>
+  <String ID="$ADD_OBJECT">Přidat objekt</String>
+  <String ID="$ADD_INSTANCE">Přidat instanci</String>
+  <String ID="$DELETE_OBJECT">Odstranit objekt</String>
+  <String ID="$DELETE_INSTANCE">Odstranit instanci</String>
+  <String ID="$VIEW_NUM_INST">Zobrazit počet instancí</String>
 </Localisation>

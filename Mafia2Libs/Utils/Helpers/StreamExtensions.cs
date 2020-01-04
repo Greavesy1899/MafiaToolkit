@@ -131,6 +131,13 @@ namespace Utils.Extensions
         {
             stream.Write(BitConverter.GetBytes(value), 0, 1);
         }
+
+        public static void WriteString16(this Stream stream, string text, bool bigEndian)
+        {
+            stream.Write((short)text.Length, bigEndian);
+            stream.Write(text.ToCharArray());
+        }
+
         public static void WriteStringBuffer(this Stream writer, int size, string text, char trim = ' ', Encoding encoding = null)
         {
             bool addTrim = (trim == ' ' ? false : true);
