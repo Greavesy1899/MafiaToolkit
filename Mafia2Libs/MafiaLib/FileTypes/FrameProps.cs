@@ -169,8 +169,6 @@ namespace ResourceTypes.Misc
                 }
                 frameInfos[i] = chunk;
             }
-
-            WriteToText();
         }
 
         public void WriteToFile(string name)

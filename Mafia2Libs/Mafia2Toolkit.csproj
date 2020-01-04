@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Mafia2Tool</RootNamespace>
     <AssemblyName>MafiaToolkit</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -125,9 +125,6 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=1.1.0.145, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.1.1.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Octokit, Version=0.36.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Octokit.0.36.0\lib\net46\Octokit.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

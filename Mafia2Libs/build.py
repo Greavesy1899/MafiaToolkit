@@ -31,7 +31,6 @@ print("Building Toolkit for release..")
 remove_dll("Gibbed.IO.dll")
 remove_dll("ICSharpCode.SharpZipLib.dll")
 remove_dll("Gibbed.IO.dll");
-remove_dll("Octokit.dll");
 remove_dll("SharpDX.D3DCompiler.dll");
 remove_dll("SharpDX.Desktop.dll");
 remove_dll("SharpDX.Direct3D11.dll");
@@ -48,8 +47,6 @@ remove_dll("squish_64.dll");
 
 #remove files
 remove_file("ToolkitUpdater.pdb")
-remove_file("Octokit.pdb")
-remove_file("Octokit.xml")
 remove_file("Mafia2Toolkit.pdb")
 remove_file("ICSharpCode.SharpZipLib.xml")
 remove_file("ICSharpCode.SharpZipLib.pdb")

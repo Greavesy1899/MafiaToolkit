@@ -109,12 +109,12 @@
             65536});
             this.ScaleZNumeric.Location = new System.Drawing.Point(67, 240);
             this.ScaleZNumeric.Maximum = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             0});
             this.ScaleZNumeric.Minimum = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             -2147483648});
@@ -132,12 +132,12 @@
             65536});
             this.ScaleYNumeric.Location = new System.Drawing.Point(67, 214);
             this.ScaleYNumeric.Maximum = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             0});
             this.ScaleYNumeric.Minimum = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             -2147483648});
@@ -155,12 +155,12 @@
             65536});
             this.ScaleXNumeric.Location = new System.Drawing.Point(67, 188);
             this.ScaleXNumeric.Maximum = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             0});
             this.ScaleXNumeric.Minimum = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             -2147483648});
