@@ -152,13 +152,14 @@ namespace Rendering.Graphics
                 for(int i = 0; i < vertices.Length; i++)
                     vertices[i].Colour = colour;
 
-                DataBox dataBox;
-                dataBox = deviceContext.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-                Utilities.Write(dataBox.DataPointer, vertices, 0, vertices.Length);
-                deviceContext.UnmapSubresource(vertexBuffer, 0);
-                dataBox = deviceContext.MapSubresource(indexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-                Utilities.Write(dataBox.DataPointer, indices, 0, indices.Length);
-                deviceContext.UnmapSubresource(indexBuffer, 0);
+                if(vertexBuffer != null && indexBuffer != null)
+                {
+                    indexBuffer?.Dispose();
+                    indexBuffer = null;
+                    vertexBuffer?.Dispose();
+                    vertexBuffer = null;
+                }
+                InitBuffers(device, deviceContext);
             }
         }
 

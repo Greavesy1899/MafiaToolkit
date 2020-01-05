@@ -338,6 +338,11 @@ namespace ResourceTypes.Navigation
             set { offset2 = value; }
         }
 
+        public JunctionDefinition()
+        {
+            dataSet2 = new unkStruct2Sect2();
+        }
+
         public override string ToString()
         {
             return string.Format("{0} {1} {2} {3} {4} {5} {6}", junctionSize0, junctionSize1, boundarySize0, boundarySize1, junctionIdx, unk5, unk6);
@@ -401,6 +406,11 @@ namespace ResourceTypes.Navigation
         public Vector3[] Path {
             get { return path; }
             set { path = value; }
+        }
+
+        public JunctionSpline()
+        {
+            path = new Vector3[pathSize1];
         }
 
         public override string ToString()

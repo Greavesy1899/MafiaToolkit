@@ -23,6 +23,7 @@ namespace Mafia2Tool
             collisionFile = file;
             CheckCollision();
             Show();
+            MessageBox.Show("This editor is now deprecated. Use the Map Editor to import Collisions.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             ToolkitSettings.UpdateRichPresence("Using the Collision editor.");
         }
 

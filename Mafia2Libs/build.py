@@ -44,10 +44,12 @@ remove_dll("BitStreams.dll");
 remove_dll("Gibbed.Squish.dll");
 remove_dll("squish_32.dll");
 remove_dll("squish_64.dll");
+remove_dll("Octokit.dll");
 
 #remove files
 remove_file("ToolkitUpdater.pdb")
 remove_file("Mafia2Toolkit.pdb")
+remove_file("Octokit.xml");
 remove_file("ICSharpCode.SharpZipLib.xml")
 remove_file("ICSharpCode.SharpZipLib.pdb")
 remove_file("Gibbed.IO.pdb");

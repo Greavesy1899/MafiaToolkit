@@ -63,7 +63,10 @@ namespace Rendering.Graphics
 
         public override void InitBuffers(Device d3d, DeviceContext context)
         {
-            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            if (vertices.Length != 0)
+            {
+                vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            }
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
@@ -92,10 +95,12 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
-            DataBox dataBox;
-            dataBox = deviceContext.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-            Utilities.Write(dataBox.DataPointer, vertices, 0, vertices.Length);
-            deviceContext.UnmapSubresource(vertexBuffer, 0);
+            if(vertexBuffer != null)
+            {
+                vertexBuffer.Dispose();
+                vertexBuffer = null;
+            }
+            InitBuffers(device, deviceContext);
             isUpdatedNeeded = false;
         }
 

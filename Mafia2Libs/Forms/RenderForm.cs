@@ -1209,7 +1209,12 @@ namespace Mafia2Tool
                         float t;
 
                         if (!localRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-                        Debug.Assert(t > 0f);
+
+                        if(t > 0.0f)
+                        {
+                            var frame = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase);
+                            Utils.Logging.Log.WriteLine("The toolkit has failed to analyse a model. Skipping " + frame.Name);
+                        }
 
                         var worldPosition = ray.Position + t * ray.Direction;
                         var distance = (worldPosition - ray.Position).LengthSquared();
@@ -1353,6 +1358,16 @@ namespace Mafia2Tool
                     }
                 }
             }
+            if (pGrid.SelectedObject is RenderRoad)
+            {
+                RenderRoad road = (pGrid.SelectedObject as RenderRoad);
+                road.Spline.UpdateVertices();
+            }
+            if (pGrid.SelectedObject is RenderJunction)
+            {
+                RenderJunction junction = (pGrid.SelectedObject as RenderJunction);
+                junction.UpdateVertices();
+            }
             if (pGrid.SelectedObject is FrameObjectSingleMesh)
             {
                 FrameObjectSingleMesh obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
@@ -1373,6 +1388,7 @@ namespace Mafia2Tool
 
                 Graphics.Assets[obj.RefID].SetTransform(obj.WorldTransform);
             }
+
         }
 
         private void OnPropertyGridSelectChanged(object sender, SelectedGridItemChangedEventArgs e)
@@ -1384,11 +1400,6 @@ namespace Mafia2Tool
             if (pGrid.SelectedObject is FrameObjectSingleMesh)
             {
                 ApplyChangesToRenderable((FrameObjectBase)pGrid.SelectedObject);
-            }
-            if (pGrid.SelectedObject is RenderRoad)
-            {
-                RenderRoad road = (pGrid.SelectedObject as RenderRoad);
-                road.Spline.UpdateVertices();
             }
             if (pGrid.SelectedObject is FrameObjectArea || pGrid.SelectedObject is FrameObjectSector)
             {
@@ -1977,7 +1988,7 @@ namespace Mafia2Tool
 
         private void AddCollisionButton_Click(object sender, EventArgs e)
         {
-            if (SceneData.Collisions != null && ToolkitSettings.Experimental)
+            if (SceneData.Collisions != null)
             {
                 if (MeshBrowser.ShowDialog() != DialogResult.OK)
                 {
