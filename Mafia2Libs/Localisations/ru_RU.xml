@@ -51,7 +51,7 @@
   <String ID="$DISCORD_TOGGLE_DETAILS">Отображать подробную информацию </String>
   <String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Включить Rich Presence</String>
   <String ID="$LANGUAGE_ENGLISH">English</String>
-  <String ID="$LANGUAGE_RUSSIAN">Русский</String>
+  <String ID="$LANGUAGE_RUSSIAN">русский</String>
   <String ID="$LANGUAGE_CZECH">čeština</String>
   <String ID="$LANGUAGE_POLISH">Polish</String>
   <String ID="$LANGUAGE_OPTION">Язык</String>
@@ -170,43 +170,4 @@
   <String ID="$ROTATION_X">Вращение X</String>
   <String ID="$ROTATION_Y">Вращение Y</String>
   <String ID="$ROTATION_Z">Вращение Z</String>
-  
-  <!-- StreamEditor strings-->
-  <String ID="$STREAM_EDITOR_TITLE">Редактор потоков</String>
-  <String ID="$ADD_LINE">Добавить линию</String>
-  <String ID="$DELETE_LINE">Удалить линию</String>
-  <String ID="$MOVE_UP">Переместить вверх</String>
-  <String ID="$MOVE_DOWN">Переместить Вниз</String>
-  
-  <!-- ListWindow Strings-->
-  <String ID="$SELECT_PARENT">Дважды щелкните, чтобы выбрать нового родителя.</String>
-  <String ID="$HOW_TO_SEARCH">Для поиска введите имя кадра и нажмите клавишу "enter"..</String>
-  
-  <!-- M2FBX Strings-->
-  <String ID="$SELECT_MESH">Выбрать сетку</String>
-  <String ID="$CONVERT">Конвертировать!</String>
-  <String ID="$IMPORT">Ипортировать</String>
-  <String ID="$EXPORT">Экспорт</String>
-  <String ID="$M2FBX_INSTRUCTIONS">Utilise M2FBX Functions below. Any new files will be saved in the same location as the inputted file.</String>
-  
-  <!-- NewObjectEntry Form -->
-  <String ID="$IMPORT_NORMAL">Импорт Нормалей</String>
-  <String ID="$IMPORT_TANGENT">Импорт Тангенс,</String>
-  <String ID="$IMPORT_DIFFUSE">Импорт Diffuse UV</String>
-  <String ID="$IMPORT_UV1">Импорт UV1</String>
-  <String ID="$IMPORT_UV2">Импорт UV2</String>
-  <String ID="$IMPORT_AO">Импорт AO UV</String>
-  <String ID="$IMPORT_COLOR0">Импорт Цвет0</String>
-  <String ID="$IMPORT_COLOR1">Импорт Цвет1</String>
-  <String ID="$FLIP_UV">Флип UV-координаты</String>
-  <String ID="$MODEL_OPTIONS_TITLE">Настройки Модели</String>
-  <String ID="$MODEL_OPTIONS_TEXT">Выберите, какие свойства следует импортировать для </String>
-
-  <!-- Translokator Strings-->
-  <String ID="$TRANSLOKATOR_EDITOR">Translokator Editor</String>
-  <String ID="$ADD_OBJECT">Добавить Объект </String>
-  <String ID="$ADD_INSTANCE">Добавить Экземпляр</String>
-  <String ID="$DELETE_OBJECT">Удалить Объект</String>
-  <String ID="$DELETE_INSTANCE">Удалить Экземпляр</String>
-  <String ID="$VIEW_NUM_INST">Просмотр количества экземпляров</String>
 </Localisation>

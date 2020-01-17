@@ -26,13 +26,21 @@ namespace Mafia2Tool
         {
             if (ToolkitSettings.CheckForUpdates)
             {
-                Octokit.GitHubClient client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("ToolkitUpdater", "1"));
-                GetLatest(client).Wait();
+                try
+                {
+                    Octokit.GitHubClient client = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("ToolkitUpdater", "1"));
+                    GetLatest(client).Wait();
+                }
+                catch(Exception)
+                {
+                    MessageBox.Show(Language.GetString("$FAILED_UPDATE_CHECK"), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
         }
 
         private static async Task GetLatest(Octokit.GitHubClient client)
         {
+            //NOTE: Getting the very latest release causes an exception, so we need to use GetAll().
             var releases = await client.Repository.Release.GetAll("Greavesy1899", "Mafia2Toolkit");
             var release = releases[0];
             var version = release.TagName.Replace("v", "");

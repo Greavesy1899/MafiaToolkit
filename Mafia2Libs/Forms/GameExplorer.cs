@@ -324,14 +324,19 @@ namespace Mafia2Tool
 
         private void OpenSDS(FileInfo file, bool openDirectory = true)
         {
+            string backupFolder = Path.Combine(file.Directory.FullName, "BackupSDS");
+            string extractedFolder = Path.Combine(file.Directory.FullName, "extracted");
+
             //backup file before unpacking..
-            if (!Directory.Exists(file.Directory.FullName + "/BackupSDS"))
-                Directory.CreateDirectory(file.Directory.FullName + "/BackupSDS");
+            if (!Directory.Exists(backupFolder))
+            {
+                Directory.CreateDirectory(backupFolder);
+            }
 
             //place copy in new folder.
             string time = string.Format("{0}_{1}_{2}_{3}_{4}", DateTime.Now.TimeOfDay.Hours, DateTime.Now.TimeOfDay.Minutes, DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
             string filename = ToolkitSettings.AddTimeDataBackup == true ? file.Name.Insert(file.Name.Length - 4, "_" + time) : file.Name;
-            File.Copy(file.FullName, file.Directory.FullName + "/BackupSDS/" + filename, true);
+            File.Copy(file.FullName, Path.Combine(backupFolder, filename), true);
 
             Log.WriteLine("Opening SDS: " + file.Name);
             fileListView.Items.Clear();
@@ -348,7 +353,6 @@ namespace Mafia2Tool
             Log.WriteLine("Succesfully unwrapped compressed data");
 
             archiveFile.SaveResources(file);
-
             if (openDirectory)
             {
                 var directory = file.Directory;
@@ -358,7 +362,7 @@ namespace Mafia2Tool
                 if(!node.Nodes.ContainsKey("extracted"))
                 {
                     var extracted = new TreeNode("extracted");
-                    extracted.Tag = file.Directory.FullName + "/extracted/";
+                    extracted.Tag = extracted;
                     extracted.Name = "extracted";
                     extracted.Nodes.Add(file.Name);
                     node.Nodes.Add(extracted);
@@ -368,7 +372,7 @@ namespace Mafia2Tool
                     node.Nodes["extracted"].Nodes.Add(file.Name);
                 }
 
-                OpenDirectory(new DirectoryInfo(file.Directory.FullName + "/extracted/" + file.Name));
+                OpenDirectory(new DirectoryInfo(Path.Combine(extractedFolder, file.Name)));
                 infoText.Text = "Opened SDS..";
             }
         }

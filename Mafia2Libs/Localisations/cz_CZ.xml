@@ -7,9 +7,10 @@
   <String ID="$COPY">Kopírovat</String>
   <String ID="$PASTE">Vložit</String>
   <String ID="$ENTRY_NAME">Entry Name</String>
-  <String ID="$UPDATE_MESSAGE1">K dispozici je nová verze Toolkitu.</String>
+  <String ID="$UPDATE_MESSAGE1">K dispozici je nová verze Mafia II: Toolkit!</String>
   <String ID="$UPDATE_MESSAGE2">Chcete-li stáhnout novou verzi, stiskněte tlačítko OK.</String>
   <String ID="$UPDATE_MESSAGE3">Chcete-li použít aktuální verzi, stiskněte Storno.</String>
+  <String ID="$FAILED_UPDATE_CHECK">Při kontrole aktualizací se nezdařilo!</String>
   
   <!-- Game Explorer Strings -->
   <String ID="$CREDITS">Poděkování</String>

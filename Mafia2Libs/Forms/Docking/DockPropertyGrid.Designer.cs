@@ -308,9 +308,8 @@
             this.CurrentEntry.AutoSize = true;
             this.CurrentEntry.Location = new System.Drawing.Point(10, 7);
             this.CurrentEntry.Name = "CurrentEntry";
-            this.CurrentEntry.Size = new System.Drawing.Size(111, 13);
+            this.CurrentEntry.Size = new System.Drawing.Size(0, 13);
             this.CurrentEntry.TabIndex = 12;
-            this.CurrentEntry.Text = "FRAME NAME HERE";
             // 
             // RotationZLabel
             // 

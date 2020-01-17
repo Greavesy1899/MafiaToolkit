@@ -7,9 +7,10 @@
   <String ID="$COPY">Copy</String>
   <String ID="$PASTE">Paste</String>
   <String ID="$ENTRY_NAME">Entry Name</String>
-  <String ID="$UPDATE_MESSAGE1">A new version of the Toolkit is available.</String>
+  <String ID="$UPDATE_MESSAGE1">A new version of the Mafia II: Toolkit is available!</String>
   <String ID="$UPDATE_MESSAGE2">To download, press OK.</String>
   <String ID="$UPDATE_MESSAGE3">To use the current version, press cancel.</String>
+  <String ID="$FAILED_UPDATE_CHECK">Failed to checking for updates!</String>
   
   <!-- Game Explorer Strings -->
   <String ID="$CREDITS">Special Thanks</String>

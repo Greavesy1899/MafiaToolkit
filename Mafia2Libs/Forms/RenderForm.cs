@@ -1212,8 +1212,11 @@ namespace Mafia2Tool
 
                         if(t > 0.0f)
                         {
-                            var frame = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase);
-                            Utils.Logging.Log.WriteLine("The toolkit has failed to analyse a model. Skipping " + frame.Name);
+                            if(SceneData.FrameResource.FrameObjects.ContainsKey(model.Key))
+                            {
+                                var frame = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase);
+                                Utils.Logging.Log.WriteLine("The toolkit has failed to analyse a model. Skipping " + frame.Name);
+                            }
                         }
 
                         var worldPosition = ray.Position + t * ray.Direction;

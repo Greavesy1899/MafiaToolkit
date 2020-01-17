@@ -75,7 +75,7 @@ namespace Forms.Docking
                 Vector3 scale;
                 fObject.LocalTransform.Decompose(out scale, out rotation2, out position);
 
-                CurrentEntry.Text = fObject.Name.String;
+                CurrentEntry.Text = fObject.Name.ToString();
                 PositionXNumeric.Value = Convert.ToDecimal(position.X);
                 PositionYNumeric.Value = Convert.ToDecimal(position.Y);
                 PositionZNumeric.Value = Convert.ToDecimal(position.Z);
