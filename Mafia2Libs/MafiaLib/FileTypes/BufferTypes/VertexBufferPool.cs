@@ -30,26 +30,6 @@ namespace ResourceTypes.BufferPools
         }
 
         /// <summary>
-        /// Get buffer from manager. use IndexBufferRef from FrameGeometry.
-        /// </summary>
-        /// <param name="indexRef">indexBufferRef</param>
-        /// <returns></returns>
-        public BufferLocationStruct SearchBuffer(ulong indexRef)
-        {
-            for (int i = 0; i != bufferPools.Count; i++)
-            {
-                int c = 0;
-                foreach (KeyValuePair<ulong, VertexBuffer> entry in bufferPools[i].Buffers)
-                {
-                    if (entry.Key == indexRef)
-                        return new BufferLocationStruct(i, c);
-                    c++;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
         /// Add new buffer to first non-full pool.
         /// </summary>
         /// <param name="buffer"></param>
@@ -76,17 +56,30 @@ namespace ResourceTypes.BufferPools
             }
         }
 
-        /// <summary>
-        /// Remove buffer if found.
-        /// </summary>
-        /// <param name="buffer"></param>
-        public void RemoveBuffer(VertexBuffer buffer)
+        public bool HasBuffer(VertexBuffer buffer)
         {
-            for (int i = 0; i != bufferPools.Count; i++)
+            for (int i = 0; i < bufferPools.Count; i++)
+            {
+                if (bufferPools[i].Buffers.ContainsValue(buffer))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool RemoveBuffer(VertexBuffer buffer)
+        {
+            for (int i = 0; i < bufferPools.Count; i++)
             {
                 if (bufferPools[i].Buffers.Remove(buffer.Hash))
-                    return;
+                {
+                    return true;
+                }
             }
+
+            return false;
         }
 
         /// <summary>

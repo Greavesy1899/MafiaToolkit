@@ -1077,16 +1077,26 @@ namespace Mafia2Tool
 
             for (int i = 0; i < model.FrameGeometry.NumLods; i++)
             {
-                //Check for existing buffer; if it exists, remove so we can add one later.
-                if (SceneData.IndexBufferPool.SearchBuffer(model.IndexBuffers[i].Hash) != null)
+                bool indexResult = SceneData.IndexBufferPool.HasBuffer(model.IndexBuffers[i]);
+                bool vertexResult = SceneData.VertexBufferPool.HasBuffer(model.VertexBuffers[i]);
+                bool import = true;
+                if (indexResult || vertexResult)
+                {
+                    var result = MessageBox.Show("Found existing buffers!\nPressing 'OK' will replace, pressing 'Cancel' will stop the importing process.", "Toolkit", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                    import = (result == DialogResult.OK ? true : false);
+                }
+
+                if(import)
+                {
                     SceneData.IndexBufferPool.RemoveBuffer(model.IndexBuffers[i]);
-
-                //do the same for vertexbuffer pools.
-                if (SceneData.VertexBufferPool.SearchBuffer(model.VertexBuffers[i].Hash) != null)
                     SceneData.VertexBufferPool.RemoveBuffer(model.VertexBuffers[i]);
-
-                SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[i]);
-                SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[i]);
+                    SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[i]);
+                    SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[i]);
+                }
+                else
+                {
+                    return null;
+                }
             }
 
             return mesh;
