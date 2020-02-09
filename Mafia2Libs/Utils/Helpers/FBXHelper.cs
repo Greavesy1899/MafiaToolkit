@@ -69,6 +69,12 @@ namespace Utils
                 case -94:
                     message += "Could not find standalone mesh or LOD Group!";
                     break;
+                case -50:
+                    message += "Failed to initialize the FBX Importer!";
+                    break;
+                case -25:
+                    message += "pMesh->IsTriangleMesh() did not equal true..Cannot continue!";
+                    break;
                 case -10:
                     message += "Failed to initialize the PhysX Cooking library!";
                     break;

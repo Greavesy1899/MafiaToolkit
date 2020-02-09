@@ -145,7 +145,7 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	//Gotta be triangulated.
 	if (!pMesh->IsTriangleMesh()) {
 		WriteLine("pMesh->IsTriangleMesh() did not equal true.. Cannot continue.");
-		return -97;
+		return -25;
 	}
 
 	//begin getting triangles
@@ -264,7 +264,7 @@ int BuildLodGroup(ModelStructure* structure, FbxNode* node)
 		FbxNode* child = node->GetChild(i);
 		int result = BuildModelPart(child, Part);
 		if (result != 0)
-			return -95;
+			return result;
 		parts[i] = Part;
 	}
 	structure->SetParts(parts);
@@ -282,7 +282,7 @@ int BuildModel(ModelStructure* structure, FbxNode* node)
 
 	int result = BuildModelPart(node, Part);
 	if (result != 0)
-		return -95;
+		return result;
 
 	parts[0] = Part;
 	structure->SetParts(parts);
@@ -332,20 +332,20 @@ int ConvertFBX(const char* pSource, const char* pDest)
 		if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eNull) {
 			int result = BuildLodGroup(Structure, pNode);
 			if (result != 0)
-				return -95;
+				return result;
 			break;
 		}
 		else if (DetermineNodeAttribute(pNode) == FbxNodeAttribute::eMesh) {
 			int result = BuildModel(Structure, pNode);
 			if (result != 0)
-				return -95;
+				return result;
 			break;
 		}
 		else if (pNode->FindChild("LOD0"))
 		{
 			int result = BuildLodGroup(Structure, pNode);
 			if (result != 0)
-				return -95;
+				return result;
 			break;
 		}
 	}

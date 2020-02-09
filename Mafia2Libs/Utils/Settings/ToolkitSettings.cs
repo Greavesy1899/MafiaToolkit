@@ -52,7 +52,7 @@ namespace Utils.Settings
         public static bool UseSDSToolFormat;
         public static bool CookCollisions;
         public static bool CheckForUpdates;
-        public static readonly float Version = 2.02f;
+        public static readonly float Version = 2.03f;
 
         public static void ReadINI()
         {

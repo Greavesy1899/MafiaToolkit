@@ -2,6 +2,7 @@
 using Utils;
 using System.Windows.Forms;
 using Utils.Lang;
+using System.IO;
 
 namespace Mafia2Tool.Forms
 {
@@ -46,10 +47,21 @@ namespace Mafia2Tool.Forms
 
         private void ConvertButton_Click(object sender, EventArgs e)
         {
-            if(ImportBox.Text.Contains(".m2t"))
-                FBXHelper.ConvertM2T(ImportBox.Text, ExportBox.Text);
-            else if (ImportBox.Text.Contains(".fbx"))
-                FBXHelper.ConvertFBX(ImportBox.Text, ExportBox.Text);
+            if (File.Exists(ImportBox.Text))
+            {
+                if (ImportBox.Text.Contains(".m2t"))
+                {
+                    FBXHelper.ConvertM2T(ImportBox.Text, ExportBox.Text);
+                }
+                else if (ImportBox.Text.Contains(".fbx"))
+                {
+                    FBXHelper.ConvertFBX(ImportBox.Text, ExportBox.Text);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Import file does not exist!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
