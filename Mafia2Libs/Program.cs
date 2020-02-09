@@ -5,6 +5,7 @@ using Utils.Settings;
 using Utils.Lang;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using ResourceTypes.EntityDataStorage;
 
 namespace Mafia2Tool
 {
@@ -19,6 +20,9 @@ namespace Mafia2Tool
             ToolkitSettings.ReadINI();
             Language.ReadLanguageXML();
             CheckLatestRelease();
+
+            //EntityDataStorageLoader storage = new EntityDataStorageLoader();
+            //storage.ReadFromFile("EntityDataStorage_16.eds", false);
             Application.Run(new GameExplorer());
         }
 

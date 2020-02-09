@@ -22,9 +22,9 @@ namespace Utils.Lua
             main = FileToFunction(info.FullName);
             Decompiler decompile = new Decompiler(main);
             decompile.Decompile();
-            bool isAP = (info.Extension == ".AP" ? true : false);
+            bool isAP = (info.Extension.Equals(".AP") ? true : false);
             string name = info.FullName.Remove(info.FullName.Length - (isAP ? 7 : 4));
-            name += "_d." + info.Extension/* + (isAP ? ".ap " : "")*/;
+            name += "_d" + info.Extension;
             var curCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
             System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             using (var writer = new StreamWriter(name, false, Encoding.ASCII))

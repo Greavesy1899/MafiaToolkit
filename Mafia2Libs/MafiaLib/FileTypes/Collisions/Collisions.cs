@@ -74,31 +74,8 @@ namespace ResourceTypes.Collisions
             {
                 foreach (var collisionModel in Models)
                 {
-                    using (BinaryWriter writer = new BinaryWriter(File.Open("mesh.bin", FileMode.Create)))
-                    {
-                        collisionModel.Value.Mesh.Save(writer);
-                    }
-
-                    Utils.FBXHelper.CookTriangleCollision("mesh.bin", "cook.bin");
-
-                    TriangleMesh cookedTriangleMesh = new TriangleMesh();
-                    using (BinaryReader reader = new BinaryReader(File.Open("cook.bin", FileMode.Open)))
-                    {
-                        cookedTriangleMesh.Load(reader);
-                    }
-
-
-                    if (File.Exists("mesh.bin"))
-                    {
-                        File.Delete("mesh.bin");
-                    }
-                    if (File.Exists("cook.bin"))
-                    {
-                        File.Delete("cook.bin");
-                    }
-
-                    cookedTriangleMesh.Force32BitIndices();
-                    collisionModel.Value.Mesh = cookedTriangleMesh;
+                    TriangleCooking cooker = new TriangleCooking();
+                    collisionModel.Value.Mesh = cooker.Cook(collisionModel.Value.Mesh);
                 }
             }
 

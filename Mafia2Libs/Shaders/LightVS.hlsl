@@ -38,6 +38,7 @@ VS_OUTPUT LightVertexShader(VS_INPUT input)
 
 	// Change the position vector to be 4 units for proper matrix calculations.
 	input.Position.w = 1.0f;
+    output.Binormal = float3(1.0f, 1.0f, 1.0f);
 	input.TexCoord0.y = -input.TexCoord0.y;
     input.TexCoord7.y = -input.TexCoord7.y;
 
@@ -52,9 +53,13 @@ VS_OUTPUT LightVertexShader(VS_INPUT input)
 
 	// Calculate the normal vector against the world matrix only.
 	output.Normal = mul(input.Normal, (float3x3)worldMatrix);
-
-	// Normalize the normal vector.
 	output.Normal = normalize(output.Normal);
+    
+    output.Tangent = mul(input.Tangent, (float3x3) worldMatrix);
+    output.Tangent = normalize(output.Tangent);
+    
+    output.Binormal = mul(output.Binormal, (float3x3) worldMatrix);
+    output.Binormal = normalize(output.Binormal);
 
 	// Calculate the position of the vertex in the world.
 	worldPosition = mul(input.Position, worldMatrix);

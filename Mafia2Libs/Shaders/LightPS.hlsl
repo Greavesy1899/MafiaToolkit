@@ -37,10 +37,11 @@ struct VS_OUTPUT
 	float3 viewDirection : TEXCOORD2;
 };
 
-void CalculateFromNormalMap(VS_OUTPUT input)
+float3 CalculateFromNormalMap(VS_OUTPUT input)
 {
 	//Load normal from normal map
 	float4 normalMap = textures[1].Sample(SampleType, input.TexCoord0);
+    normalMap.a = 1.0f;
 
 	//Change normal map range from [0, 1] to [-1, 1]
 	normalMap = (2.0f * normalMap) - 1.0f;
@@ -55,19 +56,21 @@ void CalculateFromNormalMap(VS_OUTPUT input)
 	float3x3 texSpace = float3x3(input.Tangent, biTangent, input.Normal);
 
 	//Convert normal from normal map to texture space and store in input.normal
-	input.Normal = normalize(mul(normalMap.xyz, texSpace));
+    float3 bumpNormal = (normalMap.x * input.Tangent) + (normalMap.y * biTangent) + (normalMap.z * input.Normal);
+    bumpNormal = normalize(bumpNormal);
+    return bumpNormal;
 }
 
 float4 CalculateColor(VS_OUTPUT input, float4 color)
 {
-	CalculateFromNormalMap(input);
-
     float3 lightDir;
     float lightIntensity;
     float3 reflection;
     float4 specular;
-
-
+    float3 normal;
+    
+	normal = CalculateFromNormalMap(input);
+    
     // Set the default output color to the ambient light value for all pixels.
     color = ambientColor;
 
@@ -78,12 +81,11 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     lightDir = -lightDirection;
 
 	// Calculate the amount of the light on this pixel.
-    lightIntensity = saturate(dot(input.Normal, lightDir));
+    lightIntensity = saturate(dot(normal, lightDir));
 
 	// Determine the final diffuse color based on the diffuse color and the amount of the light intensity.
-	color += (diffuseColor * lightIntensity);
 	// Saturate the ambient and diffuse color.
-	color = saturate(color);
+    color = saturate(diffuseColor * lightIntensity);
 
 	// Calculate the reflection vector based on the light intensity, normal vector, and light direction.
 	reflection = normalize(2 * lightIntensity * input.Normal - lightDir);
@@ -132,6 +134,5 @@ float4 PS_50760736(VS_OUTPUT input) : SV_TARGET
 	emissiveTextureColor = (textures[1].Sample(SampleType, input.TexCoord0)* C005_EmissiveFacadeColorAndIntensity);
 	color = CalculateColor(input, color);
 	color = (color * aoTextureColor * diffuseTextureColor);
-
 	return color;
 }

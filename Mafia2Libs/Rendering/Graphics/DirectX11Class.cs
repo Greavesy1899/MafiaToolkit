@@ -39,7 +39,7 @@ namespace Rendering.Graphics
             var monitor = adapter.GetOutput(0);
             var modes = monitor.GetDisplayModeList(Format.R8G8B8A8_UNorm, DisplayModeEnumerationFlags.Interlaced);
             var rational = new Rational(0, 1);
-
+            /*
             if (ToolkitSettings.VSync)
             {
                 foreach (var mode in modes)
@@ -51,7 +51,7 @@ namespace Rendering.Graphics
                     }
                 }
             }
-
+            */
             var adapterDescription = adapter.Description;
             VideoCardMemory = adapterDescription.DedicatedVideoMemory >> 10 >> 10;
             VideoCardDescription = adapterDescription.Description.Trim('\0');
@@ -62,7 +62,7 @@ namespace Rendering.Graphics
             var swapChainDesc = new SwapChainDescription()
             {
                 BufferCount = 2,
-                ModeDescription = new ModeDescription(ToolkitSettings.Width, ToolkitSettings.Height, rational, Format.R8G8B8A8_UNorm),
+                ModeDescription = new ModeDescription(1920, 1080, rational, Format.R8G8B8A8_UNorm),
                 Usage = Usage.RenderTargetOutput,
                 OutputHandle = WindowHandle,
                 SampleDescription = new SampleDescription(1, 0),
@@ -83,9 +83,9 @@ namespace Rendering.Graphics
 
             var depthBufferDesc = new Texture2DDescription()
             {
-                Width = ToolkitSettings.Width,
-                Height = ToolkitSettings.Height,
-                MipLevels = 0,
+                Width = 4096,
+                Height = 4096,
+                MipLevels = 1,
                 ArraySize = 1,
                 Format = Format.D24_UNorm_S8_UInt,
                 SampleDescription = new SampleDescription(1, 0),
@@ -204,7 +204,7 @@ namespace Rendering.Graphics
             else if (m_CullMode == CullMode.Back && m_FillMode == FillMode.Wireframe)
                 DeviceContext.Rasterizer.State = m_RSCullWireFrame;
 
-            DeviceContext.Rasterizer.SetViewport(0, 0, ToolkitSettings.Width, ToolkitSettings.Height, 0, 1);
+            DeviceContext.Rasterizer.SetViewport(0, 0, 1920, 1080, 0, 1);
         }
         public void Shutdown()
         {

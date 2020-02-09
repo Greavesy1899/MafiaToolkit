@@ -460,12 +460,6 @@
     <Compile Include="Forms\SpeechEditor.Designer.cs">
       <DependentUpon>SpeechEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\CollisionEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\CollisionEditor.Designer.cs">
-      <DependentUpon>CollisionEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="Utils\DiscordRPC\DiscordController.cs" />
     <Compile Include="Utils\DiscordRPC\DiscordRPC.cs" />
     <Compile Include="Forms\GameExplorer.cs">
@@ -598,6 +592,10 @@
     <Content Include="Localisations\ru_RU.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Localisations\sk_SK.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\default_n.dds" />
     <Content Include="Resources\hashes.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -703,9 +701,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SpeechEditor.resx">
       <DependentUpon>SpeechEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\CollisionEditor.resx">
-      <DependentUpon>CollisionEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GameExplorer.resx">
       <DependentUpon>GameExplorer.cs</DependentUpon>

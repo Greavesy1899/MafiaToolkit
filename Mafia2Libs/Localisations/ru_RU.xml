@@ -54,6 +54,7 @@
   <String ID="$LANGUAGE_RUSSIAN">русский</String>
   <String ID="$LANGUAGE_CZECH">čeština</String>
   <String ID="$LANGUAGE_POLISH">Polish</String>
+  <String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
   <String ID="$LANGUAGE_OPTION">Язык</String>
   
   <!-- Model/Exporting Option Strings-->

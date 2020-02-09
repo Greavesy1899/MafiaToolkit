@@ -60,8 +60,28 @@ namespace ResourceTypes.EntityDataStorage
                 public float SteeringCoeff { get; set; }
                 public float BrakeCoeffLeft { get; set; }
                 public float BrakeCoeffRight { get; set; }
-                public short Steering { get; set; }
-                public float HandBrake { get; set; }
+                public byte Steering { get; set; }
+                public byte HandBrake { get; set; }
+            }
+            public class SmokeMotorTableData
+            {
+                public int SmokeMotorID;
+                public float SmokeMotorDamage;
+                public float SmokeMotorUnk01;
+            }
+            public class EngineTableData
+            {
+                public int EngineFSndCategory { get; set; }
+                public int EngineFSndId { get; set; }
+                public float EngineFVolume { get; set; }
+                public float EngineFVolumeNoPower { get; set; }
+                public float EngineFFrqLo { get; set; }
+                public float EngineFFrqHi { get; set; }
+                public float EngineFRotLo { get; set; }
+                public float EngineFRotLoVol { get; set; }
+                public float EngineFRotHiVol { get; set; }
+                public float EngineFRotHi { get; set; }
+                public float EngineFNoClutchLockOnly { get; set; }
             }
 
             public ulong Hash { get; set;}
@@ -116,6 +136,78 @@ namespace ResourceTypes.EntityDataStorage
             public float TyreLateralStiffnessCoeff { get; set; }
             public float TypeLateralDamperCoeff { get; set; }
             public WheelTableData[] WheelData { get; set; }
+            public float BrakeTorque { get; set; }
+            public float BrakeReaction { get; set; }
+            public float HandBrakeTorque { get; set; }
+            public float BrakeReactionLow { get; set; }
+            public float BrakeReactionHigh { get; set; }
+            public float AerodynamicSurfaceSize { get; set; }
+            public float AerodynamicResistCoeff { get; set; }
+            public float FrontSpoilerSurfaceSize { get; set; }
+            public float FrontSpoilerResistCoeff { get; set; }
+            public float BackSpoilerSurfaceSize { get; set; }
+            public float BackSpoilerResistCoeff { get; set; }
+            public bool ESM { get; set; }
+            public bool ASP { get; set; }
+            public float ArcadeMinCoeff { get; set; }
+            public int AMFakeESP { get; set; }
+            public float MinSpeed { get; set; }
+            public float MaxSpeedAdd { get; set; }
+            public float ESPCoeffMinus { get; set; }
+            public float ESPCoeffPlus { get; set; }
+            public bool AMFakeESPUseASR { get; set; }
+            public bool AMFakeURVM { get; set; }
+            public float SpeedMaxEffectivity { get; set; }
+            public float RotVelSpeedLimit { get; set; }
+            public float Coeff { get; set; }
+            public bool AMFakeURVMUseASR { get; set; }
+            public bool RightWheelForcePos { get; set; }
+            public float FFRideMagnitudeCoeff { get; set; }
+            public SmokeMotorTableData[] SmokeMotorData { get; set; }
+            public short SmokeExhaustID { get; set; }
+            public short ExplosionID { get; set; }
+            public short FireID { get; set; }
+            public short SlideEffectID { get; set; }
+            public short CrashEffectID { get; set; }
+            public short RimSparksID { get; set; }
+            public short BurnOutID { get; set; }
+            public short BreakTireID { get; set; }
+            public short BreakGlassSideWindowID { get; set; }
+            public short BreakGlassFrontWindowID { get; set; }
+            public short[] HedgeIDs { get; set; }
+            public int RainID { get; set; }
+            public float TimeFireMax { get; set; }
+            public int EngineSwitchSndCategory10 { get; set; }
+            public int EngineSwitchSndId10 { get; set; }
+            public float EngineSwitchVolume10 { get; set; }
+            public float EngineSwitchStart10 { get; set; }
+            public int EngineSwitchSndCategory11 { get; set; }
+            public int EngineSwitchSndId11 { get; set; }
+            public float EngineSwitchVolume11 { get; set; }
+            public int EngineSwitchSndCategory12 { get; set; }
+            public int EngineSwitchSndId12 { get; set; }
+            public float EngineSwitchVolume12 { get; set; }
+            public int EngineMinRotSndCategory1 { get; set; }
+            public int EngineMinRotSndID1 { get; set; }
+            public float EngineMinRotVolume1 { get; set; }
+            public float EngineMinRotRotVolHi1 { get; set; }
+            public float EngineMinRotRotHi1 { get; set; }
+            public int EngineNPCSndCategory1 { get; set; }
+            public int EngineNPCSndID1 { get; set; }
+            public float EngineNPCVolume1 { get; set; }
+            public float EngineNPCFrqLo1 { get; set; }
+            public float EngineNPCFrqHi1 { get; set; }
+            public float EngineNPCRotLoVol1 { get; set; }
+            public float EngineNPCRotHiVol1 { get; set; }
+            public float EngineNPCLoVolume1 { get; set; }
+            public float EngineVolEnvelopeRotLo1 { get; set; }
+            public float EngineVolEnvelopeRotLoVol1 { get; set; }
+            public float EngineVolEnvelopeRotHi1 { get; set; }
+            public float EngineVolEnvelopeRotHiVol1 { get; set; }
+            public float EngineCrossFadeTimePlus1 { get; set; }
+            public float EngineCrossFadeTimeMinus1 { get; set; }
+            public EngineTableData[] EngineFData { get; set; }
+            public EngineTableData[] EngineBData { get; set; }
         }
 
         int entityType; //Cars have 18, City_Universe has 13.
@@ -183,7 +275,7 @@ namespace ResourceTypes.EntityDataStorage
                     #region GearData parsing
                     table.GearData = new EntityTable.GearTableData[7];
 
-                    for(int z = 0; z < 7; z++)
+                    for (int z = 0; z < 7; z++)
                     {
                         var gearData = new EntityTable.GearTableData();
                         gearData.GearRatio = stream.ReadSingle(isBigEndian);
@@ -258,9 +350,8 @@ namespace ResourceTypes.EntityDataStorage
                     for (int z = 0; z < 10; z++)
                         table.WheelData[z].Tyre = stream.ReadStringBuffer(8);
 
-                    var scale = stream.ReadSingle(isBigEndian);
                     for (int z = 0; z < 10; z++)
-                        table.WheelData[z].Scale = scale;
+                        table.WheelData[z].Scale = stream.ReadSingle(isBigEndian);
 
                     for (int z = 0; z < 10; z++)
                         table.WheelData[z].TyreStiffness = stream.ReadSingle(isBigEndian);
@@ -317,16 +408,230 @@ namespace ResourceTypes.EntityDataStorage
                         table.WheelData[z].BrakeCoeffRight = stream.ReadSingle(isBigEndian);
 
                     for (int z = 0; z < 10; z++)
-                        table.WheelData[z].Steering = stream.ReadInt16(isBigEndian);
+                        table.WheelData[z].Steering = stream.ReadByte8();
 
                     for (int z = 0; z < 10; z++)
-                        table.WheelData[z].HandBrake = stream.ReadSingle(isBigEndian);
+                        table.WheelData[z].HandBrake = stream.ReadByte8();
+                    #endregion
+
+                    table.BrakeTorque = stream.ReadSingle(isBigEndian);
+                    table.BrakeReaction = stream.ReadSingle(isBigEndian);
+                    table.HandBrakeTorque = stream.ReadSingle(isBigEndian);
+                    table.BrakeReactionLow = stream.ReadSingle(isBigEndian);
+                    table.BrakeReactionHigh = stream.ReadSingle(isBigEndian);
+                    table.AerodynamicSurfaceSize = stream.ReadSingle(isBigEndian);
+                    table.AerodynamicResistCoeff = stream.ReadSingle(isBigEndian);
+                    table.FrontSpoilerSurfaceSize = stream.ReadSingle(isBigEndian);
+                    table.FrontSpoilerResistCoeff = stream.ReadSingle(isBigEndian);
+                    table.BackSpoilerSurfaceSize = stream.ReadSingle(isBigEndian);
+                    table.BackSpoilerResistCoeff = stream.ReadSingle(isBigEndian);
+                    table.ESM = stream.ReadBoolean();
+                    table.ASP = stream.ReadBoolean();
+
+                    //offset in IDA = 1760. sizeof(header) == 68. 1760 + 68.
+                    stream.Seek(1828, SeekOrigin.Begin);
+
+                    table.ArcadeMinCoeff = stream.ReadSingle(isBigEndian);
+                    table.AMFakeESP = stream.ReadInt32(isBigEndian);
+                    table.MinSpeed = stream.ReadSingle(isBigEndian);
+                    table.MaxSpeedAdd = stream.ReadSingle(isBigEndian);
+                    table.ESPCoeffMinus = stream.ReadSingle(isBigEndian);
+                    table.ESPCoeffPlus = stream.ReadSingle(isBigEndian);
+                    table.AMFakeESPUseASR = stream.ReadBoolean();
+                    table.AMFakeURVM = stream.ReadBoolean();
+
+                    //offset in IDA = 1788. sizeof(header) == 68. 1788 + 68.
+                    stream.Seek(1856, SeekOrigin.Begin);
+
+                    table.SpeedMaxEffectivity = stream.ReadSingle(isBigEndian);
+                    table.RotVelSpeedLimit = stream.ReadSingle(isBigEndian);
+                    table.Coeff = stream.ReadSingle(isBigEndian);
+                    table.AMFakeURVMUseASR = stream.ReadBoolean();
+                    table.RightWheelForcePos = stream.ReadBoolean();
+
+                    //offset in IDA = 1804. sizeof(header) == 68. 1804 + 68.
+                    stream.Seek(1872, SeekOrigin.Begin);
+
+                    table.FFRideMagnitudeCoeff = stream.ReadSingle(isBigEndian);
+                    table.SmokeMotorData = new EntityTable.SmokeMotorTableData[3];
+
+                    for (int z = 0; z < 3; z++)
+                    {
+                        table.SmokeMotorData[z] = new EntityTable.SmokeMotorTableData();
+                        table.SmokeMotorData[z].SmokeMotorID = stream.ReadInt32(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 3; z++)
+                        table.SmokeMotorData[z].SmokeMotorDamage = stream.ReadSingle(isBigEndian);
+
+                    for (int z = 0; z < 3; z++)
+                        table.SmokeMotorData[z].SmokeMotorUnk01 = stream.ReadSingle(isBigEndian);
+
+                    table.SmokeExhaustID = stream.ReadInt16(isBigEndian);
+                    table.ExplosionID = stream.ReadInt16(isBigEndian);
+                    table.FireID = stream.ReadInt16(isBigEndian);
+                    table.SlideEffectID = stream.ReadInt16(isBigEndian);
+                    table.CrashEffectID = stream.ReadInt16(isBigEndian);
+                    table.RimSparksID = stream.ReadInt16(isBigEndian);
+                    table.BurnOutID = stream.ReadInt16(isBigEndian);
+                    table.BreakTireID = stream.ReadInt16(isBigEndian);
+                    table.BreakGlassSideWindowID = stream.ReadInt16(isBigEndian);
+                    table.BreakGlassFrontWindowID = stream.ReadInt16(isBigEndian);
+                    table.HedgeIDs = new short[2];
+                    table.HedgeIDs[0] = stream.ReadInt16(isBigEndian);
+                    table.HedgeIDs[1] = stream.ReadInt16(isBigEndian);
+                    table.RainID = stream.ReadInt32(isBigEndian);
+                    table.TimeFireMax = stream.ReadSingle(isBigEndian);
+                    table.EngineSwitchSndCategory10 = stream.ReadInt32(isBigEndian);
+                    table.EngineSwitchSndCategory11 = stream.ReadInt32(isBigEndian);
+                    table.EngineSwitchSndCategory12 = stream.ReadInt32(isBigEndian);
+                    table.EngineSwitchSndId10 = stream.ReadInt32(isBigEndian);
+                    table.EngineSwitchSndId11 = stream.ReadInt32(isBigEndian);
+                    table.EngineSwitchSndId12 = stream.ReadInt32(isBigEndian);
+                    table.EngineSwitchVolume10 = stream.ReadSingle(isBigEndian);
+                    table.EngineSwitchVolume11 = stream.ReadSingle(isBigEndian);
+                    table.EngineSwitchVolume12 = stream.ReadSingle(isBigEndian);
+                    table.EngineSwitchStart10 = stream.ReadSingle(isBigEndian);
+                    table.EngineMinRotSndCategory1 = stream.ReadInt32(isBigEndian);
+                    table.EngineMinRotSndID1 = stream.ReadInt32(isBigEndian);
+                    table.EngineMinRotVolume1 = stream.ReadSingle(isBigEndian);
+                    table.EngineMinRotRotVolHi1 = stream.ReadSingle(isBigEndian);
+                    table.EngineMinRotRotHi1 = stream.ReadSingle(isBigEndian);
+                    table.EngineNPCSndCategory1 = stream.ReadInt32(isBigEndian);
+                    table.EngineNPCSndID1 = stream.ReadInt32(isBigEndian);
+                    table.EngineNPCVolume1 = stream.ReadSingle(isBigEndian);
+                    table.EngineNPCFrqLo1 = stream.ReadSingle(isBigEndian);
+                    table.EngineNPCFrqHi1 = stream.ReadSingle(isBigEndian);
+                    table.EngineNPCRotLoVol1 = stream.ReadSingle(isBigEndian);
+                    table.EngineNPCRotHiVol1 = stream.ReadSingle(isBigEndian);
+                    table.EngineNPCLoVolume1 = stream.ReadSingle(isBigEndian);
+                    table.EngineVolEnvelopeRotLo1 = stream.ReadSingle(isBigEndian);
+                    table.EngineVolEnvelopeRotLoVol1 = stream.ReadSingle(isBigEndian);
+                    table.EngineVolEnvelopeRotHi1 = stream.ReadSingle(isBigEndian);
+                    table.EngineVolEnvelopeRotHiVol1 = stream.ReadSingle(isBigEndian);
+                    table.EngineCrossFadeTimePlus1 = stream.ReadSingle(isBigEndian);
+                    table.EngineCrossFadeTimeMinus1 = stream.ReadSingle(isBigEndian);
+                    table.EngineFData = new EntityTable.EngineTableData[8];
+                    table.EngineBData = new EntityTable.EngineTableData[8];
+
+                    #region EngineF Parsing:
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineFData[z] = new EntityTable.EngineTableData();
+                        table.EngineFData[z].EngineFSndCategory = stream.ReadInt32(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++) 
+                    {
+                        table.EngineFData[z].EngineFSndId = stream.ReadInt32(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineFData[z].EngineFVolume = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineFData[z].EngineFVolumeNoPower = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineFData[z].EngineFFrqLo = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineFData[z].EngineFFrqHi = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineFData[z].EngineFRotLo = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineFData[z].EngineFRotLoVol = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineFData[z].EngineFRotHiVol = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineFData[z].EngineFRotHi = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineFData[z].EngineFNoClutchLockOnly = stream.ReadSingle(isBigEndian);
+                    }
+                    #endregion
+
+                    #region EngineB Parsing:
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineBData[z] = new EntityTable.EngineTableData();
+                        table.EngineBData[z].EngineFSndCategory = stream.ReadInt32(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineBData[z].EngineFSndId = stream.ReadInt32(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineBData[z].EngineFVolume = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineBData[z].EngineFVolumeNoPower = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineBData[z].EngineFFrqLo = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineBData[z].EngineFFrqHi = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineBData[z].EngineFRotLo = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineBData[z].EngineFRotLoVol = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineBData[z].EngineFRotHiVol = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineBData[z].EngineFRotHi = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < 8; z++)
+                    {
+                        table.EngineBData[z].EngineFNoClutchLockOnly = stream.ReadSingle(isBigEndian);
+                    }
                     #endregion
 
                     Debug.WriteLine("{0}", stream.Position - 68);
                 }
-
-
             }
         }
 

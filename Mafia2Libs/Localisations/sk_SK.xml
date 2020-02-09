@@ -1,0 +1,240 @@
+<Localisation lANG="SK_SK">
+  <!-- Generic String -->
+  <String ID="$CONTINUE">Pokračovať</String>
+  <String ID="$CANCEL">Ukončiť</String>
+  <String ID="$EDIT">Upraviť</String>
+  <String ID="$INDEX">Index</String>
+  <String ID="$COPY">Skopírovať</String>
+  <String ID="$PASTE">Prilepiť</String>
+  <String ID="$ENTRY_NAME">Názov vstupu</String>
+  <String ID="$UPDATE_MESSAGE1">Nová verzia Mafia II toolkitu je dostupná!</String>
+  <String ID="$UPDATE_MESSAGE2">Pre stiahnutie stlačte OK.</String>
+  <String ID="$UPDATE_MESSAGE3">Aby ste používali verziu ktorú práve máte stlačte ZRUŠIŤ.</String>
+  <String ID="$FAILED_UPDATE_CHECK">Nepodarilo sa pozrieť či sú dostupné aktualizácie!</String>
+  
+  <!-- Game Explorer Strings -->
+  <String ID="$CREDITS">Špeciálne poďakovanie</String>
+  <String ID="$VIEW">Pozrieť sa</String>
+  <String ID="$FILE">Súbor</String>
+  <String ID="$TOOLS">Náradie</String>
+  <String ID="$BTN_OPEN_MII">Otvoriť Mafiu II</String>
+  <String ID="$BTN_RUN_MII">Spustiť Mafiu II</String>
+  <String ID="$EXIT">Odísť</String>
+  <String ID="$OPTIONS">Nastavenia</String>
+  <String ID="$SELECT_MII_FOLDER">Vyberte priečinok obsahujúci hru Mafia II. Priečinok by mal obsahovať "launcher.exe"</String>
+  <String ID="$ICON">Ikona</String>
+  <String ID="$DETAILS">Detaily</String>
+  <String ID="$SMALL_ICON">Malá ikona</String>
+  <String ID="$LIST">List</String>
+  <String ID="$TILE">Dlaždica</String>
+  <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Prehliadač hry</String>
+  <String ID="$UNPACK_ALL_SDS">Rozbaliť všetky SDS súbory</String>
+  <String ID="$OPEN_FOLDER_EXPLORER">Otvoriť priečinok v prehliadači</String>
+  <String ID="$PACK">Zabaliť</String>
+  <String ID="$UNPACK">Vybaliť</String>
+  <String ID="$LAST_MODIFIED">Naposledy modifikované</String>
+  <String ID="$NAME">Meno</String>
+  <String ID="$SIZE">Veľkosť</String>
+  <String ID="$TYPE">Typ</String>
+  <String ID="$SEARCH_TOOLTIP">Hladať</String>
+  <String ID="$SEARCH_DOTS">Hladať...</String>
+  <String ID="$REFRESH">Obnoviť</String>
+  <String ID="$FOLDER_PATH_TOOLTIP">Cesta priečinka</String>
+  <String ID="$UP_TOOLTIP">Hore</String>
+  
+  <!-- Main Options Strings-->
+  <String ID="$GENERAL">Všeobecné</String>
+  <String ID="$SDS_OPTIONS">SDS Nastavenia</String>
+  <String ID="$MODEL_EXPORTING">Modely/Exportovanie</String>
+  <String ID="$MATERIAL_LIBS">Knižnice Materiálov</String>
+
+  <!-- General Options Strings-->
+  <String ID="$ENABLE_DEBUG_LOGGING">Zapnúť Logger</String>
+  <String ID="$MII_DIRECTORY">Mafia II Priečinok</String>
+  <String ID="$DISCORD_RICH_PRESENCE">Discord Rich Presence</String>
+  <String ID="$DISCORD_TOGGLE_ELAPSED_TIME">Uplinulý čas je zapnutý</String>
+  <String ID="$DISCORD_TOGGLE_STATE">Stav povolený</String>
+  <String ID="$DISCORD_TOGGLE_DETAILS">Detaily povolené</String>
+  <String ID="$DISCORD_TOGGLE_RICH_PRESENCE">Rich Presence povolený</String>
+  <String ID="$LANGUAGE_ENGLISH">English</String>
+  <String ID="$LANGUAGE_RUSSIAN">русский</String>
+  <String ID="$LANGUAGE_CZECH">čeština</String>
+  <String ID="$LANGUAGE_POLISH">Polish</String>
+  <String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
+  <String ID="$LANGUAGE_OPTION">Vybrať jazyk</String>
+  <String ID="$DISCORD_STATE_CUSTOM">Použiť vlastný status v Discorde.</String>
+  <String ID="$CHECK_FOR_UPDATES">Pozrieť sa či nie sú dostupné aktualizácie.</String>
+  
+  <!-- Model/Exporting Option Strings-->
+  <String ID="$EXPORT_PATH_TITLE">Cesta exportu:</String>
+  <String ID="$EXPORT_PATH_DESC">Vyberte cestu pre exportované modely.</String>
+  <String ID="$EXPORT_MODELTYPE_TITLE">Formát Exportovaného modelu:</String>
+  
+  <!-- Material Libs Option Strings-->
+  <String ID="$MATERIAL_LIB_REMOVE">Odstrániť vybranú knižnicu</String>
+  <String ID="$MATERIAL_LIB_ADD">Pridať knižnicu</String>
+  <String ID="$MATERIAL_LIB_SELECTED">Vybrané knižnice</String>
+  <String ID="$CONFLICTING_MATS">Konfliktné materiály</String>
+  <String ID="$NEW_MATS">Nové materiály</String>
+  <String ID="$MERGE">Zlúčiť</String>
+  <String ID="$MERGE_MTL">Zlúčiť MTL</String>
+  <String ID="$DELETE_SEL_MAT">Zmazať vybraný materiál</String>
+  <String ID="$SELECT_ALL">Vybrať všetko</String>
+  
+  <!-- SDS Options -->
+  <String ID="$SDS_COMPRESSION_TYPE">Typ konpresácie</String>
+  <String ID="$SDS_UNCOMPRESSED">Nekompresované</String>
+  <String ID="$SDS_COMPRESSED">Kompresované</String>
+  <String ID="$SDS_ONEBLOCK">Jeden blok</String>
+  <String ID="$ADD_TIME_DATE_BACKUP">Pridať čas a dátum ku zálohe.</String>
+  <String ID="$DECOMPILE_LUA_UNPACK">Dekompilovať Lua keď sa rozbaľuje.</String>
+  <String ID="$USE_SDS_TOOL_FORMAT">Použiť SDS Tool GUI formát keď sa rozbaľuje.</String>
+  <String ID="$COOK_COLLISIONS">Cook kolízie keď sa ukláda.</String>
+  
+  <!-- Render Options -->
+  <String ID="$RENDER">Vykreslovanie</String>
+  <String ID="$RENDER_OPTIONS">Možnosti vykreslovania</String>
+  <String ID="$RENDER_SCREENFAR">Screen Far</String>
+  <String ID="$RENDER_SCREENEAR">Screen Near</String>
+  <String ID="$RENDER_CAMERASPEED">Rýchlosť kamery</String>
+  <String ID="$RENDER_FOV">Zorné pole</String>
+  <String ID="$TEXTURE_DIRECTORY">Cesta textúr</String>
+  <String ID="$SELECT_TEX_FOLDER">Vyberte priečinok ktorý obsahuje textúry.</String>
+  
+  <!-- Collision Editor Form Strings-->
+  <String ID="$SAVE">Uložiť</String>
+  <String ID="$RELOAD">Obnoviť</String>
+  <String ID="$COLLISION_DELETE">Vymazať kolíziu</String>
+  <String ID="$COLLISION_ADD">Pridať kolíziu</String>
+  <String ID="$PLACEMENT_DELETE">Odstrániť Instance</String>
+  <String ID="$PLACEMENT_ADD">Pridať Instance</String>
+  <String ID="$SELECT_MODEL_FILE">Vybrať si Model.</String>
+  <String ID="$COLLISION_EDITOR_TITLE">Editor kolízií</String>
+  
+  <!-- Material Editor Form Strings-->
+  <String ID="$MATERIAL_ADD">Pridať materiál</String>
+  <String ID="$MATERIAL_DELETE">Vymazať materiál</String>
+  <String ID="$MATERIAL_UPDATE_LIST">Aktualizovať list s materiálom</String>
+  <String ID="$MATERIAL_EDITOR_TITLE">Editor knižníc s materiálom</String>
+  <String ID="$OPEN">Otvoriť</String>
+  <String ID="$QUESTION_NAME_OF_MAT">Prosím, vložte názov materiálu:</String>
+  
+  <!-- FrameResource Editor Form Strings-->
+  <String ID="$FRAME_EDITOR_EXPORT_BTN">Exportovať modely..</String>
+  <String ID="$FRAME_EDITOR_MODELS">FrameNameTable modely</String>
+  <String ID="$FRAME_EDITOR_ALL">Všetky modely</String>
+  <String ID="$FRAME_EDITOR_OVERWRITE_BUFFER">Prepísať buffer</String>
+  <String ID="$FRAME_EDITOR_ADD_BUTTON">Pridať nový vstup</String>
+  <String ID="$FRAME_EDITOR_MODIFY_HEADER">Modifikovať Header</String>
+  <String ID="$FRAME_EDITOR_SWITCH_VIEW">Zmeniť pohľad</String>
+  <String ID="$FRAME_EDITOR_EXTRACT3D">Extrahovať model</String>
+  <String ID="$DELETE">Vymazať</String>
+  <String ID="$FRAME_EDITOR_UPDATE_PARENTS">Aktualizovať Parent</String>
+  <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Vyberte scénku ktorú by ste pridali ako parent.</String>
+  <String ID="$FRAME_EDITOR_TITLE">FrameResource Editor</String>
+  <String ID="$FRADD_TYPE">Typ snímku</String>
+  <String ID="$QUESTION_FRADD">Vložte názov a typ snímky.</String>
+  
+  <!-- NewObjForm Form Strings-->
+  <String ID="$NEWOBJFORM_TITLE">Názov vstupu</String>
+  <String ID="$QUESTION_NOT_NEEDED">Táto možnosť nepotrebuje názov.</String>
+  <String ID="$SCENE_OPTIONS">Nastavenia scénok</String>
+  <String ID="$FSCENE_OFFSET">Pozícia offsetu</String>
+
+  <!-- Error strings -->
+  <String ID="$ERROR_DID_NOT_FIND_LAUNCHER">Nebolo možné nájsť 'launcher.exe', prosím nájdite správny priečinok!</String>
+  <String ID="$ERROR_TITLE">Chyba!</String>
+  <String ID="$ERROR_SELECT_ITEM">Vyberte položku!</String>
+  <String ID="$ERROR_DIDNT_FIND_MTL">Nebolo možné načítať materiály: \n\n</String>
+
+  <!-- CityArea Strings -->
+  <String ID="$CITY_AREA_EDITOR_TITLE">CityArea Editor</String>
+  <String ID="$AREA_DATA">Dáta miesta</String>
+  <String ID="$AREA_1">Area 1</String>
+  <String ID="$AREA_NAME">Názov miesta</String>
+  <String ID="$AREA_2">Miesto 2</String>
+  <String ID="$UNK_BYTE">Neznámy bajt</String>
+  <String ID="$SAVE_AREA">Uložiť miesto</String>
+  <String ID="$RELOAD_AREA">Obnoviť miesto</String>
+
+  <!-- CityShop Strings -->
+  <String ID="$CITY_SHOP_EDITOR_TITLE">CityShop Editor</String>
+  <String ID="$ADD_AREA">Pridať miesto</String>
+  <String ID="$ADD_DATA">Pridať dáta</String>
+  <String ID="$DELETE_AREA">Vymazať miesto</String>
+  <String ID="$DELETE_DATA">Vymazať dáta</String>
+  <String ID="$DUPLICATE_DATA">Duplikovať dáta</String>
+  <String ID="$POPULATE_TRANSLOKATORS">Oživiť nové translokátory</String>
+
+  <!-- Table Editor string -->
+  <String ID="$TABLE_EDITOR_TITLE">Editor tabuliek</String>
+  <String ID="$TABLE_ADD_ROW">Pridať riadok</String>
+  <String ID="$TABLE_ADD_COLUMN">Pridať stĺpec</String>
+  
+  <!-- Renderer strings -->
+  <String ID="$CREATE">Vytvoriť</String>
+  <String ID="$VIEW_OPTIONS">Uvidieť nastavenia</String>
+  <String ID="$VIEW_PROPERTY_GRID">Zobraziť sieť vlastností</String>
+  <String ID="$VIEW_SCENE_TREE">Zobraziť strom scénok</String>
+  <String ID="$VIEW_VIS_OPTIONS">Uvidieť možnosti viditeľnosti</String>
+  <String ID="$TOGGLE_MODELS">Zapnúť modely</String>
+  <String ID="$TOGGLE_COLLISIONS">Zapnúť kolízie</String>
+  <String ID="$TOGGLE_BOXES">Zapnúť boxy</String>
+  <String ID="$ADD">Pridať..</String>
+  <String ID="$ADD_SCENE_FOLDER">Pridať priečinok scénky</String>
+  <String ID="$ADD_ROAD_SPLINE">Pridať krivku cesty</String>
+  <String ID="$VISIBLE">Viditeľné</String>
+  <String ID="$HIDDEN">Schované</String>
+  <String ID="$EDIT_TRANSFORM">Upraviť transformáciu</String>
+  <String ID="$PROPERTY_GRID">Sieť vlastností</String>
+  <String ID="$TOGGLE_WIREFRAME">Zapnúť Wireframe</String>
+  <String ID="$TOGGLE_CULLING">Zapnúť Culling</String>
+  <String ID="$POSITION_X">Pozícia X</String>
+  <String ID="$POSITION_Y">Pozícia Y</String>
+  <String ID="$POSITION_Z">Pozícia Z</String>
+  <String ID="$ROTATION_X">Rotácia X</String>
+  <String ID="$ROTATION_Y">Rotácia Y</String>
+  <String ID="$ROTATION_Z">Rotácia Z</String>
+  <String ID="$SCALE_X">Veľkosť X</String>
+  <String ID="$SCALE_Y">Veľkosť Y</String>
+  <String ID="$SCALE_Z">Veľkosť Z</String>
+  
+  <!-- StreamEditor strings-->
+  <String ID="$STREAM_EDITOR_TITLE">Stream Editor</String>
+  <String ID="$ADD_LINE">Pridať riadok</String>
+  <String ID="$DELETE_LINE">Zmazať riadok</String>
+  <String ID="$MOVE_UP">Posunúť hore</String>
+  <String ID="$MOVE_DOWN">Posúnuť dole</String>
+  
+  <!-- ListWindow Strings-->
+  <String ID="$SELECT_PARENT">Dvojklik pre vybranie nového parentu.</String>
+  <String ID="$HOW_TO_SEARCH">Pre vyhľadávanie vložte názov snímku stlačte ENTER.</String>
+  
+  <!-- M2FBX Strings-->
+  <String ID="$SELECT_MESH">Vybrať Mesh</String>
+  <String ID="$CONVERT">Konvertovať</String>
+  <String ID="$IMPORT">Importovať</String>
+  <String ID="$EXPORT">Exportovať</String>
+  <String ID="$M2FBX_INSTRUCTIONS">Utilise M2FBX Functions below. Any new files will be saved in the same location as the inputted file.</String>
+  
+  <!-- NewObjectEntry Form -->
+  <String ID="$IMPORT_NORMAL">Importovať Normals</String>
+  <String ID="$IMPORT_TANGENT">Importovať Tangents</String>
+  <String ID="$IMPORT_DIFFUSE">Importovať Diffuse UV</String>
+  <String ID="$IMPORT_UV1">Importovať UV1</String>
+  <String ID="$IMPORT_UV2">Importovať UV2</String>
+  <String ID="$IMPORT_AO">Importovať AO UV</String>
+  <String ID="$IMPORT_COLOR0">Importovať Farbu0</String>
+  <String ID="$IMPORT_COLOR1">Importovať Farbu1</String>
+  <String ID="$FLIP_UV">Prevrátiť UV súradnice</String>
+  <String ID="$MODEL_OPTIONS_TITLE">Možnosti modelu</String>
+  <String ID="$MODEL_OPTIONS_TEXT">Vyberte, ktoré vlastnosti modelu sa majú importovať </String>
+
+  <!-- Translokator Strings-->
+  <String ID="$TRANSLOKATOR_EDITOR">Editor translokátorov</String>
+  <String ID="$ADD_OBJECT">Pridať objekt</String>
+  <String ID="$ADD_INSTANCE">Pridať inštanciu</String>
+  <String ID="$DELETE_OBJECT">Vymazať objekt</String>
+  <String ID="$DELETE_INSTANCE">Vymazať inštanciu</String>
+  <String ID="$VIEW_NUM_INST">Ukázať počet inštancií</String>
+</Localisation>

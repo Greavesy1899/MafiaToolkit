@@ -88,6 +88,7 @@ namespace Rendering.Graphics
                     var vertice = new VertexLayouts.NormalLayout.Vertex();
                     vertice.Position = lod.Vertices[y].Position;
                     vertice.Normal = lod.Vertices[y].Normal;
+                    vertice.Tangent = lod.Vertices[y].Tangent;
                     vertice.TexCoord0 = lod.Vertices[y].UVs[0];
                     vertice.TexCoord7 = lod.Vertices[y].UVs[3];
                     lod2.Vertices[y] = vertice;

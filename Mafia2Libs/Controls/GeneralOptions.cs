@@ -31,6 +31,7 @@ namespace Forms.OptionControls
             languageComboBox.Items[1] = Language.GetString("$LANGUAGE_RUSSIAN");
             languageComboBox.Items[2] = Language.GetString("$LANGUAGE_CZECH");
             languageComboBox.Items[3] = Language.GetString("$LANGUAGE_POLISH");
+            languageComboBox.Items[5] = Language.GetString("$LANGUAGE_SLOVAK");
             label1.Text = Language.GetString("$LANGUAGE_OPTION");
             label2.Text = Language.GetString("$DISCORD_STATE_CUSTOM");
         }

@@ -30,8 +30,6 @@ namespace Utils.Settings
         public static bool Experimental;
         public static bool UseMIPS;
         public static float FieldOfView;
-        public const int Width = 1920;
-        public const int Height = 1080;
 
         //Model Exporting keys;
         public static int Format;
@@ -52,7 +50,7 @@ namespace Utils.Settings
         public static bool UseSDSToolFormat;
         public static bool CookCollisions;
         public static bool CheckForUpdates;
-        public static readonly float Version = 2.02f;
+        public static readonly float Version = 2.03f;
 
         public static void ReadINI()
         {

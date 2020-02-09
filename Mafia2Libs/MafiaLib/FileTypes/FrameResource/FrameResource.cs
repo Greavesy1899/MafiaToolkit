@@ -5,6 +5,8 @@ using System.Linq;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Utils.Extensions;
+using Utils.Settings;
+using Mafia2Tool;
 
 namespace ResourceTypes.FrameResource
 {
@@ -362,6 +364,116 @@ namespace ResourceTypes.FrameResource
                     (entry as FrameObjectModel).WriteToFile(writer);
                 else if (entry.GetType() == typeof(FrameObjectCollision))
                     (entry as FrameObjectCollision).WriteToFile(writer);
+            }
+        }
+
+        private void SaveFrame(FrameObjectBase frame, BinaryWriter writer)
+        {
+            //is this even needed? hmm.
+            if (frame.GetType() == typeof(FrameObjectArea))
+            {
+                writer.Write((ushort)ObjectType.Area);
+                (frame as FrameObjectArea).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectCamera))
+            {
+                writer.Write((ushort)ObjectType.Camera);
+                (frame as FrameObjectCamera).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectCollision))
+            {
+                writer.Write((ushort)ObjectType.Collision);
+                (frame as FrameObjectCollision).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectComponent_U005))
+            {
+                writer.Write((ushort)ObjectType.Collision);
+                (frame as FrameObjectComponent_U005).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectDummy))
+            {
+                writer.Write((ushort)ObjectType.Dummy);
+                (frame as FrameObjectDummy).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectDeflector))
+            {
+                writer.Write((ushort)ObjectType.ParticleDeflector);
+                (frame as FrameObjectDeflector).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectFrame))
+            {
+                writer.Write((ushort)ObjectType.Frame);
+                (frame as FrameObjectFrame).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectJoint))
+            {
+                writer.Write((ushort)ObjectType.Joint);
+                (frame as FrameObjectJoint).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectLight))
+            {
+                writer.Write((ushort)ObjectType.Light);
+                (frame as FrameObjectLight).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectModel))
+            {
+                var mesh = (frame as FrameObjectModel);
+                writer.Write((ushort)ObjectType.Model);
+                mesh.WriteToFile(writer);
+                mesh.Geometry.WriteToFile(writer);
+                mesh.Material.WriteToFile(writer);
+                mesh.BlendInfo.WriteToFile(writer);
+                mesh.Skeleton.WriteToFile(writer);
+                mesh.SkeletonHierarchy.WriteToFile(writer);
+
+                foreach (var lod in mesh.Geometry.LOD)
+                {
+                    SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.uHash).WriteToFile(writer);
+                    SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.uHash).WriteToFile(writer);
+                }
+            }
+            else if (frame.GetType() == typeof(FrameObjectSector))
+            {
+                writer.Write((ushort)ObjectType.Sector);
+                (frame as FrameObjectSector).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectSingleMesh))
+            {
+                var mesh = (frame as FrameObjectSingleMesh);
+                writer.Write((ushort)ObjectType.SingleMesh);
+                mesh.WriteToFile(writer);
+                mesh.Geometry.WriteToFile(writer);
+                mesh.Material.WriteToFile(writer);
+
+                foreach (var lod in mesh.Geometry.LOD)
+                {
+                    SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.uHash).WriteToFile(writer);
+                    SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.uHash).WriteToFile(writer);
+                }
+            }
+            else if (frame.GetType() == typeof(FrameObjectTarget))
+            {
+                writer.Write((ushort)ObjectType.Target);
+                (frame as FrameObjectTarget).WriteToFile(writer);
+            }
+            else
+            {
+                writer.Write(frame.Type);
+                frame.WriteToFile(writer);
+            }
+
+            for(int i = 0; i < frame.Children.Count; i++)
+            {
+                SaveFrame(frame.Children[i], writer);
+            }
+        }
+
+        public void SaveFramesToFile(FrameObjectBase frame, string file)
+        {
+            string filename = frame.Name.String;
+            using (BinaryWriter writer = new BinaryWriter(File.Open(Path.Combine(ToolkitSettings.ExportPath, filename) + ".framedata", FileMode.Create)))
+            {
+                SaveFrame(frame, writer);
             }
         }
 

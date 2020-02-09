@@ -213,7 +213,7 @@ namespace Rendering.Graphics
                 }
                 else
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[0];
+                    texture = RenderStorageSingleton.Instance.TextureCache[1];
                 }
                 context.PixelShader.SetShaderResource(1, texture);
             }

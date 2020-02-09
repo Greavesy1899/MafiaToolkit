@@ -493,7 +493,6 @@ namespace Mafia2Tool
             }
 
             MaterialTool mTool;
-            CollisionEditor cTool;
             ActorEditor aTool;
             PrefabLoader prefabs;
             SpeechEditor sTool;
@@ -599,9 +598,6 @@ namespace Mafia2Tool
                     //fTool = new FrameResourceTool((FileInfo)item.Tag);
                     d3dForm = new D3DForm((FileInfo)item.Tag);
                     d3dForm.Dispose();
-                    return;
-                case "COL":
-                    cTool = new CollisionEditor((FileInfo)item.Tag);
                     return;
                 case "IOFX":
                     iofx = new IOFxFile((FileInfo)item.Tag);
@@ -800,9 +796,11 @@ namespace Mafia2Tool
             MessageBox.Show("Toolkit developed by Greavesy. \n\n" +
                 "Special thanks to: \nOleg @ ZModeler 3 \nRick 'Gibbed' \nFireboyd for developing UnluacNET" +
                 "\n\n" +
+                "Thanks to Hurikejnis and Zeuvera for Slovenčina localization." +
+                "\n\n" +
                 "Also, a very special thanks to PayPal donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider \nNemesis7675" +
                 "\n\n" +
-                "And Patreons: \nHamAndRock \nMelber", 
+                "And Patreons: \nHamAndRock \nMelber",
                 "Toolkit",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);

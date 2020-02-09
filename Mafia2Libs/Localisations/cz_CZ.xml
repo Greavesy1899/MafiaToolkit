@@ -60,6 +60,7 @@
   <String ID="$LANGUAGE_RUSSIAN">русский</String>
   <String ID="$LANGUAGE_CZECH">Česky</String>
   <String ID="$LANGUAGE_POLISH">Polština</String>
+  <String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
   <String ID="$LANGUAGE_OPTION">Jazyk</String>
   <String ID="$DISCORD_STATE_CUSTOM">Použít vlastní status v discordu.</String>
   <String ID="$CHECK_FOR_UPDATES">Vyhledat aktualizace.</String>
