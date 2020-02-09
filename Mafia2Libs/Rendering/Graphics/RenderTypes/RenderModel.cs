@@ -10,6 +10,8 @@ using Buffer = SharpDX.Direct3D11.Buffer;
 using Utils.Models;
 using Utils.SharpDXExtensions;
 using System.Diagnostics;
+using System;
+using System.Windows;
 
 namespace Rendering.Graphics
 {
@@ -212,9 +214,10 @@ namespace Rendering.Graphics
                         lod.Vertices[x] = vertex;
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
-                    throw new System.Exception("Failed to build renderable!");
+                    MessageBox.Show(string.Format("Error when creating renderable {1}!: \n{0}", ex.Message, mesh.Name.ToString()), "Toolkit");
+                    return false;
                 }
                 LODs[i] = lod;
             }
