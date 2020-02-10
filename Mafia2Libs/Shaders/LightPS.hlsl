@@ -41,7 +41,6 @@ float3 CalculateFromNormalMap(VS_OUTPUT input)
 {
 	//Load normal from normal map
 	float4 normalMap = textures[1].Sample(SampleType, input.TexCoord0);
-    normalMap.a = 1.0f;
 
 	//Change normal map range from [0, 1] to [-1, 1]
 	normalMap = (2.0f * normalMap) - 1.0f;
@@ -49,14 +48,8 @@ float3 CalculateFromNormalMap(VS_OUTPUT input)
 	//Make sure tangent is completely orthogonal to normal
 	input.Tangent = normalize(input.Tangent - dot(input.Tangent, input.Normal) * input.Normal);
 
-	//Create the biTangent
-	float3 biTangent = cross(input.Normal, input.Tangent);
-
-	//Create the "Texture Space"
-	float3x3 texSpace = float3x3(input.Tangent, biTangent, input.Normal);
-
 	//Convert normal from normal map to texture space and store in input.normal
-    float3 bumpNormal = (normalMap.x * input.Tangent) + (normalMap.y * biTangent) + (normalMap.z * input.Normal);
+    float3 bumpNormal = (normalMap.x * input.Tangent) + (normalMap.y * input.Binormal) + (normalMap.z * input.Normal);
     bumpNormal = normalize(bumpNormal);
     return bumpNormal;
 }
@@ -83,9 +76,10 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
 	// Calculate the amount of the light on this pixel.
     lightIntensity = saturate(dot(normal, lightDir));
 
-	// Determine the final diffuse color based on the diffuse color and the amount of the light intensity.
+    // Determine the final diffuse color based on the diffuse color and the amount of the light intensity.
+    color += (diffuseColor * lightIntensity);
 	// Saturate the ambient and diffuse color.
-    color = saturate(diffuseColor * lightIntensity);
+    color = saturate(color);
 
 	// Calculate the reflection vector based on the light intensity, normal vector, and light direction.
 	reflection = normalize(2 * lightIntensity * input.Normal - lightDir);
@@ -94,6 +88,7 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
 	specular = pow(saturate(dot(reflection, input.viewDirection)), specularPower);
 
     color = saturate(color + specular);
+    color.a = 1.0f;
     return color;
 }
 
@@ -107,7 +102,7 @@ float4 LightPixelShader(VS_OUTPUT input) : SV_TARGET
     aoTextureColor = textures[2].Sample(SampleType, input.TexCoord7);
 
     color = CalculateColor(input, color);
-	color = (color * aoTextureColor * diffuseTextureColor);
+    color = (color * aoTextureColor * diffuseTextureColor);
 	
 	return color;
 }
@@ -133,6 +128,6 @@ float4 PS_50760736(VS_OUTPUT input) : SV_TARGET
 	aoTextureColor = textures[2].Sample(SampleType, input.TexCoord7);
 	emissiveTextureColor = (textures[1].Sample(SampleType, input.TexCoord0)* C005_EmissiveFacadeColorAndIntensity);
 	color = CalculateColor(input, color);
-	color = (color * aoTextureColor * diffuseTextureColor);
+    color = (color * aoTextureColor * diffuseTextureColor);
 	return color;
 }

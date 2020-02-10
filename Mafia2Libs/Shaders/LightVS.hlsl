@@ -16,6 +16,7 @@ struct VS_INPUT
 	float4 Position : POSITION;
     float3 Normal : NORMAL;
 	float3 Tangent : TANGENT;
+    float3 Binormal : BINORMAL;
 	float2 TexCoord0 : TEXCOORD0;
 	float2 TexCoord7 : TEXCOORD1;
 };
@@ -38,7 +39,6 @@ VS_OUTPUT LightVertexShader(VS_INPUT input)
 
 	// Change the position vector to be 4 units for proper matrix calculations.
 	input.Position.w = 1.0f;
-    output.Binormal = float3(1.0f, 1.0f, 1.0f);
 	input.TexCoord0.y = -input.TexCoord0.y;
     input.TexCoord7.y = -input.TexCoord7.y;
 
@@ -51,14 +51,32 @@ VS_OUTPUT LightVertexShader(VS_INPUT input)
 	output.TexCoord0 = input.TexCoord0;
 	output.TexCoord7 = input.TexCoord7;
 
+    //float3 t;
+    //float3 b;
+    //float3 c1 = cross(input.Normal, float3(0.0, 0.0, 1.0));
+    //float3 c2 = cross(input.Normal, float3(0.0, 1.0, 0.0));
+    //if(length(c1) > length(c2))
+    //{   
+    //    t = c1;
+    //}
+    //else
+    //{
+    //    t = c2;
+    //}
+    
+    //t = normalize(t);
+    //b = normalize(cross(input.Normal, t));
+    
+    //output.Tangent = t;
+    //output.Binormal = b;
 	// Calculate the normal vector against the world matrix only.
-	output.Normal = mul(input.Normal, (float3x3)worldMatrix);
-	output.Normal = normalize(output.Normal);
+    output.Normal = mul(input.Normal, (float3x3) worldMatrix);
+    output.Normal = normalize(output.Normal);
     
     output.Tangent = mul(input.Tangent, (float3x3) worldMatrix);
     output.Tangent = normalize(output.Tangent);
     
-    output.Binormal = mul(output.Binormal, (float3x3) worldMatrix);
+    output.Binormal = mul(input.Binormal, (float3x3) worldMatrix);
     output.Binormal = normalize(output.Binormal);
 
 	// Calculate the position of the vertex in the world.

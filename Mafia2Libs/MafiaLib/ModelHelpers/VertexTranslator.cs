@@ -23,14 +23,15 @@ namespace Utils.Models
          * 
          *
          * */
-        public static Vector3 ReadPositionDataFromVB(byte[] data, int i, float factor, Vector3 offset)
+        public static Vector4 ReadPositionDataFromVB(byte[] data, int i, float factor, Vector3 offset)
         {
-            Vector3 vec = new Vector3();
+            Vector4 vec = new Vector4();
             ushort x = BitConverter.ToUInt16(data, i);
             ushort y = BitConverter.ToUInt16(data, i + 2);
             ushort z = (ushort)(BitConverter.ToUInt16(data, i + 4) & short.MaxValue);
-            vec = new Vector3(x * factor, y * factor, z * factor);
-            vec += offset;
+            ushort w = (ushort)(BitConverter.ToUInt16(data, i + 4) & 0x8000);
+            vec = new Vector4(x * factor, y * factor, z * factor, w != 0 ? -1.0f : 1.0f);
+            vec += new Vector4(offset, 0.0f);
             return vec;
         }
 
