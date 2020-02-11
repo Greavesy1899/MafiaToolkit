@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Utils.Extensions;
 
 namespace ResourceTypes.BufferPools
 {
@@ -23,10 +24,10 @@ namespace ResourceTypes.BufferPools
         /// Construct manager with passed files.
         /// </summary>
         /// <param name="files"></param>
-        public VertexBufferManager(List<FileInfo> files)
+        public VertexBufferManager(List<FileInfo> files, bool isBigEndian = false)
         {
             loadedPoolNames = files;
-            ReadFiles();
+            ReadFiles(isBigEndian);
         }
 
         /// <summary>
@@ -82,24 +83,18 @@ namespace ResourceTypes.BufferPools
             return false;
         }
 
-        /// <summary>
-        /// Read files which are passed through constructor.
-        /// </summary>
-        public void ReadFiles()
+        public void ReadFiles(bool isBigEndian)
         {
             bufferPools = new List<VertexBufferPool>();
             for (int i = 0; i != loadedPoolNames.Count; i++)
             {
-                using (BinaryReader reader = new BinaryReader(File.Open(loadedPoolNames[i].FullName, FileMode.Open)))
-                    bufferPools.Add(new VertexBufferPool(reader));
+                using (MemoryStream stream = new MemoryStream(File.ReadAllBytes(loadedPoolNames[i].FullName), false))
+                {
+                    bufferPools.Add(new VertexBufferPool(stream, isBigEndian));
+                }
             }
         }
 
-        /// <summary>
-        /// Get buffer from manager. use VertexBufferRef from FrameGeometry.
-        /// </summary>
-        /// <param name="vertexRef">vertexBufferRef</param>
-        /// <returns></returns>
         public VertexBuffer GetBuffer(ulong vertexRef)
         {
             for (int i = 0; i != bufferPools.Count; i++)
@@ -111,23 +106,26 @@ namespace ResourceTypes.BufferPools
             return null;
         }
 
-        /// <summary>
-        /// writer pools to their files.
-        /// </summary>
-        public void WriteToFile()
+        public void WriteToFile(bool isBigEndian = false)
         {
             for (int i = 0; i != bufferPools.Count; i++)
             {
                 if (loadedPoolNames.Count > i)
                 {
-                    using (BinaryWriter writer = new BinaryWriter(File.Open(loadedPoolNames[i].FullName, FileMode.Create)))
-                        bufferPools[i].WriteToFile(writer);
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        bufferPools[i].WriteToFile(stream, isBigEndian);
+                        File.WriteAllBytes(loadedPoolNames[i].FullName, stream.ToArray());
+                    }
                 }
                 else
                 {
                     int offset = 20 + i;
-                    using (BinaryWriter writer = new BinaryWriter(File.Open(loadedPoolNames[0].DirectoryName + "/VertexBufferPool_" + offset + ".vbp", FileMode.Create)))
-                        bufferPools[i].WriteToFile(writer);
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        bufferPools[i].WriteToFile(stream, isBigEndian);
+                        File.WriteAllBytes(loadedPoolNames[0].DirectoryName + "/VertexBufferPool_" + offset + ".vbp", stream.ToArray());
+                    }
                 }
             }
         }
@@ -150,9 +148,9 @@ namespace ResourceTypes.BufferPools
         /// Construct pool and read buffers.
         /// </summary>
         /// <param name="reader"></param>
-        public VertexBufferPool(BinaryReader reader)
+        public VertexBufferPool(MemoryStream stream, bool isBigEndian)
         {
-            ReadFromFile(reader);
+            ReadFromFile(stream, isBigEndian);
         }
 
         public VertexBufferPool()
@@ -163,52 +161,48 @@ namespace ResourceTypes.BufferPools
             buffers = new Dictionary<ulong, VertexBuffer>();
         }
 
-        /// <summary>
-        /// read all buffers from the file.
-        /// </summary>
-        /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             int expectedSize = 0;
 
-            version = (BufferType)reader.ReadByte();
-            numBuffers = reader.ReadInt32();
-            size = reader.ReadInt32();
+            version = (BufferType)stream.ReadByte();
+            numBuffers = stream.ReadInt32(isBigEndian);
+            size = stream.ReadInt32(isBigEndian);
 
             for (int i = 0; i != numBuffers; i++)
             {
-                VertexBuffer buffer = new VertexBuffer(reader);
+                VertexBuffer buffer = new VertexBuffer(stream, isBigEndian);
                 expectedSize += buffer.Data.Length;
                 buffers.Add(buffer.Hash, buffer);
             }
         }
 
-        /// <summary>
-        /// Write all buffers to the file.
-        /// </summary>
-        /// <param name="writer"></param>
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             size = 0;
 
-            writer.Write((byte)version);
-            writer.Write(buffers.Count);
+            stream.WriteByte((byte)version);
+            stream.Write(buffers.Count, isBigEndian);
 
             //need to make sure we update total size of buffers.
             for (int i = 0; i != buffers.Count; i++)
+            {
                 size += (buffers.ElementAt(i).Value.Data.Length);
+            }
 
-            writer.Write(size);
+            stream.Write(size, isBigEndian);
 
             for (int i = 0; i != buffers.Count; i++)
-                buffers.ElementAt(i).Value.WriteToFile(writer);
+            {
+                buffers.ElementAt(i).Value.WriteToFile(stream, isBigEndian);
+            }
         }
     }
 
     public class VertexBuffer
     {
         ulong hash;
-        int len;
+        uint length;
         byte[] data;
 
         public ulong Hash {
@@ -219,48 +213,32 @@ namespace ResourceTypes.BufferPools
             get { return data; }
             set {
                 data = value;
-                len = data.Length;
+                length = (uint)data.Length;
             }
         }
 
-        /// <summary>
-        /// Construct a buffer with given hash.
-        /// </summary>
-        /// <param name="hash"></param>
         public VertexBuffer(ulong hash)
         {
             this.hash = hash;
         }
 
-        /// <summary>
-        /// Construct pool and read buffers.
-        /// </summary>
-        /// <param name="reader"></param>
-        public VertexBuffer(BinaryReader reader)
+        public VertexBuffer(MemoryStream stream, bool isBigEndian)
         {
-            ReadFromFile(reader);
+            ReadFromFile(stream, isBigEndian);
         }
 
-        /// <summary>
-        /// Read buffer to file.
-        /// </summary>
-        /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            hash = reader.ReadUInt64();
-            len = reader.ReadInt32();
-            data = reader.ReadBytes(len);
+            hash = stream.ReadUInt64(isBigEndian);
+            length = stream.ReadUInt32(isBigEndian);
+            data = stream.ReadBytes((int)length);
         }
 
-        /// <summary>
-        /// Write buffer to file.
-        /// </summary>
-        /// <param name="writer"></param>
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
-            writer.Write(hash);
-            writer.Write(len);
-            writer.Write(data);
+            stream.Write(hash, isBigEndian);
+            stream.Write(length, isBigEndian);
+            stream.Write(data);
         }
     }
 }

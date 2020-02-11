@@ -273,7 +273,7 @@ namespace Gibbed.Mafia2.ResourceFormats
                 {
                     Name = DeserializeData(data, input.ReadValueU32(endian), endian),
                     Value = DeserializeData(data, input.ReadValueU32(endian), endian),
-                    Id = input.ReadValueU32(),
+                    Id = input.ReadValueU32(endian)
                 };
 
                 var childCount = input.ReadValueU32(endian);

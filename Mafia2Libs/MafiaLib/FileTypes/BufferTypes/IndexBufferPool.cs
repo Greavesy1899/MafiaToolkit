@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Utils.Extensions;
 
 namespace ResourceTypes.BufferPools
 {
@@ -18,20 +19,12 @@ namespace ResourceTypes.BufferPools
             set { loadedPoolNames = value; }
         }
 
-        /// <summary>
-        /// Construct manager with passed files.
-        /// </summary>
-        /// <param name="files"></param>
-        public IndexBufferManager(List<FileInfo> files)
+        public IndexBufferManager(List<FileInfo> files, bool isBigEndian = false)
         {
             loadedPoolNames = files;
-            ReadFiles();
+            ReadFiles(isBigEndian);
         }
 
-        /// <summary>
-        /// Add new buffer to first non-full pool.
-        /// </summary>
-        /// <param name="buffer"></param>
         public void AddBuffer(IndexBuffer buffer)
         {
             int poolToInput = -1;
@@ -80,24 +73,18 @@ namespace ResourceTypes.BufferPools
             return false;
         }
 
-        /// <summary>
-        /// Read files which are passed through constructor.
-        /// </summary>
-        public void ReadFiles()
+        public void ReadFiles(bool isBigEndian)
         {
             bufferPools = new List<IndexBufferPool>();
             for (int i = 0; i != loadedPoolNames.Count; i++)
             {
-                using (BinaryReader reader = new BinaryReader(File.Open(loadedPoolNames[i].FullName, FileMode.Open)))
-                    bufferPools.Add(new IndexBufferPool(reader));
+                using (MemoryStream stream = new MemoryStream(File.ReadAllBytes(loadedPoolNames[i].FullName), false))
+                {
+                    bufferPools.Add(new IndexBufferPool(stream, isBigEndian));
+                }
             }
         }
 
-        /// <summary>
-        /// Get buffer from manager. use IndexBufferRef from FrameGeometry.
-        /// </summary>
-        /// <param name="indexRef">indexBufferRef</param>
-        /// <returns></returns>
         public IndexBuffer GetBuffer(ulong indexRef)
         {
             IndexBuffer buff = null;
@@ -111,23 +98,26 @@ namespace ResourceTypes.BufferPools
             return buff;
         }
 
-        /// <summary>
-        /// writer pools to their files.
-        /// </summary>
-        public void WriteToFile()
+        public void WriteToFile(bool isBigEndian = false)
         {
             for(int i = 0; i != bufferPools.Count; i++)
             {
                 if (loadedPoolNames.Count > i)
                 {
-                    using (BinaryWriter writer = new BinaryWriter(File.Open(loadedPoolNames[i].FullName, FileMode.Create)))
-                        bufferPools[i].WriteToFile(writer);
+                    using(MemoryStream stream = new MemoryStream())
+                    {
+                        bufferPools[i].WriteToFile(stream, isBigEndian);
+                        File.WriteAllBytes(loadedPoolNames[i].FullName, stream.ToArray());
+                    }
                 }
                 else
                 {
                     int offset = 20 + i;
-                    using (BinaryWriter writer = new BinaryWriter(File.Open(loadedPoolNames[0].DirectoryName + "/IndexBufferPool_" + offset + ".ibp", FileMode.Create)))
-                        bufferPools[i].WriteToFile(writer);
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        bufferPools[i].WriteToFile(stream, isBigEndian);
+                        File.WriteAllBytes(loadedPoolNames[0].DirectoryName + "/IndexBufferPool_" + offset + ".ibp", stream.ToArray());
+                    }
                 }
             }
         }
@@ -138,7 +128,7 @@ namespace ResourceTypes.BufferPools
         //MAX BUFFER SIZE IS 128
         private BufferType version;
         private int numBuffers;
-        private int size;
+        private uint size;
         private Dictionary<ulong, IndexBuffer> buffers = new Dictionary<ulong, IndexBuffer>();
 
         public Dictionary<ulong, IndexBuffer> Buffers {
@@ -146,13 +136,9 @@ namespace ResourceTypes.BufferPools
             set { buffers = value; }
         }
 
-        /// <summary>
-        /// Construct pool and read buffers.
-        /// </summary>
-        /// <param name="reader"></param>
-        public IndexBufferPool(BinaryReader reader)
+        public IndexBufferPool(MemoryStream stream, bool isBigEndian)
         {
-            ReadFromFile(reader);
+            ReadFromFile(stream, isBigEndian);
         }
 
         public IndexBufferPool()
@@ -163,53 +149,46 @@ namespace ResourceTypes.BufferPools
             buffers = new Dictionary<ulong, IndexBuffer>();
         }
 
-        /// <summary>
-        /// read all buffers from the file.
-        /// </summary>
-        /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            version = (BufferType)reader.ReadByte();
-            numBuffers = reader.ReadInt32();
-            size = reader.ReadInt32();
+            version = (BufferType)stream.ReadByte8();
+            numBuffers = stream.ReadInt32(isBigEndian);
+            size = stream.ReadUInt32(isBigEndian);
 
             for (int i = 0; i != numBuffers; i++)
             {
-                IndexBuffer buffer = new IndexBuffer(reader);
+                IndexBuffer buffer = new IndexBuffer(stream, isBigEndian);
                 buffers.Add(buffer.Hash, buffer);
             }
         }
 
-        /// <summary>
-        /// Write all buffers to the file.
-        /// </summary>
-        /// <param name="writer"></param>
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             size = 0;
 
-            writer.Write((byte)version);
-            writer.Write(buffers.Count);
+            stream.WriteByte((byte)version);
+            stream.Write(buffers.Count, isBigEndian);
 
             //need to make sure we update total size of buffers.
             for (int i = 0; i != buffers.Count; i++)
             {
-                int usage = buffers.ElementAt(i).Value.Data.Length*2;
+                uint usage = (uint)buffers.ElementAt(i).Value.Data.Length*2;
                 size += usage;
             }
             size += 128;
-            writer.Write(size);
+            stream.Write(size, isBigEndian);
 
             for (int i = 0; i != buffers.Count; i++)
-                buffers.ElementAt(i).Value.WriteToFile(writer);
+            {
+                buffers.ElementAt(i).Value.WriteToFile(stream, isBigEndian);
+            }
         }
     }
 
     public class IndexBuffer
     {
         private ulong hash;
-        private int u;
-        private int len;
+        private uint length;
         private ushort[] data;
 
         public ulong Hash {
@@ -220,64 +199,47 @@ namespace ResourceTypes.BufferPools
             get { return data; }
             set {
                 data = value;
-                len = (data.Length * 2);
+                length = (uint)(data.Length * 2);
             }
         }
 
-        /// <summary>
-        /// Construct a buffer with given hash.
-        /// </summary>
-        /// <param name="hash"></param>
         public IndexBuffer(ulong hash)
         {
             this.hash = hash;
-            u = 1;
         }
 
-        /// <summary>
-        /// Construct buffer and read data.
-        /// </summary>
-        /// <param name="reader"></param>
-        public IndexBuffer(BinaryReader reader)
+        public IndexBuffer(MemoryStream stream, bool isBigEndian)
         {
-            ReadFromFile(reader);
+            ReadFromFile(stream, isBigEndian);
         }
 
-        /// <summary>
-        /// Read buffer to file.
-        /// </summary>
-        /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            hash = reader.ReadUInt64();
-            u = reader.ReadInt32();
-            len = reader.ReadInt32();
-            data = new ushort[len / 2];
+            hash = stream.ReadUInt64(isBigEndian);
+            stream.ReadInt32(isBigEndian);
+            length = stream.ReadUInt32(isBigEndian);
+            data = new ushort[length / 2];
 
             int num = 0;
             int index = 0;
 
-            while (num < len)
+            while (num < length)
             {
-                data[index] = reader.ReadUInt16();
+                data[index] = stream.ReadUInt16(isBigEndian);
                 num += 2;
                 ++index;
             }
         }
         
-        /// <summary>
-        /// Write buffer to file.
-        /// </summary>
-        /// <param name="writer"></param>
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(MemoryStream stream, bool isBigEndian = false)
         {
-            writer.Write(hash);
-            writer.Write(u);
-            writer.Write(len);
+            stream.Write(hash, isBigEndian);
+            stream.Write(1, isBigEndian);
+            stream.Write(length, isBigEndian);
 
             for(int i = 0; i != data.Length; i++)
             {
-                writer.Write(data[i]);
+                stream.Write(data[i], isBigEndian);
             }
         }
     }

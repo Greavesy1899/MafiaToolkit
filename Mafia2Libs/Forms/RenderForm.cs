@@ -814,6 +814,24 @@ namespace Mafia2Tool
                 dSceneTree.AddToTree(node);
                 collisionRoot.Collapse(false);
             }
+            if(SceneData.ATLoader != null && ToolkitSettings.Experimental)
+            {
+                animalTrafficRoot = new TreeNode("Animal Traffic Paths");
+                animalTrafficRoot.Tag = "Folder";
+                for (int i = 0; i < SceneData.ATLoader.paths.Length; i++)
+                {
+                    int refID = StringHelpers.RandomGenerator.Next();
+                    RenderATP atp = new RenderATP();
+                    atp.Init(SceneData.ATLoader.paths[i]);
+                    TreeNode child = new TreeNode();
+                    child.Text = animalTrafficRoot.Nodes.Count.ToString();
+                    child.Name = refID.ToString();
+                    child.Tag = atp;
+                    assets.Add(refID, atp);
+                    animalTrafficRoot.Nodes.Add(child);
+                }
+                dSceneTree.AddToTree(animalTrafficRoot);
+            }
             if (SceneData.Actors.Length > 0 && ToolkitSettings.Experimental)
             {
                 actorRoot = new TreeNode("Actor Items");

@@ -33,14 +33,15 @@ namespace ResourceTypes.Navigation
             public Hash unkHash;
             public float Unk0 { get; set; }
             public float Unk1 { get; set; }
-            public short Unk2 { get; set; }
+            public byte Unk2 { get; set; }
+            public byte[] Unk3 { get; set; }
             public PathVectors[] vectors;
-            public byte unk3;
+            
 
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3} {4}, {5}", unkHash.ToString(), Unk0, Unk1, Unk2, unk3, bbox);
+                return string.Format("{0} {1} {2} {3} {4}, {5}", unkHash.ToString(), Unk0, Unk1, Unk2, Unk2, bbox);
             }
         }
         public struct AnimalTrafficInstance
@@ -103,7 +104,8 @@ namespace ResourceTypes.Navigation
                 path.unkHash.ReadFromFile(reader); //decompiled exe says this is a hash but its always empty
                 path.Unk0 = reader.ReadSingle(); //5
                 path.Unk1 = reader.ReadSingle(); //15
-                path.Unk2 = reader.ReadInt16(); //1 257 or 513.
+                path.Unk2 = reader.ReadByte(); //1 257 or 513.
+                path.Unk3 = reader.ReadBytes(path.Unk2);
                 path.vectors = new PathVectors[path.numPaths];
 
                 for(int x = 0; x < path.numPaths; x++)
@@ -115,8 +117,7 @@ namespace ResourceTypes.Navigation
                     vector.unk0 = reader.ReadByte(); //7 or 4
                     path.vectors[x] = vector;
                 }
-                if (path.Unk2 == 2)
-                    path.unk3 = reader.ReadByte();
+ 
 
                 paths[i] = path;
             }
@@ -150,6 +151,7 @@ namespace ResourceTypes.Navigation
                     writer.Write(path.Unk0);
                     writer.Write(path.Unk1);
                     writer.Write(path.Unk2);
+                    writer.Write(path.Unk3);
 
                     for (int x = 0; x < path.numPaths; x++)
                     {
@@ -157,8 +159,6 @@ namespace ResourceTypes.Navigation
                         Vector3Extenders.WriteToFile(path.vectors[x].vectors[1], writer);
                         writer.Write(path.vectors[x].unk0);
                     }
-                    if (path.Unk2 == 2)
-                        writer.Write(path.unk3);
                 }
             }
         }
