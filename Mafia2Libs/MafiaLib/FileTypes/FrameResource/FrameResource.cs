@@ -107,11 +107,11 @@ namespace ResourceTypes.FrameResource
             return new FrameHolder(-1, null);
         }
 
-        public FrameResource(string file)
+        public FrameResource(string file, bool isBigEndian = false)
         {
             using (MemoryStream reader = new MemoryStream(File.ReadAllBytes(file), false))
             {
-                ReadFromFile(reader, false);
+                ReadFromFile(reader, isBigEndian);
             }
         }
 

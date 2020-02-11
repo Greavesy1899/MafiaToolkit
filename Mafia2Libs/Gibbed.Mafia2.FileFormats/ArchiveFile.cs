@@ -823,7 +823,7 @@ namespace Gibbed.Mafia2.FileFormats
                 resource = new XmlResource();
                 resource.Deserialize(entry.Version, stream, Endian);
 
-                if (Endian == Endian.Big || resource.Unk3)
+                if (resource.Unk3)
                 {
                     File.WriteAllBytes(xmlDir + "/" + name + ".xml", entry.Data);
                 }

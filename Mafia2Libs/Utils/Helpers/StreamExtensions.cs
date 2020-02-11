@@ -53,8 +53,7 @@ namespace Utils.Extensions
         public static byte[] ReadBytes(this Stream stream, int num)
         {
             byte[] data = new byte[num];
-            for (int i = 0; i < num; i++)
-                data[i] = (byte)stream.ReadByte();
+            stream.Read(data, 0, num);
             return data;
         }
         public static byte ReadByte8(this Stream stream)

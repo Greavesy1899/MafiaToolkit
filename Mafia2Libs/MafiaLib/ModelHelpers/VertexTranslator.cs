@@ -25,7 +25,21 @@ namespace Utils.Models
          * */
         public static Vector3 ReadPositionDataFromVB(byte[] data, int i, float factor, Vector3 offset)
         {
+            //byte[] xData = new byte[2];
+            //byte[] yData = new byte[2];
+            //byte[] zData = new byte[2];
+            //Array.Copy(data, i + 0, xData, 0, 2);
+            //Array.Copy(data, i + 2, yData, 0, 2);
+            //Array.Copy(data, i + 4, zData, 0, 2);
+
+            //Array.Reverse(xData);
+            //Array.Reverse(yData);
+            //Array.Reverse(zData);
+
             Vector3 vec = new Vector3();
+            //ushort x = BitConverter.ToUInt16(xData, 0);
+            //ushort y = BitConverter.ToUInt16(yData, 0);
+            //ushort z = (ushort)(BitConverter.ToUInt16(zData, 0) & short.MaxValue);
             ushort x = BitConverter.ToUInt16(data, i);
             ushort y = BitConverter.ToUInt16(data, i + 2);
             ushort z = (ushort)(BitConverter.ToUInt16(data, i + 4) & short.MaxValue);
