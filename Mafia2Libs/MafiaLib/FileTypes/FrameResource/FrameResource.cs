@@ -428,8 +428,8 @@ namespace ResourceTypes.FrameResource
 
                 foreach (var lod in mesh.Geometry.LOD)
                 {
-                    SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.uHash).WriteToFile(writer);
-                    SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.uHash).WriteToFile(writer);
+                    //SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.uHash).WriteToFile(writer);
+                    //SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.uHash).WriteToFile(writer);
                 }
             }
             else if (frame.GetType() == typeof(FrameObjectSector))
@@ -447,8 +447,8 @@ namespace ResourceTypes.FrameResource
 
                 foreach (var lod in mesh.Geometry.LOD)
                 {
-                    SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.uHash).WriteToFile(writer);
-                    SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.uHash).WriteToFile(writer);
+                    //SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.uHash).WriteToFile(writer);
+                    //SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.uHash).WriteToFile(writer);
                 }
             }
             else if (frame.GetType() == typeof(FrameObjectTarget))

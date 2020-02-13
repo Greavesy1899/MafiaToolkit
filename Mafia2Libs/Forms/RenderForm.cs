@@ -818,11 +818,11 @@ namespace Mafia2Tool
             {
                 animalTrafficRoot = new TreeNode("Animal Traffic Paths");
                 animalTrafficRoot.Tag = "Folder";
-                for (int i = 0; i < SceneData.ATLoader.paths.Length; i++)
+                for (int i = 0; i < SceneData.ATLoader.Paths.Length; i++)
                 {
                     int refID = StringHelpers.RandomGenerator.Next();
                     RenderATP atp = new RenderATP();
-                    atp.Init(SceneData.ATLoader.paths[i]);
+                    atp.Init(SceneData.ATLoader.Paths[i]);
                     TreeNode child = new TreeNode();
                     child.Text = animalTrafficRoot.Nodes.Count.ToString();
                     child.Name = refID.ToString();

@@ -22,12 +22,12 @@ namespace Rendering.Graphics
         public void Init(AnimalTrafficLoader.AnimalTrafficPath path)
         {
             ATP = path;
-            BBox.Init(path.bbox);
+            BBox.Init(path.BoundingBox);
 
-            Vector3[] points = new Vector3[path.vectors.Length];
-            for(int i = 0; i != path.vectors.Length; i++)
+            Vector3[] points = new Vector3[path.Vectors.Length];
+            for(int i = 0; i != path.Vectors.Length; i++)
             {
-                points[i] = path.vectors[i].vectors[0];
+                points[i] = path.Vectors[i].Position;
             }
             Path.Init(points);
         }
