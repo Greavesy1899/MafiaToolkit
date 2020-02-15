@@ -159,85 +159,85 @@ namespace ResourceTypes.Cutscene
                             if(type == AeModel.Type)
                             {
                                 AeModel model = new AeModel();
-                                model.ReadFromFile(stream, true);
+                                model.ReadFromFile(stream, false);
                                 entities[i] = model;
                             }
                             else if (type == AeSpotLight.Type)
                             {
                                 AeSpotLight spotLight = new AeSpotLight();
-                                spotLight.ReadFromFile(stream, true);
+                                spotLight.ReadFromFile(stream, false);
                                 entities[i] = spotLight;
                             }
                             else if (type == AeOmniLight.Type)
                             {
                                 AeOmniLight omniLight = new AeOmniLight();
-                                omniLight.ReadFromFile(stream, true);
+                                omniLight.ReadFromFile(stream, false);
                                 entities[i] = omniLight;
                             }
                             else if (type == AeUnk4.Type)
                             {
                                 AeUnk4 unk4 = new AeUnk4();
-                                unk4.ReadFromFile(stream, true);
+                                unk4.ReadFromFile(stream, false);
                                 entities[i] = unk4;
                             }
                             else if (type == AeTargetCamera.Type)
                             {
                                 AeTargetCamera targetCamera = new AeTargetCamera();
-                                targetCamera.ReadFromFile(stream, true);
+                                targetCamera.ReadFromFile(stream, false);
                                 entities[i] = targetCamera;
                             }
                             else if(type == AeFrame.Type)
                             {
                                 AeFrame frame = new AeFrame();
-                                frame.ReadFromFile(stream, true);
+                                frame.ReadFromFile(stream, false);
                                 entities[i] = frame;
                             }
                             else if (type == AeUnk10.Type)
                             {
                                 AeUnk10 unk10 = new AeUnk10();
-                                unk10.ReadFromFile(stream, true);
+                                unk10.ReadFromFile(stream, false);
                                 entities[i] = unk10;
                             }
                             else if (type == AeUnk12.Type)
                             {
                                 AeUnk12 unk12 = new AeUnk12();
-                                unk12.ReadFromFile(stream, true);
+                                unk12.ReadFromFile(stream, false);
                                 entities[i] = unk12;
                             }
                             else if (type == AeUnk13.Type)
                             {
                                 AeUnk13 unk13 = new AeUnk13();
-                                unk13.ReadFromFile(stream, true);
+                                unk13.ReadFromFile(stream, false);
                                 entities[i] = unk13;
                             }
                             else if (type == AeVehicle.Type)
                             {
                                 AeVehicle vehicle = new AeVehicle();
-                                vehicle.ReadFromFile(stream, true);
+                                vehicle.ReadFromFile(stream, false);
                                 entities[i] = vehicle;
                             }
                             else if (type == AeUnk18.Type)
                             {
                                 AeUnk18 unk18 = new AeUnk18();
-                                unk18.ReadFromFile(stream, true);
+                                unk18.ReadFromFile(stream, false);
                                 entities[i] = unk18;
                             }
                             else if (type == AeUnk23.Type)
                             {
                                 AeUnk23 unk23 = new AeUnk23();
-                                unk23.ReadFromFile(stream, true);
+                                unk23.ReadFromFile(stream, false);
                                 entities[i] = unk23;
                             }
                             else if (type == AeEffects.Type)
                             {
                                 AeEffects effects = new AeEffects();
-                                effects.ReadFromFile(stream, true);
+                                effects.ReadFromFile(stream, false);
                                 entities[i] = effects;
                             }
                             else if (type == AeSunLight.Type)
                             {
                                 AeSunLight sunlight = new AeSunLight();
-                                sunlight.ReadFromFile(stream, true);
+                                sunlight.ReadFromFile(stream, false);
                                 entities[i] = sunlight;
                             }
                             else

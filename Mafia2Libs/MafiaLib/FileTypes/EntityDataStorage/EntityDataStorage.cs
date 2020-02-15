@@ -81,7 +81,26 @@ namespace ResourceTypes.EntityDataStorage
                 public float EngineFRotLoVol { get; set; }
                 public float EngineFRotHiVol { get; set; }
                 public float EngineFRotHi { get; set; }
-                public float EngineFNoClutchLockOnly { get; set; }
+                public bool EngineFNoClutchLockOnly { get; set; }
+            }
+            public class EngineFizzTableData
+            {
+                public int EngineFizzSndID { get; set; }
+                public float EngineFizzVolume { get; set; }
+
+            }
+            public class KnockingBonnetTableData
+            {
+                public int KnockingBonnetSndId { get; set; }
+                public float KnockingBonnetSpeed { get; set; }
+                public float KnockingBonnetVolume { get; set; }
+            }
+            public class CrashTableData
+            {
+                public int CrashSndCategory { get; set; }
+                public int CrashSndId { get; set; }
+                public float CrashVolume { get; set; }
+                public float CrashSpeed { get; set; }
             }
 
             public ulong Hash { get; set;}
@@ -208,6 +227,47 @@ namespace ResourceTypes.EntityDataStorage
             public float EngineCrossFadeTimeMinus1 { get; set; }
             public EngineTableData[] EngineFData { get; set; }
             public EngineTableData[] EngineBData { get; set; }
+            public int EngineFizzSndCategory { get; set; }
+            public EngineFizzTableData[] EngineFizzData { get; set; }
+            public int EngineCoolingSndCategory1 { get; set; }
+            public int EngineCoolingSndId1 { get; set; }
+            public float EngineCoolingVolume1 { get; set; }
+            public float EngineCoolingTemperatureVolume1 { get; set; }
+            public float EngineCoolingTemperatureSilencion1 { get; set; }
+            public int EngineFanSndCategory { get; set; }
+            public int EngineFanSndId { get; set; }
+            public float m_EngineFanVolume { get; set; }
+            public int EnvironmentalSndCategory1 { get; set; }
+            public int EnvironmentalSndId1 { get; set; }
+            public float EnvironmentalVolume1 { get; set; }
+            public float EnvironmentalFrqLo1 { get; set; }
+            public float EnvironmentalFrqHi1 { get; set; }
+            public float EnvironmentalSpeedMaxVolume1 { get; set; }
+            public int AirPumpSndCategory1 { get; set; }
+            public int AirPumpSndId1 { get; set; }
+            public float AirPumpVolume1 { get; set; }
+            public int DoorOpenSndCategory1 { get; set; }
+            public int DoorOpenSndId1 { get; set; }
+            public float DoorOpenVolume1 { get; set; }
+            public int DoorOpenSndId1b { get; set; }
+            public float DoorOpenVolume1b { get; set; }
+            public int DoorCloseSndCategory1 { get; set; }
+            public int DoorCloseSndId1 { get; set; }
+            public float DoorCloseVolume1 { get; set; }
+            public int DoorCloseSndId1b { get; set; }
+            public float DoorCloseVolume1b { get; set; }
+            public int CoverOpenSndCategory1 { get; set; }
+            public int CoverOpenSndId1 { get; set; }
+            public float CoverOpenVolume1 { get; set; }
+            public int CoverCloseSndCategory1 { get; set; }
+            public int CoverCloseSndId1 { get; set; }
+            public float CoverCloseVolume1 { get; set; }
+            public int KnockingBonnetSndCategory1 { get; set; }
+            public KnockingBonnetTableData[] KnockingBonnetData { get; set; }
+            public int DropHoodSndCategory1 { get; set; }
+            public int DropHoodSndId1 { get; set; }
+            public float DropHoodVolume1 { get; set; }
+            public CrashTableData[] CrashData { get; set; }
         }
 
         int entityType; //Cars have 18, City_Universe has 13.
@@ -521,7 +581,7 @@ namespace ResourceTypes.EntityDataStorage
                         table.EngineFData[z].EngineFSndCategory = stream.ReadInt32(isBigEndian);
                     }
 
-                    for (int z = 0; z < 8; z++) 
+                    for (int z = 0; z < 8; z++)
                     {
                         table.EngineFData[z].EngineFSndId = stream.ReadInt32(isBigEndian);
                     }
@@ -568,7 +628,7 @@ namespace ResourceTypes.EntityDataStorage
 
                     for (int z = 0; z < 8; z++)
                     {
-                        table.EngineFData[z].EngineFNoClutchLockOnly = stream.ReadSingle(isBigEndian);
+                        table.EngineFData[z].EngineFNoClutchLockOnly = stream.ReadBoolean();
                     }
                     #endregion
 
@@ -626,7 +686,97 @@ namespace ResourceTypes.EntityDataStorage
 
                     for (int z = 0; z < 8; z++)
                     {
-                        table.EngineBData[z].EngineFNoClutchLockOnly = stream.ReadSingle(isBigEndian);
+                        table.EngineBData[z].EngineFNoClutchLockOnly = stream.ReadBoolean();
+                    }
+                    #endregion
+
+                    table.EngineFizzSndCategory = stream.ReadInt32(isBigEndian);
+                    table.EngineFizzData = new EntityTable.EngineFizzTableData[3];
+
+                    #region EngineFizzData
+                    for (int z = 0; z < table.EngineFizzData.Length; z++)
+                    {
+                        table.EngineFizzData[z] = new EntityTable.EngineFizzTableData();
+                        table.EngineFizzData[z].EngineFizzSndID = stream.ReadInt32(isBigEndian);
+                    }
+
+                    for (int z = 0; z < table.EngineFizzData.Length; z++)
+                    {
+                        table.EngineFizzData[z].EngineFizzVolume = stream.ReadSingle(isBigEndian);
+                    }
+                    #endregion
+
+                    table.EngineCoolingSndCategory1 = stream.ReadInt32(isBigEndian);
+                    table.EngineCoolingSndId1 = stream.ReadInt32(isBigEndian);
+                    table.EngineCoolingVolume1 = stream.ReadSingle(isBigEndian);
+                    table.EngineCoolingTemperatureVolume1 = stream.ReadSingle(isBigEndian);
+                    table.EngineCoolingTemperatureSilencion1 = stream.ReadSingle(isBigEndian);
+                    table.EngineFanSndCategory = stream.ReadInt32(isBigEndian);
+                    table.EngineFanSndId = stream.ReadInt32(isBigEndian);
+                    table.m_EngineFanVolume = stream.ReadSingle(isBigEndian);
+                    table.EnvironmentalSndCategory1 = stream.ReadInt32(isBigEndian);
+                    table.EnvironmentalSndId1 = stream.ReadInt32(isBigEndian);
+                    table.EnvironmentalVolume1 = stream.ReadSingle(isBigEndian);
+                    table.EnvironmentalFrqLo1 = stream.ReadSingle(isBigEndian);
+                    table.EnvironmentalFrqHi1 = stream.ReadSingle(isBigEndian);
+                    table.EnvironmentalSpeedMaxVolume1 = stream.ReadSingle(isBigEndian);
+                    table.AirPumpSndCategory1 = stream.ReadInt32(isBigEndian);
+                    table.AirPumpSndId1 = stream.ReadInt32(isBigEndian);
+                    table.AirPumpVolume1 = stream.ReadSingle(isBigEndian);
+                    table.DoorOpenSndCategory1 = stream.ReadInt32(isBigEndian);
+                    table.DoorOpenSndId1 = stream.ReadInt32(isBigEndian);
+                    table.DoorOpenVolume1 = stream.ReadSingle(isBigEndian);
+                    table.DoorOpenSndId1b = stream.ReadInt32(isBigEndian);
+                    table.DoorOpenVolume1b = stream.ReadSingle(isBigEndian);
+                    table.DoorCloseSndCategory1 = stream.ReadInt32(isBigEndian);
+                    table.DoorCloseSndId1 = stream.ReadInt32(isBigEndian);
+                    table.DoorCloseVolume1 = stream.ReadSingle(isBigEndian);
+                    table.DoorCloseSndId1b = stream.ReadInt32(isBigEndian);
+                    table.DoorCloseVolume1b = stream.ReadSingle(isBigEndian);
+                    table.CoverOpenSndCategory1 = stream.ReadInt32(isBigEndian);
+                    table.CoverOpenSndId1 = stream.ReadInt32(isBigEndian);
+                    table.CoverOpenVolume1 = stream.ReadSingle(isBigEndian);
+                    table.CoverCloseSndCategory1 = stream.ReadInt32(isBigEndian);
+                    table.CoverCloseSndId1 = stream.ReadInt32(isBigEndian);
+                    table.CoverCloseVolume1 = stream.ReadSingle(isBigEndian);
+                    table.KnockingBonnetSndCategory1 = stream.ReadInt32(isBigEndian);
+
+                    #region KnockingBonnetData
+                    table.KnockingBonnetData = new EntityTable.KnockingBonnetTableData[2];
+                    for (int z = 0; z < table.KnockingBonnetData.Length; z++)
+                    {
+                        table.KnockingBonnetData[z] = new EntityTable.KnockingBonnetTableData();
+                        table.KnockingBonnetData[z].KnockingBonnetSndId = stream.ReadInt32(isBigEndian);
+                        table.KnockingBonnetData[z].KnockingBonnetSpeed = stream.ReadSingle(isBigEndian);
+                        table.KnockingBonnetData[z].KnockingBonnetVolume = stream.ReadSingle(isBigEndian);
+                    }
+                    #endregion
+
+                    table.DropHoodSndCategory1 = stream.ReadInt32(isBigEndian);
+                    table.DropHoodSndId1 = stream.ReadInt32(isBigEndian);
+                    table.DropHoodVolume1 = stream.ReadSingle(isBigEndian);
+
+                    #region CrashTable Data
+                    table.CrashData = new EntityTable.CrashTableData[4];
+                    for (int z = 0; z < table.CrashData.Length; z++)
+                    {
+                        table.CrashData[z] = new EntityTable.CrashTableData();
+                        table.CrashData[z].CrashSndCategory = stream.ReadInt32(isBigEndian);
+                    }
+
+                    for (int z = 0; z < table.CrashData.Length; z++)
+                    {
+                        table.CrashData[z].CrashSndId = stream.ReadInt32(isBigEndian);
+                    }
+
+                    for (int z = 0; z < table.CrashData.Length; z++)
+                    {
+                        table.CrashData[z].CrashVolume = stream.ReadSingle(isBigEndian);
+                    }
+
+                    for (int z = 0; z < table.CrashData.Length; z++)
+                    {
+                        table.CrashData[z].CrashSpeed = stream.ReadSingle(isBigEndian);
                     }
                     #endregion
 
