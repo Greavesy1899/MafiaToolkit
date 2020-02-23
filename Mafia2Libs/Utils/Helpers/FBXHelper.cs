@@ -8,10 +8,8 @@ namespace Utils
     {
         [DllImport("libs/M2FBX.dll")]
         private static extern int RunConvertFBX(string source, string dest);
-
         [DllImport("libs/M2FBX.dll")]
         private static extern int RunConvertM2T(string source, string dest, byte extDesc);
-
         [DllImport("libs/M2FBX.dll")]
         private static extern int RunCookTriangleCollision(string source, string dest);
         [DllImport("libs/M2FBX.dll")]
@@ -70,6 +68,12 @@ namespace Utils
                     break;
                 case -94:
                     message += "Could not find standalone mesh or LOD Group!";
+                    break;
+                case -50:
+                    message += "Failed to initialize the FBX Importer!";
+                    break;
+                case -25:
+                    message += "pMesh->IsTriangleMesh() did not equal true..Cannot continue!";
                     break;
                 case -10:
                     message += "Failed to initialize the PhysX Cooking library!";

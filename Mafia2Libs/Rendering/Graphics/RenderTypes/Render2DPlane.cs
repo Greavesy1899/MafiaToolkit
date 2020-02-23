@@ -130,24 +130,6 @@ namespace Rendering.Graphics
             shader.Render(deviceContext, PrimitiveTopology.TriangleList, indices.Length, 0);
         }
 
-        public override void SetTransform(Vector3 position, Matrix33 rotation)
-        {
-            Matrix m_trans = Matrix.Identity;
-            m_trans[0, 0] = rotation.M00;
-            m_trans[0, 1] = rotation.M01;
-            m_trans[0, 2] = rotation.M02;
-            m_trans[1, 0] = rotation.M10;
-            m_trans[1, 1] = rotation.M11;
-            m_trans[1, 2] = rotation.M12;
-            m_trans[2, 0] = rotation.M20;
-            m_trans[2, 1] = rotation.M21;
-            m_trans[2, 2] = rotation.M22;
-            m_trans[3, 0] = position.X;
-            m_trans[3, 1] = position.Y;
-            m_trans[3, 2] = position.Z;
-            Transform = m_trans;
-        }
-
         public override void SetTransform(Matrix matrix)
         {
             this.Transform = matrix;
@@ -170,13 +152,14 @@ namespace Rendering.Graphics
                 for(int i = 0; i < vertices.Length; i++)
                     vertices[i].Colour = colour;
 
-                DataBox dataBox;
-                dataBox = deviceContext.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-                Utilities.Write(dataBox.DataPointer, vertices, 0, vertices.Length);
-                deviceContext.UnmapSubresource(vertexBuffer, 0);
-                dataBox = deviceContext.MapSubresource(indexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-                Utilities.Write(dataBox.DataPointer, indices, 0, indices.Length);
-                deviceContext.UnmapSubresource(indexBuffer, 0);
+                if(vertexBuffer != null && indexBuffer != null)
+                {
+                    indexBuffer?.Dispose();
+                    indexBuffer = null;
+                    vertexBuffer?.Dispose();
+                    vertexBuffer = null;
+                }
+                InitBuffers(device, deviceContext);
             }
         }
 

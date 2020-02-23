@@ -10,8 +10,8 @@ namespace Utils.Models
         Vector3 normal;
         Vector3 tangent;
         Vector3 binormal;
-        float blendWeight;
-        int boneID;
+        float[] boneWeights;
+        byte[] boneIDs;
         Half2[] uvs;
         int damageGroup;
         byte[] color0;
@@ -38,13 +38,13 @@ namespace Utils.Models
             get { return uvs; }
             set { uvs = value; }
         }
-        public float BlendWeight {
-            get { return blendWeight; }
-            set { blendWeight = value; }
+        public float[] BoneWeights {
+            get { return boneWeights; }
+            set { boneWeights = value; }
         }
-        public int BoneID {
-            get { return boneID; }
-            set { boneID = value; }
+        public byte[] BoneIDs {
+            get { return boneIDs; }
+            set { boneIDs = value; }
         }
         public int DamageGroup {
             get { return damageGroup; }
@@ -172,6 +172,11 @@ namespace Utils.Models
             Array.Copy(tempPosData, 0, data, i + 2, 2);
         }
 
+        public void WriteColourData(byte[] data, int i, int index)
+        {
+            Array.Copy((index == 0 ? color0 : color1), 0, data, i, 4);
+        }
+
         /// <summary>
         /// Write Damage group to buffer
         /// </summary>
@@ -181,17 +186,6 @@ namespace Utils.Models
         {
             byte[] tempDamageIDData = BitConverter.GetBytes(damageGroup);
             Array.Copy(tempDamageIDData, 0, data, i, 4);
-        }
-
-        /// <summary>
-        /// Read Damage Group from buffer
-        /// </summary>
-        /// <param name="data">vertex buffer data</param>
-        /// <param name="i">current position to read from</param>
-        public void ReadDamageGroup(byte[] data, int i)
-        {
-            //todo; work on skeleton models.
-            damageGroup = BitConverter.ToInt32(data, i);
         }
 
         /// <summary>

@@ -9,10 +9,20 @@ namespace Rendering.Graphics
 {
     public class RenderJunction : IRenderer
     {
-        RenderLine[] Splines;
-        RenderLine Boundary;
+        RenderLine[] splines;
+        RenderLine boundary;
         JunctionDefinition data;
 
+        [Browsable(false)]
+        public RenderLine[] Splines {
+            get { return splines; }
+            set { splines = value; }
+        }
+        [Browsable(false)]
+        public RenderLine Boundary {
+            get { return boundary; }
+            set { boundary = value; }
+        }
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public JunctionDefinition Data {
             get { return data; }
@@ -20,6 +30,14 @@ namespace Rendering.Graphics
         }
 
         public void Init(JunctionDefinition data)
+        {
+            this.data = data;
+            InitBoundary();
+            InitSplines();
+            DoRender = true;
+        }
+
+        private void InitBoundary()
         {
             if (data.Boundaries != null)
             {
@@ -35,7 +53,10 @@ namespace Rendering.Graphics
                     Boundary.Init(extraPoints);
                 }
             }
+        }
 
+        private void InitSplines()
+        {
             if (data.Splines != null)
             {
                 //do spline
@@ -48,60 +69,52 @@ namespace Rendering.Graphics
                     Splines[i] = line;
                 }
             }
-            DoRender = true;
-            this.data = data;
         }
 
         public override void InitBuffers(Device d3d, DeviceContext deviceContext)
         {
             if (Boundary != null)
+            {
                 Boundary.InitBuffers(d3d, deviceContext);
+            }
 
             if (Splines != null)
             {
                 foreach (var spline in Splines)
+                {
                     spline.InitBuffers(d3d, deviceContext);
+                }
             }
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
         {
             if (!DoRender)
+            {
                 return;
+            }
 
             if (Boundary != null)
+            {
                 Boundary.Render(device, deviceContext, camera, light);
+            }
 
             if (Splines != null)
             {
                 foreach (var spline in Splines)
+                {
                     spline.Render(device, deviceContext, camera, light);
+                }
             }
         }
 
         public override void Select()
         {
             if (Boundary != null)
+            {
                 Boundary.Select();
+            }
             isUpdatedNeeded = true;
-        }
-
-        public override void SetTransform(Vector3 position, Matrix33 rotation)
-        {
-            Matrix m_trans = Matrix.Identity;
-            m_trans[0, 0] = rotation.M00;
-            m_trans[0, 1] = rotation.M01;
-            m_trans[0, 2] = rotation.M02;
-            m_trans[1, 0] = rotation.M10;
-            m_trans[1, 1] = rotation.M11;
-            m_trans[1, 2] = rotation.M12;
-            m_trans[2, 0] = rotation.M20;
-            m_trans[2, 1] = rotation.M21;
-            m_trans[2, 2] = rotation.M22;
-            m_trans[3, 0] = position.X;
-            m_trans[3, 1] = position.Y;
-            m_trans[3, 2] = position.Z;
-            Transform = m_trans;
         }
 
         public override void SetTransform(Matrix matrix)
@@ -112,19 +125,50 @@ namespace Rendering.Graphics
         public override void Shutdown()
         {
             if (Boundary != null)
+            {
                 Boundary.Shutdown();
+            }
 
             if (Splines != null)
             {
                 foreach (var spline in Splines)
+                {
                     spline.Shutdown();
+                }
             }
         }
 
         public override void Unselect()
         {
             if (Boundary != null)
+            {
                 Boundary.Unselect();
+            }
+            isUpdatedNeeded = true;
+        }
+
+        public void UpdateVertices()
+        {
+            if (boundary != null)
+            {
+                boundary.Points = data.Boundaries;
+            }
+            else
+            {
+                InitBoundary();
+            }
+
+            if (splines != null)
+            {
+                for (int i = 0; i < data.Splines.Length; i++)
+                {
+                    splines[i].Points = data.Splines[i].Path;
+                }
+            }
+            else
+            {
+                InitSplines();
+            }
             isUpdatedNeeded = true;
         }
 
@@ -132,15 +176,18 @@ namespace Rendering.Graphics
         {
             if(isUpdatedNeeded)
             {
-                if(Boundary != null)
+                if (Boundary != null)
+                {
                     Boundary.UpdateBuffers(device, deviceContext);
+                }
 
                 if (Splines != null)
                 {
-                    foreach (var spline in Splines)
-                        spline.UpdateBuffers(device, deviceContext);
+                    for(int i = 0; i < data.Splines.Length; i++)
+                    {
+                        Splines[i].UpdateBuffers(device, deviceContext);
+                    }
                 }
-
                 isUpdatedNeeded = false;
             }
         }

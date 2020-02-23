@@ -1,7 +1,9 @@
-﻿using System.ComponentModel;
+﻿using SharpDX;
+using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;
 using Utils.Models;
+using Utils.SharpDXExtensions;
 using Utils.Types;
 
 namespace ResourceTypes.FrameResource
@@ -15,8 +17,8 @@ namespace ResourceTypes.FrameResource
         int blendInfoIndex;
         int skeletonIndex;
         int skeletonHierachyIndex;
-        TransformMatrix[] restPose;
-        TransformMatrix unkTrasform;
+        Matrix[] restTransform;
+        Matrix unkTransform;
         AttachmentReference[] attachmentReferences;
         uint unkFlags;
         int physSplitSize;
@@ -41,13 +43,13 @@ namespace ResourceTypes.FrameResource
             get { return blendMeshSplits; }
             set { blendMeshSplits = value; }
         }
-        public TransformMatrix[] RestPose {
-            get { return restPose; }
-            set { restPose = value; }
+        public Matrix[] RestTransform {
+            get { return restTransform; }
+            set { restTransform = value; }
         }
-        public TransformMatrix UnkTrasform {
-            get { return unkTrasform; }
-            set { unkTrasform = value; }
+        public Matrix UnkTransform {
+            get { return unkTransform; }
+            set { unkTransform = value; }
         }
         public HitBoxInfo[] HitBoxes {
             get { return hitBoxInfo; }
@@ -76,6 +78,11 @@ namespace ResourceTypes.FrameResource
             set { hierachy = value; }
         }
 
+        public FrameObjectModel() : base()
+        {
+
+
+        }
         public FrameObjectModel (MemoryStream reader, bool isBigEndian)
         {
         }
@@ -87,10 +94,10 @@ namespace ResourceTypes.FrameResource
             skeletonHierachyIndex = other.skeletonHierachyIndex;
             skeleton = other.skeleton;
             blendInfo = other.blendInfo;
-            restPose = new TransformMatrix[skeleton.NumBones[0]];
-            for (int i = 0; i != restPose.Length; i++)
-                restPose[i] = new TransformMatrix(other.restPose[i]);
-            unkTrasform = other.unkTrasform;
+            restTransform = new Matrix[skeleton.NumBones[0]];
+            for (int i = 0; i != restTransform.Length; i++)
+                restTransform[i] = new Matrix(other.restTransform[i].ToArray());
+            unkTransform = new Matrix(other.unkTransform.ToArray());
             attachmentReferences = new AttachmentReference[other.attachmentReferences.Length];
             for (int i = 0; i != attachmentReferences.Length; i++)
                 attachmentReferences[i] = new AttachmentReference(other.attachmentReferences[i]);
@@ -115,33 +122,34 @@ namespace ResourceTypes.FrameResource
             skeletonHierachyIndex = reader.ReadInt32(isBigEndian);
         }
 
-        public void ReadFromFilePart2(MemoryStream reader, bool isBigEndian, FrameSkeleton skeleton, FrameBlendInfo blendInfo)
+        public void ReadFromFilePart2(MemoryStream stream, bool isBigEndian, FrameSkeleton skeleton, FrameBlendInfo blendInfo)
         {
             this.skeleton = skeleton;
             this.blendInfo = blendInfo;
 
             //do rest matrices.
-            restPose = new TransformMatrix[skeleton.NumBones[0]];
-            for (int i = 0; i != restPose.Length; i++)
-                restPose[i] = new TransformMatrix(reader, isBigEndian);
+            restTransform = new Matrix[skeleton.NumBones[0]];
+            for (int i = 0; i != restTransform.Length; i++)
+                restTransform[i] = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+
 
             //unknown transform.
-            unkTrasform = new TransformMatrix(reader, isBigEndian);
+            unkTransform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
 
             //attachments.
-            int length1 = reader.ReadInt32(isBigEndian);
+            int length1 = stream.ReadInt32(isBigEndian);
             attachmentReferences = new AttachmentReference[length1];
 
             for (int i = 0; i != length1; i++)
-                attachmentReferences[i] = new AttachmentReference(reader, isBigEndian);
+                attachmentReferences[i] = new AttachmentReference(stream, isBigEndian);
 
             //unknwon.
-            unkFlags = reader.ReadUInt32(isBigEndian);
-            physSplitSize = reader.ReadInt32(isBigEndian);
-            hitBoxSize = reader.ReadInt32(isBigEndian);
+            unkFlags = stream.ReadUInt32(isBigEndian);
+            physSplitSize = stream.ReadInt32(isBigEndian);
+            hitBoxSize = stream.ReadInt32(isBigEndian);
 
             if (physSplitSize > 0)
-                nPhysSplits = reader.ReadInt16(isBigEndian);
+                nPhysSplits = stream.ReadInt16(isBigEndian);
             else
                 nPhysSplits = 0;
 
@@ -149,13 +157,15 @@ namespace ResourceTypes.FrameResource
             blendMeshSplits = new WeightedByMeshSplit[nPhysSplits];
             for (int i = 0; i != nPhysSplits; i++)
             {
-                blendMeshSplits[i] = new WeightedByMeshSplit(reader, isBigEndian);
+                blendMeshSplits[i] = new WeightedByMeshSplit(stream, isBigEndian);
+                int index = blendInfo.BoneIndexInfos[0].IDs[blendMeshSplits[i].BlendIndex];
+                blendMeshSplits[i].JointName = skeleton.BoneNames[index].ToString();
                 totalSplits += blendMeshSplits[i].Data.Length;
             }
 
             hitBoxInfo = new HitBoxInfo[totalSplits];
             for (int i = 0; i != hitBoxInfo.Length; i++)
-                hitBoxInfo[i] = new HitBoxInfo(reader, isBigEndian);
+                hitBoxInfo[i] = new HitBoxInfo(stream, isBigEndian);
         }
 
         public override void WriteToFile(BinaryWriter writer)
@@ -166,11 +176,11 @@ namespace ResourceTypes.FrameResource
             writer.Write(skeletonHierachyIndex);
 
             //do rest matrices.
-            for (int i = 0; i != restPose.Length; i++)
-                restPose[i].WriteToFile(writer);
+            for (int i = 0; i != restTransform.Length; i++)
+                MatrixExtensions.WriteToFile(restTransform[i], writer);
 
             //unknown transform.
-            unkTrasform.WriteToFile(writer);
+            MatrixExtensions.WriteToFile(unkTransform, writer);
 
             //attachments.
             writer.Write(attachmentReferences.Length);
@@ -286,7 +296,7 @@ namespace ResourceTypes.FrameResource
         {
             ushort blendIndex;
             BlendMeshSplitInfo[] data;
-            SkeletonBoneIDs jointName;
+            string jointName;
 
             public ushort BlendIndex {
                 get { return blendIndex; }
@@ -296,7 +306,7 @@ namespace ResourceTypes.FrameResource
                 get { return data; }
                 set { data = value; }
             }
-            public SkeletonBoneIDs JointName {
+            public string JointName {
                 get { return jointName; }
                 set { jointName = value; }
             }
@@ -318,7 +328,6 @@ namespace ResourceTypes.FrameResource
             public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
                 blendIndex = reader.ReadUInt16(isBigEndian);
-
                 ushort num = reader.ReadUInt16(isBigEndian);
                 data = new BlendMeshSplitInfo[num];
 

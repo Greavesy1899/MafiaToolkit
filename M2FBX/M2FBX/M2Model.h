@@ -1,41 +1,5 @@
-#ifndef M2_EDM_HEADER
-#define M2_EDM_HEADER
+#pragma once
 #include "Common.h"
-
-typedef struct {
-	unsigned short i1;
-	unsigned short i2;
-	unsigned short i3;
-} Int3;
-typedef struct {
-	float x;
-	float y;
-	float z;
-} Point3;
-typedef struct {
-	float x;
-	float y;
-} UVVert;
-typedef struct {
-	float m00;
-	float m01;
-	float m02;
-	float m10;
-	float m11;
-	float m12;
-	float m20;
-	float m21;
-	float m22;
-} Matrix3;
-typedef struct {
-	Point3 position;
-	Point3 normals;
-	Point3 tangent;
-	UVVert uv0;
-	UVVert uv1;
-	UVVert uv2;
-	UVVert uv3;
-} Vertex;
 
 class SubMesh {
 private:
@@ -53,18 +17,7 @@ public:
 };
 class ModelPart {
 private:
-	bool hasPosition;
-	bool hasNormals;
-	bool hasTangents;
-	bool hasBlendData;
-	bool hasFlag0x80;
-	bool hasUV0;
-	bool hasUV1;
-	bool hasUV2;
-	bool hasUV7;
-	bool hasFlag0x20000;
-	bool hasFlag0x40000;
-	bool hasDamageGroup;
+	VertexFlags flags;
 	uint numVertices;
 	Vertex* vertices;
 	uint numSubMeshes;
@@ -74,51 +27,35 @@ private:
 public:
 	ModelPart();
 	~ModelPart();
-	void SetHasPositions(bool b);
-	void SetHasNormals(bool b);
-	void SetHasTangents(bool b);
-	void SetHasBlendData(bool b);
-	void SetHasFlag0x80(bool b);
-	void SetHasUV0(bool b);
-	void SetHasUV1(bool b);
-	void SetHasUV2(bool b);
-	void SetHasUV7(bool b);
-	void SetHasFlag0x20000(bool b);
-	void SetHasFlag0x40000(bool b);
-	void SetHasDamage(bool b);
+	void SetVertexFlag(VertexFlags flag);
 	void SetVertSize(int count);
 	void SetVertices(Vertex* vertices, unsigned int count);
 	void SetSubMeshes(SubMesh* subMeshes, unsigned int count);
 	void SetSubMeshCount(int count);
 	void SetIndicesSize(int count);
 	void SetIndices(std::vector<Int3> indices, unsigned int count);
-	bool GetHasPositions();
-	bool GetHasNormals();;
-	bool GetHasTangents();
-	bool GetHasBlendData();
-	bool GetHasFlag0x80();
-	bool GetHasUV0();
-	bool GetHasUV1();
-	bool GetHasUV2();
-	bool GetHasUV7();
-	bool GetHasFlag0x20000();
-	bool GetHasFlag0x40000();
-	bool GetHasDamage();
+	bool HasVertexFlag(VertexFlags flag);
 	uint GetVertSize();
 	Vertex* GetVertices();
 	uint GetSubMeshCount();
 	uint GetIndicesSize();
 	SubMesh* GetSubMeshes() const;
-	std::vector<Int3> GetIndices();
+	std::vector<Int3>& GetIndices();
 	
 	void ReadFromStream(FILE* stream);
+	void ReadFromStream2(FILE* stream);
 	void WriteToStream(FILE * stream);
 };
 
 class ModelStructure {
 private:
-	const int magic = 22295117;
+	const int magicVersion1 = 22295117;
+	const int magicVersion2 = 39072333;
 	std::string name;
+	bool isSkinned;
+	std::vector<std::string> boneNames;
+	std::vector<byte> boneIDs;
+	std::vector<Matrix> transforms;
 	char partSize;
 	ModelPart* parts;
 public:
@@ -127,11 +64,18 @@ public:
 	void SetName(std::string name);
 	void SetPartSize(char& count);
 	void SetParts(ModelPart* parts);
+	void SetBoneNames(std::vector<std::string>& names);
+	void SetBoneIDs(std::vector<byte>& boneIDs);
+	void SetBoneMatrices(std::vector<Matrix>& transforms);
+	void SetIsSkinned(bool skinned);
 	std::string GetName() const;
 	char GetPartSize() const;
 	ModelPart* GetParts() const;
+	std::vector<std::string>& GetBoneNames();
+	std::vector<byte>& GetBoneIDs();
+	std::vector<Matrix>& GetBoneMatrices();
+	bool GetIsSkinned();
 
 	void ReadFromStream(FILE* stream);
 	void WriteToStream(FILE * stream);
 };
-#endif

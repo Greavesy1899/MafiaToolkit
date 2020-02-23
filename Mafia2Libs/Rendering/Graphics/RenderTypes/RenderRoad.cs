@@ -11,6 +11,7 @@ namespace Rendering.Graphics
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public RenderLine Spline { get; set; }
         public BoundingBox BBox { get; set; }
+        public int IndexOffset { get; set; }
         Render2DPlane[] towardLanes;
         Render2DPlane[] backwardLanes;
 
@@ -36,42 +37,43 @@ namespace Rendering.Graphics
         public void Init(SplineDefinition data)
         {
             Spline.SetUnselectedColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-            Spline.Init(data.points);
-            Vector3[] editPoints = (Vector3[])data.points.Clone();
+            Spline.Init(data.Points);
+            Vector3[] editPoints = (Vector3[])data.Points.Clone();
 
-            if (data.hasToward)
+            if (data.HasToward)
             {
-                towardLanes = new Render2DPlane[data.toward.LaneSize0];
+                towardLanes = new Render2DPlane[data.Toward.LaneSize0];
 
-                for (int i = 0; i != data.toward.LaneSize0; i++)
+                for (int i = 0; i != data.Toward.LaneSize0; i++)
                 {
                     Render2DPlane lane = new Render2DPlane();
-                    lane.Init(ref editPoints, data.toward.Lanes[i], data.toward.Flags);
+                    lane.Init(ref editPoints, data.Toward.Lanes[i], data.Toward.Flags);
                     towardLanes[i] = lane;
                 }
 
-                Toward = data.toward;
-                HasToward = data.hasToward;
+                Toward = data.Toward;
+                HasToward = data.HasToward;
             }
 
-            editPoints = (Vector3[])data.points.Clone();
+            editPoints = (Vector3[])data.Points.Clone();
 
-            if (data.hasBackward)
+            if (data.HasBackward)
             {
-                backwardLanes = new Render2DPlane[data.backward.LaneSize0];
+                backwardLanes = new Render2DPlane[data.Backward.LaneSize0];
 
-                for (int i = 0; i != data.backward.LaneSize0; i++)
+                for (int i = 0; i != data.Backward.LaneSize0; i++)
                 {
                     Render2DPlane lane = new Render2DPlane();
-                    lane.Init(ref editPoints, data.backward.Lanes[i], data.backward.Flags);
+                    lane.Init(ref editPoints, data.Backward.Lanes[i], data.Backward.Flags);
                     backwardLanes[i] = lane;
                 }
 
-                Backward = data.backward;
-                HasBackward = data.hasBackward;
+                Backward = data.Backward;
+                HasBackward = data.HasBackward;
             }
 
             BBox = BoundingBox.FromPoints(editPoints);
+            IndexOffset = data.IndexOffset;
         }
 
         public override void InitBuffers(Device d3d, DeviceContext context)
@@ -97,24 +99,6 @@ namespace Rendering.Graphics
 
             foreach (Render2DPlane plane in backwardLanes)
                 plane.Render(device, deviceContext, camera, light);
-        }
-
-        public override void SetTransform(Vector3 position, Matrix33 rotation)
-        {
-            Matrix m_trans = Matrix.Identity;
-            m_trans[0, 0] = rotation.M00;
-            m_trans[0, 1] = rotation.M01;
-            m_trans[0, 2] = rotation.M02;
-            m_trans[1, 0] = rotation.M10;
-            m_trans[1, 1] = rotation.M11;
-            m_trans[1, 2] = rotation.M12;
-            m_trans[2, 0] = rotation.M20;
-            m_trans[2, 1] = rotation.M21;
-            m_trans[2, 2] = rotation.M22;
-            m_trans[3, 0] = position.X;
-            m_trans[3, 1] = position.Y;
-            m_trans[3, 2] = position.Z;
-            Transform = m_trans;
         }
 
         public override void SetTransform(Matrix matrix)

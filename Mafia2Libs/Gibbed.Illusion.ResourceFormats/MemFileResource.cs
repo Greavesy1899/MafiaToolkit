@@ -56,10 +56,6 @@ namespace Gibbed.Mafia2.ResourceFormats
             this.Data = input.ReadBytes((int)size);
         }
 
-        /// <summary>
-        /// Deserialize resource using passed bytes.
-        /// </summary>
-        /// <param name="data"></param>
         public void Deserialize(byte[] data, Endian endian)
         {
             MemoryStream input = new MemoryStream(data);

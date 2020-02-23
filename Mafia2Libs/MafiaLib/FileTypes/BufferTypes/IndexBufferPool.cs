@@ -29,26 +29,6 @@ namespace ResourceTypes.BufferPools
         }
 
         /// <summary>
-        /// Search pool for buffer.
-        /// </summary>
-        /// <param name="indexRef"></param>
-        /// <returns></returns>
-        public BufferLocationStruct SearchBuffer(ulong indexRef)
-        {
-            for (int i = 0; i != bufferPools.Count; i++)
-            {
-                int c = 0;
-                foreach (KeyValuePair<ulong, IndexBuffer> entry in bufferPools[i].Buffers)
-                {
-                    if (entry.Key == indexRef)
-                        return new BufferLocationStruct(i, c);
-                    c++;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
         /// Add new buffer to first non-full pool.
         /// </summary>
         /// <param name="buffer"></param>
@@ -75,17 +55,29 @@ namespace ResourceTypes.BufferPools
             }
         }
 
-        /// <summary>
-        /// Remove buffer if found.
-        /// </summary>
-        /// <param name="buffer"></param>
-        public void RemoveBuffer(IndexBuffer buffer)
+        public bool HasBuffer(IndexBuffer buffer)
         {
-            for (int i = 0; i != bufferPools.Count; i++)
+            for (int i = 0; i < bufferPools.Count; i++)
+            {
+                if (bufferPools[i].Buffers.ContainsValue(buffer))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool RemoveBuffer(IndexBuffer buffer)
+        {
+            for (int i = 0; i < bufferPools.Count; i++)
             {
                 if (bufferPools[i].Buffers.Remove(buffer.Hash))
-                    return;
+                {
+                    return true;
+                }
             }
+            return false;
         }
 
         /// <summary>
@@ -108,13 +100,15 @@ namespace ResourceTypes.BufferPools
         /// <returns></returns>
         public IndexBuffer GetBuffer(ulong indexRef)
         {
+            IndexBuffer buff = null;
             for (int i = 0; i != bufferPools.Count; i++)
-            {
-                IndexBuffer buff;
+            {            
                 if (bufferPools[i].Buffers.TryGetValue(indexRef, out buff))
+                {
                     return buff;
+                }
             }
-            return null;
+            return buff;
         }
 
         /// <summary>

@@ -20,24 +20,37 @@ namespace ApexSDK
             int size = reader.ReadInt32();
             position = new Vector3[size];
 
-            for(int i = 0; i != size; i++)
+            for (int i = 0; i < size; i++)
+            {
                 position[i] = Vector3Extenders.ReadFromFile(reader);
+            }
 
             size = reader.ReadInt32();
             sphere = new Vector3[size];
 
-            for (int i = 0; i != size; i++)
+            for (int i = 0; i < size; i++)
+            {
                 sphere[i] = Vector3Extenders.ReadFromFile(reader);
+            }
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
-            throw new NotImplementedException();
+            writer.Write(position.Length);
+            for(int i = 0; i < position.Length; i++)
+            {
+                Vector3Extenders.WriteToFile(position[i], writer);
+            }
+            writer.Write(sphere.Length);
+            for (int i = 0; i < sphere.Length; i++)
+            {
+                Vector3Extenders.WriteToFile(sphere[i], writer);
+            }
         }
 
         public override string ToString()
         {
-            return string.Format("EmitterGeomExplicitParams");
+            return "EmitterGeomExplicitParams";
         }
     }
 }

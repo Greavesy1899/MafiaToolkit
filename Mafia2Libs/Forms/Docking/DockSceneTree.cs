@@ -121,25 +121,7 @@ namespace Forms.Docking
 
             if (FrameResource.IsFrameType(data))
             {
-                bool fin = false;
-                TransformMatrix matrix = (data as FrameObjectBase).Matrix;
-                TreeNode curNode = treeView1.SelectedNode;
-                while (!fin)
-                {
-                    if (curNode.Parent == null)
-                    {
-                        fin = true;
-                    }
-                    else
-                    {
-                        FrameObjectBase parent = (curNode.Parent.Tag as FrameObjectBase);
-                        curNode = curNode.Parent;
-                        if (parent != null)
-                            matrix += parent.Matrix;
-                    }
-
-                }
-                return matrix.Position;
+                return (data as FrameObjectBase).WorldTransform.TranslationVector;
             }
 
             if(data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))

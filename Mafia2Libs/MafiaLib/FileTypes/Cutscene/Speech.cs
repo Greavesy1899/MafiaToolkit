@@ -38,10 +38,14 @@ namespace ResourceTypes.Speech
         public void ReadFromFile(BinaryReader reader)
         {
             if (reader.ReadInt32() != fileversion)
+            {
                 throw new Exception("Error: Int 1 did not equal 2.");
+            }
 
             if (reader.ReadInt32() != fileversion2)
+            {
                 throw new Exception("Error: Int 2 did not equal 2.");
+            }
 
             numSpeechTypes = reader.ReadInt32();
             speechTypes = new SpeechTypeData[numSpeechTypes];
@@ -49,9 +53,13 @@ namespace ResourceTypes.Speech
             speechItems = new SpeechItemData[numSpeechItems];
 
             for (int i = 0; i != speechTypes.Length; i++)
+            {
                 speechTypes[i] = new SpeechTypeData(reader);
+            }
             for (int i = 0; i != speechItems.Length; i++)
+            {
                 speechItems[i] = new SpeechItemData(reader);
+            }
         }
 
         public class SpeechTypeData
@@ -60,7 +68,11 @@ namespace ResourceTypes.Speech
             string entityType; //int32 for string size;
             string speechType; //int32 for string size;
             string folder; //int32 for string size;
-            byte[] unkBytes; //20 bytes; sometimes all empty or sometimes used.
+            int unk1;
+            int unk2;
+            int unk3;
+            int unk4;
+            int unk5;
 
             public int Unk0 {
                 get { return unk0; }
@@ -78,9 +90,25 @@ namespace ResourceTypes.Speech
                 get { return folder; }
                 set { folder = value; }
             }
-            public byte[] UnkBytes {
-                get { return unkBytes; }
-                set { unkBytes = value; }
+            public int Unk1 {
+                get { return unk1; }
+                set { unk1 = value; }
+            }
+            public int Unk2 {
+                get { return unk2; }
+                set { unk2 = value; }
+            }
+            public int Unk3 {
+                get { return unk3; }
+                set { unk3 = value; }
+            }
+            public int Unk4 {
+                get { return unk4; }
+                set { unk4 = value; }
+            }
+            public int Unk5 {
+                get { return unk5; }
+                set { unk5 = value; }
             }
 
             public SpeechTypeData(BinaryReader reader)
@@ -94,7 +122,11 @@ namespace ResourceTypes.Speech
                 entityType = StringHelpers.ReadString32(reader);
                 speechType = StringHelpers.ReadString32(reader);
                 folder = StringHelpers.ReadString32(reader);
-                unkBytes = reader.ReadBytes(20);
+                unk1 = reader.ReadInt32();
+                unk2 = reader.ReadInt32();
+                unk3 = reader.ReadInt32();
+                unk4 = reader.ReadInt32();
+                unk5 = reader.ReadInt32();
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -103,7 +135,11 @@ namespace ResourceTypes.Speech
                 StringHelpers.WriteString32(writer, entityType);
                 StringHelpers.WriteString32(writer, speechType);
                 StringHelpers.WriteString32(writer, folder);
-                writer.Write(unkBytes);
+                writer.Write(unk1);
+                writer.Write(unk2);
+                writer.Write(unk3);
+                writer.Write(unk4);
+                writer.Write(unk5);
             }
 
             public override string ToString()
@@ -119,7 +155,9 @@ namespace ResourceTypes.Speech
             int unk2; //1? in spvito;
             string itemName; //links to names of files;
             int unk3;
-            byte[] unkBytes; //12 empty bytes in spvito;
+            int unk4; //0 in cloth_gossip.
+            int unk5; //8000 in cloth_gossip
+            int unk6; //16000 in cloth_gossip
 
             public int Unk0 {
                 get { return unk0; }
@@ -141,9 +179,17 @@ namespace ResourceTypes.Speech
                 get { return unk3; }
                 set { unk3 = value; }
             }
-            public byte[] UnkBytes {
-                get { return unkBytes; }
-                set { unkBytes = value; }
+            public int Unk4 {
+                get { return unk4; }
+                set { unk4 = value; }
+            }
+            public int Unk5 {
+                get { return unk5; }
+                set { unk5 = value; }
+            }
+            public int Unk6 {
+                get { return unk6; }
+                set { unk6 = value; }
             }
 
             public SpeechItemData(BinaryReader reader)
@@ -158,7 +204,9 @@ namespace ResourceTypes.Speech
                 unk2 = reader.ReadInt32();
                 itemName = StringHelpers.ReadString32(reader);
                 unk3 = reader.ReadInt32();
-                unkBytes = reader.ReadBytes(12);
+                unk4 = reader.ReadInt32();
+                unk5 = reader.ReadInt32();
+                unk6 = reader.ReadInt32();
             }
 
             public void WriteToFile(BinaryWriter writer)
@@ -168,7 +216,9 @@ namespace ResourceTypes.Speech
                 writer.Write(unk2);
                 StringHelpers.WriteString32(writer, itemName);
                 writer.Write(unk3);
-                writer.Write(unkBytes);
+                writer.Write(unk4);
+                writer.Write(unk5);
+                writer.Write(unk6);
             }
 
             public override string ToString()

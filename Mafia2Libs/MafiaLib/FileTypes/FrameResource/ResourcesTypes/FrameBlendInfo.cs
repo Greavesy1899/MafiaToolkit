@@ -58,16 +58,22 @@ namespace ResourceTypes.FrameResource
 
             for (int i = 0; i != boneIndexInfos.Length; i++)
             {
-                boneIndexInfos[i].BonesPerPool = reader.ReadBytes(4);
+                boneIndexInfos[i].BonesPerPool = reader.ReadBytes(8);
 
                 //IDs..
                 boneIndexInfos[i].IDs = reader.ReadBytes(boneIndexInfos[i].NumIDs);
-                boneIndexInfos[i].Unk01 = reader.ReadInt32(isBigEndian);
 
                 //Material blendings..
                 boneIndexInfos[i].MatBlends = new ushort[boneIndexInfos[i].NumMaterials];
+                boneIndexInfos[i].BonesSlot = new byte[boneIndexInfos[i].NumMaterials];
+                boneIndexInfos[i].NumWeightsPerVertex = new int[boneIndexInfos[i].NumMaterials];
                 for (int x = 0; x != boneIndexInfos[i].NumMaterials; x++)
+                {
                     boneIndexInfos[i].MatBlends[x] = reader.ReadUInt16(isBigEndian);
+                    ushort value = boneIndexInfos[i].MatBlends[x];
+                    boneIndexInfos[i].BonesSlot[x] = (byte)(value & 0xFF);
+                    boneIndexInfos[i].NumWeightsPerVertex[x] = (value >> 8);
+                }
             }
         }
 
@@ -96,7 +102,6 @@ namespace ResourceTypes.FrameResource
 
                 //IDs..
                 writer.Write(boneIndexInfos[i].IDs);
-                writer.Write(boneIndexInfos[i].Unk01);
 
                 //Material blendings..
                 for (int x = 0; x != boneIndexInfos[i].NumMaterials; x++)
@@ -115,8 +120,19 @@ namespace ResourceTypes.FrameResource
             int numMaterials;
             byte[] bonesPerPool;
             byte[] ids;
-            int unk01;
             ushort[] matBlends;
+
+            byte[] bBonesSlot;
+            int[] numWeightsPerVertex;
+
+            public byte[] BonesSlot {
+                get { return bBonesSlot; }
+                set { bBonesSlot = value; }
+            }
+            public int[] NumWeightsPerVertex {
+                get { return numWeightsPerVertex; }
+                set { numWeightsPerVertex = value; }
+            }
 
             public int NumIDs {
                 get { return numIDs; }
@@ -134,10 +150,6 @@ namespace ResourceTypes.FrameResource
                 get { return ids; }
                 set { ids = value; }
             }
-            public int Unk01 {
-                get { return unk01; }
-                set { unk01 = value; }
-            }
             public ushort[] MatBlends {
                 get { return matBlends; }
                 set { matBlends = value; }
@@ -146,11 +158,11 @@ namespace ResourceTypes.FrameResource
 
         public struct BoneTransform
         {
-            TransformMatrix transform;
+            Matrix transform;
             BoundingBox bounds;
             byte isValid;
 
-            public TransformMatrix Transform {
+            public Matrix Transform {
                 get { return transform; }
                 set { transform = value; }
             }
@@ -163,11 +175,11 @@ namespace ResourceTypes.FrameResource
                 set { isValid = value; }
             }
 
-            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
+            public void ReadFromFile(MemoryStream stream, bool isBigEndian)
             {
-                transform = new TransformMatrix(reader, isBigEndian);
-                bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
-                isValid = reader.ReadByte8();
+                transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+                bounds = BoundingBoxExtenders.ReadFromFile(stream, isBigEndian);
+                isValid = stream.ReadByte8();
             }
 
             public void WriteToFile(BinaryWriter writer)

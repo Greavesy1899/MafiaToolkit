@@ -15,7 +15,6 @@ namespace Utils.Types
     {
         ulong hash;
         string _string;
-        short size;
 
         //[ReadOnly(true)]
         public ulong uHash {
@@ -57,34 +56,31 @@ namespace Utils.Types
         public void ReadFromFile(BinaryReader reader)
         {
             hash = reader.ReadUInt64();
-            size = reader.ReadInt16();
+            ushort size = reader.ReadUInt16();
             _string = Encoding.ASCII.GetString(reader.ReadBytes(size));
         }
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             hash = stream.ReadUInt64(isBigEndian);
-            size = stream.ReadInt16(isBigEndian);
+            ushort size = stream.ReadUInt16(isBigEndian);
             _string = Encoding.ASCII.GetString(stream.ReadBytes(size));
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(hash);
-            writer.Write(size);
-            writer.Write(_string.ToCharArray());
+            StringHelpers.StringHelpers.WriteString16(writer, _string);
         }
 
-        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        public void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
-            writer.Write(hash, isBigEndian);
-            writer.Write(size, isBigEndian);
-            writer.Write(_string.ToCharArray());
+            stream.Write(hash, isBigEndian);
+            stream.WriteString16(_string, isBigEndian);
         }
 
         public void Set(string name)
         {
             _string = name;
-            size = (short)name.Length;
 
             if (_string == "")
                 hash = 0;

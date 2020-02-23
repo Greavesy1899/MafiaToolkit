@@ -16,7 +16,7 @@ namespace Rendering.Graphics
         public RenderBoundingBox()
         {
             DoRender = true;
-            SetTransform(new Vector3(0.0f), new Matrix33());
+            SetTransform(new Matrix());
             colour = new Vector4(1.0f);
         }
 
@@ -92,24 +92,6 @@ namespace Rendering.Graphics
         public void SetColour(Vector4 vec)
         {
             colour = vec;
-        }
-
-        public override void SetTransform(Vector3 position, Matrix33 rotation)
-        {
-            Matrix m_trans = Matrix.Identity;
-            m_trans[0, 0] = rotation.M00;
-            m_trans[0, 1] = rotation.M01;
-            m_trans[0, 2] = rotation.M02;
-            m_trans[1, 0] = rotation.M10;
-            m_trans[1, 1] = rotation.M11;
-            m_trans[1, 2] = rotation.M12;
-            m_trans[2, 0] = rotation.M20;
-            m_trans[2, 1] = rotation.M21;
-            m_trans[2, 2] = rotation.M22;
-            m_trans[3, 0] = position.X;
-            m_trans[3, 1] = position.Y;
-            m_trans[3, 2] = position.Z;
-            Transform = m_trans;
         }
 
         public override void SetTransform(Matrix matrix)

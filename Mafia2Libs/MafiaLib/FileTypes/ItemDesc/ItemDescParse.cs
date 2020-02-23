@@ -1,7 +1,9 @@
-﻿using System;
+﻿using SharpDX;
+using System;
 using System.IO;
 using Utils;
 using Utils.Logging;
+using Utils.SharpDXExtensions;
 using Utils.Types;
 
 namespace ResourceTypes.ItemDesc
@@ -13,7 +15,7 @@ namespace ResourceTypes.ItemDesc
         public CollisionTypes colType;
         public ulong idHash;
         public short colMaterial;
-        public TransformMatrix Matrix;
+        public Matrix Matrix;
         public byte unkByte;
         public object collision;
 
@@ -33,7 +35,7 @@ namespace ResourceTypes.ItemDesc
             colType = (CollisionTypes)reader.ReadByte();
             idHash = reader.ReadUInt64();
             colMaterial = reader.ReadInt16();
-            Matrix = new TransformMatrix(reader);
+            Matrix = MatrixExtensions.ReadFromFile(reader);
             unkByte = reader.ReadByte();
 
             if (colType == CollisionTypes.Box)

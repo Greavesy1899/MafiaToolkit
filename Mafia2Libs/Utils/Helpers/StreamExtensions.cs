@@ -34,15 +34,20 @@ namespace Utils.Extensions
         {
             return new string(stream.ReadChars(size));
         }
-        public static string ReadString(this Stream reader)
+        public static string ReadString16(this Stream stream, bool isBigEndian)
+        {
+            ushort size = stream.ReadUInt16(isBigEndian);
+            return ReadStringBuffer(stream, size);
+        }
+        public static string ReadString(this Stream stream)
         {
             string newString = "";
 
-            while (reader.PeekChar() != '\0')
+            while (stream.PeekChar() != '\0')
             {
-                newString += reader.ReadChar();
+                newString += stream.ReadChar();
             }
-            reader.ReadByte();
+            stream.ReadByte();
             return newString;
         }
         public static byte[] ReadBytes(this Stream stream, int num)
@@ -126,6 +131,13 @@ namespace Utils.Extensions
         {
             stream.Write(BitConverter.GetBytes(value), 0, 1);
         }
+
+        public static void WriteString16(this Stream stream, string text, bool bigEndian)
+        {
+            stream.Write((short)text.Length, bigEndian);
+            stream.Write(text.ToCharArray());
+        }
+
         public static void WriteStringBuffer(this Stream writer, int size, string text, char trim = ' ', Encoding encoding = null)
         {
             bool addTrim = (trim == ' ' ? false : true);

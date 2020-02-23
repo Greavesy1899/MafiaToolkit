@@ -289,8 +289,7 @@ namespace ResourceTypes.Actors
             ulong defintionHash; //definition hash
             ulong frameNameHash; //frame name hash
             Vector3 position;
-            Vector4 quat;
-            Vector3 euler;
+            Quaternion quat;
             Vector3 scale;
             ushort unk3;
             ushort dataID;
@@ -339,13 +338,9 @@ namespace ResourceTypes.Actors
                 get { return position; }
                 set { position = value; }
             }
-            public Vector4 Quaternion {
+            public Quaternion Quaternion {
                 get { return quat; }
                 set { quat = value; }
-            }
-            public Vector3 Rotation {
-                get { return euler; }
-                set { euler = value; }
             }
             public Vector3 Scale {
                 get { return scale; }
@@ -369,22 +364,6 @@ namespace ResourceTypes.Actors
             public ActorItem(BinaryReader reader)
             {
                 ReadFromFile(reader);
-                ConvertQuaternion();
-            }
-
-            private void ConvertQuaternion()
-            {
-                euler = new Vector3();
-                var qw = quat.W;
-                var qx = quat.X;
-                var qy = quat.Y;
-                var qz = quat.Z;
-                var eX = Math.Atan2(-2 * ((qy * qz) - (qw * qx)), (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
-                var eY = Math.Asin(2 * ((qx * qz) + (qw * qy)));
-                var eZ = Math.Atan2(-2 * ((qx * qy) - (qw * qz)), (qw * qw) + (qx * qx) - (qy * qy) - (qz * qz));
-                euler.Z = (float)Math.Round(eZ * 180 / Math.PI);
-                euler.Y = (float)Math.Round(eY * 180 / Math.PI);
-                euler.X = (float)Math.Round(eX * 180 / Math.PI);
             }
 
             public void ReadFromFile(BinaryReader reader)
@@ -400,7 +379,7 @@ namespace ResourceTypes.Actors
                 defintionHash = reader.ReadUInt64();
                 frameNameHash = reader.ReadUInt64();
                 position = Vector3Extenders.ReadFromFile(reader);
-                quat = Vector4Extenders.ReadFromFile(reader);
+                quat = QuaternionExtensions.ReadFromFile(reader);
                 scale = Vector3Extenders.ReadFromFile(reader);
                 unk3 = reader.ReadUInt16();
                 dataID = reader.ReadUInt16();
@@ -433,6 +412,7 @@ namespace ResourceTypes.Actors
                 writer.Write(defintionHash);
                 writer.Write(frameNameHash);
                 position.WriteToFile(writer);
+                QuaternionExtensions.WriteToFile(quat, writer);
                 quat.WriteToFile(writer);
                 scale.WriteToFile(writer);
                 writer.Write(unk3);

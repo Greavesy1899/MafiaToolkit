@@ -283,12 +283,9 @@ namespace Gibbed.Mafia2.FileFormats
         {
             //TODO: MAKE THIS CLEANER
             string sdsFolder = folder;
-
-            List<string> addedTypes = new List<string>();
             XmlDocument document = new XmlDocument();
             XmlDocument xmlDoc = new XmlDocument();
             XmlNode rootNode;
-
             if(!File.Exists(sdsFolder + "/SDSContent.xml"))
             {
                 MessageBox.Show("Could not find 'SDSContent.xml'. Folder Path: " + sdsFolder + "/SDSContent.xml", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -311,31 +308,17 @@ namespace Gibbed.Mafia2.FileFormats
 
             XPathNavigator nav = document.CreateNavigator();
             var nodes = nav.Select("/SDSResource/ResourceEntry");
+            Dictionary<string, List<ResourceEntry>> entries = new Dictionary<string, List<ResourceEntry>>();
             while (nodes.MoveNext() == true)
             {
-                int exists = -1;
                 nodes.Current.MoveToFirstChild();
                 string resourceType = nodes.Current.Value;
 
-                if (addedTypes.Count == 0)
-                {
-                    exists = -1;
-                }
-                else
-                {
-                    for (int i = 0; i != addedTypes.Count; i++)
-                    {
-                        if (addedTypes[i] == resourceType)
-                            exists = i;
-                    }
-                }
-
-                if (exists == -1)
+                if (!entries.ContainsKey(resourceType))
                 {
                     ResourceType resource = new ResourceType();
                     resource.Name = nodes.Current.Value;
-                    resource.Id = (uint)addedTypes.Count;
-                    exists = addedTypes.Count;
+                    resource.Id = (uint)entries.Count;
 
                     //TODO
                     if (resource.Name == "IndexBufferPool" || resource.Name == "PREFAB")
@@ -345,19 +328,16 @@ namespace Gibbed.Mafia2.FileFormats
                     else if (resource.Name == "NAV_HPD_DATA")
                         resource.Parent = 1;
 
-                    addedTypes.Add(nodes.Current.Value);
                     ResourceTypes.Add(resource);
+                    entries.Add(resourceType, new List<ResourceEntry>());
                 }
-
                 XmlNode resourceNode = xmlDoc.CreateElement("ResourceInfo");
                 XmlNode typeNameNode = xmlDoc.CreateElement("TypeName");
                 typeNameNode.InnerText = resourceType;
                 XmlNode sddescNode = xmlDoc.CreateElement("SourceDataDescription");
 
                 ResourceEntry resourceEntry = new ResourceEntry();
-                resourceEntry.TypeId = exists;
-
-                switch(resourceType)
+                switch (resourceType)
                 {
                     case "FrameResource":
                     case "Effects":
@@ -421,10 +401,6 @@ namespace Gibbed.Mafia2.FileFormats
                         MessageBox.Show("Did not pack type: " + resourceType, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         break;
                 }
-                //resourceEntry.SlotRamRequired = 0;
-                //resourceEntry.SlotVramRequired = 0;
-                //resourceEntry.OtherRamRequired = 0;
-                //resourceEntry.OtherVramRequired = 0;
                 resourceNode.AppendChild(typeNameNode);
                 resourceNode.AppendChild(sddescNode);
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotRamRequired", (int)resourceEntry.SlotRamRequired));
@@ -432,13 +408,17 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherRamRequired", (int)resourceEntry.OtherRamRequired));
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherVramRequired", (int)resourceEntry.OtherVramRequired));
                 rootNode.AppendChild(resourceNode);
-                ResourceEntries.Add(resourceEntry);
                 SlotRamRequired += resourceEntry.SlotRamRequired;
                 SlotVramRequired += resourceEntry.SlotVramRequired;
                 OtherRamRequired += resourceEntry.OtherRamRequired;
                 OtherVramRequired += resourceEntry.OtherVramRequired;
+                resourceEntry.TypeId = (int)ResourceTypes.Find(s => s.Name.Equals(resourceType)).Id;
+                entries[resourceType].Add(resourceEntry);
             }
-
+            foreach(var pair in entries)
+            {
+                _ResourceEntries.AddRange(pair.Value);
+            }
             ResourceInfoXml = xmlDoc.OuterXml;
         }
 
@@ -821,7 +801,7 @@ namespace Gibbed.Mafia2.FileFormats
             MemoryStream stream = new MemoryStream();
             resource.Serialize(version, stream, Endian.Little);
             entry.Version = version;
-            entry.Data = stream.GetBuffer();
+            entry.Data = stream.ToArray();
             descNode.InnerText = path;
             return entry;
         }
@@ -830,28 +810,29 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteElementString("File", name);
             XmlResource resource = new XmlResource();
 
-            //try
-            //{
             string[] dirs = name.Split('/');
-            resource = new XmlResource();
-            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian);
             string xmldir = xmlDir;
             for (int z = 0; z != dirs.Length - 1; z++)
             {
                 xmldir += "/" + dirs[z];
                 Directory.CreateDirectory(xmldir);
             }
-            if (!resource.Unk3)
-                File.WriteAllText(xmlDir + "/" + name + ".xml", resource.Content);
-            else
+
+            using (MemoryStream stream = new MemoryStream(entry.Data))
             {
-                File.WriteAllBytes(xmlDir + "/" + name + ".xml", entry.Data);
+                resource = new XmlResource();
+                resource.Deserialize(entry.Version, stream, Endian);
+
+                if (Endian == Endian.Big || resource.Unk3)
+                {
+                    File.WriteAllBytes(xmlDir + "/" + name + ".xml", entry.Data);
+                }
+                else
+                {
+                    File.WriteAllText(xmlDir + "/" + name + ".xml", resource.Content);
+                }
             }
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(string.Format("ERROR CONVERTING XML: \nFile{0} \nError: {1}", name, ex.Message));
-            //}
+
             resourceXML.WriteElementString("XMLTag", resource.Tag);
             resourceXML.WriteElementString("Unk1", Convert.ToByte(resource.Unk1).ToString());
             resourceXML.WriteElementString("Unk3", Convert.ToByte(resource.Unk3).ToString());
@@ -895,7 +876,7 @@ namespace Gibbed.Mafia2.FileFormats
             }
             else
             {
-                entry.Data = stream.GetBuffer();
+                entry.Data = stream.ToArray();
             }
 
             return entry;
@@ -1000,11 +981,12 @@ namespace Gibbed.Mafia2.FileFormats
             entry.SlotRamRequired = (uint)resource.Data.Length;
 
             //serialize.
-            MemoryStream stream = new MemoryStream();
-            resource.Serialize(entry.Version, stream, Endian.Little);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                resource.Serialize(entry.Version, stream, Endian.Little);
+                entry.Data = stream.ToArray();
+            }
 
-            //set the data.
-            entry.Data = stream.GetBuffer();
             descNode.InnerText = file;
             return entry;
         }

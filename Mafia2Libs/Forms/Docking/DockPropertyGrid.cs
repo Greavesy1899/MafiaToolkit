@@ -9,6 +9,7 @@ using System.Drawing;
 using System.IO;
 using Utils.Lang;
 using WeifenLuo.WinFormsUI.Docking;
+using Utils.SharpDXExtensions;
 
 namespace Forms.Docking
 {
@@ -69,17 +70,24 @@ namespace Forms.Docking
             if (FrameResource.IsFrameType(currentObject))
             {
                 FrameObjectBase fObject = (currentObject as FrameObjectBase);
-                CurrentEntry.Text = fObject.Name.String;
-                PositionXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.X);
-                PositionYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.Y);
-                PositionZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Position.Z);
-                RotationXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.X);
-                RotationYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.Y);
-                RotationZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Rotation.Z);
+                Vector3 position;
+                Quaternion rotation2;
+                Vector3 scale;
+                fObject.LocalTransform.Decompose(out scale, out rotation2, out position);
+
+                CurrentEntry.Text = fObject.Name.ToString();
+                PositionXNumeric.Value = Convert.ToDecimal(position.X);
+                PositionYNumeric.Value = Convert.ToDecimal(position.Y);
+                PositionZNumeric.Value = Convert.ToDecimal(position.Z);
+
+                Vector3 rotation = rotation2.ToEuler();
+                RotationXNumeric.Value = Convert.ToDecimal(rotation.X);
+                RotationYNumeric.Value = Convert.ToDecimal(rotation.Y);
+                RotationZNumeric.Value = Convert.ToDecimal(rotation.Z);
                 ScaleXNumeric.Enabled = ScaleYNumeric.Enabled = ScaleZNumeric.Enabled = true;
-                ScaleXNumeric.Value = Convert.ToDecimal(fObject.Matrix.Scale.X);
-                ScaleYNumeric.Value = Convert.ToDecimal(fObject.Matrix.Scale.Y);
-                ScaleZNumeric.Value = Convert.ToDecimal(fObject.Matrix.Scale.Z);
+                ScaleXNumeric.Value = Convert.ToDecimal(scale.X);
+                ScaleYNumeric.Value = Convert.ToDecimal(scale.Y);
+                ScaleZNumeric.Value = Convert.ToDecimal(scale.Z);
             }
             else if (currentObject is ResourceTypes.Collisions.Collision.Placement)
             {
@@ -107,18 +115,20 @@ namespace Forms.Docking
         {
             if (IsEntryReady && currentObject != null)
             {
+                Vector3 position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
+                Vector3 rotation = new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value));
+                Vector3 scale = new Vector3(Convert.ToSingle(ScaleXNumeric.Value), Convert.ToSingle(ScaleYNumeric.Value), Convert.ToSingle(ScaleZNumeric.Value));
+
                 if (FrameResource.IsFrameType(currentObject))
                 {
                     FrameObjectBase fObject = (currentObject as FrameObjectBase);
-                    fObject.Matrix.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
-                    fObject.Matrix.SetRotationMatrix(new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value)));
-                    fObject.Matrix.Scale = new Vector3(Convert.ToSingle(ScaleXNumeric.Value), Convert.ToSingle(ScaleYNumeric.Value), Convert.ToSingle(ScaleZNumeric.Value));
+                    fObject.LocalTransform = MatrixExtensions.SetMatrix(rotation, scale, position);
                 }
                 else if (currentObject is ResourceTypes.Collisions.Collision.Placement)
                 {
                     ResourceTypes.Collisions.Collision.Placement placement = (currentObject as ResourceTypes.Collisions.Collision.Placement);
-                    placement.Position = new Vector3(Convert.ToSingle(PositionXNumeric.Value), Convert.ToSingle(PositionYNumeric.Value), Convert.ToSingle(PositionZNumeric.Value));
-                    placement.RotationDegrees = new Vector3(Convert.ToSingle(RotationXNumeric.Value), Convert.ToSingle(RotationYNumeric.Value), Convert.ToSingle(RotationZNumeric.Value));
+                    placement.Position = position;
+                    placement.RotationDegrees = rotation;
                 }
             }
         }

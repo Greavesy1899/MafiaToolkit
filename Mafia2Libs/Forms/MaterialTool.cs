@@ -21,9 +21,9 @@ namespace Mafia2Tool
             InitializeComponent();
             Localise();
 
-            if (MaterialsManager.MTLs.ContainsKey(file.FullName))
+            if (MaterialsManager.MaterialLibraries.ContainsKey(file.FullName))
             {
-                mtl = MaterialsManager.MTLs[file.FullName];
+                mtl = MaterialsManager.MaterialLibraries[file.FullName];
             }
             else
             {

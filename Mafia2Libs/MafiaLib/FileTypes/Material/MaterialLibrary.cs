@@ -85,12 +85,33 @@ namespace ResourceTypes.Materials
             Material mat;
 
             if (materials.TryGetValue(hash, out mat))
+            {
                 return mat;
+            }
             else
             {
                 Log.WriteLine("Unable to find material with key: " + hash, LoggingTypes.WARNING);
                 return null;
             }
+        }
+
+        public Material LookupMaterialByName(string name)
+        {
+            Material mat = null;
+
+            foreach(var pair in materials)
+            {
+                if(pair.Value.MaterialName.Equals(name))
+                {
+                    mat = pair.Value;
+                }
+            }
+
+            if(mat == null)
+            {
+                Log.WriteLine("Unable to find material with name: " + name, LoggingTypes.WARNING);
+            }
+            return mat;
         }
     }
 }

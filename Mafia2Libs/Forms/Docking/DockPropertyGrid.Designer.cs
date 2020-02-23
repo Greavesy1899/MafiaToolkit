@@ -109,12 +109,12 @@
             65536});
             this.ScaleZNumeric.Location = new System.Drawing.Point(67, 240);
             this.ScaleZNumeric.Maximum = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             0});
             this.ScaleZNumeric.Minimum = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             -2147483648});
@@ -132,12 +132,12 @@
             65536});
             this.ScaleYNumeric.Location = new System.Drawing.Point(67, 214);
             this.ScaleYNumeric.Maximum = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             0});
             this.ScaleYNumeric.Minimum = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             -2147483648});
@@ -155,12 +155,12 @@
             65536});
             this.ScaleXNumeric.Location = new System.Drawing.Point(67, 188);
             this.ScaleXNumeric.Maximum = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             0});
             this.ScaleXNumeric.Minimum = new decimal(new int[] {
-            10,
+            1000,
             0,
             0,
             -2147483648});
@@ -308,9 +308,8 @@
             this.CurrentEntry.AutoSize = true;
             this.CurrentEntry.Location = new System.Drawing.Point(10, 7);
             this.CurrentEntry.Name = "CurrentEntry";
-            this.CurrentEntry.Size = new System.Drawing.Size(111, 13);
+            this.CurrentEntry.Size = new System.Drawing.Size(0, 13);
             this.CurrentEntry.TabIndex = 12;
-            this.CurrentEntry.Text = "FRAME NAME HERE";
             // 
             // RotationZLabel
             // 

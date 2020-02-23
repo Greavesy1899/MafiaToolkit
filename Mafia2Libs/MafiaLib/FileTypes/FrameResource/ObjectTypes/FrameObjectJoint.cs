@@ -28,7 +28,9 @@ namespace ResourceTypes.FrameResource
             nodeData = new NodeStruct[dataSize];
 
             for (int i = 0; i != dataSize; i++)
+            {
                 nodeData[i] = new NodeStruct();
+            }
         }
 
         public FrameObjectJoint(MemoryStream reader, bool isBigEndian) : base()
@@ -49,7 +51,9 @@ namespace ResourceTypes.FrameResource
             nodeData = new NodeStruct[dataSize];
 
             for (int i = 0; i != dataSize; i++)
+            {
                 nodeData[i] = new NodeStruct(reader, isBigEndian);
+            }
         }
 
         public override void WriteToFile(BinaryWriter writer)
@@ -58,7 +62,9 @@ namespace ResourceTypes.FrameResource
             writer.Write(dataSize);
 
             for (int i = 0; i != dataSize; i++)
+            {
                 nodeData[i].WriteToFile(writer);
+            }
         }
 
         public override string ToString()

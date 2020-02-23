@@ -263,5 +263,4 @@ paket-files/
 __pycache__/
 *.pyc
 
-M2FBX/M2FBX/libs/
-M2FBX/M2FBX/include/
+M2FBX/M2FBX/SDKs/

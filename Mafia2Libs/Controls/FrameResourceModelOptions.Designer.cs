@@ -30,18 +30,21 @@
         {
             this.buttonContinue = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.ModelOptionsText = new System.Windows.Forms.Label();
             this.ImportNormalBox = new System.Windows.Forms.CheckBox();
             this.ImportUV1Box = new System.Windows.Forms.CheckBox();
             this.ImportUV2Box = new System.Windows.Forms.CheckBox();
-            this.ImportUV7Box = new System.Windows.Forms.CheckBox();
+            this.ImportAOBox = new System.Windows.Forms.CheckBox();
             this.FlipUVBox = new System.Windows.Forms.CheckBox();
-            this.ImportUV0Box = new System.Windows.Forms.CheckBox();
+            this.ImportDiffuseBox = new System.Windows.Forms.CheckBox();
+            this.ImportTangentBox = new System.Windows.Forms.CheckBox();
+            this.ImportColor1Box = new System.Windows.Forms.CheckBox();
+            this.ImportColor0Box = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // buttonContinue
             // 
-            this.buttonContinue.Location = new System.Drawing.Point(259, 163);
+            this.buttonContinue.Location = new System.Drawing.Point(259, 190);
             this.buttonContinue.Name = "buttonContinue";
             this.buttonContinue.Size = new System.Drawing.Size(93, 23);
             this.buttonContinue.TabIndex = 2;
@@ -52,7 +55,7 @@
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(16, 163);
+            this.buttonCancel.Location = new System.Drawing.Point(12, 190);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(93, 23);
             this.buttonCancel.TabIndex = 3;
@@ -60,74 +63,104 @@
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.OnButtonClickCancel);
             // 
-            // label1
+            // ModelOptionsText
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 13);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(235, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Select what options you would like to import with";
+            this.ModelOptionsText.Location = new System.Drawing.Point(13, 13);
+            this.ModelOptionsText.Name = "ModelOptionsText";
+            this.ModelOptionsText.Size = new System.Drawing.Size(290, 13);
+            this.ModelOptionsText.TabIndex = 4;
+            this.ModelOptionsText.Text = "$MODEL_OPTIONS_TEXT";
             // 
             // ImportNormalBox
             // 
             this.ImportNormalBox.AutoSize = true;
-            this.ImportNormalBox.Location = new System.Drawing.Point(16, 39);
+            this.ImportNormalBox.Location = new System.Drawing.Point(15, 40);
             this.ImportNormalBox.Name = "ImportNormalBox";
-            this.ImportNormalBox.Size = new System.Drawing.Size(96, 17);
+            this.ImportNormalBox.Size = new System.Drawing.Size(133, 17);
             this.ImportNormalBox.TabIndex = 6;
-            this.ImportNormalBox.Text = "Import Normals";
+            this.ImportNormalBox.Text = "$IMPORT_NORMALS";
             this.ImportNormalBox.UseVisualStyleBackColor = true;
             // 
             // ImportUV1Box
             // 
             this.ImportUV1Box.AutoSize = true;
-            this.ImportUV1Box.Location = new System.Drawing.Point(16, 83);
+            this.ImportUV1Box.Location = new System.Drawing.Point(15, 100);
             this.ImportUV1Box.Name = "ImportUV1Box";
-            this.ImportUV1Box.Size = new System.Drawing.Size(79, 17);
+            this.ImportUV1Box.Size = new System.Drawing.Size(101, 17);
             this.ImportUV1Box.TabIndex = 7;
-            this.ImportUV1Box.Text = "Import UV1";
+            this.ImportUV1Box.Text = "$IMPORT_UV1";
             this.ImportUV1Box.UseVisualStyleBackColor = true;
             // 
             // ImportUV2Box
             // 
             this.ImportUV2Box.AutoSize = true;
-            this.ImportUV2Box.Location = new System.Drawing.Point(16, 106);
+            this.ImportUV2Box.Location = new System.Drawing.Point(15, 120);
             this.ImportUV2Box.Name = "ImportUV2Box";
-            this.ImportUV2Box.Size = new System.Drawing.Size(79, 17);
+            this.ImportUV2Box.Size = new System.Drawing.Size(101, 17);
             this.ImportUV2Box.TabIndex = 8;
-            this.ImportUV2Box.Text = "Import UV2";
+            this.ImportUV2Box.Text = "$IMPORT_UV2";
             this.ImportUV2Box.UseVisualStyleBackColor = true;
             // 
-            // ImportUV7Box
+            // ImportAOBox
             // 
-            this.ImportUV7Box.AutoSize = true;
-            this.ImportUV7Box.Location = new System.Drawing.Point(16, 129);
-            this.ImportUV7Box.Name = "ImportUV7Box";
-            this.ImportUV7Box.Size = new System.Drawing.Size(79, 17);
-            this.ImportUV7Box.TabIndex = 9;
-            this.ImportUV7Box.Text = "Import UV7";
-            this.ImportUV7Box.UseVisualStyleBackColor = true;
+            this.ImportAOBox.AutoSize = true;
+            this.ImportAOBox.Location = new System.Drawing.Point(15, 140);
+            this.ImportAOBox.Name = "ImportAOBox";
+            this.ImportAOBox.Size = new System.Drawing.Size(95, 17);
+            this.ImportAOBox.TabIndex = 9;
+            this.ImportAOBox.Text = "$IMPORT_AO";
+            this.ImportAOBox.UseVisualStyleBackColor = true;
             // 
             // FlipUVBox
             // 
             this.FlipUVBox.AutoSize = true;
-            this.FlipUVBox.Location = new System.Drawing.Point(181, 39);
+            this.FlipUVBox.Location = new System.Drawing.Point(180, 80);
             this.FlipUVBox.Name = "FlipUVBox";
-            this.FlipUVBox.Size = new System.Drawing.Size(119, 17);
+            this.FlipUVBox.Size = new System.Drawing.Size(75, 17);
             this.FlipUVBox.TabIndex = 10;
-            this.FlipUVBox.Text = "Flip UV Coordinates";
+            this.FlipUVBox.Text = "$FLIP_UV";
             this.FlipUVBox.UseVisualStyleBackColor = true;
             // 
-            // ImportUV0Box
+            // ImportDiffuseBox
             // 
-            this.ImportUV0Box.AutoSize = true;
-            this.ImportUV0Box.Location = new System.Drawing.Point(16, 60);
-            this.ImportUV0Box.Name = "ImportUV0Box";
-            this.ImportUV0Box.Size = new System.Drawing.Size(79, 17);
-            this.ImportUV0Box.TabIndex = 11;
-            this.ImportUV0Box.Text = "Import UV0";
-            this.ImportUV0Box.UseVisualStyleBackColor = true;
+            this.ImportDiffuseBox.AutoSize = true;
+            this.ImportDiffuseBox.Location = new System.Drawing.Point(15, 80);
+            this.ImportDiffuseBox.Name = "ImportDiffuseBox";
+            this.ImportDiffuseBox.Size = new System.Drawing.Size(125, 17);
+            this.ImportDiffuseBox.TabIndex = 11;
+            this.ImportDiffuseBox.Text = "$IMPORT_DIFFUSE";
+            this.ImportDiffuseBox.UseVisualStyleBackColor = true;
+            // 
+            // ImportTangentBox
+            // 
+            this.ImportTangentBox.AutoSize = true;
+            this.ImportTangentBox.Enabled = false;
+            this.ImportTangentBox.Location = new System.Drawing.Point(15, 60);
+            this.ImportTangentBox.Name = "ImportTangentBox";
+            this.ImportTangentBox.Size = new System.Drawing.Size(139, 17);
+            this.ImportTangentBox.TabIndex = 12;
+            this.ImportTangentBox.Text = "$IMPORT_TANGENTS";
+            this.ImportTangentBox.UseVisualStyleBackColor = true;
+            // 
+            // ImportColor1Box
+            // 
+            this.ImportColor1Box.AutoSize = true;
+            this.ImportColor1Box.Location = new System.Drawing.Point(180, 60);
+            this.ImportColor1Box.Name = "ImportColor1Box";
+            this.ImportColor1Box.Size = new System.Drawing.Size(123, 17);
+            this.ImportColor1Box.TabIndex = 14;
+            this.ImportColor1Box.Text = "$IMPORT_COLOR1";
+            this.ImportColor1Box.UseVisualStyleBackColor = true;
+            // 
+            // ImportColor0Box
+            // 
+            this.ImportColor0Box.AutoSize = true;
+            this.ImportColor0Box.Location = new System.Drawing.Point(180, 40);
+            this.ImportColor0Box.Name = "ImportColor0Box";
+            this.ImportColor0Box.Size = new System.Drawing.Size(123, 17);
+            this.ImportColor0Box.TabIndex = 13;
+            this.ImportColor0Box.Text = "$IMPORT_COLOR0";
+            this.ImportColor0Box.UseVisualStyleBackColor = true;
             // 
             // FrameResourceModelOptions
             // 
@@ -136,21 +169,24 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(364, 193);
+            this.ClientSize = new System.Drawing.Size(364, 225);
             this.ControlBox = false;
-            this.Controls.Add(this.ImportUV0Box);
+            this.Controls.Add(this.ImportColor1Box);
+            this.Controls.Add(this.ImportColor0Box);
+            this.Controls.Add(this.ImportTangentBox);
+            this.Controls.Add(this.ImportDiffuseBox);
             this.Controls.Add(this.FlipUVBox);
-            this.Controls.Add(this.ImportUV7Box);
+            this.Controls.Add(this.ImportAOBox);
             this.Controls.Add(this.ImportUV2Box);
             this.Controls.Add(this.ImportUV1Box);
             this.Controls.Add(this.ImportNormalBox);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.ModelOptionsText);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonContinue);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FrameResourceModelOptions";
-            this.Text = "NewObjectEntry";
+            this.Text = "$MODEL_OPTIONS_TITLE";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -159,12 +195,15 @@
         #endregion
         private System.Windows.Forms.Button buttonContinue;
         private System.Windows.Forms.Button buttonCancel;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label ModelOptionsText;
         private System.Windows.Forms.CheckBox ImportNormalBox;
         private System.Windows.Forms.CheckBox ImportUV1Box;
         private System.Windows.Forms.CheckBox ImportUV2Box;
-        private System.Windows.Forms.CheckBox ImportUV7Box;
+        private System.Windows.Forms.CheckBox ImportAOBox;
         private System.Windows.Forms.CheckBox FlipUVBox;
-        private System.Windows.Forms.CheckBox ImportUV0Box;
+        private System.Windows.Forms.CheckBox ImportDiffuseBox;
+        private System.Windows.Forms.CheckBox ImportTangentBox;
+        private System.Windows.Forms.CheckBox ImportColor1Box;
+        private System.Windows.Forms.CheckBox ImportColor0Box;
     }
 }

@@ -7,6 +7,10 @@
   <String ID="$COPY">Copy</String>
   <String ID="$PASTE">Paste</String>
   <String ID="$ENTRY_NAME">Entry Name</String>
+  <String ID="$UPDATE_MESSAGE1">A new version of the Mafia II: Toolkit is available!</String>
+  <String ID="$UPDATE_MESSAGE2">To download, press OK.</String>
+  <String ID="$UPDATE_MESSAGE3">To use the current version, press cancel.</String>
+  <String ID="$FAILED_UPDATE_CHECK">Failed to checking for updates!</String>
   
   <!-- Game Explorer Strings -->
   <String ID="$CREDITS">Special Thanks</String>
@@ -58,6 +62,7 @@
   <String ID="$LANGUAGE_POLISH">Polish</String>
   <String ID="$LANGUAGE_OPTION">Interface Language</String>
   <String ID="$DISCORD_STATE_CUSTOM">Use a custom discord state.</String>
+  <String ID="$CHECK_FOR_UPDATES">Check for Updates.</String>
   
   <!-- Model/Exporting Option Strings-->
   <String ID="$EXPORT_PATH_TITLE">Export Path:</String>
@@ -207,9 +212,22 @@
   <!-- M2FBX Strings-->
   <String ID="$SELECT_MESH">Select Mesh</String>
   <String ID="$CONVERT">Convert</String>
-  <String ID="$Import">Import</String>
+  <String ID="$IMPORT">Import</String>
   <String ID="$EXPORT">Export</String>
   <String ID="$M2FBX_INSTRUCTIONS">Utilise M2FBX Functions below. Any new files will be saved in the same location as the inputted file.</String>
+  
+  <!-- NewObjectEntry Form -->
+  <String ID="$IMPORT_NORMAL">Import Normals</String>
+  <String ID="$IMPORT_TANGENT">Import Tangents</String>
+  <String ID="$IMPORT_DIFFUSE">Import Diffuse UV</String>
+  <String ID="$IMPORT_UV1">Import UV1</String>
+  <String ID="$IMPORT_UV2">Import UV2</String>
+  <String ID="$IMPORT_AO">Import AO UV</String>
+  <String ID="$IMPORT_COLOR0">Import Color0</String>
+  <String ID="$IMPORT_COLOR1">Import Color1</String>
+  <String ID="$FLIP_UV">Flip UV Coordinates</String>
+  <String ID="$MODEL_OPTIONS_TITLE">Model Options</String>
+  <String ID="$MODEL_OPTIONS_TEXT">Select which properties should be imported for </String>
 
   <!-- Translokator Strings-->
   <String ID="$TRANSLOKATOR_EDITOR">Translokator Editor</String>
