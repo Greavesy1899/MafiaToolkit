@@ -42,7 +42,8 @@ namespace Mafia2Tool
         public static FrameProps FrameProperties;
         public static string ScenePath;
 
-        public static void BuildData()
+        private static bool isBigEndian;
+        public static void BuildData(bool forceBigEndian)
         {
             List<FileInfo> vbps = new List<FileInfo>();
             List<FileInfo> ibps = new List<FileInfo>();
@@ -59,7 +60,13 @@ namespace Mafia2Tool
             document.Load(ScenePath + "/SDSContent.xml");
             XPathNavigator nav = document.CreateNavigator();
             var nodes = nav.Select("/SDSResource/ResourceEntry");
-            bool isBigEndian = false;
+            isBigEndian = forceBigEndian;
+            Utils.Models.VertexTranslator.IsBigEndian = forceBigEndian;
+            if(isBigEndian)
+            {
+                MessageBox.Show("Detected 'Big Endian' formats. This will severely effect functionality!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
             while (nodes.MoveNext() == true)
             {
                 string type;
@@ -118,12 +125,6 @@ namespace Mafia2Tool
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
             OBJData = obj.ToArray();
-        }
-
-        public static void Reload()
-        {
-            CleanData();
-            BuildData();
         }
 
         public static void CleanData()

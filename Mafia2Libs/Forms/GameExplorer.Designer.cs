@@ -84,6 +84,7 @@ namespace Mafia2Tool
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            this.ContextForceBigEndian = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -257,9 +258,10 @@ namespace Mafia2Tool
             this.ContextOpenFolder,
             this.ContextSDSUnpackAll,
             this.ContextView,
-            this.CreateFileButton});
+            this.CreateFileButton,
+            this.ContextForceBigEndian});
             this.GEContext.Name = "SDSContext";
-            this.GEContext.Size = new System.Drawing.Size(219, 158);
+            this.GEContext.Size = new System.Drawing.Size(219, 180);
             this.GEContext.Text = "$VIEW";
             this.GEContext.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpening);
             // 
@@ -427,28 +429,28 @@ namespace Mafia2Tool
             // openMafiaIIToolStripMenuItem
             // 
             this.openMafiaIIToolStripMenuItem.Name = "openMafiaIIToolStripMenuItem";
-            this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.openMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.openMafiaIIToolStripMenuItem.Text = "$BTN_OPEN_MII";
             this.openMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.OpenMafiaIIClicked);
             // 
             // runMafiaIIToolStripMenuItem
             // 
             this.runMafiaIIToolStripMenuItem.Name = "runMafiaIIToolStripMenuItem";
-            this.runMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.runMafiaIIToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.runMafiaIIToolStripMenuItem.Text = "$BTN_RUN_MII";
             this.runMafiaIIToolStripMenuItem.Click += new System.EventHandler(this.RunMafiaIIClicked);
             // 
             // creditsToolStripMenuItem
             // 
             this.creditsToolStripMenuItem.Name = "creditsToolStripMenuItem";
-            this.creditsToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.creditsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.creditsToolStripMenuItem.Text = "$CREDITS";
             this.creditsToolStripMenuItem.Click += new System.EventHandler(this.OnCredits_Pressed);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.exitToolStripMenuItem.Text = "$EXIT";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolkitClicked);
             // 
@@ -456,7 +458,7 @@ namespace Mafia2Tool
             // 
             this.VersionLabel.Enabled = false;
             this.VersionLabel.Name = "VersionLabel";
-            this.VersionLabel.Size = new System.Drawing.Size(160, 22);
+            this.VersionLabel.Size = new System.Drawing.Size(159, 22);
             this.VersionLabel.Text = "Toolkit v";
             // 
             // dropdownView
@@ -524,7 +526,7 @@ namespace Mafia2Tool
             this.dropdownTools.Image = ((System.Drawing.Image)(resources.GetObject("dropdownTools.Image")));
             this.dropdownTools.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.dropdownTools.Name = "dropdownTools";
-            this.dropdownTools.Size = new System.Drawing.Size(62, 19);
+            this.dropdownTools.Size = new System.Drawing.Size(61, 19);
             this.dropdownTools.Text = "$TOOLS";
             // 
             // OptionsItem
@@ -585,6 +587,13 @@ namespace Mafia2Tool
             // MafiaIIBrowser
             // 
             this.MafiaIIBrowser.Description = "$SELECT_MII_FOLDER";
+            // 
+            // ContextForceBigEndian
+            // 
+            this.ContextForceBigEndian.Name = "ContextForceBigEndian";
+            this.ContextForceBigEndian.Size = new System.Drawing.Size(218, 22);
+            this.ContextForceBigEndian.Text = "$FORCE_BIG_ENDIAN";
+            this.ContextForceBigEndian.Click += new System.EventHandler(this.ContextForceBigEndian_Click);
             // 
             // GameExplorer
             // 
@@ -679,5 +688,6 @@ namespace Mafia2Tool
         private ToolStripMenuItem CreateFrameResourceButton;
         private ToolStripMenuItem CreateSDSContentButton;
         private ToolStripMenuItem CreateCollisionButton;
+        private ToolStripMenuItem ContextForceBigEndian;
     }
 }
