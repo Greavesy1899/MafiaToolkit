@@ -65,11 +65,9 @@ namespace Mafia2Tool
             }
 
             ToolkitSettings.UpdateRichPresence(string.Format("Editing '{0}'", info.Directory.Name));
-            SceneData.ScenePath = info.DirectoryName;
             fileLocation = info;
-            SceneData.BuildData();
             InitDockingControls();
-            PopulateList(info);
+            PopulateList();
             CameraSpeedTool.Value = (decimal)ToolkitSettings.CameraSpeed;
             KeyPreview = true;
             Text += " -" + info.Directory.Name;
@@ -168,7 +166,7 @@ namespace Mafia2Tool
             }
         }
 
-        public void PopulateList(FileInfo info)
+        public void PopulateList()
         {
             TreeNode tree = SceneData.FrameResource.BuildTree(SceneData.FrameNameTable);
             tree.Tag = "Folder";

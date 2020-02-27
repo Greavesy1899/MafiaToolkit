@@ -5,6 +5,7 @@ namespace Utils.Models
 {
     public class VertexTranslator
     {
+        public static bool IsBigEndian = false;
         /*
          * Position.X = 2 Bytes / Half;
          * Position.Y = 2 Bytes / Half;
@@ -25,25 +26,26 @@ namespace Utils.Models
          * */
         public static Vector4 ReadPositionDataFromVB(byte[] data, int i, float factor, Vector3 offset)
         {
+            //.w component is binormal
             Vector4 vec = new Vector4();
-            //byte[] xData = new byte[2];
-            //byte[] yData = new byte[2];
-            //byte[] zData = new byte[2];
-            //Array.Copy(data, i + 0, xData, 0, 2);
-            //Array.Copy(data, i + 2, yData, 0, 2);
-            //Array.Copy(data, i + 4, zData, 0, 2);
 
-            //Array.Reverse(xData);
-            //Array.Reverse(yData);
-            //Array.Reverse(zData);
+            //create small arrays
+            byte[] xData = new byte[2] { data[i + 0], data[i + 1] };
+            byte[] yData = new byte[2] { data[i + 2], data[i + 3] };
+            byte[] zData = new byte[2] { data[i + 4], data[i + 5] };
 
-            //ushort x = BitConverter.ToUInt16(xData, 0);
-            //ushort y = BitConverter.ToUInt16(yData, 0);
-            //ushort z = (ushort)(BitConverter.ToUInt16(zData, 0) & short.MaxValue);
-            ushort x = BitConverter.ToUInt16(data, i);
-            ushort y = BitConverter.ToUInt16(data, i + 2);
-            ushort z = (ushort)(BitConverter.ToUInt16(data, i + 4) & short.MaxValue);
-            ushort w = (ushort)(BitConverter.ToUInt16(data, i + 4) & 0x8000);
+            //reverse if big
+            if (IsBigEndian)
+            {
+                Array.Reverse(xData);
+                Array.Reverse(yData);
+                Array.Reverse(zData);
+            }
+
+            ushort x = BitConverter.ToUInt16(xData, 0);
+            ushort y = BitConverter.ToUInt16(yData, 0);
+            ushort z = (ushort)(BitConverter.ToUInt16(zData, 0) & short.MaxValue);
+            ushort w = (ushort)(BitConverter.ToUInt16(zData, 0) & 0x8000);
             vec = new Vector4(x * factor, y * factor, z * factor, w != 0 ? -1.0f : 1.0f);
             vec += new Vector4(offset, 0.0f);
             return vec;
@@ -85,8 +87,17 @@ namespace Utils.Models
 
         public static Vector2 ReadTexcoordFromVB(byte[] data, int i)
         {
-            System.Half x = System.Half.ToHalf(data, i);
-            System.Half y = System.Half.ToHalf(data, i + 2);
+            byte[] xData = new byte[2] { data[i + 0], data[i + 1] };
+            byte[] yData = new byte[2] { data[i + 2], data[i + 3] };
+
+            if(IsBigEndian)
+            {
+                Array.Reverse(xData);
+                Array.Reverse(yData);
+            }
+
+            System.Half x = System.Half.ToHalf(xData, 0);
+            System.Half y = System.Half.ToHalf(yData, 0);
             y = -y;
             return new Vector2(x, y);
         }

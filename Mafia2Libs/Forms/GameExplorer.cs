@@ -408,6 +408,18 @@ namespace Mafia2Tool
             OnRefreshButtonClicked(null, null);
         }
 
+        private bool HandleSDSMap(FileInfo info, bool forceBigEndian = false)
+        {
+            //we now build scene data from GameExplorer rather than d3d viewer.
+            SceneData.ScenePath = info.DirectoryName;
+            SceneData.BuildData(forceBigEndian);
+
+            //d3d viewer expects data inside scenedata.
+            D3DForm d3dForm = new D3DForm(info);
+            d3dForm.Dispose();
+            return true;
+        }
+
         private bool HandleStreamMap(FileInfo file)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
@@ -506,7 +518,6 @@ namespace Mafia2Tool
             CityAreaEditor caEditor;
             CityShopEditor csEditor;
             SoundSectorLoader soundSector;
-            D3DForm d3dForm;
 
             //special case:
             if (item.SubItems[0].Text.Contains("SDSContent") && item.SubItems[1].Text == "XML")
@@ -595,9 +606,7 @@ namespace Mafia2Tool
                     OpenPATCH((FileInfo)item.Tag);
                     break;
                 case "FR":
-                    //fTool = new FrameResourceTool((FileInfo)item.Tag);
-                    d3dForm = new D3DForm((FileInfo)item.Tag);
-                    d3dForm.Dispose();
+                    HandleSDSMap((FileInfo)item.Tag);
                     return;
                 case "IOFX":
                     iofx = new IOFxFile((FileInfo)item.Tag);
@@ -679,6 +688,7 @@ namespace Mafia2Tool
         {
             GEContext.Items[0].Visible = false;
             GEContext.Items[1].Visible = false;
+            GEContext.Items[6].Visible = false;
 
             if (fileListView.SelectedItems.Count == 0)
             {
@@ -693,6 +703,10 @@ namespace Mafia2Tool
                 {
                     GEContext.Items[0].Visible = true;
                     GEContext.Items[1].Visible = true;
+                }
+                else if(extension == ".fr")
+                {
+                    GEContext.Items[6].Visible = true;
                 }
             }
         }
@@ -866,6 +880,11 @@ namespace Mafia2Tool
         {
             Collision collision = new Collision();
             collision.WriteToFile(Path.Combine(currentDirectory.FullName, "Collision_0.col"));
+        }
+
+        private void ContextForceBigEndian_Click(object sender, EventArgs e)
+        {
+            HandleSDSMap((FileInfo)fileListView.SelectedItems[0].Tag, true);
         }
     }
 }
