@@ -8,6 +8,7 @@ namespace ResourceTypes.Cutscene
 {
     public interface IAeEntity
     {
+        int GetType();
         bool ReadFromFile(MemoryStream stream, bool isBigEndian);
         bool WriteToFile(MemoryStream writer, bool isBigEndian);
     }
@@ -65,6 +66,11 @@ namespace ResourceTypes.Cutscene
         public bool WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             throw new NotImplementedException();
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 
@@ -157,6 +163,11 @@ namespace ResourceTypes.Cutscene
         {
             throw new NotImplementedException();
         }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
     }
     //AeCameraLink
     public class AeUnk4 : IAeEntity
@@ -202,6 +213,11 @@ namespace ResourceTypes.Cutscene
         public bool WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             throw new NotImplementedException();
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 
@@ -268,6 +284,11 @@ namespace ResourceTypes.Cutscene
         {
             throw new NotImplementedException();
         }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
     }
 
     public class AeModel : IAeEntity
@@ -320,6 +341,11 @@ namespace ResourceTypes.Cutscene
             throw new NotImplementedException();
             return true;
         }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
     }
 
     public class AeUnk10 : IAeEntity
@@ -337,6 +363,11 @@ namespace ResourceTypes.Cutscene
         public bool WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             throw new NotImplementedException();
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 
@@ -356,6 +387,11 @@ namespace ResourceTypes.Cutscene
         {
             throw new NotImplementedException();
         }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
     }
 
     public class AeUnk13 : IAeEntity
@@ -373,6 +409,11 @@ namespace ResourceTypes.Cutscene
         public bool WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             throw new NotImplementedException();
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 
@@ -421,6 +462,11 @@ namespace ResourceTypes.Cutscene
             throw new NotImplementedException();
             return true;
         }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
     }
 
     public class AeUnk18 : IAeEntity
@@ -438,6 +484,11 @@ namespace ResourceTypes.Cutscene
         public bool WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             throw new NotImplementedException();
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 
@@ -464,10 +515,16 @@ namespace ResourceTypes.Cutscene
 
         public bool ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
+            File.WriteAllBytes("frame.bin", stream.ToArray());
             Unk01 = stream.ReadInt16(isBigEndian);
             Name1 = stream.ReadString16(isBigEndian);
             Name2 = stream.ReadString16(isBigEndian);
-            Unk02 = stream.ReadByte8();
+
+            if(string.IsNullOrEmpty(Name1))
+            {
+                Unk02 = stream.ReadByte8();
+            }
+            
             Hash0 = stream.ReadUInt64(isBigEndian);
             Hash1 = stream.ReadUInt64(isBigEndian);
             Name3 = stream.ReadString16(isBigEndian);
@@ -487,6 +544,11 @@ namespace ResourceTypes.Cutscene
         {
             throw new NotImplementedException();
             return true;
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 
@@ -539,6 +601,11 @@ namespace ResourceTypes.Cutscene
             throw new NotImplementedException();
             return true;
         }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
     }
 
     public class AeEffects : IAeEntity
@@ -556,6 +623,11 @@ namespace ResourceTypes.Cutscene
         public bool WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             throw new NotImplementedException();
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 
@@ -627,6 +699,11 @@ namespace ResourceTypes.Cutscene
         public bool WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             throw new NotImplementedException();
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 }
