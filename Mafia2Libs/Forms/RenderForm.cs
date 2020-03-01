@@ -57,7 +57,6 @@ namespace Mafia2Tool
         {
             InitializeComponent();
             Localise();
-            MaterialData.Load();
 
             if (MaterialsManager.MaterialLibraries.Count == 0)
             {

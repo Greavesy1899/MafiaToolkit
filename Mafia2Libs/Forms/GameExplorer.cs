@@ -410,6 +410,10 @@ namespace Mafia2Tool
 
         private bool HandleSDSMap(FileInfo info, bool forceBigEndian = false)
         {
+            //make sure to load materials.
+            MaterialData.Load();
+
+
             //we now build scene data from GameExplorer rather than d3d viewer.
             SceneData.ScenePath = info.DirectoryName;
             SceneData.BuildData(forceBigEndian);
