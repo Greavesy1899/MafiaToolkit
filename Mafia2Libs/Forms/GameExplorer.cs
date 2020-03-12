@@ -167,7 +167,7 @@ namespace Mafia2Tool
             }
             else
             {
-                Application.Exit();
+                ExitProgram();
             }
         }
 
@@ -408,8 +408,12 @@ namespace Mafia2Tool
             OnRefreshButtonClicked(null, null);
         }
 
-        private bool HandleSDSMap(FileInfo info, bool forceBigEndian = false)
+        private void HandleSDSMap(FileInfo info, bool forceBigEndian = false)
         {
+            //make sure to load materials.
+            MaterialData.Load();
+
+
             //we now build scene data from GameExplorer rather than d3d viewer.
             SceneData.ScenePath = info.DirectoryName;
             SceneData.BuildData(forceBigEndian);
@@ -417,7 +421,6 @@ namespace Mafia2Tool
             //d3d viewer expects data inside scenedata.
             D3DForm d3dForm = new D3DForm(info);
             d3dForm.Dispose();
-            return true;
         }
 
         private bool HandleStreamMap(FileInfo file)
@@ -608,6 +611,9 @@ namespace Mafia2Tool
                 case "FR":
                     HandleSDSMap((FileInfo)item.Tag);
                     return;
+                case "COL":
+                    MessageBox.Show("$COLLISION_EDITOR_REMOVED", "Toolkit", MessageBoxButtons.OK);
+                    return;
                 case "IOFX":
                     iofx = new IOFxFile((FileInfo)item.Tag);
                     return;
@@ -717,6 +723,12 @@ namespace Mafia2Tool
             Localise();
         }
 
+        private void ExitProgram()
+        {
+            Application.ExitThread();
+            Application.Exit();
+        }
+
         private void ContextSDSUnpackAll_Click(object sender, EventArgs e)
         {
             foreach (ListViewItem item in fileListView.Items)
@@ -728,7 +740,10 @@ namespace Mafia2Tool
 
         //'File' Button dropdown events.
         private void OpenMafiaIIClicked(object sender, EventArgs e) => InitExplorerSettings();
-        private void ExitToolkitClicked(object sender, EventArgs e) => Application.Exit();
+        private void ExitToolkitClicked(object sender, EventArgs e)
+        {
+            ExitProgram();
+        }
         private void RunMafiaIIClicked(object sender, EventArgs e) => Process.Start(launcher.FullName);
         private void SearchBarOnTextChanged(object sender, EventArgs e) => OpenDirectory(currentDirectory, true, SearchEntryText.Text);
 

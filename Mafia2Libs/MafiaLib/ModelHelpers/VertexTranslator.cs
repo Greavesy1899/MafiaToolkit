@@ -5,7 +5,13 @@ namespace Utils.Models
 {
     public class VertexTranslator
     {
-        public static bool IsBigEndian = false;
+        private static bool isBigEndian;
+
+        public static bool IsBigEndian {
+            get { return isBigEndian; }
+            set { isBigEndian = value; }
+        }
+
         /*
          * Position.X = 2 Bytes / Half;
          * Position.Y = 2 Bytes / Half;
@@ -30,12 +36,12 @@ namespace Utils.Models
             Vector4 vec = new Vector4();
 
             //create small arrays
-            byte[] xData = new byte[2] { data[i + 0], data[i + 1] };
-            byte[] yData = new byte[2] { data[i + 2], data[i + 3] };
-            byte[] zData = new byte[2] { data[i + 4], data[i + 5] };
+            byte[] xData = new byte[] { data[i + 0], data[i + 1] };
+            byte[] yData = new byte[] { data[i + 2], data[i + 3] };
+            byte[] zData = new byte[] { data[i + 4], data[i + 5] };
 
             //reverse if big
-            if (IsBigEndian)
+            if (isBigEndian)
             {
                 Array.Reverse(xData);
                 Array.Reverse(yData);
@@ -87,10 +93,10 @@ namespace Utils.Models
 
         public static Vector2 ReadTexcoordFromVB(byte[] data, int i)
         {
-            byte[] xData = new byte[2] { data[i + 0], data[i + 1] };
-            byte[] yData = new byte[2] { data[i + 2], data[i + 3] };
+            byte[] xData = new byte[] { data[i + 0], data[i + 1] };
+            byte[] yData = new byte[] { data[i + 2], data[i + 3] };
 
-            if(IsBigEndian)
+            if(isBigEndian)
             {
                 Array.Reverse(xData);
                 Array.Reverse(yData);

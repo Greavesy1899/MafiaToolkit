@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using ResourceTypes.Actors;
 using Utils.Lang;
 using Utils.Settings;
+using Forms.EditorControls;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2Tool
 {
@@ -33,6 +35,9 @@ namespace Mafia2Tool
             SaveButton.Text = Language.GetString("$SAVE");
             ReloadButton.Text = Language.GetString("$RELOAD");
             ExitButton.Text = Language.GetString("$EXIT");
+            EditButton.Text = Language.GetString("$EDIT");
+            AddDefinitionButton.Text = Language.GetString("$ADD_DEFINITION");
+            AddItemButton.Text = Language.GetString("$ADD_ITEM");
         }
 
         private void BuildData()
@@ -41,17 +46,17 @@ namespace Mafia2Tool
             definitions = new TreeNode("Definitions");
             items = new TreeNode("Entities");
 
-            for (int i = 0; i != actors.Definitions.Length; i++)
+            for (int i = 0; i != actors.Definitions.Count; i++)
             {
-                TreeNode node = new TreeNode(actors.Definitions[i].name);
+                TreeNode node = new TreeNode(actors.Definitions[i].Name);
                 node.Name = actors.Definitions[i].Hash.ToString();
                 node.Tag = actors.Definitions[i];
                 definitions.Nodes.Add(node);
             }
 
-            for (int i = 0; i != actors.Items.Length; i++)
+            for (int i = 0; i != actors.Items.Count; i++)
             {
-                TreeNode node = new TreeNode(actors.Items[i].EntityType);
+                TreeNode node = new TreeNode(actors.Items[i].EntityName);
                 node.Tag = actors.Items[i];
 
                 TreeNode child = new TreeNode("Extra Data");
@@ -62,7 +67,7 @@ namespace Mafia2Tool
                 if (Debugger.IsAttached)
                 {
                     string folder = "actors_unks/" + (ActorTypes)actors.Items[i].ActorTypeID + "/";
-                    string filename = actors.Items[i].EntityType + ".dat";
+                    string filename = actors.Items[i].EntityName + ".dat";
 
                     if (!Directory.Exists(folder))
                     {
@@ -83,7 +88,23 @@ namespace Mafia2Tool
 
         private void ContextDelete_Click(object sender, System.EventArgs e)
         {
-            throw new System.NotImplementedException();
+            object data = ActorTreeView.SelectedNode.Tag;
+            bool isDeleted = false;
+            if (data is ActorEntry)
+            {
+                actors.Items.Remove((ActorEntry)data);
+                isDeleted = true;
+            }
+            else if(data is ActorDefinition)
+            {
+                actors.Definitions.Remove((ActorDefinition)data);
+                isDeleted = true;
+            }
+
+            if(isDeleted)
+            {
+                ActorTreeView.Nodes.Remove(ActorTreeView.SelectedNode);
+            }
         }
 
         private void SaveButton_OnClick(object sender, System.EventArgs e)
@@ -103,6 +124,46 @@ namespace Mafia2Tool
         private void ExitButton_OnClick(object sender, System.EventArgs e)
         {
             Close();
+        }
+
+        private void AddItemButton_Click(object sender, System.EventArgs e)
+        {
+            NewObjectForm objectForm = new NewObjectForm(true);
+            objectForm.SetLabel("$SELECT_TYPE_AND_NAME");
+            ActorItemAddOption optionControl = new ActorItemAddOption();
+            objectForm.LoadOption(optionControl);
+
+            if (objectForm.ShowDialog() == DialogResult.OK)
+            {
+                ActorTypes type = optionControl.GetSelectedType();
+                ActorEntry entry = actors.CreateActorEntry(type, objectForm.GetInputText());
+
+                TreeNode node = new TreeNode(entry.EntityName);
+                node.Text = entry.EntityName;
+                node.Tag = entry;
+
+                TreeNode child = new TreeNode("Extra Data");
+                child.Tag = actors.ExtraData[entry.DataID];
+                node.Nodes.Add(child);
+                items.Nodes.Add(node);
+            }
+
+            objectForm.Dispose();
+        }
+
+        private void AddDefinitionButton_Click(object sender, System.EventArgs e)
+        {
+            ListWindow window = new ListWindow();
+            window.PopulateForm(actors.Items);
+
+            if(window.ShowDialog() == DialogResult.OK)
+            {
+                ActorDefinition definition = actors.CreateActorDefinition((window.chosenObject as ActorEntry));
+                TreeNode node = new TreeNode(definition.Name);
+                node.Name = definition.Hash.ToString();
+                node.Tag = definition;
+                definitions.Nodes.Add(node);
+            }
         }
     }
 }

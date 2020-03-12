@@ -46,6 +46,8 @@
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ViewNumInstButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.LHFunctionButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.TranslokatorContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -60,6 +62,7 @@
             this.PropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
             this.PropertyGrid.Size = new System.Drawing.Size(402, 416);
             this.PropertyGrid.TabIndex = 16;
+            this.PropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.PropertyGrid_PropertyValueChanged);
             // 
             // TranslokatorTree
             // 
@@ -180,7 +183,8 @@
             // 
             this.ToolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ToolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ViewNumInstButton});
+            this.ViewNumInstButton,
+            this.LHFunctionButton});
             this.ToolsButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsButton.Image")));
             this.ToolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ToolsButton.Name = "ToolsButton";
@@ -190,9 +194,20 @@
             // ViewNumInstButton
             // 
             this.ViewNumInstButton.Name = "ViewNumInstButton";
-            this.ViewNumInstButton.Size = new System.Drawing.Size(180, 22);
+            this.ViewNumInstButton.Size = new System.Drawing.Size(169, 22);
             this.ViewNumInstButton.Text = "$VIEW_NUM_INST";
             this.ViewNumInstButton.Click += new System.EventHandler(this.ViewNumInstButton_Click);
+            // 
+            // LHFunctionButton
+            // 
+            this.LHFunctionButton.Name = "LHFunctionButton";
+            this.LHFunctionButton.Size = new System.Drawing.Size(169, 22);
+            this.LHFunctionButton.Text = "$LH_FUNCTION";
+            this.LHFunctionButton.Click += new System.EventHandler(this.LHFunctionButton_Click);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
             // 
             // TranslokatorEditor
             // 
@@ -230,5 +245,7 @@
         private System.Windows.Forms.ToolStripMenuItem PasteButton;
         private System.Windows.Forms.ToolStripDropDownButton ToolsButton;
         private System.Windows.Forms.ToolStripMenuItem ViewNumInstButton;
+        private System.Windows.Forms.ToolStripMenuItem LHFunctionButton;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }

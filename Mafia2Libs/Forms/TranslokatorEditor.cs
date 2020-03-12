@@ -269,7 +269,24 @@ namespace Mafia2Tool.Forms
         private void DeleteObject_Click(object sender, EventArgs e) => DeleteNode();
         private void CopyButton_Click(object sender, EventArgs e) => Copy();
         private void PasteButton_Click(object sender, EventArgs e) => Paste();
+        private void PropertyGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            Cursor.Current = Cursors.WaitCursor;
+            if (e.ChangedItem.Label == "Name")
+            {
+                TreeNode selected = TranslokatorTree.SelectedNode;
+                TranslokatorTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
 
+                if(selected.Tag is ResourceTypes.Translokator.Object)
+                {
+                    for(int i = 0; i < selected.Nodes.Count; i++)
+                    {
+                        selected.Nodes[i].Text = selected.Text + " " + i;
+                    }
+                }
+            }
+            Cursor.Current = Cursors.Default;
+        }
         private void ViewNumInstButton_Click(object sender, EventArgs e)
         {
             var num = 0;
@@ -286,6 +303,85 @@ namespace Mafia2Tool.Forms
                 }
             }
             MessageBox.Show(string.Format("Number of Instances: {0}", num), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void LHFunctionButton_Click(object sender, EventArgs e)
+        {
+            if(openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                FileInfo info = new FileInfo(openFileDialog1.FileName);
+                TranslokatorLoader loader2 = new TranslokatorLoader(info);
+
+                for (int i = 0; i < loader2.ObjectGroups.Length; i++)
+                {
+                    ObjectGroup objectGroup = loader2.ObjectGroups[i];
+                    ObjectGroup transGroup = translokator.ObjectGroups[i];
+
+                    for (int y = 0; y < objectGroup.Objects.Length; y++)
+                    {
+                        ResourceTypes.Translokator.Object loaderObj = objectGroup.Objects[y];
+
+                        for (int z = 0; z < transGroup.Objects.Length; z++)
+                        {
+                            ResourceTypes.Translokator.Object transObj = transGroup.Objects[z];
+
+                            if (loaderObj.Name == transObj.Name)
+                            {
+                                int size = transObj.Instances.Length - loaderObj.Instances.Length;
+
+                                if (size > 0)
+                                {
+                                    Instance[] newArray = new Instance[size];
+                                    Array.Copy(transObj.Instances, loaderObj.Instances.Length, newArray, 0, newArray.Length);
+                                    transObj.Instances = newArray;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                TranslokatorTree.Nodes.Clear();
+
+                TreeNode headerData = new TreeNode("Header Data");
+                headerData.Tag = translokator;
+
+                TreeNode gridNode = new TreeNode("Grids");
+                for (int i = 0; i < translokator.Grids.Length; i++)
+                {
+                    Grid grid = translokator.Grids[i];
+                    TreeNode child = new TreeNode("Grid " + i);
+                    child.Tag = grid;
+                    gridNode.Nodes.Add(child);
+                }
+                TreeNode ogNode = new TreeNode("Objects Groups");
+                for (int i = 0; i < translokator.ObjectGroups.Length; i++)
+                {
+                    ObjectGroup objectGroup = translokator.ObjectGroups[i];
+                    TreeNode objectGroupNode = new TreeNode("Object Group " + i);
+                    objectGroupNode.Tag = objectGroup;
+
+                    for (int y = 0; y < objectGroup.Objects.Length; y++)
+                    {
+                        ResourceTypes.Translokator.Object obj = objectGroup.Objects[y];
+                        TreeNode objNode = new TreeNode(obj.Name);
+                        objNode.Tag = obj;
+                        objectGroupNode.Nodes.Add(objNode);
+
+                        for (int x = 0; x < obj.Instances.Length; x++)
+                        {
+                            Instance instance = obj.Instances[x];
+                            TreeNode instanceNode = new TreeNode(obj.Name + " " + x);
+                            instanceNode.Tag = instance;
+                            objNode.Nodes.Add(instanceNode);
+                        }
+                    }
+
+                    ogNode.Nodes.Add(objectGroupNode);
+                }
+                TranslokatorTree.Nodes.Add(headerData);
+                TranslokatorTree.Nodes.Add(gridNode);
+                TranslokatorTree.Nodes.Add(ogNode);
+            }
         }
     }
 }

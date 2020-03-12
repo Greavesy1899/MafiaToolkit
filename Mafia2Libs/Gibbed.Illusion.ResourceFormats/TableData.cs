@@ -114,8 +114,6 @@ namespace Gibbed.Mafia2.ResourceFormats
                 }
             }
 
-            //input.WriteBytes(Data);
-
             for (int i = 0; i < Columns.Count; i++)
             {
                 Columns[i].Serialize(input, endian);
