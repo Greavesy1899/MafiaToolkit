@@ -24,6 +24,7 @@ using Utils.SharpDXExtensions;
 using ResourceTypes.Collisions;
 using System.Diagnostics;
 using ResourceTypes.Actors;
+using Utils.Extensions;
 
 namespace Mafia2Tool
 {
@@ -112,6 +113,8 @@ namespace Mafia2Tool
             dSceneTree.treeView1.KeyUp += new KeyEventHandler(OnKeyPressedDockedPanel);
             dSceneTree.LinkToActorButton.Click += new EventHandler(LinkToActor_Click);
             dPropertyGrid.KeyUp += new KeyEventHandler(OnKeyPressedDockedPanel);
+            dSceneTree.UpdateParent1Button.Click += new EventHandler(UpdateParent_Click);
+            dSceneTree.UpdateParent2Button.Click += new EventHandler(UpdateParent_Click);
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyValueChanged);
             dPropertyGrid.PositionXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.PositionYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
@@ -272,6 +275,19 @@ namespace Mafia2Tool
         private void SceneTreeOnClicked(object sender, EventArgs e) => dSceneTree.Show(dockPanel1, DockState.DockLeft);
         private void ViewOptionProperties_Click(object sender, EventArgs e) => dSceneTree.Show(dockPanel1, DockState.DockLeft);
         private void CurrentModeButton_ButtonClick(object sender, EventArgs e) => SwitchMode(!bSelectMode);
+        private void UpdateParent_Click(object sender, EventArgs e)
+        {
+            string name = (sender as ToolStripMenuItem).Name;
+            int parent = (name == "UpdateParent1Button" ? 0 : 1);
+            ListWindow window = new ListWindow();
+            window.PopulateForm(parent);
+            
+            if (window.ShowDialog() == DialogResult.OK)
+            {
+                FrameEntry obj = (window.chosenObject as FrameEntry);
+                UpdateObjectParents(parent, obj.RefID, obj);
+            }
+        }
 
         private void OnFormClosing(object sender, FormClosingEventArgs e)
         {
@@ -676,118 +692,6 @@ namespace Mafia2Tool
                     //}
                 }
             }
-
-            //if (SceneData.Translokator != null && ToolkitSettings.Experimental)
-            //{
-            //    TreeNode node = new TreeNode("Translokator Data");
-            //    translokatorRoot = node;
-
-            //    BoundingBox bounds = SceneData.Translokator.Bounds;
-            //    for (int i = 0; i != SceneData.Translokator.Grids.Length; i++)
-            //    {
-            //        var grid = SceneData.Translokator.Grids[i];
-            //        TreeNode gridNode = new TreeNode("Grid " + (i+1));
-            //        gridNode.Tag = grid;
-            //        gridNode.Name = "Grid"+(i+1);
-
-            //        var curCellX = grid.CellSize.X;
-            //        var curCellY = grid.CellSize.Y;
-            //        for (int y = 0; y != grid.Height; y++)
-            //        {
-            //            for (int x = 0; x < grid.Width; x++)
-            //            {
-            //                RenderBoundingBox bboxX = new RenderBoundingBox();
-            //                var curBounds = new Vector3(bounds.Minimum.X + curCellX, bounds.Minimum.Y + curCellY, 0.0f);
-            //                bboxX.Init(new BoundingBox(new Vector3(bounds.Minimum.X, bounds.Minimum.Y, 0.0f), curBounds));
-            //                bboxX.SetTransform(new Vector3(0, 0, 0), new Matrix33());
-
-            //                var refID = 0;
-            //                var bAllow = false;
-            //                while (!bAllow)
-            //                {
-            //                    if (!assets.ContainsKey(refID))
-            //                        bAllow = true;
-            //                    else
-            //                        refID = StringHelpers.RandomGenerator.Next() + 65535 + y;
-            //                }
-            //                assets.Add(refID, bboxX);
-            //                TreeNode gridXNode = new TreeNode(string.Format("[{0}, {1}]", x, y));
-            //                gridXNode.Name = refID.ToString();
-            //                gridXNode.Tag = bboxX;
-            //                gridNode.Nodes.Add(gridXNode);
-            //                curCellX += grid.CellSize.X;
-            //            }
-            //            curCellY += grid.CellSize.Y;
-            //            curCellX = grid.CellSize.X;
-            //        }
-            //        node.Nodes.Add(gridNode);
-            //    }
-            //    for (int i = 0; i != SceneData.Translokator.ObjectGroups.Length; i++)
-            //    {
-            //        var objGroup = SceneData.Translokator.ObjectGroups[i];
-
-            //        for (int x = 0; x != objGroup.Objects.Length; x++)
-            //        {
-            //            var objects = objGroup.Objects[x];
-            //            TreeNode objectNode = new TreeNode(objects.Name);
-            //            node.Nodes.Add(objectNode);
-
-            //            //RenderModel model = null;
-
-            //            //foreach (KeyValuePair<int, object> pair in SceneData.FrameResource.FrameObjects)
-            //            //{
-            //            //    FrameObjectBase baseObject = (FrameObjectBase)pair.Value;
-            //            //    if (baseObject.GetType() == typeof(FrameObjectFrame))
-            //            //    {
-            //            //        if ((baseObject as FrameObjectFrame).ActorHash.uHash == objects.Hash)
-            //            //        {
-            //            //            model = (RenderModel)assets[baseObject.RefID];
-            //            //        }
-            //            //    }
-            //            //}
-
-            //            for (int z = 0; z != objects.Instances.Length; z++)
-            //            {
-            //                var instance = objects.Instances[z];
-            //                RenderBoundingBox bbox = new RenderBoundingBox();
-            //                bbox.Init(new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f)));
-            //                bbox.SetTransform(instance.Position, new Matrix33());
-            //                int refID = 65535 + z;
-
-            //                var bAllow = false;
-            //                while (!bAllow)
-            //                {
-            //                    if (!assets.ContainsKey(refID))
-            //                        bAllow = true;
-            //                    else
-            //                        refID = StringHelpers.RandomGenerator.Next() + 65535 + z;
-            //                }
-            //                assets.Add(refID, bbox);
-
-            //                TreeNode child = new TreeNode(objects.Name + " " + (z + 1));
-            //                child.Tag = bbox;
-            //                child.Name = refID.ToString();
-            //                objectNode.Nodes.Add(child);
-            //            }
-            //        }
-            //    }
-            //    dSceneTree.AddToTree(node);
-            //}
-            //if (SceneData.OBJData != null)
-            //{
-            //    for (int y = 0; y < SceneData.OBJData.Length; y++)
-            //    {
-            //        OBJData data = (OBJData)SceneData.OBJData[y].data;
-
-            //        for (int i = 0; i < data.vertices.Length; i++)
-            //        {
-            //            RenderNav nav = new RenderNav();
-            //            nav.Init(data, i);
-            //            int generatedID = StringHelpers.RandomGenerator.Next();
-            //            assets.Add(generatedID, nav);
-            //        }
-            //    }
-            //}
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
                 TreeNode node = new TreeNode("Road Data");
@@ -960,11 +864,10 @@ namespace Mafia2Tool
             }
             for(int i = 0; i < SceneData.FrameNameTable.FrameData.Length; i++)
             {
-                int numBlocks = SceneData.FrameResource.NewFrames.Count - SceneData.FrameResource.Header.NumObjects;
                 FrameNameTable.Data data = SceneData.FrameNameTable.FrameData[i];
                 if (data.FrameIndex != -1)
                 {
-                    FrameObjectBase frame = (SceneData.FrameResource.NewFrames[numBlocks + data.FrameIndex].Data as FrameObjectBase);
+                    FrameObjectBase frame = (SceneData.FrameResource.FrameObjects.ElementAt(data.FrameIndex).Value as FrameObjectBase);
                     if (frame != null)
                     {
                         frame.FrameNameTableFlags = data.Flags;
@@ -1051,11 +954,11 @@ namespace Mafia2Tool
                     instance.SetTransform(placement.Transform);
                 }
             }
-            UpdateWorldTransforms();
         }
 
         private void ApplyChangesToRenderable(FrameObjectBase obj)
         {
+            //UpdateWorldTransforms();
             if (obj is FrameObjectArea)
             {
                 FrameObjectArea area = (obj as FrameObjectArea);
@@ -1362,13 +1265,70 @@ namespace Mafia2Tool
             Graphics.Camera.Position = dSceneTree.JumpToHelper();
         }
 
+        private void UpdateObjectParents(int parent, int refID, FrameEntry entry = null)
+        {
+            FrameObjectBase obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectBase);
+            //make sure refID is not root.
+            if (refID != 0)
+            {
+                //make sure entry is not null.
+                if (entry == null)
+                {
+                    TreeNode[] objs = dSceneTree.treeView1.Nodes.Find(refID.ToString(), true);
+
+                    if (objs.Length > 0)
+                    {
+                        entry = (objs[0].Tag as FrameEntry);
+                    }
+                }
+
+                SceneData.FrameResource.SetParentOfObject(parent, obj, entry);
+            }
+            else
+            {
+                SceneData.FrameResource.SetParentOfObject(parent, obj, null);
+            }
+
+            dSceneTree.treeView1.Nodes.Remove(dSceneTree.treeView1.SelectedNode);
+            TreeNode newNode = new TreeNode();
+            newNode.Tag = obj;
+            newNode.Name = obj.RefID.ToString();
+            newNode.Text = obj.ToString();
+
+            TreeNode[] nodes = null;
+            if (obj.ParentIndex1.Index != -1)
+            {
+                nodes = dSceneTree.treeView1.Nodes.Find(obj.ParentIndex1.RefID.ToString(), true);
+
+                if (nodes.Length > 0)
+                {
+                    dSceneTree.AddToTree(newNode, nodes[0]);
+                }
+            }
+            else if (obj.ParentIndex2.Index != -1)
+            {
+                nodes = dSceneTree.treeView1.Nodes.Find(obj.ParentIndex2.RefID.ToString(), true);
+
+                if (nodes.Length > 0)
+                {
+                    dSceneTree.AddToTree(newNode, nodes[0]);
+                }
+            }
+            else
+            {
+                dSceneTree.AddToTree(newNode, frameResourceRoot);
+            }
+
+            dSceneTree.treeView1.SelectedNode = newNode;
+            ApplyChangesToRenderable(obj);
+        }
+
         private void OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             PropertyGrid pGrid = (s as PropertyGrid);
             if (pGrid.SelectedObject is FrameObjectBase)
             {
                 FrameObjectBase obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectBase);
-                bool reparent = false;
 
                 if (dSceneTree.treeView1.SelectedNode.Tag == pGrid.SelectedObject)
                 {
@@ -1395,146 +1355,15 @@ namespace Mafia2Tool
                             obj.SubRef(FrameEntryRefTypes.Parent2);
                         }
                     }
-                    reparent = true;
                 }
                 else if (e.ChangedItem.Label == "RefID")
                 {
                     //used just incase the user wants to set the parent to "root"
-                    if ((int)e.ChangedItem.Value == 0)
-                    {
-                        if (e.ChangedItem.Parent.Label == "ParentIndex1")
-                        {
-                            obj.ParentIndex1.Index = -1;
-                            obj.ParentIndex1.Name = "";
-                            obj.ParentIndex1.RefID = 0;
-                            obj.SubRef(FrameEntryRefTypes.Parent1);
-                        }
-                        else if (e.ChangedItem.Parent.Label == "ParentIndex2")
-                        {
-                            obj.ParentIndex2.Index = -1;
-                            obj.ParentIndex2.Name = "";
-                            obj.ParentIndex2.RefID = 0;
-                            obj.SubRef(FrameEntryRefTypes.Parent2);
-                        }
-
-                        //TODO:: Make indexes viewable and assignable.
-                    }
-                    reparent = true;
-
-                    TreeNode[] nodes = dSceneTree.treeView1.Nodes.Find(e.ChangedItem.Value.ToString(), true);
-
-                    if (nodes.Length > 0)
-                    {
-                        int newValue = (int)e.ChangedItem.Value;
-                        int newIndex = 0;
-                        string name = "";
-
-                        for (int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
-                        {
-                            FrameObjectBase frameObj = (SceneData.FrameResource.FrameObjects.ElementAt(i).Value as FrameObjectBase);
-
-                            if (frameObj.RefID == newValue)
-                            {
-                                newIndex = i;
-                                name = frameObj.Name.String;
-                            }
-                        }
-
-                        if (newIndex == -1)
-                        {
-                            for (int i = 0; i != SceneData.FrameResource.FrameScenes.Count; i++)
-                            {
-                                FrameHeaderScene frameObj = SceneData.FrameResource.FrameScenes.ElementAt(i).Value;
-
-                                if (frameObj.RefID == newValue)
-                                {
-                                    newIndex = i;
-                                    name = frameObj.Name.String;
-                                }
-                            }
-                        }
-
-                        if (string.IsNullOrEmpty(name))
-                            name = "unknown";
-
-                        if (e.ChangedItem.Parent.Label == "ParentIndex1")
-                        {
-                            obj.ParentIndex1.Index = newIndex;
-                            obj.ParentIndex1.Name = name;
-                            obj.SubRef(FrameEntryRefTypes.Parent1);
-                            obj.AddRef(FrameEntryRefTypes.Parent1, newValue);
-                        }
-                        else if (e.ChangedItem.Parent.Label == "ParentIndex2")
-                        {
-                            obj.ParentIndex2.Index = newIndex;
-                            obj.ParentIndex2.Name = name;
-                            obj.SubRef(FrameEntryRefTypes.Parent2);
-                            obj.AddRef(FrameEntryRefTypes.Parent2, newValue);
-                        }
-                    }
+                    int parent = (e.ChangedItem.Parent.Label == "ParentIndex1" ? 0 : 1);
+                    UpdateObjectParents(parent, (int)e.ChangedItem.Value);
                 }
-
-                if (pGrid.SelectedObject is FrameObjectSingleMesh)
-                {
-                    FrameObjectSingleMesh mesh = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectSingleMesh);
-
-                    if (e.ChangedItem.Label == "MeshIndex")
-                    {
-                        int value = (int)e.ChangedItem.Value;
-                        mesh.Refs["Mesh"] = SceneData.FrameResource.NewFrames[value].Data.RefID;
-                        mesh.Geometry = SceneData.FrameResource.FrameGeometries[obj.Refs["Mesh"]];
-
-                    }
-                    if (e.ChangedItem.Label == "MaterialIndex")
-                    {
-                        int value = (int)e.ChangedItem.Value;
-                        mesh.Refs["Material"] = SceneData.FrameResource.NewFrames[value].Data.RefID;
-                        mesh.Material = SceneData.FrameResource.FrameMaterials[obj.Refs["Material"]];
-                    }
-
-                    ApplyChangesToRenderable((FrameObjectBase)pGrid.SelectedObject);
-                }
-                if (pGrid.SelectedObject is FrameObjectArea || pGrid.SelectedObject is FrameObjectSector || pGrid.SelectedObject is FrameObjectDummy)
-                {
-                    if (e.ChangedItem.Label == "BoundsMinimumX" || e.ChangedItem.Label == "BoundsMinimumY" || e.ChangedItem.Label == "BoundsMinimumZ" ||
-                        e.ChangedItem.Label == "BoundsMaximumX" || e.ChangedItem.Label == "BoundsMaximumY" || e.ChangedItem.Label == "BoundsMaximumZ")
-                    {
-                        ApplyChangesToRenderable((FrameObjectBase)pGrid.SelectedObject);
-                    }
-                }
-
-                if (reparent)
-                {
-                    TreeNode newNode = new TreeNode(obj.ToString());
-                    newNode.Tag = obj;
-                    newNode.Name = obj.RefID.ToString();
-                    TreeNode[] parents = null;
-
-                    if (obj.ParentIndex1.Index != -1)
-                    {
-                        parents = dSceneTree.treeView1.Nodes.Find(obj.ParentIndex1.RefID.ToString(), true);
-
-                        if (parents.Length > 0)
-                        {
-                            dSceneTree.treeView1.Nodes.Remove(dSceneTree.treeView1.SelectedNode);
-                            dSceneTree.AddToTree(newNode, parents[0]);
-                        }
-                    }
-                    else if (obj.ParentIndex2.Index != -1)
-                    {
-                        parents = dSceneTree.treeView1.Nodes.Find(obj.ParentIndex2.RefID.ToString(), true);
-
-                        if (parents.Length > 0)
-                        {
-                            dSceneTree.treeView1.Nodes.Remove(dSceneTree.treeView1.SelectedNode);
-                            dSceneTree.AddToTree(newNode, parents[0]);
-                        }
-                    }
-                    else
-                    {
-                        dSceneTree.AddToTree(newNode, frameResourceRoot);
-                    }
-                }
+                
+                ApplyChangesToRenderable((FrameObjectBase)pGrid.SelectedObject);
             }
             if (pGrid.SelectedObject is RenderRoad)
             {

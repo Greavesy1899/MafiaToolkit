@@ -5,6 +5,7 @@ using SharpDX;
 using Utils.Types;
 using Mafia2Tool;
 using System;
+using Utils.Extensions;
 
 namespace Forms.Docking
 {
@@ -142,110 +143,12 @@ namespace Forms.Docking
             return new Vector3(0, 0, 0);
         }
 
-        private void OnDoubleClick(object sender, System.EventArgs e)
+        private void OnDoubleClick(object sender, EventArgs e)
         {
             var localPosition = treeView1.PointToClient(Cursor.Position);
             var hitTestInfo = treeView1.HitTest(localPosition);
             if (hitTestInfo.Location == TreeViewHitTestLocations.StateImage)
                 return;
-        }
-
-        private void UpdateParent1Pressed(object sender, System.EventArgs e)
-        {
-            ModifyParents(0);
-        }
-
-        private void UpdateParent2Pressed(object sender, System.EventArgs e)
-        {
-            ModifyParents(1);
-        }
-
-        private void ModifyParents(int parent)
-        {
-            FrameObjectBase obj = treeView1.SelectedNode.Tag as FrameObjectBase;
-            ListWindow window = new ListWindow();
-            window.PopulateForm(parent);
-
-            if (window.ShowDialog() == DialogResult.OK)
-            {
-                int refID = (window.chosenObject as FrameEntry).RefID;
-
-                if (refID != 0)
-                {
-                    if (parent == 0)
-                    {
-                        obj.ParentIndex1.Name = window.chosenObject.ToString();
-                        obj.ParentIndex1.Index = SceneData.FrameResource.GetIndexOfObject(refID);
-                        obj.ParentIndex1.RefID = refID;
-                        obj.ReplaceRef(FrameEntryRefTypes.Parent1, refID);
-
-                        if (SceneData.FrameResource.GetEntryFromIdx(obj.ParentIndex1.Index).Data.RefID == refID)
-                        {
-                            Console.WriteLine("yes");
-                        }
-                    }
-                    else if (parent == 1)
-                    {
-                        obj.ParentIndex2.Name = window.chosenObject.ToString();
-                        obj.ParentIndex2.Index = SceneData.FrameResource.GetIndexOfObject(refID);
-                        obj.ParentIndex2.RefID = refID;
-                        obj.ReplaceRef(FrameEntryRefTypes.Parent2, refID);
-
-                        if(SceneData.FrameResource.GetEntryFromIdx(obj.ParentIndex2.Index).Data.RefID == refID)
-                        {
-                            Console.WriteLine("yes");
-                        }
-                    }
-                }
-                else
-                {
-                    if (parent == 0)
-                    {
-                        obj.ParentIndex1.Name = "root";
-                        obj.ParentIndex1.Index = -1;
-                        obj.ParentIndex1.RefID = 0;
-                        obj.ReplaceRef(FrameEntryRefTypes.Parent1, refID);
-                    }
-                    else if (parent == 1)
-                    {
-                        obj.ParentIndex2.Name = "root";
-                        obj.ParentIndex2.Index = -1;
-                        obj.ParentIndex2.RefID = 0;
-                        obj.ReplaceRef(FrameEntryRefTypes.Parent2, refID);
-                    }
-                }
-                treeView1.Nodes.Remove(treeView1.SelectedNode);
-                TreeNode newNode = new TreeNode();
-                newNode.Tag = obj;
-                newNode.Name = obj.RefID.ToString();
-                newNode.Text = obj.ToString();
-
-                TreeNode[] nodes = null; 
-                if (obj.ParentIndex1.Index != -1)
-                {
-                    nodes = treeView1.Nodes.Find(obj.ParentIndex1.RefID.ToString(), true);
-
-                    if (nodes.Length > 0)
-                    {
-                        AddToTree(newNode, nodes[0]);
-                    }
-                }
-                else if (obj.ParentIndex2.Index != -1)
-                {
-                    nodes = treeView1.Nodes.Find(obj.ParentIndex2.RefID.ToString(), true);
-
-                    if (nodes.Length > 0)
-                    {
-                        AddToTree(newNode, nodes[0]);
-                    }
-                }
-                else
-                {
-                    AddToTree(newNode, treeView1.Nodes[0]);
-                }
-
-                treeView1.SelectedNode = newNode;
-            }
         }
     }
 }

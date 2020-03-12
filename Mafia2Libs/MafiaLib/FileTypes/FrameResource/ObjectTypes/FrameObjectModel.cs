@@ -122,11 +122,8 @@ namespace ResourceTypes.FrameResource
             skeletonHierachyIndex = reader.ReadInt32(isBigEndian);
         }
 
-        public void ReadFromFilePart2(MemoryStream stream, bool isBigEndian, FrameSkeleton skeleton, FrameBlendInfo blendInfo)
+        public void ReadFromFilePart2(MemoryStream stream, bool isBigEndian)
         {
-            this.skeleton = skeleton;
-            this.blendInfo = blendInfo;
-
             //do rest matrices.
             restTransform = new Matrix[skeleton.NumBones[0]];
             for (int i = 0; i != restTransform.Length; i++)

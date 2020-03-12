@@ -98,14 +98,12 @@ namespace Forms.Docking
             this.UpdateParent1Button.Name = "UpdateParent1Button";
             this.UpdateParent1Button.Size = new System.Drawing.Size(166, 22);
             this.UpdateParent1Button.Text = "Update Parent 1";
-            this.UpdateParent1Button.Click += new System.EventHandler(this.UpdateParent1Pressed);
             // 
             // UpdateParent2Button
             // 
             this.UpdateParent2Button.Name = "UpdateParent2Button";
             this.UpdateParent2Button.Size = new System.Drawing.Size(166, 22);
             this.UpdateParent2Button.Text = "Update Parent 2";
-            this.UpdateParent2Button.Click += new System.EventHandler(this.UpdateParent2Pressed);
             // 
             // ExportFrameButton
             // 
@@ -173,8 +171,8 @@ namespace Forms.Docking
         public System.Windows.Forms.ToolStripMenuItem DuplicateButton;
         public System.Windows.Forms.ToolStripMenuItem Export3DButton;
         public Utils.Extensions.MTreeView treeView1;
-        private System.Windows.Forms.ToolStripMenuItem UpdateParent1Button;
-        private System.Windows.Forms.ToolStripMenuItem UpdateParent2Button;
+        public System.Windows.Forms.ToolStripMenuItem UpdateParent1Button;
+        public System.Windows.Forms.ToolStripMenuItem UpdateParent2Button;
         private System.Windows.Forms.ToolStripMenuItem FrameActions;
         public System.Windows.Forms.ToolStripMenuItem ExportFrameButton;
         public System.Windows.Forms.ToolStripMenuItem LinkToActorButton;
