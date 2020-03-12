@@ -42,6 +42,7 @@ namespace Forms.Docking
             this.ExportFrameButton = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.treeView1 = new Utils.Extensions.MTreeView();
+            this.LinkToActorButton = new System.Windows.Forms.ToolStripMenuItem();
             this.EntryMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -86,7 +87,8 @@ namespace Forms.Docking
             this.FrameActions.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.UpdateParent1Button,
             this.UpdateParent2Button,
-            this.ExportFrameButton});
+            this.ExportFrameButton,
+            this.LinkToActorButton});
             this.FrameActions.Name = "FrameActions";
             this.FrameActions.Size = new System.Drawing.Size(180, 22);
             this.FrameActions.Text = "Frame Actions";
@@ -94,21 +96,21 @@ namespace Forms.Docking
             // UpdateParent1Button
             // 
             this.UpdateParent1Button.Name = "UpdateParent1Button";
-            this.UpdateParent1Button.Size = new System.Drawing.Size(180, 22);
+            this.UpdateParent1Button.Size = new System.Drawing.Size(166, 22);
             this.UpdateParent1Button.Text = "Update Parent 1";
             this.UpdateParent1Button.Click += new System.EventHandler(this.UpdateParent1Pressed);
             // 
             // UpdateParent2Button
             // 
             this.UpdateParent2Button.Name = "UpdateParent2Button";
-            this.UpdateParent2Button.Size = new System.Drawing.Size(180, 22);
+            this.UpdateParent2Button.Size = new System.Drawing.Size(166, 22);
             this.UpdateParent2Button.Text = "Update Parent 2";
             this.UpdateParent2Button.Click += new System.EventHandler(this.UpdateParent2Pressed);
             // 
             // ExportFrameButton
             // 
             this.ExportFrameButton.Name = "ExportFrameButton";
-            this.ExportFrameButton.Size = new System.Drawing.Size(180, 22);
+            this.ExportFrameButton.Size = new System.Drawing.Size(166, 22);
             this.ExportFrameButton.Text = "Export Frame";
             // 
             // imageList1
@@ -142,6 +144,12 @@ namespace Forms.Docking
             this.treeView1.TabIndex = 0;
             this.treeView1.DoubleClick += new System.EventHandler(this.OnDoubleClick);
             // 
+            // LinkToActorButton
+            // 
+            this.LinkToActorButton.Name = "LinkToActorButton";
+            this.LinkToActorButton.Size = new System.Drawing.Size(166, 22);
+            this.LinkToActorButton.Text = "$LINK_TO_ACTOR";
+            // 
             // DockSceneTree
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -169,5 +177,6 @@ namespace Forms.Docking
         private System.Windows.Forms.ToolStripMenuItem UpdateParent2Button;
         private System.Windows.Forms.ToolStripMenuItem FrameActions;
         public System.Windows.Forms.ToolStripMenuItem ExportFrameButton;
+        public System.Windows.Forms.ToolStripMenuItem LinkToActorButton;
     }
 }

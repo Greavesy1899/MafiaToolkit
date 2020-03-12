@@ -377,5 +377,34 @@ namespace Mafia2Tool
                 }
             }
         }
+
+        private void PropertyGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            Cursor.Current = Cursors.WaitCursor;
+            if (e.ChangedItem.Label == "Name")
+            {
+                if(tabControl.SelectedTab == StreamLinesPage)
+                {
+                    TreeNode selected = linesTree.SelectedNode;
+                    linesTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
+                }
+                else if (tabControl.SelectedTab == StreamGroupPage)
+                {
+                    TreeNode selected = groupTree.SelectedNode;
+                    groupTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
+                }
+                //TreeNode selected = StreamLinesPage.SelectedNode;
+                //TranslokatorTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
+
+                //if (selected.Tag is ResourceTypes.Translokator.Object)
+                //{
+                //    for (int i = 0; i < selected.Nodes.Count; i++)
+                //    {
+                //        selected.Nodes[i].Text = selected.Text + " " + i;
+                //    }
+                //}
+            }
+            Cursor.Current = Cursors.Default;
+        }
     }
 }

@@ -40,6 +40,9 @@
             this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.AddItemButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.AddDefinitionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ActorContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -89,7 +92,8 @@
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.FileButton});
+            this.FileButton,
+            this.EditButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(800, 25);
@@ -112,23 +116,49 @@
             // SaveButton
             // 
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(180, 22);
+            this.SaveButton.Size = new System.Drawing.Size(124, 22);
             this.SaveButton.Text = "$SAVE";
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_OnClick);
             // 
             // ReloadButton
             // 
             this.ReloadButton.Name = "ReloadButton";
-            this.ReloadButton.Size = new System.Drawing.Size(180, 22);
+            this.ReloadButton.Size = new System.Drawing.Size(124, 22);
             this.ReloadButton.Text = "$RELOAD";
             this.ReloadButton.Click += new System.EventHandler(this.ReloadButton_OnClick);
             // 
             // ExitButton
             // 
             this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(180, 22);
+            this.ExitButton.Size = new System.Drawing.Size(124, 22);
             this.ExitButton.Text = "$EXIT";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_OnClick);
+            // 
+            // EditButton
+            // 
+            this.EditButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.AddItemButton,
+            this.AddDefinitionButton});
+            this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
+            this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.EditButton.Name = "EditButton";
+            this.EditButton.Size = new System.Drawing.Size(49, 22);
+            this.EditButton.Text = "$EDIT";
+            // 
+            // AddItemButton
+            // 
+            this.AddItemButton.Name = "AddItemButton";
+            this.AddItemButton.Size = new System.Drawing.Size(180, 22);
+            this.AddItemButton.Text = "$ADD_ITEM";
+            this.AddItemButton.Click += new System.EventHandler(this.AddItemButton_Click);
+            // 
+            // AddDefinitionButton
+            // 
+            this.AddDefinitionButton.Name = "AddDefinitionButton";
+            this.AddDefinitionButton.Size = new System.Drawing.Size(180, 22);
+            this.AddDefinitionButton.Text = "$ADD_DEFINITION";
+            this.AddDefinitionButton.Click += new System.EventHandler(this.AddDefinitionButton_Click);
             // 
             // ActorEditor
             // 
@@ -161,5 +191,8 @@
         private System.Windows.Forms.ToolStripMenuItem ExitButton;
         private System.Windows.Forms.ContextMenuStrip ActorContext;
         private System.Windows.Forms.ToolStripMenuItem ContextDelete;
+        private System.Windows.Forms.ToolStripDropDownButton EditButton;
+        private System.Windows.Forms.ToolStripMenuItem AddItemButton;
+        private System.Windows.Forms.ToolStripMenuItem AddDefinitionButton;
     }
 }

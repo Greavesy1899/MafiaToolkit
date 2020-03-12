@@ -75,12 +75,16 @@ namespace ResourceTypes.FrameResource
             set { newFrames = value; }
         }
 
+        private int GetBlockCount {
+            get { return frameBlendInfos.Count + frameGeometries.Count + frameMaterials.Count + frameSkeletons.Count + frameSkeletonHierachies.Count + frameScenes.Count; }
+        }
+
         public int GetIndexOfObject(int refID)
         {
             for (int i = 0; i != frameObjects.Count; i++)
             {
                 if (frameObjects.ElementAt(i).Key == refID)
-                    return i;
+                    return i + (GetBlockCount);
             }
             return -1;
         }
@@ -363,6 +367,19 @@ namespace ResourceTypes.FrameResource
                 else if (entry.GetType() == typeof(FrameObjectCollision))
                     (entry as FrameObjectCollision).WriteToFile(writer);
             }
+        }
+
+        public void DuplicateBlocks(FrameObjectSingleMesh mesh)
+        {
+            FrameMaterial material = new FrameMaterial(mesh.Material);
+            mesh.ReplaceRef(FrameEntryRefTypes.Material, material.RefID);
+            mesh.Material = material;
+            frameMaterials.Add(material.RefID, material);
+        }
+
+        public void DuplicateBlocks(FrameObjectModel model)
+        {
+            DuplicateBlocks((FrameObjectSingleMesh)model);
         }
 
         private void AddChildren(Dictionary<int, TreeNode> parsedNodes, List<FrameObjectBase> children, TreeNode parentNode)

@@ -7,13 +7,13 @@ namespace ResourceTypes.FrameResource
     public class FrameObjectFrame : FrameObjectJoint
     {
         Hash actorHash;
-        Actor.ActorItem item;
+        ActorEntry item;
 
         public Hash ActorHash {
             get { return actorHash; }
             set { actorHash = value; }
         }
-        public Actor.ActorItem Item {
+        public ActorEntry Item {
             get { return item; }
             set { item = value; }
         }

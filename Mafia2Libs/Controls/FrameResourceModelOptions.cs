@@ -4,7 +4,7 @@ using Utils.Models;
 using System.Windows.Forms;
 using System.Collections.Generic;
 
-namespace Mafia2Tool
+namespace Forms.EditorControls
 {
     public partial class FrameResourceModelOptions : Form
     {

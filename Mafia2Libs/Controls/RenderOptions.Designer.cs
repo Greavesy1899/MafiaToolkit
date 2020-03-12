@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.RenderGroup = new System.Windows.Forms.GroupBox();
+            this.FieldOfViewNumDown = new System.Windows.Forms.NumericUpDown();
+            this.RenderFieldOfView = new System.Windows.Forms.Label();
             this.UseMIPsBox = new System.Windows.Forms.CheckBox();
             this.ExperimentalBox = new System.Windows.Forms.CheckBox();
             this.BrowseButton = new System.Windows.Forms.Button();
@@ -41,13 +43,11 @@
             this.ScreenFarLabel = new System.Windows.Forms.Label();
             this.ScreenNearLabel = new System.Windows.Forms.Label();
             this.TexBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.FieldOfViewNumDown = new System.Windows.Forms.NumericUpDown();
-            this.RenderFieldOfView = new System.Windows.Forms.Label();
             this.RenderGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.FieldOfViewNumDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenFarUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenNearUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.FieldOfViewNumDown)).BeginInit();
             this.SuspendLayout();
             // 
             // RenderGroup
@@ -72,6 +72,44 @@
             this.RenderGroup.TabIndex = 2;
             this.RenderGroup.TabStop = false;
             this.RenderGroup.Text = "$RENDER_OPTIONS";
+            // 
+            // FieldOfViewNumDown
+            // 
+            this.FieldOfViewNumDown.DecimalPlaces = 1;
+            this.FieldOfViewNumDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.FieldOfViewNumDown.Location = new System.Drawing.Point(235, 126);
+            this.FieldOfViewNumDown.Maximum = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
+            this.FieldOfViewNumDown.Minimum = new decimal(new int[] {
+            40,
+            0,
+            0,
+            0});
+            this.FieldOfViewNumDown.Name = "FieldOfViewNumDown";
+            this.FieldOfViewNumDown.Size = new System.Drawing.Size(120, 20);
+            this.FieldOfViewNumDown.TabIndex = 13;
+            this.FieldOfViewNumDown.Value = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
+            this.FieldOfViewNumDown.ValueChanged += new System.EventHandler(this.FieldOfViewNumDown_ValueChanged);
+            // 
+            // RenderFieldOfView
+            // 
+            this.RenderFieldOfView.AutoSize = true;
+            this.RenderFieldOfView.Location = new System.Drawing.Point(232, 110);
+            this.RenderFieldOfView.Name = "RenderFieldOfView";
+            this.RenderFieldOfView.Size = new System.Drawing.Size(137, 13);
+            this.RenderFieldOfView.TabIndex = 12;
+            this.RenderFieldOfView.Text = "$RENDER_FIELDOFVIEW";
             // 
             // UseMIPsBox
             // 
@@ -136,11 +174,6 @@
             0,
             0,
             0});
-            this.CameraSpeedUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
             this.CameraSpeedUpDown.Name = "CameraSpeedUpDown";
             this.CameraSpeedUpDown.Size = new System.Drawing.Size(120, 20);
             this.CameraSpeedUpDown.TabIndex = 6;
@@ -218,44 +251,6 @@
             // 
             this.TexBrowser.Description = "$SELECT_TEX_FOLDER";
             // 
-            // FieldOfViewNumDown
-            // 
-            this.FieldOfViewNumDown.DecimalPlaces = 1;
-            this.FieldOfViewNumDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.FieldOfViewNumDown.Location = new System.Drawing.Point(235, 126);
-            this.FieldOfViewNumDown.Maximum = new decimal(new int[] {
-            120,
-            0,
-            0,
-            0});
-            this.FieldOfViewNumDown.Minimum = new decimal(new int[] {
-            40,
-            0,
-            0,
-            0});
-            this.FieldOfViewNumDown.Name = "FieldOfViewNumDown";
-            this.FieldOfViewNumDown.Size = new System.Drawing.Size(120, 20);
-            this.FieldOfViewNumDown.TabIndex = 13;
-            this.FieldOfViewNumDown.Value = new decimal(new int[] {
-            120,
-            0,
-            0,
-            0});
-            this.FieldOfViewNumDown.ValueChanged += new System.EventHandler(this.FieldOfViewNumDown_ValueChanged);
-            // 
-            // RenderFieldOfView
-            // 
-            this.RenderFieldOfView.AutoSize = true;
-            this.RenderFieldOfView.Location = new System.Drawing.Point(232, 110);
-            this.RenderFieldOfView.Name = "RenderFieldOfView";
-            this.RenderFieldOfView.Size = new System.Drawing.Size(137, 13);
-            this.RenderFieldOfView.TabIndex = 12;
-            this.RenderFieldOfView.Text = "$RENDER_FIELDOFVIEW";
-            // 
             // RenderOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -265,10 +260,10 @@
             this.Size = new System.Drawing.Size(390, 193);
             this.RenderGroup.ResumeLayout(false);
             this.RenderGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.FieldOfViewNumDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenFarUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenNearUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.FieldOfViewNumDown)).EndInit();
             this.ResumeLayout(false);
 
         }
