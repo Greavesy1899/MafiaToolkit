@@ -183,7 +183,7 @@ namespace ResourceTypes.Navigation
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5}, {6}, {7}", laneIDX0, laneIDX1, laneSize0, laneSize1, rangeSize0, rangeSize1, flags, splineIDX);
+            return string.Format("{0} {1} {2} {3} {4} {5}", laneIDX0, laneIDX1, laneSize0, rangeSize0, flags, splineIDX);
         }
     }
 
@@ -237,7 +237,7 @@ namespace ResourceTypes.Navigation
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4}", width, flags, unk03, rangeSize0, rangeSize1);
+            return string.Format("{0} {1} {2}", width, flags, unk03);
         }
     }
 
@@ -345,7 +345,7 @@ namespace ResourceTypes.Navigation
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5} {6}", junctionSize0, junctionSize1, boundarySize0, boundarySize1, junctionIdx, unk5, unk6);
+            return string.Format("{0} {1} {2}", junctionIdx, unk5, unk6);
         }
     }
 
@@ -387,18 +387,22 @@ namespace ResourceTypes.Navigation
             get { return unk5; }
             set { unk5 = value; }
         }
+        [Browsable(false)]
         public uint Offset0 {
             get { return offset0; }
             set { offset0 = value; }
         }
+        [Browsable(false)]
         public short PathSize0 {
             get { return pathSize0; }
             set { pathSize0 = value; }
         }
+        [Browsable(false)]
         public short PathSize1 {
             get { return pathSize1; }
             set { pathSize1 = value; }
         }
+        [Browsable(false)]
         public float Length {
             get { return length; }
             set { length = value; }
@@ -415,7 +419,7 @@ namespace ResourceTypes.Navigation
 
         public override string ToString()
         {
-            return string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10}", unk0, unk1, unk2, unk3, unk4, unk5, unk4, unk5, pathSize0, pathSize1, length);
+            return string.Format("{0} {1} {2} {3} {4} {5} {6} {7}", unk0, unk1, unk2, unk3, unk4, unk5, unk4, unk5);
         }
     }
 
@@ -423,11 +427,11 @@ namespace ResourceTypes.Navigation
     public class unkStruct2Sect2
     {
         int unk0;
-        public uint offset0;
+        uint offset0;
         short unk1;
         short unk2;
         int unk3;
-        public uint offset1;
+        uint offset1;
         short unk4;
         short unk5;
         short unk6;
@@ -441,6 +445,11 @@ namespace ResourceTypes.Navigation
             get { return unk0; }
             set { unk0 = value; }
         }
+        [Browsable(false)]
+        public uint Offset0 {
+            get { return offset0; }
+            set { offset0 = value; }
+        }
         public short Unk1 {
             get { return unk1; }
             set { unk1 = value; }
@@ -452,6 +461,11 @@ namespace ResourceTypes.Navigation
         public int Unk3 {
             get { return unk3; }
             set { unk3 = value; }
+        }
+        [Browsable(false)]
+        public uint Offset1 {
+            get { return offset1; }
+            set { offset1 = value; }
         }
         public short Unk4 {
             get { return unk4; }
@@ -782,12 +796,12 @@ namespace ResourceTypes.Navigation
                     unkStruct2Sect2 dataSet = new unkStruct2Sect2();
                     dataSet = new unkStruct2Sect2();
                     dataSet.Unk0 = reader.ReadInt32();
-                    dataSet.offset0 = reader.ReadInt24();
+                    dataSet.Offset0 = reader.ReadInt24();
                     reader.ReadByte();
                     dataSet.Unk1 = reader.ReadInt16();
                     dataSet.Unk2 = reader.ReadInt16();
                     dataSet.Unk3 = reader.ReadInt32();
-                    dataSet.offset1 = reader.ReadInt24();
+                    dataSet.Offset1 = reader.ReadInt24();
                     reader.ReadByte();
                     dataSet.Unk4 = reader.ReadInt16();
                     dataSet.Unk5 = reader.ReadInt16();
@@ -855,53 +869,6 @@ namespace ResourceTypes.Navigation
             for (int i = 0; i < unkDataSet6Count; i++)
             {
                 unkSet6[i] = reader.ReadUInt16();
-            }
-
-            int highest = -1;
-
-            for (int i = 0; i < unkDataSet3Count; i++)
-            {
-                if (unkSet3[i] > highest)
-                {
-                    highest = unkSet3[i];
-                }
-            }
-
-            int highestp1 = -1;
-            int highestp2 = -1;
-            int idxp2 = -1;
-
-            int high5 = -1;
-            int high6 = -1;
-
-            for (int i = 0; i < unkDataSet4Count; i++)
-            {
-                if (unkSet4[i].Unk0 > highestp1)
-                {
-                    highestp1 = unkSet4[i].Unk0;
-                }
-
-                if (unkSet4[i].Unk1 > highestp2)
-                {
-                    highestp2 = unkSet4[i].Unk1;
-                    idxp2 = i;
-                }
-            }
-
-            for (int i = 0; i < unkGPS.Length; i++)
-            {
-                if (unkGPS[i] > high5)
-                {
-                    high5 = unkGPS[i];
-                }
-            }
-
-            for (int i = 0; i < unkSet6.Length; i++)
-            {
-                if (unkSet6[i] > high6)
-                {
-                    high6 = unkSet6[i];
-                }
             }
         }
 
@@ -1147,12 +1114,12 @@ namespace ResourceTypes.Navigation
 
                     writer.Write(data.Unk0);
                     offsetPos = writer.BaseStream.Position;
-                    writer.WriteInt24(data.offset0);
+                    writer.WriteInt24(data.Offset0);
                     writer.Write(data.Unk1);
                     writer.Write(data.Unk2);
                     writer.Write(data.Unk3);
                     offset2Pos = writer.BaseStream.Position;
-                    writer.WriteInt24(data.offset1);
+                    writer.WriteInt24(data.Offset1);
                     writer.Write(data.Unk4);
                     writer.Write(data.Unk5);
                     writer.Write(data.Unk6);
@@ -1160,9 +1127,9 @@ namespace ResourceTypes.Navigation
                     writer.Write(data.Unk8);
                     writer.Write(data.Unk9);
 
-                    if (junctionData[i].DataSet2.offset1 - junctionData[i].DataSet2.offset0 == 4)
+                    if (junctionData[i].DataSet2.Offset1 - junctionData[i].DataSet2.Offset0 == 4)
                         Console.WriteLine("STOP");
-                    else if (junctionData[i].DataSet2.offset1 - junctionData[i].DataSet2.offset0 == 8)
+                    else if (junctionData[i].DataSet2.Offset1 - junctionData[i].DataSet2.Offset0 == 8)
                         Console.WriteLine("STOP");
                     else
                         Console.WriteLine("STOP!");
@@ -1241,26 +1208,29 @@ namespace ResourceTypes.Navigation
         public void DebugCheckLineIDX()
         {
             int correct = 0;
-            for(int i = 0; i != splineData.Length; i++)
-            {
-                int count = 0;
-                SplineProperties data = splineData[i];
-                
-                foreach(var lane in data.Lanes)
-                {
-                    if (lane.Flags != 0)
-                        count++;
-                    else if (data.Flags.HasFlag(RoadFlags.flag_16))
-                        count++;
-                }
+            List<ushort> unkset3 = new List<ushort>();
 
-                if(count == Math.Abs(data.LaneIDX0 - data.LaneIDX1))
+            ushort index = 0;
+            for(int i = 0; i != splines.Length; i++)
+            {
+                SplineProperties data = splines[i].Toward;
+
+                if (data != null)
                 {
-                    correct++;
-                }
-                else
-                {
-                    Console.WriteLine("[" + i + "] " + count + " vs " + Math.Abs(data.LaneIDX0 - data.LaneIDX1));
+                    int length = data.Lanes.Length;
+                    if(data.Flags.HasFlag(RoadFlags.flag_2048))
+                    {
+                        length /= 2;
+                    }
+
+                    for(int z = 0; z < length; z++)
+                    {
+                        if (data.Lanes[z].Flags != 0)
+                        {
+                            unkset3.Add(index);
+                        }
+                        index++;
+                    }   
                 }
             }
             Console.WriteLine(correct + "/" + splineData.Length + " = " + Convert.ToSingle(correct / splineData.Length));

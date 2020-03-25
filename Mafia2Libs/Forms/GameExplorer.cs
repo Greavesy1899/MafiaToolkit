@@ -167,7 +167,7 @@ namespace Mafia2Tool
             }
             else
             {
-                Application.Exit();
+                ExitProgram();
             }
         }
 
@@ -408,6 +408,21 @@ namespace Mafia2Tool
             OnRefreshButtonClicked(null, null);
         }
 
+        private void HandleSDSMap(FileInfo info, bool forceBigEndian = false)
+        {
+            //make sure to load materials.
+            MaterialData.Load();
+
+
+            //we now build scene data from GameExplorer rather than d3d viewer.
+            SceneData.ScenePath = info.DirectoryName;
+            SceneData.BuildData(forceBigEndian);
+
+            //d3d viewer expects data inside scenedata.
+            D3DForm d3dForm = new D3DForm(info);
+            d3dForm.Dispose();
+        }
+
         private bool HandleStreamMap(FileInfo file)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
@@ -493,7 +508,6 @@ namespace Mafia2Tool
             }
 
             MaterialTool mTool;
-            CollisionEditor cTool;
             ActorEditor aTool;
             PrefabLoader prefabs;
             SpeechEditor sTool;
@@ -507,7 +521,6 @@ namespace Mafia2Tool
             CityAreaEditor caEditor;
             CityShopEditor csEditor;
             SoundSectorLoader soundSector;
-            D3DForm d3dForm;
 
             //special case:
             if (item.SubItems[0].Text.Contains("SDSContent") && item.SubItems[1].Text == "XML")
@@ -596,12 +609,10 @@ namespace Mafia2Tool
                     OpenPATCH((FileInfo)item.Tag);
                     break;
                 case "FR":
-                    //fTool = new FrameResourceTool((FileInfo)item.Tag);
-                    d3dForm = new D3DForm((FileInfo)item.Tag);
-                    d3dForm.Dispose();
+                    HandleSDSMap((FileInfo)item.Tag);
                     return;
                 case "COL":
-                    cTool = new CollisionEditor((FileInfo)item.Tag);
+                    MessageBox.Show("$COLLISION_EDITOR_REMOVED", "Toolkit", MessageBoxButtons.OK);
                     return;
                 case "IOFX":
                     iofx = new IOFxFile((FileInfo)item.Tag);
@@ -683,6 +694,7 @@ namespace Mafia2Tool
         {
             GEContext.Items[0].Visible = false;
             GEContext.Items[1].Visible = false;
+            GEContext.Items[6].Visible = false;
 
             if (fileListView.SelectedItems.Count == 0)
             {
@@ -698,6 +710,10 @@ namespace Mafia2Tool
                     GEContext.Items[0].Visible = true;
                     GEContext.Items[1].Visible = true;
                 }
+                else if(extension == ".fr")
+                {
+                    GEContext.Items[6].Visible = true;
+                }
             }
         }
         private void OnOptionsItem_Clicked(object sender, EventArgs e)
@@ -705,6 +721,12 @@ namespace Mafia2Tool
             OptionsForm options = new OptionsForm();
             options.ShowDialog();
             Localise();
+        }
+
+        private void ExitProgram()
+        {
+            Application.ExitThread();
+            Application.Exit();
         }
 
         private void ContextSDSUnpackAll_Click(object sender, EventArgs e)
@@ -718,7 +740,10 @@ namespace Mafia2Tool
 
         //'File' Button dropdown events.
         private void OpenMafiaIIClicked(object sender, EventArgs e) => InitExplorerSettings();
-        private void ExitToolkitClicked(object sender, EventArgs e) => Application.Exit();
+        private void ExitToolkitClicked(object sender, EventArgs e)
+        {
+            ExitProgram();
+        }
         private void RunMafiaIIClicked(object sender, EventArgs e) => Process.Start(launcher.FullName);
         private void SearchBarOnTextChanged(object sender, EventArgs e) => OpenDirectory(currentDirectory, true, SearchEntryText.Text);
 
@@ -868,6 +893,11 @@ namespace Mafia2Tool
         {
             Collision collision = new Collision();
             collision.WriteToFile(Path.Combine(currentDirectory.FullName, "Collision_0.col"));
+        }
+
+        private void ContextForceBigEndian_Click(object sender, EventArgs e)
+        {
+            HandleSDSMap((FileInfo)fileListView.SelectedItems[0].Tag, true);
         }
     }
 }

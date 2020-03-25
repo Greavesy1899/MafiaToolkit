@@ -5,6 +5,13 @@ namespace Utils.Models
 {
     public class VertexTranslator
     {
+        private static bool isBigEndian;
+
+        public static bool IsBigEndian {
+            get { return isBigEndian; }
+            set { isBigEndian = value; }
+        }
+
         /*
          * Position.X = 2 Bytes / Half;
          * Position.Y = 2 Bytes / Half;
@@ -25,10 +32,23 @@ namespace Utils.Models
          * */
         public static Vector3 ReadPositionDataFromVB(byte[] data, int i, float factor, Vector3 offset)
         {
+            //create small arrays
+            byte[] xData = new byte[] { data[i + 0], data[i + 1] };
+            byte[] yData = new byte[] { data[i + 2], data[i + 3] };
+            byte[] zData = new byte[] { data[i + 4], data[i + 5] };
+
+            //reverse if big
+            if (isBigEndian)
+            {
+                Array.Reverse(xData);
+                Array.Reverse(yData);
+                Array.Reverse(zData);
+            }
+
             Vector3 vec = new Vector3();
-            ushort x = BitConverter.ToUInt16(data, i);
-            ushort y = BitConverter.ToUInt16(data, i + 2);
-            ushort z = (ushort)(BitConverter.ToUInt16(data, i + 4) & short.MaxValue);
+            ushort x = BitConverter.ToUInt16(xData, 0);
+            ushort y = BitConverter.ToUInt16(yData, 0);
+            ushort z = (ushort)(BitConverter.ToUInt16(zData, 0) & short.MaxValue);
             vec = new Vector3(x * factor, y * factor, z * factor);
             vec += offset;
             return vec;
@@ -70,8 +90,17 @@ namespace Utils.Models
 
         public static Vector2 ReadTexcoordFromVB(byte[] data, int i)
         {
-            System.Half x = System.Half.ToHalf(data, i);
-            System.Half y = System.Half.ToHalf(data, i + 2);
+            byte[] xData = new byte[] { data[i + 0], data[i + 1] };
+            byte[] yData = new byte[] { data[i + 2], data[i + 3] };
+
+            if(isBigEndian)
+            {
+                Array.Reverse(xData);
+                Array.Reverse(yData);
+            }
+
+            System.Half x = System.Half.ToHalf(xData, 0);
+            System.Half y = System.Half.ToHalf(yData, 0);
             y = -y;
             return new Vector2(x, y);
         }

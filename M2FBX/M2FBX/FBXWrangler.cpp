@@ -96,7 +96,7 @@ int ConvertM2T(const char* pSource, const char* pDest, unsigned char isBin)
 	if (lResult)
 	{
 		//Save the document
-		lResult = SaveDocument(lSdkManager, lScene, pDest, isBin);
+		lResult = SaveDocument(lSdkManager, lScene, pDest, 1);
 		if (!lResult) WriteLine("\n\nAn error occurred while saving the document...");
 	}
 	else WriteLine("\n\nAn error occurred while creating the document...");
@@ -154,9 +154,9 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 		auto transform = model.GetBoneMatrices();
 		ModelPart* parts = model.GetParts();
 		FbxSkin* skin = FbxSkin::Create(pManager, "Skin");
-		FbxPose* bindPose = FbxPose::Create(pManager, "BindPose");
-		pScene->AddPose(bindPose);
-		bindPose->SetIsBindPose(true);
+		//FbxPose* bindPose = FbxPose::Create(pManager, "BindPose");
+		//pScene->AddPose(bindPose);
+		//bindPose->SetIsBindPose(false);
 		std::vector<FbxNode*> nodes = std::vector<FbxNode*>();
 		std::vector<FbxCluster*> clusters = std::vector<FbxCluster*>();
 		for (int i = 0; i < names.size(); i++)
@@ -171,8 +171,8 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 			FbxVector4 position, rotation, scale;
 			position = FbxVector4(transform[i].position.x, transform[i].position.y, transform[i].position.z);
 			//rotation = FbxVector4(transform[i].rotation.x, transform[i].rotation.y, transform[i].rotation.z);
-			rotation = FbxVector4(0.0f, 0.0f, 0.0f);
-			scale = FbxVector4(transform[i].scale.x, transform[i].scale.y, transform[i].scale.z);
+			//rotation = FbxVector4(0.0f, 0.0f, 0.0f);
+			//scale = FbxVector4(transform[i].scale.x, transform[i].scale.y, transform[i].scale.z);
 			lTransformMatrix.SetTRS(position, rotation, scale);
 
 			FbxNode* node = FbxNode::Create(pManager, nodeName.Buffer());
@@ -182,27 +182,28 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 
 			FbxSkeleton* skeleton = FbxSkeleton::Create(pManager, skeletonName.Buffer());
 			skeleton->SetSkeletonType(FbxSkeleton::EType::eLimbNode);
-			skeleton->Size.Set(1.0f);
+			//skeleton->Size.Set(1.0f);
+			
 			node->SetNodeAttribute(skeleton);
 
 			FbxCluster* cluster = FbxCluster::Create(pManager, clusterName.Buffer());
 			cluster->SetLinkMode(FbxCluster::ELinkMode::eTotalOne);
 			cluster->SetLink(node);
-			cluster->SetTransformLinkMatrix(node->EvaluateGlobalTransform());
-			cluster->SetTransformMatrix(lTransformMatrix.Inverse());
+			//cluster->SetTransformLinkMatrix(node->EvaluateGlobalTransform());
+			//cluster->SetTransformMatrix(lTransformMatrix);
 			clusters.push_back(cluster);
 
 			skin->AddCluster(cluster);
-			bindPose->Add(node, lTransformMatrix);
+			//bindPose->Add(node, lTransformMatrix);
 
-			if (ids[i] != 255)
-			{
-				nodes[ids[i]]->AddChild(node);
-			}
-			else
-			{
+			//if (ids[i] != 255)
+			//{
+			//	nodes[ids[i]]->AddChild(node);
+			//}
+			//else
+			//{
 				rootNode->AddChild(node);
-			}
+			//}
 		}
 		for (int i = 0; i < model.GetPartSize(); i++)
 		{

@@ -176,6 +176,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApexSDK\IOFX\ScaleAlongVelocityModifier.cs" />
+    <Compile Include="Controls\ActorItemAddOption.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ActorItemAddOption.Designer.cs">
+      <DependentUpon>ActorItemAddOption.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ListWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -278,6 +284,10 @@
     <Compile Include="Forms\TranslokatorEditor.Designer.cs">
       <DependentUpon>TranslokatorEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="MafiaLib\FileTypes\Actors\ActorDefinition.cs" />
+    <Compile Include="MafiaLib\FileTypes\Actors\ActorEntry.cs" />
+    <Compile Include="MafiaLib\FileTypes\Actors\ActorExtraData.cs" />
+    <Compile Include="MafiaLib\FileTypes\Actors\ActorFactory.cs" />
     <Compile Include="MafiaLib\FileTypes\BufferTypes\BufferHelpers.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Model.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\OpcodeException.cs" />
@@ -294,7 +304,7 @@
     <Compile Include="MafiaLib\FileTypes\Navigation\Enums.cs" />
     <Compile Include="MafiaLib\FileTypes\SdsConfigFile.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorEnums.cs" />
-    <Compile Include="MafiaLib\FileTypes\Actors\ActorParse.cs" />
+    <Compile Include="MafiaLib\FileTypes\Actors\Actor.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorTypes.cs" />
     <Compile Include="MafiaLib\FileTypes\Animations\Animation2.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\CollisionEnums.cs" />
@@ -459,12 +469,6 @@
     </Compile>
     <Compile Include="Forms\SpeechEditor.Designer.cs">
       <DependentUpon>SpeechEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\CollisionEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\CollisionEditor.Designer.cs">
-      <DependentUpon>CollisionEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils\DiscordRPC\DiscordController.cs" />
     <Compile Include="Utils\DiscordRPC\DiscordRPC.cs" />
@@ -643,6 +647,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\ActorItemAddOption.resx">
+      <DependentUpon>ActorItemAddOption.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\ListWindow.resx">
       <DependentUpon>ListWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -703,9 +711,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SpeechEditor.resx">
       <DependentUpon>SpeechEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\CollisionEditor.resx">
-      <DependentUpon>CollisionEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\GameExplorer.resx">
       <DependentUpon>GameExplorer.cs</DependentUpon>

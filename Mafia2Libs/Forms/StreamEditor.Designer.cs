@@ -36,6 +36,7 @@ namespace Mafia2Tool
             this.LineContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.AddLineButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteLineButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.CopyLoadListAbove = new System.Windows.Forms.ToolStripMenuItem();
             this.MoveItemUp = new System.Windows.Forms.ToolStripMenuItem();
             this.MoveItemDown = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStrip();
@@ -47,11 +48,10 @@ namespace Mafia2Tool
             this.tabControl = new System.Windows.Forms.TabControl();
             this.StreamLinesPage = new System.Windows.Forms.TabPage();
             this.StreamGroupPage = new System.Windows.Forms.TabPage();
-            this.StreamBlocksPage = new System.Windows.Forms.TabPage();
-            this.SearchBox = new System.Windows.Forms.TextBox();
             this.groupTree = new Utils.Extensions.MTreeView();
+            this.StreamBlocksPage = new System.Windows.Forms.TabPage();
             this.blockView = new Utils.Extensions.MTreeView();
-            this.CopyLoadListAbove = new System.Windows.Forms.ToolStripMenuItem();
+            this.SearchBox = new System.Windows.Forms.TextBox();
             this.LineContextStrip.SuspendLayout();
             this.ToolStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -81,7 +81,7 @@ namespace Mafia2Tool
             this.MoveItemUp,
             this.MoveItemDown});
             this.LineContextStrip.Name = "AddLineButton";
-            this.LineContextStrip.Size = new System.Drawing.Size(183, 136);
+            this.LineContextStrip.Size = new System.Drawing.Size(183, 114);
             this.LineContextStrip.Text = "Context Strip";
             this.LineContextStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OnContextMenuOpening);
             // 
@@ -98,6 +98,13 @@ namespace Mafia2Tool
             this.DeleteLineButton.Size = new System.Drawing.Size(182, 22);
             this.DeleteLineButton.Text = "$DELETE_LINE";
             this.DeleteLineButton.Click += new System.EventHandler(this.DeleteLineButtonPressed);
+            // 
+            // CopyLoadListAbove
+            // 
+            this.CopyLoadListAbove.Name = "CopyLoadListAbove";
+            this.CopyLoadListAbove.Size = new System.Drawing.Size(182, 22);
+            this.CopyLoadListAbove.Text = "$COPY_LINE_ABOVE";
+            this.CopyLoadListAbove.Click += new System.EventHandler(this.CopyLoadListAbove_Click);
             // 
             // MoveItemUp
             // 
@@ -139,21 +146,21 @@ namespace Mafia2Tool
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.saveToolStripMenuItem.Text = "$SAVE";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveButtonPressed);
             // 
             // reloadToolStripMenuItem
             // 
             this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.reloadToolStripMenuItem.Text = "$RELOAD";
             this.reloadToolStripMenuItem.Click += new System.EventHandler(this.ReloadButtonPressed);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.exitToolStripMenuItem.Text = "$EXIT";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitButtonPressed);
             // 
@@ -167,6 +174,7 @@ namespace Mafia2Tool
             this.PropertyGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
             this.PropertyGrid.Size = new System.Drawing.Size(662, 410);
             this.PropertyGrid.TabIndex = 10;
+            this.PropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.PropertyGrid_PropertyValueChanged);
             // 
             // tabControl
             // 
@@ -201,6 +209,15 @@ namespace Mafia2Tool
             this.StreamGroupPage.Text = "Stream Groups";
             this.StreamGroupPage.UseVisualStyleBackColor = true;
             // 
+            // groupTree
+            // 
+            this.groupTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupTree.Location = new System.Drawing.Point(0, 0);
+            this.groupTree.Name = "groupTree";
+            this.groupTree.Size = new System.Drawing.Size(238, 355);
+            this.groupTree.TabIndex = 13;
+            this.groupTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
+            // 
             // StreamBlocksPage
             // 
             this.StreamBlocksPage.Controls.Add(this.blockView);
@@ -211,23 +228,6 @@ namespace Mafia2Tool
             this.StreamBlocksPage.Text = "Stream Blocks";
             this.StreamBlocksPage.UseVisualStyleBackColor = true;
             // 
-            // SearchBox
-            // 
-            this.SearchBox.Location = new System.Drawing.Point(12, 31);
-            this.SearchBox.Name = "SearchBox";
-            this.SearchBox.Size = new System.Drawing.Size(242, 20);
-            this.SearchBox.TabIndex = 28;
-            this.SearchBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
-            // 
-            // groupTree
-            // 
-            this.groupTree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupTree.Location = new System.Drawing.Point(0, 0);
-            this.groupTree.Name = "groupTree";
-            this.groupTree.Size = new System.Drawing.Size(238, 355);
-            this.groupTree.TabIndex = 13;
-            this.groupTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
-            // 
             // blockView
             // 
             this.blockView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -237,12 +237,13 @@ namespace Mafia2Tool
             this.blockView.TabIndex = 14;
             this.blockView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
             // 
-            // CopyLoadListAbove
+            // SearchBox
             // 
-            this.CopyLoadListAbove.Name = "CopyLoadListAbove";
-            this.CopyLoadListAbove.Size = new System.Drawing.Size(182, 22);
-            this.CopyLoadListAbove.Text = "$COPY_LINE_ABOVE";
-            this.CopyLoadListAbove.Click += new System.EventHandler(this.CopyLoadListAbove_Click);
+            this.SearchBox.Location = new System.Drawing.Point(12, 31);
+            this.SearchBox.Name = "SearchBox";
+            this.SearchBox.Size = new System.Drawing.Size(242, 20);
+            this.SearchBox.TabIndex = 28;
+            this.SearchBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
             // 
             // StreamEditor
             // 

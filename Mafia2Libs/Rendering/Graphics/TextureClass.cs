@@ -3,6 +3,7 @@ using SharpDX.Direct3D11;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using Utils.Logging;
 using Utils.Settings;
 
 namespace Rendering.Graphics
@@ -39,22 +40,33 @@ namespace Rendering.Graphics
             }
             path = Path.Combine("Resources", "texture.dds");
             if (File.Exists(path))
+            {
                 return path;
+            }
             else
             {
-                Debug.WriteLine("FAILED TO LOAD: {0}", path);
+                Log.WriteLine(string.Format("Failed to load file: {0}", path), LoggingTypes.FATAL, LogCategoryTypes.IO);
                 throw new System.Exception("Unable to locate texture.dds! This should be located in the texture folder assigned. You can assign it in Options > Render > Texture Directory.");
             }
         }
 
         public static ShaderResourceView LoadTexture(Device d3d, DeviceContext d3dContext, string fileName)
         {
-            Resource ddsResource;
-            ShaderResourceView _temp;
-            DDSTextureLoader.DDS_ALPHA_MODE mode;
-            string texturePath = GetTextureFromPath(fileName);
-            DDSTextureLoader.CreateDDSTextureFromFile(d3d, d3dContext, texturePath, out ddsResource, out _temp, 4096, out mode);
-            return _temp;
+            try
+            {
+                Resource ddsResource;
+                ShaderResourceView _temp;
+                DDSTextureLoader.DDS_ALPHA_MODE mode;
+                string texturePath = GetTextureFromPath(fileName);
+                DDSTextureLoader.CreateDDSTextureFromFile(d3d, d3dContext, texturePath, out ddsResource, out _temp, 4096, out mode);
+                return _temp;
+            }
+            catch
+            {
+                Log.WriteLine(string.Format("Failed to load file: {0}", fileName), LoggingTypes.FATAL, LogCategoryTypes.IO);
+                return null;
+            }
+            
         }
     }
 }

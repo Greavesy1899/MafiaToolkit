@@ -5,6 +5,7 @@ using SharpDX;
 using Utils.Types;
 using Mafia2Tool;
 using System;
+using Utils.Extensions;
 
 namespace Forms.Docking
 {
@@ -88,6 +89,7 @@ namespace Forms.Docking
             EntryMenuStrip.Items[2].Visible = false;
             EntryMenuStrip.Items[3].Visible = false;
             EntryMenuStrip.Items[4].Visible = false;
+            FrameActions.DropDownItems[3].Visible = false;
 
             if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag != null)
             {
@@ -95,9 +97,9 @@ namespace Forms.Docking
                 EntryMenuStrip.Items[1].Visible = true;
                 EntryMenuStrip.Items[2].Visible = true;
 
-                if (FrameResource.IsFrameType(treeView1.SelectedNode.Tag) ||
-                    treeView1.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement) ||
-                    treeView1.SelectedNode.Tag.GetType() == typeof(Rendering.Graphics.RenderJunction))
+                object data = treeView1.SelectedNode.Tag;
+                if (FrameResource.IsFrameType(data) || data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement) || data.GetType() == typeof(Rendering.Graphics.RenderJunction) ||
+                    data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
                 {
                     EntryMenuStrip.Items[0].Visible = true;
                 }
@@ -111,6 +113,11 @@ namespace Forms.Docking
                 if (FrameResource.IsFrameType(treeView1.SelectedNode.Tag))
                 {
                     EntryMenuStrip.Items[4].Visible = true;
+
+                    if(treeView1.SelectedNode.Tag is FrameObjectFrame)
+                    {
+                        FrameActions.DropDownItems[3].Visible = true;
+                    }
                 }
             }
         }
@@ -130,79 +137,18 @@ namespace Forms.Docking
             if(data.GetType() == typeof(Rendering.Graphics.RenderJunction))
                 return (data as Rendering.Graphics.RenderJunction).Data.Position;
 
+            if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
+                return (data as ResourceTypes.Actors.ActorEntry).Position;
+
             return new Vector3(0, 0, 0);
         }
 
-        private void OnDoubleClick(object sender, System.EventArgs e)
+        private void OnDoubleClick(object sender, EventArgs e)
         {
             var localPosition = treeView1.PointToClient(Cursor.Position);
             var hitTestInfo = treeView1.HitTest(localPosition);
             if (hitTestInfo.Location == TreeViewHitTestLocations.StateImage)
                 return;
-        }
-
-        private void UpdateParent1Pressed(object sender, System.EventArgs e)
-        {
-            ModifyParents(0);
-        }
-
-        private void UpdateParent2Pressed(object sender, System.EventArgs e)
-        {
-            ModifyParents(1);
-        }
-
-        private void ModifyParents(int parent)
-        {
-            FrameObjectBase obj = treeView1.SelectedNode.Tag as FrameObjectBase;
-            ListWindow window = new ListWindow();
-            window.PopulateForm(parent);
-
-            if (window.ShowDialog() == DialogResult.OK)
-            {
-                int refID = (window.chosenObject as FrameEntry).RefID;
-                obj.IsOnFrameTable = true;
-
-                if (parent == 0)
-                {
-                    obj.ParentIndex1.Name = window.chosenObject.ToString();
-                    obj.ParentIndex1.Index = SceneData.FrameResource.GetIndexOfObject(refID);
-                    obj.ParentIndex1.RefID = refID;
-                    obj.SubRef(FrameEntryRefTypes.Parent1);
-                    obj.AddRef(FrameEntryRefTypes.Parent1, refID);
-                }
-                else if(parent == 1)
-                {
-                    obj.ParentIndex2.Name = window.chosenObject.ToString();
-                    obj.ParentIndex2.Index = SceneData.FrameResource.GetIndexOfObject(refID) + SceneData.FrameResource.FrameScenes.Count;
-                    obj.ParentIndex2.RefID = refID;
-                    obj.SubRef(FrameEntryRefTypes.Parent2);
-                    obj.AddRef(FrameEntryRefTypes.Parent2, refID);
-                }
-                  
-                treeView1.Nodes.Remove(treeView1.SelectedNode);
-                TreeNode newNode = new TreeNode();
-                newNode.Tag = obj;
-                newNode.Name = obj.RefID.ToString();
-                newNode.Text = obj.ToString();
-
-                if (obj.ParentIndex1.Index != -1)
-                {
-                    TreeNode[] nodes = treeView1.Nodes.Find(obj.ParentIndex1.RefID.ToString(), true);
-
-                    if (nodes.Length > 0)
-                        AddToTree(newNode, nodes[0]);
-                }
-                else if (obj.ParentIndex2.Index != -1)
-                {
-                    TreeNode[] nodes = treeView1.Nodes.Find(obj.ParentIndex2.RefID.ToString(), true);
-
-                    if (nodes.Length > 0)
-                        AddToTree(newNode, nodes[0]);
-                }
-                else
-                {
-                }
-            }
         }
     }
 }

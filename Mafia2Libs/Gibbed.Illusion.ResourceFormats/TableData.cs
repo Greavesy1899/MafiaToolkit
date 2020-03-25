@@ -56,10 +56,68 @@ namespace Gibbed.Mafia2.ResourceFormats
             input.WriteValueU32(Unk2, endian);
             input.WriteValueU32((uint)(Data.Length / Rows.Count));
             input.WriteValueU32((uint)Rows.Count);
-            input.WriteBytes(Data);
+
+            for (int i = 0; i < Rows.Count; i++)
+            {
+                for (int x = 0; x < Columns.Count; x++)
+                {
+                    Column column = Columns[x];
+                    switch (column.Type)
+                    {
+                        case ColumnType.Boolean:
+                            uint value = Convert.ToUInt32(Rows[i].Values[x]);
+                            input.WriteValueU32(value);
+                            break;
+                        case ColumnType.Float32:
+                            input.WriteValueF32((float)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.Signed32:
+                            input.WriteValueS32((int)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.Unsigned32:
+                            input.WriteValueU32((uint)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.Flags32:
+                            input.WriteValueU32((uint)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.Hash64:
+                            input.WriteValueU64((ulong)Rows[i].Values[x]);
+                            break;
+                        case ColumnType.String8:
+                            input.WriteString(Rows[i].Values[x].ToString(), 8);
+                            break;
+                        case ColumnType.String16:
+                            input.WriteString(Rows[i].Values[x].ToString(), 16);
+                            break;
+                        case ColumnType.String32:
+                            input.WriteString(Rows[i].Values[x].ToString(), 32, System.Text.Encoding.GetEncoding(1250));
+                            break;
+                        case ColumnType.String64:
+                            input.WriteString(Rows[i].Values[x].ToString(), 64);
+                            break;
+                        case ColumnType.Color:
+                            string[] colors = (Rows[i].Values[x] as string).Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            input.WriteValueF32(float.Parse(colors[0]));
+                            input.WriteValueF32(float.Parse(colors[1]));
+                            input.WriteValueF32(float.Parse(colors[2]));
+                            break;
+                        case ColumnType.Hash64AndString32:
+                            string name = (string)Rows[i].Values[x];
+                            ulong hash = FNV64.Hash(name);
+                            input.WriteValueU64(hash);
+                            input.WriteString(Rows[i].Values[x].ToString(), 32);
+                            break;
+                        default:
+                            throw new FormatException();
+                            break;
+                    }
+                }
+            }
 
             for (int i = 0; i < Columns.Count; i++)
+            {
                 Columns[i].Serialize(input, endian);
+            }
         }
 
         public void Serialize(BinaryWriter writer)

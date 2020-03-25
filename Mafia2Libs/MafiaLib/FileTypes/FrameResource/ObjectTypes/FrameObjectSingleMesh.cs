@@ -35,10 +35,12 @@ namespace ResourceTypes.FrameResource
             get { return unk14; }
             set { unk14 = value; }
         }
+        [ReadOnly(true)]
         public int MeshIndex {
             get { return meshIndex; }
             set { meshIndex = value; }
         }
+        [ReadOnly(true)]
         public int MaterialIndex {
             get { return materialIndex; }
             set { materialIndex = value; }

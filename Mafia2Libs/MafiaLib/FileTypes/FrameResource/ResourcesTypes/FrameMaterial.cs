@@ -42,6 +42,23 @@ namespace ResourceTypes.FrameResource
             ReadFromFile(reader, isBigEndian);
         }
 
+        public FrameMaterial(FrameMaterial other)
+        {
+            bounds = other.bounds;
+            numLods = other.numLods;
+            lodMatCount = other.lodMatCount;
+            materials = new List<MaterialStruct[]>();
+            for (int i = 0; i < numLods; i++)
+            {
+                MaterialStruct[] array = new MaterialStruct[lodMatCount[i]];
+                for (int d = 0; d < array.Length; d++)
+                {
+                    array[d] = new MaterialStruct(other.materials[i][d]);
+                }
+                materials.Add(array);
+            }
+        }
+
         public FrameMaterial() : base()
         {
             numLods = 0;
@@ -126,6 +143,15 @@ namespace ResourceTypes.FrameResource
         public MaterialStruct(MemoryStream reader, bool isBigEndian)
         {
             ReadFromFile(reader, isBigEndian);
+        }
+
+        public MaterialStruct(MaterialStruct other)
+        {
+            numFaces = other.numFaces;
+            startIndex = other.startIndex;
+            materialHash = other.materialHash;
+            materialName = other.materialName;
+            unk3 = other.unk3;
         }
 
         public MaterialStruct()

@@ -42,7 +42,8 @@ namespace Mafia2Tool
         public static FrameProps FrameProperties;
         public static string ScenePath;
 
-        public static void BuildData()
+        private static bool isBigEndian;
+        public static void BuildData(bool forceBigEndian)
         {
             List<FileInfo> vbps = new List<FileInfo>();
             List<FileInfo> ibps = new List<FileInfo>();
@@ -59,6 +60,13 @@ namespace Mafia2Tool
             document.Load(ScenePath + "/SDSContent.xml");
             XPathNavigator nav = document.CreateNavigator();
             var nodes = nav.Select("/SDSResource/ResourceEntry");
+            isBigEndian = forceBigEndian;
+            Utils.Models.VertexTranslator.IsBigEndian = forceBigEndian;
+            if(isBigEndian)
+            {
+                MessageBox.Show("Detected 'Big Endian' formats. This will severely effect functionality!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
             while (nodes.MoveNext() == true)
             {
                 string type;
@@ -73,7 +81,7 @@ namespace Mafia2Tool
                     ibps.Add(new FileInfo(name));
                 else if (type == "VertexBufferPool")
                     vbps.Add(new FileInfo(name));
-                else if (type == "Actors")
+                else if (type == "Actors" && !isBigEndian)
                 {
                     try
                     {
@@ -85,14 +93,14 @@ namespace Mafia2Tool
                     }
                 }
                 else if (type == "FrameResource")
-                    FrameResource = new FrameResource(name);
-                else if (type == "ItemDesc")
+                    FrameResource = new FrameResource(name, isBigEndian);
+                else if (type == "ItemDesc" && !isBigEndian)
                     ids.Add(new ItemDescLoader(name));
                 else if (type == "FrameNameTable")
-                    FrameNameTable = new FrameNameTable(name);
-                else if (type == "Collisions")
+                    FrameNameTable = new FrameNameTable(name, isBigEndian);
+                else if (type == "Collisions" && !isBigEndian)
                     Collisions = new Collision(name);
-                else if (type == "AnimalTrafficPaths")
+                else if (type == "AnimalTrafficPaths" && !isBigEndian)
                 {
                     try
                     {
@@ -100,29 +108,23 @@ namespace Mafia2Tool
                     }
                     catch(Exception ex)
                     {
-                        Console.WriteLine("Failed to read AnimalTrafficPaths {0}", ATLoader);
+                        Console.WriteLine("Failed to read AnimalTrafficPaths {0}", ex.Message);
                     }
                 }
-                else if (nodes.Current.Value == "roadmap.gsd")
+                else if (nodes.Current.Value == "roadmap.gsd" && !isBigEndian)
                     roadMap = new Roadmap(new FileInfo(name));
-                else if (type == "NAV_OBJ_DATA")
+                else if (type == "NAV_OBJ_DATA" && !isBigEndian)
                     obj.Add(new NAVData(new FileInfo(name)));
-                else if (type == "Translokator")
+                else if (type == "Translokator" && !isBigEndian)
                     Translokator = new TranslokatorLoader(new FileInfo(name));
                     
             }
 
-            IndexBufferPool = new IndexBufferManager(ibps);
-            VertexBufferPool = new VertexBufferManager(vbps);
+            IndexBufferPool = new IndexBufferManager(ibps, isBigEndian);
+            VertexBufferPool = new VertexBufferManager(vbps, isBigEndian);
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
             OBJData = obj.ToArray();
-        }
-
-        public static void Reload()
-        {
-            CleanData();
-            BuildData();
         }
 
         public static void CleanData()

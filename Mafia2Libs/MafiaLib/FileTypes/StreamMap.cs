@@ -81,6 +81,7 @@ namespace ResourceTypes.Misc
             public int endOffset; //end
             public int unk5;
 
+            [ReadOnly(true)]
             public string Name {
                 get { return name; }
                 set { name = value; }

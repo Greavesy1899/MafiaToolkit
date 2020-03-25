@@ -6,8 +6,6 @@ namespace Mafia2Tool
 {
     public partial class NewObjectForm : Form
     {
-        public int type = -1;
-        public object[] data;
         public Control control;
 
         public NewObjectForm(bool nameEnabled)
@@ -43,13 +41,13 @@ namespace Mafia2Tool
 
         public void OnButtonClickContinue(object sender, EventArgs e)
         {
-            type = 1;
+            DialogResult = DialogResult.OK;
             Close();
         }
 
         public void OnButtonClickCancel(object sender, EventArgs e)
         {
-            type = -1;
+            DialogResult = DialogResult.Cancel;
             Close();
         }
     }

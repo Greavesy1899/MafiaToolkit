@@ -3,6 +3,7 @@ using ResourceTypes.FrameResource;
 using System.IO;
 using System.Linq;
 using Utils.StringHelpers;
+using Utils.Extensions;
 
 namespace ResourceTypes.FrameNameTable
 {
@@ -29,29 +30,17 @@ namespace ResourceTypes.FrameNameTable
             set { fileName = value; }
         }
 
-
-        ///<summary>
-        /// Empty FrameNameTable; best to use when rebuilding the data.
-        /// </summary>
         public FrameNameTable() { }
 
-        /// <summary>
-        /// Construct data by reading a "FrameNameTable"
-        /// </summary>
-        /// <param name="file">filepath</param>
-        public FrameNameTable(string file)
+        public FrameNameTable(string file, bool isBigEndian = false)
         {
             fileName = file;
-            using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
+            using (MemoryStream stream = new MemoryStream(File.ReadAllBytes(file), false))
             {
-                ReadFromFile(reader);
+                ReadFromFile(stream, isBigEndian);
             }
         }
 
-        /// <summary>
-        /// Builds the file from the FrameResource passed into this function.
-        /// </summary>
-        /// <param name="resource">the frame resource which the data is coming from.</param>
         public void BuildDataFromResource(FrameResource.FrameResource resource)
         {
             List<Data> tableData = new List<Data>();
@@ -157,27 +146,27 @@ namespace ResourceTypes.FrameNameTable
         /// Read the data from the file and store the read data.
         /// </summary>
         /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            bufferSize = reader.ReadInt32();
+            bufferSize = stream.ReadInt32(isBigEndian);
 
             while (true)
             {
-                int offset = (int)reader.BaseStream.Position - 4; // header is 4 bytes.
+                int offset = (int)stream.Position - 4; // header is 4 bytes.
 
                 if (offset == bufferSize)
                     break;
 
-                string name = StringHelpers.ReadString(reader); //read string
+                string name = stream.ReadString(); //read string
                 names.Add(offset, name); //add offset as unique key and string
             }
 
-            dataSize = reader.ReadInt32();
+            dataSize = stream.ReadInt32(isBigEndian);
             frameData = new Data[dataSize];
 
             for (int i = 0; i != frameData.Length; i++)
             {
-                frameData[i] = new Data(reader);
+                frameData[i] = new Data(stream, isBigEndian);
             }
             AddNames();
         }
@@ -244,18 +233,18 @@ namespace ResourceTypes.FrameNameTable
             /// Constructor which then reads data from a given file.
             /// </summary>
             /// <param name="reader"></param>
-            public Data(BinaryReader reader)
+            public Data(MemoryStream stream, bool isBigEndian)
             {
-                ReadFromFile(reader);
+                ReadFromFile(stream, isBigEndian);
             }
 
-            public void ReadFromFile(BinaryReader reader)
+            public void ReadFromFile(MemoryStream stream, bool isBigEndian)
             {
-                parent = reader.ReadInt16();
-                namepos1 = reader.ReadUInt16();
-                namepos2 = reader.ReadUInt16();
-                frameIndex = reader.ReadInt16();
-                flags = (NameTableFlags)reader.ReadInt16();
+                parent = stream.ReadInt16(isBigEndian);
+                namepos1 = stream.ReadUInt16(isBigEndian);
+                namepos2 = stream.ReadUInt16(isBigEndian);
+                frameIndex = stream.ReadInt16(isBigEndian);
+                flags = (NameTableFlags)stream.ReadInt16(isBigEndian);
             }
 
             public void WriteToFile(BinaryWriter writer)

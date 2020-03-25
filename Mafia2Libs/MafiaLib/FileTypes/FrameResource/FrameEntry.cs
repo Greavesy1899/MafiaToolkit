@@ -95,6 +95,14 @@ namespace ResourceTypes.FrameResource
             }
         }
 
+        public void ReplaceRef(FrameEntryRefTypes type, int objRef)
+        {
+            if(refs.ContainsKey(type.ToString()))
+            {
+                refs[type.ToString()] = objRef;
+            }
+        }
+
         /// <summary>
         /// Remove reference from this object.
         /// </summary>

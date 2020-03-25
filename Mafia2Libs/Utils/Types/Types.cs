@@ -1,4 +1,5 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.FrameResource;
 using SharpDX;
 using System;
 using System.ComponentModel;
@@ -129,6 +130,18 @@ namespace Utils.Types
             index = other.index;
             name = other.name;
             refID = other.refID;
+        }
+
+        public void SetParent(int index, FrameEntry entry)
+        {
+            SetParent(index, entry.ToString(), entry.RefID);
+        }
+
+        public void SetParent(int index, string name, int refID)
+        {
+            this.index = index;
+            this.name = name;
+            this.refID = refID;
         }
 
         public override string ToString()
