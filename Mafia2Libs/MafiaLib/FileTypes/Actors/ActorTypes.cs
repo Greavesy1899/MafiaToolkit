@@ -204,7 +204,7 @@ namespace ResourceTypes.Actors
         }
         public int GetSize()
         {
-            return 56;
+            return 20;
         }
 
         public ActorActorDetector()
@@ -1898,6 +1898,107 @@ namespace ResourceTypes.Actors
         }
     }
 
+    public class ActorHuman : IActorExtraDataInterface
+    {
+        public float HealthMax { get; set; }
+        public float HumanType { get; set; }
+        public int Aggressiveness { get; set; }
+        public int Courage { get; set; }
+        public int PanicOnEvent { get; set; }
+        public int PanicOnHP { get; set; }
+        public int Sight { get; set; }
+        [Description("VisionAngle is stored in radians. Not degrees!")]
+        public float VisionAngle { get; set; }
+        public float Hearing { get; set; }
+        public int UseSoundScene { get; set; }
+        public float FightingSkill { get; set; }
+        public int ReactionOnSounds { get; set; }
+        public int RecogniseTime { get; set; }
+        public int RecogniseRange { get; set; }
+        public int PreferMelee { get; set; }
+        public float MeleeAttackLevel { get; set; }
+        public float MeleeBlockLevel { get; set; }
+        public float MeleeAggressiveness { get; set; }
+        public float MeleeCounterBlockSkill { get; set; }
+        public float HumanVoices { get; set; }
+        public int ShootDispXY { get; set; }
+        public float ShootDispZ { get; set; }
+        public float ShootDispCorrectionTimeMin { get; set; }
+        public float ShootDispCorrectionTimeMax { get; set; }
+        public byte[] Unknown { get; set; }
+
+        public ActorHuman(MemoryStream stream, bool isBigEndian)
+        {
+            ReadFromFile(stream, isBigEndian);
+        }
+
+        public ActorHuman()
+        {
+        }
+
+        public int GetSize()
+        {
+            return 128;
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            HealthMax = stream.ReadSingle(isBigEndian);
+            HumanType = stream.ReadSingle(isBigEndian);
+            Aggressiveness = stream.ReadInt32(isBigEndian);
+            Courage = stream.ReadInt32(isBigEndian);
+            PanicOnEvent = stream.ReadInt32(isBigEndian);
+            PanicOnHP = stream.ReadInt32(isBigEndian);
+            Sight = stream.ReadInt32(isBigEndian);
+            VisionAngle = stream.ReadSingle(isBigEndian);
+            Hearing = stream.ReadSingle(isBigEndian);
+            UseSoundScene = stream.ReadInt32(isBigEndian);
+            FightingSkill = stream.ReadSingle(isBigEndian);
+            ReactionOnSounds = stream.ReadInt32(isBigEndian);
+            RecogniseTime = stream.ReadInt32(isBigEndian);
+            RecogniseRange = stream.ReadInt32(isBigEndian);
+            PreferMelee = stream.ReadInt32(isBigEndian);
+            MeleeAttackLevel = stream.ReadSingle(isBigEndian);
+            MeleeBlockLevel = stream.ReadSingle(isBigEndian);
+            MeleeAggressiveness = stream.ReadSingle(isBigEndian);
+            MeleeCounterBlockSkill = stream.ReadSingle(isBigEndian);
+            HumanVoices = stream.ReadSingle(isBigEndian);
+            ShootDispXY = stream.ReadInt32(isBigEndian);
+            ShootDispZ = stream.ReadSingle(isBigEndian);
+            ShootDispCorrectionTimeMin = stream.ReadSingle(isBigEndian);
+            ShootDispCorrectionTimeMax = stream.ReadSingle(isBigEndian);
+            Unknown = stream.ReadBytes((int)(stream.Length - stream.Position));
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            writer.Write(HealthMax, isBigEndian);
+            writer.Write(HumanType, isBigEndian);
+            writer.Write(Aggressiveness, isBigEndian);
+            writer.Write(Courage, isBigEndian);
+            writer.Write(PanicOnEvent, isBigEndian);
+            writer.Write(PanicOnHP, isBigEndian);
+            writer.Write(Sight, isBigEndian);
+            writer.Write(VisionAngle, isBigEndian);
+            writer.Write(Hearing, isBigEndian);
+            writer.Write(UseSoundScene, isBigEndian);
+            writer.Write(FightingSkill, isBigEndian);
+            writer.Write(ReactionOnSounds, isBigEndian);
+            writer.Write(RecogniseTime, isBigEndian);
+            writer.Write(RecogniseRange, isBigEndian);
+            writer.Write(PreferMelee, isBigEndian);
+            writer.Write(MeleeAttackLevel, isBigEndian);
+            writer.Write(MeleeBlockLevel, isBigEndian);
+            writer.Write(MeleeAggressiveness, isBigEndian);
+            writer.Write(MeleeCounterBlockSkill, isBigEndian);
+            writer.Write(HumanVoices, isBigEndian);
+            writer.Write(ShootDispXY, isBigEndian);
+            writer.Write(ShootDispZ, isBigEndian);
+            writer.Write(ShootDispCorrectionTimeMin, isBigEndian);
+            writer.Write(ShootDispCorrectionTimeMax, isBigEndian);
+            writer.Write(Unknown);
+        }
+    }
     public class ActorScriptEntity : IActorExtraDataInterface
     {
         string scriptName;

@@ -52,7 +52,7 @@ namespace ResourceTypes.BufferPools
         {
             for (int i = 0; i < bufferPools.Count; i++)
             {
-                if (bufferPools[i].Buffers.ContainsValue(buffer))
+                if (bufferPools[i].Buffers.ContainsKey(buffer.Hash))
                 {
                     return true;
                 }

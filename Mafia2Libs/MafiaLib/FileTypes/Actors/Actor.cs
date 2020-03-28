@@ -111,8 +111,8 @@ namespace ResourceTypes.Actors
         public ActorDefinition CreateActorDefinition(ActorEntry entry)
         {
             ActorDefinition definition = new ActorDefinition();
-            definition.Name = entry.EntityName;
-            definition.Hash = entry.EntityHash;
+            definition.Name = entry.FrameName;
+            definition.Hash = entry.FrameNameHash;
             Definitions.Add(definition);
             return definition;
         }
