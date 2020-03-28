@@ -68,7 +68,7 @@ namespace Rendering.Graphics
             structure.ReadFromM2T("Resources/sky_backdrop.m2t");
             sky.ConvertMTKToRenderModel(structure);
             sky.InitBuffers(D3D.Device, D3D.DeviceContext);
-            sky.DoRender = true;
+            sky.DoRender = false;
             Assets.Add(1, sky);
 
             RenderModel clouds = new RenderModel();

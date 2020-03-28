@@ -30,7 +30,7 @@ namespace Mafia2Tool.Forms
             MeshBrowser.FileName = "";
             if (MeshBrowser.ShowDialog() == DialogResult.OK)
             {
-                ImportBox.Text = MeshBrowser.FileName;
+                ImportBox.Text = MeshBrowser.FileName.ToLower();
             }
             else return;
         }
@@ -40,7 +40,7 @@ namespace Mafia2Tool.Forms
             MeshBrowser.FileName = "";
             if (MeshBrowser.ShowDialog() == DialogResult.OK)
             {
-                ExportBox.Text = MeshBrowser.FileName;
+                ExportBox.Text = MeshBrowser.FileName.ToLower();
             }
             else return;
         }

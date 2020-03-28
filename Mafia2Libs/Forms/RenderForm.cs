@@ -48,7 +48,6 @@ namespace Mafia2Tool
         private TreeNode roadRoot;
         private TreeNode junctionRoot;
         private TreeNode animalTrafficRoot;
-        private TreeNode translokatorRoot;
         private TreeNode actorRoot;
 
         private bool bSelectMode = false;
@@ -154,6 +153,7 @@ namespace Mafia2Tool
 
                             //create the definition
                             ActorDefinition definition = SceneData.Actors[0].CreateActorDefinition(entry);
+                            definition.FrameIndex = (uint)SceneData.FrameResource.FrameObjects.IndexOfValue(frame.RefID);
 
                             //create the node
                             TreeNode entityNode = new TreeNode("actor_" + entry.EntityName);
@@ -162,7 +162,7 @@ namespace Mafia2Tool
 
                             //now add the node to the scene tree
                             var typeString = string.Format("actorType_" + entry.ActorTypeName);
-                            var foundnodes = actorRoot.Nodes.Find(typeString, false);
+                            var foundnodes = actorRoot.Nodes[0].Nodes.Find(typeString, false);
                             if (foundnodes.Length > 0)
                             {
                                 dSceneTree.AddToTree(entityNode, foundnodes[0]);
@@ -173,7 +173,7 @@ namespace Mafia2Tool
                                 typeNode.Name = typeString;
                                 typeNode.Text = entry.ActorTypeName;
                                 typeNode.Nodes.Add(entityNode);
-                                dSceneTree.AddToTree(typeNode);
+                                dSceneTree.AddToTree(typeNode, actorRoot.Nodes[0]);
                             }
                         }
 
@@ -485,7 +485,7 @@ namespace Mafia2Tool
 
         private void Save()
         {
-            DialogResult result = MessageBox.Show("Do you want to save your changes?", "Save Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult result = MessageBox.Show("Do you want to save your changes?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (result == DialogResult.Yes)
             {
@@ -505,6 +505,15 @@ namespace Mafia2Tool
                 SanitizeBuffers();
                 SceneData.IndexBufferPool.WriteToFile();
                 SceneData.VertexBufferPool.WriteToFile();
+
+                if(SceneData.Actors != null && ToolkitSettings.Experimental)
+                {
+                    for(int i = 0; i < SceneData.Actors.Length; i++)
+                    {
+                        FixActorDefintions(SceneData.Actors[i]);
+                        SceneData.Actors[i].WriteToFile();
+                    }
+                }
 
                 if (SceneData.roadMap != null && ToolkitSettings.Experimental)
                 {
@@ -633,6 +642,10 @@ namespace Mafia2Tool
                 vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
             }
 
+            if(indexBuffers[0].Data == null || vertexBuffers[0].Data == null)
+            {
+                return null;
+            }
             RenderModel model = new RenderModel();
             model.ConvertFrameToRenderModel(mesh, geom, mat, indexBuffers, vertexBuffers);
             return model;
@@ -794,7 +807,6 @@ namespace Mafia2Tool
                 actorRoot.Tag = "Folder";
                 for (int z = 0; z < SceneData.Actors.Length; z++)
                 {
-                    bool modified = false;
                     Actor actor = SceneData.Actors[z];
                     TreeNode actorFile = new TreeNode("Actor File " + z);
                     actorRoot.Nodes.Add(actorFile);
@@ -820,45 +832,7 @@ namespace Mafia2Tool
                             actorFile.Nodes.Add(typeNode);
                         }
                     }
-
-                    for (int i = 0; i != actor.Definitions.Count; i++)
-                    {
-                        FrameObjectFrame frame = null;
-                        for (int c = 0; c != actor.Items.Count; c++)
-                        {
-                            if (actor.Definitions[i].Hash == actor.Items[c].FrameNameHash)
-                            {
-                                if (SceneData.FrameResource.FrameObjects.Count > actor.Definitions[i].FrameIndex)
-                                    frame = (SceneData.FrameResource.FrameObjects.ElementAt((int)actor.Definitions[i].FrameIndex).Value as FrameObjectFrame);
-
-                                if (frame == null)
-                                {
-                                    for (int x = 0; x < SceneData.FrameResource.FrameObjects.Count; x++)
-                                    {
-                                        var obj = (SceneData.FrameResource.FrameObjects.ElementAt(x).Value as FrameObjectBase);
-                                        if (obj.GetType() == typeof(FrameObjectFrame))
-                                        {
-                                            var nFrame = (obj as FrameObjectFrame);
-                                            if (nFrame.ActorHash.uHash == actor.Items[c].FrameNameHash)
-                                            {
-                                                actor.Definitions[i].FrameIndex = (uint)x;
-                                                frame = nFrame;
-                                                modified = true;
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    frame.Item = actor.Items[c];
-                                    frame.LocalTransform = MatrixExtensions.SetMatrix(actor.Items[c].Quaternion, actor.Items[c].Scale, actor.Items[c].Position);
-                                    assets[frame.RefID].SetTransform(frame.WorldTransform);
-                                }
-                            }
-                        }
-                    }
-
-                    if (modified) actor.WriteToFile();
+                    FixActorDefintions(actor);
                 }
                 dSceneTree.AddToTree(actorRoot);
             }
@@ -914,14 +888,52 @@ namespace Mafia2Tool
             //RenderPanel.Focus();
         }
 
-        private void UpdateWorldTransforms()
+        private void FixActorDefintions(Actor actor)
         {
-            foreach(var pair in SceneData.FrameResource.FrameObjects)
+            for (int i = 0; i != actor.Definitions.Count; i++)
             {
-                FrameObjectBase frame = (pair.Value as FrameObjectBase);
-                if (Graphics.Assets.ContainsKey(frame.RefID))
+                FrameObjectFrame frame = null;
+                for (int c = 0; c != actor.Items.Count; c++)
                 {
-                    Graphics.Assets[frame.RefID].SetTransform(frame.WorldTransform);
+                    if (actor.Definitions[i].Hash == actor.Items[c].FrameNameHash)
+                    {
+                        int index = ((int)actor.Definitions[i].FrameIndex);
+
+                        if (SceneData.FrameResource.FrameObjects.Count > index)
+                        {
+                            frame = (SceneData.FrameResource.FrameObjects.ElementAt(index).Value as FrameObjectFrame);
+                        }
+
+                        if (frame == null)
+                        {
+                            bool sorted = false;
+                            for (int x = 0; x < SceneData.FrameResource.FrameObjects.Count; x++)
+                            {
+                                var obj = (SceneData.FrameResource.FrameObjects.ElementAt(x).Value as FrameObjectBase);
+                                if (obj.GetType() == typeof(FrameObjectFrame))
+                                {
+                                    var nFrame = (obj as FrameObjectFrame);
+                                    if (nFrame.ActorHash.uHash == actor.Items[c].FrameNameHash)
+                                    {
+                                        actor.Definitions[i].FrameIndex = (uint)x;
+                                        frame = nFrame;
+                                        frame.Item = actor.Items[c];
+                                        sorted = true;
+                                    }
+                                }
+                            }
+
+                            if (!sorted)
+                            {
+                                throw new Exception("fucked it mate");
+                            }
+                        }
+                        else
+                        {
+                            frame.Item = actor.Items[c];
+                            frame.LocalTransform = MatrixExtensions.SetMatrix(actor.Items[c].Quaternion, actor.Items[c].Scale, actor.Items[c].Position);
+                        }
+                    }
                 }
             }
         }
@@ -1137,8 +1149,14 @@ namespace Mafia2Tool
             {
                 FrameObjectSingleMesh mesh = (frame as FrameObjectSingleMesh);
                 RenderModel model = BuildRenderModel(mesh);
-
-                Graphics.InitObjectStack.Add(frame.RefID, model);
+                if (model != null)
+                {
+                    Graphics.InitObjectStack.Add(frame.RefID, model);
+                }
+                else
+                {
+                    return;
+                }
             }
 
             if (frame.GetType() == typeof(FrameObjectArea))
@@ -1265,6 +1283,19 @@ namespace Mafia2Tool
             Graphics.Camera.Position = dSceneTree.JumpToHelper();
         }
 
+        private void UpdateObjectParentsRecurse(TreeNode parent, FrameObjectBase entry)
+        {
+            foreach (var child in entry.Children)
+            {
+                TreeNode childNode = new TreeNode();
+                childNode.Tag = child;
+                childNode.Name = child.RefID.ToString();
+                childNode.Text = child.ToString();
+                parent.Nodes.Add(childNode);
+                UpdateObjectParentsRecurse(childNode, child);
+            }
+        }
+
         private void UpdateObjectParents(int parent, int refID, FrameEntry entry = null)
         {
             FrameObjectBase obj = (dSceneTree.treeView1.SelectedNode.Tag as FrameObjectBase);
@@ -1294,6 +1325,7 @@ namespace Mafia2Tool
             newNode.Tag = obj;
             newNode.Name = obj.RefID.ToString();
             newNode.Text = obj.ToString();
+            UpdateObjectParentsRecurse(newNode, obj);
 
             TreeNode[] nodes = null;
             if (obj.ParentIndex1.Index != -1)

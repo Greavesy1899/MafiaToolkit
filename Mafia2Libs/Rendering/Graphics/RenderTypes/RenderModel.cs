@@ -105,7 +105,7 @@ namespace Rendering.Graphics
 
         public bool ConvertFrameToRenderModel(FrameObjectSingleMesh mesh, FrameGeometry geom, FrameMaterial mats, IndexBuffer[] indexBuffers, VertexBuffer[] vertexBuffers)
         {
-            if (mesh == null || geom == null || mats == null || indexBuffers == null || vertexBuffers == null)
+            if (mesh == null || geom == null || mats == null || indexBuffers[0] == null || vertexBuffers[0] == null)
                 return false;
 
             aoHash = mesh.OMTextureHash;

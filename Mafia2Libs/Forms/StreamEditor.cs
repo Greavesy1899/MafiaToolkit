@@ -371,7 +371,13 @@ namespace Mafia2Tool
 
                         StreamLine line = (linesTree.SelectedNode.Tag as StreamLine);
                         StreamLine toCopyLine = (parent.Nodes[index-1].Tag as StreamLine);
-                        line.loadList = toCopyLine.loadList;
+
+                        line.loadList = new StreamLoader[toCopyLine.loadList.Length];
+                        for (int i = 0; i < toCopyLine.loadList.Length; i++)
+                        {
+                            line.loadList[i] = new StreamLoader(toCopyLine.loadList[i]);
+                        }
+
                         linesTree.SelectedNode.Tag = line;
                     }
                 }

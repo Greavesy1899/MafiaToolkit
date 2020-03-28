@@ -636,7 +636,7 @@ namespace Gibbed.Mafia2.FileFormats
         public ResourceEntry ReadTextureEntry(ResourceEntry entry, XmlWriter resourceXML, string name)
         {
             TextureResource resource = new TextureResource();
-            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian);
             resourceXML.WriteElementString("File", name);
             resourceXML.WriteElementString("HasMIP", resource.HasMIP.ToString());
             entry.Data = resource.Data;
@@ -677,7 +677,7 @@ namespace Gibbed.Mafia2.FileFormats
         public ResourceEntry ReadMipmapEntry(ResourceEntry entry, XmlWriter resourceXML, string name)
         {
             TextureResource resource = new TextureResource();
-            resource.DeserializeMIP(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+            resource.DeserializeMIP(entry.Version, new MemoryStream(entry.Data), Endian);
             resourceXML.WriteElementString("File", "MIP_" + name);
             entry.Data = resource.Data;
             return entry;

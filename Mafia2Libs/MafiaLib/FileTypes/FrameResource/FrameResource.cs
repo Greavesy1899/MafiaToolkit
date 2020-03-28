@@ -52,7 +52,7 @@ namespace ResourceTypes.FrameResource
             set { frameObjects = value; }
         }
 
-        private int GetBlockCount {
+        public int GetBlockCount {
             get { return frameBlendInfos.Count + frameGeometries.Count + frameMaterials.Count + frameSkeletons.Count + frameSkeletonHierachies.Count + frameScenes.Count; }
         }
 
@@ -445,7 +445,7 @@ namespace ResourceTypes.FrameResource
                     continue;
                 }
 
-                if(pair.Value is FrameObjectFrame)
+                if(frame.ParentIndex1.Index == -1 && frame.ParentIndex2.Index == -1)
                 {
                     node = new TreeNode(frame.ToString());
                     node.Tag = frame;
@@ -454,9 +454,19 @@ namespace ResourceTypes.FrameResource
                     parsedNodes.Add(frame.RefID, node);
                     AddChildren(parsedNodes, frame.Children, node);
                 }
-                else
+            }
+
+            foreach (var pair in frameObjects)
+            {
+                if (!parsedNodes.ContainsKey(pair.Key))
                 {
-                    //throw new FormatException("Skipped frame!");
+                    FrameObjectBase frame = (pair.Value as FrameObjectBase);
+                    Debug.WriteLine("Failed " + frame.ToString());
+                    TreeNode node = new TreeNode(frame.ToString());
+                    node.Tag = frame;
+                    node.Name = frame.RefID.ToString();
+                    root.Nodes.Add(node);
+                    //throw new FormatException("Unhandled frame! Name is: " + pair.Value.ToString());
                 }
             }
             return root;
@@ -489,6 +499,10 @@ namespace ResourceTypes.FrameResource
                         obj.Parent = parent;
                         parent.Children.Add(obj);
                     }
+                    else
+                    {
+                        throw new Exception("Unhandled Frame!");
+                    }
                     obj.AddRef(FrameEntryRefTypes.Parent1, obj.ParentIndex1.RefID);
                 }
 
@@ -509,10 +523,13 @@ namespace ResourceTypes.FrameResource
                         obj.Root = parent;
                         if (obj.Parent == null) parent.Children.Add(obj);
                     }
+                    else
+                    {
+                        throw new Exception("Unhandled Frame!");
+                    }
 
                     obj.AddRef(FrameEntryRefTypes.Parent2, obj.ParentIndex2.RefID);
                 }
-
                 obj.SetWorldTransform();
             }
         }

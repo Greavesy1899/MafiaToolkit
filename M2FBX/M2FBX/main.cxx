@@ -41,23 +41,23 @@ int main(int argc, char** argv)
 {
 	int result = 0;
 
-	if ((strcmp(argv[1], "-ConvertM2T") == 0) && (argc == 4))
+	if ((strcmp(argv[1], "-ConvertM2T") == 0) && (argc >=4))
 	{
 		result = ConvertM2T(argv[2], argv[3], 0);
 	}
-	else if ((strcmp(argv[1], "-ConvertFBX") == 0) && (argc == 4))
+	else if ((strcmp(argv[1], "-ConvertFBX") == 0) && (argc >= 4))
 	{
 		result = ConvertFBX(argv[2], argv[3]);
 	}
-	else if ((strcmp(argv[1], "-ConvertType") == 0) && (argc == 4))
+	else if ((strcmp(argv[1], "-ConvertType") == 0) && (argc >= 4))
 	{
 		result = ConvertType(argv[2], argv[3]);
 	}
-	else if ((strcmp(argv[1], "-CookTriangle") == 0) && (argc == 4))
+	else if ((strcmp(argv[1], "-CookTriangle") == 0) && (argc >= 4))
 	{
 		result = CookTriangle(argv[2], argv[3]);
 	}
-	else if ((strcmp(argv[1], "-CookConvex") == 0) && (argc == 4))
+	else if ((strcmp(argv[1], "-CookConvex") == 0) && (argc >= 4))
 	{
 		result = CookConvex(argv[2], argv[3]);
 	}

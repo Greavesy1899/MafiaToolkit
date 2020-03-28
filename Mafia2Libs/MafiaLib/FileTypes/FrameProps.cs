@@ -64,11 +64,11 @@ namespace ResourceTypes.Misc
 
         private const int Signature = 1718775152;
         private const int Version = 3;
-        private int[] unks;
+        private int[] offsets;
         private uint[] propertiesIndexes;
         private string[] properties;
         private ulong[] actorHashes;
-        private uint[] unks5;
+        private uint[] infoSizes;
         private FrameInfoChunk[] frameInfos;
 
         private Dictionary<ulong, FrameInfo> frameExtraData;
@@ -100,17 +100,17 @@ namespace ResourceTypes.Misc
                 return;
             }
 
-            unks = new int[5];
+            offsets = new int[5];
             for (int i = 0; i != 5; i++)
             {
-                unks[i] = reader.ReadInt32();
+                offsets[i] = reader.ReadInt32();
             }
 
-            propertiesIndexes = new uint[unks[0]];
-            properties = new string[unks[0]];
-            actorHashes = new ulong[unks[2]];
-            unks5 = new uint[unks[2]];
-            frameInfos = new FrameInfoChunk[unks[2]];
+            propertiesIndexes = new uint[offsets[0]];
+            properties = new string[offsets[0]];
+            actorHashes = new ulong[offsets[2]];
+            infoSizes = new uint[offsets[2]];
+            frameInfos = new FrameInfoChunk[offsets[2]];
             frameExtraData = new Dictionary<ulong, FrameInfo>();
 
             for (int i = 0; i != propertiesIndexes.Length; i++)
@@ -128,9 +128,10 @@ namespace ResourceTypes.Misc
                 actorHashes[i] = reader.ReadUInt64();
             }
 
-            for (int i = 0; i != unks5.Length; i++)
+            //this is the size of each section in the next loop.
+            for (int i = 0; i != infoSizes.Length; i++)
             {
-                unks5[i] = reader.ReadUInt32();
+                infoSizes[i] = reader.ReadUInt32();
             }
 
             for(int i = 0; i < frameInfos.Length; i++)
@@ -173,9 +174,12 @@ namespace ResourceTypes.Misc
 
         public void WriteToFile(string name)
         {
-            throw new System.NotImplementedException();
+            using (BinaryReader reader = new BinaryReader(File.Open(name, FileMode.Create)))
+            {
+                WriteToFile(reader);
+            }
         }
-        public void WriteToFile(MemoryStream stream)
+        public void WriteToFile(BinaryReader reader)
         {
             throw new System.NotImplementedException();
         }
@@ -196,30 +200,20 @@ namespace ResourceTypes.Misc
         private void WriteToText()
         {
             List<string> file = new List<string>();
-            for (int i = 0; i != unks.Length; i++)
+            for (int i = 0; i < offsets.Length; i++)
             {
-                file.Add(i + " " + unks[i].ToString());
+                file.Add(i + " " + offsets[i].ToString());
             }
-            //file.Add("");
-            //for (int i = 0; i != unks2.Length; i++)
-            //{
-            //    file.Add(i + " " + unks2[i].ToString());
-            //}
             file.Add("");
-            for (int i = 0; i != properties.Length; i++)
+            for (int i = 0; i < properties.Length; i++)
             {
                 file.Add(i + " " + properties[i].ToString());
             }
             file.Add("");
-            for (int i = 0; i != actorHashes.Length; i++)
+            for (int i = 0; i < actorHashes.Length; i++)
             {
                 file.Add(i + " " + actorHashes[i].ToString());
             }
-            //file.Add("");
-            //for (int i = 0; i != unks5.Length; i++)
-            //{
-            //    file.Add(i + " " + unks5[i].ToString());
-            //}
             file.AddRange(new string[] { "", "FrameInfoChunk Structures:" });
             for(int i = 0; i < frameInfos.Length; i++)
             {

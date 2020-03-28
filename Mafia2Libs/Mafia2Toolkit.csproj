@@ -602,14 +602,26 @@
     <Content Include="Localisations\ru_RU.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\GizmoModel.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\hashes.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\MissingMaterial.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\sky_backdrop.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\SoundDummy.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\texture.dds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\weather_clouds.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Shaders\CollisionPS.hlsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -631,8 +643,12 @@
     </Content>
     <None Include="packages.config" />
     <Compile Include="Rendering\Graphics\VertexLayouts.cs" />
-    <None Include="Resources\Splash.png" />
-    <None Include="Resources\Toolkit.ico" />
+    <None Include="Resources\Splash.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Toolkit.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
@@ -656,6 +672,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\FrameResourceModelOptions.resx">
       <DependentUpon>FrameResourceModelOptions.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\RenderOptions.resx">
       <DependentUpon>RenderOptions.cs</DependentUpon>
@@ -671,6 +688,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\FrameResourceAddSceneOption.resx">
       <DependentUpon>FrameResourceAddSceneOption.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\FrameResourceAddOption.resx">
       <DependentUpon>FrameResourceAddOption.cs</DependentUpon>
