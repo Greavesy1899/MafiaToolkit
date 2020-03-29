@@ -73,7 +73,9 @@ namespace Utils.Models
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                        vertex.Position = VertexTranslator.ReadPositionDataFromVB(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset);
+                        var output = VertexTranslator.ReadPositionDataFromVB(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset);
+                        vertex.Position = Vector3Extenders.FromVector4(output);
+                        vertex.Binormal = new Vector3(output.X);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))

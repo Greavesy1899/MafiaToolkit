@@ -285,10 +285,8 @@ namespace Mafia2Tool
         {
             TreeNode node = linesTree.SelectedNode;
             StreamLine line = new StreamLine();
-            line.Name = "New_Stream_Line";
             line.Group = node.Text;
             line.Flags = "";
-            line.loadList = new StreamLoader[0];
 
             TreeNode child = new TreeNode();
             child.Name = "GroupLoader" + node.Index;
@@ -361,25 +359,13 @@ namespace Mafia2Tool
             {
                 if (linesTree.SelectedNode.Tag.GetType() == typeof(StreamLine))
                 {
-                    TreeNode parent = linesTree.SelectedNode.Parent;
                     TreeNode node = linesTree.SelectedNode;
-
-                    int index = parent.Nodes.IndexOf(node);
-                    if (index > 0)
-                    {
-                        TreeNode toCopy = parent.Nodes[index];
-
-                        StreamLine line = (linesTree.SelectedNode.Tag as StreamLine);
-                        StreamLine toCopyLine = (parent.Nodes[index-1].Tag as StreamLine);
-
-                        line.loadList = new StreamLoader[toCopyLine.loadList.Length];
-                        for (int i = 0; i < toCopyLine.loadList.Length; i++)
-                        {
-                            line.loadList[i] = new StreamLoader(toCopyLine.loadList[i]);
-                        }
-
-                        linesTree.SelectedNode.Tag = line;
-                    }
+                    StreamLine newLine = new StreamLine((node.Tag as StreamLine));
+                    TreeNode newNode = new TreeNode();
+                    newNode.Name = "GroupLoader" + node.Index;
+                    newNode.Text = newLine.Name;
+                    newNode.Tag = newLine;
+                    node.Parent.Nodes.Insert(node.Index + 1, newNode);
                 }
             }
         }
@@ -399,16 +385,6 @@ namespace Mafia2Tool
                     TreeNode selected = groupTree.SelectedNode;
                     groupTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
                 }
-                //TreeNode selected = StreamLinesPage.SelectedNode;
-                //TranslokatorTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
-
-                //if (selected.Tag is ResourceTypes.Translokator.Object)
-                //{
-                //    for (int i = 0; i < selected.Nodes.Count; i++)
-                //    {
-                //        selected.Nodes[i].Text = selected.Text + " " + i;
-                //    }
-                //}
             }
             Cursor.Current = Cursors.Default;
         }

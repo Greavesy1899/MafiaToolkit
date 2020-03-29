@@ -144,7 +144,9 @@ namespace Rendering.Graphics
                         if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                         {
                             int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                            vertex.Position = VertexTranslator.ReadPositionDataFromVB(vertexBuffers[i].Data, startIndex, geom.DecompressionFactor, geom.DecompressionOffset);
+                            var output = VertexTranslator.ReadPositionDataFromVB(vertexBuffers[i].Data, startIndex, geom.DecompressionFactor, geom.DecompressionOffset);
+                            vertex.Position = Vector3Extenders.FromVector4(output);
+                            //vertex.Binormal = new Vector3(output.X); this is for later
                         }
 
                         if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))

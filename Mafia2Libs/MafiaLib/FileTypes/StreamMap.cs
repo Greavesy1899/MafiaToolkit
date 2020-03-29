@@ -184,6 +184,33 @@ namespace ResourceTypes.Misc
                 set { unk15 = value; }
             }
 
+            public StreamLine()
+            {
+                name = "New Line";
+                loadList = new StreamLoader[0];
+            }
+
+            public StreamLine(StreamLine other)
+            {
+                name = other.name + "_duplicated";
+                group = other.group;
+                loadType = other.loadType;
+                flags = other.flags;
+                unk10 = other.unk10;
+                unk11 = other.unk11;
+                unk5 = other.unk5;
+                unk12 = other.unk12;
+                unk13 = other.unk13;
+                unk14 = other.unk14;
+                unk15 = other.unk15;
+
+                loadList = new StreamLoader[other.loadList.Length];
+                for (int i = 0; i < other.loadList.Length; i++)
+                {
+                    loadList[i] = new StreamLoader(other.loadList[i]);
+                }
+            }
+
 
             public override string ToString()
             {
