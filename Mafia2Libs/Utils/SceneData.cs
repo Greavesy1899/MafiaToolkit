@@ -113,8 +113,8 @@ namespace Mafia2Tool
                 }
                 else if (nodes.Current.Value == "roadmap.gsd" && !isBigEndian)
                     roadMap = new Roadmap(new FileInfo(name));
-                else if (type == "NAV_OBJ_DATA" && !isBigEndian)
-                    obj.Add(new NAVData(new FileInfo(name)));
+                //else if (type == "NAV_OBJ_DATA" && !isBigEndian)
+                //    obj.Add(new NAVData(new FileInfo(name)));
                 else if (type == "Translokator" && !isBigEndian)
                     Translokator = new TranslokatorLoader(new FileInfo(name));
                     

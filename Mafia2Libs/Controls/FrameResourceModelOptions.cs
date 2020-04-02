@@ -55,6 +55,7 @@ namespace Forms.EditorControls
             options.Add("COLOR1", false);
 
             ImportNormalBox.Enabled = flags.HasFlag(VertexFlags.Normals);
+            ImportTangentBox.Enabled = flags.HasFlag(VertexFlags.Tangent);
             ImportDiffuseBox.Enabled = flags.HasFlag(VertexFlags.TexCoords0);
             ImportUV1Box.Enabled = flags.HasFlag(VertexFlags.TexCoords1);
             ImportUV2Box.Enabled = flags.HasFlag(VertexFlags.TexCoords2);
@@ -68,6 +69,7 @@ namespace Forms.EditorControls
         {
             DialogResult = DialogResult.OK;
             options["NORMALS"] = ImportNormalBox.Checked;
+            options["TANGENTS"] = ImportTangentBox.Checked;
             options["DIFFUSE"] = ImportDiffuseBox.Checked;
             options["UV1"] = ImportUV1Box.Checked;
             options["UV2"] = ImportUV2Box.Checked;

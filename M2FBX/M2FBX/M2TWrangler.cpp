@@ -64,6 +64,17 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		}
 	}
 
+	if (pPart.HasVertexFlag(VertexFlags::Tangent))
+	{
+		if (pElementTangent->GetReferenceMode() != FbxGeometryElement::eDirect) {
+			WriteLine("pElementTangent->GetReferenceMode() did not equal eDirect.. Cannot continue.");
+			return -99;
+		}
+		if ((pElementTangent->GetMappingMode() != FbxGeometryElement::eByControlPoint)) {
+			pMesh->GenerateTangentsData("DiffuseUV", true);
+		}
+	}
+
 	uint numVertices = pMesh->GetControlPointsCount();
 	Vertex* vertices = new Vertex[numVertices];
 
