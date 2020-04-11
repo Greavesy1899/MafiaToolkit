@@ -69,7 +69,6 @@ artifacts/
 *.pidb
 *.svclog
 *.scc
-*.m2t
 *.fbx
 *.png
 
