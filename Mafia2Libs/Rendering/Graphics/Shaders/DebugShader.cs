@@ -1,6 +1,4 @@
-﻿using SharpDX;
-using SharpDX.Direct3D11;
-using ResourceTypes.Materials;
+﻿using SharpDX.Direct3D11;
 
 namespace Rendering.Graphics
 {
@@ -49,7 +47,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void SetShaderParameters(Device device, DeviceContext context, Material material)
+        public override void SetShaderParameters(Device device, DeviceContext context, MaterialParameters material)
         {
             //empty
         }

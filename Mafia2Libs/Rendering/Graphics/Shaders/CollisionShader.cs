@@ -1,5 +1,4 @@
 ﻿using SharpDX.Direct3D11;
-using ResourceTypes.Materials;
 
 namespace Rendering.Graphics
 {
@@ -34,9 +33,9 @@ namespace Rendering.Graphics
             context.DrawIndexed(size, (int)offset, 0);
         }
 
-        public override void SetShaderParameters(Device device, DeviceContext context, Material material)
+        public override void SetShaderParameters(Device device, DeviceContext context, MaterialParameters matParams)
         {
-            //empty
+            base.SetShaderParameters(device, context, matParams);
         }
     }
 }

@@ -45,15 +45,18 @@ namespace Rendering.Graphics
         public override void SetSceneVariables(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera)
         {
             base.SetSceneVariables(deviceContext, WorldMatrix, camera);
-            ConstantBufferFactory.UpdatePixelBuffer(deviceContext, ConstantShaderParamBuffer, 1, ShaderParams);
+            ConstantBufferFactory.UpdatePixelBuffer(deviceContext, ConstantShaderParamBuffer, 2, ShaderParams);
         }
         public override void InitCBuffersFrame(DeviceContext context, Camera camera, LightClass light)
         {
             base.InitCBuffersFrame(context, camera, light);
         }
-        public override void SetShaderParameters(Device device, DeviceContext deviceContext, Material material)
+        public override void SetShaderParameters(Device device, DeviceContext deviceContext, MaterialParameters matParams)
         {
+            base.SetShaderParameters(device, deviceContext, matParams);
+
             Shader_601151254Params parameters = new Shader_601151254Params();
+            var material = matParams.MaterialData;
 
             if (material.Parameters.ContainsKey("C002"))
             {

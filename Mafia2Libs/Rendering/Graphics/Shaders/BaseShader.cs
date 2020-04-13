@@ -31,10 +31,15 @@ namespace Rendering.Graphics
             public float specularPower;
             public Vector4 specularColor;
         }
-
-        public struct ShaderParameters
+        [StructLayout(LayoutKind.Sequential)]
+        protected struct EditorParameterBuffer
         {
-            public ShaderParameters(Material material, Vector4 vector4)
+            public Vector4 selectionColour;
+        }
+
+        public struct MaterialParameters
+        {
+            public MaterialParameters(Material material, Vector4 vector4)
             {
                 MaterialData = material;
                 SelectionColour = vector4;
@@ -49,9 +54,13 @@ namespace Rendering.Graphics
         protected Buffer ConstantMatrixBuffer { get; set; }
         protected Buffer ConstantLightBuffer { get; set; }
         protected Buffer ConstantCameraBuffer { get; set; }
+        protected Buffer ConstantEditorParamsBuffer { get; set; }
         protected SamplerState SamplerState { get; set; }
 
-        protected LightClass lighting = null;
+        protected LightClass previousLighting = null;
+
+        //this will be replaced with the editor param data
+        protected Vector4 previousEditorParams;
 
         public virtual bool Init(Device device, InputElement[] elements, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
         {
@@ -86,6 +95,7 @@ namespace Rendering.Graphics
             ConstantCameraBuffer = ConstantBufferFactory.ConstructBuffer<DCameraBuffer>(device, "CameraBuffer");
             ConstantLightBuffer = ConstantBufferFactory.ConstructBuffer<LightBuffer>(device, "LightBuffer");
             ConstantMatrixBuffer = ConstantBufferFactory.ConstructBuffer<MatrixBuffer>(device, "MatrixBuffer");
+            ConstantEditorParamsBuffer = ConstantBufferFactory.ConstructBuffer<EditorParameterBuffer>(device, "EditorBuffer");
 
             pixelShaderByteCode.Dispose();
             vertexShaderByteCode.Dispose();
@@ -102,7 +112,7 @@ namespace Rendering.Graphics
             };
             ConstantBufferFactory.UpdateVertexBuffer(context, ConstantCameraBuffer, 1, cameraBuffer);
 
-            if (lighting == null || !lighting.Equals(light))
+            if (previousLighting == null || !previousLighting.Equals(light))
             {
                 LightBuffer lightbuffer = new LightBuffer()
                 {
@@ -112,7 +122,7 @@ namespace Rendering.Graphics
                     specularColor = light.SpecularColor,
                     specularPower = light.SpecularPower
                 };
-                lighting = light;
+                previousLighting = light;
                 ConstantBufferFactory.UpdatePixelBuffer(context, ConstantLightBuffer, 0, lightbuffer);
             }
         }
@@ -135,8 +145,34 @@ namespace Rendering.Graphics
             ConstantBufferFactory.UpdateVertexBuffer(context, ConstantMatrixBuffer, 0, matrixBuffer);
         }
 
-        public virtual void SetShaderParameters(Device device, DeviceContext deviceContext, Material material)
+        public virtual void SetShaderParameters(Device device, DeviceContext deviceContext, MaterialParameters matParams)
         {
+            if (!previousEditorParams.Equals(matParams.SelectionColour))
+            {
+                var editorParams = new EditorParameterBuffer()
+                { 
+                    selectionColour = matParams.SelectionColour
+                };
+
+                ConstantBufferFactory.UpdatePixelBuffer(deviceContext, ConstantEditorParamsBuffer, 1, editorParams);
+            }
+
+            //experiments with samplers; currently the toolkit doesn't not support any types.
+            /*SamplerStateDescription samplerDesc = new SamplerStateDescription()
+            {
+                Filter = Filter.Anisotropic,
+                AddressU = (material != null) ? (TextureAddressMode)material.Samplers["S000"].SamplerStates[0] : TextureAddressMode.Wrap,
+                AddressV = (material != null) ? (TextureAddressMode)material.Samplers["S000"].SamplerStates[1] : TextureAddressMode.Wrap,
+                AddressW = (material != null) ? (TextureAddressMode)material.Samplers["S000"].SamplerStates[2] : TextureAddressMode.Wrap,
+                MipLodBias = 0,
+                MaximumAnisotropy = 16,
+                ComparisonFunction = Comparison.Always,
+                BorderColor = new Color4(0, 0, 0, 0),
+                MinimumLod = 0,
+                MaximumLod = float.MaxValue
+            };
+
+            SamplerState = new SamplerState(device, samplerDesc);*/
         }
 
         public virtual void Render(DeviceContext context, SharpDX.Direct3D.PrimitiveTopology type, int size, uint offset)
@@ -155,6 +191,8 @@ namespace Rendering.Graphics
             ConstantCameraBuffer = null;
             ConstantMatrixBuffer?.Dispose();
             ConstantMatrixBuffer = null;
+            ConstantEditorParamsBuffer?.Dispose();
+            ConstantEditorParamsBuffer = null;
             SamplerState?.Dispose();
             SamplerState = null;
             Layout?.Dispose();

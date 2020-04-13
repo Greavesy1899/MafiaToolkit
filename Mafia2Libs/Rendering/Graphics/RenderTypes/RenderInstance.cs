@@ -1,6 +1,5 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D11;
-using Utils.Types;
 
 namespace Rendering.Graphics
 {
@@ -8,7 +7,6 @@ namespace Rendering.Graphics
     {
         private IRenderer instance;
         private bool isSelected;
-        
 
         public void Init(RenderStaticCollision col)
         {
@@ -75,14 +73,14 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            isSelected = true;
-            (instance as RenderStaticCollision).BoundingBox.Select();
+            isSelected = true;            
+            (instance as RenderStaticCollision).Select();
         }
 
         public override void Unselect()
         {
             isSelected = false;
-            (instance as RenderStaticCollision).BoundingBox.Unselect();
+            (instance as RenderStaticCollision).Unselect();
         }
     }
 }

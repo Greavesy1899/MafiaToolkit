@@ -9,7 +9,6 @@ using Utils.Types;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using Utils.Models;
 using Utils.SharpDXExtensions;
-using System.Diagnostics;
 using System;
 using System.Windows;
 using static Rendering.Graphics.BaseShader;
@@ -372,7 +371,7 @@ namespace Rendering.Graphics
             deviceContext.PixelShader.SetShaderResource(2, AOTexture);
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
             {
-                LODs[0].ModelParts[i].Shader.SetShaderParameters(device, deviceContext, LODs[0].ModelParts[i].Material/*new ShaderParameters(LODs[0].ModelParts[i].Material, SelectionColour)*/);
+                LODs[0].ModelParts[i].Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(LODs[0].ModelParts[i].Material, SelectionColour));
                 LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera);
                 LODs[0].ModelParts[i].Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(LODs[0].ModelParts[i].NumFaces * 3), LODs[0].ModelParts[i].StartIndex);
             }
