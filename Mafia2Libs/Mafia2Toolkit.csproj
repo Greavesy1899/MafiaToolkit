@@ -81,7 +81,7 @@
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
-    <ApplicationIcon>Toolkit.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Toolkit.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup />
@@ -642,7 +642,6 @@
     <Content Include="Shaders\LightVS.hlsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Toolkit.ico" />
     <None Include="packages.config" />
     <Compile Include="Rendering\Graphics\VertexLayouts.cs" />
     <None Include="Resources\Splash.png">

@@ -1,9 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using ResourceTypes.Materials;
 using SharpDX;
-using SharpDX.D3DCompiler;
 using SharpDX.Direct3D11;
-using Utils.Settings;
 
 namespace Rendering.Graphics
 {
@@ -14,65 +12,26 @@ namespace Rendering.Graphics
         {
             public Vector4 C005_EmissiveFacadeColorAndIntensity;
         }
-
-        public VertexShader VertexShader { get; set; }
-        public PixelShader PixelShader { get; set; }
-        public InputLayout Layout { get; set; }
-        public Buffer ConstantMatrixBuffer { get; set; }
-        public Buffer ConstantLightBuffer { get; set; }
-        public Buffer ConstantCameraBuffer { get; set; }
-        public Buffer ConstantShaderParamBuffer { get; set; }
-        public SamplerState SamplerState { get; set; }
-        public Shader_50760736Params ShaderParams { get; private set; }
-        private LightClass lighting = null;
+        protected Buffer ConstantShaderParamBuffer { get; set; }
+        protected Shader_50760736Params ShaderParams { get; private set; }
 
         public Shader_50760736(Device device, InputElement[] elements, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
         {
             if (!Init(device, elements, vsPath, psPath, vsEntryPoint, psEntryPoint))
+            {
                 throw new System.Exception("Failed to load Shader!");
+            }
         }
 
         public override bool Init(Device device, InputElement[] elements, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
         {
-            ShaderBytecode pixelShaderByteCode;
-            ShaderBytecode vertexShaderByteCode;
-
-            vsFileName = ToolkitSettings.ShaderPath + vsFileName;
-            psFileName = ToolkitSettings.ShaderPath + psFileName;
-
-            pixelShaderByteCode = ShaderBytecode.CompileFromFile(psFileName, psEntryPoint, "ps_4_0", ShaderFlags.None, EffectFlags.None);
-            vertexShaderByteCode = ShaderBytecode.CompileFromFile(vsFileName, vsEntryPoint, "vs_4_0", ShaderFlags.None, EffectFlags.None);
-            PixelShader = new PixelShader(device, pixelShaderByteCode);
-            VertexShader = new VertexShader(device, vertexShaderByteCode);
-            Layout = new InputLayout(device, ShaderSignature.GetInputSignature(vertexShaderByteCode), elements);
-
-            SamplerStateDescription samplerDesc = new SamplerStateDescription()
+            if (!base.Init(device, elements, vsFileName, psFileName, vsEntryPoint, psEntryPoint))
             {
-                Filter = Filter.Anisotropic,
-                AddressU = TextureAddressMode.Wrap,
-                AddressV = TextureAddressMode.Wrap,
-                AddressW = TextureAddressMode.Wrap,
-                MipLodBias = 0,
-                MaximumAnisotropy = 16,
-                ComparisonFunction = Comparison.Always,
-                BorderColor = new Color4(0, 0, 0, 0),
-                MinimumLod = 0,
-                MaximumLod = float.MaxValue
-            };
-
-            SamplerState = new SamplerState(device, samplerDesc);
-
-            ConstantCameraBuffer = ConstantBufferFactory.ConstructBuffer<DCameraBuffer>(device, "CameraBuffer");
-            ConstantLightBuffer = ConstantBufferFactory.ConstructBuffer<LightBuffer>(device, "LightBuffer");
-            ConstantMatrixBuffer = ConstantBufferFactory.ConstructBuffer<MatrixBuffer>(device, "MatrixBuffer");
-            ConstantShaderParamBuffer = ConstantBufferFactory.ConstructBuffer<Shader_50760736Params>(device, "ShaderParamsBuffer");
-
-            pixelShaderByteCode.Dispose();
-            vertexShaderByteCode.Dispose();
-
+                return false;
+            }
+            ConstantShaderParamBuffer = ConstantBufferFactory.ConstructBuffer<Shader_50760736Params>(device, "ShaderParamBuffer");
             return true;
         }
-
         public override void Render(DeviceContext deviceContext, SharpDX.Direct3D.PrimitiveTopology type, int numTriangles, uint offset)
         {
             deviceContext.InputAssembler.InputLayout = Layout;
@@ -81,47 +40,13 @@ namespace Rendering.Graphics
             deviceContext.PixelShader.SetSampler(0, SamplerState);
             deviceContext.DrawIndexed(numTriangles, (int)offset, 0);
         }
-
-        public override void InitCBuffersFrame(DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void InitCBuffersFrame(DeviceContext context, Camera camera, LightClass light)
         {
-            var cameraBuffer = new DCameraBuffer()
-            {
-                cameraPosition = camera.Position,
-                padding = 0.0f
-            };
-            ConstantBufferFactory.UpdateVertexBuffer(deviceContext, ConstantCameraBuffer, 1, cameraBuffer);
-
-            if (lighting == null || !lighting.Equals(light))
-            {
-                LightBuffer lightbuffer = new LightBuffer()
-                {
-                    ambientColor = light.AmbientColor,
-                    diffuseColor = light.DiffuseColour,
-                    LightDirection = light.Direction,
-                    specularColor = light.SpecularColor,
-                    specularPower = light.SpecularPower
-                };
-                lighting = light;
-                ConstantBufferFactory.UpdatePixelBuffer(deviceContext, ConstantLightBuffer, 0, lightbuffer);
-            }
+            base.InitCBuffersFrame(context, camera, light);
         }
-
         public override void SetSceneVariables(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera)
         {
-            Matrix tMatrix = WorldMatrix;
-            Matrix vMatrix = camera.ViewMatrix;
-            Matrix cMatrix = camera.ProjectionMatrix;
-            vMatrix.Transpose();
-            cMatrix.Transpose();
-            tMatrix.Transpose();
-
-            MatrixBuffer matrixBuffer = new MatrixBuffer()
-            {
-                world = tMatrix,
-                view = vMatrix,
-                projection = cMatrix
-            };
-            ConstantBufferFactory.UpdateVertexBuffer(deviceContext, ConstantMatrixBuffer, 0, matrixBuffer);
+            base.SetSceneVariables(deviceContext, WorldMatrix, camera);
             ConstantBufferFactory.UpdatePixelBuffer(deviceContext, ConstantShaderParamBuffer, 1, ShaderParams);
         }
 
@@ -176,22 +101,9 @@ namespace Rendering.Graphics
 
         public override void Shutdown()
         {
-            ConstantLightBuffer?.Dispose();
-            ConstantLightBuffer = null;
-            ConstantCameraBuffer?.Dispose();
-            ConstantCameraBuffer = null;
-            ConstantMatrixBuffer?.Dispose();
-            ConstantMatrixBuffer = null;
+            base.Shutdown();
             ConstantShaderParamBuffer?.Dispose();
             ConstantShaderParamBuffer = null;
-            SamplerState?.Dispose();
-            SamplerState = null;
-            Layout?.Dispose();
-            Layout = null;
-            PixelShader?.Dispose();
-            PixelShader = null;
-            VertexShader?.Dispose();
-            VertexShader = null;
         }
     }
 }
