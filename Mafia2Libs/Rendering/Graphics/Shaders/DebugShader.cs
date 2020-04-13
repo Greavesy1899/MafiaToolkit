@@ -13,13 +13,13 @@ namespace Rendering.Graphics
         public InputLayout Layout { get; set; }
         public Buffer ConstantMatrixBuffer { get; set; }
 
-        public DebugShader(Device device, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
+        public DebugShader(Device device, InputElement[] element, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
         {
-            if (!Init(device, vsPath, psPath, vsEntryPoint, psEntryPoint))
+            if (!Init(device, element, vsPath, psPath, vsEntryPoint, psEntryPoint))
                 throw new System.Exception("Failed to load Shader!");
         }
 
-        public override bool Init(Device device, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
+        public override bool Init(Device device, InputElement[] element, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
         {
             ShaderBytecode pixelShaderByteCode;
             ShaderBytecode vertexShaderByteCode;
@@ -31,19 +31,9 @@ namespace Rendering.Graphics
             vertexShaderByteCode = ShaderBytecode.CompileFromFile(vsFileName, vsEntryPoint, "vs_4_0", ShaderFlags.None, EffectFlags.None);
             PixelShader = new PixelShader(device, pixelShaderByteCode);
             VertexShader = new VertexShader(device, vertexShaderByteCode);
-            Layout = new InputLayout(device, ShaderSignature.GetInputSignature(vertexShaderByteCode), VertexLayouts.BasicLayout.GetLayout());
+            Layout = new InputLayout(device, ShaderSignature.GetInputSignature(vertexShaderByteCode), element);
 
-            BufferDescription MatrixBuffDesc = new BufferDescription()
-            {
-                Usage = ResourceUsage.Dynamic,
-                SizeInBytes = Utilities.SizeOf<MatrixBuffer>(),
-                BindFlags = BindFlags.ConstantBuffer,
-                CpuAccessFlags = CpuAccessFlags.Write,
-                OptionFlags = ResourceOptionFlags.None,
-                StructureByteStride = 0
-            };
-
-            ConstantMatrixBuffer = new Buffer(device, MatrixBuffDesc);
+            ConstantMatrixBuffer = ConstantBufferFactory.ConstructBuffer<MatrixBuffer>(device, "MatrixBuffer");
 
             pixelShaderByteCode.Dispose();
             vertexShaderByteCode.Dispose();
@@ -70,9 +60,6 @@ namespace Rendering.Graphics
 
         public override void SetSceneVariables(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera)
         {
-            DataStream mappedResource;
-
-            #region Constant Matrix Buffer
             Matrix tMatrix = WorldMatrix;
             Matrix vMatrix = camera.ViewMatrix;
             Matrix cMatrix = camera.ProjectionMatrix;
@@ -80,18 +67,13 @@ namespace Rendering.Graphics
             cMatrix.Transpose();
             tMatrix.Transpose();
 
-            deviceContext.MapSubresource(ConstantMatrixBuffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
             MatrixBuffer matrixBuffer = new MatrixBuffer()
             {
                 world = tMatrix,
                 view = vMatrix,
                 projection = cMatrix
             };
-            mappedResource.Write(matrixBuffer);
-            deviceContext.UnmapSubresource(ConstantMatrixBuffer, 0);
-            int bufferSlotNumber = 0;
-            deviceContext.VertexShader.SetConstantBuffer(bufferSlotNumber, ConstantMatrixBuffer);
-            #endregion
+            ConstantBufferFactory.UpdateVertexBuffer(deviceContext, ConstantMatrixBuffer, 0, matrixBuffer);
         }
 
         public override void Render(DeviceContext deviceContext, SharpDX.Direct3D.PrimitiveTopology type, int size, uint offset)
@@ -114,7 +96,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void SetShaderParamters(Device device, DeviceContext context, Material material)
+        public override void SetShaderParameters(Device device, DeviceContext context, Material material)
         {
             //empty
         }

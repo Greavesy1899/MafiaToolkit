@@ -20,7 +20,6 @@ using Utils.Lua;
 using ResourceTypes.Misc;
 using Mafia2Tool.Forms;
 using ResourceTypes.FrameResource;
-using ResourceTypes.Collisions;
 using SharpDX;
 using Collision = ResourceTypes.Collisions.Collision;
 using System.Text;

@@ -144,48 +144,48 @@
             this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
             this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolButton.Name = "toolButton";
-            this.toolButton.Size = new System.Drawing.Size(62, 22);
+            this.toolButton.Size = new System.Drawing.Size(61, 22);
             this.toolButton.Text = "$TOOLS";
             // 
             // AddAreaButton
             // 
             this.AddAreaButton.Name = "AddAreaButton";
-            this.AddAreaButton.Size = new System.Drawing.Size(236, 22);
+            this.AddAreaButton.Size = new System.Drawing.Size(233, 22);
             this.AddAreaButton.Text = "$ADD_AREA";
             this.AddAreaButton.Click += new System.EventHandler(this.AddAreaButton_Click);
             // 
             // AddDataButton
             // 
             this.AddDataButton.Name = "AddDataButton";
-            this.AddDataButton.Size = new System.Drawing.Size(236, 22);
+            this.AddDataButton.Size = new System.Drawing.Size(233, 22);
             this.AddDataButton.Text = "$ADD_DATA";
             this.AddDataButton.Click += new System.EventHandler(this.AddDataButton_Click);
             // 
             // DuplicateDataButton
             // 
             this.DuplicateDataButton.Name = "DuplicateDataButton";
-            this.DuplicateDataButton.Size = new System.Drawing.Size(236, 22);
+            this.DuplicateDataButton.Size = new System.Drawing.Size(233, 22);
             this.DuplicateDataButton.Text = "$DUPLICATE_DATA";
             this.DuplicateDataButton.Click += new System.EventHandler(this.DuplicateData_OnClick);
             // 
             // PopulateTranslokatorButton
             // 
             this.PopulateTranslokatorButton.Name = "PopulateTranslokatorButton";
-            this.PopulateTranslokatorButton.Size = new System.Drawing.Size(236, 22);
+            this.PopulateTranslokatorButton.Size = new System.Drawing.Size(233, 22);
             this.PopulateTranslokatorButton.Text = "$POPULATE_TRANSLOKATORS";
             this.PopulateTranslokatorButton.Click += new System.EventHandler(this.PopulateTranslokatorButton_Click);
             // 
             // DeleteAreaButton
             // 
             this.DeleteAreaButton.Name = "DeleteAreaButton";
-            this.DeleteAreaButton.Size = new System.Drawing.Size(236, 22);
+            this.DeleteAreaButton.Size = new System.Drawing.Size(233, 22);
             this.DeleteAreaButton.Text = "$DELETE_AREA";
             this.DeleteAreaButton.Click += new System.EventHandler(this.DeleteArea_Click);
             // 
             // DeleteDataButton
             // 
             this.DeleteDataButton.Name = "DeleteDataButton";
-            this.DeleteDataButton.Size = new System.Drawing.Size(236, 22);
+            this.DeleteDataButton.Size = new System.Drawing.Size(233, 22);
             this.DeleteDataButton.Text = "$DELETE_DATA";
             this.DeleteDataButton.Click += new System.EventHandler(this.DeleteData_Click);
             // 

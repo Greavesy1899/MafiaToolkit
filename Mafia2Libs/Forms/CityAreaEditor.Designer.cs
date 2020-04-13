@@ -41,6 +41,7 @@
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AddAreaButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.DeleteArea = new System.Windows.Forms.ToolStripMenuItem();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.AreaNameLabel = new System.Windows.Forms.Label();
             this.AreaNameBox = new System.Windows.Forms.TextBox();
@@ -53,7 +54,6 @@
             this.ReloadAreaButton = new System.Windows.Forms.Button();
             this.Area2Box = new System.Windows.Forms.TextBox();
             this.Area1Box = new System.Windows.Forms.TextBox();
-            this.DeleteArea = new System.Windows.Forms.ToolStripMenuItem();
             this.CollisionContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.AreaGroupBox.SuspendLayout();
@@ -139,16 +139,24 @@
             this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
             this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolButton.Name = "toolButton";
-            this.toolButton.Size = new System.Drawing.Size(62, 22);
+            this.toolButton.Size = new System.Drawing.Size(61, 22);
             this.toolButton.Text = "$TOOLS";
             // 
             // AddAreaButton
             // 
             this.AddAreaButton.Name = "AddAreaButton";
             this.AddAreaButton.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-            this.AddAreaButton.Size = new System.Drawing.Size(191, 22);
+            this.AddAreaButton.Size = new System.Drawing.Size(190, 22);
             this.AddAreaButton.Text = "$ADD_AREA";
             this.AddAreaButton.Click += new System.EventHandler(this.AddAreaButton_Click);
+            // 
+            // DeleteArea
+            // 
+            this.DeleteArea.Name = "DeleteArea";
+            this.DeleteArea.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D)));
+            this.DeleteArea.Size = new System.Drawing.Size(190, 22);
+            this.DeleteArea.Text = "$DELETE_AREA";
+            this.DeleteArea.Click += new System.EventHandler(this.DeleteArea_Click);
             // 
             // listBox1
             // 
@@ -265,14 +273,6 @@
             this.Area1Box.Name = "Area1Box";
             this.Area1Box.Size = new System.Drawing.Size(229, 20);
             this.Area1Box.TabIndex = 26;
-            // 
-            // DeleteArea
-            // 
-            this.DeleteArea.Name = "DeleteArea";
-            this.DeleteArea.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.D)));
-            this.DeleteArea.Size = new System.Drawing.Size(191, 22);
-            this.DeleteArea.Text = "$DELETE_AREA";
-            this.DeleteArea.Click += new System.EventHandler(this.DeleteArea_Click);
             // 
             // CityAreaEditor
             // 

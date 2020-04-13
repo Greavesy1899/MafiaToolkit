@@ -30,11 +30,23 @@ namespace Rendering.Graphics
             public Vector4 specularColor;
         }
 
+        public struct ShaderParameters
+        {
+            public ShaderParameters(Material material, Vector4 vector4)
+            {
+                MaterialData = material;
+                SelectionColour = vector4;
+            }
+
+            public Material MaterialData { get; set; }
+            public Vector4 SelectionColour { get; set; }
+        }
+
         public BaseShader() { }
-        public abstract bool Init(Device device, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint);
+        public abstract bool Init(Device device, InputElement[] elements, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint);
         public abstract void InitCBuffersFrame(DeviceContext context, Camera camera, LightClass light);
         public abstract void SetSceneVariables(DeviceContext context, Matrix WorldMatrix, Camera camera);
-        public abstract void SetShaderParamters(Device device, DeviceContext deviceContext, Material material);
+        public abstract void SetShaderParameters(Device device, DeviceContext deviceContext, Material material);
         public abstract void Render(DeviceContext context, SharpDX.Direct3D.PrimitiveTopology type, int size, uint offset);
         public abstract void Shutdown();
     }

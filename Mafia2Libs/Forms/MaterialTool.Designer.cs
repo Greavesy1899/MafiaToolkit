@@ -42,14 +42,14 @@
             this.MTLBrowser = new System.Windows.Forms.OpenFileDialog();
             this.MainPanel = new System.Windows.Forms.Panel();
             this.MergePanel = new System.Windows.Forms.Panel();
+            this.SelectAllNewButton = new System.Windows.Forms.Button();
+            this.SelectAllOverwriteButton = new System.Windows.Forms.Button();
+            this.NewMaterialLabel = new System.Windows.Forms.Label();
+            this.OverWriteLabel = new System.Windows.Forms.Label();
+            this.NewMatListBox = new System.Windows.Forms.CheckedListBox();
             this.CancelButton = new System.Windows.Forms.Button();
             this.MergeButton = new System.Windows.Forms.Button();
             this.OverwriteListBox = new System.Windows.Forms.CheckedListBox();
-            this.NewMatListBox = new System.Windows.Forms.CheckedListBox();
-            this.OverWriteLabel = new System.Windows.Forms.Label();
-            this.NewMaterialLabel = new System.Windows.Forms.Label();
-            this.SelectAllOverwriteButton = new System.Windows.Forms.Button();
-            this.SelectAllNewButton = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.MainPanel.SuspendLayout();
@@ -107,27 +107,27 @@
             // 
             this.contextOpenButton.Enabled = false;
             this.contextOpenButton.Name = "contextOpenButton";
-            this.contextOpenButton.Size = new System.Drawing.Size(180, 22);
+            this.contextOpenButton.Size = new System.Drawing.Size(110, 22);
             this.contextOpenButton.Text = "Open";
             // 
             // contextReloadButton
             // 
             this.contextReloadButton.Name = "contextReloadButton";
-            this.contextReloadButton.Size = new System.Drawing.Size(180, 22);
+            this.contextReloadButton.Size = new System.Drawing.Size(110, 22);
             this.contextReloadButton.Text = "Reload";
             this.contextReloadButton.Click += new System.EventHandler(this.UpdateList);
             // 
             // contextSaveButton
             // 
             this.contextSaveButton.Name = "contextSaveButton";
-            this.contextSaveButton.Size = new System.Drawing.Size(180, 22);
+            this.contextSaveButton.Size = new System.Drawing.Size(110, 22);
             this.contextSaveButton.Text = "Save";
             this.contextSaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // contextExitButton
             // 
             this.contextExitButton.Name = "contextExitButton";
-            this.contextExitButton.Size = new System.Drawing.Size(180, 22);
+            this.contextExitButton.Size = new System.Drawing.Size(110, 22);
             this.contextExitButton.Text = "Exit";
             this.contextExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -147,21 +147,21 @@
             // addMaterialToolStripMenuItem
             // 
             this.addMaterialToolStripMenuItem.Name = "addMaterialToolStripMenuItem";
-            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.addMaterialToolStripMenuItem.Text = "Add Material";
             this.addMaterialToolStripMenuItem.Click += new System.EventHandler(this.AddMaterial);
             // 
             // DeleteSelectedMaterialButton
             // 
             this.DeleteSelectedMaterialButton.Name = "DeleteSelectedMaterialButton";
-            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(180, 22);
+            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(170, 22);
             this.DeleteSelectedMaterialButton.Text = "$DELETE_SEL_MAT";
             this.DeleteSelectedMaterialButton.Click += new System.EventHandler(this.DeleteMaterial);
             // 
             // MergeMTLButton
             // 
             this.MergeMTLButton.Name = "MergeMTLButton";
-            this.MergeMTLButton.Size = new System.Drawing.Size(180, 22);
+            this.MergeMTLButton.Size = new System.Drawing.Size(170, 22);
             this.MergeMTLButton.Text = "$MERGE_MTL";
             this.MergeMTLButton.Click += new System.EventHandler(this.MergeMTLButton_Click);
             // 
@@ -227,6 +227,58 @@
             this.MergePanel.Size = new System.Drawing.Size(785, 403);
             this.MergePanel.TabIndex = 4;
             // 
+            // SelectAllNewButton
+            // 
+            this.SelectAllNewButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SelectAllNewButton.Location = new System.Drawing.Point(424, 28);
+            this.SelectAllNewButton.Name = "SelectAllNewButton";
+            this.SelectAllNewButton.Size = new System.Drawing.Size(100, 23);
+            this.SelectAllNewButton.TabIndex = 8;
+            this.SelectAllNewButton.Text = "$SELECT_ALL";
+            this.SelectAllNewButton.UseVisualStyleBackColor = true;
+            this.SelectAllNewButton.Click += new System.EventHandler(this.SelectAllNewButton_Click);
+            // 
+            // SelectAllOverwriteButton
+            // 
+            this.SelectAllOverwriteButton.Location = new System.Drawing.Point(251, 28);
+            this.SelectAllOverwriteButton.Name = "SelectAllOverwriteButton";
+            this.SelectAllOverwriteButton.Size = new System.Drawing.Size(100, 23);
+            this.SelectAllOverwriteButton.TabIndex = 7;
+            this.SelectAllOverwriteButton.Text = "$SELECT_ALL";
+            this.SelectAllOverwriteButton.UseVisualStyleBackColor = true;
+            this.SelectAllOverwriteButton.Click += new System.EventHandler(this.SelectAllOverwriteButton_Click);
+            // 
+            // NewMaterialLabel
+            // 
+            this.NewMaterialLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.NewMaterialLabel.AutoSize = true;
+            this.NewMaterialLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.NewMaterialLabel.Location = new System.Drawing.Point(527, 5);
+            this.NewMaterialLabel.Name = "NewMaterialLabel";
+            this.NewMaterialLabel.Size = new System.Drawing.Size(96, 17);
+            this.NewMaterialLabel.TabIndex = 6;
+            this.NewMaterialLabel.Text = "New Materials";
+            // 
+            // OverWriteLabel
+            // 
+            this.OverWriteLabel.AutoSize = true;
+            this.OverWriteLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.OverWriteLabel.Location = new System.Drawing.Point(8, 5);
+            this.OverWriteLabel.Name = "OverWriteLabel";
+            this.OverWriteLabel.Size = new System.Drawing.Size(134, 17);
+            this.OverWriteLabel.TabIndex = 5;
+            this.OverWriteLabel.Text = "Conflicting Materials";
+            // 
+            // NewMatListBox
+            // 
+            this.NewMatListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.NewMatListBox.FormattingEnabled = true;
+            this.NewMatListBox.Location = new System.Drawing.Point(530, 23);
+            this.NewMatListBox.Name = "NewMatListBox";
+            this.NewMatListBox.Size = new System.Drawing.Size(243, 364);
+            this.NewMatListBox.TabIndex = 4;
+            // 
             // CancelButton
             // 
             this.CancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -258,58 +310,6 @@
             this.OverwriteListBox.Name = "OverwriteListBox";
             this.OverwriteListBox.Size = new System.Drawing.Size(237, 364);
             this.OverwriteListBox.TabIndex = 0;
-            // 
-            // NewMatListBox
-            // 
-            this.NewMatListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.NewMatListBox.FormattingEnabled = true;
-            this.NewMatListBox.Location = new System.Drawing.Point(530, 23);
-            this.NewMatListBox.Name = "NewMatListBox";
-            this.NewMatListBox.Size = new System.Drawing.Size(243, 364);
-            this.NewMatListBox.TabIndex = 4;
-            // 
-            // OverWriteLabel
-            // 
-            this.OverWriteLabel.AutoSize = true;
-            this.OverWriteLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OverWriteLabel.Location = new System.Drawing.Point(8, 5);
-            this.OverWriteLabel.Name = "OverWriteLabel";
-            this.OverWriteLabel.Size = new System.Drawing.Size(134, 17);
-            this.OverWriteLabel.TabIndex = 5;
-            this.OverWriteLabel.Text = "Conflicting Materials";
-            // 
-            // NewMaterialLabel
-            // 
-            this.NewMaterialLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.NewMaterialLabel.AutoSize = true;
-            this.NewMaterialLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.NewMaterialLabel.Location = new System.Drawing.Point(527, 5);
-            this.NewMaterialLabel.Name = "NewMaterialLabel";
-            this.NewMaterialLabel.Size = new System.Drawing.Size(96, 17);
-            this.NewMaterialLabel.TabIndex = 6;
-            this.NewMaterialLabel.Text = "New Materials";
-            // 
-            // SelectAllOverwriteButton
-            // 
-            this.SelectAllOverwriteButton.Location = new System.Drawing.Point(251, 28);
-            this.SelectAllOverwriteButton.Name = "SelectAllOverwriteButton";
-            this.SelectAllOverwriteButton.Size = new System.Drawing.Size(100, 23);
-            this.SelectAllOverwriteButton.TabIndex = 7;
-            this.SelectAllOverwriteButton.Text = "$SELECT_ALL";
-            this.SelectAllOverwriteButton.UseVisualStyleBackColor = true;
-            this.SelectAllOverwriteButton.Click += new System.EventHandler(this.SelectAllOverwriteButton_Click);
-            // 
-            // SelectAllNewButton
-            // 
-            this.SelectAllNewButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SelectAllNewButton.Location = new System.Drawing.Point(424, 28);
-            this.SelectAllNewButton.Name = "SelectAllNewButton";
-            this.SelectAllNewButton.Size = new System.Drawing.Size(100, 23);
-            this.SelectAllNewButton.TabIndex = 8;
-            this.SelectAllNewButton.Text = "$SELECT_ALL";
-            this.SelectAllNewButton.UseVisualStyleBackColor = true;
-            this.SelectAllNewButton.Click += new System.EventHandler(this.SelectAllNewButton_Click);
             // 
             // MaterialTool
             // 

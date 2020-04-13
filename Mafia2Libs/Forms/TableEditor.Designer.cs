@@ -103,7 +103,7 @@
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
             this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EditButton.Name = "EditButton";
-            this.EditButton.Size = new System.Drawing.Size(50, 22);
+            this.EditButton.Size = new System.Drawing.Size(49, 22);
             this.EditButton.Text = "$EDIT";
             // 
             // AddRowButton
@@ -151,13 +151,13 @@
             // ColumnIndexLabel
             // 
             this.ColumnIndexLabel.Name = "ColumnIndexLabel";
-            this.ColumnIndexLabel.Size = new System.Drawing.Size(78, 17);
+            this.ColumnIndexLabel.Size = new System.Drawing.Size(79, 17);
             this.ColumnIndexLabel.Text = "ColumnIndex";
             // 
             // RowIndexLabel
             // 
             this.RowIndexLabel.Name = "RowIndexLabel";
-            this.RowIndexLabel.Size = new System.Drawing.Size(58, 17);
+            this.RowIndexLabel.Size = new System.Drawing.Size(59, 17);
             this.RowIndexLabel.Text = "RowIndex";
             // 
             // DataTypeLabel
