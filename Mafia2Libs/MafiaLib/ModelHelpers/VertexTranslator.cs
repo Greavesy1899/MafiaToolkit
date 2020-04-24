@@ -39,6 +39,7 @@ namespace Utils.Models
             byte[] xData = new byte[] { data[i + 0], data[i + 1] };
             byte[] yData = new byte[] { data[i + 2], data[i + 3] };
             byte[] zData = new byte[] { data[i + 4], data[i + 5] };
+            byte[] wData = new byte[] { data[i + 6], data[i + 7] };
 
             //reverse if big
             if (isBigEndian)
@@ -46,6 +47,7 @@ namespace Utils.Models
                 Array.Reverse(xData);
                 Array.Reverse(yData);
                 Array.Reverse(zData);
+                Array.Reverse(wData);
             }
 
             ushort x = BitConverter.ToUInt16(xData, 0);
@@ -59,35 +61,19 @@ namespace Utils.Models
 
         public static Vector3 ReadTangentDataFromVB(byte[] data, int i)
         {
-            Vector3 vec = new Vector3();
-            float x = (data[i + 6] - 127.0f) * 0.007874f;
-            float y = (data[i + 7] - 127.0f) * 0.007874f;
-            float z = (data[i + 11] - 127.0f) * 0.007874f;
-            vec = new Vector3(x, y, z);
-            vec.Normalize();
-            return vec;
+            Vector3 tan = new Vector3();
+            tan.X = (data[i + 6] - 127.0f) * 0.007874f;
+            tan.Y = (data[i + 7] - 127.0f) * 0.007874f;
+            tan.Z = (data[i + 12] - 127.0f) * 0.007874f;
+            return tan;
         }
 
         public static Vector3 ReadNormalDataFromVB(byte[] data, int i)
         {
             Vector3 norm = new Vector3();
-            float tx = (data[i] - 127.0f) * 0.007874f;
-            float ty = (data[i + 1] - 127.0f) * 0.007874f;
-            float tz = (data[i + 2] - 127.0f) * 0.007874f;
-            norm.X = tx;
-            norm.Y = ty;
-            norm.Z = tz;
-            norm.Normalize();
-
-            //SharpDX.Half x = new SharpDX.Half(data[i]);
-            //SharpDX.Half y = new SharpDX.Half(data[i + 1]);
-            //SharpDX.Half z = new SharpDX.Half(data[i + 2]);
-            //Vector3 vec = new Vector3();
-            //vec.X = data[i];
-            //vec.Y = data[i+1];
-            //vec.Z = data[i+2];
-            //vec /= 255;
-            //vec = vec * 2 - 1;
+            norm.X = (data[i] - 127.0f) * 0.007874f;
+            norm.Y = (data[i + 1] - 127.0f) * 0.007874f;
+            norm.Z = (data[i + 2] - 127.0f) * 0.007874f;
             return norm;
         }
 

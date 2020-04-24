@@ -20,8 +20,7 @@ private:
 	VertexFlags flags;
 	uint numVertices;
 	Vertex* vertices;
-	uint numSubMeshes;
-	SubMesh* submeshes;
+	std::vector<SubMesh> submeshes;
 	uint numIndices;
 	std::vector<Int3> indices;
 public:
@@ -30,8 +29,7 @@ public:
 	void SetVertexFlag(VertexFlags flag);
 	void SetVertSize(int count);
 	void SetVertices(Vertex* vertices, unsigned int count);
-	void SetSubMeshes(SubMesh* subMeshes, unsigned int count);
-	void SetSubMeshCount(int count);
+	void SetSubMeshes(const std::vector<SubMesh>& subMeshes);
 	void SetIndicesSize(int count);
 	void SetIndices(std::vector<Int3> indices, unsigned int count);
 	bool HasVertexFlag(VertexFlags flag);
@@ -39,7 +37,7 @@ public:
 	Vertex* GetVertices();
 	uint GetSubMeshCount();
 	uint GetIndicesSize();
-	SubMesh* GetSubMeshes() const;
+	std::vector<SubMesh> GetSubMeshes() const;
 	std::vector<Int3>& GetIndices();
 	
 	void ReadFromStream(FILE* stream);

@@ -317,9 +317,6 @@ namespace Utils.Models
             for (int i = 0; i != model.Lods.Length; i++)
             {
                 vertData.Add(model.Lods[i].Vertices);
-
-                if (model.Lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
-                    model.Lods[i].VertexDeclaration -= VertexFlags.Tangent;
             }
 
             frameMesh.Boundings = BoundingBoxExtenders.CalculateBounds(vertData);

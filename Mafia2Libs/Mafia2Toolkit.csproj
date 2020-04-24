@@ -62,7 +62,7 @@
     <LangVersion>7.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>Mafia2Tool.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>ECEBC1D26FFB2386CF2C12237C8B7067EEED7348</ManifestCertificateThumbprint>
@@ -389,6 +389,7 @@
     <Compile Include="Gibbed.Mafia2.FileFormats\TEA.cs" />
     <Compile Include="MafiaLib\ModelHelpers\M2TStructure.cs" />
     <Compile Include="MafiaLib\ModelHelpers\ModelDefinition.cs" />
+    <Compile Include="Rendering\Graphics\ConstantBufferFactory.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\IRenderer.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\Render2DPlane.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderATP.cs" />

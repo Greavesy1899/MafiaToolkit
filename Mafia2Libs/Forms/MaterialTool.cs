@@ -14,7 +14,6 @@ namespace Mafia2Tool
     public partial class MaterialTool : Form
     {
         private MaterialLibrary mtl;
-        private List<string> debugShader = new List<string>();
 
         public MaterialTool(FileInfo file)
         {

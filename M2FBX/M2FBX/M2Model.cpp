@@ -14,13 +14,9 @@ void ModelPart::SetVertices(Vertex* vertices, unsigned int count) {
 	ModelPart::numVertices = count;
 }
 
-void ModelPart::SetSubMeshes(SubMesh* subMeshes, unsigned int count) {
+void ModelPart::SetSubMeshes(const std::vector<SubMesh>& subMeshes)
+{
 	this->submeshes = subMeshes;
-	this->numSubMeshes = count;
-}
-
-void ModelPart::SetSubMeshCount(int count) {
-	this->numSubMeshes = count;
 }
 
 void ModelPart::SetIndicesSize(int count) {
@@ -46,14 +42,14 @@ Vertex* ModelPart::GetVertices() {
 }
 
 uint ModelPart::GetSubMeshCount() {
-	return this->numSubMeshes;
+	return this->submeshes.size();
 }
 
 uint ModelPart::GetIndicesSize() {
 	return this->numIndices;
 }
 
-SubMesh* ModelPart::GetSubMeshes() const
+std::vector<SubMesh> ModelPart::GetSubMeshes() const
 {
 	return this->submeshes;
 }
@@ -108,10 +104,11 @@ void ModelPart::ReadFromStream(FILE * stream) {
 		}
 		vertices[i] = vertex;
 	}
-	fread(&numSubMeshes, sizeof(int), 1, stream);
-	this->submeshes = new SubMesh[numSubMeshes];
+	int numSubmesh = 0;
+	fread(&numSubmesh, sizeof(int), 1, stream);
+	this->submeshes = std::vector<SubMesh>();
 
-	for (uint i = 0; i < this->numSubMeshes; i++) {
+	for (uint i = 0; i < numSubmesh; i++) {
 		SubMesh subMesh = SubMesh();
 		std::string name = std::string();
 		int startIndex, numFaces;
@@ -122,7 +119,7 @@ void ModelPart::ReadFromStream(FILE * stream) {
 		fread(&numFaces, sizeof(int), 1, stream);
 		subMesh.SetStartIndex(startIndex);
 		subMesh.SetNumFaces(numFaces);
-		this->submeshes[i] = subMesh;
+		this->submeshes.push_back(subMesh);
 	}
 	fread(&numIndices, sizeof(int), 1, stream);
 	for (int x = 0; x != numIndices/3; x++) {
@@ -174,10 +171,11 @@ void ModelPart::ReadFromStream2(FILE* stream)
 		}
 		vertices[i] = vertex;
 	}
-	fread(&numSubMeshes, sizeof(int), 1, stream);
-	this->submeshes = new SubMesh[numSubMeshes];
+	int numSubmesh = 0;
+	fread(&numSubmesh, sizeof(int), 1, stream);
+	this->submeshes = std::vector<SubMesh>();
 
-	for (uint i = 0; i < this->numSubMeshes; i++) {
+	for (uint i = 0; i < numSubmesh; i++) {
 		SubMesh subMesh = SubMesh();
 		std::string name = std::string();
 		int startIndex, numFaces;
@@ -188,7 +186,7 @@ void ModelPart::ReadFromStream2(FILE* stream)
 		fread(&numFaces, sizeof(int), 1, stream);
 		subMesh.SetStartIndex(startIndex);
 		subMesh.SetNumFaces(numFaces);
-		this->submeshes[i] = subMesh;
+		this->submeshes.push_back(subMesh);
 	}
 	fread(&numIndices, sizeof(int), 1, stream);
 	for (int x = 0; x != numIndices / 3; x++) {
@@ -235,12 +233,13 @@ void ModelPart::WriteToStream(FILE * stream) {
 			fwrite(&this->vertices[i].uv3, sizeof(UVVert), 1, stream);
 		}
 	}
+	int numSubMeshes = submeshes.size();
 	fwrite(&numSubMeshes, sizeof(int), 1, stream);
 	for (uint i = 0; i < numSubMeshes; i++) {
-		SubMesh subMesh = this->submeshes[i];
-		WriteString(stream, subMesh.GetMatName());
-		int startIndex = subMesh.GetStartIndex();
-		int numFaces = subMesh.GetNumFaces();
+		SubMesh submesh = this->submeshes.at(i);
+		WriteString(stream, submesh.GetMatName());
+		int startIndex = submesh.GetStartIndex();
+		int numFaces = submesh.GetNumFaces();
 		fwrite(&startIndex, sizeof(int), 1, stream);
 		fwrite(&numFaces, sizeof(int), 1, stream);
 	}

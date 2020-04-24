@@ -64,6 +64,17 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		}
 	}
 
+	if (pPart.HasVertexFlag(VertexFlags::Tangent))
+	{
+		if (pElementTangent->GetReferenceMode() != FbxGeometryElement::eDirect) {
+			WriteLine("pElementTangent->GetReferenceMode() did not equal eDirect.. Cannot continue.");
+			return -99;
+		}
+		if ((pElementTangent->GetMappingMode() != FbxGeometryElement::eByControlPoint)) {
+			pMesh->GenerateTangentsData("DiffuseUV", true);
+		}
+	}
+
 	uint numVertices = pMesh->GetControlPointsCount();
 	Vertex* vertices = new Vertex[numVertices];
 
@@ -152,7 +163,7 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	std::vector<Int3> indices = std::vector<Int3>();
 
 	auto matCount = pNode->GetMaterialCount() == 0 ? 1 : pNode->GetMaterialCount();
-	SubMesh* subMeshes = new SubMesh[matCount];
+	std::vector<SubMesh> subMeshes = std::vector<SubMesh>();
 
 	if (pNode->GetMaterialCount() > 0)
 	{
@@ -161,14 +172,14 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 			SubMesh sub = SubMesh();
 			FbxSurfaceMaterial* mat = pNode->GetMaterial(i);
 			sub.SetMatName(std::string(mat->GetName()));
-			subMeshes[i] = sub;
+			subMeshes.push_back(sub);
 		}
 	}
 	else
 	{
 		SubMesh sub = SubMesh();
 		sub.SetMatName("Material0");
-		subMeshes[0] = sub;
+		subMeshes.push_back(sub);
 		WriteLine("Missing material nodes on this FBX Model, Implemented whole material");
 	}
 
@@ -222,18 +233,32 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	}
 
 	int curTotal = 0;
-	for (size_t i = 0; i != matCount; i++)
+
+	//remove any empty materials. 
+	auto it = subMeshes.begin();
+	int index = 0;
+	while (it != subMeshes.end())
 	{
-		int faces = subNumFacesCount[i];
-		subMeshes[i].SetNumFaces(faces);
-		subMeshes[i].SetStartIndex(curTotal);
-		curTotal += faces*3;
+		if (subNumFacesCount[index] == 0)
+		{
+			WriteLine("Removing material: %s", it->GetMatName().data());
+			it = subMeshes.erase(it);
+		}
+		else
+		{
+			int faces = subNumFacesCount[index];
+			it->SetNumFaces(faces);
+			it->SetStartIndex(curTotal);
+			curTotal += faces * 3;
+			it++;
+		}	
+		index++;
 	}
+
 	//Update data to do with triangles and vertices
 	pPart.SetVertices(vertices, numVertices);
 	pPart.SetIndices(indices, indices.size());
-	pPart.SetSubMeshes(subMeshes, matCount);
-	pPart.SetSubMeshCount(matCount);
+	pPart.SetSubMeshes(subMeshes);
 	delete[] subNumFacesCount;
 	return 0;
 }

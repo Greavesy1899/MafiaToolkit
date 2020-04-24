@@ -81,7 +81,6 @@ namespace Mafia2Tool
             {
                 data.Deserialize(0, reader.BaseStream, Gibbed.IO.Endian.Little);
             }
-
             foreach (TableData.Column column in data.Columns)
             {
                 MTableColumn newCol = new MTableColumn();

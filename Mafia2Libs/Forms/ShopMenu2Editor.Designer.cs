@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpeechEditor));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShopMenu2Editor));
             this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.CollisionContext = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -47,8 +47,8 @@
             // 
             // FrameResourceGrid
             // 
-            this.FrameResourceGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.FrameResourceGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FrameResourceGrid.Location = new System.Drawing.Point(402, 28);
             this.FrameResourceGrid.Name = "FrameResourceGrid";
@@ -58,7 +58,7 @@
             // 
             // treeView1
             // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView1.ContextMenuStrip = this.CollisionContext;
             this.treeView1.Location = new System.Drawing.Point(12, 28);
@@ -137,7 +137,7 @@
             this.exitToolStripMenuItem.Text = "$EXIT";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
-            // SpeechEditor
+            // ShopMenu2Editor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -146,7 +146,7 @@
             this.Controls.Add(this.FrameResourceGrid);
             this.Controls.Add(this.treeView1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "SpeechEditor";
+            this.Name = "ShopMenu2Editor";
             this.Text = "$SPEECH_EDITOR_TITLE";
             this.CollisionContext.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);

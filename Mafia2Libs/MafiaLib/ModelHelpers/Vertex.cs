@@ -127,7 +127,7 @@ namespace Utils.Models
             //Z..
             tempNormal = Tangent.Z * 127.0f + 127.0f;
             tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)255;
-            data[i + 11] = tempByte;
+            data[i + 12] = tempByte;
         }
 
         /// <summary>
@@ -186,17 +186,6 @@ namespace Utils.Models
         {
             byte[] tempDamageIDData = BitConverter.GetBytes(damageGroup);
             Array.Copy(tempDamageIDData, 0, data, i, 4);
-        }
-
-        /// <summary>
-        /// Construct binormal data from normal and tangent info.
-        /// </summary>
-        public void BuildBinormals()
-        {
-            binormal = normal;           
-            binormal = Vector3.Cross(binormal, tangent);
-            binormal *= 2;
-            binormal.Normalize();
         }
 
         public override string ToString()

@@ -5,10 +5,16 @@
 4
 5
 6
+R
+G
+B
+attacker
+reciver
 affector
 BlockId
 BlockingTime
 Bottom
+Bigearls
 CategoryId
 channel
 civil
@@ -32,6 +38,7 @@ Flags
 fragtex
 Group
 guid
+Kadence
 HP
 Id
 ID
@@ -50,6 +57,8 @@ Notes
 Possibility
 Price
 Priority
+Priorita
+Popis
 Probability
 Range
 Reaction
@@ -71,6 +80,7 @@ SoundId
 source
 speed
 Speed
+Power0
 TexCols
 TexEnd
 TexRows

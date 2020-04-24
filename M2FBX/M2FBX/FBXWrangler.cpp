@@ -96,7 +96,7 @@ int ConvertM2T(const char* pSource, const char* pDest, unsigned char isBin)
 	if (lResult)
 	{
 		//Save the document
-		lResult = SaveDocument(lSdkManager, lScene, pDest, 1);
+		lResult = SaveDocument(lSdkManager, lScene, pDest, isBin);
 		if (!lResult) WriteLine("\n\nAn error occurred while saving the document...");
 	}
 	else WriteLine("\n\nAn error occurred while creating the document...");

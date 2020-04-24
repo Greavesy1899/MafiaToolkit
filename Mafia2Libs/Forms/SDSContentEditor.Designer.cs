@@ -68,9 +68,9 @@
             this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.ToolsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AutoAddFilesBUtton = new System.Windows.Forms.ToolStripMenuItem();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -226,15 +226,6 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
-            // panel1
-            // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.panel1.Location = new System.Drawing.Point(203, 28);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(585, 410);
-            this.panel1.TabIndex = 16;
-            // 
             // ToolsButton
             // 
             this.ToolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -249,9 +240,18 @@
             // AutoAddFilesBUtton
             // 
             this.AutoAddFilesBUtton.Name = "AutoAddFilesBUtton";
-            this.AutoAddFilesBUtton.Size = new System.Drawing.Size(180, 22);
+            this.AutoAddFilesBUtton.Size = new System.Drawing.Size(153, 22);
             this.AutoAddFilesBUtton.Text = "Auto-Add Files";
             this.AutoAddFilesBUtton.Click += new System.EventHandler(this.AutoAddFilesButton_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.panel1.Location = new System.Drawing.Point(203, 28);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(585, 410);
+            this.panel1.TabIndex = 16;
             // 
             // SDSContentEditor
             // 
@@ -261,6 +261,7 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.treeView1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SDSContentEditor";
             this.Text = "SDSContentEditor";
             this.toolStrip1.ResumeLayout(false);

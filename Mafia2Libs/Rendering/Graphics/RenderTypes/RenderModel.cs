@@ -9,9 +9,9 @@ using Utils.Types;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using Utils.Models;
 using Utils.SharpDXExtensions;
-using System.Diagnostics;
 using System;
 using System.Windows;
+using static Rendering.Graphics.BaseShader;
 
 namespace Rendering.Graphics
 {
@@ -29,6 +29,7 @@ namespace Rendering.Graphics
         private Hash aoHash;
         public ShaderResourceView AOTexture { get; set; }
         public RenderBoundingBox BoundingBox { get; set; }
+        public Vector4 SelectionColour { get; private set; }
 
         public struct LOD
         {
@@ -45,6 +46,7 @@ namespace Rendering.Graphics
             isUpdatedNeeded = false;
             Transform = Matrix.Identity;
             BoundingBox = new RenderBoundingBox();
+            SelectionColour = new Vector4(1.0f);
         }
 
         public void ConvertMTKToRenderModel(M2TStructure structure)
@@ -370,7 +372,7 @@ namespace Rendering.Graphics
             deviceContext.PixelShader.SetShaderResource(2, AOTexture);
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
             {
-                LODs[0].ModelParts[i].Shader.SetShaderParamters(device, deviceContext, LODs[0].ModelParts[i].Material);
+                LODs[0].ModelParts[i].Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(LODs[0].ModelParts[i].Material, SelectionColour));
                 LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera);
                 LODs[0].ModelParts[i].Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(LODs[0].ModelParts[i].NumFaces * 3), LODs[0].ModelParts[i].StartIndex);
             }
@@ -406,12 +408,14 @@ namespace Rendering.Graphics
         public override void Select()
         {
             BoundingBox.Select();
+            SelectionColour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
             BoundingBox.DoRender = true;
         }
 
         public override void Unselect()
         {
             BoundingBox.Unselect();
+            SelectionColour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
             BoundingBox.DoRender = false;
         }
     }

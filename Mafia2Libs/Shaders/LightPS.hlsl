@@ -13,6 +13,11 @@ cbuffer LightBuffer
 	float4 specularColor;
 };
 
+cbuffer EditorParameterBuffer
+{
+    float4 selectionColour;
+};
+
 cbuffer Shader_601151254Params
 {
     float4 C002MaterialColour;
@@ -102,8 +107,7 @@ float4 LightPixelShader(VS_OUTPUT input) : SV_TARGET
     aoTextureColor = textures[2].Sample(SampleType, input.TexCoord7);
 
     color = CalculateColor(input, color);
-    color = (color * aoTextureColor * diffuseTextureColor);
-	
+    color = (color * aoTextureColor * diffuseTextureColor * selectionColour);	
 	return color;
 }
 
@@ -112,7 +116,7 @@ float4 PS_601151254(VS_OUTPUT input) : SV_TARGET
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     color = CalculateColor(input, color);
-    color = color * C002MaterialColour;
+    color = color * C002MaterialColour * selectionColour;
 
     return color;
 }
@@ -128,6 +132,6 @@ float4 PS_50760736(VS_OUTPUT input) : SV_TARGET
 	aoTextureColor = textures[2].Sample(SampleType, input.TexCoord7);
 	emissiveTextureColor = (textures[1].Sample(SampleType, input.TexCoord0)* C005_EmissiveFacadeColorAndIntensity);
 	color = CalculateColor(input, color);
-    color = (color * aoTextureColor * diffuseTextureColor);
+    color = (color * aoTextureColor * diffuseTextureColor * selectionColour);
 	return color;
 }

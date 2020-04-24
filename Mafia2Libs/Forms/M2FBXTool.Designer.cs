@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(M2FBXTool));
             this.ImportBox = new System.Windows.Forms.TextBox();
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
             this.M2FBXGroup = new System.Windows.Forms.GroupBox();
@@ -141,6 +142,7 @@
             this.ClientSize = new System.Drawing.Size(428, 188);
             this.Controls.Add(this.M2FBXGroup);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "M2FBXTool";
             this.Text = "M2FBXTool";

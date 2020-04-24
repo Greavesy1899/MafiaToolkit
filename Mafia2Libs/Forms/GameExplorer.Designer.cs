@@ -62,6 +62,7 @@ namespace Mafia2Tool
             this.CreateFrameResourceButton = new System.Windows.Forms.ToolStripMenuItem();
             this.CreateSDSContentButton = new System.Windows.Forms.ToolStripMenuItem();
             this.CreateCollisionButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ContextForceBigEndian = new System.Windows.Forms.ToolStripMenuItem();
             this.topContainer = new System.Windows.Forms.ToolStripContainer();
             this.tools = new System.Windows.Forms.ToolStrip();
             this.dropdownFile = new System.Windows.Forms.ToolStripDropDownButton();
@@ -84,7 +85,6 @@ namespace Mafia2Tool
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
             this.MafiaIIBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.ContextForceBigEndian = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -261,7 +261,7 @@ namespace Mafia2Tool
             this.CreateFileButton,
             this.ContextForceBigEndian});
             this.GEContext.Name = "SDSContext";
-            this.GEContext.Size = new System.Drawing.Size(219, 180);
+            this.GEContext.Size = new System.Drawing.Size(219, 158);
             this.GEContext.Text = "$VIEW";
             this.GEContext.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpening);
             // 
@@ -379,6 +379,13 @@ namespace Mafia2Tool
             this.CreateCollisionButton.Size = new System.Drawing.Size(155, 22);
             this.CreateCollisionButton.Text = "Collision";
             this.CreateCollisionButton.Click += new System.EventHandler(this.CreateCollisionButton_Click);
+            // 
+            // ContextForceBigEndian
+            // 
+            this.ContextForceBigEndian.Name = "ContextForceBigEndian";
+            this.ContextForceBigEndian.Size = new System.Drawing.Size(218, 22);
+            this.ContextForceBigEndian.Text = "$FORCE_BIG_ENDIAN";
+            this.ContextForceBigEndian.Click += new System.EventHandler(this.ContextForceBigEndian_Click);
             // 
             // topContainer
             // 
@@ -587,13 +594,6 @@ namespace Mafia2Tool
             // MafiaIIBrowser
             // 
             this.MafiaIIBrowser.Description = "$SELECT_MII_FOLDER";
-            // 
-            // ContextForceBigEndian
-            // 
-            this.ContextForceBigEndian.Name = "ContextForceBigEndian";
-            this.ContextForceBigEndian.Size = new System.Drawing.Size(218, 22);
-            this.ContextForceBigEndian.Text = "$FORCE_BIG_ENDIAN";
-            this.ContextForceBigEndian.Click += new System.EventHandler(this.ContextForceBigEndian_Click);
             // 
             // GameExplorer
             // 
