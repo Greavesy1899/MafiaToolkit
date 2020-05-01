@@ -188,6 +188,7 @@ namespace ResourceTypes.BufferPools
     public class IndexBuffer
     {
         private ulong hash;
+        private int unk0;
         private uint length;
         private ushort[] data;
 
@@ -216,7 +217,7 @@ namespace ResourceTypes.BufferPools
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             hash = stream.ReadUInt64(isBigEndian);
-            stream.ReadInt32(isBigEndian);
+            unk0 = stream.ReadInt32(isBigEndian);
             length = stream.ReadUInt32(isBigEndian);
             data = new ushort[length / 2];
 
@@ -234,10 +235,10 @@ namespace ResourceTypes.BufferPools
         public void WriteToFile(MemoryStream stream, bool isBigEndian = false)
         {
             stream.Write(hash, isBigEndian);
-            stream.Write(1, isBigEndian);
+            stream.Write(unk0, isBigEndian);
             stream.Write(length, isBigEndian);
 
-            for(int i = 0; i != data.Length; i++)
+            for (int i = 0; i != data.Length; i++)
             {
                 stream.Write(data[i], isBigEndian);
             }

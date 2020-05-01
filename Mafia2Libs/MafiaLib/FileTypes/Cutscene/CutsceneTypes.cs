@@ -567,8 +567,8 @@ namespace ResourceTypes.Cutscene
         public int Unk04 { get; set; }
         public int Unk05 { get; set; }
         public byte Unk06 { get; set; }
-        public int Unk07 { get; set; }
-        public int Unk08 { get; set; }
+        public ulong Unk07 { get; set; }
+        public ulong Unk08 { get; set; }
         public Matrix Transform { get; set; }
         public string Name4 { get; set; }
         public AeUnk23()
@@ -589,8 +589,8 @@ namespace ResourceTypes.Cutscene
             Unk04 = stream.ReadInt32(isBigEndian);
             Unk05 = stream.ReadInt32(isBigEndian);
             Unk06 = stream.ReadByte8();
-            Unk07 = stream.ReadInt32(isBigEndian);
-            Unk08 = stream.ReadInt32(isBigEndian);
+            Unk07 = stream.ReadUInt64(isBigEndian);
+            Unk08 = stream.ReadUInt64(isBigEndian);
             Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
             Name4 = stream.ReadString16(isBigEndian);
             return true;

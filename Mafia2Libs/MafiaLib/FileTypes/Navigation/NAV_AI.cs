@@ -69,7 +69,7 @@ namespace ResourceTypes.Navigation
                 else
                 {
                     reader.BaseStream.Seek(start, SeekOrigin.Begin);
-                    //data = new OBJData(reader);
+                    data = new OBJData(reader);
                 }
             }
             else if (unk01_flags == 1005)

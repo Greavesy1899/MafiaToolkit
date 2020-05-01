@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using ResourceTypes.Collisions.Opcode;
 using SharpDX;
@@ -150,6 +151,7 @@ namespace ResourceTypes.Collisions
             public Matrix Transform { 
                 get {
                     Matrix transform = Matrix.RotationYawPitchRoll(MathUtil.DegreesToRadians(RotationDegrees.X), MathUtil.DegreesToRadians(RotationDegrees.Y), MathUtil.DegreesToRadians(RotationDegrees.Z));
+                    Debug.Assert(!transform.IsNaN());
                     transform.TranslationVector = Position;
                     return transform;
                 }

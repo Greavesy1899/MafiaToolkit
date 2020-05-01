@@ -147,17 +147,19 @@ namespace Rendering.Graphics
         public void SelectEntry(int id)
         {
             IRenderer newObj, oldObj, gizmo;
-            Assets.TryGetValue(id, out newObj);
-            Assets.TryGetValue(selectedID, out oldObj);
+            bool foundNew = Assets.TryGetValue(id, out newObj);
+            bool foundOld = Assets.TryGetValue(selectedID, out oldObj);
             gizmo = Assets[1];
 
             if (selectedID == id)
                 return;
 
-            if (newObj != null)
+            if (foundNew)
             {
-                if (oldObj != null)
+                if (foundOld)
+                {
                     oldObj.Unselect();
+                }
 
                 gizmo.SetTransform(newObj.Transform);
                 gizmo.DoRender = false;

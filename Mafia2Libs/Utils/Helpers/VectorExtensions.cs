@@ -48,6 +48,11 @@ namespace Utils.SharpDXExtensions
             stream.Write(vec.Y, isBigEndian);
             stream.Write(vec.Z, isBigEndian);
         }
+
+        public static bool IsNaN(this Vector3 vector)
+        {
+            return float.IsNaN(vector.X) || float.IsNaN(vector.Y) || float.IsNaN(vector.Z);
+        }
     }
 
     public static class Vector2Extenders
@@ -87,6 +92,11 @@ namespace Utils.SharpDXExtensions
             vec.Z = stream.ReadSingle(isBigEndian);
             vec.W = stream.ReadSingle(isBigEndian);
             return vec;
+        }
+
+        public static bool IsNaN(this Vector4 vector)
+        {
+            return float.IsNaN(vector.X) || float.IsNaN(vector.Y) || float.IsNaN(vector.Z) || float.IsNaN(vector.W);
         }
 
         public static void WriteToFile(this Vector4 vec, BinaryWriter writer)

@@ -305,6 +305,23 @@ namespace Mafia2Tool
             Shutdown();
         }
 
+        private Vector3 MoveObjectWithMouse(float z, int sx, int sy)
+        {
+            Ray ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(RenderPanel.Size.Width, RenderPanel.Size.Height));
+            Vector3 worldPosition = ray.Position + (ray.Direction * 1);
+            //Vector3 worldPosition = ray.Position + (ray.Direction*(ray.Position.Z + ray.Direction.Z / fObject.LocalTransform.TranslationVector.Z)); nefunguje, asi chyba v odcitani?
+
+            for (int i = 0; i < 99999; i++)
+            {
+                worldPosition = ray.Position + (ray.Direction * i);
+                if (worldPosition.Z - z < 10)
+                {
+                    break;
+                }
+            }
+
+            return worldPosition;
+        }
 
         public bool Frame()
         {
@@ -324,10 +341,46 @@ namespace Mafia2Tool
                     camUpdated = true;
                     
                 }
-                else if (Input.IsButtonDown(MouseButtons.Left) && bSelectMode && selectTimer <= 0.0f)
+                else if (Input.IsButtonDown(MouseButtons.Left) && selectTimer <= 0.0f)
                 {
-                    Pick(mousePos.X, mousePos.Y);
-                    selectTimer = 1.0f;
+                    if (bSelectMode)
+                    {
+                        Pick(mousePos.X, mousePos.Y);
+                        selectTimer = 1.0f;
+                    }
+                    else
+                    {
+                        if(dSceneTree.treeView1.SelectedNode != null)
+                        {
+                            var node = dSceneTree.treeView1.SelectedNode;
+                            var tag = dSceneTree.treeView1.SelectedNode.Tag;
+                            
+                            if(FrameResource.IsFrameType(tag))
+                            {
+                                FrameObjectBase fObject = (tag as FrameObjectBase);
+                                var translation = MoveObjectWithMouse(fObject.LocalTransform.TranslationVector.Z, mousePos.X, mousePos.Y);
+                                var local = fObject.LocalTransform;
+                                translation.Z = local.TranslationVector.Z;
+                                fObject.LocalTransform = MatrixExtensions.SetTranslationVector(local, translation);
+                                TreeViewUpdateSelected();
+                                ApplyChangesToRenderable(fObject);
+                            }
+                            else if(tag is Collision.Placement)
+                            {
+                                Collision.Placement placement = (tag as Collision.Placement);
+                                var translation = MoveObjectWithMouse(placement.Position.Z, mousePos.X, mousePos.Y);
+                                var local = placement.Position;
+                                translation.Z = local.Z;
+                                placement.Position = translation;
+                                TreeViewUpdateSelected();
+                                IRenderer asset;
+                                Graphics.Assets.TryGetValue(int.Parse(node.Name), out asset);
+                                RenderInstance instance = (asset as RenderInstance);
+                                instance.SetTransform(placement.Transform);
+                            }
+                        }
+                        
+                    }
                 }
 
                 float multiplier = ToolkitSettings.CameraSpeed;
@@ -865,29 +918,27 @@ namespace Mafia2Tool
 
         private void TreeViewUpdateSelected()
         {
-            if (dSceneTree.treeView1.SelectedNode.Tag == null)
+            var node = dSceneTree.treeView1.SelectedNode;
+            if (node.Tag == null)
+            {
                 return;
-
-            if (dSceneTree.treeView1.SelectedNode.Tag is RenderRoad)
-            {
-                Graphics.SelectEntry(Convert.ToInt32(dSceneTree.treeView1.SelectedNode.Name));
-            }
-            else if (dSceneTree.treeView1.SelectedNode.Tag is RenderJunction)
-            {
-                Graphics.SelectEntry(Convert.ToInt32(dSceneTree.treeView1.SelectedNode.Name));
-            }
-            else if (dSceneTree.treeView1.SelectedNode.Tag is Collision.Placement)
-            {
-                Graphics.SelectEntry(Convert.ToInt32(dSceneTree.treeView1.SelectedNode.Name));
-            }
-            else if (dSceneTree.treeView1.SelectedNode.Tag is FrameEntry)
-            {
-                Graphics.SelectEntry((dSceneTree.treeView1.SelectedNode.Tag as FrameEntry).RefID);
             }
 
-            dPropertyGrid.SetObject(dSceneTree.treeView1.SelectedNode.Tag);
-            //dPropertyGrid.Show(dockPanel1, DockState.DockRight);
-            //RenderPanel.Focus();
+            if (FrameResource.IsFrameType(node.Tag))
+            {
+                Graphics.SelectEntry((node.Tag as FrameEntry).RefID);
+            }
+            else
+            {
+                int result = 0;
+                if(int.TryParse(node.Name, out result))
+                {
+                    Graphics.SelectEntry(result);
+                }
+                
+            }
+
+            dPropertyGrid.SetObject(node.Tag);
         }
 
         private void FixActorDefintions(Actor actor)
@@ -1187,6 +1238,7 @@ namespace Mafia2Tool
             int lowestRefID = -1;
 
             Ray ray = Graphics.Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(RenderPanel.Size.Width, RenderPanel.Size.Height));
+            int index = 0;
             foreach (KeyValuePair<int, IRenderer> model in Graphics.Assets)
             {
                 if (!model.Value.DoRender)
@@ -1215,12 +1267,12 @@ namespace Mafia2Tool
 
                         if (!localRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
 
-                        if(t > 0.0f)
+                        if (t < 0.0f || float.IsNaN(t))
                         {
-                            if(SceneData.FrameResource.FrameObjects.ContainsKey(model.Key))
+                            if (SceneData.FrameResource.FrameObjects.ContainsKey(model.Key))
                             {
                                 var frame = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase);
-                                Utils.Logging.Log.WriteLine("The toolkit has failed to analyse a model. Skipping " + frame.Name);
+                                Utils.Logging.Log.WriteLine(string.Format("The toolkit has failed to analyse a model: {0} {1}", frame.Name, t));
                             }
                         }
 
@@ -1250,7 +1302,15 @@ namespace Mafia2Tool
                         float t;
 
                         if (!localRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-                        Debug.Assert(t > 0f);
+
+                        if (t < 0.0f || float.IsNaN(t))
+                        {
+                            //if (SceneData.FrameResource.FrameObjects.ContainsKey(model.Key))
+                            //{
+                            //    var frame = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase);
+                            //    Utils.Logging.Log.WriteLine(string.Format("The toolkit has failed to analyse a model: {0} {1}", frame.Name, t));
+                            //}
+                        }
 
                         var worldPosition = ray.Position + t * ray.Direction;
                         var distance = (worldPosition - ray.Position).LengthSquared();
@@ -1262,6 +1322,7 @@ namespace Mafia2Tool
                         }
                     }
                 }
+                index++;
             }
             TreeNode[] nodes = dSceneTree.treeView1.Nodes.Find(lowestRefID.ToString(), true);
 

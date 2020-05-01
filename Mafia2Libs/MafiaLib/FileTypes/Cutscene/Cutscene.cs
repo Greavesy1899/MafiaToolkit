@@ -254,9 +254,14 @@ namespace ResourceTypes.Cutscene
                             {
                                 Console.WriteLine("Unknown type");
                                 stream.Position = stream.Length;
-                                File.WriteAllBytes("Entitiy" + type + "_" + i + ".bin", data);
+                                File.WriteAllBytes("CutSceneData/Entitiy" + type + "_" + i + ".bin", data);
                             }
-                            Debug.Assert(stream.Position == stream.Length);
+                            File.WriteAllBytes("CutSceneData/Entitiy" + type + "_" + i + ".bin", data);
+                            if (stream.Position != stream.Length)
+                            {
+                                Debug.Assert(stream.Position == stream.Length);
+                            }
+                            
                         }
                     }
 
