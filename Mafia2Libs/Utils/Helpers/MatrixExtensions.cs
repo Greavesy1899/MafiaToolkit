@@ -52,10 +52,12 @@ namespace Utils.SharpDXExtensions
 
         public static Matrix SetMatrix(Quaternion rotation, Vector3 scale, Vector3 position)
         {
+            //doing the normal T * R * S does not work; I have to manually push in the vector into the final row.
             Matrix r = Matrix.RotationQuaternion(rotation);
             Matrix s = Matrix.Scaling(scale);
-            Matrix t = Matrix.Translation(position);
-            return t * r * s;
+            Matrix final = r * s;
+            final.Row4 = new Vector4(position, 1.0f);
+            return final;
         }
 
         public static Matrix SetTranslationVector(Matrix other, Vector3 position)

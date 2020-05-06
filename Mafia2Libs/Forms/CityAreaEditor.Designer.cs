@@ -28,11 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CityAreaEditor));
-            this.CollisionContext = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.deletePlacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openM2T = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
@@ -54,30 +50,9 @@
             this.ReloadAreaButton = new System.Windows.Forms.Button();
             this.Area2Box = new System.Windows.Forms.TextBox();
             this.Area1Box = new System.Windows.Forms.TextBox();
-            this.CollisionContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.AreaGroupBox.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // CollisionContext
-            // 
-            this.CollisionContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ContextDelete,
-            this.deletePlacementToolStripMenuItem});
-            this.CollisionContext.Name = "SDSContext";
-            this.CollisionContext.Size = new System.Drawing.Size(167, 48);
-            // 
-            // ContextDelete
-            // 
-            this.ContextDelete.Name = "ContextDelete";
-            this.ContextDelete.Size = new System.Drawing.Size(166, 22);
-            this.ContextDelete.Text = "Delete Collision";
-            // 
-            // deletePlacementToolStripMenuItem
-            // 
-            this.deletePlacementToolStripMenuItem.Name = "deletePlacementToolStripMenuItem";
-            this.deletePlacementToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.deletePlacementToolStripMenuItem.Text = "Delete Placement";
             // 
             // openM2T
             // 
@@ -285,7 +260,6 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "CityAreaEditor";
             this.Text = "$ACTOR_EDITOR_TITLE";
-            this.CollisionContext.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.AreaGroupBox.ResumeLayout(false);
@@ -302,9 +276,6 @@
         private System.Windows.Forms.ToolStripMenuItem SaveButton;
         private System.Windows.Forms.ToolStripMenuItem ReloadButton;
         private System.Windows.Forms.ToolStripMenuItem ExitButton;
-        private System.Windows.Forms.ContextMenuStrip CollisionContext;
-        private System.Windows.Forms.ToolStripMenuItem ContextDelete;
-        private System.Windows.Forms.ToolStripMenuItem deletePlacementToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton toolButton;
         private System.Windows.Forms.ToolStripMenuItem AddAreaButton;
         private System.Windows.Forms.ListBox listBox1;

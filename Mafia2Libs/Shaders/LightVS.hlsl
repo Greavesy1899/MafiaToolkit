@@ -55,8 +55,8 @@ VS_OUTPUT LightVertexShader(VS_INPUT input)
     //float3 b;
     //float3 c1 = cross(input.Normal, float3(0.0, 0.0, 1.0));
     //float3 c2 = cross(input.Normal, float3(0.0, 1.0, 0.0));
-    //if(length(c1) > length(c2))
-    //{   
+    //if (length(c1) > length(c2))
+    //{
     //    t = c1;
     //}
     //else
@@ -69,6 +69,7 @@ VS_OUTPUT LightVertexShader(VS_INPUT input)
     
     //output.Tangent = t;
     //output.Binormal = b;
+    
 	// Calculate the normal vector against the world matrix only.
     output.Normal = mul(input.Normal, (float3x3) worldMatrix);
     output.Normal = normalize(output.Normal);

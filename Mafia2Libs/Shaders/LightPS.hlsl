@@ -54,7 +54,7 @@ float3 CalculateFromNormalMap(VS_OUTPUT input)
 	input.Tangent = normalize(input.Tangent - dot(input.Tangent, input.Normal) * input.Normal);
 
 	//Convert normal from normal map to texture space and store in input.normal
-    float3 bumpNormal = (normalMap.x * input.Tangent) + (normalMap.y * input.Binormal) + (normalMap.z * input.Normal);
+    float3 bumpNormal = (normalMap.x * input.Tangent) + (normalMap.y * input.Binormal)/* + (normalMap.z * input.Normal)*/;
     bumpNormal = normalize(bumpNormal);
     return bumpNormal;
 }
@@ -82,7 +82,7 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     lightIntensity = saturate(dot(normal, lightDir));
 
     // Determine the final diffuse color based on the diffuse color and the amount of the light intensity.
-    color += (diffuseColor * lightIntensity);
+    color += (diffuseColor * 1.0f);
 	// Saturate the ambient and diffuse color.
     color = saturate(color);
 

@@ -3,9 +3,7 @@ using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
-using Mafia2Tool;
 using Utils.Settings;
-using System.Windows.Forms;
 
 namespace Rendering.Graphics
 {
@@ -17,7 +15,6 @@ namespace Rendering.Graphics
         public SharpDX.Direct3D11.Device Device { get; private set; }
         public DeviceContext DeviceContext { get; private set; }
         public DepthStencilState DepthStencilState { get; set; }
-
         private RenderTargetView m_RenderTargetView { get; set; }
         private Texture2D m_depthStencilBuffer { get; set; }
         private DepthStencilView m_DepthStencilView { get; set; }  
@@ -25,6 +22,7 @@ namespace Rendering.Graphics
         private RasterizerState m_RSWireFrame { get; set; }
         private RasterizerState m_RSCullSolid { get; set; }
         private RasterizerState m_RSCullWireFrame { get; set; }
+
         private RasterizerStateDescription m_RSDesc;
         private FillMode m_FillMode = FillMode.Solid;
         private CullMode m_CullMode = CullMode.Back;
@@ -81,10 +79,60 @@ namespace Rendering.Graphics
             m_RenderTargetView = new RenderTargetView(device, backBuffer);
             backBuffer.Dispose();
 
+            BlendStateDescription bsd = new BlendStateDescription()
+            {
+                AlphaToCoverageEnable = false,//true,
+                IndependentBlendEnable = false,
+            };
+            bsd.RenderTarget[0].AlphaBlendOperation = BlendOperation.Add;
+            bsd.RenderTarget[0].BlendOperation = BlendOperation.Add;
+            bsd.RenderTarget[0].DestinationAlphaBlend = BlendOption.One;
+            bsd.RenderTarget[0].DestinationBlend = BlendOption.InverseSourceAlpha;
+            bsd.RenderTarget[0].IsBlendEnabled = true;
+            bsd.RenderTarget[0].RenderTargetWriteMask = ColorWriteMaskFlags.All;
+            bsd.RenderTarget[0].SourceAlphaBlend = BlendOption.Zero;
+            bsd.RenderTarget[0].SourceBlend = BlendOption.SourceAlpha;
+            //bsDefault = new BlendState(device, bsd);
+
+            bsd.AlphaToCoverageEnable = true;
+            BlendState bsAlpha = new BlendState(device, bsd);
+
+            DeviceContext.OutputMerger.BlendState = bsAlpha;
+            BuildDepthStencilView(1920, 1080);
+
+            m_RSDesc = new RasterizerStateDescription()
+            {
+                IsAntialiasedLineEnabled = false,
+                CullMode = CullMode.Back,
+                DepthBias = 0,
+                DepthBiasClamp = .0f,
+                IsDepthClipEnabled = false,
+                FillMode = FillMode.Solid,
+                IsFrontCounterClockwise = true,
+                IsMultisampleEnabled = true,
+                IsScissorEnabled = false,
+                SlopeScaledDepthBias = .0f
+            };
+
+            
+            m_RSCullSolid = new RasterizerState(Device, m_RSDesc);
+            m_RSDesc.CullMode = CullMode.None;
+            m_RSSolid = new RasterizerState(Device, m_RSDesc);
+            m_RSDesc.FillMode = FillMode.Wireframe;
+            m_RSWireFrame = new RasterizerState(Device, m_RSDesc);
+            m_RSDesc.CullMode = CullMode.Back;
+            m_RSCullWireFrame = new RasterizerState(Device, m_RSDesc);
+
+            UpdateRasterizer();
+            return true;
+        }
+
+        private void BuildDepthStencilView(int w, int h)
+        {
             var depthBufferDesc = new Texture2DDescription()
             {
-                Width = 4096,
-                Height = 4096,
+                Width = w,
+                Height = h,
                 MipLevels = 1,
                 ArraySize = 1,
                 Format = Format.D24_UNorm_S8_UInt,
@@ -95,7 +143,7 @@ namespace Rendering.Graphics
                 OptionFlags = ResourceOptionFlags.None
             };
 
-            m_depthStencilBuffer = new Texture2D(device, depthBufferDesc);
+            m_depthStencilBuffer = new Texture2D(Device, depthBufferDesc);
 
             var depthStencilDecs = new DepthStencilStateDescription()
             {
@@ -134,55 +182,10 @@ namespace Rendering.Graphics
                 }
             };
 
-            BlendStateDescription bsd = new BlendStateDescription()
-            {
-                AlphaToCoverageEnable = false,//true,
-                IndependentBlendEnable = false,
-            };
-            bsd.RenderTarget[0].AlphaBlendOperation = BlendOperation.Add;
-            bsd.RenderTarget[0].BlendOperation = BlendOperation.Add;
-            bsd.RenderTarget[0].DestinationAlphaBlend = BlendOption.One;
-            bsd.RenderTarget[0].DestinationBlend = BlendOption.InverseSourceAlpha;
-            bsd.RenderTarget[0].IsBlendEnabled = true;
-            bsd.RenderTarget[0].RenderTargetWriteMask = ColorWriteMaskFlags.All;
-            bsd.RenderTarget[0].SourceAlphaBlend = BlendOption.Zero;
-            bsd.RenderTarget[0].SourceBlend = BlendOption.SourceAlpha;
-            //bsDefault = new BlendState(device, bsd);
-
-            bsd.AlphaToCoverageEnable = true;
-            BlendState bsAlpha = new BlendState(device, bsd);
-
-            DeviceContext.OutputMerger.BlendState = bsAlpha;
-
             m_DepthStencilView = new DepthStencilView(Device, m_depthStencilBuffer, depthStencilViewDesc);
             DeviceContext.OutputMerger.SetTargets(m_DepthStencilView, m_RenderTargetView);
-
-            m_RSDesc = new RasterizerStateDescription()
-            {
-                IsAntialiasedLineEnabled = true,
-                CullMode = CullMode.Back,
-                DepthBias = 10,
-                DepthBiasClamp = .0f,
-                IsDepthClipEnabled = false,
-                FillMode = FillMode.Solid,
-                IsFrontCounterClockwise = true,
-                IsMultisampleEnabled = false,
-                IsScissorEnabled = false,
-                SlopeScaledDepthBias = .0f
-            };
-
-            
-            m_RSCullSolid = new RasterizerState(Device, m_RSDesc);
-            m_RSDesc.CullMode = CullMode.None;
-            m_RSSolid = new RasterizerState(Device, m_RSDesc);
-            m_RSDesc.FillMode = FillMode.Wireframe;
-            m_RSWireFrame = new RasterizerState(Device, m_RSDesc);
-            m_RSDesc.CullMode = CullMode.Back;
-            m_RSCullWireFrame = new RasterizerState(Device, m_RSDesc);
-
-            UpdateRasterizer();
-            return true;
         }
+
         public void ToggleCullMode()
         {
             m_CullMode = m_CullMode == CullMode.None ? CullMode.Back : CullMode.None;
@@ -232,14 +235,27 @@ namespace Rendering.Graphics
             SwapChain?.Dispose();
             SwapChain = null;
         }
-        /// <summary>
-        /// Begin The scene. The Parameters are colours.
-        /// </summary>
+
         public void BeginScene(float red, float green, float blue, float alpha)
         {
             DeviceContext.ClearDepthStencilView(m_DepthStencilView, DepthStencilClearFlags.Depth, 1, 0);
             DeviceContext.ClearRenderTargetView(m_RenderTargetView, new Color4(red, green, blue, alpha));
         }
+
+        public void Resize(int w, int h)
+        {
+            DeviceContext.OutputMerger.SetRenderTargets(null, null, null);
+            m_RenderTargetView.Dispose();
+            SwapChain.ResizeBuffers(0, w, h, Format.Unknown, SwapChainFlags.None);
+            Texture2D buffer = SwapChain.GetBackBuffer<Texture2D>(0);
+            m_RenderTargetView = new RenderTargetView(Device, buffer);
+            buffer.Dispose();
+            BuildDepthStencilView(w, h);
+            DeviceContext.OutputMerger.SetRenderTargets(m_DepthStencilView, m_RenderTargetView);
+            DeviceContext.Rasterizer.SetViewport(0, 0, w, h, ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
+
+        }
+
         public void EndScene()
         {
             if (ToolkitSettings.VSync)

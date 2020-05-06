@@ -37,7 +37,6 @@ namespace Rendering.Graphics
             if (!D3D.Init(WindowHandle))
             {
                 MessageBox.Show("Failed to initialize DirectX11!");
-                return false;
             }
 
             Timer = new TimerClass();
@@ -46,39 +45,34 @@ namespace Rendering.Graphics
             Timer.Init();
             FPS.Init();
 
-            RenderStorageSingleton.Instance.Prefabs = new RenderPrefabs();
-            if (!RenderStorageSingleton.Instance.ShaderManager.Init(D3D.Device))
+            if(!RenderStorageSingleton.Instance.IsInitialised())
             {
-                MessageBox.Show("Failed to initialize Shader Manager!");
-                return false;
+                bool result = RenderStorageSingleton.Instance.Initialise(D3D);
+                var structure = new M2TStructure();
+                //import gizmo
+                RenderModel model = new RenderModel();
+                structure.ReadFromM2T("Resources/GizmoModel.m2t");
+                model.ConvertMTKToRenderModel(structure);
+                model.InitBuffers(D3D.Device, D3D.DeviceContext);
+                model.DoRender = false;
+
+                RenderModel sky = new RenderModel();
+                structure = new M2TStructure();
+                structure.ReadFromM2T("Resources/sky_backdrop.m2t");
+                sky.ConvertMTKToRenderModel(structure);
+                sky.InitBuffers(D3D.Device, D3D.DeviceContext);
+                sky.DoRender = false;
+                Assets.Add(1, sky);
+
+                RenderModel clouds = new RenderModel();
+                structure = new M2TStructure();
+                structure.ReadFromM2T("Resources/weather_clouds.m2t");
+                clouds.ConvertMTKToRenderModel(structure);
+                clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
+                clouds.DoRender = false;
+                Assets.Add(2, clouds);
             }
-            //this is backup!
-            RenderStorageSingleton.Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, D3D.DeviceContext, "texture.dds"));
-            RenderStorageSingleton.Instance.TextureCache.Add(1, TextureLoader.LoadTexture(D3D.Device, D3D.DeviceContext, "default_n.dds"));
 
-            var structure = new M2TStructure();
-            //import gizmo
-            RenderModel model = new RenderModel();
-            structure.ReadFromM2T("Resources/GizmoModel.m2t");
-            model.ConvertMTKToRenderModel(structure);
-            model.InitBuffers(D3D.Device, D3D.DeviceContext);
-            model.DoRender = false;
-
-            RenderModel sky = new RenderModel();
-            structure = new M2TStructure();
-            structure.ReadFromM2T("Resources/sky_backdrop.m2t");
-            sky.ConvertMTKToRenderModel(structure);
-            sky.InitBuffers(D3D.Device, D3D.DeviceContext);
-            sky.DoRender = false;
-            Assets.Add(1, sky);
-
-            RenderModel clouds = new RenderModel();
-            structure = new M2TStructure();
-            structure.ReadFromM2T("Resources/weather_clouds.m2t");
-            clouds.ConvertMTKToRenderModel(structure);
-            clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
-            clouds.DoRender = false;
-            Assets.Add(2, clouds);
             return true;
         }
 
@@ -93,7 +87,7 @@ namespace Rendering.Graphics
             Light.SetDiffuseColour(0.5f, 0.5f, 0.5f, 1f);
             Light.Direction = new Vector3(-0.2f, -1f, -0.3f);
             Light.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-            Light.SetSpecularPower(255.0f);
+            Light.SetSpecularPower(5.0f);
             Input = new InputClass();
             Input.Init();
             return true;
@@ -121,8 +115,10 @@ namespace Rendering.Graphics
             D3D.BeginScene(0.0f, 0f, 0f, 1.0f);
             Camera.Render();
 
-            foreach(KeyValuePair<ulong, BaseShader> shader in RenderStorageSingleton.Instance.ShaderManager.shaders)
+            foreach (KeyValuePair<ulong, BaseShader> shader in RenderStorageSingleton.Instance.ShaderManager.shaders)
+            {
                 shader.Value.InitCBuffersFrame(D3D.DeviceContext, Camera, Light);
+            }
 
             foreach (KeyValuePair<int, IRenderer> entry in Assets)
             {
@@ -166,6 +162,12 @@ namespace Rendering.Graphics
                 newObj.Select();
                 selectedID = id;
             }
+        }
+
+        public void OnResize(int width, int height)
+        {
+            Camera.SetProjectionMatrix(width, height);
+            //D3D.Resize(width, height);
         }
 
         public void ToggleD3DFillMode() => D3D.ToggleFillMode();

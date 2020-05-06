@@ -159,37 +159,33 @@ namespace ResourceTypes.FrameResource
         {
             //The world transform is calculated and then decomposed because some reason,
             //the renderer does not update on the first startup of the editor.
-            Vector3 position, scale;
+            Vector3 position, otherPosition, scale, otherScale;
             Quaternion rotation, otherRotation;
             localTransform.Decompose(out scale, out rotation, out position);
             worldTransform = Matrix.Identity;
-
-            Matrix transform = Matrix.Translation(position);
-            Matrix r;
+            Quaternion newRot;
+            Vector3 newPos;
 
             if (parent != null)
             {
-                Matrix.Multiply(ref parent.worldTransform, ref transform, out worldTransform);
-                worldTransform.Decompose(out scale, out otherRotation, out position);
-                r = Matrix.RotationQuaternion(otherRotation * rotation);
+                parent.worldTransform.Decompose(out otherScale, out otherRotation, out otherPosition);
+                newRot = otherRotation * rotation;
+                newPos = otherPosition + position;
             }
-            else if(root != null)
-            { 
-                Matrix.Multiply(ref root.worldTransform, ref transform, out worldTransform);
-                worldTransform.Decompose(out scale, out otherRotation, out position);
-                r = Matrix.RotationQuaternion(otherRotation * rotation);
+            else if (root != null)
+            {
+                root.worldTransform.Decompose(out otherScale, out otherRotation, out otherPosition);
+                newRot = otherRotation * rotation;
+                newPos = otherPosition + position;
             }
             else
             {
-                localTransform.Decompose(out scale, out rotation, out position);
-                r = Matrix.RotationQuaternion(rotation);
+                newRot = rotation;
+                newPos = position;
             }
 
-            worldTransform = Matrix.Identity;
-            Matrix s = Matrix.Scaling(scale);
-            Matrix t = Matrix.Translation(position);
-            worldTransform = r * s * t;
-
+            worldTransform = MatrixExtensions.SetMatrix(newRot, scale, newPos);
+            Debug.Assert(!worldTransform.IsNaN());
             foreach (var child in children)
             {
                 child.SetWorldTransform();

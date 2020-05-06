@@ -109,12 +109,10 @@ namespace Rendering.Graphics
 
         public void SetProjectionMatrix(int width, int height)
         {
-            if(width == 0 || height == 0)
-            {
-                width = 1024;
-                height = 768;
-            }
-            ProjectionMatrix = Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(ToolkitSettings.FieldOfView), (width / height), ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
+            width = (width == 0 ? 1024 : width);
+            height = (height == 0 ? 768 : height);
+            float aspectRatio = (float)width / (float)height;
+            ProjectionMatrix = Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(ToolkitSettings.FieldOfView), aspectRatio, ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
         }
 
         public Ray GetPickingRay(Vector2 pos, Vector2 screenDims)

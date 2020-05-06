@@ -180,6 +180,7 @@ namespace Rendering.Graphics
             context.InputAssembler.InputLayout = Layout;
             context.VertexShader.Set(VertexShader);
             context.PixelShader.Set(PixelShader);
+            context.PixelShader.SetSampler(0, SamplerState);
             context.DrawIndexed(size, (int)offset, 0);
         }
 

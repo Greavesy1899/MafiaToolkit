@@ -45,8 +45,10 @@ namespace Mafia2Tool
         {
             areas = new CityAreas(cityAreasFile.FullName);
 
-            for(int i = 0; i != areas.AreaCollection.Count; i++)
+            for (int i = 0; i != areas.AreaCollection.Count; i++)
+            {
                 listBox1.Items.Add(areas.AreaCollection[i].Name);
+            }
         }
 
         private void AddAreaButton_Click(object sender, EventArgs e)
@@ -61,13 +63,15 @@ namespace Mafia2Tool
         private void SaveButton_Click(object sender, EventArgs e)
         {
             using (BinaryWriter writer = new BinaryWriter(File.Open(cityAreasFile.FullName, FileMode.Create)))
+            {
                 areas.WriteToFile(writer);
+            }
         }
 
         private void ReloadButton_Click(object sender, EventArgs e)
         {
-            using (BinaryReader reader = new BinaryReader(File.Open(cityAreasFile.FullName, FileMode.Open)))
-                areas.ReadFromFile(reader);
+            Clear();
+            BuildData();
         }
 
         private void ExitButton_Click(object sender, EventArgs e)
@@ -77,8 +81,10 @@ namespace Mafia2Tool
 
         private void UpdateAreaData(object sender, EventArgs e)
         {
-            if(listBox1.SelectedIndex != -1)
+            if (listBox1.SelectedIndex != -1)
+            {
                 curIndex = listBox1.SelectedIndex;
+            }
 
             AreaNameBox.Text = areas.AreaCollection[curIndex].Name;
             Area1Box.Text = areas.AreaCollection[curIndex].IndexedString;
@@ -102,8 +108,24 @@ namespace Mafia2Tool
 
         private void DeleteArea_Click(object sender, EventArgs e)
         {
-            if(listBox1.SelectedItem != null)
+            //just a testing thing right now
+            if(listBox1.SelectedIndex != 1)
+            {
+                listBox1.Items.RemoveAt(listBox1.SelectedIndex);
+            }
+            else if (listBox1.SelectedItem != null)
+            {
                 listBox1.Items.Remove(listBox1.SelectedItem);
+            }
+        }
+
+        private void Clear()
+        {
+            listBox1.Items.Clear();
+            AreaNameBox.Clear();
+            Area1Box.Clear();
+            Area2Box.Clear();
+            UnkByteBox.Checked = false;
         }
     }
 }

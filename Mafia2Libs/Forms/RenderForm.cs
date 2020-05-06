@@ -129,7 +129,7 @@ namespace Mafia2Tool
 
         private void RenderPanel_Resize(object sender, EventArgs e)
         {
-            Graphics.Camera.SetProjectionMatrix(RenderPanel.Width, RenderPanel.Height);
+            Graphics.OnResize(RenderPanel.Width, RenderPanel.Height);
         }
         
         private void LinkToActor_Click(object sender, EventArgs e)
@@ -796,6 +796,19 @@ namespace Mafia2Tool
                 dSceneTree.AddToTree(node);
                 dSceneTree.AddToTree(node2);
             }
+            if(SceneData.OBJData != null)
+            {
+                for (int i = 0; i < SceneData.OBJData.Length; i++)
+                {
+                    var obj = (SceneData.OBJData[i].data as OBJData);
+                    for (int z = 0; z < obj.vertices.Length; z++)
+                    {
+                        RenderNav nav = new RenderNav();                       
+                        nav.Init(obj, z);
+                        assets.Add(StringHelpers.RandomGenerator.Next(), nav);
+                    }                   
+                }
+            }
             if (SceneData.Collisions != null)
             {
                 TreeNode node = new TreeNode("Collision Data");
@@ -1050,6 +1063,11 @@ namespace Mafia2Tool
                 RenderModel model = (Graphics.Assets[obj.RefID] as RenderModel);
                 model.SetTransform(mesh.WorldTransform);
                 model.UpdateMaterials(mesh.Material);
+            }
+
+            foreach(var child in obj.Children)
+            {
+                ApplyChangesToRenderable(child);
             }
         }
 
