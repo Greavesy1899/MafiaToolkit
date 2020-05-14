@@ -103,7 +103,7 @@ namespace ResourceTypes.FrameResource
             Tables = new string[numTables];
             for (int i = 0; i < numTables; i++)
             {
-                iterator.MoveNext();
+                iterator.Current.MoveToNext();
                 Tables[i] = iterator.Current.Value;
             }
             iterator.Current.MoveToNext();
@@ -197,13 +197,16 @@ namespace ResourceTypes.FrameResource
 
         public override void ReadResourceEntry(XPathNodeIterator iterator)
         {
-            base.ReadResourceEntry(iterator);
+            iterator.Current.MoveToNext();
+            FileName = iterator.Current.Value;
             iterator.Current.MoveToNext();
             XMLTag = iterator.Current.Value;
             iterator.Current.MoveToNext();
             Unk1 = iterator.Current.ValueAsInt;
             iterator.Current.MoveToNext();
             Unk3 = iterator.Current.ValueAsInt;
+            iterator.Current.MoveToNext();
+            EntryVersion = iterator.Current.ValueAsInt;
         }
 
         public override void WriteResourceEntry(XmlWriter writer)

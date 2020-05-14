@@ -14,6 +14,7 @@ namespace Mafia2Tool
     {
         private FileInfo file;
         private StreamMapLoader stream;
+        private object clipboard;
 
         public StreamEditor(FileInfo file)
         {
@@ -34,8 +35,8 @@ namespace Mafia2Tool
             exitToolStripMenuItem.Text = Language.GetString("$EXIT");
             AddLineButton.Text = Language.GetString("$ADD_LINE");
             DeleteLineButton.Text = Language.GetString("$DELETE_LINE");
-            MoveItemDown.Text = Language.GetString("$MOVE_DOWN");
-            MoveItemUp.Text = Language.GetString("$MOVE_UP");
+            MoveItemDownButton.Text = Language.GetString("$MOVE_DOWN");
+            MoveItemUpButton.Text = Language.GetString("$MOVE_UP");
         }
 
         private void Sort(List<StreamLoader> loaders)
@@ -313,7 +314,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void MoveItemUp_Click(object sender, System.EventArgs e)
+        private void MoveItemUp()
         {
             if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
             {
@@ -333,7 +334,12 @@ namespace Mafia2Tool
             }
         }
 
-        private void MoveItemDown_Click(object sender, System.EventArgs e)
+        private void MoveItemUp_Click(object sender, System.EventArgs e)
+        {
+            MoveItemUp();
+        }
+
+        private void MoveItemDown()
         {
             if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
             {
@@ -351,6 +357,11 @@ namespace Mafia2Tool
                     }
                 }
             }
+        }
+
+        private void MoveItemDown_Click(object sender, System.EventArgs e)
+        {
+            MoveItemDown();
         }
 
         private void CopyLoadListAbove_Click(object sender, EventArgs e)
@@ -387,6 +398,63 @@ namespace Mafia2Tool
                 }
             }
             Cursor.Current = Cursors.Default;
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if(linesTree.Focused)
+            {
+                if (e.KeyCode == Keys.Delete)
+                {
+                    if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null && linesTree.SelectedNode.Tag is StreamLine)
+                    {
+                        linesTree.Nodes.Remove(linesTree.SelectedNode);
+                    }
+                }
+                else if (e.Control && e.KeyCode == Keys.C)
+                {
+                    Copy();
+                }
+                else if (e.Control && e.KeyCode == Keys.V)
+                {
+                    Paste();
+                }
+                else if(e.Control && e.KeyCode == Keys.U && linesTree.SelectedNode.Tag is StreamLine)
+                {
+                    MoveItemUp();
+                }
+                else if (e.Control && e.KeyCode == Keys.N && linesTree.SelectedNode.Tag is StreamLine)
+                {
+                    MoveItemDown();
+                }
+            }
+        }
+
+        private void Paste()
+        {
+            var data = clipboard;
+            if (data != null)
+            {
+                if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
+                {
+                    var tag = linesTree.SelectedNode.Tag;
+                    if (tag is StreamLine && data is StreamLine)
+                    {
+                        StreamLine newData = new StreamLine(data as StreamLine);
+                        linesTree.SelectedNode.Tag = newData;
+                        linesTree.SelectedNode.Text = newData.Name;
+                    }
+                }
+            }
+            PropertyGrid.SelectedObject = linesTree?.SelectedNode.Tag;
+        }
+
+        private void Copy()
+        {
+            if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
+            {
+                clipboard = linesTree.SelectedNode.Tag;
+            }
         }
     }
 }

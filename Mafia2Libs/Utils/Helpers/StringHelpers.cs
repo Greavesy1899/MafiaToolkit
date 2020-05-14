@@ -6,7 +6,13 @@ namespace Utils.StringHelpers
 {
     public class StringHelpers
     {
-        public static Random RandomGenerator = new Random();
+        private static int currentRefID = -1;
+
+        public static int GetNewRefID()
+        {
+            currentRefID++;
+            return currentRefID;
+        }
 
         public static string ReadString8(BinaryReader reader)
         {

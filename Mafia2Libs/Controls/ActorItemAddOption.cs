@@ -31,6 +31,12 @@ namespace Forms.EditorControls
         {
             groupGeneral.Text = Language.GetString("$GENERAL");
             ActorTypeLabel.Text = Language.GetString("$ACTOR_TYPE");
+            ActorDefinitionLabel.Text = Language.GetString("$ACTOR_DEFINITION_NAME");
+        }
+
+        public string GetDefinitionName()
+        {
+            return DefinitionBox.Text;
         }
 
         public ActorTypes GetSelectedType()

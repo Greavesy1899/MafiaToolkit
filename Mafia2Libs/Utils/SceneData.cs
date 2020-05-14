@@ -18,6 +18,8 @@ using ResourceTypes.Collisions;
 using ResourceTypes.Navigation;
 using ResourceTypes.Translokator;
 using ResourceTypes.Misc;
+using Utils.Types;
+using System.Diagnostics;
 
 namespace Mafia2Tool
 {
@@ -42,7 +44,17 @@ namespace Mafia2Tool
         public static FrameProps FrameProperties;
         public static string ScenePath;
 
+        private static SDSContentFile sdsContent;
         private static bool isBigEndian;
+
+        private static FileInfo BuildFileInfo(string name)
+        {
+            var file = name;
+            var info = new FileInfo(file);
+            Debug.Assert(info.Exists);
+            return info;
+        }
+
         public static void BuildData(bool forceBigEndian)
         {
             List<FileInfo> vbps = new List<FileInfo>();
@@ -52,79 +64,135 @@ namespace Mafia2Tool
             List<NAVData> aiw = new List<NAVData>();
             List<NAVData> obj = new List<NAVData>();
 
-            DirectoryInfo dirInfo = new DirectoryInfo(ScenePath);
-
-            FileInfo[] files = dirInfo.GetFiles("*", SearchOption.AllDirectories);
-
-            XmlDocument document = new XmlDocument();
-            document.Load(ScenePath + "/SDSContent.xml");
-            XPathNavigator nav = document.CreateNavigator();
-            var nodes = nav.Select("/SDSResource/ResourceEntry");
             isBigEndian = forceBigEndian;
             Utils.Models.VertexTranslator.IsBigEndian = forceBigEndian;
-            if(isBigEndian)
+
+            if (isBigEndian)
             {
                 MessageBox.Show("Detected 'Big Endian' formats. This will severely effect functionality!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
-            while (nodes.MoveNext() == true)
+            DirectoryInfo dirInfo = new DirectoryInfo(ScenePath);
+            sdsContent = new SDSContentFile();
+            sdsContent.ReadFromFile(new FileInfo(Path.Combine(ScenePath + "/SDSContent.xml")));
+
+            //IndexBuffers
+            var paths = sdsContent.GetResourceFiles("IndexBufferPool", true);
+            foreach(var item in paths)
             {
-                string type;
-                string name;
+                ibps.Add(BuildFileInfo(item));
+            }
 
-                nodes.Current.MoveToFirstChild();
-                type = nodes.Current.Value;
-                nodes.Current.MoveToNext();
-                name = ScenePath + "/" + nodes.Current.Value;
+            //Vertex Buffers
+            paths = sdsContent.GetResourceFiles("VertexBufferPool", true);
+            foreach (var item in paths)
+            {
+                vbps.Add(BuildFileInfo(item));
+            }
 
-                if (type == "IndexBufferPool")
-                    ibps.Add(new FileInfo(name));
-                else if (type == "VertexBufferPool")
-                    vbps.Add(new FileInfo(name));
-                else if (type == "Actors" && !isBigEndian)
+            //Actors
+            if (!isBigEndian)
+            {
+                paths = sdsContent.GetResourceFiles("Actors", true);
+                foreach (var item in paths)
                 {
                     try
                     {
-                        act.Add(new Actor(name));
+                        act.Add(new Actor(item));
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Failed to read actor {0}", name);
+                        Console.WriteLine("Failed to read actor {0}", item);
                     }
                 }
-                else if (type == "FrameResource")
-                    FrameResource = new FrameResource(name, isBigEndian);
-                else if (type == "ItemDesc" && !isBigEndian)
-                    ids.Add(new ItemDescLoader(name));
-                else if (type == "FrameNameTable")
-                    FrameNameTable = new FrameNameTable(name, isBigEndian);
-                else if (type == "Collisions" && !isBigEndian)
-                    Collisions = new Collision(name);
-                else if (type == "AnimalTrafficPaths" && !isBigEndian)
-                {
-                    try
-                    {
-                        ATLoader = new AnimalTrafficLoader(new FileInfo(name));
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine("Failed to read AnimalTrafficPaths {0}", ex.Message);
-                    }
-                }
-                else if (nodes.Current.Value == "roadmap.gsd" && !isBigEndian)
-                    roadMap = new Roadmap(new FileInfo(name));
-                //else if (type == "NAV_OBJ_DATA" && !isBigEndian)
-                //    obj.Add(new NAVData(new FileInfo(name)));
-                else if (type == "Translokator" && !isBigEndian)
-                    Translokator = new TranslokatorLoader(new FileInfo(name));
-                    
             }
 
+            //FrameResource
+            if (sdsContent.HasResource("FrameResource"))
+            {
+                var name = sdsContent.GetResourceFiles("FrameResource", true)[0];
+                FrameResource = new FrameResource(name, isBigEndian);
+            }
+
+            //Item Desc
+            if (!isBigEndian)
+            {
+                paths = sdsContent.GetResourceFiles("ItemDesc", true);
+                foreach (var item in paths)
+                {
+                    ids.Add(new ItemDescLoader(item));
+                }
+            }
+
+            //FrameNameTable
+            if (sdsContent.HasResource("FrameNameTable"))
+            {
+                var name = sdsContent.GetResourceFiles("FrameNameTable", true)[0];
+                FrameNameTable = new FrameNameTable(name, isBigEndian);
+            }
+
+            //Collisions
+            if (!isBigEndian && sdsContent.HasResource("Collisions"))
+            {
+                var name = sdsContent.GetResourceFiles("Collisions", true)[0];
+                Collisions = new Collision(name);
+            }
+
+            //AnimalTrafficPaths
+            if (!isBigEndian && sdsContent.HasResource("AnimalTrafficPaths"))
+            {
+                var name = sdsContent.GetResourceFiles("AnimalTrafficPaths", true)[0];
+                try
+                {
+                    ATLoader = new AnimalTrafficLoader(new FileInfo(name));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Failed to read AnimalTrafficPaths {0}", ex.Message);
+                }
+            }
+
+            //RoadMap
+            if (!isBigEndian)
+            {
+                paths = sdsContent.GetResourceFiles("MemFile", true);
+                foreach (var item in paths)
+                {
+                    if (item.Contains("RoadMap") || item.Contains("roadmap"))
+                    {
+                        roadMap = new Roadmap(new FileInfo(item));
+                    }
+                }
+            }
+
+            //Translokator
+            if (!isBigEndian && sdsContent.HasResource("Translokator"))
+            {
+                var name = sdsContent.GetResourceFiles("Translokator", true)[0];
+                Translokator = new TranslokatorLoader(new FileInfo(name));
+            }
+
+            //Kynapse OBJ_DATA
+            if (!isBigEndian)
+            {
+                //tis' broken for now
+                //paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
+                //foreach (var item in paths)
+                //{
+                //    obj.Add(new NAVData(new FileInfo(item)));
+                //}
+            }
             IndexBufferPool = new IndexBufferManager(ibps, isBigEndian);
             VertexBufferPool = new VertexBufferManager(vbps, isBigEndian);
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
             OBJData = obj.ToArray();
+        }
+
+        public static void UpdateResourceType()
+        {
+            sdsContent.CreateFileFromFolder();
+            sdsContent.WriteToFile();
         }
 
         public static void CleanData()

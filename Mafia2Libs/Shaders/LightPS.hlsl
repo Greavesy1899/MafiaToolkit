@@ -67,7 +67,8 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     float4 specular;
     float3 normal;
     
-	normal = CalculateFromNormalMap(input);
+    normal = float3(1.0f, 1.0f, 1.0f);
+	//normal = CalculateFromNormalMap(input);
     
     // Set the default output color to the ambient light value for all pixels.
     color = ambientColor;
@@ -82,7 +83,7 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     lightIntensity = saturate(dot(normal, lightDir));
 
     // Determine the final diffuse color based on the diffuse color and the amount of the light intensity.
-    color += (diffuseColor * 1.0f);
+    color += (diffuseColor * lightIntensity);
 	// Saturate the ambient and diffuse color.
     color = saturate(color);
 

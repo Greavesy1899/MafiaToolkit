@@ -8,125 +8,151 @@ namespace ResourceTypes.BufferPools
 {
     public class VertexBufferManager
     {
-        List<VertexBufferPool> bufferPools;
         List<FileInfo> loadedPoolNames;
+        Dictionary<ulong, VertexBuffer> buffers;
+        DirectoryInfo root;
 
-        public List<VertexBufferPool> BufferPools {
-            get { return bufferPools; }
-            set { bufferPools = value; }
+        public Dictionary<ulong, VertexBuffer> Buffers {
+            get { return buffers; }
         }
+
         public List<FileInfo> LoadedPoolNames {
             get { return loadedPoolNames; }
-            set { loadedPoolNames = value; }
         }
 
-        /// <summary>
-        /// Construct manager with passed files.
-        /// </summary>
-        /// <param name="files"></param>
         public VertexBufferManager(List<FileInfo> files, bool isBigEndian = false)
         {
             loadedPoolNames = files;
+            buffers = new Dictionary<ulong, VertexBuffer>();
+            if (LoadedPoolNames.Count > 0)
+            {
+                root = loadedPoolNames[0].Directory;
+            }
             ReadFiles(isBigEndian);
         }
 
-        /// <summary>
-        /// Add new buffer to first non-full pool.
-        /// </summary>
-        /// <param name="buffer"></param>
-        public void AddBuffer(VertexBuffer buffer)
+        public bool AddBuffer(VertexBuffer buffer)
         {
-            int poolToInput = -1;
+            if (!HasBuffer(buffer))
+            {
+                buffers.Add(buffer.Hash, buffer);
+                return true;
+            }
+            return false;
+        }
 
-            for (int i = 0; i != bufferPools.Count; i++)
-            {
-                if (bufferPools[i].Buffers.Count != 128)
-                {
-                    poolToInput = i;
-                }
-            }
-
-            if (poolToInput == -1)
-            {
-                bufferPools.Add(new VertexBufferPool());
-                bufferPools[bufferPools.Count - 1].Buffers.Add(buffer.Hash, buffer);
-            }
-            else
-            {
-                bufferPools[poolToInput].Buffers.Add(buffer.Hash, buffer);
-            }
+        public bool HasBuffer(ulong hash)
+        {
+            return buffers.ContainsKey(hash);
         }
 
         public bool HasBuffer(VertexBuffer buffer)
         {
-            for (int i = 0; i < bufferPools.Count; i++)
-            {
-                if (bufferPools[i].Buffers.ContainsKey(buffer.Hash))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return HasBuffer(buffer.Hash);
         }
 
         public bool RemoveBuffer(VertexBuffer buffer)
         {
-            for (int i = 0; i < bufferPools.Count; i++)
+            if (HasBuffer(buffer))
             {
-                if (bufferPools[i].Buffers.Remove(buffer.Hash))
-                {
-                    return true;
-                }
+                buffers.Remove(buffer.Hash);
+                return true;
             }
+            return false;
+        }
 
+        public bool RemoveBuffer(ulong hash)
+        {
+            if (HasBuffer(hash))
+            {
+                buffers.Remove(hash);
+                return true;
+            }
+            return false;
+        }
+
+        public bool ReplaceBuffer(VertexBuffer buffer)
+        {
+            if (HasBuffer(buffer))
+            {
+                buffers[buffer.Hash] = buffer;
+                return true;
+            }
             return false;
         }
 
         public void ReadFiles(bool isBigEndian)
         {
-            bufferPools = new List<VertexBufferPool>();
             for (int i = 0; i != loadedPoolNames.Count; i++)
             {
+                VertexBufferPool pool = null;
                 using (MemoryStream stream = new MemoryStream(File.ReadAllBytes(loadedPoolNames[i].FullName), false))
                 {
-                    bufferPools.Add(new VertexBufferPool(stream, isBigEndian));
+                    pool = new VertexBufferPool(stream, isBigEndian);
+                }
+
+                foreach (var buff in pool.Buffers)
+                {
+                    if (!buffers.ContainsKey(buff.Key))
+                    {
+                        buffers.Add(buff.Key, buff.Value);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Skipped a buffer {0}", buff.Key);
+                    }
                 }
             }
         }
 
         public VertexBuffer GetBuffer(ulong vertexRef)
         {
-            for (int i = 0; i != bufferPools.Count; i++)
-            {
-                VertexBuffer buff;
-                if (bufferPools[i].Buffers.TryGetValue(vertexRef, out buff))
-                    return buff;
-            }
-            return null;
+            return buffers.ContainsKey(vertexRef) ? buffers[vertexRef] : null;
         }
 
         public void WriteToFile(bool isBigEndian = false)
         {
-            for (int i = 0; i != bufferPools.Count; i++)
+            int numPool = 0;
+            int poolSize = 0;
+            VertexBufferPool pool = new VertexBufferPool();
+
+            foreach (var loaded in loadedPoolNames)
             {
-                if (loadedPoolNames.Count > i)
+                File.Delete(loaded.FullName);
+            }
+            loadedPoolNames.Clear();
+            var buffArray = buffers.Values.ToArray();
+            //var sorted = buffArray.OrderBy(buff => buff.Data.Length);
+            foreach (var buffer in buffArray)
+            {
+                int prePoolSize = (poolSize) + (buffer.Data.Length);
+                if (pool.Buffers.Count == 128 || prePoolSize > 20900000)
                 {
-                    using (MemoryStream stream = new MemoryStream())
-                    {
-                        bufferPools[i].WriteToFile(stream, isBigEndian);
-                        File.WriteAllBytes(loadedPoolNames[i].FullName, stream.ToArray());
-                    }
+                    string name = Path.Combine(root.FullName, string.Format("VertexBufferPool_{0}.vbp", numPool));
+                    SavePool(pool, name, isBigEndian);
+                    pool = new VertexBufferPool();
+                    numPool++;
+                    prePoolSize = 0;
                 }
-                else
-                {
-                    int offset = 20 + i;
-                    using (MemoryStream stream = new MemoryStream())
-                    {
-                        bufferPools[i].WriteToFile(stream, isBigEndian);
-                        File.WriteAllBytes(loadedPoolNames[0].DirectoryName + "/VertexBufferPool_" + offset + ".vbp", stream.ToArray());
-                    }
-                }
+
+                pool.Buffers.Add(buffer.Hash, buffer);
+                poolSize = prePoolSize;
+            }
+
+            if (pool != null)
+            {
+                string name = Path.Combine(root.FullName, string.Format("VertexBufferPool_{0}.vbp", numPool));
+                SavePool(pool, name, isBigEndian);
+            }
+        }
+
+        private void SavePool(VertexBufferPool pool, string name, bool isBigEndian)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                pool.WriteToFile(stream, isBigEndian);
+                File.WriteAllBytes(name, stream.ToArray());
+                loadedPoolNames.Add(new FileInfo(name));
             }
         }
     }

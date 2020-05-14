@@ -136,7 +136,9 @@ namespace Mafia2Tool
             if (objectForm.ShowDialog() == DialogResult.OK)
             {
                 ActorTypes type = optionControl.GetSelectedType();
+                string def = optionControl.GetDefinitionName();
                 ActorEntry entry = actors.CreateActorEntry(type, objectForm.GetInputText());
+                entry.DefinitionName = def;
 
                 TreeNode node = new TreeNode(entry.EntityName);
                 node.Text = entry.EntityName;

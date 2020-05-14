@@ -152,7 +152,9 @@ namespace Mafia2Tool
                         {
                             //create the new entry
                             ActorTypes type = optionControl.GetSelectedType();
+                            string def = optionControl.GetDefinitionName();
                             ActorEntry entry = SceneData.Actors[0].CreateActorEntry(type, objectForm.GetInputText());
+                            entry.DefinitionName = def;
                             entry.FrameName = frame.ActorHash.String;
                             entry.FrameNameHash = frame.ActorHash.uHash;
                             frame.Item = entry;
@@ -454,84 +456,62 @@ namespace Mafia2Tool
         {
             #region vertex sanitize;
             //vertex pool check
-            List<Dictionary<ulong, bool>> bufferPools = new List<Dictionary<ulong, bool>>();
+            var bufferPools = new Dictionary<ulong, bool>();
             
-            foreach(var pool in SceneData.VertexBufferPool.BufferPools)
+            foreach(var pool in SceneData.VertexBufferPool.Buffers)
             {
-                var checkPool = new Dictionary<ulong, bool>();
-                foreach (KeyValuePair<ulong, VertexBuffer> pair in pool.Buffers)
-                    checkPool.Add(pair.Key, false);
-
-                bufferPools.Add(checkPool);
+                bufferPools.Add(pool.Key, false);
             }
 
             foreach(KeyValuePair<int, FrameGeometry> pair in SceneData.FrameResource.FrameGeometries)
             {
                 foreach(var lod in pair.Value.LOD)
                 {
-                    foreach(var pool in bufferPools)
+                    if (bufferPools.ContainsKey(lod.VertexBufferRef.uHash))
                     {
-                        if (pool.ContainsKey(lod.VertexBufferRef.uHash))
-                            pool[lod.VertexBufferRef.uHash] = true;
+                        bufferPools[lod.VertexBufferRef.uHash] = true;
                     }
                 }
             }
 
-            for(int x = 0; x < bufferPools.Count; x++)
+            for(int i = 0; i < bufferPools.Count; i++)
             {
-                var pool = bufferPools[x];
-                for(int i = 0; i < pool.Count;)
+                KeyValuePair<ulong, bool> pair = bufferPools.ElementAt(i);
+                if (!pair.Value)
                 {
-                    KeyValuePair<ulong, bool> pair = pool.ElementAt(i);
-                    if (!pair.Value)
-                    {
-                        pool.Remove(pair.Key);
-                        SceneData.VertexBufferPool.BufferPools[x].Buffers.Remove(pair.Key);
-                        Console.WriteLine("Removed Vertex Buffer {0}", pair.Key);
-                    }
-                    else i++;
+                    SceneData.VertexBufferPool.RemoveBuffer(pair.Key);
+                    Console.WriteLine("Removed Vertex Buffer {0}", pair.Key);
                 }
             }
 
             #endregion vertex sanitize;
             #region index sanitize;
-            //vertex pool check
-            bufferPools = new List<Dictionary<ulong, bool>>();
+            //index pool check
+            bufferPools = new Dictionary<ulong, bool>();
 
-            foreach (var pool in SceneData.IndexBufferPool.BufferPools)
+            foreach (var pool in SceneData.IndexBufferPool.Buffers)
             {
-                var checkPool = new Dictionary<ulong, bool>();
-                foreach (KeyValuePair<ulong, IndexBuffer> pair in pool.Buffers)
-                    checkPool.Add(pair.Key, false);
-
-                bufferPools.Add(checkPool);
+                bufferPools.Add(pool.Key, false);
             }
 
             foreach (KeyValuePair<int, FrameGeometry> pair in SceneData.FrameResource.FrameGeometries)
             {
                 foreach (var lod in pair.Value.LOD)
                 {
-                    foreach (var pool in bufferPools)
+                    if(bufferPools.ContainsKey(lod.IndexBufferRef.uHash))
                     {
-                        if (pool.ContainsKey(lod.IndexBufferRef.uHash))
-                            pool[lod.IndexBufferRef.uHash] = true;
+                        bufferPools[lod.IndexBufferRef.uHash] = true;
                     }
                 }
             }
 
-            for (int x = 0; x < bufferPools.Count; x++)
+            for (int i = 0; i < bufferPools.Count; i++)
             {
-                var pool = bufferPools[x];
-                for (int i = 0; i < pool.Count;)
+                KeyValuePair<ulong, bool> pair = bufferPools.ElementAt(i);
+                if (!pair.Value)
                 {
-                    KeyValuePair<ulong, bool> pair = pool.ElementAt(i);
-                    if (!pair.Value)
-                    {
-                        pool.Remove(pair.Key);
-                        SceneData.IndexBufferPool.BufferPools[x].Buffers.Remove(pair.Key);
-                        Console.WriteLine("Removed Index Buffer {0}", pair.Key);
-                    }
-                    else i++;
+                    SceneData.IndexBufferPool.RemoveBuffer(pair.Key);
+                    Console.WriteLine("Removed Index Buffer {0}", pair.Key);
                 }
             }
 
@@ -622,9 +602,8 @@ namespace Mafia2Tool
                     SceneData.Collisions = collision;
                     SceneData.Collisions.WriteToFile();
                 }
+                SceneData.UpdateResourceType();
                 Cursor.Current = Cursors.Default;
-
-
 
                 Console.WriteLine("Saved Changes Succesfully");
             }
@@ -771,7 +750,7 @@ namespace Mafia2Tool
                 for (int i = 0; i != SceneData.roadMap.splines.Length; i++)
                 {
                     RenderRoad road = new RenderRoad();
-                    int generatedID = StringHelpers.RandomGenerator.Next();
+                    int generatedID = StringHelpers.GetNewRefID();
                     road.Init(SceneData.roadMap.splines[i]);
                     assets.Add(generatedID, road);
                     TreeNode child = new TreeNode(i.ToString());
@@ -783,7 +762,7 @@ namespace Mafia2Tool
 
                 for (int i = 0; i < SceneData.roadMap.junctionData.Length; i++)
                 {
-                    int generatedID = StringHelpers.RandomGenerator.Next();
+                    int generatedID = StringHelpers.GetNewRefID();
                     RenderJunction junction = new RenderJunction();
                     junction.Init(SceneData.roadMap.junctionData[i]);
                     assets.Add(generatedID, junction);
@@ -805,7 +784,7 @@ namespace Mafia2Tool
                     {
                         RenderNav nav = new RenderNav();                       
                         nav.Init(obj, z);
-                        assets.Add(StringHelpers.RandomGenerator.Next(), nav);
+                        assets.Add(StringHelpers.GetNewRefID(), nav);
                     }                   
                 }
             }
@@ -835,7 +814,7 @@ namespace Mafia2Tool
 
                     if (nodes.Length > 0)
                     {
-                        int refID = StringHelpers.RandomGenerator.Next();
+                        int refID = StringHelpers.GetNewRefID();
                         RenderInstance instance = new RenderInstance();
                         instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
                         instance.SetTransform(placement.Transform);
@@ -857,7 +836,7 @@ namespace Mafia2Tool
                 animalTrafficRoot.Tag = "Folder";
                 for (int i = 0; i < SceneData.ATLoader.Paths.Length; i++)
                 {
-                    int refID = StringHelpers.RandomGenerator.Next();
+                    int refID = StringHelpers.GetNewRefID();
                     RenderATP atp = new RenderATP();
                     atp.Init(SceneData.ATLoader.Paths[i]);
                     TreeNode child = new TreeNode();
@@ -1687,7 +1666,7 @@ namespace Mafia2Tool
                 int.TryParse(node.Text, out pIdxName);
                 pIdxName++;
 
-                int refID = StringHelpers.RandomGenerator.Next();
+                int refID = StringHelpers.GetNewRefID();
                 TreeNode child = new TreeNode();
                 child.Text = pIdxName.ToString();
                 child.Name = refID.ToString();
@@ -1833,7 +1812,7 @@ namespace Mafia2Tool
             road.Backward.Lanes[0].Flags = LaneTypes.None;
 
 
-            int generatedID = StringHelpers.RandomGenerator.Next();
+            int generatedID = StringHelpers.GetNewRefID();
             RenderStorageSingleton.Instance.SplineStorage.Add(spline);
             Graphics.InitObjectStack.Add(generatedID, road);
             int nodeID = (roadRoot.Nodes.Count);
@@ -1894,7 +1873,7 @@ namespace Mafia2Tool
             road.Backward.Lanes[0].Flags = LaneTypes.None;
 
 
-            int generatedID = StringHelpers.RandomGenerator.Next();
+            int generatedID = StringHelpers.GetNewRefID();
             RenderStorageSingleton.Instance.SplineStorage.Add(spline);
             Graphics.InitObjectStack.Add(generatedID, road);
             int nodeID = (roadRoot.Nodes.Count);
@@ -1915,7 +1894,7 @@ namespace Mafia2Tool
             definition.JunctionIDX = junctionRoot.Nodes.Count;
             junction.Init(definition);
 
-            int generatedID = StringHelpers.RandomGenerator.Next();
+            int generatedID = StringHelpers.GetNewRefID();
             Graphics.InitObjectStack.Add(generatedID, junction);
             int nodeID = (junctionRoot.Nodes.Count);
             TreeNode child = new TreeNode(nodeID.ToString());
@@ -2020,7 +1999,7 @@ namespace Mafia2Tool
                 treeNode.Tag = collisionModel;
 
                 //add instance of object.
-                int refID = StringHelpers.RandomGenerator.Next();
+                int refID = StringHelpers.GetNewRefID();
                 TreeNode child = new TreeNode();
                 child.Text = treeNode.Nodes.Count.ToString();
                 child.Name = refID.ToString();

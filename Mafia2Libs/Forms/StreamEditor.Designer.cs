@@ -36,9 +36,9 @@ namespace Mafia2Tool
             this.LineContextStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.AddLineButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteLineButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.CopyLoadListAbove = new System.Windows.Forms.ToolStripMenuItem();
-            this.MoveItemUp = new System.Windows.Forms.ToolStripMenuItem();
-            this.MoveItemDown = new System.Windows.Forms.ToolStripMenuItem();
+            this.DuplicateLine = new System.Windows.Forms.ToolStripMenuItem();
+            this.MoveItemUpButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.MoveItemDownButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,10 +48,10 @@ namespace Mafia2Tool
             this.tabControl = new System.Windows.Forms.TabControl();
             this.StreamLinesPage = new System.Windows.Forms.TabPage();
             this.StreamGroupPage = new System.Windows.Forms.TabPage();
-            this.groupTree = new Utils.Extensions.MTreeView();
             this.StreamBlocksPage = new System.Windows.Forms.TabPage();
-            this.blockView = new Utils.Extensions.MTreeView();
             this.SearchBox = new System.Windows.Forms.TextBox();
+            this.groupTree = new Utils.Extensions.MTreeView();
+            this.blockView = new Utils.Extensions.MTreeView();
             this.LineContextStrip.SuspendLayout();
             this.ToolStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
@@ -71,54 +71,55 @@ namespace Mafia2Tool
             this.linesTree.Size = new System.Drawing.Size(238, 355);
             this.linesTree.TabIndex = 11;
             this.linesTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
+            this.linesTree.KeyUp += new System.Windows.Forms.KeyEventHandler(this.OnKeyUp);
             // 
             // LineContextStrip
             // 
             this.LineContextStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddLineButton,
             this.DeleteLineButton,
-            this.CopyLoadListAbove,
-            this.MoveItemUp,
-            this.MoveItemDown});
+            this.DuplicateLine,
+            this.MoveItemUpButton,
+            this.MoveItemDownButton});
             this.LineContextStrip.Name = "AddLineButton";
-            this.LineContextStrip.Size = new System.Drawing.Size(183, 114);
+            this.LineContextStrip.Size = new System.Drawing.Size(181, 136);
             this.LineContextStrip.Text = "Context Strip";
             this.LineContextStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OnContextMenuOpening);
             // 
             // AddLineButton
             // 
             this.AddLineButton.Name = "AddLineButton";
-            this.AddLineButton.Size = new System.Drawing.Size(182, 22);
+            this.AddLineButton.Size = new System.Drawing.Size(180, 22);
             this.AddLineButton.Text = "$ADD_LINE";
             this.AddLineButton.Click += new System.EventHandler(this.AddLineButtonPressed);
             // 
             // DeleteLineButton
             // 
             this.DeleteLineButton.Name = "DeleteLineButton";
-            this.DeleteLineButton.Size = new System.Drawing.Size(182, 22);
+            this.DeleteLineButton.Size = new System.Drawing.Size(180, 22);
             this.DeleteLineButton.Text = "$DELETE_LINE";
             this.DeleteLineButton.Click += new System.EventHandler(this.DeleteLineButtonPressed);
             // 
-            // CopyLoadListAbove
+            // DuplicateLine
             // 
-            this.CopyLoadListAbove.Name = "CopyLoadListAbove";
-            this.CopyLoadListAbove.Size = new System.Drawing.Size(182, 22);
-            this.CopyLoadListAbove.Text = "$COPY_LINE_ABOVE";
-            this.CopyLoadListAbove.Click += new System.EventHandler(this.CopyLoadListAbove_Click);
+            this.DuplicateLine.Name = "DuplicateLine";
+            this.DuplicateLine.Size = new System.Drawing.Size(180, 22);
+            this.DuplicateLine.Text = "$DUPLICATE_LINE";
+            this.DuplicateLine.Click += new System.EventHandler(this.CopyLoadListAbove_Click);
             // 
-            // MoveItemUp
+            // MoveItemUpButton
             // 
-            this.MoveItemUp.Name = "MoveItemUp";
-            this.MoveItemUp.Size = new System.Drawing.Size(182, 22);
-            this.MoveItemUp.Text = "$MOVE_UP";
-            this.MoveItemUp.Click += new System.EventHandler(this.MoveItemUp_Click);
+            this.MoveItemUpButton.Name = "MoveItemUpButton";
+            this.MoveItemUpButton.Size = new System.Drawing.Size(180, 22);
+            this.MoveItemUpButton.Text = "$MOVE_UP";
+            this.MoveItemUpButton.Click += new System.EventHandler(this.MoveItemUp_Click);
             // 
-            // MoveItemDown
+            // MoveItemDownButton
             // 
-            this.MoveItemDown.Name = "MoveItemDown";
-            this.MoveItemDown.Size = new System.Drawing.Size(182, 22);
-            this.MoveItemDown.Text = "$MOVE_DOWN";
-            this.MoveItemDown.Click += new System.EventHandler(this.MoveItemDown_Click);
+            this.MoveItemDownButton.Name = "MoveItemDownButton";
+            this.MoveItemDownButton.Size = new System.Drawing.Size(180, 22);
+            this.MoveItemDownButton.Text = "$MOVE_DOWN";
+            this.MoveItemDownButton.Click += new System.EventHandler(this.MoveItemDown_Click);
             // 
             // ToolStrip
             // 
@@ -209,15 +210,6 @@ namespace Mafia2Tool
             this.StreamGroupPage.Text = "Stream Groups";
             this.StreamGroupPage.UseVisualStyleBackColor = true;
             // 
-            // groupTree
-            // 
-            this.groupTree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupTree.Location = new System.Drawing.Point(0, 0);
-            this.groupTree.Name = "groupTree";
-            this.groupTree.Size = new System.Drawing.Size(238, 355);
-            this.groupTree.TabIndex = 13;
-            this.groupTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
-            // 
             // StreamBlocksPage
             // 
             this.StreamBlocksPage.Controls.Add(this.blockView);
@@ -228,6 +220,23 @@ namespace Mafia2Tool
             this.StreamBlocksPage.Text = "Stream Blocks";
             this.StreamBlocksPage.UseVisualStyleBackColor = true;
             // 
+            // SearchBox
+            // 
+            this.SearchBox.Location = new System.Drawing.Point(12, 31);
+            this.SearchBox.Name = "SearchBox";
+            this.SearchBox.Size = new System.Drawing.Size(242, 20);
+            this.SearchBox.TabIndex = 28;
+            this.SearchBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
+            // 
+            // groupTree
+            // 
+            this.groupTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupTree.Location = new System.Drawing.Point(0, 0);
+            this.groupTree.Name = "groupTree";
+            this.groupTree.Size = new System.Drawing.Size(238, 355);
+            this.groupTree.TabIndex = 13;
+            this.groupTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
+            // 
             // blockView
             // 
             this.blockView.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -236,14 +245,6 @@ namespace Mafia2Tool
             this.blockView.Size = new System.Drawing.Size(238, 355);
             this.blockView.TabIndex = 14;
             this.blockView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
-            // 
-            // SearchBox
-            // 
-            this.SearchBox.Location = new System.Drawing.Point(12, 31);
-            this.SearchBox.Name = "SearchBox";
-            this.SearchBox.Size = new System.Drawing.Size(242, 20);
-            this.SearchBox.TabIndex = 28;
-            this.SearchBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
             // 
             // StreamEditor
             // 
@@ -287,8 +288,8 @@ namespace Mafia2Tool
         private ToolStripMenuItem AddLineButton;
         private ToolStripMenuItem DeleteLineButton;
         private TextBox SearchBox;
-        private ToolStripMenuItem MoveItemUp;
-        private ToolStripMenuItem MoveItemDown;
-        private ToolStripMenuItem CopyLoadListAbove;
+        private ToolStripMenuItem MoveItemUpButton;
+        private ToolStripMenuItem MoveItemDownButton;
+        private ToolStripMenuItem DuplicateLine;
     }
 }

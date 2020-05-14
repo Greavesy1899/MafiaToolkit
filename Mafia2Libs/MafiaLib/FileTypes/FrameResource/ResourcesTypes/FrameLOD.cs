@@ -218,6 +218,9 @@ namespace ResourceTypes.FrameResource
             short[] p0;
             short[] p1;
 
+            Vector3 unpackedP0;
+            Vector3 unpackedP1;
+
             public int Num1 {
                 get { return num1; }
                 set { num1 = value; }
@@ -235,7 +238,17 @@ namespace ResourceTypes.FrameResource
                 set { p1 = value; }
             }
 
-            public Descriptor(MemoryStream reader, bool isBigEndian)
+            //public Vector3 UnpackedP0 {
+            //    get { return unpackedP0; }
+            //    set { unpackedP0 = value; }
+            //}
+
+            //public Vector3 UnpackedP1 {
+            //    get { return unpackedP1; }
+            //    set { unpackedP1 = value; }
+            //}
+
+            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
                 num1 = reader.ReadInt32(isBigEndian);
                 p0 = new short[3] { reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian) }; //packed
@@ -251,6 +264,12 @@ namespace ResourceTypes.FrameResource
                 for (int i = 0; i != p1.Length; i++)
                     writer.Write(p1[i]);
                 writer.Write(num2);
+            }
+
+            public void Unpack(Vector3 factor1, Vector3 factor2)
+            {
+                unpackedP0 = new Vector3(p0[0] * factor1.X, p0[1] * factor1.Y, p0[2] * factor1.Z);
+                unpackedP1 = new Vector3(p1[0] * factor2.X, p1[1] * factor2.Y, p1[2] * factor2.Z);
             }
         }
         [TypeConverter(typeof(ExpandableObjectConverter))]
@@ -321,7 +340,7 @@ namespace ResourceTypes.FrameResource
                 get { return numDesc1Length; }
                 set { numDesc1Length = value; }
             }
-            public Descriptor[] descriptors {
+            public Descriptor[] Descriptors {
                 get { return numDesc1; }
                 set { numDesc1 = value; }
             }
@@ -350,7 +369,9 @@ namespace ResourceTypes.FrameResource
                     numDesc1 = new Descriptor[numDesc1Length];
                     for (int i = 0; i != numDesc1.Length; i++)
                     {
-                        numDesc1[i] = new Descriptor(reader, isBigEndian);
+                        numDesc1[i] = new Descriptor();
+                        numDesc1[i].ReadFromFile(reader, isBigEndian);
+                        //numDesc1[i].Unpack(offsetVector, scaleVector);
                     }
                 }
                 numLongs1Length = reader.ReadInt32(isBigEndian);
@@ -425,7 +446,7 @@ namespace ResourceTypes.FrameResource
                 partitionType = 4;
                 Longs1 = new int[0];
                 Longs2 = new int[0];
-                descriptors = new Descriptor[0];
+                Descriptors = new Descriptor[0];
                 numDesc1Length = 0;
                 numLongs1Length = numDesc1Length + 1;
                 numLongs2Length = 0;
