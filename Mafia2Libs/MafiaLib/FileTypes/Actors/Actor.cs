@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using Utils.StringHelpers;
 
@@ -77,20 +75,22 @@ namespace ResourceTypes.Actors
 
         private void Sanitize()
         {
-            bool[] isUsed = new bool[extraData.Count];
-
+            Dictionary<ushort, ushort> reorganisedKeys = new Dictionary<ushort, ushort>();
+            extraData.Clear();
             for (int i = 0; i < items.Count; i++)
             {
-                isUsed[items[i].DataID] = true;
-            }
-
-            for (int i = 0; i < isUsed.Length; i++)
-            {
-                if (!isUsed[i])
+                if(!reorganisedKeys.ContainsKey(items[i].DataID))
                 {
-                    extraData.RemoveAt(i);
+                    extraData.Add(items[i].Data);
+                    reorganisedKeys.Add(items[i].DataID, (ushort)(extraData.Count-1));
+                    items[i].DataID = reorganisedKeys[items[i].DataID];
+                }
+                else
+                {
+                    items[i].DataID = reorganisedKeys[items[i].DataID];
                 }
             }
+            reorganisedKeys.Clear();
         }
 
         public ActorEntry CreateActorEntry(ActorTypes type, string name)
@@ -203,6 +203,8 @@ namespace ResourceTypes.Actors
 
         public void WriteToFile(BinaryWriter writer)
         {
+            Dictionary<int, int> sanitizedIDs = new Dictionary<int, int>();
+
             Sanitize();
             pool = BuildDefinitions();
 
@@ -231,8 +233,11 @@ namespace ResourceTypes.Actors
                 writer.Write(instanceOffset);
                 instanceOffset += (extraData[i].Data != null ? extraData[i].Data.GetSize() : extraData[i].GetDataInBytes().Length) + 8;
             }
-            for (int i = 0; i < extraData.Count; i++)
+
+            for(int i = 0; i < extraData.Count; i++)
+            {
                 extraData[i].WriteToFile(writer);
+            }
 
             int itemOffset = instanceOffset + (items.Count * sizeof(int)) + 16;
             long itemPos = writer.BaseStream.Position;
@@ -244,7 +249,9 @@ namespace ResourceTypes.Actors
             }
 
             for (int i = 0; i < items.Count; i++)
+            {
                 items[i].WriteToFile(writer);
+            }
 
             //for that unknown value.
             writer.Write(0);

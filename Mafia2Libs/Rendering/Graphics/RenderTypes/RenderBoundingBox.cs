@@ -139,16 +139,24 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            for(int i = 0; i < vertices.Length; i++)
-                vertices[i].Colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+            colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i].Colour = colour;
+            }
 
             isUpdatedNeeded = true;
         }
 
         public override void Unselect()
         {
+            colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+
             for (int i = 0; i < vertices.Length; i++)
-                vertices[i].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+            {
+                vertices[i].Colour = colour;
+            }
 
             isUpdatedNeeded = true;
         }

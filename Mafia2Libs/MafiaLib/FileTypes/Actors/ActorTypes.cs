@@ -659,7 +659,8 @@ namespace ResourceTypes.Actors
         }
     }
 
-    public class ActorLight : IActorExtraDataInterface
+    public class 
+    ActorLight : IActorExtraDataInterface
     {
         int size;
         byte[] padding;
@@ -692,6 +693,13 @@ namespace ResourceTypes.Actors
         int instanced;
         int type;
 
+        //DO NOT STORE IN ACTOR!
+        private Quaternion uMatrix0Quat;
+        private Quaternion uMatrix1Quat;
+
+        public int Size {
+            get { return size; }
+        }
         public int Unk01 {
             get { return unk01; }
             set { unk01 = value; }
@@ -703,7 +711,19 @@ namespace ResourceTypes.Actors
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public Matrix UnkMatrix0 {
             get { return uMatrix0; }
-            set { uMatrix0 = value; }
+        }
+        public Vector3 UnkMatrix0Translation {
+            get { return uMatrix0.TranslationVector; }
+            set { uMatrix0.TranslationVector = value; }
+        }
+        public Quaternion UnkMatrix0Quaternion {
+            get { return uMatrix0Quat; }
+            set {
+                uMatrix0Quat = value;
+                var translation = uMatrix0.TranslationVector;
+                uMatrix0 = Matrix.RotationQuaternion(uMatrix0Quat);
+                uMatrix0.TranslationVector = translation;
+            }
         }
         public int Unk07 {
             get { return unk07; }
@@ -798,7 +818,19 @@ namespace ResourceTypes.Actors
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public Matrix UnkMatrix1 {
             get { return uMatrix1; }
-            set { uMatrix1 = value; }
+        }
+        public Vector3 UnkMatrix1Translation {
+            get { return uMatrix1.TranslationVector; }
+            set { uMatrix1.TranslationVector = value; }
+        }
+        public Quaternion UnkMatrix1Quaternion {
+            get { return uMatrix1Quat; }
+            set {
+                uMatrix1Quat = value;
+                var translation = uMatrix1.TranslationVector;
+                uMatrix1 = Matrix.RotationQuaternion(uMatrix1Quat);
+                uMatrix1.TranslationVector = translation;
+            }
         }
         public int Instanced {
             get { return instanced; }
@@ -815,7 +847,7 @@ namespace ResourceTypes.Actors
 
         public ActorLight()
         {
-            padding = new byte[9];
+            padding = new byte[10];
             uMatrix0 = Matrix.Identity;
             uMatrix1 = Matrix.Identity;
             count = 0;
@@ -828,6 +860,14 @@ namespace ResourceTypes.Actors
             unkFloat4 = new float[5];
             unkFloat5 = new float[20];
             names = new Hash[4];
+            for (int i = 0; i < 4; i++)
+            {
+                names[i] = new Hash();
+            }
+
+            nameLight = new Hash();
+            uMatrix0Quat = Quaternion.RotationMatrix(uMatrix0);
+            uMatrix1Quat = Quaternion.RotationMatrix(uMatrix1);
         }
 
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
@@ -835,9 +875,8 @@ namespace ResourceTypes.Actors
             size = stream.ReadInt32(isBigEndian);
             if (size < 2305)
             {
-                padding = stream.ReadBytes(9);
+                padding = stream.ReadBytes(10);
                 unk01 = stream.ReadInt32(isBigEndian);
-                unk02 = stream.ReadByte8();
                 uMatrix0 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
                 unk07 = stream.ReadInt32(isBigEndian);
                 unk08 = stream.ReadInt32(isBigEndian);
@@ -854,8 +893,6 @@ namespace ResourceTypes.Actors
                     frameLinks[i] = new Hash(stream, isBigEndian);
                     frameIdxLinks[i] = stream.ReadInt32(isBigEndian);
                 }
-
-                //flags = reader.ReadInt32();
 
                 for (int i = 0; i < 7; i++)
                     unkFloat1[i] = stream.ReadSingle(isBigEndian);
@@ -892,16 +929,21 @@ namespace ResourceTypes.Actors
             stream.Seek(2308, SeekOrigin.Begin);
             instanced = stream.ReadInt32(isBigEndian);
             type = stream.ReadInt32(isBigEndian);
+
+            //PREP 
+            uMatrix0Quat = Quaternion.RotationMatrix(uMatrix0);
+            uMatrix1Quat = Quaternion.RotationMatrix(uMatrix1);
         }
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(new byte[2316]);
             writer.Seek(0, SeekOrigin.Begin);
+            size = CalculateSize();
             writer.Write(size, isBigEndian);
-            writer.Write(this.padding);
+            writer.Write(padding);
             writer.Write(unk01, isBigEndian);
-            writer.WriteByte(unk02);
+            //writer.WriteByte(unk02);
             uMatrix0.WriteToFile(writer, isBigEndian);
             writer.Write(unk07, isBigEndian);
             writer.Write(unk08, isBigEndian);
@@ -950,6 +992,27 @@ namespace ResourceTypes.Actors
             writer.Seek(2308, SeekOrigin.Begin);
             writer.Write(instanced, isBigEndian);
             writer.Write(type, isBigEndian);
+        }
+
+        private int CalculateSize()
+        {
+            //this is the base size of a light; the rest is determined by the data of hashes/strings etc.
+            int size = 378; 
+
+            for (int i = 0; i < count; i++)
+            {
+                size += sceneLinks[i].CalculateSize();
+                size += FrameLinks[i].CalculateSize();
+                size += 4;
+            }
+
+            size += nameLight.CalculateSize();
+
+            for (int i = 0; i < 4; i++)
+            {
+                size += names[i].CalculateSize();
+            }
+            return size;
         }
 
         public int GetSize()

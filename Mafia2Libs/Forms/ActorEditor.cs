@@ -109,7 +109,8 @@ namespace Mafia2Tool
 
         private void SaveButton_OnClick(object sender, System.EventArgs e)
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Open(actorFile.FullName + "EDIT", FileMode.Create)))
+            File.Copy(actorFile.FullName, actorFile.FullName + "_old", true);
+            using (BinaryWriter writer = new BinaryWriter(File.Open(actorFile.FullName, FileMode.Create)))
             {
                 actors.WriteToFile(writer);
             }

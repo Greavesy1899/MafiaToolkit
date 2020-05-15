@@ -1027,6 +1027,7 @@ namespace Mafia2Tool
             {
                 FrameObjectDummy dummy = (obj as FrameObjectDummy);
                 RenderBoundingBox bbox = (Graphics.Assets[obj.RefID] as RenderBoundingBox);
+                bbox.SetTransform(dummy.WorldTransform);
                 bbox.Update(dummy.Bounds);
             }
             else if (obj is FrameObjectSector)
@@ -1588,12 +1589,15 @@ namespace Mafia2Tool
             //new safety net
             if (FrameResource.IsFrameType(node.Tag))
             {
-                DialogResult result = MessageBox.Show("$DUPLICATE_MATERIAL_BLOCK", "Toolkit", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-
-                //we don't want to duplicate anymore
-                if (result == DialogResult.Cancel)
+                if (node.Tag is FrameObjectSingleMesh || node.Tag is FrameObjectModel)
                 {
-                    return;
+                    DialogResult result = MessageBox.Show("$DUPLICATE_MATERIAL_BLOCK", "Toolkit", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+                    //we don't want to duplicate anymore
+                    if (result == DialogResult.Cancel)
+                    {
+                        return;
+                    }
                 }
 
                 //is this even needed? hmm.
@@ -1632,7 +1636,11 @@ namespace Mafia2Tool
                     Graphics.InitObjectStack.Add(mesh.RefID, model);
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectSector))
+                {
                     newEntry = new FrameObjectSector((FrameObjectSector)node.Tag);
+                    FrameObjectSector sector = (newEntry as FrameObjectSector);
+                    Graphics.InitObjectStack.Add(sector.RefID, BuildRenderBounds(sector));
+                }
                 else if (node.Tag.GetType() == typeof(FrameObjectSingleMesh))
                 {
                     newEntry = new FrameObjectSingleMesh((FrameObjectSingleMesh)node.Tag);
