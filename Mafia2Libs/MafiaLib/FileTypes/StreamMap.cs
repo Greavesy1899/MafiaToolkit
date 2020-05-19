@@ -606,7 +606,10 @@ namespace ResourceTypes.Misc
         public void WriteToFile()
         {
             Update();
-            using (BinaryWriter writer = new BinaryWriter(File.Open(file.FullName + "1", FileMode.Create)))
+            var oldString = file.FullName.Remove(file.FullName.Length - 4, 4);
+            oldString += "_old.bin";
+            File.Copy(file.FullName, oldString, true);
+            using (BinaryWriter writer = new BinaryWriter(File.Open(file.FullName, FileMode.Create)))
             {
                 InternalWriteToFile(writer);
             }

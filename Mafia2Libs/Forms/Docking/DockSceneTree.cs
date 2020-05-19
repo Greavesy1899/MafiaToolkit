@@ -84,6 +84,7 @@ namespace Forms.Docking
 
         private void OpenEntryContext(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            //TODO: Clean this messy system.
             EntryMenuStrip.Items[0].Visible = false;
             EntryMenuStrip.Items[1].Visible = false;
             EntryMenuStrip.Items[2].Visible = false;
@@ -99,7 +100,7 @@ namespace Forms.Docking
 
                 object data = treeView1.SelectedNode.Tag;
                 if (FrameResource.IsFrameType(data) || data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement) || data.GetType() == typeof(Rendering.Graphics.RenderJunction) ||
-                    data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
+                    data.GetType() == typeof(ResourceTypes.Actors.ActorEntry) || data.GetType() == typeof(Rendering.Graphics.RenderNav))
                 {
                     EntryMenuStrip.Items[0].Visible = true;
                 }
@@ -136,6 +137,9 @@ namespace Forms.Docking
 
             if(data.GetType() == typeof(Rendering.Graphics.RenderJunction))
                 return (data as Rendering.Graphics.RenderJunction).Data.Position;
+
+            if (data.GetType() == typeof(Rendering.Graphics.RenderNav))
+                return (data as Rendering.Graphics.RenderNav).BoundingBox.Transform.TranslationVector;
 
             if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
                 return (data as ResourceTypes.Actors.ActorEntry).Position;

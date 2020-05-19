@@ -110,6 +110,8 @@ namespace Utils.SharpDXExtensions
             var qy = quat.Y;
             var qz = quat.Z;
             var eX = Math.Atan2(-2 * ((qy * qz) - (qw * qx)), (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
+            //double test = qx * qy + qz * qw;
+            //var eY = Math.Asin(2 * test);
             var eY = Math.Asin(2 * ((qx * qz) + (qw * qy)));
             var eZ = Math.Atan2(-2 * ((qx * qy) - (qw * qz)), (qw * qw) + (qx * qx) - (qy * qy) - (qz * qz));
             euler.Z = (float)Math.Round(eZ * 180 / Math.PI);

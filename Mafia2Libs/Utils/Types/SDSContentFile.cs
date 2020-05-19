@@ -66,7 +66,6 @@ namespace Utils.Types
             typeExtension.Add("eff", "Effects");
             typeExtension.Add("fnt", "FrameNameTable");
             typeExtension.Add("act", "Actors");
-            typeExtension.Add("eds", "EntityDataStorage");
             typeExtension.Add("prf", "PREFAB");
             typeExtension.Add("an2", "Animation2");
             typeExtension.Add("nov", "NAV_OBJ_DATA");
@@ -356,6 +355,7 @@ namespace Utils.Types
             var xmls = ProtectResourceType("XML");
             var memfile = ProtectResourceType("MemFile");
             var audioSectors = ProtectResourceType("AudioSectors");
+            var entityDataStorage = ProtectResourceType("EntityDataStorage");
 
             //clear and scan
             resources.Clear();
@@ -386,6 +386,7 @@ namespace Utils.Types
             ReapplyResourceType("XML", xmls);
             ReapplyResourceType("MemFile", memfile);
             ReapplyResourceType("AudioSectors", audioSectors);
+            ReapplyResourceType("EntityDataStorage", entityDataStorage);
             Sort();
         }
     }

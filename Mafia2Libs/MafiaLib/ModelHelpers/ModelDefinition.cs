@@ -116,28 +116,11 @@ namespace Utils.Models
             double MaxZ = bounds.Maximum.Z - bounds.Minimum.Z + minFloatf;
 
             double fMaxSize = Math.Max(MaxX, Math.Max(MaxY, MaxZ * 2.0f));
-
-            //todo fix decompression factors.
             Console.WriteLine("Decompress value before: " + fMaxSize);
-
-            if (fMaxSize <= 16)
-                frameGeometry.DecompressionFactor = (float)16 / 0x10000;
-            else if (fMaxSize <= 256)
-                frameGeometry.DecompressionFactor = (float)256 / 0x10000;
-            else if(fMaxSize <= 512)
-                frameGeometry.DecompressionFactor = (float)512 / 0x10000;
-            else if(fMaxSize <= 1024)
-                frameGeometry.DecompressionFactor = (float)1024 / 0x10000;
-            else if (fMaxSize <= 2048)
-                frameGeometry.DecompressionFactor = (float)2048 / 0x10000;
-            else if (fMaxSize <= 4196)
-                frameGeometry.DecompressionFactor = (float)4196 / 0x10000;
-            else if (fMaxSize <= 8392)
-                frameGeometry.DecompressionFactor = (float)8392 / 0x10000;
-            else if (fMaxSize <= 16784)
-                frameGeometry.DecompressionFactor = (float)16784 / 0x10000;
-            else
-                frameGeometry.DecompressionFactor = (float)fMaxSize / 0x10000;
+            double result = Math.Log(fMaxSize) / Math.Log(2.0f);
+            double pow = Math.Ceiling(result);
+            double factor = Math.Pow(2.0f, pow);
+            frameGeometry.DecompressionFactor = (float)(factor / 0x10000);
 
             Console.WriteLine("Using decompression value from: " + fMaxSize + " result is: " + frameGeometry.DecompressionFactor);
         }

@@ -79,10 +79,10 @@ namespace ResourceTypes.Actors
             extraData.Clear();
             for (int i = 0; i < items.Count; i++)
             {
-                if(!reorganisedKeys.ContainsKey(items[i].DataID))
+                if (!reorganisedKeys.ContainsKey(items[i].DataID))
                 {
                     extraData.Add(items[i].Data);
-                    reorganisedKeys.Add(items[i].DataID, (ushort)(extraData.Count-1));
+                    reorganisedKeys.Add(items[i].DataID, (ushort)(extraData.Count - 1));
                     items[i].DataID = reorganisedKeys[items[i].DataID];
                 }
                 else

@@ -165,6 +165,10 @@ namespace ResourceTypes.Collisions
 
             public Placement()
             {
+                Unk5 = 128;
+                Unk4 = -1;
+                Position = new Vector3(0, 0, 0);
+                Rotation = new Vector3(0);
             }
 
             public Placement(Placement other)

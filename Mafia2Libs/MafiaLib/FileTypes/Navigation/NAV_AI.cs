@@ -303,12 +303,16 @@ namespace ResourceTypes.Navigation
         int unk3;
         int unk4;
 
-        public struct unkStruct
+        public class unkStruct
         {
             public int id;
             public Vector3 unk0;
             public Vector3 unk1;
-            public byte[] unkData;
+            public int unk2;
+            public int unk3;
+            public int unk4;
+            public int unk5;
+            public int unk6;
 
             public override string ToString()
             {
@@ -318,10 +322,14 @@ namespace ResourceTypes.Navigation
 
         public HPDData(BinaryReader reader)
         {
+            StreamWriter writer = new StreamWriter("NAV_HPD_DATA content.txt");
             unk0 = reader.ReadInt32();
             unk1 = reader.ReadInt32();
+            writer.WriteLine(unk0);
+            writer.WriteLine(unk1);
             remainingHeader = reader.ReadBytes(132);
 
+            writer.WriteLine("");
             unkData = new unkStruct[unk1];
 
             for (int i = 0; i != unkData.Length; i++)
@@ -330,28 +338,115 @@ namespace ResourceTypes.Navigation
                 data.id = reader.ReadInt32();
                 data.unk0 = Vector3Extenders.ReadFromFile(reader);
                 data.unk1 = Vector3Extenders.ReadFromFile(reader);
-                data.unkData = reader.ReadBytes(20);
-                unkData[i] = data;
-            }
 
+                //Vector3 pos = data.unk0;
+                //float y = pos.Y;
+                //pos.Y = -pos.Z;
+                //pos.Z = y;
+                //data.unk0 = pos;
+
+                //pos = data.unk1;
+                //y = pos.Y;
+                //pos.Y = -pos.Z;
+                //pos.Z = y;
+                //data.unk1 = pos;
+
+                data.unk2 = reader.ReadInt32();
+                data.unk3 = reader.ReadInt32();
+                data.unk4 = reader.ReadInt32();
+                data.unk5 = reader.ReadInt32();
+                data.unk6 = reader.ReadInt32();
+                writer.WriteLine(data.id);
+                writer.WriteLine(data.unk1);
+                writer.WriteLine(data.unk0);
+                writer.WriteLine(data.unk2);
+                writer.WriteLine(data.unk3);
+                writer.WriteLine(data.unk4);
+                writer.WriteLine(data.unk5);
+                writer.WriteLine(data.unk6);
+                unkData[i] = data;
+                writer.WriteLine("");
+            }
+            writer.WriteLine("");
             unk2 = StringHelpers.ReadString(reader);
+            writer.WriteLine(unk2);
             unk3 = reader.ReadInt32();
+            writer.WriteLine(unk3);
             unk4 = reader.ReadInt32();
+            writer.WriteLine(unk4);
+            writer.Close();
         }
     }
     public class OBJData
     {
+        public struct ConnectionStruct
+        {
+            uint flags;
+            uint nodeID;
+            uint connectedNodeID;
+
+            public uint Flags {
+                get { return flags; }
+                set { flags = value; }
+            }
+            public uint NodeID {
+                get { return nodeID; }
+                set { nodeID = value; }
+            }
+            public uint ConnectedNodeID {
+                get { return connectedNodeID; }
+                set { connectedNodeID = value; }
+            }
+        }
         public struct VertexStruct
         {
-            public uint unk7;
-            public Vector3 position;
-            public float unk0;
-            public float unk1;
-            public int unk2;
-            public short unk3;
-            public short unk4;
-            public int unk5;
-            public int unk6;
+            uint unk7;
+            Vector3 position;
+            float unk0;
+            float unk1;
+            int unk2;
+            short unk3;
+            short unk4;
+            int unk5;
+            int unk6;
+
+            public uint Unk7 {
+                get { return unk7; }
+                set { unk7 = value; }
+            }
+            public Vector3 Position {
+                get { return position; }
+                set { position = value; }
+            }
+            public float Unk0 {
+                get { return unk0; }
+                set { unk0 = value; }
+            }
+            public float Unk1 {
+                get { return unk1; }
+                set { unk1 = value; }
+            }
+            public int Unk2 {
+                get { return unk2; }
+                set { unk2 = value; }
+            }
+            public short Unk3 {
+                get { return unk3; }
+                set { unk3 = value; }
+            }
+            public short Unk4 {
+                get { return unk4; }
+                set { unk4 = value; }
+            }
+            public int Unk5 {
+                get { return unk5; }
+                set { unk5 = value; }
+            }
+            public int Unk6 {
+                get { return unk6; }
+                set { unk6 = value; }
+            }
+
 
             public override string ToString()
             {
@@ -429,21 +524,14 @@ namespace ResourceTypes.Navigation
 
         }
 
-        string fileName;
         int unk0;
-        byte unk1;
         int unk2;
         int unk3;
         int unk4;
         int vertSize;
         int triSize;
-        int unk5;
         public VertexStruct[] vertices;
-        int unk6;
-        int unk7;
-        short unk8;
-        short unk9;
-        public uint[] indices;
+        public ConnectionStruct[] connections;
 
         public OBJData(BinaryReader reader)
         {
@@ -452,12 +540,13 @@ namespace ResourceTypes.Navigation
 
         public void ReadFromFile(BinaryReader reader)
         {
-            StreamWriter writer = File.CreateText("NAV_AI_OBJ_DATA.txt");
+            StreamWriter writer = File.CreateText("NAV_AI_OBJ_DATA"+StringHelpers.GetNewRefID()+".txt");
 
             unk0 = reader.ReadInt32();
             unk2 = reader.ReadInt32();
             unk3 = reader.ReadInt32();
             unk4 = reader.ReadInt32();
+            writer.WriteLine(string.Format("{0} {1} {2} {3}", unk0, unk2, unk3, unk4));
             vertSize = reader.ReadInt32();
             triSize = reader.ReadInt32();
             //writer.WriteLine(string.Format("{0}, )
@@ -467,32 +556,35 @@ namespace ResourceTypes.Navigation
             for (int i = 0; i < vertSize; i++)
             {
                 VertexStruct vertex = new VertexStruct();
-                vertex.unk7 = reader.ReadUInt32() & 0x7FFFFFFF;
-                vertex.position = Vector3Extenders.ReadFromFile(reader);
-                //float pos = vertex.position.Y;
-                //vertex.position.Y = vertex.position.Z;
-                //vertex.position.Z = pos;
-                vertex.unk0 = reader.ReadSingle();
-                vertex.unk1 = reader.ReadSingle();
-                vertex.unk2 = reader.ReadInt32();
-                vertex.unk3 = reader.ReadInt16();
-                vertex.unk4 = reader.ReadInt16();
-                vertex.unk5 = reader.ReadInt32();
-                vertex.unk6 = reader.ReadInt32();
-                //data.Add(string.Format("v {0} {1} {2}", vertex.position.X, vertex.position.Z, vertex.position.Y));
+                vertex.Unk7 = reader.ReadUInt32() & 0x7FFFFFFF;
+                vertex.Position = Vector3Extenders.ReadFromFile(reader);
+                Vector3 pos = vertex.Position;
+                float y = pos.Y;
+                pos.Y = -pos.Z;
+                pos.Z = y;
+                vertex.Position = pos;
+                writer.WriteLine(vertex.Position);
+                vertex.Unk0 = reader.ReadSingle();
+                vertex.Unk1 = reader.ReadSingle();
+                vertex.Unk2 = reader.ReadInt32();
+                vertex.Unk3 = reader.ReadInt16();
+                vertex.Unk4 = reader.ReadInt16();
+                vertex.Unk5 = reader.ReadInt32();
+                vertex.Unk6 = reader.ReadInt32();
                 vertices[i] = vertex;
             }
+            writer.WriteLine("");
             //data.Add("");
             //data.Add("g mesh");
-            indices = new uint[triSize * 3];
-            int index = 0;
+            connections = new ConnectionStruct[triSize];
             for (int i = 0; i < triSize; i++)
             {
-                indices[index] = reader.ReadUInt32() & 0x7FFFFFFF;
-                indices[index + 1] = reader.ReadUInt32() & 0x7FFFFFFF;
-                indices[index + 2] = reader.ReadUInt32() & 0x7FFFFFFF;
-                //data.Add(string.Format("f {0} {1} {2}", indices[index] + 1, indices[index + 1] + 1, indices[index + 2] + 1));
-                index += 3;
+                ConnectionStruct connection = new ConnectionStruct();
+                connection.Flags = reader.ReadUInt32() & 0x7FFFFFFF;
+                connection.NodeID = reader.ReadUInt32() & 0x7FFFFFFF;
+                connection.ConnectedNodeID = reader.ReadUInt32() & 0x7FFFFFFF;
+                connections[i] = connection;
+                writer.WriteLine(string.Format("{0} {1} {2}", connection.Flags, connection.NodeID, connection.ConnectedNodeID));
             }
 
             //KynogonRuntimeMesh
@@ -747,7 +839,7 @@ namespace ResourceTypes.Navigation
                 //byte[] data = reader.ReadBytes(size);
                 //File.WriteAllBytes("grid_" + i + ".bin", data);
             }
-
+            writer.Close();
 
             //File.WriteAllLines("model.obj", data.ToArray());
 

@@ -6,6 +6,7 @@ using Utils.Lang;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using ResourceTypes.EntityDataStorage;
+using SharpDX;
 
 namespace Mafia2Tool
 {

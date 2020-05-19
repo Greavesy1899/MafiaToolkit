@@ -253,7 +253,6 @@ namespace Rendering.Graphics
             BuildDepthStencilView(w, h);
             DeviceContext.OutputMerger.SetRenderTargets(m_DepthStencilView, m_RenderTargetView);
             DeviceContext.Rasterizer.SetViewport(0, 0, w, h, ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
-
         }
 
         public void EndScene()
