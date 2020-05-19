@@ -21,7 +21,7 @@
   <String ID="$BTN_RUN_MII">Spustit Mafii II</String>
   <String ID="$EXIT">Odejít</String>
   <String ID="$OPTIONS">Nastavení</String>
-  <String ID="$SELECT_MII_FOLDER">Vyberte složku s Mafií II. Složka by měla obsahovat "launcher.exe"</String>
+  <String ID="$SELECT_MII_FOLDER">Vyberte složku s Mafií II. Složka by měla obsahovat "mafia2.exe" nebo "mafia II Definitive Edition.exe"</String>
   <String ID="$ICON">Ikona</String>
   <String ID="$DETAILS">Detaily</String>
   <String ID="$SMALL_ICON">Malá Ikona</String>
@@ -41,6 +41,11 @@
   <String ID="$REFRESH">Obnovit</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Umístění složky</String>
   <String ID="$UP_TOOLTIP">Nahoru</String>
+
+  <!-- Map Editor -->
+  <String ID="$NO_COL_FILE_CREATE_NEW">Žádný soubor s kolizí není nalezen. Vytvořit nový soubor kolize?</String>
+  <String ID="$CANNOT_CREATE_COL">Nelze přidat kolizi. Žádný soubor s kolizí není nalezen!</String>
+  <String ID="$ADD_COLLISION">Přidat kolizi</String>
   
   <!-- Main Options Strings-->
   <String ID="$GENERAL">Obecné</String>

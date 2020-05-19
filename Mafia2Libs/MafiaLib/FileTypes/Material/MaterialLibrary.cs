@@ -39,7 +39,7 @@ namespace ResourceTypes.Materials
 
                 for (int i = 0; i != numMats; i++)
                 {
-                    Material mat = new Material(reader);
+                    Material mat = new Material(reader, unk1);
                     materials.Add(mat.MaterialHash, mat);
                 }
             }

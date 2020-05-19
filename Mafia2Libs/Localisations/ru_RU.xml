@@ -15,7 +15,7 @@
   <String ID="$BTN_RUN_MII">Запустить Mafia II</String>
   <String ID="$EXIT">Выход</String>
   <String ID="$OPTIONS">Настройки</String>
-  <String ID="$SELECT_MII_FOLDER">Выберите папку с MafiaII, содержащей "launcher.exe"</String>
+  <String ID="$SELECT_MII_FOLDER">Выберите папку с MafiaII, содержащей "mafia2.exe" или "mafia II Definitive Edition.exe"</String>
   <String ID="$ICON">Значок</String>
   <String ID="$DETAILS">Подробнее</String>
   <String ID="$SMALL_ICON">Маленький значок</String>
@@ -35,6 +35,11 @@
   <String ID="$REFRESH">Обновить</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Путь к папке </String>
   <String ID="$UP_TOOLTIP">Вверх</String>
+
+  <!-- Map Editor -->
+  <String ID="$NO_COL_FILE_CREATE_NEW">No Collision file is present. Create new Collision File?</String>
+  <String ID="$CANNOT_CREATE_COL">Cannot add a collision. No Collision file is present!</String>
+  <String ID="$ADD_COLLISION">Add Collision</String>
   
   <!-- Main Options Strings-->
   <String ID="$GENERAL">Общие</String>
