@@ -28,8 +28,17 @@ namespace Mafia2Tool
 {
     public partial class GameExplorer : Form
     {
+        readonly string[] supportedExecutables = new string[]
+        {
+            "mafia2.exe",
+            "mafia2",
+            "mafia ii definitive edition.exe",
+            "mafia ii definitive edition",
+        };
+
         private DirectoryInfo currentDirectory;
-        private DirectoryInfo originalPath;
+        private DirectoryInfo rootDirectory;
+        private DirectoryInfo pcDirectory;
         private FileInfo launcher;
 
         public GameExplorer()
@@ -112,12 +121,14 @@ namespace Mafia2Tool
             folderView.Nodes.Clear();
 
             if (string.IsNullOrEmpty(ToolkitSettings.M2Directory))
+            {
                 GetPath();
+            }
 
-            originalPath = new DirectoryInfo(ToolkitSettings.M2Directory);
+            pcDirectory = new DirectoryInfo(ToolkitSettings.M2Directory);
 
             //check if directory exists.
-            if (!originalPath.Exists)
+            if (!pcDirectory.Exists)
             {
                 PrintErrorLauncher();
                 GetPath();
@@ -125,14 +136,16 @@ namespace Mafia2Tool
             }
 
             bool hasLauncher = false;
-            foreach (FileInfo file in originalPath.GetFiles())
+            foreach (FileInfo file in pcDirectory.GetFiles())
             {
-                //check for either steam or gog version.
-                if ((file.Name.ToLower() == "launcher") || (file.Name.ToLower() == "launcher.exe") || (file.Name.ToLower() == "launch mafia ii") || (file.Name.ToLower() == "launch mafia ii.lnk"))
+                foreach(var text in supportedExecutables)
                 {
-                    hasLauncher = true;
-                    launcher = file;
-                    break;
+                    if(file.Name.ToLower() == text)
+                    {
+                        hasLauncher = true;
+                        launcher = file;
+                        break;
+                    }
                 }
             }
 
@@ -145,7 +158,7 @@ namespace Mafia2Tool
 
             InitTreeView();
 
-            string path = originalPath.FullName + "/edit/tables/FrameProps.bin";
+            string path = pcDirectory.FullName + "/edit/tables/FrameProps.bin";
             if(File.Exists(path))
             {
                 FileInfo info = new FileInfo(path);
@@ -161,8 +174,8 @@ namespace Mafia2Tool
             if (MafiaIIBrowser.ShowDialog() == DialogResult.OK)
             {
                 ToolkitSettings.M2Directory = MafiaIIBrowser.SelectedPath;
-                ToolkitSettings.WriteKey("MafiaII", "Directories", MafiaIIBrowser.SelectedPath);
-                originalPath = new DirectoryInfo(ToolkitSettings.M2Directory);
+                ToolkitSettings.WriteKey("MafiaII", "Directories", ToolkitSettings.M2Directory);
+                pcDirectory = new DirectoryInfo(ToolkitSettings.M2Directory);
                 InitTreeView();
             }
             else
@@ -174,11 +187,12 @@ namespace Mafia2Tool
         private void InitTreeView()
         {
             infoText.Text = "Building folders..";
-            TreeNode rootTreeNode = new TreeNode(originalPath.Name);
-            rootTreeNode.Tag = originalPath;
+            rootDirectory = pcDirectory.Parent;
+            TreeNode rootTreeNode = new TreeNode(rootDirectory.Name);
+            rootTreeNode.Tag = rootDirectory;
             folderView.Nodes.Add(rootTreeNode);
             infoText.Text = "Done builidng folders..";
-            OpenDirectory(originalPath);
+            OpenDirectory(rootDirectory);
         }
 
         private void GetSubdirectories(DirectoryInfo directory, TreeNode rootTreeNode)
@@ -209,7 +223,7 @@ namespace Mafia2Tool
             if (!directory.Exists)
             {
                 MessageBox.Show("Could not find directory! Returning to original path..", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                OpenDirectory(originalPath, false);
+                OpenDirectory(rootDirectory, false);
                 return;
             }
 
@@ -264,7 +278,7 @@ namespace Mafia2Tool
 
             infoText.Text = "Done loading directory.";
             currentDirectory = directory;
-            string directoryPath = directory.FullName.Remove(0, directory.FullName.IndexOf(originalPath.Name)).TrimEnd('\\');
+            string directoryPath = directory.FullName.Remove(0, directory.FullName.IndexOf(rootDirectory.Name)).TrimEnd('\\');
 
             FolderPath.Text = directoryPath;
             fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
@@ -356,7 +370,7 @@ namespace Mafia2Tool
             if (openDirectory)
             {
                 var directory = file.Directory;
-                string path = directory.FullName.Remove(0, directory.FullName.IndexOf(originalPath.Name, StringComparison.InvariantCultureIgnoreCase)).TrimEnd('\\');
+                string path = directory.FullName.Remove(0, directory.FullName.IndexOf(rootDirectory.Name, StringComparison.InvariantCultureIgnoreCase)).TrimEnd('\\');
                 TreeNode node = folderView.Nodes.FindTreeNodeByFullPath(path);
 
                 if(!node.Nodes.ContainsKey("extracted"))
@@ -676,9 +690,9 @@ namespace Mafia2Tool
             if (e.KeyChar == '\r')
             {
                 string newDir = FolderPath.Text;
-                int idx = newDir.IndexOf(originalPath.Name);
-                if (newDir.IndexOf(originalPath.Name) == 0)
-                    newDir = Path.Combine(originalPath.Parent.FullName, FolderPath.Text);
+                int idx = newDir.IndexOf(rootDirectory.Name);
+                if (newDir.IndexOf(rootDirectory.Name) == 0)
+                    newDir = Path.Combine(rootDirectory.Parent.FullName, FolderPath.Text);
 
                 if (Directory.Exists(newDir) && FolderPath.Text.Contains(currentDirectory.Name))
                     OpenDirectory(new DirectoryInfo(newDir));
@@ -750,10 +764,10 @@ namespace Mafia2Tool
         //FileListViewStrip events.
         private void OnUpButtonClicked(object sender, EventArgs e)
         {
-            if (currentDirectory.Name == originalPath.Name)
+            if (currentDirectory.Name == rootDirectory.Name)
                 return;
 
-            string directoryPath = currentDirectory.FullName.Remove(0, currentDirectory.FullName.IndexOf(originalPath.Name)).TrimEnd('\\');
+            string directoryPath = currentDirectory.FullName.Remove(0, currentDirectory.FullName.IndexOf(rootDirectory.Name)).TrimEnd('\\');
 
             TreeNode nodeToCollapse = folderView.Nodes.FindTreeNodeByFullPath(directoryPath);
             if (nodeToCollapse != null)
@@ -818,7 +832,7 @@ namespace Mafia2Tool
         private void OnViewSmallIconClicked(object sender, EventArgs e) => FileListViewTypeController(2);
         private void OnViewListClicked(object sender, EventArgs e) => FileListViewTypeController(3);
         private void OnViewTileClicked(object sender, EventArgs e) => FileListViewTypeController(4);
-        private void UnpackAllSDSButton_Click(object sender, EventArgs e) => UnpackSDSRecurse(originalPath);
+        private void UnpackAllSDSButton_Click(object sender, EventArgs e) => UnpackSDSRecurse(rootDirectory);
 
         private void OnCredits_Pressed(object sender, EventArgs e)
         {
@@ -826,8 +840,8 @@ namespace Mafia2Tool
                 "Special thanks to: \nOleg @ ZModeler 3 \nRick 'Gibbed' \nFireboyd for developing UnluacNET" +
                 "\n\n" +
                 "Also, a very special thanks to PayPal donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider \nNemesis7675" +
-                "\n\n" +
-                "And Patreons: \nHamAndRock \nMelber", 
+                "\n Foxite \n\n" +
+                "And Patreons: \nHamAndRock \nMelber",
                 "Toolkit",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
