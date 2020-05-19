@@ -113,9 +113,9 @@ namespace ResourceTypes.Materials
         /// Construct material and read data.
         /// </summary>
         /// <param name="reader"></param>
-        public Material(BinaryReader reader)
+        public Material(BinaryReader reader, int version)
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, version);
         }
 
         /// <summary>
@@ -148,18 +148,25 @@ namespace ResourceTypes.Materials
         /// Read material from library.
         /// </summary>
         /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(BinaryReader reader, int version)
         {
 
             materialHash = reader.ReadUInt64();
             materialName = StringHelpers.ReadString32(reader);
 
-            ufo1 = reader.ReadByte();
-            ufo2 = reader.ReadByte();
-            flags = (MaterialFlags)reader.ReadInt32();
-            ufo4 = reader.ReadByte();
-            ufo5 = reader.ReadInt32();
-            ufo6 = reader.ReadInt32();
+            if (version == 57)
+            {
+                ufo1 = reader.ReadByte();
+                ufo2 = reader.ReadByte();
+                flags = (MaterialFlags)reader.ReadInt32();
+                ufo4 = reader.ReadByte();
+                ufo5 = reader.ReadInt32();
+                ufo6 = reader.ReadInt32();
+            }
+            else
+            {
+                reader.ReadBytes(21);
+            }
 
             shaderID = reader.ReadUInt64();
             shaderHash = reader.ReadUInt32();
@@ -176,7 +183,7 @@ namespace ResourceTypes.Materials
             samplers = new Dictionary<string, ShaderParameterSampler>();
             for (int i = 0; i != spsCount; i++)
             {
-                var shader = new ShaderParameterSampler(reader);
+                var shader = new ShaderParameterSampler(reader, version);
                 samplers.Add(shader.ID, shader);
             }
 
@@ -325,9 +332,9 @@ namespace ResourceTypes.Materials
         /// Construct sampler data on read data.
         /// </summary>
         /// <param name="reader"></param>
-        public ShaderParameterSampler(BinaryReader reader)
+        public ShaderParameterSampler(BinaryReader reader, int version)
         {
-            ReadFromFile(reader);
+            ReadFromFile(reader, version);
         }
 
         public ShaderParameterSampler()
@@ -351,21 +358,42 @@ namespace ResourceTypes.Materials
         /// Read data to library.
         /// </summary>
         /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader)
+        public void ReadFromFile(BinaryReader reader, int version)
         {
-            id = new string(reader.ReadChars(4));
-            ufo_x1 = new int[2];
-            ufo_x1[0] = reader.ReadInt32();
-            ufo_x1[1] = reader.ReadInt32();
-            textureHash = reader.ReadUInt64();
-            texType = reader.ReadByte();
-            unkZero = reader.ReadByte();
-            samplerStates = reader.ReadBytes(6);
-            ufo_x2 = new int[2]; //these can have erratic values
-            ufo_x2[0] = reader.ReadInt32();
-            ufo_x2[1] = reader.ReadInt32();
-            int fileLength = reader.ReadInt32();
-            file = new string(reader.ReadChars(fileLength));
+            if (version == 57)
+            {
+                id = new string(reader.ReadChars(4));
+                ufo_x1 = new int[2];
+                ufo_x1[0] = reader.ReadInt32();
+                ufo_x1[1] = reader.ReadInt32(); 
+                textureHash = reader.ReadUInt64();
+                texType = reader.ReadByte();
+                unkZero = reader.ReadByte();
+                samplerStates = reader.ReadBytes(6);
+                ufo_x2 = new int[2]; //these can have erratic values
+                ufo_x2[0] = reader.ReadInt32();
+                ufo_x2[1] = reader.ReadInt32();
+                int fileLength = reader.ReadInt32();
+                file = new string(reader.ReadChars(fileLength));
+            }
+            else
+            {
+                id = new string(reader.ReadChars(4));
+                ufo_x1 = new int[4];
+                ufo_x1[0] = reader.ReadInt32();
+                ufo_x1[1] = reader.ReadInt32();
+                ufo_x1[2] = reader.ReadInt32();
+                ufo_x1[3] = reader.ReadInt32();
+                textureHash = reader.ReadUInt64();
+                texType = reader.ReadByte();
+                unkZero = reader.ReadByte();
+                samplerStates = reader.ReadBytes(6);
+                ufo_x2 = new int[2]; //these can have erratic values
+                ufo_x2[0] = reader.ReadInt32();
+                ufo_x2[1] = reader.ReadInt32();
+                int fileLength = reader.ReadInt32();
+                file = new string(reader.ReadChars(fileLength));
+            }
         }
 
         /// <summary>

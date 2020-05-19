@@ -21,7 +21,7 @@
   <String ID="$BTN_RUN_MII">Spustiť Mafiu II</String>
   <String ID="$EXIT">Odísť</String>
   <String ID="$OPTIONS">Nastavenia</String>
-  <String ID="$SELECT_MII_FOLDER">Vyberte priečinok obsahujúci hru Mafia II. Priečinok by mal obsahovať "launcher.exe"</String>
+  <String ID="$SELECT_MII_FOLDER">Vyberte priečinok obsahujúci hru Mafia II. Priečinok by mal obsahovať "mafia2.exe" alebo "mafia II Definitive Edition.exe"</String>
   <String ID="$ICON">Ikona</String>
   <String ID="$DETAILS">Detaily</String>
   <String ID="$SMALL_ICON">Malá ikona</String>
@@ -48,6 +48,11 @@
   <String ID="$MODEL_EXPORTING">Modely/Exportovanie</String>
   <String ID="$MATERIAL_LIBS">Knižnice Materiálov</String>
 
+  <!-- Map Editor -->
+  <String ID="$NO_COL_FILE_CREATE_NEW">No Collision file is present. Create new Collision File?</String>
+  <String ID="$CANNOT_CREATE_COL">Cannot add a collision. No Collision file is present!</String>
+  <String ID="$ADD_COLLISION">Add Collision</String>
+  
   <!-- General Options Strings-->
   <String ID="$ENABLE_DEBUG_LOGGING">Zapnúť Logger</String>
   <String ID="$MII_DIRECTORY">Mafia II Priečinok</String>

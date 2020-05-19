@@ -15,7 +15,7 @@
   <String ID="$BTN_RUN_MII">Lancer Mafia II</String>
   <String ID="$EXIT">Quitter</String>
   <String ID="$OPTIONS">Options</String>
-  <String ID="$SELECT_MII_FOLDER">Sélectionnez votre dossier Mafia II. Il doit contenir le fichier "launcher.exe"</String>
+  <String ID="$SELECT_MII_FOLDER">Sélectionnez votre dossier Mafia II. Il doit contenir le fichier "mafia2.exe" ou "mafia II Definitive Edition.exe"</String>
   <String ID="$ICON">Icone</String>
   <String ID="$DETAILS">Détails</String>
   <String ID="$SMALL_ICON">Petit icon</String>
@@ -57,6 +57,11 @@
   <String ID="$LANGUAGE_FRENCH">Français</String>
   <String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
   <String ID="$LANGUAGE_OPTION">Langue de l'interface</String>
+
+  <!-- Map Editor -->
+  <String ID="$NO_COL_FILE_CREATE_NEW">No Collision file is present. Create new Collision File?</String>
+  <String ID="$CANNOT_CREATE_COL">Cannot add a collision. No Collision file is present!</String>
+  <String ID="$ADD_COLLISION">Add Collision</String>
   
   <!-- Model/Exporting Option Strings-->
   <String ID="$EXPORT_PATH_TITLE">Chemin d'export:</String>

@@ -514,6 +514,11 @@ namespace Gibbed.Mafia2.FileFormats
                 ResourceEntry entry = ResourceEntries[i];
 
                 resourceXML.WriteStartElement("ResourceEntry");
+                if (entry.TypeId == -1)
+                {
+                    MessageBox.Show(string.Format("Detected unknown type, skipping. Size: {0}", entry.Data.Length));
+                    continue;
+                }
                 resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
                 string saveName = "";
                 Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
