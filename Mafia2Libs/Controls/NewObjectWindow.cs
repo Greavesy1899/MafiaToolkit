@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using Utils.Lang;
+using Utils.Language;
 
 namespace Mafia2Tool
 {

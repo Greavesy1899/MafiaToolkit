@@ -12,7 +12,7 @@ using ResourceTypes.FrameResource;
 using ResourceTypes.BufferPools;
 using Collision = ResourceTypes.Collisions.Collision;
 using Utils.Settings;
-using Utils.Lang;
+using Utils.Language;
 using Forms.EditorControls;
 using Utils.StringHelpers;
 using Forms.Docking;

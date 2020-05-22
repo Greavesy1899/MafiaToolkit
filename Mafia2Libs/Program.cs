@@ -2,11 +2,12 @@
 using System.IO;
 using System.Windows.Forms;
 using Utils.Settings;
-using Utils.Lang;
+using Utils.Language;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using ResourceTypes.EntityDataStorage;
 using SharpDX;
+using Mafia2Tool.Forms;
 
 namespace Mafia2Tool
 {
@@ -19,12 +20,32 @@ namespace Mafia2Tool
             Application.SetCompatibleTextRenderingDefault(false);
             CheckINIExists();
             ToolkitSettings.ReadINI();
+            GameStorage.Instance.InitStorage();
             Language.ReadLanguageXML();
             CheckLatestRelease();
 
             //EntityDataStorageLoader storage = new EntityDataStorageLoader();
             //storage.ReadFromFile("EntityDataStorage_16.eds", false);
-            Application.Run(new GameExplorer());
+            if(ToolkitSettings.SkipGameSelector)
+            {
+                GameStorage.Instance.SetSelectedGameByIndex(ToolkitSettings.DefaultGame);
+                OpenGameExplorer();
+                return;
+            }
+
+            GameSelector selector = new GameSelector();
+            if(selector.ShowDialog() == DialogResult.OK)
+            {
+                selector.Dispose();
+                OpenGameExplorer();
+            }
+        }
+
+        private static void OpenGameExplorer()
+        {
+            GameExplorer explorer = new GameExplorer();
+            explorer.ShowDialog();
+            explorer.Dispose();
         }
 
         private static void CheckLatestRelease()

@@ -278,10 +278,11 @@ namespace Utils.Types
                 {
                     CreateBaseResource(typeExtension[extension], info);
                 }
-                else if(info.Extension.Contains("tbl"))
-                {
-                    tables.Add(info.Name);
-                }
+                //temporarily disabled because of Mafia: DE (2020);
+                //else if(info.Extension.Contains("tbl"))
+                //{
+                //    tables.Add(info.Name);
+                //}
                 else if(info.Extension.Contains("dds") && !info.Name.Contains("MIP_"))
                 {
                     textures.Add(info.Name);
@@ -356,6 +357,7 @@ namespace Utils.Types
             var memfile = ProtectResourceType("MemFile");
             var audioSectors = ProtectResourceType("AudioSectors");
             var entityDataStorage = ProtectResourceType("EntityDataStorage");
+            var tablesProtected = ProtectResourceType("Tables");
 
             //clear and scan
             resources.Clear();
@@ -387,6 +389,7 @@ namespace Utils.Types
             ReapplyResourceType("MemFile", memfile);
             ReapplyResourceType("AudioSectors", audioSectors);
             ReapplyResourceType("EntityDataStorage", entityDataStorage);
+            ReapplyResourceType("Tables", tablesProtected);
             Sort();
         }
     }

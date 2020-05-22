@@ -182,6 +182,12 @@
     <Compile Include="Controls\ActorItemAddOption.Designer.cs">
       <DependentUpon>ActorItemAddOption.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ControlGameEntry.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ControlGameEntry.Designer.cs">
+      <DependentUpon>ControlGameEntry.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ListWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -229,6 +235,12 @@
     </Compile>
     <Compile Include="Forms\Docking\DockSceneTree.Designer.cs">
       <DependentUpon>DockSceneTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GameSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GameSelector.Designer.cs">
+      <DependentUpon>GameSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\M2FBXTool.cs">
       <SubType>Form</SubType>
@@ -411,6 +423,7 @@
     <Compile Include="Utils\Helpers\LuaHelper.cs" />
     <Compile Include="Utils\Helpers\StreamExtensions.cs" />
     <Compile Include="Utils\Helpers\StringHelpers.cs" />
+    <Compile Include="Utils\Settings\GameStorage.cs" />
     <Compile Include="Utils\Types\Half.cs" />
     <Compile Include="Utils\Helpers\HalfHelper.cs" />
     <Compile Include="Utils\Logger.cs" />
@@ -607,28 +620,42 @@
     <Content Include="Localisations\sk_SK.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\default_n.dds" />
-    <Content Include="Resources\GizmoModel.m2t">
+    <None Include="Resources\cross.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\hashes.txt">
+    </None>
+    <None Include="Resources\default_n.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\MissingMaterial.dds">
+    </None>
+    <None Include="Resources\GizmoModel.m2t">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\sky_backdrop.m2t">
+    </None>
+    <None Include="Resources\hashes.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\SoundDummy.m2t">
+    </None>
+    <None Include="Resources\m2de_logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\texture.dds">
+    </None>
+    <None Include="Resources\m2_logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\weather_clouds.m2t">
+    </None>
+    <None Include="Resources\MissingMaterial.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
+    <None Include="Resources\sky_backdrop.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SoundDummy.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\texture.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\tick.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\weather_clouds.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="Shaders\CollisionPS.hlsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -672,6 +699,9 @@
     <EmbeddedResource Include="Controls\ActorItemAddOption.resx">
       <DependentUpon>ActorItemAddOption.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ControlGameEntry.resx">
+      <DependentUpon>ControlGameEntry.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ListWindow.resx">
       <DependentUpon>ListWindow.cs</DependentUpon>
@@ -717,6 +747,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Docking\DockSceneTree.resx">
       <DependentUpon>DockSceneTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GameSelector.resx">
+      <DependentUpon>GameSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\M2FBXTool.resx">
       <DependentUpon>M2FBXTool.cs</DependentUpon>

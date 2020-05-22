@@ -1,5 +1,5 @@
 ﻿using System;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Models;
 using System.Windows.Forms;
 using System.Collections.Generic;

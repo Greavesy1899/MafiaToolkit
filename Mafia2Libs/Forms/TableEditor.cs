@@ -2,7 +2,7 @@
 using Gibbed.Mafia2.ResourceFormats;
 using System.Windows.Forms;
 using System;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Extensions;
 using System.Collections.Generic;
 using Gibbed.Illusion.FileFormats.Hashing;

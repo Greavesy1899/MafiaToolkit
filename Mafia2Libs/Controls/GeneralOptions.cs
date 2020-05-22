@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Logging;
 using Utils.Settings;
 
@@ -41,7 +41,7 @@ namespace Forms.OptionControls
         /// </summary>
         private void LoadSettings()
         {
-            M2DirectoryBox.Text = ToolkitSettings.M2Directory;
+            M2DirectoryBox.Text = GameStorage.Instance.GetSelectedGame().Directory;
             DiscordStateTextBox.Text = ToolkitSettings.CustomStateText;
             DiscordEnabledCheckBox.Checked = ToolkitSettings.DiscordEnabled;
             DiscordDetailsCheckBox.Checked = ToolkitSettings.DiscordDetailsEnabled;
@@ -70,8 +70,7 @@ namespace Forms.OptionControls
 
         private void M2Directory_TextChanged(object sender, EventArgs e)
         {
-            ToolkitSettings.M2Directory = M2DirectoryBox.Text;
-            ToolkitSettings.WriteKey("MafiaII", "Directories", M2DirectoryBox.Text);
+            GameStorage.Instance.GetSelectedGame().Directory = M2DirectoryBox.Text;
         }
 
         private void DiscordEnabledCheckBox_CheckedChanged(object sender, EventArgs e)

@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using System.ComponentModel;
 using Utils.Settings;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Logging;
 
 namespace Mafia2Tool

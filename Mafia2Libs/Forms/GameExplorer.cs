@@ -8,7 +8,7 @@ using Gibbed.Mafia2.FileFormats.Archive;
 using Utils.Extensions;
 using ApexSDK;
 using System.Drawing;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Logging;
 using Utils.Settings;
 using ResourceTypes.Cutscene;
@@ -28,14 +28,6 @@ namespace Mafia2Tool
 {
     public partial class GameExplorer : Form
     {
-        readonly string[] supportedExecutables = new string[]
-        {
-            "mafia2.exe",
-            "mafia2",
-            "mafia ii definitive edition.exe",
-            "mafia ii definitive edition",
-        };
-
         private DirectoryInfo currentDirectory;
         private DirectoryInfo rootDirectory;
         private DirectoryInfo pcDirectory;
@@ -104,55 +96,21 @@ namespace Mafia2Tool
             OptionsItem.Text = Language.GetString("$OPTIONS");
             MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
             UnpackAllSDSButton.Text = Language.GetString("$UNPACK_ALL_SDS");
-
-            StringBuilder builder = new StringBuilder("Toolkit v");
-            builder.Append(ToolkitSettings.Version);
-            VersionLabel.Text = builder.ToString();
-        }
-
-        private void PrintErrorLauncher()
-        {
-            MessageBox.Show(Language.GetString("$ERROR_DID_NOT_FIND_LAUNCHER"), Language.GetString("$ERROR_TITLE"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-            Log.WriteLine("$ERROR_DID_NOT_FIND_LAUNCHER", LoggingTypes.ERROR);
         }
 
         public void InitExplorerSettings()
         {
             folderView.Nodes.Clear();
 
-            if (string.IsNullOrEmpty(ToolkitSettings.M2Directory))
-            {
-                GetPath();
-            }
+            var game = GameStorage.Instance.GetSelectedGame();
+            pcDirectory = new DirectoryInfo(game.Directory);
+            launcher = new FileInfo(pcDirectory.FullName + "/" + GameStorage.GetExecutableName(game.GameType));
+            rootDirectory = pcDirectory.Parent;
 
-            pcDirectory = new DirectoryInfo(ToolkitSettings.M2Directory);
-
-            //check if directory exists.
-            if (!pcDirectory.Exists)
+            if(!launcher.Exists)
             {
-                PrintErrorLauncher();
-                GetPath();
-                return;
-            }
-
-            bool hasLauncher = false;
-            foreach (FileInfo file in pcDirectory.GetFiles())
-            {
-                foreach(var text in supportedExecutables)
-                {
-                    if(file.Name.ToLower() == text)
-                    {
-                        hasLauncher = true;
-                        launcher = file;
-                        break;
-                    }
-                }
-            }
-
-            if (!hasLauncher)
-            {
-                PrintErrorLauncher();
-                GetPath();
+                MessageBox.Show("Could not find executable!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Close();
                 return;
             }
 
@@ -166,22 +124,6 @@ namespace Mafia2Tool
                 SceneData.FrameProperties = props;
             }
 
-        }
-
-        private void GetPath()
-        {
-            MafiaIIBrowser.SelectedPath = "";
-            if (MafiaIIBrowser.ShowDialog() == DialogResult.OK)
-            {
-                ToolkitSettings.M2Directory = MafiaIIBrowser.SelectedPath;
-                ToolkitSettings.WriteKey("MafiaII", "Directories", ToolkitSettings.M2Directory);
-                pcDirectory = new DirectoryInfo(ToolkitSettings.M2Directory);
-                InitTreeView();
-            }
-            else
-            {
-                ExitProgram();
-            }
         }
 
         private void InitTreeView()
@@ -914,6 +856,15 @@ namespace Mafia2Tool
         private void ContextForceBigEndian_Click(object sender, EventArgs e)
         {
             HandleSDSMap((FileInfo)fileListView.SelectedItems[0].Tag, true);
+        }
+
+        private void Button_SelectGame_OnClick(object sender, EventArgs e)
+        {
+            GameSelector selector = new GameSelector();
+            if(selector.ShowDialog() == DialogResult.OK)
+            {
+                InitExplorerSettings();
+            }
         }
     }
 }

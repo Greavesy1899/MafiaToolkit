@@ -3,7 +3,7 @@ using System.Xml;
 using Utils.Logging;
 using Utils.Settings;
 
-namespace Utils.Lang
+namespace Utils.Language
 {
     public class Language
     {

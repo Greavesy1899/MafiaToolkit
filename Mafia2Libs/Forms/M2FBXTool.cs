@@ -1,7 +1,7 @@
 ﻿using System;
 using Utils;
 using System.Windows.Forms;
-using Utils.Lang;
+using Utils.Language;
 using System.IO;
 
 namespace Mafia2Tool.Forms

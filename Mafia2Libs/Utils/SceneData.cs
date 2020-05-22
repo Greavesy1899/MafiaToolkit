@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
 using Utils.Settings;
-using Utils.Lang;
+using Utils.Language;
 using ResourceTypes.BufferPools;
 using ResourceTypes.City;
 using ResourceTypes.ItemDesc;
@@ -229,7 +229,7 @@ namespace Mafia2Tool
 
             try
             {
-                MaterialsManager.ReadMatFiles(ToolkitSettings.MaterialLibs.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                MaterialsManager.ReadMatFiles(GameStorage.Instance.GetSelectedGame().Materials.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
                 HasLoaded = true;
             }
             catch (Exception ex)

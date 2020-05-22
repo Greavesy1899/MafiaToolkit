@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using Utils.Lang;
+using Utils.Language;
 using ResourceTypes.Actors;
 
 namespace Forms.EditorControls

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using ResourceTypes.Misc;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Settings;
 using static ResourceTypes.Misc.StreamMapLoader;
 

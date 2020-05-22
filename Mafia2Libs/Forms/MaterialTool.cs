@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using Gibbed.Illusion.FileFormats.Hashing;
 using Forms.EditorControls;
 using ResourceTypes.Materials;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Settings;
 using System.Linq;
 

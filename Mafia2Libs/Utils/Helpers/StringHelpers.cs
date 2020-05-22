@@ -6,7 +6,8 @@ namespace Utils.StringHelpers
 {
     public class StringHelpers
     {
-        private static int currentRefID = -1;
+        //set to 10 because the first 10 are placeholders for render assets.
+        private static int currentRefID = 10;
 
         public static int GetNewRefID()
         {

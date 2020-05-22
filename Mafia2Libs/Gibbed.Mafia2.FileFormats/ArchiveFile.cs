@@ -512,13 +512,13 @@ namespace Gibbed.Mafia2.FileFormats
             for (int i = 0; i != ResourceEntries.Count; i++)
             {
                 ResourceEntry entry = ResourceEntries[i];
-
-                resourceXML.WriteStartElement("ResourceEntry");
                 if (entry.TypeId == -1)
                 {
-                    MessageBox.Show(string.Format("Detected unknown type, skipping. Size: {0}", entry.Data.Length));
+                    MessageBox.Show(string.Format("Detected unknown type, skipping. Size: {0}", entry.Data.Length), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     continue;
                 }
+
+                resourceXML.WriteStartElement("ResourceEntry");
                 resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
                 string saveName = "";
                 Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
@@ -1000,13 +1000,16 @@ namespace Gibbed.Mafia2.FileFormats
             TableResource resource = new TableResource();
             resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian);
             if (!Directory.Exists(tableDIR + "/tables"))
+            {
                 Directory.CreateDirectory(tableDIR + "/tables");
+            }
 
             resourceXML.WriteElementString("NumTables", resource.Tables.Count.ToString());
 
             foreach (TableData data in resource.Tables)
             {
-                data.Serialize(entry.Version, File.Open(tableDIR + data.Name, FileMode.Create), Endian.Little);
+                //maybe we can get away with saving to version 1, and then converting to version 2 when packing?
+                data.Serialize(1, File.Open(tableDIR + data.Name, FileMode.Create), Endian.Little);
                 resourceXML.WriteElementString("Table", data.Name);
             }
 
@@ -1018,7 +1021,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             //number of tables
             nodes.Current.MoveToNext();
-            int count = int.Parse(nodes.Current.Value);
+            int count = nodes.Current.ValueAsInt;
 
             //read tables and add to resource.
             for(int i = 0; i != count; i++)
@@ -1033,7 +1036,7 @@ namespace Gibbed.Mafia2.FileFormats
                 //now read..
                 using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + file, FileMode.Open)))
                 {
-                    data.Deserialize(0, reader.BaseStream, Endian);
+                    data.Deserialize(1, reader.BaseStream, Endian);
                     data.Name = file;
                     data.NameHash = FNV64.Hash(data.Name);
                 }
@@ -1041,17 +1044,17 @@ namespace Gibbed.Mafia2.FileFormats
                 resource.Tables.Add(data);
             }
 
+            //get version, always 1 Mafia II (2010) is 1, Mafia: DE (2020) is 2.
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
             //create a temporary memory stream, merge all data and then fill entry data.
             using (MemoryStream stream = new MemoryStream())
             {
-                resource.Serialize(1, stream, Endian.Little);
+                resource.Serialize(entry.Version, stream, Endian.Little);
                 entry.Data = stream.ToArray();
                 entry.SlotRamRequired = (uint)entry.Data.Length + 128;
             }
-
-            //get version, always 1?
-            nodes.Current.MoveToNext();
-            entry.Version = Convert.ToUInt16(nodes.Current.Value);
 
             //fin.
             return entry;

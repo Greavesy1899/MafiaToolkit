@@ -7,7 +7,7 @@ using System;
 using Mafia2Tool.Forms;
 using System.Drawing;
 using System.IO;
-using Utils.Lang;
+using Utils.Language;
 using WeifenLuo.WinFormsUI.Docking;
 using Utils.SharpDXExtensions;
 
