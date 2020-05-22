@@ -119,7 +119,7 @@ namespace Mafia2Tool
             {
                 if (mtl.Materials.ContainsKey(FNV64.Hash(form.GetInputText())))
                 {
-                    MessageBox.Show("Found duplicate material. Will not be adding new material!");
+                    MessageBox.Show("Found duplicate material. Will not be adding new material!", "Toolkit");
                     return;
                 }
 
@@ -164,7 +164,6 @@ namespace Mafia2Tool
             {
                 MaterialGrid.SelectedObject = dataGridView1.Rows[e.RowIndex].Tag;
                 Material mat = (dataGridView1.Rows[e.RowIndex].Tag as Material);
-                Console.WriteLine(string.Format("{0} {1}", mat.MaterialName, (int)mat.Flags));
             }
         }
 

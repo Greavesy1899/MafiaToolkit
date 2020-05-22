@@ -14,12 +14,15 @@ namespace ResourceTypes.Materials
         ulong materialHash;
         string materialName;
 
-        byte ufo1;
-        byte ufo2;
+        byte unk0;
+        byte unk1;
+        byte unk2;
         MaterialFlags flags;
-        byte ufo4;
-        int ufo5;
-        int ufo6;
+        byte unk3;
+        int unk4;
+        int unk5;
+        byte unk6;
+        float unk7;
 
         ulong shaderID;
         uint shaderHash;
@@ -39,16 +42,22 @@ namespace ResourceTypes.Materials
             set { SetName(value); }
         }
 
-        [Category("UFOs")]
-        public byte UFO1 {
-            get { return ufo1; }
-            set { ufo1 = value; }
+        [Category("Unknown")]
+        public byte Unk0 {
+            get { return unk0; }
+            set { unk0 = value; }
         }
 
-        [Category("UFOs")]
-        public byte UFO2 {
-            get { return ufo2; }
-            set { ufo2 = value; }
+        [Category("Unknown")]
+        public byte Unk1 {
+            get { return unk1; }
+            set { unk1 = value; }
+        }
+
+        [Category("Unknown")]
+        public byte Unk2 {
+            get { return unk2; }
+            set { unk2 = value; }
         }
 
         [Category("Flags"), Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
@@ -57,22 +66,32 @@ namespace ResourceTypes.Materials
             set { flags = value; }
         }
 
-        [Category("UFOs")]
-        public byte UFO4 {
-            get { return ufo4; }
-            set { ufo4 = value; }
+        [Category("Unknown"), Description("Only used in v58. (Mafia II: DE)")]
+        public byte Unk3 {
+            get { return unk3; }
+            set { unk3 = value; }
         }
 
-        [Category("UFOs")]
-        public int UFO5 {
-            get { return ufo5; }
-            set { ufo5 = value; }
+        [Category("Unknown")]
+        public int Unk4 {
+            get { return unk4; }
+            set { unk4 = value; }
         }
 
-        [Category("UFOs")]
-        public int UFO6 {
-            get { return ufo6; }
-            set { ufo6 = value; }
+        [Category("Unknown")]
+        public int Unk5 {
+            get { return unk5; }
+            set { unk5 = value; }
+        }
+        [Category("Unknown"), Description("Only used in v58. (Mafia II: DE)")]
+        public byte Unk6 {
+            get { return unk6; }
+            set { unk6 = value; }
+        }
+        [Category("Unknown"), Description("Only used in v58. (Mafia II: DE)")]
+        public float Unk7 {
+            get { return unk7; }
+            set { unk7 = value; }
         }
 
         [Category("Shader")]
@@ -113,7 +132,7 @@ namespace ResourceTypes.Materials
         /// Construct material and read data.
         /// </summary>
         /// <param name="reader"></param>
-        public Material(BinaryReader reader, int version)
+        public Material(BinaryReader reader, VersionsEnumerator version)
         {
             ReadFromFile(reader, version);
         }
@@ -127,12 +146,15 @@ namespace ResourceTypes.Materials
             materialHash = 1;
             shaderHash = 3388704532;
             shaderID = 4894707398632176459;
-            ufo1 = 128;
-            ufo2 = 0;
+            unk0 = 128;
+            unk1 = 0;
+            unk2 = 0;
             flags = (MaterialFlags)31461376;
-            ufo4 = 0;
-            ufo5 = 0;
-            ufo6 = 0;
+            unk3 = 0;
+            unk4 = 0;
+            unk5 = 0;
+            unk6 = 0;
+            unk7 = 1.0f;
             parameters = new Dictionary<string, ShaderParameter>();
             samplers = new Dictionary<string, ShaderParameterSampler>();
             var spp = new ShaderParameterSampler();
@@ -148,24 +170,29 @@ namespace ResourceTypes.Materials
         /// Read material from library.
         /// </summary>
         /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader, int version)
+        public void ReadFromFile(BinaryReader reader, VersionsEnumerator version)
         {
 
             materialHash = reader.ReadUInt64();
             materialName = StringHelpers.ReadString32(reader);
 
-            if (version == 57)
+            unk0 = reader.ReadByte();
+            unk1 = reader.ReadByte();
+
+            if (version == VersionsEnumerator.V_58)
             {
-                ufo1 = reader.ReadByte();
-                ufo2 = reader.ReadByte();
-                flags = (MaterialFlags)reader.ReadInt32();
-                ufo4 = reader.ReadByte();
-                ufo5 = reader.ReadInt32();
-                ufo6 = reader.ReadInt32();
+                unk2 = reader.ReadByte();
             }
-            else
+
+            flags = (MaterialFlags)reader.ReadInt32();
+            unk3 = reader.ReadByte();
+            unk4 = reader.ReadInt32();
+            unk5 = reader.ReadInt32();
+
+            if (version == VersionsEnumerator.V_58)
             {
-                reader.ReadBytes(21);
+                unk6 = reader.ReadByte();
+                unk7 = reader.ReadSingle();
             }
 
             shaderID = reader.ReadUInt64();
@@ -186,40 +213,43 @@ namespace ResourceTypes.Materials
                 var shader = new ShaderParameterSampler(reader, version);
                 samplers.Add(shader.ID, shader);
             }
-
         }
 
-        /// <summary>
-        /// Write material to library.
-        /// </summary>
-        /// <param name="writer"></param>
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(BinaryWriter writer, VersionsEnumerator version)
         {
-            ////material hash code and name.
+            //material hash code and name.
             writer.Write(materialHash);
             writer.Write(materialName.Length);
             writer.Write(materialName.ToCharArray());
 
-            ////UFO values
-            writer.Write(ufo1);
-            writer.Write(ufo2);
+            //unknown values
+            writer.Write(unk0);
+            writer.Write(unk1);
+            if (version == VersionsEnumerator.V_58)
+            {
+                writer.Write(unk2);
+            }
             writer.Write((int)flags);
-            writer.Write(ufo4);
-            writer.Write(ufo5);
-            writer.Write(ufo6);
-
-            ////Shader and flags
+            writer.Write(unk3);
+            writer.Write(unk4);
+            writer.Write(unk5);
+            if (version == VersionsEnumerator.V_58)
+            {
+                writer.Write(unk6);
+                writer.Write(unk7);
+            }
+            //Shader and flags
             writer.Write(shaderID);
             writer.Write(shaderHash);
 
-            ////Shader Parameter
+            //Shader Parameter
             writer.Write(parameters.Count);
             foreach (KeyValuePair<string, ShaderParameter> param in parameters)
             {
                 param.Value.WriteToFile(writer);
             }
 
-            ////Shader Parameter Samplers
+            //Shader Parameter Samplers
             writer.Write(samplers.Count);
             foreach (KeyValuePair<string, ShaderParameterSampler> shader in samplers)
             {
@@ -227,10 +257,6 @@ namespace ResourceTypes.Materials
             }
         }
 
-        /// <summary>
-        /// Set shader sampler name
-        /// </summary>
-        /// <param name="name"></param>
         public void SetName(string name)
         {
             materialName = name;
@@ -287,21 +313,21 @@ namespace ResourceTypes.Materials
     {
 
         string id;
-        int[] ufo_x1;
+        int[] unkSet0;
         ulong textureHash;
         byte texType;
         byte unkZero;
         byte[] samplerStates;
-        int[] ufo_x2;
+        int[] unkSet1;
         string file;
 
         public string ID {
             get { return id; }
             set { id = value; }
         }
-        public int[] UFO_X1 {
-            get { return ufo_x1; }
-            set { ufo_x1 = value; }
+        public int[] UnkSet0 {
+            get { return unkSet0; }
+            set { unkSet0 = value; }
         }
         public ulong TextureHash {
             get { return textureHash; }
@@ -319,20 +345,16 @@ namespace ResourceTypes.Materials
             get { return samplerStates; }
             set { samplerStates = value; }
         }
-        public int[] UFO_X2 {
-            get { return ufo_x2; }
-            set { ufo_x2 = value; }
+        public int[] UnkSet1 {
+            get { return unkSet1; }
+            set { unkSet1 = value; }
         }
         public string File {
             get { return file; }
             set { SetName(value); }
         }
 
-        /// <summary>
-        /// Construct sampler data on read data.
-        /// </summary>
-        /// <param name="reader"></param>
-        public ShaderParameterSampler(BinaryReader reader, int version)
+        public ShaderParameterSampler(BinaryReader reader, VersionsEnumerator version)
         {
             ReadFromFile(reader, version);
         }
@@ -342,8 +364,8 @@ namespace ResourceTypes.Materials
             id = "S000";
             file = "null.dds";
             textureHash = 1;
-            ufo_x1 = new int[2];
-            ufo_x2 = new int[2];
+            unkSet0 = new int[2];
+            unkSet1 = new int[2];
             samplerStates = new byte[6] { 3, 3, 2, 0, 0, 0 };
             texType = 2;
             UnkZero = 0;
@@ -354,57 +376,34 @@ namespace ResourceTypes.Materials
             return string.Format("{0}, {1}", id, file);
         }
 
-        /// <summary>
-        /// Read data to library.
-        /// </summary>
-        /// <param name="reader"></param>
-        public void ReadFromFile(BinaryReader reader, int version)
+        public void ReadFromFile(BinaryReader reader, VersionsEnumerator version)
         {
-            if (version == 57)
+            id = new string(reader.ReadChars(4));
+            unkSet0 = new int[version == VersionsEnumerator.V_58 ? 4 : 2];
+            for (int i = 0; i < unkSet0.Length; i++)
             {
-                id = new string(reader.ReadChars(4));
-                ufo_x1 = new int[2];
-                ufo_x1[0] = reader.ReadInt32();
-                ufo_x1[1] = reader.ReadInt32(); 
-                textureHash = reader.ReadUInt64();
-                texType = reader.ReadByte();
-                unkZero = reader.ReadByte();
-                samplerStates = reader.ReadBytes(6);
-                ufo_x2 = new int[2]; //these can have erratic values
-                ufo_x2[0] = reader.ReadInt32();
-                ufo_x2[1] = reader.ReadInt32();
-                int fileLength = reader.ReadInt32();
-                file = new string(reader.ReadChars(fileLength));
+                unkSet0[i] = reader.ReadInt32();
             }
-            else
+            textureHash = reader.ReadUInt64();
+            texType = reader.ReadByte();
+            unkZero = reader.ReadByte();
+            samplerStates = reader.ReadBytes(6);
+            unkSet1 = new int[2]; //these can have erratic values
+            for (int i = 0; i < unkSet1.Length; i++)
             {
-                id = new string(reader.ReadChars(4));
-                ufo_x1 = new int[4];
-                ufo_x1[0] = reader.ReadInt32();
-                ufo_x1[1] = reader.ReadInt32();
-                ufo_x1[2] = reader.ReadInt32();
-                ufo_x1[3] = reader.ReadInt32();
-                textureHash = reader.ReadUInt64();
-                texType = reader.ReadByte();
-                unkZero = reader.ReadByte();
-                samplerStates = reader.ReadBytes(6);
-                ufo_x2 = new int[2]; //these can have erratic values
-                ufo_x2[0] = reader.ReadInt32();
-                ufo_x2[1] = reader.ReadInt32();
-                int fileLength = reader.ReadInt32();
-                file = new string(reader.ReadChars(fileLength));
+                unkSet1[i] = reader.ReadInt32();
             }
+            int fileLength = reader.ReadInt32();
+            file = new string(reader.ReadChars(fileLength));
         }
 
-        /// <summary>
-        /// write data to library.
-        /// </summary>
-        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(id.ToCharArray());
-            writer.Write(ufo_x1[0]);
-            writer.Write(ufo_x1[1]);
+            for(int i = 0; i < unkSet0.Length; i++)
+            {
+                writer.Write(unkSet0[i]);
+            }
             writer.Write(textureHash);
             writer.Write(texType);
             writer.Write(UnkZero);
@@ -414,16 +413,14 @@ namespace ResourceTypes.Materials
             else
                 writer.Write(samplerStates);
 
-            writer.Write(ufo_x2[0]);
-            writer.Write(ufo_x2[1]);
+            for (int i = 0; i < unkSet1.Length; i++)
+            {
+                writer.Write(unkSet1[i]);
+            }
             writer.Write(file.Length);
             writer.Write(file.ToCharArray());
         }
 
-        /// <summary>
-        /// Set shader sampler name
-        /// </summary>
-        /// <param name="name"></param>
         public void SetName(string name)
         {
             file = name;
