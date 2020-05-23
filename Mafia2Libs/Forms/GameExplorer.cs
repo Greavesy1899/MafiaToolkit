@@ -32,6 +32,7 @@ namespace Mafia2Tool
         private DirectoryInfo rootDirectory;
         private DirectoryInfo pcDirectory;
         private FileInfo launcher;
+        private Game game;
 
         public GameExplorer()
         {
@@ -94,15 +95,15 @@ namespace Mafia2Tool
             dropdownView.Text = Language.GetString("$VIEW");
             dropdownTools.Text = Language.GetString("$TOOLS");
             OptionsItem.Text = Language.GetString("$OPTIONS");
-            MafiaIIBrowser.Description = Language.GetString("$SELECT_MII_FOLDER");
             UnpackAllSDSButton.Text = Language.GetString("$UNPACK_ALL_SDS");
+            Button_SelectGame.Text = Language.GetString("$SELECT_GAME");
         }
 
         public void InitExplorerSettings()
         {
             folderView.Nodes.Clear();
 
-            var game = GameStorage.Instance.GetSelectedGame();
+            game = GameStorage.Instance.GetSelectedGame();
             pcDirectory = new DirectoryInfo(game.Directory);
             launcher = new FileInfo(pcDirectory.FullName + "/" + GameStorage.GetExecutableName(game.GameType));
             rootDirectory = pcDirectory.Parent;
@@ -256,12 +257,19 @@ namespace Mafia2Tool
 
             //begin..
             infoText.Text = "Saving SDS..";
-            ArchiveFile archiveFile = new ArchiveFile
+            ArchiveFile archiveFile = new ArchiveFile();
+            archiveFile.Platform = Platform.PC;
+            //MII: DE no longer has this data in the header.
+            if(game.GameType == GamesEnumerator.MafiaII)
             {
-                Platform = Platform.PC,
-                Unknown20 = new byte[16] { 55, 51, 57, 55, 57, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-            };
-            archiveFile.BuildResources(file.Directory.FullName + "/extracted/" + file.Name);
+                archiveFile.Unknown20 = new byte[16] { 55, 51, 57, 55, 57, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            }
+            //end of game specific code.
+            if(!archiveFile.BuildResources(file.Directory.FullName + "/extracted/" + file.Name))
+            {
+                MessageBox.Show("Failed to pack SDS.", "Toolkit", MessageBoxButtons.OK);
+                return;
+            }
 
             foreach (ResourceEntry entry in archiveFile.ResourceEntries)
             {
@@ -276,6 +284,7 @@ namespace Mafia2Tool
                 archiveFile.Serialize(output, ToolkitSettings.SerializeSDSOption == 0 ? ArchiveSerializeOptions.OneBlock : ArchiveSerializeOptions.Compress);
             }
             infoText.Text = "Saved SDS.";
+            archiveFile = null;
         }
 
         private void OpenSDS(FileInfo file, bool openDirectory = true)
@@ -696,10 +705,7 @@ namespace Mafia2Tool
 
         //'File' Button dropdown events.
         private void OpenMafiaIIClicked(object sender, EventArgs e) => InitExplorerSettings();
-        private void ExitToolkitClicked(object sender, EventArgs e)
-        {
-            ExitProgram();
-        }
+        private void ExitToolkitClicked(object sender, EventArgs e) => ExitProgram();
         private void RunMafiaIIClicked(object sender, EventArgs e) => Process.Start(launcher.FullName);
         private void SearchBarOnTextChanged(object sender, EventArgs e) => OpenDirectory(currentDirectory, true, SearchEntryText.Text);
 

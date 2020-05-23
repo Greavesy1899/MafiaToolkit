@@ -554,7 +554,7 @@ namespace Mafia2Tool
                 {
                     for(int i = 0; i < SceneData.Actors.Length; i++)
                     {
-                        FixActorDefintions(SceneData.Actors[i]);
+                        //FixActorDefintions(SceneData.Actors[i]);
                         SceneData.Actors[i].WriteToFile();
                     }
                 }
@@ -935,7 +935,7 @@ namespace Mafia2Tool
                             actorFile.Nodes.Add(typeNode);
                         }
                     }
-                    FixActorDefintions(actor);
+                    //FixActorDefintions(actor);
                 }
                 dSceneTree.AddToTree(actorRoot);
             }
@@ -1194,7 +1194,7 @@ namespace Mafia2Tool
             return mesh;
         }
 
-        private void CreateNewEntry(int selected, string name)
+        private void CreateNewEntry(int selected, string name, bool addToNameTable)
         {
             FrameObjectBase frame;
 
@@ -1246,6 +1246,7 @@ namespace Mafia2Tool
             }
 
             frame.Name.Set(name);
+            frame.IsOnFrameTable = addToNameTable;
             SceneData.FrameResource.FrameObjects.Add(frame.RefID, frame);
             TreeNode node = new TreeNode(frame.Name.String);
             node.Tag = frame;
@@ -1821,12 +1822,13 @@ namespace Mafia2Tool
         {
             NewObjectForm form = new NewObjectForm(true);
             form.SetLabel(Language.GetString("$QUESTION_FRADD"));
-            form.LoadOption(new FrameResourceAddOption());
+            form.LoadOption(new ControlOptionFrameAdd());
 
             if(form.ShowDialog() == DialogResult.OK)
             {
-                int selection = (form.control as FrameResourceAddOption).GetSelectedType();
-                CreateNewEntry(selection, form.GetInputText());
+                ControlOptionFrameAdd window = (form.control as ControlOptionFrameAdd);
+                int selection = window.GetSelectedType();
+                CreateNewEntry(selection, form.GetInputText(), window.GetAddToNameTable());
             }
         }
 

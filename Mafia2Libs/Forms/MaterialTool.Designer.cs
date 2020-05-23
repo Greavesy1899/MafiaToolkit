@@ -40,7 +40,7 @@
             this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.columnHash = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MTLBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.MainPanel = new System.Windows.Forms.Panel();
+            this.Panel_Main = new System.Windows.Forms.Panel();
             this.MergePanel = new System.Windows.Forms.Panel();
             this.SelectAllNewButton = new System.Windows.Forms.Button();
             this.SelectAllOverwriteButton = new System.Windows.Forms.Button();
@@ -52,7 +52,7 @@
             this.OverwriteListBox = new System.Windows.Forms.CheckedListBox();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.MainPanel.SuspendLayout();
+            this.Panel_Main.SuspendLayout();
             this.MergePanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,7 +64,6 @@
             this.MaterialSearch.Name = "MaterialSearch";
             this.MaterialSearch.Size = new System.Drawing.Size(329, 20);
             this.MaterialSearch.TabIndex = 0;
-            this.MaterialSearch.TextChanged += new System.EventHandler(this.MaterialSearch_TextChanged);
             this.MaterialSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
             // 
             // MaterialGrid
@@ -195,18 +194,18 @@
             this.columnHash.Name = "columnHash";
             this.columnHash.ReadOnly = true;
             // 
-            // MainPanel
+            // Panel_Main
             // 
-            this.MainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.Panel_Main.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.MainPanel.Controls.Add(this.dataGridView1);
-            this.MainPanel.Controls.Add(this.MaterialSearch);
-            this.MainPanel.Controls.Add(this.MaterialGrid);
-            this.MainPanel.Location = new System.Drawing.Point(0, 28);
-            this.MainPanel.Name = "MainPanel";
-            this.MainPanel.Size = new System.Drawing.Size(785, 403);
-            this.MainPanel.TabIndex = 4;
+            this.Panel_Main.Controls.Add(this.dataGridView1);
+            this.Panel_Main.Controls.Add(this.MaterialSearch);
+            this.Panel_Main.Controls.Add(this.MaterialGrid);
+            this.Panel_Main.Location = new System.Drawing.Point(0, 28);
+            this.Panel_Main.Name = "Panel_Main";
+            this.Panel_Main.Size = new System.Drawing.Size(785, 403);
+            this.Panel_Main.TabIndex = 4;
             // 
             // MergePanel
             // 
@@ -317,16 +316,16 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 431);
             this.Controls.Add(this.toolStrip1);
+            this.Controls.Add(this.Panel_Main);
             this.Controls.Add(this.MergePanel);
-            this.Controls.Add(this.MainPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MaterialTool";
             this.Text = "Material Library Editor";
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.MainPanel.ResumeLayout(false);
-            this.MainPanel.PerformLayout();
+            this.Panel_Main.ResumeLayout(false);
+            this.Panel_Main.PerformLayout();
             this.MergePanel.ResumeLayout(false);
             this.MergePanel.PerformLayout();
             this.ResumeLayout(false);
@@ -352,7 +351,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn columnHash;
         private System.Windows.Forms.ToolStripMenuItem MergeMTLButton;
         private System.Windows.Forms.OpenFileDialog MTLBrowser;
-        private System.Windows.Forms.Panel MainPanel;
+        private System.Windows.Forms.Panel Panel_Main;
         private System.Windows.Forms.Panel MergePanel;
         private System.Windows.Forms.CheckedListBox OverwriteListBox;
         private System.Windows.Forms.Button CancelButton;

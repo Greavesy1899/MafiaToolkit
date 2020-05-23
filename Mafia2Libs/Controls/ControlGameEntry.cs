@@ -21,8 +21,9 @@ namespace Mafia2Tool.Controls
 
         public void LocaliseEntry()
         {
-            Label_FolderPath.Text = "Game Directory:";
-            //Label_FolderPath.Text = Language.GetString("$GAMEENTRY_SELECTFOLDER");
+            Label_FolderPath.Text = Language.GetString("$FOLDER_PATH_LABEL");
+            Button_SelectFolder.Text = Language.GetString("$SELECT_FOLDER");
+            Button_Start.Text = Language.GetString("$START_TOOLKIT");
         }
 
         public void InitialiseEntry(Game game)
@@ -72,7 +73,7 @@ namespace Mafia2Tool.Controls
 
                 if (debug)
                 {
-                    MessageBox.Show("Failed to find correct executable!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(string.Format("Failed to find correct executable: {0}!", executable), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }      
         }

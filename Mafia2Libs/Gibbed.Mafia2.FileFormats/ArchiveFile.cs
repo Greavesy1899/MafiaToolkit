@@ -99,6 +99,7 @@ namespace Gibbed.Mafia2.FileFormats
         {
             this._ResourceTypes = new List<Archive.ResourceType>();
             this._ResourceEntries = new List<Archive.ResourceEntry>();
+            Unknown20 = new byte[16];
         }
         #endregion
         #region Functions
@@ -279,7 +280,7 @@ namespace Gibbed.Mafia2.FileFormats
         /// Build resources from given folder.
         /// </summary>
         /// <param name="folder"></param>
-        public void BuildResources(string folder)
+        public bool BuildResources(string folder)
         {
             //TODO: MAKE THIS CLEANER
             string sdsFolder = folder;
@@ -289,7 +290,7 @@ namespace Gibbed.Mafia2.FileFormats
             if(!File.Exists(sdsFolder + "/SDSContent.xml"))
             {
                 MessageBox.Show("Could not find 'SDSContent.xml'. Folder Path: " + sdsFolder + "/SDSContent.xml", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return false;
             }
             try
             {
@@ -301,7 +302,7 @@ namespace Gibbed.Mafia2.FileFormats
             catch(Exception ex)
             {
                 MessageBox.Show(string.Format("Error while parsing SDSContent.XML. \n{0}", ex.Message));
-                return;
+                return false;
             }
 
             xmlDoc.AppendChild(rootNode);
@@ -420,6 +421,7 @@ namespace Gibbed.Mafia2.FileFormats
                 _ResourceEntries.AddRange(pair.Value);
             }
             ResourceInfoXml = xmlDoc.OuterXml;
+            return true;
         }
 
         /// <summary>

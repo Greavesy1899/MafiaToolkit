@@ -15,6 +15,8 @@ namespace Forms.Docking
 {
     public partial class DockPropertyGrid : DockContent
     {
+        private bool isMaterialTabFocused;
+        private bool hasLoadedMaterials;
         private object currentObject;
         public bool IsEntryReady;
 
@@ -24,6 +26,8 @@ namespace Forms.Docking
             Localise();
             currentObject = null;
             IsEntryReady = false;
+            isMaterialTabFocused = false;
+            hasLoadedMaterials = false;
         }
 
         private void Localise()
@@ -51,6 +55,7 @@ namespace Forms.Docking
 
         private void SetMaterialTab()
         {
+            hasLoadedMaterials = false;
             LODComboBox.Items.Clear();
             if (FrameResource.IsFrameType(currentObject))
             {
@@ -58,9 +63,40 @@ namespace Forms.Docking
                 {
                     var entry = (currentObject as FrameObjectSingleMesh);
                     for (int i = 0; i != entry.Geometry.NumLods; i++)
+                    {
                         LODComboBox.Items.Add("LOD #" + i);
+                    }
                     LODComboBox.SelectedIndex = 0;
+                    LoadMaterials();
                 }
+            }
+        }
+
+        private void LoadMaterials()
+        {
+            if (isMaterialTabFocused && !hasLoadedMaterials)
+            {
+                MatViewPanel.Controls.Clear();
+                if (FrameResource.IsFrameType(currentObject))
+                {
+                    if (currentObject is FrameObjectSingleMesh)
+                    {
+                        var entry = (currentObject as FrameObjectSingleMesh);
+                        for (int i = 0; i != entry.Material.NumLods; i++)
+                        {
+                            for (int x = 0; x != entry.Material.Materials[i].Length; x++)
+                            {
+                                var mat = entry.Material.Materials[i][x];
+                                TextureEntry textEntry = new TextureEntry();
+                                textEntry.WasClicked += MatViewerPanel_WasClicked;
+                                textEntry.SetMaterialName(mat.MaterialName);
+                                textEntry.SetMaterialTexture(GetThumbnail(mat));
+                                MatViewPanel.Controls.Add(textEntry);
+                            }
+                        }
+                    }
+                }
+                hasLoadedMaterials = true;
             }
         }
 
@@ -193,26 +229,8 @@ namespace Forms.Docking
 
         private void SelectedIndexChanged(object sender, EventArgs e)
         {
-            MatViewPanel.Controls.Clear();
-            if (FrameResource.IsFrameType(currentObject))
-            {
-                if (currentObject is FrameObjectSingleMesh)
-                {
-                    var entry = (currentObject as FrameObjectSingleMesh);
-                    for (int i = 0; i != entry.Material.NumLods; i++)
-                    {
-                        for (int x = 0; x != entry.Material.Materials[i].Length; x++)
-                        {
-                            var mat = entry.Material.Materials[i][x];
-                            TextureEntry textEntry = new TextureEntry();
-                            textEntry.WasClicked += MatViewerPanel_WasClicked;
-                            textEntry.SetMaterialName(mat.MaterialName);
-                            textEntry.SetMaterialTexture(GetThumbnail(mat));
-                            MatViewPanel.Controls.Add(textEntry);
-                        }
-                    }
-                }
-            }
+            hasLoadedMaterials = false;
+            LoadMaterials();
         }
 
         void MatViewerPanel_WasClicked(object sender, EventArgs e)
@@ -229,6 +247,12 @@ namespace Forms.Docking
                     ((TextureEntry)c).IsSelected = false;
                 }
             }
+        }
+
+        private void MainTabControl_OnTabIndexChanged(object sender, EventArgs e)
+        {
+            isMaterialTabFocused = (MainTabControl.SelectedIndex == 2);
+            LoadMaterials();
         }
     }
 }

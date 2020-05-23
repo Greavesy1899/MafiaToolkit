@@ -450,11 +450,11 @@
     <Compile Include="Controls\FrameResourceAddSceneOption.Designer.cs">
       <DependentUpon>FrameResourceAddSceneOption.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\FrameResourceAddOption.cs">
+    <Compile Include="Controls\ControlOptionFrameAdd.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\FrameResourceAddOption.Designer.cs">
-      <DependentUpon>FrameResourceAddOption.cs</DependentUpon>
+    <Compile Include="Controls\ControlOptionFrameAdd.Designer.cs">
+      <DependentUpon>ControlOptionFrameAdd.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\MaterialAddOption.cs">
       <SubType>UserControl</SubType>
@@ -727,8 +727,8 @@
       <DependentUpon>FrameResourceAddSceneOption.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\FrameResourceAddOption.resx">
-      <DependentUpon>FrameResourceAddOption.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\ControlOptionFrameAdd.resx">
+      <DependentUpon>ControlOptionFrameAdd.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\MaterialAddOption.resx">

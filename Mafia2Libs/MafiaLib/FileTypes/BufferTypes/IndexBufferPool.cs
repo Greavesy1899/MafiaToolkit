@@ -191,7 +191,11 @@ namespace ResourceTypes.BufferPools
             for (int i = 0; i != numBuffers; i++)
             {
                 IndexBuffer buffer = new IndexBuffer(stream, isBigEndian);
-                buffers.Add(buffer.Hash, buffer);
+
+                if (!buffers.ContainsKey(buffer.Hash))
+                {
+                    buffers.Add(buffer.Hash, buffer);
+                }
             }
         }
 

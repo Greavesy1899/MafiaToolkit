@@ -40,9 +40,9 @@ namespace Forms.Docking
             this.UpdateParent1Button = new System.Windows.Forms.ToolStripMenuItem();
             this.UpdateParent2Button = new System.Windows.Forms.ToolStripMenuItem();
             this.ExportFrameButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.LinkToActorButton = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.treeView1 = new Utils.Extensions.MTreeView();
-            this.LinkToActorButton = new System.Windows.Forms.ToolStripMenuItem();
             this.EntryMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,20 +96,27 @@ namespace Forms.Docking
             // UpdateParent1Button
             // 
             this.UpdateParent1Button.Name = "UpdateParent1Button";
-            this.UpdateParent1Button.Size = new System.Drawing.Size(166, 22);
+            this.UpdateParent1Button.Size = new System.Drawing.Size(180, 22);
             this.UpdateParent1Button.Text = "Update Parent 1";
             // 
             // UpdateParent2Button
             // 
             this.UpdateParent2Button.Name = "UpdateParent2Button";
-            this.UpdateParent2Button.Size = new System.Drawing.Size(166, 22);
+            this.UpdateParent2Button.Size = new System.Drawing.Size(180, 22);
             this.UpdateParent2Button.Text = "Update Parent 2";
             // 
             // ExportFrameButton
             // 
             this.ExportFrameButton.Name = "ExportFrameButton";
-            this.ExportFrameButton.Size = new System.Drawing.Size(166, 22);
+            this.ExportFrameButton.Size = new System.Drawing.Size(180, 22);
             this.ExportFrameButton.Text = "Export Frame";
+            // 
+            // LinkToActorButton
+            // 
+            this.LinkToActorButton.Enabled = false;
+            this.LinkToActorButton.Name = "LinkToActorButton";
+            this.LinkToActorButton.Size = new System.Drawing.Size(180, 22);
+            this.LinkToActorButton.Text = "$LINK_TO_ACTOR";
             // 
             // imageList1
             // 
@@ -141,12 +148,6 @@ namespace Forms.Docking
             this.treeView1.Size = new System.Drawing.Size(266, 450);
             this.treeView1.TabIndex = 0;
             this.treeView1.DoubleClick += new System.EventHandler(this.OnDoubleClick);
-            // 
-            // LinkToActorButton
-            // 
-            this.LinkToActorButton.Name = "LinkToActorButton";
-            this.LinkToActorButton.Size = new System.Drawing.Size(166, 22);
-            this.LinkToActorButton.Text = "$LINK_TO_ACTOR";
             // 
             // DockSceneTree
             // 

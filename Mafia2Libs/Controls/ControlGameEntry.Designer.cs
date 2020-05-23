@@ -97,7 +97,7 @@ namespace Mafia2Tool.Controls
             this.Button_Start.Name = "Button_Start";
             this.Button_Start.Size = new System.Drawing.Size(124, 23);
             this.Button_Start.TabIndex = 7;
-            this.Button_Start.Text = "Start Toolkit";
+            this.Button_Start.Text = "$START_TOOLKIT";
             this.Button_Start.UseVisualStyleBackColor = true;
             // 
             // Button_SelectFolder
@@ -106,7 +106,7 @@ namespace Mafia2Tool.Controls
             this.Button_SelectFolder.Name = "Button_SelectFolder";
             this.Button_SelectFolder.Size = new System.Drawing.Size(124, 23);
             this.Button_SelectFolder.TabIndex = 10;
-            this.Button_SelectFolder.Text = "Select Folder";
+            this.Button_SelectFolder.Text = "$SELECT_FOLDER";
             this.Button_SelectFolder.UseVisualStyleBackColor = true;
             this.Button_SelectFolder.Click += new System.EventHandler(this.Button_SelectFolder_OnClick);
             // 

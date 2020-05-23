@@ -199,7 +199,11 @@ namespace ResourceTypes.BufferPools
             {
                 VertexBuffer buffer = new VertexBuffer(stream, isBigEndian);
                 expectedSize += buffer.Data.Length;
-                buffers.Add(buffer.Hash, buffer);
+
+                if (!buffers.ContainsKey(buffer.Hash))
+                {
+                    buffers.Add(buffer.Hash, buffer);
+                }
             }
         }
 

@@ -32,7 +32,7 @@ namespace Mafia2Tool
 
             FetchMaterials();
             Show();
-            MainPanel.Visible = true;
+            Panel_Main.Visible = true;
             MergePanel.Visible = false;
             ToolkitSettings.UpdateRichPresence("Using the Material Library editor.");
         }
@@ -96,7 +96,7 @@ namespace Mafia2Tool
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            if (!MainPanel.Visible)
+            if (!Panel_Main.Visible)
             {
                 MessageBox.Show("Complete the merge to save!");
                 return;
@@ -107,7 +107,7 @@ namespace Mafia2Tool
 
         private void AddMaterial(object sender, EventArgs e)
         {
-            if (!MainPanel.Visible)
+            if (!Panel_Main.Visible)
                 return;
 
             //ask user for material name.
@@ -137,7 +137,7 @@ namespace Mafia2Tool
 
         private void DeleteMaterial(object sender, EventArgs e)
         {
-            if (dataGridView1.SelectedCells[0] == null || !MainPanel.Visible)
+            if (dataGridView1.SelectedCells[0] == null || !Panel_Main.Visible)
                 return;
 
             int index = dataGridView1.SelectedCells[0].RowIndex;
@@ -152,7 +152,7 @@ namespace Mafia2Tool
 
         private void UpdateList(object sender, EventArgs e)
         {
-            if (!MainPanel.Visible)
+            if (!Panel_Main.Visible)
                 return;
 
             FetchMaterials(false, null);
@@ -185,7 +185,7 @@ namespace Mafia2Tool
 
         private void MergeMTLButton_Click(object sender, EventArgs e)
         {
-            if (!MainPanel.Visible)
+            if (!Panel_Main.Visible)
                 return;
 
             MaterialLibrary matLib = new MaterialLibrary();
@@ -208,7 +208,7 @@ namespace Mafia2Tool
             }
 
             MergePanel.Visible = true;
-            MainPanel.Visible = false;
+            Panel_Main.Visible = false;
             OverwriteListBox.Items.Clear();
             NewMatListBox.Items.Clear();
 
@@ -230,7 +230,7 @@ namespace Mafia2Tool
         {
             if(MergePanel.Visible)
             {
-                MainPanel.Visible = true;
+                Panel_Main.Visible = true;
                 MergePanel.Visible = false;
                 OverwriteListBox.Items.Clear();
                 NewMatListBox.Items.Clear();
@@ -241,7 +241,7 @@ namespace Mafia2Tool
         {
             if(MergePanel.Visible)
             {
-                MainPanel.Visible = true;
+                Panel_Main.Visible = true;
                 MergePanel.Visible = false;
 
                 for(int i = 0; i < NewMatListBox.CheckedItems.Count; i++)

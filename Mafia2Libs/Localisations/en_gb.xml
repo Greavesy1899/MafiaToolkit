@@ -42,6 +42,13 @@
   <String ID="$FOLDER_PATH_TOOLTIP">Folder Path</String>
   <String ID="$UP_TOOLTIP">Up</String>
   
+  <!-- Game Selector -->
+  <String ID="$START_TOOLKIT">Start Toolkit</String>
+  <String ID="$FOLDER_PATH_LABEL">Game Directory:</String>
+  <String ID="$SELECT_AS_DEFAULT">Skip This Window In The Future</String>
+  <String ID="$SELECT_FOLDER">Select Folder</String>
+  <String ID="$SELECT_GAME">Select Game</String>
+  
   <!-- Main Options Strings-->
   <String ID="$GENERAL">General</String>
   <String ID="$SDS_OPTIONS">SDS Options</String>
@@ -138,6 +145,7 @@
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Choose a scene to add as a parent.</String>
   <String ID="$FRAME_EDITOR_TITLE">FrameResource Editor</String>
   <String ID="$FRADD_TYPE">Frame Type</String>
+  <String ID="$FRADD_NAME_TABLE">Add Frame To Name Table?</String>
   <String ID="$QUESTION_FRADD">Enter the name and type of the frame.</String>
   
   <!-- NewObjForm Form Strings-->

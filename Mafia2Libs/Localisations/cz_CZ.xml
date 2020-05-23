@@ -42,6 +42,13 @@
   <String ID="$FOLDER_PATH_TOOLTIP">Umístění složky</String>
   <String ID="$UP_TOOLTIP">Nahoru</String>
 
+  <!-- Game Selector -->
+  <String ID="$START_TOOLKIT">Zapnout Toolkit</String>
+  <String ID="$FOLDER_PATH_LABEL">Složka hry:</String>
+  <String ID="$SELECT_AS_DEFAULT">Znovu neukazovat toto okno</String>
+  <String ID="$SELECT_FOLDER">Vybrat složku</String>
+  <String ID="$SELECT_GAME">Vybrat hru</String>
+  
   <!-- Map Editor -->
   <String ID="$NO_COL_FILE_CREATE_NEW">Žádný soubor s kolizí není nalezen. Vytvořit nový soubor kolize?</String>
   <String ID="$CANNOT_CREATE_COL">Nelze přidat kolizi. Žádný soubor s kolizí není nalezen!</String>
@@ -139,6 +146,7 @@
   <String ID="$FRAME_EDITOR_TITLE">FrameResource Editor</String>
   <String ID="$FRADD_TYPE">Framu Typ</String>
   <String ID="$QUESTION_FRADD">Napište jméno a typ framu.</String>
+  <String ID="$FRADD_NAME_TABLE">Přidat Frame do Name Table?</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Jméno</String>
