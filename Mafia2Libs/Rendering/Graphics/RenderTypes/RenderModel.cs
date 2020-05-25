@@ -35,7 +35,7 @@ namespace Rendering.Graphics
         {
             public ModelPart[] ModelParts { get; set; }
             public VertexLayouts.NormalLayout.Vertex[] Vertices { get; set; }
-            public ushort[] Indices { get; set; }
+            public uint[] Indices { get; set; }
         }
 
         public LOD[] LODs { get; private set; }
@@ -123,7 +123,7 @@ namespace Rendering.Graphics
             for(int i = 0; i != geom.NumLods; i++)
             {
                 LOD lod = new LOD();
-                lod.Indices = indexBuffers[i].Data;
+                lod.Indices = indexBuffers[i].GetData();
                 lod.ModelParts = new ModelPart[mats.LodMatCount[i]];
 
                 for (int z = 0; z != mats.Materials[i].Length; z++)
@@ -367,7 +367,7 @@ namespace Rendering.Graphics
             //    return;
 
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
-            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
+            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             deviceContext.PixelShader.SetShaderResource(2, AOTexture);
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)

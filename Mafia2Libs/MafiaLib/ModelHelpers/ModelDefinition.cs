@@ -133,7 +133,7 @@ namespace Utils.Models
             for (int i = 0; i < model.Lods.Length; i++)
             {
                 IndexBuffers[i] = new IndexBuffer(FNV64.Hash("M2TK." + model.Name + ".IB" + i));
-                indexBuffers[i].Data = model.Lods[i].Indices;
+                indexBuffers[i].SetData(model.Lods[i].Indices);
             }
         }
 

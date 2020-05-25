@@ -685,7 +685,7 @@ namespace Mafia2Tool
                 vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
             }
 
-            if(indexBuffers[0].Data == null || vertexBuffers[0].Data == null)
+            if(indexBuffers[0].GetData() == null || vertexBuffers[0].Data == null)
             {
                 return null;
             }
@@ -2157,6 +2157,38 @@ namespace Mafia2Tool
         private void EditLighting_Click(object sender, EventArgs e)
         {
             dPropertyGrid.SetObject(Graphics.Light);
+        }
+
+        private void Button_TestConvert_Click(object sender, EventArgs e)
+        {
+            var geoms = SceneData.FrameResource.FrameGeometries;
+            var mats = SceneData.FrameResource.FrameMaterials;
+            var indexbuffer = SceneData.IndexBufferPool.Buffers;
+            foreach(var geom in geoms)
+            {
+                foreach(var lod in geom.Value.LOD)
+                {
+                    lod.SplitInfo.IndexStride = 4;
+                }
+            }
+
+            foreach(var mat in mats)
+            {
+                foreach(var m in mat.Value.Materials)
+                {
+                    foreach (var z in m)
+                    {
+                        z.MaterialHash = 8957959174291022936;
+                    }
+                }
+            }
+
+            foreach(var buffer in indexbuffer)
+            {
+                buffer.Value.SwapIndexFormat();
+            }
+
+            Save();
         }
     }
 }
