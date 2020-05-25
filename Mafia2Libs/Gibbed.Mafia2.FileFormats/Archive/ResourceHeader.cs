@@ -34,6 +34,8 @@ namespace Gibbed.Mafia2.FileFormats.Archive
         public uint SlotVramRequired;
         public uint OtherRamRequired;
         public uint OtherVramRequired;
+        public ushort _f1E;
+        public uint _f20;
 
         public static ResourceHeader Read(Stream input, Endian endian)
         {
@@ -45,6 +47,8 @@ namespace Gibbed.Mafia2.FileFormats.Archive
             instance.SlotVramRequired = input.ReadValueU32(endian);
             instance.OtherRamRequired = input.ReadValueU32(endian);
             instance.OtherVramRequired = input.ReadValueU32(endian);
+            instance._f1E = input.ReadValueU16(endian);
+            instance._f20 = input.ReadValueU32(endian);
             return instance;
         }
 
@@ -57,6 +61,8 @@ namespace Gibbed.Mafia2.FileFormats.Archive
             output.WriteValueU32(this.SlotVramRequired, endian);
             output.WriteValueU32(this.OtherRamRequired, endian);
             output.WriteValueU32(this.OtherVramRequired, endian);
+            output.WriteValueU16(this._f1E, endian);
+            output.WriteValueU32(this._f20, endian);
         }
     }
 }

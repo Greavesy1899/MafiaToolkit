@@ -57,9 +57,9 @@ namespace Gibbed.Illusion.FileFormats
             var hash = stream.ReadValueU32(endian);
             if (hash != computedHash)
             {
-                throw new InvalidDataException(string.Format("hash failure ({0:X} vs {1:X})",
-                                                             computedHash,
-                                                             hash));
+                //throw new InvalidDataException(string.Format("hash failure ({0:X} vs {1:X})",
+                //                                             computedHash,
+                //                                             hash));
             }
 
             output.Position = 0;
@@ -100,7 +100,8 @@ namespace Gibbed.Illusion.FileFormats
             var length = stream.ReadValueU32(endian);
             if (length > 0x3FF)
             {
-                throw new InvalidOperationException();
+                return "unknown";
+                //throw new InvalidOperationException();
             }
             return stream.ReadString(length);
         }

@@ -348,7 +348,7 @@ namespace Gibbed.Illusion.FileFormats
             public uint CompressedSize;
             public byte Unknown0E;
             public byte Unknown0F;
-            public short[] Chunks;
+            public ushort[] Chunks;
 
             public static CompressedBlockHeader Read(Stream input, Endian endian)
             {
@@ -360,11 +360,11 @@ namespace Gibbed.Illusion.FileFormats
                 instance.Unknown0C = input.ReadValueS16(endian);
                 instance.Unknown0E = input.ReadValueU8();
                 instance.Unknown0F = input.ReadValueU8();
-                instance.Chunks = new short[8];
+                instance.Chunks = new ushort[8];
                 instance.CompressedSize = 0;
                 for (int i = 0; i < 8; ++i)
                 {
-                    instance.Chunks[i] = input.ReadValueS16(endian);
+                    instance.Chunks[i] = input.ReadValueU16(endian);
                     instance.CompressedSize += (uint)instance.Chunks[i];
                 }
                 return instance;

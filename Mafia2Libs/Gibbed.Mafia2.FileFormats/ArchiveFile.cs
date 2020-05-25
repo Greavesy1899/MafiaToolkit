@@ -145,6 +145,8 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceHeader.SlotVramRequired = resourceEntry.SlotVramRequired;
                 resourceHeader.OtherRamRequired = resourceEntry.OtherRamRequired;
                 resourceHeader.OtherVramRequired = resourceEntry.OtherVramRequired;
+                resourceHeader._f1E = 0;
+                resourceHeader._f20 = 0;
 
                 using (var data = new MemoryStream())
                 {
@@ -210,7 +212,7 @@ namespace Gibbed.Mafia2.FileFormats
                 data.Position += 4; // skip platform
             }
 
-            if (version != 19)
+            if (version != 19 && version != 20)
             {
                 throw new FormatException("unsupported archive version");
             }
@@ -231,15 +233,19 @@ namespace Gibbed.Mafia2.FileFormats
 
             input.Position = basePosition + fileHeader.BlockTableOffset;
             var blockStream = BlockReaderStream.FromStream(input, endian);
-
+            
             var resources = new Archive.ResourceEntry[fileHeader.ResourceCount];
             for (uint i = 0; i < fileHeader.ResourceCount; i++)
             {
                 Archive.ResourceHeader resourceHeader;
-                using (var data = blockStream.ReadToMemoryStreamSafe(26, endian))
+                using (var data = blockStream.ReadToMemoryStreamSafe(32, endian))
                 {
                     resourceHeader = Archive.ResourceHeader.Read(data, endian);
+                    
+
                 }
+                //var name = blockStream.ReadValueU32(endian);
+                blockStream.Seek(blockStream.Position - 4, SeekOrigin.Begin);
 
                 if (resourceHeader.Size < 30)
                 {
@@ -250,12 +256,24 @@ namespace Gibbed.Mafia2.FileFormats
                 {
                     TypeId = (int)resourceHeader.TypeId,
                     Version = resourceHeader.Version,
-                    Data = blockStream.ReadBytes((int)resourceHeader.Size - 30),
+                    Data = blockStream.ReadBytes((int)resourceHeader.Size - 32),
                     SlotRamRequired = resourceHeader.SlotRamRequired,
                     SlotVramRequired = resourceHeader.SlotVramRequired,
                     OtherRamRequired = resourceHeader.OtherRamRequired,
                     OtherVramRequired = resourceHeader.OtherVramRequired,
                 };
+
+                File.WriteAllBytes("Mafia3/Resource_" + i + ".bin", resources[i].Data);
+                if (resources[i].TypeId == 1) // MemFile
+                {
+                    var blockPosition = blockStream.Position;
+                    var memoryName = blockStream.ReadToMemoryStreamSafe(255, endian);
+                    memoryName.Seek(memoryName.Position + 6, SeekOrigin.Begin);
+
+                    var Name_ = memoryName.ReadStringU32(endian);
+                    var description = Name_;
+                    blockStream.Seek(blockPosition, SeekOrigin.Begin);
+                }
             }
 
             input.Position = basePosition + fileHeader.XmlOffset;
