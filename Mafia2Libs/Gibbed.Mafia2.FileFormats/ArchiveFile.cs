@@ -39,11 +39,12 @@ using Utils.Settings;
 
 namespace Gibbed.Mafia2.FileFormats
 {
-    public class ArchiveFile
+    public partial class ArchiveFile
     {
         public const uint Signature = 0x53445300; // 'SDS\0'
         #region Fields
         private Endian _Endian;
+        private uint _Version;
         private Archive.Platform _Platform;
         private uint _SlotRamRequired;
         private uint _SlotVramRequired;
@@ -58,6 +59,11 @@ namespace Gibbed.Mafia2.FileFormats
         public Endian Endian {
             get { return this._Endian; }
             set { this._Endian = value; }
+        }
+
+        public uint Version {
+            get { return this._Version; }
+            set { this._Version = value; }
         }
         public Archive.Platform Platform {
             get { return this._Platform; }
@@ -113,7 +119,7 @@ namespace Gibbed.Mafia2.FileFormats
             using (var data = new MemoryStream(12))
             {
                 data.WriteValueU32(Signature, Endian.Big);
-                data.WriteValueU32(19, endian);
+                data.WriteValueU32(Version, endian);
                 data.WriteValueU32((uint)this._Platform, Endian.Big);
                 data.Flush();
                 output.WriteFromMemoryStreamSafe(data, endian);
@@ -130,27 +136,28 @@ namespace Gibbed.Mafia2.FileFormats
             {
                 resourceType.Write(output, endian);
             }
-
-            var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != 0 ? (uint)this._ResourceEntries.Sum(re => 30 + (re.Data == null ? 0 : re.Data.Length)) : 0x4000;
+            uint stride = (uint)(Version == 20 ? 38 : 30);
+            var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != 0 ? (uint)this._ResourceEntries.Sum(re => stride + (re.Data == null ? 0 : re.Data.Length)) : 0x4000;
             fileHeader.BlockTableOffset = (uint)(output.Position - basePosition);
             fileHeader.ResourceCount = 0;
-            var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress);
+            var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress);           
             foreach (var resourceEntry in this._ResourceEntries)
             {
                 Archive.ResourceHeader resourceHeader;
                 resourceHeader.TypeId = (uint)resourceEntry.TypeId;
-                resourceHeader.Size = 30 + (uint)(resourceEntry.Data == null ? 0 : resourceEntry.Data.Length);
+                resourceHeader.Size = stride + (uint)(resourceEntry.Data == null ? 0 : resourceEntry.Data.Length);
                 resourceHeader.Version = resourceEntry.Version;
                 resourceHeader.SlotRamRequired = resourceEntry.SlotRamRequired;
                 resourceHeader.SlotVramRequired = resourceEntry.SlotVramRequired;
                 resourceHeader.OtherRamRequired = resourceEntry.OtherRamRequired;
                 resourceHeader.OtherVramRequired = resourceEntry.OtherVramRequired;
-                resourceHeader._f1E = 0;
-                resourceHeader._f20 = 0;
+                resourceHeader.Unk01 = 0;
+                resourceHeader.Unk02 = 0;
+                resourceHeader.Unk03 = 0;
 
                 using (var data = new MemoryStream())
                 {
-                    resourceHeader.Write(data, endian);
+                    resourceHeader.Write(data, endian, Version);
                     data.Flush();
                     blockStream.WriteFromMemoryStreamSafe(data, endian);
                 }
@@ -204,15 +211,14 @@ namespace Gibbed.Mafia2.FileFormats
 
             input.Position = basePosition;
 
-            uint version;
             using (var data = input.ReadToMemoryStreamSafe(12, endian))
             {
                 data.Position += 4; // skip magic
-                version = data.ReadValueU32(endian);
+                _Version = data.ReadValueU32(endian);
                 data.Position += 4; // skip platform
             }
 
-            if (version != 19 && version != 20)
+            if (_Version != 19 && _Version != 20)
             {
                 throw new FormatException("unsupported archive version");
             }
@@ -238,14 +244,11 @@ namespace Gibbed.Mafia2.FileFormats
             for (uint i = 0; i < fileHeader.ResourceCount; i++)
             {
                 Archive.ResourceHeader resourceHeader;
-                using (var data = blockStream.ReadToMemoryStreamSafe(32, endian))
+                var size = (_Version == 20 ? 34 : 26);
+                using (var data = blockStream.ReadToMemoryStreamSafe(size, endian))
                 {
-                    resourceHeader = Archive.ResourceHeader.Read(data, endian);
-                    
-
+                    resourceHeader = Archive.ResourceHeader.Read(data, endian, _Version);
                 }
-                //var name = blockStream.ReadValueU32(endian);
-                blockStream.Seek(blockStream.Position - 4, SeekOrigin.Begin);
 
                 if (resourceHeader.Size < 30)
                 {
@@ -256,28 +259,21 @@ namespace Gibbed.Mafia2.FileFormats
                 {
                     TypeId = (int)resourceHeader.TypeId,
                     Version = resourceHeader.Version,
-                    Data = blockStream.ReadBytes((int)resourceHeader.Size - 32),
+                    Data = blockStream.ReadBytes((int)resourceHeader.Size - (size+4)),
                     SlotRamRequired = resourceHeader.SlotRamRequired,
                     SlotVramRequired = resourceHeader.SlotVramRequired,
                     OtherRamRequired = resourceHeader.OtherRamRequired,
                     OtherVramRequired = resourceHeader.OtherVramRequired,
                 };
-
-                File.WriteAllBytes("Mafia3/Resource_" + i + ".bin", resources[i].Data);
-                if (resources[i].TypeId == 1) // MemFile
-                {
-                    var blockPosition = blockStream.Position;
-                    var memoryName = blockStream.ReadToMemoryStreamSafe(255, endian);
-                    memoryName.Seek(memoryName.Position + 6, SeekOrigin.Begin);
-
-                    var Name_ = memoryName.ReadStringU32(endian);
-                    var description = Name_;
-                    blockStream.Seek(blockPosition, SeekOrigin.Begin);
-                }
+                File.WriteAllBytes("Mafia3/Resources_" + i, resources[i].Data);
             }
 
-            input.Position = basePosition + fileHeader.XmlOffset;
-            var xml = input.ReadString((int)(input.Length - input.Position), Encoding.ASCII);
+            if (fileHeader.XmlOffset != 0)
+            {
+                input.Position = basePosition + fileHeader.XmlOffset;
+                var xml = input.ReadString((int)(input.Length - input.Position), Encoding.ASCII);
+                this._ResourceInfoXml = xml;
+            }
 
             this._ResourceTypes.Clear();
             this._ResourceEntries.Clear();
@@ -290,7 +286,6 @@ namespace Gibbed.Mafia2.FileFormats
             this._OtherVramRequired = fileHeader.OtherVramRequired;
             this._Unknown20 = (byte[])fileHeader.Unknown20.Clone();
             this._ResourceTypes.AddRange(resourceTypes);
-            this._ResourceInfoXml = xml;
             this._ResourceEntries.AddRange(resources);
         }
 
@@ -508,154 +503,14 @@ namespace Gibbed.Mafia2.FileFormats
                 }
             }
 
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.IndentChars = ("\t");
-            settings.OmitXmlDeclaration = true;
-
-            string extractedPath = Path.Combine(file.Directory.FullName, "extracted");
-
-            if (!Directory.Exists(extractedPath))
-                Directory.CreateDirectory(extractedPath);
-
-            string finalPath = Path.Combine(extractedPath, file.Name);
-            Directory.CreateDirectory(finalPath);
-
-            Log.WriteLine("Begin unpacking and saving files..");
-
-            XmlWriter resourceXML = XmlWriter.Create(finalPath + "/SDSContent.xml", settings);
-            resourceXML.WriteStartElement("SDSResource");
-
-            int[] counts = new int[ResourceTypes.Count];
-
-            //TODO Cleanup this code. It's awful. (V2 26/08/18, improved to use switch)
-            for (int i = 0; i != ResourceEntries.Count; i++)
+            if(Version == 19)
             {
-                ResourceEntry entry = ResourceEntries[i];
-                if (entry.TypeId == -1)
-                {
-                    MessageBox.Show(string.Format("Detected unknown type, skipping. Size: {0}", entry.Data.Length), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    continue;
-                }
-
-                resourceXML.WriteStartElement("ResourceEntry");
-                resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
-                string saveName = "";
-                Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
-                string sdsToolName = ResourceTypes[entry.TypeId].Name + "_" + counts[entry.TypeId] + ".bin";
-                switch (ResourceTypes[entry.TypeId].Name)
-                {
-                    case "Texture":
-                        ReadTextureEntry(entry, resourceXML, itemNames[i]);
-                        saveName = itemNames[i];
-                        break;
-                    case "Mipmap":
-                        ReadMipmapEntry(entry, resourceXML, itemNames[i]);
-                        saveName = "MIP_" + itemNames[i];
-                        break;
-                    case "IndexBufferPool":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "IndexBufferPool_" + i + ".ibp" : sdsToolName);
-                        break;
-                    case "VertexBufferPool":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "VertexBufferPool_" + i + ".vbp" : sdsToolName);
-                        break;
-                    case "AnimalTrafficPaths":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "AnimalTrafficPaths" + i + ".atp" : sdsToolName);
-                        break;
-                    case "FrameResource":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "FrameResource_" + i + ".fr" : sdsToolName);
-                        break;
-                    case "Effects":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Effects_" + i + ".eff" : sdsToolName);
-                        break;
-                    case "FrameNameTable":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "FrameNameTable_" + i + ".fnt" : sdsToolName);
-                        break;
-                    case "EntityDataStorage":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "EntityDataStorage_" + i + ".eds" : sdsToolName);
-                        break;
-                    case "PREFAB":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "PREFAB_" + i + ".prf" : sdsToolName);
-                        break;
-                    case "ItemDesc":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "ItemDesc_" + i + ".ids" : sdsToolName);
-                        break;
-                    case "Actors":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Actors_" + i + ".act" : sdsToolName);
-                        break;
-                    case "Collisions":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Collisions_" + i + ".col" : sdsToolName);
-                        break;
-                    case "AudioSectors":
-                        ReadAudioSectorEntry(entry, resourceXML, itemNames[i], finalPath);
-                        saveName = itemNames[i];
-                        break;
-                    case "SoundTable":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "SoundTable_" + i + ".stbl" : sdsToolName);
-                        break;
-                    case "Speech":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Speech_" + i + ".spe" : sdsToolName);
-                        break;
-                    case "FxAnimSet":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "FxAnimSet_" + i + ".fas" : sdsToolName);
-                        break;
-                    case "FxActor":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "FxActor_" + i + ".fxa" : sdsToolName);
-                        break;
-                    case "Cutscene":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Cutscene_" + i + ".cut" : sdsToolName);
-                        break;
-                    case "Translokator":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Translokator_" + i + ".tra" : sdsToolName);
-                        break;
-                    case "Animation2":
-                        saveName = ReadBasicEntry(resourceXML, itemNames[i] + ".an2");
-                        break;
-                    case "NAV_AIWORLD_DATA":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "NAV_AIWORLD_DATA_" + i + ".nav" : sdsToolName);
-                        break;
-                    case "NAV_OBJ_DATA":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "NAV_OBJ_DATA_" + i + ".nov" : sdsToolName);
-                        break;
-                    case "NAV_HPD_DATA":
-                        saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "NAV_HPD_DATA_" + i + ".nhv" : sdsToolName);
-                        break;
-                    case "Script":
-                        ReadScriptEntry(entry, resourceXML, finalPath);
-                        continue;
-                    case "XML":
-                        ReadXMLEntry(entry, resourceXML, itemNames[i], finalPath);
-                        continue;
-                    case "Sound":
-                        ReadSoundEntry(entry, resourceXML, itemNames[i], finalPath);
-                        saveName = itemNames[i] + ".fsb";
-                        break;
-                    case "MemFile":
-                        ReadMemEntry(entry, resourceXML, itemNames[i], finalPath);
-                        saveName = itemNames[i];
-                        break;
-                    case "Table":
-                        ReadTableEntry(entry, resourceXML, "", finalPath);
-                        counts[ResourceTypes[entry.TypeId].Id]++;
-                        resourceXML.WriteElementString("Version", entry.Version.ToString());
-                        resourceXML.WriteEndElement();
-                        continue;
-                    case "Animated Texture":
-                        saveName = ReadBasicEntry(resourceXML, itemNames[i]);
-                        break;
-                    default:
-                        MessageBox.Show("Found unknown type: " + ResourceTypes[entry.TypeId].Name);
-                        break;
-                }
-                counts[ResourceTypes[entry.TypeId].Id]++;
-                resourceXML.WriteElementString("Version", entry.Version.ToString());
-                File.WriteAllBytes(finalPath + "/" + saveName, entry.Data);
-                resourceXML.WriteEndElement();
+                SaveResourcesVersion19(file, itemNames);
+            } 
+            else if(Version == 20)
+            {
+                SaveResourcesVersion20(file, itemNames);
             }
-
-            resourceXML.WriteEndElement();
-            resourceXML.Flush();
-            resourceXML.Dispose();
         }
         
         public ResourceEntry ReadTextureEntry(ResourceEntry entry, XmlWriter resourceXML, string name)

@@ -103,7 +103,7 @@ namespace Gibbed.Mafia2.FileFormats
                 
                 using (var data = blockStream.ReadToMemoryStream(26))
                 {
-                    resourceHeader = Archive.ResourceHeader.Read(data, endian);
+                    resourceHeader = Archive.ResourceHeader.Read(data, endian, 19);
                 }
                 if (resourceHeader.Size < 30)
                 {

@@ -34,10 +34,11 @@ namespace Gibbed.Mafia2.FileFormats.Archive
         public uint SlotVramRequired;
         public uint OtherRamRequired;
         public uint OtherVramRequired;
-        public ushort _f1E;
-        public uint _f20;
+        public ushort Unk01;
+        public uint Unk02;
+        public ushort Unk03;
 
-        public static ResourceHeader Read(Stream input, Endian endian)
+        public static ResourceHeader Read(Stream input, Endian endian, uint version)
         {
             ResourceHeader instance;
             instance.TypeId = input.ReadValueU32(endian);
@@ -47,12 +48,22 @@ namespace Gibbed.Mafia2.FileFormats.Archive
             instance.SlotVramRequired = input.ReadValueU32(endian);
             instance.OtherRamRequired = input.ReadValueU32(endian);
             instance.OtherVramRequired = input.ReadValueU32(endian);
-            instance._f1E = input.ReadValueU16(endian);
-            instance._f20 = input.ReadValueU32(endian);
+
+            if (version == 20)
+            {
+                instance.Unk01 = input.ReadValueU16(endian);
+                instance.Unk02 = input.ReadValueU32(endian);
+                instance.Unk03 = input.ReadValueU16(endian);
+            } else
+            {
+                instance.Unk01 = 0;
+                instance.Unk02 = 0;
+                instance.Unk03 = 0;
+            }
             return instance;
         }
 
-        public void Write(Stream output, Endian endian)
+        public void Write(Stream output, Endian endian, uint version)
         {
             output.WriteValueU32(this.TypeId, endian);
             output.WriteValueU32(this.Size, endian);
@@ -61,8 +72,13 @@ namespace Gibbed.Mafia2.FileFormats.Archive
             output.WriteValueU32(this.SlotVramRequired, endian);
             output.WriteValueU32(this.OtherRamRequired, endian);
             output.WriteValueU32(this.OtherVramRequired, endian);
-            output.WriteValueU16(this._f1E, endian);
-            output.WriteValueU32(this._f20, endian);
+
+            if (version == 20)
+            {
+                output.WriteValueU16(this.Unk01, endian);
+                output.WriteValueU32(this.Unk02, endian);
+                output.WriteValueU32(this.Unk03, endian);
+            }
         }
     }
 }

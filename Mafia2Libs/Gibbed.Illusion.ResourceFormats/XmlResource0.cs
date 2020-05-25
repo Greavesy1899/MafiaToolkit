@@ -30,6 +30,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Gibbed.IO;
+using Utils.Logging;
 
 namespace Gibbed.Mafia2.ResourceFormats
 {
@@ -357,8 +358,9 @@ namespace Gibbed.Mafia2.ResourceFormats
 
                     var value = input.ReadStringZ(Encoding.UTF8);
 
-                    if (string.IsNullOrEmpty(value) || value.Contains("--") || value.Contains("\n\t >"))
+                    if (string.IsNullOrEmpty(value) || value.Contains("--") || value.Contains("\n\t >") || value.Contains("\t"))
                     {
+                        Log.WriteLine("Detect unusual special: " + value);
                         return null;
                     }
 
