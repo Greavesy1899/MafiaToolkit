@@ -20,6 +20,11 @@
  *    distribution.
  */
 
+using Gibbed.Illusion.FileFormats;
+using Gibbed.Illusion.FileFormats.Hashing;
+using Gibbed.IO;
+using Gibbed.Mafia2.FileFormats.Archive;
+using Gibbed.Mafia2.ResourceFormats;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,11 +33,6 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
-using Gibbed.Illusion.FileFormats;
-using Gibbed.Illusion.FileFormats.Hashing;
-using Gibbed.IO;
-using Gibbed.Mafia2.FileFormats.Archive;
-using Gibbed.Mafia2.ResourceFormats;
 using Utils.Logging;
 using Utils.Lua;
 using Utils.Settings;
@@ -51,7 +51,7 @@ namespace Gibbed.Mafia2.FileFormats
         private uint _OtherRamRequired;
         private uint _OtherVramRequired;
         private byte[] _Unknown20;
-        private readonly List<Archive.ResourceType> _ResourceTypes;
+        private List<Archive.ResourceType> _ResourceTypes;
         private string _ResourceInfoXml;
         private readonly List<Archive.ResourceEntry> _ResourceEntries;
         #endregion
@@ -137,7 +137,7 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceType.Write(output, endian);
             }
             uint stride = (uint)(Version == 20 ? 38 : 30);
-            var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != 0 ? (uint)this._ResourceEntries.Sum(re => stride + (re.Data == null ? 0 : re.Data.Length)) : 0x4000;
+            var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != 0 ? (uint)this._ResourceEntries.Sum(re => stride + (re.Data == null ? 0 : re.Data.Length)) : 0x10000;
             fileHeader.BlockTableOffset = (uint)(output.Position - basePosition);
             fileHeader.ResourceCount = 0;
             var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress);           
@@ -265,9 +265,7 @@ namespace Gibbed.Mafia2.FileFormats
                     OtherRamRequired = resourceHeader.OtherRamRequired,
                     OtherVramRequired = resourceHeader.OtherVramRequired,
                 };
-                File.WriteAllBytes("Mafia3/Resources_" + i, resources[i].Data);
             }
-
             if (fileHeader.XmlOffset != 0)
             {
                 input.Position = basePosition + fileHeader.XmlOffset;
@@ -319,122 +317,17 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             xmlDoc.AppendChild(rootNode);
+            bool result = false;
 
-            XPathNavigator nav = document.CreateNavigator();
-            var nodes = nav.Select("/SDSResource/ResourceEntry");
-            Dictionary<string, List<ResourceEntry>> entries = new Dictionary<string, List<ResourceEntry>>();
-            while (nodes.MoveNext() == true)
+            if(_Version == 19)
             {
-                nodes.Current.MoveToFirstChild();
-                string resourceType = nodes.Current.Value;
-
-                if (!entries.ContainsKey(resourceType))
-                {
-                    ResourceType resource = new ResourceType();
-                    resource.Name = nodes.Current.Value;
-                    resource.Id = (uint)entries.Count;
-
-                    //TODO
-                    if (resource.Name == "IndexBufferPool" || resource.Name == "PREFAB")
-                        resource.Parent = 3;
-                    else if (resource.Name == "VertexBufferPool" || resource.Name == "NAV_OBJ_DATA")
-                        resource.Parent = 2;
-                    else if (resource.Name == "NAV_HPD_DATA")
-                        resource.Parent = 1;
-
-                    ResourceTypes.Add(resource);
-                    entries.Add(resourceType, new List<ResourceEntry>());
-                }
-                XmlNode resourceNode = xmlDoc.CreateElement("ResourceInfo");
-                XmlNode typeNameNode = xmlDoc.CreateElement("TypeName");
-                typeNameNode.InnerText = resourceType;
-                XmlNode sddescNode = xmlDoc.CreateElement("SourceDataDescription");
-
-                ResourceEntry resourceEntry = new ResourceEntry();
-                switch (resourceType)
-                {
-                    case "FrameResource":
-                    case "Effects":
-                    case "PREFAB":
-                    case "ItemDesc":
-                    case "FrameNameTable":
-                    case "Actors":
-                    case "NAV_AIWORLD_DATA":
-                    case "NAV_OBJ_DATA":
-                    case "NAV_HPD_DATA":
-                    case "Cutscene":
-                    case "FxActor":
-                    case "FxAnimSet":
-                    case "Translokator":
-                    case "Speech":
-                    case "SoundTable":
-                    case "AnimalTrafficPaths":
-                        resourceEntry = WriteBasicEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "AudioSectors":
-                        resourceEntry = WriteAudioSectorEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "Animated Texture":
-                        resourceEntry = WriteAnimatedTextureEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "Collisions":
-                        resourceEntry = WriteCollisionEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "IndexBufferPool":
-                    case "VertexBufferPool":
-                        resourceEntry = WriteBufferEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "EntityDataStorage":
-                        resourceEntry = WriteEntityDataEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "Animation2":
-                        resourceEntry = WriteAnimationEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "Texture":
-                        resourceEntry = WriteTextureEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "Mipmap":
-                        resourceEntry = WriteMipmapEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "Sound":
-                        resourceEntry = WriteSoundEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "XML":
-                        resourceEntry = WriteXMLEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "MemFile":
-                        resourceEntry = WriteMemFileEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "Script":
-                        resourceEntry = WriteScriptEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    case "Table":
-                        resourceEntry = WriteTableEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        break;
-                    default:
-                        MessageBox.Show("Did not pack type: " + resourceType, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        break;
-                }
-                resourceNode.AppendChild(typeNameNode);
-                resourceNode.AppendChild(sddescNode);
-                resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotRamRequired", (int)resourceEntry.SlotRamRequired));
-                resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotVRamRequired", (int)resourceEntry.SlotVramRequired));
-                resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherRamRequired", (int)resourceEntry.OtherRamRequired));
-                resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherVramRequired", (int)resourceEntry.OtherVramRequired));
-                rootNode.AppendChild(resourceNode);
-                SlotRamRequired += resourceEntry.SlotRamRequired;
-                SlotVramRequired += resourceEntry.SlotVramRequired;
-                OtherRamRequired += resourceEntry.OtherRamRequired;
-                OtherVramRequired += resourceEntry.OtherVramRequired;
-                resourceEntry.TypeId = (int)ResourceTypes.Find(s => s.Name.Equals(resourceType)).Id;
-                entries[resourceType].Add(resourceEntry);
+                result = BuildResourcesVersion19(document, xmlDoc, rootNode, sdsFolder);
             }
-            foreach(var pair in entries)
+            else if(_Version == 20)
             {
-                _ResourceEntries.AddRange(pair.Value);
+                result = BuildResourcesVersion20(document, xmlDoc, rootNode, sdsFolder);
             }
-            ResourceInfoXml = xmlDoc.OuterXml;
-            return true;
+            return result;
         }
 
         /// <summary>
@@ -541,7 +434,7 @@ namespace Gibbed.Mafia2.FileFormats
             texData = File.ReadAllBytes(sdsFolder + "/" + file);
             resource = new TextureResource(FNV64.Hash(file), hasMIP, texData);
 
-            //entry.SlotVramRequired = (uint)(texData.Length - 128);
+            entry.SlotVramRequired = (uint)(texData.Length - 128);
             //if (hasMIP == 1)
             //{
             //    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/MIP_" + file, FileMode.Open)))
@@ -598,7 +491,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             //finish
             entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
-            descNode.InnerText = "not available";
+            descNode.InnerText = file;
             return entry;
         }
         public ResourceEntry WriteAnimatedTextureEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
@@ -830,7 +723,10 @@ namespace Gibbed.Mafia2.FileFormats
         public void ReadMemEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string memDIR)
         {
             MemFileResource resource = new MemFileResource();
-            resource.Deserialize(entry.Data, _Endian);
+            using (var stream = new MemoryStream(entry.Data))
+            {
+                resource.Deserialize(entry.Version, stream, _Endian);
+            }
             entry.Data = resource.Data;
 
             string[] dirs = name.Split('/');
@@ -842,6 +738,7 @@ namespace Gibbed.Mafia2.FileFormats
                 Directory.CreateDirectory(memdir);
             }
             resourceXML.WriteElementString("File", name);
+            resourceXML.WriteElementString("Unk2_V4", resource.Unk2_V4.ToString());
         }
         public ResourceEntry WriteMemFileEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
         {
@@ -849,13 +746,16 @@ namespace Gibbed.Mafia2.FileFormats
             nodes.Current.MoveToNext();
             string file = nodes.Current.Value;
             nodes.Current.MoveToNext();
+            uint unk2 = Convert.ToUInt32(nodes.Current.Value);
+            nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
 
             //construct MemResource.
             MemFileResource resource = new MemFileResource
             {
                 Name = file,
-                Unk1 = 1
+                Unk1 = 1,
+                Unk2_V4 = unk2
             };
             resource.Data = File.ReadAllBytes(sdsFolder + "/" + file);
             entry.SlotRamRequired = (uint)resource.Data.Length;

@@ -77,7 +77,7 @@ namespace Gibbed.Mafia2.FileFormats.Archive
             {
                 output.WriteValueU16(this.Unk01, endian);
                 output.WriteValueU32(this.Unk02, endian);
-                output.WriteValueU32(this.Unk03, endian);
+                output.WriteValueU16(this.Unk03, endian);
             }
         }
     }

@@ -40,11 +40,14 @@ namespace Gibbed.Mafia2.ResourceFormats
 
         public void Serialize(ushort version, Stream output, Endian endian)
         {
-            //output.WriteStringU16(FileName, endian);
-            //output.WriteValueU64(Hash);
-            //output.WriteStringU16(Name, endian);
-            //output.WriteValueU32(Size, endian);
-            //output.Write(Data, 0, (int)Size);
+            output.WriteValueU64(Unk01, endian);
+            output.WriteValueS32(Size, endian);
+            output.WriteBytes(Data);
+            output.WriteValueU32(Unk02, endian);
+            output.WriteValueU64(Unk03, endian);
+            output.WriteStringU32(Unk04, endian);
+            output.WriteValueU64(Hash, endian);
+            output.WriteStringU32(Name, endian);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.XPath;
 using Utils.Logging;
 using Utils.Settings;
 
@@ -160,6 +161,125 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteEndElement();
             resourceXML.Flush();
             resourceXML.Dispose();
+        }
+
+        public bool BuildResourcesVersion19(XmlDocument document, XmlDocument xmlDoc, XmlNode rootNode, string sdsFolder)
+        {
+            XPathNavigator nav = document.CreateNavigator();
+            var nodes = nav.Select("/SDSResource/ResourceEntry");
+            Dictionary<string, List<ResourceEntry>> entries = new Dictionary<string, List<ResourceEntry>>();
+            while (nodes.MoveNext() == true)
+            {
+                nodes.Current.MoveToFirstChild();
+                string resourceType = nodes.Current.Value;
+
+                if (!entries.ContainsKey(resourceType))
+                {
+                    ResourceType resource = new ResourceType();
+                    resource.Name = nodes.Current.Value;
+                    resource.Id = (uint)entries.Count;
+
+                    //TODO
+                    if (resource.Name == "IndexBufferPool" || resource.Name == "PREFAB")
+                        resource.Parent = 3;
+                    else if (resource.Name == "VertexBufferPool" || resource.Name == "NAV_OBJ_DATA")
+                        resource.Parent = 2;
+                    else if (resource.Name == "NAV_HPD_DATA")
+                        resource.Parent = 1;
+
+                    ResourceTypes.Add(resource);
+                    entries.Add(resourceType, new List<ResourceEntry>());
+                }
+                XmlNode resourceNode = xmlDoc.CreateElement("ResourceInfo");
+                XmlNode typeNameNode = xmlDoc.CreateElement("TypeName");
+                typeNameNode.InnerText = resourceType;
+                XmlNode sddescNode = xmlDoc.CreateElement("SourceDataDescription");
+
+                ResourceEntry resourceEntry = new ResourceEntry();
+                switch (resourceType)
+                {
+                    case "FrameResource":
+                    case "Effects":
+                    case "PREFAB":
+                    case "ItemDesc":
+                    case "FrameNameTable":
+                    case "Actors":
+                    case "NAV_AIWORLD_DATA":
+                    case "NAV_OBJ_DATA":
+                    case "NAV_HPD_DATA":
+                    case "Cutscene":
+                    case "FxActor":
+                    case "FxAnimSet":
+                    case "Translokator":
+                    case "Speech":
+                    case "SoundTable":
+                    case "AnimalTrafficPaths":
+                        resourceEntry = WriteBasicEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "AudioSectors":
+                        resourceEntry = WriteAudioSectorEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Animated Texture":
+                        resourceEntry = WriteAnimatedTextureEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Collisions":
+                        resourceEntry = WriteCollisionEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "IndexBufferPool":
+                    case "VertexBufferPool":
+                        resourceEntry = WriteBufferEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "EntityDataStorage":
+                        resourceEntry = WriteEntityDataEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Animation2":
+                        resourceEntry = WriteAnimationEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Texture":
+                        resourceEntry = WriteTextureEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Mipmap":
+                        resourceEntry = WriteMipmapEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Sound":
+                        resourceEntry = WriteSoundEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "XML":
+                        resourceEntry = WriteXMLEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "MemFile":
+                        resourceEntry = WriteMemFileEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Script":
+                        resourceEntry = WriteScriptEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Table":
+                        resourceEntry = WriteTableEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    default:
+                        MessageBox.Show("Did not pack type: " + resourceType, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        break;
+                }
+                resourceNode.AppendChild(typeNameNode);
+                resourceNode.AppendChild(sddescNode);
+                resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotRamRequired", (int)resourceEntry.SlotRamRequired));
+                resourceNode.AppendChild(AddRamElement(xmlDoc, "SlotVRamRequired", (int)resourceEntry.SlotVramRequired));
+                resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherRamRequired", (int)resourceEntry.OtherRamRequired));
+                resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherVramRequired", (int)resourceEntry.OtherVramRequired));
+                rootNode.AppendChild(resourceNode);
+                SlotRamRequired += resourceEntry.SlotRamRequired;
+                SlotVramRequired += resourceEntry.SlotVramRequired;
+                OtherRamRequired += resourceEntry.OtherRamRequired;
+                OtherVramRequired += resourceEntry.OtherVramRequired;
+                resourceEntry.TypeId = (int)ResourceTypes.Find(s => s.Name.Equals(resourceType)).Id;
+                entries[resourceType].Add(resourceEntry);
+            }
+            foreach (var pair in entries)
+            {
+                _ResourceEntries.AddRange(pair.Value);
+            }
+            ResourceInfoXml = xmlDoc.OuterXml;
+            return true;
         }
     }
 }

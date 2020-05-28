@@ -259,6 +259,7 @@ namespace Mafia2Tool
             infoText.Text = "Saving SDS..";
             ArchiveFile archiveFile = new ArchiveFile();
             archiveFile.Platform = Platform.PC;
+            archiveFile.Version = 20;
             //MII: DE no longer has this data in the header.
             if(game.GameType == GamesEnumerator.MafiaII)
             {
@@ -281,7 +282,7 @@ namespace Mafia2Tool
 
             using (var output = File.Create(file.FullName))
             {
-                archiveFile.Serialize(output, ToolkitSettings.SerializeSDSOption == 0 ? ArchiveSerializeOptions.OneBlock : ArchiveSerializeOptions.Compress);
+                archiveFile.Serialize(output, ToolkitSettings.SerializeSDSOption == 0 ? ArchiveSerializeOptions.None : ArchiveSerializeOptions.Compress);
             }
             infoText.Text = "Saved SDS.";
             archiveFile = null;
