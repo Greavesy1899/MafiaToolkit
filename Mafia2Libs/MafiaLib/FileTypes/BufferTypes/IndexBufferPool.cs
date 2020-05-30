@@ -280,10 +280,10 @@ namespace ResourceTypes.BufferPools
                 }
             }
         }
-        
-        public void SwapIndexFormat()
+
+        public void SetFormat(int format)
         {
-            indexFormat = (indexFormat == 1 ? 2 : 1);
+            indexFormat = format;
             GetLength();
         }
 

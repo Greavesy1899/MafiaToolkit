@@ -60,7 +60,7 @@ namespace ResourceTypes.FrameResource
             get { SetWorldTransform(); return worldTransform; }
             set { worldTransform = value; }
         }
-        [Browsable(false)]
+        [Browsable(true)]
         public short Unk3 {
             get { return unk3; }
             set { unk3 = value; }
@@ -73,7 +73,7 @@ namespace ResourceTypes.FrameResource
             get { return parentIndex2; }
             set { parentIndex2 = value; }
         }
-        [Browsable(false)]
+        [Browsable(true)]
         public short Unk6 {
             get { return unk6; }
             set { unk6 = value; }

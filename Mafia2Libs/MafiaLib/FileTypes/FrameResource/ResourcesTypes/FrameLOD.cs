@@ -53,7 +53,7 @@ namespace ResourceTypes.FrameResource
             get { return vertexBufferRef; }
             set { vertexBufferRef = value; }
         }
-        public int NumVertsPr {
+        public int NumVerts {
             get { return numVerts; }
             set { numVerts = value; }
         }
@@ -630,7 +630,6 @@ namespace ResourceTypes.FrameResource
                 unk24 = 1;
                 nSizeOfMatBurstEntries = 0x14;
                 nSizeOfMatSplitEntries = 0xC;
-                //materialBursts[0].Bounds = new short[6] { 32766, 32766, 32766, -32766, -32766, -32766 };
             }
 
         }

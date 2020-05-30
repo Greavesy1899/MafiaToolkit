@@ -134,6 +134,7 @@ namespace Utils.Models
             {
                 IndexBuffers[i] = new IndexBuffer(FNV64.Hash("M2TK." + model.Name + ".IB" + i));
                 indexBuffers[i].SetData(model.Lods[i].Indices);
+                indexBuffers[i].SetFormat(model.Lods[i].GetIndexFormat());
             }
         }
 
@@ -150,7 +151,7 @@ namespace Utils.Models
                 FrameLOD frameLod = frameGeometry.LOD[i];
                 int vertexSize;
                 Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = frameLod.GetVertexOffsets(out vertexSize);
-                byte[] vBuffer = new byte[vertexSize * frameLod.NumVertsPr];
+                byte[] vBuffer = new byte[vertexSize * frameLod.NumVerts];
 
                 for (int v = 0; v != model.Lods[i].Vertices.Length; v++)
                 {
@@ -228,32 +229,33 @@ namespace Utils.Models
             }
             for (int x = 0; x < model.Lods.Length; x++)
             {
-                frameGeometry.LOD[x] = new FrameLOD();
-                frameGeometry.LOD[x].Distance = 1E+12f;
-                frameGeometry.LOD[x].BuildNewPartition();
-                frameGeometry.LOD[x].BuildNewMaterialSplit();
-                frameGeometry.LOD[x].SplitInfo.NumVerts = model.Lods[x].Vertices.Length;
-                frameGeometry.LOD[x].NumVertsPr = model.Lods[x].Vertices.Length;
-                frameGeometry.LOD[x].SplitInfo.NumFaces = model.Lods[x].Indices.Length / 3;
-                frameGeometry.LOD[x].VertexDeclaration = model.Lods[x].VertexDeclaration;
+                var lod = new FrameLOD();
+                lod.Distance = 1E+12f;
+                lod.BuildNewPartition();
+                lod.BuildNewMaterialSplit();
+                lod.SplitInfo.NumVerts = model.Lods[x].Vertices.Length;
+                lod.NumVerts = model.Lods[x].Vertices.Length;
+                lod.SplitInfo.NumFaces = model.Lods[x].Indices.Length / 3;
+                lod.VertexDeclaration = model.Lods[x].VertexDeclaration;
 
                 //burst split info.
-                frameGeometry.LOD[x].SplitInfo.NumMatSplit = model.Lods[x].Parts.Length;
-                frameGeometry.LOD[x].SplitInfo.NumMatBurst = model.Lods[x].Parts.Length;
-                frameGeometry.LOD[x].SplitInfo.MaterialSplits = new FrameLOD.MaterialSplit[model.Lods[x].Parts.Length];
-                frameGeometry.LOD[x].SplitInfo.MaterialBursts = new FrameLOD.MaterialBurst[model.Lods[x].Parts.Length];
+                lod.SplitInfo.IndexStride = (model.Lods[x].GetIndexFormat() == 2 ? 4 : 2);
+                lod.SplitInfo.NumMatSplit = model.Lods[x].Parts.Length;
+                lod.SplitInfo.NumMatBurst = model.Lods[x].Parts.Length;
+                lod.SplitInfo.MaterialSplits = new FrameLOD.MaterialSplit[model.Lods[x].Parts.Length];
+                lod.SplitInfo.MaterialBursts = new FrameLOD.MaterialBurst[model.Lods[x].Parts.Length];
+                frameGeometry.LOD[x] = lod;
 
                 int faceIndex = 0;
-                int baseIndex = 0;
                 frameMaterial.LodMatCount[x] = model.Lods[x].Parts.Length;
                 frameMaterial.Materials[x] = new MaterialStruct[model.Lods[x].Parts.Length];
                 for (int i = 0; i != model.Lods[x].Parts.Length; i++)
                 {
                     frameMaterial.Materials[x][i] = new MaterialStruct();
-                    frameMaterial.Materials[x][i].StartIndex = (int)model.Lods[0].Parts[i].StartIndex;
-                    frameMaterial.Materials[x][i].NumFaces = (int)model.Lods[0].Parts[i].NumFaces;
+                    frameMaterial.Materials[x][i].StartIndex = (int)model.Lods[x].Parts[i].StartIndex;
+                    frameMaterial.Materials[x][i].NumFaces = (int)model.Lods[x].Parts[i].NumFaces;
                     frameMaterial.Materials[x][i].Unk3 = 0;
-                    frameMaterial.Materials[x][i].MaterialHash = model.Lods[0].Parts[i].Hash;
+                    frameMaterial.Materials[x][i].MaterialHash = model.Lods[x].Parts[i].Hash;
                     //frameMaterial.Materials[0][i].MaterialName = model.Lods[0].Parts[i].Material;
                     faceIndex += (int)model.Lods[x].Parts[i].NumFaces;
 
@@ -275,10 +277,9 @@ namespace Utils.Models
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].RightIndex = -1;
                     frameGeometry.LOD[x].SplitInfo.MaterialBursts[i].SecondIndex =
                         Convert.ToUInt16(model.Lods[x].Parts[i].NumFaces - 1);
-                    frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].BaseIndex = baseIndex;
+                    frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].BaseIndex = (int)model.Lods[x].Parts[i].StartIndex;
                     frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].FirstBurst = i;
                     frameGeometry.LOD[x].SplitInfo.MaterialSplits[i].NumBurst = 1;
-                    baseIndex += faceIndex;
                 }
             }
         }
@@ -315,7 +316,7 @@ namespace Utils.Models
 
                 var size = 0;
                 lod.GetVertexOffsets(out size);
-                if (vertexBuffers[i].Data.Length != (size * lod.NumVertsPr)) throw new SystemException();
+                if (vertexBuffers[i].Data.Length != (size * lod.NumVerts)) throw new SystemException();
                 lod.IndexBufferRef = new Hash("M2TK." + model.Name + ".IB" + i);
                 lod.VertexBufferRef = new Hash("M2TK." + model.Name + ".VB" + i);
             }

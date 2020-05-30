@@ -238,7 +238,7 @@ namespace Mafia2Tool
         public void PopulateList()
         {
             TreeNode tree = SceneData.FrameResource.BuildTree(SceneData.FrameNameTable);
-            tree.Tag = "Folder";
+            tree.Tag = SceneData.FrameResource.Header;
             frameResourceRoot = tree;
             dSceneTree.AddToTree(tree);
         }
@@ -1137,7 +1137,8 @@ namespace Mafia2Tool
             for (int i = 0; i < model.ModelStructure.Lods.Length; i++)
             {
                 var lod = model.ModelStructure.Lods[i];
-                FrameResourceModelOptions modelForm = new FrameResourceModelOptions(lod.VertexDeclaration, i);
+                var is32bit = (lod.GetIndexFormat() == 2);
+                FrameResourceModelOptions modelForm = new FrameResourceModelOptions(lod.VertexDeclaration, i, is32bit);
                 if (modelForm.ShowDialog() != DialogResult.OK)
                 {
                     return null;
@@ -2161,31 +2162,50 @@ namespace Mafia2Tool
 
         private void Button_TestConvert_Click(object sender, EventArgs e)
         {
+            ConvertBuffer(1);
+        }
+
+        private void Button_TestConvert32_Click(object sender, EventArgs e)
+        {
+            ConvertBuffer(2);
+        }
+
+        private void ConvertBuffer(int format)
+        {
+            var frames = SceneData.FrameResource.FrameObjects;
             var geoms = SceneData.FrameResource.FrameGeometries;
             var mats = SceneData.FrameResource.FrameMaterials;
             var indexbuffer = SceneData.IndexBufferPool.Buffers;
-            foreach(var geom in geoms)
+            foreach(var entry in frames)
             {
-                foreach(var lod in geom.Value.LOD)
+                var frame = entry.Value;
+                if(frame is FrameObjectSingleMesh)
                 {
-                    lod.SplitInfo.IndexStride = 4;
+                    (frame as FrameObjectSingleMesh).SingleMeshFlags |= SingleMeshFlags.flag_134217728;
+                }
+            }
+            foreach (var geom in geoms)
+            {
+                foreach (var lod in geom.Value.LOD)
+                {
+                    lod.SplitInfo.IndexStride = (format == 1 ? 2 : 4);
                 }
             }
 
-            foreach(var mat in mats)
+            foreach (var mat in mats)
             {
-                foreach(var m in mat.Value.Materials)
+                foreach (var m in mat.Value.Materials)
                 {
                     foreach (var z in m)
                     {
-                        z.MaterialHash = 8957959174291022936;
+                        z.MaterialHash = 3832291855489980698;
                     }
                 }
             }
 
-            foreach(var buffer in indexbuffer)
+            foreach (var buffer in indexbuffer)
             {
-                buffer.Value.SwapIndexFormat();
+                buffer.Value.SetFormat(format);
             }
 
             Save();

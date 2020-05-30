@@ -118,7 +118,7 @@ namespace Utils.SharpDXExtensions
             euler.Y = (float)Math.Round(eY * 180 / Math.PI);
             euler.X = (float)Math.Round(eX * 180 / Math.PI);
 
-            if(euler.IsNaN())
+            if (euler.IsNaN())
             {
                 throw new Exception("Triggered NaN check in QuaternionExtensions.ToEuler();");
             }

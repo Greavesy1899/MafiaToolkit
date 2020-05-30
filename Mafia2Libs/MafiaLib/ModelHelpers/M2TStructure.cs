@@ -62,9 +62,9 @@ namespace Utils.Models
 
                 int vertexSize;
                 Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = frameLod.GetVertexOffsets(out vertexSize);
-                lods[i].Vertices = new Vertex[frameLod.NumVertsPr];
+                lods[i].Vertices = new Vertex[frameLod.NumVerts];
 
-                if (vertexSize * frameLod.NumVertsPr != vertexBuffer.Data.Length) throw new System.Exception();
+                if (vertexSize * frameLod.NumVerts != vertexBuffer.Data.Length) throw new System.Exception();
                 for (int v = 0; v != lods[i].Vertices.Length; v++)
                 {
                     Vertex vertex = new Vertex();
@@ -229,9 +229,9 @@ namespace Utils.Models
 
             for (int triIdx = 0, idxIdx = 0; triIdx < triangleMesh.Triangles.Count; triIdx++, idxIdx += 3)
             {
-                lods[0].Indices[idxIdx] = (ushort) triangleMesh.Triangles[triIdx].v0;
-                lods[0].Indices[idxIdx + 1] = (ushort) triangleMesh.Triangles[triIdx].v1;
-                lods[0].Indices[idxIdx + 2] = (ushort) triangleMesh.Triangles[triIdx].v2;
+                lods[0].Indices[idxIdx] = triangleMesh.Triangles[triIdx].v0;
+                lods[0].Indices[idxIdx + 1] = triangleMesh.Triangles[triIdx].v1;
+                lods[0].Indices[idxIdx + 2] = triangleMesh.Triangles[triIdx].v2;
             }
 
             for (int x = 0; x != lods[0].Vertices.Length; x++)
@@ -417,7 +417,7 @@ namespace Utils.Models
                     writer.Write(lod.Indices.Length);
                     for (int x = 0; x != lod.Indices.Length; x++)
                     {
-                        writer.Write((ushort)lods[i].Indices[x]);
+                        writer.Write(lods[i].Indices[x]);
                     }
                 }
             }
@@ -697,7 +697,7 @@ namespace Utils.Models
                 Lods[i].Indices = new uint[numIndices];
                 for (int x = 0; x != Lods[i].Indices.Length; x++)
                 {
-                    Lods[i].Indices[x] = reader.ReadUInt16();
+                    Lods[i].Indices[x] = reader.ReadUInt32();
                 }
                 Lods[i].CalculatePartBounds();
 
@@ -761,7 +761,7 @@ namespace Utils.Models
                     writer.Write(lods[i].Indices.Length);
                     for (int x = 0; x != lods[i].Indices.Length; x++)
                     {
-                        writer.Write((ushort)lods[i].Indices[x]);
+                        writer.Write(lods[i].Indices[x]);
                     }
                 }
             }
@@ -829,6 +829,11 @@ namespace Utils.Models
                     BoundingBox.FromPoints(partVerts.ToArray(), out bounds);
                     parts[i].Bounds = bounds;
                 }
+            }
+
+            public int GetIndexFormat()
+            {
+                return (indices.Length * 3 > ushort.MaxValue ? 2 : 1);
             }
 
             public void CalculateNormals()

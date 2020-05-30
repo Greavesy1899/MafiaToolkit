@@ -278,7 +278,6 @@ namespace Mafia2Tool
                     throw new FormatException();
                 }
             }
-
             using (var output = File.Create(file.FullName))
             {
                 archiveFile.Serialize(output, ToolkitSettings.SerializeSDSOption == 0 ? ArchiveSerializeOptions.OneBlock : ArchiveSerializeOptions.Compress);
@@ -625,7 +624,21 @@ namespace Mafia2Tool
                 return;
             }
 
-            PackSDS(fileListView.SelectedItems[0].Tag as FileInfo);
+            var info = fileListView.SelectedItems[0].Tag as FileInfo;
+
+            if(info.Attributes.HasFlag(FileAttributes.ReadOnly))
+            {
+                DialogResult result = MessageBox.Show("Detected a read only file. Would you like to forcefully pack?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                info.Attributes -= FileAttributes.ReadOnly;
+            }
+
+            PackSDS(info);
         }
         private void ContextSDSUnpack_Click(object sender, EventArgs e)
         {

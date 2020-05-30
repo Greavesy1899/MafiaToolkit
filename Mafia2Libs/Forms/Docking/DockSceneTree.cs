@@ -76,6 +76,8 @@ namespace Forms.Docking
                 node.SelectedImageIndex = node.ImageIndex = 4;
             else if (node.Tag.GetType() == typeof(FrameHeaderScene))
                 node.SelectedImageIndex = node.ImageIndex = 8;
+            else if (node.Tag.GetType() == typeof(FrameHeader))
+                node.SelectedImageKey = node.ImageKey = "SceneObject.png";
             else if ((node.Tag is string) && ((node.Tag as string) == "Folder"))
                 node.SelectedImageKey = node.ImageKey = "SceneObject.png";
             else
