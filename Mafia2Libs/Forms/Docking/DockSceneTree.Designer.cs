@@ -269,7 +269,7 @@ namespace Forms.Docking
         public System.Windows.Forms.ToolStripMenuItem DeleteButton;
         public System.Windows.Forms.ToolStripMenuItem DuplicateButton;
         public System.Windows.Forms.ToolStripMenuItem Export3DButton;
-        public Utils.Extensions.MTreeView treeView1;
+        private Utils.Extensions.MTreeView treeView1;
         public System.Windows.Forms.ToolStripMenuItem UpdateParent1Button;
         public System.Windows.Forms.ToolStripMenuItem UpdateParent2Button;
         private System.Windows.Forms.ToolStripMenuItem FrameActions;

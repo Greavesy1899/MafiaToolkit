@@ -537,7 +537,9 @@
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
     <Compile Include="Rendering\System\TimerClass.cs" />
-    <Compile Include="Utils\Helpers\Extensions.cs" />
+    <Compile Include="Utils\Helpers\Extensions.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Utils\Types\IniFile.cs" />
     <Compile Include="Forms\MaterialTool.cs">
       <SubType>Form</SubType>

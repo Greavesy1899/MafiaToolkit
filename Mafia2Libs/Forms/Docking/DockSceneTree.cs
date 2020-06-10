@@ -9,23 +9,68 @@ namespace Forms.Docking
 {
     public partial class DockSceneTree : DockContent
     {
+        public TreeNode SelectedNode {
+            get { return treeView1.SelectedNode; }
+            set { treeView1.SelectedNode = value; }
+        }
+
         public DockSceneTree()
         {
             InitializeComponent();
         }
 
-        public void AddToTree(TreeNode newNode, TreeNode parentNode = null)
+        /* Abstract Functions for the outliner */
+        public void SetEventHandler(string eventType, TreeViewEventHandler handler)
         {
-            newNode.Checked = true;
-            ApplyImageIndex(newNode);
-            RecurseChildren(newNode);
-
-            if (parentNode != null)
-                parentNode.Nodes.Add(newNode);
+            if(eventType.Equals("AfterSelect"))
+            {
+                treeView1.AfterSelect += handler;
+            }
+            else if (eventType.Equals("AfterCheck"))
+            {
+                treeView1.AfterCheck += handler;
+            }
             else
-                treeView1.Nodes.Add(newNode);
+            {
+                throw new NotImplementedException();
+            }
         }
 
+        public void SetKeyHandler(string eventType, KeyEventHandler handler)
+        {
+            if (eventType.Equals("KeyUp"))
+            {
+                treeView1.KeyUp += handler;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public TreeNode[] Find(string key, bool searchAllChildren)
+        {
+            return treeView1.Nodes.Find(key, searchAllChildren);
+        }
+
+        public void RemoveNode(TreeNode node)
+        {
+            treeView1.Nodes.Remove(node);
+        }
+
+        public void AddToTree(TreeNode node, TreeNode parentNode = null)
+        {
+            node.Checked = true;
+            ApplyImageIndex(node);
+            RecurseChildren(node);
+
+            if (parentNode != null)
+                parentNode.Nodes.Add(node);
+            else
+                treeView1.Nodes.Add(node);
+        }
+
+        /* Helper functions */
         private void RecurseChildren(TreeNode node)
         {
             foreach (TreeNode child in node.Nodes)
@@ -82,6 +127,7 @@ namespace Forms.Docking
                 node.SelectedImageIndex = node.ImageIndex = 7;
         }
 
+        /* Context function */
         private void OpenEntryContext(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //TODO: Clean this messy system.
