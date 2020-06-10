@@ -50,6 +50,8 @@
             this.CancelButton = new System.Windows.Forms.Button();
             this.MergeButton = new System.Windows.Forms.Button();
             this.OverwriteListBox = new System.Windows.Forms.CheckedListBox();
+            this.ComboBox_SearchType = new System.Windows.Forms.ComboBox();
+            this.Label_SearchType = new System.Windows.Forms.Label();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.Panel_Main.SuspendLayout();
@@ -60,7 +62,7 @@
             // 
             this.MaterialSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.MaterialSearch.Location = new System.Drawing.Point(3, 3);
+            this.MaterialSearch.Location = new System.Drawing.Point(3, 28);
             this.MaterialSearch.Name = "MaterialSearch";
             this.MaterialSearch.Size = new System.Drawing.Size(329, 20);
             this.MaterialSearch.TabIndex = 0;
@@ -175,10 +177,10 @@
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.columnName,
             this.columnHash});
-            this.dataGridView1.Location = new System.Drawing.Point(3, 28);
+            this.dataGridView1.Location = new System.Drawing.Point(3, 54);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(329, 372);
+            this.dataGridView1.Size = new System.Drawing.Size(329, 346);
             this.dataGridView1.TabIndex = 3;
             this.dataGridView1.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnMaterialSelected);
             // 
@@ -199,6 +201,8 @@
             this.Panel_Main.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel_Main.Controls.Add(this.Label_SearchType);
+            this.Panel_Main.Controls.Add(this.ComboBox_SearchType);
             this.Panel_Main.Controls.Add(this.dataGridView1);
             this.Panel_Main.Controls.Add(this.MaterialSearch);
             this.Panel_Main.Controls.Add(this.MaterialGrid);
@@ -310,6 +314,29 @@
             this.OverwriteListBox.Size = new System.Drawing.Size(237, 364);
             this.OverwriteListBox.TabIndex = 0;
             // 
+            // ComboBox_SearchType
+            // 
+            this.ComboBox_SearchType.FormattingEnabled = true;
+            this.ComboBox_SearchType.Items.AddRange(new object[] {
+            "$LABEL_MATERIALNAME",
+            "$LABEL_MATERIALHASH",
+            "$LABEL_SHADERID",
+            "$LABEL_SHADERHASH"});
+            this.ComboBox_SearchType.Location = new System.Drawing.Point(148, 3);
+            this.ComboBox_SearchType.Name = "ComboBox_SearchType";
+            this.ComboBox_SearchType.Size = new System.Drawing.Size(184, 21);
+            this.ComboBox_SearchType.TabIndex = 4;
+            this.ComboBox_SearchType.SelectedIndexChanged += new System.EventHandler(this.SearchType_OnIndexChanged);
+            // 
+            // Label_SearchType
+            // 
+            this.Label_SearchType.AutoSize = true;
+            this.Label_SearchType.Location = new System.Drawing.Point(8, 7);
+            this.Label_SearchType.Name = "Label_SearchType";
+            this.Label_SearchType.Size = new System.Drawing.Size(124, 13);
+            this.Label_SearchType.TabIndex = 5;
+            this.Label_SearchType.Text = "$LABEL_SEARCHTYPE";
+            // 
             // MaterialTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -361,5 +388,7 @@
         private System.Windows.Forms.Label NewMaterialLabel;
         private System.Windows.Forms.Button SelectAllNewButton;
         private System.Windows.Forms.Button SelectAllOverwriteButton;
+        private System.Windows.Forms.Label Label_SearchType;
+        private System.Windows.Forms.ComboBox ComboBox_SearchType;
     }
 }

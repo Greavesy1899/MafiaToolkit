@@ -18,6 +18,8 @@ namespace ResourceTypes.Actors
                     return new ActorTrafficHuman();
                 case ActorTypes.C_TrafficTrain:
                     return new ActorTrafficTrain();
+                case ActorTypes.ActionPointScript:
+                    return new ActorActionPointScript();
                 case ActorTypes.C_Item:
                     return new ActorItem();
                 case ActorTypes.C_Door:
@@ -45,6 +47,21 @@ namespace ResourceTypes.Actors
             }
         }
 
+        public static IActorExtraDataInterface LoadEntityDataStorage(ActorEDSTypes type, MemoryStream stream, bool isBigEndian)
+        {
+            switch(type)
+            {
+                case ActorEDSTypes.C_Car:
+                    return new ActorCar(stream, isBigEndian);
+                case ActorEDSTypes.C_ActionPointScript:
+                    return new ActorActionPointScript(stream, isBigEndian);
+                case ActorEDSTypes.C_Train:
+                    throw new NotImplementedException();
+                default:
+                    return null;
+            }
+        }
+
         public static IActorExtraDataInterface LoadExtraData(ActorTypes type, MemoryStream stream, bool isBigEndian)
         {
             switch(type)
@@ -57,6 +74,8 @@ namespace ResourceTypes.Actors
                     return new ActorTrafficHuman(stream, isBigEndian);
                 case ActorTypes.C_TrafficTrain:
                     return new ActorTrafficTrain(stream, isBigEndian);
+                case ActorTypes.ActionPointScript:
+                    return new ActorActionPointScript(stream, isBigEndian);
                 case ActorTypes.C_Item:
                     return new ActorItem(stream, isBigEndian);
                 case ActorTypes.C_Door:

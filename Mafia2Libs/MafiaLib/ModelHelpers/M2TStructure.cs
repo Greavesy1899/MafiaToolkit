@@ -836,6 +836,11 @@ namespace Utils.Models
                 return (indices.Length * 3 > ushort.MaxValue ? 2 : 1);
             }
 
+            public bool Over16BitLimit()
+            {
+                return (vertices.Length > ushort.MaxValue);
+            }
+
             public void CalculateNormals()
             {
                 List<Vector3> surfaceNormals = new List<Vector3>();

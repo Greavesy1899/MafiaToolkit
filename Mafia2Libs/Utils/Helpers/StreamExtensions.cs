@@ -163,6 +163,10 @@ namespace Utils.Extensions
             if (bigEndian) Array.Reverse(data);
             stream.Write(data);
         }
+        public static void Write(this Stream stream, bool value)
+        {
+            stream.WriteByte(Convert.ToByte(value));
+        }
         public static void Write(this Stream stream, double value, bool bigEndian)
         {
             byte[] data = BitConverter.GetBytes(value);

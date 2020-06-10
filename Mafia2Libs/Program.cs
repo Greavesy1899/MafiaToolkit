@@ -5,8 +5,6 @@ using Utils.Settings;
 using Utils.Language;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using ResourceTypes.EntityDataStorage;
-using SharpDX;
 using Mafia2Tool.Forms;
 
 namespace Mafia2Tool
@@ -24,8 +22,6 @@ namespace Mafia2Tool
             Language.ReadLanguageXML();
             CheckLatestRelease();
 
-            //EntityDataStorageLoader storage = new EntityDataStorageLoader();
-            //storage.ReadFromFile("EntityDataStorage_16.eds", false);
             if(ToolkitSettings.SkipGameSelector)
             {
                 GameStorage.Instance.SetSelectedGameByIndex(ToolkitSettings.DefaultGame);

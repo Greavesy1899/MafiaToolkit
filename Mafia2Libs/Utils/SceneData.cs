@@ -42,7 +42,7 @@ namespace Mafia2Tool
         public static HPDData HPDData;
         public static TranslokatorLoader Translokator;
         public static FrameProps FrameProperties;
-        public static string ScenePath;
+        public static string ScenePath = "";
 
         private static SDSContentFile sdsContent;
         private static bool isBigEndian;
@@ -182,11 +182,11 @@ namespace Mafia2Tool
             //        obj.Add(new NAVData(new FileInfo(item)));
             //    }
             //}
-            //if(!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
+            //if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
             //{
             //    var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
             //    var data = new NAVData(new FileInfo(name));
-            //    HPDData = (data.data as HPDData);                
+            //    HPDData = (data.data as HPDData);
             //}
             IndexBufferPool = new IndexBufferManager(ibps, isBigEndian);
             VertexBufferPool = new VertexBufferManager(vbps, isBigEndian);

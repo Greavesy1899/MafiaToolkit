@@ -14,6 +14,7 @@ namespace Mafia2Tool
     public partial class MaterialTool : Form
     {
         private MaterialLibrary mtl;
+        private int currentSearchType;
 
         public MaterialTool(FileInfo file)
         {
@@ -63,10 +64,40 @@ namespace Mafia2Tool
             {
                 if (!string.IsNullOrEmpty(text) && searchMode)
                 {
-                    if (mat.Value.MaterialName.Contains(text) || mat.Value.MaterialHash.ToString().Contains(text))
-                        dataGridView1.Rows.Add(BuildRowData(mat));
-                    else
-                        continue;
+                    DataGridViewRow row = null;
+                    if(currentSearchType == 0)
+                    {         
+                        if (mat.Value.MaterialName.Contains(text))
+                        {
+                            row = BuildRowData(mat);
+                        }
+                    }
+                    else if (currentSearchType == 1)
+                    {
+                        if (mat.Value.MaterialHash.ToString().Contains(text))
+                        {
+                            row = BuildRowData(mat);
+                        }
+                    }
+                    else if (currentSearchType == 2)
+                    {
+                        if (mat.Value.ShaderHash.ToString().Contains(text))
+                        {
+                            row = BuildRowData(mat);
+                        }
+                    }
+                    else if (currentSearchType == 3)
+                    {
+                        if (mat.Value.ShaderID.ToString().Contains(text))
+                        {
+                            row = BuildRowData(mat);
+                        }
+                    }
+
+                    if(row != null)
+                    {
+                        dataGridView1.Rows.Add(row);
+                    }
                 }
                 else
                 {
@@ -138,7 +169,9 @@ namespace Mafia2Tool
         private void DeleteMaterial(object sender, EventArgs e)
         {
             if (dataGridView1.SelectedCells[0] == null || !Panel_Main.Visible)
+            {
                 return;
+            }
 
             int index = dataGridView1.SelectedCells[0].RowIndex;
             mtl.Materials.Remove((dataGridView1.Rows[index].Tag as Material).MaterialHash);
@@ -153,7 +186,9 @@ namespace Mafia2Tool
         private void UpdateList(object sender, EventArgs e)
         {
             if (!Panel_Main.Visible)
+            {
                 return;
+            }
 
             FetchMaterials(false, null);
         }
@@ -266,14 +301,23 @@ namespace Mafia2Tool
             if(MergePanel.Visible)
             {
                 for (int i = 0; i < OverwriteListBox.Items.Count; i++)
+                {
                     OverwriteListBox.SetItemChecked(i, true);
+                }
             }
         }
 
         private void SelectAllNewButton_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < NewMatListBox.Items.Count; i++)
+            {
                 NewMatListBox.SetItemChecked(i, true);
+            }
+        }
+
+        private void SearchType_OnIndexChanged(object sender, EventArgs e)
+        {
+            currentSearchType = ComboBox_SearchType.SelectedIndex;
         }
     }
 }

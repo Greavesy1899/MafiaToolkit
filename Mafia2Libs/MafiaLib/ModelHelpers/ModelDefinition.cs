@@ -132,9 +132,10 @@ namespace Utils.Models
 
             for (int i = 0; i < model.Lods.Length; i++)
             {
+                var indexFormat = (model.Lods[i].Over16BitLimit() ? 2 : 1);
                 IndexBuffers[i] = new IndexBuffer(FNV64.Hash("M2TK." + model.Name + ".IB" + i));
                 indexBuffers[i].SetData(model.Lods[i].Indices);
-                indexBuffers[i].SetFormat(model.Lods[i].GetIndexFormat());
+                indexBuffers[i].SetFormat(indexFormat);
             }
         }
 
@@ -239,7 +240,7 @@ namespace Utils.Models
                 lod.VertexDeclaration = model.Lods[x].VertexDeclaration;
 
                 //burst split info.
-                lod.SplitInfo.IndexStride = (model.Lods[x].GetIndexFormat() == 2 ? 4 : 2);
+                lod.SplitInfo.IndexStride = (model.Lods[x].Over16BitLimit() ? 4 : 2);
                 lod.SplitInfo.NumMatSplit = model.Lods[x].Parts.Length;
                 lod.SplitInfo.NumMatBurst = model.Lods[x].Parts.Length;
                 lod.SplitInfo.MaterialSplits = new FrameLOD.MaterialSplit[model.Lods[x].Parts.Length];

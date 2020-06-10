@@ -10,9 +10,22 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 namespace Utils.Extensions
-{
-    public class MTreeView : TreeView
+{ 
+
+    public class MTreeNode : TreeNode
     {
+        public bool isFiltered { get; set; }
+
+        public MTreeNode(string text) : base(text) { }
+    }
+
+    public sealed class MTreeView : TreeView
+    {
+        public MTreeView()
+        {
+            DrawMode = TreeViewDrawMode.OwnerDrawAll;
+        }
+
         //fix from: (gotta love stack overflow!)
         //https://stackoverflow.com/questions/14647216/c-sharp-treeview-ignore-double-click-only-at-checkbox
         protected override void WndProc(ref Message m)
@@ -27,6 +40,16 @@ namespace Utils.Extensions
                 }
             }
             base.WndProc(ref m);
+        }
+
+        protected override void OnDrawNode(DrawTreeNodeEventArgs e)
+        {
+            if(e.Node is MTreeNode)
+            {
+                (e.Node as MTreeNode).isFiltered = true;
+                e.DrawDefault = (e.Node as MTreeNode).isFiltered;
+            }
+            base.OnDrawNode(e);  
         }
 
         protected override void OnAfterCheck(TreeViewEventArgs e)

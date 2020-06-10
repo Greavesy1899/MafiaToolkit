@@ -501,6 +501,7 @@ namespace ResourceTypes.FrameResource
                 frame.WriteToFile(writer);
             }
 
+            writer.Write(frame.Children.Count);
             for(int i = 0; i < frame.Children.Count; i++)
             {
                 SaveFrame(frame.Children[i], writer);

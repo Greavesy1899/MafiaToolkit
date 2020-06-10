@@ -2,8 +2,6 @@
 using System.Windows.Forms;
 using ResourceTypes.FrameResource;
 using SharpDX;
-using Utils.Types;
-using Mafia2Tool;
 using System;
 using Utils.Extensions;
 
@@ -155,6 +153,14 @@ namespace Forms.Docking
             var hitTestInfo = treeView1.HitTest(localPosition);
             if (hitTestInfo.Location == TreeViewHitTestLocations.StateImage)
                 return;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void Button_Filter_Click(object sender, EventArgs e)
+        {
         }
     }
 }

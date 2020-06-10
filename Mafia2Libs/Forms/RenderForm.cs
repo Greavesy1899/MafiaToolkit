@@ -554,7 +554,7 @@ namespace Mafia2Tool
                 {
                     for(int i = 0; i < SceneData.Actors.Length; i++)
                     {
-                        //FixActorDefintions(SceneData.Actors[i]);
+                        FixActorDefintions(SceneData.Actors[i]);
                         SceneData.Actors[i].WriteToFile();
                     }
                 }
@@ -685,7 +685,7 @@ namespace Mafia2Tool
                 vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
             }
 
-            if(indexBuffers[0].GetData() == null || vertexBuffers[0].Data == null)
+            if(indexBuffers[0] == null || vertexBuffers[0] == null)
             {
                 return null;
             }
@@ -935,7 +935,7 @@ namespace Mafia2Tool
                             actorFile.Nodes.Add(typeNode);
                         }
                     }
-                    //FixActorDefintions(actor);
+                    FixActorDefintions(actor);
                 }
                 dSceneTree.AddToTree(actorRoot);
             }
@@ -1071,7 +1071,6 @@ namespace Mafia2Tool
 
         private void ApplyChangesToRenderable(FrameObjectBase obj)
         {
-            //UpdateWorldTransforms();
             if (obj is FrameObjectArea)
             {
                 FrameObjectArea area = (obj as FrameObjectArea);
@@ -1137,7 +1136,7 @@ namespace Mafia2Tool
             for (int i = 0; i < model.ModelStructure.Lods.Length; i++)
             {
                 var lod = model.ModelStructure.Lods[i];
-                var is32bit = (lod.GetIndexFormat() == 2);
+                var is32bit = model.ModelStructure.Lods[i].Over16BitLimit();
                 FrameResourceModelOptions modelForm = new FrameResourceModelOptions(lod.VertexDeclaration, i, is32bit);
                 if (modelForm.ShowDialog() != DialogResult.OK)
                 {
@@ -2189,17 +2188,6 @@ namespace Mafia2Tool
                 foreach (var lod in geom.Value.LOD)
                 {
                     lod.SplitInfo.IndexStride = (format == 1 ? 2 : 4);
-                }
-            }
-
-            foreach (var mat in mats)
-            {
-                foreach (var m in mat.Value.Materials)
-                {
-                    foreach (var z in m)
-                    {
-                        z.MaterialHash = 3832291855489980698;
-                    }
                 }
             }
 

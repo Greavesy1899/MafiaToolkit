@@ -218,6 +218,12 @@
     <Compile Include="Controls\TextureEntry.Designer.cs">
       <DependentUpon>TextureEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\EntityDataStorageEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EntityDataStorageEditor.Designer.cs">
+      <DependentUpon>EntityDataStorageEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Docking\DockPropertyGrid.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -300,6 +306,8 @@
     <Compile Include="MafiaLib\FileTypes\Actors\ActorEntry.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorExtraData.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorFactory.cs" />
+    <Compile Include="MafiaLib\FileTypes\Actors\Types\ActorActionPointScript.cs" />
+    <Compile Include="MafiaLib\FileTypes\Actors\Types\ActorCar.cs" />
     <Compile Include="MafiaLib\FileTypes\BufferTypes\BufferHelpers.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Model.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\OpcodeException.cs" />
@@ -529,9 +537,7 @@
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
     <Compile Include="Rendering\System\TimerClass.cs" />
-    <Compile Include="Utils\Helpers\Extensions.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Utils\Helpers\Extensions.cs" />
     <Compile Include="Utils\Types\IniFile.cs" />
     <Compile Include="Forms\MaterialTool.cs">
       <SubType>Form</SubType>
@@ -719,6 +725,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TextureEntry.resx">
       <DependentUpon>TextureEntry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EntityDataStorageEditor.resx">
+      <DependentUpon>EntityDataStorageEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CityShopEditor.resx">
       <DependentUpon>CityShopEditor.cs</DependentUpon>

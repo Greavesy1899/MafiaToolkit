@@ -58,10 +58,6 @@ namespace Mafia2Tool
             this.ContextViewSmallIcon = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextViewList = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextViewTile = new System.Windows.Forms.ToolStripMenuItem();
-            this.CreateFileButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.CreateFrameResourceButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.CreateSDSContentButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.CreateCollisionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ContextForceBigEndian = new System.Windows.Forms.ToolStripMenuItem();
             this.topContainer = new System.Windows.Forms.ToolStripContainer();
             this.tools = new System.Windows.Forms.ToolStrip();
@@ -257,7 +253,6 @@ namespace Mafia2Tool
             this.ContextOpenFolder,
             this.ContextSDSUnpackAll,
             this.ContextView,
-            this.CreateFileButton,
             this.ContextForceBigEndian});
             this.GEContext.Name = "SDSContext";
             this.GEContext.Size = new System.Drawing.Size(219, 158);
@@ -345,39 +340,6 @@ namespace Mafia2Tool
             this.ContextViewTile.Size = new System.Drawing.Size(151, 22);
             this.ContextViewTile.Text = "$TILE";
             this.ContextViewTile.Click += new System.EventHandler(this.OnViewTileClicked);
-            // 
-            // CreateFileButton
-            // 
-            this.CreateFileButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.CreateFrameResourceButton,
-            this.CreateSDSContentButton,
-            this.CreateCollisionButton});
-            this.CreateFileButton.Enabled = false;
-            this.CreateFileButton.Name = "CreateFileButton";
-            this.CreateFileButton.Size = new System.Drawing.Size(218, 22);
-            this.CreateFileButton.Text = "$CREATE FILE";
-            this.CreateFileButton.Visible = false;
-            // 
-            // CreateFrameResourceButton
-            // 
-            this.CreateFrameResourceButton.Name = "CreateFrameResourceButton";
-            this.CreateFrameResourceButton.Size = new System.Drawing.Size(155, 22);
-            this.CreateFrameResourceButton.Text = "FrameResource";
-            this.CreateFrameResourceButton.Click += new System.EventHandler(this.CreateFrameResource_OnClick);
-            // 
-            // CreateSDSContentButton
-            // 
-            this.CreateSDSContentButton.Name = "CreateSDSContentButton";
-            this.CreateSDSContentButton.Size = new System.Drawing.Size(155, 22);
-            this.CreateSDSContentButton.Text = "SDSContent";
-            this.CreateSDSContentButton.Click += new System.EventHandler(this.CreateSDSContentButton_Click);
-            // 
-            // CreateCollisionButton
-            // 
-            this.CreateCollisionButton.Name = "CreateCollisionButton";
-            this.CreateCollisionButton.Size = new System.Drawing.Size(155, 22);
-            this.CreateCollisionButton.Text = "Collision";
-            this.CreateCollisionButton.Click += new System.EventHandler(this.CreateCollisionButton_Click);
             // 
             // ContextForceBigEndian
             // 
@@ -677,10 +639,6 @@ namespace Mafia2Tool
         private ToolStripMenuItem creditsToolStripMenuItem;
         private ToolStripMenuItem M2FBXButton;
         private ToolStripMenuItem UnpackAllSDSButton;
-        private ToolStripMenuItem CreateFileButton;
-        private ToolStripMenuItem CreateFrameResourceButton;
-        private ToolStripMenuItem CreateSDSContentButton;
-        private ToolStripMenuItem CreateCollisionButton;
         private ToolStripMenuItem ContextForceBigEndian;
         private ToolStripMenuItem Button_SelectGame;
     }
