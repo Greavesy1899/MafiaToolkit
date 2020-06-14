@@ -133,7 +133,7 @@ namespace Rendering.Graphics
             {
                 Width = w,
                 Height = h,
-                MipLevels = 1,
+                MipLevels = 0,
                 ArraySize = 1,
                 Format = Format.D24_UNorm_S8_UInt,
                 SampleDescription = new SampleDescription(1, 0),

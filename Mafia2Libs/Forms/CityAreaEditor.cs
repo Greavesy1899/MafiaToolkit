@@ -105,6 +105,8 @@ namespace Mafia2Tool
         private void Button_Search_OnClick(object sender, EventArgs e)
         {
             var text = TextBox_Search.Text;
+            var textUpper = text.ToUpper();
+            var textLower = text.ToLower();
             var bIsSearching = !string.IsNullOrEmpty(text);
             ListBox_Areas.Items.Clear();
 
@@ -112,7 +114,7 @@ namespace Mafia2Tool
             {
                 if (bIsSearching)
                 {
-                    if (area.Name.Contains(text) || area.Name.Contains(text.ToLower()))
+                    if (area.Name.Contains(text) || area.Name.Contains(textLower) || area.Name.Contains(textUpper))
                     {
                         ListBox_Areas.Items.Add(area);
                     }

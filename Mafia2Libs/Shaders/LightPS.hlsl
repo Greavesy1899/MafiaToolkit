@@ -80,7 +80,7 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     lightDir = -lightDirection;
 
 	// Calculate the amount of the light on this pixel.
-    lightIntensity = saturate(dot(normal, lightDir));
+    lightIntensity = saturate(dot(input.Normal, lightDir));
 
     // Determine the final diffuse color based on the diffuse color and the amount of the light intensity.
     color += (diffuseColor * lightIntensity);
@@ -101,8 +101,8 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
 float4 LightPixelShader(VS_OUTPUT input) : SV_TARGET
 {
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 diffuseTextureColor;
-	float4 aoTextureColor;
+    float4 diffuseTextureColor;
+    float4 aoTextureColor;
 
     diffuseTextureColor = textures[0].Sample(SampleType, input.TexCoord0);
     aoTextureColor = textures[2].Sample(SampleType, input.TexCoord7);
