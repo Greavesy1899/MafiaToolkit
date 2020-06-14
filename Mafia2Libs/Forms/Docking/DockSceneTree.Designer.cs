@@ -43,11 +43,8 @@ namespace Forms.Docking
             this.LinkToActorButton = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.Split_Main = new System.Windows.Forms.SplitContainer();
-            this.Label_FilterByType = new System.Windows.Forms.Label();
             this.Label_FilterFrame = new System.Windows.Forms.Label();
             this.TextBox_FilterFrame = new System.Windows.Forms.TextBox();
-            this.Combo_FilterByType = new System.Windows.Forms.ComboBox();
-            this.Button_Filter = new System.Windows.Forms.Button();
             this.Button_Search = new System.Windows.Forms.Button();
             this.treeView1 = new Utils.Extensions.MTreeView();
             this.EntryMenuStrip.SuspendLayout();
@@ -155,28 +152,16 @@ namespace Forms.Docking
             // 
             // Split_Main.Panel1
             // 
-            this.Split_Main.Panel1.Controls.Add(this.Label_FilterByType);
             this.Split_Main.Panel1.Controls.Add(this.Label_FilterFrame);
             this.Split_Main.Panel1.Controls.Add(this.TextBox_FilterFrame);
-            this.Split_Main.Panel1.Controls.Add(this.Combo_FilterByType);
-            this.Split_Main.Panel1.Controls.Add(this.Button_Filter);
             this.Split_Main.Panel1.Controls.Add(this.Button_Search);
             // 
             // Split_Main.Panel2
             // 
             this.Split_Main.Panel2.Controls.Add(this.treeView1);
-            this.Split_Main.Size = new System.Drawing.Size(409, 450);
+            this.Split_Main.Size = new System.Drawing.Size(244, 450);
             this.Split_Main.SplitterDistance = 48;
             this.Split_Main.TabIndex = 1;
-            // 
-            // Label_FilterByType
-            // 
-            this.Label_FilterByType.AutoSize = true;
-            this.Label_FilterByType.Location = new System.Drawing.Point(238, 5);
-            this.Label_FilterByType.Name = "Label_FilterByType";
-            this.Label_FilterByType.Size = new System.Drawing.Size(71, 13);
-            this.Label_FilterByType.TabIndex = 5;
-            this.Label_FilterByType.Text = "Filter By Type";
             // 
             // Label_FilterFrame
             // 
@@ -194,26 +179,6 @@ namespace Forms.Docking
             this.TextBox_FilterFrame.Name = "TextBox_FilterFrame";
             this.TextBox_FilterFrame.Size = new System.Drawing.Size(194, 20);
             this.TextBox_FilterFrame.TabIndex = 3;
-            // 
-            // Combo_FilterByType
-            // 
-            this.Combo_FilterByType.Enabled = false;
-            this.Combo_FilterByType.FormattingEnabled = true;
-            this.Combo_FilterByType.Location = new System.Drawing.Point(237, 21);
-            this.Combo_FilterByType.Name = "Combo_FilterByType";
-            this.Combo_FilterByType.Size = new System.Drawing.Size(126, 21);
-            this.Combo_FilterByType.TabIndex = 2;
-            // 
-            // Button_Filter
-            // 
-            this.Button_Filter.Enabled = false;
-            this.Button_Filter.Location = new System.Drawing.Point(369, 19);
-            this.Button_Filter.Name = "Button_Filter";
-            this.Button_Filter.Size = new System.Drawing.Size(27, 23);
-            this.Button_Filter.TabIndex = 1;
-            this.Button_Filter.Text = ">>";
-            this.Button_Filter.UseVisualStyleBackColor = true;
-            this.Button_Filter.Click += new System.EventHandler(this.Button_Filter_Click);
             // 
             // Button_Search
             // 
@@ -237,7 +202,7 @@ namespace Forms.Docking
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
             this.treeView1.SelectedImageIndex = 0;
-            this.treeView1.Size = new System.Drawing.Size(409, 398);
+            this.treeView1.Size = new System.Drawing.Size(244, 398);
             this.treeView1.TabIndex = 0;
             this.treeView1.DoubleClick += new System.EventHandler(this.OnDoubleClick);
             // 
@@ -245,10 +210,10 @@ namespace Forms.Docking
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(409, 450);
+            this.ClientSize = new System.Drawing.Size(244, 450);
             this.Controls.Add(this.Split_Main);
             this.HideOnClose = true;
-            this.MinimumSize = new System.Drawing.Size(425, 39);
+            this.MinimumSize = new System.Drawing.Size(260, 39);
             this.Name = "DockSceneTree";
             this.TabText = "Scene Outliner";
             this.Text = "DockSceneTree";
@@ -277,10 +242,7 @@ namespace Forms.Docking
         public System.Windows.Forms.ToolStripMenuItem LinkToActorButton;
         private System.Windows.Forms.SplitContainer Split_Main;
         private System.Windows.Forms.TextBox TextBox_FilterFrame;
-        private System.Windows.Forms.ComboBox Combo_FilterByType;
-        private System.Windows.Forms.Button Button_Filter;
         private System.Windows.Forms.Button Button_Search;
         private System.Windows.Forms.Label Label_FilterFrame;
-        private System.Windows.Forms.Label Label_FilterByType;
     }
 }
