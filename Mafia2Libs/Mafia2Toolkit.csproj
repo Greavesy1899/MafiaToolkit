@@ -321,8 +321,12 @@
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceXML.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\ItemDescEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\Enumerator.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\AIWorld\AIWorld.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\AnimalTraffic.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\Enums.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\HPD.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\OBJ_DATA\KynogonRuntimeMesh.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\OBJ_DATA\OBJData.cs" />
     <Compile Include="MafiaLib\FileTypes\SdsConfigFile.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\Actor.cs" />
@@ -419,6 +423,7 @@
     <Compile Include="Rendering\Graphics\RenderTypes\RenderJunction.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderLine.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderNav.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderNavCell.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderRoad.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderStaticCollision.cs" />
     <Compile Include="Rendering\Graphics\Shaders\CollisionShader.cs" />

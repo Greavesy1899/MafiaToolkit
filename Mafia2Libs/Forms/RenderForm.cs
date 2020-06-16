@@ -815,31 +815,41 @@ namespace Mafia2Tool
                     navNode.Text = string.Format("NAV: {0}", i);
                     navNode.Name = generatedID.ToString();
                     var obj = (SceneData.OBJData[i].data as OBJData);
-                    for (int z = 0; z < obj.vertices.Length; z++)
-                    {
-                        generatedID = StringHelpers.GetNewRefID();
-                        TreeNode verticeNode = new TreeNode();
-                        verticeNode.Text = string.Format("NODE: {0}", z);
-                        verticeNode.Name = generatedID.ToString();
-                        
-                        RenderNav nav = new RenderNav();                       
-                        nav.Init(obj, z);
-                        assets.Add(generatedID, nav);
+                    //foreach(var cell in obj.runtimeMesh.Cells)
+                    //{
+                    //    if (cell != null)
+                    //    {
+                    //        RenderNavCell renderCell = new RenderNavCell();
+                    //        renderCell.Init(cell);
+                    //        generatedID = StringHelpers.GetNewRefID();
+                    //        assets.Add(generatedID, renderCell);
+                    //    }
+                    //}
+                    //for (int z = 0; z < obj.vertices.Length; z++)
+                    //{
+                    //    generatedID = StringHelpers.GetNewRefID();
+                    //    TreeNode verticeNode = new TreeNode();
+                    //    verticeNode.Text = string.Format("NODE: {0}", z);
+                    //    verticeNode.Name = generatedID.ToString();
 
-                        verticeNode.Tag = nav;
-                        navNode.Nodes.Add(verticeNode);
-                    }
-                    int index = 0;
-                    for (int z = 0; z < obj.connections.Length; z++)
-                    {
-                        var flag = obj.connections[z].Flags;
-                        var one = obj.vertices[obj.connections[z].NodeID].Position;
-                        var two = obj.vertices[obj.connections[z].ConnectedNodeID].Position;
-                        RenderLine line = new RenderLine();
-                        line.Init(new Vector3[2] { one, two });
-                        assets.Add(StringHelpers.GetNewRefID(), line);
-                        index += 3;
-                    }
+                    //    RenderNav nav = new RenderNav();
+                    //    nav.Init(obj, z);
+                    //    assets.Add(generatedID, nav);
+
+                    //    verticeNode.Tag = nav;
+                    //    navNode.Nodes.Add(verticeNode);
+                    //}
+                    //int index = 0;
+                    //for (int z = 0; z < obj.connections.Length; z++)
+                    //{
+                    //    var flag = obj.connections[z].Flags;
+                    //    var one = obj.vertices[obj.connections[z].NodeID].Position;
+                    //    var two = obj.vertices[obj.connections[z].ConnectedNodeID].Position;
+                    //    RenderLine line = new RenderLine();
+                    //    line.Init(new Vector3[2] { one, two });
+                    //    assets.Add(StringHelpers.GetNewRefID(), line);
+                    //    index += 3;
+                    //}
                     dSceneTree.AddToTree(navNode);
                 }
             }

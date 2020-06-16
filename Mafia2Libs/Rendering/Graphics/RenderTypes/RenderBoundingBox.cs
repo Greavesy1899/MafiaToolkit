@@ -19,6 +19,22 @@ namespace Rendering.Graphics
             colour = new Vector4(1.0f);
         }
 
+        public bool InitSwap(BoundingBox bbox)
+        {
+            Vector3 pos = bbox.Maximum;
+            float y = pos.Y;
+            pos.Y = -pos.Z;
+            pos.Z = y;
+            bbox.Maximum = pos;
+
+            pos = bbox.Minimum;
+            y = pos.Y;
+            pos.Y = -pos.Z;
+            pos.Z = y;
+            bbox.Minimum = pos;
+
+            return Init(bbox);
+        }
         public bool Init(BoundingBox bbox)
         {
             this.bbox = bbox;
@@ -55,9 +71,10 @@ namespace Rendering.Graphics
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
         }
 
-        public void SetColour(Vector4 vec)
+        public void SetColour(Vector4 vec, bool update = false)
         {
             colour = vec;
+            isUpdatedNeeded = update;
         }
 
         public override void SetTransform(Matrix matrix)

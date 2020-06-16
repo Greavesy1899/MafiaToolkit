@@ -38,29 +38,6 @@ namespace Rendering.Graphics
             boundingBox.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
             boundingBox.SetTransform(Matrix.Translation(data.vertices[i].Position));
             vertex = data.vertices[i];
-
-            //if (data.vertices[i].unk3 < data.vertices.Length)
-            //{
-            //    RenderLine line = new RenderLine();
-            //    Vector3 pos1 = data.vertices[i].position;
-            //    Vector3 pos2 = data.vertices[data.vertices[i].unk3].position;
-            //    line.Init(new Vector3[] { pos1, pos2 });
-            //    lines.Add(line);
-            //}
-
-            //if (data.vertices[i].unk4 < data.vertices.Length)
-            //{
-            //    RenderLine line = new RenderLine();
-            //    line.Init(new Vector3[] { data.vertices[i].position, data.vertices[data.vertices[i].unk4].position });
-            //    lines.Add(line);
-            //}
-
-            //if (data.vertices[i].unk5 < data.vertices.Length)
-            //{
-            //    RenderLine line = new RenderLine();
-            //    line.Init(new Vector3[] { data.vertices[i].position, data.vertices[data.vertices[i].unk5].position });
-            //    lines.Add(line);
-            //}
         }
 
         public override void InitBuffers(Device d3d, DeviceContext deviceContext)

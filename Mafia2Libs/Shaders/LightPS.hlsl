@@ -67,8 +67,8 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     float4 specular;
     float3 normal;
     
-    normal = float3(1.0f, 1.0f, 1.0f);
-	//normal = CalculateFromNormalMap(input);
+    //normal = float3(1.0f, 1.0f, 1.0f);
+	normal = CalculateFromNormalMap(input);
     
     // Set the default output color to the ambient light value for all pixels.
     color = ambientColor;
@@ -108,7 +108,7 @@ float4 LightPixelShader(VS_OUTPUT input) : SV_TARGET
     aoTextureColor = textures[2].Sample(SampleType, input.TexCoord7);
 
     color = CalculateColor(input, color);
-    color = (color * aoTextureColor * diffuseTextureColor * selectionColour);	
+    color = (color/* * aoTextureColor * diffuseTextureColor * */*selectionColour);	
 	return color;
 }
 
@@ -117,7 +117,7 @@ float4 PS_601151254(VS_OUTPUT input) : SV_TARGET
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     color = CalculateColor(input, color);
-    color = color * C002MaterialColour * selectionColour;
+    color = color /** C002MaterialColour * */ * selectionColour;
 
     return color;
 }
@@ -133,6 +133,6 @@ float4 PS_50760736(VS_OUTPUT input) : SV_TARGET
 	aoTextureColor = textures[2].Sample(SampleType, input.TexCoord7);
 	emissiveTextureColor = (textures[1].Sample(SampleType, input.TexCoord0)* C005_EmissiveFacadeColorAndIntensity);
 	color = CalculateColor(input, color);
-    color = (color * aoTextureColor * diffuseTextureColor * selectionColour);
+    color = (color/* * aoTextureColor * diffuseTextureColor **/ * selectionColour);
 	return color;
 }
