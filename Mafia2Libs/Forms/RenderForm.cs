@@ -346,8 +346,7 @@ namespace Mafia2Tool
                 {
                     var dx = -0.25f * (mousePos.X - lastMousePos.X);
                     var dy = -0.25f * (mousePos.Y - lastMousePos.Y);
-                    Graphics.Camera.Pitch(dy);
-                    Graphics.Camera.Yaw(dx);
+                    Graphics.RotateCamera(dx, dy);
                     camUpdated = true;
                     
                 }
@@ -1343,7 +1342,6 @@ namespace Mafia2Tool
 
                         var worldPosition = ray.Position + t * ray.Direction;
                         var distance = (worldPosition - ray.Position).LengthSquared();
-
                         if (distance < lowest)
                         {
                             lowest = distance;
@@ -2166,7 +2164,7 @@ namespace Mafia2Tool
 
         private void EditLighting_Click(object sender, EventArgs e)
         {
-            dPropertyGrid.SetObject(Graphics.Light);
+            dPropertyGrid.SetObject(Graphics.WorldSettings);
         }
 
         private void Button_TestConvert_Click(object sender, EventArgs e)

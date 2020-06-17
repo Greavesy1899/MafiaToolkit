@@ -4,6 +4,7 @@ using SharpDX.D3DCompiler;
 using SharpDX.Direct3D11;
 using System.Runtime.InteropServices;
 using Utils.Settings;
+using Rendering.Sys;
 
 namespace Rendering.Graphics
 {
@@ -34,19 +35,20 @@ namespace Rendering.Graphics
         [StructLayout(LayoutKind.Sequential)]
         protected struct EditorParameterBuffer
         {
-            public Vector4 selectionColour;
+            public Vector3 selectionColour;
+            public int renderMode;
         }
 
         public struct MaterialParameters
         {
-            public MaterialParameters(Material material, Vector4 vector4)
+            public MaterialParameters(Material material, Vector3 vector)
             {
                 MaterialData = material;
-                SelectionColour = vector4;
+                SelectionColour = vector;
             }
 
             public Material MaterialData { get; set; }
-            public Vector4 SelectionColour { get; set; }
+            public Vector3 SelectionColour { get; set; }
         }
         protected VertexShader VertexShader { get; set; }
         protected PixelShader PixelShader { get; set; }
@@ -103,7 +105,7 @@ namespace Rendering.Graphics
             return true;
         }
 
-        public virtual void InitCBuffersFrame(DeviceContext context, Camera camera, LightClass light)
+        public virtual void InitCBuffersFrame(DeviceContext context, Camera camera, WorldSettings settings)
         {
             var cameraBuffer = new DCameraBuffer()
             {
@@ -112,17 +114,17 @@ namespace Rendering.Graphics
             };
             ConstantBufferFactory.UpdateVertexBuffer(context, ConstantCameraBuffer, 1, cameraBuffer);
 
-            if (previousLighting == null || !previousLighting.Equals(light))
+            if (previousLighting == null || !previousLighting.Equals(settings.Lighting))
             {
                 LightBuffer lightbuffer = new LightBuffer()
                 {
-                    ambientColor = light.AmbientColor,
-                    diffuseColor = light.DiffuseColour,
-                    LightDirection = light.Direction,
-                    specularColor = light.SpecularColor,
-                    specularPower = light.SpecularPower
+                    ambientColor = settings.Lighting.AmbientColor,
+                    diffuseColor = settings.Lighting.DiffuseColour,
+                    LightDirection = settings.Lighting.Direction,
+                    specularColor = settings.Lighting.SpecularColor,
+                    specularPower = settings.Lighting.SpecularPower
                 };
-                previousLighting = light;
+                previousLighting = settings.Lighting;
                 ConstantBufferFactory.UpdatePixelBuffer(context, ConstantLightBuffer, 0, lightbuffer);
             }
         }

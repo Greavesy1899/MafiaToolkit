@@ -50,25 +50,6 @@ VS_OUTPUT LightVertexShader(VS_INPUT input)
 	// Store the texture coordinates for the pixel shader.
 	output.TexCoord0 = input.TexCoord0;
 	output.TexCoord7 = input.TexCoord7;
-
-    //float3 t;
-    //float3 b;
-    //float3 c1 = cross(input.Normal, float3(0.0, 0.0, 1.0));
-    //float3 c2 = cross(input.Normal, float3(0.0, 1.0, 0.0));
-    //if (length(c1) > length(c2))
-    //{
-    //    t = c1;
-    //}
-    //else
-    //{
-    //    t = c2;
-    //}
-    
-    //t = normalize(t);
-    //b = normalize(cross(input.Normal, t));
-    
-    //output.Tangent = t;
-    //output.Binormal = b;
     
 	// Calculate the normal vector against the world matrix only.
     output.Normal = mul(input.Normal, (float3x3) worldMatrix);

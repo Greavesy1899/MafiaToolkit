@@ -428,6 +428,7 @@
     <Compile Include="Rendering\Graphics\RenderTypes\RenderStaticCollision.cs" />
     <Compile Include="Rendering\Graphics\Shaders\CollisionShader.cs" />
     <Compile Include="Rendering\Graphics\Shaders\Shader_50760736.cs" />
+    <Compile Include="Rendering\Graphics\WorldSettings.cs" />
     <Compile Include="Rendering\RenderPrefabs.cs" />
     <Compile Include="Rendering\System\FPSClass.cs" />
     <Compile Include="Utils\Helpers\MatrixExtensions.cs" />
