@@ -65,7 +65,7 @@ namespace Rendering.Graphics
             this.Transform = matrix;
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;

@@ -3,8 +3,6 @@ using System;
 using System.Windows.Forms;
 using SharpDX;
 using System.Collections.Generic;
-using Utils.Settings;
-using System.IO;
 using Rendering.Sys;
 using Utils.Models;
 
@@ -14,8 +12,8 @@ namespace Rendering.Graphics
     {
         public FPSClass FPS { get; set; }
         public InputClass Input { get; private set; }
+        public WorldSettings WorldSettings { get; set; }
         public Camera Camera { get; set; }
-
         public Dictionary<int, IRenderer> Assets { get; private set; }
         public Dictionary<int, IRenderer> InitObjectStack { get; set; }
 
@@ -23,7 +21,6 @@ namespace Rendering.Graphics
 
         private int selectedID;
         private DirectX11Class D3D;
-        public LightClass Light;
 
         public GraphicsClass()
         {
@@ -72,34 +69,32 @@ namespace Rendering.Graphics
                 clouds.DoRender = false;
                 Assets.Add(2, clouds);
             }
-
             return true;
         }
 
         public bool InitScene(int width, int height)
         {
+            WorldSettings = new WorldSettings();
+            WorldSettings.SetupLighting();
             Camera = new Camera();
-            Camera.Position = new Vector3(0, 0, 15);
+            Camera.Position = new Vector3(0.0f, 0.0f, 15.0f);
             Camera.SetProjectionMatrix(width, height);
             ClearRenderStack();
-            Light = new LightClass();
-            Light.SetAmbientColor(0.5f, 0.5f, 0.5f, 1f);
-            Light.SetDiffuseColour(0.5f, 0.5f, 0.5f, 1f);
-            Light.Direction = new Vector3(-0.2f, -1f, -0.3f);
-            Light.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-            Light.SetSpecularPower(255.0f);
             Input = new InputClass();
             Input.Init();
             return true;
         }
         public void Shutdown()
         {
+            WorldSettings.Shutdown();
+            WorldSettings = null;
             Camera = null;
             Timer = null;
-            Light = null;
 
             foreach (KeyValuePair<int, IRenderer> model in Assets)
+            {
                 model.Value?.Shutdown();
+            }
 
             Assets = null;
             D3D?.Shutdown();
@@ -117,15 +112,14 @@ namespace Rendering.Graphics
 
             foreach (KeyValuePair<ulong, BaseShader> shader in RenderStorageSingleton.Instance.ShaderManager.shaders)
             {
-                shader.Value.InitCBuffersFrame(D3D.DeviceContext, Camera, Light);
+                shader.Value.InitCBuffersFrame(D3D.DeviceContext, Camera, WorldSettings);
             }
 
             foreach (KeyValuePair<int, IRenderer> entry in Assets)
             {
                 entry.Value.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-                entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera, Light);
+                entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera);
             }
-
             D3D.EndScene();
             return true;
         }
@@ -168,6 +162,12 @@ namespace Rendering.Graphics
         {
             Camera.SetProjectionMatrix(width, height);
             //D3D.Resize(width, height);
+        }
+
+        public void RotateCamera(float deltaX, float deltaY)
+        {
+            Camera.Pitch(deltaY);
+            Camera.Yaw(deltaX);
         }
 
         public void ToggleD3DFillMode() => D3D.ToggleFillMode();

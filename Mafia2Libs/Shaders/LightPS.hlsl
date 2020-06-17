@@ -15,12 +15,20 @@ cbuffer LightBuffer
 
 cbuffer EditorParameterBuffer
 {
-    float4 selectionColour;
+    float3 selectionColour;
+    int renderMode;
 };
 
 cbuffer Shader_601151254Params
 {
     float4 C002MaterialColour;
+};
+
+//TODO: Make this shader specific
+cbuffer ExtraParameterBuffer
+{
+    int hasTangentSpace;
+    float3 padding;
 };
 
 cbuffer Shader_50760736Params
@@ -41,6 +49,22 @@ struct VS_OUTPUT
 	float2 TexCoord7 : TEXCOORD1;
 	float3 viewDirection : TEXCOORD2;
 };
+
+float4 GetDiffuseColour(VS_OUTPUT input)
+{
+    return textures[0].Sample(SampleType, input.TexCoord0);
+}
+
+float4 GetEmissiveColour(VS_OUTPUT input)
+{
+    return textures[1].Sample(SampleType, input.TexCoord0) * C005_EmissiveFacadeColorAndIntensity;
+}
+
+float4 GetAOColour(VS_OUTPUT input)
+{
+    float4 sampled = textures[2].Sample(SampleType, input.TexCoord7);
+    return float4(sampled.xy, sampled.x, 1.0f);
+}
 
 float3 CalculateFromNormalMap(VS_OUTPUT input)
 {
@@ -65,11 +89,13 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     float lightIntensity;
     float3 reflection;
     float4 specular;
-    float3 normal;
+    float3 normal = float3(1.0f, 1.0f, 1.0f);
     
-    normal = float3(1.0f, 1.0f, 1.0f);
-	//normal = CalculateFromNormalMap(input);
-    
+    if(hasTangentSpace == 1)
+    {
+        normal = CalculateFromNormalMap(input);
+    }
+
     // Set the default output color to the ambient light value for all pixels.
     color = ambientColor;
 
@@ -80,7 +106,7 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
     lightDir = -lightDirection;
 
 	// Calculate the amount of the light on this pixel.
-    lightIntensity = saturate(dot(normal, lightDir));
+    lightIntensity = saturate(dot(input.Normal * normal, lightDir));
 
     // Determine the final diffuse color based on the diffuse color and the amount of the light intensity.
     color += (diffuseColor * lightIntensity);
@@ -101,14 +127,17 @@ float4 CalculateColor(VS_OUTPUT input, float4 color)
 float4 LightPixelShader(VS_OUTPUT input) : SV_TARGET
 {
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 diffuseTextureColor;
-	float4 aoTextureColor;
-
-    diffuseTextureColor = textures[0].Sample(SampleType, input.TexCoord0);
-    aoTextureColor = textures[2].Sample(SampleType, input.TexCoord7);
-
+    float4 diffuseTextureColor = GetDiffuseColour(input);
+    float4 aoTextureColor = GetAOColour(input);
+    
     color = CalculateColor(input, color);
-    color = (color * aoTextureColor * diffuseTextureColor * selectionColour);	
+    color *= float4(selectionColour.xyz, 1.0f);
+    
+    //if(renderMode == 2)
+    //{
+        color *= (diffuseTextureColor * aoTextureColor);
+    //}
+
 	return color;
 }
 
@@ -117,7 +146,12 @@ float4 PS_601151254(VS_OUTPUT input) : SV_TARGET
     float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     color = CalculateColor(input, color);
-    color = color * C002MaterialColour * selectionColour;
+    color *= float4(selectionColour.xyz, 1.0f);
+    
+    //if(renderMode == 2)
+    //{
+        color *= C002MaterialColour;
+    //}
 
     return color;
 }
@@ -125,14 +159,17 @@ float4 PS_601151254(VS_OUTPUT input) : SV_TARGET
 float4 PS_50760736(VS_OUTPUT input) : SV_TARGET
 {
 	float4 color = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	float4 diffuseTextureColor;
-	float4 emissiveTextureColor;
-	float4 aoTextureColor;
-
-	diffuseTextureColor = textures[0].Sample(SampleType, input.TexCoord0);
-	aoTextureColor = textures[2].Sample(SampleType, input.TexCoord7);
-	emissiveTextureColor = (textures[1].Sample(SampleType, input.TexCoord0)* C005_EmissiveFacadeColorAndIntensity);
-	color = CalculateColor(input, color);
-    color = (color * aoTextureColor * diffuseTextureColor * selectionColour);
+    float4 diffuseTextureColor = GetDiffuseColour(input);
+    float4 emissiveTextureColor = GetEmissiveColour(input);
+    float4 aoTextureColor = GetAOColour(input);
+    
+    color = CalculateColor(input, color);
+    color *= float4(selectionColour.xyz, 1.0f);
+    
+    //if (renderMode == 2)
+    //{
+        color *= (diffuseTextureColor * aoTextureColor);
+    //}
+    
 	return color;
 }

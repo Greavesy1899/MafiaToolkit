@@ -29,13 +29,13 @@ namespace Rendering.Graphics
             instance.InitBuffers(d3d, context);
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;
 
             instance.SetTransform(Transform);
-            instance.Render(device, deviceContext, camera, light);   
+            instance.Render(device, deviceContext, camera);   
 
 
             //unique to instanced collision; we need to do this rather than the usual, because otherwise all instanced collisions will show as being selected.
@@ -44,7 +44,7 @@ namespace Rendering.Graphics
                 if (instance.GetType() == typeof(RenderStaticCollision) || instance.GetType() == typeof(RenderModel))
                 {
                     (instance as RenderStaticCollision).BoundingBox.DoRender = true;
-                    (instance as RenderStaticCollision).BoundingBox.Render(device, deviceContext, camera, light);
+                    (instance as RenderStaticCollision).BoundingBox.Render(device, deviceContext, camera);
                     (instance as RenderStaticCollision).BoundingBox.DoRender = false;
                 }
             }

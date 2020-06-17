@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Rendering.Sys;
 using ResourceTypes.Materials;
 using SharpDX;
 using SharpDX.Direct3D11;
@@ -40,9 +41,9 @@ namespace Rendering.Graphics
             deviceContext.PixelShader.SetSampler(0, SamplerState);
             deviceContext.DrawIndexed(numTriangles, (int)offset, 0);
         }
-        public override void InitCBuffersFrame(DeviceContext context, Camera camera, LightClass light)
+        public override void InitCBuffersFrame(DeviceContext context, Camera camera, WorldSettings settings)
         {
-            base.InitCBuffersFrame(context, camera, light);
+            base.InitCBuffersFrame(context, camera, settings);
         }
         public override void SetSceneVariables(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera)
         {

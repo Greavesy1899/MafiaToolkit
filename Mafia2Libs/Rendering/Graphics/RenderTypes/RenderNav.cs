@@ -76,17 +76,17 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (DoRender)
             {
-                if (boundingBox != null) boundingBox.Render(device, deviceContext, camera, light);
+                if (boundingBox != null) boundingBox.Render(device, deviceContext, camera);
 
                 if (lines != null)
                 {
                     for (int i = 0; i < lines.Count; i++)
                     {
-                        lines[i].Render(device, deviceContext, camera, light);
+                        lines[i].Render(device, deviceContext, camera);
                     }
                 }
             }

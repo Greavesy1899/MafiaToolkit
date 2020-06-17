@@ -38,12 +38,12 @@ namespace Rendering.Graphics
             Path.InitBuffers(d3d, deviceContext);
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (DoRender != false)
             {
-                BBox.Render(device, deviceContext, camera, light);
-                Path.Render(device, deviceContext, camera, light);
+                BBox.Render(device, deviceContext, camera);
+                Path.Render(device, deviceContext, camera);
             }
         }
 

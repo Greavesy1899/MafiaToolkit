@@ -69,7 +69,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;

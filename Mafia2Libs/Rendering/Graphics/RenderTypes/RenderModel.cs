@@ -29,7 +29,7 @@ namespace Rendering.Graphics
         private Hash aoHash;
         public ShaderResourceView AOTexture { get; set; }
         public RenderBoundingBox BoundingBox { get; set; }
-        public Vector4 SelectionColour { get; private set; }
+        public Vector3 SelectionColour { get; private set; }
 
         public struct LOD
         {
@@ -46,7 +46,7 @@ namespace Rendering.Graphics
             isUpdatedNeeded = false;
             Transform = Matrix.Identity;
             BoundingBox = new RenderBoundingBox();
-            SelectionColour = new Vector4(1.0f);
+            SelectionColour = new Vector3(1.0f);
         }
 
         public void ConvertMTKToRenderModel(M2TStructure structure)
@@ -358,7 +358,7 @@ namespace Rendering.Graphics
             BoundingBox.SetTransform(matrix);
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;
@@ -376,7 +376,7 @@ namespace Rendering.Graphics
                 LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera);
                 LODs[0].ModelParts[i].Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(LODs[0].ModelParts[i].NumFaces * 3), LODs[0].ModelParts[i].StartIndex);
             }
-            BoundingBox.Render(device, deviceContext, camera, light);
+            BoundingBox.Render(device, deviceContext, camera);
         }
 
         public override void Shutdown()
@@ -408,14 +408,14 @@ namespace Rendering.Graphics
         public override void Select()
         {
             BoundingBox.Select();
-            SelectionColour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+            SelectionColour = new Vector3(1.0f, 0.0f, 0.0f);
             BoundingBox.DoRender = true;
         }
 
         public override void Unselect()
         {
             BoundingBox.Unselect();
-            SelectionColour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+            SelectionColour = new Vector3(1.0f, 1.0f, 1.0f);
             BoundingBox.DoRender = false;
         }
     }
