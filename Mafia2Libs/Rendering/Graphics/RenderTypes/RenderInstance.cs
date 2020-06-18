@@ -6,22 +6,13 @@ namespace Rendering.Graphics
     public class RenderInstance : IRenderer
     {
         private IRenderer instance;
-        private bool isSelected;
 
         public void Init(RenderStaticCollision col)
         {
             DoRender = true;
-            isSelected = false;
             Transform = Matrix.Identity;
+            BoundingBox = col.BoundingBox;
             instance = col;
-        }
-
-        public void Init(RenderModel model)
-        {
-            DoRender = true;
-            isSelected = false;
-            Transform = Matrix.Identity;
-            instance = model;
         }
 
         public override void InitBuffers(Device d3d, DeviceContext context)
@@ -36,18 +27,6 @@ namespace Rendering.Graphics
 
             instance.SetTransform(Transform);
             instance.Render(device, deviceContext, camera);   
-
-
-            //unique to instanced collision; we need to do this rather than the usual, because otherwise all instanced collisions will show as being selected.
-            if(isSelected)
-            {
-                if (instance.GetType() == typeof(RenderStaticCollision) || instance.GetType() == typeof(RenderModel))
-                {
-                    (instance as RenderStaticCollision).BoundingBox.DoRender = true;
-                    (instance as RenderStaticCollision).BoundingBox.Render(device, deviceContext, camera);
-                    (instance as RenderStaticCollision).BoundingBox.DoRender = false;
-                }
-            }
         }
 
         public override void SetTransform(Matrix matrix)
@@ -72,14 +51,12 @@ namespace Rendering.Graphics
         }
 
         public override void Select()
-        {
-            isSelected = true;            
+        {     
             (instance as RenderStaticCollision).Select();
         }
 
         public override void Unselect()
         {
-            isSelected = false;
             (instance as RenderStaticCollision).Unselect();
         }
     }

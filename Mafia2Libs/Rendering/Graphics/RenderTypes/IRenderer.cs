@@ -1,7 +1,5 @@
-﻿using Rendering.Sys;
-using SharpDX;
+﻿using SharpDX;
 using SharpDX.Direct3D11;
-using Utils.Types;
 
 namespace Rendering.Graphics
 {
@@ -11,6 +9,7 @@ namespace Rendering.Graphics
         protected BaseShader shader;
         protected bool isUpdatedNeeded;
         public Matrix Transform { get; protected set; }
+        public BoundingBox BoundingBox { get; protected set; }
         protected Buffer indexBuffer;
         protected Buffer vertexBuffer;
 

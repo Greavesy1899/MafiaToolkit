@@ -1318,7 +1318,7 @@ namespace Mafia2Tool
                 if (model.Value is RenderModel)
                 {
                     RenderModel mesh = (model.Value as RenderModel);
-                    var bbox = mesh.BoundingBox.BBox;
+                    var bbox = mesh.BoundingBox;
 
                     if (!localRay.Intersects(ref bbox)) continue;
 
@@ -1353,7 +1353,7 @@ namespace Mafia2Tool
                 {
                     RenderInstance instance = (model.Value as RenderInstance);
                     RenderStaticCollision collision = instance.GetCollision();
-                    var bbox = collision.BoundingBox.BBox;
+                    var bbox = collision.BoundingBox;
 
                     if (!localRay.Intersects(ref bbox)) continue;
 

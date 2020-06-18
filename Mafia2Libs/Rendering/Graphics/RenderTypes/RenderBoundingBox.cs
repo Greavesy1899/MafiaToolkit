@@ -9,8 +9,6 @@ namespace Rendering.Graphics
         private VertexLayouts.BasicLayout.Vertex[] vertices;
         private ushort[] indices;
         private Vector4 colour;
-        private BoundingBox bbox;
-        public BoundingBox BBox { get { return bbox; } }
 
         public RenderBoundingBox()
         {
@@ -37,7 +35,7 @@ namespace Rendering.Graphics
         }
         public bool Init(BoundingBox bbox)
         {
-            this.bbox = bbox;
+            BoundingBox = bbox;
 
             vertices = new VertexLayouts.BasicLayout.Vertex[8];
 

@@ -11,7 +11,6 @@ namespace Rendering.Graphics
 {
     public class RenderStaticCollision : IRenderer
     {
-        public RenderBoundingBox BoundingBox { get; set; }
         public VertexLayouts.CollisionLayout.Vertex[] Vertices { get; private set; }
         public uint[] Indices { get; private set; }
         public BaseShader Shader;
@@ -21,7 +20,6 @@ namespace Rendering.Graphics
         {
             DoRender = true;
             Transform = Matrix.Identity;
-            BoundingBox = new RenderBoundingBox();
             SelectionColour = new Vector3(1.0f);
         }
 
@@ -30,15 +28,12 @@ namespace Rendering.Graphics
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, Vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, Indices);
             Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[2];
-            BoundingBox.InitBuffers(d3d, context);
         }
 
         public void ConvertCollisionToRender(ResourceTypes.ItemDesc.CollisionConvex convex)
         {
             DoRender = true;
-            BoundingBox = new RenderBoundingBox();
-            BoundingBox.Init(new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f)));
-            BoundingBox.DoRender = false;
+            BoundingBox = new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f));
 
             Indices = convex.indices;
             Vertices = new VertexLayouts.CollisionLayout.Vertex[convex.vertices.Length];
@@ -56,9 +51,7 @@ namespace Rendering.Graphics
         public void ConvertCollisionToRender(TriangleMesh triangleMesh)
         { 
             DoRender = true;
-            BoundingBox = new RenderBoundingBox();
-            BoundingBox.Init(triangleMesh.BoundingBox);
-            BoundingBox.DoRender = false;
+            BoundingBox = triangleMesh.BoundingBox;
 
             Indices = triangleMesh.Triangles.SelectMany(t => new[] { t.v0, t.v1, t.v2 }).ToArray();
             Vertices = new VertexLayouts.CollisionLayout.Vertex[triangleMesh.Vertices.Count];
@@ -149,7 +142,6 @@ namespace Rendering.Graphics
             if (!DoRender)
                 return;
 
-            BoundingBox.Render(device, deviceContext, camera);
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.CollisionLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
@@ -161,7 +153,6 @@ namespace Rendering.Graphics
         public override void SetTransform(Matrix matrix)
         {
             Transform = matrix;
-            BoundingBox.SetTransform(matrix);
         }
 
         public override void Shutdown()
@@ -169,8 +160,6 @@ namespace Rendering.Graphics
             Indices = null;
             Vertices = null;
             materials = null;
-            BoundingBox.Shutdown();
-            BoundingBox = null;
             vertexBuffer?.Dispose();
             vertexBuffer = null;
             indexBuffer?.Dispose();
@@ -179,7 +168,6 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
-            BoundingBox.UpdateBuffers(device, deviceContext);
             if(isUpdatedNeeded)
             {
                 //todo: implement this!
@@ -188,16 +176,12 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            BoundingBox.Select();
             SelectionColour = new Vector3(1.0f, 0.0f, 0.0f);
-            BoundingBox.DoRender = true;
         }
 
         public override void Unselect()
         {
-            BoundingBox.Unselect();
             SelectionColour = new Vector3(1.0f, 1.0f, 1.0f);
-            BoundingBox.DoRender = false;
         }
     }
 }

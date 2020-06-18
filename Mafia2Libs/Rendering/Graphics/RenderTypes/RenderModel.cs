@@ -28,7 +28,6 @@ namespace Rendering.Graphics
 
         private Hash aoHash;
         public ShaderResourceView AOTexture { get; set; }
-        public RenderBoundingBox BoundingBox { get; set; }
         public Vector3 SelectionColour { get; private set; }
 
         public struct LOD
@@ -45,7 +44,6 @@ namespace Rendering.Graphics
             DoRender = true;
             isUpdatedNeeded = false;
             Transform = Matrix.Identity;
-            BoundingBox = new RenderBoundingBox();
             SelectionColour = new Vector3(1.0f);
         }
 
@@ -99,10 +97,7 @@ namespace Rendering.Graphics
                 }
                 LODs[i] = lod2;
             }
-            BoundingBox = new RenderBoundingBox();
-            BoundingBox.Init(BoundingBoxExtenders.CalculateBounds(vertices));
-            BoundingBox.SetTransform(Transform);
-            BoundingBox.DoRender = false;
+            BoundingBox = BoundingBoxExtenders.CalculateBounds(vertices);
             SetupShaders();
         }
 
@@ -114,10 +109,7 @@ namespace Rendering.Graphics
             aoHash = mesh.OMTextureHash;
             SetTransform(mesh.WorldTransform);
             //DoRender = (mesh.SecondaryFlags == 4097 ? true : false);
-            BoundingBox = new RenderBoundingBox();
-            BoundingBox.Init(mesh.Boundings);
-            BoundingBox.SetTransform(Transform);
-            BoundingBox.DoRender = false;
+            BoundingBox = mesh.Boundings;
             LODs = new LOD[geom.NumLods];
 
             for(int i = 0; i != geom.NumLods; i++)
@@ -348,14 +340,12 @@ namespace Rendering.Graphics
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, LODs[0].Vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, LODs[0].Indices);
 
-            BoundingBox.InitBuffers(d3d, d3dContext);
             InitTextures(d3d, d3dContext);
         }
 
         public override void SetTransform(Matrix matrix)
         {
             Transform = matrix;
-            BoundingBox.SetTransform(matrix);
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera)
@@ -376,17 +366,14 @@ namespace Rendering.Graphics
                 LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera);
                 LODs[0].ModelParts[i].Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(LODs[0].ModelParts[i].NumFaces * 3), LODs[0].ModelParts[i].StartIndex);
             }
-            BoundingBox.Render(device, deviceContext, camera);
         }
 
         public override void Shutdown()
         {
             LODs[0].Vertices = null;
             LODs[0].Indices = null;
-            BoundingBox.Shutdown();
             AOTexture?.Dispose();
             AOTexture = null;
-            BoundingBox.Shutdown();
             vertexBuffer?.Dispose();
             vertexBuffer = null;
             indexBuffer?.Dispose();
@@ -395,8 +382,6 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
-            BoundingBox.UpdateBuffers(device, deviceContext);
-
             if(isUpdatedNeeded)
             {
                 SetupShaders();
@@ -407,16 +392,12 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            BoundingBox.Select();
             SelectionColour = new Vector3(1.0f, 0.0f, 0.0f);
-            BoundingBox.DoRender = true;
         }
 
         public override void Unselect()
         {
-            BoundingBox.Unselect();
             SelectionColour = new Vector3(1.0f, 1.0f, 1.0f);
-            BoundingBox.DoRender = false;
         }
     }
 }

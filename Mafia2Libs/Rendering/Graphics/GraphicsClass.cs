@@ -20,12 +20,15 @@ namespace Rendering.Graphics
         public TimerClass Timer;
 
         private int selectedID;
-        private DirectX11Class D3D;
+        private RenderBoundingBox selectionBox;
+
+        private DirectX11Class D3D;    
 
         public GraphicsClass()
         {
             InitObjectStack = new Dictionary<int, IRenderer>();
             Assets = new Dictionary<int, IRenderer>();
+            selectionBox = new RenderBoundingBox();
         }
 
         public bool PreInit(IntPtr WindowHandle)
@@ -69,6 +72,9 @@ namespace Rendering.Graphics
                 clouds.DoRender = false;
                 Assets.Add(2, clouds);
             }
+            selectionBox.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+            selectionBox.Init(new BoundingBox(new Vector3(0.5f), new Vector3(-0.5f)));          
+            selectionBox.DoRender = false;
             return true;
         }
 
@@ -80,6 +86,7 @@ namespace Rendering.Graphics
             Camera.Position = new Vector3(0.0f, 0.0f, 15.0f);
             Camera.SetProjectionMatrix(width, height);
             ClearRenderStack();
+            selectionBox.InitBuffers(D3D.Device, D3D.DeviceContext);
             Input = new InputClass();
             Input.Init();
             return true;
@@ -96,6 +103,8 @@ namespace Rendering.Graphics
                 model.Value?.Shutdown();
             }
 
+            selectionBox.Shutdown();
+            selectionBox = null;
             Assets = null;
             D3D?.Shutdown();
             D3D = null;
@@ -120,6 +129,10 @@ namespace Rendering.Graphics
                 entry.Value.UpdateBuffers(D3D.Device, D3D.DeviceContext);
                 entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera);
             }
+
+            selectionBox.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+            selectionBox.Render(D3D.Device, D3D.DeviceContext, Camera);
+
             D3D.EndScene();
             return true;
         }
@@ -154,6 +167,9 @@ namespace Rendering.Graphics
                 gizmo.SetTransform(newObj.Transform);
                 gizmo.DoRender = false;
                 newObj.Select();
+                selectionBox.DoRender = true;
+                selectionBox.SetTransform(newObj.Transform);
+                selectionBox.Update(newObj.BoundingBox);
                 selectedID = id;
             }
         }
