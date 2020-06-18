@@ -35,12 +35,13 @@ namespace Mafia2Tool
             System.Windows.Forms.StatusStrip StatusStrip;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(D3DForm));
             this.CurrentModeButton = new System.Windows.Forms.ToolStripSplitButton();
-            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.PositionXTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.PositionYTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.PositionZTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.RotationXTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.CameraSpeedTool = new Utils.Extensions.NumericUpDownToolStrip();
+            this.Label_FPS = new System.Windows.Forms.ToolStripStatusLabel();
+            this.Label_MemoryUsage = new System.Windows.Forms.ToolStripStatusLabel();
             this.ToolbarStrip = new System.Windows.Forms.ToolStrip();
             this.FileButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,6 +68,7 @@ namespace Mafia2Tool
             this.ToggleCullingButton = new System.Windows.Forms.ToolStripMenuItem();
             this.EditLighting = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_TestConvert16 = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_TestConvert32 = new System.Windows.Forms.ToolStripMenuItem();
             this.WindowButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -76,7 +78,6 @@ namespace Mafia2Tool
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
             this.TxtBrowser = new System.Windows.Forms.OpenFileDialog();
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
-            this.Button_TestConvert32 = new System.Windows.Forms.ToolStripMenuItem();
             StatusStrip = new System.Windows.Forms.StatusStrip();
             StatusStrip.SuspendLayout();
             this.ToolbarStrip.SuspendLayout();
@@ -87,12 +88,13 @@ namespace Mafia2Tool
             StatusStrip.AutoSize = false;
             StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.CurrentModeButton,
-            this.toolStripStatusLabel3,
             this.PositionXTool,
             this.PositionYTool,
             this.PositionZTool,
             this.RotationXTool,
-            this.CameraSpeedTool});
+            this.CameraSpeedTool,
+            this.Label_FPS,
+            this.Label_MemoryUsage});
             StatusStrip.Location = new System.Drawing.Point(0, 600);
             StatusStrip.Name = "StatusStrip";
             StatusStrip.Size = new System.Drawing.Size(1217, 24);
@@ -108,12 +110,6 @@ namespace Mafia2Tool
             this.CurrentModeButton.Size = new System.Drawing.Size(128, 22);
             this.CurrentModeButton.Text = "$CurrentModeLabel";
             this.CurrentModeButton.ButtonClick += new System.EventHandler(this.CurrentModeButton_ButtonClick);
-            // 
-            // toolStripStatusLabel3
-            // 
-            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(118, 19);
-            this.toolStripStatusLabel3.Text = "toolStripStatusLabel3";
             // 
             // PositionXTool
             // 
@@ -280,6 +276,18 @@ namespace Mafia2Tool
             0,
             0});
             this.CameraSpeedTool.ValueChanged += new System.EventHandler(this.CameraSpeedUpdate);
+            // 
+            // Label_FPS
+            // 
+            this.Label_FPS.Name = "Label_FPS";
+            this.Label_FPS.Size = new System.Drawing.Size(59, 19);
+            this.Label_FPS.Text = "Label_FPS";
+            // 
+            // Label_MemoryUsage
+            // 
+            this.Label_MemoryUsage.Name = "Label_MemoryUsage";
+            this.Label_MemoryUsage.Size = new System.Drawing.Size(117, 19);
+            this.Label_MemoryUsage.Text = "Label_MemoryUsage";
             // 
             // ToolbarStrip
             // 
@@ -510,6 +518,13 @@ namespace Mafia2Tool
             this.Button_TestConvert16.Text = "$TEST_CONVERT_16BIT";
             this.Button_TestConvert16.Click += new System.EventHandler(this.Button_TestConvert_Click);
             // 
+            // Button_TestConvert32
+            // 
+            this.Button_TestConvert32.Name = "Button_TestConvert32";
+            this.Button_TestConvert32.Size = new System.Drawing.Size(193, 22);
+            this.Button_TestConvert32.Text = "$TEST_CONVERT_32BIT";
+            this.Button_TestConvert32.Click += new System.EventHandler(this.Button_TestConvert32_Click);
+            // 
             // WindowButton
             // 
             this.WindowButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -576,13 +591,6 @@ namespace Mafia2Tool
             this.dockPanel1.Size = new System.Drawing.Size(1217, 575);
             this.dockPanel1.TabIndex = 0;
             // 
-            // Button_TestConvert32
-            // 
-            this.Button_TestConvert32.Name = "Button_TestConvert32";
-            this.Button_TestConvert32.Size = new System.Drawing.Size(193, 22);
-            this.Button_TestConvert32.Text = "$TEST_CONVERT_32BIT";
-            this.Button_TestConvert32.Click += new System.EventHandler(this.Button_TestConvert32_Click);
-            // 
             // D3DForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -632,7 +640,7 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem AddToward;
         private System.Windows.Forms.ToolStripMenuItem AddCollisionButton;
         private System.Windows.Forms.ToolStripMenuItem roadDebuggingToolStripMenuItem;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private System.Windows.Forms.ToolStripStatusLabel Label_FPS;
         private NumericUpDownToolStrip PositionYTool;
         private NumericUpDownToolStrip PositionZTool;
         private NumericUpDownToolStrip RotationXTool;
@@ -649,5 +657,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem EditLighting;
         private System.Windows.Forms.ToolStripMenuItem Button_TestConvert16;
         private System.Windows.Forms.ToolStripMenuItem Button_TestConvert32;
+        private System.Windows.Forms.ToolStripStatusLabel Label_MemoryUsage;
     }
 }

@@ -35,7 +35,7 @@ namespace Rendering.Graphics
             lines = new List<RenderLine>();
             navigationBox = new RenderBoundingBox();
             navigationBox.Init(new BoundingBox(new Vector3(-0.1f), new Vector3(0.1f)));
-            navigationBox.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+            navigationBox.SetColour(System.Drawing.Color.Green);
             navigationBox.SetTransform(Matrix.Translation(data.vertices[i].Position));
             vertex = data.vertices[i];
         }

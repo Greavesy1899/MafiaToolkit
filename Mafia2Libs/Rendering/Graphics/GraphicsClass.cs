@@ -72,7 +72,7 @@ namespace Rendering.Graphics
                 clouds.DoRender = false;
                 Assets.Add(2, clouds);
             }
-            selectionBox.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+            selectionBox.SetColour(System.Drawing.Color.Red);
             selectionBox.Init(new BoundingBox(new Vector3(0.5f), new Vector3(-0.5f)));          
             selectionBox.DoRender = false;
             return true;

@@ -1,8 +1,9 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
-using Utils.Types;
+using Color = System.Drawing.Color;
 using Buffer = SharpDX.Direct3D11.Buffer;
+using Utils.Extensions;
 
 namespace Rendering.Graphics
 {
@@ -10,14 +11,14 @@ namespace Rendering.Graphics
     {
         private VertexLayouts.BasicLayout.Vertex[] vertices;
         private ushort[] indices;
-        private Vector4 colour;
+        private Color colour;
 
         public Render2DPlane()
         {
             DoRender = true;
             shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
             Transform = Matrix.Identity;
-            colour = new Vector4(1.0f);
+            colour = Color.White;
         }
 
         public void Init(ref Vector3[] points, ResourceTypes.Navigation.LaneProperties lane, ResourceTypes.Navigation.RoadFlags roadFlags)
@@ -28,19 +29,19 @@ namespace Rendering.Graphics
             for (int i = 0; i < points.Length; i++)
             {
                 if (lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.MainRoad) || (lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.IsHighway)))
-                    colour = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+                    colour = Color.Blue;
                 else if (lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.Parking))
-                    colour = new Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+                    colour = Color.Green;
                 else if (lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.ExcludeImpassible))
-                    colour = new Vector4(0.5f, 0.1f, 0f, 1.0f);
+                    colour = Color.FromArgb(255, 128, 26, 0);
                 else if (lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.ExcludeImpassible) && lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.BackRoad))
-                    colour = new Vector4(0.5f, 0.2f, 0.9f, 1.0f);
+                    colour = Color.FromArgb(255, 128, 51, 230);
                 else if (lane.Flags.HasFlag(ResourceTypes.Navigation.LaneTypes.BackRoad))
-                    colour = new Vector4(0.5f, 0.2f, 0.9f, 1.0f);
+                    colour = Color.FromArgb(255, 128, 51, 230);
 
                 vertices[idx] = new VertexLayouts.BasicLayout.Vertex();
                 vertices[idx].Position = points[i];
-                vertices[idx].Colour = colour;
+                vertices[idx].Colour = colour.ToArgb();
                 Vector2 forward = Vector2.Zero;
 
                 if (i < points.Length - 1)
@@ -72,11 +73,11 @@ namespace Rendering.Graphics
                 }
 
                 vertices[idx].Position = new Vector3(x, y, points[i].Z);
-                vertices[idx].Colour = colour;
+                vertices[idx].Colour = colour.ToArgb();
                 points[i] = vertices[idx].Position;
 
                 RenderLine line = new RenderLine();
-                line.SetUnselectedColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+                line.SetUnselectedColour(Color.Blue);
                 line.Init(new Vector3[2] { vertices[idx - 1].Position, vertices[idx].Position });
                 idx++;
 
@@ -106,9 +107,9 @@ namespace Rendering.Graphics
             }
         }
 
-        public void SetColour(Vector4 vec)
+        public void SetColour(Color newColor)
         {
-            colour = vec;
+            colour = newColor;
         }
 
         public override void InitBuffers(Device d3d, DeviceContext context)
@@ -149,8 +150,10 @@ namespace Rendering.Graphics
         {
             if(isUpdatedNeeded)
             {
-                for(int i = 0; i < vertices.Length; i++)
-                    vertices[i].Colour = colour;
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    vertices[i].Colour = colour.ToArgb();
+                }
 
                 if(vertexBuffer != null && indexBuffer != null)
                 {

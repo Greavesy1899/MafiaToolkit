@@ -442,7 +442,6 @@ namespace Mafia2Tool
             Graphics.Timer.Frame2();
             Graphics.FPS.Frame();
             Graphics.Frame();
-
             if (camUpdated)
             {
                 PositionXTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
@@ -455,7 +454,9 @@ namespace Mafia2Tool
                 PositionYTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
                 PositionZTool.ValueChanged += new EventHandler(CameraToolsOnValueChanged);
             }
-            toolStripStatusLabel3.Text = string.Format("{0} FPS", Graphics.FPS.FPS);
+            Process process = Process.GetCurrentProcess();
+            Label_MemoryUsage.Text = string.Format("Usage: {0}", process.WorkingSet64.ConvertToMemorySize());
+            Label_FPS.Text = string.Format("{0} FPS", Graphics.FPS.FPS);
             return true;
         }
 

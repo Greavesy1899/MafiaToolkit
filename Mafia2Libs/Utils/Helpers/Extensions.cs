@@ -614,6 +614,15 @@ namespace Utils.Extensions
         }
     }
 
+    public static class ColorExtender
+    {
+        public static Vector3 Normalize(this System.Drawing.Color color)
+        {
+            return new Vector3(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
+        }
+    }
+
+
     public static class TreeNodeExtender
     {
         public static bool CheckIfParentsAreValid(this TreeNode node)
@@ -652,10 +661,10 @@ namespace Utils.Extensions
 
     public static class FileInfoUtils
     {
-        public static string CalculateFileSize(this FileInfo file)
+        public static string ConvertToMemorySize(this long value)
         {
             string[] sizes = { "B", "KB", "MB", "GB", "TB" };
-            double len = file.Length;
+            double len = value;
             int order = 0;
             while (len >= 1024 && order < sizes.Length - 1)
             {
@@ -665,7 +674,12 @@ namespace Utils.Extensions
 
             // Adjust the format string to your preferences. For example "{0:0.#}{1}" would
             // show a single decimal place, and no space.
-            return String.Format("{0:0.##} {1}", len, sizes[order]);
+            return string.Format("{0:0.##} {1}", len, sizes[order]);
+        }
+
+        public static string CalculateFileSize(this FileInfo file)
+        {
+            return file.Length.ConvertToMemorySize();
         }
     }
 

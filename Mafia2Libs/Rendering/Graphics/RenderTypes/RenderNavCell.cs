@@ -24,7 +24,7 @@ namespace Rendering.Graphics
                 foreach (var unk10 in set.unk10Boxes)
                 {
                     RenderBoundingBox bbox = new RenderBoundingBox();
-                    bbox.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f), true);
+                    bbox.SetColour(System.Drawing.Color.Red, true);
                     bbox.InitSwap(unk10.B1);
                     
                     boundingBoxes.Add(bbox);
@@ -33,7 +33,7 @@ namespace Rendering.Graphics
                 foreach (var unk12 in set.unk12Boxes)
                 {
                     RenderBoundingBox bbox = new RenderBoundingBox();
-                    bbox.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f), true);
+                    bbox.SetColour(System.Drawing.Color.Green, true);
                     bbox.InitSwap(unk12.B1);
                     
                     boundingBoxes.Add(bbox);
@@ -42,7 +42,7 @@ namespace Rendering.Graphics
                 foreach (var unk14 in set.unk14Boxes)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(new Vector4(0.992f, 0.992f, 0.168f, 1.0f));
+                    line.SetUnselectedColour(System.Drawing.Color.FromArgb(253, 253, 34));
                     line.InitSwap(unk14.Points);
                     lines.Add(line);
                 }
@@ -54,7 +54,7 @@ namespace Rendering.Graphics
                     //bbox.InitSwap(unk16);
 
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(new Vector4(0.992f, 0.992f, 0.168f, 1.0f));
+                    line.SetUnselectedColour(System.Drawing.Color.FromArgb(253, 253, 34));
                     line.InitSwap(new Vector3[2] { unk16.Maximum, unk16.Minimum});
                     lines.Add(line);
 
@@ -64,7 +64,7 @@ namespace Rendering.Graphics
                 foreach(var unk18 in set.unk18Set)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(new Vector4(1.0f));
+                    line.SetUnselectedColour(System.Drawing.Color.White);
                     line.InitSwap(unk18.Points);
                     lines.Add(line);
                 }

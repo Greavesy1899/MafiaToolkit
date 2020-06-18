@@ -11,7 +11,9 @@ using Utils.Models;
 using Utils.SharpDXExtensions;
 using System;
 using System.Windows;
+using Color = System.Drawing.Color;
 using static Rendering.Graphics.BaseShader;
+using Utils.Extensions;
 
 namespace Rendering.Graphics
 {
@@ -28,7 +30,7 @@ namespace Rendering.Graphics
 
         private Hash aoHash;
         public ShaderResourceView AOTexture { get; set; }
-        public Vector3 SelectionColour { get; private set; }
+        public Color SelectionColour { get; private set; }
 
         public struct LOD
         {
@@ -44,7 +46,7 @@ namespace Rendering.Graphics
             DoRender = true;
             isUpdatedNeeded = false;
             Transform = Matrix.Identity;
-            SelectionColour = new Vector3(1.0f);
+            SelectionColour = Color.White;
         }
 
         public void ConvertMTKToRenderModel(M2TStructure structure)
@@ -362,7 +364,7 @@ namespace Rendering.Graphics
             deviceContext.PixelShader.SetShaderResource(2, AOTexture);
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
             {
-                LODs[0].ModelParts[i].Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(LODs[0].ModelParts[i].Material, SelectionColour));
+                LODs[0].ModelParts[i].Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(LODs[0].ModelParts[i].Material, SelectionColour.Normalize()));
                 LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera);
                 LODs[0].ModelParts[i].Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(LODs[0].ModelParts[i].NumFaces * 3), LODs[0].ModelParts[i].StartIndex);
             }
@@ -392,12 +394,12 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            SelectionColour = new Vector3(1.0f, 0.0f, 0.0f);
+            SelectionColour = Color.Red;
         }
 
         public override void Unselect()
         {
-            SelectionColour = new Vector3(1.0f, 1.0f, 1.0f);
+            SelectionColour = Color.White;
         }
     }
 }

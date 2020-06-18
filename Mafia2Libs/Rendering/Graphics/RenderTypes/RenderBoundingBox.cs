@@ -1,6 +1,8 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
+using Utils.Extensions;
+using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
 {
@@ -8,13 +10,13 @@ namespace Rendering.Graphics
     {
         private VertexLayouts.BasicLayout.Vertex[] vertices;
         private ushort[] indices;
-        private Vector4 colour;
+        private Color colour;
 
         public RenderBoundingBox()
         {
             DoRender = true;
             SetTransform(Matrix.Identity);
-            colour = new Vector4(1.0f);
+            colour = Color.White;
         }
 
         public bool InitSwap(BoundingBox bbox)
@@ -44,7 +46,7 @@ namespace Rendering.Graphics
             {
                 vertices[i] = new VertexLayouts.BasicLayout.Vertex();
                 vertices[i].Position = corners[i];
-                vertices[i].Colour = colour;
+                vertices[i].Colour = colour.ToArgb();
             }
 
             indices = new ushort[] {
@@ -69,9 +71,9 @@ namespace Rendering.Graphics
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
         }
 
-        public void SetColour(Vector4 vec, bool update = false)
+        public void SetColour(Color newColour, bool update = false)
         {
-            colour = vec;
+            colour = newColour;
             isUpdatedNeeded = update;
         }
 
@@ -117,11 +119,11 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+            colour = Color.Red;
 
             for (int i = 0; i < vertices.Length; i++)
             {
-                vertices[i].Colour = colour;
+                vertices[i].Colour = colour.ToArgb();
             }
 
             isUpdatedNeeded = true;
@@ -129,11 +131,11 @@ namespace Rendering.Graphics
 
         public override void Unselect()
         {
-            colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+            colour = Color.White;
 
             for (int i = 0; i < vertices.Length; i++)
             {
-                vertices[i].Colour = colour;
+                vertices[i].Colour = colour.ToArgb();
             }
 
             isUpdatedNeeded = true;
