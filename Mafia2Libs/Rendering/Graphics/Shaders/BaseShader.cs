@@ -85,11 +85,11 @@ namespace Rendering.Graphics
                 AddressV = TextureAddressMode.Wrap,
                 AddressW = TextureAddressMode.Wrap,
                 MipLodBias = 0,
-                MaximumAnisotropy = 16,
+                MaximumAnisotropy = 8,
                 ComparisonFunction = Comparison.Always,
                 BorderColor = new Color4(0, 0, 0, 0),
                 MinimumLod = 0,
-                MaximumLod = float.MaxValue
+                MaximumLod = 0
             };
 
             SamplerState = new SamplerState(device, samplerDesc);

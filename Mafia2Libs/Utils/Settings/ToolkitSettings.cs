@@ -46,7 +46,7 @@ namespace Utils.Settings
         public static bool CheckForUpdates;
         public static bool SkipGameSelector;
         public static int DefaultGame;
-        public static readonly float Version = 2.06f;
+        public static readonly float Version = 2.07f;
 
         public static void ReadINI()
         {

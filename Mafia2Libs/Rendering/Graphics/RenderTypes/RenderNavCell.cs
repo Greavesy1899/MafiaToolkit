@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SharpDX;
 using SharpDX.Direct3D11;
 using ResourceTypes.Navigation;
@@ -92,7 +89,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if(DoRender)
             {
@@ -100,7 +97,7 @@ namespace Rendering.Graphics
                 {
                     foreach(var bbox in boundingBoxes)
                     {
-                        bbox.Render(device, deviceContext, camera, light);
+                        bbox.Render(device, deviceContext, camera);
                     }
                 }
 
@@ -108,7 +105,7 @@ namespace Rendering.Graphics
                 {
                     foreach (var line in lines)
                     {
-                        line.Render(device, deviceContext, camera, light);
+                        line.Render(device, deviceContext, camera);
                     }
                 }
             }
