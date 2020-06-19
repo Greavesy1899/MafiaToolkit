@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using Gibbed.Illusion.FileFormats.Hashing;
 using Forms.EditorControls;
 using ResourceTypes.Materials;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Settings;
 using System.Linq;
 
@@ -14,7 +14,7 @@ namespace Mafia2Tool
     public partial class MaterialTool : Form
     {
         private MaterialLibrary mtl;
-        private List<string> debugShader = new List<string>();
+        private int currentSearchType;
 
         public MaterialTool(FileInfo file)
         {
@@ -33,7 +33,7 @@ namespace Mafia2Tool
 
             FetchMaterials();
             Show();
-            MainPanel.Visible = true;
+            Panel_Main.Visible = true;
             MergePanel.Visible = false;
             ToolkitSettings.UpdateRichPresence("Using the Material Library editor.");
         }
@@ -64,10 +64,40 @@ namespace Mafia2Tool
             {
                 if (!string.IsNullOrEmpty(text) && searchMode)
                 {
-                    if (mat.Value.MaterialName.Contains(text) || mat.Value.MaterialHash.ToString().Contains(text))
-                        dataGridView1.Rows.Add(BuildRowData(mat));
-                    else
-                        continue;
+                    DataGridViewRow row = null;
+                    if(currentSearchType == 0)
+                    {         
+                        if (mat.Value.MaterialName.Contains(text))
+                        {
+                            row = BuildRowData(mat);
+                        }
+                    }
+                    else if (currentSearchType == 1)
+                    {
+                        if (mat.Value.MaterialHash.ToString().Contains(text))
+                        {
+                            row = BuildRowData(mat);
+                        }
+                    }
+                    else if (currentSearchType == 2)
+                    {
+                        if (mat.Value.ShaderHash.ToString().Contains(text))
+                        {
+                            row = BuildRowData(mat);
+                        }
+                    }
+                    else if (currentSearchType == 3)
+                    {
+                        if (mat.Value.ShaderID.ToString().Contains(text))
+                        {
+                            row = BuildRowData(mat);
+                        }
+                    }
+
+                    if(row != null)
+                    {
+                        dataGridView1.Rows.Add(row);
+                    }
                 }
                 else
                 {
@@ -97,7 +127,7 @@ namespace Mafia2Tool
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            if (!MainPanel.Visible)
+            if (!Panel_Main.Visible)
             {
                 MessageBox.Show("Complete the merge to save!");
                 return;
@@ -108,7 +138,7 @@ namespace Mafia2Tool
 
         private void AddMaterial(object sender, EventArgs e)
         {
-            if (!MainPanel.Visible)
+            if (!Panel_Main.Visible)
                 return;
 
             //ask user for material name.
@@ -120,7 +150,7 @@ namespace Mafia2Tool
             {
                 if (mtl.Materials.ContainsKey(FNV64.Hash(form.GetInputText())))
                 {
-                    MessageBox.Show("Found duplicate material. Will not be adding new material!");
+                    MessageBox.Show("Found duplicate material. Will not be adding new material!", "Toolkit");
                     return;
                 }
 
@@ -138,8 +168,10 @@ namespace Mafia2Tool
 
         private void DeleteMaterial(object sender, EventArgs e)
         {
-            if (dataGridView1.SelectedCells[0] == null || !MainPanel.Visible)
+            if (dataGridView1.SelectedCells[0] == null || !Panel_Main.Visible)
+            {
                 return;
+            }
 
             int index = dataGridView1.SelectedCells[0].RowIndex;
             mtl.Materials.Remove((dataGridView1.Rows[index].Tag as Material).MaterialHash);
@@ -153,8 +185,10 @@ namespace Mafia2Tool
 
         private void UpdateList(object sender, EventArgs e)
         {
-            if (!MainPanel.Visible)
+            if (!Panel_Main.Visible)
+            {
                 return;
+            }
 
             FetchMaterials(false, null);
         }
@@ -165,7 +199,6 @@ namespace Mafia2Tool
             {
                 MaterialGrid.SelectedObject = dataGridView1.Rows[e.RowIndex].Tag;
                 Material mat = (dataGridView1.Rows[e.RowIndex].Tag as Material);
-                Console.WriteLine(string.Format("{0} {1}", mat.MaterialName, (int)mat.Flags));
             }
         }
 
@@ -187,7 +220,7 @@ namespace Mafia2Tool
 
         private void MergeMTLButton_Click(object sender, EventArgs e)
         {
-            if (!MainPanel.Visible)
+            if (!Panel_Main.Visible)
                 return;
 
             MaterialLibrary matLib = new MaterialLibrary();
@@ -210,7 +243,7 @@ namespace Mafia2Tool
             }
 
             MergePanel.Visible = true;
-            MainPanel.Visible = false;
+            Panel_Main.Visible = false;
             OverwriteListBox.Items.Clear();
             NewMatListBox.Items.Clear();
 
@@ -232,7 +265,7 @@ namespace Mafia2Tool
         {
             if(MergePanel.Visible)
             {
-                MainPanel.Visible = true;
+                Panel_Main.Visible = true;
                 MergePanel.Visible = false;
                 OverwriteListBox.Items.Clear();
                 NewMatListBox.Items.Clear();
@@ -243,7 +276,7 @@ namespace Mafia2Tool
         {
             if(MergePanel.Visible)
             {
-                MainPanel.Visible = true;
+                Panel_Main.Visible = true;
                 MergePanel.Visible = false;
 
                 for(int i = 0; i < NewMatListBox.CheckedItems.Count; i++)
@@ -268,14 +301,23 @@ namespace Mafia2Tool
             if(MergePanel.Visible)
             {
                 for (int i = 0; i < OverwriteListBox.Items.Count; i++)
+                {
                     OverwriteListBox.SetItemChecked(i, true);
+                }
             }
         }
 
         private void SelectAllNewButton_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < NewMatListBox.Items.Count; i++)
+            {
                 NewMatListBox.SetItemChecked(i, true);
+            }
+        }
+
+        private void SearchType_OnIndexChanged(object sender, EventArgs e)
+        {
+            currentSearchType = ComboBox_SearchType.SelectedIndex;
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.IO;
 using ResourceTypes.Translokator;
 using System.Windows.Forms;
-using Utils.Lang;
+using Utils.Language;
 
 namespace Mafia2Tool.Forms
 {

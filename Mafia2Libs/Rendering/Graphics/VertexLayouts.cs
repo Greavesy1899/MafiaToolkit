@@ -99,6 +99,7 @@ namespace Rendering.Graphics
                 public Vector3 Position;
                 public Vector3 Normal;
                 public Vector3 Tangent;
+                public Vector3 Binormal;
                 public Vector2 TexCoord0;
                 public Vector2 TexCoord7;
                 
@@ -131,6 +132,16 @@ namespace Rendering.Graphics
                     new InputElement()
                     {
                         SemanticName = "TANGENT",
+                        SemanticIndex = 0,
+                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Slot = 0,
+                        AlignedByteOffset = InputElement.AppendAligned,
+                        Classification = InputClassification.PerVertexData,
+                        InstanceDataStepRate = 0
+                    },
+                    new InputElement()
+                    {
+                        SemanticName = "BINORMAL",
                         SemanticIndex = 0,
                         Format = SharpDX.DXGI.Format.R32G32B32_Float,
                         Slot = 0,

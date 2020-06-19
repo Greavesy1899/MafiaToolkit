@@ -87,18 +87,18 @@ namespace Rendering.Graphics
                 plane.InitBuffers(d3d, context);
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;
 
-            Spline.Render(device, deviceContext, camera, light);
+            Spline.Render(device, deviceContext, camera);
 
             foreach (Render2DPlane plane in towardLanes)
-                plane.Render(device, deviceContext, camera, light);
+                plane.Render(device, deviceContext, camera);
 
             foreach (Render2DPlane plane in backwardLanes)
-                plane.Render(device, deviceContext, camera, light);
+                plane.Render(device, deviceContext, camera);
         }
 
         public override void SetTransform(Matrix matrix)

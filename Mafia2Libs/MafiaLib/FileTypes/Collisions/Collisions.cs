@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using ResourceTypes.Collisions.Opcode;
 using SharpDX;
@@ -74,31 +75,8 @@ namespace ResourceTypes.Collisions
             {
                 foreach (var collisionModel in Models)
                 {
-                    using (BinaryWriter writer = new BinaryWriter(File.Open("mesh.bin", FileMode.Create)))
-                    {
-                        collisionModel.Value.Mesh.Save(writer);
-                    }
-
-                    Utils.FBXHelper.CookTriangleCollision("mesh.bin", "cook.bin");
-
-                    TriangleMesh cookedTriangleMesh = new TriangleMesh();
-                    using (BinaryReader reader = new BinaryReader(File.Open("cook.bin", FileMode.Open)))
-                    {
-                        cookedTriangleMesh.Load(reader);
-                    }
-
-
-                    if (File.Exists("mesh.bin"))
-                    {
-                        File.Delete("mesh.bin");
-                    }
-                    if (File.Exists("cook.bin"))
-                    {
-                        File.Delete("cook.bin");
-                    }
-
-                    cookedTriangleMesh.Force32BitIndices();
-                    collisionModel.Value.Mesh = cookedTriangleMesh;
+                    TriangleCooking cooker = new TriangleCooking();
+                    collisionModel.Value.Mesh = cooker.Cook(collisionModel.Value.Mesh);
                 }
             }
 
@@ -173,6 +151,7 @@ namespace ResourceTypes.Collisions
             public Matrix Transform { 
                 get {
                     Matrix transform = Matrix.RotationYawPitchRoll(MathUtil.DegreesToRadians(RotationDegrees.X), MathUtil.DegreesToRadians(RotationDegrees.Y), MathUtil.DegreesToRadians(RotationDegrees.Z));
+                    Debug.Assert(!transform.IsNaN());
                     transform.TranslationVector = Position;
                     return transform;
                 }
@@ -186,6 +165,10 @@ namespace ResourceTypes.Collisions
 
             public Placement()
             {
+                Unk5 = 128;
+                Unk4 = -1;
+                Position = new Vector3(0, 0, 0);
+                Rotation = new Vector3(0);
             }
 
             public Placement(Placement other)

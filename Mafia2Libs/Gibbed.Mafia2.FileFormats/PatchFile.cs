@@ -10,13 +10,14 @@ namespace Gibbed.Mafia2.FileFormats
     public class PatchFile
     {
         public FileInfo file;
+        public ResourceEntry[] resources;
 
         public const uint Signature = 0xD010F0F;
         public const uint Signature2 = 0xF0F0010D;
         private int UnkCount1;
-        private int[] UnkInts1;
+        public int[] UnkInts1;
         private int UnkCount2;
-        private int[] UnkInts2;
+        public int[] UnkInts2;
         private int UnkTotal; //UnkCount1 and UnkCount2 added together.
 
         private int numTypes;
@@ -95,7 +96,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             //return;
 
-            var resources = new Archive.ResourceEntry[UnkTotal];
+            resources = new Archive.ResourceEntry[UnkTotal];
             for (uint i = 0; i < resources.Length; i++)
             {
                 Archive.ResourceHeader resourceHeader;
@@ -105,6 +106,7 @@ namespace Gibbed.Mafia2.FileFormats
                 {
                     resourceHeader = Archive.ResourceHeader.Read(data, endian);
                 }
+                blockStream.ReadBytes(4); //checksum i think
                 if (resourceHeader.Size < 30)
                 {
                     throw new FormatException();
@@ -113,7 +115,7 @@ namespace Gibbed.Mafia2.FileFormats
                 {
                     TypeId = (int)resourceHeader.TypeId,
                     Version = resourceHeader.Version,
-                    Data = blockStream.ReadBytes((int)resourceHeader.Size - 26),
+                    Data = blockStream.ReadBytes((int)resourceHeader.Size - 30),
                     SlotRamRequired = resourceHeader.SlotRamRequired,
                     SlotVramRequired = resourceHeader.SlotVramRequired,
                     OtherRamRequired = resourceHeader.OtherRamRequired,

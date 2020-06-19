@@ -51,6 +51,14 @@ namespace Gibbed.Mafia2.ResourceFormats
         {
             input.WriteValueU64(NameHash, endian);
             input.WriteStringU16(Name, endian);
+
+            if(version >= 2)
+            {
+                input.WriteBytes(new byte[10]);
+                input.WriteValueS32(-1);
+                input.WriteValueS32(0);
+            }
+
             input.WriteValueU16((ushort)Columns.Count, endian);
             input.WriteValueU32(Unk1, endian);
             input.WriteValueU32(Unk2, endian);
@@ -195,151 +203,149 @@ namespace Gibbed.Mafia2.ResourceFormats
             this.NameHash = input.ReadValueU64(endian);
             this.Name = input.ReadStringU16(endian);
 
-            if (version >= 2)
+            if(version >= 2)
             {
-                throw new NotSupportedException();
+                input.ReadBytes(18);
             }
-            else
+
+            var columnCount = input.ReadValueU16(endian);
+
+            Unk1 = input.ReadValueU32(endian);
+            Unk2 = input.ReadValueU32(endian);
+
+            var rowSize = input.ReadValueU32(endian);
+            var rowCount = input.ReadValueU32(endian);
+            var data = input.ReadToMemoryStream((int)(rowSize * rowCount));
+            Data = data.ReadBytes((int)data.Length);
+
+            this.Columns = new List<Column>();
+            for (uint i = 0; i < columnCount; i++)
             {
-                var columnCount = input.ReadValueU16(endian);
-
-                Unk1 = input.ReadValueU32(endian);
-                Unk2 = input.ReadValueU32(endian);
-
-                var rowSize = input.ReadValueU32(endian);
-                var rowCount = input.ReadValueU32(endian);
-                var data = input.ReadToMemoryStream((int)(rowSize * rowCount));
-                Data = data.ReadBytes((int)data.Length);
-
-                this.Columns = new List<Column>();
-                for (uint i = 0; i < columnCount; i++)
+                this.Columns.Add(new Column()
                 {
-                    this.Columns.Add(new Column()
-                    {
-                        NameHash = input.ReadValueU32(endian),
-                        Type = (ColumnType)input.ReadValueU8(),
-                        Unknown2 = input.ReadValueU8(),
-                        Unknown3 = input.ReadValueU16(endian),
-                    });
-                }
+                    NameHash = input.ReadValueU32(endian),
+                    Type = (ColumnType)input.ReadValueU8(),
+                    Unknown2 = input.ReadValueU8(),
+                    Unknown3 = input.ReadValueU16(endian),
+                });
+            }
 
-                //input = null;
+            //input = null;
 
-                this.Rows.Clear();
-                for (uint i = 0; i < rowCount; i++)
+            this.Rows.Clear();
+            for (uint i = 0; i < rowCount; i++)
+            {
+                var row = new Row();
+
+                data.Seek(i * rowSize, SeekOrigin.Begin);
+                foreach (var column in this.Columns)
                 {
-                    var row = new Row();
-
-                    data.Seek(i * rowSize, SeekOrigin.Begin);
-                    foreach (var column in this.Columns)
+                    if ((byte)column.Type > 163)
                     {
-                        if ((byte)column.Type > 163)
-                        {
-                            throw new FormatException();
-                        }
+                        throw new FormatException();
+                    }
 
-                        switch (column.Type)
-                        {
-                            case ColumnType.Boolean:
-                                {
-                                    var value = data.ReadValueU32(endian);
-                                    if (value != 0 && value != 1)
-                                    {
-                                        throw new FormatException();
-                                    }
-                                    row.Values.Add(value != 0);
-                                    break;
-                                }
-
-                            case ColumnType.Float32:
-                                {
-                                    var value = data.ReadValueF32(endian);
-                                    row.Values.Add(value);
-                                    break;
-                                }
-
-                            case ColumnType.Signed32:
-                                {
-                                    var value = data.ReadValueS32(endian);
-                                    row.Values.Add(value);
-                                    break;
-                                }
-
-                            case ColumnType.Unsigned32:
-                                {
-                                    var value = data.ReadValueU32(endian);
-                                    row.Values.Add(value);
-                                    break;
-                                }
-
-                            case ColumnType.Flags32:
-                                {
-                                    var value = data.ReadValueU32(endian);
-                                    row.Values.Add(value);
-                                    break;
-                                }
-
-                            case ColumnType.Hash64:
-                                {
-                                    var value = data.ReadValueU64(endian);
-                                    row.Values.Add(value);
-                                    break;
-                                }
-
-                            case ColumnType.String8:
-                                {
-                                    string value = data.ReadString(8, true);
-                                    row.Values.Add(value);
-                                    break;
-                                }
-
-                            case ColumnType.String16:
-                                {
-                                    string value = data.ReadString(16, true);
-                                    row.Values.Add(value);
-                                    break;
-                                }
-
-                            case ColumnType.String32:
-                                {
-                                    string value = data.ReadString(32, true, System.Text.Encoding.GetEncoding(1250));
-                                    row.Values.Add(value);
-                                    break;
-                                }
-
-                            case ColumnType.String64:
-                                {
-                                    string value = data.ReadString(64, true);
-                                    row.Values.Add(value);
-                                    break;
-                                }
-
-                            case ColumnType.Color:
-                                {
-                                    float r = data.ReadValueF32(endian);
-                                    float g = data.ReadValueF32(endian);
-                                    float b = data.ReadValueF32(endian);
-                                    row.Values.Add(r + " " + g + " " + b);
-                                    break;
-                                }
-
-                            case ColumnType.Hash64AndString32:
-                                {
-                                    var hash = data.ReadValueU64(endian);
-                                    string value = data.ReadString(32, true);
-                                    row.Values.Add(value);
-                                    break;
-                                }
-
-                            default:
+                    switch (column.Type)
+                    {
+                        case ColumnType.Boolean:
+                            {
+                                var value = data.ReadValueU32(endian);
+                                if (value != 0 && value != 1)
                                 {
                                     throw new FormatException();
                                 }
-                        }
-                    }
+                                row.Values.Add(value != 0);
+                                break;
+                            }
 
-                    this.Rows.Add(row);
+                        case ColumnType.Float32:
+                            {
+                                var value = data.ReadValueF32(endian);
+                                row.Values.Add(value);
+                                break;
+                            }
+
+                        case ColumnType.Signed32:
+                            {
+                                var value = data.ReadValueS32(endian);
+                                row.Values.Add(value);
+                                break;
+                            }
+
+                        case ColumnType.Unsigned32:
+                            {
+                                var value = data.ReadValueU32(endian);
+                                row.Values.Add(value);
+                                break;
+                            }
+
+                        case ColumnType.Flags32:
+                            {
+                                var value = data.ReadValueU32(endian);
+                                row.Values.Add(value);
+                                break;
+                            }
+
+                        case ColumnType.Hash64:
+                            {
+                                var value = data.ReadValueU64(endian);
+                                row.Values.Add(value);
+                                break;
+                            }
+
+                        case ColumnType.String8:
+                            {
+                                string value = data.ReadString(8, true);
+                                row.Values.Add(value);
+                                break;
+                            }
+
+                        case ColumnType.String16:
+                            {
+                                string value = data.ReadString(16, true);
+                                row.Values.Add(value);
+                                break;
+                            }
+
+                        case ColumnType.String32:
+                            {
+                                string value = data.ReadString(32, true, System.Text.Encoding.GetEncoding(1250));
+                                row.Values.Add(value);
+                                break;
+                            }
+
+                        case ColumnType.String64:
+                            {
+                                string value = data.ReadString(64, true);
+                                row.Values.Add(value);
+                                break;
+                            }
+
+                        case ColumnType.Color:
+                            {
+                                float r = data.ReadValueF32(endian);
+                                float g = data.ReadValueF32(endian);
+                                float b = data.ReadValueF32(endian);
+                                row.Values.Add(r + " " + g + " " + b);
+                                break;
+                            }
+
+                        case ColumnType.Hash64AndString32:
+                            {
+                                var hash = data.ReadValueU64(endian);
+                                string value = data.ReadString(32, true);
+                                row.Values.Add(value);
+                                break;
+                            }
+
+                        default:
+                            {
+                                throw new FormatException();
+                            }
+                    }
                 }
+
+                this.Rows.Add(row);
             }
         }
 

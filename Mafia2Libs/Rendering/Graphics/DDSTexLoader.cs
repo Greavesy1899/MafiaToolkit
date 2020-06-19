@@ -1554,16 +1554,6 @@ namespace Rendering.Graphics
             {
                 handle.Free();
             }
-#if DEBUG
-            if (texture != null)
-            {
-                texture.DebugName = fileName;
-            }
-            if (textureView != null)
-            {
-                textureView.DebugName = fileName;
-            }
-#endif
         }
     }
 }

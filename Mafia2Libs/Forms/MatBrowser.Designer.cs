@@ -28,31 +28,80 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MatBrowser));
+            this.FlowPanel_Materials = new System.Windows.Forms.FlowLayoutPanel();
+            this.ComboBox_SelectMatLib = new System.Windows.Forms.Label();
+            this.Label_SearchBar = new System.Windows.Forms.Label();
+            this.ComboBox_Materials = new System.Windows.Forms.ComboBox();
+            this.TextBox_SearchBar = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // flowLayoutPanel1
+            // FlowPanel_Materials
             // 
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(800, 450);
-            this.flowLayoutPanel1.TabIndex = 3;
+            this.FlowPanel_Materials.AutoScroll = true;
+            this.FlowPanel_Materials.Location = new System.Drawing.Point(0, 52);
+            this.FlowPanel_Materials.Name = "FlowPanel_Materials";
+            this.FlowPanel_Materials.Size = new System.Drawing.Size(800, 398);
+            this.FlowPanel_Materials.TabIndex = 3;
+            this.FlowPanel_Materials.Click += new System.EventHandler(this.UsersGrid_WasClicked);
+            // 
+            // ComboBox_SelectMatLib
+            // 
+            this.ComboBox_SelectMatLib.AutoSize = true;
+            this.ComboBox_SelectMatLib.Location = new System.Drawing.Point(12, 9);
+            this.ComboBox_SelectMatLib.Name = "ComboBox_SelectMatLib";
+            this.ComboBox_SelectMatLib.Size = new System.Drawing.Size(132, 13);
+            this.ComboBox_SelectMatLib.TabIndex = 4;
+            this.ComboBox_SelectMatLib.Text = "$LABEL_SELECTMATLIB";
+            // 
+            // Label_SearchBar
+            // 
+            this.Label_SearchBar.AutoSize = true;
+            this.Label_SearchBar.Location = new System.Drawing.Point(561, 9);
+            this.Label_SearchBar.Name = "Label_SearchBar";
+            this.Label_SearchBar.Size = new System.Drawing.Size(118, 13);
+            this.Label_SearchBar.TabIndex = 5;
+            this.Label_SearchBar.Text = "$LABEL_SEARCHBAR";
+            // 
+            // ComboBox_Materials
+            // 
+            this.ComboBox_Materials.FormattingEnabled = true;
+            this.ComboBox_Materials.Location = new System.Drawing.Point(12, 25);
+            this.ComboBox_Materials.Name = "ComboBox_Materials";
+            this.ComboBox_Materials.Size = new System.Drawing.Size(189, 21);
+            this.ComboBox_Materials.TabIndex = 6;
+            // 
+            // TextBox_SearchBar
+            // 
+            this.TextBox_SearchBar.Location = new System.Drawing.Point(564, 25);
+            this.TextBox_SearchBar.Name = "TextBox_SearchBar";
+            this.TextBox_SearchBar.Size = new System.Drawing.Size(224, 20);
+            this.TextBox_SearchBar.TabIndex = 7;
             // 
             // MatBrowser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.flowLayoutPanel1);
+            this.Controls.Add(this.TextBox_SearchBar);
+            this.Controls.Add(this.ComboBox_Materials);
+            this.Controls.Add(this.Label_SearchBar);
+            this.Controls.Add(this.ComboBox_SelectMatLib);
+            this.Controls.Add(this.FlowPanel_Materials);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MatBrowser";
             this.Text = "MatBrowser";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.FlowLayoutPanel FlowPanel_Materials;
+        private System.Windows.Forms.Label ComboBox_SelectMatLib;
+        private System.Windows.Forms.Label Label_SearchBar;
+        private System.Windows.Forms.ComboBox ComboBox_Materials;
+        private System.Windows.Forms.TextBox TextBox_SearchBar;
     }
 }

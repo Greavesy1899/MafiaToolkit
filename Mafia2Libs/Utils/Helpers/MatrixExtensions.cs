@@ -7,6 +7,11 @@ namespace Utils.SharpDXExtensions
 {
     public static class MatrixExtensions
     {
+        public static bool IsNaN(this Matrix matrix)
+        {
+            return matrix.Column1.IsNaN() || matrix.Column2.IsNaN() || matrix.Column3.IsNaN() || matrix.Column4.IsNaN();
+        }
+
         public static Matrix ReadFromFile(BinaryReader reader)
         {
             Matrix matrix = new Matrix();
@@ -22,6 +27,12 @@ namespace Utils.SharpDXExtensions
             matrix.Column1 = Vector4Extenders.ReadFromFile(stream, isBigEndian);
             matrix.Column2 = Vector4Extenders.ReadFromFile(stream, isBigEndian);
             matrix.Column3 = Vector4Extenders.ReadFromFile(stream, isBigEndian);
+            if(matrix.IsNaN())
+            {
+                matrix.Row1 = new Vector4(1.0f, 0.0f, 0.0f, 0.0f);
+                matrix.Row2 = new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
+                matrix.Row3 = new Vector4(0.0f, 0.0f, 1.0f, 0.0f);
+            }
             return matrix;
         }
 
@@ -41,10 +52,19 @@ namespace Utils.SharpDXExtensions
 
         public static Matrix SetMatrix(Quaternion rotation, Vector3 scale, Vector3 position)
         {
+            //doing the normal T * R * S does not work; I have to manually push in the vector into the final row.
             Matrix r = Matrix.RotationQuaternion(rotation);
             Matrix s = Matrix.Scaling(scale);
-            Matrix t = Matrix.Translation(position);
-            return r * s * t;
+            Matrix final = r * s;
+            final.Row4 = new Vector4(position, 1.0f);
+            return final;
+        }
+
+        public static Matrix SetTranslationVector(Matrix other, Vector3 position)
+        {
+            Matrix matrix = other;
+            matrix.TranslationVector = position;
+            return matrix;
         }
 
         public static Matrix RowEchelon(Matrix other)
@@ -69,9 +89,14 @@ namespace Utils.SharpDXExtensions
 
         public static Matrix SetMatrix(Vector3 rotation, Vector3 scale, Vector3 position)
         {
-            Quaternion quaternion = Quaternion.RotationYawPitchRoll(MathUtil.DegreesToRadians(rotation.X), MathUtil.DegreesToRadians(rotation.Y), MathUtil.DegreesToRadians(rotation.Z));
-            Matrix matrix = SetMatrix(quaternion, scale, position);
-            return matrix;
+            float radX, radY, radZ;
+            radX = MathUtil.DegreesToRadians(rotation.X);
+            radY = MathUtil.DegreesToRadians(rotation.Y);
+            radZ = MathUtil.DegreesToRadians(rotation.Z);
+            Quaternion qX = Quaternion.RotationAxis(Vector3.UnitX, radX);
+            Quaternion qY = Quaternion.RotationAxis(Vector3.UnitY, radY);
+            Quaternion qZ = Quaternion.RotationAxis(Vector3.UnitZ, radZ);
+            return SetMatrix(qX * qY * qZ, scale, position);
         }
     }
 
@@ -85,25 +110,19 @@ namespace Utils.SharpDXExtensions
             var qy = quat.Y;
             var qz = quat.Z;
             var eX = Math.Atan2(-2 * ((qy * qz) - (qw * qx)), (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
+            //double test = qx * qy + qz * qw;
+            //var eY = Math.Asin(2 * test);
             var eY = Math.Asin(2 * ((qx * qz) + (qw * qy)));
             var eZ = Math.Atan2(-2 * ((qx * qy) - (qw * qz)), (qw * qw) + (qx * qx) - (qy * qy) - (qz * qz));
             euler.Z = (float)Math.Round(eZ * 180 / Math.PI);
             euler.Y = (float)Math.Round(eY * 180 / Math.PI);
             euler.X = (float)Math.Round(eX * 180 / Math.PI);
 
-            //temp
-            if (float.IsNaN(euler.X))
+            if (euler.IsNaN())
             {
-                euler.X = 0.0f;
+                throw new Exception("Triggered NaN check in QuaternionExtensions.ToEuler();");
             }
-            if (float.IsNaN(euler.Y))
-            {
-                euler.Y = 0.0f;
-            }
-            if (float.IsNaN(euler.Z))
-            {
-                euler.Z = 0.0f;
-            }
+
             return euler;
         }
 

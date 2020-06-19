@@ -1,4 +1,4 @@
-﻿using Utils.Lang;
+﻿using Utils.Language;
 
 namespace Forms.OptionControls
 {

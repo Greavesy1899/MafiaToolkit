@@ -84,8 +84,8 @@ namespace ResourceTypes.Cutscene
             //This size of GCS Seems to be ignoring the cutscene count, and then checking for a bool; basically to check if SPD data exists.
             private int gcsSize; //size of GCS! data.
             private GCSData gcsData; //GCS! data.
-            private int unk1;
             private SPDData spdData; //SPD! data.
+            private GCRData[] gcrData; //GCR! data;
 
             public Cutscene(BinaryReader reader)
             {
@@ -102,21 +102,26 @@ namespace ResourceTypes.Cutscene
                 long start = reader.BaseStream.Position;
                 gcsData = new GCSData();
                 gcsData.ReadFromFile(reader);
-                return;
-                reader.BaseStream.Seek(start, SeekOrigin.Begin);
-                byte[] unkBytes2 = reader.ReadBytes(gcsSize - 4);
-                int spdSize = reader.ReadInt32();
-                if (spdSize == 0)
+
+                bool hasSPD = reader.ReadBoolean();
+                if(hasSPD)
                 {
-                    if(reader.BaseStream.Position == reader.BaseStream.Length)
-                        Console.WriteLine("Succesfully hit eof");
-                    return;
+                    spdData = new SPDData();
+                    spdData.ReadFromFile(reader);
+                    File.WriteAllBytes("CutsceneData/SPD_Data.bin", spdData.Data);
                 }
-                start = reader.BaseStream.Position;
-                spdData = new SPDData();
-                spdData.ReadFromFile(reader);
-                reader.BaseStream.Seek(start, SeekOrigin.Begin);
-                byte[] unkBytes3 = reader.ReadBytes(spdSize);
+
+                int gcrCount = reader.ReadInt32();
+                gcrData = new GCRData[gcrCount];
+                for(int i = 0; i < gcrCount; i++)
+                {
+                    GCRData data = new GCRData();
+                    data.ReadFromFile(reader);
+                    gcrData[i] = data;
+                    File.WriteAllBytes("Cutscenedata/GCR_" + gcrData[i].Name + ".bin", gcrData[i].Data);
+                }
+
+                return;
             }
 
             public class GCSData
@@ -132,6 +137,11 @@ namespace ResourceTypes.Cutscene
                 private int unk09; //possible size of entries;
                 private ushort numEntities; //numEntities;
                 public IAeEntity[] entities;
+                public int unk10;
+                public float unk11;
+                public int unk12;
+                public float unk13;
+                public int unk14;
 
                 public void ReadFromFile(BinaryReader reader)
                 {
@@ -159,138 +169,147 @@ namespace ResourceTypes.Cutscene
                             if(type == AeModel.Type)
                             {
                                 AeModel model = new AeModel();
-                                model.ReadFromFile(stream, true);
+                                model.ReadFromFile(stream, false);
                                 entities[i] = model;
                             }
                             else if (type == AeSpotLight.Type)
                             {
                                 AeSpotLight spotLight = new AeSpotLight();
-                                spotLight.ReadFromFile(stream, true);
+                                spotLight.ReadFromFile(stream, false);
                                 entities[i] = spotLight;
                             }
                             else if (type == AeOmniLight.Type)
                             {
                                 AeOmniLight omniLight = new AeOmniLight();
-                                omniLight.ReadFromFile(stream, true);
+                                omniLight.ReadFromFile(stream, false);
                                 entities[i] = omniLight;
                             }
                             else if (type == AeUnk4.Type)
                             {
                                 AeUnk4 unk4 = new AeUnk4();
-                                unk4.ReadFromFile(stream, true);
+                                unk4.ReadFromFile(stream, false);
                                 entities[i] = unk4;
                             }
                             else if (type == AeTargetCamera.Type)
                             {
                                 AeTargetCamera targetCamera = new AeTargetCamera();
-                                targetCamera.ReadFromFile(stream, true);
+                                targetCamera.ReadFromFile(stream, false);
                                 entities[i] = targetCamera;
                             }
                             else if(type == AeFrame.Type)
                             {
                                 AeFrame frame = new AeFrame();
-                                frame.ReadFromFile(stream, true);
+                                frame.ReadFromFile(stream, false);
                                 entities[i] = frame;
                             }
                             else if (type == AeUnk10.Type)
                             {
                                 AeUnk10 unk10 = new AeUnk10();
-                                unk10.ReadFromFile(stream, true);
+                                unk10.ReadFromFile(stream, false);
                                 entities[i] = unk10;
                             }
                             else if (type == AeUnk12.Type)
                             {
                                 AeUnk12 unk12 = new AeUnk12();
-                                unk12.ReadFromFile(stream, true);
+                                unk12.ReadFromFile(stream, false);
                                 entities[i] = unk12;
                             }
                             else if (type == AeUnk13.Type)
                             {
                                 AeUnk13 unk13 = new AeUnk13();
-                                unk13.ReadFromFile(stream, true);
+                                unk13.ReadFromFile(stream, false);
                                 entities[i] = unk13;
                             }
                             else if (type == AeVehicle.Type)
                             {
                                 AeVehicle vehicle = new AeVehicle();
-                                vehicle.ReadFromFile(stream, true);
+                                vehicle.ReadFromFile(stream, false);
                                 entities[i] = vehicle;
                             }
                             else if (type == AeUnk18.Type)
                             {
                                 AeUnk18 unk18 = new AeUnk18();
-                                unk18.ReadFromFile(stream, true);
+                                unk18.ReadFromFile(stream, false);
                                 entities[i] = unk18;
                             }
                             else if (type == AeUnk23.Type)
                             {
                                 AeUnk23 unk23 = new AeUnk23();
-                                unk23.ReadFromFile(stream, true);
+                                unk23.ReadFromFile(stream, false);
                                 entities[i] = unk23;
                             }
                             else if (type == AeEffects.Type)
                             {
                                 AeEffects effects = new AeEffects();
-                                effects.ReadFromFile(stream, true);
+                                effects.ReadFromFile(stream, false);
                                 entities[i] = effects;
                             }
                             else if (type == AeSunLight.Type)
                             {
                                 AeSunLight sunlight = new AeSunLight();
-                                sunlight.ReadFromFile(stream, true);
+                                sunlight.ReadFromFile(stream, false);
                                 entities[i] = sunlight;
                             }
                             else
                             {
                                 Console.WriteLine("Unknown type");
                                 stream.Position = stream.Length;
-                                File.WriteAllBytes("Entitiy" + type + "_" + i + ".bin", data);
+                                File.WriteAllBytes("CutSceneData/Entitiy" + type + "_" + i + ".bin", data);
                             }
-                            Debug.Assert(stream.Position == stream.Length);
+                            File.WriteAllBytes("CutSceneData/Entitiy" + type + "_" + i + ".bin", data);
+                            if (stream.Position != stream.Length)
+                            {
+                                Debug.Assert(stream.Position == stream.Length);
+                            }
+                            
                         }
                     }
 
-                    return;
-                    Console.WriteLine("Hit");
+                    for (int z = 0; z < numEntities; z++)
+                    {
+                        int dunno = reader.ReadInt32();
+                        int size = reader.ReadInt32();
+                        reader.BaseStream.Position -= 8;
+                        File.WriteAllBytes("CutSceneData/" + entities[z] + "_" + z.ToString() + ".bin", reader.ReadBytes(size));
+                    }
+
+                    unk10 = reader.ReadInt32();
+                    unk11 = reader.ReadSingle();
+                    unk12 = reader.ReadInt32();
+                    unk13 = reader.ReadSingle();
+                    unk14 = reader.ReadInt32();
                 }
             }
 
             public class SPDData
             {
-                private string header;
-                private int unk01; //i think this is the same as unk02 in GCSData.
-                private int unk02; //possible empty? or unk01 & unk02 are just a long.
-                private UnkStruct1[] unkIntData; //size at the start as an int, then three ints following. (possible struct with 3 ints)
-
+                public byte[] Data;
                 public void ReadFromFile(BinaryReader reader)
                 {
-                    header = new string(reader.ReadChars(4)); //header
-                    unk01 = reader.ReadInt32();
-                    unk02 = reader.ReadInt32();
-
-                    int sizeOfInts = reader.ReadInt32();
-                    unkIntData = new UnkStruct1[sizeOfInts];
-
-                    for (int i = 0; i != unkIntData.Length; i++)
+                    int magic = reader.ReadInt32();
+                    if(magic == 1000)
                     {
-                        unkIntData[i] = new UnkStruct1(reader);
+                        //the size includes the size and the magic, A.K.A: (magic and size == 8)
+                        int size = reader.ReadInt32();
+                        reader.BaseStream.Position -= 8;
+                        //Data = reader.ReadBytes(size-8);
+                        Data = reader.ReadBytes(size);
                     }
                 }
+            }
 
-                private struct UnkStruct1
+            public class GCRData
+            {
+                public string Name;
+                public byte[] Data;
+                public void ReadFromFile(BinaryReader reader)
                 {
-                    private int unk01;
-                    private int unk02;
-                    private int unk03;
-                    private short unk04;
-
-                    public UnkStruct1(BinaryReader reader)
-                    {
-                        unk01 = reader.ReadInt32();
-                        unk02 = reader.ReadInt32();
-                        unk03 = reader.ReadInt32();
-                        unk04 = reader.ReadInt16();
-                    }
+                    Name = StringHelpers.ReadString16(reader);
+                    int unk0 = reader.ReadInt32();
+                    int size = reader.ReadInt32();
+                    reader.BaseStream.Position -= 8;
+                    //Data = reader.ReadBytes(size-8);
+                    Data = reader.ReadBytes(size);
                 }
             }
         }

@@ -62,9 +62,9 @@ namespace Utils.Models
 
                 int vertexSize;
                 Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = frameLod.GetVertexOffsets(out vertexSize);
-                lods[i].Vertices = new Vertex[frameLod.NumVertsPr];
+                lods[i].Vertices = new Vertex[frameLod.NumVerts];
 
-                if (vertexSize * frameLod.NumVertsPr != vertexBuffer.Data.Length) throw new System.Exception();
+                if (vertexSize * frameLod.NumVerts != vertexBuffer.Data.Length) throw new System.Exception();
                 for (int v = 0; v != lods[i].Vertices.Length; v++)
                 {
                     Vertex vertex = new Vertex();
@@ -73,7 +73,9 @@ namespace Utils.Models
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                        vertex.Position = VertexTranslator.ReadPositionDataFromVB(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset);
+                        var output = VertexTranslator.ReadPositionDataFromVB(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset);
+                        vertex.Position = Vector3Extenders.FromVector4(output);
+                        vertex.Binormal = new Vector3(output.X);
                     }
 
                     if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
@@ -146,7 +148,7 @@ namespace Utils.Models
                     lods[i].Vertices[v] = vertex;
                 }
 
-                lods[i].Indices = indexBuffer.Data;
+                lods[i].Indices = indexBuffer.GetData();
                 MaterialStruct[] materials = frameMaterial.Materials[i];
                 lods[i].Parts = new ModelPart[materials.Length];
                 for (int x = 0; x != materials.Length; x++)
@@ -201,7 +203,7 @@ namespace Utils.Models
 
                     for(uint z = part.StartIndex; z < part.StartIndex+(part.NumFaces*3); z++)
                     {
-                        int index = lod.Indices[z];
+                        uint index = lod.Indices[z];
                         if (!remapped[index])
                         {
                             for (uint f = 0; f < indexInfos.NumWeightsPerVertex[x]; f++)
@@ -223,13 +225,13 @@ namespace Utils.Models
 
             TriangleMesh triangleMesh = collisionModel.Mesh;
             lods[0].Vertices = new Vertex[triangleMesh.Vertices.Count];
-            lods[0].Indices = new ushort[triangleMesh.Triangles.Count * 3];
+            lods[0].Indices = new uint[triangleMesh.Triangles.Count * 3];
 
             for (int triIdx = 0, idxIdx = 0; triIdx < triangleMesh.Triangles.Count; triIdx++, idxIdx += 3)
             {
-                lods[0].Indices[idxIdx] = (ushort) triangleMesh.Triangles[triIdx].v0;
-                lods[0].Indices[idxIdx + 1] = (ushort) triangleMesh.Triangles[triIdx].v1;
-                lods[0].Indices[idxIdx + 2] = (ushort) triangleMesh.Triangles[triIdx].v2;
+                lods[0].Indices[idxIdx] = triangleMesh.Triangles[triIdx].v0;
+                lods[0].Indices[idxIdx + 1] = triangleMesh.Triangles[triIdx].v1;
+                lods[0].Indices[idxIdx + 2] = triangleMesh.Triangles[triIdx].v2;
             }
 
             for (int x = 0; x != lods[0].Vertices.Length; x++)
@@ -242,28 +244,28 @@ namespace Utils.Models
             //M2T doesn't support unorganised triangles, only triangles in order by material.
             //basically like mafia itself, so we have to reorder them and then save.
             //this doesn't mess anything up, just takes a little longer :)
-            Dictionary<string, List<ushort>> sortedMats = new Dictionary<string, List<ushort>>();
+            Dictionary<string, List<uint>> sortedMats = new Dictionary<string, List<uint>>();
             for(int i = 0; i < triangleMesh.MaterialIndices.Count; i++)
             {
                 string mat = ((CollisionMaterials)triangleMesh.MaterialIndices[i]).ToString();
                 if(!sortedMats.ContainsKey(mat))
                 {
-                    List<ushort> list = new List<ushort>();
-                    list.Add((ushort)collisionModel.Mesh.Triangles[i].v0);
-                    list.Add((ushort)collisionModel.Mesh.Triangles[i].v1);
-                    list.Add((ushort)collisionModel.Mesh.Triangles[i].v2);
+                    List<uint> list = new List<uint>();
+                    list.Add(collisionModel.Mesh.Triangles[i].v0);
+                    list.Add(collisionModel.Mesh.Triangles[i].v1);
+                    list.Add(collisionModel.Mesh.Triangles[i].v2);
                     sortedMats.Add(mat, list);
                 }
                 else
                 {
-                    sortedMats[mat].Add((ushort)collisionModel.Mesh.Triangles[i].v0);
-                    sortedMats[mat].Add((ushort)collisionModel.Mesh.Triangles[i].v1);
-                    sortedMats[mat].Add((ushort)collisionModel.Mesh.Triangles[i].v2);
+                    sortedMats[mat].Add(collisionModel.Mesh.Triangles[i].v0);
+                    sortedMats[mat].Add(collisionModel.Mesh.Triangles[i].v1);
+                    sortedMats[mat].Add(collisionModel.Mesh.Triangles[i].v2);
                 }
             }
 
             lods[0].Parts = new ModelPart[sortedMats.Count];
-            List<ushort> inds = new List<ushort>();
+            List<uint> inds = new List<uint>();
             for (int x = 0; x != lods[0].Parts.Length; x++)
             {
                 lods[0].Parts[x] = new ModelPart();
@@ -570,7 +572,7 @@ namespace Utils.Models
                 }
 
                 int numIndices = reader.ReadInt32();
-                Lods[i].Indices = new ushort[numIndices];
+                Lods[i].Indices = new uint[numIndices];
                 for (int x = 0; x != Lods[i].Indices.Length; x++)
                 {
                     Lods[i].Indices[x] = reader.ReadUInt16();
@@ -692,10 +694,10 @@ namespace Utils.Models
                 }
 
                 int numIndices = reader.ReadInt32();
-                Lods[i].Indices = new ushort[numIndices];
+                Lods[i].Indices = new uint[numIndices];
                 for (int x = 0; x != Lods[i].Indices.Length; x++)
                 {
-                    Lods[i].Indices[x] = reader.ReadUInt16();
+                    Lods[i].Indices[x] = reader.ReadUInt32();
                 }
                 Lods[i].CalculatePartBounds();
 
@@ -788,7 +790,7 @@ namespace Utils.Models
             private VertexFlags vertexDeclaration;
             Vertex[] vertices;
             ModelPart[] parts;
-            ushort[] indices;
+            uint[] indices;
 
             public VertexFlags VertexDeclaration {
                 get { return vertexDeclaration; }
@@ -799,7 +801,7 @@ namespace Utils.Models
                 get { return vertices; }
                 set { vertices = value; }
             }
-            public ushort[] Indices {
+            public uint[] Indices {
                 get { return indices; }
                 set { indices = value; }
             }
@@ -827,6 +829,16 @@ namespace Utils.Models
                     BoundingBox.FromPoints(partVerts.ToArray(), out bounds);
                     parts[i].Bounds = bounds;
                 }
+            }
+
+            public int GetIndexFormat()
+            {
+                return (indices.Length * 3 > ushort.MaxValue ? 2 : 1);
+            }
+
+            public bool Over16BitLimit()
+            {
+                return (vertices.Length > ushort.MaxValue);
             }
 
             public void CalculateNormals()

@@ -53,7 +53,7 @@ namespace ResourceTypes.FrameResource
             get { return vertexBufferRef; }
             set { vertexBufferRef = value; }
         }
-        public int NumVertsPr {
+        public int NumVerts {
             get { return numVerts; }
             set { numVerts = value; }
         }
@@ -218,6 +218,9 @@ namespace ResourceTypes.FrameResource
             short[] p0;
             short[] p1;
 
+            Vector3 unpackedP0;
+            Vector3 unpackedP1;
+
             public int Num1 {
                 get { return num1; }
                 set { num1 = value; }
@@ -235,7 +238,17 @@ namespace ResourceTypes.FrameResource
                 set { p1 = value; }
             }
 
-            public Descriptor(MemoryStream reader, bool isBigEndian)
+            //public Vector3 UnpackedP0 {
+            //    get { return unpackedP0; }
+            //    set { unpackedP0 = value; }
+            //}
+
+            //public Vector3 UnpackedP1 {
+            //    get { return unpackedP1; }
+            //    set { unpackedP1 = value; }
+            //}
+
+            public void ReadFromFile(MemoryStream reader, bool isBigEndian)
             {
                 num1 = reader.ReadInt32(isBigEndian);
                 p0 = new short[3] { reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian), reader.ReadInt16(isBigEndian) }; //packed
@@ -251,6 +264,12 @@ namespace ResourceTypes.FrameResource
                 for (int i = 0; i != p1.Length; i++)
                     writer.Write(p1[i]);
                 writer.Write(num2);
+            }
+
+            public void Unpack(Vector3 factor1, Vector3 factor2)
+            {
+                unpackedP0 = new Vector3(p0[0] * factor1.X, p0[1] * factor1.Y, p0[2] * factor1.Z);
+                unpackedP1 = new Vector3(p1[0] * factor2.X, p1[1] * factor2.Y, p1[2] * factor2.Z);
             }
         }
         [TypeConverter(typeof(ExpandableObjectConverter))]
@@ -321,7 +340,7 @@ namespace ResourceTypes.FrameResource
                 get { return numDesc1Length; }
                 set { numDesc1Length = value; }
             }
-            public Descriptor[] descriptors {
+            public Descriptor[] Descriptors {
                 get { return numDesc1; }
                 set { numDesc1 = value; }
             }
@@ -350,7 +369,9 @@ namespace ResourceTypes.FrameResource
                     numDesc1 = new Descriptor[numDesc1Length];
                     for (int i = 0; i != numDesc1.Length; i++)
                     {
-                        numDesc1[i] = new Descriptor(reader, isBigEndian);
+                        numDesc1[i] = new Descriptor();
+                        numDesc1[i].ReadFromFile(reader, isBigEndian);
+                        //numDesc1[i].Unpack(offsetVector, scaleVector);
                     }
                 }
                 numLongs1Length = reader.ReadInt32(isBigEndian);
@@ -425,7 +446,7 @@ namespace ResourceTypes.FrameResource
                 partitionType = 4;
                 Longs1 = new int[0];
                 Longs2 = new int[0];
-                descriptors = new Descriptor[0];
+                Descriptors = new Descriptor[0];
                 numDesc1Length = 0;
                 numLongs1Length = numDesc1Length + 1;
                 numLongs2Length = 0;
@@ -436,7 +457,7 @@ namespace ResourceTypes.FrameResource
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class MaterialSplitInfo
         {
-            int unk18 = 0;
+            int indexStride = 0;
             int unk20 = 0;
             int unk21 = 0;
             int unk24 = 0;
@@ -457,9 +478,9 @@ namespace ResourceTypes.FrameResource
                 get { return availD; }
                 set { availD = value; }
             }
-            public int Unk18 {
-                get { return unk18; }
-                set { unk18 = value; }
+            public int IndexStride {
+                get { return indexStride; }
+                set { indexStride = value; }
             }
             public int Unk20 {
                 get { return unk20; }
@@ -522,15 +543,18 @@ namespace ResourceTypes.FrameResource
             {
                 if (type == 12)
                 {
-                    unk18 = reader.ReadInt32(isBigEndian);
+                    indexStride = reader.ReadInt32(isBigEndian); //2
                     numVerts = reader.ReadInt32(isBigEndian);
                     numFaces = reader.ReadInt32(isBigEndian);
-                    unk20 = reader.ReadInt32(isBigEndian);
-                    unk21 = reader.ReadInt32(isBigEndian);
-                    numSplitGroup = reader.ReadInt32(isBigEndian);
+                    unk20 = reader.ReadInt32(isBigEndian); //0
+                    unk21 = reader.ReadInt32(isBigEndian); //12
+                    numSplitGroup = reader.ReadInt32(isBigEndian); //1
 
-                    if (unk18 + unk20 + unk21 + nSizeOfMatBurstEntries + nSizeOfMatSplitEntries != 0xE)
-                        throw new Exception("does not equal 14");
+                    var result = indexStride + unk20 + unk21 + nSizeOfMatBurstEntries + nSizeOfMatSplitEntries;
+                    if (result != 0xE && result != 0x10)
+                    {
+                        throw new Exception("does not equal 14 or 16");
+                    }
                 }
 
                 if(type == 1)
@@ -566,7 +590,7 @@ namespace ResourceTypes.FrameResource
             {
                 if (type == 12)
                 {
-                    writer.Write(unk18);
+                    writer.Write(indexStride);
                     writer.Write(numVerts);
                     writer.Write(numFaces);
                     writer.Write(unk20);
@@ -598,7 +622,7 @@ namespace ResourceTypes.FrameResource
 
             public void BuildMaterialSplits()
             {
-                unk18 = 2;
+                indexStride = 2;
                 unk20 = 0;
                 unk21 = 0xC;
                 numSplitGroup = 1;
@@ -606,7 +630,6 @@ namespace ResourceTypes.FrameResource
                 unk24 = 1;
                 nSizeOfMatBurstEntries = 0x14;
                 nSizeOfMatSplitEntries = 0xC;
-                //materialBursts[0].Bounds = new short[6] { 32766, 32766, 32766, -32766, -32766, -32766 };
             }
 
         }

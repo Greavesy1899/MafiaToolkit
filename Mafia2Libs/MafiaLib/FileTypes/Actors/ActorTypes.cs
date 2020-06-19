@@ -204,7 +204,7 @@ namespace ResourceTypes.Actors
         }
         public int GetSize()
         {
-            return 56;
+            return 20;
         }
 
         public ActorActorDetector()
@@ -659,7 +659,8 @@ namespace ResourceTypes.Actors
         }
     }
 
-    public class ActorLight : IActorExtraDataInterface
+    public class 
+    ActorLight : IActorExtraDataInterface
     {
         int size;
         byte[] padding;
@@ -692,6 +693,13 @@ namespace ResourceTypes.Actors
         int instanced;
         int type;
 
+        //DO NOT STORE IN ACTOR!
+        private Quaternion uMatrix0Quat;
+        private Quaternion uMatrix1Quat;
+
+        public int Size {
+            get { return size; }
+        }
         public int Unk01 {
             get { return unk01; }
             set { unk01 = value; }
@@ -703,7 +711,19 @@ namespace ResourceTypes.Actors
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public Matrix UnkMatrix0 {
             get { return uMatrix0; }
-            set { uMatrix0 = value; }
+        }
+        public Vector3 UnkMatrix0Translation {
+            get { return uMatrix0.TranslationVector; }
+            set { uMatrix0.TranslationVector = value; }
+        }
+        public Quaternion UnkMatrix0Quaternion {
+            get { return uMatrix0Quat; }
+            set {
+                uMatrix0Quat = value;
+                var translation = uMatrix0.TranslationVector;
+                uMatrix0 = Matrix.RotationQuaternion(uMatrix0Quat);
+                uMatrix0.TranslationVector = translation;
+            }
         }
         public int Unk07 {
             get { return unk07; }
@@ -798,7 +818,19 @@ namespace ResourceTypes.Actors
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public Matrix UnkMatrix1 {
             get { return uMatrix1; }
-            set { uMatrix1 = value; }
+        }
+        public Vector3 UnkMatrix1Translation {
+            get { return uMatrix1.TranslationVector; }
+            set { uMatrix1.TranslationVector = value; }
+        }
+        public Quaternion UnkMatrix1Quaternion {
+            get { return uMatrix1Quat; }
+            set {
+                uMatrix1Quat = value;
+                var translation = uMatrix1.TranslationVector;
+                uMatrix1 = Matrix.RotationQuaternion(uMatrix1Quat);
+                uMatrix1.TranslationVector = translation;
+            }
         }
         public int Instanced {
             get { return instanced; }
@@ -815,7 +847,7 @@ namespace ResourceTypes.Actors
 
         public ActorLight()
         {
-            padding = new byte[9];
+            padding = new byte[10];
             uMatrix0 = Matrix.Identity;
             uMatrix1 = Matrix.Identity;
             count = 0;
@@ -828,6 +860,14 @@ namespace ResourceTypes.Actors
             unkFloat4 = new float[5];
             unkFloat5 = new float[20];
             names = new Hash[4];
+            for (int i = 0; i < 4; i++)
+            {
+                names[i] = new Hash();
+            }
+
+            nameLight = new Hash();
+            uMatrix0Quat = Quaternion.RotationMatrix(uMatrix0);
+            uMatrix1Quat = Quaternion.RotationMatrix(uMatrix1);
         }
 
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
@@ -835,9 +875,8 @@ namespace ResourceTypes.Actors
             size = stream.ReadInt32(isBigEndian);
             if (size < 2305)
             {
-                padding = stream.ReadBytes(9);
+                padding = stream.ReadBytes(10);
                 unk01 = stream.ReadInt32(isBigEndian);
-                unk02 = stream.ReadByte8();
                 uMatrix0 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
                 unk07 = stream.ReadInt32(isBigEndian);
                 unk08 = stream.ReadInt32(isBigEndian);
@@ -854,8 +893,6 @@ namespace ResourceTypes.Actors
                     frameLinks[i] = new Hash(stream, isBigEndian);
                     frameIdxLinks[i] = stream.ReadInt32(isBigEndian);
                 }
-
-                //flags = reader.ReadInt32();
 
                 for (int i = 0; i < 7; i++)
                     unkFloat1[i] = stream.ReadSingle(isBigEndian);
@@ -892,16 +929,21 @@ namespace ResourceTypes.Actors
             stream.Seek(2308, SeekOrigin.Begin);
             instanced = stream.ReadInt32(isBigEndian);
             type = stream.ReadInt32(isBigEndian);
+
+            //PREP 
+            uMatrix0Quat = Quaternion.RotationMatrix(uMatrix0);
+            uMatrix1Quat = Quaternion.RotationMatrix(uMatrix1);
         }
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(new byte[2316]);
             writer.Seek(0, SeekOrigin.Begin);
+            size = CalculateSize();
             writer.Write(size, isBigEndian);
-            writer.Write(this.padding);
+            writer.Write(padding);
             writer.Write(unk01, isBigEndian);
-            writer.WriteByte(unk02);
+            //writer.WriteByte(unk02);
             uMatrix0.WriteToFile(writer, isBigEndian);
             writer.Write(unk07, isBigEndian);
             writer.Write(unk08, isBigEndian);
@@ -950,6 +992,27 @@ namespace ResourceTypes.Actors
             writer.Seek(2308, SeekOrigin.Begin);
             writer.Write(instanced, isBigEndian);
             writer.Write(type, isBigEndian);
+        }
+
+        private int CalculateSize()
+        {
+            //this is the base size of a light; the rest is determined by the data of hashes/strings etc.
+            int size = 378; 
+
+            for (int i = 0; i < count; i++)
+            {
+                size += sceneLinks[i].CalculateSize();
+                size += FrameLinks[i].CalculateSize();
+                size += 4;
+            }
+
+            size += nameLight.CalculateSize();
+
+            for (int i = 0; i < 4; i++)
+            {
+                size += names[i].CalculateSize();
+            }
+            return size;
         }
 
         public int GetSize()
@@ -1898,6 +1961,107 @@ namespace ResourceTypes.Actors
         }
     }
 
+    public class ActorHuman : IActorExtraDataInterface
+    {
+        public float HealthMax { get; set; }
+        public float HumanType { get; set; }
+        public int Aggressiveness { get; set; }
+        public int Courage { get; set; }
+        public int PanicOnEvent { get; set; }
+        public int PanicOnHP { get; set; }
+        public int Sight { get; set; }
+        [Description("VisionAngle is stored in radians. Not degrees!")]
+        public float VisionAngle { get; set; }
+        public float Hearing { get; set; }
+        public int UseSoundScene { get; set; }
+        public float FightingSkill { get; set; }
+        public int ReactionOnSounds { get; set; }
+        public int RecogniseTime { get; set; }
+        public int RecogniseRange { get; set; }
+        public int PreferMelee { get; set; }
+        public float MeleeAttackLevel { get; set; }
+        public float MeleeBlockLevel { get; set; }
+        public float MeleeAggressiveness { get; set; }
+        public float MeleeCounterBlockSkill { get; set; }
+        public float HumanVoices { get; set; }
+        public int ShootDispXY { get; set; }
+        public float ShootDispZ { get; set; }
+        public float ShootDispCorrectionTimeMin { get; set; }
+        public float ShootDispCorrectionTimeMax { get; set; }
+        public byte[] Unknown { get; set; }
+
+        public ActorHuman(MemoryStream stream, bool isBigEndian)
+        {
+            ReadFromFile(stream, isBigEndian);
+        }
+
+        public ActorHuman()
+        {
+        }
+
+        public int GetSize()
+        {
+            return 128;
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            HealthMax = stream.ReadSingle(isBigEndian);
+            HumanType = stream.ReadSingle(isBigEndian);
+            Aggressiveness = stream.ReadInt32(isBigEndian);
+            Courage = stream.ReadInt32(isBigEndian);
+            PanicOnEvent = stream.ReadInt32(isBigEndian);
+            PanicOnHP = stream.ReadInt32(isBigEndian);
+            Sight = stream.ReadInt32(isBigEndian);
+            VisionAngle = stream.ReadSingle(isBigEndian);
+            Hearing = stream.ReadSingle(isBigEndian);
+            UseSoundScene = stream.ReadInt32(isBigEndian);
+            FightingSkill = stream.ReadSingle(isBigEndian);
+            ReactionOnSounds = stream.ReadInt32(isBigEndian);
+            RecogniseTime = stream.ReadInt32(isBigEndian);
+            RecogniseRange = stream.ReadInt32(isBigEndian);
+            PreferMelee = stream.ReadInt32(isBigEndian);
+            MeleeAttackLevel = stream.ReadSingle(isBigEndian);
+            MeleeBlockLevel = stream.ReadSingle(isBigEndian);
+            MeleeAggressiveness = stream.ReadSingle(isBigEndian);
+            MeleeCounterBlockSkill = stream.ReadSingle(isBigEndian);
+            HumanVoices = stream.ReadSingle(isBigEndian);
+            ShootDispXY = stream.ReadInt32(isBigEndian);
+            ShootDispZ = stream.ReadSingle(isBigEndian);
+            ShootDispCorrectionTimeMin = stream.ReadSingle(isBigEndian);
+            ShootDispCorrectionTimeMax = stream.ReadSingle(isBigEndian);
+            Unknown = stream.ReadBytes((int)(stream.Length - stream.Position));
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            writer.Write(HealthMax, isBigEndian);
+            writer.Write(HumanType, isBigEndian);
+            writer.Write(Aggressiveness, isBigEndian);
+            writer.Write(Courage, isBigEndian);
+            writer.Write(PanicOnEvent, isBigEndian);
+            writer.Write(PanicOnHP, isBigEndian);
+            writer.Write(Sight, isBigEndian);
+            writer.Write(VisionAngle, isBigEndian);
+            writer.Write(Hearing, isBigEndian);
+            writer.Write(UseSoundScene, isBigEndian);
+            writer.Write(FightingSkill, isBigEndian);
+            writer.Write(ReactionOnSounds, isBigEndian);
+            writer.Write(RecogniseTime, isBigEndian);
+            writer.Write(RecogniseRange, isBigEndian);
+            writer.Write(PreferMelee, isBigEndian);
+            writer.Write(MeleeAttackLevel, isBigEndian);
+            writer.Write(MeleeBlockLevel, isBigEndian);
+            writer.Write(MeleeAggressiveness, isBigEndian);
+            writer.Write(MeleeCounterBlockSkill, isBigEndian);
+            writer.Write(HumanVoices, isBigEndian);
+            writer.Write(ShootDispXY, isBigEndian);
+            writer.Write(ShootDispZ, isBigEndian);
+            writer.Write(ShootDispCorrectionTimeMin, isBigEndian);
+            writer.Write(ShootDispCorrectionTimeMax, isBigEndian);
+            writer.Write(Unknown);
+        }
+    }
     public class ActorScriptEntity : IActorExtraDataInterface
     {
         string scriptName;

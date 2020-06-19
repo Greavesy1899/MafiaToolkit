@@ -53,6 +53,8 @@ namespace Gibbed.Mafia2.FileFormats
         private readonly List<Archive.ResourceType> _ResourceTypes;
         private string _ResourceInfoXml;
         private readonly List<Archive.ResourceEntry> _ResourceEntries;
+        private readonly List<string> _ResourceNames;
+
         #endregion
         #region Properties
         public Endian Endian {
@@ -93,12 +95,17 @@ namespace Gibbed.Mafia2.FileFormats
         public List<Archive.ResourceEntry> ResourceEntries {
             get { return this._ResourceEntries; }
         }
+        public List<string> ResourceNames {
+            get { return this._ResourceNames; }
+        }
         #endregion
         #region Constructors
         public ArchiveFile()
         {
             this._ResourceTypes = new List<Archive.ResourceType>();
             this._ResourceEntries = new List<Archive.ResourceEntry>();
+            this._ResourceNames = new List<string>();
+            Unknown20 = new byte[16];
         }
         #endregion
         #region Functions
@@ -279,7 +286,7 @@ namespace Gibbed.Mafia2.FileFormats
         /// Build resources from given folder.
         /// </summary>
         /// <param name="folder"></param>
-        public void BuildResources(string folder)
+        public bool BuildResources(string folder)
         {
             //TODO: MAKE THIS CLEANER
             string sdsFolder = folder;
@@ -289,7 +296,7 @@ namespace Gibbed.Mafia2.FileFormats
             if(!File.Exists(sdsFolder + "/SDSContent.xml"))
             {
                 MessageBox.Show("Could not find 'SDSContent.xml'. Folder Path: " + sdsFolder + "/SDSContent.xml", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return false;
             }
             try
             {
@@ -301,7 +308,7 @@ namespace Gibbed.Mafia2.FileFormats
             catch(Exception ex)
             {
                 MessageBox.Show(string.Format("Error while parsing SDSContent.XML. \n{0}", ex.Message));
-                return;
+                return false;
             }
 
             xmlDoc.AppendChild(rootNode);
@@ -420,6 +427,201 @@ namespace Gibbed.Mafia2.FileFormats
                 _ResourceEntries.AddRange(pair.Value);
             }
             ResourceInfoXml = xmlDoc.OuterXml;
+            return true;
+        }
+
+        public void ExtractPatch(FileInfo file)
+        {
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.IndentChars = ("\t");
+            settings.OmitXmlDeclaration = true;
+
+            string extractedPath = Path.Combine(file.Directory.FullName, "extracted");
+
+            if (!Directory.Exists(extractedPath))
+                Directory.CreateDirectory(extractedPath);
+
+            string finalPath = Path.Combine(extractedPath, file.Name);
+            Directory.CreateDirectory(finalPath);
+
+            Log.WriteLine("Begin unpacking and saving files..");
+
+            XmlWriter resourceXML = XmlWriter.Create(finalPath + "/SDSContent.xml", settings);
+            resourceXML.WriteStartElement("SDSResource");
+
+            PatchFile patchFile = null;
+
+            using (var input = File.OpenRead(file.FullName))
+            {
+                using (Stream data = ArchiveEncryption.Unwrap(input))
+                {
+                    patchFile = new PatchFile();
+                    patchFile.file = new FileInfo(file.FullName + ".patch");
+                    patchFile.Deserialize(data ?? input, Endian.Little);
+                }
+            }
+            Dictionary<string, Dictionary<int, string>> sortedResources = new Dictionary<string, Dictionary<int, string>>();
+            Dictionary<string, List<KeyValuePair<int, bool>>> resPatchAvailable = new Dictionary<string, List<KeyValuePair<int, bool>>>();
+
+            for (int i = 0; i < ResourceTypes.Count; i++)
+            {
+                sortedResources.Add(ResourceTypes[i].Name, new Dictionary<int, string>());
+                resPatchAvailable.Add(ResourceTypes[i].Name, new List<KeyValuePair<int, bool>>());
+            }
+
+            for (int i = 0; i < ResourceEntries.Count; i++)
+            {
+                var type = ResourceTypes[_ResourceEntries[i].TypeId].Name;
+                var name = (type == "Mipmap" ? ResourceNames[i].Remove(0, 4) : ResourceNames[i]);
+
+                if (sortedResources.ContainsKey(type))
+                {
+                    sortedResources[type].Add(i, name);
+
+                    if (patchFile.UnkInts1.Contains(i))
+                    {
+                        resPatchAvailable[type].Add(new KeyValuePair<int, bool>(i, false));
+                    }
+                }
+            }
+
+            var currentIndex = 0;
+            for (int i = 0; i < patchFile.resources.Length; i++)
+            {
+                var entry = patchFile.resources[i];
+                var index = patchFile.UnkInts1[currentIndex];
+
+                if (entry.TypeId > ResourceTypes.Count)
+                {
+                    File.WriteAllBytes("Unk" + i + ".bin", entry.Data);
+                    continue;
+                }
+
+                var type = ResourceTypes[entry.TypeId].Name;
+                string name = string.Format("{0}_{1}", type, i);
+                var updateIndex = false;
+                for (int z = 0; z < resPatchAvailable[type].Count; z++)
+                {
+                    var res = resPatchAvailable[type][z];
+                    if (type == "Texture" || type == "Mipmap")
+                    {
+                        TextureResource tRes = new TextureResource();
+                        tRes.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+                        var resName = sortedResources[type][res.Key];
+                        var hash = FNV64.Hash(resName);
+                        if (tRes.NameHash == hash)
+                        {
+                            Console.WriteLine("Detected possible candidate: {0}", resName);
+                            name = resName;
+                            updateIndex = true;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (!res.Value)
+                        {
+                            name = sortedResources[type][res.Key];
+                            resPatchAvailable[type][z] = new KeyValuePair<int, bool>(res.Key, true);
+                            updateIndex = true;
+                            break;
+                        }
+                    }
+
+                }
+                currentIndex = (updateIndex ? currentIndex + 1 : currentIndex);
+                var saveName = "";
+                resourceXML.WriteStartElement("ResourceEntry");
+                resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
+                switch (type)
+                {
+                    case "Texture":
+                        var textureName = name + ".dds";
+                        ReadTextureEntry(entry, resourceXML, name);
+                        saveName = textureName;
+                        break;
+                    case "Mipmap":
+                        var mipName = "MIP_" + name + ".dds";
+                        ReadMipmapEntry(entry, resourceXML, name);
+                        saveName = mipName;
+                        break;
+                    case "IndexBufferPool":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "VertexBufferPool":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "AnimalTrafficPaths":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "FrameResource":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "Translokator":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "Effects":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "FrameNameTable":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "EntityDataStorage":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "PREFAB":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "ItemDesc":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "Actors":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "Collisions":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "Animation2":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "NAV_AIWORLD_DATA":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "NAV_OBJ_DATA":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "NAV_HPD_DATA":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "FxAnimSet":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "FxActor":
+                        saveName = ReadBasicEntry(resourceXML, name);
+                        break;
+                    case "Sound":
+                        ReadSoundEntry(entry, resourceXML, name, finalPath);
+                        saveName = name + ".fsb";
+                        break;
+                    case "Script":
+                        ReadScriptEntry(entry, resourceXML, finalPath);
+                        continue;
+                    case "AudioSectors":
+                        ReadAudioSectorEntry(entry, resourceXML, name, finalPath);
+                        saveName = name;
+                        break;
+                    default:
+                        Console.WriteLine("Unhandled Resource Type {0}", type);
+                        break;
+                }
+                resourceXML.WriteElementString("Version", entry.Version.ToString());
+                File.WriteAllBytes(finalPath + "/" + saveName, entry.Data);
+                resourceXML.WriteEndElement();
+            }
+            resourceXML.WriteEndElement();
+            resourceXML.Flush();
+            resourceXML.Dispose();
         }
 
         /// <summary>
@@ -428,8 +630,6 @@ namespace Gibbed.Mafia2.FileFormats
         /// <param name="xml"></param>
         public void SaveResources(FileInfo file)
         {
-            //get resources names...
-            List<string> itemNames = new List<string>();
             XPathDocument doc = null;
 
             if (string.IsNullOrEmpty(ResourceInfoXml) == false)
@@ -472,19 +672,19 @@ namespace Gibbed.Mafia2.FileFormats
             var nodes = nav.Select("/xml/ResourceInfo/SourceDataDescription");
             while (nodes.MoveNext() == true)
             {
-                itemNames.Add(nodes.Current.Value);
+                _ResourceNames.Add(nodes.Current.Value);
             }
             Log.WriteLine("Found all items; count is " + nodes.Count);
 
 
-            if (itemNames.Count == 0)
+            if (_ResourceNames.Count == 0)
             {
                 //Fix for friends for life SDS files.
                 MessageBox.Show("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Log.WriteLine("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", LoggingTypes.WARNING);
                 for (int i = 0; i != ResourceEntries.Count; i++)
                 {
-                    itemNames.Add("unk_" + i);
+                    _ResourceNames.Add("unk_" + i);
                 }
             }
 
@@ -512,21 +712,26 @@ namespace Gibbed.Mafia2.FileFormats
             for (int i = 0; i != ResourceEntries.Count; i++)
             {
                 ResourceEntry entry = ResourceEntries[i];
+                if (entry.TypeId == -1)
+                {
+                    MessageBox.Show(string.Format("Detected unknown type, skipping. Size: {0}", entry.Data.Length), "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    continue;
+                }
 
                 resourceXML.WriteStartElement("ResourceEntry");
                 resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
                 string saveName = "";
-                Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
+                Log.WriteLine("Resource: " + i + ", name: " + _ResourceNames[i] + ", type: " + entry.TypeId);
                 string sdsToolName = ResourceTypes[entry.TypeId].Name + "_" + counts[entry.TypeId] + ".bin";
                 switch (ResourceTypes[entry.TypeId].Name)
                 {
                     case "Texture":
-                        ReadTextureEntry(entry, resourceXML, itemNames[i]);
-                        saveName = itemNames[i];
+                        ReadTextureEntry(entry, resourceXML, _ResourceNames[i]);
+                        saveName = _ResourceNames[i];
                         break;
                     case "Mipmap":
-                        ReadMipmapEntry(entry, resourceXML, itemNames[i]);
-                        saveName = "MIP_" + itemNames[i];
+                        ReadMipmapEntry(entry, resourceXML, _ResourceNames[i]);
+                        saveName = "MIP_" + _ResourceNames[i];
                         break;
                     case "IndexBufferPool":
                         saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "IndexBufferPool_" + i + ".ibp" : sdsToolName);
@@ -562,8 +767,8 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Collisions_" + i + ".col" : sdsToolName);
                         break;
                     case "AudioSectors":
-                        ReadAudioSectorEntry(entry, resourceXML, itemNames[i], finalPath);
-                        saveName = itemNames[i];
+                        ReadAudioSectorEntry(entry, resourceXML, _ResourceNames[i], finalPath);
+                        saveName = _ResourceNames[i];
                         break;
                     case "SoundTable":
                         saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "SoundTable_" + i + ".stbl" : sdsToolName);
@@ -584,7 +789,7 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "Translokator_" + i + ".tra" : sdsToolName);
                         break;
                     case "Animation2":
-                        saveName = ReadBasicEntry(resourceXML, itemNames[i] + ".an2");
+                        saveName = ReadBasicEntry(resourceXML, _ResourceNames[i] + ".an2");
                         break;
                     case "NAV_AIWORLD_DATA":
                         saveName = ReadBasicEntry(resourceXML, ToolkitSettings.UseSDSToolFormat == false ? "NAV_AIWORLD_DATA_" + i + ".nav" : sdsToolName);
@@ -599,15 +804,15 @@ namespace Gibbed.Mafia2.FileFormats
                         ReadScriptEntry(entry, resourceXML, finalPath);
                         continue;
                     case "XML":
-                        ReadXMLEntry(entry, resourceXML, itemNames[i], finalPath);
+                        ReadXMLEntry(entry, resourceXML, _ResourceNames[i], finalPath);
                         continue;
                     case "Sound":
-                        ReadSoundEntry(entry, resourceXML, itemNames[i], finalPath);
-                        saveName = itemNames[i] + ".fsb";
+                        ReadSoundEntry(entry, resourceXML, _ResourceNames[i], finalPath);
+                        saveName = _ResourceNames[i] + ".fsb";
                         break;
                     case "MemFile":
-                        ReadMemEntry(entry, resourceXML, itemNames[i], finalPath);
-                        saveName = itemNames[i];
+                        ReadMemEntry(entry, resourceXML, _ResourceNames[i], finalPath);
+                        saveName = _ResourceNames[i];
                         break;
                     case "Table":
                         ReadTableEntry(entry, resourceXML, "", finalPath);
@@ -616,12 +821,13 @@ namespace Gibbed.Mafia2.FileFormats
                         resourceXML.WriteEndElement();
                         continue;
                     case "Animated Texture":
-                        saveName = ReadBasicEntry(resourceXML, itemNames[i]);
+                        saveName = ReadBasicEntry(resourceXML, _ResourceNames[i]);
                         break;
                     default:
                         MessageBox.Show("Found unknown type: " + ResourceTypes[entry.TypeId].Name);
                         break;
                 }
+                _ResourceNames[i] = saveName;
                 counts[ResourceTypes[entry.TypeId].Id]++;
                 resourceXML.WriteElementString("Version", entry.Version.ToString());
                 File.WriteAllBytes(finalPath + "/" + saveName, entry.Data);
@@ -636,7 +842,7 @@ namespace Gibbed.Mafia2.FileFormats
         public ResourceEntry ReadTextureEntry(ResourceEntry entry, XmlWriter resourceXML, string name)
         {
             TextureResource resource = new TextureResource();
-            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian);
             resourceXML.WriteElementString("File", name);
             resourceXML.WriteElementString("HasMIP", resource.HasMIP.ToString());
             entry.Data = resource.Data;
@@ -677,7 +883,7 @@ namespace Gibbed.Mafia2.FileFormats
         public ResourceEntry ReadMipmapEntry(ResourceEntry entry, XmlWriter resourceXML, string name)
         {
             TextureResource resource = new TextureResource();
-            resource.DeserializeMIP(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+            resource.DeserializeMIP(entry.Version, new MemoryStream(entry.Data), Endian);
             resourceXML.WriteElementString("File", "MIP_" + name);
             entry.Data = resource.Data;
             return entry;
@@ -995,13 +1201,16 @@ namespace Gibbed.Mafia2.FileFormats
             TableResource resource = new TableResource();
             resource.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian);
             if (!Directory.Exists(tableDIR + "/tables"))
+            {
                 Directory.CreateDirectory(tableDIR + "/tables");
+            }
 
             resourceXML.WriteElementString("NumTables", resource.Tables.Count.ToString());
 
             foreach (TableData data in resource.Tables)
             {
-                data.Serialize(entry.Version, File.Open(tableDIR + data.Name, FileMode.Create), Endian.Little);
+                //maybe we can get away with saving to version 1, and then converting to version 2 when packing?
+                data.Serialize(1, File.Open(tableDIR + data.Name, FileMode.Create), Endian.Little);
                 resourceXML.WriteElementString("Table", data.Name);
             }
 
@@ -1013,7 +1222,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             //number of tables
             nodes.Current.MoveToNext();
-            int count = int.Parse(nodes.Current.Value);
+            int count = nodes.Current.ValueAsInt;
 
             //read tables and add to resource.
             for(int i = 0; i != count; i++)
@@ -1028,7 +1237,7 @@ namespace Gibbed.Mafia2.FileFormats
                 //now read..
                 using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + file, FileMode.Open)))
                 {
-                    data.Deserialize(0, reader.BaseStream, Endian);
+                    data.Deserialize(1, reader.BaseStream, Endian);
                     data.Name = file;
                     data.NameHash = FNV64.Hash(data.Name);
                 }
@@ -1036,17 +1245,17 @@ namespace Gibbed.Mafia2.FileFormats
                 resource.Tables.Add(data);
             }
 
+            //get version, always 1 Mafia II (2010) is 1, Mafia: DE (2020) is 2.
+            nodes.Current.MoveToNext();
+            entry.Version = Convert.ToUInt16(nodes.Current.Value);
+
             //create a temporary memory stream, merge all data and then fill entry data.
             using (MemoryStream stream = new MemoryStream())
             {
-                resource.Serialize(1, stream, Endian.Little);
+                resource.Serialize(entry.Version, stream, Endian.Little);
                 entry.Data = stream.ToArray();
                 entry.SlotRamRequired = (uint)entry.Data.Length + 128;
             }
-
-            //get version, always 1?
-            nodes.Current.MoveToNext();
-            entry.Version = Convert.ToUInt16(nodes.Current.Value);
 
             //fin.
             return entry;

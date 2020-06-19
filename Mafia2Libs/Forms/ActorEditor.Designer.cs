@@ -149,14 +149,14 @@
             // AddItemButton
             // 
             this.AddItemButton.Name = "AddItemButton";
-            this.AddItemButton.Size = new System.Drawing.Size(180, 22);
+            this.AddItemButton.Size = new System.Drawing.Size(171, 22);
             this.AddItemButton.Text = "$ADD_ITEM";
             this.AddItemButton.Click += new System.EventHandler(this.AddItemButton_Click);
             // 
             // AddDefinitionButton
             // 
             this.AddDefinitionButton.Name = "AddDefinitionButton";
-            this.AddDefinitionButton.Size = new System.Drawing.Size(180, 22);
+            this.AddDefinitionButton.Size = new System.Drawing.Size(171, 22);
             this.AddDefinitionButton.Text = "$ADD_DEFINITION";
             this.AddDefinitionButton.Click += new System.EventHandler(this.AddDefinitionButton_Click);
             // 

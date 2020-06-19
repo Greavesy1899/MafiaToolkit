@@ -396,6 +396,7 @@
             this.MainTabControl.SelectedIndex = 0;
             this.MainTabControl.Size = new System.Drawing.Size(269, 461);
             this.MainTabControl.TabIndex = 7;
+            this.MainTabControl.SelectedIndexChanged += new System.EventHandler(this.MainTabControl_OnTabIndexChanged);
             // 
             // MaterialPage
             // 

@@ -46,12 +46,12 @@ namespace ResourceTypes.FrameResource
         /// </summary>
         public FrameEntry()
         {
-            refID = StringHelpers.RandomGenerator.Next();
+            refID = StringHelpers.GetNewRefID();
         }
 
         public FrameEntry(FrameEntry entry)
         {
-            refID = StringHelpers.RandomGenerator.Next();
+            refID = StringHelpers.GetNewRefID();
             refs = new Dictionary<string, int>();
 
             for(int i = 0; i != entry.refs.Count; i++)

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Settings;
 
 namespace Forms.OptionControls
@@ -24,7 +24,7 @@ namespace Forms.OptionControls
 
         private void LoadSettings()
         {
-            string[] files = ToolkitSettings.MaterialLibs.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] files = GameStorage.Instance.GetSelectedGame().Materials.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach(string file in files)
             {
                 MTLListBox.Items.Add(file);
@@ -61,8 +61,7 @@ namespace Forms.OptionControls
                 value += file;
                 value += ",";
             }
-            ToolkitSettings.MaterialLibs = value;
-            ToolkitSettings.WriteKey("MaterialLibs", "Materials", value);
+            GameStorage.Instance.GetSelectedGame().Materials = value;
         }
     }
 }

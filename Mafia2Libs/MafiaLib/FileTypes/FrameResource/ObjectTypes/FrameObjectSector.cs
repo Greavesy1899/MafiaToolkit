@@ -85,9 +85,16 @@ namespace ResourceTypes.FrameResource
         public FrameObjectSector(FrameObjectSector other) : base(other)
         {
             bounds = other.bounds;
+            unk_08_int = other.unk_08_int;
+            planesSize = other.planesSize;
+            planes = new Vector4[planesSize];
+            for (int i = 0; i < planesSize; i++)
+            {
+                planes[i] = other.planes[i];
+            }
             unk_13_vector3 = other.unk_13_vector3;
             unk_14_vector3 = other.unk_14_vector3;
-            sectorName = new Hash(sectorName.String);
+            sectorName = new Hash(other.sectorName.String);
         }
 
         public FrameObjectSector(MemoryStream reader, bool isBigEndian) : base()
@@ -103,7 +110,9 @@ namespace ResourceTypes.FrameResource
 
             planes = new Vector4[planesSize];
             for (int i = 0; i != planes.Length; i++)
+            {
                 planes[i] = Vector4Extenders.ReadFromFile(reader, isBigEndian);
+            }
 
             bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
             unk_13_vector3 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
@@ -119,7 +128,9 @@ namespace ResourceTypes.FrameResource
             writer.Write(planes.Length);
 
             for (int i = 0; i != planes.Length; i++)
+            {
                 planes[i].WriteToFile(writer);
+            }
 
             bounds.WriteToFile(writer);
             unk_13_vector3.WriteToFile(writer);
@@ -130,18 +141,24 @@ namespace ResourceTypes.FrameResource
         public void FillPlanesArray()
         {
             planes = new Vector4[6];
-            planes[0] = new Vector4(-1, 0, 0, bounds.Maximum.X);
-            planes[1] = new Vector4(1, 0, 0, bounds.Maximum.X);
-            planes[2] = new Vector4(0, -1, 0, bounds.Maximum.Y);
-            planes[3] = new Vector4(0, 1, 0, bounds.Maximum.Y);
-            planes[4] = new Vector4(0, 0, -1, bounds.Maximum.Z);
-            planes[5] = new Vector4(0, 0, 1, bounds.Maximum.Z);
-            //planes[0] = new Vector4(0, 1, 0, Math.Abs(bounds.Minimum.X));
-            //planes[1] = new Vector4(1, 0, 0, Math.Abs(bounds.Minimum.Y));
-            //planes[2] = new Vector4(0, 0, -1, bounds.Maximum.Z);
-            //planes[3] = new Vector4(0, 0, 1, Math.Abs(bounds.Minimum.Y));
-            //planes[4] = new Vector4(-1, 0, 0, bounds.Maximum.X);
-            //planes[5] = new Vector4(0, -1, 0, bounds.Maximum.Y);
+            planes[0] = new Vector4(0, 0, 1, Math.Abs(bounds.Minimum.Z));
+            planes[1] = new Vector4(1, 0, 0, Math.Abs(bounds.Maximum.X));
+            planes[2] = new Vector4(0, -1, 0, Math.Abs(bounds.Maximum.Y));
+            planes[3] = new Vector4(0, 1, 0, Math.Abs(bounds.Maximum.Y));
+            planes[4] = new Vector4(0, 0, -1, Math.Abs(bounds.Maximum.Z));
+            planes[5] = new Vector4(-1, 0, 0, Math.Abs(bounds.Maximum.X));
+            //planes[0] = new Vector4(-1, 0, 0, bounds.Maximum.X);
+            //planes[1] = new Vector4(1, 0, 0, bounds.Maximum.X);
+            //planes[2] = new Vector4(0, -1, 0, bounds.Maximum.Y);
+            //planes[3] = new Vector4(0, 1, 0, bounds.Maximum.Y);
+            //planes[4] = new Vector4(0, 0, -1, bounds.Maximum.Z);
+            //planes[5] = new Vector4(0, 0, 1, bounds.Maximum.Z);
+            ////planes[0] = new Vector4(0, 1, 0, Math.Abs(bounds.Minimum.X));
+            ////planes[1] = new Vector4(1, 0, 0, Math.Abs(bounds.Minimum.Y));
+            ////planes[2] = new Vector4(0, 0, -1, bounds.Maximum.Z);
+            ////planes[3] = new Vector4(0, 0, 1, Math.Abs(bounds.Minimum.Y));
+            ////planes[4] = new Vector4(-1, 0, 0, bounds.Maximum.X);
+            ////planes[5] = new Vector4(0, -1, 0, bounds.Maximum.Y);
         }
 
         public override string ToString()

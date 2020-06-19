@@ -62,7 +62,7 @@
     <LangVersion>7.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <StartupObject>Mafia2Tool.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>ECEBC1D26FFB2386CF2C12237C8B7067EEED7348</ManifestCertificateThumbprint>
@@ -182,6 +182,12 @@
     <Compile Include="Controls\ActorItemAddOption.Designer.cs">
       <DependentUpon>ActorItemAddOption.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ControlGameEntry.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ControlGameEntry.Designer.cs">
+      <DependentUpon>ControlGameEntry.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ListWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -212,6 +218,12 @@
     <Compile Include="Controls\TextureEntry.Designer.cs">
       <DependentUpon>TextureEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\EntityDataStorageEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EntityDataStorageEditor.Designer.cs">
+      <DependentUpon>EntityDataStorageEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Docking\DockPropertyGrid.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -229,6 +241,12 @@
     </Compile>
     <Compile Include="Forms\Docking\DockSceneTree.Designer.cs">
       <DependentUpon>DockSceneTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GameSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GameSelector.Designer.cs">
+      <DependentUpon>GameSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\M2FBXTool.cs">
       <SubType>Form</SubType>
@@ -288,6 +306,8 @@
     <Compile Include="MafiaLib\FileTypes\Actors\ActorEntry.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorExtraData.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorFactory.cs" />
+    <Compile Include="MafiaLib\FileTypes\Actors\Types\ActorActionPointScript.cs" />
+    <Compile Include="MafiaLib\FileTypes\Actors\Types\ActorCar.cs" />
     <Compile Include="MafiaLib\FileTypes\BufferTypes\BufferHelpers.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Model.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\OpcodeException.cs" />
@@ -300,8 +320,13 @@
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceXML.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\ItemDescEnums.cs" />
+    <Compile Include="MafiaLib\FileTypes\Material\Enumerator.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\AIWorld\AIWorld.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\AnimalTraffic.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\Enums.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\HPD.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\OBJ_DATA\KynogonRuntimeMesh.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\OBJ_DATA\OBJData.cs" />
     <Compile Include="MafiaLib\FileTypes\SdsConfigFile.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\Actor.cs" />
@@ -389,6 +414,7 @@
     <Compile Include="Gibbed.Mafia2.FileFormats\TEA.cs" />
     <Compile Include="MafiaLib\ModelHelpers\M2TStructure.cs" />
     <Compile Include="MafiaLib\ModelHelpers\ModelDefinition.cs" />
+    <Compile Include="Rendering\Graphics\ConstantBufferFactory.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\IRenderer.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\Render2DPlane.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderATP.cs" />
@@ -397,10 +423,12 @@
     <Compile Include="Rendering\Graphics\RenderTypes\RenderJunction.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderLine.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderNav.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderNavCell.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderRoad.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderStaticCollision.cs" />
     <Compile Include="Rendering\Graphics\Shaders\CollisionShader.cs" />
     <Compile Include="Rendering\Graphics\Shaders\Shader_50760736.cs" />
+    <Compile Include="Rendering\Graphics\WorldSettings.cs" />
     <Compile Include="Rendering\RenderPrefabs.cs" />
     <Compile Include="Rendering\System\FPSClass.cs" />
     <Compile Include="Utils\Helpers\MatrixExtensions.cs" />
@@ -410,9 +438,11 @@
     <Compile Include="Utils\Helpers\LuaHelper.cs" />
     <Compile Include="Utils\Helpers\StreamExtensions.cs" />
     <Compile Include="Utils\Helpers\StringHelpers.cs" />
+    <Compile Include="Utils\Settings\GameStorage.cs" />
     <Compile Include="Utils\Types\Half.cs" />
     <Compile Include="Utils\Helpers\HalfHelper.cs" />
     <Compile Include="Utils\Logger.cs" />
+    <Compile Include="Utils\Types\SDSContentFile.cs" />
     <Compile Include="Utils\Types\Types.cs" />
     <Compile Include="Utils\Helpers\VectorExtensions.cs" />
     <Compile Include="MafiaLib\ModelHelpers\Vertex.cs" />
@@ -434,11 +464,11 @@
     <Compile Include="Controls\FrameResourceAddSceneOption.Designer.cs">
       <DependentUpon>FrameResourceAddSceneOption.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\FrameResourceAddOption.cs">
+    <Compile Include="Controls\ControlOptionFrameAdd.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\FrameResourceAddOption.Designer.cs">
-      <DependentUpon>FrameResourceAddOption.cs</DependentUpon>
+    <Compile Include="Controls\ControlOptionFrameAdd.Designer.cs">
+      <DependentUpon>ControlOptionFrameAdd.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\MaterialAddOption.cs">
       <SubType>UserControl</SubType>
@@ -602,15 +632,45 @@
     <Content Include="Localisations\ru_RU.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\hashes.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\MissingMaterial.dds">
+    <Content Include="Localisations\sk_SK.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\texture.dds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="Resources\cross.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\default_n.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\GizmoModel.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\hashes.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\m2de_logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\m2_logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\MissingMaterial.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\sky_backdrop.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SoundDummy.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\texture.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\tick.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\weather_clouds.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="Shaders\CollisionPS.hlsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -631,8 +691,12 @@
     </Content>
     <None Include="packages.config" />
     <Compile Include="Rendering\Graphics\VertexLayouts.cs" />
-    <None Include="Resources\Splash.png" />
-    <None Include="Resources\Toolkit.ico" />
+    <None Include="Resources\Splash.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Toolkit.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
@@ -651,11 +715,15 @@
       <DependentUpon>ActorItemAddOption.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ControlGameEntry.resx">
+      <DependentUpon>ControlGameEntry.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\ListWindow.resx">
       <DependentUpon>ListWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\FrameResourceModelOptions.resx">
       <DependentUpon>FrameResourceModelOptions.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\RenderOptions.resx">
       <DependentUpon>RenderOptions.cs</DependentUpon>
@@ -666,14 +734,18 @@
     <EmbeddedResource Include="Controls\TextureEntry.resx">
       <DependentUpon>TextureEntry.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EntityDataStorageEditor.resx">
+      <DependentUpon>EntityDataStorageEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\CityShopEditor.resx">
       <DependentUpon>CityShopEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\FrameResourceAddSceneOption.resx">
       <DependentUpon>FrameResourceAddSceneOption.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\FrameResourceAddOption.resx">
-      <DependentUpon>FrameResourceAddOption.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\ControlOptionFrameAdd.resx">
+      <DependentUpon>ControlOptionFrameAdd.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\MaterialAddOption.resx">
@@ -693,6 +765,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Docking\DockSceneTree.resx">
       <DependentUpon>DockSceneTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GameSelector.resx">
+      <DependentUpon>GameSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\M2FBXTool.resx">
       <DependentUpon>M2FBXTool.cs</DependentUpon>

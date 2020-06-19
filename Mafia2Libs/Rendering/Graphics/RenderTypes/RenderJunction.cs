@@ -87,7 +87,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
             {
@@ -96,14 +96,14 @@ namespace Rendering.Graphics
 
             if (Boundary != null)
             {
-                Boundary.Render(device, deviceContext, camera, light);
+                Boundary.Render(device, deviceContext, camera);
             }
 
             if (Splines != null)
             {
                 foreach (var spline in Splines)
                 {
-                    spline.Render(device, deviceContext, camera, light);
+                    spline.Render(device, deviceContext, camera);
                 }
             }
         }

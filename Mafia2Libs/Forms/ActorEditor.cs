@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.Actors;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Settings;
 using Forms.EditorControls;
 using Gibbed.Illusion.FileFormats.Hashing;
@@ -109,7 +109,8 @@ namespace Mafia2Tool
 
         private void SaveButton_OnClick(object sender, System.EventArgs e)
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Open(actorFile.FullName + "EDIT", FileMode.Create)))
+            File.Copy(actorFile.FullName, actorFile.FullName + "_old", true);
+            using (BinaryWriter writer = new BinaryWriter(File.Open(actorFile.FullName, FileMode.Create)))
             {
                 actors.WriteToFile(writer);
             }
@@ -136,7 +137,9 @@ namespace Mafia2Tool
             if (objectForm.ShowDialog() == DialogResult.OK)
             {
                 ActorTypes type = optionControl.GetSelectedType();
+                string def = optionControl.GetDefinitionName();
                 ActorEntry entry = actors.CreateActorEntry(type, objectForm.GetInputText());
+                entry.DefinitionName = def;
 
                 TreeNode node = new TreeNode(entry.EntityName);
                 node.Text = entry.EntityName;

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.Speech;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Settings;
 
 namespace Mafia2Tool

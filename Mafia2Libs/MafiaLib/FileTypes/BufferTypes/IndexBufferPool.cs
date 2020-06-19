@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Utils.Extensions;
@@ -7,118 +8,151 @@ namespace ResourceTypes.BufferPools
 {
     public class IndexBufferManager
     {
-        List<IndexBufferPool> bufferPools;
         List<FileInfo> loadedPoolNames;
+        Dictionary<ulong, IndexBuffer> buffers;
+        DirectoryInfo root;
 
-        public List<IndexBufferPool> BufferPools {
-            get { return bufferPools; }
-            set { bufferPools = value; }
+        public Dictionary<ulong, IndexBuffer> Buffers {
+            get { return buffers; }
         }
+
         public List<FileInfo> LoadedPoolNames {
             get { return loadedPoolNames; }
-            set { loadedPoolNames = value; }
         }
 
         public IndexBufferManager(List<FileInfo> files, bool isBigEndian = false)
         {
             loadedPoolNames = files;
+            buffers = new Dictionary<ulong, IndexBuffer>();
+            if (LoadedPoolNames.Count > 0)
+            {
+                root = loadedPoolNames[0].Directory;
+            }
             ReadFiles(isBigEndian);
         }
 
-        public void AddBuffer(IndexBuffer buffer)
+        public bool AddBuffer(IndexBuffer buffer)
         {
-            int poolToInput = -1;
+            if(!HasBuffer(buffer))
+            {
+                buffers.Add(buffer.Hash, buffer);
+                return true;
+            }
+            return false;
+        }
 
-            for (int i = 0; i != bufferPools.Count; i++)
-            {
-                if (bufferPools[i].Buffers.Count != 128)
-                {
-                    poolToInput = i;
-                }
-            }
-
-            if(poolToInput == -1)
-            {
-                bufferPools.Add(new IndexBufferPool());
-                bufferPools[bufferPools.Count-1].Buffers.Add(buffer.Hash, buffer);
-            }
-            else
-            {
-                bufferPools[poolToInput].Buffers.Add(buffer.Hash, buffer);
-            }
+        public bool HasBuffer(ulong hash)
+        {
+            return buffers.ContainsKey(hash);
         }
 
         public bool HasBuffer(IndexBuffer buffer)
         {
-            for (int i = 0; i < bufferPools.Count; i++)
-            {
-                if (bufferPools[i].Buffers.ContainsValue(buffer))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return HasBuffer(buffer.Hash);
         }
 
         public bool RemoveBuffer(IndexBuffer buffer)
         {
-            for (int i = 0; i < bufferPools.Count; i++)
+            if(HasBuffer(buffer))
             {
-                if (bufferPools[i].Buffers.Remove(buffer.Hash))
-                {
-                    return true;
-                }
+                buffers.Remove(buffer.Hash);
+                return true;
+            }
+            return false;
+        }
+
+        public bool RemoveBuffer(ulong hash)
+        {
+            if (HasBuffer(hash))
+            {
+                buffers.Remove(hash);
+                return true;
+            }
+            return false;
+        }
+
+        public bool ReplaceBuffer(IndexBuffer buffer)
+        {
+            if(HasBuffer(buffer))
+            {
+                buffers[buffer.Hash] = buffer;
+                return true;
             }
             return false;
         }
 
         public void ReadFiles(bool isBigEndian)
         {
-            bufferPools = new List<IndexBufferPool>();
             for (int i = 0; i != loadedPoolNames.Count; i++)
             {
+                IndexBufferPool pool = null;
                 using (MemoryStream stream = new MemoryStream(File.ReadAllBytes(loadedPoolNames[i].FullName), false))
                 {
-                    bufferPools.Add(new IndexBufferPool(stream, isBigEndian));
+                    pool = new IndexBufferPool(stream, isBigEndian);
+                }
+
+                foreach (var buff in pool.Buffers)
+                {
+                    if (!buffers.ContainsKey(buff.Key))
+                    {
+                        buffers.Add(buff.Key, buff.Value);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Skipped a buffer {0}", buff.Key);
+                    }
                 }
             }
         }
 
         public IndexBuffer GetBuffer(ulong indexRef)
         {
-            IndexBuffer buff = null;
-            for (int i = 0; i != bufferPools.Count; i++)
-            {            
-                if (bufferPools[i].Buffers.TryGetValue(indexRef, out buff))
-                {
-                    return buff;
-                }
-            }
-            return buff;
+            return buffers.ContainsKey(indexRef) ? buffers[indexRef] : null;
         }
 
         public void WriteToFile(bool isBigEndian = false)
         {
-            for(int i = 0; i != bufferPools.Count; i++)
+            int numPool = 0;
+            int poolSize = 0;
+            IndexBufferPool pool = new IndexBufferPool();
+
+            foreach(var loaded in loadedPoolNames)
             {
-                if (loadedPoolNames.Count > i)
+                File.Delete(loaded.FullName);
+            }
+            loadedPoolNames.Clear();
+            var buffArray = buffers.Values.ToArray();
+            //var sorted = buffArray.OrderBy(buff => buff.Data.Length);
+            foreach (var buffer in buffArray)
+            {
+                int prePoolSize = (poolSize) + (int)(buffer.GetLength());
+                if (pool.Buffers.Count == 128 || prePoolSize > 920000)
                 {
-                    using(MemoryStream stream = new MemoryStream())
-                    {
-                        bufferPools[i].WriteToFile(stream, isBigEndian);
-                        File.WriteAllBytes(loadedPoolNames[i].FullName, stream.ToArray());
-                    }
+                    string name = Path.Combine(root.FullName, string.Format("IndexBufferPool_{0}.ibp", numPool));
+                    SavePool(pool, name, isBigEndian);
+                    pool = new IndexBufferPool();
+                    numPool++;
+                    prePoolSize = 0;
                 }
-                else
-                {
-                    int offset = 20 + i;
-                    using (MemoryStream stream = new MemoryStream())
-                    {
-                        bufferPools[i].WriteToFile(stream, isBigEndian);
-                        File.WriteAllBytes(loadedPoolNames[0].DirectoryName + "/IndexBufferPool_" + offset + ".ibp", stream.ToArray());
-                    }
-                }
+
+                pool.Buffers.Add(buffer.Hash, buffer);
+                poolSize = prePoolSize;
+            }
+
+            if(pool != null)
+            {
+                string name = Path.Combine(root.FullName, string.Format("IndexBufferPool_{0}.ibp", numPool));
+                SavePool(pool, name, isBigEndian);
+            }           
+        }
+
+        private void SavePool(IndexBufferPool pool, string name, bool isBigEndian)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                pool.WriteToFile(stream, isBigEndian);              
+                File.WriteAllBytes(name, stream.ToArray());
+                loadedPoolNames.Add(new FileInfo(name));
             }
         }
     }
@@ -133,7 +167,6 @@ namespace ResourceTypes.BufferPools
 
         public Dictionary<ulong, IndexBuffer> Buffers {
             get { return buffers; }
-            set { buffers = value; }
         }
 
         public IndexBufferPool(MemoryStream stream, bool isBigEndian)
@@ -158,7 +191,11 @@ namespace ResourceTypes.BufferPools
             for (int i = 0; i != numBuffers; i++)
             {
                 IndexBuffer buffer = new IndexBuffer(stream, isBigEndian);
-                buffers.Add(buffer.Hash, buffer);
+
+                if (!buffers.ContainsKey(buffer.Hash))
+                {
+                    buffers.Add(buffer.Hash, buffer);
+                }
             }
         }
 
@@ -172,7 +209,7 @@ namespace ResourceTypes.BufferPools
             //need to make sure we update total size of buffers.
             for (int i = 0; i != buffers.Count; i++)
             {
-                uint usage = (uint)buffers.ElementAt(i).Value.Data.Length*2;
+                uint usage = (uint)buffers.ElementAt(i).Value.GetLength();
                 size += usage;
             }
             size += 128;
@@ -188,24 +225,19 @@ namespace ResourceTypes.BufferPools
     public class IndexBuffer
     {
         private ulong hash;
+        private int indexFormat;
         private uint length;
-        private ushort[] data;
+        private uint[] data;
 
         public ulong Hash {
             get { return hash; }
             set { hash = value; }
         }
-        public ushort[] Data {
-            get { return data; }
-            set {
-                data = value;
-                length = (uint)(data.Length * 2);
-            }
-        }
 
         public IndexBuffer(ulong hash)
         {
             this.hash = hash;
+            this.indexFormat = 1;
         }
 
         public IndexBuffer(MemoryStream stream, bool isBigEndian)
@@ -216,31 +248,83 @@ namespace ResourceTypes.BufferPools
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             hash = stream.ReadUInt64(isBigEndian);
-            stream.ReadInt32(isBigEndian);
+            indexFormat = stream.ReadInt32(isBigEndian);
             length = stream.ReadUInt32(isBigEndian);
-            data = new ushort[length / 2];
 
-            int num = 0;
-            int index = 0;
-
-            while (num < length)
+            if (indexFormat == 1)
             {
-                data[index] = stream.ReadUInt16(isBigEndian);
-                num += 2;
-                ++index;
+                data = new uint[length / 2];
+
+                int num = 0;
+                int index = 0;
+
+                while (num < length)
+                {
+                    data[index] = stream.ReadUInt16(isBigEndian);
+                    num += 2;
+                    ++index;
+                }
+            }
+            else
+            {
+                data = new uint[length / 4];
+
+                int num = 0;
+                int index = 0;
+
+                while (num < length)
+                {
+                    data[index] = stream.ReadUInt32(isBigEndian);
+                    num += 4;
+                    ++index;
+                }
             }
         }
-        
+
+        public void SetFormat(int format)
+        {
+            indexFormat = format;
+            GetLength();
+        }
+
         public void WriteToFile(MemoryStream stream, bool isBigEndian = false)
         {
             stream.Write(hash, isBigEndian);
-            stream.Write(1, isBigEndian);
+            stream.Write(indexFormat, isBigEndian);
+            GetLength();
             stream.Write(length, isBigEndian);
 
-            for(int i = 0; i != data.Length; i++)
+            if (indexFormat == 1)
             {
-                stream.Write(data[i], isBigEndian);
+                for (int i = 0; i != data.Length; i++)
+                {
+                    stream.Write((ushort)data[i], isBigEndian);
+                }
             }
+            else
+            {
+                for (int i = 0; i != data.Length; i++)
+                {
+                    stream.Write(data[i], isBigEndian);
+                }
+            }
+        }
+
+        public uint[] GetData()
+        {
+            return data;
+        }
+
+        public uint GetLength()
+        {
+            length = (uint)(indexFormat == 2 ? data.Length * 4 : data.Length * 2);
+            return length;
+        }
+
+        public void SetData(uint[] data)
+        {
+            this.data = data;
+            length = (uint)(indexFormat == 2 ? data.Length * 4 : data.Length * 2);
         }
     }
 }

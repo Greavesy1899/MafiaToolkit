@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,36 +17,27 @@ namespace Rendering.Graphics
         OBJData data;
         RenderBoundingBox boundingBox;
         List<RenderLine> lines;
+        OBJData.VertexStruct vertex;
+
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public OBJData.VertexStruct Vertex {
+            get { return vertex; }
+            set { vertex = value; }
+        }
+
+        public RenderBoundingBox BoundingBox {
+            get { return boundingBox; }
+        }
         public void Init(OBJData data, int i)
         {
+            DoRender = true;
             this.data = data;
             lines = new List<RenderLine>();
             boundingBox = new RenderBoundingBox();
-            boundingBox.Init(new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f)));
-            boundingBox.SetTransform(Matrix.Translation(data.vertices[i].position));
-
-            if (data.vertices[i].unk3 < data.vertices.Length)
-            {
-                RenderLine line = new RenderLine();
-                Vector3 pos1 = data.vertices[i].position;
-                Vector3 pos2 = data.vertices[data.vertices[i].unk3].position;
-                line.Init(new Vector3[] { pos1, pos2 });
-                lines.Add(line);
-            }
-
-            if (data.vertices[i].unk4 < data.vertices.Length)
-            {
-                RenderLine line = new RenderLine();
-                line.Init(new Vector3[] { data.vertices[i].position, data.vertices[data.vertices[i].unk4].position });
-                lines.Add(line);
-            }
-
-            if (data.vertices[i].unk5 < data.vertices.Length)
-            {
-                RenderLine line = new RenderLine();
-                line.Init(new Vector3[] { data.vertices[i].position, data.vertices[data.vertices[i].unk5].position });
-                lines.Add(line);
-            }
+            boundingBox.Init(new BoundingBox(new Vector3(-0.1f), new Vector3(0.1f)));
+            boundingBox.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+            boundingBox.SetTransform(Matrix.Translation(data.vertices[i].Position));
+            vertex = data.vertices[i];
         }
 
         public override void InitBuffers(Device d3d, DeviceContext deviceContext)
@@ -61,22 +53,25 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
-            if (boundingBox != null) boundingBox.Render(device, deviceContext, camera, light);
-
-            if (lines != null)
+            if (DoRender)
             {
-                for (int i = 0; i < lines.Count; i++)
+                if (boundingBox != null) boundingBox.Render(device, deviceContext, camera);
+
+                if (lines != null)
                 {
-                    lines[i].Render(device, deviceContext, camera, light);
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        lines[i].Render(device, deviceContext, camera);
+                    }
                 }
             }
         }
 
         public override void Select()
         {
-            throw new NotImplementedException();
+            boundingBox.Select();
         }
 
         public override void SetTransform(Matrix matrix)
@@ -99,7 +94,7 @@ namespace Rendering.Graphics
 
         public override void Unselect()
         {
-            throw new NotImplementedException();
+            boundingBox.Unselect();
         }
 
         public override void UpdateBuffers(Device device, DeviceContext deviceContext)

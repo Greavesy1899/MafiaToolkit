@@ -5,6 +5,8 @@ using System.Linq;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Utils.Extensions;
+using Utils.Settings;
+using Mafia2Tool;
 
 namespace ResourceTypes.FrameResource
 {
@@ -52,7 +54,7 @@ namespace ResourceTypes.FrameResource
             set { frameObjects = value; }
         }
 
-        private int GetBlockCount {
+        public int GetBlockCount {
             get { return frameBlendInfos.Count + frameGeometries.Count + frameMaterials.Count + frameSkeletons.Count + frameSkeletonHierachies.Count + frameScenes.Count; }
         }
 
@@ -396,6 +398,125 @@ namespace ResourceTypes.FrameResource
             }
         }
 
+        private void SaveFrame(FrameObjectBase frame, BinaryWriter writer)
+        {
+            //is this even needed? hmm.
+            if (frame.GetType() == typeof(FrameObjectArea))
+            {
+                writer.Write((ushort)ObjectType.Area);
+                (frame as FrameObjectArea).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectCamera))
+            {
+                writer.Write((ushort)ObjectType.Camera);
+                (frame as FrameObjectCamera).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectCollision))
+            {
+                writer.Write((ushort)ObjectType.Collision);
+                (frame as FrameObjectCollision).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectComponent_U005))
+            {
+                writer.Write((ushort)ObjectType.Collision);
+                (frame as FrameObjectComponent_U005).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectDummy))
+            {
+                writer.Write((ushort)ObjectType.Dummy);
+                (frame as FrameObjectDummy).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectDeflector))
+            {
+                writer.Write((ushort)ObjectType.ParticleDeflector);
+                (frame as FrameObjectDeflector).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectFrame))
+            {
+                writer.Write((ushort)ObjectType.Frame);
+                (frame as FrameObjectFrame).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectJoint))
+            {
+                writer.Write((ushort)ObjectType.Joint);
+                (frame as FrameObjectJoint).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectLight))
+            {
+                writer.Write((ushort)ObjectType.Light);
+                (frame as FrameObjectLight).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectModel))
+            {
+                var mesh = (frame as FrameObjectModel);
+                writer.Write((ushort)ObjectType.Model);
+                mesh.WriteToFile(writer);
+                mesh.Geometry.WriteToFile(writer);
+                mesh.Material.WriteToFile(writer);
+                mesh.BlendInfo.WriteToFile(writer);
+                mesh.Skeleton.WriteToFile(writer);
+                mesh.SkeletonHierarchy.WriteToFile(writer);
+
+                foreach (var lod in mesh.Geometry.LOD)
+                {
+                    using (var stream = new MemoryStream())
+                    {
+                        SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.uHash).WriteToFile(stream, false);
+                        SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.uHash).WriteToFile(stream, false);
+                        writer.Write(stream.ToArray());
+                    }
+                }
+            }
+            else if (frame.GetType() == typeof(FrameObjectSector))
+            {
+                writer.Write((ushort)ObjectType.Sector);
+                (frame as FrameObjectSector).WriteToFile(writer);
+            }
+            else if (frame.GetType() == typeof(FrameObjectSingleMesh))
+            {
+                var mesh = (frame as FrameObjectSingleMesh);
+                writer.Write((ushort)ObjectType.SingleMesh);
+                mesh.WriteToFile(writer);
+                mesh.Geometry.WriteToFile(writer);
+                mesh.Material.WriteToFile(writer);
+
+                foreach (var lod in mesh.Geometry.LOD)
+                {
+                    using (var stream = new MemoryStream())
+                    {
+                        SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.uHash).WriteToFile(stream, false);
+                        SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.uHash).WriteToFile(stream, false);
+                        writer.Write(stream.ToArray());
+                    }
+                }
+            }
+            else if (frame.GetType() == typeof(FrameObjectTarget))
+            {
+                writer.Write((ushort)ObjectType.Target);
+                (frame as FrameObjectTarget).WriteToFile(writer);
+            }
+            else
+            {
+                writer.Write(frame.Type);
+                frame.WriteToFile(writer);
+            }
+
+            writer.Write(frame.Children.Count);
+            for(int i = 0; i < frame.Children.Count; i++)
+            {
+                SaveFrame(frame.Children[i], writer);
+            }
+        }
+
+        public void SaveFramesToFile(FrameObjectBase frame, string file)
+        {
+            string filename = frame.Name.String;
+            using (BinaryWriter writer = new BinaryWriter(File.Open(Path.Combine(ToolkitSettings.ExportPath, filename) + ".framedata", FileMode.Create)))
+            {
+                SaveFrame(frame, writer);
+            }
+        }
+
         private void AddChildren(Dictionary<int, TreeNode> parsedNodes, List<FrameObjectBase> children, TreeNode parentNode)
         {
             foreach (var child in children)
@@ -445,7 +566,7 @@ namespace ResourceTypes.FrameResource
                     continue;
                 }
 
-                if(pair.Value is FrameObjectFrame)
+                if(frame.ParentIndex1.Index == -1 && frame.ParentIndex2.Index == -1)
                 {
                     node = new TreeNode(frame.ToString());
                     node.Tag = frame;
@@ -454,9 +575,19 @@ namespace ResourceTypes.FrameResource
                     parsedNodes.Add(frame.RefID, node);
                     AddChildren(parsedNodes, frame.Children, node);
                 }
-                else
+            }
+
+            foreach (var pair in frameObjects)
+            {
+                if (!parsedNodes.ContainsKey(pair.Key))
                 {
-                    //throw new FormatException("Skipped frame!");
+                    FrameObjectBase frame = (pair.Value as FrameObjectBase);
+                    Debug.WriteLine("Failed " + frame.ToString());
+                    TreeNode node = new TreeNode(frame.ToString());
+                    node.Tag = frame;
+                    node.Name = frame.RefID.ToString();
+                    root.Nodes.Add(node);
+                    //throw new FormatException("Unhandled frame! Name is: " + pair.Value.ToString());
                 }
             }
             return root;
@@ -489,6 +620,10 @@ namespace ResourceTypes.FrameResource
                         obj.Parent = parent;
                         parent.Children.Add(obj);
                     }
+                    else
+                    {
+                        throw new Exception("Unhandled Frame!");
+                    }
                     obj.AddRef(FrameEntryRefTypes.Parent1, obj.ParentIndex1.RefID);
                 }
 
@@ -509,10 +644,13 @@ namespace ResourceTypes.FrameResource
                         obj.Root = parent;
                         if (obj.Parent == null) parent.Children.Add(obj);
                     }
+                    else
+                    {
+                        throw new Exception("Unhandled Frame!");
+                    }
 
                     obj.AddRef(FrameEntryRefTypes.Parent2, obj.ParentIndex2.RefID);
                 }
-
                 obj.SetWorldTransform();
             }
         }

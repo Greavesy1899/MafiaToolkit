@@ -89,6 +89,13 @@ namespace Utils.Types
                 hash = FNV64.Hash(name);
         }
 
+        public int CalculateSize()
+        {
+            int size = 10;
+            size += (_string.Length);
+            return size;
+        }
+
         public override string ToString()
         {
             if (string.IsNullOrEmpty(_string))

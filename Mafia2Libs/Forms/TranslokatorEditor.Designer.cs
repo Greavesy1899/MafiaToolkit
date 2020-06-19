@@ -217,6 +217,7 @@
             this.Controls.Add(this.PropertyGrid);
             this.Controls.Add(this.TranslokatorTree);
             this.Controls.Add(this.toolStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TranslokatorEditor";
             this.Text = "$TRANSLOKATOR_EDITOR";
             this.TranslokatorContext.ResumeLayout(false);

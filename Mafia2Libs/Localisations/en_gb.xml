@@ -21,7 +21,7 @@
   <String ID="$BTN_RUN_MII">Run Mafia II</String>
   <String ID="$EXIT">Exit</String>
   <String ID="$OPTIONS">Options</String>
-  <String ID="$SELECT_MII_FOLDER">Select your MafiaII folder. The folder should contain "launcher.exe"</String>
+  <String ID="$SELECT_MII_FOLDER">Select your MafiaII folder. The folder should contain "mafia2.exe" or "mafia II Definitive Edition.exe"</String>
   <String ID="$ICON">Icon</String>
   <String ID="$DETAILS">Details</String>
   <String ID="$SMALL_ICON">Small Icon</String>
@@ -42,6 +42,13 @@
   <String ID="$FOLDER_PATH_TOOLTIP">Folder Path</String>
   <String ID="$UP_TOOLTIP">Up</String>
   
+  <!-- Game Selector -->
+  <String ID="$START_TOOLKIT">Start Toolkit</String>
+  <String ID="$FOLDER_PATH_LABEL">Game Directory:</String>
+  <String ID="$SELECT_AS_DEFAULT">Skip This Window In The Future</String>
+  <String ID="$SELECT_FOLDER">Select Folder</String>
+  <String ID="$SELECT_GAME">Select Game</String>
+  
   <!-- Main Options Strings-->
   <String ID="$GENERAL">General</String>
   <String ID="$SDS_OPTIONS">SDS Options</String>
@@ -60,6 +67,7 @@
   <String ID="$LANGUAGE_RUSSIAN">русский</String>
   <String ID="$LANGUAGE_CZECH">čeština</String>
   <String ID="$LANGUAGE_POLISH">Polish</String>
+  <String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
   <String ID="$LANGUAGE_OPTION">Interface Language</String>
   <String ID="$DISCORD_STATE_CUSTOM">Use a custom discord state.</String>
   <String ID="$CHECK_FOR_UPDATES">Check for Updates.</String>
@@ -89,6 +97,11 @@
   <String ID="$DECOMPILE_LUA_UNPACK">Decompile lua when unpacking.</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Use SDS Tool GUI Format when unpacking.</String>
   <String ID="$COOK_COLLISIONS">Cook collisions when saving.</String>
+  
+  <!-- Map Editor -->
+  <String ID="$NO_COL_FILE_CREATE_NEW">No Collision file is present. Create new Collision File?</String>
+  <String ID="$CANNOT_CREATE_COL">Cannot add a collision. No Collision file is present!</String>
+  <String ID="$ADD_COLLISION">Add Collision</String>
   
   <!-- Render Options -->
   <String ID="$RENDER">Render</String>
@@ -132,6 +145,7 @@
   <String ID="$FRAME_EDITOR_UPDATE_PARENTS_TT">Choose a scene to add as a parent.</String>
   <String ID="$FRAME_EDITOR_TITLE">FrameResource Editor</String>
   <String ID="$FRADD_TYPE">Frame Type</String>
+  <String ID="$FRADD_NAME_TABLE">Add Frame To Name Table?</String>
   <String ID="$QUESTION_FRADD">Enter the name and type of the frame.</String>
   
   <!-- NewObjForm Form Strings-->
@@ -179,7 +193,7 @@
   <String ID="$TOGGLE_MODELS">Toggle Models</String>
   <String ID="$TOGGLE_COLLISIONS">Toggle Collisions</String>
   <String ID="$TOGGLE_BOXES">Toggle Boxes</String>
-  <String ID="$ADD">Add..</String>
+  <String ID="$ADD">Add Frame</String>
   <String ID="$ADD_SCENE_FOLDER">Add Scene Folder</String>
   <String ID="$ADD_ROAD_SPLINE">Add Road Spline</String>
   <String ID="$VISIBLE">Visible</String>

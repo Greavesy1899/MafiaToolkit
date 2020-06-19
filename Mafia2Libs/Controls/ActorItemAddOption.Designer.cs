@@ -32,6 +32,8 @@
             this.groupGeneral = new System.Windows.Forms.GroupBox();
             this.ActorTypeLabel = new System.Windows.Forms.Label();
             this.TypeCombo = new System.Windows.Forms.ComboBox();
+            this.ActorDefinitionLabel = new System.Windows.Forms.Label();
+            this.DefinitionBox = new System.Windows.Forms.TextBox();
             this.groupGeneral.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -42,11 +44,13 @@
             // groupGeneral
             // 
             this.groupGeneral.AutoSize = true;
+            this.groupGeneral.Controls.Add(this.DefinitionBox);
+            this.groupGeneral.Controls.Add(this.ActorDefinitionLabel);
             this.groupGeneral.Controls.Add(this.ActorTypeLabel);
             this.groupGeneral.Controls.Add(this.TypeCombo);
             this.groupGeneral.Location = new System.Drawing.Point(0, 0);
             this.groupGeneral.Name = "groupGeneral";
-            this.groupGeneral.Size = new System.Drawing.Size(340, 75);
+            this.groupGeneral.Size = new System.Drawing.Size(340, 88);
             this.groupGeneral.TabIndex = 2;
             this.groupGeneral.TabStop = false;
             this.groupGeneral.Text = "$GENERAL";
@@ -54,7 +58,7 @@
             // ActorTypeLabel
             // 
             this.ActorTypeLabel.AutoSize = true;
-            this.ActorTypeLabel.Location = new System.Drawing.Point(6, 27);
+            this.ActorTypeLabel.Location = new System.Drawing.Point(6, 51);
             this.ActorTypeLabel.Name = "ActorTypeLabel";
             this.ActorTypeLabel.Size = new System.Drawing.Size(84, 13);
             this.ActorTypeLabel.TabIndex = 1;
@@ -63,10 +67,26 @@
             // TypeCombo
             // 
             this.TypeCombo.FormattingEnabled = true;
-            this.TypeCombo.Location = new System.Drawing.Point(182, 24);
+            this.TypeCombo.Location = new System.Drawing.Point(182, 48);
             this.TypeCombo.Name = "TypeCombo";
             this.TypeCombo.Size = new System.Drawing.Size(152, 21);
             this.TypeCombo.TabIndex = 0;
+            // 
+            // ActorDefinitionLabel
+            // 
+            this.ActorDefinitionLabel.AutoSize = true;
+            this.ActorDefinitionLabel.Location = new System.Drawing.Point(6, 24);
+            this.ActorDefinitionLabel.Name = "ActorDefinitionLabel";
+            this.ActorDefinitionLabel.Size = new System.Drawing.Size(117, 13);
+            this.ActorDefinitionLabel.TabIndex = 3;
+            this.ActorDefinitionLabel.Text = "$ACTOR_DEFINITION";
+            // 
+            // DefinitionBox
+            // 
+            this.DefinitionBox.Location = new System.Drawing.Point(182, 20);
+            this.DefinitionBox.Name = "DefinitionBox";
+            this.DefinitionBox.Size = new System.Drawing.Size(152, 20);
+            this.DefinitionBox.TabIndex = 4;
             // 
             // ActorItemAddOption
             // 
@@ -87,5 +107,7 @@
         private System.Windows.Forms.GroupBox groupGeneral;
         private System.Windows.Forms.Label ActorTypeLabel;
         private System.Windows.Forms.ComboBox TypeCombo;
+        private System.Windows.Forms.Label ActorDefinitionLabel;
+        private System.Windows.Forms.TextBox DefinitionBox;
     }
 }

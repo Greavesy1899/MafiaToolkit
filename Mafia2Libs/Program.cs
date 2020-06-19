@@ -2,9 +2,10 @@
 using System.IO;
 using System.Windows.Forms;
 using Utils.Settings;
-using Utils.Lang;
+using Utils.Language;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Mafia2Tool.Forms;
 
 namespace Mafia2Tool
 {
@@ -17,9 +18,30 @@ namespace Mafia2Tool
             Application.SetCompatibleTextRenderingDefault(false);
             CheckINIExists();
             ToolkitSettings.ReadINI();
+            GameStorage.Instance.InitStorage();
             Language.ReadLanguageXML();
             CheckLatestRelease();
-            Application.Run(new GameExplorer());
+
+            if(ToolkitSettings.SkipGameSelector)
+            {
+                GameStorage.Instance.SetSelectedGameByIndex(ToolkitSettings.DefaultGame);
+                OpenGameExplorer();
+                return;
+            }
+
+            GameSelector selector = new GameSelector();
+            if(selector.ShowDialog() == DialogResult.OK)
+            {
+                selector.Dispose();
+                OpenGameExplorer();
+            }
+        }
+
+        private static void OpenGameExplorer()
+        {
+            GameExplorer explorer = new GameExplorer();
+            explorer.ShowDialog();
+            explorer.Dispose();
         }
 
         private static void CheckLatestRelease()

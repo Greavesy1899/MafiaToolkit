@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using ResourceTypes.Misc;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Settings;
 using static ResourceTypes.Misc.StreamMapLoader;
 
@@ -14,6 +14,7 @@ namespace Mafia2Tool
     {
         private FileInfo file;
         private StreamMapLoader stream;
+        private object clipboard;
 
         public StreamEditor(FileInfo file)
         {
@@ -34,8 +35,8 @@ namespace Mafia2Tool
             exitToolStripMenuItem.Text = Language.GetString("$EXIT");
             AddLineButton.Text = Language.GetString("$ADD_LINE");
             DeleteLineButton.Text = Language.GetString("$DELETE_LINE");
-            MoveItemDown.Text = Language.GetString("$MOVE_DOWN");
-            MoveItemUp.Text = Language.GetString("$MOVE_UP");
+            MoveItemDownButton.Text = Language.GetString("$MOVE_DOWN");
+            MoveItemUpButton.Text = Language.GetString("$MOVE_UP");
         }
 
         private void Sort(List<StreamLoader> loaders)
@@ -285,10 +286,8 @@ namespace Mafia2Tool
         {
             TreeNode node = linesTree.SelectedNode;
             StreamLine line = new StreamLine();
-            line.Name = "New_Stream_Line";
             line.Group = node.Text;
             line.Flags = "";
-            line.loadList = new StreamLoader[0];
 
             TreeNode child = new TreeNode();
             child.Name = "GroupLoader" + node.Index;
@@ -315,7 +314,7 @@ namespace Mafia2Tool
             }
         }
 
-        private void MoveItemUp_Click(object sender, System.EventArgs e)
+        private void MoveItemUp()
         {
             if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
             {
@@ -335,7 +334,12 @@ namespace Mafia2Tool
             }
         }
 
-        private void MoveItemDown_Click(object sender, System.EventArgs e)
+        private void MoveItemUp_Click(object sender, System.EventArgs e)
+        {
+            MoveItemUp();
+        }
+
+        private void MoveItemDown()
         {
             if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
             {
@@ -355,25 +359,24 @@ namespace Mafia2Tool
             }
         }
 
+        private void MoveItemDown_Click(object sender, System.EventArgs e)
+        {
+            MoveItemDown();
+        }
+
         private void CopyLoadListAbove_Click(object sender, EventArgs e)
         {
             if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
             {
                 if (linesTree.SelectedNode.Tag.GetType() == typeof(StreamLine))
                 {
-                    TreeNode parent = linesTree.SelectedNode.Parent;
                     TreeNode node = linesTree.SelectedNode;
-
-                    int index = parent.Nodes.IndexOf(node);
-                    if (index > 0)
-                    {
-                        TreeNode toCopy = parent.Nodes[index];
-
-                        StreamLine line = (linesTree.SelectedNode.Tag as StreamLine);
-                        StreamLine toCopyLine = (parent.Nodes[index-1].Tag as StreamLine);
-                        line.loadList = toCopyLine.loadList;
-                        linesTree.SelectedNode.Tag = line;
-                    }
+                    StreamLine newLine = new StreamLine((node.Tag as StreamLine));
+                    TreeNode newNode = new TreeNode();
+                    newNode.Name = "GroupLoader" + node.Index;
+                    newNode.Text = newLine.Name;
+                    newNode.Tag = newLine;
+                    node.Parent.Nodes.Insert(node.Index + 1, newNode);
                 }
             }
         }
@@ -393,18 +396,65 @@ namespace Mafia2Tool
                     TreeNode selected = groupTree.SelectedNode;
                     groupTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
                 }
-                //TreeNode selected = StreamLinesPage.SelectedNode;
-                //TranslokatorTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
-
-                //if (selected.Tag is ResourceTypes.Translokator.Object)
-                //{
-                //    for (int i = 0; i < selected.Nodes.Count; i++)
-                //    {
-                //        selected.Nodes[i].Text = selected.Text + " " + i;
-                //    }
-                //}
             }
             Cursor.Current = Cursors.Default;
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if(linesTree.Focused)
+            {
+                if (e.KeyCode == Keys.Delete)
+                {
+                    if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null && linesTree.SelectedNode.Tag is StreamLine)
+                    {
+                        linesTree.Nodes.Remove(linesTree.SelectedNode);
+                    }
+                }
+                else if (e.Control && e.KeyCode == Keys.C)
+                {
+                    Copy();
+                }
+                else if (e.Control && e.KeyCode == Keys.V)
+                {
+                    Paste();
+                }
+                else if(e.Control && e.KeyCode == Keys.U && linesTree.SelectedNode.Tag is StreamLine)
+                {
+                    MoveItemUp();
+                }
+                else if (e.Control && e.KeyCode == Keys.N && linesTree.SelectedNode.Tag is StreamLine)
+                {
+                    MoveItemDown();
+                }
+            }
+        }
+
+        private void Paste()
+        {
+            var data = clipboard;
+            if (data != null)
+            {
+                if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
+                {
+                    var tag = linesTree.SelectedNode.Tag;
+                    if (tag is StreamLine && data is StreamLine)
+                    {
+                        StreamLine newData = new StreamLine(data as StreamLine);
+                        linesTree.SelectedNode.Tag = newData;
+                        linesTree.SelectedNode.Text = newData.Name;
+                    }
+                }
+            }
+            PropertyGrid.SelectedObject = linesTree?.SelectedNode.Tag;
+        }
+
+        private void Copy()
+        {
+            if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
+            {
+                clipboard = linesTree.SelectedNode.Tag;
+            }
         }
     }
 }

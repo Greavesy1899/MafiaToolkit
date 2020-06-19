@@ -73,15 +73,13 @@ namespace ResourceTypes.Collisions
         }
     }
 
-    public class TriangleMeshBuilder : TriangleMesh
+    public class TriangleCooking : TriangleMesh
     {
-        public TriangleMesh Build(IList<Vector3> vertexList, IList<Triangle> triangleList, IList<ushort> materialsList)
+        public TriangleMesh Cook(TriangleMesh mesh)
         {
-            Init(vertexList, triangleList, materialsList);
-
             using (BinaryWriter writer = new BinaryWriter(File.Open("mesh.bin", FileMode.Create)))
             {
-                Save(writer);
+                mesh.Save(writer);
             }
 
             FBXHelper.CookTriangleCollision("mesh.bin", "cook.bin");
@@ -92,12 +90,26 @@ namespace ResourceTypes.Collisions
                 cookedTriangleMesh.Load(reader);
             }
 
-
-            if (File.Exists("mesh.bin")) File.Delete("mesh.bin");
-            if (File.Exists("cook.bin")) File.Delete("cook.bin");
+            if(File.Exists("mesh.bin"))
+            {
+                File.Delete("mesh.bin");
+            }
+            if (File.Exists("cook.bin"))
+            {
+                File.Delete("cook.bin");
+            }
 
             cookedTriangleMesh.Force32BitIndices();
             return cookedTriangleMesh;
+        }
+    }
+    public class TriangleMeshBuilder : TriangleMesh
+    {
+        public TriangleMesh Build(IList<Vector3> vertexList, IList<Triangle> triangleList, IList<ushort> materialsList)
+        {
+            Init(vertexList, triangleList, materialsList);
+            TriangleCooking cooked = new TriangleCooking();
+            return cooked.Cook(this);
         }
 
         private void Init(IList<Vector3> vertexList, IList<Triangle> triangleList, IList<ushort> materialsList)

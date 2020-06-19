@@ -52,69 +52,39 @@ namespace Rendering.Graphics
 
         public void ContructFrustrum()
         {
-            Matrix vp = ProjectionMatrix;
-            float min = -vp.M43 / -vp.M33;
-            float rev = ToolkitSettings.ScreenDepth / (ToolkitSettings.ScreenDepth - min);
-            vp.M33 = rev;
-            vp.M43 = -rev * min;
+            Matrix inverse = Matrix.Invert(ProjectionMatrix);
 
-            vp = ViewMatrix * vp;
+            frustrumPlanes[0] = Plane.Normalize(Plane.Transform(new Plane(0.0f, 0.0f, 1.0f, 0.0f), inverse));
+            frustrumPlanes[1] = Plane.Normalize(Plane.Transform(new Plane(0.0f, 0.0f, -1.0f, 1.0f), inverse));
+            frustrumPlanes[2] = Plane.Normalize(Plane.Transform(new Plane(1.0f, 0.0f, 0.0f, 1.0f), inverse));
+            frustrumPlanes[3] = Plane.Normalize(Plane.Transform(new Plane(-1.0f, 0.0f, 0.0f, 1.0f), inverse));
+            frustrumPlanes[4] = Plane.Normalize(Plane.Transform(new Plane(0.0f, -1.0f, 0.0f, 1.0f), inverse));
+            frustrumPlanes[5] = Plane.Normalize(Plane.Transform(new Plane(0.0f, 1.0f, 0.0f, 1.0f), inverse));
 
-            frustrumPlanes[0] = Plane.Normalize(new Plane((vp.M14 + vp.M11), (vp.M24 + vp.M21), (vp.M34 + vp.M31), (vp.M44 + vp.M41)));
-            frustrumPlanes[1] = Plane.Normalize(new Plane((vp.M14 - vp.M11), (vp.M24 - vp.M21), (vp.M34 - vp.M31), (vp.M44 - vp.M41)));
-            frustrumPlanes[2] = Plane.Normalize(new Plane((vp.M14 - vp.M12), (vp.M24 - vp.M22), (vp.M34 - vp.M32), (vp.M44 - vp.M42)));
-            frustrumPlanes[3] = Plane.Normalize(new Plane((vp.M14 + vp.M12), (vp.M24 + vp.M22), (vp.M34 + vp.M32), (vp.M44 + vp.M42)));
-            frustrumPlanes[4] = Plane.Normalize(new Plane((vp.M13), (vp.M23), (vp.M33), 0.0f));//(vp.M43));
-            frustrumPlanes[5] = Plane.Normalize(new Plane((vp.M14 - vp.M13), (vp.M24 - vp.M23), (vp.M34 - vp.M33), (vp.M44 - vp.M43)));
-
-            //frustrumPlanes[0] = new Plane(matrix.M14 + matrix.M13, matrix.M24 + matrix.M23, matrix.M34 + matrix.M33, matrix.M44 + matrix.M43);
-            //frustrumPlanes[0].Normalize();
-            //frustrumPlanes[1] = new Plane(matrix.M14 - matrix.M13, matrix.M24 - matrix.M23, matrix.M34 - matrix.M33, matrix.M44 - matrix.M43);
-            //frustrumPlanes[1].Normalize();
-            //frustrumPlanes[2] = new Plane(matrix.M14 + matrix.M11, matrix.M24 + matrix.M21, matrix.M34 + matrix.M31, matrix.M44 + matrix.M41);
-            //frustrumPlanes[2].Normalize();
-            //frustrumPlanes[3] = new Plane(matrix.M14 - matrix.M11, matrix.M24 - matrix.M21, matrix.M34 - matrix.M31, matrix.M44 - matrix.M41);
-            //frustrumPlanes[3].Normalize();
-            //frustrumPlanes[4] = new Plane(matrix.M14 - matrix.M12, matrix.M24 - matrix.M22, matrix.M34 - matrix.M32, matrix.M44 - matrix.M42);
-            //frustrumPlanes[4].Normalize();
-            //frustrumPlanes[5] = new Plane(matrix.M14 + matrix.M12, matrix.M24 + matrix.M22, matrix.M34 + matrix.M32, matrix.M44 + matrix.M42);
-            //frustrumPlanes[5].Normalize();
         }
 
         public bool CheckBBoxFrustrum(BoundingBox box)
         {
-            for (int i = 0; i < 6; i++)
+            bool result = false;
+            for (int i = 0; i < 6; i++) 
             {
-                if (Plane.DotCoordinate(frustrumPlanes[i], new Vector3(box.Center.X - box.Size.X, box.Center.Y - box.Size.Y, box.Center.Z - box.Size.Z)) >= 0.0f)
-                    continue;
-                if (Plane.DotCoordinate(frustrumPlanes[i], new Vector3(box.Center.X + box.Size.X, box.Center.Y - box.Size.Y, box.Center.Z - box.Size.Z)) >= 0.0f)
-                    continue;
-                if (Plane.DotCoordinate(frustrumPlanes[i], new Vector3(box.Center.X - box.Size.X, box.Center.Y + box.Size.Y, box.Center.Z - box.Size.Z)) >= 0.0f)
-                    continue;
-                if (Plane.DotCoordinate(frustrumPlanes[i], new Vector3(box.Center.X - box.Size.X, box.Center.Y - box.Size.Y, box.Center.Z + box.Size.Z)) >= 0.0f)
-                    continue;
-                if (Plane.DotCoordinate(frustrumPlanes[i], new Vector3(box.Center.X + box.Size.X, box.Center.Y + box.Size.Y, box.Center.Z - box.Size.Z)) >= 0.0f)
-                    continue;
-                if (Plane.DotCoordinate(frustrumPlanes[i], new Vector3(box.Center.X + box.Size.X, box.Center.Y - box.Size.Y, box.Center.Z + box.Size.Z)) >= 0.0f)
-                    continue;
-                if (Plane.DotCoordinate(frustrumPlanes[i], new Vector3(box.Center.X - box.Size.X, box.Center.Y + box.Size.Y, box.Center.Z + box.Size.Z)) >= 0.0f)
-                    continue;
-                if (Plane.DotCoordinate(frustrumPlanes[i], new Vector3(box.Center.X + box.Size.X, box.Center.Y + box.Size.Y, box.Center.Z + box.Size.Z)) >= 0.0f)
-                    continue;
+                float distance = Vector3.Distance(box.Maximum, frustrumPlanes[i].Normal);
+                float distance2 = Vector3.Distance(box.Minimum, frustrumPlanes[i].Normal);
 
-                return false;
+                if(distance < 0 || distance2 < 0)
+                {
+                    return true;
+                }
             }
-            return true;
+            return result;
         }
 
         public void SetProjectionMatrix(int width, int height)
         {
-            if(width == 0 || height == 0)
-            {
-                width = 1024;
-                height = 768;
-            }
-            ProjectionMatrix = Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(ToolkitSettings.FieldOfView), (width / height), ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
+            width = (width == 0 ? 1024 : width);
+            height = (height == 0 ? 768 : height);
+            float aspectRatio = (float)width / (float)height;
+            ProjectionMatrix = Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(ToolkitSettings.FieldOfView), aspectRatio, ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
         }
 
         public Ray GetPickingRay(Vector2 pos, Vector2 screenDims)

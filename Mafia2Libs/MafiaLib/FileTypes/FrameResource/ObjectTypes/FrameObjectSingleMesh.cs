@@ -23,7 +23,7 @@ namespace ResourceTypes.FrameResource
         private FrameGeometry geometry;
 
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public SingleMeshFlags Flags {
+        public SingleMeshFlags SingleMeshFlags {
             get { return flags; }
             set { flags = value; }
         }

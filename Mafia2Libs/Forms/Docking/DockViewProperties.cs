@@ -1,4 +1,4 @@
-﻿using Utils.Lang;
+﻿using Utils.Language;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Forms.Docking

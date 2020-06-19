@@ -32,6 +32,18 @@ namespace Rendering.Graphics
             vertices = new VertexLayouts.BasicLayout.Vertex[0];
         }
 
+        public void InitSwap(Vector3[] points)
+        {
+            for(int i = 0; i < points.Length; i++)
+            {
+                Vector3 pos = points[i];
+                float y = pos.Y;
+                pos.Y = -pos.Z;
+                pos.Z = y;
+                points[i] = pos;
+            }
+            Init(points);
+        }
         public void Init(Vector3[] points)
         {
             this.points = points;
@@ -69,7 +81,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;

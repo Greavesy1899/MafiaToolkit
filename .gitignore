@@ -21,6 +21,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+[Ii]cons/
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -69,9 +70,7 @@ artifacts/
 *.pidb
 *.svclog
 *.scc
-*.m2t
 *.fbx
-*.png
 
 # Chutzpah Test files
 _Chutzpah*

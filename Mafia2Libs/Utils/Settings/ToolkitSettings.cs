@@ -10,9 +10,6 @@ namespace Utils.Settings
     {
         private static IniFile ini;
 
-        //Directories keys;
-        public static string M2Directory;
-
         //Discord keys;
         public static bool DiscordEnabled;
         public static bool DiscordElapsedTimeEnabled;
@@ -30,15 +27,10 @@ namespace Utils.Settings
         public static bool Experimental;
         public static bool UseMIPS;
         public static float FieldOfView;
-        public const int Width = 1920;
-        public const int Height = 1080;
 
         //Model Exporting keys;
         public static int Format;
         public static string ExportPath;
-
-        //Material Library Keys:
-        public static string MaterialLibs;
 
         //Misc vars;
         private static long ElapsedTime;
@@ -52,14 +44,15 @@ namespace Utils.Settings
         public static bool UseSDSToolFormat;
         public static bool CookCollisions;
         public static bool CheckForUpdates;
-        public static readonly float Version = 2.04f;
+        public static bool SkipGameSelector;
+        public static int DefaultGame;
+        public static readonly float Version = 2.06f;
 
         public static void ReadINI()
         {
             ini = new IniFile();
             ElapsedTime = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
 
-            M2Directory = ReadKey("MafiaII", "Directories");
             TexturePath = ReadKey("TexturePath", "ModelViewer");
             CustomStateText = ReadKey("CustomStateText", "Discord", "Developing mods.");
             bool.TryParse(ReadKey("Enabled", "Discord", "True"), out DiscordEnabled);
@@ -77,13 +70,14 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("Logging", "Misc", "True"), out LoggingEnabled);
             int.TryParse(ReadKey("Language", "Misc", "0"), out Language);
             int.TryParse(ReadKey("Format", "Exporting", "0"), out Format);
+            int.TryParse(ReadKey("DefaultGame", "Misc", "0"), out DefaultGame);
             bool.TryParse(ReadKey("AddTimeDataBackup", "SDS", "True"), out AddTimeDataBackup);
             bool.TryParse(ReadKey("DecompileLUA", "SDS", "False"), out DecompileLUA);
             bool.TryParse(ReadKey("UseSDSToolFormat", "SDS", "False"), out UseSDSToolFormat);
             bool.TryParse(ReadKey("CookCollisions", "SDS", "False"), out CookCollisions);
             bool.TryParse(ReadKey("CheckForUpdates", "Misc", "True"), out CheckForUpdates);
+            bool.TryParse(ReadKey("SkipGameSelector", "Misc", "False"), out SkipGameSelector);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
-            MaterialLibs = ReadKey("MaterialLibs", "Materials", "");
 
 
             ShaderPath = @"Shaders\";
@@ -93,7 +87,7 @@ namespace Utils.Settings
                 InitRichPresence();
         }
 
-        private static string ReadKey(string key, string section, string defaultValue = null)
+        public static string ReadKey(string key, string section, string defaultValue = null)
         {
             if (!ini.KeyExists(key, section))
                 ini.Write(key, defaultValue, section);
@@ -106,6 +100,16 @@ namespace Utils.Settings
         public static void WriteKey(string key, string section, string defaultValue)
         {
             ini.Write(key, defaultValue, section);
+        }
+
+        public static void WriteDirectoryKey(string key, string value)
+        {
+            WriteKey(key, "Directories", value);
+        }
+
+        public static string ReadDirectoryKey(string key)
+        {
+            return ReadKey(key, "Directories", "");
         }
 
         private static void InitRichPresence()

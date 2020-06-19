@@ -2,7 +2,7 @@
 using Gibbed.Mafia2.ResourceFormats;
 using System.Windows.Forms;
 using System;
-using Utils.Lang;
+using Utils.Language;
 using Utils.Extensions;
 using System.Collections.Generic;
 using Gibbed.Illusion.FileFormats.Hashing;
@@ -53,7 +53,11 @@ namespace Mafia2Tool
                 foreach(var hash in hashes)
                 {
                     uint key = FNV32.Hash(hash);
-                    columnNames.Add(key, hash);
+
+                    if (!columnNames.ContainsKey(key))
+                    {
+                        columnNames.Add(key, hash);
+                    }
                 }
             }
             catch(Exception ex)
@@ -81,7 +85,6 @@ namespace Mafia2Tool
             {
                 data.Deserialize(0, reader.BaseStream, Gibbed.IO.Endian.Little);
             }
-
             foreach (TableData.Column column in data.Columns)
             {
                 MTableColumn newCol = new MTableColumn();

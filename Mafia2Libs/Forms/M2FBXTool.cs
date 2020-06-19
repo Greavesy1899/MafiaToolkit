@@ -1,7 +1,7 @@
 ﻿using System;
 using Utils;
 using System.Windows.Forms;
-using Utils.Lang;
+using Utils.Language;
 using System.IO;
 
 namespace Mafia2Tool.Forms
@@ -30,7 +30,7 @@ namespace Mafia2Tool.Forms
             MeshBrowser.FileName = "";
             if (MeshBrowser.ShowDialog() == DialogResult.OK)
             {
-                ImportBox.Text = MeshBrowser.FileName;
+                ImportBox.Text = MeshBrowser.FileName.ToLower();
             }
             else return;
         }
@@ -40,7 +40,7 @@ namespace Mafia2Tool.Forms
             MeshBrowser.FileName = "";
             if (MeshBrowser.ShowDialog() == DialogResult.OK)
             {
-                ExportBox.Text = MeshBrowser.FileName;
+                ExportBox.Text = MeshBrowser.FileName.ToLower();
             }
             else return;
         }

@@ -8,6 +8,7 @@ namespace ResourceTypes.Cutscene
 {
     public interface IAeEntity
     {
+        int GetType();
         bool ReadFromFile(MemoryStream stream, bool isBigEndian);
         bool WriteToFile(MemoryStream writer, bool isBigEndian);
     }
@@ -65,6 +66,11 @@ namespace ResourceTypes.Cutscene
         public bool WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             throw new NotImplementedException();
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 
@@ -157,6 +163,11 @@ namespace ResourceTypes.Cutscene
         {
             throw new NotImplementedException();
         }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
     }
     //AeCameraLink
     public class AeUnk4 : IAeEntity
@@ -202,6 +213,11 @@ namespace ResourceTypes.Cutscene
         public bool WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             throw new NotImplementedException();
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 
@@ -268,17 +284,24 @@ namespace ResourceTypes.Cutscene
         {
             throw new NotImplementedException();
         }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
     }
 
     public class AeModel : IAeEntity
     {
         public readonly static int Type = 6;
 
-        public int Unk01 { get; set; }
+        public short Unk00 { get; set; }
         public string Name1 { get; set; }
-        public ulong Hash0 { get; set; }
-        public ulong Hash1 { get; set; }
         public string Name2 { get; set; }
+        public byte Unk01 { get; set; }
+        public ulong Hash0 { get; set; }
+        public ulong Hash1 { get; set; }     
+        public string Name3 { get; set; }
         public int Unk02 { get; set; }
         public int Unk03 { get; set; }
         public int Unk04 { get; set; }
@@ -286,7 +309,7 @@ namespace ResourceTypes.Cutscene
         public int Unk06 { get; set; }
         public int Unk07 { get; set; }
         public Matrix Transform { get; set; }
-        public string Name3 { get; set; }
+        public string Name4 { get; set; }
 
         public AeModel()
         {
@@ -295,11 +318,13 @@ namespace ResourceTypes.Cutscene
 
         public bool ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            Unk01 = stream.ReadInt32(isBigEndian);
+            Unk00 = stream.ReadInt16(isBigEndian);
             Name1 = stream.ReadString16(isBigEndian);
+            Name2 = stream.ReadString16(isBigEndian);
+            Unk01 = stream.ReadByte8();
             Hash0 = stream.ReadUInt64(isBigEndian);
             Hash1 = stream.ReadUInt64(isBigEndian);
-            Name2 = stream.ReadString16(isBigEndian);
+            Name3 = stream.ReadString16(isBigEndian);
             Unk02 = stream.ReadInt32(isBigEndian);
             Unk03 = stream.ReadInt32(isBigEndian);
             Unk04 = stream.ReadInt32(isBigEndian);
@@ -307,7 +332,7 @@ namespace ResourceTypes.Cutscene
             Unk06 = stream.ReadInt32(isBigEndian);
             Unk07 = stream.ReadInt32(isBigEndian);
             Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
-            Name3 = stream.ReadString16(isBigEndian);
+            Name4 = stream.ReadString16(isBigEndian);
             return true;
         }
 
@@ -315,6 +340,11 @@ namespace ResourceTypes.Cutscene
         {
             throw new NotImplementedException();
             return true;
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 
@@ -334,6 +364,11 @@ namespace ResourceTypes.Cutscene
         {
             throw new NotImplementedException();
         }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
     }
 
     public class AeUnk12 : IAeEntity
@@ -352,6 +387,11 @@ namespace ResourceTypes.Cutscene
         {
             throw new NotImplementedException();
         }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
     }
 
     public class AeUnk13 : IAeEntity
@@ -369,6 +409,11 @@ namespace ResourceTypes.Cutscene
         public bool WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             throw new NotImplementedException();
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 
@@ -417,6 +462,11 @@ namespace ResourceTypes.Cutscene
             throw new NotImplementedException();
             return true;
         }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
     }
 
     public class AeUnk18 : IAeEntity
@@ -435,6 +485,11 @@ namespace ResourceTypes.Cutscene
         {
             throw new NotImplementedException();
         }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
     }
 
     public class AeFrame : IAeEntity
@@ -452,12 +507,74 @@ namespace ResourceTypes.Cutscene
         public int Unk04 { get; set; }
         public int Unk05 { get; set; }
         public byte Unk06 { get; set; }
-        public int Unk07 { get; set; }
-        public int Unk08 { get; set; }
+        public ulong Hash2 { get; set; }
         public Matrix Transform { get; set; }
-        public float Unk09 { get; set; }
-        public float Unk10 { get; set; }
+        public float Unk07 { get; set; }
+        public float Unk08 { get; set; }
         public Matrix Transform1 { get; set; }
+
+        public bool ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            File.WriteAllBytes("frame.bin", stream.ToArray());
+            Unk01 = stream.ReadInt16(isBigEndian);
+            Name1 = stream.ReadString16(isBigEndian);
+            Name2 = stream.ReadString16(isBigEndian);
+
+            if(string.IsNullOrEmpty(Name1))
+            {
+                Unk02 = stream.ReadByte8();
+            }
+            
+            Hash0 = stream.ReadUInt64(isBigEndian);
+            Hash1 = stream.ReadUInt64(isBigEndian);
+            Name3 = stream.ReadString16(isBigEndian);
+            Unk03 = stream.ReadInt32(isBigEndian);
+            Unk04 = stream.ReadInt32(isBigEndian);
+            Unk05 = stream.ReadInt32(isBigEndian);
+            Unk06 = stream.ReadByte8();
+            Hash2 = stream.ReadUInt64(isBigEndian);
+            Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            Unk07 = stream.ReadSingle(isBigEndian);
+            Unk08 = stream.ReadSingle(isBigEndian);
+            Transform1 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            return true;
+        }
+
+        public bool WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            throw new NotImplementedException();
+            return true;
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
+        }
+    }
+
+    public class AeUnk23 : IAeEntity
+    {
+        public readonly static int Type = 23;
+
+        public short Unk01 { get; set; }
+        public string Name1 { get; set; }
+        public string Name2 { get; set; }
+        public byte Unk02 { get; set; }
+        public ulong Hash0 { get; set; }
+        public ulong Hash1 { get; set; }
+        public string Name3 { get; set; }
+        public int Unk03 { get; set; }
+        public int Unk04 { get; set; }
+        public int Unk05 { get; set; }
+        public byte Unk06 { get; set; }
+        public ulong Unk07 { get; set; }
+        public ulong Unk08 { get; set; }
+        public Matrix Transform { get; set; }
+        public string Name4 { get; set; }
+        public AeUnk23()
+        {
+
+        }
 
         public bool ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
@@ -472,12 +589,10 @@ namespace ResourceTypes.Cutscene
             Unk04 = stream.ReadInt32(isBigEndian);
             Unk05 = stream.ReadInt32(isBigEndian);
             Unk06 = stream.ReadByte8();
-            Unk07 = stream.ReadInt32(isBigEndian);
-            Unk08 = stream.ReadInt32(isBigEndian);
+            Unk07 = stream.ReadUInt64(isBigEndian);
+            Unk08 = stream.ReadUInt64(isBigEndian);
             Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
-            Unk09 = stream.ReadSingle(isBigEndian);
-            Unk10 = stream.ReadSingle(isBigEndian);
-            Transform1 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            Name4 = stream.ReadString16(isBigEndian);
             return true;
         }
 
@@ -486,54 +601,10 @@ namespace ResourceTypes.Cutscene
             throw new NotImplementedException();
             return true;
         }
-    }
 
-    public class AeUnk23 : IAeEntity
-    {
-        public readonly static int Type = 23;
-
-        public short Unk01 { get; set; }
-        public string Name1 { get; set; }
-        public byte Unk02 { get; set; }
-        public ulong Hash0 { get; set; }
-        public ulong Hash1 { get; set; }
-        public string Name2 { get; set; }
-        public int Unk03 { get; set; }
-        public int Unk04 { get; set; }
-        public int Unk05 { get; set; }
-        public byte Unk06 { get; set; }
-        public int Unk07 { get; set; }
-        public int Unk08 { get; set; }
-        public Matrix Transform { get; set; }
-        public string Name3 { get; set; }
-        public AeUnk23()
+        int IAeEntity.GetType()
         {
-
-        }
-
-        public bool ReadFromFile(MemoryStream stream, bool isBigEndian)
-        {
-            Unk01 = stream.ReadInt16(isBigEndian);
-            Name1 = stream.ReadString16(isBigEndian);
-            Name2 = stream.ReadString16(isBigEndian);
-            Unk02 = stream.ReadByte8();
-            Hash0 = stream.ReadUInt64(isBigEndian);
-            Hash1 = stream.ReadUInt64(isBigEndian);
-            Unk03 = stream.ReadInt32(isBigEndian);
-            Unk04 = stream.ReadInt32(isBigEndian);
-            Unk05 = stream.ReadInt32(isBigEndian);
-            Unk06 = stream.ReadByte8();
-            Unk07 = stream.ReadInt32(isBigEndian);
-            Unk08 = stream.ReadInt32(isBigEndian);
-            Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
-            Name3 = stream.ReadString16(isBigEndian); 
-            return true;
-        }
-
-        public bool WriteToFile(MemoryStream stream, bool isBigEndian)
-        {
-            throw new NotImplementedException();
-            return true;
+            return Type;
         }
     }
 
@@ -552,6 +623,11 @@ namespace ResourceTypes.Cutscene
         public bool WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             throw new NotImplementedException();
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 
@@ -623,6 +699,11 @@ namespace ResourceTypes.Cutscene
         public bool WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             throw new NotImplementedException();
+        }
+
+        int IAeEntity.GetType()
+        {
+            return Type;
         }
     }
 }

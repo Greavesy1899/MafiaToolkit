@@ -87,7 +87,9 @@ namespace ResourceTypes.FrameResource
             planes = new Vector4[planesSize];
 
             for (int i = 0; i != planes.Length; i++)
+            {
                 planes[i] = Vector4Extenders.ReadFromFile(reader, isBigEndian);
+            }
 
             bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
         }
@@ -99,7 +101,9 @@ namespace ResourceTypes.FrameResource
             writer.Write(planes.Length);
 
             for (int i = 0; i != planes.Length; i++)
+            {
                 planes[i].WriteToFile(writer);
+            }
 
             bounds.WriteToFile(writer);
         }

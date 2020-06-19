@@ -16,6 +16,7 @@ struct VS_INPUT
 	float4 Position : POSITION;
     float3 Normal : NORMAL;
 	float3 Tangent : TANGENT;
+    float3 Binormal : BINORMAL;
 	float2 TexCoord0 : TEXCOORD0;
 	float2 TexCoord7 : TEXCOORD1;
 };
@@ -49,12 +50,16 @@ VS_OUTPUT LightVertexShader(VS_INPUT input)
 	// Store the texture coordinates for the pixel shader.
 	output.TexCoord0 = input.TexCoord0;
 	output.TexCoord7 = input.TexCoord7;
-
+    
 	// Calculate the normal vector against the world matrix only.
-	output.Normal = mul(input.Normal, (float3x3)worldMatrix);
-
-	// Normalize the normal vector.
-	output.Normal = normalize(output.Normal);
+    output.Normal = mul(input.Normal, (float3x3) worldMatrix);
+    output.Normal = normalize(output.Normal);
+    
+    output.Tangent = mul(input.Tangent, (float3x3) worldMatrix);
+    output.Tangent = normalize(output.Tangent);
+    
+    output.Binormal = mul(input.Binormal, (float3x3) worldMatrix);
+    output.Binormal = normalize(output.Binormal);
 
 	// Calculate the position of the vertex in the world.
 	worldPosition = mul(input.Position, worldMatrix);

@@ -20,7 +20,7 @@ namespace Rendering
             GizmoBlue.MaterialHash = 1338;
             GizmoGreen.MaterialName = "GizmoGreen";
             GizmoGreen.MaterialHash = 1339;
-            GizmoRed.UFO1 = GizmoBlue.UFO1 = GizmoGreen.UFO1 = 128;
+            GizmoRed.Unk0 = GizmoBlue.Unk0 = GizmoGreen.Unk0 = 128;
             GizmoRed.ShaderID = GizmoBlue.ShaderID = GizmoGreen.ShaderID = 3854590933660942049;
             GizmoRed.ShaderHash = GizmoBlue.ShaderHash = GizmoGreen.ShaderHash = 601151254;
 

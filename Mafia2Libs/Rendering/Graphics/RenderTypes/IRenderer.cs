@@ -1,4 +1,5 @@
-﻿using SharpDX;
+﻿using Rendering.Sys;
+using SharpDX;
 using SharpDX.Direct3D11;
 using Utils.Types;
 
@@ -18,7 +19,7 @@ namespace Rendering.Graphics
         public abstract void InitBuffers(Device d3d, DeviceContext deviceContext);
         public abstract void SetTransform(Matrix matrix);
         public abstract void UpdateBuffers(Device device, DeviceContext deviceContext);
-        public abstract void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light);
+        public abstract void Render(Device device, DeviceContext deviceContext, Camera camera);
         public abstract void Shutdown();
 
     }

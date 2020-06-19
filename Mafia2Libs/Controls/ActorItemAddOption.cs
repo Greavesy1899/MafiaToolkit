@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using Utils.Lang;
+using Utils.Language;
 using ResourceTypes.Actors;
 
 namespace Forms.EditorControls
@@ -14,6 +14,7 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.C_TrafficCar);
             TypeCombo.Items.Add(ActorTypes.C_TrafficHuman);
             TypeCombo.Items.Add(ActorTypes.C_TrafficTrain);
+            TypeCombo.Items.Add(ActorTypes.ActionPointScript);
             TypeCombo.Items.Add(ActorTypes.C_Item);
             TypeCombo.Items.Add(ActorTypes.C_Door);
             TypeCombo.Items.Add(ActorTypes.C_Sound);
@@ -31,6 +32,12 @@ namespace Forms.EditorControls
         {
             groupGeneral.Text = Language.GetString("$GENERAL");
             ActorTypeLabel.Text = Language.GetString("$ACTOR_TYPE");
+            ActorDefinitionLabel.Text = Language.GetString("$ACTOR_DEFINITION_NAME");
+        }
+
+        public string GetDefinitionName()
+        {
+            return DefinitionBox.Text;
         }
 
         public ActorTypes GetSelectedType()

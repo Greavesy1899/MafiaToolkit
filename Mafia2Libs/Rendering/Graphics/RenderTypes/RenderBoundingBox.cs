@@ -1,7 +1,6 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
-using Utils.Types;
 
 namespace Rendering.Graphics
 {
@@ -16,61 +15,44 @@ namespace Rendering.Graphics
         public RenderBoundingBox()
         {
             DoRender = true;
-            SetTransform(new Matrix());
+            SetTransform(Matrix.Identity);
             colour = new Vector4(1.0f);
         }
 
+        public bool InitSwap(BoundingBox bbox)
+        {
+            Vector3 pos = bbox.Maximum;
+            float y = pos.Y;
+            pos.Y = -pos.Z;
+            pos.Z = y;
+            bbox.Maximum = pos;
+
+            pos = bbox.Minimum;
+            y = pos.Y;
+            pos.Y = -pos.Z;
+            pos.Z = y;
+            bbox.Minimum = pos;
+
+            return Init(bbox);
+        }
         public bool Init(BoundingBox bbox)
         {
             this.bbox = bbox;
 
             vertices = new VertexLayouts.BasicLayout.Vertex[8];
-            //1
-            vertices[0].Position = new Vector3(BBox.Minimum.X, BBox.Minimum.Y, BBox.Maximum.Z);
-            vertices[0].Colour = colour;
 
-            //2
-            vertices[1].Position = new Vector3(BBox.Maximum.X, BBox.Minimum.Y, BBox.Maximum.Z);
-            vertices[1].Colour = colour;
-
-            //3
-            vertices[2].Position = new Vector3(BBox.Minimum.X, BBox.Minimum.Y, BBox.Minimum.Z);
-            vertices[2].Colour = colour;
-
-            //4
-            vertices[3].Position = new Vector3(BBox.Maximum.X, BBox.Minimum.Y, BBox.Minimum.Z);
-            vertices[3].Colour = colour;
-
-            //5
-            vertices[4].Position = new Vector3(BBox.Minimum.X, BBox.Maximum.Y, BBox.Maximum.Z);
-            vertices[4].Colour = colour;
-
-            //6
-            vertices[5].Position = new Vector3(BBox.Maximum.X, BBox.Maximum.Y, BBox.Maximum.Z);
-            vertices[5].Colour = colour;
-
-
-            //7
-            vertices[6].Position = new Vector3(BBox.Minimum.X, BBox.Maximum.Y, BBox.Minimum.Z);
-            vertices[6].Colour = colour;
-
-            //8
-            vertices[7].Position = new Vector3(BBox.Maximum.X, BBox.Maximum.Y, BBox.Minimum.Z);
-            vertices[7].Colour = colour;
+            Vector3[] corners = bbox.GetCorners();
+            for(int i = 0; i < corners.Length; i++)
+            {
+                vertices[i] = new VertexLayouts.BasicLayout.Vertex();
+                vertices[i].Position = corners[i];
+                vertices[i].Colour = colour;
+            }
 
             indices = new ushort[] {
-            0, 2, 3,
-            3, 1, 0,
-            4, 5, 7,
-            7, 6, 4,
-            0, 1, 5,
-            5, 4, 0,
-            1, 3, 7,
-            7, 5, 1,
-            3, 2, 6,
-            6, 7, 3,
-            2, 0, 4,
-            4, 6, 2
+                0, 1, 1, 2, 2, 3, 3, 0, // Front edges
+                4, 5, 5, 6, 6, 7, 7, 4, // Back edges
+                0, 4, 1, 5, 2, 6, 3, 7 // Side edges connecting front and back
             };
 
             shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
@@ -89,9 +71,10 @@ namespace Rendering.Graphics
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
         }
 
-        public void SetColour(Vector4 vec)
+        public void SetColour(Vector4 vec, bool update = false)
         {
             colour = vec;
+            isUpdatedNeeded = update;
         }
 
         public override void SetTransform(Matrix matrix)
@@ -99,7 +82,7 @@ namespace Rendering.Graphics
             this.Transform = matrix;
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;
@@ -109,7 +92,7 @@ namespace Rendering.Graphics
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
 
             shader.SetSceneVariables(deviceContext, Transform, camera);
-            shader.Render(deviceContext, PrimitiveTopology.LineList, 36, 0);
+            shader.Render(deviceContext, PrimitiveTopology.LineList, indices.Length, 0);
         }
 
         public override void Shutdown()
@@ -130,25 +113,30 @@ namespace Rendering.Graphics
                 dataBox = deviceContext.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
                 Utilities.Write(dataBox.DataPointer, vertices, 0, vertices.Length);
                 deviceContext.UnmapSubresource(vertexBuffer, 0);
-                dataBox = deviceContext.MapSubresource(indexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-                Utilities.Write(dataBox.DataPointer, indices, 0, indices.Length);
-                deviceContext.UnmapSubresource(indexBuffer, 0);
                 isUpdatedNeeded = false;
             }
         }
 
         public override void Select()
         {
-            for(int i = 0; i < vertices.Length; i++)
-                vertices[i].Colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+            colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i].Colour = colour;
+            }
 
             isUpdatedNeeded = true;
         }
 
         public override void Unselect()
         {
+            colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+
             for (int i = 0; i < vertices.Length; i++)
-                vertices[i].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+            {
+                vertices[i].Colour = colour;
+            }
 
             isUpdatedNeeded = true;
         }

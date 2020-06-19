@@ -1,10 +1,7 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
-using System;
-using Utils.Types;
 using ResourceTypes.Collisions;
-using static ResourceTypes.Collisions.Collision;
 using Buffer = SharpDX.Direct3D11.Buffer;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +16,13 @@ namespace Rendering.Graphics
         public uint[] Indices { get; private set; }
         public BaseShader Shader;
         private CollisionMaterials[] materials;
-
+        public Vector3 SelectionColour { get; private set; }
         public RenderStaticCollision()
         {
             DoRender = true;
             Transform = Matrix.Identity;
             BoundingBox = new RenderBoundingBox();
+            SelectionColour = new Vector3(1.0f);
         }
 
         public override void InitBuffers(Device d3d, DeviceContext context)
@@ -108,9 +106,9 @@ namespace Rendering.Graphics
                         Vertices[triangleMesh.Triangles[i].v2].Colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
                         break;
                     default:
-                        Vertices[triangleMesh.Triangles[i].v0].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
-                        Vertices[triangleMesh.Triangles[i].v1].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
-                        Vertices[triangleMesh.Triangles[i].v2].Colour = new Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+                        Vertices[triangleMesh.Triangles[i].v0].Colour = new Vector4(1.0f);
+                        Vertices[triangleMesh.Triangles[i].v1].Colour = new Vector4(1.0f);
+                        Vertices[triangleMesh.Triangles[i].v2].Colour = new Vector4(1.0f);
                         break;
 
                 }
@@ -146,16 +144,17 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;
 
-            BoundingBox.Render(device, deviceContext, camera, light);
+            BoundingBox.Render(device, deviceContext, camera);
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.CollisionLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             Shader.SetSceneVariables(deviceContext, Transform, camera);
+            Shader.SetShaderParameters(device, deviceContext, new BaseShader.MaterialParameters(null, SelectionColour));
             Shader.Render(deviceContext, PrimitiveTopology.TriangleList, Indices.Length, 0);
         }
 
@@ -190,12 +189,14 @@ namespace Rendering.Graphics
         public override void Select()
         {
             BoundingBox.Select();
+            SelectionColour = new Vector3(1.0f, 0.0f, 0.0f);
             BoundingBox.DoRender = true;
         }
 
         public override void Unselect()
         {
             BoundingBox.Unselect();
+            SelectionColour = new Vector3(1.0f, 1.0f, 1.0f);
             BoundingBox.DoRender = false;
         }
     }

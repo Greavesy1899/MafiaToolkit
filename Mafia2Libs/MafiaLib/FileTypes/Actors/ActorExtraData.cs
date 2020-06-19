@@ -43,106 +43,14 @@ namespace ResourceTypes.Actors
 
             uint bufferLength = reader.ReadUInt32();
             buffer = reader.ReadBytes((int)bufferLength);
-            bool parsed = false;
             using (MemoryStream stream = new MemoryStream(buffer))
             {
                 bool isBigEndian = false; //we'll change this once console parsing is complete.
-                if (bufferType == ActorTypes.C_Pinup && bufferLength == 4)
-                {
-                    data = new ActorPinup(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.C_ActorDetector && bufferLength == 20)
-                {
-                    data = new ActorActorDetector(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.C_ScriptEntity && bufferLength == 100)
-                {
-                    data = new ActorScriptEntity(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.Radio && bufferLength == 1028)
-                {
-                    data = new ActorRadio(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.Airplane && bufferLength == 4)
-                {
-                    data = new ActorAircraft(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.SpikeStrip && bufferLength == 4)
-                {
-                    data = new ActorSpikeStrip(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.C_Door && bufferLength == 364)
-                {
-                    data = new ActorDoor(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if(bufferType == ActorTypes.FrameWrapper && bufferLength == 4)
-                {
-                    data = new ActorFrameWrapper(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.Wardrobe && bufferLength == 208)
-                {
-                    data = new ActorWardrobe(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.C_TrafficTrain && bufferLength == 180)
-                {
-                    data = new ActorTrafficTrain(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.C_TrafficHuman && bufferLength == 160)
-                {
-                    data = new ActorTrafficHuman(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.C_TrafficCar && bufferLength == 220)
-                {
-                    data = new ActorTrafficCar(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.C_StaticParticle && bufferLength == 16)
-                {
-                    data = new ActorStaticParticle(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.StaticEntity && bufferLength == 4)
-                {
-                    data = new ActorStaticEntity(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.LightEntity && bufferLength == 2316)
-                {
-                    data = new ActorLight(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.C_Item && bufferLength == 152)
-                {
-                    data = new ActorItem(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.C_Sound && bufferLength == 592)
-                {
-                    data = new ActorSoundEntity(stream, isBigEndian);
-                    parsed = true;
-                }
-                else if (bufferType == ActorTypes.CleanEntity && bufferLength == 20)
-                {
-                    data = new ActorCleanEntity(stream, isBigEndian);
-                    parsed = true;
-                }
-
+                data = ActorFactory.LoadExtraData(bufferType, stream, isBigEndian);
                 Debug.Assert(bufferLength == stream.Length);
             }
 
-            if (parsed)
-                buffer = null;
+            buffer = (data == null ? buffer : null);
         }
         public void WriteToFile(BinaryWriter writer)
         {
