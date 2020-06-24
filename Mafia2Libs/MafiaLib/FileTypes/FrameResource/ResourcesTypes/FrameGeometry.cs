@@ -12,7 +12,6 @@ namespace ResourceTypes.FrameResource
         Vector3 decompressionOffset;
         float decompressionFactor;
         FrameLOD[] lod;
-        int unk02_int;
 
         public byte NumLods {
             get { return numLods; }
@@ -33,10 +32,6 @@ namespace ResourceTypes.FrameResource
         public FrameLOD[] LOD {
             get { return lod; }
             set { lod = value; }
-        }
-        public int Unk02 {
-            get { return unk02_int; }
-            set { unk02_int = value; }
         }
 
         /// <summary>

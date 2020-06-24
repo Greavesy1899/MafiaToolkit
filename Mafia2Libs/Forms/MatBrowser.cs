@@ -13,8 +13,8 @@ namespace Mafia2Tool.Forms
         public MatBrowser()
         {
             InitializeComponent();
-            //Init();
-            //ShowDialog();
+            Init();
+            ShowDialog();
         }
 
         public bool ThumbnailCallback()
@@ -22,20 +22,28 @@ namespace Mafia2Tool.Forms
             return false;
         }
 
-        public void Init()
+        private void Init()
         {
-            for(int i = 0; i < 1; i++)
+            // Populate Material Libraries;
+            for(int i = 0; i < MaterialsManager.MaterialLibraries.Count; i++)
             {
-                var mtl = MaterialsManager.MaterialLibraries.ElementAt(i).Value;
+                var lib = MaterialsManager.MaterialLibraries.ElementAt(i).Value;
+                ComboBox_Materials.Items.Add(lib.Name);
+            }
 
-                for (int x = 0; x < 20; x++)
-                {
-                    var mat = mtl.Materials.ElementAt(x).Value;
-                    TextureEntry textEntry = new TextureEntry();
-                    textEntry.SetMaterialName(mat.MaterialName);
-                    textEntry.SetMaterialTexture(GetThumbnail(mat));
-                    flowLayoutPanel1.Controls.Add(textEntry);
-                }
+            PopulateBrowser(0);
+        }
+
+        private void PopulateBrowser(int index)
+        {
+            var mtl = MaterialsManager.MaterialLibraries.ElementAt(index).Value;
+            for (int x = 0; x < 20; x++)
+            {
+                var mat = mtl.Materials.ElementAt(x).Value;
+                TextureEntry textEntry = new TextureEntry();
+                textEntry.SetMaterialName(mat.MaterialName);
+                textEntry.SetMaterialTexture(GetThumbnail(mat));
+                FlowPanel_Materials.Controls.Add(textEntry);
             }
         }
 
@@ -87,7 +95,7 @@ namespace Mafia2Tool.Forms
         void UsersGrid_WasClicked(object sender, EventArgs e)
         {
             // Set IsSelected for all UCs in the FlowLayoutPanel to false. 
-            foreach (Control c in flowLayoutPanel1.Controls)
+            foreach (Control c in FlowPanel_Materials.Controls)
             {
                 if (c is TextureEntry)
                 {

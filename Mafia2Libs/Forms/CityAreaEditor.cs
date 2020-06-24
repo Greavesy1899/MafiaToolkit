@@ -11,7 +11,6 @@ namespace Mafia2Tool
     {
         private FileInfo cityAreasFile;
         private CityAreas areas;
-        private int curIndex = -1;
 
         public CityAreaEditor(FileInfo file)
         {
@@ -32,13 +31,6 @@ namespace Mafia2Tool
             ExitButton.Text = Language.GetString("$EXIT");
             toolButton.Text = Language.GetString("$TOOLS");
             AddAreaButton.Text = Language.GetString("$ADD_AREA");
-            AreaGroupBox.Text = Language.GetString("$AREA_DATA");
-            Area1Label.Text = Language.GetString("$AREA_1");
-            Area2Label.Text = Language.GetString("$AREA_2");
-            AreaNameLabel.Text = Language.GetString("$AREA_NAME");
-            UnkByteLabel.Text = Language.GetString("$UNK_BYTE");
-            SaveAreaButton.Text = Language.GetString("$SAVE_AREA");
-            ReloadAreaButton.Text = Language.GetString("$RELOAD_AREA");
         }
 
         private void BuildData()
@@ -47,7 +39,7 @@ namespace Mafia2Tool
 
             for (int i = 0; i != areas.AreaCollection.Count; i++)
             {
-                listBox1.Items.Add(areas.AreaCollection[i].Name);
+                ListBox_Areas.Items.Add(areas.AreaCollection[i]);
             }
         }
 
@@ -56,8 +48,8 @@ namespace Mafia2Tool
             CityAreas.AreaData area = new CityAreas.AreaData();
             area.Create();
             areas.AreaCollection.Add(area);
-            listBox1.Items.Add(area.Name);
-            listBox1.SelectedIndex = areas.AreaCollection.Count - 1;
+            ListBox_Areas.Items.Add(area);
+            ListBox_Areas.SelectedItem = area;
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
@@ -81,51 +73,57 @@ namespace Mafia2Tool
 
         private void UpdateAreaData(object sender, EventArgs e)
         {
-            if (listBox1.SelectedIndex != -1)
+            if (ListBox_Areas.SelectedIndex != -1)
             {
-                curIndex = listBox1.SelectedIndex;
+                PropertyGrid_Area.SelectedObject = ListBox_Areas.SelectedItem;
             }
-
-            AreaNameBox.Text = areas.AreaCollection[curIndex].Name;
-            Area1Box.Text = areas.AreaCollection[curIndex].IndexedString;
-            Area2Box.Text = areas.AreaCollection[curIndex].IndexedString2;
-            UnkByteBox.Checked = Convert.ToBoolean(areas.AreaCollection[curIndex].UnkByte);
-        }
-
-        private void SaveArea_Clicked(object sender, EventArgs e)
-        {
-            areas.AreaCollection[curIndex].Name = AreaNameBox.Text;
-            areas.AreaCollection[curIndex].IndexedString = Area1Box.Text;
-            areas.AreaCollection[curIndex].IndexedString2 = Area2Box.Text;
-            areas.AreaCollection[curIndex].UnkByte = Convert.ToByte(UnkByteBox.Checked);
-            listBox1.Items[curIndex] = AreaNameBox.Text;
-        }
-
-        private void ReloadArea_Click(object sender, EventArgs e)
-        {
-            UpdateAreaData(null, null);
         }
 
         private void DeleteArea_Click(object sender, EventArgs e)
         {
-            //just a testing thing right now
-            if(listBox1.SelectedIndex != 1)
+            if(ListBox_Areas.SelectedItem != null)
             {
-                listBox1.Items.RemoveAt(listBox1.SelectedIndex);
-            }
-            else if (listBox1.SelectedItem != null)
-            {
-                listBox1.Items.Remove(listBox1.SelectedItem);
+                areas.AreaCollection.Remove((CityAreas.AreaData)ListBox_Areas.SelectedItem);
+                ListBox_Areas.Items.Remove(ListBox_Areas.SelectedItem);
             }
         }
 
         private void Clear()
         {
-            listBox1.Items.Clear();
-            AreaNameBox.Clear();
-            Area1Box.Clear();
-            Area2Box.Clear();
-            UnkByteBox.Checked = false;
+            ListBox_Areas.Items.Clear();
+        }
+
+        private void PropertyGrid_Area_ValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            var area = (ListBox_Areas.SelectedItem as CityAreas.AreaData);
+            var index = ListBox_Areas.SelectedIndex;
+            ListBox_Areas.Items.RemoveAt(index);
+            ListBox_Areas.Items.Insert(index, area);
+            ListBox_Areas.SelectedItem = area;
+        }
+
+        private void Button_Search_OnClick(object sender, EventArgs e)
+        {
+            var text = TextBox_Search.Text;
+            var textUpper = text.ToUpper();
+            var textLower = text.ToLower();
+            var bIsSearching = !string.IsNullOrEmpty(text);
+            ListBox_Areas.Items.Clear();
+
+            foreach(var area in areas.AreaCollection)
+            {
+                if (bIsSearching)
+                {
+                    if (area.Name.Contains(text) || area.Name.Contains(textLower) || area.Name.Contains(textUpper))
+                    {
+                        ListBox_Areas.Items.Add(area);
+                    }
+                }
+                else
+                {
+                    ListBox_Areas.Items.Add(area);
+                }
+            }
         }
     }
 }

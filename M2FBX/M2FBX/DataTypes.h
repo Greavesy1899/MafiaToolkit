@@ -21,9 +21,9 @@ enum VertexFlags
 };
 
 typedef struct {
-	unsigned short i1;
-	unsigned short i2;
-	unsigned short i3;
+	unsigned int i1;
+	unsigned int i2;
+	unsigned int i3;
 } Int3;
 typedef struct {
 	float x;

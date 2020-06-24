@@ -15,7 +15,7 @@ namespace Rendering.Graphics
     public class RenderNav : IRenderer
     {
         OBJData data;
-        RenderBoundingBox boundingBox;
+        RenderBoundingBox navigationBox;
         List<RenderLine> lines;
         OBJData.VertexStruct vertex;
 
@@ -25,47 +25,24 @@ namespace Rendering.Graphics
             set { vertex = value; }
         }
 
-        public RenderBoundingBox BoundingBox {
-            get { return boundingBox; }
+        public RenderBoundingBox NavigationBox {
+            get { return navigationBox; }
         }
         public void Init(OBJData data, int i)
         {
             DoRender = true;
             this.data = data;
             lines = new List<RenderLine>();
-            boundingBox = new RenderBoundingBox();
-            boundingBox.Init(new BoundingBox(new Vector3(-0.1f), new Vector3(0.1f)));
-            boundingBox.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f));
-            boundingBox.SetTransform(Matrix.Translation(data.vertices[i].Position));
+            navigationBox = new RenderBoundingBox();
+            navigationBox.Init(new BoundingBox(new Vector3(-0.1f), new Vector3(0.1f)));
+            navigationBox.SetColour(System.Drawing.Color.Green);
+            navigationBox.SetTransform(Matrix.Translation(data.vertices[i].Position));
             vertex = data.vertices[i];
-
-            //if (data.vertices[i].unk3 < data.vertices.Length)
-            //{
-            //    RenderLine line = new RenderLine();
-            //    Vector3 pos1 = data.vertices[i].position;
-            //    Vector3 pos2 = data.vertices[data.vertices[i].unk3].position;
-            //    line.Init(new Vector3[] { pos1, pos2 });
-            //    lines.Add(line);
-            //}
-
-            //if (data.vertices[i].unk4 < data.vertices.Length)
-            //{
-            //    RenderLine line = new RenderLine();
-            //    line.Init(new Vector3[] { data.vertices[i].position, data.vertices[data.vertices[i].unk4].position });
-            //    lines.Add(line);
-            //}
-
-            //if (data.vertices[i].unk5 < data.vertices.Length)
-            //{
-            //    RenderLine line = new RenderLine();
-            //    line.Init(new Vector3[] { data.vertices[i].position, data.vertices[data.vertices[i].unk5].position });
-            //    lines.Add(line);
-            //}
         }
 
         public override void InitBuffers(Device d3d, DeviceContext deviceContext)
         {
-            if (boundingBox != null) boundingBox.InitBuffers(d3d, deviceContext);
+            if (navigationBox != null) navigationBox.InitBuffers(d3d, deviceContext);
 
             if(lines != null)
             {
@@ -76,17 +53,17 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (DoRender)
             {
-                if (boundingBox != null) boundingBox.Render(device, deviceContext, camera, light);
+                if (navigationBox != null) navigationBox.Render(device, deviceContext, camera);
 
                 if (lines != null)
                 {
                     for (int i = 0; i < lines.Count; i++)
                     {
-                        lines[i].Render(device, deviceContext, camera, light);
+                        lines[i].Render(device, deviceContext, camera);
                     }
                 }
             }
@@ -94,7 +71,7 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            boundingBox.Select();
+            navigationBox.Select();
         }
 
         public override void SetTransform(Matrix matrix)
@@ -104,7 +81,7 @@ namespace Rendering.Graphics
 
         public override void Shutdown()
         {
-            if (boundingBox != null) boundingBox.Shutdown();
+            if (navigationBox != null) navigationBox.Shutdown();
 
             if (lines != null)
             {
@@ -117,12 +94,12 @@ namespace Rendering.Graphics
 
         public override void Unselect()
         {
-            boundingBox.Unselect();
+            navigationBox.Unselect();
         }
 
         public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
-            if (boundingBox != null) boundingBox.UpdateBuffers(device, deviceContext);
+            if (navigationBox != null) navigationBox.UpdateBuffers(device, deviceContext);
 
             if (lines != null)
             {

@@ -1,4 +1,5 @@
-﻿using SharpDX.Direct3D11;
+﻿using Rendering.Core;
+using SharpDX.Direct3D11;
 
 namespace Rendering.Graphics
 {
@@ -22,7 +23,7 @@ namespace Rendering.Graphics
             return true;
         }
 
-        public override void InitCBuffersFrame(DeviceContext context, Camera camera, LightClass light)
+        public override void InitCBuffersFrame(DeviceContext context, Camera camera, WorldSettings settings)
         {
             //throw new System.NotImplementedException();
         }

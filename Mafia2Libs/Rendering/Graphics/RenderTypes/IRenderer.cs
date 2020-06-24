@@ -1,6 +1,5 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D11;
-using Utils.Types;
 
 namespace Rendering.Graphics
 {
@@ -10,6 +9,7 @@ namespace Rendering.Graphics
         protected BaseShader shader;
         protected bool isUpdatedNeeded;
         public Matrix Transform { get; protected set; }
+        public BoundingBox BoundingBox { get; protected set; }
         protected Buffer indexBuffer;
         protected Buffer vertexBuffer;
 
@@ -18,7 +18,7 @@ namespace Rendering.Graphics
         public abstract void InitBuffers(Device d3d, DeviceContext deviceContext);
         public abstract void SetTransform(Matrix matrix);
         public abstract void UpdateBuffers(Device device, DeviceContext deviceContext);
-        public abstract void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light);
+        public abstract void Render(Device device, DeviceContext deviceContext, Camera camera);
         public abstract void Shutdown();
 
     }

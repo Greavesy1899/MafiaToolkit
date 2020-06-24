@@ -34,11 +34,14 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		}
 	}
 
-	if (pMesh->GetControlPoints()->Length() > 65535)
-	{
-		FBXSDK_printf("Vertex count > ushort max value! This model cannot be used in Mafia II\n");
-		return -97;
-	}
+	//auto test = pMesh->GetPolygonCount();
+	//if(pMesh->GetPolygonCount() * 3 > )
+	//if (pMesh->GetControlPoints()->Length() > 65535)
+	//{
+	//	FBXSDK_printf("Vertex count > ushort max value! This model cannot be used in Mafia II\n");
+	//	return -97;
+	//}
+
 	pPart.SetVertexFlag(VertexFlags::Position);
 	pPart.SetVertexFlag(pElementNormal ? VertexFlags::Normals : VertexFlags::None);
 	pPart.SetVertexFlag(pElementTangent ? VertexFlags::Tangent : VertexFlags::None);

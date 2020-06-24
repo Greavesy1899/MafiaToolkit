@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Rendering.Core;
 using ResourceTypes.Materials;
 using SharpDX;
 using SharpDX.Direct3D11;
@@ -47,9 +48,9 @@ namespace Rendering.Graphics
             base.SetSceneVariables(deviceContext, WorldMatrix, camera);
             ConstantBufferFactory.UpdatePixelBuffer(deviceContext, ConstantShaderParamBuffer, 2, ShaderParams);
         }
-        public override void InitCBuffersFrame(DeviceContext context, Camera camera, LightClass light)
+        public override void InitCBuffersFrame(DeviceContext context, Camera camera, WorldSettings settings)
         {
-            base.InitCBuffersFrame(context, camera, light);
+            base.InitCBuffersFrame(context, camera, settings);
         }
         public override void SetShaderParameters(Device device, DeviceContext deviceContext, MaterialParameters matParams)
         {

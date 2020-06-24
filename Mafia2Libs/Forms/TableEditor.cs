@@ -53,7 +53,11 @@ namespace Mafia2Tool
                 foreach(var hash in hashes)
                 {
                     uint key = FNV32.Hash(hash);
-                    columnNames.Add(key, hash);
+
+                    if (!columnNames.ContainsKey(key))
+                    {
+                        columnNames.Add(key, hash);
+                    }
                 }
             }
             catch(Exception ex)

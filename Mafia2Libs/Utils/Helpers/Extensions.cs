@@ -6,12 +6,13 @@ using System.Drawing.Design;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 namespace Utils.Extensions
 {
-    public class MTreeView : TreeView
+    public sealed class MTreeView : TreeView
     {
         //fix from: (gotta love stack overflow!)
         //https://stackoverflow.com/questions/14647216/c-sharp-treeview-ignore-double-click-only-at-checkbox
@@ -27,13 +28,6 @@ namespace Utils.Extensions
                 }
             }
             base.WndProc(ref m);
-        }
-
-        protected override void OnAfterCheck(TreeViewEventArgs e)
-        {
-            base.OnAfterCheck(e);
-            foreach(TreeNode node in e.Node.Nodes)
-                node.Checked = e.Node.Checked;
         }
     }
 
@@ -62,6 +56,35 @@ namespace Utils.Extensions
         }
     }
 
+    public static class ConverterUtils
+    {
+        private static string[] replacementList = { "X", "Y", "Z", "W", ":" };
+        public static float[] ConvertStringToFloats(string text, int count)
+        {
+            //remove letters
+            foreach(var replacement in replacementList)
+            {
+                text = text.Replace(replacement, "");
+            }
+
+            text = text.Replace(",", CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator);
+
+            //create array, split text to array and convert to floats.
+            float[] floats = new float[count];
+            string[] components = text.Split(' ');
+            for(int i = 0; i < count; i++)
+            {
+                var value = 0.0f;
+                if(!float.TryParse(components[i], NumberStyles.Any, CultureInfo.InvariantCulture, out value))
+                {
+                    throw new InvalidCastException(string.Format("Failed to convert {0}", components[i]));
+                }
+                floats[i] = value;
+            }
+            return floats;
+        }
+    }
+
     public class Vector2Converter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
@@ -80,22 +103,8 @@ namespace Utils.Extensions
 
             if (!string.IsNullOrEmpty(stringValue))
             {
-                float x, y, z = 0.0f;
-
-                if (stringValue.Contains("X") && stringValue.Contains("Y"))
-                {
-                    string[] components = stringValue.Split(' ');
-                    float.TryParse(components[0].Substring(2), out x);
-                    float.TryParse(components[1].Substring(2), out y);
-                }
-                else
-                {
-                    string[] components = stringValue.Split(' ');
-                    float.TryParse(components[0], out x);
-                    float.TryParse(components[1], out y);
-                }
-
-                result = new Vector2(x, y);
+                float[] values = ConverterUtils.ConvertStringToFloats(stringValue, 2);
+                result = new Vector2(values);
             }
 
             return result ?? base.ConvertFrom(context, culture, value);
@@ -106,8 +115,10 @@ namespace Utils.Extensions
             object result = null;
             Vector2 vector2 = (Vector2)value;
 
-            if (destinationType == typeof(String))
+            if (destinationType == typeof(string))
+            {
                 result = vector2.ToString();
+            }
 
             return result ?? base.ConvertTo(context, culture, value, destinationType);
         }
@@ -132,24 +143,8 @@ namespace Utils.Extensions
 
             if (!string.IsNullOrEmpty(stringValue))
             {
-                float x, y, z = 0.0f;
-
-                if (stringValue.Contains("X") && stringValue.Contains("Y") && stringValue.Contains("Z"))
-                {
-                    string[] components = stringValue.Split(' ');
-                    float.TryParse(components[0].Substring(2), out x);
-                    float.TryParse(components[1].Substring(2), out y);
-                    float.TryParse(components[2].Substring(2), out z);
-                }
-                else
-                {
-                    string[] components = stringValue.Split(' ');
-                    float.TryParse(components[0], out x);
-                    float.TryParse(components[1], out y);
-                    float.TryParse(components[2], out z);
-                }
-                
-                result = new Vector3(x, y, z);
+                float[] values = ConverterUtils.ConvertStringToFloats(stringValue, 3);
+                result = new Vector3(values);
             }
 
             return result ?? base.ConvertFrom(context, culture, value);
@@ -160,8 +155,10 @@ namespace Utils.Extensions
             object result = null;
             Vector3 vector3 = (Vector3)value;
 
-            if (destinationType == typeof(String))
+            if (destinationType == typeof(string))
+            {
                 result = vector3.ToString();
+            }
 
             return result ?? base.ConvertTo(context, culture, value, destinationType);
         }
@@ -186,26 +183,8 @@ namespace Utils.Extensions
 
             if (!string.IsNullOrEmpty(stringValue))
             {
-                float x, y, z, w = 0.0f;
-
-                if (stringValue.Contains("X") && stringValue.Contains("Y") && stringValue.Contains("Z") && stringValue.Contains("W"))
-                {
-                    string[] components = stringValue.Split(' ');
-                    float.TryParse(components[0].Substring(2), out x);
-                    float.TryParse(components[1].Substring(2), out y);
-                    float.TryParse(components[2].Substring(2), out z);
-                    float.TryParse(components[3].Substring(2), out w);
-                }
-                else
-                {
-                    string[] components = stringValue.Split(' ');
-                    float.TryParse(components[0], out x);
-                    float.TryParse(components[1], out y);
-                    float.TryParse(components[2], out z);
-                    float.TryParse(components[3], out w);
-                }
-
-                result = new Vector4(x, y, z, w);
+                float[] values = ConverterUtils.ConvertStringToFloats(stringValue, 4);
+                result = new Vector4(values);
             }
 
             return result ?? base.ConvertFrom(context, culture, value);
@@ -217,7 +196,9 @@ namespace Utils.Extensions
             Vector4 vector4 = (Vector4)value;
 
             if (destinationType == typeof(string))
+            {
                 result = vector4.ToString();
+            }
 
             return result ?? base.ConvertTo(context, culture, value, destinationType);
         }
@@ -242,26 +223,8 @@ namespace Utils.Extensions
 
             if (!string.IsNullOrEmpty(stringValue))
             {
-                float x, y, z, w = 0.0f;
-
-                if (stringValue.Contains("X") && stringValue.Contains("Y") && stringValue.Contains("Z") && stringValue.Contains("W"))
-                {
-                    string[] components = stringValue.Split(' ');
-                    float.TryParse(components[0].Substring(2), out x);
-                    float.TryParse(components[1].Substring(2), out y);
-                    float.TryParse(components[2].Substring(2), out z);
-                    float.TryParse(components[3].Substring(2), out w);
-                }
-                else
-                {
-                    string[] components = stringValue.Split(' ');
-                    float.TryParse(components[0], out x);
-                    float.TryParse(components[1], out y);
-                    float.TryParse(components[2], out z);
-                    float.TryParse(components[3], out w);
-                }
-
-                result = new Quaternion(x, y, z, w);
+                float[] values = ConverterUtils.ConvertStringToFloats(stringValue, 4);
+                result = new Quaternion(values);
             }
 
             return result ?? base.ConvertFrom(context, culture, value);
@@ -273,7 +236,9 @@ namespace Utils.Extensions
             Quaternion quaternion = (Quaternion)value;
 
             if (destinationType == typeof(string))
+            {
                 result = quaternion.ToString();
+            }
 
             return result ?? base.ConvertTo(context, culture, value, destinationType);
         }
@@ -649,6 +614,35 @@ namespace Utils.Extensions
         }
     }
 
+    public static class ColorExtender
+    {
+        public static Vector3 Normalize(this System.Drawing.Color color)
+        {
+            return new Vector3(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
+        }
+    }
+
+
+    public static class TreeNodeExtender
+    {
+        public static bool CheckIfParentsAreValid(this TreeNode node)
+        {
+            bool bValid = false;
+            TreeNode currentParent = node.Parent;
+
+            while (currentParent != null)
+            {
+                bValid = currentParent.Checked;
+                currentParent = currentParent.Parent;
+
+                if(!bValid)
+                {
+                    return bValid;
+                }
+            }
+            return bValid;
+        }
+    }
     public static class DictionaryExtensions
     {
         public static int IndexOfValue<Tkey, TValue>(this Dictionary<Tkey, TValue> dic, int key)
@@ -667,10 +661,10 @@ namespace Utils.Extensions
 
     public static class FileInfoUtils
     {
-        public static string CalculateFileSize(this FileInfo file)
+        public static string ConvertToMemorySize(this long value)
         {
             string[] sizes = { "B", "KB", "MB", "GB", "TB" };
-            double len = file.Length;
+            double len = value;
             int order = 0;
             while (len >= 1024 && order < sizes.Length - 1)
             {
@@ -680,7 +674,12 @@ namespace Utils.Extensions
 
             // Adjust the format string to your preferences. For example "{0:0.#}{1}" would
             // show a single decimal place, and no space.
-            return String.Format("{0:0.##} {1}", len, sizes[order]);
+            return string.Format("{0:0.##} {1}", len, sizes[order]);
+        }
+
+        public static string CalculateFileSize(this FileInfo file)
+        {
+            return file.Length.ConvertToMemorySize();
         }
     }
 

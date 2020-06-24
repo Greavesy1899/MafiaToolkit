@@ -36,7 +36,7 @@ namespace Rendering.Graphics
 
         public void Init(SplineDefinition data)
         {
-            Spline.SetUnselectedColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+            Spline.SetUnselectedColour(System.Drawing.Color.White);
             Spline.Init(data.Points);
             Vector3[] editPoints = (Vector3[])data.Points.Clone();
 
@@ -87,18 +87,18 @@ namespace Rendering.Graphics
                 plane.InitBuffers(d3d, context);
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;
 
-            Spline.Render(device, deviceContext, camera, light);
+            Spline.Render(device, deviceContext, camera);
 
             foreach (Render2DPlane plane in towardLanes)
-                plane.Render(device, deviceContext, camera, light);
+                plane.Render(device, deviceContext, camera);
 
             foreach (Render2DPlane plane in backwardLanes)
-                plane.Render(device, deviceContext, camera, light);
+                plane.Render(device, deviceContext, camera);
         }
 
         public override void SetTransform(Matrix matrix)

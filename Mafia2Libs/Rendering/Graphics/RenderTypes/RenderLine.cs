@@ -1,8 +1,9 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
-using Utils.Types;
+using Color = System.Drawing.Color;
 using Buffer = SharpDX.Direct3D11.Buffer;
+using Utils.Extensions;
 
 namespace Rendering.Graphics
 {
@@ -18,20 +19,32 @@ namespace Rendering.Graphics
             }
         }
         private VertexLayouts.BasicLayout.Vertex[] vertices;
-        private Vector4 SelectedColour;
-        private Vector4 UnselectedColour;
+        private Color SelectedColour;
+        private Color UnselectedColour;
 
         public RenderLine()
         {
             DoRender = true;
             shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
             Transform = Matrix.Identity;
-            SelectedColour = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
-            UnselectedColour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+            SelectedColour = Color.Blue;
+            UnselectedColour = Color.Red;
             points = new Vector3[0];
             vertices = new VertexLayouts.BasicLayout.Vertex[0];
         }
 
+        public void InitSwap(Vector3[] points)
+        {
+            for(int i = 0; i < points.Length; i++)
+            {
+                Vector3 pos = points[i];
+                float y = pos.Y;
+                pos.Y = -pos.Z;
+                pos.Z = y;
+                points[i] = pos;
+            }
+            Init(points);
+        }
         public void Init(Vector3[] points)
         {
             this.points = points;
@@ -42,23 +55,25 @@ namespace Rendering.Graphics
         {
             vertices = new VertexLayouts.BasicLayout.Vertex[points.Length];
 
+            var color = (selected ? SelectedColour : UnselectedColour).ToArgb();
+
             for (int i = 0; i != vertices.Length; i++)
             {
                 VertexLayouts.BasicLayout.Vertex vertex = new VertexLayouts.BasicLayout.Vertex();
                 vertex.Position = points[i];
-                vertex.Colour = (selected ? SelectedColour : UnselectedColour);
+                vertex.Colour = color;
                 vertices[i] = vertex;
             }
             isUpdatedNeeded = true;
         }
 
-        public void SetSelectedColour(Vector4 vec)
+        public void SetSelectedColour(Color color)
         {
-            SelectedColour = vec;
+            SelectedColour = color;
         }
-        public void SetUnselectedColour(Vector4 vec)
+        public void SetUnselectedColour(Color color)
         {
-            UnselectedColour = vec;
+            UnselectedColour = color;
         }
 
         public override void InitBuffers(Device d3d, DeviceContext context)
@@ -69,7 +84,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;

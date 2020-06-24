@@ -14,6 +14,7 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.C_TrafficCar);
             TypeCombo.Items.Add(ActorTypes.C_TrafficHuman);
             TypeCombo.Items.Add(ActorTypes.C_TrafficTrain);
+            TypeCombo.Items.Add(ActorTypes.ActionPointScript);
             TypeCombo.Items.Add(ActorTypes.C_Item);
             TypeCombo.Items.Add(ActorTypes.C_Door);
             TypeCombo.Items.Add(ActorTypes.C_Sound);

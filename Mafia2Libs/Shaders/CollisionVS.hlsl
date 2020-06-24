@@ -30,7 +30,7 @@ VS_OUTPUT CollisionShader(VS_INPUT input)
 {
 	VS_OUTPUT output;
 	float4 worldPosition;
-    output.Colour = input.Colour;
+    output.Colour = input.Colour.bgra;
 
 	// Change the position vector to be 4 units for proper matrix calculations.
 	input.Position.w = 1.0f;

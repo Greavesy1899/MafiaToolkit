@@ -11,7 +11,9 @@ using Utils.Models;
 using Utils.SharpDXExtensions;
 using System;
 using System.Windows;
+using Color = System.Drawing.Color;
 using static Rendering.Graphics.BaseShader;
+using Utils.Extensions;
 
 namespace Rendering.Graphics
 {
@@ -28,14 +30,13 @@ namespace Rendering.Graphics
 
         private Hash aoHash;
         public ShaderResourceView AOTexture { get; set; }
-        public RenderBoundingBox BoundingBox { get; set; }
-        public Vector4 SelectionColour { get; private set; }
+        public Color SelectionColour { get; private set; }
 
         public struct LOD
         {
             public ModelPart[] ModelParts { get; set; }
             public VertexLayouts.NormalLayout.Vertex[] Vertices { get; set; }
-            public ushort[] Indices { get; set; }
+            public uint[] Indices { get; set; }
         }
 
         public LOD[] LODs { get; private set; }
@@ -45,8 +46,7 @@ namespace Rendering.Graphics
             DoRender = true;
             isUpdatedNeeded = false;
             Transform = Matrix.Identity;
-            BoundingBox = new RenderBoundingBox();
-            SelectionColour = new Vector4(1.0f);
+            SelectionColour = Color.White;
         }
 
         public void ConvertMTKToRenderModel(M2TStructure structure)
@@ -99,10 +99,7 @@ namespace Rendering.Graphics
                 }
                 LODs[i] = lod2;
             }
-            BoundingBox = new RenderBoundingBox();
-            BoundingBox.Init(BoundingBoxExtenders.CalculateBounds(vertices));
-            BoundingBox.SetTransform(Transform);
-            BoundingBox.DoRender = false;
+            BoundingBox = BoundingBoxExtenders.CalculateBounds(vertices);
             SetupShaders();
         }
 
@@ -114,16 +111,13 @@ namespace Rendering.Graphics
             aoHash = mesh.OMTextureHash;
             SetTransform(mesh.WorldTransform);
             //DoRender = (mesh.SecondaryFlags == 4097 ? true : false);
-            BoundingBox = new RenderBoundingBox();
-            BoundingBox.Init(mesh.Boundings);
-            BoundingBox.SetTransform(Transform);
-            BoundingBox.DoRender = false;
+            BoundingBox = mesh.Boundings;
             LODs = new LOD[geom.NumLods];
 
             for(int i = 0; i != geom.NumLods; i++)
             {
                 LOD lod = new LOD();
-                lod.Indices = indexBuffers[i].Data;
+                lod.Indices = indexBuffers[i].GetData();
                 lod.ModelParts = new ModelPart[mats.LodMatCount[i]];
 
                 for (int z = 0; z != mats.Materials[i].Length; z++)
@@ -135,7 +129,7 @@ namespace Rendering.Graphics
                     lod.ModelParts[z].Material = MaterialsManager.LookupMaterialByHash(lod.ModelParts[z].MaterialHash);
                 }
 
-                lod.Vertices = new VertexLayouts.NormalLayout.Vertex[geom.LOD[i].NumVertsPr];
+                lod.Vertices = new VertexLayouts.NormalLayout.Vertex[geom.LOD[i].NumVerts];
                 int vertexSize;
                 Dictionary<VertexFlags, FrameLOD.VertexOffset> vertexOffsets = geom.LOD[i].GetVertexOffsets(out vertexSize);
                 try
@@ -348,45 +342,40 @@ namespace Rendering.Graphics
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, LODs[0].Vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, LODs[0].Indices);
 
-            BoundingBox.InitBuffers(d3d, d3dContext);
             InitTextures(d3d, d3dContext);
         }
 
         public override void SetTransform(Matrix matrix)
         {
             Transform = matrix;
-            BoundingBox.SetTransform(matrix);
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;
 
-            //if (camera.CheckBBoxFrustrum(BoundingBox.BBox))
+            //if (!camera.CheckBBoxFrustrum(BoundingBox.BBox))
             //    return;
 
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
-            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
+            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             deviceContext.PixelShader.SetShaderResource(2, AOTexture);
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
             {
-                LODs[0].ModelParts[i].Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(LODs[0].ModelParts[i].Material, SelectionColour));
+                LODs[0].ModelParts[i].Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(LODs[0].ModelParts[i].Material, SelectionColour.Normalize()));
                 LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera);
                 LODs[0].ModelParts[i].Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(LODs[0].ModelParts[i].NumFaces * 3), LODs[0].ModelParts[i].StartIndex);
             }
-            BoundingBox.Render(device, deviceContext, camera, light);
         }
 
         public override void Shutdown()
         {
             LODs[0].Vertices = null;
             LODs[0].Indices = null;
-            BoundingBox.Shutdown();
             AOTexture?.Dispose();
             AOTexture = null;
-            BoundingBox.Shutdown();
             vertexBuffer?.Dispose();
             vertexBuffer = null;
             indexBuffer?.Dispose();
@@ -395,8 +384,6 @@ namespace Rendering.Graphics
 
         public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
-            BoundingBox.UpdateBuffers(device, deviceContext);
-
             if(isUpdatedNeeded)
             {
                 SetupShaders();
@@ -407,16 +394,12 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            BoundingBox.Select();
-            SelectionColour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-            BoundingBox.DoRender = true;
+            SelectionColour = Color.Red;
         }
 
         public override void Unselect()
         {
-            BoundingBox.Unselect();
-            SelectionColour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-            BoundingBox.DoRender = false;
+            SelectionColour = Color.White;
         }
     }
 }

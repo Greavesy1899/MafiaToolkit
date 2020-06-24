@@ -37,19 +37,6 @@ namespace Rendering.Graphics
             var monitor = adapter.GetOutput(0);
             var modes = monitor.GetDisplayModeList(Format.R8G8B8A8_UNorm, DisplayModeEnumerationFlags.Interlaced);
             var rational = new Rational(0, 1);
-            /*
-            if (ToolkitSettings.VSync)
-            {
-                foreach (var mode in modes)
-                {
-                    if (mode.Width == ToolkitSettings.Width && mode.Height == ToolkitSettings.Height)
-                    {
-                        rational = new Rational(mode.RefreshRate.Numerator, mode.RefreshRate.Denominator);
-                        break;
-                    }
-                }
-            }
-            */
             var adapterDescription = adapter.Description;
             VideoCardMemory = adapterDescription.DedicatedVideoMemory >> 10 >> 10;
             VideoCardDescription = adapterDescription.Description.Trim('\0');
@@ -133,7 +120,7 @@ namespace Rendering.Graphics
             {
                 Width = w,
                 Height = h,
-                MipLevels = 1,
+                MipLevels = 0,
                 ArraySize = 1,
                 Format = Format.D24_UNorm_S8_UInt,
                 SampleDescription = new SampleDescription(1, 0),

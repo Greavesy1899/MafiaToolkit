@@ -3,7 +3,7 @@ using System.ComponentModel;
 using ResourceTypes.Navigation;
 using SharpDX;
 using SharpDX.Direct3D11;
-using Utils.Types;
+using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
 {
@@ -48,8 +48,8 @@ namespace Rendering.Graphics
                     Array.Copy(data.Boundaries, extraPoints, data.Boundaries.Length);
                     extraPoints[extraPoints.Length - 1] = extraPoints[0];
                     Boundary = new RenderLine();
-                    Boundary.SetSelectedColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-                    Boundary.SetUnselectedColour(new Vector4(1.0f));
+                    Boundary.SetSelectedColour(Color.Red);
+                    Boundary.SetUnselectedColour(Color.White);
                     Boundary.Init(extraPoints);
                 }
             }
@@ -64,7 +64,7 @@ namespace Rendering.Graphics
                 for (int i = 0; i < data.Splines.Length; i++)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(new Vector4(1.0f, 0.87f, 0f, 1.0f));
+                    line.SetUnselectedColour(Color.FromArgb(255, 222, 255));
                     line.Init(data.Splines[i].Path);
                     Splines[i] = line;
                 }
@@ -87,7 +87,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
             {
@@ -96,14 +96,14 @@ namespace Rendering.Graphics
 
             if (Boundary != null)
             {
-                Boundary.Render(device, deviceContext, camera, light);
+                Boundary.Render(device, deviceContext, camera);
             }
 
             if (Splines != null)
             {
                 foreach (var spline in Splines)
                 {
-                    spline.Render(device, deviceContext, camera, light);
+                    spline.Render(device, deviceContext, camera);
                 }
             }
         }

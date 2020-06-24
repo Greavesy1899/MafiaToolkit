@@ -40,6 +40,7 @@
             this.ImportTangentBox = new System.Windows.Forms.CheckBox();
             this.ImportColor1Box = new System.Windows.Forms.CheckBox();
             this.ImportColor0Box = new System.Windows.Forms.CheckBox();
+            this.Label_BufferType = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // buttonContinue
@@ -162,6 +163,15 @@
             this.ImportColor0Box.Text = "$IMPORT_COLOR0";
             this.ImportColor0Box.UseVisualStyleBackColor = true;
             // 
+            // Label_BufferType
+            // 
+            this.Label_BufferType.AutoSize = true;
+            this.Label_BufferType.Location = new System.Drawing.Point(14, 166);
+            this.Label_BufferType.Name = "Label_BufferType";
+            this.Label_BufferType.Size = new System.Drawing.Size(102, 13);
+            this.Label_BufferType.TabIndex = 15;
+            this.Label_BufferType.Text = "$IS_32BIT_MODEL";
+            // 
             // FrameResourceModelOptions
             // 
             this.AcceptButton = this.buttonContinue;
@@ -171,6 +181,7 @@
             this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(364, 225);
             this.ControlBox = false;
+            this.Controls.Add(this.Label_BufferType);
             this.Controls.Add(this.ImportColor1Box);
             this.Controls.Add(this.ImportColor0Box);
             this.Controls.Add(this.ImportTangentBox);
@@ -205,5 +216,6 @@
         private System.Windows.Forms.CheckBox ImportTangentBox;
         private System.Windows.Forms.CheckBox ImportColor1Box;
         private System.Windows.Forms.CheckBox ImportColor0Box;
+        private System.Windows.Forms.Label Label_BufferType;
     }
 }

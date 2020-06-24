@@ -96,6 +96,7 @@ namespace Utils.SharpDXExtensions
             Quaternion qX = Quaternion.RotationAxis(Vector3.UnitX, radX);
             Quaternion qY = Quaternion.RotationAxis(Vector3.UnitY, radY);
             Quaternion qZ = Quaternion.RotationAxis(Vector3.UnitZ, radZ);
+            (qX * qY * qZ).ToEuler();
             return SetMatrix(qX * qY * qZ, scale, position);
         }
     }
@@ -109,16 +110,34 @@ namespace Utils.SharpDXExtensions
             var qx = quat.X;
             var qy = quat.Y;
             var qz = quat.Z;
-            var eX = Math.Atan2(-2 * ((qy * qz) - (qw * qx)), (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
-            //double test = qx * qy + qz * qw;
-            //var eY = Math.Asin(2 * test);
-            var eY = Math.Asin(2 * ((qx * qz) + (qw * qy)));
-            var eZ = Math.Atan2(-2 * ((qx * qy) - (qw * qz)), (qw * qw) + (qx * qx) - (qy * qy) - (qz * qz));
-            euler.Z = (float)Math.Round(eZ * 180 / Math.PI);
-            euler.Y = (float)Math.Round(eY * 180 / Math.PI);
-            euler.X = (float)Math.Round(eX * 180 / Math.PI);
 
-            if(euler.IsNaN())
+            double test = qx * qy + qz * qw;
+            if(test > 0.499f)
+            {
+                euler.Z = (float)(2 * Math.Atan2(quat.X, quat.W));
+                euler.Y = 3.14f / 2;
+                euler.X = 0.0f;
+            }
+            else if(test < -0.499f)
+            {
+                euler.Z = (float)(-2 * Math.Atan2(quat.X, quat.W));
+                euler.Y = -(3.14f / 2);
+                euler.X = 0.0f;
+            }
+            else
+            {
+                float sqx = quat.X * quat.X;
+                float sqy = quat.Y * quat.Y;
+                float sqz = quat.Z * quat.Z;
+                euler.X = (float)Math.Atan2(-2 * ((qy * qz) - (qw * qx)), (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
+                euler.Y = (float)Math.Asin(2 * ((qx * qz) + (qw * qy)));
+                euler.Z = (float)Math.Atan2(-2 * ((qx * qy) - (qw * qz)), (qw * qw) + (qx * qx) - (qy * qy) - (qz * qz));
+            }
+
+            euler.Z = MathUtil.RadiansToDegrees(euler.Z);
+            euler.Y = MathUtil.RadiansToDegrees(euler.Y);
+            euler.X = MathUtil.RadiansToDegrees(euler.X);
+            if (euler.IsNaN())
             {
                 throw new Exception("Triggered NaN check in QuaternionExtensions.ToEuler();");
             }

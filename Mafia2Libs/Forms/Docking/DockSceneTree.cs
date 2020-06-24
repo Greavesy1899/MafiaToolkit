@@ -2,8 +2,6 @@
 using System.Windows.Forms;
 using ResourceTypes.FrameResource;
 using SharpDX;
-using Utils.Types;
-using Mafia2Tool;
 using System;
 using Utils.Extensions;
 
@@ -11,23 +9,68 @@ namespace Forms.Docking
 {
     public partial class DockSceneTree : DockContent
     {
+        public TreeNode SelectedNode {
+            get { return treeView1.SelectedNode; }
+            set { treeView1.SelectedNode = value; }
+        }
+
         public DockSceneTree()
         {
             InitializeComponent();
         }
 
-        public void AddToTree(TreeNode newNode, TreeNode parentNode = null)
+        /* Abstract Functions for the outliner */
+        public void SetEventHandler(string eventType, TreeViewEventHandler handler)
         {
-            newNode.Checked = true;
-            ApplyImageIndex(newNode);
-            RecurseChildren(newNode);
-
-            if (parentNode != null)
-                parentNode.Nodes.Add(newNode);
+            if(eventType.Equals("AfterSelect"))
+            {
+                treeView1.AfterSelect += handler;
+            }
+            else if (eventType.Equals("AfterCheck"))
+            {
+                treeView1.AfterCheck += handler;
+            }
             else
-                treeView1.Nodes.Add(newNode);
+            {
+                throw new NotImplementedException();
+            }
         }
 
+        public void SetKeyHandler(string eventType, KeyEventHandler handler)
+        {
+            if (eventType.Equals("KeyUp"))
+            {
+                treeView1.KeyUp += handler;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public TreeNode[] Find(string key, bool searchAllChildren)
+        {
+            return treeView1.Nodes.Find(key, searchAllChildren);
+        }
+
+        public void RemoveNode(TreeNode node)
+        {
+            treeView1.Nodes.Remove(node);
+        }
+
+        public void AddToTree(TreeNode node, TreeNode parentNode = null)
+        {
+            node.Checked = true;
+            ApplyImageIndex(node);
+            RecurseChildren(node);
+
+            if (parentNode != null)
+                parentNode.Nodes.Add(node);
+            else
+                treeView1.Nodes.Add(node);
+        }
+
+        /* Helper functions */
         private void RecurseChildren(TreeNode node)
         {
             foreach (TreeNode child in node.Nodes)
@@ -76,12 +119,15 @@ namespace Forms.Docking
                 node.SelectedImageIndex = node.ImageIndex = 4;
             else if (node.Tag.GetType() == typeof(FrameHeaderScene))
                 node.SelectedImageIndex = node.ImageIndex = 8;
+            else if (node.Tag.GetType() == typeof(FrameHeader))
+                node.SelectedImageKey = node.ImageKey = "SceneObject.png";
             else if ((node.Tag is string) && ((node.Tag as string) == "Folder"))
                 node.SelectedImageKey = node.ImageKey = "SceneObject.png";
             else
                 node.SelectedImageIndex = node.ImageIndex = 7;
         }
 
+        /* Context function */
         private void OpenEntryContext(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //TODO: Clean this messy system.
@@ -139,7 +185,7 @@ namespace Forms.Docking
                 return (data as Rendering.Graphics.RenderJunction).Data.Position;
 
             if (data.GetType() == typeof(Rendering.Graphics.RenderNav))
-                return (data as Rendering.Graphics.RenderNav).BoundingBox.Transform.TranslationVector;
+                return (data as Rendering.Graphics.RenderNav).NavigationBox.Transform.TranslationVector;
 
             if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
                 return (data as ResourceTypes.Actors.ActorEntry).Position;
@@ -153,6 +199,14 @@ namespace Forms.Docking
             var hitTestInfo = treeView1.HitTest(localPosition);
             if (hitTestInfo.Location == TreeViewHitTestLocations.StateImage)
                 return;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void Button_Filter_Click(object sender, EventArgs e)
+        {
         }
     }
 }

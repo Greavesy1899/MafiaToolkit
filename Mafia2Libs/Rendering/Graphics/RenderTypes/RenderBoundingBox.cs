@@ -1,6 +1,8 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
+using Utils.Extensions;
+using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
 {
@@ -8,20 +10,34 @@ namespace Rendering.Graphics
     {
         private VertexLayouts.BasicLayout.Vertex[] vertices;
         private ushort[] indices;
-        private Vector4 colour;
-        private BoundingBox bbox;
-        public BoundingBox BBox { get { return bbox; } }
+        private Color colour;
 
         public RenderBoundingBox()
         {
             DoRender = true;
             SetTransform(Matrix.Identity);
-            colour = new Vector4(1.0f);
+            colour = Color.White;
         }
 
+        public bool InitSwap(BoundingBox bbox)
+        {
+            Vector3 pos = bbox.Maximum;
+            float y = pos.Y;
+            pos.Y = -pos.Z;
+            pos.Z = y;
+            bbox.Maximum = pos;
+
+            pos = bbox.Minimum;
+            y = pos.Y;
+            pos.Y = -pos.Z;
+            pos.Z = y;
+            bbox.Minimum = pos;
+
+            return Init(bbox);
+        }
         public bool Init(BoundingBox bbox)
         {
-            this.bbox = bbox;
+            BoundingBox = bbox;
 
             vertices = new VertexLayouts.BasicLayout.Vertex[8];
 
@@ -30,7 +46,7 @@ namespace Rendering.Graphics
             {
                 vertices[i] = new VertexLayouts.BasicLayout.Vertex();
                 vertices[i].Position = corners[i];
-                vertices[i].Colour = colour;
+                vertices[i].Colour = colour.ToArgb();
             }
 
             indices = new ushort[] {
@@ -55,9 +71,10 @@ namespace Rendering.Graphics
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
         }
 
-        public void SetColour(Vector4 vec)
+        public void SetColour(Color newColour, bool update = false)
         {
-            colour = vec;
+            colour = newColour;
+            isUpdatedNeeded = update;
         }
 
         public override void SetTransform(Matrix matrix)
@@ -65,7 +82,7 @@ namespace Rendering.Graphics
             this.Transform = matrix;
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;
@@ -102,11 +119,11 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            colour = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+            colour = Color.Red;
 
             for (int i = 0; i < vertices.Length; i++)
             {
-                vertices[i].Colour = colour;
+                vertices[i].Colour = colour.ToArgb();
             }
 
             isUpdatedNeeded = true;
@@ -114,11 +131,11 @@ namespace Rendering.Graphics
 
         public override void Unselect()
         {
-            colour = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+            colour = Color.White;
 
             for (int i = 0; i < vertices.Length; i++)
             {
-                vertices[i].Colour = colour;
+                vertices[i].Colour = colour.ToArgb();
             }
 
             isUpdatedNeeded = true;

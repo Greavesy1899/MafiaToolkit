@@ -42,6 +42,13 @@ namespace ResourceTypes.Actors
         CleanEntity = 114
     }
 
+    public enum ActorEDSTypes
+    {
+        C_Car = 18,
+        C_Train = 19,
+        C_ActionPointScript = 30,
+    }
+
     [Flags]
     public enum ActorSoundEntityBehaviourFlags
     {

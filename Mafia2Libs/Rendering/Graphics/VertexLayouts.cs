@@ -1,6 +1,8 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D11;
+using System.Drawing;
 using System.Runtime.InteropServices;
+using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
 {
@@ -12,7 +14,7 @@ namespace Rendering.Graphics
             public struct Vertex
             {
                 public Vector3 Position;
-                public Vector4 Colour;
+                public int Colour;
             }
 
             public static InputElement[] GetLayout()
@@ -33,7 +35,7 @@ namespace Rendering.Graphics
                     {
                         SemanticName = "COLOR",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32A32_Float,
+                        Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
                         Slot = 0,
                         AlignedByteOffset = InputElement.AppendAligned,
                         Classification = InputClassification.PerVertexData,
@@ -50,7 +52,7 @@ namespace Rendering.Graphics
             {
                 public Vector3 Position;
                 public Vector3 Normal;
-                public Vector4 Colour;
+                public int Colour;
             }
 
             public static InputElement[] GetLayout()
@@ -81,7 +83,7 @@ namespace Rendering.Graphics
                     {
                         SemanticName = "COLOR",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32A32_Float,
+                        Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
                         Slot = 0,
                         AlignedByteOffset = InputElement.AppendAligned,
                         Classification = InputClassification.PerVertexData,

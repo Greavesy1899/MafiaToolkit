@@ -1,10 +1,24 @@
 ﻿using SharpDX.Direct3D11;
 using ResourceTypes.Materials;
+using Rendering.Core;
+using System.Runtime.InteropServices;
+using SharpDX;
 
 namespace Rendering.Graphics
 {
     public class DefaultShader : BaseShader
     {
+        [StructLayout(LayoutKind.Sequential)]
+        protected struct ExtraParameterBuffer
+        {
+            public int hasTangentSpace;
+            public Vector3 padding;
+        }
+
+        private ExtraParameterBuffer extraParams;
+        protected Buffer ConstantExtraParameterBuffer { get; set; }
+        protected int previousRenderType;
+
         public DefaultShader(Device device, InputElement[] elements, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
         {
             if (!Init(device, elements, vsPath, psPath, vsEntryPoint, psEntryPoint))
@@ -20,11 +34,13 @@ namespace Rendering.Graphics
                 return false;
             }
 
+            ConstantExtraParameterBuffer = ConstantBufferFactory.ConstructBuffer<ExtraParameterBuffer>(device, "ExtraBuffer");
+
             return true;
         }
-        public override void InitCBuffersFrame(DeviceContext context, Camera camera, LightClass light)
+        public override void InitCBuffersFrame(DeviceContext context, Camera camera, WorldSettings settings)
         {
-            base.InitCBuffersFrame(context, camera, light);
+            base.InitCBuffersFrame(context, camera, settings);
         }
         public override void Render(DeviceContext context, SharpDX.Direct3D.PrimitiveTopology type, int size, uint offset)
         {
@@ -35,8 +51,11 @@ namespace Rendering.Graphics
             context.DrawIndexed(size, (int)offset, 0);
         }
         public override void SetShaderParameters(Device device, DeviceContext context, MaterialParameters matParams)
-        {
+        {           
             base.SetShaderParameters(device, context, matParams);
+
+            int previousHasTangentSpace = extraParams.hasTangentSpace;
+
             var material = matParams.MaterialData;
             if (material == null)
             {
@@ -62,13 +81,20 @@ namespace Rendering.Graphics
                 if (material.Samplers.TryGetValue("S001", out sampler))
                 {
                     texture = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
+                    extraParams.hasTangentSpace = 1;
                 }
                 else
                 {
                     texture = RenderStorageSingleton.Instance.TextureCache[1];
+                    extraParams.hasTangentSpace = 0;
                 }
                 context.PixelShader.SetShaderResource(1, texture);
             }
+
+            if(previousRenderType != extraParams.hasTangentSpace)
+            {
+                ConstantBufferFactory.UpdatePixelBuffer(context, ConstantExtraParameterBuffer, 2, extraParams);
+            }         
         }
     }
 }

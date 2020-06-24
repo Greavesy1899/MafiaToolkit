@@ -53,7 +53,7 @@ namespace ResourceTypes.FrameResource
             get { return vertexBufferRef; }
             set { vertexBufferRef = value; }
         }
-        public int NumVertsPr {
+        public int NumVerts {
             get { return numVerts; }
             set { numVerts = value; }
         }
@@ -457,7 +457,7 @@ namespace ResourceTypes.FrameResource
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class MaterialSplitInfo
         {
-            int unk18 = 0;
+            int indexStride = 0;
             int unk20 = 0;
             int unk21 = 0;
             int unk24 = 0;
@@ -478,9 +478,9 @@ namespace ResourceTypes.FrameResource
                 get { return availD; }
                 set { availD = value; }
             }
-            public int Unk18 {
-                get { return unk18; }
-                set { unk18 = value; }
+            public int IndexStride {
+                get { return indexStride; }
+                set { indexStride = value; }
             }
             public int Unk20 {
                 get { return unk20; }
@@ -543,15 +543,18 @@ namespace ResourceTypes.FrameResource
             {
                 if (type == 12)
                 {
-                    unk18 = reader.ReadInt32(isBigEndian);
+                    indexStride = reader.ReadInt32(isBigEndian); //2
                     numVerts = reader.ReadInt32(isBigEndian);
                     numFaces = reader.ReadInt32(isBigEndian);
-                    unk20 = reader.ReadInt32(isBigEndian);
-                    unk21 = reader.ReadInt32(isBigEndian);
-                    numSplitGroup = reader.ReadInt32(isBigEndian);
+                    unk20 = reader.ReadInt32(isBigEndian); //0
+                    unk21 = reader.ReadInt32(isBigEndian); //12
+                    numSplitGroup = reader.ReadInt32(isBigEndian); //1
 
-                    if (unk18 + unk20 + unk21 + nSizeOfMatBurstEntries + nSizeOfMatSplitEntries != 0xE)
-                        throw new Exception("does not equal 14");
+                    var result = indexStride + unk20 + unk21 + nSizeOfMatBurstEntries + nSizeOfMatSplitEntries;
+                    if (result != 0xE && result != 0x10)
+                    {
+                        throw new Exception("does not equal 14 or 16");
+                    }
                 }
 
                 if(type == 1)
@@ -587,7 +590,7 @@ namespace ResourceTypes.FrameResource
             {
                 if (type == 12)
                 {
-                    writer.Write(unk18);
+                    writer.Write(indexStride);
                     writer.Write(numVerts);
                     writer.Write(numFaces);
                     writer.Write(unk20);
@@ -619,7 +622,7 @@ namespace ResourceTypes.FrameResource
 
             public void BuildMaterialSplits()
             {
-                unk18 = 2;
+                indexStride = 2;
                 unk20 = 0;
                 unk21 = 0xC;
                 numSplitGroup = 1;
@@ -627,7 +630,6 @@ namespace ResourceTypes.FrameResource
                 unk24 = 1;
                 nSizeOfMatBurstEntries = 0x14;
                 nSizeOfMatSplitEntries = 0xC;
-                //materialBursts[0].Bounds = new short[6] { 32766, 32766, 32766, -32766, -32766, -32766 };
             }
 
         }

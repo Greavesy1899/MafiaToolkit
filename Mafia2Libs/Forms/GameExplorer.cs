@@ -279,7 +279,6 @@ namespace Mafia2Tool
                     throw new FormatException();
                 }
             }
-
             using (var output = File.Create(file.FullName))
             {
                 archiveFile.Serialize(output, ToolkitSettings.SerializeSDSOption == 0 ? ArchiveSerializeOptions.None : ArchiveSerializeOptions.Compress);
@@ -319,6 +318,16 @@ namespace Mafia2Tool
             Log.WriteLine("Succesfully unwrapped compressed data");
 
             archiveFile.SaveResources(file);
+
+            if (File.Exists(file.FullName + ".patch") && GameStorage.Instance.GetSelectedGame().GameType == GamesEnumerator.MafiaII_DE)
+            {
+                DialogResult result = MessageBox.Show("Detected Patch file. Would you like to unpack?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    archiveFile.ExtractPatch(new FileInfo(file.FullName + ".patch"));
+                }
+            }
+
             if (openDirectory)
             {
                 var directory = file.Directory;
@@ -340,22 +349,7 @@ namespace Mafia2Tool
 
                 OpenDirectory(new DirectoryInfo(Path.Combine(extractedFolder, file.Name)));
                 infoText.Text = "Opened SDS..";
-            }
-        }
-
-        private void OpenPATCH(FileInfo file)
-        {
-            Log.WriteLine("Opening PATCH: " + file.Name);
-
-            infoText.Text = "Opening PATCH..";
-
-            PatchFile patch;
-            using (var input = File.OpenRead(file.FullName))
-            {
-                patch = new PatchFile();
-                patch.file = file;
-                patch.Deserialize(input, Gibbed.IO.Endian.Big);
-            }
+            }  
         }
 
         private void HandleLuaFile(FileInfo file)
@@ -571,9 +565,9 @@ namespace Mafia2Tool
                 case "SDS Archive":
                     OpenSDS((FileInfo)item.Tag);
                     break;
-                case "PATCH Archive":
-                    OpenPATCH((FileInfo)item.Tag);
-                    break;
+                //case "PATCH Archive":
+                //    OpenPATCH((FileInfo)item.Tag);
+                //    break;
                 case "FR":
                     HandleSDSMap((FileInfo)item.Tag);
                     return;
@@ -612,6 +606,9 @@ namespace Mafia2Tool
                 case "BIN":
                     SoundSectorLoader sLoader = new SoundSectorLoader(item.Tag as FileInfo);
                     return;
+                case "EDS":
+                    EntityDataStorageEditor edsEditor = new EntityDataStorageEditor(item.Tag as FileInfo);
+                    return;
                 default:
                     Process.Start(((FileInfo)item.Tag).FullName);
                     break;
@@ -626,7 +623,21 @@ namespace Mafia2Tool
                 return;
             }
 
-            PackSDS(fileListView.SelectedItems[0].Tag as FileInfo);
+            var info = fileListView.SelectedItems[0].Tag as FileInfo;
+
+            if(info.Attributes.HasFlag(FileAttributes.ReadOnly))
+            {
+                DialogResult result = MessageBox.Show("Detected a read only file. Would you like to forcefully pack?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                info.Attributes -= FileAttributes.ReadOnly;
+            }
+
+            PackSDS(info);
         }
         private void ContextSDSUnpack_Click(object sender, EventArgs e)
         {
@@ -660,7 +671,7 @@ namespace Mafia2Tool
         {
             GEContext.Items[0].Visible = false;
             GEContext.Items[1].Visible = false;
-            GEContext.Items[6].Visible = false;
+            //GEContext.Items[6].Visible = false;
 
             if (fileListView.SelectedItems.Count == 0)
             {
@@ -678,7 +689,7 @@ namespace Mafia2Tool
                 }
                 else if(extension == ".fr")
                 {
-                    GEContext.Items[6].Visible = true;
+                    //GEContext.Items[6].Visible = true;
                 }
             }
         }
@@ -841,23 +852,6 @@ namespace Mafia2Tool
             }
 
             Debug.WriteLine("Finished Unpack All SDS Function");
-        }
-
-        private void CreateFrameResource_OnClick(object sender, EventArgs e)
-        {
-            FrameResource fr = new FrameResource();
-            fr.WriteToFile(Path.Combine(currentDirectory.FullName, "FrameResource_0.fr"));
-        }
-
-        private void CreateSDSContentButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void CreateCollisionButton_Click(object sender, EventArgs e)
-        {
-            Collision collision = new Collision();
-            collision.WriteToFile(Path.Combine(currentDirectory.FullName, "Collision_0.col"));
         }
 
         private void ContextForceBigEndian_Click(object sender, EventArgs e)

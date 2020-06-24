@@ -17,7 +17,7 @@ namespace Rendering.Graphics
             throw new NotImplementedException();
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             throw new NotImplementedException();
         }

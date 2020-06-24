@@ -14,9 +14,10 @@ namespace Forms.EditorControls
             set { options = value; }
         }
 
-        public FrameResourceModelOptions(VertexFlags flags, int i)
+        public FrameResourceModelOptions(VertexFlags flags, int i, bool is32bit)
         {
             InitializeComponent();
+            Label_BufferType.Visible = is32bit;
             Init(flags, i);
             Localise();
         }
@@ -40,7 +41,7 @@ namespace Forms.EditorControls
 
         private void Init(VertexFlags flags, int i)
         {
-            string text = string.Format("{0} LOD: {1}", Language.GetString("$MODEL_OPTIONS_TEXT"), i);
+            string text = string.Format("{0} LOD: {1}", Language.GetString("$MODEL_OPTIONS_TEXT"), i.ToString());
             ModelOptionsText.Text = text;
 
             options = new Dictionary<string, bool>();

@@ -125,7 +125,7 @@ namespace ResourceTypes.BufferPools
             //var sorted = buffArray.OrderBy(buff => buff.Data.Length);
             foreach (var buffer in buffArray)
             {
-                int prePoolSize = (poolSize) + (buffer.Data.Length*2);
+                int prePoolSize = (poolSize) + (int)(buffer.GetLength());
                 if (pool.Buffers.Count == 128 || prePoolSize > 920000)
                 {
                     string name = Path.Combine(root.FullName, string.Format("IndexBufferPool_{0}.ibp", numPool));
@@ -209,7 +209,7 @@ namespace ResourceTypes.BufferPools
             //need to make sure we update total size of buffers.
             for (int i = 0; i != buffers.Count; i++)
             {
-                uint usage = (uint)buffers.ElementAt(i).Value.Data.Length*2;
+                uint usage = (uint)buffers.ElementAt(i).Value.GetLength();
                 size += usage;
             }
             size += 128;
@@ -225,26 +225,19 @@ namespace ResourceTypes.BufferPools
     public class IndexBuffer
     {
         private ulong hash;
-        private int unk0;
+        private int indexFormat;
         private uint length;
-        private ushort[] data;
+        private uint[] data;
 
         public ulong Hash {
             get { return hash; }
             set { hash = value; }
         }
-        public ushort[] Data {
-            get { return data; }
-            set {
-                data = value;
-                length = (uint)(data.Length * 2);
-            }
-        }
 
         public IndexBuffer(ulong hash)
         {
             this.hash = hash;
-            this.unk0 = 1;
+            this.indexFormat = 1;
         }
 
         public IndexBuffer(MemoryStream stream, bool isBigEndian)
@@ -255,31 +248,83 @@ namespace ResourceTypes.BufferPools
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             hash = stream.ReadUInt64(isBigEndian);
-            unk0 = stream.ReadInt32(isBigEndian);
+            indexFormat = stream.ReadInt32(isBigEndian);
             length = stream.ReadUInt32(isBigEndian);
-            data = new ushort[length / 2];
 
-            int num = 0;
-            int index = 0;
-
-            while (num < length)
+            if (indexFormat == 1)
             {
-                data[index] = stream.ReadUInt16(isBigEndian);
-                num += 2;
-                ++index;
+                data = new uint[length / 2];
+
+                int num = 0;
+                int index = 0;
+
+                while (num < length)
+                {
+                    data[index] = stream.ReadUInt16(isBigEndian);
+                    num += 2;
+                    ++index;
+                }
+            }
+            else
+            {
+                data = new uint[length / 4];
+
+                int num = 0;
+                int index = 0;
+
+                while (num < length)
+                {
+                    data[index] = stream.ReadUInt32(isBigEndian);
+                    num += 4;
+                    ++index;
+                }
             }
         }
-        
+
+        public void SetFormat(int format)
+        {
+            indexFormat = format;
+            GetLength();
+        }
+
         public void WriteToFile(MemoryStream stream, bool isBigEndian = false)
         {
             stream.Write(hash, isBigEndian);
-            stream.Write(1, isBigEndian);
+            stream.Write(indexFormat, isBigEndian);
+            GetLength();
             stream.Write(length, isBigEndian);
 
-            for (int i = 0; i != data.Length; i++)
+            if (indexFormat == 1)
             {
-                stream.Write(data[i], isBigEndian);
+                for (int i = 0; i != data.Length; i++)
+                {
+                    stream.Write((ushort)data[i], isBigEndian);
+                }
             }
+            else
+            {
+                for (int i = 0; i != data.Length; i++)
+                {
+                    stream.Write(data[i], isBigEndian);
+                }
+            }
+        }
+
+        public uint[] GetData()
+        {
+            return data;
+        }
+
+        public uint GetLength()
+        {
+            length = (uint)(indexFormat == 2 ? data.Length * 4 : data.Length * 2);
+            return length;
+        }
+
+        public void SetData(uint[] data)
+        {
+            this.data = data;
+            length = (uint)(indexFormat == 2 ? data.Length * 4 : data.Length * 2);
         }
     }
 }

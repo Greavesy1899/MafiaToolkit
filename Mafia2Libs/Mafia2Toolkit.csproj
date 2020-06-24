@@ -218,6 +218,12 @@
     <Compile Include="Controls\TextureEntry.Designer.cs">
       <DependentUpon>TextureEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\EntityDataStorageEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EntityDataStorageEditor.Designer.cs">
+      <DependentUpon>EntityDataStorageEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Docking\DockPropertyGrid.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -304,6 +310,8 @@
     <Compile Include="MafiaLib\FileTypes\Actors\ActorEntry.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorExtraData.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorFactory.cs" />
+    <Compile Include="MafiaLib\FileTypes\Actors\Types\ActorActionPointScript.cs" />
+    <Compile Include="MafiaLib\FileTypes\Actors\Types\ActorCar.cs" />
     <Compile Include="MafiaLib\FileTypes\BufferTypes\BufferHelpers.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Model.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\OpcodeException.cs" />
@@ -317,8 +325,12 @@
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceXML.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\ItemDescEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\Enumerator.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\AIWorld\AIWorld.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\AnimalTraffic.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\Enums.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\HPD.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\OBJ_DATA\KynogonRuntimeMesh.cs" />
+    <Compile Include="MafiaLib\FileTypes\Navigation\OBJ_DATA\OBJData.cs" />
     <Compile Include="MafiaLib\FileTypes\SdsConfigFile.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\Actor.cs" />
@@ -415,12 +427,16 @@
     <Compile Include="Rendering\Graphics\RenderTypes\RenderJunction.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderLine.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderNav.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderNavCell.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderRoad.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\RenderStaticCollision.cs" />
     <Compile Include="Rendering\Graphics\Shaders\CollisionShader.cs" />
     <Compile Include="Rendering\Graphics\Shaders\Shader_50760736.cs" />
+    <Compile Include="Rendering\Graphics\WorldSettings.cs" />
     <Compile Include="Rendering\RenderPrefabs.cs" />
-    <Compile Include="Rendering\System\FPSClass.cs" />
+    <Compile Include="Rendering\Core\FPSClass.cs" />
+    <Compile Include="Rendering\Core\SpatialCell.cs" />
+    <Compile Include="Rendering\Core\SpatialGrid.cs" />
     <Compile Include="Utils\Helpers\MatrixExtensions.cs" />
     <Compile Include="Utils\Helpers\BoundExtensions.cs" />
     <Compile Include="MafiaLib\ModelHelpers\Enums.cs" />
@@ -532,7 +548,7 @@
     <Compile Include="Rendering\Graphics\Shaders\Shader_601151254.cs" />
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
-    <Compile Include="Rendering\System\TimerClass.cs" />
+    <Compile Include="Rendering\Core\TimerClass.cs" />
     <Compile Include="Utils\Helpers\Extensions.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -723,6 +739,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TextureEntry.resx">
       <DependentUpon>TextureEntry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EntityDataStorageEditor.resx">
+      <DependentUpon>EntityDataStorageEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CityShopEditor.resx">
       <DependentUpon>CityShopEditor.cs</DependentUpon>
