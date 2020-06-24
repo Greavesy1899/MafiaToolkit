@@ -430,7 +430,9 @@
     <Compile Include="Rendering\Graphics\Shaders\Shader_50760736.cs" />
     <Compile Include="Rendering\Graphics\WorldSettings.cs" />
     <Compile Include="Rendering\RenderPrefabs.cs" />
-    <Compile Include="Rendering\System\FPSClass.cs" />
+    <Compile Include="Rendering\Core\FPSClass.cs" />
+    <Compile Include="Rendering\Core\SpatialCell.cs" />
+    <Compile Include="Rendering\Core\SpatialGrid.cs" />
     <Compile Include="Utils\Helpers\MatrixExtensions.cs" />
     <Compile Include="Utils\Helpers\BoundExtensions.cs" />
     <Compile Include="MafiaLib\ModelHelpers\Enums.cs" />
@@ -542,7 +544,7 @@
     <Compile Include="Rendering\Graphics\Shaders\Shader_601151254.cs" />
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
-    <Compile Include="Rendering\System\TimerClass.cs" />
+    <Compile Include="Rendering\Core\TimerClass.cs" />
     <Compile Include="Utils\Helpers\Extensions.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -1,18 +1,20 @@
 ﻿using Rendering.Graphics;
 using SharpDX;
 
-namespace Rendering.Sys
+namespace Rendering.Core
 {
     public class WorldSettings
     {
         public LightClass Lighting { get; set; }
         
         public int RenderMode { get; set; }
+        public bool RenderSky { get; set; }
 
         public WorldSettings()
         {
             Lighting = new LightClass();
             RenderMode = 2;
+            RenderSky = false;
         }
 
         public void SetupLighting()

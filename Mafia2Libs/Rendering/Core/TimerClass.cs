@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Threading;
 
-namespace Rendering.Sys
+namespace Rendering.Core
 {
     public class TimerClass
     {

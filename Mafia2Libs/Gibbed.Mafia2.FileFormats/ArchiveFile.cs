@@ -486,11 +486,9 @@ namespace Gibbed.Mafia2.FileFormats
                 }
             }
 
-            var currentIndex = 0;
             for (int i = 0; i < patchFile.resources.Length; i++)
             {
                 var entry = patchFile.resources[i];
-                var index = patchFile.UnkInts1[currentIndex];
 
                 if (entry.TypeId > ResourceTypes.Count)
                 {
@@ -500,7 +498,6 @@ namespace Gibbed.Mafia2.FileFormats
 
                 var type = ResourceTypes[entry.TypeId].Name;
                 string name = string.Format("{0}_{1}", type, i);
-                var updateIndex = false;
                 for (int z = 0; z < resPatchAvailable[type].Count; z++)
                 {
                     var res = resPatchAvailable[type][z];
@@ -514,7 +511,6 @@ namespace Gibbed.Mafia2.FileFormats
                         {
                             Console.WriteLine("Detected possible candidate: {0}", resName);
                             name = resName;
-                            updateIndex = true;
                             break;
                         }
                     }
@@ -524,13 +520,11 @@ namespace Gibbed.Mafia2.FileFormats
                         {
                             name = sortedResources[type][res.Key];
                             resPatchAvailable[type][z] = new KeyValuePair<int, bool>(res.Key, true);
-                            updateIndex = true;
                             break;
                         }
                     }
 
                 }
-                currentIndex = (updateIndex ? currentIndex + 1 : currentIndex);
                 var saveName = "";
                 resourceXML.WriteStartElement("ResourceEntry");
                 resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);

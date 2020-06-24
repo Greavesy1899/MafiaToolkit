@@ -150,7 +150,7 @@ namespace ResourceTypes.Navigation
             unk2 = reader.ReadInt32();
             unk3 = reader.ReadInt32();
             unk4 = reader.ReadInt32();
-            writer.WriteLine(string.Format("{0} {1} {2} {3}", unk0, unk2, unk3, unk4));
+            //writer.WriteLine(string.Format("{0} {1} {2} {3}", unk0, unk2, unk3, unk4));
             vertSize = reader.ReadInt32();
             triSize = reader.ReadInt32();
             //writer.WriteLine(string.Format("{0}, )
@@ -167,7 +167,7 @@ namespace ResourceTypes.Navigation
                 pos.Y = -pos.Z;
                 pos.Z = y;
                 vertex.Position = pos;
-                writer.WriteLine(vertex.Position);
+                //writer.WriteLine(vertex.Position);
                 vertex.Unk0 = reader.ReadSingle();
                 vertex.Unk1 = reader.ReadSingle();
                 vertex.Unk2 = reader.ReadInt32();
@@ -188,7 +188,7 @@ namespace ResourceTypes.Navigation
                 connection.NodeID = reader.ReadUInt32() & 0x7FFFFFFF;
                 connection.ConnectedNodeID = reader.ReadUInt32() & 0x7FFFFFFF;
                 connections[i] = connection;
-                writer.WriteLine(string.Format("{0} {1} {2}", connection.Flags, connection.NodeID, connection.ConnectedNodeID));
+                //writer.WriteLine(string.Format("{0} {1} {2}", connection.Flags, connection.NodeID, connection.ConnectedNodeID));
             }
 
             //Read KynogonRuntimeMesh

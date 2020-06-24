@@ -1,4 +1,4 @@
-﻿using Rendering.Sys;
+﻿using Rendering.Core;
 using SharpDX.Direct3D11;
 
 namespace Rendering.Graphics

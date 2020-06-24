@@ -49,6 +49,14 @@ namespace Utils.SharpDXExtensions
             stream.Write(vec.Z, isBigEndian);
         }
 
+        public static Vector3 Swap(this Vector3 pos)
+        {
+            float z = pos.Z;
+            pos.Z = pos.X;
+            pos.X = z;
+            return pos;
+        }
+
         public static bool IsNaN(this Vector3 vector)
         {
             return float.IsNaN(vector.X) || float.IsNaN(vector.Y) || float.IsNaN(vector.Z);

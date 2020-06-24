@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using Rendering.Sys;
+using Rendering.Core;
 using ResourceTypes.Materials;
 using SharpDX;
 using SharpDX.Direct3D11;

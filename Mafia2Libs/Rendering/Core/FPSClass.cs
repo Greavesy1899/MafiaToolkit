@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rendering.Sys
+namespace Rendering.Core
 {
     public class FPSClass
     {

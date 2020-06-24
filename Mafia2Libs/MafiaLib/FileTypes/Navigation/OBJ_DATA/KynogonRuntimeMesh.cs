@@ -1,10 +1,6 @@
 ﻿using SharpDX;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 
@@ -98,11 +94,14 @@ namespace ResourceTypes.Navigation
 
         public int Unk0;
         public int Unk1;
-        public BoundingBox BoundingBox;
+        public float Unk2;
+        public float Unk3;
+        public Vector2 BoundMin;
+        public Vector2 BoundMax;
         public int CellSizeX;
         public int CellSizeY;
         public float Radius;
-        public int Unk2;
+        public int Unk4;
         public int Height;
         public int Offset;
         public int[] Grid;
@@ -126,17 +125,35 @@ namespace ResourceTypes.Navigation
                 throw new FormatException("Version did not equal 2");
             }
 
+            writer.WriteLine("");
             Unk0 = reader.ReadInt32();
             Unk1 = reader.ReadInt32();
-            BoundingBox = BoundingBoxExtenders.ReadFromFile(reader);
+            Unk2 = reader.ReadSingle();
+            Unk3 = reader.ReadSingle();
+            writer.WriteLine(Unk0);
+            writer.WriteLine(Unk1);
+            writer.WriteLine(Unk2);
+            writer.WriteLine(Unk3);
+            BoundMin = Vector2Extenders.ReadFromFile(reader);
+            BoundMax = Vector2Extenders.ReadFromFile(reader);
+            writer.WriteLine(BoundMin);
+            writer.WriteLine(BoundMax);
+            //BoundingBox = BoundingBoxExtenders.ReadFromFile(reader);
             CellSizeX = reader.ReadInt32();
             CellSizeY = reader.ReadInt32();
+            writer.WriteLine(CellSizeX);
+            writer.WriteLine(CellSizeY);
             Radius = reader.ReadSingle();
-            Unk2 = reader.ReadInt32();
+            Unk4 = reader.ReadInt32();
             Height = reader.ReadInt32();
             Offset = reader.ReadInt32(); //this is a potential offset;
+            writer.WriteLine(Radius);
+            writer.WriteLine(Unk4);
+            writer.WriteLine(Height);
+            writer.WriteLine(Offset);
             Grid = new int[(CellSizeX * CellSizeY)];
             Cells = new Cell[Grid.Length];
+            writer.WriteLine("");
 
             for (int i = 0; i < Grid.Length; i++)
             {
@@ -382,11 +399,14 @@ namespace ResourceTypes.Navigation
 
             writer.Write(Unk0);
             writer.Write(Unk1);
-            BoundingBoxExtenders.WriteToFile(BoundingBox, writer);
+            writer.Write(Unk2);
+            writer.Write(Unk3);
+            Vector2Extenders.WriteToFile(BoundMin, writer);
+            Vector2Extenders.WriteToFile(BoundMax, writer);
             writer.Write(CellSizeX);
             writer.Write(CellSizeY);
             writer.Write(Radius);
-            writer.Write(Unk2);
+            writer.Write(Unk4);
             writer.Write(Height);
             writer.Write(Offset);
 
@@ -456,13 +476,13 @@ namespace ResourceTypes.Navigation
                         writer.Write(dataSet.Unk05);
                     }
 
-                    foreach(var offset in set.unk14Offsets)
-                    {
-                        writer.Write(offset);
-                    }
-
                     if(set.cellUnk14 > 0)
                     {
+                        foreach (var offset in set.unk14Offsets)
+                        {
+                            writer.Write(offset);
+                        }
+
                         writer.Write(set.unk14End);
                         foreach(var dataSet in set.unk14Boxes)
                         {

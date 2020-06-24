@@ -3,7 +3,7 @@ using System;
 using System.Windows.Forms;
 using SharpDX;
 using System.Collections.Generic;
-using Rendering.Sys;
+using Rendering.Core;
 using Utils.Models;
 
 namespace Rendering.Graphics
@@ -21,14 +21,22 @@ namespace Rendering.Graphics
 
         private int selectedID;
         private RenderBoundingBox selectionBox;
+        private RenderModel sky;
+        private RenderModel clouds;
+        private RenderModel gizmo;
 
-        private DirectX11Class D3D;    
+        private DirectX11Class D3D;
+
+        private SpatialGrid translokatorGrid;
+        private SpatialGrid[] navigationGrids;
 
         public GraphicsClass()
         {
             InitObjectStack = new Dictionary<int, IRenderer>();
             Assets = new Dictionary<int, IRenderer>();
             selectionBox = new RenderBoundingBox();
+            translokatorGrid = new SpatialGrid();
+            navigationGrids = new SpatialGrid[0];
         }
 
         public bool PreInit(IntPtr WindowHandle)
@@ -38,39 +46,34 @@ namespace Rendering.Graphics
             {
                 MessageBox.Show("Failed to initialize DirectX11!");
             }
-
             Timer = new TimerClass();
             FPS = new FPSClass();
 
             Timer.Init();
             FPS.Init();
-
             if(!RenderStorageSingleton.Instance.IsInitialised())
             {
                 bool result = RenderStorageSingleton.Instance.Initialise(D3D);
                 var structure = new M2TStructure();
                 //import gizmo
-                RenderModel model = new RenderModel();
+                gizmo = new RenderModel();
                 structure.ReadFromM2T("Resources/GizmoModel.m2t");
-                model.ConvertMTKToRenderModel(structure);
-                model.InitBuffers(D3D.Device, D3D.DeviceContext);
-                model.DoRender = false;
+                gizmo.ConvertMTKToRenderModel(structure);
+                gizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
+                gizmo.DoRender = false;
 
-                RenderModel sky = new RenderModel();
+                sky = new RenderModel();
                 structure = new M2TStructure();
                 structure.ReadFromM2T("Resources/sky_backdrop.m2t");
                 sky.ConvertMTKToRenderModel(structure);
                 sky.InitBuffers(D3D.Device, D3D.DeviceContext);
-                sky.DoRender = false;
-                Assets.Add(1, sky);
 
-                RenderModel clouds = new RenderModel();
+                clouds = new RenderModel();
                 structure = new M2TStructure();
                 structure.ReadFromM2T("Resources/weather_clouds.m2t");
                 clouds.ConvertMTKToRenderModel(structure);
                 clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
                 clouds.DoRender = false;
-                Assets.Add(2, clouds);
             }
             selectionBox.SetColour(System.Drawing.Color.Red);
             selectionBox.Init(new BoundingBox(new Vector3(0.5f), new Vector3(-0.5f)));          
@@ -87,10 +90,31 @@ namespace Rendering.Graphics
             Camera.SetProjectionMatrix(width, height);
             ClearRenderStack();
             selectionBox.InitBuffers(D3D.Device, D3D.DeviceContext);
+            gizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
+            sky.InitBuffers(D3D.Device, D3D.DeviceContext);
+            sky.DoRender = WorldSettings.RenderSky;
+            clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
             Input = new InputClass();
             Input.Init();
             return true;
         }
+
+        public void SetTranslokatorGrid(ResourceTypes.Translokator.TranslokatorLoader translokator)
+        {
+            translokatorGrid = new SpatialGrid(translokator);
+            translokatorGrid.Initialise(D3D.Device, D3D.DeviceContext);
+        }
+
+        public void SetNavigationGrid(ResourceTypes.Navigation.OBJData[] data)
+        {
+            navigationGrids = new SpatialGrid[data.Length];
+            for(int i = 0; i < navigationGrids.Length; i++)
+            {
+                navigationGrids[i] = new SpatialGrid(data[i].runtimeMesh);
+                navigationGrids[i].Initialise(D3D.Device, D3D.DeviceContext);
+            }
+        }
+
         public void Shutdown()
         {
             WorldSettings.Shutdown();
@@ -103,8 +127,22 @@ namespace Rendering.Graphics
                 model.Value?.Shutdown();
             }
 
+            foreach (SpatialGrid grid in navigationGrids)
+            {
+                grid?.Shutdown();
+            }
+
+            navigationGrids = null;
+            translokatorGrid?.Shutdown();
+            translokatorGrid = null;
             selectionBox.Shutdown();
             selectionBox = null;
+            gizmo.Shutdown();
+            gizmo = null;
+            clouds.Shutdown();
+            clouds = null;
+            sky.Shutdown();
+            sky = null;
             Assets = null;
             D3D?.Shutdown();
             D3D = null;
@@ -130,9 +168,21 @@ namespace Rendering.Graphics
                 entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera);
             }
 
+            foreach (var grid in navigationGrids)
+            {
+                grid.Render(D3D.Device, D3D.DeviceContext, Camera);
+            }
+
+            translokatorGrid.Render(D3D.Device, D3D.DeviceContext, Camera);
             selectionBox.UpdateBuffers(D3D.Device, D3D.DeviceContext);
             selectionBox.Render(D3D.Device, D3D.DeviceContext, Camera);
-
+            gizmo.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+            gizmo.Render(D3D.Device, D3D.DeviceContext, Camera);
+            clouds.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+            clouds.Render(D3D.Device, D3D.DeviceContext, Camera);
+            sky.DoRender = WorldSettings.RenderSky;
+            sky.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+            sky.Render(D3D.Device, D3D.DeviceContext, Camera);
             D3D.EndScene();
             return true;
         }
@@ -149,10 +199,9 @@ namespace Rendering.Graphics
 
         public void SelectEntry(int id)
         {
-            IRenderer newObj, oldObj, gizmo;
+            IRenderer newObj, oldObj;
             bool foundNew = Assets.TryGetValue(id, out newObj);
             bool foundOld = Assets.TryGetValue(selectedID, out oldObj);
-            gizmo = Assets[1];
 
             if (selectedID == id)
                 return;

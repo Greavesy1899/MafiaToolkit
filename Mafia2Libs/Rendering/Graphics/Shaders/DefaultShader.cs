@@ -1,6 +1,6 @@
 ﻿using SharpDX.Direct3D11;
 using ResourceTypes.Materials;
-using Rendering.Sys;
+using Rendering.Core;
 using System.Runtime.InteropServices;
 using SharpDX;
 

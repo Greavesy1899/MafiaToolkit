@@ -182,16 +182,16 @@ namespace Mafia2Tool
                     obj.Add(new NAVData(new FileInfo(item)));
                 }
 
-                //for(int i = 0; i < obj.Count; i++)
+                //for (int i = 0; i < obj.Count; i++)
                 //{
                 //    obj[i].WriteToFile();
                 //}
             }
             if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
             {
-                var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
-                var data = new NAVData(new FileInfo(name));
-                HPDData = (data.data as HPDData);
+                //var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
+                //var data = new NAVData(new FileInfo(name));
+                //HPDData = (data.data as HPDData);
             }
             IndexBufferPool = new IndexBufferManager(ibps, isBigEndian);
             VertexBufferPool = new VertexBufferManager(vbps, isBigEndian);
