@@ -16,6 +16,7 @@ using ResourceTypes.Navigation;
 using ResourceTypes.Prefab;
 using ResourceTypes.Sound;
 using ResourceTypes.SDSConfig;
+using Core;
 using Utils.Lua;
 using ResourceTypes.Misc;
 using Mafia2Tool.Forms;
@@ -106,7 +107,6 @@ namespace Mafia2Tool
             game = GameStorage.Instance.GetSelectedGame();
             pcDirectory = new DirectoryInfo(game.Directory);
             launcher = new FileInfo(pcDirectory.FullName + "/" + GameStorage.GetExecutableName(game.GameType));
-            rootDirectory = pcDirectory.Parent;
 
             if(!launcher.Exists)
             {
@@ -130,7 +130,16 @@ namespace Mafia2Tool
         private void InitTreeView()
         {
             infoText.Text = "Building folders..";
-            rootDirectory = pcDirectory.Parent;
+
+            if (game.GameType != GamesEnumerator.MafiaIII)
+            {
+                rootDirectory = pcDirectory.Parent;
+            }
+            else
+            {
+                rootDirectory = pcDirectory;
+            }
+
             TreeNode rootTreeNode = new TreeNode(rootDirectory.Name);
             rootTreeNode.Tag = rootDirectory;
             folderView.Nodes.Add(rootTreeNode);
@@ -259,7 +268,7 @@ namespace Mafia2Tool
             infoText.Text = "Saving SDS..";
             ArchiveFile archiveFile = new ArchiveFile();
             archiveFile.Platform = Platform.PC;
-            archiveFile.Version = 20;
+            archiveFile.Version = (uint)(GameStorage.Instance.GetSelectedGame().GameType == GamesEnumerator.MafiaIII ? 20 : 19);
             //MII: DE no longer has this data in the header.
             if(game.GameType == GamesEnumerator.MafiaII)
             {
@@ -608,6 +617,10 @@ namespace Mafia2Tool
                     return;
                 case "EDS":
                     EntityDataStorageEditor edsEditor = new EntityDataStorageEditor(item.Tag as FileInfo);
+                    return;
+                case "XBIN":
+                    XBinFile xbin = new XBinFile();
+                    xbin.Open(item.Tag as FileInfo);
                     return;
                 default:
                     Process.Start(((FileInfo)item.Tag).FullName);

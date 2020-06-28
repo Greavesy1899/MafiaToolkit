@@ -102,3 +102,9 @@ npcs
 water
 BulletsAUX
 BulletsWeapon
+BumpMin
+BumpPlus
+SpaceMin
+SpacePlus
+HeightMax
+poznamka

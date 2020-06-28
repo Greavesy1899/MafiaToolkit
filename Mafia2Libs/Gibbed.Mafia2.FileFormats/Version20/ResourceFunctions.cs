@@ -56,6 +56,8 @@ namespace Gibbed.Mafia2.FileFormats
                 }
 
                 resourceXML.WriteStartElement("ResourceEntry");
+                resourceXML.WriteAttributeString("SlotVram", entry.SlotVramRequired.ToString());
+                resourceXML.WriteAttributeString("SlotRam", entry.SlotRamRequired.ToString());
                 resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
                 string saveName = "";
                 Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
@@ -68,6 +70,7 @@ namespace Gibbed.Mafia2.FileFormats
                     case "hkAnimation":
                     case "Generic":
                     case "NAV_PATH_DATA":
+                    case "NAV_AIWORLD_DATA":
                     case "RoadMap":
                         ConstructPath(finalPath, itemNames[i]);
                         ReadBasicEntry(resourceXML, itemNames[i]);
@@ -88,6 +91,9 @@ namespace Gibbed.Mafia2.FileFormats
                         ReadFlashEntry(entry, resourceXML, itemNames[i], finalPath);
                         saveName = itemNames[i];
                         break;
+                    case "Script":
+                        ReadScriptEntry(entry, resourceXML, finalPath);
+                        continue;
                     default:
                         MessageBox.Show("Found unknown type: " + ResourceTypes[entry.TypeId].Name);
                         break;
@@ -109,6 +115,11 @@ namespace Gibbed.Mafia2.FileFormats
             Dictionary<string, List<ResourceEntry>> entries = new Dictionary<string, List<ResourceEntry>>();
             while (nodes.MoveNext() == true)
             {
+                nodes.Current.MoveToFirstAttribute();
+                uint SlotVramRequired = uint.Parse(nodes.Current.Value);
+                nodes.Current.MoveToNextAttribute();
+                uint SlotRamRequired = uint.Parse(nodes.Current.Value);
+                nodes.Current.MoveToParent();
                 nodes.Current.MoveToFirstChild();
                 string resourceType = nodes.Current.Value;
 
@@ -120,7 +131,7 @@ namespace Gibbed.Mafia2.FileFormats
 
                     //TODO
                     if (resource.Name == "NAV_PATH_DATA")
-                        resource.Parent = 1;
+                        resource.Parent = 0;
 
                     ResourceTypes.Add(resource);
                     entries.Add(resourceType, new List<ResourceEntry>());
@@ -130,29 +141,47 @@ namespace Gibbed.Mafia2.FileFormats
                 typeNameNode.InnerText = resourceType;
                 XmlNode sddescNode = xmlDoc.CreateElement("SourceDataDescription");
 
-                ResourceEntry resourceEntry = new ResourceEntry();
+                ResourceEntry resourceEntry = new ResourceEntry() {
+                    SlotRamRequired = SlotRamRequired,
+                    SlotVramRequired = SlotVramRequired,
+                };
+
                 switch (resourceType)
                 {
                     case "Texture":
                         resourceEntry = WriteTextureEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        //this.SlotVramRequired += (uint)(resourceEntry.Data.Length - 128);
                         break;
                     case "hkAnimation":
+                        resourceEntry = WriteBasicEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
                     case "Generic":
+                        resourceEntry = WriteBasicEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        resourceEntry.SlotRamRequired = SlotRamRequired;
+                        resourceEntry.SlotVramRequired = SlotVramRequired;
+                        this.OtherRamRequired += (uint)resourceEntry.Data.Length;
+                        break;
                     case "NAV_PATH_DATA":
+                    case "NAV_AIWORLD_DATA":
                     case "RoadMap":
                         resourceEntry = WriteBasicEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        resourceEntry.OtherRamRequired += (uint)(resourceEntry.Data.Length);
                         break;
                     case "MemFile":
                         resourceEntry = WriteMemFileEntry(resourceEntry, nodes, sdsFolder, sddescNode);
                         break;
                     case "SystemObjectDatabase":
                         resourceEntry = WriteXBinEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        //this.SlotRamRequired += (uint)(resourceEntry.Data.Length);
                         break;
                     case "XML":
                         resourceEntry = WriteXMLEntry(resourceEntry, nodes, sdsFolder, sddescNode);
-                        continue;
+                        break;
+                    case "Script":
+                        resourceEntry = WriteScriptEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
                     case "Flash":
-                        throw new NotImplementedException();
+                        resourceEntry = WriteFlashEntry(resourceEntry, nodes, sdsFolder, sddescNode);
                         break;
                     default:
                         MessageBox.Show("Did not pack type: " + resourceType, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -165,14 +194,12 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherRamRequired", (int)resourceEntry.OtherRamRequired));
                 resourceNode.AppendChild(AddRamElement(xmlDoc, "OtherVramRequired", (int)resourceEntry.OtherVramRequired));
                 rootNode.AppendChild(resourceNode);
-                SlotRamRequired += resourceEntry.SlotRamRequired;
-                SlotVramRequired += resourceEntry.SlotVramRequired;
-                OtherRamRequired += resourceEntry.OtherRamRequired;
-                OtherVramRequired += resourceEntry.OtherVramRequired;
+
+                this.SlotVramRequired += resourceEntry.OtherVramRequired;
+                this.SlotRamRequired += resourceEntry.OtherRamRequired;
                 resourceEntry.TypeId = (int)ResourceTypes.Find(s => s.Name.Equals(resourceType)).Id;
                 entries[resourceType].Add(resourceEntry);
             }
-
             _ResourceTypes.Reverse();
 
             for (int i = 0; i < _ResourceTypes.Count; i++)
@@ -198,7 +225,29 @@ namespace Gibbed.Mafia2.FileFormats
             ResourceInfoXml = xmlDoc.OuterXml;
             return true;
         }
+        private ResourceEntry WriteFlashEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
+        {
+            FlashResource resource = new FlashResource();
 
+            //read contents from XML entry
+            nodes.Current.MoveToNext();
+            resource.FileName = nodes.Current.Value;
+            nodes.Current.MoveToNext();
+            resource.Name = nodes.Current.Value;
+            nodes.Current.MoveToNext();
+            entry.Version = (ushort)nodes.Current.ValueAsInt;
+
+            resource.Data = File.ReadAllBytes(sdsFolder + "/" + resource.FileName);
+
+            using (var stream = new MemoryStream())
+            {
+                resource.Serialize(entry.Version, stream, _Endian);
+                entry.Data = stream.ToArray();
+            }
+
+            descNode.InnerText = resource.FileName;
+            return entry;
+        }
         private void ReadFlashEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string flashDir)
         {
             string[] dirs = name.Split('/');
@@ -214,8 +263,8 @@ namespace Gibbed.Mafia2.FileFormats
             using (var stream = new MemoryStream(entry.Data))
             {
                 resource.Deserialize(entry.Version, stream, Endian);
+                entry.Data = resource.Data;
             }
-
             newPath += "/" + dirs[dirs.Length - 1];
             resourceXML.WriteElementString("File", name);
             resourceXML.WriteElementString("Name", resource.Name);
@@ -245,6 +294,7 @@ namespace Gibbed.Mafia2.FileFormats
             resource.Data = File.ReadAllBytes(sdsFolder + "/" + resource.Name);
             resource.Size = resource.Data.Length;
             descNode.InnerText = resource.Name;
+            entry.OtherRamRequired = (uint)(resource.Size);
             
             using(var stream = new MemoryStream())
             {
@@ -277,6 +327,8 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteElementString("Unk03", resource.Unk03.ToString());
             resourceXML.WriteElementString("Unk04", resource.Unk04);
             resourceXML.WriteElementString("Hash", resource.Hash.ToString());
+            //resourceXML.WriteElementString("Entry_0", entry.SlotRamRequired.ToString());
+            //resourceXML.WriteElementString("Entry_1", entry.SlotVramRequired.ToString());
             resourceXML.WriteElementString("Version", entry.Version.ToString());
             File.WriteAllBytes(xbinDir + "/" + resource.Name, resource.Data);
 

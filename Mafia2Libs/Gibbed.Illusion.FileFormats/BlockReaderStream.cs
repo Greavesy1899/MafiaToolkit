@@ -25,7 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gibbed.IO;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using ZLibNet;
 
 namespace Gibbed.Illusion.FileFormats
 {
@@ -312,12 +312,14 @@ namespace Gibbed.Illusion.FileFormats
 
                 input.Seek(this._DataOffset, SeekOrigin.Begin);
                 this._Data = new byte[this.Size];
-                var inflater = new InflaterInputStream(input);
-                if (inflater.Read(this._Data, 0, this._Data.Length) != this._Data.Length)
+                using (ZLibStream stream = new ZLibStream(input, CompressionMode.Decompress, true))
                 {
-                    throw new InvalidOperationException();
+                    var length = stream.Read(this._Data, 0, this._Data.Length);
+                    if (length != this._Data.Length)
+                    {
+                        throw new InvalidOperationException();
+                    }
                 }
-
                 this._IsLoaded = true;
                 return true;
             }

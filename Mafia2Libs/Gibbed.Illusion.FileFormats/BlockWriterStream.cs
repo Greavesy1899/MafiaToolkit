@@ -23,7 +23,7 @@
 using System;
 using System.IO;
 using Gibbed.IO;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using ZLibNet;
 
 namespace Gibbed.Illusion.FileFormats
 {
@@ -136,23 +136,27 @@ namespace Gibbed.Illusion.FileFormats
         {
             public uint UncompressedSize;
             public uint Unknown04;
-            public uint Unknown08;
-            public uint Unknown0C;
+            public short ChunkSize;
+            public short ChunkCount;
+            public short Unknown0C;
             public uint CompressedSize;
-            public uint Unknown14;
-            public uint Unknown18;
-            public uint Unknown1C;
+            public byte Unknown0E;
+            public byte Unknown0F;
+            public ushort[] Chunks;
 
             public void Write(Stream output, Endian endian)
             {
                 output.WriteValueU32(this.UncompressedSize, endian);
                 output.WriteValueU32(this.Unknown04, endian);
-                output.WriteValueU32(this.Unknown08, endian);
-                output.WriteValueU32(this.Unknown0C, endian);
-                output.WriteValueU32(this.CompressedSize, endian);
-                output.WriteValueU32(this.Unknown14, endian);
-                output.WriteValueU32(this.Unknown18, endian);
-                output.WriteValueU32(this.Unknown1C, endian);
+                output.WriteValueS16(this.ChunkSize, endian);
+                output.WriteValueS16(this.ChunkCount, endian);
+                output.WriteValueS16(this.Unknown0C, endian);
+                output.WriteValueU8(this.Unknown0E);
+                output.WriteValueU8(this.Unknown0F);
+                for(int i = 0; i < 8; i++)
+                {
+                    output.WriteValueU16(this.Chunks[i], endian);
+                }
             }
         }
 
@@ -164,11 +168,9 @@ namespace Gibbed.Illusion.FileFormats
                 blockLength = 1 + (blockLength < 0 ? 0 : blockLength);*/
                 var blockLength = this._BlockOffset;
 
-                var zlib = new DeflaterOutputStream(data);
+                var zlib = new ZLibStream(data, CompressionMode.Compress, CompressionLevel.Level6);
                 zlib.Write(this._BlockBytes, 0, blockLength);
-                zlib.Finish();
-                data.Flush();
-
+                zlib.Flush();
                 var compressedLength = (int)data.Length;
                 if (data.Length < blockLength)
                 {
@@ -177,15 +179,19 @@ namespace Gibbed.Illusion.FileFormats
                     CompressedBlockHeader compressedBlockHeader;
                     compressedBlockHeader.UncompressedSize = (uint)blockLength;
                     compressedBlockHeader.Unknown04 = 32;
-                    compressedBlockHeader.Unknown08 = 81920;
-                    compressedBlockHeader.Unknown0C = 135200769;
+                    compressedBlockHeader.Unknown0C = 1;
+                    compressedBlockHeader.Unknown0E = 15;
+                    compressedBlockHeader.Unknown0F = 8;
                     compressedBlockHeader.CompressedSize = (uint)compressedLength;
-                    compressedBlockHeader.Unknown14 = 0;
-                    compressedBlockHeader.Unknown18 = 0;
-                    compressedBlockHeader.Unknown1C = 0;
+                    compressedBlockHeader.ChunkCount = 1;
+                    compressedBlockHeader.ChunkSize = 0;
+                    compressedBlockHeader.Chunks = new ushort[8];
+                    compressedBlockHeader.Chunks[0] = (ushort)compressedBlockHeader.CompressedSize;
                     compressedBlockHeader.Write(this._BaseStream, this._Endian);
                     this._BaseStream.Write(data.GetBuffer(), 0, compressedLength);
                     this._BlockOffset = 0;
+                    zlib.Close();
+                    zlib.Dispose();
                     return true;
                 }
             }

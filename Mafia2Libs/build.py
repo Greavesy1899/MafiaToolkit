@@ -45,6 +45,7 @@ remove_dll("Gibbed.Squish.dll");
 remove_dll("squish_32.dll");
 remove_dll("squish_64.dll");
 remove_dll("Octokit.dll");
+remove_dll("zlibnet.dll");
 
 #remove files
 remove_file("ToolkitUpdater.pdb")

@@ -173,6 +173,10 @@
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="zlibnet, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\zlibnet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApexSDK\IOFX\ScaleAlongVelocityModifier.cs" />
@@ -218,6 +222,7 @@
     <Compile Include="Controls\TextureEntry.Designer.cs">
       <DependentUpon>TextureEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Core\XBinFile.cs" />
     <Compile Include="Forms\EntityDataStorageEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -324,6 +329,11 @@
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceXML.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\ItemDescEnums.cs" />
+    <Compile Include="MafiaLib\FileTypes\M3\XBin\Types\TableEnums.cs" />
+    <Compile Include="MafiaLib\FileTypes\M3\XBin\Types\TrafficEnums.cs" />
+    <Compile Include="MafiaLib\FileTypes\M3\XBin\Types\VehicleEnums.cs" />
+    <Compile Include="MafiaLib\FileTypes\M3\XBin\Types\Vehicles.cs" />
+    <Compile Include="MafiaLib\FileTypes\M3\XBin\XBin.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\Enumerator.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\AIWorld\AIWorld.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\AnimalTraffic.cs" />
@@ -622,6 +632,7 @@
     <Content Include="libs\UnluacNET.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="libs\zlibnet.dll" />
     <Content Include="Localisations\cz_CZ.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

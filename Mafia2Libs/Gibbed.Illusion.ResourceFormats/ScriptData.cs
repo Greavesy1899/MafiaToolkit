@@ -35,7 +35,7 @@ namespace Gibbed.Mafia2.ResourceFormats
 
         public void Serialize(ushort version, Stream output, Endian endian)
         {
-            if (version == 2)
+            if (version >= 2)
             {
                 this.NameHash = Illusion.FileFormats.Hashing.FNV64.Hash(this.Name);
                 this.DataHash = Illusion.FileFormats.Hashing.FNV64.Hash(this.Data, 0, this.Data.Length);
@@ -50,7 +50,7 @@ namespace Gibbed.Mafia2.ResourceFormats
 
         public void Deserialize(ushort version, Stream input, Endian endian)
         {
-            if (version == 2)
+            if (version >= 2)
             {
                 this.NameHash = input.ReadValueU64(endian);
                 this.DataHash = input.ReadValueU64(endian);

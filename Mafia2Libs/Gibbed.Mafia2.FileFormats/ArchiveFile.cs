@@ -117,7 +117,7 @@ namespace Gibbed.Mafia2.FileFormats
         #region Functions
         public void Serialize(Stream output, ArchiveSerializeOptions options)
         {
-            var compress = (options & ArchiveSerializeOptions.Compress) != 0;
+            var compress = (options & ArchiveSerializeOptions.Compress) > 0;
 
             var basePosition = output.Position;
             var endian = this._Endian;
@@ -143,7 +143,8 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceType.Write(output, endian);
             }
             uint stride = (uint)(Version == 20 ? 38 : 30);
-            var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != 0 ? (uint)this._ResourceEntries.Sum(re => stride + (re.Data == null ? 0 : re.Data.Length)) : 0x10000;
+            uint alignment = (uint)(Version == 20 ? 0x10000 : 0x4000);
+            var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != ArchiveSerializeOptions.None ? (uint)this._ResourceEntries.Sum(re => stride + (re.Data == null ? 0 : re.Data.Length)) : alignment;
             fileHeader.BlockTableOffset = (uint)(output.Position - basePosition);
             fileHeader.ResourceCount = 0;
             var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress);           
@@ -254,6 +255,7 @@ namespace Gibbed.Mafia2.FileFormats
                 using (var data = blockStream.ReadToMemoryStreamSafe(size, endian))
                 {
                     resourceHeader = Archive.ResourceHeader.Read(data, endian, _Version);
+                    
                 }
 
                 if (resourceHeader.Size < 30)
@@ -271,6 +273,7 @@ namespace Gibbed.Mafia2.FileFormats
                     OtherRamRequired = resourceHeader.OtherRamRequired,
                     OtherVramRequired = resourceHeader.OtherVramRequired,
                 };
+                Console.WriteLine("{0}: SlotRam: {1} SlotVRam: {2} OtherRam: {3} OtherVRam: {4} ActualSize: {5}", i, resources[i].SlotRamRequired, resources[i].SlotVramRequired, resources[i].OtherRamRequired, resources[i].OtherVramRequired, resources[i].Data.Length);
             }
             if (fileHeader.XmlOffset != 0)
             {
@@ -590,11 +593,11 @@ namespace Gibbed.Mafia2.FileFormats
 
             if(Version == 19)
             {
-                SaveResourcesVersion19(file, itemNames);
+                SaveResourcesVersion19(file, _ResourceNames);
             } 
             else if(Version == 20)
             {
-                SaveResourcesVersion20(file, itemNames);
+                SaveResourcesVersion20(file, _ResourceNames);
             }
         }
         
@@ -626,7 +629,7 @@ namespace Gibbed.Mafia2.FileFormats
             texData = File.ReadAllBytes(sdsFolder + "/" + file);
             resource = new TextureResource(FNV64.Hash(file), hasMIP, texData);
 
-            entry.SlotVramRequired = (uint)(texData.Length - 128);
+            entry.OtherVramRequired = (uint)(texData.Length - 128);
             //if (hasMIP == 1)
             //{
             //    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/MIP_" + file, FileMode.Open)))
@@ -767,6 +770,7 @@ namespace Gibbed.Mafia2.FileFormats
             resource.Serialize(version, stream, Endian.Little);
             entry.Version = version;
             entry.Data = stream.ToArray();
+            entry.SlotRamRequired = (uint)stream.Length;
             descNode.InnerText = path;
             return entry;
         }
@@ -950,7 +954,15 @@ namespace Gibbed.Mafia2.FileFormats
                 Unk2_V4 = unk2
             };
             resource.Data = File.ReadAllBytes(sdsFolder + "/" + file);
-            entry.SlotRamRequired = (uint)resource.Data.Length;
+
+            if (Version == 19)
+            {
+                entry.SlotRamRequired = (uint)resource.Data.Length;
+            }
+            else
+            {
+                entry.OtherRamRequired = (uint)resource.Data.Length;
+            }
 
             //serialize.
             using (MemoryStream stream = new MemoryStream())

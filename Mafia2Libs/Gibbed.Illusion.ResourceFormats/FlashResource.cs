@@ -24,10 +24,10 @@ namespace Gibbed.Mafia2.ResourceFormats
         public void Serialize(ushort version, Stream output, Endian endian)
         {
             output.WriteStringU16(FileName, endian);
-            output.WriteValueU64(Hash);
+            output.WriteValueU64(Illusion.FileFormats.Hashing.FNV64.Hash(Name), endian);
             output.WriteStringU16(Name, endian);
-            output.WriteValueU32(Size, endian);
-            output.Write(Data, 0, (int)Size);
+            output.WriteValueS32(Data.Length, endian);
+            output.WriteBytes(Data);
         }
     }
 }
