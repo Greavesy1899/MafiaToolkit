@@ -603,6 +603,16 @@ namespace ResourceTypes.FrameResource
                 if (obj == null)
                     continue;
 
+                if(obj is FrameObjectModel)
+                {
+                    FrameObjectModel model = (obj as FrameObjectModel);
+                    
+                    foreach(var attachment in model.AttachmentReferences)
+                    {
+                        attachment.Attachment = (frameObjects.ElementAt(attachment.AttachmentIndex - GetBlockCount).Value as FrameObjectBase);
+                    }
+                }
+
                 if (obj.ParentIndex1.Index > -1)
                 {
                     if (obj.ParentIndex1.Index <= (frameScenes.Count - 1) && (frameScenes.Count - 1) != -1)

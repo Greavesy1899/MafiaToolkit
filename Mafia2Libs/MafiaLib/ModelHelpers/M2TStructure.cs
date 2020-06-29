@@ -176,15 +176,18 @@ namespace Utils.Models
             if(model.Skeleton != null && model.SkeletonHierarchy != null && model.BlendInfo != null)
             {
                 skeleton = new Skeleton();
-                skeleton.BoneNames = new string[model.Skeleton.BoneNames.Length];
-                skeleton.Parents = new byte[model.SkeletonHierarchy.ParentIndices.Length];
-                skeleton.Transform = new Matrix[model.RestTransform.Length];
-                for (int i = 0; i < model.Skeleton.BoneNames.Length; i++)
+                skeleton.Joints = new Joint[model.Skeleton.BoneNames.Length];
+                for (int i = 0; i < skeleton.Joints.Length; i++)
                 {
-                    skeleton.BoneNames[i] = model.Skeleton.BoneNames[i].ToString();
-                    skeleton.Parents[i] = model.SkeletonHierarchy.ParentIndices[i];
-                    skeleton.Transform[i] = model.RestTransform[i];
+                    var joint = new Joint();
+                    joint.Name = model.Skeleton.BoneNames[i].ToString();
+                    joint.ParentIndex = model.SkeletonHierarchy.ParentIndices[i];
+                    joint.Parent = (joint.ParentIndex != 0xFF) ? skeleton.Joints[joint.ParentIndex] : null;
+                    joint.LocalTransform = model.Skeleton.JointTransforms[i];
+                    skeleton.Joints[i] = joint;
                 }
+
+                skeleton.ComputeTransforms();
             }
 
             for(int i = 0; i < model.BlendInfo.BoneIndexInfos.Length; i++)
@@ -198,7 +201,7 @@ namespace Utils.Models
                     byte offset = 0;
                     for(int s = 0; s < indexInfos.BonesSlot[x]; s++)
                     {
-                        offset += (byte)(indexInfos.BonesPerPool[s]);
+                        offset += indexInfos.BonesPerPool[s];
                     }
 
                     for(uint z = part.StartIndex; z < part.StartIndex+(part.NumFaces*3); z++)
@@ -322,14 +325,15 @@ namespace Utils.Models
                 writer.Write(isSkinned);
                 if (isSkinned)
                 {
-                    writer.Write((byte)skeleton.BoneNames.Length);
-                    for (int i = 0; i < skeleton.BoneNames.Length; i++)
+                    writer.Write((byte)skeleton.Joints.Length);
+                    for (int i = 0; i < skeleton.Joints.Length; i++)
                     {
-                        StringHelpers.StringHelpers.WriteString8(writer, skeleton.BoneNames[i]);
-                        writer.Write(skeleton.Parents[i]);
+                        var joint = skeleton.Joints[i];
+                        StringHelpers.StringHelpers.WriteString8(writer, joint.Name);
+                        writer.Write(joint.ParentIndex);
                         Quaternion rotation;
                         Vector3 position, scale;
-                        skeleton.Transform[i].Decompose(out scale, out rotation, out position);
+                        joint.WorldTransform.Decompose(out scale, out rotation, out position);
                         position.WriteToFile(writer);
                         rotation.ToEuler().WriteToFile(writer);
                         scale.WriteToFile(writer);
@@ -591,17 +595,18 @@ namespace Utils.Models
             if(isSkinned)
             {
                 byte size = reader.ReadByte();
-                skeleton.BoneNames = new string[size];
-                skeleton.Parents = new byte[size];
-                skeleton.Transform = new Matrix[size];
+                skeleton.Joints = new Joint[size];
                 for (int i = 0; i < size; i++)
                 {
-                    skeleton.BoneNames[i] = StringHelpers.StringHelpers.ReadString8(reader);
-                    skeleton.Parents[i] = reader.ReadByte();
+                    Joint joint = new Joint();
+                    joint.Name = StringHelpers.StringHelpers.ReadString8(reader);
+                    joint.ParentIndex = reader.ReadByte();
+                    joint.Parent = (joint.ParentIndex != 0xFF) ? skeleton.Joints[joint.ParentIndex] : null; //may crash because root will not be in range
                     Vector3 position = Vector3Extenders.ReadFromFile(reader);
                     Vector3 rotation = Vector3Extenders.ReadFromFile(reader);
                     Vector3 scale = Vector3Extenders.ReadFromFile(reader);
-                    skeleton.Transform[i] = MatrixExtensions.SetMatrix(rotation, scale, position);
+                    joint.WorldTransform = MatrixExtensions.SetMatrix(rotation, scale, position);
+                    skeleton.Joints[i] = joint;
                 }
             }
 
@@ -766,24 +771,93 @@ namespace Utils.Models
                 }
             }
         }
+
+        public class Joint
+        {
+            string name;
+            byte parentIndex;
+            Joint parent;
+            Matrix localTransform;
+            Matrix worldTransform;
+
+            public string Name {
+                get { return name; }
+                set { name = value; }
+            }
+            public Joint Parent {
+                get { return parent; }
+                set { parent = value; }
+            }
+            public byte ParentIndex {
+                get { return parentIndex; }
+                set { parentIndex = value; }
+            }
+            public Matrix LocalTransform {
+                get { return localTransform; }
+                set { localTransform = value; }
+            }
+            public Matrix WorldTransform {
+                get { return worldTransform; }
+                set { worldTransform = value; }
+            }
+
+            public Vector3 GetWorldPosition(Vector3 invertedLocal)
+            {
+                var transposed = GetRotationFromLocalTransform(true);
+                var transformed = Vector3.Transform(invertedLocal, transposed);
+                return new Vector3(transformed.X, transformed.Y, transformed.Z);
+            }
+
+            public void SetWorldPosition(Vector3 position)
+            {
+                worldTransform.TranslationVector = position;
+            }
+
+            private Matrix GetRotationFromLocalTransform(bool transpose)
+            {
+                Vector3 scale, position;
+                Quaternion rotation;
+                localTransform.Decompose(out scale, out rotation, out position);       
+                
+                var matrix = Matrix.RotationQuaternion(rotation);
+                if (transpose)
+                {
+                    matrix.Transpose();
+                }
+
+                return matrix;
+            }
+        }
+
         public class Skeleton
         {
-            string[] boneNames;
-            byte[] parents;
-            Matrix[] transform;
+            Joint[] joints;
 
-            public string[] BoneNames {
-                get { return boneNames; }
-                set { boneNames = value; }
+            public Joint[] Joints {
+                get { return joints; }
+                set { joints = value; }
             }
-            public byte[] Parents {
-                get { return parents; }
-                set { parents = value; }
+
+            public void ComputeTransforms()
+            {
+                for(int i = 0; i < Joints.Length; i++)
+                {
+                    var currentJoint = joints[i];
+                    var parentJoint = currentJoint.Parent;                
+                    var invertedLocal = currentJoint.LocalTransform.TranslationVector;
+                    while(parentJoint != null)
+                    {
+                        invertedLocal = parentJoint.GetWorldPosition(invertedLocal);
+                        parentJoint = parentJoint.Parent;
+                    }
+                    if(currentJoint.Parent != null)
+                    {
+                        invertedLocal += currentJoint.Parent.GetWorldPosition(invertedLocal);
+                    }
+                    currentJoint.SetWorldPosition(invertedLocal);
+                }
             }
-            public Matrix[] Transform {
-                get { return transform; }
-                set { transform = value; }
-            }
+
         }
         public class Lod
         {

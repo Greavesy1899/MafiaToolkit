@@ -16,10 +16,10 @@ namespace ResourceTypes.FrameResource
         int[] unkLodData;
         byte idType;
         Hash[] boneNames;
-        Matrix[] matrices1;
+        Matrix[] jointTransforms; //maybe joint space
         int numUnkCount2;
         byte[] boneLODUsage;
-        Matrix[] matrices2;
+        Matrix[] worldTransforms; //world space = extract position matrix, extract rotation matrix, multiply -position * rotation
         MappingForBlendingInfo[] mappingForBlendingInfos;
 
         public int[] NumBones {
@@ -46,9 +46,9 @@ namespace ResourceTypes.FrameResource
             get { return boneNames; }
             set { boneNames = value; }
         }
-        public Matrix[] Matrices1 {
-            get { return matrices1; }
-            set { matrices1 = value; }
+        public Matrix[] JointTransforms {
+            get { return jointTransforms; }
+            set { jointTransforms = value; }
         }
         public int NumUnkCount2 {
             get { return numUnkCount2; }
@@ -58,9 +58,9 @@ namespace ResourceTypes.FrameResource
             get { return boneLODUsage; }
             set { boneLODUsage = value; }
         }
-        public Matrix[] Matrices2 {
-            get { return matrices2; }
-            set { matrices2 = value; }
+        public Matrix[] WorldTransforms {
+            get { return worldTransforms; }
+            set { worldTransforms = value; }
         }
         public MappingForBlendingInfo[] MappingForBlendingInfos {
             get { return mappingForBlendingInfos; }
@@ -94,17 +94,21 @@ namespace ResourceTypes.FrameResource
                 boneNames[i] = new Hash(stream, isBigEndian);
 
             //Matrices;
-            matrices1 = new Matrix[numBones[1]];
-            matrices2 = new Matrix[numBones[3]];
+            jointTransforms = new Matrix[numBones[1]];
+            worldTransforms = new Matrix[numBones[3]];
 
-            for (int i = 0; i != matrices1.Length; i++)
-                matrices1[i] = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            for (int i = 0; i != jointTransforms.Length; i++)
+            {
+                jointTransforms[i] = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            }
 
             numUnkCount2 = stream.ReadInt32(isBigEndian);
             boneLODUsage = stream.ReadBytes(numUnkCount2);
 
-            for (int i = 0; i != matrices2.Length; i++)
-                matrices2[i] = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            for (int i = 0; i != worldTransforms.Length; i++)
+            {
+                worldTransforms[i] = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            }
 
             //BoneMappings.
             mappingForBlendingInfos = new MappingForBlendingInfo[numLods];
@@ -143,14 +147,16 @@ namespace ResourceTypes.FrameResource
             for (int i = 0; i != boneNames.Length; i++)
                 boneNames[i].WriteToFile(writer);
 
-            for (int i = 0; i != matrices1.Length; i++)
-                matrices1[i].WriteToFile(writer);
+            for (int i = 0; i != jointTransforms.Length; i++)
+                jointTransforms[i].WriteToFile(writer);
 
             writer.Write(numUnkCount2);
             writer.Write(boneLODUsage);
 
-            for (int i = 0; i != matrices2.Length; i++)
-                matrices2[i].WriteToFile(writer);
+            for (int i = 0; i != worldTransforms.Length; i++)
+            {
+                worldTransforms[i].WriteToFile(writer);
+            }
 
             //BoneMappings.
             for (int i = 0; i != mappingForBlendingInfos.Length; i++)

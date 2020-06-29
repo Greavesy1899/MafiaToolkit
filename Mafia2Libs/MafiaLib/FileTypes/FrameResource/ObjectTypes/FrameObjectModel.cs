@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.IO;
 using Utils.Extensions;
-using Utils.Models;
 using Utils.SharpDXExtensions;
 using Utils.Types;
 
@@ -138,7 +137,10 @@ namespace ResourceTypes.FrameResource
             attachmentReferences = new AttachmentReference[length1];
 
             for (int i = 0; i != length1; i++)
+            {
                 attachmentReferences[i] = new AttachmentReference(stream, isBigEndian);
+                attachmentReferences[i].JointName = skeleton.BoneNames[attachmentReferences[i].JointIndex].ToString();
+            }
 
             //unknwon.
             unkFlags = stream.ReadUInt32(isBigEndian);
@@ -210,6 +212,10 @@ namespace ResourceTypes.FrameResource
             int attachmentIndex;
             byte jointIndex;
 
+            //not saved
+            string jointName;
+            FrameObjectBase attachment;
+
             public int AttachmentIndex {
                 get { return attachmentIndex; }
                 set { attachmentIndex = value; }
@@ -217,6 +223,14 @@ namespace ResourceTypes.FrameResource
             public byte JointIndex {
                 get { return jointIndex; }
                 set { jointIndex = value; }
+            }
+            public string JointName {
+                get { return jointName; }
+                set { jointName = value; }
+            }
+            public FrameObjectBase Attachment {
+                get { return attachment; }
+                set { attachment = value; }
             }
 
             public AttachmentReference(MemoryStream reader, bool isBigEndian)
