@@ -8,7 +8,7 @@ namespace ResourceTypes.City
 {
     public class CityShops
     {
-        public int fileVersion; //vanilla = 8; JA = 9;
+        private int fileVersion; //vanilla = 8; JA = 9;
         public int numAreas;
         public int bufferSize;
         public int numDatas;
@@ -38,6 +38,10 @@ namespace ResourceTypes.City
                 areaDatas = value;
                 numDatas = areaDatas.Count;
             }
+        }
+        public int FileVersion {
+            get { return fileVersion; }
+            set { fileVersion = value; }
         }
 
         public CityShops(string fileName)

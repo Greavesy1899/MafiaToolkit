@@ -66,6 +66,7 @@ namespace Mafia2Tool
             var releases = await client.Repository.Release.GetAll("Greavesy1899", "Mafia2Toolkit");
             var release = releases[0];
             var version = release.TagName.Replace("v", "");
+            version = version.Replace(".", System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
             float value = 0.0f;
             float.TryParse(version, out value);
             if (ToolkitSettings.Version < value)
