@@ -138,77 +138,18 @@ namespace Rendering.Graphics
                     {
                         VertexLayouts.NormalLayout.Vertex vertex = new VertexLayouts.NormalLayout.Vertex();
 
-                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Position))
-                        {
-                            int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                            Vector4 vector = VertexTranslator.ReadPositionDataFromVB(vertexBuffers[i].Data, startIndex, geom.DecompressionFactor, geom.DecompressionOffset);
-                            vertex.Position = Vector3Extenders.FromVector4(vector);
-                            vertex.Binormal = new Vector3(vector.W);
-                        }
+                        //declare data required and send to decompresser
+                        byte[] data = new byte[vertexSize];
+                        Array.Copy(vertexBuffers[i].Data, (x * vertexSize), data, 0, vertexSize);
+                        Vertex decompressed = VertexTranslator.DecompressVertex(data, geom.LOD[i].VertexDeclaration, geom.DecompressionOffset, geom.DecompressionFactor, vertexOffsets);
 
-                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
-                        {
-                            int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                            vertex.Tangent = VertexTranslator.ReadTangentDataFromVB(vertexBuffers[i].Data, startIndex);
-                        }
-
-                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
-                        {
-                            int startIndex = x * vertexSize + vertexOffsets[VertexFlags.Normals].Offset;
-                            vertex.Normal = VertexTranslator.ReadNormalDataFromVB(vertexBuffers[i].Data, startIndex);
-                        }
-
-                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Skin))
-                        {
-                            //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.BlendData].Offset;
-                            // vertex.BlendWeight = VertexTranslator.ReadBlendWeightFromVB(vertexBuffer.Data, startIndex);
-                            // vertex.BoneID = VertexTranslator.ReadBlendIDFromVB(vertexBuffer.Data, startIndex);
-                        }
-
-                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Color))
-                        {
-                            //unknown
-                        }
-
-                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
-                        {
-                            int startIndex = x * vertexSize + vertexOffsets[VertexFlags.TexCoords0].Offset;
-                            vertex.TexCoord0 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
-                        }
-
-                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
-                        {
-                            //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords1].Offset;
-                            //vertex.UVs[1] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
-                        }
-
-                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
-                        {
-                            //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords2].Offset;
-                            //vertex.UVs[2] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
-                        }
-
-                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
-                        {
-                            int startIndex = x * vertexSize + vertexOffsets[VertexFlags.ShadowTexture].Offset;
-                            vertex.TexCoord7 = VertexTranslator.ReadTexcoordFromVB(vertexBuffers[i].Data, startIndex);
-                        }
-
-                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.Color1))
-                        {
-                            //unknown
-                        }
-
-                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.BBCoeffs))
-                        {
-                            //unknown
-                        }
-
-                        if (geom.LOD[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
-                        {
-                            //int startIndex = v * vertexSize + vertexOffsets[VertexFlags.DamageGroup].Offset;
-                            //vertex.DamageGroup = VertexTranslator.ReadDamageGroupFromVB(vertexBuffer.Data, startIndex);
-                        }
+                        //retrieve the data we require
+                        vertex.Position = decompressed.Position;
+                        vertex.Normal = decompressed.Normal;
+                        vertex.Tangent = decompressed.Tangent;
+                        vertex.Binormal = decompressed.Binormal;
+                        vertex.TexCoord0 = decompressed.UVs[0];
+                        vertex.TexCoord7 = decompressed.UVs[3];
 
                         lod.Vertices[x] = vertex;
                     }

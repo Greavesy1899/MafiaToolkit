@@ -2109,4 +2109,106 @@ namespace ResourceTypes.Actors
             return 100;
         }
     }
+
+    public class ActorTree : IActorExtraDataInterface
+    {
+        public int GarbageID {get;set;}
+        public int SummerLeavesID { get; set; }
+        public int WinterLeavesID { get; set; }
+
+        public ActorTree()
+        {
+
+        }
+
+        public ActorTree(MemoryStream stream, bool isBigEndian)
+        {
+            ReadFromFile(stream, isBigEndian);
+        }
+
+        public int GetSize()
+        {
+            return 12;
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            GarbageID = stream.ReadInt32(isBigEndian);
+            SummerLeavesID = stream.ReadInt32(isBigEndian);
+            WinterLeavesID = stream.ReadInt32(isBigEndian);
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            writer.Write(GarbageID, isBigEndian);
+            writer.Write(SummerLeavesID, isBigEndian);
+            writer.Write(WinterLeavesID, isBigEndian);
+        }
+    }
+
+    public class ActorActionPoint : IActorExtraDataInterface
+    {
+        public float AttractionCoeff { get; set; }
+        public float AttractionRadius { get; set; }
+        public float WalkRange { get; set; }
+        public int SensorType { get; set; }
+        public float Radius { get; set; }
+        public Vector3 BBox { get; set; }
+        public string ScriptEntity { get; set; }
+        public byte[] Data { get; set; }
+        public int Type { get; set; }
+        public int NumActors { get; set; }
+
+        public int GetSize()
+        {
+            return 2216;
+        }
+
+        public ActorActionPoint() : base()
+        {
+            Data = new byte[2048];
+        }
+
+        public ActorActionPoint(MemoryStream stream, bool isBigEndian)
+        {
+            ReadFromFile(stream, isBigEndian);
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            AttractionCoeff = stream.ReadSingle(isBigEndian);
+            AttractionRadius = stream.ReadSingle(isBigEndian);
+            WalkRange = stream.ReadSingle(isBigEndian);
+            SensorType = stream.ReadInt32(isBigEndian);
+            Radius = stream.ReadSingle(isBigEndian);
+            BBox = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            ScriptEntity = stream.ReadStringBuffer(128);
+            Data = stream.ReadBytes(2048);
+
+            for(int i = 0; i < Data.Length; i++)
+            {
+                if(Data[i] != 0)
+                {
+                    System.Windows.MessageBox.Show("Detected ActionPoint actor with extra data! Please mention on the Mafia: Toolkit discord!", "Toolkit", System.Windows.MessageBoxButton.OK);
+                }
+            }
+
+            Type = stream.ReadInt32(isBigEndian);
+            NumActors = stream.ReadInt32(isBigEndian);
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            writer.Write(AttractionCoeff, isBigEndian);
+            writer.Write(AttractionRadius, isBigEndian);
+            writer.Write(WalkRange, isBigEndian);
+            writer.Write(SensorType, isBigEndian);
+            writer.Write(Radius, isBigEndian);
+            Vector3Extenders.WriteToFile(BBox, writer, isBigEndian);
+            writer.Write(Data);
+            writer.Write(Type, isBigEndian);
+            writer.Write(NumActors, isBigEndian);
+        }
+    }
+
 }

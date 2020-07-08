@@ -746,10 +746,10 @@ namespace Mafia2Tool
                     //}
                 }
             }
-            if(SceneData.Translokator != null && ToolkitSettings.Experimental)
-            {
-                Graphics.SetTranslokatorGrid(SceneData.Translokator);
-            }
+            //if(SceneData.Translokator != null && ToolkitSettings.Experimental)
+            //{
+            //    Graphics.SetTranslokatorGrid(SceneData.Translokator);
+            //}
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
                 TreeNode node = new TreeNode("Road Data");
@@ -812,12 +812,12 @@ namespace Mafia2Tool
             }
             if(SceneData.OBJData != null)
             {
-                var data = new OBJData[SceneData.OBJData.Length];
-                for(int i = 0; i < SceneData.OBJData.Length; i++)
-                {
-                    data[i] = (OBJData)SceneData.OBJData[i].data;
-                }
-                Graphics.SetNavigationGrid(data);
+                //var data = new OBJData[SceneData.OBJData.Length];
+                //for(int i = 0; i < SceneData.OBJData.Length; i++)
+                //{
+                //    data[i] = (OBJData)SceneData.OBJData[i].data;
+                //}
+                //Graphics.SetNavigationGrid(data);
                 //for (int i = 0; i < SceneData.OBJData.Length; i++)
                 //{
                 //    int generatedID = StringHelpers.GetNewRefID();

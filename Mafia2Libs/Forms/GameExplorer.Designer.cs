@@ -180,6 +180,7 @@ namespace Mafia2Tool
             // FolderPath
             // 
             this.FolderPath.AutoSize = false;
+            this.FolderPath.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.FolderPath.Name = "FolderPath";
             this.FolderPath.Size = new System.Drawing.Size(200, 23);
             this.FolderPath.ToolTipText = "$FOLDER_PATH_TOOLTIP";
@@ -198,6 +199,7 @@ namespace Mafia2Tool
             // SearchEntryText
             // 
             this.SearchEntryText.AutoSize = false;
+            this.SearchEntryText.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.SearchEntryText.Name = "SearchEntryText";
             this.SearchEntryText.Size = new System.Drawing.Size(200, 23);
             this.SearchEntryText.ToolTipText = "$SEARCH_TOOLTIP";
@@ -255,7 +257,7 @@ namespace Mafia2Tool
             this.ContextView,
             this.ContextForceBigEndian});
             this.GEContext.Name = "SDSContext";
-            this.GEContext.Size = new System.Drawing.Size(219, 158);
+            this.GEContext.Size = new System.Drawing.Size(219, 136);
             this.GEContext.Text = "$VIEW";
             this.GEContext.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpening);
             // 
@@ -563,7 +565,6 @@ namespace Mafia2Tool
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GameExplorer";
             this.Text = "$MII_TK_GAME_EXPLORER";
-            this.Activated += new System.EventHandler(this.OnRefreshButtonClicked);
             this.Load += new System.EventHandler(this.toolStrip1_Resize);
             this.mainContainer.Panel1.ResumeLayout(false);
             this.mainContainer.Panel2.ResumeLayout(false);

@@ -318,14 +318,14 @@ namespace Mafia2Tool
 
             archiveFile.SaveResources(file);
 
-            if (File.Exists(file.FullName + ".patch") && GameStorage.Instance.GetSelectedGame().GameType == GamesEnumerator.MafiaII_DE)
-            {
-                DialogResult result = MessageBox.Show("Detected Patch file. Would you like to unpack?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (result == DialogResult.Yes)
-                {
-                    archiveFile.ExtractPatch(new FileInfo(file.FullName + ".patch"));
-                }
-            }
+            //if (File.Exists(file.FullName + ".patch") && GameStorage.Instance.GetSelectedGame().GameType == GamesEnumerator.MafiaII_DE)
+            //{
+            //    DialogResult result = MessageBox.Show("Detected Patch file. Would you like to unpack?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            //    if (result == DialogResult.Yes)
+            //    {
+            //        archiveFile.ExtractPatch(new FileInfo(file.FullName + ".patch"));
+            //    }
+            //}
 
             if (openDirectory)
             {

@@ -74,7 +74,9 @@ namespace Utils.Models
             uvs = new Half2[4];
 
             for (int i = 0; i != uvs.Length; i++)
+            {
                 uvs[i] = new Half2();
+            }
         }
 
         /// <summary>
