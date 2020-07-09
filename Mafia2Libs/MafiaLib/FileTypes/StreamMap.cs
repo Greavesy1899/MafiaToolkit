@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
-using Utils.Extensions;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Misc
@@ -59,12 +58,33 @@ namespace ResourceTypes.Misc
     public class StreamMapLoader
     {
         private FileInfo file;
-        public StreamGroup[] groups;
-        public string[] groupHeaders;
-        public StreamLine[] lines;
-        public StreamLoader[] loaders;
-        public StreamBlock[] blocks;
-        public ulong[] hashes;
+        private StreamGroup[] groups;
+        private string[] groupHeaders;
+        private StreamLine[] lines;
+        private StreamLoader[] loaders;
+        private StreamBlock[] blocks;
+        private ulong[] hashes;
+
+        public StreamGroup[] Groups {
+            get { return groups; }
+            set { groups = value; }
+        }
+        public string[] GroupHeaders {
+            get { return groupHeaders; }
+            set { groupHeaders = value; }
+        }
+        public StreamLine[] Lines {
+            get { return lines; }
+            set { lines = value; }
+        }
+        public StreamLoader[] Loaders {
+            get { return loaders; }
+            set { loaders = value; }
+        }
+        public StreamBlock[] Blocks {
+            get { return blocks; }
+            set { blocks = value; }
+        }
 
         //Only used after the streamap has been updated.
         private ulong[] upGroupHeaders;
@@ -224,12 +244,14 @@ namespace ResourceTypes.Misc
             string entity;
             public int start;
             public int end;
-            public GroupTypes type;
-            public int loaderSubID;
-            public int loaderID;
-            public int loadType;
+            private GroupTypes type;
+            private int loaderSubID;
+            private int loaderID;
+            private int loadType;
             public int pathIDX;
             public int entityIDX;
+            private string preferredGroup;
+            private string assignedGroup;
 
             [Description("Loading type, 0 - 6.")]
             public int LoadType {
@@ -258,13 +280,20 @@ namespace ResourceTypes.Misc
             }
             [Browsable(false)]
             public int GroupID { get; set; }
-            [ReadOnly(true)]
-            public string AssignedGroup { get; set; }
-
-            [Description("The group this assets is under, every group can be seen under 'Stream Groups'")]
+            [ReadOnly(true), Description("The Assigned group for this line. This is determined when saving the Stream Map file.")]
+            public string AssignedGroup {
+                get { return assignedGroup; }
+                set { assignedGroup = value; preferredGroup = ""; }
+            }
+            [Description("When this is set, the 'Type' is ignored and the editor will automatically assign this line to the preferred group. The list is available under the 'Stream Groups' Tab.")]
+            public string PreferredGroup {
+                set { preferredGroup = value; assignedGroup = ""; }
+                get { return preferredGroup; }
+            }
+            [Description("The group this asset is under, every group can be seen under 'Stream Groups'")]
             public GroupTypes Type {
                 get { return type; }
-                set { type = value; }
+                set { type = value; preferredGroup = ""; }
             }
 
 
@@ -307,6 +336,13 @@ namespace ResourceTypes.Misc
             public ulong[] Hashes {
                 get { return hashes; }
                 set { hashes = value; }
+            }
+
+            public StreamBlock()
+            {
+                startOffset = 0;
+                endOffset = 0;
+                hashes = new ulong[endOffset - startOffset];
             }
 
             public override string ToString()
@@ -363,10 +399,14 @@ namespace ResourceTypes.Misc
         public void ReadFromFile(BinaryReader reader)
         {
             if (reader.ReadInt32() != 1299346515)
+            {
                 return;
+            }
 
             if (reader.ReadInt32() != 0x6)
+            {
                 return;
+            }
 
             int fileSize = reader.ReadInt32();
             int unk0 = reader.ReadInt32();
@@ -386,8 +426,7 @@ namespace ResourceTypes.Misc
             int poolSize = reader.ReadInt32();
             int poolOffset = reader.ReadInt32();
 
-            if (reader.BaseStream.Position != groupOffset)
-                throw new FormatException();
+            Debug.Assert(reader.BaseStream.Position == groupOffset, "Failed to reach the starting offset for group declaration!");
 
             groups = new StreamGroup[numGroups];
             for (int i = 0; i < numGroups; i++)
@@ -403,8 +442,7 @@ namespace ResourceTypes.Misc
                 groups[i] = map;
             }
 
-            if (reader.BaseStream.Position != headerOffset)
-                throw new FormatException();
+            Debug.Assert(reader.BaseStream.Position == headerOffset, "Did not reach the header starting offset");
 
             groupHeaders = new string[numHeaders];
             ulong[] ulongHeaders = new ulong[numHeaders];
@@ -415,8 +453,7 @@ namespace ResourceTypes.Misc
                 groupHeaders[i] = ReadFromBuffer((long)(ulongHeaders[i] + (ulong)poolOffset), reader.BaseStream.Position, reader);
             }
 
-            if (reader.BaseStream.Position != lineOffset)
-                throw new FormatException();
+            Debug.Assert(reader.BaseStream.Position == lineOffset, "Did not reach the line data starting offset!");
 
             lines = new StreamLine[numLines];
 
@@ -441,8 +478,7 @@ namespace ResourceTypes.Misc
                 lines[i] = map;
             }
 
-            if (reader.BaseStream.Position != loadersOffset)
-                throw new FormatException();
+            Debug.Assert(reader.BaseStream.Position == loadersOffset, "Did not reach the loader data starting offset!");
 
             loaders = new StreamLoader[numLoaders];
 
@@ -451,10 +487,10 @@ namespace ResourceTypes.Misc
                 StreamLoader map = new StreamLoader();
                 map.start = reader.ReadInt32();
                 map.end = reader.ReadInt32();
-                map.type = (GroupTypes)reader.ReadInt32();
+                map.Type = (GroupTypes)reader.ReadInt32();
                 
-                map.loaderSubID = reader.ReadInt32();
-                map.loaderID = reader.ReadInt32();
+                map.LoaderSubID = reader.ReadInt32();
+                map.LoaderID = reader.ReadInt32();
                 map.LoadType = reader.ReadInt32();
                 map.pathIDX = reader.ReadInt32();
                 map.entityIDX = reader.ReadInt32();
@@ -463,8 +499,7 @@ namespace ResourceTypes.Misc
                 loaders[i] = map;
             }
 
-            if (reader.BaseStream.Position != blockOffset)
-                throw new FormatException();
+            Debug.Assert(reader.BaseStream.Position == blockOffset, "Did not reach the block declaration starting offset!");
 
             blocks = new StreamBlock[numBlocks];
             for (int i = 0; i < numBlocks; i++)
@@ -472,27 +507,31 @@ namespace ResourceTypes.Misc
                 StreamBlock map = new StreamBlock();
                 map.startOffset = reader.ReadInt32();
                 map.endOffset = reader.ReadInt32();
+                map.Hashes = new ulong[map.endOffset - map.startOffset];
                 blocks[i] = map;
             }
 
-            if (reader.BaseStream.Position != hashOffset)
-                throw new FormatException();
+            Debug.Assert(reader.BaseStream.Position == hashOffset, "Did not reach the block hashes starting offset!");
 
             hashes = new ulong[numHashes];
 
             for (int i = 0; i < numHashes; i++)
-                hashes[i] = reader.ReadUInt64();
+            {
+                hashes[i] = reader.ReadUInt64();                                                                                              
+            }
 
-            if (reader.BaseStream.Position != poolOffset)
-                throw new FormatException();
+            for(int i = 0; i < numBlocks; i++)
+            {
+                var block = blocks[i];
+                Array.Copy(hashes, block.startOffset, block.Hashes, 0, block.Hashes.Length);
+            }
+
+            Debug.Assert(reader.BaseStream.Position == poolOffset, "Did not reach the buffer pool starting offset!");
 
             reader.BaseStream.Seek(poolSize, SeekOrigin.Current);
 
-            if (reader.BaseStream.Position != reader.BaseStream.Length)
-                throw new FormatException("Borked this up");
+            Debug.Assert(reader.BaseStream.Position == reader.BaseStream.Length, "Did not reach the end of the file!");
         }
-
-
 
         private void Update()
         {
@@ -517,10 +556,10 @@ namespace ResourceTypes.Misc
                 {
                     loaderIDX++;
                     var loader = loaders[x];
-                    if (loader.loaderSubID == 1)
-                        loader.loaderID = x != 0 ? loaders[x - 1].loaderID : 1;
+                    if (loader.LoaderSubID == 1)
+                        loader.LoaderID = x != 0 ? loaders[x - 1].LoaderID : 1;
                     else
-                        loader.loaderID = loaderIDX;
+                        loader.LoaderID = loaderIDX;
 
                     idx = -1;
                     if (!pool.TryGetValue(loader.Path, out idx))
@@ -668,10 +707,10 @@ namespace ResourceTypes.Misc
             {
                 writer.Write(loader.start);
                 writer.Write(loader.end);
-                writer.Write((int)loader.type);
-                writer.Write(loader.loaderSubID);
-                writer.Write(loader.loaderID);
-                writer.Write(loader.loadType);
+                writer.Write((int)loader.Type);
+                writer.Write(loader.LoaderSubID);
+                writer.Write(loader.LoaderID);
+                writer.Write(loader.LoadType);
                 writer.Write(loader.pathIDX);
                 writer.Write(loader.entityIDX);
             }

@@ -218,6 +218,13 @@
     <Compile Include="Controls\TextureEntry.Designer.cs">
       <DependentUpon>TextureEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Core\FileBase.cs" />
+    <Compile Include="Core\FileFactory.cs" />
+    <Compile Include="Core\FileFrameResoure.cs" />
+    <Compile Include="Core\FileLua.cs" />
+    <Compile Include="Core\FilePATCH.cs" />
+    <Compile Include="Core\FileSDS.cs" />
+    <Compile Include="Core\FileTextureDDS.cs" />
     <Compile Include="Forms\EntityDataStorageEditor.cs">
       <SubType>Form</SubType>
     </Compile>

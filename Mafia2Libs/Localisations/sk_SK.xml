@@ -123,6 +123,12 @@
   <String ID="$MATERIAL_EDITOR_TITLE">Editor knižníc s materiálom</String>
   <String ID="$OPEN">Otvoriť</String>
   <String ID="$QUESTION_NAME_OF_MAT">Prosím, vložte názov materiálu:</String>
+  <String ID="$EXPORT_MATS">Export Selected Materials</String>
+  <String ID="$LABEL_SEARCHTYPE">Type of Search:</String>
+  <String ID="$LABEL_MATERIALNAME">Material Name</String>
+  <String ID="$LABEL_MATERIALHASH">Material Hash</String>
+  <String ID="$LABEL_SHADERID">Shader ID</String>
+  <String ID="$LABEL_SHADERHASH">Shader Hash</String>
   
   <!-- FrameResource Editor Form Strings-->
   <String ID="$FRAME_EDITOR_EXPORT_BTN">Exportovať modely..</String>
