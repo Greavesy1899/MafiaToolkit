@@ -109,10 +109,11 @@ namespace Utils.Models
                     joint.ParentIndex = model.SkeletonHierarchy.ParentIndices[i];
                     joint.Parent = (joint.ParentIndex != 0xFF) ? skeleton.Joints[joint.ParentIndex] : null;
                     joint.LocalTransform = model.Skeleton.JointTransforms[i];
+
                     skeleton.Joints[i] = joint;
                 }
 
-                skeleton.ComputeTransforms();
+                //skeleton.ComputeTransforms();
             }
 
             for(int i = 0; i < model.BlendInfo.BoneIndexInfos.Length; i++)
@@ -258,9 +259,9 @@ namespace Utils.Models
                         writer.Write(joint.ParentIndex);
                         Quaternion rotation;
                         Vector3 position, scale;
-                        joint.WorldTransform.Decompose(out scale, out rotation, out position);
+                        joint.LocalTransform.Decompose(out scale, out rotation, out position);
                         position.WriteToFile(writer);
-                        rotation.ToEuler().WriteToFile(writer);
+                        rotation.WriteToFile(writer);
                         scale.WriteToFile(writer);
                     }
                 }
@@ -528,7 +529,7 @@ namespace Utils.Models
                     joint.ParentIndex = reader.ReadByte();
                     joint.Parent = (joint.ParentIndex != 0xFF) ? skeleton.Joints[joint.ParentIndex] : null; //may crash because root will not be in range
                     Vector3 position = Vector3Extenders.ReadFromFile(reader);
-                    Vector3 rotation = Vector3Extenders.ReadFromFile(reader);
+                    Quaternion rotation = QuaternionExtensions.ReadFromFile(reader);
                     Vector3 scale = Vector3Extenders.ReadFromFile(reader);
                     joint.WorldTransform = MatrixExtensions.SetMatrix(rotation, scale, position);
                     skeleton.Joints[i] = joint;

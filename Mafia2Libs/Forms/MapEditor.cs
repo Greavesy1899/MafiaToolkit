@@ -28,7 +28,7 @@ using Utils.Extensions;
 
 namespace Mafia2Tool
 {
-    public partial class D3DForm : Form
+    public partial class MapEditor : Form
     {
         private InputClass Input { get; set; }
         private GraphicsClass Graphics { get; set; }
@@ -52,8 +52,9 @@ namespace Mafia2Tool
 
         private bool bSelectMode = false;
         private float selectTimer = 0.0f;
+        private bool bHideChildren = false;
 
-        public D3DForm(FileInfo info)
+        public MapEditor(FileInfo info)
         {
             InitializeComponent();
             Localise();
@@ -111,9 +112,10 @@ namespace Mafia2Tool
             dSceneTree.DeleteButton.Click += new EventHandler(DeleteButton_Click);
             dSceneTree.DuplicateButton.Click += new EventHandler(DuplicateButton_Click);
             dSceneTree.SetEventHandler("AfterCheck", new TreeViewEventHandler(OutlinerAfterCheck));
-            dSceneTree.SetKeyHandler("KeyUp", new KeyEventHandler(OnKeyPressedDockedPanel));
+            dSceneTree.SetKeyHandler("KeyUp", new KeyEventHandler(OnKeyUpDockedPanel));
+            dSceneTree.SetKeyHandler("KeyDown", new KeyEventHandler(OnKeyDownDockedPanel));
             dSceneTree.LinkToActorButton.Click += new EventHandler(LinkToActor_Click);
-            dPropertyGrid.KeyUp += new KeyEventHandler(OnKeyPressedDockedPanel);
+            dPropertyGrid.KeyUp += new KeyEventHandler(OnKeyUpDockedPanel);
             dSceneTree.UpdateParent1Button.Click += new EventHandler(UpdateParent_Click);
             dSceneTree.UpdateParent2Button.Click += new EventHandler(UpdateParent_Click);
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyValueChanged);
@@ -204,7 +206,7 @@ namespace Mafia2Tool
             }        
         }
 
-        private void UpdateAssetVisualisation(TreeNode node)
+        private void UpdateAssetVisualisation(TreeNode node, TreeNode parent)
         {
             if (node.Tag != null)
             {
@@ -212,6 +214,11 @@ namespace Mafia2Tool
 
                 int result = -1;
                 int.TryParse(node.Name, out result);
+
+                if(bHideChildren && (node != parent))
+                {
+                    node.Checked = parent.Checked;
+                }
 
                 int refID = (isFrame) ? (node.Tag as FrameEntry).RefID : result;
                 if (Graphics.Assets.ContainsKey(refID))
@@ -222,7 +229,7 @@ namespace Mafia2Tool
 
             foreach (TreeNode child in node.Nodes)
             {
-                UpdateAssetVisualisation(child);
+                UpdateAssetVisualisation(child, node);
             }
         }
 
@@ -230,7 +237,9 @@ namespace Mafia2Tool
         {
             if (e.Node != null)
             {
-                UpdateAssetVisualisation(e.Node);
+                dSceneTree.RemoveEventHandler("AfterCheck", new TreeViewEventHandler(OutlinerAfterCheck));
+                UpdateAssetVisualisation(e.Node, e.Node);
+                dSceneTree.SetEventHandler("AfterCheck", new TreeViewEventHandler(OutlinerAfterCheck));
             }
         }
 
@@ -750,6 +759,7 @@ namespace Mafia2Tool
             //{
             //    Graphics.SetTranslokatorGrid(SceneData.Translokator);
             //}
+
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
                 TreeNode node = new TreeNode("Road Data");
@@ -947,6 +957,7 @@ namespace Mafia2Tool
                     assets[frame.RefID].SetTransform(frame.WorldTransform);
                 }
             }
+
             Graphics.InitObjectStack = assets;
         }
 
@@ -2122,10 +2133,24 @@ namespace Mafia2Tool
             lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
         }
 
-        private void OnKeyPressedDockedPanel(object sender, KeyEventArgs e)
+        private void OnKeyUpDockedPanel(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Delete)
+            if (e.KeyCode == Keys.Delete)
+            {
                 dSceneTree.DeleteButton.PerformClick();
+            }
+            else if (e.KeyCode == Keys.ControlKey)
+            {
+                bHideChildren = false;
+            }
+        }
+
+        private void OnKeyDownDockedPanel(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.ControlKey)
+            {
+                bHideChildren = true;
+            }
         }
 
         private void OnViewSide2ButtonClicked(object sender, EventArgs e)

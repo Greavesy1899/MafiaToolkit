@@ -11,12 +11,12 @@ using System.Linq;
 
 namespace Mafia2Tool
 {
-    public partial class MaterialTool : Form
+    public partial class MaterialEditor : Form
     {
         private MaterialLibrary mtl;
         private int currentSearchType;
 
-        public MaterialTool(FileInfo file)
+        public MaterialEditor(FileInfo file)
         {
             InitializeComponent();
             Localise();

@@ -218,13 +218,20 @@
     <Compile Include="Controls\TextureEntry.Designer.cs">
       <DependentUpon>TextureEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Core\FileActor.cs" />
     <Compile Include="Core\FileBase.cs" />
+    <Compile Include="Core\FileBin.cs" />
+    <Compile Include="Core\FileEntityDataStorage.cs" />
     <Compile Include="Core\FileFactory.cs" />
     <Compile Include="Core\FileFrameResoure.cs" />
     <Compile Include="Core\FileLua.cs" />
-    <Compile Include="Core\FilePATCH.cs" />
+    <Compile Include="Core\FileMaterialLibrary.cs" />
+    <Compile Include="Core\FileSpeech.cs" />
     <Compile Include="Core\FileSDS.cs" />
+    <Compile Include="Core\FileTable.cs" />
     <Compile Include="Core\FileTextureDDS.cs" />
+    <Compile Include="Core\FileTranslokator.cs" />
+    <Compile Include="Core\FileXML.cs" />
     <Compile Include="Forms\EntityDataStorageEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -267,11 +274,11 @@
     <Compile Include="Forms\MatBrowser.Designer.cs">
       <DependentUpon>MatBrowser.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\RenderForm.cs">
+    <Compile Include="Forms\MapEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\RenderForm.Designer.cs">
-      <DependentUpon>RenderForm.cs</DependentUpon>
+    <Compile Include="Forms\MapEditor.Designer.cs">
+      <DependentUpon>MapEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="ApexSDK\ApexRenderMesh.cs" />
     <Compile Include="ApexSDK\Emitter\EmitterGeomExplicit.cs" />
@@ -556,11 +563,11 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Utils\Types\IniFile.cs" />
-    <Compile Include="Forms\MaterialTool.cs">
+    <Compile Include="Forms\MaterialEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\MaterialTool.Designer.cs">
-      <DependentUpon>MaterialTool.cs</DependentUpon>
+    <Compile Include="Forms\MaterialEditor.Designer.cs">
+      <DependentUpon>MaterialEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\GeneralOptions.cs">
       <SubType>UserControl</SubType>
@@ -596,6 +603,7 @@
     <None Include="build.cmd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Configs\App.config" />
     <None Include="Configs\packages.config" />
   </ItemGroup>
@@ -799,8 +807,8 @@
     <EmbeddedResource Include="Forms\GameExplorer.resx">
       <DependentUpon>GameExplorer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\MaterialTool.resx">
-      <DependentUpon>MaterialTool.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\MaterialEditor.resx">
+      <DependentUpon>MaterialEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SplashForm.resx">
       <DependentUpon>SplashForm.cs</DependentUpon>
@@ -808,8 +816,8 @@
     <EmbeddedResource Include="Forms\TableEditor.resx">
       <DependentUpon>TableEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\RenderForm.resx">
-      <DependentUpon>RenderForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\MapEditor.resx">
+      <DependentUpon>MapEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\GeneralOptions.resx">
       <DependentUpon>GeneralOptions.cs</DependentUpon>

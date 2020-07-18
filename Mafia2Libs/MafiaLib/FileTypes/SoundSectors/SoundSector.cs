@@ -15,21 +15,21 @@ namespace ResourceTypes.Sound
         public short[] shorts;
         public int unk2;
         public float unk3;
-        public string name;
+        public string sectorName;
         public short unk4;
         public int unk5;
     }
 
     struct unkStruct2
     {
-        public string name;
+        public string portalName;
         public float[] floats;
-        public string name2;
+        public string sectorToLoad;
         public byte unk01;
-        public string name3;
+        public string sectorType;
         public byte unk02;
         public float unk03;
-        public string name4;
+        public string doorName;
         public byte unk04;
         public byte unk05;
         public byte unk06;
@@ -118,7 +118,7 @@ namespace ResourceTypes.Sound
 
                 subData.unk2 = reader.ReadInt32();
                 subData.unk3 = reader.ReadSingle();
-                subData.name = new string(reader.ReadChars(reader.ReadByte()));
+                subData.sectorName = new string(reader.ReadChars(reader.ReadByte()));
                 subData.unk4 = reader.ReadInt16();
                 subData.unk5 = reader.ReadInt32();
                 data[i] = subData;
@@ -131,18 +131,18 @@ namespace ResourceTypes.Sound
             {
                 byte sZero = reader.ReadByte();
                 unkStruct2 subData = new unkStruct2();
-                subData.name = new string(reader.ReadChars(reader.ReadByte()));
+                subData.portalName = new string(reader.ReadChars(reader.ReadByte()));
                 subData.floats = new float[5];
                 for (int x = 0; x != 5; x++)
                 {
                     subData.floats[x] = reader.ReadSingle();
                 }
-                subData.name2 = new string(reader.ReadChars(reader.ReadByte()));
+                subData.sectorToLoad = new string(reader.ReadChars(reader.ReadByte()));
                 subData.unk01 = reader.ReadByte();
-                subData.name3 = new string(reader.ReadChars(reader.ReadByte()));
+                subData.sectorType = new string(reader.ReadChars(reader.ReadByte()));
                 subData.unk02 = reader.ReadByte();
                 subData.unk03 = reader.ReadSingle();
-                subData.name4 = new string(reader.ReadChars(reader.ReadByte()));
+                subData.doorName = new string(reader.ReadChars(reader.ReadByte()));
                 subData.unk04 = reader.ReadByte();
                 subData.unk05 = reader.ReadByte();
 
@@ -201,7 +201,7 @@ namespace ResourceTypes.Sound
                 dump.Add("");
                 dump.Add(string.Format("Unk02: {0}", data[i].unk2));
                 dump.Add(string.Format("Unk03: {0}", data[i].unk3));
-                dump.Add(string.Format("Name: {0}", data[i].name));
+                dump.Add(string.Format("Name: {0}", data[i].sectorName));
                 dump.Add(string.Format("Unk04: {0}", data[i].unk4));
                 dump.Add(string.Format("Unk05: {0}", data[i].unk5));
                 dump.Add("========================================");
@@ -218,16 +218,16 @@ namespace ResourceTypes.Sound
             {
                 dump.Add("Next Set: " + i.ToString());
                 dump.Add("========================================");
-                dump.Add(string.Format("Name: {0}", data1[i].name));
+                dump.Add(string.Format("Portal Name: {0}", data1[i].portalName));
                 dump.Add(string.Format("Floats (First three position): {0}", 5));
                 for (int x = 0; x != 5; x++)
                     dump.Add(string.Format(data1[i].floats[x].ToString()));
-                dump.Add(string.Format("Name2: {0}", data1[i].name2));
+                dump.Add(string.Format("Sector To Load: {0}", data1[i].sectorToLoad));
                 dump.Add(string.Format("Unk01: {0}", data1[i].unk01));
-                dump.Add(string.Format("Unk02: {0}", data1[i].name3));
+                dump.Add(string.Format("Unk02: {0}", data1[i].sectorType));
                 dump.Add(string.Format("Name3: {0}", data1[i].unk02));
                 dump.Add(string.Format("Unk03: {0}", data1[i].unk03));
-                dump.Add(string.Format("Name4: {0}", data1[i].name4));
+                dump.Add(string.Format("Door Name: {0}", data1[i].doorName));
                 dump.Add(string.Format("Unk04: {0}", data1[i].unk04));
                 dump.Add(string.Format("Unk05: {0}", data1[i].unk05));
                 dump.Add(string.Format("Unk06: {0}", data1[i].unk06));
@@ -281,8 +281,8 @@ namespace ResourceTypes.Sound
 
                 writer.Write(subData.unk2);
                 writer.Write(subData.unk3);
-                writer.Write((byte)subData.name.Length);
-                writer.Write(subData.name.ToCharArray());
+                writer.Write((byte)subData.sectorName.Length);
+                writer.Write(subData.sectorName.ToCharArray());
                 writer.Write(subData.unk4);
                 writer.Write(subData.unk5);
             }
@@ -294,20 +294,20 @@ namespace ResourceTypes.Sound
             {
                 writer.Write((byte)0);
                 unkStruct2 subData = data1[i];
-                writer.Write((byte)subData.name.Length);
-                writer.Write(subData.name.ToCharArray());
+                writer.Write((byte)subData.portalName.Length);
+                writer.Write(subData.portalName.ToCharArray());
                 for (int x = 0; x != 5; x++)
                     writer.Write(subData.floats[x]);
 
-                writer.Write((byte)subData.name2.Length);
-                writer.Write(subData.name2.ToCharArray());
+                writer.Write((byte)subData.sectorToLoad.Length);
+                writer.Write(subData.sectorToLoad.ToCharArray());
                 writer.Write(subData.unk01);
-                writer.Write((byte)subData.name3.Length);
-                writer.Write(subData.name3.ToCharArray());
+                writer.Write((byte)subData.sectorType.Length);
+                writer.Write(subData.sectorType.ToCharArray());
                 writer.Write(subData.unk02);
                 writer.Write(subData.unk03);
-                writer.Write((byte)subData.name4.Length);
-                writer.Write(subData.name4.ToCharArray());
+                writer.Write((byte)subData.doorName.Length);
+                writer.Write(subData.doorName.ToCharArray());
                 writer.Write(subData.unk04);
                 writer.Write(subData.unk05);
 

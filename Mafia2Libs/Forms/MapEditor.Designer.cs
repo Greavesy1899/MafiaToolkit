@@ -3,7 +3,7 @@ using Utils.Extensions;
 
 namespace Mafia2Tool
 {
-    partial class D3DForm
+    partial class MapEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -33,7 +33,7 @@ namespace Mafia2Tool
         {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.StatusStrip StatusStrip;
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(D3DForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapEditor));
             this.CurrentModeButton = new System.Windows.Forms.ToolStripSplitButton();
             this.PositionXTool = new Utils.Extensions.NumericUpDownToolStrip();
             this.PositionYTool = new Utils.Extensions.NumericUpDownToolStrip();
@@ -135,7 +135,7 @@ namespace Mafia2Tool
             this.PositionXTool.Name = "PositionXTool";
             this.PositionXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionXTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionXTool.Size = new System.Drawing.Size(78, 24);
+            this.PositionXTool.Size = new System.Drawing.Size(70, 24);
             this.PositionXTool.Text = "0.00000";
             this.PositionXTool.Value = new decimal(new int[] {
             0,
@@ -168,7 +168,7 @@ namespace Mafia2Tool
             this.PositionYTool.Name = "PositionYTool";
             this.PositionYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionYTool.Size = new System.Drawing.Size(78, 24);
+            this.PositionYTool.Size = new System.Drawing.Size(70, 24);
             this.PositionYTool.Text = "0.00000";
             this.PositionYTool.Value = new decimal(new int[] {
             0,
@@ -201,7 +201,7 @@ namespace Mafia2Tool
             this.PositionZTool.Name = "PositionZTool";
             this.PositionZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionZTool.Size = new System.Drawing.Size(78, 24);
+            this.PositionZTool.Size = new System.Drawing.Size(70, 24);
             this.PositionZTool.Text = "0.00000";
             this.PositionZTool.Value = new decimal(new int[] {
             0,
@@ -268,7 +268,7 @@ namespace Mafia2Tool
             this.CameraSpeedTool.Name = "CameraSpeedTool";
             this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.CameraSpeedTool.Size = new System.Drawing.Size(78, 24);
+            this.CameraSpeedTool.Size = new System.Drawing.Size(70, 24);
             this.CameraSpeedTool.Text = "0.00000";
             this.CameraSpeedTool.Value = new decimal(new int[] {
             0,
@@ -591,7 +591,7 @@ namespace Mafia2Tool
             this.dockPanel1.Size = new System.Drawing.Size(1217, 575);
             this.dockPanel1.TabIndex = 0;
             // 
-            // D3DForm
+            // MapEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -601,7 +601,7 @@ namespace Mafia2Tool
             this.Controls.Add(StatusStrip);
             this.Controls.Add(this.ToolbarStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "D3DForm";
+            this.Name = "MapEditor";
             this.Text = "Map Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
             StatusStrip.ResumeLayout(false);

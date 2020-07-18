@@ -207,6 +207,7 @@ namespace Mafia2Tool
             // 
             // fileListView
             // 
+            this.fileListView.AllowDrop = true;
             this.fileListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -226,6 +227,9 @@ namespace Mafia2Tool
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.Details;
             this.fileListView.ItemActivate += new System.EventHandler(this.listView1_ItemActivate);
+            this.fileListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.ListView_OnDragDrop);
+            this.fileListView.DragEnter += new System.Windows.Forms.DragEventHandler(this.ListView_OnDragEnter);
+            this.fileListView.DragLeave += new System.EventHandler(this.ListView_OnDragLeave);
             this.fileListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
             // 
             // columnName

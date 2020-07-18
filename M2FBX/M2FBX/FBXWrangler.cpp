@@ -149,9 +149,8 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 
 	if (model.GetIsSkinned())
 	{
-		auto ids = model.GetBoneIDs();
-		auto names = model.GetBoneNames();
-		auto transform = model.GetBoneMatrices();
+		auto names = model.GetJointNames();
+		auto joints = model.GetJoints();
 		ModelPart* parts = model.GetParts();
 		FbxSkin* skin = FbxSkin::Create(pManager, "Skin");
 		//FbxPose* bindPose = FbxPose::Create(pManager, "BindPose");
@@ -161,23 +160,42 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 		std::vector<FbxCluster*> clusters = std::vector<FbxCluster*>();
 		for (int i = 0; i < names.size(); i++)
 		{
+			auto joint = joints[i];
+			auto transform = joint.transform;
+
 			FbxString skeletonName = names[i].c_str();
 			FbxString clusterName = names[i].c_str();
 			FbxString nodeName = names[i].c_str();
 			skeletonName.Append("_Skeleton", 9);
 			clusterName.Append("_Cluster", 8);
 
+			FbxQuaternion quaterion = FbxQuaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+
 			FbxAMatrix lTransformMatrix;
-			FbxVector4 position, rotation, scale;
-			position = FbxVector4(transform[i].position.x, transform[i].position.y, transform[i].position.z);
-			//rotation = FbxVector4(transform[i].rotation.x, transform[i].rotation.y, transform[i].rotation.z);
-			//rotation = FbxVector4(0.0f, 0.0f, 0.0f);
-			//scale = FbxVector4(transform[i].scale.x, transform[i].scale.y, transform[i].scale.z);
-			lTransformMatrix.SetTRS(position, rotation, scale);
+			lTransformMatrix.SetIdentity();
+
+			lTransformMatrix.SetT(FbxVector4(transform.position.x, transform.position.y, transform.position.z));
+			lTransformMatrix.SetQ(quaterion);
+			lTransformMatrix.SetS(FbxVector4(transform.scale.x, transform.scale.y, transform.scale.z));
+
+			FbxVector4 euler;
+			euler.SetXYZ(quaterion);
 
 			FbxNode* node = FbxNode::Create(pManager, nodeName.Buffer());
-			node->LclTranslation.Set(FbxDouble3(transform[i].position.x, transform[i].position.y, transform[i].position.z));
-			//node->LclRotation.Set(FbxDouble3(transform[i].rotation.x, transform[i].rotation.y, transform[i].rotation.z));
+
+			if (joint.parentID != 0xFF)
+			{
+				nodes[joint.parentID]->AddChild(node);
+			}
+			else
+			{
+				rootNode->AddChild(node);
+			}
+
+			node->LclTranslation.Set(lTransformMatrix.GetT());
+			node->LclScaling.Set(lTransformMatrix.GetS());
+			node->LclRotation.Set(euler);
+			FbxAMatrix globalMatrix = node->EvaluateGlobalTransform();
 			nodes.push_back(node);
 
 			FbxSkeleton* skeleton = FbxSkeleton::Create(pManager, skeletonName.Buffer());
@@ -187,25 +205,15 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 			node->SetNodeAttribute(skeleton);
 
 			FbxCluster* cluster = FbxCluster::Create(pManager, clusterName.Buffer());
-			cluster->SetLinkMode(FbxCluster::ELinkMode::eTotalOne);
-			cluster->SetLink(node);
-			//cluster->SetTransformLinkMatrix(node->EvaluateGlobalTransform());
-			//cluster->SetTransformMatrix(lTransformMatrix);
+			cluster->SetLinkMode(FbxCluster::eTotalOne);
+			cluster->SetLink(node);	
+			cluster->SetTransformLinkMatrix(globalMatrix);
 			clusters.push_back(cluster);
 
 			skin->AddCluster(cluster);
 			//bindPose->Add(node, lTransformMatrix);
-
-			//if (ids[i] != 255)
-			//{
-			//	nodes[ids[i]]->AddChild(node);
-			//}
-			//else
-			//{
-				rootNode->AddChild(node);
-			//}
 		}
-		for (int i = 0; i < model.GetPartSize(); i++)
+		for (int i = 0; i < 1; i++)
 		{
 			auto vertices = parts[i].GetVertices();
 			for (int x = 0; x < parts[i].GetVertSize(); x++)

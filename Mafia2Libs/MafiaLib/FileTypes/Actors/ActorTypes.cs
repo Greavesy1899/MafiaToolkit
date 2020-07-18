@@ -34,7 +34,7 @@ namespace ResourceTypes.Actors
         public float DeactivateThreshold { get; set; }
         public float HitPoints { get; set; }
         public int MaterialID { get; set; }
-        public float StaticFriction { get; set; }
+        public int StaticFriction { get; set; }
         public float DynamicFriction { get; set; }
         public float Restitution { get; set; }
         public int POType { get; set; }

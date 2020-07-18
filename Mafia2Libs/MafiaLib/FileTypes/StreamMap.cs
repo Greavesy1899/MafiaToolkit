@@ -268,7 +268,6 @@ namespace ResourceTypes.Misc
                 get { return entity; }
                 set { entity = value; }
             }
-            [Browsable(false)]
             public int LoaderSubID {
                 get { return loaderSubID; }
                 set { loaderSubID = value; }
