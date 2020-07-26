@@ -26,14 +26,17 @@ namespace ResourceTypes.FrameResource
         WeightedByMeshSplit[] blendMeshSplits;
         HitBoxInfo[] hitBoxInfo;
 
+        [ReadOnly(true)]
         public int BlendInfoIndex {
             get { return blendInfoIndex; }
             set { blendInfoIndex = value; }
         }
+        [ReadOnly(true)]
         public int SkeletonIndex {
             get { return skeletonIndex; }
             set { skeletonIndex = value; }
         }
+        [ReadOnly(true)]
         public int SkeletonHierachyIndex {
             get { return skeletonHierachyIndex; }
             set { skeletonHierachyIndex = value; }
@@ -62,16 +65,18 @@ namespace ResourceTypes.FrameResource
             get { return unkFlags; }
             set { unkFlags = value; }
         }
+        [Category("Linked Blocks")]
         public FrameSkeleton Skeleton {
             get { return skeleton; }
             set { skeleton = value; }
         }
+        [Category("Linked Blocks")]
         public FrameBlendInfo BlendInfo {
             get { return blendInfo; }
             set { blendInfo = value; }
         }
 
-        [TypeConverter(typeof(ExpandableObjectConverter))]
+        [Category("Linked Blocks"), TypeConverter(typeof(ExpandableObjectConverter))]
         public FrameSkeletonHierachy SkeletonHierarchy {
             get { return hierachy; }
             set { hierachy = value; }
@@ -84,6 +89,14 @@ namespace ResourceTypes.FrameResource
         }
         public FrameObjectModel (MemoryStream reader, bool isBigEndian)
         {
+        }
+
+        public FrameObjectModel(FrameObjectSingleMesh other) : base(other)
+        {
+            restTransform = new Matrix[0];
+            attachmentReferences = new AttachmentReference[0];
+            blendMeshSplits = new WeightedByMeshSplit[0];
+            hitBoxInfo = new HitBoxInfo[0];
         }
 
         public FrameObjectModel(FrameObjectModel other) : base(other)

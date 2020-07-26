@@ -27,6 +27,12 @@ namespace ResourceTypes.FrameResource
             set { bounds = value; }
         }
 
+        public FrameBlendInfo() : base()
+        {
+            boneIndexInfos = new BoneIndexInfo[0];
+            boneTransforms = new BoneTransform[0];
+        }
+
         public FrameBlendInfo(MemoryStream reader, bool isBigEndian) : base()
         {
             ReadFromFile(reader, isBigEndian);
@@ -111,7 +117,7 @@ namespace ResourceTypes.FrameResource
 
         public override string ToString()
         {
-            return string.Format("Blend Info");
+            return "Blend Info Block";
         }
 
         public struct BoneIndexInfo

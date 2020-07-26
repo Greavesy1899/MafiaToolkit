@@ -4,6 +4,21 @@ using Utils.SharpDXExtensions;
 
 namespace Utils.Models
 {
+    /*
+    0 - position X (0)
+    1 - position X (1)
+    2 - position Y (0)
+    3 - position Y (1)
+    4 - position Z (0)
+    5 - position Z (1)
+    6 - position W (0)
+    7 - position W (1)
+    8 - Normal X (0)
+    9 - Normal Y (0)
+    10 - Normal Z (0)
+    11 - Normal W (0)
+    */
+
     public class Vertex
     {
         Vector3 position;
@@ -63,14 +78,15 @@ namespace Utils.Models
             set { bbCoeffs = value; }
         }
 
-        /// <summary>
-        /// Construct empty vertex.
-        /// </summary>
         public Vertex()
         {
             position = new Vector3(0);
             normal = new Vector3(0);
             tangent = new Vector3(0);
+            color0 = new byte[4];
+            color1 = new byte[4];
+            boneWeights = new float[4];
+            boneIDs = new byte[4];
             uvs = new Half2[4];
 
             for (int i = 0; i != uvs.Length; i++)
@@ -79,14 +95,9 @@ namespace Utils.Models
             }
         }
 
-        /// <summary>
-        /// Write position data into buffer. Uses Decompression factor, and offset.
-        /// </summary>
-        /// <param name="factor"></param>
-        /// <param name="offset"></param>
-        /// <returns></returns>
         public void WritePositionData(byte[] data, int i, float factor, Vector3 offset)
         {
+            float tempBinormal = 0.0f;
             position -= offset;
             position /= factor;
             byte[] tempPosData;
@@ -97,45 +108,45 @@ namespace Utils.Models
 
             //Do Y
             tempPosData = BitConverter.GetBytes(Convert.ToUInt16(position.Y));
-            Array.Copy(tempPosData, 0, data, i+2, 2);
+            Array.Copy(tempPosData, 0, data, i + 2, 2);
 
             //Do Z
-            tempPosData = BitConverter.GetBytes(Convert.ToUInt16(position.Z));
-            Array.Copy(tempPosData, 0, data, i+4, 2);
+            // We have to make space for the binormal data (this is stored in the highest bit).
+            ushort z = Convert.ToUInt16(position.Z);
+            z &= 0x7FFF;
+            if (tempBinormal < 0.0f)
+            {
+                z |= 0x8000;
+            }
+
+            tempPosData = BitConverter.GetBytes(z);
+            Array.Copy(tempPosData, 0, data, i + 4, 2);
 
             data[i + 6] = 0x0;
             data[i + 7] = 0x0;
         }
 
-        /// <summary>
-        /// Write tangent data from buffer.
-        /// </summary>
-        /// <returns></returns>
         public void WriteTangentData(byte[] data, int i)
         {
             byte tempByte = 0;
-            float tempNormal = 0f;
+            float tempTangent = 0f;
 
             //X..
-            tempNormal = Tangent.X * 127.0f + 127.0f;
-            tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
+            tempTangent = Tangent.X * 127.0f + 127.0f;
+            tempByte = !float.IsNaN(tempTangent) ? Convert.ToByte(tempTangent) : (byte)127;
             data[i + 6] = tempByte;
 
             //Y..
-            tempNormal = Tangent.Y * 127.0f + 127.0f;
-            tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)127;
+            tempTangent = Tangent.Y * 127.0f + 127.0f;
+            tempByte = !float.IsNaN(tempTangent) ? Convert.ToByte(tempTangent) : (byte)127;
             data[i + 7] = tempByte;
 
             //Z..
-            tempNormal = Tangent.Z * 127.0f + 127.0f;
-            tempByte = !float.IsNaN(tempNormal) ? Convert.ToByte(tempNormal) : (byte)255;
-            data[i + 12] = tempByte;
+            tempTangent = Tangent.Z * 127.0f + 127.0f;
+            tempByte = !float.IsNaN(tempTangent) ? Convert.ToByte(tempTangent) : (byte)255;
+            data[i + 11] = tempByte;
         }
 
-        /// <summary>
-        /// Write tangent data from buffer.
-        /// </summary>
-        /// <returns></returns>
         public void WriteNormalData(byte[] data, int i)
         {
             byte tempByte = 0;
@@ -157,11 +168,6 @@ namespace Utils.Models
             data[i + 2] = tempByte;
         }
 
-        /// <summary>
-        /// Write UV Data to buffer. uvNum is either TexCoord 0, 1, 2, 7
-        /// </summary>
-        /// <param name="uvNum"></param>
-        /// <returns></returns>
         public void WriteUvData(byte[] data, int i, int uvNum)
         {
             //Do X
@@ -174,16 +180,11 @@ namespace Utils.Models
             Array.Copy(tempPosData, 0, data, i + 2, 2);
         }
 
-        public void WriteColourData(byte[] data, int i, int index)
+        public void WriteColourData(byte[] data, int i, int colourIndex)
         {
-            Array.Copy((index == 0 ? color0 : color1), 0, data, i, 4);
+            Array.Copy((colourIndex == 0 ? color0 : color1), 0, data, i, 4);
         }
 
-        /// <summary>
-        /// Write Damage group to buffer
-        /// </summary>
-        /// <param name="uvNum"></param>
-        /// <returns></returns>
         public void WriteDamageGroup(byte[] data, int i)
         {
             byte[] tempDamageIDData = BitConverter.GetBytes(damageGroup);

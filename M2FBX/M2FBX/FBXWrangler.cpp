@@ -48,7 +48,7 @@ int ConvertType(const char* pSource, const char* pDest)
 	WriteLine("Loading FBX File..");
 	//Init importer. if it fails, it will print error code.
 	if (!lImporter->Initialize(pSource, -1, lSdkManager->GetIOSettings())) {
-		WriteLine("Error occured while initializing importer:");
+		WriteLine("Error occurred while initializing importer:");
 		WriteLine("%s", lImporter->GetStatus().GetErrorString());
 		return -1;
 	}
@@ -129,8 +129,7 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 	FbxNode* lLodNode = FbxNode::Create(pManager, model.GetName().c_str());
 	std::string nodeName = model.GetName();
 	nodeName += "_LODNODE";
-	//FbxLODGroup* lLodGroup = FbxLODGroup::Create(pManager, nodeName.c_str());
-	//lLodNode->SetNodeAttribute(lLodGroup);
+
 	for (int i = 0; i < model.GetPartSize(); i++)
 	{
 		std::string name = "LOD";
@@ -153,9 +152,7 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 		auto joints = model.GetJoints();
 		ModelPart* parts = model.GetParts();
 		FbxSkin* skin = FbxSkin::Create(pManager, "Skin");
-		//FbxPose* bindPose = FbxPose::Create(pManager, "BindPose");
-		//pScene->AddPose(bindPose);
-		//bindPose->SetIsBindPose(false);
+
 		std::vector<FbxNode*> nodes = std::vector<FbxNode*>();
 		std::vector<FbxCluster*> clusters = std::vector<FbxCluster*>();
 		for (int i = 0; i < names.size(); i++)
@@ -195,23 +192,20 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 			node->LclTranslation.Set(lTransformMatrix.GetT());
 			node->LclScaling.Set(lTransformMatrix.GetS());
 			node->LclRotation.Set(euler);
-			FbxAMatrix globalMatrix = node->EvaluateGlobalTransform();
-			nodes.push_back(node);
 
 			FbxSkeleton* skeleton = FbxSkeleton::Create(pManager, skeletonName.Buffer());
 			skeleton->SetSkeletonType(FbxSkeleton::EType::eLimbNode);
-			//skeleton->Size.Set(1.0f);
-			
+
 			node->SetNodeAttribute(skeleton);
 
 			FbxCluster* cluster = FbxCluster::Create(pManager, clusterName.Buffer());
 			cluster->SetLinkMode(FbxCluster::eTotalOne);
-			cluster->SetLink(node);	
-			cluster->SetTransformLinkMatrix(globalMatrix);
+			cluster->SetLink(node);
+			cluster->SetTransformLinkMatrix(node->EvaluateGlobalTransform());
 			clusters.push_back(cluster);
-
 			skin->AddCluster(cluster);
-			//bindPose->Add(node, lTransformMatrix);
+
+			nodes.push_back(node);
 		}
 		for (int i = 0; i < 1; i++)
 		{
@@ -434,19 +428,21 @@ FbxGeometryElementVertexColor* CreateVertexColor(FbxMesh* lMesh, const char* pNa
 	element->SetReferenceMode(FbxGeometryElement::eDirect);
 
 	bool color1 = false;
-	if (strcmp(pName, "ColorMap1"))
+
+	// We should check if we have Color1 vertex flag to perform this action.
+	// Otherwise we'll have very big problems!
+	if (strcmp(pName, "ColorMap1") == 0 && pModel.HasVertexFlag(VertexFlags::Color1))
 	{
 		color1 = true;
 	}
+
+	const Vertex* vertices = pModel.GetVertices();
 	for (size_t i = 0; i < pModel.GetVertSize(); i++)
 	{
-		FbxColor color;
-		auto vc = (color1 == true ? pModel.GetVertices()[i].color1 : pModel.GetVertices()[i].color0);
-		color.mRed = vc[0] / 255.0f;
-		color.mGreen = vc[1] / 255.0f;
-		color.mBlue = vc[2] / 255.0f;
-		color.mAlpha = vc[3] / 255.0f;
-		element->GetDirectArray().Add(color);
+		const unsigned char* vc = (color1 == true ? vertices[i].color1 : vertices[i].color0);
+		FbxColor colour = { vc[0] / 255.0f, vc[1] / 255.0f, vc[2] / 255.0f, vc[3] / 255.0f };
+		WriteLine("%i %f, %f, %f, %f", i, colour.mRed, colour.mGreen, colour.mBlue, colour.mAlpha);
+		element->GetDirectArray().Add(colour);
 	}
 	return element;
 }

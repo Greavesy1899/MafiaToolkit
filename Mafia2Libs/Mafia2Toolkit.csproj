@@ -603,7 +603,6 @@
     <None Include="build.cmd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="ClassDiagram1.cd" />
     <None Include="Configs\App.config" />
     <None Include="Configs\packages.config" />
   </ItemGroup>

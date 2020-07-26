@@ -62,13 +62,13 @@ namespace ResourceTypes.FrameResource
             set { unk18_3 = value; }
         }
 
-        [TypeConverter(typeof(ExpandableObjectConverter)), Category("Debug"), Description("Avoid editing!")]
+        [TypeConverter(typeof(ExpandableObjectConverter)), Category("Linked Blocks"), Description("Avoid editing!")]
         public FrameGeometry Geometry {
             get { return geometry; }
             set { geometry = value; }
         }
 
-        [TypeConverter(typeof(ExpandableObjectConverter)), Category("Debug"), Description("Avoid editing!")]
+        [TypeConverter(typeof(ExpandableObjectConverter)), Category("Linked Blocks"), Description("Avoid editing!")]
         public FrameMaterial Material {
             get { return material; }
             set { material = value; }

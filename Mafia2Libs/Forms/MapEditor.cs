@@ -1103,12 +1103,9 @@ namespace Mafia2Tool
             }
         }
 
-        private FrameObjectBase CreateSingleMesh()
+        private Model LoadModelFromFile()
         {
-            FrameObjectBase mesh = new FrameObjectSingleMesh();
-
             Model model = new Model();
-            model.FrameMesh = (mesh as FrameObjectSingleMesh);
 
             if (MeshBrowser.ShowDialog() == DialogResult.Cancel)
             {
@@ -1122,7 +1119,7 @@ namespace Mafia2Tool
                     return null;
                 }
             }
-            else if(MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
+            else if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
             {
                 using (BinaryReader reader = new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)))
                 {
@@ -1152,18 +1149,11 @@ namespace Mafia2Tool
                 lod.VertexDeclaration |= (options["COLOR1"] == true ? VertexFlags.Color1 : 0);
             }
 
-            FrameObjectSingleMesh sm = (mesh as FrameObjectSingleMesh);
-            sm.Name.Set(model.ModelStructure.Name);
-            model.CreateObjectsFromModel();
-            sm.AddRef(FrameEntryRefTypes.Mesh, model.FrameGeometry.RefID);
-            sm.Geometry = model.FrameGeometry;
-            sm.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
-            sm.Material = model.FrameMaterial;
-            sm.LocalTransform = Matrix.Identity;
-            sm.WorldTransform = Matrix.Identity;
-            SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
-            SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
+            return model;
+        }
 
+        private void CreateMeshBuffers(Model model)
+        {
             for (int i = 0; i < model.FrameGeometry.NumLods; i++)
             {
                 bool indexResult = SceneData.IndexBufferPool.HasBuffer(model.IndexBuffers[i]);
@@ -1175,20 +1165,68 @@ namespace Mafia2Tool
                     import = (result == DialogResult.OK ? true : false);
                 }
 
-                if(import)
+                if (import)
                 {
                     SceneData.IndexBufferPool.RemoveBuffer(model.IndexBuffers[i]);
                     SceneData.VertexBufferPool.RemoveBuffer(model.VertexBuffers[i]);
                     SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[i]);
                     SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[i]);
                 }
-                else
-                {
-                    return null;
-                }
+            }
+        }
+
+        private FrameObjectBase CreateSingleMesh(Model model)
+        {
+            // The model is invalid; we should not continue;
+            // TODO:: Ideally we should move this check somewhere else..
+            if(model == null)
+            {
+                return null;
+
             }
 
-            return mesh;
+            // Create a new SM and assign the frame mesh onto the model for future frame construction.
+            FrameObjectSingleMesh sm = new FrameObjectSingleMesh();
+            model.FrameMesh = sm;
+
+            Debug.Assert(sm != null && model != null, "Failed to load model from file!");
+
+            sm.Name.Set(model.ModelStructure.Name);
+            model.CreateObjectsFromModel();
+            sm.AddRef(FrameEntryRefTypes.Mesh, model.FrameGeometry.RefID);
+            sm.Geometry = model.FrameGeometry;
+            sm.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
+            sm.Material = model.FrameMaterial;
+            SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
+            SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
+
+            sm.LocalTransform = Matrix.Identity;
+            sm.WorldTransform = Matrix.Identity;
+
+            CreateMeshBuffers(model);
+            return sm;
+        }
+
+        private FrameObjectBase CreateSkinnedMesh(Model model)
+        {
+            // We use the single mesh and convert to skinned and replace the old data on the model
+            FrameObjectSingleMesh sm = (CreateSingleMesh(model) as FrameObjectSingleMesh);
+            FrameObjectModel rigged = new FrameObjectModel(sm);
+            model.FrameMesh = sm;
+            model.FrameModel = rigged;
+
+            rigged.AddRef(FrameEntryRefTypes.BlendInfo, model.BlendInfoBlock.RefID);
+            rigged.BlendInfo = model.BlendInfoBlock;
+            rigged.AddRef(FrameEntryRefTypes.Skeleton, model.SkeletonBlock.RefID);
+            rigged.Skeleton = model.SkeletonBlock;
+            rigged.AddRef(FrameEntryRefTypes.SkeletonHierachy, model.SkeletonHierachyBlock.RefID);
+            rigged.SkeletonHierarchy = model.SkeletonHierachyBlock;
+
+            SceneData.FrameResource.FrameBlendInfos.Add(rigged.BlendInfo.RefID, rigged.BlendInfo);
+            SceneData.FrameResource.FrameSkeletons.Add(rigged.Skeleton.RefID, rigged.Skeleton);
+            SceneData.FrameResource.FrameSkeletonHierachies.Add(rigged.SkeletonHierarchy.RefID, rigged.SkeletonHierarchy);
+
+            return rigged;
         }
 
         private void CreateNewEntry(int selected, string name, bool addToNameTable)
@@ -1198,10 +1236,7 @@ namespace Mafia2Tool
             switch (selected)
             {
                 case 0:
-                    frame = CreateSingleMesh();
-
-                    if (frame == null)
-                        return;
+                    frame = CreateSingleMesh(LoadModelFromFile());
                     break;
                 case 1:
                     frame = new FrameObjectFrame();
@@ -1231,7 +1266,7 @@ namespace Mafia2Tool
                     frame = new FrameObjectTarget();
                     break;
                 case 10:
-                    throw new NotImplementedException();
+                    frame = CreateSkinnedMesh(LoadModelFromFile());
                     break;
                 case 11:
                     frame = new FrameObjectCollision();
@@ -1241,6 +1276,8 @@ namespace Mafia2Tool
                     Console.WriteLine("Unknown type selected");
                     break;
             }
+
+            Debug.Assert(frame != null, "Frame was null!");
 
             frame.Name.Set(name);
             frame.IsOnFrameTable = addToNameTable;

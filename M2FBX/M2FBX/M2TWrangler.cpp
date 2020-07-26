@@ -2,7 +2,7 @@
 #include "FbxUtilities.h"
 #include <conio.h>
 
-int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
+int BuildModelPart(FbxNode* pNode, ModelPart& pPart)
 {
 	FbxMesh* pMesh = (FbxMesh*)pNode->GetNodeAttribute();
 	FbxGeometryElementNormal* pElementNormal = pMesh->GetElementNormal(0);
@@ -14,6 +14,11 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 	FbxGeometryElementMaterial* pElementMaterial = pMesh->GetElementMaterial(0);
 	FbxGeometryElementVertexColor* pElementColor0 = pMesh->GetElementVertexColor(0);
 	FbxGeometryElementVertexColor* pElementColor1 = pMesh->GetElementVertexColor(1);
+
+	for (int i = 0; i < pMesh->GetElementVertexColorCount(); i++)
+	{
+		WriteLine("Vertex Colour Channel: %s", pMesh->GetElementVertexColor(i)->GetName());
+	}
 
 	pMesh->ComputeBBox();
 
@@ -117,15 +122,15 @@ int BuildModelPart(FbxNode* pNode, ModelPart &pPart)
 		if (pPart.HasVertexFlag(VertexFlags::Color)) {
 			color = pElementColor0->GetDirectArray().GetAt(i);
 			vertice.color0[0] = (color.mRed * 255.0f);
-			vertice.color0[1] = (color.mBlue * 255.0f);
-			vertice.color0[2] = (color.mGreen * 255.0f);
+			vertice.color0[1] = (color.mGreen * 255.0f);
+			vertice.color0[2] = (color.mBlue * 255.0f);
 			vertice.color0[3] = (color.mAlpha * 255.0f);
 		}
 		if (pPart.HasVertexFlag(VertexFlags::Color1)) {
 			color = pElementColor1->GetDirectArray().GetAt(i);
 			vertice.color1[0] = (color.mRed * 255.0f);
-			vertice.color1[1] = (color.mBlue * 255.0f);
-			vertice.color1[2] = (color.mGreen * 255.0f);
+			vertice.color1[1] = (color.mGreen * 255.0f);
+			vertice.color1[2] = (color.mBlue * 255.0f);
 			vertice.color1[3] = (color.mAlpha * 255.0f);
 		}
 		//do UV stuff.

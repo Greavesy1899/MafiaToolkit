@@ -22,7 +22,7 @@ namespace Utils.Models
         //main header data of the file.
         private string name; //name of model.
         private bool isSkinned;
-        Skeleton skeleton;
+        private Skeleton skeleton;
         Lod[] lods; //Holds the models which can be exported, all EDM content is saved here.
 
         private string aoTexture;
@@ -34,6 +34,10 @@ namespace Utils.Models
         public bool IsSkinned {
             get { return isSkinned; }
             set { isSkinned = value; }
+        }
+        public Skeleton SkeletonData {
+            get { return skeleton; }
+            set { skeleton = value; }
         }
         public string Name {
             get { return name; }
@@ -521,6 +525,7 @@ namespace Utils.Models
             if(isSkinned)
             {
                 byte size = reader.ReadByte();
+                skeleton = new Skeleton();
                 skeleton.Joints = new Joint[size];
                 for (int i = 0; i < size; i++)
                 {

@@ -138,7 +138,7 @@ namespace Utils.Models
             ushort y = BitConverter.ToUInt16(yData, 0);
             ushort z = (ushort)(BitConverter.ToUInt16(zData, 0) & short.MaxValue);
             ushort w = (ushort)(BitConverter.ToUInt16(zData, 0) & 0x8000);
-            vec = new Vector4(x * factor, y * factor, z * factor, w != 0 ? -1.0f : 1.0f);
+            vec = new Vector4(x * factor, y * factor, z * factor, w != 0.0f ? -1.0f : 1.0f);
             vec += new Vector4(offset, 0.0f);
             return vec;
         }
@@ -148,7 +148,7 @@ namespace Utils.Models
             Vector3 tan = new Vector3();
             tan.X = (data[i + 6] - 127.0f) * 0.007874f;
             tan.Y = (data[i + 7] - 127.0f) * 0.007874f;
-            tan.Z = (data[i + 12] - 127.0f) * 0.007874f;
+            tan.Z = (data[i + 11] - 127.0f) * 0.007874f;
             return tan;
         }
 

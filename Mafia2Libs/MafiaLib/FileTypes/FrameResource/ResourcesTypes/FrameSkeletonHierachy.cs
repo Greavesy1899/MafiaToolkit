@@ -28,6 +28,13 @@ namespace ResourceTypes.FrameResource
             set { unkData = value; }
         }
 
+        public FrameSkeletonHierachy() : base()
+        {
+            parentIndices = new byte[0];
+            lastChildIndices = new byte[0];
+            unkData = new byte[0];
+        }
+
         public FrameSkeletonHierachy(MemoryStream reader, bool isBigEndian) : base()
         {
             ReadFromFile(reader, isBigEndian);
