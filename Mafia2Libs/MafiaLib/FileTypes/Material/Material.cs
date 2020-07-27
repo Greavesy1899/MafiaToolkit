@@ -262,6 +262,16 @@ namespace ResourceTypes.Materials
             materialName = name;
             materialHash = FNV64.Hash(name);
         }
+
+        public ShaderParameterSampler GetSamplerByKey(string SamplerName)
+        {
+            if(samplers.ContainsKey(SamplerName))
+            {
+                return samplers[SamplerName];
+            }
+
+            return null;
+        }
     }
 
     public struct ShaderParameter

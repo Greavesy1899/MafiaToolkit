@@ -105,7 +105,6 @@ namespace Mafia2Tool
             dViewProperties = new DockViewProperties();
             dPropertyGrid.Show(dockPanel1, DockState.DockRight);
             dSceneTree.Show(dockPanel1, DockState.DockLeft);
-            //dViewProperties.Show(dockPanel1, DockState.DockRight);
             dSceneTree.SetEventHandler("AfterSelect", new TreeViewEventHandler(OnAfterSelect));
             dSceneTree.ExportFrameButton.Click += new EventHandler(ExportFrame_Click);
             dSceneTree.Export3DButton.Click += new EventHandler(Export3DButton_Click);
@@ -120,15 +119,7 @@ namespace Mafia2Tool
             dSceneTree.UpdateParent1Button.Click += new EventHandler(UpdateParent_Click);
             dSceneTree.UpdateParent2Button.Click += new EventHandler(UpdateParent_Click);
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyValueChanged);
-            dPropertyGrid.PositionXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.PositionYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.PositionZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.RotationXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.RotationYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.RotationZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.ScaleXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.ScaleYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.ScaleZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.OnObjectUpdated += ApplyEntryChanges;
         }
 
         private void RenderPanel_MouseWheel(object sender, MouseEventArgs e)

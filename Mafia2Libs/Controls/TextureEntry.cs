@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Rendering.Graphics;
+using ResourceTypes.Materials;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -8,6 +10,7 @@ namespace Mafia2Tool
     {
         private bool isSelected;
         private Color defaultColour;
+        private Material material;
 
         public bool IsSelected {
             get { return isSelected; }
@@ -23,19 +26,24 @@ namespace Mafia2Tool
             defaultColour = MaterialName.BackColor;
         }
 
+        public void SetMaterial(Material material)
+        {
+            if (material != null)
+            {
+                MaterialName.Text = material.MaterialName;
+                TextureImage.Image = TextureLoader.LoadThumbnail(material);
+                this.material = material;
+            }
+        }
+
+        public Material GetMaterial()
+        {
+            return material;
+        }
+
         public event EventHandler<EventArgs> WasClicked;
 
-        public void SetMaterialName(string value)
-        {
-            MaterialName.Text = value;
-        }
-
-        public void SetMaterialTexture(Image image)
-        {
-            TextureImage.Image = image;
-        }
-
-        private void OnDoubleClick(object sender, System.EventArgs e)
+        private void OnDoubleClick(object sender, EventArgs e)
         {
             var wasClicked = WasClicked;
             if (wasClicked != null)

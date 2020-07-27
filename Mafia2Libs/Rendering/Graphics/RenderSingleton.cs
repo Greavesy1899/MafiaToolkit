@@ -1,5 +1,6 @@
 ﻿using SharpDX.Direct3D11;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows;
 
 namespace Rendering.Graphics
@@ -9,6 +10,7 @@ namespace Rendering.Graphics
         public List<RenderLine> SplineStorage;
         public Dictionary<ulong, RenderStaticCollision> StaticCollisions;
         public Dictionary<ulong, ShaderResourceView> TextureCache;
+        public Dictionary<ulong, Image> TextureThumbnails;
         public ShaderManager ShaderManager;
         public RenderPrefabs Prefabs;
         private bool isInit;
@@ -18,6 +20,7 @@ namespace Rendering.Graphics
             SplineStorage = new List<RenderLine>();
             StaticCollisions = new Dictionary<ulong, RenderStaticCollision>();
             TextureCache = new Dictionary<ulong, ShaderResourceView>();
+            TextureThumbnails = new Dictionary<ulong, Image>();
             ShaderManager = new ShaderManager();
             Prefabs = new RenderPrefabs();
         }
@@ -61,6 +64,7 @@ namespace Rendering.Graphics
             SplineStorage.Clear();
             StaticCollisions.Clear();
             TextureCache.Clear();
+            TextureThumbnails.Clear();
             ShaderManager.Shutdown();
             Prefabs.Shutdown();
             isInit = false;

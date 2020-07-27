@@ -121,5 +121,22 @@ namespace ResourceTypes.Materials
             }
             return mat;
         }
+
+        public Material[] SearchForMaterialsByName(string Name)
+        {
+            string NameToFilter = Name.ToLower();
+
+            List<Material> Filtered = new List<Material>();
+            foreach (var Pair in materials)
+            {
+                string MaterialName = Pair.Value.MaterialName.ToLower();
+                if(MaterialName.Contains(Name))
+                {
+                    Filtered.Add(Pair.Value);
+                }
+            }
+
+            return Filtered.ToArray();
+        }
     }
 }

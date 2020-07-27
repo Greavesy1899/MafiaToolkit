@@ -34,6 +34,8 @@
             this.Label_SearchBar = new System.Windows.Forms.Label();
             this.ComboBox_Materials = new System.Windows.Forms.ComboBox();
             this.TextBox_SearchBar = new System.Windows.Forms.TextBox();
+            this.Button_Search = new System.Windows.Forms.Button();
+            this.Label_MaterialCount = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // FlowPanel_Materials
@@ -43,7 +45,6 @@
             this.FlowPanel_Materials.Name = "FlowPanel_Materials";
             this.FlowPanel_Materials.Size = new System.Drawing.Size(800, 398);
             this.FlowPanel_Materials.TabIndex = 3;
-            this.FlowPanel_Materials.Click += new System.EventHandler(this.UsersGrid_WasClicked);
             // 
             // ComboBox_SelectMatLib
             // 
@@ -57,7 +58,7 @@
             // Label_SearchBar
             // 
             this.Label_SearchBar.AutoSize = true;
-            this.Label_SearchBar.Location = new System.Drawing.Point(561, 9);
+            this.Label_SearchBar.Location = new System.Drawing.Point(480, 9);
             this.Label_SearchBar.Name = "Label_SearchBar";
             this.Label_SearchBar.Size = new System.Drawing.Size(118, 13);
             this.Label_SearchBar.TabIndex = 5;
@@ -70,19 +71,41 @@
             this.ComboBox_Materials.Name = "ComboBox_Materials";
             this.ComboBox_Materials.Size = new System.Drawing.Size(189, 21);
             this.ComboBox_Materials.TabIndex = 6;
+            this.ComboBox_Materials.SelectedIndexChanged += new System.EventHandler(this.ComboBox_MaterialsSelectedIndexChanged);
             // 
             // TextBox_SearchBar
             // 
-            this.TextBox_SearchBar.Location = new System.Drawing.Point(564, 25);
+            this.TextBox_SearchBar.Location = new System.Drawing.Point(483, 25);
             this.TextBox_SearchBar.Name = "TextBox_SearchBar";
             this.TextBox_SearchBar.Size = new System.Drawing.Size(224, 20);
             this.TextBox_SearchBar.TabIndex = 7;
+            // 
+            // Button_Search
+            // 
+            this.Button_Search.Location = new System.Drawing.Point(713, 23);
+            this.Button_Search.Name = "Button_Search";
+            this.Button_Search.Size = new System.Drawing.Size(75, 23);
+            this.Button_Search.TabIndex = 8;
+            this.Button_Search.Text = "$SEARCH";
+            this.Button_Search.UseVisualStyleBackColor = true;
+            this.Button_Search.Click += new System.EventHandler(this.Button_SearchOnClicked);
+            // 
+            // Label_MaterialCount
+            // 
+            this.Label_MaterialCount.AutoSize = true;
+            this.Label_MaterialCount.Location = new System.Drawing.Point(656, 9);
+            this.Label_MaterialCount.Name = "Label_MaterialCount";
+            this.Label_MaterialCount.Size = new System.Drawing.Size(51, 13);
+            this.Label_MaterialCount.TabIndex = 9;
+            this.Label_MaterialCount.Text = "$COUNT";
             // 
             // MatBrowser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.Label_MaterialCount);
+            this.Controls.Add(this.Button_Search);
             this.Controls.Add(this.TextBox_SearchBar);
             this.Controls.Add(this.ComboBox_Materials);
             this.Controls.Add(this.Label_SearchBar);
@@ -103,5 +126,7 @@
         private System.Windows.Forms.Label Label_SearchBar;
         private System.Windows.Forms.ComboBox ComboBox_Materials;
         private System.Windows.Forms.TextBox TextBox_SearchBar;
+        private System.Windows.Forms.Button Button_Search;
+        private System.Windows.Forms.Label Label_MaterialCount;
     }
 }

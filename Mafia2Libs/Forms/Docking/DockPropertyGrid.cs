@@ -1,15 +1,13 @@
-﻿using Gibbed.Squish;
-using Mafia2Tool;
+﻿using Mafia2Tool;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using SharpDX;
 using System;
 using Mafia2Tool.Forms;
-using System.Drawing;
-using System.IO;
 using Utils.Language;
 using WeifenLuo.WinFormsUI.Docking;
 using Utils.SharpDXExtensions;
+using System.Collections.Generic;
 
 namespace Forms.Docking
 {
@@ -18,7 +16,11 @@ namespace Forms.Docking
         private bool isMaterialTabFocused;
         private bool hasLoadedMaterials;
         private object currentObject;
+        private Dictionary<TextureEntry, MaterialStruct> currentMaterials;
+
         public bool IsEntryReady;
+
+        public event EventHandler<EventArgs> OnObjectUpdated;
 
         public DockPropertyGrid()
         {
@@ -28,6 +30,7 @@ namespace Forms.Docking
             IsEntryReady = false;
             isMaterialTabFocused = false;
             hasLoadedMaterials = false;
+            currentMaterials = new Dictionary<TextureEntry, MaterialStruct>();
         }
 
         private void Localise()
@@ -77,22 +80,25 @@ namespace Forms.Docking
             if (isMaterialTabFocused && !hasLoadedMaterials)
             {
                 MatViewPanel.Controls.Clear();
+                currentMaterials.Clear();
                 if (FrameResource.IsFrameType(currentObject))
                 {
                     if (currentObject is FrameObjectSingleMesh)
                     {
                         var entry = (currentObject as FrameObjectSingleMesh);
-                        for (int i = 0; i != entry.Material.NumLods; i++)
+                        MaterialStruct[] materialAssignments = entry.Material.Materials[LODComboBox.SelectedIndex];
+                        for (int x = 0; x != materialAssignments.Length; x++)
                         {
-                            for (int x = 0; x != entry.Material.Materials[i].Length; x++)
-                            {
-                                var mat = entry.Material.Materials[i][x];
-                                TextureEntry textEntry = new TextureEntry();
-                                textEntry.WasClicked += MatViewerPanel_WasClicked;
-                                textEntry.SetMaterialName(mat.MaterialName);
-                                textEntry.SetMaterialTexture(GetThumbnail(mat));
-                                MatViewPanel.Controls.Add(textEntry);
-                            }
+                            TextureEntry textEntry = new TextureEntry();
+
+                            var mat = materialAssignments[x];
+                            Material material = MaterialsManager.LookupMaterialByHash(mat.MaterialHash);
+
+                            textEntry.WasClicked += MatViewerPanel_WasClicked;
+                            textEntry.SetMaterial(material);
+
+                            currentMaterials.Add(textEntry, mat);
+                            MatViewPanel.Controls.Add(textEntry);
                         }
                     }
                 }
@@ -169,64 +175,6 @@ namespace Forms.Docking
             }
         }
 
-        public bool ThumbnailCallback()
-        {
-            return false;
-        }
-
-        private Image LoadDDSSquish(string name)
-        {
-            Image.GetThumbnailImageAbort myCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
-            DdsFile dds = new DdsFile();
-
-            name = File.Exists(name) == false ? "Resources/texture.dds" : name;
-
-            var bLoaded = false;
-            using (var stream = File.Open(name, FileMode.Open))
-            {
-                try
-                {
-                    dds.Load(stream);
-                    bLoaded = true;
-                }
-                catch(Exception ex)
-                {
-                    Utils.Logging.Log.WriteLine("Failed to load DDS: " + name, Utils.Logging.LoggingTypes.WARNING);
-                }
-            }
-
-            Image thumbnail = null;
-            if (bLoaded)
-                thumbnail = dds.Image().GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
-            else
-                thumbnail = LoadDDSSquish("Resources/texture.dds");
-
-            dds = null;
-            return thumbnail;
-        }
-
-        private Image GetThumbnail(MaterialStruct material)
-        {
-            Material mat = MaterialsManager.LookupMaterialByHash(material.MaterialHash);
-            Image thumbnail = null;
-            if (mat != null)
-            {
-                if(mat.Samplers.ContainsKey("S000"))
-                {
-                    thumbnail = LoadDDSSquish(Path.Combine(SceneData.ScenePath, mat.Samplers["S000"].File));
-                }
-                else
-                {
-                    thumbnail = LoadDDSSquish("Resources/texture.dds");
-                }
-            }
-            else
-            {
-                thumbnail = LoadDDSSquish("Resources/MissingMaterial.dds");
-            }
-            return thumbnail;
-        }
-
         private void SelectedIndexChanged(object sender, EventArgs e)
         {
             hasLoadedMaterials = false;
@@ -239,12 +187,27 @@ namespace Forms.Docking
             MatBrowser browser = null;
             foreach (var c in MatViewPanel.Controls)
             {
-                if (c is TextureEntry)
+                TextureEntry entry = (c as TextureEntry);
+                if (entry != null)
                 {
-                    if(((TextureEntry)c).IsSelected)
+                    if (entry.IsSelected)
+                    {
                         browser = new MatBrowser();
+                        Material selectedMaterial = browser.GetSelectedMaterial();
 
-                    ((TextureEntry)c).IsSelected = false;
+                        if (selectedMaterial != null)
+                        {
+                            currentMaterials[entry].MaterialName = selectedMaterial.MaterialName;
+                            currentMaterials[entry].MaterialHash = selectedMaterial.MaterialHash;
+                            entry.SetMaterial(selectedMaterial);
+                            OnObjectUpdated(sender, e);
+                        }
+
+                        browser.Dispose();
+                        browser = null;
+                    }
+
+                    entry.IsSelected = false;
                 }
             }
         }
@@ -253,6 +216,11 @@ namespace Forms.Docking
         {
             isMaterialTabFocused = (MainTabControl.SelectedIndex == 2);
             LoadMaterials();
+        }
+
+        private void ObjectHasUpdated(object sender, EventArgs e)
+        {
+            OnObjectUpdated(sender, e);
         }
     }
 }

@@ -1,15 +1,17 @@
-﻿using Gibbed.Squish;
-using System;
+﻿using System;
 using ResourceTypes.Materials;
 using System.Windows.Forms;
 using System.Linq;
-using System.Drawing;
-using System.IO;
+using System.Diagnostics;
 
 namespace Mafia2Tool.Forms
 {
     public partial class MatBrowser : Form
     {
+        MaterialLibrary SelectedLibrary = null;
+        TextureEntry SelectedEntry = null;
+        Material SelectedMaterial = null;
+
         public MatBrowser()
         {
             InitializeComponent();
@@ -17,91 +19,71 @@ namespace Mafia2Tool.Forms
             ShowDialog();
         }
 
-        public bool ThumbnailCallback()
-        {
-            return false;
-        }
-
         private void Init()
         {
             // Populate Material Libraries;
-            for(int i = 0; i < MaterialsManager.MaterialLibraries.Count; i++)
+            for (int i = 0; i < MaterialsManager.MaterialLibraries.Count; i++)
             {
                 var lib = MaterialsManager.MaterialLibraries.ElementAt(i).Value;
                 ComboBox_Materials.Items.Add(lib.Name);
             }
 
-            PopulateBrowser(0);
+            ComboBox_Materials.SelectedIndex = 0;
+            Label_MaterialCount.Text = "";
         }
 
-        private void PopulateBrowser(int index)
+        public Material GetSelectedMaterial()
         {
-            var mtl = MaterialsManager.MaterialLibraries.ElementAt(index).Value;
-            for (int x = 0; x < 20; x++)
+            return SelectedMaterial;
+        }
+
+        private void PopulateBrowser(Material[] materials)
+        {
+            FlowPanel_Materials.Controls.Clear();
+
+            for (int x = 0; x < materials.Length; x++)
             {
-                var mat = mtl.Materials.ElementAt(x).Value;
+                var mat = materials[x];
                 TextureEntry textEntry = new TextureEntry();
-                textEntry.SetMaterialName(mat.MaterialName);
-                textEntry.SetMaterialTexture(GetThumbnail(mat));
+                textEntry.SetMaterial(mat);
+                textEntry.WasClicked += TextureEntry_WasClicked;
                 FlowPanel_Materials.Controls.Add(textEntry);
             }
         }
 
-        private Image LoadDDSSquish(string name)
+        private void TextureEntry_WasClicked(object sender, EventArgs e)
         {
-            Image.GetThumbnailImageAbort myCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
-            DdsFile dds = new DdsFile();
+            // Add the new selected one
+            TextureEntry Entry = (sender as TextureEntry);
 
-            name = File.Exists(name) == false ? "Resources/texture.dds" : name;
-
-            using (var stream = File.Open(name, FileMode.Open))
+            // Remove the previous entry, if it is the same then we select this and exit the browser
+            if (SelectedEntry != null)
             {
-                try
+                SelectedEntry.IsSelected = false;
+
+                if (SelectedEntry == Entry)
                 {
-                    dds.Load(stream);
+                    Debug.Assert(sender == SelectedEntry, "The sent control should be the same as SelectedMaterial, but it is not!");
+                    SelectedMaterial = SelectedEntry.GetMaterial();
+                    Close();
                 }
-                catch(Exception ex)
-                {
-                    return LoadDDSSquish("Resources/texture.dds").GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
-                }
-                
             }
-            var thumbnail = dds.Image().GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
-            dds = null;
-            return thumbnail;
+
+            SelectedEntry = Entry;
         }
 
-        private Image GetThumbnail(Material mat)
+        private void Button_SearchOnClicked(object sender, EventArgs e)
         {
-            Image thumbnail = null;
-            if (mat != null)
-            {
-                if (mat.Samplers.ContainsKey("S000"))
-                {
-                    thumbnail = LoadDDSSquish(Path.Combine(SceneData.ScenePath, mat.Samplers["S000"].File));
-                }
-                else
-                {
-                    thumbnail = LoadDDSSquish("Resources/texture.dds");
-                }
-            }
-            else
-            {
-                thumbnail = LoadDDSSquish("Resources/MissingMaterial.dds");
-            }
-            return thumbnail;
+            string text = TextBox_SearchBar.Text;
+            Material[] filtered = SelectedLibrary.SearchForMaterialsByName(text);
+            PopulateBrowser(filtered);
+            Label_MaterialCount.Text = string.Format("(Found: {0} Materials)", filtered.Length);
         }
 
-        void UsersGrid_WasClicked(object sender, EventArgs e)
+        private void ComboBox_MaterialsSelectedIndexChanged(object sender, EventArgs e)
         {
-            // Set IsSelected for all UCs in the FlowLayoutPanel to false. 
-            foreach (Control c in FlowPanel_Materials.Controls)
-            {
-                if (c is TextureEntry)
-                {
-                    ((TextureEntry)c).IsSelected = false;
-                }
-            }
+            int index = ComboBox_Materials.SelectedIndex;
+            SelectedLibrary = MaterialsManager.MaterialLibraries.ElementAt(index).Value;
         }
     }
 }
