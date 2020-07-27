@@ -99,6 +99,7 @@ namespace Mafia2Tool
         {
             dockPanel1.Controls.Add(RenderPanel);
             RenderPanel.Resize += RenderPanel_Resize;
+            RenderPanel.MouseWheel += RenderPanel_MouseWheel;
             dPropertyGrid = new DockPropertyGrid();
             dSceneTree = new DockSceneTree();
             dViewProperties = new DockViewProperties();
@@ -128,6 +129,12 @@ namespace Mafia2Tool
             dPropertyGrid.ScaleXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.ScaleYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.ScaleZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+        }
+
+        private void RenderPanel_MouseWheel(object sender, MouseEventArgs e)
+        {
+            decimal value = (e.Delta > 0 ? CameraSpeedTool.Increment : -CameraSpeedTool.Increment);
+            CameraSpeedTool.Value += value;
         }
 
         private void RenderPanel_Resize(object sender, EventArgs e)
@@ -1578,6 +1585,11 @@ namespace Mafia2Tool
         }
 
         private void CameraSpeedUpdate(object sender, EventArgs e)
+        {
+            UpdateCameraSpeed();
+        }
+
+        private void UpdateCameraSpeed()
         {
             if (CameraSpeedTool.Value == CameraSpeedTool.Increment)
             {

@@ -130,7 +130,7 @@ bool CreateDocument(FbxManager* pManager, FbxScene* pScene, ModelStructure model
 	std::string nodeName = model.GetName();
 	nodeName += "_LODNODE";
 
-	for (int i = 0; i < model.GetPartSize(); i++)
+	for (int i = 0; i < 1; i++)
 	{
 		std::string name = "LOD";
 		name += std::to_string(i);
@@ -260,6 +260,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 {
 	FbxMesh* lMesh = FbxMesh::Create(pManager, pName);
 	FbxNode* lNode = FbxNode::Create(pManager, pName);
+
 	lNode->SetNodeAttribute(lMesh);
 	lNode->SetShadingMode(FbxNode::eTextureShading);
 	lNode->LclRotation.Set(FbxVector4(-90, 0, 0));
@@ -274,32 +275,55 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 	FbxGeometryElementUV* lUVTwoElement = nullptr;
 	FbxGeometryElementUV* lUVOMElement = nullptr;
 
+	FbxLayer* Layer = lMesh->GetLayer(0);
+	if (Layer == nullptr)
+	{
+		lMesh->CreateLayer();
+		Layer = lMesh->GetLayer(0);
+	}
+
 	for (size_t i = 0; i < part.GetVertSize(); i++)
 	{
-		lControlPoints[i] = FbxVector4(vertices[i].position.x, vertices[i].position.y, vertices[i].position.z);
+		lControlPoints[i] = ConvertVector3(vertices[i].position);
 	}
 
 	// We want to have one normal for each vertex (or control point),
 	// so we set the mapping mode to eByControlPoint.
 	if (part.HasVertexFlag(VertexFlags::Normals))
 	{
-		FbxGeometryElementNormal* lElementNormal = lMesh->CreateElementNormal();
-		lElementNormal->SetMappingMode(FbxGeometryElement::eByControlPoint);
-		lElementNormal->SetReferenceMode(FbxGeometryElement::eDirect);
+		// Create the element.
+		FbxLayerElementNormal* LayerElementNormal = FbxLayerElementNormal::Create(lMesh, "");
+		LayerElementNormal->SetMappingMode(FbxGeometryElement::eByControlPoint);
+		LayerElementNormal->SetReferenceMode(FbxGeometryElement::eDirect);
+
+		// Get the direct array and begin storing our normal vectors into this array.
+		FbxLayerElementArrayTemplate<FbxVector4>& DirectArray = LayerElementNormal->GetDirectArray();
+
 		for (size_t i = 0; i < part.GetVertSize(); i++)
 		{
-			lElementNormal->GetDirectArray().Add(FbxVector4(vertices[i].normals.x, vertices[i].normals.y, vertices[i].normals.z));
+			DirectArray.Add(ConvertVector3(vertices[i].normals));
 		}
+
+		// We finish normals off by adding it to the layer.
+		Layer->SetNormals(LayerElementNormal);
 	}
 	if (part.HasVertexFlag(VertexFlags::Tangent))
 	{
-		FbxGeometryElementTangent* lElementTangent = lMesh->CreateElementTangent();
-		lElementTangent->SetMappingMode(FbxGeometryElement::eByControlPoint);
-		lElementTangent->SetReferenceMode(FbxGeometryElement::eDirect);
+		// Create the element.
+		FbxGeometryElementTangent* LayerElementTangent = FbxGeometryElementTangent::Create(lMesh, "");
+		LayerElementTangent->SetMappingMode(FbxGeometryElement::eByControlPoint);
+		LayerElementTangent->SetReferenceMode(FbxGeometryElement::eDirect);
+
+		// Get the direct array and begin storing our normal vectors into this array.
+		FbxLayerElementArrayTemplate<FbxVector4>& DirectArray = LayerElementTangent->GetDirectArray();
+
 		for (size_t i = 0; i < part.GetVertSize(); i++)
 		{
-			lElementTangent->GetDirectArray().Add(FbxVector4(vertices[i].tangent.x, vertices[i].tangent.y, vertices[i].tangent.z));
+			DirectArray.Add(ConvertVector3(vertices[i].tangent));
 		}
+
+		// We finish normals off by adding it to the layer.
+		Layer->SetTangents(LayerElementTangent);
 	}
 	if (part.HasVertexFlag(VertexFlags::TexCoords0))
 	{
@@ -321,10 +345,14 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 		lUVOMElement = CreateUVElement(lMesh, "OMUV", part);
 		CreateMaterialElement(lMesh, "AO/OM Mapping", part);
 	}
+
+	int count3 = lMesh->GetElementVertexColorCount();
+
 	if (part.HasVertexFlag(VertexFlags::Color))
 	{
 		CreateVertexColor(lMesh, "ColorMap0", part);
 	}
+
 	if (part.HasVertexFlag(VertexFlags::Color1))
 	{
 		CreateVertexColor(lMesh, "ColorMap1", part);
@@ -362,6 +390,7 @@ FbxNode* CreatePlane(FbxManager* pManager, const char* pName, ModelPart part)
 			}
 		}
 	}
+	int count = lMesh->GetLayerCount();
 	// return the FbxNode
 	return lNode;
 }
@@ -422,10 +451,8 @@ FbxSurfacePhong* CreateMaterial(FbxManager* pManager, const char* pName)
 FbxGeometryElementVertexColor* CreateVertexColor(FbxMesh* lMesh, const char* pName, ModelPart& pModel)
 {
 	FbxGeometryElementVertexColor* element = lMesh->CreateElementVertexColor();
-	element->SetName(pName);
-	FBX_ASSERT(element != nullptr);
-	element->SetMappingMode(FbxGeometryElement::eByControlPoint);
-	element->SetReferenceMode(FbxGeometryElement::eDirect);
+	element->SetMappingMode(FbxLayerElement::eByPolygonVertex);
+	element->SetReferenceMode(FbxLayerElement::eIndexToDirect);
 
 	bool color1 = false;
 
@@ -437,13 +464,37 @@ FbxGeometryElementVertexColor* CreateVertexColor(FbxMesh* lMesh, const char* pNa
 	}
 
 	const Vertex* vertices = pModel.GetVertices();
-	for (size_t i = 0; i < pModel.GetVertSize(); i++)
+	const std::vector<Int3> indices = pModel.GetIndices();
+	const size_t indicesSize = pModel.GetIndicesSize();
+	const size_t verticesSize = pModel.GetVertSize();
+
+	FbxLayerElementArrayTemplate<FbxColor>& colorArray = element->GetDirectArray();
+
+	for (size_t i = 0; i < indices.size(); i++)
 	{
-		const unsigned char* vc = (color1 == true ? vertices[i].color1 : vertices[i].color0);
+		size_t verticeIndex = indices[i].i1;
+		const unsigned char* vc = (color1 == true ? vertices[verticeIndex].color1 : vertices[verticeIndex].color0);
 		FbxColor colour = { vc[0] / 255.0f, vc[1] / 255.0f, vc[2] / 255.0f, vc[3] / 255.0f };
-		WriteLine("%i %f, %f, %f, %f", i, colour.mRed, colour.mGreen, colour.mBlue, colour.mAlpha);
-		element->GetDirectArray().Add(colour);
+		colorArray.Add(colour);
+
+		verticeIndex = indices[i].i2;
+		vc = (color1 == true ? vertices[verticeIndex].color1 : vertices[verticeIndex].color0);
+		colour = FbxColor(vc[0] / 255.0f, vc[1] / 255.0f, vc[2] / 255.0f, vc[3] / 255.0f);
+		colorArray.Add(colour);
+
+		verticeIndex = indices[i].i3;
+		vc = (color1 == true ? vertices[verticeIndex].color1 : vertices[verticeIndex].color0);
+		colour = FbxColor(vc[0] / 255.0f, vc[1] / 255.0f, vc[2] / 255.0f, vc[3] / 255.0f);
+		colorArray.Add(colour);
 	}
+
+	element->GetIndexArray().SetCount(indicesSize);
+
+	for (size_t i = 0; i < indicesSize; i++)
+	{
+		element->GetIndexArray().SetAt(i, i);
+	}
+
 	return element;
 }
 

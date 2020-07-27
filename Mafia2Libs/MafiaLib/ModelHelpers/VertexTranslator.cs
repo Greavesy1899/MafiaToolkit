@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using SharpDX;
 using Utils.SharpDXExtensions;
 
@@ -41,7 +42,7 @@ namespace Utils.Models
                 int startIndex = offsets[VertexFlags.Position].Offset;
                 var output = ReadPositionDataFromVB(data, startIndex, scale, offset);
                 vertex.Position = Vector3Extenders.FromVector4(output);
-                vertex.Binormal = new Vector3(output.X);
+                vertex.Binormal = new Vector3(output.W);
             }
 
             if (declaration.HasFlag(VertexFlags.Tangent))
@@ -111,6 +112,12 @@ namespace Utils.Models
                 vertex.DamageGroup = ReadDamageGroupFromVB(data, startIndex);
             }
 
+            // We only try to calculate binormal vector if we have the correct tangent space data so far..
+            if (declaration.HasFlag(VertexFlags.Normals) && declaration.HasFlag(VertexFlags.Tangent))
+            {
+                Vector4 positionW = new Vector4(vertex.Position, vertex.Binormal.X);
+                vertex.Binormal = CalculateBinormal(positionW, vertex.Tangent, vertex.Normal);
+            }
             return vertex;
         }
 
@@ -149,6 +156,7 @@ namespace Utils.Models
             tan.X = (data[i + 6] - 127.0f) * 0.007874f;
             tan.Y = (data[i + 7] - 127.0f) * 0.007874f;
             tan.Z = (data[i + 11] - 127.0f) * 0.007874f;
+
             return tan;
         }
 
@@ -159,6 +167,13 @@ namespace Utils.Models
             norm.Y = (data[i + 1] - 127.0f) * 0.007874f;
             norm.Z = (data[i + 2] - 127.0f) * 0.007874f;
             return norm;
+        }
+
+        private static Vector3 CalculateBinormal(Vector4 position, Vector3 tangent, Vector3 normal)
+        {
+            Vector3 binormal = Vector3.Cross(normal, tangent);
+            binormal *= -position.W;
+            return binormal;
         }
 
         private static Vector2 ReadTexcoordFromVB(byte[] data, int i)
@@ -183,12 +198,13 @@ namespace Utils.Models
             return BitConverter.ToInt32(data, i);
         }
 
+        // Colour format is BGRA??
         private static byte[] ReadColorFromVB(byte[] data, int i)
         {
             byte[] color = new byte[4];
-            color[0] = data[i + 0];
+            color[2] = data[i + 0];
             color[1] = data[i + 1];
-            color[2] = data[i + 2];
+            color[0] = data[i + 2];
             color[3] = data[i + 3];
             return color;
         }

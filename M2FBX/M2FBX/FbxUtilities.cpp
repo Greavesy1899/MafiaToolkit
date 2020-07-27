@@ -23,3 +23,8 @@ void DestroySdkObjects(FbxManager* pManager, bool pExitStatus)
 	if (pExitStatus) WriteLine("Program Success!");
 #endif _DEBUG
 }
+
+FbxVector4 ConvertVector3(const Point3& Vector3)
+{
+	return FbxVector4(Vector3.x, Vector3.y, Vector3.z, 1.0f);
+}

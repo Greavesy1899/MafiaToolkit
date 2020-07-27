@@ -182,7 +182,11 @@ namespace Utils.Models
 
         public void WriteColourData(byte[] data, int i, int colourIndex)
         {
-            Array.Copy((colourIndex == 0 ? color0 : color1), 0, data, i, 4);
+            byte[] colourData = (colourIndex == 0 ? color0 : color1);
+            data[i + 0] = colourData[2];
+            data[i + 1] = colourData[1];
+            data[i + 2] = colourData[0];
+            data[i + 3] = colourData[3];
         }
 
         public void WriteDamageGroup(byte[] data, int i)

@@ -15,9 +15,20 @@ int BuildModelPart(FbxNode* pNode, ModelPart& pPart)
 	FbxGeometryElementVertexColor* pElementColor0 = pMesh->GetElementVertexColor(0);
 	FbxGeometryElementVertexColor* pElementColor1 = pMesh->GetElementVertexColor(1);
 
+	// Ideally this should have to be done. But it does.
+	// TODO:: Figure out why three vertex colour elements are added to the mesh.
+	// TODO CONT:: This could be because we don't add to the layer but directly to the mesh?
 	for (int i = 0; i < pMesh->GetElementVertexColorCount(); i++)
 	{
-		WriteLine("Vertex Colour Channel: %s", pMesh->GetElementVertexColor(i)->GetName());
+		FbxGeometryElementVertexColor* VertexColor = pMesh->GetElementVertexColor(i);
+		auto MappingMode = VertexColor->GetMappingMode();
+		auto ReferenceMode = VertexColor->GetReferenceMode();
+
+		if (MappingMode == FbxLayerElement::eByPolygonVertex && ReferenceMode == FbxLayerElement::eIndexToDirect)
+		{
+			pElementColor0 = VertexColor;
+		}
+		WriteLine("Vertex Colour Channel: %s", VertexColor->GetName());
 	}
 
 	pMesh->ComputeBBox();
@@ -55,7 +66,7 @@ int BuildModelPart(FbxNode* pNode, ModelPart& pPart)
 	pPart.SetVertexFlag(pElementTwoUV ? VertexFlags::TexCoords2 : VertexFlags::None);
 	pPart.SetVertexFlag(pElementOMUV ? VertexFlags::ShadowTexture : VertexFlags::None);
 	pPart.SetVertexFlag(pElementColor0 ? VertexFlags::Color : VertexFlags::None);
-	pPart.SetVertexFlag(pElementColor1 ? VertexFlags::Color1 : VertexFlags::None);
+	//pPart.SetVertexFlag(pElementColor1 ? VertexFlags::Color1 : VertexFlags::None);
 
 	if (pPart.HasVertexFlag(VertexFlags::Normals))
 	{
@@ -117,21 +128,6 @@ int BuildModelPart(FbxNode* pNode, ModelPart& pPart)
 			vert.y = vec4.mData[1];
 			vert.z = vec4.mData[2];
 			vertice.tangent = vert;
-		}
-		//Colours
-		if (pPart.HasVertexFlag(VertexFlags::Color)) {
-			color = pElementColor0->GetDirectArray().GetAt(i);
-			vertice.color0[0] = (color.mRed * 255.0f);
-			vertice.color0[1] = (color.mGreen * 255.0f);
-			vertice.color0[2] = (color.mBlue * 255.0f);
-			vertice.color0[3] = (color.mAlpha * 255.0f);
-		}
-		if (pPart.HasVertexFlag(VertexFlags::Color1)) {
-			color = pElementColor1->GetDirectArray().GetAt(i);
-			vertice.color1[0] = (color.mRed * 255.0f);
-			vertice.color1[1] = (color.mGreen * 255.0f);
-			vertice.color1[2] = (color.mBlue * 255.0f);
-			vertice.color1[3] = (color.mAlpha * 255.0f);
 		}
 		//do UV stuff.
 		if (pPart.HasVertexFlag(VertexFlags::TexCoords0) && (pElementDiffuseUV->GetMappingMode() == FbxGeometryElement::eByControlPoint)) {
@@ -218,6 +214,39 @@ int BuildModelPart(FbxNode* pNode, ModelPart& pPart)
 		{
 			segments[0].push_back(triangle);
 		}
+
+		//Colours
+		if (pPart.HasVertexFlag(VertexFlags::Color)) {
+			FbxColor color = pElementColor0->GetDirectArray().GetAt(triangle.i1);
+			vertices[triangle.i1].color0[0] = (color.mRed * 255.0f);
+			vertices[triangle.i1].color0[1] = (color.mGreen * 255.0f);
+			vertices[triangle.i1].color0[2] = (color.mBlue * 255.0f);
+			//vertice.color0[3] = (color.mAlpha * 255.0f);
+			vertices[triangle.i1].color0[3] = 0;
+
+			color = pElementColor0->GetDirectArray().GetAt(triangle.i2);
+			vertices[triangle.i2].color0[0] = (color.mRed * 255.0f);
+			vertices[triangle.i2].color0[1] = (color.mGreen * 255.0f);
+			vertices[triangle.i2].color0[2] = (color.mBlue * 255.0f);
+			//vertice.color0[3] = (color.mAlpha * 255.0f);
+			vertices[triangle.i2].color0[3] = 0;
+
+			color = pElementColor0->GetDirectArray().GetAt(triangle.i3);
+			vertices[triangle.i3].color0[0] = (color.mRed * 255.0f);
+			vertices[triangle.i3].color0[1] = (color.mGreen * 255.0f);
+			vertices[triangle.i3].color0[2] = (color.mBlue * 255.0f);
+			//vertice.color0[3] = (color.mAlpha * 255.0f);
+			vertices[triangle.i3].color0[3] = 0;
+		}
+		/* TODO:: Removed because I think we can only have one vertex colour layer per geometry.
+		if (pPart.HasVertexFlag(VertexFlags::Color1)) {
+			color = pElementColor1->GetDirectArray().GetAt(i);
+			vertice.color1[0] = (color.mRed * 255.0f);
+			vertice.color1[1] = (color.mGreen * 255.0f);
+			vertice.color1[2] = (color.mBlue * 255.0f);
+			//vertice.color1[3] = (color.mAlpha * 255.0f);
+			vertice.color1[3] = 0;
+		} */
 	}
 
 	for (size_t i = 0; i != matCount; i++)
