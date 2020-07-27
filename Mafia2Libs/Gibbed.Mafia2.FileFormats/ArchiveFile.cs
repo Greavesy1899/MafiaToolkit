@@ -877,43 +877,60 @@ namespace Gibbed.Mafia2.FileFormats
         }
         public void ReadSoundEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string soundDir)
         {
-            //Do resource first..
+            // Create and deserialize the data.
             SoundResource resource = new SoundResource();
-            resource.Deserialize(entry.Version, new MemoryStream(entry.Data), this.Platform != Platform.PC ? Endian.Big : Endian.Little);
+
+            using(MemoryStream stream = new MemoryStream(entry.Data))
+            {
+                resource.Deserialize(entry.Version, stream, _Endian);
+            }
+
             entry.Data = resource.Data;
 
+            // Create directories and then write the XML to finish it off.
             string fileName = name + ".fsb";
             string[] dirs = name.Split('/');
 
-            string sounddir = soundDir;
+            string tempDir = soundDir;
             for (int z = 0; z != dirs.Length - 1; z++)
             {
-                sounddir += "/" + dirs[z];
-                Directory.CreateDirectory(sounddir);
+                tempDir = Path.Combine(tempDir, dirs[z]);
+                Directory.CreateDirectory(tempDir);
             }
+
             resourceXML.WriteElementString("File", fileName);
         }
         public ResourceEntry WriteSoundEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
         {
-            List<byte> data = new List<byte>();
-            string file;
             nodes.Current.MoveToNext();
-            file = nodes.Current.Value.Remove(nodes.Current.Value.Length - 4, 4);
-            data.Add((byte)file.Length);
-            for (int i = 0; i != file.Length; i++)
-                data.Add((byte)file[i]);
+            string file = nodes.Current.Value.Remove(nodes.Current.Value.Length - 4, 4);
 
-            using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/" + file + ".fsb", FileMode.Open)))
-            {
-                entry.SlotRamRequired = 40;
-                entry.SlotVramRequired = (uint)reader.BaseStream.Length;
-                data.AddRange(BitConverter.GetBytes((int)reader.BaseStream.Length)); //?? WHAT DOES THIS DO?? CHECK LATER.
-                data.AddRange(reader.ReadBytes((int)reader.BaseStream.Length));
-            }
+            // Combine path and add extension.
+            string path = Path.Combine(sdsFolder, file);
+            path += ".fsb";
+
+            // Get the Version and set the inner text (meta XML).
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
-            entry.Data = data.ToArray();
             descNode.InnerText = file;
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                byte[] fileData = File.ReadAllBytes(path);
+                SoundResource resource = new SoundResource
+                {
+                    Name = file,
+                    Data = fileData,
+                    FileSize = fileData.Length
+                };
+
+                resource.Serialize(entry.Version, stream, _Endian);
+                
+                // Fill the remaining data for the entry.
+                entry.SlotRamRequired = 40;
+                entry.SlotVramRequired = (uint)resource.FileSize;
+                entry.Data = stream.ToArray();
+            }
             return entry;
         }
         public void ReadMemEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string memDIR)

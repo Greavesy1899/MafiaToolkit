@@ -28,7 +28,7 @@ using Utils.Extensions;
 
 namespace Mafia2Tool
 {
-    public partial class D3DForm : Form
+    public partial class MapEditor : Form
     {
         private InputClass Input { get; set; }
         private GraphicsClass Graphics { get; set; }
@@ -52,8 +52,9 @@ namespace Mafia2Tool
 
         private bool bSelectMode = false;
         private float selectTimer = 0.0f;
+        private bool bHideChildren = false;
 
-        public D3DForm(FileInfo info)
+        public MapEditor(FileInfo info)
         {
             InitializeComponent();
             Localise();
@@ -98,6 +99,7 @@ namespace Mafia2Tool
         {
             dockPanel1.Controls.Add(RenderPanel);
             RenderPanel.Resize += RenderPanel_Resize;
+            RenderPanel.MouseWheel += RenderPanel_MouseWheel;
             dPropertyGrid = new DockPropertyGrid();
             dSceneTree = new DockSceneTree();
             dViewProperties = new DockViewProperties();
@@ -111,9 +113,10 @@ namespace Mafia2Tool
             dSceneTree.DeleteButton.Click += new EventHandler(DeleteButton_Click);
             dSceneTree.DuplicateButton.Click += new EventHandler(DuplicateButton_Click);
             dSceneTree.SetEventHandler("AfterCheck", new TreeViewEventHandler(OutlinerAfterCheck));
-            dSceneTree.SetKeyHandler("KeyUp", new KeyEventHandler(OnKeyPressedDockedPanel));
+            dSceneTree.SetKeyHandler("KeyUp", new KeyEventHandler(OnKeyUpDockedPanel));
+            dSceneTree.SetKeyHandler("KeyDown", new KeyEventHandler(OnKeyDownDockedPanel));
             dSceneTree.LinkToActorButton.Click += new EventHandler(LinkToActor_Click);
-            dPropertyGrid.KeyUp += new KeyEventHandler(OnKeyPressedDockedPanel);
+            dPropertyGrid.KeyUp += new KeyEventHandler(OnKeyUpDockedPanel);
             dSceneTree.UpdateParent1Button.Click += new EventHandler(UpdateParent_Click);
             dSceneTree.UpdateParent2Button.Click += new EventHandler(UpdateParent_Click);
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyValueChanged);
@@ -126,6 +129,12 @@ namespace Mafia2Tool
             dPropertyGrid.ScaleXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.ScaleYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
             dPropertyGrid.ScaleZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+        }
+
+        private void RenderPanel_MouseWheel(object sender, MouseEventArgs e)
+        {
+            decimal value = (e.Delta > 0 ? CameraSpeedTool.Increment : -CameraSpeedTool.Increment);
+            CameraSpeedTool.Value += value;
         }
 
         private void RenderPanel_Resize(object sender, EventArgs e)
@@ -204,7 +213,7 @@ namespace Mafia2Tool
             }        
         }
 
-        private void UpdateAssetVisualisation(TreeNode node)
+        private void UpdateAssetVisualisation(TreeNode node, TreeNode parent)
         {
             if (node.Tag != null)
             {
@@ -212,6 +221,11 @@ namespace Mafia2Tool
 
                 int result = -1;
                 int.TryParse(node.Name, out result);
+
+                if(bHideChildren && (node != parent))
+                {
+                    node.Checked = parent.Checked;
+                }
 
                 int refID = (isFrame) ? (node.Tag as FrameEntry).RefID : result;
                 if (Graphics.Assets.ContainsKey(refID))
@@ -222,7 +236,7 @@ namespace Mafia2Tool
 
             foreach (TreeNode child in node.Nodes)
             {
-                UpdateAssetVisualisation(child);
+                UpdateAssetVisualisation(child, node);
             }
         }
 
@@ -230,7 +244,9 @@ namespace Mafia2Tool
         {
             if (e.Node != null)
             {
-                UpdateAssetVisualisation(e.Node);
+                dSceneTree.RemoveEventHandler("AfterCheck", new TreeViewEventHandler(OutlinerAfterCheck));
+                UpdateAssetVisualisation(e.Node, e.Node);
+                dSceneTree.SetEventHandler("AfterCheck", new TreeViewEventHandler(OutlinerAfterCheck));
             }
         }
 
@@ -746,10 +762,11 @@ namespace Mafia2Tool
                     //}
                 }
             }
-            if(SceneData.Translokator != null && ToolkitSettings.Experimental)
-            {
-                Graphics.SetTranslokatorGrid(SceneData.Translokator);
-            }
+            //if(SceneData.Translokator != null && ToolkitSettings.Experimental)
+            //{
+            //    Graphics.SetTranslokatorGrid(SceneData.Translokator);
+            //}
+
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
                 TreeNode node = new TreeNode("Road Data");
@@ -812,12 +829,12 @@ namespace Mafia2Tool
             }
             if(SceneData.OBJData != null)
             {
-                var data = new OBJData[SceneData.OBJData.Length];
-                for(int i = 0; i < SceneData.OBJData.Length; i++)
-                {
-                    data[i] = (OBJData)SceneData.OBJData[i].data;
-                }
-                Graphics.SetNavigationGrid(data);
+                //var data = new OBJData[SceneData.OBJData.Length];
+                //for(int i = 0; i < SceneData.OBJData.Length; i++)
+                //{
+                //    data[i] = (OBJData)SceneData.OBJData[i].data;
+                //}
+                //Graphics.SetNavigationGrid(data);
                 //for (int i = 0; i < SceneData.OBJData.Length; i++)
                 //{
                 //    int generatedID = StringHelpers.GetNewRefID();
@@ -947,6 +964,7 @@ namespace Mafia2Tool
                     assets[frame.RefID].SetTransform(frame.WorldTransform);
                 }
             }
+
             Graphics.InitObjectStack = assets;
         }
 
@@ -1092,12 +1110,9 @@ namespace Mafia2Tool
             }
         }
 
-        private FrameObjectBase CreateSingleMesh()
+        private Model LoadModelFromFile()
         {
-            FrameObjectBase mesh = new FrameObjectSingleMesh();
-
             Model model = new Model();
-            model.FrameMesh = (mesh as FrameObjectSingleMesh);
 
             if (MeshBrowser.ShowDialog() == DialogResult.Cancel)
             {
@@ -1111,7 +1126,7 @@ namespace Mafia2Tool
                     return null;
                 }
             }
-            else if(MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
+            else if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
             {
                 using (BinaryReader reader = new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)))
                 {
@@ -1141,18 +1156,11 @@ namespace Mafia2Tool
                 lod.VertexDeclaration |= (options["COLOR1"] == true ? VertexFlags.Color1 : 0);
             }
 
-            FrameObjectSingleMesh sm = (mesh as FrameObjectSingleMesh);
-            sm.Name.Set(model.ModelStructure.Name);
-            model.CreateObjectsFromModel();
-            sm.AddRef(FrameEntryRefTypes.Mesh, model.FrameGeometry.RefID);
-            sm.Geometry = model.FrameGeometry;
-            sm.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
-            sm.Material = model.FrameMaterial;
-            sm.LocalTransform = Matrix.Identity;
-            sm.WorldTransform = Matrix.Identity;
-            SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
-            SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
+            return model;
+        }
 
+        private void CreateMeshBuffers(Model model)
+        {
             for (int i = 0; i < model.FrameGeometry.NumLods; i++)
             {
                 bool indexResult = SceneData.IndexBufferPool.HasBuffer(model.IndexBuffers[i]);
@@ -1164,20 +1172,68 @@ namespace Mafia2Tool
                     import = (result == DialogResult.OK ? true : false);
                 }
 
-                if(import)
+                if (import)
                 {
                     SceneData.IndexBufferPool.RemoveBuffer(model.IndexBuffers[i]);
                     SceneData.VertexBufferPool.RemoveBuffer(model.VertexBuffers[i]);
                     SceneData.IndexBufferPool.AddBuffer(model.IndexBuffers[i]);
                     SceneData.VertexBufferPool.AddBuffer(model.VertexBuffers[i]);
                 }
-                else
-                {
-                    return null;
-                }
+            }
+        }
+
+        private FrameObjectBase CreateSingleMesh(Model model)
+        {
+            // The model is invalid; we should not continue;
+            // TODO:: Ideally we should move this check somewhere else..
+            if(model == null)
+            {
+                return null;
+
             }
 
-            return mesh;
+            // Create a new SM and assign the frame mesh onto the model for future frame construction.
+            FrameObjectSingleMesh sm = new FrameObjectSingleMesh();
+            model.FrameMesh = sm;
+
+            Debug.Assert(sm != null && model != null, "Failed to load model from file!");
+
+            sm.Name.Set(model.ModelStructure.Name);
+            model.CreateObjectsFromModel();
+            sm.AddRef(FrameEntryRefTypes.Mesh, model.FrameGeometry.RefID);
+            sm.Geometry = model.FrameGeometry;
+            sm.AddRef(FrameEntryRefTypes.Material, model.FrameMaterial.RefID);
+            sm.Material = model.FrameMaterial;
+            SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
+            SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
+
+            sm.LocalTransform = Matrix.Identity;
+            sm.WorldTransform = Matrix.Identity;
+
+            CreateMeshBuffers(model);
+            return sm;
+        }
+
+        private FrameObjectBase CreateSkinnedMesh(Model model)
+        {
+            // We use the single mesh and convert to skinned and replace the old data on the model
+            FrameObjectSingleMesh sm = (CreateSingleMesh(model) as FrameObjectSingleMesh);
+            FrameObjectModel rigged = new FrameObjectModel(sm);
+            model.FrameMesh = sm;
+            model.FrameModel = rigged;
+
+            rigged.AddRef(FrameEntryRefTypes.BlendInfo, model.BlendInfoBlock.RefID);
+            rigged.BlendInfo = model.BlendInfoBlock;
+            rigged.AddRef(FrameEntryRefTypes.Skeleton, model.SkeletonBlock.RefID);
+            rigged.Skeleton = model.SkeletonBlock;
+            rigged.AddRef(FrameEntryRefTypes.SkeletonHierachy, model.SkeletonHierachyBlock.RefID);
+            rigged.SkeletonHierarchy = model.SkeletonHierachyBlock;
+
+            SceneData.FrameResource.FrameBlendInfos.Add(rigged.BlendInfo.RefID, rigged.BlendInfo);
+            SceneData.FrameResource.FrameSkeletons.Add(rigged.Skeleton.RefID, rigged.Skeleton);
+            SceneData.FrameResource.FrameSkeletonHierachies.Add(rigged.SkeletonHierarchy.RefID, rigged.SkeletonHierarchy);
+
+            return rigged;
         }
 
         private void CreateNewEntry(int selected, string name, bool addToNameTable)
@@ -1187,10 +1243,7 @@ namespace Mafia2Tool
             switch (selected)
             {
                 case 0:
-                    frame = CreateSingleMesh();
-
-                    if (frame == null)
-                        return;
+                    frame = CreateSingleMesh(LoadModelFromFile());
                     break;
                 case 1:
                     frame = new FrameObjectFrame();
@@ -1220,7 +1273,7 @@ namespace Mafia2Tool
                     frame = new FrameObjectTarget();
                     break;
                 case 10:
-                    throw new NotImplementedException();
+                    frame = CreateSkinnedMesh(LoadModelFromFile());
                     break;
                 case 11:
                     frame = new FrameObjectCollision();
@@ -1230,6 +1283,8 @@ namespace Mafia2Tool
                     Console.WriteLine("Unknown type selected");
                     break;
             }
+
+            Debug.Assert(frame != null, "Frame was null!");
 
             frame.Name.Set(name);
             frame.IsOnFrameTable = addToNameTable;
@@ -1530,6 +1585,11 @@ namespace Mafia2Tool
         }
 
         private void CameraSpeedUpdate(object sender, EventArgs e)
+        {
+            UpdateCameraSpeed();
+        }
+
+        private void UpdateCameraSpeed()
         {
             if (CameraSpeedTool.Value == CameraSpeedTool.Increment)
             {
@@ -2122,10 +2182,24 @@ namespace Mafia2Tool
             lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
         }
 
-        private void OnKeyPressedDockedPanel(object sender, KeyEventArgs e)
+        private void OnKeyUpDockedPanel(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Delete)
+            if (e.KeyCode == Keys.Delete)
+            {
                 dSceneTree.DeleteButton.PerformClick();
+            }
+            else if (e.KeyCode == Keys.ControlKey)
+            {
+                bHideChildren = false;
+            }
+        }
+
+        private void OnKeyDownDockedPanel(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.ControlKey)
+            {
+                bHideChildren = true;
+            }
         }
 
         private void OnViewSide2ButtonClicked(object sender, EventArgs e)

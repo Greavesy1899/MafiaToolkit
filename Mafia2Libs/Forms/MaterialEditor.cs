@@ -11,12 +11,12 @@ using System.Linq;
 
 namespace Mafia2Tool
 {
-    public partial class MaterialTool : Form
+    public partial class MaterialEditor : Form
     {
         private MaterialLibrary mtl;
         private int currentSearchType;
 
-        public MaterialTool(FileInfo file)
+        public MaterialEditor(FileInfo file)
         {
             InitializeComponent();
             Localise();
@@ -35,6 +35,7 @@ namespace Mafia2Tool
             Show();
             Panel_Main.Visible = true;
             MergePanel.Visible = false;
+            ComboBox_SearchType.SelectedIndex = currentSearchType = 0;
             ToolkitSettings.UpdateRichPresence("Using the Material Library editor.");
         }
 
@@ -54,6 +55,15 @@ namespace Mafia2Tool
             OverWriteLabel.Text = Language.GetString("$CONFLICTING_MATS");
             NewMaterialLabel.Text = Language.GetString("$NEW_MATS");
             SelectAllNewButton.Text = SelectAllOverwriteButton.Text = Language.GetString("$SELECT_ALL");
+            Button_ExportSelected.Text = Language.GetString("$EXPORT_MATS");
+            Label_SearchType.Text = Language.GetString("$LABEL_SEARCHTYPE");
+
+            for(int i = 0; i < ComboBox_SearchType.Items.Count; i++)
+            {
+                var text = (ComboBox_SearchType.Items[i] as string);
+                text = Language.GetString(text);
+                ComboBox_SearchType.Items[i] = text;
+            }
         }
 
         public void FetchMaterials(bool searchMode = false, string text = null)
@@ -318,6 +328,29 @@ namespace Mafia2Tool
         private void SearchType_OnIndexChanged(object sender, EventArgs e)
         {
             currentSearchType = ComboBox_SearchType.SelectedIndex;
+        }
+
+        private void Button_ExportedSelected_Clicked(object sender, EventArgs e)
+        {
+            MaterialLibrary library = new MaterialLibrary();
+
+            foreach(DataGridViewCell cell in dataGridView1.SelectedCells)
+            {
+                if(cell.ColumnIndex == 0)
+                {
+                    var material = (cell.OwningRow.Tag as Material);
+
+                    if (material != null)
+                    {
+                        library.Materials.Add(material.MaterialHash, material);
+                    }
+                }
+            }
+            
+            if(MTLSaveDialog.ShowDialog() == DialogResult.OK)
+            {
+                library.WriteMatFile(MTLSaveDialog.FileName);
+            }
         }
     }
 }

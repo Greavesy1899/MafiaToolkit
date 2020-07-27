@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using SharpDX;
+using Utils.SharpDXExtensions;
 
 namespace Utils.Models
 {
@@ -30,7 +33,95 @@ namespace Utils.Models
          * 
          *
          * */
-        public static Vector4 ReadPositionDataFromVB(byte[] data, int i, float factor, Vector3 offset)
+        public static Vertex DecompressVertex(byte[] data, VertexFlags declaration, Vector3 offset, float scale, Dictionary<VertexFlags, ResourceTypes.FrameResource.FrameLOD.VertexOffset> offsets)
+        {
+            Vertex vertex = new Vertex();
+
+            if (declaration.HasFlag(VertexFlags.Position))
+            {
+                int startIndex = offsets[VertexFlags.Position].Offset;
+                var output = ReadPositionDataFromVB(data, startIndex, scale, offset);
+                vertex.Position = Vector3Extenders.FromVector4(output);
+                vertex.Binormal = new Vector3(output.W);
+            }
+
+            if (declaration.HasFlag(VertexFlags.Tangent))
+            {
+                int startIndex = offsets[VertexFlags.Position].Offset;
+                vertex.Tangent = ReadTangentDataFromVB(data, startIndex);
+            }
+
+            if (declaration.HasFlag(VertexFlags.Normals))
+            {
+                int startIndex = offsets[VertexFlags.Normals].Offset;
+                vertex.Normal = ReadNormalDataFromVB(data, startIndex);
+            }
+
+            if (declaration.HasFlag(VertexFlags.Skin))
+            {
+                int startIndex = offsets[VertexFlags.Skin].Offset;
+                vertex.BoneWeights = ReadWeightsFromVB(data, startIndex);
+                vertex.BoneIDs = ReadBonesFromVB(data, startIndex + 4);
+            }
+
+            if (declaration.HasFlag(VertexFlags.Color))
+            {
+                int startIndex = offsets[VertexFlags.Color].Offset;
+                vertex.Color0 = ReadColorFromVB(data, startIndex);
+            }
+
+            if (declaration.HasFlag(VertexFlags.Color1))
+            {
+                int startIndex = offsets[VertexFlags.Color1].Offset;
+                vertex.Color1 = ReadColorFromVB(data, startIndex);
+            }
+
+            if (declaration.HasFlag(VertexFlags.TexCoords0))
+            {
+                int startIndex = offsets[VertexFlags.TexCoords0].Offset;
+                vertex.UVs[0] = ReadTexcoordFromVB(data, startIndex);
+            }
+
+            if (declaration.HasFlag(VertexFlags.TexCoords1))
+            {
+                int startIndex = offsets[VertexFlags.TexCoords1].Offset;
+                vertex.UVs[1] = ReadTexcoordFromVB(data, startIndex);
+            }
+
+            if (declaration.HasFlag(VertexFlags.TexCoords2))
+            {
+                int startIndex = offsets[VertexFlags.TexCoords2].Offset;
+                vertex.UVs[2] = ReadTexcoordFromVB(data, startIndex);
+            }
+
+            if (declaration.HasFlag(VertexFlags.ShadowTexture))
+            {
+                int startIndex = offsets[VertexFlags.ShadowTexture].Offset;
+                vertex.UVs[3] = ReadTexcoordFromVB(data, startIndex);
+            }
+
+            if (declaration.HasFlag(VertexFlags.BBCoeffs))
+            {
+                int startIndex = offsets[VertexFlags.BBCoeffs].Offset;
+                vertex.BBCoeffs = ReadBBCoeffsVB(data, startIndex);
+            }
+
+            if (declaration.HasFlag(VertexFlags.DamageGroup))
+            {
+                int startIndex = offsets[VertexFlags.DamageGroup].Offset;
+                vertex.DamageGroup = ReadDamageGroupFromVB(data, startIndex);
+            }
+
+            // We only try to calculate binormal vector if we have the correct tangent space data so far..
+            if (declaration.HasFlag(VertexFlags.Normals) && declaration.HasFlag(VertexFlags.Tangent))
+            {
+                Vector4 positionW = new Vector4(vertex.Position, vertex.Binormal.X);
+                vertex.Binormal = CalculateBinormal(positionW, vertex.Tangent, vertex.Normal);
+            }
+            return vertex;
+        }
+
+        private static Vector4 ReadPositionDataFromVB(byte[] data, int i, float factor, Vector3 offset)
         {
             //.w component is binormal
             Vector4 vec = new Vector4();
@@ -54,21 +145,22 @@ namespace Utils.Models
             ushort y = BitConverter.ToUInt16(yData, 0);
             ushort z = (ushort)(BitConverter.ToUInt16(zData, 0) & short.MaxValue);
             ushort w = (ushort)(BitConverter.ToUInt16(zData, 0) & 0x8000);
-            vec = new Vector4(x * factor, y * factor, z * factor, w != 0 ? -1.0f : 1.0f);
+            vec = new Vector4(x * factor, y * factor, z * factor, w != 0.0f ? -1.0f : 1.0f);
             vec += new Vector4(offset, 0.0f);
             return vec;
         }
 
-        public static Vector3 ReadTangentDataFromVB(byte[] data, int i)
+        private static Vector3 ReadTangentDataFromVB(byte[] data, int i)
         {
             Vector3 tan = new Vector3();
             tan.X = (data[i + 6] - 127.0f) * 0.007874f;
             tan.Y = (data[i + 7] - 127.0f) * 0.007874f;
-            tan.Z = (data[i + 12] - 127.0f) * 0.007874f;
+            tan.Z = (data[i + 11] - 127.0f) * 0.007874f;
+
             return tan;
         }
 
-        public static Vector3 ReadNormalDataFromVB(byte[] data, int i)
+        private static Vector3 ReadNormalDataFromVB(byte[] data, int i)
         {
             Vector3 norm = new Vector3();
             norm.X = (data[i] - 127.0f) * 0.007874f;
@@ -77,7 +169,14 @@ namespace Utils.Models
             return norm;
         }
 
-        public static Vector2 ReadTexcoordFromVB(byte[] data, int i)
+        private static Vector3 CalculateBinormal(Vector4 position, Vector3 tangent, Vector3 normal)
+        {
+            Vector3 binormal = Vector3.Cross(normal, tangent);
+            binormal *= -position.W;
+            return binormal;
+        }
+
+        private static Vector2 ReadTexcoordFromVB(byte[] data, int i)
         {
             byte[] xData = new byte[] { data[i + 0], data[i + 1] };
             byte[] yData = new byte[] { data[i + 2], data[i + 3] };
@@ -94,22 +193,23 @@ namespace Utils.Models
             return new Vector2(x, y);
         }
 
-        public static int ReadDamageGroupFromVB(byte[] data, int i)
+        private static int ReadDamageGroupFromVB(byte[] data, int i)
         {
             return BitConverter.ToInt32(data, i);
         }
 
-        public static byte[] ReadColorFromVB(byte[] data, int i)
+        // Colour format is BGRA??
+        private static byte[] ReadColorFromVB(byte[] data, int i)
         {
             byte[] color = new byte[4];
-            color[0] = data[i + 0];
+            color[2] = data[i + 0];
             color[1] = data[i + 1];
-            color[2] = data[i + 2];
+            color[0] = data[i + 2];
             color[3] = data[i + 3];
             return color;
         }
 
-        public static Vector3 ReadBBCoeffsVB(byte[] data, int i)
+        private static Vector3 ReadBBCoeffsVB(byte[] data, int i)
         {
             Vector3 vec = new Vector3();
             vec.X = BitConverter.ToSingle(data, i);
@@ -118,7 +218,7 @@ namespace Utils.Models
             return vec;
         }
 
-        public static float[] ReadWeightsFromVB(byte[] data, int i)
+        private static float[] ReadWeightsFromVB(byte[] data, int i)
         {
             float[] weights = new float[4];
             weights[0] = (data[i + 0] / 255.0f);
@@ -128,7 +228,7 @@ namespace Utils.Models
             return weights;
         }
 
-        public static byte[] ReadBonesFromVB(byte[] data, int i)
+        private static byte[] ReadBonesFromVB(byte[] data, int i)
         {
             byte[] bones = new byte[4];
             Array.Copy(data, i, bones, 0, 4);

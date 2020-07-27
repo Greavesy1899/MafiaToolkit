@@ -111,6 +111,12 @@
   <String ID="$MATERIAL_EDITOR_TITLE">Редактор Библиотеки Материалов.</String>
   <String ID="$OPEN">Открыть</String>
   <String ID="$QUESTION_NAME_OF_MAT">Пожалуйста, введите название материала:</String>
+  <String ID="$EXPORT_MATS">Export Selected Materials</String>
+  <String ID="$LABEL_SEARCHTYPE">Type of Search:</String>
+  <String ID="$LABEL_MATERIALNAME">Material Name</String>
+  <String ID="$LABEL_MATERIALHASH">Material Hash</String>
+  <String ID="$LABEL_SHADERID">Shader ID</String>
+  <String ID="$LABEL_SHADERHASH">Shader Hash</String>
   
   <!-- FrameResource Editor Form Strings-->
   <String ID="$FRAME_EDITOR_EXPORT_BTN">Экспортируем модели....</String>

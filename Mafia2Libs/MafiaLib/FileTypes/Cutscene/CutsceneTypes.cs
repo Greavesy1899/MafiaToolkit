@@ -520,7 +520,7 @@ namespace ResourceTypes.Cutscene
             Name1 = stream.ReadString16(isBigEndian);
             Name2 = stream.ReadString16(isBigEndian);
 
-            if(string.IsNullOrEmpty(Name1))
+            if(!string.IsNullOrEmpty(Name2))
             {
                 Unk02 = stream.ReadByte8();
             }

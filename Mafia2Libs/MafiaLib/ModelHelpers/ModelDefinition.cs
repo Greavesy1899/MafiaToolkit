@@ -44,6 +44,21 @@ namespace Utils.Models
             set { frameMaterial = value; }
         }
 
+        public FrameBlendInfo BlendInfoBlock {
+            get { return blendInfo; }
+            set { blendInfo = value; }
+        }
+
+        public FrameSkeleton SkeletonBlock {
+            get { return skeleton; }
+            set { skeleton = value; }
+        }
+
+        public FrameSkeletonHierachy SkeletonHierachyBlock {
+            get { return skeletonHierarchy; }
+            set { skeletonHierarchy = value; }
+        }
+
         public IndexBuffer[] IndexBuffers {
             get { return indexBuffers; }
             set { indexBuffers = value; }
@@ -174,6 +189,18 @@ namespace Utils.Models
                     {
                         int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Normals].Offset;
                         vert.WriteNormalData(vBuffer, startIndex);
+                    }
+
+                    if(frameLod.VertexDeclaration.HasFlag(VertexFlags.Color))
+                    {
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Color].Offset;
+                        vert.WriteColourData(vBuffer, startIndex, 0);
+                    }
+
+                    if (frameLod.VertexDeclaration.HasFlag(VertexFlags.Color1))
+                    {
+                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Color1].Offset;
+                        vert.WriteColourData(vBuffer, startIndex, 1);
                     }
 
                     if (frameLod.VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
@@ -320,6 +347,60 @@ namespace Utils.Models
                 if (vertexBuffers[i].Data.Length != (size * lod.NumVerts)) throw new SystemException();
                 lod.IndexBufferRef = new Hash("M2TK." + model.Name + ".IB" + i);
                 lod.VertexBufferRef = new Hash("M2TK." + model.Name + ".VB" + i);
+            }
+
+            if(model.IsSkinned)
+            {
+                CreateSkinnedObjectsFromModel();
+            }
+        }
+
+        private void CreateSkinnedObjectsFromModel()
+        {
+            blendInfo = new FrameBlendInfo();
+            skeleton = new FrameSkeleton();
+            skeletonHierarchy = new FrameSkeletonHierachy();
+
+            int jointCount = model.SkeletonData.Joints.Length;
+            skeleton.BoneNames = new Hash[jointCount];
+            skeleton.NumBones = new int[4];
+            skeleton.UnkLodData = new int[1];
+            skeleton.BoneLODUsage = new byte[jointCount];
+
+            skeleton.NumBlendIDs = jointCount;
+            skeleton.NumUnkCount2 = jointCount;
+            skeleton.UnkLodData[0] = jointCount;
+
+
+            for (int i = 0; i < 4; i++)
+            {
+                skeleton.NumBones[i] = jointCount;
+            }
+
+            for (int i = 0; i < jointCount; i++)
+            {
+                Hash bone = new Hash();
+                bone.Set(model.SkeletonData.Joints[i].Name);
+                skeleton.BoneNames[i] = bone;
+
+                if (model.Lods.Length == 1)
+                {
+                    skeleton.BoneLODUsage[i] = 1;
+                }
+            }
+
+            skeletonHierarchy.ParentIndices = new byte[jointCount];
+            skeletonHierarchy.LastChildIndices = new byte[jointCount];
+            skeletonHierarchy.UnkData = new byte[jointCount];
+            skeleton.JointTransforms = new Matrix[jointCount];
+
+            skeletonHierarchy.UnkData[0] = (byte)(jointCount + 1);
+
+            for (int i = 0; i < jointCount; i++)
+            {
+                skeletonHierarchy.ParentIndices[i] = model.SkeletonData.Joints[i].ParentIndex;
+                skeletonHierarchy.UnkData[i] = (byte)(i != jointCount ? i : 0);
+                skeleton.JointTransforms[i] = model.SkeletonData.Joints[i].LocalTransform;
             }
         }
     }

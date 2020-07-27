@@ -12,17 +12,23 @@ namespace Utils.Logging
 
         public static void DeleteOldLog()
         {
-            if(File.Exists(LogPath))
+            if (File.Exists(LogPath))
+            {
                 File.Delete(LogPath);
+            }
         }
 
         public static void CreateFile(bool append = false)
         {
-            //if (!LoggingEnabled)
+            if (!LoggingEnabled)
+            {
                 return;
+            }
 
             if (!Directory.Exists("Logging"))
+            {
                 Directory.CreateDirectory("Logging");
+            }
 
             if (!File.Exists(LogPath))
             {
@@ -31,7 +37,9 @@ namespace Utils.Logging
             else
             {
                 if (!append)
+                {
                     WriteLine("Debugging has started.", LoggingTypes.MESSAGE, LogCategoryTypes.APPLICATION, false);
+                }
             }
         }
         public static void WriteLine(string text, LoggingTypes logType = LoggingTypes.MESSAGE, LogCategoryTypes catType = LogCategoryTypes.FUNCTION, bool append = true)
@@ -39,8 +47,10 @@ namespace Utils.Logging
             string data = string.Format("[{0}] {1}: {2}", DateTime.Now.TimeOfDay, logType, text);
             Console.WriteLine(data);
 
-            //if (!LoggingEnabled)
-                return;
+           // if (!LoggingEnabled)
+            //{
+            return;
+            //}
 
             string logfile = "Logging/LOG_" + LogCategoryTypes.APPLICATION + ".txt";
 
@@ -48,7 +58,9 @@ namespace Utils.Logging
             {
 
                 if (text != "")
+                {
                     Writer.WriteLine(data);
+                }
             }
         }
     }

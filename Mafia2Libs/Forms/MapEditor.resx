@@ -123,6 +123,9 @@
   <metadata name="StatusStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>122, 17</value>
   </metadata>
+  <metadata name="StatusStrip.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="CurrentModeButton.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -225,7 +228,7 @@
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAAAK
-        AgAAAk1TRnQBSQFMAgEBAgEAAcABAgHAAQIBEAEAARABAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFA
+        AgAAAk1TRnQBSQFMAgEBAgEAAdgBAgHYAQIBEAEAARABAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFA
         AwABEAMAAQEBAAEgBgABEP8A/wAuAAL/AgAC/wIAAv8CAAL/LgAC/wIAAv8CAAL/AgAC/wIAAv8CAAL/
         AgAC/6YAAv8CAAL/CgAC/wIAAv8qAAL/AgAC/84AAv8CAAL/JgAC/wIAAv/OAAL/AgAC/yYAAv8CAAL/
         ygAC/wIAAv8CAAL/JgAC/wIAAv/GAAL/AgAC/wIAAv8qAAL/AgAC/74AAv8CAAL/AgAC/wIAAv8uAAL/

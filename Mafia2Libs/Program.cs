@@ -6,6 +6,7 @@ using Utils.Language;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Mafia2Tool.Forms;
+using Core.IO;
 
 namespace Mafia2Tool
 {
@@ -16,6 +17,7 @@ namespace Mafia2Tool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
             CheckINIExists();
             ToolkitSettings.ReadINI();
             GameStorage.Instance.InitStorage();

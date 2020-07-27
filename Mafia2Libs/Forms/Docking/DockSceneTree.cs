@@ -36,11 +36,27 @@ namespace Forms.Docking
             }
         }
 
+        public void RemoveEventHandler(string eventType, TreeViewEventHandler handler)
+        {
+            if (eventType.Equals("AfterCheck"))
+            {
+                treeView1.AfterCheck -= handler;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public void SetKeyHandler(string eventType, KeyEventHandler handler)
         {
             if (eventType.Equals("KeyUp"))
             {
                 treeView1.KeyUp += handler;
+            }
+            else if (eventType.Equals("KeyDown"))
+            {
+                treeView1.KeyDown += handler;
             }
             else
             {

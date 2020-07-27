@@ -22,7 +22,7 @@ namespace Utils.Models
         //main header data of the file.
         private string name; //name of model.
         private bool isSkinned;
-        Skeleton skeleton;
+        private Skeleton skeleton;
         Lod[] lods; //Holds the models which can be exported, all EDM content is saved here.
 
         private string aoTexture;
@@ -34,6 +34,10 @@ namespace Utils.Models
         public bool IsSkinned {
             get { return isSkinned; }
             set { isSkinned = value; }
+        }
+        public Skeleton SkeletonData {
+            get { return skeleton; }
+            set { skeleton = value; }
         }
         public string Name {
             get { return name; }
@@ -67,85 +71,10 @@ namespace Utils.Models
                 if (vertexSize * frameLod.NumVerts != vertexBuffer.Data.Length) throw new System.Exception();
                 for (int v = 0; v != lods[i].Vertices.Length; v++)
                 {
-                    Vertex vertex = new Vertex();
-                    vertex.UVs = new Half2[4];
-
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                        var output = VertexTranslator.ReadPositionDataFromVB(vertexBuffer.Data, startIndex, frameGeometry.DecompressionFactor, frameGeometry.DecompressionOffset);
-                        vertex.Position = Vector3Extenders.FromVector4(output);
-                        vertex.Binormal = new Vector3(output.X);
-                    }
-
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Position].Offset;
-                        vertex.Tangent = VertexTranslator.ReadTangentDataFromVB(vertexBuffer.Data, startIndex);
-                    }
-
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Normals].Offset;
-                        vertex.Normal = VertexTranslator.ReadNormalDataFromVB(vertexBuffer.Data, startIndex);
-                    }
-
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Skin))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Skin].Offset;
-                        vertex.BoneWeights = VertexTranslator.ReadWeightsFromVB(vertexBuffer.Data, startIndex);
-                        vertex.BoneIDs = VertexTranslator.ReadBonesFromVB(vertexBuffer.Data, startIndex+4);
-                    }
-                    
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Color))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Color].Offset;
-                        vertex.Color0 = VertexTranslator.ReadColorFromVB(vertexBuffer.Data, startIndex);
-                    }
-
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.Color1))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.Color1].Offset;
-                        vertex.Color1 = VertexTranslator.ReadColorFromVB(vertexBuffer.Data, startIndex);
-                    }
-
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords0].Offset;
-                        vertex.UVs[0] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
-                    }
-
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords1))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords1].Offset;
-                        vertex.UVs[1] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
-                    }
-
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords2))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.TexCoords2].Offset;
-                        vertex.UVs[2] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
-                    }
-
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.ShadowTexture))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.ShadowTexture].Offset;
-                        vertex.UVs[3] = VertexTranslator.ReadTexcoordFromVB(vertexBuffer.Data, startIndex);
-                    }
-
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.BBCoeffs))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.BBCoeffs].Offset;
-                        vertex.BBCoeffs = VertexTranslator.ReadBBCoeffsVB(vertexBuffer.Data, startIndex);
-                    }
-
-                    if (lods[i].VertexDeclaration.HasFlag(VertexFlags.DamageGroup))
-                    {
-                        int startIndex = v * vertexSize + vertexOffsets[VertexFlags.DamageGroup].Offset;
-                        vertex.DamageGroup = VertexTranslator.ReadDamageGroupFromVB(vertexBuffer.Data, startIndex);
-                    }
-
-                    lods[i].Vertices[v] = vertex;
+                    //declare data required and send to decompresser
+                    byte[] data = new byte[vertexSize];
+                    Array.Copy(vertexBuffers[i].Data, (v * vertexSize), data, 0, vertexSize);
+                    lods[i].Vertices[v] = VertexTranslator.DecompressVertex(data, frameGeometry.LOD[i].VertexDeclaration, frameGeometry.DecompressionOffset, frameGeometry.DecompressionFactor, vertexOffsets);
                 }
 
                 lods[i].Indices = indexBuffer.GetData();
@@ -184,10 +113,11 @@ namespace Utils.Models
                     joint.ParentIndex = model.SkeletonHierarchy.ParentIndices[i];
                     joint.Parent = (joint.ParentIndex != 0xFF) ? skeleton.Joints[joint.ParentIndex] : null;
                     joint.LocalTransform = model.Skeleton.JointTransforms[i];
+
                     skeleton.Joints[i] = joint;
                 }
 
-                skeleton.ComputeTransforms();
+                //skeleton.ComputeTransforms();
             }
 
             for(int i = 0; i < model.BlendInfo.BoneIndexInfos.Length; i++)
@@ -333,9 +263,9 @@ namespace Utils.Models
                         writer.Write(joint.ParentIndex);
                         Quaternion rotation;
                         Vector3 position, scale;
-                        joint.WorldTransform.Decompose(out scale, out rotation, out position);
+                        joint.LocalTransform.Decompose(out scale, out rotation, out position);
                         position.WriteToFile(writer);
-                        rotation.ToEuler().WriteToFile(writer);
+                        rotation.WriteToFile(writer);
                         scale.WriteToFile(writer);
                     }
                 }
@@ -595,6 +525,7 @@ namespace Utils.Models
             if(isSkinned)
             {
                 byte size = reader.ReadByte();
+                skeleton = new Skeleton();
                 skeleton.Joints = new Joint[size];
                 for (int i = 0; i < size; i++)
                 {
@@ -603,7 +534,7 @@ namespace Utils.Models
                     joint.ParentIndex = reader.ReadByte();
                     joint.Parent = (joint.ParentIndex != 0xFF) ? skeleton.Joints[joint.ParentIndex] : null; //may crash because root will not be in range
                     Vector3 position = Vector3Extenders.ReadFromFile(reader);
-                    Vector3 rotation = Vector3Extenders.ReadFromFile(reader);
+                    Quaternion rotation = QuaternionExtensions.ReadFromFile(reader);
                     Vector3 scale = Vector3Extenders.ReadFromFile(reader);
                     joint.WorldTransform = MatrixExtensions.SetMatrix(rotation, scale, position);
                     skeleton.Joints[i] = joint;
@@ -827,6 +758,23 @@ namespace Utils.Models
 
                 return matrix;
             }
+
+            public void ComputeJointTransform()
+            {
+                var parentJoint = Parent;
+                var invertedLocal = LocalTransform.TranslationVector;
+                while (parentJoint != null)
+                {
+                    invertedLocal = parentJoint.GetWorldPosition(invertedLocal);
+                    parentJoint = parentJoint.Parent;
+                }
+                if (Parent != null)
+                {
+                    Parent.ComputeJointTransform();
+                    invertedLocal += Parent.GetWorldPosition(invertedLocal);
+                }
+                SetWorldPosition(invertedLocal);
+            }
         }
 
         public class Skeleton
@@ -843,18 +791,7 @@ namespace Utils.Models
                 for(int i = 0; i < Joints.Length; i++)
                 {
                     var currentJoint = joints[i];
-                    var parentJoint = currentJoint.Parent;                
-                    var invertedLocal = currentJoint.LocalTransform.TranslationVector;
-                    while(parentJoint != null)
-                    {
-                        invertedLocal = parentJoint.GetWorldPosition(invertedLocal);
-                        parentJoint = parentJoint.Parent;
-                    }
-                    if(currentJoint.Parent != null)
-                    {
-                        invertedLocal += currentJoint.Parent.GetWorldPosition(invertedLocal);
-                    }
-                    currentJoint.SetWorldPosition(invertedLocal);
+                    currentJoint.ComputeJointTransform();
                 }
             }
 

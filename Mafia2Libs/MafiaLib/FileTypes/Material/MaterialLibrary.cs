@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Utils.Logging;
 using System;
+using Utils.Settings;
 
 namespace ResourceTypes.Materials
 {
@@ -23,6 +24,16 @@ namespace ResourceTypes.Materials
         public string Name {
             get { return name; }
             set { name = value; }
+        }
+
+        public MaterialLibrary()
+        {
+            name = "";
+            materials = new Dictionary<ulong, Material>();
+            unk2 = 0;
+            version = GameStorage.Instance.GetSelectedGame().GameType == GamesEnumerator.MafiaII_DE 
+                ? VersionsEnumerator.V_58 
+                : VersionsEnumerator.V_57;
         }
 
         public void ReadMatFile(string name)

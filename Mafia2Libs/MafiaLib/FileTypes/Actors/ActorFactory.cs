@@ -18,12 +18,16 @@ namespace ResourceTypes.Actors
                     return new ActorTrafficHuman();
                 case ActorTypes.C_TrafficTrain:
                     return new ActorTrafficTrain();
+                case ActorTypes.ActionPoint:
+                    return new ActorActionPoint();
                 case ActorTypes.ActionPointScript:
                     return new ActorActionPointScript();
                 case ActorTypes.C_Item:
                     return new ActorItem();
                 case ActorTypes.C_Door:
                     return new ActorDoor();
+                case ActorTypes.Tree:
+                    return new ActorTree();
                 case ActorTypes.C_Sound:
                     return new ActorSoundEntity();
                 case ActorTypes.StaticEntity:
@@ -74,12 +78,16 @@ namespace ResourceTypes.Actors
                     return new ActorTrafficHuman(stream, isBigEndian);
                 case ActorTypes.C_TrafficTrain:
                     return new ActorTrafficTrain(stream, isBigEndian);
+                case ActorTypes.ActionPoint:
+                    return new ActorActionPoint(stream, isBigEndian);
                 case ActorTypes.ActionPointScript:
                     return new ActorActionPointScript(stream, isBigEndian);
                 case ActorTypes.C_Item:
                     return new ActorItem(stream, isBigEndian);
                 case ActorTypes.C_Door:
                     return new ActorDoor(stream, isBigEndian);
+                case ActorTypes.Tree:
+                    return new ActorTree(stream, isBigEndian);
                 case ActorTypes.C_Sound:
                     return new ActorSoundEntity(stream, isBigEndian);
                 case ActorTypes.Radio:

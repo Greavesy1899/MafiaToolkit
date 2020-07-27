@@ -129,9 +129,9 @@ namespace Utils.SharpDXExtensions
                 float sqx = quat.X * quat.X;
                 float sqy = quat.Y * quat.Y;
                 float sqz = quat.Z * quat.Z;
-                euler.X = (float)Math.Atan2(-2 * ((qy * qz) - (qw * qx)), (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
-                euler.Y = (float)Math.Asin(2 * ((qx * qz) + (qw * qy)));
-                euler.Z = (float)Math.Atan2(-2 * ((qx * qy) - (qw * qz)), (qw * qw) + (qx * qx) - (qy * qy) - (qz * qz));
+                euler.Y = (float)Math.Atan2(2 * quat.Y * quat.W - 2 * quat.X * quat.Z, 1 - 2 * sqy - 2 * sqz);
+                euler.X = -(float)Math.Asin(2 * test);
+                euler.Z = (float)Math.Atan2(2 * quat.X * quat.W - 2 * quat.Y * quat.Z, 1 - 2 * sqx - 2 * sqz);
             }
 
             euler.Z = MathUtil.RadiansToDegrees(euler.Z);

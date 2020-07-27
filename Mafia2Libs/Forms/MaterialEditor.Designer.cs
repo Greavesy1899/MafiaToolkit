@@ -1,5 +1,5 @@
 ﻿namespace Mafia2Tool {
-    partial class MaterialTool {
+    partial class MaterialEditor {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -23,7 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MaterialTool));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MaterialEditor));
             this.MaterialSearch = new System.Windows.Forms.TextBox();
             this.MaterialGrid = new System.Windows.Forms.PropertyGrid();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -41,6 +41,8 @@
             this.columnHash = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MTLBrowser = new System.Windows.Forms.OpenFileDialog();
             this.Panel_Main = new System.Windows.Forms.Panel();
+            this.Label_SearchType = new System.Windows.Forms.Label();
+            this.ComboBox_SearchType = new System.Windows.Forms.ComboBox();
             this.MergePanel = new System.Windows.Forms.Panel();
             this.SelectAllNewButton = new System.Windows.Forms.Button();
             this.SelectAllOverwriteButton = new System.Windows.Forms.Button();
@@ -50,8 +52,8 @@
             this.CancelButton = new System.Windows.Forms.Button();
             this.MergeButton = new System.Windows.Forms.Button();
             this.OverwriteListBox = new System.Windows.Forms.CheckedListBox();
-            this.ComboBox_SearchType = new System.Windows.Forms.ComboBox();
-            this.Label_SearchType = new System.Windows.Forms.Label();
+            this.Button_ExportSelected = new System.Windows.Forms.ToolStripMenuItem();
+            this.MTLSaveDialog = new System.Windows.Forms.SaveFileDialog();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.Panel_Main.SuspendLayout();
@@ -138,7 +140,8 @@
             this.toolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addMaterialToolStripMenuItem,
             this.DeleteSelectedMaterialButton,
-            this.MergeMTLButton});
+            this.MergeMTLButton,
+            this.Button_ExportSelected});
             this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
             this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolButton.Name = "toolButton";
@@ -148,21 +151,21 @@
             // addMaterialToolStripMenuItem
             // 
             this.addMaterialToolStripMenuItem.Name = "addMaterialToolStripMenuItem";
-            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addMaterialToolStripMenuItem.Text = "Add Material";
             this.addMaterialToolStripMenuItem.Click += new System.EventHandler(this.AddMaterial);
             // 
             // DeleteSelectedMaterialButton
             // 
             this.DeleteSelectedMaterialButton.Name = "DeleteSelectedMaterialButton";
-            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(170, 22);
+            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(180, 22);
             this.DeleteSelectedMaterialButton.Text = "$DELETE_SEL_MAT";
             this.DeleteSelectedMaterialButton.Click += new System.EventHandler(this.DeleteMaterial);
             // 
             // MergeMTLButton
             // 
             this.MergeMTLButton.Name = "MergeMTLButton";
-            this.MergeMTLButton.Size = new System.Drawing.Size(170, 22);
+            this.MergeMTLButton.Size = new System.Drawing.Size(180, 22);
             this.MergeMTLButton.Text = "$MERGE_MTL";
             this.MergeMTLButton.Click += new System.EventHandler(this.MergeMTLButton_Click);
             // 
@@ -196,6 +199,10 @@
             this.columnHash.Name = "columnHash";
             this.columnHash.ReadOnly = true;
             // 
+            // MTLBrowser
+            // 
+            this.MTLBrowser.Filter = "Material Library|*.mtl";
+            // 
             // Panel_Main
             // 
             this.Panel_Main.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -210,6 +217,29 @@
             this.Panel_Main.Name = "Panel_Main";
             this.Panel_Main.Size = new System.Drawing.Size(785, 403);
             this.Panel_Main.TabIndex = 4;
+            // 
+            // Label_SearchType
+            // 
+            this.Label_SearchType.AutoSize = true;
+            this.Label_SearchType.Location = new System.Drawing.Point(8, 7);
+            this.Label_SearchType.Name = "Label_SearchType";
+            this.Label_SearchType.Size = new System.Drawing.Size(124, 13);
+            this.Label_SearchType.TabIndex = 5;
+            this.Label_SearchType.Text = "$LABEL_SEARCHTYPE";
+            // 
+            // ComboBox_SearchType
+            // 
+            this.ComboBox_SearchType.FormattingEnabled = true;
+            this.ComboBox_SearchType.Items.AddRange(new object[] {
+            "$LABEL_MATERIALNAME",
+            "$LABEL_MATERIALHASH",
+            "$LABEL_SHADERID",
+            "$LABEL_SHADERHASH"});
+            this.ComboBox_SearchType.Location = new System.Drawing.Point(148, 3);
+            this.ComboBox_SearchType.Name = "ComboBox_SearchType";
+            this.ComboBox_SearchType.Size = new System.Drawing.Size(184, 21);
+            this.ComboBox_SearchType.TabIndex = 4;
+            this.ComboBox_SearchType.SelectedIndexChanged += new System.EventHandler(this.SearchType_OnIndexChanged);
             // 
             // MergePanel
             // 
@@ -314,28 +344,16 @@
             this.OverwriteListBox.Size = new System.Drawing.Size(237, 364);
             this.OverwriteListBox.TabIndex = 0;
             // 
-            // ComboBox_SearchType
+            // Button_ExportSelected
             // 
-            this.ComboBox_SearchType.FormattingEnabled = true;
-            this.ComboBox_SearchType.Items.AddRange(new object[] {
-            "$LABEL_MATERIALNAME",
-            "$LABEL_MATERIALHASH",
-            "$LABEL_SHADERID",
-            "$LABEL_SHADERHASH"});
-            this.ComboBox_SearchType.Location = new System.Drawing.Point(148, 3);
-            this.ComboBox_SearchType.Name = "ComboBox_SearchType";
-            this.ComboBox_SearchType.Size = new System.Drawing.Size(184, 21);
-            this.ComboBox_SearchType.TabIndex = 4;
-            this.ComboBox_SearchType.SelectedIndexChanged += new System.EventHandler(this.SearchType_OnIndexChanged);
+            this.Button_ExportSelected.Name = "Button_ExportSelected";
+            this.Button_ExportSelected.Size = new System.Drawing.Size(180, 22);
+            this.Button_ExportSelected.Text = "$EXPORT_SELECTED";
+            this.Button_ExportSelected.Click += new System.EventHandler(this.Button_ExportedSelected_Clicked);
             // 
-            // Label_SearchType
+            // MTLSaveDialog
             // 
-            this.Label_SearchType.AutoSize = true;
-            this.Label_SearchType.Location = new System.Drawing.Point(8, 7);
-            this.Label_SearchType.Name = "Label_SearchType";
-            this.Label_SearchType.Size = new System.Drawing.Size(124, 13);
-            this.Label_SearchType.TabIndex = 5;
-            this.Label_SearchType.Text = "$LABEL_SEARCHTYPE";
+            this.MTLSaveDialog.Filter = "Material Library|*.mtl";
             // 
             // MaterialTool
             // 
@@ -390,5 +408,7 @@
         private System.Windows.Forms.Button SelectAllOverwriteButton;
         private System.Windows.Forms.Label Label_SearchType;
         private System.Windows.Forms.ComboBox ComboBox_SearchType;
+        private System.Windows.Forms.ToolStripMenuItem Button_ExportSelected;
+        private System.Windows.Forms.SaveFileDialog MTLSaveDialog;
     }
 }

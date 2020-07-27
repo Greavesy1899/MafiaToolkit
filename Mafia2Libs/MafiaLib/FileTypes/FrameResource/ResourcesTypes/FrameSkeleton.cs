@@ -67,6 +67,16 @@ namespace ResourceTypes.FrameResource
             set { mappingForBlendingInfos = value; }
         }
 
+        public FrameSkeleton() : base()
+        {
+            numBones = new int[4];
+            unkLodData = new int[0];
+            boneNames = new Hash[0];
+            jointTransforms = new Matrix[0];
+            worldTransforms = new Matrix[0];
+            mappingForBlendingInfos = new MappingForBlendingInfo[0];
+        }
+
         public FrameSkeleton(MemoryStream reader, bool isBigEndian) : base()
         {
             ReadFromFile(reader, isBigEndian);
@@ -174,7 +184,7 @@ namespace ResourceTypes.FrameResource
 
         public override string ToString()
         {
-            return string.Format("Skeleton");
+            return "Skeleton Block";
         }
 
         public struct MappingForBlendingInfo

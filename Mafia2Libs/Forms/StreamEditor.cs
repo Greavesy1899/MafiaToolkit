@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ResourceTypes.Misc;
 using Utils.Language;
@@ -115,7 +117,9 @@ namespace Mafia2Tool
                 }
             }
             foreach (var loader in currentLoaders)
+            {
                 loaders.Add(loader.Value);
+            }
 
             currentLoaders = null;
             temp = null;
@@ -136,16 +140,47 @@ namespace Mafia2Tool
 
             foreach (StreamLoader pair in loaders)
             {
-                if(string.IsNullOrEmpty(pair.AssignedGroup) && pair.GroupID == -1)
+                // The main idea of this is to find if the user has changed the group.
+                // We have to iterate through the groups first and find out if this change has indeed happened.
+                for (int i = 0; i < groups.Count; i++)
                 {
-                    if(pair.type != GroupTypes.Null)
+                    var group = groups[i];
+
+                    // If there the user has assigned a preferred group then we can look for that too.
+                    // To make sure we are saving everything necessary, lets just replace everything relating to groups.
+                    if (pair.PreferredGroup == group.Name)
+                    {
+                        pair.AssignedGroup = group.Name;
+                        pair.GroupID = i;
+                        pair.Type = group.Type;
+                        break;
+                    }
+
+                    // So we check if they have modified - if yes, then we reset the group assignment so the toolkit
+                    // treats this as a newly created StreamLoader.                
+                    if (pair.AssignedGroup == group.Name)
+                    {
+                        if(pair.Type != group.Type)
+                        {
+                            pair.AssignedGroup = string.Empty;
+                            pair.GroupID = -1;
+                        }
+                        break;
+                    }
+                }
+
+                // This will handle any non-declared group assignments. 
+                if (string.IsNullOrEmpty(pair.AssignedGroup) && pair.GroupID == -1)
+                {
+                    if(pair.Type != GroupTypes.Null)
                     {
                         for(int i = 0; i < groups.Count; i++)
                         {
                             var group = groups[i];
-                            if(group.Type == pair.type)
+                            if(group.Type == pair.Type)
                             {
                                 pair.GroupID = i;
+                                pair.AssignedGroup = group.Name;
                                 break;
                             }
                         }
@@ -175,9 +210,9 @@ namespace Mafia2Tool
                 idx++;
             }
 
-            stream.lines = lines.ToArray();
-            stream.groups = groups.ToArray();
-            stream.loaders = streamLoaders.ToArray();
+            stream.Lines = lines.ToArray();
+            stream.Groups = groups.ToArray();
+            stream.Loaders = streamLoaders.ToArray();
         }
 
         private void BuildData()
@@ -187,16 +222,16 @@ namespace Mafia2Tool
             groupTree.Nodes.Clear();
             stream = new StreamMapLoader(file);
 
-            for (int i = 0; i < stream.groupHeaders.Length; i++)
+            for (int i = 0; i < stream.GroupHeaders.Length; i++)
             {
                 TreeNode node = new TreeNode("group" + i);
-                node.Text = stream.groupHeaders[i];
+                node.Text = stream.GroupHeaders[i];
                 node.Tag = "Header";
                 linesTree.Nodes.Add(node);
             }
-            for (int i = 0; i < stream.groups.Length; i++)
+            for (int i = 0; i < stream.Groups.Length; i++)
             {
-                var line = stream.groups[i];
+                var line = stream.Groups[i];
                 TreeNode node = new TreeNode();
                 node.Name = "GroupLoader" + i;
                 node.Text = line.Name;
@@ -204,25 +239,25 @@ namespace Mafia2Tool
 
                 for (int x = line.startOffset; x < line.startOffset + line.endOffset; x++)
                 {
-                    var loader = stream.loaders[x];
+                    var loader = stream.Loaders[x];
                     loader.AssignedGroup = line.Name;
                     loader.GroupID = i;
                 }
 
                 groupTree.Nodes.Add(node);
             }
-            for (int i = 0; i != stream.lines.Length; i++)
+            for (int i = 0; i != stream.Lines.Length; i++)
             {
-                var line = stream.lines[i];
+                var line = stream.Lines[i];
                 TreeNode node = new TreeNode();
                 node.Name = line.Name;
                 node.Text = line.Name;
                 node.Tag = line;
 
                 List<StreamLoader> list = new List<StreamLoader>();
-                for (int x = 0; x < stream.loaders.Length; x++)
+                for (int x = 0; x < stream.Loaders.Length; x++)
                 {
-                    var loader = stream.loaders[x];
+                    var loader = stream.Loaders[x];
                     if (line.lineID >= loader.start && line.lineID <= loader.end)
                     {
                         var newLoader = new StreamLoader(loader);
@@ -232,24 +267,18 @@ namespace Mafia2Tool
                 line.loadList = list.ToArray();
                 linesTree.Nodes[line.groupID].Nodes.Add(node);
             }
-            for (int i = 0; i < stream.blocks.Length; i++)
+            for (int i = 0; i < stream.Blocks.Length; i++)
             {
-                var block = stream.blocks[i];
-                List<ulong> hash = new List<ulong>();
-                for (int x = block.startOffset; x < block.endOffset; x++)
-                    hash.Add(stream.hashes[x]);
-                block.Hashes = hash.ToArray();
-
                 TreeNode node = new TreeNode();
                 node.Name = "Block" + i;
                 node.Text = "Block: " + i;
-                node.Tag = block;
+                node.Tag = stream.Blocks[i];
                 blockView.Nodes.Add(node);
             }
 
         }
 
-        private void OnNodeSelectSelect(object sender, TreeViewEventArgs e) => PropertyGrid.SelectedObject = e.Node.Tag;
+        private void OnNodeSelectSelect(object sender, TreeViewEventArgs e) => PropertyGrid_Stream.SelectedObject = e.Node.Tag;
         private void ExitButtonPressed(object sender, System.EventArgs e) => Close();
         private void ReloadButtonPressed(object sender, System.EventArgs e) => BuildData();
         private void SaveButtonPressed(object sender, System.EventArgs e)
@@ -397,6 +426,7 @@ namespace Mafia2Tool
                     groupTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
                 }
             }
+            PropertyGrid_Stream.Refresh();
             Cursor.Current = Cursors.Default;
         }
 
@@ -446,7 +476,7 @@ namespace Mafia2Tool
                     }
                 }
             }
-            PropertyGrid.SelectedObject = linesTree?.SelectedNode.Tag;
+            PropertyGrid_Stream.SelectedObject = linesTree?.SelectedNode.Tag;
         }
 
         private void Copy()
