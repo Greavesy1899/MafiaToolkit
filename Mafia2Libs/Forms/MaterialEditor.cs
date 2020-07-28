@@ -8,6 +8,7 @@ using ResourceTypes.Materials;
 using Utils.Language;
 using Utils.Settings;
 using System.Linq;
+using Utils.Extensions;
 
 namespace Mafia2Tool
 {
@@ -21,11 +22,11 @@ namespace Mafia2Tool
             InitializeComponent();
             Localise();
 
-            if (MaterialsManager.MaterialLibraries.ContainsKey(file.FullName))
-            {
-                mtl = MaterialsManager.MaterialLibraries[file.FullName];
-            }
-            else
+            // We try and grab the library from our storage.
+            mtl = MaterialsManager.MaterialLibraries.TryGet(file.FullName);
+
+            // If it doesn't exist, then we should try and read it as a fallback.
+            if(mtl == null)
             {
                 mtl = new MaterialLibrary();
                 mtl.ReadMatFile(file.FullName);

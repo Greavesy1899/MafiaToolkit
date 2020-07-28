@@ -37,9 +37,14 @@ namespace Rendering.Graphics
                 MessageBox.Show("Failed to initialize Shader Manager!");
                 return false;
             }
-            //this is backup!
+
+            // Precache textures and thumbnails which will be reused pretty often.
             Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, D3D.DeviceContext, "texture.dds"));
             Instance.TextureCache.Add(1, TextureLoader.LoadTexture(D3D.Device, D3D.DeviceContext, "default_n.dds"));
+
+            Instance.TextureThumbnails.Add(0, TextureLoader.LoadThumbnail("Resources/Texture.dds"));
+            Instance.TextureThumbnails.Add(1, TextureLoader.LoadThumbnail("Resource/MissingMaterial.dds"));
+
             isInit = true;
             return true;
         }

@@ -75,9 +75,14 @@ namespace Mafia2Tool.Forms
         private void Button_SearchOnClicked(object sender, EventArgs e)
         {
             string text = TextBox_SearchBar.Text;
-            Material[] filtered = SelectedLibrary.SearchForMaterialsByName(text);
-            PopulateBrowser(filtered);
-            Label_MaterialCount.Text = string.Format("(Found: {0} Materials)", filtered.Length);
+
+            // We should not search if the search bar is empty, or we'll get some terrible results!
+            if (!string.IsNullOrEmpty(text))
+            {
+                Material[] filtered = SelectedLibrary.SearchForMaterialsByName(text);
+                PopulateBrowser(filtered);
+                Label_MaterialCount.Text = string.Format("(Found: {0} Materials)", filtered.Length);
+            }
         }
 
         private void ComboBox_MaterialsSelectedIndexChanged(object sender, EventArgs e)

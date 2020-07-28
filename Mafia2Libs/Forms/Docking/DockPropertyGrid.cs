@@ -8,6 +8,7 @@ using Utils.Language;
 using WeifenLuo.WinFormsUI.Docking;
 using Utils.SharpDXExtensions;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Forms.Docking
 {
@@ -215,12 +216,16 @@ namespace Forms.Docking
         private void MainTabControl_OnTabIndexChanged(object sender, EventArgs e)
         {
             isMaterialTabFocused = (MainTabControl.SelectedIndex == 2);
-            LoadMaterials();
+
+            if (currentObject != null)
+            {
+                LoadMaterials();
+            }
         }
 
         private void ObjectHasUpdated(object sender, EventArgs e)
         {
-            OnObjectUpdated(sender, e);
+            OnObjectUpdated(this, EventArgs.Empty);
         }
     }
 }

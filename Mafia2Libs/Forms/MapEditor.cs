@@ -1604,9 +1604,7 @@ namespace Mafia2Tool
                 {
                     FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
                     SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
-                    if (Graphics.Assets.ContainsKey(entry.RefID))
-                        Graphics.Assets.Remove(entry.RefID);
-
+                    Graphics.Assets.TryRemove(entry.RefID);
                     DeleteFrames(node.Nodes[i]);
                 }
             }
@@ -1624,9 +1622,7 @@ namespace Mafia2Tool
                     dSceneTree.RemoveNode(node);
                     Graphics.Assets.Remove(obj.RefID);
                     SceneData.FrameResource.FrameObjects.Remove(obj.RefID);
-
-                    if (Graphics.Assets.ContainsKey(obj.RefID))
-                        Graphics.Assets.Remove(obj.RefID);
+                    Graphics.Assets.TryRemove(obj.RefID);
                 }
                 DeleteFrames(node);
             }
@@ -1642,34 +1638,29 @@ namespace Mafia2Tool
                 dSceneTree.RemoveNode(node);
 
                 int iName = Convert.ToInt32(node.Name);
-                if (Graphics.Assets.ContainsKey(iName))
-                    Graphics.Assets.Remove(iName);
+                Graphics.Assets.TryRemove(iName);
             }
             else if (node.Tag.GetType() == typeof(RenderRoad))
             {
                 dSceneTree.RemoveNode(node);
-                if (Graphics.Assets.ContainsKey(int.Parse(node.Name)))
-                    Graphics.Assets.Remove(int.Parse(node.Name));
+                Graphics.Assets.TryRemove(int.Parse(node.Name));
             }
             else if (node.Tag.GetType() == typeof(RenderJunction))
             {
                 dSceneTree.RemoveNode(node);
-                if (Graphics.Assets.ContainsKey(int.Parse(node.Name)))
-                    Graphics.Assets.Remove(int.Parse(node.Name));
+                Graphics.Assets.TryRemove(int.Parse(node.Name));
             }
             else if (node.Tag.GetType() == typeof(Collision.CollisionModel))
             {
                 dSceneTree.RemoveNode(node);
 
                 Collision.CollisionModel data = (node.Tag as Collision.CollisionModel);
-                if (RenderStorageSingleton.Instance.StaticCollisions.ContainsKey(data.Hash))
-                    RenderStorageSingleton.Instance.StaticCollisions.Remove(data.Hash);
+                RenderStorageSingleton.Instance.StaticCollisions.TryRemove(data.Hash);
 
                 for (int i = 0; i != node.Nodes.Count; i++)
                 {
                     int iName = Convert.ToInt32(node.Nodes[i].Name);
-                    if (Graphics.Assets.ContainsKey(iName))
-                        Graphics.Assets.Remove(iName);
+                    Graphics.Assets.TryRemove(iName);
                 }
             }
         }
