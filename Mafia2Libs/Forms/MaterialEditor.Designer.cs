@@ -36,11 +36,13 @@
             this.addMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteSelectedMaterialButton = new System.Windows.Forms.ToolStripMenuItem();
             this.MergeMTLButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_ExportSelected = new System.Windows.Forms.ToolStripMenuItem();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.columnHash = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MTLBrowser = new System.Windows.Forms.OpenFileDialog();
             this.Panel_Main = new System.Windows.Forms.Panel();
+            this.Button_Search = new System.Windows.Forms.Button();
             this.Label_SearchType = new System.Windows.Forms.Label();
             this.ComboBox_SearchType = new System.Windows.Forms.ComboBox();
             this.MergePanel = new System.Windows.Forms.Panel();
@@ -52,7 +54,6 @@
             this.CancelButton = new System.Windows.Forms.Button();
             this.MergeButton = new System.Windows.Forms.Button();
             this.OverwriteListBox = new System.Windows.Forms.CheckedListBox();
-            this.Button_ExportSelected = new System.Windows.Forms.ToolStripMenuItem();
             this.MTLSaveDialog = new System.Windows.Forms.SaveFileDialog();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -66,9 +67,8 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.MaterialSearch.Location = new System.Drawing.Point(3, 28);
             this.MaterialSearch.Name = "MaterialSearch";
-            this.MaterialSearch.Size = new System.Drawing.Size(329, 20);
+            this.MaterialSearch.Size = new System.Drawing.Size(209, 20);
             this.MaterialSearch.TabIndex = 0;
-            this.MaterialSearch.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
             // 
             // MaterialGrid
             // 
@@ -151,23 +151,30 @@
             // addMaterialToolStripMenuItem
             // 
             this.addMaterialToolStripMenuItem.Name = "addMaterialToolStripMenuItem";
-            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.addMaterialToolStripMenuItem.Text = "Add Material";
             this.addMaterialToolStripMenuItem.Click += new System.EventHandler(this.AddMaterial);
             // 
             // DeleteSelectedMaterialButton
             // 
             this.DeleteSelectedMaterialButton.Name = "DeleteSelectedMaterialButton";
-            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(180, 22);
+            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(178, 22);
             this.DeleteSelectedMaterialButton.Text = "$DELETE_SEL_MAT";
             this.DeleteSelectedMaterialButton.Click += new System.EventHandler(this.DeleteMaterial);
             // 
             // MergeMTLButton
             // 
             this.MergeMTLButton.Name = "MergeMTLButton";
-            this.MergeMTLButton.Size = new System.Drawing.Size(180, 22);
+            this.MergeMTLButton.Size = new System.Drawing.Size(178, 22);
             this.MergeMTLButton.Text = "$MERGE_MTL";
             this.MergeMTLButton.Click += new System.EventHandler(this.MergeMTLButton_Click);
+            // 
+            // Button_ExportSelected
+            // 
+            this.Button_ExportSelected.Name = "Button_ExportSelected";
+            this.Button_ExportSelected.Size = new System.Drawing.Size(178, 22);
+            this.Button_ExportSelected.Text = "$EXPORT_SELECTED";
+            this.Button_ExportSelected.Click += new System.EventHandler(this.Button_ExportedSelected_Clicked);
             // 
             // dataGridView1
             // 
@@ -208,6 +215,7 @@
             this.Panel_Main.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.Panel_Main.Controls.Add(this.Button_Search);
             this.Panel_Main.Controls.Add(this.Label_SearchType);
             this.Panel_Main.Controls.Add(this.ComboBox_SearchType);
             this.Panel_Main.Controls.Add(this.dataGridView1);
@@ -217,6 +225,16 @@
             this.Panel_Main.Name = "Panel_Main";
             this.Panel_Main.Size = new System.Drawing.Size(785, 403);
             this.Panel_Main.TabIndex = 4;
+            // 
+            // Button_Search
+            // 
+            this.Button_Search.Location = new System.Drawing.Point(218, 25);
+            this.Button_Search.Name = "Button_Search";
+            this.Button_Search.Size = new System.Drawing.Size(114, 23);
+            this.Button_Search.TabIndex = 6;
+            this.Button_Search.Text = "$SEARCH";
+            this.Button_Search.UseVisualStyleBackColor = true;
+            this.Button_Search.Click += new System.EventHandler(this.Button_Search_Click);
             // 
             // Label_SearchType
             // 
@@ -232,6 +250,7 @@
             this.ComboBox_SearchType.FormattingEnabled = true;
             this.ComboBox_SearchType.Items.AddRange(new object[] {
             "$LABEL_MATERIALNAME",
+            "$LABEL_TEXTURENAME",
             "$LABEL_MATERIALHASH",
             "$LABEL_SHADERID",
             "$LABEL_SHADERHASH"});
@@ -344,18 +363,11 @@
             this.OverwriteListBox.Size = new System.Drawing.Size(237, 364);
             this.OverwriteListBox.TabIndex = 0;
             // 
-            // Button_ExportSelected
-            // 
-            this.Button_ExportSelected.Name = "Button_ExportSelected";
-            this.Button_ExportSelected.Size = new System.Drawing.Size(180, 22);
-            this.Button_ExportSelected.Text = "$EXPORT_SELECTED";
-            this.Button_ExportSelected.Click += new System.EventHandler(this.Button_ExportedSelected_Clicked);
-            // 
             // MTLSaveDialog
             // 
             this.MTLSaveDialog.Filter = "Material Library|*.mtl";
             // 
-            // MaterialTool
+            // MaterialEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -364,7 +376,7 @@
             this.Controls.Add(this.Panel_Main);
             this.Controls.Add(this.MergePanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "MaterialTool";
+            this.Name = "MaterialEditor";
             this.Text = "Material Library Editor";
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
@@ -410,5 +422,6 @@
         private System.Windows.Forms.ComboBox ComboBox_SearchType;
         private System.Windows.Forms.ToolStripMenuItem Button_ExportSelected;
         private System.Windows.Forms.SaveFileDialog MTLSaveDialog;
+        private System.Windows.Forms.Button Button_Search;
     }
 }

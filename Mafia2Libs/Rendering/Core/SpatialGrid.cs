@@ -6,6 +6,7 @@ using Rendering.Graphics;
 using Utils.StringHelpers;
 using ResourceTypes.Navigation;
 using Utils.SharpDXExtensions;
+using System.Diagnostics;
 
 namespace Rendering.Core
 {
@@ -17,7 +18,9 @@ namespace Rendering.Core
         private Vector2 cellSize;
         private SpatialCell[] cells;
         private BoundingBox gridBounds;
+        private BoundingBox cellBounds;
         private RenderBoundingBox boundingBox;
+        private RenderBoundingBox cellBoundingBox;
 
         private int previousCell = -1;
         private int currentCell = -1;
@@ -32,36 +35,41 @@ namespace Rendering.Core
         public SpatialGrid(KynogonRuntimeMesh mesh)
         {
             bIsReady = true;
-            var min = new Vector3(mesh.BoundMin, -10.0f);
-            var max = new Vector3(mesh.BoundMax, 10.0f);
-
-            var tempX = min.X;
-            min.X = min.Y;
-            min.Y = tempX;
-
-            tempX = max.X;
-            max.X = max.Y;
-            max.Y = tempX;
+            var min = new Vector3(mesh.BoundMin, float.MinValue);
+            var max = new Vector3(mesh.BoundMax, float.MaxValue);
 
             gridBounds = new BoundingBox(min, max);
-            Console.WriteLine(gridBounds.ToString());
 
             width = mesh.CellSizeY;
             height = mesh.CellSizeX;
-            origin = gridBounds.Minimum;
+            origin = new Vector3(gridBounds.Minimum.X, gridBounds.Minimum.Y, 0.0f);
             cellSize = new Vector2(gridBounds.Width / width, gridBounds.Height / height);
             cells = new SpatialCell[width * height];
 
-            //for(int i = 0; i < )
             var index = 0;
             for (int i = 0; i < width; i++)
             {
                 for (int x = 0; x < height; x++)
                 {
+                    KynogonRuntimeMesh.Cell cell = mesh.Cells[index];
+
+                    foreach (var set in cell.Sets)
+                    {
+                        if (gridBounds.Minimum.Z < set.X)
+                        {
+                            gridBounds.Minimum.Z = set.X;
+                        }
+                        if (gridBounds.Maximum.Z > set.Y)
+                        {
+                            gridBounds.Maximum.Z = set.Y;
+                        }
+                    }
+                
                     var extents = new BoundingBox();
-                    extents.Minimum = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 10.0f);
-                    extents.Maximum = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 10.0f);
-                    cells[index] = new SpatialCell(mesh.Cells[index]);
+                    extents.Minimum = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 0.0f);
+                    extents.Maximum = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 0.0f);
+                    cells[index] = new SpatialCell(cell, extents);
+
                     index++;
                 }
             }
@@ -71,8 +79,8 @@ namespace Rendering.Core
         {
             bIsReady = true;
             gridBounds = translokator.Bounds;
-            width = 5;
-            height = 5;
+            width = translokator.Grids[0].Width;
+            height = translokator.Grids[0].Height;
             cellSize = new Vector2(gridBounds.Width / width, gridBounds.Height / height);
             cells = new SpatialCell[width * height];
             origin = gridBounds.Minimum;
@@ -119,6 +127,11 @@ namespace Rendering.Core
                 boundingBox.Init(gridBounds);
                 boundingBox.InitBuffers(device, deviceContext);
 
+                cellBoundingBox = new RenderBoundingBox();
+                cellBoundingBox.SetColour(System.Drawing.Color.Blue, true);
+                cellBoundingBox.Init(cellBounds);
+                cellBoundingBox.InitBuffers(device, deviceContext);
+
                 foreach (var cell in cells)
                 {
                     cell.Initialise(device, deviceContext);
@@ -130,13 +143,23 @@ namespace Rendering.Core
         {
             if (bIsReady)
             {
+                //foreach (var cell in cells)
+                //{
+                //    cell.Render(device, deviceContext, camera);
+                //}
+
+                cellBoundingBox.Render(device, deviceContext, camera);
                 currentCell = GetCell(camera.Position);
                 cells[currentCell].Render(device, deviceContext, camera);
-
+                //Debug.WriteLine(cells[currentCell].BoundingBox.ToString());
                 if (previousCell != currentCell)
                 {
-                    //boundingBox.Update(cells[currentCell].BoundingBox);
-                    //boundingBox.UpdateBuffers(device, deviceContext);
+                    BoundingBox newBounds = cells[currentCell].BoundingBox;
+                    newBounds.Minimum.Z = gridBounds.Minimum.Z;
+                    newBounds.Maximum.Z = gridBounds.Maximum.Z;
+
+                    cellBoundingBox.Update(newBounds);
+                    cellBoundingBox.UpdateBuffers(device, deviceContext);
                     previousCell = currentCell;
                 }
                 boundingBox.Render(device, deviceContext, camera);
@@ -146,6 +169,7 @@ namespace Rendering.Core
         public void Shutdown()
         {
             boundingBox?.Shutdown();
+            cellBoundingBox?.Shutdown();
             foreach (var cell in cells)
             {
                 cell.Shutdown();

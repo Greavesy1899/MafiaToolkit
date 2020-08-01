@@ -4,6 +4,7 @@ using System.Linq;
 using Utils.Logging;
 using System;
 using Utils.Settings;
+using SharpDX.Direct3D11;
 
 namespace ResourceTypes.Materials
 {
@@ -122,21 +123,100 @@ namespace ResourceTypes.Materials
             return mat;
         }
 
-        public Material[] SearchForMaterialsByName(string Name)
+        private bool DoesHashContainValue(string left, ulong right)
+        {
+            string LeftValue = left;
+            string RightValue = right.ToString();
+
+            return RightValue.Contains(LeftValue);
+        }
+
+        private bool DoesMaterialContainTexture(string text, Material material)
+        {
+            foreach(var sampler in material.SamplersList)
+            {
+                string FileNameLowerCase = sampler.File.ToLower();
+                return FileNameLowerCase.Contains(text);
+            }
+
+            return false;
+        }
+
+        public Material[] SearchForMaterialsByName(string Name, SearchTypesString searchType)
         {
             string NameToFilter = Name.ToLower();
 
             List<Material> Filtered = new List<Material>();
             foreach (var Pair in materials)
             {
-                string MaterialName = Pair.Value.MaterialName.ToLower();
-                if(MaterialName.Contains(Name))
+                if (searchType.Equals(SearchTypesString.MaterialName))
                 {
-                    Filtered.Add(Pair.Value);
+                    string MaterialName = Pair.Value.MaterialName.ToLower();
+                    if (MaterialName.Contains(NameToFilter))
+                    {
+                        Filtered.Add(Pair.Value);
+                    }
+                } 
+                else if(searchType.Equals(SearchTypesString.TextureName))
+                {
+                    if(DoesMaterialContainTexture(NameToFilter, Pair.Value))
+                    {
+                        Filtered.Add(Pair.Value);
+                    }
                 }
             }
 
             return Filtered.ToArray();
+        }
+
+        public Material[] SearchForMaterialsByHash(string value, SearchTypesHashes searchType)
+        {
+            List<Material> Filtered = new List<Material>();
+
+            foreach (var Pair in materials)
+            {
+                Material Value = Pair.Value;
+                ulong ValueToSearch = 0;
+
+                switch(searchType)
+                {
+                    case SearchTypesHashes.ShaderHash:
+                        ValueToSearch = Value.ShaderHash;
+                        break;
+                    case SearchTypesHashes.ShaderID:
+                        ValueToSearch = Value.ShaderID;
+                        break;
+                    case SearchTypesHashes.MaterialHash:
+                        ValueToSearch = Value.MaterialHash;
+                        break;
+                    default:
+                        ValueToSearch = 0;
+                        break;
+                }
+
+                if(DoesHashContainValue(value, ValueToSearch))
+                {
+                    Filtered.Add(Value);
+                }
+            }
+
+            return Filtered.ToArray();
+        }
+
+        public Material[] SelectSearchTypeAndProceedSearch(string text, int currentSearchType)
+        {
+            Material[] Filtered = null;
+
+            if (currentSearchType >= 3)
+            {
+                Filtered = SearchForMaterialsByHash(text, (SearchTypesHashes)currentSearchType);
+            }
+            else
+            {
+                Filtered = SearchForMaterialsByName(text, (SearchTypesString)currentSearchType);
+            }
+
+            return Filtered;
         }
     }
 }

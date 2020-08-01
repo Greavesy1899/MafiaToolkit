@@ -249,10 +249,10 @@ namespace Utils.Models
         Tangent = (1 << 4), // 0x00000010
         Skin = (1 << 6), // 0x00000040
         Color = (1 << 7), // 0x00000080
-        Texture = (1 << 8),
-        TexCoords0 = 256, // 0x00000100
-        TexCoords1 = 512, // 0x00000200
-        TexCoords2 = 1024, // 0x00000400
+        TexCoords0 = (1 << 8), // 0x00000100
+        TexCoords1 = (1 << 9), // 0x00000200
+        TexCoords2 = (1 << 10), // 0x00000400
+        Unk05 = (1 << 11), // 0x00000800
         ShadowTexture = (1 << 15), // 0x00008000 
         Color1 = (1 << 17), // 0x00020000
         BBCoeffs = (1 << 18), // 0x00040000
@@ -260,44 +260,44 @@ namespace Utils.Models
     }
 
     //Fireboyd's work from nomad
-//    enum MafiaVertexFormat : int
-//    {
-//        Position = (1 << 0),
-//        Position2D = (1 << 1),
-//        Normal = (1 << 2),
+    //    enum MafiaVertexFormat : int
+    //    {
+    //        Position = (1 << 0),
+    //        Position2D = (1 << 1),
+    //        Normal = (1 << 2),
 
-//        Tangent = (1 << 4),
+    //        Tangent = (1 << 4),
 
-//        Skin = (1 << 6),
-//        Color = (1 << 7),
-//        Texture = (1 << 8),
+    //        Skin = (1 << 6),
+    //        Color = (1 << 7),
+    //        Texture = (1 << 8),
 
-//        Texture1 = (1 << 9),
-//        Texture2 = (1 << 10),
-//        Texture3 = (1 << 11),
-//        Texture4 = (1 << 12),
+    //        Texture1 = (1 << 9),
+    //        Texture2 = (1 << 10),
+    //        Texture3 = (1 << 11),
+    //        Texture4 = (1 << 12),
 
-//        ShadowTexture = (1 << 15),
+    //        ShadowTexture = (1 << 15),
 
-//        Color1 = (1 << 17),
-//        BBCoeffs = (1 << 18),
-//        Velocity = (1 << 19),
+    //        Color1 = (1 << 17),
+    //        BBCoeffs = (1 << 18),
+    //        Velocity = (1 << 19),
 
-//        HelpingIndices = (1 << 20),
-//        MorphIndices = (1 << 21),
+    //        HelpingIndices = (1 << 20),
+    //        MorphIndices = (1 << 21),
 
-//        FloatAlpha = (1 << 25),
-//        Data_4_U8 = (1 << 26),
+    //        FloatAlpha = (1 << 25),
+    //        Data_4_U8 = (1 << 26),
 
-//        InstanceMatrix = (1 << 28),
-//        InstanceGrass = (1 << 29),
+    //        InstanceMatrix = (1 << 28),
+    //        InstanceGrass = (1 << 29),
 
-//#if VFF_USE_DYNAMIC_PARAMETER
-//    DynamicParameter    = (1 << 30), // Mafia III
-//#else
-//        InstanceGrassOrigin = (1 << 30), // Mafia II
-//#endif
-//    };
+    //#if VFF_USE_DYNAMIC_PARAMETER
+    //    DynamicParameter    = (1 << 30), // Mafia III
+    //#else
+    //        InstanceGrassOrigin = (1 << 30), // Mafia II
+    //#endif
+    //    };
 
 
 

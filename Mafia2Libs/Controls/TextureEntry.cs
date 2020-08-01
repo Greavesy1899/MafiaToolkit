@@ -41,23 +41,34 @@ namespace Mafia2Tool
             return material;
         }
 
-        public event EventHandler<EventArgs> WasClicked;
+        public event EventHandler<EventArgs> OnEntrySingularClick;
+        public event EventHandler<EventArgs> OnEntryDoubleClick;
+
+        private void OnSingularClick(object sender, EventArgs e)
+        {
+            var SingularClick = OnEntrySingularClick;
+            if (SingularClick != null)
+            {
+                OnEntrySingularClick(this, EventArgs.Empty);
+            }
+            IsSelected = true;
+        }
 
         private void OnDoubleClick(object sender, EventArgs e)
         {
-            var wasClicked = WasClicked;
-            if (wasClicked != null)
+            var DoubleClick = OnEntryDoubleClick;
+            if(DoubleClick != null)
             {
-                WasClicked(this, EventArgs.Empty);
+                OnEntryDoubleClick(this, EventArgs.Empty);
             }
-            IsSelected = true;
         }
 
         private void RecurseMouseClick(ControlCollection Controls)
         {
             foreach (Control control in Controls)
             {
-                control.MouseClick += OnDoubleClick;
+                control.MouseClick += OnSingularClick;
+                control.MouseDoubleClick += OnDoubleClick;
                 RecurseMouseClick(control.Controls);
             }
         }
@@ -65,7 +76,8 @@ namespace Mafia2Tool
         {
             foreach (Control control in Controls)
             {
-                control.MouseClick += OnDoubleClick;
+                control.MouseClick += OnSingularClick;
+                control.MouseDoubleClick += OnDoubleClick;
                 RecurseMouseClick(control.Controls);
             }
         }

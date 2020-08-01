@@ -8,7 +8,6 @@ using Utils.Language;
 using WeifenLuo.WinFormsUI.Docking;
 using Utils.SharpDXExtensions;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Forms.Docking
 {
@@ -17,6 +16,7 @@ namespace Forms.Docking
         private bool isMaterialTabFocused;
         private bool hasLoadedMaterials;
         private object currentObject;
+        private TextureEntry currentEntry;
         private Dictionary<TextureEntry, MaterialStruct> currentMaterials;
 
         public bool IsEntryReady;
@@ -28,6 +28,7 @@ namespace Forms.Docking
             InitializeComponent();
             Localise();
             currentObject = null;
+            currentEntry = null;
             IsEntryReady = false;
             isMaterialTabFocused = false;
             hasLoadedMaterials = false;
@@ -60,6 +61,7 @@ namespace Forms.Docking
         private void SetMaterialTab()
         {
             hasLoadedMaterials = false;
+            currentEntry = null;
             LODComboBox.Items.Clear();
             if (FrameResource.IsFrameType(currentObject))
             {
@@ -95,7 +97,8 @@ namespace Forms.Docking
                             var mat = materialAssignments[x];
                             Material material = MaterialsManager.LookupMaterialByHash(mat.MaterialHash);
 
-                            textEntry.WasClicked += MatViewerPanel_WasClicked;
+                            textEntry.OnEntrySingularClick += MatViewPanel_TextureEntryOnSingularClick;
+                            textEntry.OnEntryDoubleClick += MatViewPanel_TextureEntryOnDoubleClick;
                             textEntry.SetMaterial(material);
 
                             currentMaterials.Add(textEntry, mat);
@@ -182,35 +185,43 @@ namespace Forms.Docking
             LoadMaterials();
         }
 
-        void MatViewerPanel_WasClicked(object sender, EventArgs e)
+        private void MatViewPanel_TextureEntryOnDoubleClick(object sender, EventArgs e)
+        {
+            // Get our entry
+            TextureEntry Entry = (sender as TextureEntry);
+
+            // Create our browser; once the user has finished with this menu they should? have a material.
+            MaterialBrowser Browser = new MaterialBrowser();
+            Material SelectedMaterial = Browser.GetSelectedMaterial();
+
+            // Set the new material data, notify the map editor that a change has been made.
+            if (SelectedMaterial != null)
+            {
+                currentMaterials[Entry].MaterialName = SelectedMaterial.MaterialName;
+                currentMaterials[Entry].MaterialHash = SelectedMaterial.MaterialHash;
+                Entry.SetMaterial(SelectedMaterial);
+                OnObjectUpdated(sender, e);
+            }
+
+            // Yeet the browser into the shadow realm.
+            Browser.Dispose();
+            Browser = null;
+            Entry.IsSelected = false;
+        }
+
+        void MatViewPanel_TextureEntryOnSingularClick(object sender, EventArgs e)
         {
             // Set IsSelected for all UCs in the FlowLayoutPanel to false. 
-            MatBrowser browser = null;
-            foreach (var c in MatViewPanel.Controls)
+            // Add the new selected one
+            TextureEntry Entry = (sender as TextureEntry);
+
+            // Remove the previous entry
+            if (currentEntry != null)
             {
-                TextureEntry entry = (c as TextureEntry);
-                if (entry != null)
-                {
-                    if (entry.IsSelected)
-                    {
-                        browser = new MatBrowser();
-                        Material selectedMaterial = browser.GetSelectedMaterial();
-
-                        if (selectedMaterial != null)
-                        {
-                            currentMaterials[entry].MaterialName = selectedMaterial.MaterialName;
-                            currentMaterials[entry].MaterialHash = selectedMaterial.MaterialHash;
-                            entry.SetMaterial(selectedMaterial);
-                            OnObjectUpdated(sender, e);
-                        }
-
-                        browser.Dispose();
-                        browser = null;
-                    }
-
-                    entry.IsSelected = false;
-                }
+                currentEntry.IsSelected = false;
             }
+
+            currentEntry = Entry;
         }
 
         private void MainTabControl_OnTabIndexChanged(object sender, EventArgs e)

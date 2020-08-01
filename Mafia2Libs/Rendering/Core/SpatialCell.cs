@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Rendering.Graphics;
 using SharpDX.Direct3D11;
 using SharpDX;
@@ -25,13 +22,13 @@ namespace Rendering.Core
             boundingBox = extents;
         }
 
-        public SpatialCell(KynogonRuntimeMesh.Cell cellData)
+        public SpatialCell(KynogonRuntimeMesh.Cell cellData, BoundingBox extents)
         {
             assets = new Dictionary<int, IRenderer>();
             RenderNavCell cell = new RenderNavCell();
             cell.Init(cellData);
             assets.Add(StringHelpers.GetNewRefID(), cell);
-            //cell.BoundingBox = cellData.b
+            boundingBox = extents;
         }
 
         public void AddAsset(IRenderer asset, int key)
@@ -66,7 +63,7 @@ namespace Rendering.Core
 
         public override string ToString()
         {
-            return string.Format("Asset Count: {0}", assets.Count);
+            return boundingBox.ToString();
         }
     }
 }

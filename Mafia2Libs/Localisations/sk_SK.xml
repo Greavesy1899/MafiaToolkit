@@ -129,6 +129,11 @@
   <String ID="$LABEL_MATERIALHASH">Material Hash</String>
   <String ID="$LABEL_SHADERID">Shader ID</String>
   <String ID="$LABEL_SHADERHASH">Shader Hash</String>
+  <String ID="$LABEL_TEXTURENAME">Texture Name</String>
+  <String ID="$SEARCH">Vyhľadávanie</String>
+  <String ID="$LABEL_SEARCHBAR">Search for a Material:</String>
+  <String ID="$LABEL_SELECTMATLIBRARY">Select Material Library:</String>
+  <String ID="$TITLE_MATERIALBROWSER">Material Browser</String>
   
   <!-- FrameResource Editor Form Strings-->
   <String ID="$FRAME_EDITOR_EXPORT_BTN">Exportovať modely..</String>

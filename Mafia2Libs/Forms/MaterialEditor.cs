@@ -58,6 +58,7 @@ namespace Mafia2Tool
             SelectAllNewButton.Text = SelectAllOverwriteButton.Text = Language.GetString("$SELECT_ALL");
             Button_ExportSelected.Text = Language.GetString("$EXPORT_MATS");
             Label_SearchType.Text = Language.GetString("$LABEL_SEARCHTYPE");
+            Button_Search.Text = Language.GetString("$SEARCH");
 
             for(int i = 0; i < ComboBox_SearchType.Items.Count; i++)
             {
@@ -67,67 +68,26 @@ namespace Mafia2Tool
             }
         }
 
-        public void FetchMaterials(bool searchMode = false, string text = null)
+        public void FetchMaterials()
         {
             dataGridView1.Rows.Clear();
 
-            foreach (KeyValuePair<ulong, Material> mat in mtl.Materials)
+            foreach(var Pair in mtl.Materials)
             {
-                if (!string.IsNullOrEmpty(text) && searchMode)
-                {
-                    DataGridViewRow row = null;
-                    if(currentSearchType == 0)
-                    {         
-                        if (mat.Value.MaterialName.Contains(text))
-                        {
-                            row = BuildRowData(mat);
-                        }
-                    }
-                    else if (currentSearchType == 1)
-                    {
-                        if (mat.Value.MaterialHash.ToString().Contains(text))
-                        {
-                            row = BuildRowData(mat);
-                        }
-                    }
-                    else if (currentSearchType == 2)
-                    {
-                        if (mat.Value.ShaderHash.ToString().Contains(text))
-                        {
-                            row = BuildRowData(mat);
-                        }
-                    }
-                    else if (currentSearchType == 3)
-                    {
-                        if (mat.Value.ShaderID.ToString().Contains(text))
-                        {
-                            row = BuildRowData(mat);
-                        }
-                    }
-
-                    if(row != null)
-                    {
-                        dataGridView1.Rows.Add(row);
-                    }
-                }
-                else
-                {
-                    dataGridView1.Rows.Add(BuildRowData(mat));
-                }
+                dataGridView1.Rows.Add(BuildRowData(Pair.Value));
             }
         }
 
-        public void WriteMaterialsFile()
+        private void SearchForMaterials(string text = null)
         {
-            DialogResult result = MessageBox.Show("Do you want to save your changes?", "Save Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            dataGridView1.Rows.Clear();
 
-            if (result == DialogResult.Yes)
-                SaveButton_Click(null, null);
-        }
+            Material[] Filtered = mtl.SelectSearchTypeAndProceedSearch(text, currentSearchType);
 
-        private void OnKeyPressed(object sender, KeyPressEventArgs e)
-        {
-            FetchMaterials(true, MaterialSearch.Text);
+            foreach (Material Mat in Filtered)
+            {
+                dataGridView1.Rows.Add(BuildRowData(Mat));
+            }
         }
 
         private void ExitButton_Click(object sender, EventArgs e)
@@ -189,11 +149,6 @@ namespace Mafia2Tool
             dataGridView1.Rows.RemoveAt(index);
         }
 
-        private void MaterialSearch_TextChanged(object sender, EventArgs e)
-        {
-            FetchMaterials(true, MaterialSearch.Text);
-        }
-
         private void UpdateList(object sender, EventArgs e)
         {
             if (!Panel_Main.Visible)
@@ -201,7 +156,7 @@ namespace Mafia2Tool
                 return;
             }
 
-            FetchMaterials(false, null);
+            FetchMaterials();
         }
 
         private void OnMaterialSelected(object sender, DataGridViewCellEventArgs e)
@@ -211,14 +166,6 @@ namespace Mafia2Tool
                 MaterialGrid.SelectedObject = dataGridView1.Rows[e.RowIndex].Tag;
                 Material mat = (dataGridView1.Rows[e.RowIndex].Tag as Material);
             }
-        }
-
-        private DataGridViewRow BuildRowData(KeyValuePair<ulong, Material> mat)
-        {
-            DataGridViewRow row = new DataGridViewRow();
-            row.Tag = mat.Value;
-            row.CreateCells(dataGridView1, new object[] { mat.Value.MaterialName, mat.Key });
-            return row;
         }
 
         private DataGridViewRow BuildRowData(Material mat)
@@ -351,6 +298,20 @@ namespace Mafia2Tool
             if(MTLSaveDialog.ShowDialog() == DialogResult.OK)
             {
                 library.WriteMatFile(MTLSaveDialog.FileName);
+            }
+        }
+
+        private void Button_Search_Click(object sender, EventArgs e)
+        {
+            string Filtered = MaterialSearch.Text;
+
+            if (!string.IsNullOrEmpty(Filtered))
+            {
+                SearchForMaterials(MaterialSearch.Text);
+            }
+            else
+            {
+                FetchMaterials();
             }
         }
     }

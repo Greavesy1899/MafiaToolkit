@@ -753,10 +753,10 @@ namespace Mafia2Tool
                     //}
                 }
             }
-            //if(SceneData.Translokator != null && ToolkitSettings.Experimental)
-            //{
-            //    Graphics.SetTranslokatorGrid(SceneData.Translokator);
-            //}
+            if (SceneData.Translokator != null && ToolkitSettings.Experimental)
+            {
+                Graphics.SetTranslokatorGrid(SceneData.Translokator);
+            }
 
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
@@ -794,48 +794,65 @@ namespace Mafia2Tool
                 dSceneTree.AddToTree(node);
                 dSceneTree.AddToTree(node2);
             }
-            if(SceneData.HPDData != null)
-            {
-                int generatedID = StringHelpers.GetNewRefID();
-                TreeNode navNode = new TreeNode();
-                navNode.Text = string.Format("HPD");
-                navNode.Name = generatedID.ToString();
+            //if(SceneData.HPDData != null)
+            //{
+            //    int generatedID = StringHelpers.GetNewRefID();
+            //    TreeNode navNode = new TreeNode();
+            //    navNode.Text = string.Format("HPD");
+            //    navNode.Name = generatedID.ToString();
 
-                for (int i = 0; i < SceneData.HPDData.unkData.Length; i++)
+            //    for (int i = 0; i < SceneData.HPDData.unkData.Length; i++)
+            //    {
+            //        generatedID = StringHelpers.GetNewRefID();
+            //        TreeNode hpdNode = new TreeNode();
+            //        hpdNode.Text = string.Format("NODE: {0}", i);
+            //        hpdNode.Name = generatedID.ToString();
+
+            //        var item = SceneData.HPDData.unkData[i];
+            //        RenderBoundingBox bbox = new RenderBoundingBox();
+            //        BoundingBox box = new BoundingBox(item.unk0, item.unk1);
+            //        bbox.Init(box);
+            //        assets.Add(generatedID, bbox);
+            //        hpdNode.Tag = bbox;
+            //        navNode.Nodes.Add(hpdNode);
+            //    }
+            //    dSceneTree.AddToTree(navNode);
+            //}
+            if (SceneData.OBJData != null)
+            {
+                var data = new OBJData[SceneData.OBJData.Length];
+                for (int i = 0; i < SceneData.OBJData.Length; i++)
                 {
-                    generatedID = StringHelpers.GetNewRefID();
-                    TreeNode hpdNode = new TreeNode();
-                    hpdNode.Text = string.Format("NODE: {0}", i);
-                    hpdNode.Name = generatedID.ToString();
-
-                    var item = SceneData.HPDData.unkData[i];
-                    RenderBoundingBox bbox = new RenderBoundingBox();
-                    BoundingBox box = new BoundingBox(item.unk0, item.unk1);
-                    bbox.Init(box);
-                    assets.Add(generatedID, bbox);
-                    hpdNode.Tag = bbox;
-                    navNode.Nodes.Add(hpdNode);
+                    data[i] = (OBJData)SceneData.OBJData[i].data;
                 }
-                dSceneTree.AddToTree(navNode);
-            }
-            if(SceneData.OBJData != null)
-            {
-                //var data = new OBJData[SceneData.OBJData.Length];
-                //for(int i = 0; i < SceneData.OBJData.Length; i++)
-                //{
-                //    data[i] = (OBJData)SceneData.OBJData[i].data;
-                //}
-                //Graphics.SetNavigationGrid(data);
-                //for (int i = 0; i < SceneData.OBJData.Length; i++)
-                //{
-                //    int generatedID = StringHelpers.GetNewRefID();
-                //    TreeNode navNode = new TreeNode();
-                //    navNode.Text = string.Format("NAV: {0}", i);
-                //    navNode.Name = generatedID.ToString();
-                //    var obj = (SceneData.OBJData[i].data as OBJData);
+                Graphics.SetNavigationGrid(data);
+                for (int i = 0; i < SceneData.OBJData.Length; i++)
+                {
+                    int generatedID = StringHelpers.GetNewRefID();
+                    TreeNode navNode = new TreeNode();
+                    navNode.Text = string.Format("NAV: {0}", i);
+                    navNode.Name = generatedID.ToString();
+                    var obj = (SceneData.OBJData[i].data as OBJData);
 
-                //    dSceneTree.AddToTree(navNode);
-                //}
+                    //for(int x = 0; x < obj.vertices.Length; x++)
+                    //{
+                    //    RenderNav navigationPoints = new RenderNav();
+                    //    navigationPoints.Init(obj, x);
+                    //    assets.Add(StringHelpers.GetNewRefID(), navigationPoints);
+                    //}    
+
+                    //for(int y = 0; y < obj.connections.Length; y++)
+                    //{
+                    //    RenderLine navigationLine = new RenderLine();
+                    //    navigationLine.SetUnselectedColour(System.Drawing.Color.AliceBlue);
+                    //    navigationLine.Init(new Vector3[2] { obj.vertices[obj.connections[y].NodeID].Position, obj.vertices[obj.connections[y].ConnectedNodeID].Position });
+                    //    navigationLine.SetSelectedColour(System.Drawing.Color.AliceBlue);
+                    //    navigationLine.SetUnselectedColour(System.Drawing.Color.AliceBlue);
+                    //    assets.Add(StringHelpers.GetNewRefID(), navigationLine);
+                    //}
+
+                    dSceneTree.AddToTree(navNode);
+                }
             }
             if (SceneData.Collisions != null)
             {

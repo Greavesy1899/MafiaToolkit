@@ -274,7 +274,7 @@ namespace ResourceTypes.Materials
         }
     }
 
-    public struct ShaderParameter
+    public class ShaderParameter
     {
         string id;
         int paramCount;
@@ -292,7 +292,18 @@ namespace ResourceTypes.Materials
             }
         }
 
+        public ShaderParameter()
+        {
+            id = "";
+            paramaters = new float[0];
+        }
+
         public ShaderParameter(BinaryReader reader)
+        {
+            ReadFromFile(reader);
+        }
+
+        public void ReadFromFile(BinaryReader reader)
         {
             id = new string(reader.ReadChars(4));
             paramCount = reader.ReadInt32() / 4;
@@ -301,11 +312,6 @@ namespace ResourceTypes.Materials
             {
                 paramaters[i] = reader.ReadSingle();
             }
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0}, {1}", id, paramCount);
         }
 
         public void WriteToFile(BinaryWriter writer)
@@ -317,11 +323,15 @@ namespace ResourceTypes.Materials
                 writer.Write(paramaters[i]);
             }
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0}, {1}", id, paramCount);
+        }
     }
 
     public class ShaderParameterSampler
     {
-
         string id;
         int[] unkSet0;
         ulong textureHash;
