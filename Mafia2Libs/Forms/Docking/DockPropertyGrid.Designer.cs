@@ -121,6 +121,7 @@
             this.ScaleZNumeric.Name = "ScaleZNumeric";
             this.ScaleZNumeric.Size = new System.Drawing.Size(185, 20);
             this.ScaleZNumeric.TabIndex = 29;
+            this.ScaleZNumeric.ValueChanged += new System.EventHandler(this.ObjectHasUpdated);
             // 
             // ScaleYNumeric
             // 
@@ -144,6 +145,7 @@
             this.ScaleYNumeric.Name = "ScaleYNumeric";
             this.ScaleYNumeric.Size = new System.Drawing.Size(185, 20);
             this.ScaleYNumeric.TabIndex = 28;
+            this.ScaleYNumeric.ValueChanged += new System.EventHandler(this.ObjectHasUpdated);
             // 
             // ScaleXNumeric
             // 
@@ -167,6 +169,7 @@
             this.ScaleXNumeric.Name = "ScaleXNumeric";
             this.ScaleXNumeric.Size = new System.Drawing.Size(185, 20);
             this.ScaleXNumeric.TabIndex = 27;
+            this.ScaleXNumeric.ValueChanged += new System.EventHandler(this.ObjectHasUpdated);
             // 
             // ScaleZLabel
             // 
@@ -212,6 +215,7 @@
             this.RotationZNumeric.Name = "RotationZNumeric";
             this.RotationZNumeric.Size = new System.Drawing.Size(185, 20);
             this.RotationZNumeric.TabIndex = 23;
+            this.RotationZNumeric.ValueChanged += new System.EventHandler(this.ObjectHasUpdated);
             // 
             // RotationYNumeric
             // 
@@ -230,6 +234,7 @@
             this.RotationYNumeric.Name = "RotationYNumeric";
             this.RotationYNumeric.Size = new System.Drawing.Size(185, 20);
             this.RotationYNumeric.TabIndex = 22;
+            this.RotationYNumeric.ValueChanged += new System.EventHandler(this.ObjectHasUpdated);
             // 
             // RotationXNumeric
             // 
@@ -248,6 +253,7 @@
             this.RotationXNumeric.Name = "RotationXNumeric";
             this.RotationXNumeric.Size = new System.Drawing.Size(185, 20);
             this.RotationXNumeric.TabIndex = 21;
+            this.RotationXNumeric.ValueChanged += new System.EventHandler(this.ObjectHasUpdated);
             // 
             // PositionZNumeric
             // 
@@ -266,6 +272,7 @@
             this.PositionZNumeric.Name = "PositionZNumeric";
             this.PositionZNumeric.Size = new System.Drawing.Size(185, 20);
             this.PositionZNumeric.TabIndex = 20;
+            this.PositionZNumeric.ValueChanged += new System.EventHandler(this.ObjectHasUpdated);
             // 
             // PositionYNumeric
             // 
@@ -284,6 +291,7 @@
             this.PositionYNumeric.Name = "PositionYNumeric";
             this.PositionYNumeric.Size = new System.Drawing.Size(185, 20);
             this.PositionYNumeric.TabIndex = 19;
+            this.PositionYNumeric.ValueChanged += new System.EventHandler(this.ObjectHasUpdated);
             // 
             // PositionXNumeric
             // 
@@ -302,6 +310,7 @@
             this.PositionXNumeric.Name = "PositionXNumeric";
             this.PositionXNumeric.Size = new System.Drawing.Size(185, 20);
             this.PositionXNumeric.TabIndex = 18;
+            this.PositionXNumeric.ValueChanged += new System.EventHandler(this.ObjectHasUpdated);
             // 
             // CurrentEntry
             // 

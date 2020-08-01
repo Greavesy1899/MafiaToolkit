@@ -5,6 +5,7 @@ using SharpDX;
 using System.Collections.Generic;
 using Rendering.Core;
 using Utils.Models;
+using ResourceTypes.Translokator;
 
 namespace Rendering.Graphics
 {
@@ -99,7 +100,7 @@ namespace Rendering.Graphics
             return true;
         }
 
-        public void SetTranslokatorGrid(ResourceTypes.Translokator.TranslokatorLoader translokator)
+        public void SetTranslokatorGrid(TranslokatorLoader translokator)
         {
             translokatorGrid = new SpatialGrid(translokator);
             translokatorGrid.Initialise(D3D.Device, D3D.DeviceContext);
@@ -168,6 +169,7 @@ namespace Rendering.Graphics
                 entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera);
             }
 
+            //navigationGrids[0].Render(D3D.Device, D3D.DeviceContext, Camera);
             foreach (var grid in navigationGrids)
             {
                 grid.Render(D3D.Device, D3D.DeviceContext, Camera);

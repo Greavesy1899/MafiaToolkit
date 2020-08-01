@@ -13,7 +13,7 @@ namespace ResourceTypes.FrameResource
     public class FrameLOD
     {
 
-        public static VertexFlags[] VertexFlagOrder = new VertexFlags[13] {
+        public static VertexFlags[] VertexFlagOrder = new VertexFlags[14] {
             VertexFlags.Position,
             VertexFlags.Position2D,
             VertexFlags.Normals,
@@ -24,6 +24,7 @@ namespace ResourceTypes.FrameResource
             VertexFlags.TexCoords0,
             VertexFlags.TexCoords1,
             VertexFlags.TexCoords2,
+            VertexFlags.Unk05,
             VertexFlags.ShadowTexture,
             VertexFlags.BBCoeffs,
             VertexFlags.Tangent
@@ -685,6 +686,7 @@ namespace ResourceTypes.FrameResource
                 case VertexFlags.TexCoords0:
                 case VertexFlags.TexCoords1:
                 case VertexFlags.TexCoords2:
+                case VertexFlags.Unk05:
                 case VertexFlags.ShadowTexture:
                 case VertexFlags.Color1:
                 case VertexFlags.DamageGroup:

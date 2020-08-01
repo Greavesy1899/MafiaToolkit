@@ -1,5 +1,6 @@
 ﻿using SharpDX.Direct3D11;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows;
 
 namespace Rendering.Graphics
@@ -9,6 +10,7 @@ namespace Rendering.Graphics
         public List<RenderLine> SplineStorage;
         public Dictionary<ulong, RenderStaticCollision> StaticCollisions;
         public Dictionary<ulong, ShaderResourceView> TextureCache;
+        public Dictionary<ulong, Image> TextureThumbnails;
         public ShaderManager ShaderManager;
         public RenderPrefabs Prefabs;
         private bool isInit;
@@ -18,6 +20,7 @@ namespace Rendering.Graphics
             SplineStorage = new List<RenderLine>();
             StaticCollisions = new Dictionary<ulong, RenderStaticCollision>();
             TextureCache = new Dictionary<ulong, ShaderResourceView>();
+            TextureThumbnails = new Dictionary<ulong, Image>();
             ShaderManager = new ShaderManager();
             Prefabs = new RenderPrefabs();
         }
@@ -34,9 +37,14 @@ namespace Rendering.Graphics
                 MessageBox.Show("Failed to initialize Shader Manager!");
                 return false;
             }
-            //this is backup!
+
+            // Precache textures and thumbnails which will be reused pretty often.
             Instance.TextureCache.Add(0, TextureLoader.LoadTexture(D3D.Device, D3D.DeviceContext, "texture.dds"));
             Instance.TextureCache.Add(1, TextureLoader.LoadTexture(D3D.Device, D3D.DeviceContext, "default_n.dds"));
+
+            Instance.TextureThumbnails.Add(0, TextureLoader.LoadThumbnail("Resources/Texture.dds"));
+            Instance.TextureThumbnails.Add(1, TextureLoader.LoadThumbnail("Resource/MissingMaterial.dds"));
+
             isInit = true;
             return true;
         }
@@ -61,6 +69,7 @@ namespace Rendering.Graphics
             SplineStorage.Clear();
             StaticCollisions.Clear();
             TextureCache.Clear();
+            TextureThumbnails.Clear();
             ShaderManager.Shutdown();
             Prefabs.Shutdown();
             isInit = false;

@@ -27,7 +27,7 @@ namespace Core.IO
                 CityAreaEditor editor = new CityAreaEditor(file);
                 return true;
             }
-            else if(filename.Equals("cityshop"))
+            else if(filename.Equals("cityshops"))
             {
                 CityShopEditor editor = new CityShopEditor(file);
                 return true;

@@ -105,7 +105,6 @@ namespace Mafia2Tool
             dViewProperties = new DockViewProperties();
             dPropertyGrid.Show(dockPanel1, DockState.DockRight);
             dSceneTree.Show(dockPanel1, DockState.DockLeft);
-            //dViewProperties.Show(dockPanel1, DockState.DockRight);
             dSceneTree.SetEventHandler("AfterSelect", new TreeViewEventHandler(OnAfterSelect));
             dSceneTree.ExportFrameButton.Click += new EventHandler(ExportFrame_Click);
             dSceneTree.Export3DButton.Click += new EventHandler(Export3DButton_Click);
@@ -120,15 +119,7 @@ namespace Mafia2Tool
             dSceneTree.UpdateParent1Button.Click += new EventHandler(UpdateParent_Click);
             dSceneTree.UpdateParent2Button.Click += new EventHandler(UpdateParent_Click);
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyValueChanged);
-            dPropertyGrid.PositionXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.PositionYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.PositionZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.RotationXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.RotationYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.RotationZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.ScaleXNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.ScaleYNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
-            dPropertyGrid.ScaleZNumeric.ValueChanged += new EventHandler(ApplyEntryChanges);
+            dPropertyGrid.OnObjectUpdated += ApplyEntryChanges;
         }
 
         private void RenderPanel_MouseWheel(object sender, MouseEventArgs e)
@@ -762,10 +753,10 @@ namespace Mafia2Tool
                     //}
                 }
             }
-            //if(SceneData.Translokator != null && ToolkitSettings.Experimental)
-            //{
-            //    Graphics.SetTranslokatorGrid(SceneData.Translokator);
-            //}
+            if (SceneData.Translokator != null && ToolkitSettings.Experimental)
+            {
+                Graphics.SetTranslokatorGrid(SceneData.Translokator);
+            }
 
             if (SceneData.roadMap != null && ToolkitSettings.Experimental)
             {
@@ -803,48 +794,65 @@ namespace Mafia2Tool
                 dSceneTree.AddToTree(node);
                 dSceneTree.AddToTree(node2);
             }
-            if(SceneData.HPDData != null)
-            {
-                int generatedID = StringHelpers.GetNewRefID();
-                TreeNode navNode = new TreeNode();
-                navNode.Text = string.Format("HPD");
-                navNode.Name = generatedID.ToString();
+            //if(SceneData.HPDData != null)
+            //{
+            //    int generatedID = StringHelpers.GetNewRefID();
+            //    TreeNode navNode = new TreeNode();
+            //    navNode.Text = string.Format("HPD");
+            //    navNode.Name = generatedID.ToString();
 
-                for (int i = 0; i < SceneData.HPDData.unkData.Length; i++)
+            //    for (int i = 0; i < SceneData.HPDData.unkData.Length; i++)
+            //    {
+            //        generatedID = StringHelpers.GetNewRefID();
+            //        TreeNode hpdNode = new TreeNode();
+            //        hpdNode.Text = string.Format("NODE: {0}", i);
+            //        hpdNode.Name = generatedID.ToString();
+
+            //        var item = SceneData.HPDData.unkData[i];
+            //        RenderBoundingBox bbox = new RenderBoundingBox();
+            //        BoundingBox box = new BoundingBox(item.unk0, item.unk1);
+            //        bbox.Init(box);
+            //        assets.Add(generatedID, bbox);
+            //        hpdNode.Tag = bbox;
+            //        navNode.Nodes.Add(hpdNode);
+            //    }
+            //    dSceneTree.AddToTree(navNode);
+            //}
+            if (SceneData.OBJData != null)
+            {
+                var data = new OBJData[SceneData.OBJData.Length];
+                for (int i = 0; i < SceneData.OBJData.Length; i++)
                 {
-                    generatedID = StringHelpers.GetNewRefID();
-                    TreeNode hpdNode = new TreeNode();
-                    hpdNode.Text = string.Format("NODE: {0}", i);
-                    hpdNode.Name = generatedID.ToString();
-
-                    var item = SceneData.HPDData.unkData[i];
-                    RenderBoundingBox bbox = new RenderBoundingBox();
-                    BoundingBox box = new BoundingBox(item.unk0, item.unk1);
-                    bbox.Init(box);
-                    assets.Add(generatedID, bbox);
-                    hpdNode.Tag = bbox;
-                    navNode.Nodes.Add(hpdNode);
+                    data[i] = (OBJData)SceneData.OBJData[i].data;
                 }
-                dSceneTree.AddToTree(navNode);
-            }
-            if(SceneData.OBJData != null)
-            {
-                //var data = new OBJData[SceneData.OBJData.Length];
-                //for(int i = 0; i < SceneData.OBJData.Length; i++)
-                //{
-                //    data[i] = (OBJData)SceneData.OBJData[i].data;
-                //}
-                //Graphics.SetNavigationGrid(data);
-                //for (int i = 0; i < SceneData.OBJData.Length; i++)
-                //{
-                //    int generatedID = StringHelpers.GetNewRefID();
-                //    TreeNode navNode = new TreeNode();
-                //    navNode.Text = string.Format("NAV: {0}", i);
-                //    navNode.Name = generatedID.ToString();
-                //    var obj = (SceneData.OBJData[i].data as OBJData);
+                Graphics.SetNavigationGrid(data);
+                for (int i = 0; i < SceneData.OBJData.Length; i++)
+                {
+                    int generatedID = StringHelpers.GetNewRefID();
+                    TreeNode navNode = new TreeNode();
+                    navNode.Text = string.Format("NAV: {0}", i);
+                    navNode.Name = generatedID.ToString();
+                    var obj = (SceneData.OBJData[i].data as OBJData);
 
-                //    dSceneTree.AddToTree(navNode);
-                //}
+                    //for(int x = 0; x < obj.vertices.Length; x++)
+                    //{
+                    //    RenderNav navigationPoints = new RenderNav();
+                    //    navigationPoints.Init(obj, x);
+                    //    assets.Add(StringHelpers.GetNewRefID(), navigationPoints);
+                    //}    
+
+                    //for(int y = 0; y < obj.connections.Length; y++)
+                    //{
+                    //    RenderLine navigationLine = new RenderLine();
+                    //    navigationLine.SetUnselectedColour(System.Drawing.Color.AliceBlue);
+                    //    navigationLine.Init(new Vector3[2] { obj.vertices[obj.connections[y].NodeID].Position, obj.vertices[obj.connections[y].ConnectedNodeID].Position });
+                    //    navigationLine.SetSelectedColour(System.Drawing.Color.AliceBlue);
+                    //    navigationLine.SetUnselectedColour(System.Drawing.Color.AliceBlue);
+                    //    assets.Add(StringHelpers.GetNewRefID(), navigationLine);
+                    //}
+
+                    dSceneTree.AddToTree(navNode);
+                }
             }
             if (SceneData.Collisions != null)
             {
@@ -1613,9 +1621,7 @@ namespace Mafia2Tool
                 {
                     FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
                     SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
-                    if (Graphics.Assets.ContainsKey(entry.RefID))
-                        Graphics.Assets.Remove(entry.RefID);
-
+                    Graphics.Assets.TryRemove(entry.RefID);
                     DeleteFrames(node.Nodes[i]);
                 }
             }
@@ -1633,9 +1639,7 @@ namespace Mafia2Tool
                     dSceneTree.RemoveNode(node);
                     Graphics.Assets.Remove(obj.RefID);
                     SceneData.FrameResource.FrameObjects.Remove(obj.RefID);
-
-                    if (Graphics.Assets.ContainsKey(obj.RefID))
-                        Graphics.Assets.Remove(obj.RefID);
+                    Graphics.Assets.TryRemove(obj.RefID);
                 }
                 DeleteFrames(node);
             }
@@ -1651,34 +1655,29 @@ namespace Mafia2Tool
                 dSceneTree.RemoveNode(node);
 
                 int iName = Convert.ToInt32(node.Name);
-                if (Graphics.Assets.ContainsKey(iName))
-                    Graphics.Assets.Remove(iName);
+                Graphics.Assets.TryRemove(iName);
             }
             else if (node.Tag.GetType() == typeof(RenderRoad))
             {
                 dSceneTree.RemoveNode(node);
-                if (Graphics.Assets.ContainsKey(int.Parse(node.Name)))
-                    Graphics.Assets.Remove(int.Parse(node.Name));
+                Graphics.Assets.TryRemove(int.Parse(node.Name));
             }
             else if (node.Tag.GetType() == typeof(RenderJunction))
             {
                 dSceneTree.RemoveNode(node);
-                if (Graphics.Assets.ContainsKey(int.Parse(node.Name)))
-                    Graphics.Assets.Remove(int.Parse(node.Name));
+                Graphics.Assets.TryRemove(int.Parse(node.Name));
             }
             else if (node.Tag.GetType() == typeof(Collision.CollisionModel))
             {
                 dSceneTree.RemoveNode(node);
 
                 Collision.CollisionModel data = (node.Tag as Collision.CollisionModel);
-                if (RenderStorageSingleton.Instance.StaticCollisions.ContainsKey(data.Hash))
-                    RenderStorageSingleton.Instance.StaticCollisions.Remove(data.Hash);
+                RenderStorageSingleton.Instance.StaticCollisions.TryRemove(data.Hash);
 
                 for (int i = 0; i != node.Nodes.Count; i++)
                 {
                     int iName = Convert.ToInt32(node.Nodes[i].Name);
-                    if (Graphics.Assets.ContainsKey(iName))
-                        Graphics.Assets.Remove(iName);
+                    Graphics.Assets.TryRemove(iName);
                 }
             }
         }

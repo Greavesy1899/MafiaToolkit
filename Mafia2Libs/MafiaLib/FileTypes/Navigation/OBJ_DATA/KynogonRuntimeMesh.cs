@@ -134,8 +134,17 @@ namespace ResourceTypes.Navigation
             writer.WriteLine(Unk1);
             writer.WriteLine(Unk2);
             writer.WriteLine(Unk3);
-            BoundMin = Vector2Extenders.ReadFromFile(reader);
-            BoundMax = Vector2Extenders.ReadFromFile(reader);
+
+            float boundMinX = reader.ReadSingle();
+            float boundMaxX = reader.ReadSingle();
+            float boundMaxY = -reader.ReadSingle();
+            float boundMinY = -reader.ReadSingle();
+
+            BoundMin = new Vector2(boundMinX, boundMinY);
+            BoundMax = new Vector2(boundMaxX, boundMaxY);
+
+
+
             writer.WriteLine(BoundMin);
             writer.WriteLine(BoundMax);
             //BoundingBox = BoundingBoxExtenders.ReadFromFile(reader);

@@ -7,8 +7,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using System.Windows.Media.Converters;
 
 namespace Utils.Extensions
 {
@@ -656,6 +658,41 @@ namespace Utils.Extensions
                     index++;
             }
             return -1;
+        }
+
+        public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue value)
+        {
+            bool bHasKey = dic.ContainsKey(key);
+
+            if(!bHasKey)
+            {
+                dic.Add(key, value);
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryRemove<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key)
+        {
+            bool bHasKey = dic.ContainsKey(key);
+
+            if(bHasKey)
+            {
+                return dic.Remove(key);
+            }
+
+            return false;
+        }
+
+        public static TValue TryGet<Tkey, TValue>(this Dictionary<Tkey, TValue> dic, Tkey key)
+        {
+            if(dic.ContainsKey(key))
+            {
+                return dic[key];
+            }
+
+            return default(TValue);
         }
     }
 
