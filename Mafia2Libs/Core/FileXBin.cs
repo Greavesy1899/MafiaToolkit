@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using ResourceTypes.M3.XBin;
 
-namespace Core
+namespace Core.IO
 {
-    public class XBinFile
+    public class FileXBin : FileBase
     {
         private XBin xbin;
+
+        public FileXBin(FileInfo info) : base(info)
+        {
+
+        }
 
         public static string GetExtensionUpperInvariant()
         {
@@ -20,19 +22,19 @@ namespace Core
             return ".xbin";
         }
 
-        public void Open(FileInfo info)
+        public override bool Open()
         {
             xbin = new XBin();
-            using(BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
+            using(BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
             {
                 xbin.ReadFromFile(reader);
             }
-            Write(info);
-        }
 
-        public void Write(FileInfo info)
+            return true;
+        }
+        public override void Save()
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Open(info.FullName, FileMode.Create)))
+            using (BinaryWriter writer = new BinaryWriter(File.Open(file.FullName, FileMode.Create)))
             {
                 xbin.WriteToFile(writer);
             }

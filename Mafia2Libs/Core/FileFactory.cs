@@ -36,6 +36,8 @@ namespace Core.IO
                     return new FileXML(info);
                 case "BIN":
                     return new FileBin(info);
+                case "XBIN":
+                    return new FileXBin(info);
                 default:
                     Console.WriteLine(string.Format("Default selected. info.Extension is {0}", info.Extension));
                     return new FileBase(info);

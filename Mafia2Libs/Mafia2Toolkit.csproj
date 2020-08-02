@@ -222,7 +222,7 @@
     <Compile Include="Controls\TextureEntry.Designer.cs">
       <DependentUpon>TextureEntry.cs</DependentUpon>
     </Compile>
-    <Compile Include="Core\XBinFile.cs" />
+    <Compile Include="Core\FileXBin.cs" />
     <Compile Include="Core\FileActor.cs" />
     <Compile Include="Core\FileBase.cs" />
     <Compile Include="Core\FileBin.cs" />
