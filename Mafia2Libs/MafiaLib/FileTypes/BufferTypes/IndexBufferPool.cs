@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using Utils.Extensions;
 
 namespace ResourceTypes.BufferPools
@@ -103,6 +104,26 @@ namespace ResourceTypes.BufferPools
                     }
                 }
             }
+        }
+
+        public bool TryAddBuffer(IndexBuffer buffer)
+        {
+            bool indexResult = HasBuffer(buffer);
+
+            if (indexResult)
+            {
+                var result = MessageBox.Show("Found existing Index Buffer!\nPressing 'OK' will replace, pressing 'Cancel' will stop the importing process.", "Toolkit", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                indexResult = (result == DialogResult.OK ? true : false);
+            }
+
+            if (indexResult)
+            {
+                RemoveBuffer(buffer);
+                AddBuffer(buffer);
+                return true;
+            }
+
+            return false;
         }
 
         public IndexBuffer GetBuffer(ulong indexRef)

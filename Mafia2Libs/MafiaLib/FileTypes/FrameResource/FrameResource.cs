@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using Utils.Extensions;
 using Utils.Settings;
 using Mafia2Tool;
+using ResourceTypes.BufferPools;
 
 namespace ResourceTypes.FrameResource
 {
@@ -155,81 +156,29 @@ namespace ResourceTypes.FrameResource
 
                 for (int i = 0; i != header.NumObjects; i++)
                 {
-                    FrameObjectBase newObject = new FrameObjectBase();
-                    if (objectTypes[i] == (int)ObjectType.Joint)
+                    FrameObjectBase newObject = FrameFactory.ReadFrameByObjectID(reader, (ObjectType)objectTypes[i], isBigEndian);
+                    
+                    if (objectTypes[i] == (int)ObjectType.SingleMesh)
                     {
-                        newObject = new FrameObjectJoint(reader, isBigEndian);
-                    }
-
-                    else if (objectTypes[i] == (int)ObjectType.SingleMesh)
-                    {
-                        newObject = new FrameObjectSingleMesh(reader, isBigEndian);
                         FrameObjectSingleMesh mesh = newObject as FrameObjectSingleMesh;
 
                         if (mesh.MeshIndex != -1)
                         {
-                            mesh.AddRef(FrameEntryRefTypes.Mesh, refs[mesh.MeshIndex]);
-                            mesh.Geometry = frameGeometries[mesh.Refs["Mesh"]];
+                            mesh.AddRef(FrameEntryRefTypes.Geometry, refs[mesh.MeshIndex]);
+                            mesh.Geometry = frameGeometries[mesh.Refs[FrameEntry.GeometryRef]];
                         }
 
                         if (mesh.MaterialIndex != -1)
                         {
                             mesh.AddRef(FrameEntryRefTypes.Material, refs[mesh.MaterialIndex]);
-                            mesh.Material = frameMaterials[mesh.Refs["Material"]];
+                            mesh.Material = frameMaterials[mesh.Refs[FrameEntry.MaterialRef]];
                         }
                     }
-                    else if (objectTypes[i] == (int)ObjectType.Frame)
-                    {
-                        newObject = new FrameObjectFrame(reader, isBigEndian);
-                    }
-
-                    else if (objectTypes[i] == (int)ObjectType.Light)
-                    {
-                        newObject = new FrameObjectLight(reader, isBigEndian);
-                    }
-
-                    else if (objectTypes[i] == (int)ObjectType.Camera)
-                    {
-                        newObject = new FrameObjectCamera(reader, isBigEndian);
-                    }
-
-                    else if (objectTypes[i] == (int)ObjectType.Component_U00000005)
-                    {
-                        newObject = new FrameObjectComponent_U005(reader, isBigEndian);
-                    }
-
-                    else if (objectTypes[i] == (int)ObjectType.Sector)
-                    {
-                        newObject = new FrameObjectSector(reader, isBigEndian);
-                    }
-
-                    else if (objectTypes[i] == (int)ObjectType.Dummy)
-                    {
-                        newObject = new FrameObjectDummy(reader, isBigEndian);
-                    }
-
-                    else if (objectTypes[i] == (int)ObjectType.ParticleDeflector)
-                    {
-                        newObject = new FrameObjectDeflector(reader, isBigEndian);
-                    }
-
-                    else if (objectTypes[i] == (int)ObjectType.Area)
-                    {
-                        newObject = new FrameObjectArea(reader, isBigEndian);
-                    }
-
-                    else if (objectTypes[i] == (int)ObjectType.Target)
-                    {
-                        newObject = new FrameObjectTarget(reader, isBigEndian);
-                    }
-
                     else if (objectTypes[i] == (int)ObjectType.Model)
                     {
-                        FrameObjectModel mesh = new FrameObjectModel(reader, isBigEndian);
-                        mesh.ReadFromFile(reader, isBigEndian);
-
-                        mesh.AddRef(FrameEntryRefTypes.Mesh, refs[mesh.MeshIndex]);
-                        mesh.Geometry = frameGeometries[mesh.Refs[FrameEntry.MeshRef]];
+                        FrameObjectModel mesh = newObject as FrameObjectModel;
+                        mesh.AddRef(FrameEntryRefTypes.Geometry, refs[mesh.MeshIndex]);
+                        mesh.Geometry = frameGeometries[mesh.Refs[FrameEntry.GeometryRef]];
                         mesh.AddRef(FrameEntryRefTypes.Material, refs[mesh.MaterialIndex]);
                         mesh.Material = frameMaterials[mesh.Refs[FrameEntry.MaterialRef]];
                         mesh.AddRef(FrameEntryRefTypes.BlendInfo, refs[mesh.BlendInfoIndex]);
@@ -242,10 +191,6 @@ namespace ResourceTypes.FrameResource
                         mesh.ReadFromFilePart2(reader, isBigEndian);
 
                         newObject = mesh;
-                    }
-                    else if (objectTypes[i] == (int)ObjectType.Collision)
-                    {
-                        newObject = new FrameObjectCollision(reader, isBigEndian);
                     }
 
                     frameObjects.Add(newObject.RefID, newObject);
@@ -398,9 +343,97 @@ namespace ResourceTypes.FrameResource
             }
         }
 
+        private FrameObjectBase ReadFrame(MemoryStream stream)
+        {
+            ObjectType frameType = (ObjectType)stream.ReadInt16(false);
+            FrameObjectBase parent = FrameFactory.ReadFrameByObjectID(stream, frameType, false);
+            Debug.WriteLine(parent.ToString());
+
+            if (parent is FrameObjectSingleMesh || parent is FrameObjectModel)
+            {
+                // Read the required blocks;
+                FrameGeometry geometry = new FrameGeometry();
+                geometry.ReadFromFile(stream, false);
+                FrameMaterial material = new FrameMaterial();
+                material.ReadFromFile(stream, false);
+
+                // Add them into our pool of blocks
+                frameGeometries.Add(geometry.RefID, geometry);
+                frameMaterials.Add(material.RefID, material);
+
+                // Add our references onto our mesh
+                FrameObjectSingleMesh mesh = (parent as FrameObjectSingleMesh);
+                mesh.AddRef(FrameEntryRefTypes.Geometry, geometry.RefID);
+                mesh.Geometry = frameGeometries[geometry.RefID];
+                mesh.AddRef(FrameEntryRefTypes.Material, material.RefID);
+                mesh.Material = frameMaterials[material.RefID];
+
+                if(parent is FrameObjectModel)
+                {
+                    // Read the rigged specific blocks
+                    FrameBlendInfo blendInfo = new FrameBlendInfo();
+                    blendInfo.ReadFromFile(stream, false);
+                    FrameSkeleton skeleton = new FrameSkeleton();
+                    skeleton.ReadFromFile(stream, false);
+                    FrameSkeletonHierachy hierarchy = new FrameSkeletonHierachy();
+                    hierarchy.ReadFromFile(stream, false);
+
+                    // Add our new rigged specific blocks into our pools
+                    frameBlendInfos.Add(blendInfo.RefID, blendInfo);
+                    frameSkeletons.Add(skeleton.RefID, skeleton);
+                    frameSkeletonHierachies.Add(hierarchy.RefID, hierarchy);
+
+                    // Finally, add our references to the model.
+                    FrameObjectModel model = (parent as FrameObjectModel);
+                    model.AddRef(FrameEntryRefTypes.BlendInfo, blendInfo.RefID);
+                    model.BlendInfo = frameBlendInfos[blendInfo.RefID];
+                    model.AddRef(FrameEntryRefTypes.Skeleton, skeleton.RefID);
+                    model.Skeleton = frameSkeletons[skeleton.RefID];
+                    model.AddRef(FrameEntryRefTypes.SkeletonHierachy, hierarchy.RefID);
+                    model.SkeletonHierarchy = frameSkeletonHierachies[hierarchy.RefID];
+                }
+
+                // Read the buffers;
+                IndexBuffer indexBuffer = new IndexBuffer(stream, false);
+                VertexBuffer vertexBuffer = new VertexBuffer(stream, false);
+
+                // We have to make sure we have index and buffer pools available
+                // We have to do it for all LODs too; if any more than 1.
+                foreach (var lod in geometry.LOD)
+                {
+                    SceneData.IndexBufferPool.TryAddBuffer(indexBuffer);
+                    SceneData.VertexBufferPool.TryAddBuffer(vertexBuffer);
+                }
+            }
+
+            // We can finally add our new frame object
+            frameObjects.Add(parent.RefID, parent);
+
+            // Read how many children this frame has, and proceed to read them too.
+            int count = stream.ReadInt32(false);
+            for(int i = 0; i < count; i++)
+            { 
+                FrameObjectBase child = ReadFrame(stream);
+                SetParentOfObject(0, child, parent);
+                SetParentOfObject(1, child, parent);
+            }
+
+            return parent;
+        }
+
+        public TreeNode ReadFramesFromFile(string filename)
+        {
+            using (MemoryStream stream = new MemoryStream(File.ReadAllBytes(filename)))
+            {
+                FrameObjectBase parent = ReadFrame(stream);              
+                return BuildFromFrames(null, parent);
+            }
+        }
+
         private void SaveFrame(FrameObjectBase frame, BinaryWriter writer)
         {
             //is this even needed? hmm.
+            Debug.WriteLine(frame.ToString());
             if (frame.GetType() == typeof(FrameObjectArea))
             {
                 writer.Write((ushort)ObjectType.Area);
@@ -418,7 +451,7 @@ namespace ResourceTypes.FrameResource
             }
             else if (frame.GetType() == typeof(FrameObjectComponent_U005))
             {
-                writer.Write((ushort)ObjectType.Collision);
+                writer.Write((ushort)ObjectType.Component_U00000005);
                 (frame as FrameObjectComponent_U005).WriteToFile(writer);
             }
             else if (frame.GetType() == typeof(FrameObjectDummy))
@@ -593,6 +626,28 @@ namespace ResourceTypes.FrameResource
             return root;
         }
 
+        private TreeNode BuildFromFrames(TreeNode parent, FrameObjectBase frame)
+        {
+            // Create our new node for the frame.
+            TreeNode node = new TreeNode(frame.ToString());
+            node.Tag = frame;
+            node.Name = frame.RefID.ToString();
+
+            // If our parent exists, add it into the node.
+            if (parent != null)
+            {
+                parent.Nodes.Add(node);
+            }
+
+            // Iterate and create the frames from our parent frame.
+            foreach (var child in frame.Children)
+            {
+                BuildFromFrames(node, child);
+            }
+
+            return node;
+        }
+
         public void DefineFrameBlockParents()
         {
             for (int i = 0; i < frameObjects.Count; i++)
@@ -674,26 +729,36 @@ namespace ResourceTypes.FrameResource
             Dictionary<int, bool> isSkelHierUsed = new Dictionary<int, bool>(frameSkeletonHierachies.Count);
 
             foreach (KeyValuePair<int, FrameGeometry> entry in frameGeometries)
+            {
                 isGeomUsed.Add(entry.Key, false);
+            }
 
             foreach (KeyValuePair<int, FrameMaterial> entry in frameMaterials)
+            {
                 isMatUsed.Add(entry.Key, false);
+            }
 
             foreach (KeyValuePair<int, FrameBlendInfo> entry in frameBlendInfos)
+            {
                 isBlendInfoUsed.Add(entry.Key, false);
+            }
 
             foreach (KeyValuePair<int, FrameSkeleton> entry in frameSkeletons)
+            {
                 isSkelUsed.Add(entry.Key, false);
+            }
 
             foreach (KeyValuePair<int, FrameSkeletonHierachy> entry in frameSkeletonHierachies)
+            {
                 isSkelHierUsed.Add(entry.Key, false);
+            }
 
             foreach (KeyValuePair<int, object> entry in frameObjects)
             {
                 if (entry.Value is FrameObjectModel)
                 {
                     FrameObjectModel mesh = (entry.Value as FrameObjectModel);
-                    isGeomUsed[mesh.Refs[FrameEntry.MeshRef]] = true;
+                    isGeomUsed[mesh.Refs[FrameEntry.GeometryRef]] = true;
                     isMatUsed[mesh.Refs[FrameEntry.MaterialRef]] = true;
                     isBlendInfoUsed[mesh.Refs[FrameEntry.BlendInfoRef]] = true;
                     isSkelHierUsed[mesh.Refs[FrameEntry.SkeletonHierRef]] = true;
@@ -704,7 +769,7 @@ namespace ResourceTypes.FrameResource
                     FrameObjectSingleMesh mesh = (entry.Value as FrameObjectSingleMesh);
 
                     if (mesh.MeshIndex > -1)
-                        isGeomUsed[mesh.Refs[FrameEntry.MeshRef]] = true;
+                        isGeomUsed[mesh.Refs[FrameEntry.GeometryRef]] = true;
 
                     if (mesh.MaterialIndex > -1)
                         isMatUsed[mesh.Refs[FrameEntry.MaterialRef]] = true;
@@ -808,7 +873,7 @@ namespace ResourceTypes.FrameResource
                 {
                     FrameObjectSingleMesh mesh = (block as FrameObjectSingleMesh);
                     Console.WriteLine(string.Format("Updating: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
-                    if (mesh.MeshIndex != -1) mesh.MeshIndex = offsets[1] + frameGeometries.IndexOfValue(mesh.Refs[FrameEntry.MeshRef]);
+                    if (mesh.MeshIndex != -1) mesh.MeshIndex = offsets[1] + frameGeometries.IndexOfValue(mesh.Refs[FrameEntry.GeometryRef]);
                     if (mesh.MaterialIndex != -1) mesh.MaterialIndex = offsets[2] + frameMaterials.IndexOfValue(mesh.Refs[FrameEntry.MaterialRef]);
                     block = mesh;
                     Console.WriteLine(string.Format("Updated: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
@@ -817,7 +882,7 @@ namespace ResourceTypes.FrameResource
                 {
                     FrameObjectModel mesh = (block as FrameObjectModel);
                     Console.WriteLine(string.Format("Updating: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
-                    if (mesh.MeshIndex != -1)  mesh.MeshIndex = offsets[1] + frameGeometries.IndexOfValue(mesh.Refs[FrameEntry.MeshRef]);
+                    if (mesh.MeshIndex != -1)  mesh.MeshIndex = offsets[1] + frameGeometries.IndexOfValue(mesh.Refs[FrameEntry.GeometryRef]);
                     if (mesh.MaterialIndex != -1) mesh.MaterialIndex = offsets[2] + frameMaterials.IndexOfValue(mesh.Refs[FrameEntry.MaterialRef]);
                     if (mesh.BlendInfoIndex != -1) mesh.BlendInfoIndex = offsets[3] + frameBlendInfos.IndexOfValue(mesh.Refs[FrameEntry.BlendInfoRef]);
                     if (mesh.SkeletonIndex != -1) mesh.SkeletonIndex = offsets[4] + frameSkeletons.IndexOfValue(mesh.Refs[FrameEntry.SkeletonRef]);

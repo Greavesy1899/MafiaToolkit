@@ -42,7 +42,7 @@ namespace ApexSDK
 
         public override string ToString()
         {
-            return string.Format("RandomSubtextureModifierParams");
+            return "RandomSubtextureModifierParams";
         }
     }
 }

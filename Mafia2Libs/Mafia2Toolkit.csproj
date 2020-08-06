@@ -331,6 +331,7 @@
     <Compile Include="MafiaLib\FileTypes\Collisions\CollisionBuilder.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\CutsceneTypes.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameNameTable\FrameNameTableEnums.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameFactory.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceXML.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\ItemDescEnums.cs" />

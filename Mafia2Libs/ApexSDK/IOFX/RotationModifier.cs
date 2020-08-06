@@ -48,7 +48,7 @@ namespace ApexSDK
 
         public override string ToString()
         {
-            return string.Format("RotationModifierParams");
+            return "RotationModifierParams";
         }
     }
 }

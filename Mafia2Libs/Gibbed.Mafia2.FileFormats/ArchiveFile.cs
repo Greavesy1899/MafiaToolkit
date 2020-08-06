@@ -1120,7 +1120,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             // Create directories and then write the XML to finish it off.
             string fileName = name + ".fsb";
-            string[] dirs = name.Split('/');
+            string[] dirs = name.Split(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
 
             string tempDir = soundDir;
             for (int z = 0; z != dirs.Length - 1; z++)

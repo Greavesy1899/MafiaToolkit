@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using Utils.Extensions;
 
 namespace ResourceTypes.BufferPools
@@ -103,6 +104,26 @@ namespace ResourceTypes.BufferPools
                     }
                 }
             }
+        }
+
+        public bool TryAddBuffer(VertexBuffer buffer)
+        {
+            bool vertexResult = HasBuffer(buffer);
+
+            if(vertexResult)
+            {
+                var result = MessageBox.Show("Found existing Vertex Buffer!\nPressing 'OK' will replace, pressing 'Cancel' will stop the importing process.", "Toolkit", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                vertexResult = (result == DialogResult.OK ? true : false);
+            }
+
+            if (vertexResult)
+            {
+                RemoveBuffer(buffer);
+                AddBuffer(buffer);
+                return true;
+            }
+
+            return false;
         }
 
         public VertexBuffer GetBuffer(ulong vertexRef)

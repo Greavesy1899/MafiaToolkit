@@ -8,6 +8,9 @@ using Utils.Types;
 
 namespace ResourceTypes.ItemDesc
 {
+    // Collision Type 10 is 72 bytes long.
+    // In ItemDesc_564 of city_crash, there is the 0xFF at the end and then a count; for instance this is 2.
+    // it then followings with a 1, 10, and the a 1.0f.
     public class ItemDescLoader
     {
         public ulong frameRef; //links into FrameResources. Only checked collisions.
@@ -21,6 +24,8 @@ namespace ResourceTypes.ItemDesc
 
         public ItemDescLoader(string fileName)
         {
+            Log.WriteLine("Trying to Parse: " + fileName, LoggingTypes.WARNING, LogCategoryTypes.FUNCTION);
+
             using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
             {
                 ReadFromFile(reader);

@@ -100,20 +100,29 @@ namespace Rendering.Graphics
             return true;
         }
 
-        public void SetTranslokatorGrid(TranslokatorLoader translokator)
+        public TreeNode SetTranslokatorGrid(TranslokatorLoader translokator)
         {
             translokatorGrid = new SpatialGrid(translokator);
             translokatorGrid.Initialise(D3D.Device, D3D.DeviceContext);
+            return translokatorGrid.GetTreeNodes();
         }
 
-        public void SetNavigationGrid(ResourceTypes.Navigation.OBJData[] data)
+        public TreeNode SetNavigationGrid(ResourceTypes.Navigation.OBJData[] data)
         {
+            TreeNode[] Grids = new TreeNode[data.Length];
             navigationGrids = new SpatialGrid[data.Length];
+
             for(int i = 0; i < navigationGrids.Length; i++)
             {
                 navigationGrids[i] = new SpatialGrid(data[i].runtimeMesh);
                 navigationGrids[i].Initialise(D3D.Device, D3D.DeviceContext);
+                Grids[i] = navigationGrids[i].GetTreeNodes();
+                Grids[i].Text = string.Format("Grid: {0}", i);
             }
+
+            TreeNode Parent = new TreeNode("Navigation Grids");
+            Parent.Nodes.AddRange(Grids);
+            return Parent;
         }
 
         public void Shutdown()
@@ -206,7 +215,9 @@ namespace Rendering.Graphics
             bool foundOld = Assets.TryGetValue(selectedID, out oldObj);
 
             if (selectedID == id)
+            {
                 return;
+            }
 
             if (foundNew)
             {
