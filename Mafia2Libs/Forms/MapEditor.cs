@@ -1214,8 +1214,8 @@ namespace Mafia2Tool
         {
             for (int i = 0; i < model.FrameGeometry.NumLods; i++)
             {
-                SceneData.VertexBufferPool.TryAddBuffer(model.VertexBuffers[i]);
-                SceneData.IndexBufferPool.TryAddBuffer(model.IndexBuffers[i]);
+               bool bAdded = SceneData.VertexBufferPool.TryAddBuffer(model.VertexBuffers[i]);
+               bAdded = SceneData.IndexBufferPool.TryAddBuffer(model.IndexBuffers[i]);
             }
         }
 

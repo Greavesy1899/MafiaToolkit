@@ -1,11 +1,9 @@
 ﻿using SharpDX;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
-using Utils.StringHelpers;
 using Utils.Types;
 
 namespace ResourceTypes.Actors
@@ -2146,6 +2144,42 @@ namespace ResourceTypes.Actors
         }
     }
 
+    public class ActorCutscene : IActorExtraDataInterface
+    {
+        public string Name { get; set; }
+        public int Looped { get; set; }
+        public int NumOfLoops { get; set; }
+
+        public ActorCutscene()
+        {
+            Name = "";
+        }
+
+        public ActorCutscene(MemoryStream stream, bool isBigEndian)
+        {
+            ReadFromFile(stream, isBigEndian);
+        }
+
+        public int GetSize()
+        {
+            return 136;
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            Name = stream.ReadStringBuffer(128);
+            Looped = stream.ReadInt32(isBigEndian);
+            NumOfLoops = stream.ReadInt32(isBigEndian);
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            writer.WriteStringBuffer(128, Name);
+            writer.Write(Looped, isBigEndian);
+            writer.Write(NumOfLoops, isBigEndian);
+        }
+    }
+
     public class ActorActionPoint : IActorExtraDataInterface
     {
         public float AttractionCoeff { get; set; }
@@ -2204,6 +2238,7 @@ namespace ResourceTypes.Actors
             writer.Write(WalkRange, isBigEndian);
             writer.Write(SensorType, isBigEndian);
             writer.Write(Radius, isBigEndian);
+            writer.WriteStringBuffer(128, ScriptEntity);
             Vector3Extenders.WriteToFile(BBox, writer, isBigEndian);
             writer.Write(Data);
             writer.Write(Type, isBigEndian);

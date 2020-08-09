@@ -105,20 +105,33 @@ namespace ApexSDK
             for (int i = 0; i != numVerts6; i++)
                 boneIdx[i] = reader.ReadInt32();
 
-            unkShorts = new short[numVerts6*4];
-            for (int i = 0; i != numVerts6*4; i++)
+            int numUnkShorts = reader.ReadInt32();
+            unkShorts = new short[numUnkShorts];
+            for (int i = 0; i < numUnkShorts; i++)
                 unkShorts[i] = reader.ReadInt16();
 
-            unk6 = reader.ReadInt16();
-            unk7 = reader.ReadInt16();
-            unk8 = reader.ReadInt32();
-            unk8Collection = new float[unk8];
-            unk8Collection2 = new int[unk8];
-            for (int i = 0; i != unk8; i++)
-                unk8Collection[i] = reader.ReadSingle();
+            int numUnkFloats = reader.ReadInt32();
+            for (int i = 0; i < numUnkFloats; i++)
+                reader.ReadSingle();
 
-            for (int i = 0; i != unk8; i++)
-                unk8Collection2[i] = reader.ReadInt32();
+            int unk10 = reader.ReadInt32();
+            int numUnkFloats2 = reader.ReadInt32();
+            for (int i = 0; i < numUnkFloats2; i++)
+                reader.ReadSingle();
+
+            for (int i = 0; i < numUnkFloats2; i++)
+                reader.ReadInt32();
+
+            //unk6 = reader.ReadInt16();
+            //unk7 = reader.ReadInt16();
+            //unk8 = reader.ReadInt32();
+            //unk8Collection = new float[unk8];
+            //unk8Collection2 = new int[unk8];
+            //for (int i = 0; i != unk8; i++)
+            //    unk8Collection[i] = reader.ReadSingle();
+
+            //for (int i = 0; i != unk8; i++)
+            //    unk8Collection2[i] = reader.ReadInt32();
 
             numTriangles = reader.ReadInt32();
             triangles = new Int3[numTriangles];

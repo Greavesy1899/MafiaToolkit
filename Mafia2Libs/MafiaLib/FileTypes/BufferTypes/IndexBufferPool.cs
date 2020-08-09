@@ -108,22 +108,25 @@ namespace ResourceTypes.BufferPools
 
         public bool TryAddBuffer(IndexBuffer buffer)
         {
-            bool indexResult = HasBuffer(buffer);
+            bool bIndexBuffer = HasBuffer(buffer);
 
-            if (indexResult)
+            if (bIndexBuffer)
             {
                 var result = MessageBox.Show("Found existing Index Buffer!\nPressing 'OK' will replace, pressing 'Cancel' will stop the importing process.", "Toolkit", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-                indexResult = (result == DialogResult.OK ? true : false);
+                bIndexBuffer = (result == DialogResult.OK ? true : false);
             }
 
-            if (indexResult)
+            if (bIndexBuffer)
             {
                 RemoveBuffer(buffer);
                 AddBuffer(buffer);
                 return true;
             }
-
-            return false;
+            else
+            {
+                AddBuffer(buffer);
+                return true;
+            }
         }
 
         public IndexBuffer GetBuffer(ulong indexRef)

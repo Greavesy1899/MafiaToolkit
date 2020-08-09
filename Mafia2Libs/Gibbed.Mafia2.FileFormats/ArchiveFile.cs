@@ -1014,7 +1014,8 @@ namespace Gibbed.Mafia2.FileFormats
             string xmldir = xmlDir;
             for (int z = 0; z != dirs.Length - 1; z++)
             {
-                xmldir += "/" + dirs[z];
+                
+                xmldir = Path.Combine(xmldir, dirs[z]);
                 Directory.CreateDirectory(xmldir);
             }
 
@@ -1023,13 +1024,19 @@ namespace Gibbed.Mafia2.FileFormats
                 resource = new XmlResource();
                 resource.Deserialize(entry.Version, stream, Endian);
 
+                string FileName = xmldir + ".xml";
+
                 if (resource.Unk3)
                 {
-                    File.WriteAllBytes(xmlDir + "/" + name + ".xml", entry.Data);
+                    File.WriteAllBytes(FileName, entry.Data);
                 }
                 else
                 {
-                    File.WriteAllText(xmlDir + "/" + name + ".xml", resource.Content);
+                    // 08/08/2020. Originally was File.WriteAllText, but caused problems with some XML documents.
+                    using (StreamWriter writer = new StreamWriter(File.Open(FileName, FileMode.Create)))
+                    {
+                        writer.WriteLine(resource.Content);
+                    }
                 }
             }
 

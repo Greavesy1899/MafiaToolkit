@@ -108,22 +108,25 @@ namespace ResourceTypes.BufferPools
 
         public bool TryAddBuffer(VertexBuffer buffer)
         {
-            bool vertexResult = HasBuffer(buffer);
+            bool bHasVertexBuffer = HasBuffer(buffer);
 
-            if(vertexResult)
+            if(bHasVertexBuffer)
             {
                 var result = MessageBox.Show("Found existing Vertex Buffer!\nPressing 'OK' will replace, pressing 'Cancel' will stop the importing process.", "Toolkit", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-                vertexResult = (result == DialogResult.OK ? true : false);
+                bHasVertexBuffer = (result == DialogResult.OK ? true : false);
             }
 
-            if (vertexResult)
+            if (bHasVertexBuffer)
             {
                 RemoveBuffer(buffer);
                 AddBuffer(buffer);
                 return true;
             }
-
-            return false;
+            else
+            {
+                AddBuffer(buffer);
+                return true;
+            }
         }
 
         public VertexBuffer GetBuffer(ulong vertexRef)

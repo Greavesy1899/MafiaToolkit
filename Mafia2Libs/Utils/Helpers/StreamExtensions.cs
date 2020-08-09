@@ -16,7 +16,9 @@ namespace Utils.Extensions
         {
             char[] data = new char[size];
             for (int i = 0; i < size; i++)
+            {
                 data[i] = stream.ReadChar();
+            }
             return data;
         }
         public static char ReadChar(this Stream stream)
@@ -124,7 +126,9 @@ namespace Utils.Extensions
         public static void Write(this Stream stream, char[] data)
         {
             for (int i = 0; i < data.Length; i++)
+            {
                 stream.Write(data[i]);
+            }
         }
         public static void Write(this Stream stream, char value)
         {

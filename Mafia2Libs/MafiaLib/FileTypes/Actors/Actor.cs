@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Utils.StringHelpers;
 
@@ -186,9 +187,7 @@ namespace ResourceTypes.Actors
             }
 
             unk16 = reader.ReadInt32();
-
-            //if (unk16 != 0)
-            //    throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
+            Debug.Assert(unk16 == 0, "This is not the end of the file. Message Greavesy with this message and the name of the SDS you tried to read.");
         }
 
         public void WriteToFile()

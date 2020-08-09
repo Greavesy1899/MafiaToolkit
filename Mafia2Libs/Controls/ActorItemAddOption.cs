@@ -24,6 +24,7 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.FrameWrapper);
             TypeCombo.Items.Add(ActorTypes.C_ActorDetector);
             TypeCombo.Items.Add(ActorTypes.LightEntity);
+            TypeCombo.Items.Add(ActorTypes.C_Cutscene);
             TypeCombo.Items.Add(ActorTypes.C_ScriptEntity);
             TypeCombo.Items.Add(ActorTypes.C_Pinup);
 
