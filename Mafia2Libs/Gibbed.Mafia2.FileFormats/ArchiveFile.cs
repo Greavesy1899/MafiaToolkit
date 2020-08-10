@@ -1228,7 +1228,12 @@ namespace Gibbed.Mafia2.FileFormats
             foreach (TableData data in resource.Tables)
             {
                 //maybe we can get away with saving to version 1, and then converting to version 2 when packing?
-                data.Serialize(1, File.Open(tableDIR + data.Name, FileMode.Create), Endian.Little);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    data.Serialize(1, stream, Endian.Little);
+                    File.WriteAllBytes(tableDIR + data.Name, stream.ToArray());
+                }
+
                 resourceXML.WriteElementString("Table", data.Name);
             }
 

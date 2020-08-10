@@ -2084,7 +2084,10 @@ namespace Mafia2Tool
 
                 if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
                 {
-                    m2tColModel.ReadFromM2T(new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)));
+                    using(BinaryReader reader = new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)))
+                    {
+                        m2tColModel.ReadFromM2T(reader);
+                    }
                 }                  
                 else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
                 {
