@@ -9,8 +9,10 @@ namespace ResourceTypes.Cutscene.AnimEntities
     //AeOmniLight
     public class AeOmniLight : AeBase
     {
-        public int Unk01 { get; set; }
+        public short Unk0 { get; set; }
+        public string Name0 { get; set; }
         public string Name1 { get; set; }
+        public byte Unk01 { get; set; }
         public ulong Hash1 { get; set; }
         public ulong Hash2 { get; set; }
         public string Name2 { get; set; }
@@ -29,8 +31,13 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public short Unk13 { get; set; }
         public override bool ReadDefinitionFromFile(MemoryStream stream, bool isBigEndian)
         {
-            Unk01 = stream.ReadInt32(isBigEndian);
+            Unk0 = stream.ReadInt16(isBigEndian);
+            Name0 = stream.ReadString16(isBigEndian);
             Name1 = stream.ReadString16(isBigEndian);
+            if (!string.IsNullOrEmpty(Name1))
+            {
+                Unk01 = stream.ReadByte8();
+            }
             Hash1 = stream.ReadUInt64(isBigEndian);
             Hash2 = stream.ReadUInt64(isBigEndian);
             Name2 = stream.ReadString16(isBigEndian);

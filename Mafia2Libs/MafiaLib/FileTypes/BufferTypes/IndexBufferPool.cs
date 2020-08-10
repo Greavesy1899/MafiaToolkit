@@ -212,6 +212,8 @@ namespace ResourceTypes.BufferPools
             numBuffers = stream.ReadInt32(isBigEndian);
             size = stream.ReadUInt32(isBigEndian);
 
+            uint result = (size & 2147483648);
+
             for (int i = 0; i != numBuffers; i++)
             {
                 IndexBuffer buffer = new IndexBuffer(stream, isBigEndian);
@@ -225,18 +227,36 @@ namespace ResourceTypes.BufferPools
 
         public void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
+            bool bNeedHighBit = false;
             size = 0;
 
             stream.WriteByte((byte)version);
             stream.Write(buffers.Count, isBigEndian);
 
-            //need to make sure we update total size of buffers.
+            // TODO - Merge this into one iteration; it is doable.
             for (int i = 0; i != buffers.Count; i++)
             {
-                uint usage = (uint)buffers.ElementAt(i).Value.GetLength();
+                IndexBuffer buffer = buffers.ElementAt(i).Value;
+
+                // Check if this buffer uses 32bit
+                if (!bNeedHighBit)
+                {
+                    bNeedHighBit = (buffer.IndexFormat == 2);
+                }
+
+                // Now calculate our size..
+                uint usage = buffer.GetLength();
                 size += usage;
             }
+            
+            // A little bit of padding.. Maybe we should remove this now?
             size += 128;
+            
+            if(bNeedHighBit)
+            {
+                size |= 2147483648;
+            }
+
             stream.Write(size, isBigEndian);
 
             for (int i = 0; i != buffers.Count; i++)
@@ -256,6 +276,10 @@ namespace ResourceTypes.BufferPools
         public ulong Hash {
             get { return hash; }
             set { hash = value; }
+        }
+
+        public int IndexFormat {
+            get { return indexFormat; }
         }
 
         public IndexBuffer(ulong hash)

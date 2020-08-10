@@ -33,12 +33,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Unk01 = stream.ReadInt16(isBigEndian);
             Name1 = stream.ReadString16(isBigEndian);
             Name2 = stream.ReadString16(isBigEndian);
-
-            if (!string.IsNullOrEmpty(Name2))
-            {
-                Unk02 = stream.ReadByte8();
-            }
-            
+            Unk02 = stream.ReadByte8();
             Hash0 = stream.ReadUInt64(isBigEndian);
             Hash1 = stream.ReadUInt64(isBigEndian);
             Name3 = stream.ReadString16(isBigEndian);

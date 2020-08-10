@@ -2235,14 +2235,7 @@ namespace Mafia2Tool
             var geoms = SceneData.FrameResource.FrameGeometries;
             var mats = SceneData.FrameResource.FrameMaterials;
             var indexbuffer = SceneData.IndexBufferPool.Buffers;
-            foreach(var entry in frames)
-            {
-                var frame = entry.Value;
-                if(frame is FrameObjectSingleMesh)
-                {
-                    (frame as FrameObjectSingleMesh).SingleMeshFlags |= SingleMeshFlags.flag_134217728;
-                }
-            }
+
             foreach (var geom in geoms)
             {
                 foreach (var lod in geom.Value.LOD)

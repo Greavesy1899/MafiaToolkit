@@ -81,14 +81,6 @@ namespace ResourceTypes.Cutscene
 
         public class Cutscene
         {
-            //private string cutsceneName; //begins with a length; short data type.
-            //5 empty bytes;
-            //This size of GCS Seems to be ignoring the cutscene count, and then checking for a bool; basically to check if SPD data exists.
-            //private int gcsSize; //size of GCS! data.
-            //private GCSData gcsData; //GCS! data.
-            //private SPDData spdData; //SPD! data.
-            //private GCRData[] gcrData; //GCR! data;
-
             public string CutsceneName { get; set; }
             public GCSData AssetContent { get; set; }
             public SPDData SoundContent { get; set; }
