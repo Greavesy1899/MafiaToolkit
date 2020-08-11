@@ -11,6 +11,7 @@ namespace ResourceTypes.M3.XBin
 
         private int unk0; //could be with the table;
         private VehicleTable vehicles; // test;
+        private PaintCombinationsTable paintCombinations;
 
         private int unk1;
 
@@ -20,11 +21,29 @@ namespace ResourceTypes.M3.XBin
             version = reader.ReadInt32();
             numTables = reader.ReadInt32();
             offset = reader.ReadInt32();
-            unk0 = reader.ReadInt32();
 
-            vehicles = new VehicleTable();
-            vehicles.ReadFromFile(reader);
-            unk1 = reader.ReadInt32();
+            if (numTables > 0)
+            {
+                for(int i = 0; i < numTables; i++)
+                {
+                    uint offset = reader.ReadUInt32();
+                    uint size = reader.ReadUInt32();
+                }
+            }
+            else
+            {
+                unk0 = reader.ReadInt32();
+
+                //vehicles = new VehicleTable();
+                //vehicles.ReadFromFile(reader);
+                //unk1 = reader.ReadInt32();
+
+                //paintCombinations = new PaintCombinationsTable();
+                //paintCombinations.ReadFromFile(reader);
+
+                StreamMapTable table = new StreamMapTable();
+                table.ReadFromFile(reader);
+            }
         }
 
         public void WriteToFile(BinaryWriter writer)

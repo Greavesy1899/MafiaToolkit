@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using Gibbed.Illusion.FileFormats;
 using Gibbed.IO;
+using Utils.Settings;
 
 namespace Gibbed.Mafia2.ResourceFormats
 {
@@ -72,6 +73,12 @@ namespace Gibbed.Mafia2.ResourceFormats
             this.Unk1 = version >= 3 ? input.ReadValueU8() != 0 : true;
             this.Name = input.ReadStringU32(endian);
             this.Unk3 = version >= 2 ? input.ReadValueU8() != 0 : false;
+
+            if(GameStorage.Instance.GetSelectedGame().GameType == GamesEnumerator.MafiaIII)
+            {
+                this.Content = "";
+                return;
+            }
 
             if (this.Unk3 == false)
             {
