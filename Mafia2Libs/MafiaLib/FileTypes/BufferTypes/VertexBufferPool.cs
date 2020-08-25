@@ -21,14 +21,11 @@ namespace ResourceTypes.BufferPools
             get { return loadedPoolNames; }
         }
 
-        public VertexBufferManager(List<FileInfo> files, bool isBigEndian = false)
+        public VertexBufferManager(List<FileInfo> files, DirectoryInfo parent, bool isBigEndian = false)
         {
             loadedPoolNames = files;
+            root = parent;
             buffers = new Dictionary<ulong, VertexBuffer>();
-            if (LoadedPoolNames.Count > 0)
-            {
-                root = loadedPoolNames[0].Directory;
-            }
             ReadFiles(isBigEndian);
         }
 

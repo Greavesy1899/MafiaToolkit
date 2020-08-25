@@ -6,17 +6,49 @@ using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
-    public abstract class AeBase
+    public class AeBase
     {
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public AeBaseData EntityData { get; protected set; }
-        public abstract int GetEntityDefinitionType();
-        public abstract int GetEntityDataType();
-        public abstract bool ReadDefinitionFromFile(MemoryStream stream, bool isBigEndian);
-        public abstract bool WriteDefinitionToFile(MemoryStream writer, bool isBigEndian);
-        public abstract bool ReadDataFromFile(MemoryStream stream, bool isBigEndian);
-        public abstract bool WriteDataFromFile(MemoryStream stream, bool isBigEndian);
+        public short Unk01 { get; set; }
+        public string Name1 { get; set; }
+        public string Name2 { get; set; }
+        public byte Unk02 { get; set; }
+        public ulong Hash0 { get; set; }
+        public ulong Hash1 { get; set; }
+        public string Name3 { get; set; }
+        public int Unk03 { get; set; }
+        public int Unk04 { get; set; }
+        public int Unk044 { get; set; }
 
+        public virtual void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            Unk01 = stream.ReadInt16(isBigEndian);
+
+            if(Unk01 == 0)
+            {
+                // Nothing here. return.
+                return;
+            }
+
+            Name1 = stream.ReadString16(isBigEndian);
+            Name2 = stream.ReadString16(isBigEndian);
+
+            if (!string.IsNullOrEmpty(Name2))
+            {
+                Unk02 = stream.ReadByte8();
+            }
+
+            Hash0 = stream.ReadUInt64(isBigEndian);
+            Hash1 = stream.ReadUInt64(isBigEndian);
+            Name3 = stream.ReadString16(isBigEndian);
+            Unk03 = stream.ReadInt32(isBigEndian);
+            Unk04 = stream.ReadInt32(isBigEndian);
+            Unk044 = stream.ReadInt32(isBigEndian);
+        }
+
+        public virtual void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+
+        }
     }
 
     public class AeBaseData

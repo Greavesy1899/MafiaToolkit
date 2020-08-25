@@ -342,6 +342,7 @@
     <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeModel.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeOmniLight.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSound_Type28.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSound_Type33.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSound_Type8.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSpotLight.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSunLight.cs" />

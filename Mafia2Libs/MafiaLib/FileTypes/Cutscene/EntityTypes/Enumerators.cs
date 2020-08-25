@@ -20,6 +20,7 @@
         AeSound_Type28 = 28,
         AeSunLight = 29,
         AeUnk30 = 30,
-        AeUnk32 = 32
+        AeUnk32 = 32,
+        AeSound_Type33 = 33
     }
 }

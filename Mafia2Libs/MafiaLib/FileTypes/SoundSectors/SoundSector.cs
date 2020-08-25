@@ -159,6 +159,14 @@ namespace ResourceTypes.Sound
             List<string> dump = new List<string>();
             dump.Add(string.Format("File Name: {0}", fileName));
             dump.Add("");
+            dump.Add(string.Format("Unk01: {0}", unk01));
+            dump.Add(string.Format("Unk02: {0}", unk02));
+            dump.Add(string.Format("Parent: {0}", parent));
+            dump.Add(string.Format("Unk03: {0}", unk03));
+            dump.Add(string.Format("SoundPrimary: {0}", soundPrimary));
+            dump.Add(string.Format("Parent Index: {0}", parentIdx));
+            dump.Add(string.Format("Unk04: {0}", sUnk04));
+            dump.Add("");
             dump.Add("Sound hashes (Links to sounds in actors)");
             dump.Add("========================================");
             dump.Add(string.Format("Count: {0}", numActorhashes));
@@ -166,20 +174,14 @@ namespace ResourceTypes.Sound
             for (int i = 0; i != actorHashes.Length; i++)
                 dump.Add(actorHashes[i].ToString());
 
-            dump.Add(string.Format("Unk01: {0}", unk01));
-            dump.Add(string.Format("Unk02: {0}", unk02));
             dump.Add("");
             dump.Add("Unknown Data Set:");
             dump.Add("========================================");
             dump.Add(string.Format("Count: {0}", count1));
+
             for (int i = 0; i != unksData2.Length; i++)
                 dump.Add(unksData2[i].ToString());
-            dump.Add("");
-            dump.Add(string.Format("Parent: {0}", parent));
-            dump.Add(string.Format("Unk03: {0}", unk03));
-            dump.Add(string.Format("SoundPrimary: {0}", soundPrimary));
-            dump.Add(string.Format("Parent Index: {0}", parentIdx));
-            dump.Add(string.Format("Unk04: {0}", sUnk04));
+
             dump.Add("");
             dump.Add("Unknown Data Set:");
             dump.Add("========================================");

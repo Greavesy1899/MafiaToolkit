@@ -192,8 +192,8 @@ namespace Mafia2Tool
             //    HPDData = (data.data as HPDData);
             //    data.WriteToFile();
             //}
-            IndexBufferPool = new IndexBufferManager(ibps, isBigEndian);
-            VertexBufferPool = new VertexBufferManager(vbps, isBigEndian);
+            IndexBufferPool = new IndexBufferManager(ibps, dirInfo, isBigEndian);
+            VertexBufferPool = new VertexBufferManager(vbps, dirInfo, isBigEndian);
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
             OBJData = obj.ToArray();

@@ -1010,7 +1010,7 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteElementString("File", name);
             XmlResource resource = new XmlResource();
 
-            string[] dirs = name.Split('/');
+            string[] dirs = name.Split(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
             string xmldir = xmlDir;
             for (int z = 0; z != dirs.Length - 1; z++)
             {
@@ -1023,8 +1023,7 @@ namespace Gibbed.Mafia2.FileFormats
             {
                 resource = new XmlResource();
                 resource.Deserialize(entry.Version, stream, Endian);
-
-                string FileName = xmldir + ".xml";
+                string FileName = Path.Combine(xmldir, Path.GetFileName(name) + ".xml");
 
                 if (resource.Unk3)
                 {

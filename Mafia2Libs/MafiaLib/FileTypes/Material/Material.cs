@@ -27,8 +27,8 @@ namespace ResourceTypes.Materials
         ulong shaderID;
         uint shaderHash;
 
-        Dictionary<string, ShaderParameter> parameters;
-        Dictionary<string, ShaderParameterSampler> samplers;
+        List<ShaderParameter> parameters;
+        List<ShaderParameterSampler> samplers;
 
         [Category("Material IDs"), ReadOnly(true)]
         public ulong MaterialHash {
@@ -107,25 +107,15 @@ namespace ResourceTypes.Materials
         }
 
         [Browsable(false)]
-        public Dictionary<string, ShaderParameter> Parameters {
+        public List<ShaderParameter> Parameters {
             get { return parameters; }
             set { parameters = value; }
         }
 
         [Browsable(false)]
-        public Dictionary<string, ShaderParameterSampler> Samplers {
+        public List<ShaderParameterSampler> Samplers {
             get { return samplers; }
             set { samplers = value; }
-        }
-
-        [Category("Shader")]
-        public List<ShaderParameter> ParametersList {
-            get { return parameters.Values.ToList(); }
-        }
-
-        [Category("Shader")]
-        public List<ShaderParameterSampler> SamplersList {
-            get { return samplers.Values.ToList(); }
         }
 
         /// <summary>
@@ -155,10 +145,10 @@ namespace ResourceTypes.Materials
             unk5 = 0;
             unk6 = 0;
             unk7 = 1.0f;
-            parameters = new Dictionary<string, ShaderParameter>();
-            samplers = new Dictionary<string, ShaderParameterSampler>();
+            parameters = new List<ShaderParameter>();
+            samplers = new List<ShaderParameterSampler>();
             var spp = new ShaderParameterSampler();
-            samplers.Add(spp.ID, spp);
+            samplers.Add(spp);
         }
 
         public override string ToString()
@@ -199,19 +189,19 @@ namespace ResourceTypes.Materials
             shaderHash = reader.ReadUInt32();
 
             int spCount = reader.ReadInt32();
-            parameters = new Dictionary<string, ShaderParameter>();
+            parameters = new List<ShaderParameter>();
             for (int i = 0; i != spCount; i++)
             {
                 var param = new ShaderParameter(reader);
-                parameters.Add(param.ID, param);
+                parameters.Add(param);
             }
 
             int spsCount = reader.ReadInt32();
-            samplers = new Dictionary<string, ShaderParameterSampler>();
+            samplers = new List<ShaderParameterSampler>();
             for (int i = 0; i != spsCount; i++)
             {
                 var shader = new ShaderParameterSampler(reader, version);
-                samplers.Add(shader.ID, shader);
+                samplers.Add(shader);
             }
         }
 
@@ -244,16 +234,16 @@ namespace ResourceTypes.Materials
 
             //Shader Parameter
             writer.Write(parameters.Count);
-            foreach (KeyValuePair<string, ShaderParameter> param in parameters)
+            foreach (var param in parameters)
             {
-                param.Value.WriteToFile(writer);
+                param.WriteToFile(writer);
             }
 
             //Shader Parameter Samplers
             writer.Write(samplers.Count);
-            foreach (KeyValuePair<string, ShaderParameterSampler> shader in samplers)
+            foreach (var shader in samplers)
             {
-                shader.Value.WriteToFile(writer);
+                shader.WriteToFile(writer);
             }
         }
 
@@ -265,9 +255,25 @@ namespace ResourceTypes.Materials
 
         public ShaderParameterSampler GetSamplerByKey(string SamplerName)
         {
-            if(samplers.ContainsKey(SamplerName))
+            foreach (var sampler in samplers)
             {
-                return samplers[SamplerName];
+                if(sampler.ID == SamplerName)
+                {
+                    return sampler;
+                }
+            }
+
+            return null;
+        }
+
+        public ShaderParameter GetParameterByKey(string ParameterKey)
+        {
+            foreach (var param in parameters)
+            {
+                if (param.ID == ParameterKey)
+                {
+                    return param;
+                }
             }
 
             return null;

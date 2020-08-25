@@ -9,6 +9,11 @@ using ResourceTypes.Translokator;
 
 namespace Rendering.Graphics
 {
+    public class UpdateSelectedEventArgs : EventArgs
+    {
+        public int RefID { get; set; }
+    }
+
     public class GraphicsClass
     {
         public FPSClass FPS { get; set; }
@@ -19,6 +24,8 @@ namespace Rendering.Graphics
         public Dictionary<int, IRenderer> InitObjectStack { get; set; }
 
         public TimerClass Timer;
+
+        public EventHandler<UpdateSelectedEventArgs> OnSelectedObjectUpdated;
 
         private int selectedID;
         private RenderBoundingBox selectionBox;
@@ -31,6 +38,7 @@ namespace Rendering.Graphics
         private SpatialGrid translokatorGrid;
         private SpatialGrid[] navigationGrids;
 
+
         public GraphicsClass()
         {
             InitObjectStack = new Dictionary<int, IRenderer>();
@@ -38,6 +46,8 @@ namespace Rendering.Graphics
             selectionBox = new RenderBoundingBox();
             translokatorGrid = new SpatialGrid();
             navigationGrids = new SpatialGrid[0];
+
+            OnSelectedObjectUpdated += OnSelectedObjectHasUpdated;
         }
 
         public bool PreInit(IntPtr WindowHandle)
@@ -246,6 +256,14 @@ namespace Rendering.Graphics
         {
             Camera.Pitch(deltaY);
             Camera.Yaw(deltaX);
+        }
+
+        private void OnSelectedObjectHasUpdated(object Sender, UpdateSelectedEventArgs Args)
+        {
+            if(selectedID == Args.RefID)
+            {
+                selectionBox.SetTransform(Assets[Args.RefID].Transform);
+            }
         }
 
         public void ToggleD3DFillMode() => D3D.ToggleFillMode();

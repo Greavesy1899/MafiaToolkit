@@ -21,14 +21,11 @@ namespace ResourceTypes.BufferPools
             get { return loadedPoolNames; }
         }
 
-        public IndexBufferManager(List<FileInfo> files, bool isBigEndian = false)
+        public IndexBufferManager(List<FileInfo> files, DirectoryInfo dirInfo, bool isBigEndian = false)
         {
             loadedPoolNames = files;
             buffers = new Dictionary<ulong, IndexBuffer>();
-            if (LoadedPoolNames.Count > 0)
-            {
-                root = loadedPoolNames[0].Directory;
-            }
+            root = dirInfo;
             ReadFiles(isBigEndian);
         }
 

@@ -67,11 +67,11 @@ namespace ResourceTypes.Materials
                 var mat = materials.ElementAt(i).Value;
                 foreach (var sampler in mat.Samplers)
                 {
-                    if (sampler.Value.UnkSet0.Length != size)
+                    if (sampler.UnkSet0.Length != size)
                     {
-                        var array = sampler.Value.UnkSet0;
+                        var array = sampler.UnkSet0;
                         Array.Resize(ref array, size);
-                        sampler.Value.UnkSet0 = array;
+                        sampler.UnkSet0 = array;
                     }
                 }
             }
@@ -133,7 +133,7 @@ namespace ResourceTypes.Materials
 
         private bool DoesMaterialContainTexture(string text, Material material)
         {
-            foreach(var sampler in material.SamplersList)
+            foreach(var sampler in material.Samplers)
             {
                 string FileNameLowerCase = sampler.File.ToLower();
                 return FileNameLowerCase.Contains(text);

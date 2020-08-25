@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ResourceTypes.Actors
 {
     public class ActorDefinition
     {
-        ulong hash; //hash, this is the same as in the frame.
+        ulong definitionHash; //hash, this is the same as in the frame.
         ushort unk01; //always zero
         ushort namePos; //starting position for the name.
         uint frameIndex; //links to FrameResource
         string name;
 
-        public ulong Hash {
-            get { return hash; }
-            set { hash = value; }
+        public ulong DefinitionHash {
+            get { return definitionHash; }
+            set { definitionHash = value; }
         }
         public uint FrameIndex {
             get { return frameIndex; }
             set { frameIndex = value; }
         }
+        [Browsable(false)]
         public ushort NamePos {
             get { return namePos; }
             set { namePos = value; }
@@ -34,7 +31,7 @@ namespace ResourceTypes.Actors
 
         public ActorDefinition()
         {
-            hash = 0;
+            definitionHash = 0;
             unk01 = 0;
             namePos = 0;
             frameIndex = 0;
@@ -43,7 +40,7 @@ namespace ResourceTypes.Actors
 
         public ActorDefinition(BinaryReader reader)
         {
-            hash = 0;
+            definitionHash = 0;
             unk01 = 0;
             namePos = 0;
             frameIndex = 0;
@@ -53,7 +50,7 @@ namespace ResourceTypes.Actors
 
         public void ReadFromFile(BinaryReader reader)
         {
-            hash = reader.ReadUInt64();
+            definitionHash = reader.ReadUInt64();
             unk01 = reader.ReadUInt16();
             namePos = reader.ReadUInt16();
             frameIndex = reader.ReadUInt32();
@@ -62,7 +59,7 @@ namespace ResourceTypes.Actors
 
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(hash);
+            writer.Write(definitionHash);
             writer.Write(unk01);
             writer.Write(namePos);
             writer.Write(frameIndex);
@@ -70,7 +67,7 @@ namespace ResourceTypes.Actors
 
         public override string ToString()
         {
-            return string.Format("{0}, {1}", hash, name);
+            return string.Format("{0}, {1}", definitionHash, name);
         }
     }
 }

@@ -67,6 +67,15 @@ namespace ResourceTypes.Actors
         public float ParticleHitSpeedMin { get; set; }
         public int GarbageID { get; set; }
 
+        public ActorPhysicsBase()
+        {
+            HitInfo = new HitData[3];
+            for(int i = 0; i < HitInfo.Length; i++)
+            {
+                HitInfo[i] = new HitData();
+            }
+        }
+
         public virtual int GetSize()
         {
             return 240;
@@ -276,11 +285,17 @@ namespace ResourceTypes.Actors
         public ActorRadioFlags Flags { get; set; }
         public float Range { get; set; }
         public float NearRange { get; set; }
+        [Description("The volume of the Radio. It is multipled by 100 in game.")]
         public float Volume { get; set; }
         public int CurveID { get; set; }
         public string Program { get; set; }
         public string Playlist { get; set; }
         public string Station { get; set; }
+
+        public ActorRadio() : base()
+        {
+
+        }
 
         public ActorRadio(MemoryStream reader, bool isBigEndian)
         {
@@ -294,7 +309,7 @@ namespace ResourceTypes.Actors
             Range = reader.ReadSingle(isBigEndian);
             NearRange = reader.ReadSingle(isBigEndian);
             Volume = reader.ReadSingle(isBigEndian);
-            Volume /= 100.0f;
+            //Volume /= 100.0f;
             CurveID = reader.ReadInt32(isBigEndian);
             Program = reader.ReadStringBuffer(256);
             Playlist = reader.ReadStringBuffer(256);
@@ -308,7 +323,7 @@ namespace ResourceTypes.Actors
             writer.Write((int)Flags, isBigEndian);
             writer.Write(Range, isBigEndian);
             writer.Write(NearRange, isBigEndian);
-            Volume *= 100.0f;
+            //Volume *= 100.0f;
             writer.Write(Volume, isBigEndian);
             writer.Write(CurveID, isBigEndian);
             writer.WriteStringBuffer(256, Program, '\0');
@@ -1099,7 +1114,7 @@ namespace ResourceTypes.Actors
             ReadFromFile(reader, isBigEndian);
         }
 
-        public ActorDoor()
+        public ActorDoor() : base()
         {
         }
 
@@ -1631,6 +1646,11 @@ namespace ResourceTypes.Actors
                 get { return sentTestAction; }
                 set { sentTestAction = value; }
             }
+
+            public ItemScript()
+            {
+                scriptEvent = "";
+            }
         }
         public class Type0
         {
@@ -1712,11 +1732,12 @@ namespace ResourceTypes.Actors
         {
             type0Data = new Type0();
             scriptEvent = new ItemScript();
-            scriptEvent.ScriptEvent = "";
         }
 
         public ActorItem(MemoryStream reader, bool isBigEndian)
         {
+            type0Data = new Type0();
+            scriptEvent = new ItemScript();
             ReadFromFile(reader, isBigEndian);
         }
 

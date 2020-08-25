@@ -367,8 +367,12 @@ namespace ResourceTypes.FrameResource
                 mesh.Geometry = frameGeometries[geometry.RefID];
                 mesh.AddRef(FrameEntryRefTypes.Material, material.RefID);
                 mesh.Material = frameMaterials[material.RefID];
+                mesh.AddRef(FrameEntryRefTypes.Parent1, parent.RefID);
+                mesh.AddRef(FrameEntryRefTypes.Parent2, parent.RefID);
 
-                if(parent is FrameObjectModel)
+                //mesh.Parent.ParentIndex1
+
+                if (parent is FrameObjectModel)
                 {
                     // Read the rigged specific blocks
                     FrameBlendInfo blendInfo = new FrameBlendInfo();
@@ -661,8 +665,8 @@ namespace ResourceTypes.FrameResource
                 if(obj is FrameObjectModel)
                 {
                     FrameObjectModel model = (obj as FrameObjectModel);
-                    
-                    foreach(var attachment in model.AttachmentReferences)
+
+                    foreach (var attachment in model.AttachmentReferences)
                     {
                         attachment.Attachment = (frameObjects.ElementAt(attachment.AttachmentIndex - GetBlockCount).Value as FrameObjectBase);
                     }
@@ -887,6 +891,12 @@ namespace ResourceTypes.FrameResource
                     if (mesh.BlendInfoIndex != -1) mesh.BlendInfoIndex = offsets[3] + frameBlendInfos.IndexOfValue(mesh.Refs[FrameEntry.BlendInfoRef]);
                     if (mesh.SkeletonIndex != -1) mesh.SkeletonIndex = offsets[4] + frameSkeletons.IndexOfValue(mesh.Refs[FrameEntry.SkeletonRef]);
                     if (mesh.SkeletonHierachyIndex != -1) mesh.SkeletonHierachyIndex = offsets[5] + frameSkeletonHierachies.IndexOfValue(mesh.Refs[FrameEntry.SkeletonHierRef]);
+
+                    foreach(var attachment in mesh.AttachmentReferences)
+                    {
+                        attachment.AttachmentIndex = frameObjects.IndexOfValue(offsets[6] + attachment.Attachment.RefID);
+                    }
+
                     block = mesh;
                     Console.WriteLine(string.Format("Updated: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
                 }

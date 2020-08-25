@@ -1,5 +1,6 @@
 ﻿using SharpDX;
 using System;
+using System.Globalization;
 using System.IO;
 using Utils.Extensions;
 
@@ -29,6 +30,7 @@ namespace Utils.SharpDXExtensions
             matrix.Column3 = Vector4Extenders.ReadFromFile(stream, isBigEndian);
             if(matrix.IsNaN())
             {
+                System.Diagnostics.Debug.Assert(matrix.IsNaN(), "Matrix.IsNan() during ReadFromFile");
                 matrix.Row1 = new Vector4(1.0f, 0.0f, 0.0f, 0.0f);
                 matrix.Row2 = new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
                 matrix.Row3 = new Vector4(0.0f, 0.0f, 1.0f, 0.0f);
@@ -105,44 +107,57 @@ namespace Utils.SharpDXExtensions
     {
         public static Vector3 ToEuler(this Quaternion quat)
         {
-            Vector3 euler = new Vector3();
-            var qw = quat.W;
-            var qx = quat.X;
-            var qy = quat.Y;
-            var qz = quat.Z;
+            float X = quat.X;
+            float Y = quat.Y;
+            float Z = quat.Z;
+            float W = quat.W;
+            float X2 = X * 2.0f;
+            float Y2 = Y * 2.0f;
+            float Z2 = Z * 2.0f;
+            float XX2 = X * X2;
+            float XY2 = X * Y2;
+            float XZ2 = X * Z2;
+            float YX2 = Y * X2;
+            float YY2 = Y * Y2;
+            float YZ2 = Y * Z2;
+            float ZX2 = Z * X2;
+            float ZY2 = Z * Y2;
+            float ZZ2 = Z * Z2;
+            float WX2 = W * X2;
+            float WY2 = W * Y2;
+            float WZ2 = W * Z2;
 
-            double test = qx * qy + qz * qw;
-            if(test > 0.499f)
+            Vector3 AxisX, AxisY, AxisZ;
+            AxisX.X = (1.0f - (YY2 + ZZ2));
+            AxisY.X = (XY2 + WZ2);
+            AxisZ.X = (XZ2 - WY2);
+            AxisX.Y = (XY2 - WZ2);
+            AxisY.Y = (1.0f - (XX2 + ZZ2));
+            AxisZ.Y = (YZ2 + WX2);
+            AxisX.Z = (XZ2 + WY2);
+            AxisY.Z = (YZ2 - WX2);
+            AxisZ.Z = (1.0f - (XX2 + YY2));
+
+            double SmallNumber = double.Parse("1E-08", NumberStyles.Float);
+            Vector3 ResultVector = new Vector3();
+
+            ResultVector.Y = (float)Math.Asin(-MathUtil.Clamp(AxisZ.X, -1.0f, 1.0f));
+
+            if(Math.Abs(AxisZ.X) < 1.0f - SmallNumber)
             {
-                euler.Z = (float)(2 * Math.Atan2(quat.X, quat.W));
-                euler.Y = 3.14f / 2;
-                euler.X = 0.0f;
-            }
-            else if(test < -0.499f)
-            {
-                euler.Z = (float)(-2 * Math.Atan2(quat.X, quat.W));
-                euler.Y = -(3.14f / 2);
-                euler.X = 0.0f;
+                ResultVector.X = (float)Math.Atan2(AxisZ.Y, AxisZ.Z);
+                ResultVector.Z = (float)Math.Atan2(AxisZ.X, AxisX.X);
             }
             else
             {
-                float sqx = quat.X * quat.X;
-                float sqy = quat.Y * quat.Y;
-                float sqz = quat.Z * quat.Z;
-                euler.Y = (float)Math.Atan2(2 * quat.Y * quat.W - 2 * quat.X * quat.Z, 1 - 2 * sqy - 2 * sqz);
-                euler.X = -(float)Math.Asin(2 * test);
-                euler.Z = (float)Math.Atan2(2 * quat.X * quat.W - 2 * quat.Y * quat.Z, 1 - 2 * sqx - 2 * sqz);
+                ResultVector.X = 0.0f;
+                ResultVector.Z = (float)Math.Atan2(-AxisX.Y, AxisY.Y);
             }
 
-            euler.Z = MathUtil.RadiansToDegrees(euler.Z);
-            euler.Y = MathUtil.RadiansToDegrees(euler.Y);
-            euler.X = MathUtil.RadiansToDegrees(euler.X);
-            if (euler.IsNaN())
-            {
-                throw new Exception("Triggered NaN check in QuaternionExtensions.ToEuler();");
-            }
-
-            return euler;
+            ResultVector.Z = MathUtil.RadiansToDegrees(ResultVector.Z);
+            ResultVector.Y = MathUtil.RadiansToDegrees(ResultVector.Y);
+            ResultVector.X = MathUtil.RadiansToDegrees(ResultVector.X);
+            return ResultVector;
         }
 
         public static Quaternion ReadFromFile(BinaryReader reader)

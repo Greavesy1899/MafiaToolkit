@@ -3,7 +3,7 @@ using System.IO;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
-    public class AeSound_Type8 : AeBase
+    public class AeSound_Type33 : AeBase
     {
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {

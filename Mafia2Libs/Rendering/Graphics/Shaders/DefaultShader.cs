@@ -65,9 +65,9 @@ namespace Rendering.Graphics
             else
             {
                 
-                ShaderParameterSampler sampler;
+                ShaderParameterSampler sampler = material.GetSamplerByKey("S000");
                 ShaderResourceView texture = null;
-                if (material.Samplers.TryGetValue("S000", out sampler))
+                if (sampler != null)
                 {
                     texture = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
                 }
@@ -78,7 +78,8 @@ namespace Rendering.Graphics
 
                 context.PixelShader.SetShaderResource(0, texture);
 
-                if (material.Samplers.TryGetValue("S001", out sampler))
+                sampler = material.GetSamplerByKey("S001");
+                if (sampler != null)
                 {
                     texture = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
                     extraParams.hasTangentSpace = 1;

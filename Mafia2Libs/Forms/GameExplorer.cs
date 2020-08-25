@@ -98,8 +98,12 @@ namespace Mafia2Tool
 
             if(!launcher.Exists)
             {
-                MessageBox.Show("Could not find executable!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Close();
+                DialogResult result = MessageBox.Show("Could not find executable! Would you like to change the selected game?", "Toolkit", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+                if(result == DialogResult.OK)
+                {
+                    OpenGameSelectorWindow();
+                }
+                //Close();
                 return;
             }
 
@@ -590,6 +594,16 @@ namespace Mafia2Tool
                 OpenSDSDirectory(SDSFile.GetUnderlyingFileInfo(), false);
             }
         }
+
+        private void OpenGameSelectorWindow()
+        {
+            GameSelector selector = new GameSelector();
+            if (selector.ShowDialog() == DialogResult.OK)
+            {
+                InitExplorerSettings();
+            }
+        }
+
         private void UnpackSDSRecurse(DirectoryInfo info)
         {
             foreach (var file in info.GetFiles())
@@ -618,11 +632,7 @@ namespace Mafia2Tool
 
         private void Button_SelectGame_OnClick(object sender, EventArgs e)
         {
-            GameSelector selector = new GameSelector();
-            if(selector.ShowDialog() == DialogResult.OK)
-            {
-                InitExplorerSettings();
-            }
+            OpenGameSelectorWindow();
         }
 
         private void ListView_OnDragEnter(object sender, DragEventArgs e)

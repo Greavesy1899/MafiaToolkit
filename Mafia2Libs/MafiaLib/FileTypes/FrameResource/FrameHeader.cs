@@ -94,6 +94,8 @@ namespace ResourceTypes.FrameResource
         public FrameHeader()
         {
             sceneFolders = new List<FrameHeaderScene>();
+            sceneName = new Hash();
+            unkData = new float[4 * 3];
         }
 
         /// <summary>

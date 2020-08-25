@@ -58,14 +58,10 @@ namespace Rendering.Graphics
             Shader_50760736Params parameters = new Shader_50760736Params();
             var material = matParams.MaterialData;
 
-            if (material.Parameters.ContainsKey("C005"))
+            var param = material.GetParameterByKey("C005");
+            if (param != null)
             {
-                ShaderParameter param = material.Parameters["C005"];
                 parameters.C005_EmissiveFacadeColorAndIntensity = new Vector4(param.Paramaters[0], param.Paramaters[1], param.Paramaters[2], param.Paramaters[3]);
-            }
-            else
-            {
-                parameters.C005_EmissiveFacadeColorAndIntensity = new Vector4(0f);
             }
 
             if (material == null)
@@ -77,9 +73,10 @@ namespace Rendering.Graphics
             else
             {
 
-                ShaderParameterSampler sampler;
                 ShaderResourceView[] textures = new ShaderResourceView[2];
-                if (material.Samplers.TryGetValue("S000", out sampler))
+
+                var sampler = material.GetSamplerByKey("S000");
+                if (sampler != null)
                 {
                     textures[0] = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
                 }
@@ -88,7 +85,8 @@ namespace Rendering.Graphics
                     textures[0] = RenderStorageSingleton.Instance.TextureCache[0];
                 }
 
-                if (material.Samplers.TryGetValue("S011", out sampler))
+                sampler = material.GetSamplerByKey("S011");
+                if (sampler != null)
                 {
                     textures[1] = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
                 }

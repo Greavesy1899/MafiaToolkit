@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using Utils.Extensions;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
+using Utils.Extensions;
+using System.IO;
 
 namespace ResourceTypes.City
 {
@@ -18,8 +15,6 @@ namespace ResourceTypes.City
             uint id;
             string text;
 
-            public LocalisedString(uint id) { this.id = id; }
-
             public uint ID {
                 get { return id; }
                 set { id = value; }
@@ -27,6 +22,11 @@ namespace ResourceTypes.City
             public string Text {
                 get { return text; }
                 set { text = value; }
+            }
+
+            public LocalisedString(uint id) 
+            { 
+                this.id = id; 
             }
 
             public override string ToString()
@@ -53,11 +53,19 @@ namespace ResourceTypes.City
                 get { return id; }
                 set { id = value; }
             }
+
+            public Shop()
+            {
+                unk0 = new LocalisedString(0);
+                Name = "";
+            }
+
             public override string ToString()
             {
                 return string.Format("{0} {1} {2}", ID, Name, Unk0);
             }
         }
+
         public class ShopMenu
         {
             int id;
@@ -118,11 +126,20 @@ namespace ResourceTypes.City
                 set { items = value; }
             }
 
+            public ShopMenu()
+            {
+                items = new List<ItemConfig>();
+                unkDB0 = new LocalisedString(0);
+                unk1 = "";
+                path = "";
+            }
+
             public override string ToString()
             {
                 return string.Format("{3} {0} {1} {2}", Unk1, Path, Items.Count, ID);
             }
         }
+
         public class Item
         {
             string name;
@@ -141,6 +158,11 @@ namespace ResourceTypes.City
             public byte Unk0 {
                 get { return unk0; }
                 set { unk0 = value; }
+            }
+
+            public Item()
+            {
+                name = "";
             }
         }
 
@@ -202,25 +224,28 @@ namespace ResourceTypes.City
                 get { return unkMatrix; }
                 set { unkMatrix = value; }
             }
-
-            [Browsable(false)]
-            public int Count1 {
-                get { return count1; }
-                set { count1 = value; }
-            }
             public Item[] Section1 {
                 get { return section1; }
                 set { section1 = value; }
             }
-
-            [Browsable(false)]
-            public int Count2 {
-                get { return count2; }
-                set { count2 = value; }
-            }
             public Item[] Section2 {
                 get { return section2; }
                 set { section2 = value; }
+            }
+
+            public ItemConfig()
+            {
+                unkInts = new int[5];
+                unkFloats = new float[8];
+                unkMatrix = new float[10];
+                section1 = new Item[0];
+                section2 = new Item[0];
+                unkDB0 = new LocalisedString(0);
+                unkDB1 = new LocalisedString(0);
+                unkDB2 = new LocalisedString(0); 
+                unkDB3 = new LocalisedString(0);
+                unkDB4 = new LocalisedString(0);
+                unkDB5 = new LocalisedString(0);
             }
         }
 
@@ -353,20 +378,24 @@ namespace ResourceTypes.City
 
                         item.UnkInts = new int[5];
                         for (int z = 0; z < 5; z++)
+                        {
                             item.UnkInts[z] = stream.ReadInt32(isBigEndian);
+                        }
 
                         item.UnkFloats = new float[8];
                         for (int z = 0; z < 8; z++)
+                        {
                             item.UnkFloats[z] = stream.ReadSingle(isBigEndian);
+                        }
 
                         item.UnkByte = stream.ReadByte8();
                         item.UnkMatrixFloats = new float[10];
                         for (int z = 0; z < 10; z++)
                             item.UnkMatrixFloats[z] = stream.ReadSingle(isBigEndian);
 
-                        item.Count1 = stream.ReadInt32(isBigEndian);
-                        item.Section1 = new Item[item.Count1];
-                        for (int z = 0; z < item.Count1; z++)
+                        var section1Size = stream.ReadInt32(isBigEndian);
+                        item.Section1 = new Item[section1Size];
+                        for (int z = 0; z < section1Size; z++)
                         {
                             var it = new Item();
                             it.Key = stream.ReadUInt16(isBigEndian);
@@ -377,9 +406,9 @@ namespace ResourceTypes.City
                             item.Section1[z] = it;
                         }
 
-                        item.Count2 = stream.ReadInt32(isBigEndian);
-                        item.Section2 = new Item[item.Count2];
-                        for (int z = 0; z < item.Count2; z++)
+                        int section2Size = stream.ReadInt32(isBigEndian);
+                        item.Section2 = new Item[section2Size];
+                        for (int z = 0; z < section2Size; z++)
                         {
                             var it = new Item();
                             it.Key = stream.ReadUInt16(isBigEndian);
@@ -398,7 +427,7 @@ namespace ResourceTypes.City
 
         public void WriteToFile(string file)
         {
-            buildUpdateKeyStringBuffer();
+            BuildUpdateKeyStringBuffer();
             using (var stream = new MemoryStream())
             {
                 var isBigEndian = false;
@@ -462,14 +491,20 @@ namespace ResourceTypes.City
                         stream.Write(item.UnkDB5.ID, isBigEndian);
 
                         for (int z = 0; z < 5; z++)
+                        {
                             stream.Write(item.UnkInts[z], isBigEndian);
+                        }
 
                         for (int z = 0; z < 8; z++)
+                        {
                             stream.Write(item.UnkFloats[z], isBigEndian);
+                        }
 
                         stream.WriteByte(item.UnkByte);
                         for (int z = 0; z < 10; z++)
+                        {
                             stream.Write(item.UnkMatrixFloats[z], isBigEndian);
+                        }
 
                         stream.Write(item.Section1.Length, isBigEndian);
                         for (int z = 0; z < item.Section1.Length; z++)
@@ -492,7 +527,7 @@ namespace ResourceTypes.City
             }
         }
 
-        private void buildUpdateKeyStringBuffer()
+        private void BuildUpdateKeyStringBuffer()
         {
             //fix this
             List<string> addedNames = new List<string>();
@@ -513,7 +548,7 @@ namespace ResourceTypes.City
                             addedNames.Add(itemd.Section1[x].Name);
                             addedPos.Add((ushort)stringPool.Length);
                             itemd.Section1[x].Key = (ushort)stringPool.Length;
-                            stringPool += itemd.Section1[x] + "\0";
+                            stringPool += itemd.Section1[x].Name + "\0";
                         }
                         else
                         {
@@ -528,7 +563,7 @@ namespace ResourceTypes.City
                             addedNames.Add(itemd.Section2[x].Name);
                             addedPos.Add((ushort)stringPool.Length);
                             itemd.Section2[x].Key = (ushort)stringPool.Length;
-                            stringPool += itemd.Section2[x] + "\0";
+                            stringPool += itemd.Section2[x].Name + "\0";
                         }
                         else
                         {

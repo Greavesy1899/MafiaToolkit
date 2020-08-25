@@ -1,45 +1,17 @@
-﻿using System;
-using System.IO;
-using Utils.Extensions;
+﻿using System.IO;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
     public class AeSound_Type28 : AeBase
     {
-        public short isValid { get; set; }
-
-        public override int GetEntityDefinitionType()
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            return 28;
+            base.ReadFromFile(stream, isBigEndian);
         }
 
-        public override int GetEntityDataType()
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
-            throw new NotImplementedException();
-        }
-
-        public override bool ReadDefinitionFromFile(MemoryStream stream, bool isBigEndian)
-        {
-            isValid = stream.ReadInt16(isBigEndian);
-            return true;
-        }
-
-        public override bool WriteDefinitionToFile(MemoryStream writer, bool isBigEndian)
-        {
-            writer.Write(isBigEndian);
-            return true;
-        }
-
-        public override bool ReadDataFromFile(MemoryStream stream, bool isBigEndian)
-        {
-            EntityData = new AeBaseData();
-            EntityData.ReadFromFile(stream, isBigEndian);
-            return true;
-        }
-
-        public override bool WriteDataFromFile(MemoryStream stream, bool isBigEndian)
-        {
-            throw new NotImplementedException();
+            base.WriteToFile(stream, isBigEndian);
         }
     }
 }

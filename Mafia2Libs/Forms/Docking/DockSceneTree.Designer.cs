@@ -63,31 +63,31 @@ namespace Forms.Docking
             this.Export3DButton,
             this.FrameActions});
             this.EntryMenuStrip.Name = "EntryMenuStrip";
-            this.EntryMenuStrip.Size = new System.Drawing.Size(165, 114);
+            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 136);
             this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
             // 
             // JumpToButton
             // 
             this.JumpToButton.Name = "JumpToButton";
-            this.JumpToButton.Size = new System.Drawing.Size(164, 22);
+            this.JumpToButton.Size = new System.Drawing.Size(180, 22);
             this.JumpToButton.Text = "Jump To Position";
             // 
             // DeleteButton
             // 
             this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(164, 22);
+            this.DeleteButton.Size = new System.Drawing.Size(180, 22);
             this.DeleteButton.Text = "Delete";
             // 
             // DuplicateButton
             // 
             this.DuplicateButton.Name = "DuplicateButton";
-            this.DuplicateButton.Size = new System.Drawing.Size(164, 22);
+            this.DuplicateButton.Size = new System.Drawing.Size(180, 22);
             this.DuplicateButton.Text = "Duplicate";
             // 
             // Export3DButton
             // 
             this.Export3DButton.Name = "Export3DButton";
-            this.Export3DButton.Size = new System.Drawing.Size(164, 22);
+            this.Export3DButton.Size = new System.Drawing.Size(180, 22);
             this.Export3DButton.Text = "Export 3D";
             // 
             // FrameActions
@@ -98,32 +98,31 @@ namespace Forms.Docking
             this.ExportFrameButton,
             this.LinkToActorButton});
             this.FrameActions.Name = "FrameActions";
-            this.FrameActions.Size = new System.Drawing.Size(164, 22);
+            this.FrameActions.Size = new System.Drawing.Size(180, 22);
             this.FrameActions.Text = "Frame Actions";
             // 
             // UpdateParent1Button
             // 
             this.UpdateParent1Button.Name = "UpdateParent1Button";
-            this.UpdateParent1Button.Size = new System.Drawing.Size(166, 22);
+            this.UpdateParent1Button.Size = new System.Drawing.Size(180, 22);
             this.UpdateParent1Button.Text = "Update Parent 1";
             // 
             // UpdateParent2Button
             // 
             this.UpdateParent2Button.Name = "UpdateParent2Button";
-            this.UpdateParent2Button.Size = new System.Drawing.Size(166, 22);
+            this.UpdateParent2Button.Size = new System.Drawing.Size(180, 22);
             this.UpdateParent2Button.Text = "Update Parent 2";
             // 
             // ExportFrameButton
             // 
             this.ExportFrameButton.Name = "ExportFrameButton";
-            this.ExportFrameButton.Size = new System.Drawing.Size(166, 22);
+            this.ExportFrameButton.Size = new System.Drawing.Size(180, 22);
             this.ExportFrameButton.Text = "Export Frame";
             // 
             // LinkToActorButton
             // 
-            this.LinkToActorButton.Enabled = false;
             this.LinkToActorButton.Name = "LinkToActorButton";
-            this.LinkToActorButton.Size = new System.Drawing.Size(166, 22);
+            this.LinkToActorButton.Size = new System.Drawing.Size(180, 22);
             this.LinkToActorButton.Text = "$LINK_TO_ACTOR";
             // 
             // imageList1

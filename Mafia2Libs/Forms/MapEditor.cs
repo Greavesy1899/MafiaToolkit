@@ -157,8 +157,8 @@ namespace Mafia2Tool
                             string def = optionControl.GetDefinitionName();
                             ActorEntry entry = SceneData.Actors[0].CreateActorEntry(type, objectForm.GetInputText());
                             entry.DefinitionName = def;
-                            entry.FrameName = frame.ActorHash.String;
-                            entry.FrameNameHash = frame.ActorHash.uHash;
+                            entry.FrameName = frame.Name.String;
+                            entry.FrameNameHash = frame.Name.uHash;
                             frame.Item = entry;
 
                             //create the definition
@@ -1058,7 +1058,7 @@ namespace Mafia2Tool
                 for (int c = 0; c != actor.Items.Count; c++)
                 {
                     ActorEntry item = actor.Items[c];
-                    if (definition.Hash == item.FrameNameHash)
+                    if (definition.DefinitionHash == item.FrameNameHash)
                     {
                         if (frame == null)
                         {
@@ -1105,6 +1105,11 @@ namespace Mafia2Tool
                     selected.Text = fObject.ToString();
                     dPropertyGrid.UpdateObject();
                     ApplyChangesToRenderable(fObject);
+
+                    // Send an event to update our selected item. (if this is indeed our selected)
+                    UpdateSelectedEventArgs Arguments = new UpdateSelectedEventArgs();
+                    Arguments.RefID = int.Parse(selected.Name);
+                    Graphics.OnSelectedObjectUpdated(this, Arguments);
                 }
                 else if (selected.Tag is FrameHeaderScene)
                 {
@@ -1120,6 +1125,11 @@ namespace Mafia2Tool
                     Graphics.Assets.TryGetValue(int.Parse(selected.Name), out asset);
                     RenderInstance instance = (asset as RenderInstance);
                     instance.SetTransform(placement.Transform);
+
+                    // Send an event to update our selected item. (if this is indeed our selected)
+                    UpdateSelectedEventArgs Arguments = new UpdateSelectedEventArgs();
+                    Arguments.RefID = int.Parse(selected.Name);
+                    Graphics.OnSelectedObjectUpdated(this, Arguments);
                 }
             }
         }
@@ -1319,6 +1329,12 @@ namespace Mafia2Tool
                     frame = new FrameObjectBase();
                     Console.WriteLine("Unknown type selected");
                     break;
+            }
+
+            // Frame was not valid, there is no need to carry on.
+            if (frame == null)
+            {
+                return;
             }
 
             Debug.Assert(frame != null, "Frame was null!");

@@ -1,4 +1,5 @@
 ﻿using ResourceTypes.Cutscene.AnimEntities;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using Utils.StringHelpers;
@@ -50,6 +51,14 @@ namespace ResourceTypes.Cutscene
     //__cstring:01E80D40 aU011_blindtime db 'U011_BlindTime',0
     //__cstring:01E80D4F aU012_blindfade db 'U012_BlindFadeOutTime',0
     //__cstring:01E80D65 aU013_monofadeo db 'U013_MonoFadeOutTime',0
+    public class AnimEntity
+    {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeBase Definition { get; set; }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeBaseData Data { get; set; }
+
+    }
 
     public class CutsceneLoader
     {
@@ -133,7 +142,7 @@ namespace ResourceTypes.Cutscene
                 private byte[] unk08; //size from unk07; facefx data
                 private int unk09; //possible size of entries;
                 private ushort numEntities; //numEntities;
-                public AeBase[] entities;
+                public AnimEntity[] entities;
                 public int unk10;
                 public float unk11;
                 public int unk12;
@@ -152,7 +161,7 @@ namespace ResourceTypes.Cutscene
                     unk08 = reader.ReadBytes(unk07-4);
                     unk09 = reader.ReadInt32();
                     numEntities = reader.ReadUInt16();
-                    entities = new AeBase[numEntities];
+                    entities = new AnimEntity[numEntities];
 
                     for(int i = 0; i < numEntities; i++)
                     {
@@ -166,7 +175,7 @@ namespace ResourceTypes.Cutscene
                         byte[] DefintionData = reader.ReadBytes(Size - 12);
                         using (MemoryStream Reader = new MemoryStream(DefintionData))
                         {
-                            AeBase AnimEntity = CutsceneEntityFactory.ReadAnimEntityFromFile(AnimEntityType, Reader);
+                            AnimEntity AnimEntity = CutsceneEntityFactory.ReadAnimEntityFromFile(AnimEntityType, Reader);
 
                             // Debugging: If a debugger is attached, we should save it to the disc.
                             if(Debugger.IsAttached)
@@ -190,7 +199,7 @@ namespace ResourceTypes.Cutscene
                         // And then This
                         using(MemoryStream stream = new MemoryStream(dataBytes))
                         {
-                            entities[z].ReadDataFromFile(stream, false);
+                            entities[z].Data.ReadFromFile(stream, false);
                             Debug.Assert(stream.Position == stream.Length, "When reading the AnimEntity Data, we did not reach the end of the stream!");
                         }
                     }
@@ -207,7 +216,7 @@ namespace ResourceTypes.Cutscene
             {
                 public int Unk01 { get; set; }
                 public float Unk02 { get; set; } // For GCS this is FPS i think.
-                public AeBase[] EntityDefinitions { get; set; }
+                public AnimEntity[] EntityDefinitions { get; set; }
                 public void ReadFromFile(BinaryReader reader)
                 {
                     int magic = reader.ReadInt32();
@@ -222,7 +231,7 @@ namespace ResourceTypes.Cutscene
                             Unk01 = reader.ReadInt32();
                             Unk02 = reader.ReadSingle();
                             int NumEntities = reader.ReadInt32();
-                            EntityDefinitions = new AeBase[NumEntities];
+                            EntityDefinitions = new AnimEntity[NumEntities];
 
                             for (int i = 0; i < NumEntities; i++)
                             {
@@ -236,15 +245,15 @@ namespace ResourceTypes.Cutscene
                                 byte[] DefintionData = reader.ReadBytes(Size - 12);
                                 using (MemoryStream Reader = new MemoryStream(DefintionData))
                                 {
-                                    AeBase AnimEntity = CutsceneEntityFactory.ReadAnimEntityFromFile(AnimEntityType, Reader);
+                                    AnimEntity Entity = CutsceneEntityFactory.ReadAnimEntityFromFile(AnimEntityType, Reader);
 
                                     // Debugging: If the AnimEntity is null and a debugger is attached, we should save it to the disc.
-                                    if (AnimEntity == null && Debugger.IsAttached)
+                                    if (Entity == null && Debugger.IsAttached)
                                     {
                                         File.WriteAllBytes("CutSceneData/Entity_SPD_" + AnimEntityType + "_" + i + ".bin", DefintionData);
                                     }
 
-                                    EntityDefinitions[i] = AnimEntity;
+                                    EntityDefinitions[i] = Entity;
                                 }
                             }
 
@@ -260,7 +269,7 @@ namespace ResourceTypes.Cutscene
                                 // And then This
                                 using (MemoryStream stream = new MemoryStream(dataBytes))
                                 {
-                                    EntityDefinitions[z].ReadDataFromFile(stream, false);
+                                    EntityDefinitions[z].Data.ReadFromFile(stream, false);
                                 }
                             }
                         }
