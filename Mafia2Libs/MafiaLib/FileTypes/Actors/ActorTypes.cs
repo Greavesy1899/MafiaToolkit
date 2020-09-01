@@ -1,11 +1,9 @@
 ﻿using SharpDX;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
-using Utils.StringHelpers;
 using Utils.Types;
 
 namespace ResourceTypes.Actors
@@ -68,6 +66,15 @@ namespace ResourceTypes.Actors
         public int ParticleSlideID { get; set; }
         public float ParticleHitSpeedMin { get; set; }
         public int GarbageID { get; set; }
+
+        public ActorPhysicsBase()
+        {
+            HitInfo = new HitData[3];
+            for(int i = 0; i < HitInfo.Length; i++)
+            {
+                HitInfo[i] = new HitData();
+            }
+        }
 
         public virtual int GetSize()
         {
@@ -278,11 +285,17 @@ namespace ResourceTypes.Actors
         public ActorRadioFlags Flags { get; set; }
         public float Range { get; set; }
         public float NearRange { get; set; }
+        [Description("The volume of the Radio. It is multipled by 100 in game.")]
         public float Volume { get; set; }
         public int CurveID { get; set; }
         public string Program { get; set; }
         public string Playlist { get; set; }
         public string Station { get; set; }
+
+        public ActorRadio() : base()
+        {
+
+        }
 
         public ActorRadio(MemoryStream reader, bool isBigEndian)
         {
@@ -296,7 +309,7 @@ namespace ResourceTypes.Actors
             Range = reader.ReadSingle(isBigEndian);
             NearRange = reader.ReadSingle(isBigEndian);
             Volume = reader.ReadSingle(isBigEndian);
-            Volume /= 100.0f;
+            //Volume /= 100.0f;
             CurveID = reader.ReadInt32(isBigEndian);
             Program = reader.ReadStringBuffer(256);
             Playlist = reader.ReadStringBuffer(256);
@@ -310,7 +323,7 @@ namespace ResourceTypes.Actors
             writer.Write((int)Flags, isBigEndian);
             writer.Write(Range, isBigEndian);
             writer.Write(NearRange, isBigEndian);
-            Volume *= 100.0f;
+            //Volume *= 100.0f;
             writer.Write(Volume, isBigEndian);
             writer.Write(CurveID, isBigEndian);
             writer.WriteStringBuffer(256, Program, '\0');
@@ -1101,7 +1114,7 @@ namespace ResourceTypes.Actors
             ReadFromFile(reader, isBigEndian);
         }
 
-        public ActorDoor()
+        public ActorDoor() : base()
         {
         }
 
@@ -1633,6 +1646,11 @@ namespace ResourceTypes.Actors
                 get { return sentTestAction; }
                 set { sentTestAction = value; }
             }
+
+            public ItemScript()
+            {
+                scriptEvent = "";
+            }
         }
         public class Type0
         {
@@ -1714,11 +1732,12 @@ namespace ResourceTypes.Actors
         {
             type0Data = new Type0();
             scriptEvent = new ItemScript();
-            scriptEvent.ScriptEvent = "";
         }
 
         public ActorItem(MemoryStream reader, bool isBigEndian)
         {
+            type0Data = new Type0();
+            scriptEvent = new ItemScript();
             ReadFromFile(reader, isBigEndian);
         }
 
@@ -2146,6 +2165,42 @@ namespace ResourceTypes.Actors
         }
     }
 
+    public class ActorCutscene : IActorExtraDataInterface
+    {
+        public string Name { get; set; }
+        public int Looped { get; set; }
+        public int NumOfLoops { get; set; }
+
+        public ActorCutscene()
+        {
+            Name = "";
+        }
+
+        public ActorCutscene(MemoryStream stream, bool isBigEndian)
+        {
+            ReadFromFile(stream, isBigEndian);
+        }
+
+        public int GetSize()
+        {
+            return 136;
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            Name = stream.ReadStringBuffer(128);
+            Looped = stream.ReadInt32(isBigEndian);
+            NumOfLoops = stream.ReadInt32(isBigEndian);
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            writer.WriteStringBuffer(128, Name);
+            writer.Write(Looped, isBigEndian);
+            writer.Write(NumOfLoops, isBigEndian);
+        }
+    }
+
     public class ActorActionPoint : IActorExtraDataInterface
     {
         public float AttractionCoeff { get; set; }
@@ -2204,6 +2259,7 @@ namespace ResourceTypes.Actors
             writer.Write(WalkRange, isBigEndian);
             writer.Write(SensorType, isBigEndian);
             writer.Write(Radius, isBigEndian);
+            writer.WriteStringBuffer(128, ScriptEntity);
             Vector3Extenders.WriteToFile(BBox, writer, isBigEndian);
             writer.Write(Data);
             writer.Write(Type, isBigEndian);

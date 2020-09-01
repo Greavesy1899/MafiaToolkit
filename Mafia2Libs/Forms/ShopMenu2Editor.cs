@@ -1,8 +1,6 @@
 ﻿using System.IO;
 using System.Windows.Forms;
-using ResourceTypes.Speech;
 using Utils.Language;
-using Utils.Settings;
 using ResourceTypes.City;
 
 namespace Mafia2Tool
@@ -23,15 +21,17 @@ namespace Mafia2Tool
 
         private void Localise()
         {
-            Text = Language.GetString("$SPEECH_EDITOR_TITLE");
-            fileToolButton.Text = Language.GetString("$FILE");
-            saveToolStripMenuItem.Text = Language.GetString("$SAVE");
-            reloadToolStripMenuItem.Text = Language.GetString("$RELOAD");
-            exitToolStripMenuItem.Text = Language.GetString("$EXIT");
+            Text = Language.GetString("$SHOPMENU2_EDITOR_TITLE");
+            Button_File.Text = Language.GetString("$FILE");
+            Button_Save.Text = Language.GetString("$SAVE");
+            Button_Reload.Text = Language.GetString("$RELOAD");
+            Button_Exit.Text = Language.GetString("$EXIT");
         }
 
         private void BuildData()
         {
+            TreeView_ShopMenu2.Nodes.Clear();
+
             menuData = new ShopMenu2();
             menuData.ReadFromFile(menuFile.FullName);
 
@@ -54,28 +54,30 @@ namespace Mafia2Tool
                 meta.Tag = metaInfo;
                 metaNode.Nodes.Add(meta);
             }
-            treeView1.Nodes.Add(node);
-            treeView1.Nodes.Add(metaNode);
+            TreeView_ShopMenu2.Nodes.Add(node);
+            TreeView_ShopMenu2.Nodes.Add(metaNode);
         }
 
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
         {
-            FrameResourceGrid.SelectedObject = e.Node.Tag;
+            PropertyGrid_ShopMenu2.SelectedObject = e.Node.Tag;
         }
 
-        private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)
+        private void Button_Save_OnClick(object sender, System.EventArgs e)
+        {
+            File.Copy(menuFile.FullName, menuFile.FullName + "_old", true);
+            menuData.WriteToFile(menuFile.FullName);
+        }
+
+        private void Button_Reload_OnClick(object sender, System.EventArgs e)
+        {
+            PropertyGrid_ShopMenu2.SelectedObject = null;
+            BuildData();
+        }
+
+        private void Button_Exit_OnClick(object sender, System.EventArgs e)
         {
             Close();
-        }
-
-        private void reloadToolStripMenuItem_Click(object sender, System.EventArgs e)
-        {
-
-        }
-
-        private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
-        {
-            menuData.WriteToFile(menuFile.FullName);
         }
     }
 }

@@ -226,6 +226,7 @@
     <Compile Include="Core\FileActor.cs" />
     <Compile Include="Core\FileBase.cs" />
     <Compile Include="Core\FileBin.cs" />
+    <Compile Include="Core\FileCutscene.cs" />
     <Compile Include="Core\FileEntityDataStorage.cs" />
     <Compile Include="Core\FileFactory.cs" />
     <Compile Include="Core\FileFrameResoure.cs" />
@@ -237,6 +238,12 @@
     <Compile Include="Core\FileTextureDDS.cs" />
     <Compile Include="Core\FileTranslokator.cs" />
     <Compile Include="Core\FileXML.cs" />
+    <Compile Include="Forms\CutsceneEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CutsceneEditor.Designer.cs">
+      <DependentUpon>CutsceneEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\EntityDataStorageEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -338,8 +345,44 @@
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Trees.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\TriangleMesh.cs" />
     <Compile Include="MafiaLib\FileTypes\Collisions\CollisionBuilder.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\CutsceneTypes.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeBase.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeEffects.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeFrame.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeModel.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeOmniLight.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSound_Type28.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSound_Type33.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSound_Type8.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSpotLight.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSunLight.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeTargetCamera.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk10.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk12.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk13.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk18.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk23.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk30.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk32.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk4.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk7.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeVehicle.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\Enumerators.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\Factories\CutsceneEntityFactory.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\Factories\CutsceneKeyParamFactory.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\Enumerators.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\IKeyType.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_0.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_13.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_18.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_19.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_28.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_30.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_43.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_6.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_Temp.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyWeatherParam.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameNameTable\FrameNameTableEnums.cs" />
+    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameFactory.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceEnums.cs" />
     <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceXML.cs" />
     <Compile Include="MafiaLib\FileTypes\ItemDesc\ItemDescEnums.cs" />
@@ -352,6 +395,8 @@
     <Compile Include="MafiaLib\FileTypes\M3\XBin\Types\VehiclesTable.cs" />
     <Compile Include="MafiaLib\FileTypes\M3\XBin\XBin.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\Enumerator.cs" />
+    <Compile Include="MafiaLib\FileTypes\Material\MaterialParameter.cs" />
+    <Compile Include="MafiaLib\FileTypes\Material\MaterialSampler.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\AIWorld\AIWorld.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\AnimalTraffic.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\Enums.cs" />
@@ -767,6 +812,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TextureEntry.resx">
       <DependentUpon>TextureEntry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CutsceneEditor.resx">
+      <DependentUpon>CutsceneEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EntityDataStorageEditor.resx">
       <DependentUpon>EntityDataStorageEditor.cs</DependentUpon>

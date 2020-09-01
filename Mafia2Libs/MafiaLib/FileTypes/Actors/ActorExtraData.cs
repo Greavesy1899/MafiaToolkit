@@ -47,7 +47,7 @@ namespace ResourceTypes.Actors
             {
                 bool isBigEndian = false; //we'll change this once console parsing is complete.
                 data = ActorFactory.LoadExtraData(bufferType, stream, isBigEndian);
-                Debug.Assert(bufferLength == stream.Length);
+                Debug.Assert(bufferLength == stream.Length, string.Format("We did not reach the end of this stream! BufferType {0}", bufferType));
             }
 
             buffer = (data == null ? buffer : null);
@@ -69,7 +69,7 @@ namespace ResourceTypes.Actors
                 using (MemoryStream stream = new MemoryStream())
                 {
                     data.WriteToFile(stream, isBigEndian);
-                    Debug.Assert(data.GetSize() == stream.Length);
+                    Debug.Assert(data.GetSize() == stream.Length, string.Format("We did not reach the end of this stream! BufferType {0}", bufferType));
                     stream.WriteTo(writer.BaseStream);
                 }
             }

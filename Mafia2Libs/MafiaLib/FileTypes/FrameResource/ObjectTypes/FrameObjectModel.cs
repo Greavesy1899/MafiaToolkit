@@ -170,8 +170,6 @@ namespace ResourceTypes.FrameResource
             for (int i = 0; i != nPhysSplits; i++)
             {
                 blendMeshSplits[i] = new WeightedByMeshSplit(stream, isBigEndian);
-                int index = blendInfo.BoneIndexInfos[0].IDs[blendMeshSplits[i].BlendIndex];
-                blendMeshSplits[i].JointName = skeleton.BoneNames[index].ToString();
                 totalSplits += blendMeshSplits[i].Data.Length;
             }
 
@@ -338,6 +336,7 @@ namespace ResourceTypes.FrameResource
             public WeightedByMeshSplit(MemoryStream reader, bool isBigEndian)
             {
                 ReadFromFile(reader, isBigEndian);
+                jointName = "";
             }
 
             public WeightedByMeshSplit(WeightedByMeshSplit other)
@@ -370,7 +369,12 @@ namespace ResourceTypes.FrameResource
 
             public override string ToString()
             {
-                return jointName.ToString();
+                if (!string.IsNullOrEmpty(jointName))
+                {
+                    return jointName.ToString();
+                }
+
+                return "";
             }
         }
 

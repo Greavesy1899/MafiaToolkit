@@ -228,51 +228,9 @@ namespace Rendering.Graphics
                     
                     if(part.Material != null)
                     {
-                        ShaderParameterSampler sampler;
-                        if (part.Material.Samplers.TryGetValue("S000", out sampler))
-                        {
-
-                            ShaderResourceView texture;
-
-                            if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(sampler.TextureHash, out texture))
-                            {
-                                if (!string.IsNullOrEmpty(sampler.File))
-                                {
-                                    texture = TextureLoader.LoadTexture(d3d, d3dContext, sampler.File);
-                                    RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
-                                }
-                            }
-                        }
-
-                        if (part.Material.Samplers.TryGetValue("S001", out sampler))
-                        {
-
-                            ShaderResourceView texture;
-
-                            if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(sampler.TextureHash, out texture))
-                            {
-                                if (!string.IsNullOrEmpty(sampler.File))
-                                {
-                                    texture = TextureLoader.LoadTexture(d3d, d3dContext, sampler.File);
-                                    RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
-                                }
-                            }
-                        }
-
-                        if (part.Material.Samplers.TryGetValue("S011", out sampler))
-                        {
-
-                            ShaderResourceView texture;
-
-                            if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(sampler.TextureHash, out texture))
-                            {
-                                if (!string.IsNullOrEmpty(sampler.File))
-                                {
-                                    texture = TextureLoader.LoadTexture(d3d, d3dContext, sampler.File);
-                                    RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
-                                }
-                            }
-                        }
+                        GetTextureFromSampler(d3d, d3dContext, part, "S000");
+                        GetTextureFromSampler(d3d, d3dContext, part, "S001");
+                        GetTextureFromSampler(d3d, d3dContext, part, "S011");
                     }
                 }
             }
@@ -341,6 +299,24 @@ namespace Rendering.Graphics
         public override void Unselect()
         {
             SelectionColour = Color.White;
+        }
+
+        private void GetTextureFromSampler(Device d3d, DeviceContext d3dContext, ModelPart part, string SamplerKey)
+        {
+            MaterialSampler sampler = part.Material.GetSamplerByKey(SamplerKey);
+            if (sampler != null)
+            {
+                ShaderResourceView texture;
+
+                if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(sampler.TextureHash, out texture))
+                {
+                    if (!string.IsNullOrEmpty(sampler.File))
+                    {
+                        texture = TextureLoader.LoadTexture(d3d, d3dContext, sampler.File);
+                        RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
+                    }
+                }
+            }
         }
     }
 }

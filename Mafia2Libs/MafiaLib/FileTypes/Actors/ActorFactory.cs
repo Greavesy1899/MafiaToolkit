@@ -41,7 +41,7 @@ namespace ResourceTypes.Actors
                 case ActorTypes.LightEntity:
                     return new ActorLight();
                 case ActorTypes.C_Cutscene:
-                    throw new NotImplementedException();
+                    return new ActorCutscene();
                 case ActorTypes.C_ScriptEntity:
                     return new ActorScriptEntity();
                 case ActorTypes.C_Pinup:
@@ -102,6 +102,8 @@ namespace ResourceTypes.Actors
                     return new ActorStaticParticle(stream, isBigEndian);
                 case ActorTypes.LightEntity:
                     return new ActorLight(stream, isBigEndian);
+                case ActorTypes.C_Cutscene:
+                    return new ActorCutscene(stream, isBigEndian);
                 case ActorTypes.C_ScriptEntity:
                     return new ActorScriptEntity(stream, isBigEndian);
                 case ActorTypes.C_Pinup:

@@ -57,6 +57,7 @@
             this.ActorGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
             this.ActorGrid.Size = new System.Drawing.Size(386, 410);
             this.ActorGrid.TabIndex = 10;
+            this.ActorGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.ActorGrid_OnPropertyValueChanged);
             // 
             // ActorTreeView
             // 

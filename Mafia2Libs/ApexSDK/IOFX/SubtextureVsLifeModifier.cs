@@ -38,26 +38,34 @@ namespace ApexSDK
             controlPointsY = controlPointsX = new float[numControlPoints];
 
             for (int i = 0; i != numControlPoints; i++)
+            {
                 controlPointsX[i] = reader.ReadSingle();
+            }
 
             for (int i = 0; i != numControlPoints; i++)
+            {
                 controlPointsY[i] = reader.ReadSingle();
+            }
         }
 
         public override void WriteToFile(BinaryWriter writer)
         {
             writer.Write(controlPointsX.Length);
 
-            for(int i = 0; i != controlPointsX.Length; i++)
+            for (int i = 0; i != controlPointsX.Length; i++)
+            {
                 writer.Write(controlPointsX[i]);
+            }
 
             for (int i = 0; i != controlPointsY.Length; i++)
+            {
                 writer.Write(controlPointsY[i]);
+            }
         }
 
         public override string ToString()
         {
-            return string.Format("SubtextureVsLifeModifierParams");
+            return "SubtextureVsLifeModifierParams";
         }
     }
 }

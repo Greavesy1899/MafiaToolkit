@@ -1,13 +1,10 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
 using ResourceTypes.FrameResource;
-using SharpDX;
-using System;
 using System.ComponentModel;
 using System.IO;
-using System.Text;
 using Utils.Extensions;
+using Utils.StringHelpers;
 using Utils.Models;
-using Utils.SharpDXExtensions;
 
 namespace Utils.Types
 {
@@ -57,20 +54,18 @@ namespace Utils.Types
         public void ReadFromFile(BinaryReader reader)
         {
             hash = reader.ReadUInt64();
-            ushort size = reader.ReadUInt16();
-            _string = Encoding.ASCII.GetString(reader.ReadBytes(size));
+            _string = reader.ReadString16();
         }
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             hash = stream.ReadUInt64(isBigEndian);
-            ushort size = stream.ReadUInt16(isBigEndian);
-            _string = Encoding.ASCII.GetString(stream.ReadBytes(size));
+            _string = stream.ReadString16(isBigEndian);
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(hash);
-            StringHelpers.StringHelpers.WriteString16(writer, _string);
+            writer.WriteString16(_string);
         }
 
         public void WriteToFile(MemoryStream stream, bool isBigEndian)

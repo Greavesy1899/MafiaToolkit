@@ -8,7 +8,7 @@ namespace ResourceTypes.FrameResource
 {
     public enum FrameEntryRefTypes
     {
-        Mesh,
+        Geometry,
         Material,
         BlendInfo,
         Skeleton,
@@ -23,7 +23,7 @@ namespace ResourceTypes.FrameResource
         protected int refID;
         protected Dictionary<string, int> refs = new Dictionary<string, int>();
 
-        public const string MeshRef = "Mesh";
+        public const string GeometryRef = "Geometry";
         public const string MaterialRef = "Material";
         public const string BlendInfoRef = "BlendInfo";
         public const string SkeletonRef = "Skeleton";
@@ -68,8 +68,8 @@ namespace ResourceTypes.FrameResource
         {
             switch (type)
             {
-                case FrameEntryRefTypes.Mesh:
-                    refs.Add(MeshRef, objRef);
+                case FrameEntryRefTypes.Geometry:
+                    refs.Add(GeometryRef, objRef);
                     break;
                 case FrameEntryRefTypes.Material:
                     refs.Add(MaterialRef, objRef);
@@ -124,8 +124,8 @@ namespace ResourceTypes.FrameResource
         {
             switch (refType)
             {
-                case FrameEntryRefTypes.Mesh:
-                    removeRef(MeshRef);
+                case FrameEntryRefTypes.Geometry:
+                    removeRef(GeometryRef);
                     break;
                 case FrameEntryRefTypes.Material:
                     removeRef(MaterialRef);

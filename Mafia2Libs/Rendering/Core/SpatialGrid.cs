@@ -5,8 +5,7 @@ using SharpDX.Direct3D11;
 using Rendering.Graphics;
 using Utils.StringHelpers;
 using ResourceTypes.Navigation;
-using Utils.SharpDXExtensions;
-using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace Rendering.Core
 {
@@ -143,14 +142,20 @@ namespace Rendering.Core
         {
             if (bIsReady)
             {
-                //foreach (var cell in cells)
-                //{
-                //    cell.Render(device, deviceContext, camera);
-                //}
+                if (currentCell != -1)
+                {
+                    cells[currentCell].Render(device, deviceContext, camera);
+                }
+
+                /*
+                foreach (var cell in cells)
+                {
+                    cell.Render(device, deviceContext, camera);
+                }
 
                 cellBoundingBox.Render(device, deviceContext, camera);
                 currentCell = GetCell(camera.Position);
-                cells[currentCell].Render(device, deviceContext, camera);
+                //cells[currentCell].Render(device, deviceContext, camera);
                 //Debug.WriteLine(cells[currentCell].BoundingBox.ToString());
                 if (previousCell != currentCell)
                 {
@@ -163,6 +168,7 @@ namespace Rendering.Core
                     previousCell = currentCell;
                 }
                 boundingBox.Render(device, deviceContext, camera);
+                */
             }
         }
 
@@ -185,6 +191,31 @@ namespace Rendering.Core
             var intX = Convert.ToUInt32(Math.Min(gridX, width - 1));
             var intY = Convert.ToUInt32(Math.Min(gridY, height - 1));
             return (int)(intX + (int)(intY * width));
+        }
+
+        public void SetSelectedCell(int index)
+        {
+            currentCell = index;
+        }
+
+        public TreeNode GetTreeNodes()
+        {
+            TreeNode[] ChildCells = new TreeNode[cells.Length];
+
+            for(int i = 0; i < cells.Length; i++)
+            {
+                TreeNode Child = new TreeNode();
+                Child.Text = string.Format("CELL {0}", i);
+                Child.Tag = cells[i];
+                ChildCells[i] = Child;
+            }
+
+            TreeNode Parent = new TreeNode();
+            Parent.Text = string.Format("Parent");
+            Parent.Tag = this;
+            Parent.Nodes.AddRange(ChildCells);
+
+            return Parent;
         }
     }
 }

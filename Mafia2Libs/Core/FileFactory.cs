@@ -10,6 +10,8 @@ namespace Core.IO
             string extension = info.Extension.Replace(".", "").ToUpper();
             switch (extension)
             {
+                case "CUT":
+                    return new FileCutscene(info);
                 case "DDS":
                     return new FileTextureDDS(info);
                 case "SDS":

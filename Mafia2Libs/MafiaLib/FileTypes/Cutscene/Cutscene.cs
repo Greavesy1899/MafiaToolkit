@@ -1,8 +1,7 @@
-﻿using SharpDX;
-using System;
+﻿using ResourceTypes.Cutscene.AnimEntities;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene
@@ -52,11 +51,23 @@ namespace ResourceTypes.Cutscene
     //__cstring:01E80D40 aU011_blindtime db 'U011_BlindTime',0
     //__cstring:01E80D4F aU012_blindfade db 'U012_BlindFadeOutTime',0
     //__cstring:01E80D65 aU013_monofadeo db 'U013_MonoFadeOutTime',0
+    public class AnimEntity
+    {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeBase Definition { get; set; }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeBaseData Data { get; set; }
+
+    }
 
     public class CutsceneLoader
     {
-        private int count; // number of cutscenes
         private Cutscene[] cutscenes;
+
+        public Cutscene[] Cutscenes {
+            get { return cutscenes; }
+            set { cutscenes = value; }
+        }
 
         public CutsceneLoader(FileInfo file)
         {
@@ -68,9 +79,9 @@ namespace ResourceTypes.Cutscene
 
         public void ReadFromFile(BinaryReader reader)
         {
-            count = reader.ReadInt32();
-            cutscenes = new Cutscene[count];
-            for(int i = 0; i != cutscenes.Length; i++)
+            int numCutscenes = reader.ReadInt32();
+            cutscenes = new Cutscene[numCutscenes];
+            for(int i = 0; i < cutscenes.Length; i++)
             {
                 cutscenes[i] = new Cutscene(reader);
                 return;
@@ -79,13 +90,10 @@ namespace ResourceTypes.Cutscene
 
         public class Cutscene
         {
-            private string cutsceneName; //begins with a length; short data type.
-            //5 empty bytes;
-            //This size of GCS Seems to be ignoring the cutscene count, and then checking for a bool; basically to check if SPD data exists.
-            private int gcsSize; //size of GCS! data.
-            private GCSData gcsData; //GCS! data.
-            private SPDData spdData; //SPD! data.
-            private GCRData[] gcrData; //GCR! data;
+            public string CutsceneName { get; set; }
+            public GCSData AssetContent { get; set; }
+            public SPDData SoundContent { get; set; }
+            public GCRData[] VehicleContent { get; set; }
 
             public Cutscene(BinaryReader reader)
             {
@@ -95,32 +103,30 @@ namespace ResourceTypes.Cutscene
             public void ReadFromFile(BinaryReader reader)
             {
                 short length = reader.ReadInt16();
-                cutsceneName = new string(reader.ReadChars(length));
+                CutsceneName = new string(reader.ReadChars(length));
                 byte[] unkBytes1 = reader.ReadBytes(5);
-                gcsSize = reader.ReadInt32();
+                int gcsSize = reader.ReadInt32();
 
                 long start = reader.BaseStream.Position;
-                gcsData = new GCSData();
-                gcsData.ReadFromFile(reader);
+                AssetContent = new GCSData();
+                AssetContent.ReadFromFile(reader);
 
                 bool hasSPD = reader.ReadBoolean();
                 if(hasSPD)
                 {
-                    spdData = new SPDData();
-                    spdData.ReadFromFile(reader);
-                    File.WriteAllBytes("CutsceneData/SPD_Data.bin", spdData.Data);
+                    SoundContent = new SPDData();
+                    SoundContent.ReadFromFile(reader);
+                    //File.WriteAllBytes("CutsceneData/SPD_Data.bin", spdData.Data);
                 }
 
-                int gcrCount = reader.ReadInt32();
-                gcrData = new GCRData[gcrCount];
-                for(int i = 0; i < gcrCount; i++)
+                int numGCR = reader.ReadInt32();
+                VehicleContent = new GCRData[numGCR];
+
+                for (int i = 0; i < numGCR; i++)
                 {
-                    GCRData data = new GCRData();
-                    data.ReadFromFile(reader);
-                    gcrData[i] = data;
-                    File.WriteAllBytes("Cutscenedata/GCR_" + gcrData[i].Name + ".bin", gcrData[i].Data);
+                    VehicleContent[i] = new GCRData();
+                    VehicleContent[i].ReadFromFile(reader);
                 }
-
                 return;
             }
 
@@ -136,7 +142,7 @@ namespace ResourceTypes.Cutscene
                 private byte[] unk08; //size from unk07; facefx data
                 private int unk09; //possible size of entries;
                 private ushort numEntities; //numEntities;
-                public IAeEntity[] entities;
+                public AnimEntity[] entities;
                 public int unk10;
                 public float unk11;
                 public int unk12;
@@ -155,122 +161,47 @@ namespace ResourceTypes.Cutscene
                     unk08 = reader.ReadBytes(unk07-4);
                     unk09 = reader.ReadInt32();
                     numEntities = reader.ReadUInt16();
-                    entities = new IAeEntity[numEntities];
+                    entities = new AnimEntity[numEntities];
 
                     for(int i = 0; i < numEntities; i++)
                     {
-                        int header = reader.ReadInt32();
-                        if (header == 126)
+                        int Header = reader.ReadInt32();
+                        Debug.Assert(Header == 126, "We've missed the entity definition Magic!"); // Or 0x7F
+
+                        int Size = reader.ReadInt32();
+                        int RawAnimEntityType = reader.ReadInt32();
+                        AnimEntityTypes AnimEntityType = (AnimEntityTypes)RawAnimEntityType;
+
+                        byte[] DefintionData = reader.ReadBytes(Size - 12);
+                        using (MemoryStream Reader = new MemoryStream(DefintionData))
                         {
-                            int size = reader.ReadInt32();
-                            int type = reader.ReadInt32();
-                            byte[] data = reader.ReadBytes(size - 12);
-                            MemoryStream stream = new MemoryStream(data);
-                            if(type == AeModel.Type)
+                            AnimEntity AnimEntity = CutsceneEntityFactory.ReadAnimEntityFromFile(AnimEntityType, Reader);
+
+                            // Debugging: If a debugger is attached, we should save it to the disc.
+                            if(Debugger.IsAttached)
                             {
-                                AeModel model = new AeModel();
-                                model.ReadFromFile(stream, false);
-                                entities[i] = model;
+                                File.WriteAllBytes("CutSceneData/Entity" + AnimEntityType + "_" + i + ".bin", DefintionData);
                             }
-                            else if (type == AeSpotLight.Type)
-                            {
-                                AeSpotLight spotLight = new AeSpotLight();
-                                spotLight.ReadFromFile(stream, false);
-                                entities[i] = spotLight;
-                            }
-                            else if (type == AeOmniLight.Type)
-                            {
-                                AeOmniLight omniLight = new AeOmniLight();
-                                omniLight.ReadFromFile(stream, false);
-                                entities[i] = omniLight;
-                            }
-                            else if (type == AeUnk4.Type)
-                            {
-                                AeUnk4 unk4 = new AeUnk4();
-                                unk4.ReadFromFile(stream, false);
-                                entities[i] = unk4;
-                            }
-                            else if (type == AeTargetCamera.Type)
-                            {
-                                AeTargetCamera targetCamera = new AeTargetCamera();
-                                targetCamera.ReadFromFile(stream, false);
-                                entities[i] = targetCamera;
-                            }
-                            else if(type == AeFrame.Type)
-                            {
-                                AeFrame frame = new AeFrame();
-                                frame.ReadFromFile(stream, false);
-                                entities[i] = frame;
-                            }
-                            else if (type == AeUnk10.Type)
-                            {
-                                AeUnk10 unk10 = new AeUnk10();
-                                unk10.ReadFromFile(stream, false);
-                                entities[i] = unk10;
-                            }
-                            else if (type == AeUnk12.Type)
-                            {
-                                AeUnk12 unk12 = new AeUnk12();
-                                unk12.ReadFromFile(stream, false);
-                                entities[i] = unk12;
-                            }
-                            else if (type == AeUnk13.Type)
-                            {
-                                AeUnk13 unk13 = new AeUnk13();
-                                unk13.ReadFromFile(stream, false);
-                                entities[i] = unk13;
-                            }
-                            else if (type == AeVehicle.Type)
-                            {
-                                AeVehicle vehicle = new AeVehicle();
-                                vehicle.ReadFromFile(stream, false);
-                                entities[i] = vehicle;
-                            }
-                            else if (type == AeUnk18.Type)
-                            {
-                                AeUnk18 unk18 = new AeUnk18();
-                                unk18.ReadFromFile(stream, false);
-                                entities[i] = unk18;
-                            }
-                            else if (type == AeUnk23.Type)
-                            {
-                                AeUnk23 unk23 = new AeUnk23();
-                                unk23.ReadFromFile(stream, false);
-                                entities[i] = unk23;
-                            }
-                            else if (type == AeEffects.Type)
-                            {
-                                AeEffects effects = new AeEffects();
-                                effects.ReadFromFile(stream, false);
-                                entities[i] = effects;
-                            }
-                            else if (type == AeSunLight.Type)
-                            {
-                                AeSunLight sunlight = new AeSunLight();
-                                sunlight.ReadFromFile(stream, false);
-                                entities[i] = sunlight;
-                            }
-                            else
-                            {
-                                Console.WriteLine("Unknown type");
-                                stream.Position = stream.Length;
-                                File.WriteAllBytes("CutSceneData/Entitiy" + type + "_" + i + ".bin", data);
-                            }
-                            File.WriteAllBytes("CutSceneData/Entitiy" + type + "_" + i + ".bin", data);
-                            if (stream.Position != stream.Length)
-                            {
-                                Debug.Assert(stream.Position == stream.Length);
-                            }
-                            
+
+                            entities[i] = AnimEntity;
                         }
                     }
 
                     for (int z = 0; z < numEntities; z++)
                     {
-                        int dunno = reader.ReadInt32();
+                        // Export this first
+                        int dataType = reader.ReadInt32();
                         int size = reader.ReadInt32();
                         reader.BaseStream.Position -= 8;
-                        File.WriteAllBytes("CutSceneData/" + entities[z] + "_" + z.ToString() + ".bin", reader.ReadBytes(size));
+                        byte[] dataBytes = reader.ReadBytes(size);
+                        File.WriteAllBytes("CutSceneData/" + entities[z] + "_" + z.ToString() + ".bin", dataBytes);
+
+                        // And then This
+                        using(MemoryStream stream = new MemoryStream(dataBytes))
+                        {
+                            entities[z].Data.ReadFromFile(stream, false);
+                            Debug.Assert(stream.Position == stream.Length, "When reading the AnimEntity Data, we did not reach the end of the stream!");
+                        }
                     }
 
                     unk10 = reader.ReadInt32();
@@ -283,7 +214,9 @@ namespace ResourceTypes.Cutscene
 
             public class SPDData
             {
-                public byte[] Data;
+                public int Unk01 { get; set; }
+                public float Unk02 { get; set; } // For GCS this is FPS i think.
+                public AnimEntity[] EntityDefinitions { get; set; }
                 public void ReadFromFile(BinaryReader reader)
                 {
                     int magic = reader.ReadInt32();
@@ -291,9 +224,55 @@ namespace ResourceTypes.Cutscene
                     {
                         //the size includes the size and the magic, A.K.A: (magic and size == 8)
                         int size = reader.ReadInt32();
-                        reader.BaseStream.Position -= 8;
-                        //Data = reader.ReadBytes(size-8);
-                        Data = reader.ReadBytes(size);
+
+                        int fourcc = reader.ReadInt32();
+                        if(fourcc == 0x21445053)
+                        {
+                            Unk01 = reader.ReadInt32();
+                            Unk02 = reader.ReadSingle();
+                            int NumEntities = reader.ReadInt32();
+                            EntityDefinitions = new AnimEntity[NumEntities];
+
+                            for (int i = 0; i < NumEntities; i++)
+                            {
+                                int Header = reader.ReadInt32();
+                                Debug.Assert(Header == 126, "We've missed the entity definition Magic!"); // Or 0x7F
+
+                                int Size = reader.ReadInt32();
+                                int RawAnimEntityType = reader.ReadInt32();
+                                AnimEntityTypes AnimEntityType = (AnimEntityTypes)RawAnimEntityType;
+
+                                byte[] DefintionData = reader.ReadBytes(Size - 12);
+                                using (MemoryStream Reader = new MemoryStream(DefintionData))
+                                {
+                                    AnimEntity Entity = CutsceneEntityFactory.ReadAnimEntityFromFile(AnimEntityType, Reader);
+
+                                    // Debugging: If the AnimEntity is null and a debugger is attached, we should save it to the disc.
+                                    if (Entity == null && Debugger.IsAttached)
+                                    {
+                                        File.WriteAllBytes("CutSceneData/Entity_SPD_" + AnimEntityType + "_" + i + ".bin", DefintionData);
+                                    }
+
+                                    EntityDefinitions[i] = Entity;
+                                }
+                            }
+
+                            for (int z = 0; z < NumEntities; z++)
+                            {
+                                // Export this first
+                                int dataType = reader.ReadInt32();
+                                int entitySize = reader.ReadInt32();
+                                reader.BaseStream.Position -= 8;
+                                byte[] dataBytes = reader.ReadBytes(entitySize);
+                                File.WriteAllBytes("CutSceneData/" + EntityDefinitions[z] + "_SPD_" + z.ToString() + ".bin", dataBytes);
+
+                                // And then This
+                                using (MemoryStream stream = new MemoryStream(dataBytes))
+                                {
+                                    EntityDefinitions[z].Data.ReadFromFile(stream, false);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -310,6 +289,7 @@ namespace ResourceTypes.Cutscene
                     reader.BaseStream.Position -= 8;
                     //Data = reader.ReadBytes(size-8);
                     Data = reader.ReadBytes(size);
+                    File.WriteAllBytes("CutSceneData/" + Name + ".gcr", Data);
                 }
             }
         }

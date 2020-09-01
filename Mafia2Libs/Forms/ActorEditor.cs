@@ -5,7 +5,6 @@ using ResourceTypes.Actors;
 using Utils.Language;
 using Utils.Settings;
 using Forms.EditorControls;
-using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2Tool
 {
@@ -49,7 +48,7 @@ namespace Mafia2Tool
             for (int i = 0; i != actors.Definitions.Count; i++)
             {
                 TreeNode node = new TreeNode(actors.Definitions[i].Name);
-                node.Name = actors.Definitions[i].Hash.ToString();
+                node.Name = actors.Definitions[i].DefinitionHash.ToString();
                 node.Tag = actors.Definitions[i];
                 definitions.Nodes.Add(node);
             }
@@ -163,10 +162,15 @@ namespace Mafia2Tool
             {
                 ActorDefinition definition = actors.CreateActorDefinition((window.chosenObject as ActorEntry));
                 TreeNode node = new TreeNode(definition.Name);
-                node.Name = definition.Hash.ToString();
+                node.Name = definition.DefinitionHash.ToString();
                 node.Tag = definition;
                 definitions.Nodes.Add(node);
             }
+        }
+
+        private void ActorGrid_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            ActorGrid.Refresh();
         }
     }
 }

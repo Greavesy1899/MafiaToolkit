@@ -1,4 +1,5 @@
 ﻿using Mafia2Tool;
+using System.Diagnostics;
 using System.IO;
 
 namespace Core.IO
@@ -24,8 +25,10 @@ namespace Core.IO
                 SDSContentEditor editor = new SDSContentEditor(file);
                 return true;
             }
-
-            return false;
+            else
+            {
+                return (Process.Start(file.FullName) != null ? true : false);
+            }
         }
     }
 }

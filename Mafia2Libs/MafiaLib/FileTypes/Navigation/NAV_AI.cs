@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using SharpDX;
-using Utils.Extensions;
-using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
@@ -56,25 +51,6 @@ namespace ResourceTypes.Navigation
             }
         }
 
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(-1); //file size
-            writer.Write(unk01_flags);
-
-            if (unk01_flags == 3604410608)
-            {
-                writer.Write(fileName.Length);
-                StringHelpers.WriteString(writer, fileName, false);
-                if (data is OBJData)
-                {
-                    (data as OBJData).WriteToFile(writer);
-                }
-            }
-
-            writer.BaseStream.Position = 0;
-            writer.Write((uint)(writer.BaseStream.Length - 4));
-        }
-
         public void ReadFromFile(BinaryReader reader)
         {
             fileSize = reader.ReadInt32();
@@ -92,7 +68,8 @@ namespace ResourceTypes.Navigation
                 int hpdVersion = reader.ReadInt32();
                 if (hpdString == "Kynogon HPD" && hpdVersion == 2)
                 {
-                    data = new HPDData(reader);
+                    data = new HPDData();
+                    (data as HPDData).ReadFromFile(reader);
                 }
                 else
                 {
@@ -108,6 +85,43 @@ namespace ResourceTypes.Navigation
             {
                 throw new Exception("Found unexpected type: " + unk01_flags);
             }
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(-1); //file size
+            writer.Write(unk01_flags);
+
+            if (unk01_flags == 3604410608)
+            {
+                writer.Write(fileName.Length);
+                StringHelpers.WriteString(writer, fileName, false);
+                if (data is OBJData)
+                {
+                    (data as OBJData).WriteToFile(writer);
+                }
+                else if(data is HPDData)
+                {
+                    WriteHPD(writer);
+
+                    // Our HPD file here actually should subtract 12 of the total.
+                    writer.BaseStream.Position = 0;
+                    writer.Write((uint)(writer.BaseStream.Length - 12));
+                    return;
+                }
+            }
+
+            writer.BaseStream.Position = 0;
+            writer.Write((uint)(writer.BaseStream.Length - 4));
+        }
+
+        private void WriteHPD(BinaryWriter writer)
+        {
+            var hpd = (data as HPDData);
+
+            StringHelpers.WriteString(writer, "Kynogon HPD");
+            writer.Write(2); // HPD Version is always 2.
+            hpd.WriteToFile(writer);
         }
     }
 }

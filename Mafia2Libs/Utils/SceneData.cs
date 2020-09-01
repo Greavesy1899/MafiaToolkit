@@ -164,35 +164,36 @@ namespace Mafia2Tool
             }
 
             //Translokator
-            if (!isBigEndian && sdsContent.HasResource("Translokator"))
-            {
-                var name = sdsContent.GetResourceFiles("Translokator", true)[0];
-                Translokator = new TranslokatorLoader(new FileInfo(name));
-            }
+            //if (!isBigEndian && sdsContent.HasResource("Translokator"))
+            //{
+            //    var name = sdsContent.GetResourceFiles("Translokator", true)[0];
+            //    Translokator = new TranslokatorLoader(new FileInfo(name));
+            //}
 
             //Kynapse OBJ_DATA
-            if (!isBigEndian)
-            {
-                //tis' broken for now
-                paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
-                foreach (var item in paths)
-                {
-                    obj.Add(new NAVData(new FileInfo(item)));
-                }
+            //if (!isBigEndian)
+            //{
+            //    //tis' broken for now
+            //    paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
+            //    foreach (var item in paths)
+            //    {
+            //        obj.Add(new NAVData(new FileInfo(item)));
+            //    }
 
-                //for (int i = 0; i < obj.Count; i++)
-                //{
-                //    obj[i].WriteToFile();
-                //}
-            }
-            if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
-            {
-                //var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
-                //var data = new NAVData(new FileInfo(name));
-                //HPDData = (data.data as HPDData);
-            }
-            IndexBufferPool = new IndexBufferManager(ibps, isBigEndian);
-            VertexBufferPool = new VertexBufferManager(vbps, isBigEndian);
+            //    //for (int i = 0; i < obj.Count; i++)
+            //    //{
+            //    //    obj[i].WriteToFile();
+            //    //}
+            //}
+            //if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
+            //{
+            //    var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
+            //    var data = new NAVData(new FileInfo(name));
+            //    HPDData = (data.data as HPDData);
+            //    data.WriteToFile();
+            //}
+            IndexBufferPool = new IndexBufferManager(ibps, dirInfo, isBigEndian);
+            VertexBufferPool = new VertexBufferManager(vbps, dirInfo, isBigEndian);
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
             OBJData = obj.ToArray();

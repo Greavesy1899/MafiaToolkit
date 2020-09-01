@@ -59,14 +59,10 @@ namespace Rendering.Graphics
             Shader_601151254Params parameters = new Shader_601151254Params();
             var material = matParams.MaterialData;
 
-            if (material.Parameters.ContainsKey("C002"))
+            var param = material.GetParameterByKey("C002");
+            if (param != null)
             {
-                ShaderParameter param = material.Parameters["C002"];
                 parameters.C002_MaterialColor = new Vector4(param.Paramaters[0], param.Paramaters[1], param.Paramaters[2], param.Paramaters[3]);
-            }
-            else
-            {
-                parameters.C002_MaterialColor = new Vector4(0f);
             }
 
             ShaderParams = parameters;

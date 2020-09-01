@@ -185,7 +185,7 @@ namespace ResourceTypes.FrameResource
             }
 
             worldTransform = MatrixExtensions.SetMatrix(newRot, scale, newPos);
-            Debug.Assert(!worldTransform.IsNaN());
+            Debug.Assert(!worldTransform.IsNaN(), string.Format("Frame: {0} caused NaN()!", name.ToString()));
             foreach (var child in children)
             {
                 child.SetWorldTransform();

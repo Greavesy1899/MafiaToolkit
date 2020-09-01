@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Utils.StringHelpers;
 
@@ -111,8 +112,8 @@ namespace ResourceTypes.Actors
         public ActorDefinition CreateActorDefinition(ActorEntry entry)
         {
             ActorDefinition definition = new ActorDefinition();
-            definition.Name = entry.FrameName;
-            definition.Hash = entry.FrameNameHash;
+            definition.Name = entry.DefinitionName;
+            definition.DefinitionHash = entry.FrameNameHash;
             Definitions.Add(definition);
             return definition;
         }
@@ -186,9 +187,7 @@ namespace ResourceTypes.Actors
             }
 
             unk16 = reader.ReadInt32();
-
-            //if (unk16 != 0)
-            //    throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
+            Debug.Assert(unk16 == 0, "This is not the end of the file. Message Greavesy with this message and the name of the SDS you tried to read.");
         }
 
         public void WriteToFile()
@@ -267,12 +266,11 @@ namespace ResourceTypes.Actors
             writer.Write(const16);
             writer.Write((int)size); //size
             writer.Write((int)(endPos)); //unk12
-            //writer.Write(0); //unk13
-            
+                                         //writer.Write(0); //unk13
+
             //unk16 = reader.ReadInt32();
 
-            //if (unk16 != 0)
-            //    throw new Exception("UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
+            //Debug.Assert(unk16 == 0, "UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
         }
     }
 }

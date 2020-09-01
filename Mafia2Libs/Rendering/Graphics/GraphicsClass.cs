@@ -9,6 +9,11 @@ using ResourceTypes.Translokator;
 
 namespace Rendering.Graphics
 {
+    public class UpdateSelectedEventArgs : EventArgs
+    {
+        public int RefID { get; set; }
+    }
+
     public class GraphicsClass
     {
         public FPSClass FPS { get; set; }
@@ -19,6 +24,8 @@ namespace Rendering.Graphics
         public Dictionary<int, IRenderer> InitObjectStack { get; set; }
 
         public TimerClass Timer;
+
+        public EventHandler<UpdateSelectedEventArgs> OnSelectedObjectUpdated;
 
         private int selectedID;
         private RenderBoundingBox selectionBox;
@@ -31,6 +38,7 @@ namespace Rendering.Graphics
         private SpatialGrid translokatorGrid;
         private SpatialGrid[] navigationGrids;
 
+
         public GraphicsClass()
         {
             InitObjectStack = new Dictionary<int, IRenderer>();
@@ -38,6 +46,8 @@ namespace Rendering.Graphics
             selectionBox = new RenderBoundingBox();
             translokatorGrid = new SpatialGrid();
             navigationGrids = new SpatialGrid[0];
+
+            OnSelectedObjectUpdated += OnSelectedObjectHasUpdated;
         }
 
         public bool PreInit(IntPtr WindowHandle)
@@ -100,20 +110,29 @@ namespace Rendering.Graphics
             return true;
         }
 
-        public void SetTranslokatorGrid(TranslokatorLoader translokator)
+        public TreeNode SetTranslokatorGrid(TranslokatorLoader translokator)
         {
             translokatorGrid = new SpatialGrid(translokator);
             translokatorGrid.Initialise(D3D.Device, D3D.DeviceContext);
+            return translokatorGrid.GetTreeNodes();
         }
 
-        public void SetNavigationGrid(ResourceTypes.Navigation.OBJData[] data)
+        public TreeNode SetNavigationGrid(ResourceTypes.Navigation.OBJData[] data)
         {
+            TreeNode[] Grids = new TreeNode[data.Length];
             navigationGrids = new SpatialGrid[data.Length];
+
             for(int i = 0; i < navigationGrids.Length; i++)
             {
                 navigationGrids[i] = new SpatialGrid(data[i].runtimeMesh);
                 navigationGrids[i].Initialise(D3D.Device, D3D.DeviceContext);
+                Grids[i] = navigationGrids[i].GetTreeNodes();
+                Grids[i].Text = string.Format("Grid: {0}", i);
             }
+
+            TreeNode Parent = new TreeNode("Navigation Grids");
+            Parent.Nodes.AddRange(Grids);
+            return Parent;
         }
 
         public void Shutdown()
@@ -206,7 +225,9 @@ namespace Rendering.Graphics
             bool foundOld = Assets.TryGetValue(selectedID, out oldObj);
 
             if (selectedID == id)
+            {
                 return;
+            }
 
             if (foundNew)
             {
@@ -235,6 +256,14 @@ namespace Rendering.Graphics
         {
             Camera.Pitch(deltaY);
             Camera.Yaw(deltaX);
+        }
+
+        private void OnSelectedObjectHasUpdated(object Sender, UpdateSelectedEventArgs Args)
+        {
+            if(selectedID == Args.RefID)
+            {
+                selectionBox.SetTransform(Assets[Args.RefID].Transform);
+            }
         }
 
         public void ToggleD3DFillMode() => D3D.ToggleFillMode();

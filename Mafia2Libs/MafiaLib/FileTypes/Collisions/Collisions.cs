@@ -133,6 +133,10 @@ namespace ResourceTypes.Collisions
                     Vector3 vec = new Vector3();
                     vec.X = MathUtil.RadiansToDegrees(Rotation.X);
                     vec.Y = MathUtil.RadiansToDegrees(Rotation.Y);
+                    //vec.X = ((vec.X + vec.Y) * -1);
+                    //vec.X = ((vec.X + vec.Y) * -1);
+                    vec.Y = ((vec.X + vec.Y) * -1);
+                    vec.X = 0.0f;
                     vec.Z = /*Unk5 != 128 ? MathUtil.RadiansToDegrees(Rotation.Z) : */-MathUtil.RadiansToDegrees(Rotation.Z);
                     return vec;
                 }
@@ -140,6 +144,8 @@ namespace ResourceTypes.Collisions
                     Vector3 vec = new Vector3();
                     vec.X = MathUtil.DegreesToRadians(value.X);
                     vec.Y = MathUtil.DegreesToRadians(value.Y);
+                    //vec.X = ((vec.X + vec.Y) * -1);
+                    //vec.Y = ((vec.X + vec.Y) * -1);
                     vec.Z = /*Unk5 != 128 ? MathUtil.DegreesToRadians(value.Z) : */-MathUtil.DegreesToRadians(value.Z);
                     Rotation = vec;
                 }
@@ -150,7 +156,8 @@ namespace ResourceTypes.Collisions
             /// </summary>
             public Matrix Transform { 
                 get {
-                    Matrix transform = Matrix.RotationYawPitchRoll(MathUtil.DegreesToRadians(RotationDegrees.X), MathUtil.DegreesToRadians(RotationDegrees.Y), MathUtil.DegreesToRadians(RotationDegrees.Z));
+                    
+                    Matrix transform = MatrixExtensions.SetMatrix(RotationDegrees, Vector3.One, Position);
                     Debug.Assert(!transform.IsNaN());
                     transform.TranslationVector = Position;
                     return transform;

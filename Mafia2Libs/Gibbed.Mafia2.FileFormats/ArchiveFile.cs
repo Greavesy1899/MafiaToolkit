@@ -779,11 +779,12 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteElementString("File", name);
             XmlResource resource = new XmlResource();
 
-            string[] dirs = name.Split('/');
+            string[] dirs = name.Split(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
             string xmldir = xmlDir;
             for (int z = 0; z != dirs.Length - 1; z++)
             {
-                xmldir += "/" + dirs[z];
+                
+                xmldir = Path.Combine(xmldir, dirs[z]);
                 Directory.CreateDirectory(xmldir);
             }
 
@@ -791,14 +792,19 @@ namespace Gibbed.Mafia2.FileFormats
             {
                 resource = new XmlResource();
                 resource.Deserialize(entry.Version, stream, Endian);
+                string FileName = Path.Combine(xmldir, Path.GetFileName(name) + ".xml");
 
                 if (resource.Unk3)
                 {
-                    File.WriteAllBytes(xmlDir + "/" + name + ".xml", entry.Data);
+                    File.WriteAllBytes(FileName, entry.Data);
                 }
                 else
                 {
-                    File.WriteAllText(xmlDir + "/" + name + ".xml", resource.Content);
+                    // 08/08/2020. Originally was File.WriteAllText, but caused problems with some XML documents.
+                    using (StreamWriter writer = new StreamWriter(File.Open(FileName, FileMode.Create)))
+                    {
+                        writer.WriteLine(resource.Content);
+                    }
                 }
             }
 
@@ -889,7 +895,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             // Create directories and then write the XML to finish it off.
             string fileName = name + ".fsb";
-            string[] dirs = name.Split('/');
+            string[] dirs = name.Split(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
 
             string tempDir = soundDir;
             for (int z = 0; z != dirs.Length - 1; z++)
@@ -1005,7 +1011,12 @@ namespace Gibbed.Mafia2.FileFormats
             foreach (TableData data in resource.Tables)
             {
                 //maybe we can get away with saving to version 1, and then converting to version 2 when packing?
-                data.Serialize(1, File.Open(tableDIR + data.Name, FileMode.Create), Endian.Little);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    data.Serialize(1, stream, Endian.Little);
+                    File.WriteAllBytes(tableDIR + data.Name, stream.ToArray());
+                }
+
                 resourceXML.WriteElementString("Table", data.Name);
             }
 

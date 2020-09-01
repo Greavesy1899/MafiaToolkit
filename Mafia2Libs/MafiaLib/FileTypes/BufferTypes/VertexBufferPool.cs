@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using Utils.Extensions;
 
 namespace ResourceTypes.BufferPools
@@ -20,14 +21,11 @@ namespace ResourceTypes.BufferPools
             get { return loadedPoolNames; }
         }
 
-        public VertexBufferManager(List<FileInfo> files, bool isBigEndian = false)
+        public VertexBufferManager(List<FileInfo> files, DirectoryInfo parent, bool isBigEndian = false)
         {
             loadedPoolNames = files;
+            root = parent;
             buffers = new Dictionary<ulong, VertexBuffer>();
-            if (LoadedPoolNames.Count > 0)
-            {
-                root = loadedPoolNames[0].Directory;
-            }
             ReadFiles(isBigEndian);
         }
 
@@ -102,6 +100,29 @@ namespace ResourceTypes.BufferPools
                         Console.WriteLine("Skipped a buffer {0}", buff.Key);
                     }
                 }
+            }
+        }
+
+        public bool TryAddBuffer(VertexBuffer buffer)
+        {
+            bool bHasVertexBuffer = HasBuffer(buffer);
+
+            if(bHasVertexBuffer)
+            {
+                var result = MessageBox.Show("Found existing Vertex Buffer!\nPressing 'OK' will replace, pressing 'Cancel' will stop the importing process.", "Toolkit", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                bHasVertexBuffer = (result == DialogResult.OK ? true : false);
+            }
+
+            if (bHasVertexBuffer)
+            {
+                RemoveBuffer(buffer);
+                AddBuffer(buffer);
+                return true;
+            }
+            else
+            {
+                AddBuffer(buffer);
+                return true;
             }
         }
 

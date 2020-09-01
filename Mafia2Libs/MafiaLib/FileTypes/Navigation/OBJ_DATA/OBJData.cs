@@ -87,10 +87,10 @@ namespace ResourceTypes.Navigation
             }
         }
 
-        int unk0;
-        int unk2;
-        int unk3;
-        int unk4;
+        int unk0; // Usually 2
+        int fileIDHPD;
+        int unk3HPD; // Usually 100412
+        int bitFlagsHPD;
         int vertSize;
         int triSize;
         public VertexStruct[] vertices;
@@ -105,9 +105,9 @@ namespace ResourceTypes.Navigation
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(unk0);
-            writer.Write(unk2);
-            writer.Write(unk3);
-            writer.Write(unk4);
+            writer.Write(fileIDHPD);
+            writer.Write(unk3HPD);
+            writer.Write(bitFlagsHPD);
             writer.Write(vertSize);
             writer.Write(triSize);
 
@@ -144,16 +144,17 @@ namespace ResourceTypes.Navigation
 
         public void ReadFromFile(BinaryReader reader)
         {
-            StreamWriter writer = File.CreateText("NAV_AI_OBJ_DATA" + StringHelpers.GetNewRefID() + ".txt");
-
             unk0 = reader.ReadInt32();
-            unk2 = reader.ReadInt32();
-            unk3 = reader.ReadInt32();
-            unk4 = reader.ReadInt32();
-            //writer.WriteLine(string.Format("{0} {1} {2} {3}", unk0, unk2, unk3, unk4));
+            fileIDHPD = reader.ReadInt32();
+            unk3HPD = reader.ReadInt32();
+            bitFlagsHPD = reader.ReadInt32();
+            
             vertSize = reader.ReadInt32();
             triSize = reader.ReadInt32();
             //writer.WriteLine(string.Format("{0}, )
+
+            StreamWriter writer = File.CreateText("NAV_AI_OBJ_DATA_" + fileIDHPD + ".txt");
+            writer.WriteLine(string.Format("{0} {1} {2} {3}", unk0, fileIDHPD, unk3HPD, bitFlagsHPD));
 
             //List<string> data = new List<string>();
             vertices = new VertexStruct[vertSize];
