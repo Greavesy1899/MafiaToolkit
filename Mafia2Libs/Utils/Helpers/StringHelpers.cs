@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Utils.StringHelpers
 {
-    public class StringHelpers
+    public static class StringHelpers
     {
         //set to 10 because the first 10 are placeholders for render assets.
         private static int currentRefID = 10;
@@ -15,12 +15,12 @@ namespace Utils.StringHelpers
             return currentRefID;
         }
 
-        public static string ReadString8(BinaryReader reader)
+        public static string ReadString8(this BinaryReader reader)
         {
             byte size = reader.ReadByte();
             return new string(reader.ReadChars(size));
         }
-        public static string ReadString16(BinaryReader reader)
+        public static string ReadString16(this BinaryReader reader)
         {
             short size = reader.ReadInt16();
             return new string(reader.ReadChars(size));
@@ -30,7 +30,7 @@ namespace Utils.StringHelpers
             int size = reader.ReadInt32();
             return new string(reader.ReadChars(size));
         }
-        public static string ReadString64(BinaryReader reader)
+        public static string ReadString64(this BinaryReader reader)
         {
             long size = reader.ReadInt64();
             return new string(reader.ReadChars((int)size));
@@ -74,17 +74,17 @@ namespace Utils.StringHelpers
             if(trail)
                 writer.Write('\0');
         }
-        public static void WriteString8(BinaryWriter writer, string text)
+        public static void WriteString8(this BinaryWriter writer, string text)
         {
             writer.Write((byte)text.Length);
             writer.Write(text.ToCharArray());
         }
-        public static void WriteString16(BinaryWriter writer, string text)
+        public static void WriteString16(this BinaryWriter writer, string text)
         {
             writer.Write((ushort)text.Length);
             writer.Write(text.ToCharArray());
         }
-        public static void WriteString32(BinaryWriter writer, string text)
+        public static void WriteString32(this BinaryWriter writer, string text)
         {
             writer.Write(text.Length);
             writer.Write(text.ToCharArray());

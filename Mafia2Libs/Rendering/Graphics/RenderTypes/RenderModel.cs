@@ -303,7 +303,7 @@ namespace Rendering.Graphics
 
         private void GetTextureFromSampler(Device d3d, DeviceContext d3dContext, ModelPart part, string SamplerKey)
         {
-            ShaderParameterSampler sampler = part.Material.GetSamplerByKey(SamplerKey);
+            MaterialSampler sampler = part.Material.GetSamplerByKey(SamplerKey);
             if (sampler != null)
             {
                 ShaderResourceView texture;

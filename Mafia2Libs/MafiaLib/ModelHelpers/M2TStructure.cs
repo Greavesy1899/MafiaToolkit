@@ -9,7 +9,7 @@ using System.Linq;
 using ResourceTypes.Materials;
 using ResourceTypes.Collisions;
 using ResourceTypes.Collisions.Opcode;
-using System.Text;
+using Utils.StringHelpers;
 
 namespace Utils.Models
 {
@@ -259,7 +259,7 @@ namespace Utils.Models
                     for (int i = 0; i < skeleton.Joints.Length; i++)
                     {
                         var joint = skeleton.Joints[i];
-                        StringHelpers.StringHelpers.WriteString8(writer, joint.Name);
+                        writer.WriteString8(joint.Name);
                         writer.Write(joint.ParentIndex);
                         Quaternion rotation;
                         Vector3 position, scale;
@@ -530,7 +530,7 @@ namespace Utils.Models
                 for (int i = 0; i < size; i++)
                 {
                     Joint joint = new Joint();
-                    joint.Name = StringHelpers.StringHelpers.ReadString8(reader);
+                    joint.Name = reader.ReadString8();
                     joint.ParentIndex = reader.ReadByte();
                     joint.Parent = (joint.ParentIndex != 0xFF) ? skeleton.Joints[joint.ParentIndex] : null; //may crash because root will not be in range
                     Vector3 position = Vector3Extenders.ReadFromFile(reader);

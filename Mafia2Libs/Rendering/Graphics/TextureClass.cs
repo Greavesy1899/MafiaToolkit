@@ -102,7 +102,7 @@ namespace Rendering.Graphics
             ulong SamplerHash = 0;
             if (material != null)
             {
-                ShaderParameterSampler Sampler = material.GetSamplerByKey("S000");
+                MaterialSampler Sampler = material.GetSamplerByKey("S000");
 
                 if (Sampler != null)
                 {

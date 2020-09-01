@@ -65,7 +65,7 @@ namespace Rendering.Graphics
             else
             {
                 
-                ShaderParameterSampler sampler = material.GetSamplerByKey("S000");
+                MaterialSampler sampler = material.GetSamplerByKey("S000");
                 ShaderResourceView texture = null;
                 if (sampler != null)
                 {

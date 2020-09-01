@@ -1079,7 +1079,7 @@ namespace Mafia2Tool
                                     definition.FrameIndex = (uint)frameIndexes[x];
                                     frame = nFrame;
                                     frame.Item = actor.Items[c];
-                                    frame.LocalTransform = MatrixExtensions.SetMatrix(actor.Items[c].Quaternion, actor.Items[c].Scale, actor.Items[c].Position);
+                                    frame.LocalTransform = MatrixExtensions.SetMatrix(actor.Items[c].Rotation, actor.Items[c].Scale, actor.Items[c].Position);
                                     sorted = true;
                                 }
                             }

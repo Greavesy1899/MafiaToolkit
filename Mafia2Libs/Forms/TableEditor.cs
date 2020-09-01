@@ -165,10 +165,23 @@ namespace Mafia2Tool
 
             foreach (MTableColumn column in DataGrid.Columns)
             {
-                if (column.TypeM2 == TableData.ColumnType.Boolean)
-                    data.Add(0);
-                else
-                    data.Add("");
+                switch(column.TypeM2)
+                {
+                    case TableData.ColumnType.Boolean:
+                    case TableData.ColumnType.Unsigned32:
+                    case TableData.ColumnType.Signed32:
+                    case TableData.ColumnType.Hash64:
+                    case TableData.ColumnType.Float32:
+                    case TableData.ColumnType.Flags32:
+                        data.Add(0);
+                        break;
+                    case TableData.ColumnType.Color:
+                        data.Add("255 255 255");
+                        break;
+                    default:
+                        data.Add("");
+                        break;
+                }
             }
             DataGrid.Rows.Add(data.ToArray());
         }
@@ -179,8 +192,10 @@ namespace Mafia2Tool
 
         private void OnSelectedChange(object sender, EventArgs e)
         {
-            if(DataGrid.SelectedCells.Count > 0)
+            if (DataGrid.SelectedCells.Count > 0)
+            {
                 GetCellProperties(DataGrid.SelectedCells[0].RowIndex, DataGrid.SelectedCells[0].ColumnIndex);
+            }
         }
     }
 }

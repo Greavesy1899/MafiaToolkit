@@ -24,17 +24,17 @@ namespace Rendering
             GizmoRed.ShaderID = GizmoBlue.ShaderID = GizmoGreen.ShaderID = 3854590933660942049;
             GizmoRed.ShaderHash = GizmoBlue.ShaderHash = GizmoGreen.ShaderHash = 601151254;
 
-            ShaderParameter param = new ShaderParameter();
+            MaterialParameter param = new MaterialParameter();
             param.ID = "C002";
             param.Paramaters = new float[4] { 1.0f, 0.0f, 0.0f, 1.0f };
             GizmoRed.Parameters.Add(param);
 
-            param = new ShaderParameter();
+            param = new MaterialParameter();
             param.ID = "C002";
             param.Paramaters = new float[4] { 0.0f, 1.0f, 0.0f, 1.0f };
             GizmoBlue.Parameters.Add(param);
 
-            param = new ShaderParameter();
+            param = new MaterialParameter();
             param.ID = "C002";
             param.Paramaters = new float[4] { 0.0f, 0.0f, 1.0f, 1.0f };
             GizmoGreen.Parameters.Add(param);

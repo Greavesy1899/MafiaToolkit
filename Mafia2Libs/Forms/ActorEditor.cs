@@ -167,5 +167,10 @@ namespace Mafia2Tool
                 definitions.Nodes.Add(node);
             }
         }
+
+        private void ActorGrid_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            ActorGrid.Refresh();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SharpDX;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using SharpDX;
 using System.ComponentModel;
 using System.IO;
 using Utils.SharpDXExtensions;
@@ -19,7 +20,7 @@ namespace ResourceTypes.Actors
         ulong entityHash; //definition hash
         ulong frameNameHash; //frame name hash
         Vector3 position;
-        Quaternion quat;
+        Quaternion rotation;
         Vector3 scale;
         ushort unk3;
         ushort dataID;
@@ -30,7 +31,10 @@ namespace ResourceTypes.Actors
         }
         public string EntityName {
             get { return entityName; }
-            set { entityName = value; }
+            set { 
+                entityName = value;
+                entityHash = FNV64.Hash(value);
+            }
         }
         public string ActorTypeName {
             get { return actorTypeName; }
@@ -50,7 +54,10 @@ namespace ResourceTypes.Actors
         }
         public string FrameName {
             get { return frameName; }
-            set { frameName = value; }
+            set { 
+                frameName = value;
+                frameNameHash = FNV64.Hash(value);
+            }
         }
         public int ActorTypeID {
             get { return actortypeID; }
@@ -68,9 +75,9 @@ namespace ResourceTypes.Actors
             get { return position; }
             set { position = value; }
         }
-        public Quaternion Quaternion {
-            get { return quat; }
-            set { quat = value; }
+        public Quaternion Rotation {
+            get { return rotation; }
+            set { rotation = value; }
         }
         public Vector3 Scale {
             get { return scale; }
@@ -93,7 +100,7 @@ namespace ResourceTypes.Actors
 
         public ActorEntry()
         {
-            quat = Quaternion.Identity;
+            rotation = Quaternion.Identity;
             scale = Vector3.One;
             actorTypeName = "";
             entityName = "";
@@ -121,7 +128,7 @@ namespace ResourceTypes.Actors
             entityHash = reader.ReadUInt64();
             frameNameHash = reader.ReadUInt64();
             position = Vector3Extenders.ReadFromFile(reader);
-            quat = QuaternionExtensions.ReadFromFile(reader);
+            rotation = QuaternionExtensions.ReadFromFile(reader);
             scale = Vector3Extenders.ReadFromFile(reader);
             unk3 = reader.ReadUInt16();
             dataID = reader.ReadUInt16();
@@ -154,7 +161,7 @@ namespace ResourceTypes.Actors
             writer.Write(entityHash);
             writer.Write(frameNameHash);
             position.WriteToFile(writer);
-            quat.WriteToFile(writer);
+            rotation.WriteToFile(writer);
             scale.WriteToFile(writer);
             writer.Write(unk3);
             writer.Write(dataID);

@@ -27,8 +27,8 @@ namespace ResourceTypes.Materials
         ulong shaderID;
         uint shaderHash;
 
-        List<ShaderParameter> parameters;
-        List<ShaderParameterSampler> samplers;
+        List<MaterialParameter> parameters;
+        List<MaterialSampler> samplers;
 
         [Category("Material IDs"), ReadOnly(true)]
         public ulong MaterialHash {
@@ -106,14 +106,12 @@ namespace ResourceTypes.Materials
             set { shaderHash = value; }
         }
 
-        [Browsable(false)]
-        public List<ShaderParameter> Parameters {
+        public List<MaterialParameter> Parameters {
             get { return parameters; }
             set { parameters = value; }
         }
 
-        [Browsable(false)]
-        public List<ShaderParameterSampler> Samplers {
+        public List<MaterialSampler> Samplers {
             get { return samplers; }
             set { samplers = value; }
         }
@@ -145,9 +143,9 @@ namespace ResourceTypes.Materials
             unk5 = 0;
             unk6 = 0;
             unk7 = 1.0f;
-            parameters = new List<ShaderParameter>();
-            samplers = new List<ShaderParameterSampler>();
-            var spp = new ShaderParameterSampler();
+            parameters = new List<MaterialParameter>();
+            samplers = new List<MaterialSampler>();
+            var spp = new MaterialSampler();
             samplers.Add(spp);
         }
 
@@ -189,18 +187,18 @@ namespace ResourceTypes.Materials
             shaderHash = reader.ReadUInt32();
 
             int spCount = reader.ReadInt32();
-            parameters = new List<ShaderParameter>();
+            parameters = new List<MaterialParameter>();
             for (int i = 0; i != spCount; i++)
             {
-                var param = new ShaderParameter(reader);
+                var param = new MaterialParameter(reader);
                 parameters.Add(param);
             }
 
             int spsCount = reader.ReadInt32();
-            samplers = new List<ShaderParameterSampler>();
+            samplers = new List<MaterialSampler>();
             for (int i = 0; i != spsCount; i++)
             {
-                var shader = new ShaderParameterSampler(reader, version);
+                var shader = new MaterialSampler(reader, version);
                 samplers.Add(shader);
             }
         }
@@ -253,7 +251,7 @@ namespace ResourceTypes.Materials
             materialHash = FNV64.Hash(name);
         }
 
-        public ShaderParameterSampler GetSamplerByKey(string SamplerName)
+        public MaterialSampler GetSamplerByKey(string SamplerName)
         {
             foreach (var sampler in samplers)
             {
@@ -266,7 +264,7 @@ namespace ResourceTypes.Materials
             return null;
         }
 
-        public ShaderParameter GetParameterByKey(string ParameterKey)
+        public MaterialParameter GetParameterByKey(string ParameterKey)
         {
             foreach (var param in parameters)
             {
@@ -280,179 +278,7 @@ namespace ResourceTypes.Materials
         }
     }
 
-    public class ShaderParameter
-    {
-        string id;
-        int paramCount;
-        float[] paramaters;
 
-        public string ID {
-            get { return id; }
-            set { id = value; }
-        }
-        public float[] Paramaters {
-            get { return paramaters; }
-            set {
-                paramaters = value;
-                paramCount = value.Length;
-            }
-        }
-
-        public ShaderParameter()
-        {
-            id = "";
-            paramaters = new float[0];
-        }
-
-        public ShaderParameter(BinaryReader reader)
-        {
-            ReadFromFile(reader);
-        }
-
-        public void ReadFromFile(BinaryReader reader)
-        {
-            id = new string(reader.ReadChars(4));
-            paramCount = reader.ReadInt32() / 4;
-            paramaters = new float[paramCount];
-            for (int i = 0; i != paramCount; i++)
-            {
-                paramaters[i] = reader.ReadSingle();
-            }
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(id.ToCharArray());
-            writer.Write(paramCount * 4);
-            for (int i = 0; i != paramCount; i++)
-            {
-                writer.Write(paramaters[i]);
-            }
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0}, {1}", id, paramCount);
-        }
-    }
-
-    public class ShaderParameterSampler
-    {
-        string id;
-        int[] unkSet0;
-        ulong textureHash;
-        byte texType;
-        byte unkZero;
-        byte[] samplerStates;
-        int[] unkSet1;
-        string file;
-
-        public string ID {
-            get { return id; }
-            set { id = value; }
-        }
-        public int[] UnkSet0 {
-            get { return unkSet0; }
-            set { unkSet0 = value; }
-        }
-        public ulong TextureHash {
-            get { return textureHash; }
-            set { textureHash = value; }
-        }
-        public byte TexType {
-            get { return texType; }
-            set { texType = value; }
-        }
-        public byte UnkZero {
-            get { return unkZero; }
-            set { unkZero = value; }
-        }
-        public byte[] SamplerStates {
-            get { return samplerStates; }
-            set { samplerStates = value; }
-        }
-        public int[] UnkSet1 {
-            get { return unkSet1; }
-            set { unkSet1 = value; }
-        }
-        public string File {
-            get { return file; }
-            set { SetName(value); }
-        }
-
-        public ShaderParameterSampler(BinaryReader reader, VersionsEnumerator version)
-        {
-            ReadFromFile(reader, version);
-        }
-
-        public ShaderParameterSampler()
-        {
-            id = "S000";
-            file = "null.dds";
-            textureHash = 1;
-            unkSet0 = new int[2];
-            unkSet1 = new int[2];
-            samplerStates = new byte[6] { 3, 3, 2, 0, 0, 0 };
-            texType = 2;
-            UnkZero = 0;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0}, {1}", id, file);
-        }
-
-        public void ReadFromFile(BinaryReader reader, VersionsEnumerator version)
-        {
-            id = new string(reader.ReadChars(4));
-            unkSet0 = new int[version == VersionsEnumerator.V_58 ? 4 : 2];
-            for (int i = 0; i < unkSet0.Length; i++)
-            {
-                unkSet0[i] = reader.ReadInt32();
-            }
-            textureHash = reader.ReadUInt64();
-            texType = reader.ReadByte();
-            unkZero = reader.ReadByte();
-            samplerStates = reader.ReadBytes(6);
-            unkSet1 = new int[2]; //these can have erratic values
-            for (int i = 0; i < unkSet1.Length; i++)
-            {
-                unkSet1[i] = reader.ReadInt32();
-            }
-            int fileLength = reader.ReadInt32();
-            file = new string(reader.ReadChars(fileLength));
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(id.ToCharArray());
-            for(int i = 0; i < unkSet0.Length; i++)
-            {
-                writer.Write(unkSet0[i]);
-            }
-            writer.Write(textureHash);
-            writer.Write(texType);
-            writer.Write(UnkZero);
-
-            if (samplerStates == null)
-                writer.Write(new byte[] { 3, 3, 2, 0, 0, 0 });
-            else
-                writer.Write(samplerStates);
-
-            for (int i = 0; i < unkSet1.Length; i++)
-            {
-                writer.Write(unkSet1[i]);
-            }
-            writer.Write(file.Length);
-            writer.Write(file.ToCharArray());
-        }
-
-        public void SetName(string name)
-        {
-            file = name;
-            textureHash = FNV64.Hash(name);
-        }
-    }
 
     [Flags]
     public enum MaterialFlags : uint //No idea which ones are used.
