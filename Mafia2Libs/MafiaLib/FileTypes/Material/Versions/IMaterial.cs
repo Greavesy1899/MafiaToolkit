@@ -48,15 +48,16 @@ namespace ResourceTypes.Materials
         {
             return MaterialName.uHash;
         }
-
-
-        public IMaterialSampler GetSamplerByKey(string SamplerName)
+        public virtual Hash GetTextureByID(string SamplerName)
         {
             foreach (var sampler in Samplers)
             {
                 if (sampler.ID == SamplerName)
                 {
-                    return sampler;
+                    Hash TextureFile = new Hash();
+                    TextureFile.String = sampler.GetFileName();
+                    TextureFile.uHash = sampler.GetFileHash();
+                    return TextureFile;
                 }
             }
 

@@ -52,7 +52,7 @@ namespace ResourceTypes.Materials
         public override void WriteToFile(BinaryWriter writer, VersionsEnumerator version)
         {
             // Material Name doesn't use standard hex serialization.
-            writer.Write(MaterialName.Hex);
+            writer.Write(MaterialName.uHash);
             writer.WriteString32(MaterialName.String);
 
             // Unknown Values.

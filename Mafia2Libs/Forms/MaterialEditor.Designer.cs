@@ -80,6 +80,7 @@
             this.MaterialGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
             this.MaterialGrid.Size = new System.Drawing.Size(447, 400);
             this.MaterialGrid.TabIndex = 2;
+            this.MaterialGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.MaterialGrid_OnPropertyValueChanged);
             // 
             // toolStrip1
             // 

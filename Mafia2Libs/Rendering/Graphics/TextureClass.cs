@@ -9,6 +9,7 @@ using System.IO;
 using Utils.Extensions;
 using Utils.Logging;
 using Utils.Settings;
+using Utils.Types;
 
 namespace Rendering.Graphics
 {
@@ -102,15 +103,16 @@ namespace Rendering.Graphics
             ulong SamplerHash = 0;
             if (material != null)
             {
-                IMaterialSampler Sampler = material.GetSamplerByKey("S000");
+                Hash TextureHash = material.GetTextureByID("S000");
 
-                if (Sampler != null)
+                if (TextureHash != null)
                 {
+                    SamplerHash = TextureHash.uHash;
+
                     // If our storage doesn't contain a thumbnail, then we go ahead and produce another.
-                    if (!RenderStorageSingleton.Instance.TextureThumbnails.TryGetValue(Sampler.GetFileHash(), out Thumbnail))
+                    if (!RenderStorageSingleton.Instance.TextureThumbnails.TryGetValue(SamplerHash, out Thumbnail))
                     {
-                        SamplerHash = Sampler.GetFileHash();
-                        TexturePath = GetTextureFromPath(Sampler.GetFileName(), false);
+                        TexturePath = GetTextureFromPath(TextureHash.String, false);
                     }
                 }
             }

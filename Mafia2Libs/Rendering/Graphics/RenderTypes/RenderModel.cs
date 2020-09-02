@@ -303,13 +303,13 @@ namespace Rendering.Graphics
 
         private void GetTextureFromSampler(Device d3d, DeviceContext d3dContext, ModelPart part, string SamplerKey)
         {
-            IMaterialSampler sampler = part.Material.GetSamplerByKey(SamplerKey);
+            Hash sampler = part.Material.GetTextureByID(SamplerKey);
             if (sampler != null)
             {
                 ShaderResourceView texture;
 
-                ulong SamplerHash = sampler.GetFileHash();
-                string SamplerName = sampler.GetFileName();
+                ulong SamplerHash = sampler.uHash;
+                string SamplerName = sampler.String;
 
                 if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(SamplerHash, out texture))
                 {
