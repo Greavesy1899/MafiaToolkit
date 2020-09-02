@@ -170,10 +170,10 @@ namespace ResourceTypes.FrameResource
             materialHash = reader.ReadUInt64(isBigEndian);
             unk3 = reader.ReadInt32(isBigEndian);
 
-            Material mat = MaterialsManager.LookupMaterialByHash(materialHash);
+            IMaterial mat = MaterialsManager.LookupMaterialByHash(materialHash);
 
             if(mat != null)
-                materialName = mat.MaterialName;
+                materialName = mat.GetMaterialName();
             else
                 materialName = "UNABLE TO GET FROM MTLs";
         }

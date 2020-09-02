@@ -10,7 +10,7 @@ namespace Mafia2Tool
     {
         private bool isSelected;
         private Color defaultColour;
-        private Material material;
+        private IMaterial material;
 
         public bool IsSelected {
             get { return isSelected; }
@@ -26,17 +26,17 @@ namespace Mafia2Tool
             defaultColour = MaterialName.BackColor;
         }
 
-        public void SetMaterial(Material material)
+        public void SetMaterial(IMaterial material)
         {
             if (material != null)
             {
-                MaterialName.Text = material.MaterialName;
+                MaterialName.Text = material.GetMaterialName();
                 TextureImage.Image = TextureLoader.LoadThumbnail(material);
                 this.material = material;
             }
         }
 
-        public Material GetMaterial()
+        public IMaterial GetMaterial()
         {
             return material;
         }

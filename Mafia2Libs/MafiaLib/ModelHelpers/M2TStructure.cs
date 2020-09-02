@@ -86,7 +86,7 @@ namespace Utils.Models
                     if (string.IsNullOrEmpty(materials[x].MaterialName))
                     {
                         var material = MaterialsManager.LookupMaterialByHash(materials[x].MaterialHash);
-                        materials[x].MaterialName = material.MaterialName;
+                        materials[x].MaterialName = material.GetMaterialName();
                     }
 
                     ModelPart modelPart = new ModelPart();
@@ -625,7 +625,7 @@ namespace Utils.Models
 
                     if (material != null)
                     {
-                        Lods[i].Parts[x].Hash = material.MaterialHash;
+                        Lods[i].Parts[x].Hash = material.GetMaterialHash();
                     }
                 }
 

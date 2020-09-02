@@ -11,7 +11,7 @@ namespace Mafia2Tool.Forms
     {
         MaterialLibrary SelectedLibrary = null;
         TextureEntry SelectedEntry = null;
-        Material SelectedMaterial = null;
+        IMaterial SelectedMaterial = null;
 
         public MaterialBrowser()
         {
@@ -51,12 +51,12 @@ namespace Mafia2Tool.Forms
             }
         }
 
-        public Material GetSelectedMaterial()
+        public IMaterial GetSelectedMaterial()
         {
             return SelectedMaterial;
         }
 
-        private void PopulateBrowser(Material[] materials)
+        private void PopulateBrowser(IMaterial[] materials)
         {
             FlowPanel_Materials.Controls.Clear();
 
@@ -100,7 +100,7 @@ namespace Mafia2Tool.Forms
             // We should not search if the search bar is empty, or we'll get some terrible results!
             if (!string.IsNullOrEmpty(text))
             {
-                Material[] filtered = SelectedLibrary.SelectSearchTypeAndProceedSearch(text, ComboBox_SearchType.SelectedIndex);
+                IMaterial[] filtered = SelectedLibrary.SelectSearchTypeAndProceedSearch(text, ComboBox_SearchType.SelectedIndex);
                 PopulateBrowser(filtered);
                 Label_MaterialCount.Text = string.Format("(Found: {0} Materials)", filtered.Length);
             }

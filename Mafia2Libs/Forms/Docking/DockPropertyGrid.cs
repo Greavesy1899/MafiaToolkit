@@ -95,7 +95,7 @@ namespace Forms.Docking
                             TextureEntry textEntry = new TextureEntry();
 
                             var mat = materialAssignments[x];
-                            Material material = MaterialsManager.LookupMaterialByHash(mat.MaterialHash);
+                            IMaterial material = MaterialsManager.LookupMaterialByHash(mat.MaterialHash);
 
                             textEntry.OnEntrySingularClick += MatViewPanel_TextureEntryOnSingularClick;
                             textEntry.OnEntryDoubleClick += MatViewPanel_TextureEntryOnDoubleClick;
@@ -192,13 +192,13 @@ namespace Forms.Docking
 
             // Create our browser; once the user has finished with this menu they should? have a material.
             MaterialBrowser Browser = new MaterialBrowser();
-            Material SelectedMaterial = Browser.GetSelectedMaterial();
+            IMaterial SelectedMaterial = Browser.GetSelectedMaterial();
 
             // Set the new material data, notify the map editor that a change has been made.
             if (SelectedMaterial != null)
             {
-                currentMaterials[Entry].MaterialName = SelectedMaterial.MaterialName;
-                currentMaterials[Entry].MaterialHash = SelectedMaterial.MaterialHash;
+                currentMaterials[Entry].MaterialName = SelectedMaterial.GetMaterialName();
+                currentMaterials[Entry].MaterialHash = SelectedMaterial.GetMaterialHash();
                 Entry.SetMaterial(SelectedMaterial);
                 OnObjectUpdated(sender, e);
             }

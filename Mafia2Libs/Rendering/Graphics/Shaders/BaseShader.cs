@@ -41,13 +41,13 @@ namespace Rendering.Graphics
 
         public struct MaterialParameters
         {
-            public MaterialParameters(Material material, Vector3 vector)
+            public MaterialParameters(IMaterial material, Vector3 vector)
             {
                 MaterialData = material;
                 SelectionColour = vector;
             }
 
-            public Material MaterialData { get; set; }
+            public IMaterial MaterialData { get; set; }
             public Vector3 SelectionColour { get; set; }
         }
         protected VertexShader VertexShader { get; set; }

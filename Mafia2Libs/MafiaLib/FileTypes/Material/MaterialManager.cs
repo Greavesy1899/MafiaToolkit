@@ -33,9 +33,9 @@ namespace ResourceTypes.Materials
         /// </summary>
         /// <param name="hash"></param>
         /// <returns></returns>
-        public static Material LookupMaterialByHash(ulong hash)
+        public static IMaterial LookupMaterialByHash(ulong hash)
         {
-            Material mat = null;
+            IMaterial mat = null;
 
             for (int i = 0; i != matLibs.Count; i++)
             {
@@ -50,9 +50,9 @@ namespace ResourceTypes.Materials
             return mat;
         }
 
-        public static Material LookupMaterialByName(string name)
+        public static IMaterial LookupMaterialByName(string name)
         {
-            Material mat = null;
+            IMaterial mat = null;
 
             for(int i = 0; i < matLibs.Count; i++)
             {

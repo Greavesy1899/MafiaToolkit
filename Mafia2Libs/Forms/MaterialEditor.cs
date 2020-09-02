@@ -82,9 +82,9 @@ namespace Mafia2Tool
         {
             dataGridView1.Rows.Clear();
 
-            Material[] Filtered = mtl.SelectSearchTypeAndProceedSearch(text, currentSearchType);
+            IMaterial[] Filtered = mtl.SelectSearchTypeAndProceedSearch(text, currentSearchType);
 
-            foreach (Material Mat in Filtered)
+            foreach (IMaterial Mat in Filtered)
             {
                 dataGridView1.Rows.Add(BuildRowData(Mat));
             }
@@ -126,10 +126,10 @@ namespace Mafia2Tool
                 }
 
                 //create material with new name.
-                Material mat = new Material();
+                IMaterial mat = new IMaterial();
                 mat.SetName(form.GetInputText());
 
-                mtl.Materials.Add(mat.MaterialHash, mat);
+                mtl.Materials.Add(mat.GetMaterialHash(), mat);
                 dataGridView1.Rows.Add(BuildRowData(mat));
             }
 
@@ -145,7 +145,7 @@ namespace Mafia2Tool
             }
 
             int index = dataGridView1.SelectedCells[0].RowIndex;
-            mtl.Materials.Remove((dataGridView1.Rows[index].Tag as Material).MaterialHash);
+            mtl.Materials.Remove((dataGridView1.Rows[index].Tag as IMaterial).GetMaterialHash());
             dataGridView1.Rows.RemoveAt(index);
         }
 
@@ -164,15 +164,15 @@ namespace Mafia2Tool
             if ((e.RowIndex > -1) && (e.ColumnIndex > -1))
             {
                 MaterialGrid.SelectedObject = dataGridView1.Rows[e.RowIndex].Tag;
-                Material mat = (dataGridView1.Rows[e.RowIndex].Tag as Material);
+                IMaterial mat = (dataGridView1.Rows[e.RowIndex].Tag as IMaterial);
             }
         }
 
-        private DataGridViewRow BuildRowData(Material mat)
+        private DataGridViewRow BuildRowData(IMaterial mat)
         {
             DataGridViewRow row = new DataGridViewRow();
             row.Tag = mat;
-            row.CreateCells(dataGridView1, new object[] { mat.MaterialName, mat.MaterialHash });
+            row.CreateCells(dataGridView1, new object[] { mat.MaterialName, mat.GetMaterialHash() });
             return row;
         }
 
@@ -208,7 +208,7 @@ namespace Mafia2Tool
             for(int i = 0; i < matLib.Materials.Count; i++)
             {
                 var mat = matLib.Materials.ElementAt(i).Value;
-                if (mtl.Materials.ContainsKey(mat.MaterialHash))
+                if (mtl.Materials.ContainsKey(mat.GetMaterialHash()))
                 {
                     OverwriteListBox.Items.Add(mat);
                 }
@@ -239,14 +239,14 @@ namespace Mafia2Tool
 
                 for(int i = 0; i < NewMatListBox.CheckedItems.Count; i++)
                 {
-                    var mat = (NewMatListBox.CheckedItems[i] as Material);
-                    mtl.Materials.Add(mat.MaterialHash, mat);
+                    var mat = (NewMatListBox.CheckedItems[i] as IMaterial);
+                    mtl.Materials.Add(mat.GetMaterialHash(), mat);
                 }
 
                 for(int i = 0; i < OverwriteListBox.CheckedItems.Count; i++)
                 {
-                    var mat = (OverwriteListBox.CheckedItems[i] as Material);
-                    mtl.Materials[mat.MaterialHash] = mat;
+                    var mat = (OverwriteListBox.CheckedItems[i] as IMaterial);
+                    mtl.Materials[mat.GetMaterialHash()] = mat;
                 }
 
                 OverwriteListBox.Items.Clear();
@@ -286,11 +286,11 @@ namespace Mafia2Tool
             {
                 if(cell.ColumnIndex == 0)
                 {
-                    var material = (cell.OwningRow.Tag as Material);
+                    var material = (cell.OwningRow.Tag as IMaterial);
 
                     if (material != null)
                     {
-                        library.Materials.Add(material.MaterialHash, material);
+                        library.Materials.Add(material.GetMaterialHash(), material);
                     }
                 }
             }
