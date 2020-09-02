@@ -314,5 +314,10 @@ namespace Mafia2Tool
                 FetchMaterials();
             }
         }
+
+        private void MaterialGrid_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            MaterialGrid.Refresh();
+        }
     }
 }

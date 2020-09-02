@@ -3,6 +3,7 @@ using ResourceTypes.Materials;
 using Rendering.Core;
 using System.Runtime.InteropServices;
 using SharpDX;
+using Utils.Types;
 
 namespace Rendering.Graphics
 {
@@ -65,11 +66,11 @@ namespace Rendering.Graphics
             else
             {
                 
-                IMaterialSampler sampler = material.GetSamplerByKey("S000");
+                Hash TextureFile = material.GetTextureByID("S000");
                 ShaderResourceView texture = null;
-                if (sampler != null)
+                if (TextureFile != null)
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[sampler.GetFileHash()];
+                    texture = RenderStorageSingleton.Instance.TextureCache[TextureFile.uHash];
                 }
                 else
                 {
@@ -78,10 +79,10 @@ namespace Rendering.Graphics
 
                 context.PixelShader.SetShaderResource(0, texture);
 
-                sampler = material.GetSamplerByKey("S001");
-                if (sampler != null)
+                TextureFile = material.GetTextureByID("S001");
+                if (TextureFile != null)
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[sampler.GetFileHash()];
+                    texture = RenderStorageSingleton.Instance.TextureCache[TextureFile.uHash];
                     extraParams.hasTangentSpace = 1;
                 }
                 else

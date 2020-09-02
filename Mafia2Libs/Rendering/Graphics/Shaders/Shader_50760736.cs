@@ -3,6 +3,7 @@ using Rendering.Core;
 using ResourceTypes.Materials;
 using SharpDX;
 using SharpDX.Direct3D11;
+using Utils.Types;
 
 namespace Rendering.Graphics
 {
@@ -75,20 +76,20 @@ namespace Rendering.Graphics
 
                 ShaderResourceView[] textures = new ShaderResourceView[2];
 
-                var sampler = material.GetSamplerByKey("S000");
-                if (sampler != null)
+                Hash TextureFile = material.GetTextureByID("S000");
+                if (TextureFile != null)
                 {
-                    textures[0] = RenderStorageSingleton.Instance.TextureCache[sampler.GetFileHash()];
+                    textures[0] = RenderStorageSingleton.Instance.TextureCache[TextureFile.uHash];
                 }
                 else
                 {
                     textures[0] = RenderStorageSingleton.Instance.TextureCache[0];
                 }
 
-                sampler = material.GetSamplerByKey("S011");
-                if (sampler != null)
+                TextureFile = material.GetTextureByID("S011");
+                if (TextureFile != null)
                 {
-                    textures[1] = RenderStorageSingleton.Instance.TextureCache[sampler.GetFileHash()];
+                    textures[1] = RenderStorageSingleton.Instance.TextureCache[TextureFile.uHash];
                 }
                 else
                 {
