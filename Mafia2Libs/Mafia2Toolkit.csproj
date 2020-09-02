@@ -439,7 +439,6 @@
     <Compile Include="MafiaLib\FileTypes\Navigation\Roadmap.cs" />
     <Compile Include="MafiaLib\FileTypes\CGameData.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\TAPIndices.cs" />
-    <Compile Include="MafiaLib\FileTypes\Material\Material.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\MaterialLibrary.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\MaterialManager.cs" />
     <Compile Include="MafiaLib\FileTypes\Navigation\NAV_AI.cs" />

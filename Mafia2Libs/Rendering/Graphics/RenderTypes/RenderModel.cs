@@ -303,17 +303,20 @@ namespace Rendering.Graphics
 
         private void GetTextureFromSampler(Device d3d, DeviceContext d3dContext, ModelPart part, string SamplerKey)
         {
-            MaterialSampler sampler = part.Material.GetSamplerByKey(SamplerKey);
+            IMaterialSampler sampler = part.Material.GetSamplerByKey(SamplerKey);
             if (sampler != null)
             {
                 ShaderResourceView texture;
 
-                if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(sampler.TextureHash, out texture))
+                ulong SamplerHash = sampler.GetFileHash();
+                string SamplerName = sampler.GetFileName();
+
+                if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(SamplerHash, out texture))
                 {
-                    if (!string.IsNullOrEmpty(sampler.File))
+                    if (!string.IsNullOrEmpty(SamplerName))
                     {
-                        texture = TextureLoader.LoadTexture(d3d, d3dContext, sampler.File);
-                        RenderStorageSingleton.Instance.TextureCache.Add(sampler.TextureHash, texture);
+                        texture = TextureLoader.LoadTexture(d3d, d3dContext, SamplerName);
+                        RenderStorageSingleton.Instance.TextureCache.Add(SamplerHash, texture);
                     }
                 }
             }

@@ -14,13 +14,13 @@ namespace ResourceTypes.Materials
         public MaterialFlags Flags { get; set; }
         public ulong ShaderID { get; set; }
         public uint ShaderHash { get; set; }
-        public List<MaterialSampler> Samplers { get; set; }
+        public List<IMaterialSampler> Samplers { get; set; }
         public List<MaterialParameter> Parameters { get; set; }
 
         public IMaterial()
         {
             MaterialName = new Hash();
-            Samplers = new List<MaterialSampler>();
+            Samplers = new List<IMaterialSampler>();
             Parameters = new List<MaterialParameter>();
 
             // TODO: Remove this from base class, make some kind of factory of Shader Types.
@@ -50,7 +50,7 @@ namespace ResourceTypes.Materials
         }
 
 
-        public MaterialSampler GetSamplerByKey(string SamplerName)
+        public IMaterialSampler GetSamplerByKey(string SamplerName)
         {
             foreach (var sampler in Samplers)
             {
@@ -74,6 +74,33 @@ namespace ResourceTypes.Materials
             }
 
             return null;
+        }
+    }
+
+    public class IMaterialSampler
+    {
+        public string ID { get; set; }
+        public byte[] SamplerStates { get; set; }
+
+        public IMaterialSampler()
+        {
+            // TODO: Remove this from base class, make some kind of factory of Shader Types.
+            ID = "S000";
+            SamplerStates = new byte[6] { 3, 3, 2, 0, 0, 0 };
+        }
+
+        public virtual void ReadFromFile(BinaryReader reader, VersionsEnumerator version) { }
+
+        public virtual void WriteToFile(BinaryWriter writer, VersionsEnumerator version) { }
+
+        public virtual string GetFileName()
+        {
+            return "Invalid";
+        }
+
+        public virtual ulong GetFileHash()
+        {
+            return ulong.MinValue;
         }
     }
 }

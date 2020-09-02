@@ -102,15 +102,15 @@ namespace Rendering.Graphics
             ulong SamplerHash = 0;
             if (material != null)
             {
-                MaterialSampler Sampler = material.GetSamplerByKey("S000");
+                IMaterialSampler Sampler = material.GetSamplerByKey("S000");
 
                 if (Sampler != null)
                 {
                     // If our storage doesn't contain a thumbnail, then we go ahead and produce another.
-                    if (!RenderStorageSingleton.Instance.TextureThumbnails.TryGetValue(Sampler.TextureHash, out Thumbnail))
+                    if (!RenderStorageSingleton.Instance.TextureThumbnails.TryGetValue(Sampler.GetFileHash(), out Thumbnail))
                     {
-                        SamplerHash = Sampler.TextureHash;
-                        TexturePath = GetTextureFromPath(Sampler.File, false);
+                        SamplerHash = Sampler.GetFileHash();
+                        TexturePath = GetTextureFromPath(Sampler.GetFileName(), false);
                     }
                 }
             }
