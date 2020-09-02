@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Utils.StringHelpers;
+using Utils.Types;
 
 namespace ResourceTypes.Materials
 {
@@ -45,10 +46,11 @@ namespace ResourceTypes.Materials
             }
 
             int samplerCount = reader.ReadInt32();
-            Samplers = new List<MaterialSampler>();
+            Samplers = new List<IMaterialSampler>();
             for (int i = 0; i != samplerCount; i++)
             {
-                var shader = new MaterialSampler(reader, version);
+                var shader = new MaterialSampler_v58();
+                shader.ReadFromFile(reader, version);
                 Samplers.Add(shader);
             }
         }
@@ -85,8 +87,79 @@ namespace ResourceTypes.Materials
             writer.Write(Samplers.Count);
             foreach (var shader in Samplers)
             {
-                shader.WriteToFile(writer);
+                shader.WriteToFile(writer, version);
             }
+        }
+    }
+
+    public class MaterialSampler_v58 : IMaterialSampler
+    {
+        public int[] UnkSet0 { get; set; }
+        public Hash TextureName { get; set; }
+        public byte TexType { get; set; }
+        public byte UnkZero { get; set; }
+        public int[] UnkSet1 { get; set; }
+
+        public MaterialSampler_v58() : base()
+        {
+            UnkSet0 = new int[2];
+            UnkSet1 = new int[2];
+            TextureName = new Hash();
+        }
+
+        public override void ReadFromFile(BinaryReader reader, VersionsEnumerator version)
+        {
+            ID = new string(reader.ReadChars(4));
+            UnkSet0 = new int[4];
+            for (int i = 0; i < UnkSet0.Length; i++)
+            {
+                UnkSet0[i] = reader.ReadInt32();
+            }
+            ulong TextureHash = reader.ReadUInt64();
+            TexType = reader.ReadByte();
+            UnkZero = reader.ReadByte();
+            SamplerStates = reader.ReadBytes(6);
+            UnkSet1 = new int[2]; // these can have erratic values
+            for (int i = 0; i < UnkSet1.Length; i++)
+            {
+                UnkSet1[i] = reader.ReadInt32();
+            }
+            TextureName.String = StringHelpers.ReadString32(reader);
+            TextureName.uHash = TextureHash;
+        }
+
+        public override void WriteToFile(BinaryWriter writer, VersionsEnumerator version)
+        {
+            writer.Write(ID.ToCharArray());
+            for (int i = 0; i < UnkSet0.Length; i++)
+            {
+                writer.Write(UnkSet0[i]);
+            }
+            writer.Write(TextureName.uHash);
+            writer.Write(TexType);
+            writer.Write(UnkZero);
+            writer.Write(SamplerStates);
+
+            for (int i = 0; i < UnkSet1.Length; i++)
+            {
+                writer.Write(UnkSet1[i]);
+            }
+            writer.WriteString32(TextureName.String);
+        }
+
+        public override string GetFileName()
+        {
+            return TextureName.String;
+        }
+
+        public override ulong GetFileHash()
+        {
+            return TextureName.uHash;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("ID: {0} Name: {1}", ID, GetFileName());
         }
     }
 }

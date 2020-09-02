@@ -78,7 +78,7 @@ namespace Rendering.Graphics
                 var sampler = material.GetSamplerByKey("S000");
                 if (sampler != null)
                 {
-                    textures[0] = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
+                    textures[0] = RenderStorageSingleton.Instance.TextureCache[sampler.GetFileHash()];
                 }
                 else
                 {
@@ -88,7 +88,7 @@ namespace Rendering.Graphics
                 sampler = material.GetSamplerByKey("S011");
                 if (sampler != null)
                 {
-                    textures[1] = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
+                    textures[1] = RenderStorageSingleton.Instance.TextureCache[sampler.GetFileHash()];
                 }
                 else
                 {
