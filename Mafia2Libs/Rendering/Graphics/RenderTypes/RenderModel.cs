@@ -21,7 +21,7 @@ namespace Rendering.Graphics
     {
         public struct ModelPart
         {
-            public Material Material;
+            public IMaterial Material;
             public ulong MaterialHash;
             public uint StartIndex;
             public uint NumFaces;

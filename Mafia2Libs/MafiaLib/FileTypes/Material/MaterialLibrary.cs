@@ -12,13 +12,13 @@ namespace ResourceTypes.Materials
     {
         private VersionsEnumerator version;
         private int unk2;
-        private Dictionary<ulong, Material> materials;
+        private Dictionary<ulong, IMaterial> materials;
         private string name;
 
         public VersionsEnumerator Version {
             get { return version; }
         }
-        public Dictionary<ulong, Material> Materials {
+        public Dictionary<ulong, IMaterial> Materials {
             get { return materials; }
             set { materials = value; }
         }
@@ -30,7 +30,7 @@ namespace ResourceTypes.Materials
         public MaterialLibrary()
         {
             name = "";
-            materials = new Dictionary<ulong, Material>();
+            materials = new Dictionary<ulong, IMaterial>();
             unk2 = 0;
             version = GameStorage.Instance.GetSelectedGame().GameType == GamesEnumerator.MafiaII_DE 
                 ? VersionsEnumerator.V_58 
@@ -39,7 +39,7 @@ namespace ResourceTypes.Materials
 
         public void ReadMatFile(string name)
         {
-            materials = new Dictionary<ulong, Material>();
+            materials = new Dictionary<ulong, IMaterial>();
             this.name = name;
 
             using (BinaryReader reader = new BinaryReader(File.Open(name, FileMode.Open)))
@@ -51,8 +51,8 @@ namespace ResourceTypes.Materials
 
                 for (int i = 0; i != numMats; i++)
                 {
-                    Material mat = new Material(reader, version);
-                    materials.Add(mat.MaterialHash, mat);
+                    IMaterial mat = MaterialFactory.ReadMaterialFromFile(reader, version);
+                    materials.Add(mat.MaterialName.uHash, mat);
                 }
             }
         }
@@ -89,9 +89,9 @@ namespace ResourceTypes.Materials
             }
         }
 
-        public Material LookupMaterialByHash(ulong hash)
+        public IMaterial LookupMaterialByHash(ulong hash)
         {
-            Material mat;
+            IMaterial mat;
 
             if (materials.TryGetValue(hash, out mat))
             {
@@ -104,9 +104,9 @@ namespace ResourceTypes.Materials
             }
         }
 
-        public Material LookupMaterialByName(string name)
+        public IMaterial LookupMaterialByName(string name)
         {
-            Material mat = null;
+            IMaterial mat = null;
 
             foreach(var pair in materials)
             {
@@ -131,7 +131,7 @@ namespace ResourceTypes.Materials
             return RightValue.Contains(LeftValue);
         }
 
-        private bool DoesMaterialContainTexture(string text, Material material)
+        private bool DoesMaterialContainTexture(string text, IMaterial material)
         {
             foreach(var sampler in material.Samplers)
             {
@@ -142,16 +142,16 @@ namespace ResourceTypes.Materials
             return false;
         }
 
-        public Material[] SearchForMaterialsByName(string Name, SearchTypesString searchType)
+        public IMaterial[] SearchForMaterialsByName(string Name, SearchTypesString searchType)
         {
             string NameToFilter = Name.ToLower();
 
-            List<Material> Filtered = new List<Material>();
+            List<IMaterial> Filtered = new List<IMaterial>();
             foreach (var Pair in materials)
             {
                 if (searchType.Equals(SearchTypesString.MaterialName))
                 {
-                    string MaterialName = Pair.Value.MaterialName.ToLower();
+                    string MaterialName = Pair.Value.MaterialName.String.ToLower();
                     if (MaterialName.Contains(NameToFilter))
                     {
                         Filtered.Add(Pair.Value);
@@ -169,13 +169,13 @@ namespace ResourceTypes.Materials
             return Filtered.ToArray();
         }
 
-        public Material[] SearchForMaterialsByHash(string value, SearchTypesHashes searchType)
+        public IMaterial[] SearchForMaterialsByHash(string value, SearchTypesHashes searchType)
         {
-            List<Material> Filtered = new List<Material>();
+            List<IMaterial> Filtered = new List<IMaterial>();
 
             foreach (var Pair in materials)
             {
-                Material Value = Pair.Value;
+                IMaterial Value = Pair.Value;
                 ulong ValueToSearch = 0;
 
                 switch(searchType)
@@ -187,7 +187,7 @@ namespace ResourceTypes.Materials
                         ValueToSearch = Value.ShaderID;
                         break;
                     case SearchTypesHashes.MaterialHash:
-                        ValueToSearch = Value.MaterialHash;
+                        ValueToSearch = Value.GetMaterialHash();
                         break;
                     default:
                         ValueToSearch = 0;
@@ -203,9 +203,9 @@ namespace ResourceTypes.Materials
             return Filtered.ToArray();
         }
 
-        public Material[] SelectSearchTypeAndProceedSearch(string text, int currentSearchType)
+        public IMaterial[] SelectSearchTypeAndProceedSearch(string text, int currentSearchType)
         {
-            Material[] Filtered = null;
+            IMaterial[] Filtered = null;
 
             if (currentSearchType >= 3)
             {

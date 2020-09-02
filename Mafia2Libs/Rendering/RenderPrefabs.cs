@@ -5,22 +5,21 @@ namespace Rendering
 {
     public class RenderPrefabs
     {
-        public Material GizmoRed { get; set; }
-        public Material GizmoBlue { get; set; }
-        public Material GizmoGreen { get; set; }
+        public IMaterial GizmoRed { get; set; }
+        public IMaterial GizmoBlue { get; set; }
+        public IMaterial GizmoGreen { get; set; }
 
         public RenderPrefabs()
         {
-            GizmoRed = new Material();
-            GizmoBlue = new Material();
-            GizmoGreen = new Material();
-            GizmoRed.MaterialName = "GizmoRed";
-            GizmoRed.MaterialHash = 1337;
-            GizmoBlue.MaterialName = "GizmoBlue";
-            GizmoBlue.MaterialHash = 1338;
-            GizmoGreen.MaterialName = "GizmoGreen";
-            GizmoGreen.MaterialHash = 1339;
-            GizmoRed.Unk0 = GizmoBlue.Unk0 = GizmoGreen.Unk0 = 128;
+            GizmoRed = new IMaterial();
+            GizmoBlue = new IMaterial();
+            GizmoGreen = new IMaterial();
+            GizmoRed.MaterialName.String = "GizmoRed";
+            GizmoRed.MaterialName.uHash = 1337;
+            GizmoBlue.MaterialName.String = "GizmoBlue";
+            GizmoBlue.MaterialName.uHash = 1338;
+            GizmoGreen.MaterialName.String = "GizmoGreen";
+            GizmoGreen.MaterialName.uHash = 1339;
             GizmoRed.ShaderID = GizmoBlue.ShaderID = GizmoGreen.ShaderID = 3854590933660942049;
             GizmoRed.ShaderHash = GizmoBlue.ShaderHash = GizmoGreen.ShaderHash = 601151254;
 

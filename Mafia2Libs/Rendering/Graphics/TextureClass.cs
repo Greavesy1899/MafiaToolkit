@@ -95,7 +95,7 @@ namespace Rendering.Graphics
             return LoadDDSSquish(texturePath);
         }
 
-        public static Image LoadThumbnail(Material material)
+        public static Image LoadThumbnail(IMaterial material)
         {
             string TexturePath = string.Empty;
             Image Thumbnail = null;
