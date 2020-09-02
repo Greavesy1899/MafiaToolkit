@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Utils.StringHelpers;
+using Utils.Types;
 
 namespace ResourceTypes.Materials
 {
@@ -59,7 +60,7 @@ namespace ResourceTypes.Materials
         public override void WriteToFile(BinaryWriter writer, VersionsEnumerator version)
         {
             // Material Name doesn't use standard hex serialization.
-            writer.Write(MaterialName.Hex);
+            writer.Write(MaterialName.uHash);
             writer.WriteString32(MaterialName.String);
 
             // Unknown Values.
@@ -90,6 +91,19 @@ namespace ResourceTypes.Materials
             {
                 shader.WriteToFile(writer, version);
             }
+        }
+
+        public override Hash GetTextureByID(string SamplerName)
+        {
+            foreach(var texture in Textures)
+            {
+                if(texture.ID == SamplerName)
+                {
+                    return texture.TextureName;
+                }
+            }
+
+            return null;
         }
     }
 

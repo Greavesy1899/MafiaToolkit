@@ -397,7 +397,6 @@
     <Compile Include="MafiaLib\FileTypes\Material\Enumerator.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\MaterialFactory.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\MaterialParameter.cs" />
-    <Compile Include="MafiaLib\FileTypes\Material\MaterialSampler.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\MaterialTexture.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\Versions\IMaterial.cs" />
     <Compile Include="MafiaLib\FileTypes\Material\Versions\Material_v58.cs" />
