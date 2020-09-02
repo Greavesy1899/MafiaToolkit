@@ -19,6 +19,10 @@ namespace ResourceTypes.Materials
                     Material = new Material_v58();
                     Material.ReadFromFile(reader, version);
                     break;
+                case VersionsEnumerator.V_63:
+                    Material = new Material_v63();
+                    Material.ReadFromFile(reader, version);
+                    break;
                 default:
                     break;
             }
