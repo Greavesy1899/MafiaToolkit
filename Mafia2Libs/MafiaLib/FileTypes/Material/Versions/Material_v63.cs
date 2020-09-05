@@ -7,14 +7,14 @@ namespace ResourceTypes.Materials
 {
     public class Material_v63 : IMaterial
     {
-        public ulong Unk0 { get; set; }
-        public byte[] Unk1 { get; set; }
+        public byte[] Unk0 { get; set; }
+        public ulong Unk1 { get; set; }
 
         public List<MaterialTexture> Textures { get; set; }
 
         public Material_v63() : base()
         {
-            Unk1 = new byte[7];
+            Unk0 = new byte[7];
         }
 
         public override void ReadFromFile(BinaryReader reader, VersionsEnumerator version)
@@ -24,9 +24,9 @@ namespace ResourceTypes.Materials
             MaterialName.String = materialName;
             MaterialName.uHash = materialHash;
 
-            Unk0 = reader.ReadUInt64();
+            Unk0 = reader.ReadBytes(7);
             Flags = (MaterialFlags)reader.ReadInt32();
-            Unk1 = reader.ReadBytes(7);
+            Unk1 = reader.ReadUInt64();
             ShaderID = reader.ReadUInt64();
             ShaderHash = reader.ReadUInt32();
 

@@ -201,17 +201,28 @@ namespace Gibbed.Mafia2.FileFormats
         {
             var basePosition = input.Position;
 
+            // Check Magic, should be SDS.
             var magic = input.ReadValueU32(Endian.Big);
             if (magic != Signature)
             {
-                throw new FormatException("unsupported archive version");
+                string FormatError = string.Format("Unsupported Archive Signature: {0}", magic);
+                throw new FormatException(FormatError);
             }
 
-            input.Position += 4; // skip version
+            // Check Version, should be 19 (Mafia: II) or 20 (Mafia III).
+            var version = input.ReadValueU32(Endian.Little);
+            if (version != 19 && version != 20)
+            {
+                string FormatError = string.Format("Unsupported Archive Version: {0}", version);
+                throw new FormatException(FormatError);
+            }
+
+            // Check Platform. There may be values for XboxOne and PS4, but that is unknown.
             var platform = (Platform)input.ReadValueU32(Endian.Big);
             if (platform != Platform.PC && platform != Platform.Xbox360 && platform != Platform.PS3)
             {
-                throw new FormatException("unsupported archive platform");
+                string FormatError = string.Format("Unsupported Archive Platform: {0}", platform);
+                throw new FormatException(FormatError);
             }
 
             var endian = platform == Archive.Platform.PC ? Endian.Little : Endian.Big;

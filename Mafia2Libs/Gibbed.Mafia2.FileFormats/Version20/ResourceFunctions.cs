@@ -95,7 +95,10 @@ namespace Gibbed.Mafia2.FileFormats
                         ReadScriptEntry(entry, resourceXML, finalPath);
                         continue;
                     default:
-                        MessageBox.Show("Found unknown type: " + ResourceTypes[entry.TypeId].Name);
+                        string TypeName = ResourceTypes[entry.TypeId].Name;
+                        string FormatError = string.Format("Found Unknown Type: {0}\nClicking continue will proceed with unpacking the SDS.", TypeName);
+                        MessageBox.Show(FormatError, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        saveName = string.Format("{0}_{1}.bin", TypeName, i);
                         break;
                 }
                 resourceXML.WriteElementString("Version", entry.Version.ToString());
