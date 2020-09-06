@@ -15,6 +15,7 @@ namespace ResourceTypes.Materials
         public int Unk5 { get; set; }
         public byte Unk6 { get; set; }
         public float Unk7 { get; set; }
+        public List<MaterialSampler_v58> Samplers { get; set; }
 
         public override void ReadFromFile(BinaryReader reader, VersionsEnumerator version)
         {
@@ -46,7 +47,7 @@ namespace ResourceTypes.Materials
             }
 
             int samplerCount = reader.ReadInt32();
-            Samplers = new List<IMaterialSampler>();
+            Samplers = new List<MaterialSampler_v58>();
             for (int i = 0; i != samplerCount; i++)
             {
                 var shader = new MaterialSampler_v58();
@@ -89,6 +90,33 @@ namespace ResourceTypes.Materials
             {
                 shader.WriteToFile(writer, version);
             }
+        }
+
+        public override Hash GetTextureByID(string SamplerName)
+        {
+            foreach (var sampler in Samplers)
+            {
+                if (sampler.ID == SamplerName)
+                {
+                    Hash TextureFile = new Hash();
+                    TextureFile.String = sampler.GetFileName();
+                    TextureFile.uHash = sampler.GetFileHash();
+                    return TextureFile;
+                }
+            }
+
+            return null;
+        }
+
+        public override bool HasTexture(string Name)
+        {
+            foreach (var sampler in Samplers)
+            {
+                string FileNameLowerCase = sampler.GetFileName().ToLower();
+                return FileNameLowerCase.Contains(Name);
+            }
+
+            return false;
         }
     }
 

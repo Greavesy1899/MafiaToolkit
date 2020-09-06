@@ -10,7 +10,6 @@ namespace ResourceTypes.Actors
     {
         List<ActorDefinition> definitions;
         List<ActorEntry> items;
-        int unk16;
         string pool;
         //temp_unk start
         int filesize; //size of sector in bits. After this integer (so filesize - 4)
@@ -135,6 +134,9 @@ namespace ResourceTypes.Actors
                 definitions.Add(definition);
             }
 
+            // Offset is required for reading cutscene names later.
+            long actorDataOffset = reader.BaseStream.Position + 4;
+
             filesize = reader.ReadInt32();
             const6 = reader.ReadInt16();
             const2 = reader.ReadInt16();
@@ -186,8 +188,34 @@ namespace ResourceTypes.Actors
                 items.Add(item);
             }
 
-            unk16 = reader.ReadInt32();
-            Debug.Assert(unk16 == 0, "This is not the end of the file. Message Greavesy with this message and the name of the SDS you tried to read.");
+            // Read how many cutscenes and check if we actually need to do anything.
+            int numCutscenes = reader.ReadInt32();
+            if (numCutscenes > 0)
+            {
+                long endPosition = 0;
+                for (int i = 0; i < numCutscenes; i++)
+                {
+                    // Get the offset, then save the position so we can return.      
+                    uint offset = reader.ReadUInt32();
+                    long currentPosition = reader.BaseStream.Position;
+
+                    // Seek to the offset and read cutscene name
+                    reader.BaseStream.Seek(actorDataOffset + offset, SeekOrigin.Begin);
+                    string cutsceneName = StringHelpers.ReadString(reader);
+                    ushort cutscene_unk01 = reader.ReadUInt16();
+
+                    // End position so we can make sure we have reached the end of file.
+                    endPosition = reader.BaseStream.Position;
+
+                    // Return to our offset.
+                    reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+                }
+
+                // Seek back to our end point and assert if we have not reached the end of file.
+                reader.BaseStream.Position = endPosition;
+            }
+
+            Debug.Assert(reader.BaseStream.Position == reader.BaseStream.Length, "This is not the end of the file. Message Greavesy with this message and the name of the SDS you tried to read.");
         }
 
         public void WriteToFile()
@@ -203,6 +231,9 @@ namespace ResourceTypes.Actors
         public void WriteToFile(BinaryWriter writer)
         {
             Dictionary<int, int> sanitizedIDs = new Dictionary<int, int>();
+
+            // Cutscenes to save at the end of the file.
+            List<ActorEntry> cutsceneEntries = new List<ActorEntry>();
 
             Sanitize();
             pool = BuildDefinitions();
@@ -250,11 +281,51 @@ namespace ResourceTypes.Actors
             for (int i = 0; i < items.Count; i++)
             {
                 items[i].WriteToFile(writer);
+
+                // We need to store cutscenes so we can save them for later.
+                ActorTypes actorType = (ActorTypes)items[i].ActorTypeID;
+                if (actorType == ActorTypes.C_Cutscene)
+                {
+                    cutsceneEntries.Add(items[i]);
+                }
+            }
+
+            // Now we try and save the cutscene data which is stored at the bottom of the file.
+            long cutsceneEntryOffset = writer.BaseStream.Position;
+            long[] cutsceneOffsets = new long[cutsceneEntries.Count];
+            writer.Write(cutsceneEntries.Count);
+
+            // TODO: Maybe consider doing one loop rather than two.
+            for (int i = 0; i < cutsceneEntries.Count; i++)
+            {
+                ActorEntry cutscene = cutsceneEntries[i];
+
+                // Save our 'TEMP' offset; this stored the ptr to the string.
+                cutsceneOffsets[i] = writer.BaseStream.Position;
+                writer.Write(-1);
+            }
+
+            for (int i = 0; i < cutsceneEntries.Count; i++)
+            {
+                ActorEntry cutscene = cutsceneEntries[i];
+
+                // Now we save the cutscene entity name and save the new offset;
+                uint nameOffset = (uint)writer.BaseStream.Position;
+                StringHelpers.WriteString(writer, cutscene.EntityName);
+                writer.Write((ushort)0);
+
+                long completeOffset = writer.BaseStream.Position;
+
+                // Update our new offset and then return to our original offset;
+                writer.BaseStream.Seek(cutsceneOffsets[i], SeekOrigin.Begin);
+                uint newOffset = (uint)(nameOffset - (instancePos + 4));
+                writer.Write(newOffset);
+
+                writer.BaseStream.Seek(completeOffset, SeekOrigin.Begin);
             }
 
             //for that unknown value.
-            writer.Write(0);
-            long endPos = writer.BaseStream.Position - instancePos-8;
+            long endPos = cutsceneEntryOffset - instancePos-4;
             long instanceLength = writer.BaseStream.Position - instancePos-4;
             long unk = writer.BaseStream.Position - itemPos;
             long size = instanceLength - unk;
@@ -266,11 +337,6 @@ namespace ResourceTypes.Actors
             writer.Write(const16);
             writer.Write((int)size); //size
             writer.Write((int)(endPos)); //unk12
-                                         //writer.Write(0); //unk13
-
-            //unk16 = reader.ReadInt32();
-
-            //Debug.Assert(unk16 == 0, "UNK16 is not 0. Message Greavesy with this message and the name of the SDS you tried to read");
         }
     }
 }

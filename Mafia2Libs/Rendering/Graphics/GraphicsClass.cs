@@ -22,6 +22,7 @@ namespace Rendering.Graphics
         public Camera Camera { get; set; }
         public Dictionary<int, IRenderer> Assets { get; private set; }
         public Dictionary<int, IRenderer> InitObjectStack { get; set; }
+        public RenderModel Gizmo { get { return gizmo; } }
 
         public TimerClass Timer;
 
@@ -71,7 +72,7 @@ namespace Rendering.Graphics
                 structure.ReadFromM2T("Resources/GizmoModel.m2t");
                 gizmo.ConvertMTKToRenderModel(structure);
                 gizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
-                gizmo.DoRender = false;
+                gizmo.DoRender = true;
 
                 sky = new RenderModel();
                 structure = new M2TStructure();
@@ -237,7 +238,7 @@ namespace Rendering.Graphics
                 }
 
                 gizmo.SetTransform(newObj.Transform);
-                gizmo.DoRender = false;
+                gizmo.DoRender = true;
                 newObj.Select();
                 selectionBox.DoRender = true;
                 selectionBox.SetTransform(newObj.Transform);
