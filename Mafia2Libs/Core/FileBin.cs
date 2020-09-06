@@ -1,5 +1,6 @@
 ﻿using Mafia2Tool;
 using ResourceTypes.Misc;
+using ResourceTypes.Navigation;
 using ResourceTypes.SDSConfig;
 using ResourceTypes.Sound;
 using System.IO;
@@ -35,6 +36,12 @@ namespace Core.IO
             else if (filename.Equals("shopmenu2"))
             {
                 ShopMenu2Editor editor = new ShopMenu2Editor(file);
+                return true;
+            }
+            else if(filename.Contains("TAPIndices"))
+            {
+                TAPIndices editor = new TAPIndices();
+                editor.ReadFromFile(file);
                 return true;
             }
             else if(HandleStreamMap(file))

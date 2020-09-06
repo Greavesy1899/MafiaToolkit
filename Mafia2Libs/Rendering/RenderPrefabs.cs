@@ -30,12 +30,12 @@ namespace Rendering
 
             param = new MaterialParameter();
             param.ID = "C002";
-            param.Paramaters = new float[4] { 0.0f, 1.0f, 0.0f, 1.0f };
+            param.Paramaters = new float[4] { 0.0f, 0.0f, 1.0f, 1.0f };
             GizmoBlue.Parameters.Add(param);
 
             param = new MaterialParameter();
             param.ID = "C002";
-            param.Paramaters = new float[4] { 0.0f, 0.0f, 1.0f, 1.0f };
+            param.Paramaters = new float[4] { 0.0f, 1.0f, 0.0f, 1.0f };
             GizmoGreen.Parameters.Add(param);
         }
 

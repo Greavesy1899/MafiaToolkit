@@ -6,6 +6,7 @@ using Utils.Extensions;
 
 namespace ResourceTypes.Materials
 {
+    // TODO: Consider some unified approach for IMaterialSampler to be stored here.
     public class IMaterial
     {
         public Hash MaterialName { get; set; }
@@ -14,13 +15,11 @@ namespace ResourceTypes.Materials
         public MaterialFlags Flags { get; set; }
         public ulong ShaderID { get; set; }
         public uint ShaderHash { get; set; }
-        public List<IMaterialSampler> Samplers { get; set; }
         public List<MaterialParameter> Parameters { get; set; }
 
         public IMaterial()
         {
             MaterialName = new Hash();
-            Samplers = new List<IMaterialSampler>();
             Parameters = new List<MaterialParameter>();
 
             // TODO: Remove this from base class, make some kind of factory of Shader Types.
@@ -50,18 +49,12 @@ namespace ResourceTypes.Materials
         }
         public virtual Hash GetTextureByID(string SamplerName)
         {
-            foreach (var sampler in Samplers)
-            {
-                if (sampler.ID == SamplerName)
-                {
-                    Hash TextureFile = new Hash();
-                    TextureFile.String = sampler.GetFileName();
-                    TextureFile.uHash = sampler.GetFileHash();
-                    return TextureFile;
-                }
-            }
-
             return null;
+        }
+
+        public virtual bool HasTexture(string Name)
+        {
+            return false;
         }
 
         public MaterialParameter GetParameterByKey(string ParameterKey)

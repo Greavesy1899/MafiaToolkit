@@ -71,7 +71,6 @@ namespace Rendering.Graphics
             TextureCache.Clear();
             TextureThumbnails.Clear();
             ShaderManager.Shutdown();
-            Prefabs.Shutdown();
             isInit = false;
         }
 

@@ -5,6 +5,7 @@ using Utils.Logging;
 using System;
 using Utils.Settings;
 using SharpDX.Direct3D11;
+using System.Diagnostics;
 
 namespace ResourceTypes.Materials
 {
@@ -133,13 +134,8 @@ namespace ResourceTypes.Materials
 
         private bool DoesMaterialContainTexture(string text, IMaterial material)
         {
-            foreach(var sampler in material.Samplers)
-            {
-                string FileNameLowerCase = sampler.GetFileName().ToLower();
-                return FileNameLowerCase.Contains(text);
-            }
-
-            return false;
+            Debug.Assert(material != null, "Attempted to look for a texture on a non-valid Material");
+            return material.HasTexture(text);
         }
 
         public IMaterial[] SearchForMaterialsByName(string Name, SearchTypesString searchType)

@@ -24,9 +24,12 @@ namespace ResourceTypes.Navigation
         private const int magicVAP0 = 0x30504156;
         private VAPSegment[] mappingData;
 
-        public TAPIndices(BinaryReader reader)
+        public void ReadFromFile(FileInfo file)
         {
-            ReadFromFile(reader);
+            using(BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
         }
 
         public void ReadFromFile(BinaryReader reader)
