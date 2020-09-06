@@ -11,6 +11,7 @@ namespace ResourceTypes.Materials
         public ulong Unk1 { get; set; }
 
         public List<MaterialTexture> Textures { get; set; }
+        public List<MaterialSampler_v63> Samplers { get; set; }
 
         public Material_v63() : base()
         {
@@ -48,12 +49,12 @@ namespace ResourceTypes.Materials
             }
 
             int samplerCount = reader.ReadInt32();
-            Samplers = new List<IMaterialSampler>();
+            Samplers = new List<MaterialSampler_v63>();
             for (int i = 0; i != samplerCount; i++)
             {
-                var shader = new MaterialSampler_v63();
-                shader.ReadFromFile(reader, version);
-                Samplers.Add(shader);
+                var sampler = new MaterialSampler_v63();
+                sampler.ReadFromFile(reader, version);
+                Samplers.Add(sampler);
             }
         }
 
@@ -87,9 +88,9 @@ namespace ResourceTypes.Materials
 
             // Shader Samplers
             writer.Write(Samplers.Count);
-            foreach (var shader in Samplers)
+            foreach (var sampler in Samplers)
             {
-                shader.WriteToFile(writer, version);
+                sampler.WriteToFile(writer, version);
             }
         }
 
@@ -104,6 +105,17 @@ namespace ResourceTypes.Materials
             }
 
             return null;
+        }
+
+        public override bool HasTexture(string Name)
+        {
+            foreach (var texture in Textures)
+            {
+                string FileNameLowerCase = texture.TextureName.ToString();
+                return FileNameLowerCase.Contains(Name);
+            }
+
+            return false;
         }
     }
 
