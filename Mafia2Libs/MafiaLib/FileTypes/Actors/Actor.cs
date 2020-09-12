@@ -112,7 +112,7 @@ namespace ResourceTypes.Actors
         {
             ActorDefinition definition = new ActorDefinition();
             definition.Name = entry.DefinitionName;
-            definition.DefinitionHash = entry.FrameNameHash;
+            definition.FrameNameHash = entry.FrameNameHash;
             Definitions.Add(definition);
             return definition;
         }

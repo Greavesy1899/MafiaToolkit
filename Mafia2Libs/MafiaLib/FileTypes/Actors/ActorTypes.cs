@@ -1,6 +1,7 @@
 ﻿using SharpDX;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
@@ -127,8 +128,8 @@ namespace ResourceTypes.Actors
             ParticleBreakID = reader.ReadInt32(isBigEndian);
             ParticleChngVersionID = reader.ReadInt32(isBigEndian);
             ParticleSlideID = reader.ReadInt32(isBigEndian);
-            ParticleHitSpeedMin = reader.ReadSingle(isBigEndian);
             GarbageID = reader.ReadInt32(isBigEndian);
+            ParticleHitSpeedMin = reader.ReadSingle(isBigEndian);
         }
 
         public virtual void WriteToFile(MemoryStream writer, bool isBigEndian)
@@ -186,8 +187,6 @@ namespace ResourceTypes.Actors
         private float sizeX;
         private float sizeY;
         private float sizeZ;
-        private MemoryStream stream;
-        private bool isBigEndian;
 
         public int TestPrimitive {
             get { return testPrimitive; }
@@ -1234,7 +1233,6 @@ namespace ResourceTypes.Actors
 
         float near;
         float far;
-        //WHEREVER YOU AREEEE!!
         int monoDistance;
         int curveID;
         float innerAngle;
@@ -1387,6 +1385,39 @@ namespace ResourceTypes.Actors
         {
             randomWaves = new string[5];
             ReadFromFile(reader, isBigEndian);
+        }
+
+        public ActorSoundEntity(IActorExtraDataInterface extraData)
+        {
+            ActorSoundEntity other = (extraData as ActorSoundEntity);
+            behFlags = other.behFlags;
+            audioType = other.audioType;
+            behaviourType = other.behaviourType;
+            volume = other.volume;
+            pitch = other.pitch;
+            file = other.file;
+            randomPauseMin = other.randomPauseMin;
+            randomPauseMax = other.randomPauseMax;
+            randomGroupPauseMin = other.randomGroupPauseMin;
+            randomGroupPauseMax = other.randomGroupPauseMax;
+            randomGroupSoundsMin = other.randomGroupSoundsMin;
+            randomGroupSoundsMax = other.randomGroupSoundsMax;
+            randomVolumeMin = other.randomVolumeMin;
+            randomVolumeMax = other.randomVolumeMax;
+            randomPitchMin = other.randomPitchMin;
+            randomPitchMax = other.randomPitchMax;
+            randomPosRangeX = other.randomPosRangeX;
+            randomPosRangeY = other.randomPosRangeY;
+            randomPosRangeZ = other.randomPosRangeZ;
+            playFlags = other.playFlags;
+            randomWaves = other.randomWaves;
+            near = other.near;
+            far = other.far;
+            monoDistance = other.monoDistance;
+            curveID = other.curveID;
+            innerAngle = other.innerAngle;
+            outerAngle = other.outerAngle;
+            outerVolume = other.outerVolume;
         }
 
         public int GetSize()
@@ -2266,5 +2297,255 @@ namespace ResourceTypes.Actors
             writer.Write(NumActors, isBigEndian);
         }
     }
+
+    public class ActorGarage : IActorExtraDataInterface
+    {
+        public string DoorName { get; set; }
+        public byte RestrictedCars { get; set; }
+        public int Unk01 { get; set; }
+        public Vector3 CameraPos { get; set; }
+        public Vector3 CameraTarget { get; set; }
+        public Vector3 StagePos { get; set; }
+        public Vector3 SpawnPos { get; set; }
+        public Vector3 Human1SpawnPos { get; set; }
+        public Vector3 Human2SpawnPos { get; set; }
+        public Vector3 Human3SpawnPos { get; set; }
+        public Vector3 Human4SpawnPos { get; set; }
+
+        public ActorGarage()
+        {
+            DoorName = "";
+        }
+
+        public ActorGarage(MemoryStream stream, bool isBigEndian)
+        {
+            ReadFromFile(stream, isBigEndian);
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            DoorName = stream.ReadStringBuffer(31);
+            RestrictedCars = stream.ReadByte8();
+            Unk01 = stream.ReadInt32(isBigEndian);
+            CameraPos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            CameraTarget = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            StagePos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            SpawnPos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            Human1SpawnPos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            Human2SpawnPos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            Human3SpawnPos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            Human4SpawnPos = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+
+            Debug.Assert(RestrictedCars == 0, "Restricted Cars is not 0. Please inform Greavesy.");
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            writer.WriteStringBuffer(31, DoorName);
+            writer.WriteByte(RestrictedCars);
+            writer.Write(Unk01, isBigEndian);
+            CameraPos.WriteToFile(writer, isBigEndian);
+            CameraTarget.WriteToFile(writer, isBigEndian);
+            StagePos.WriteToFile(writer, isBigEndian);
+            SpawnPos.WriteToFile(writer, isBigEndian);
+            Human1SpawnPos.WriteToFile(writer, isBigEndian);
+            Human2SpawnPos.WriteToFile(writer, isBigEndian);
+            Human3SpawnPos.WriteToFile(writer, isBigEndian);
+            Human4SpawnPos.WriteToFile(writer, isBigEndian);
+        }
+
+        public int GetSize()
+        {
+            return 132;
+        }
+    }
+
+    public class ActorBlocker : IActorExtraDataInterface
+    {
+        public bool BlockPlayer { get; set; }
+        public bool BlockHuman { get; set; }
+        public bool BlockVehicle { get; set; }
+        public Vector3 BBox { get; set; }
+
+        public ActorBlocker()
+        {
+        }
+
+        public ActorBlocker(MemoryStream stream, bool isBigEndian)
+        {
+            ReadFromFile(stream, isBigEndian);
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            BlockPlayer = stream.ReadBoolean();
+            BlockHuman = stream.ReadBoolean();
+            BlockVehicle = stream.ReadBoolean();
+            stream.ReadBoolean(); // Padding?
+            BBox = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            writer.Write(BlockPlayer);
+            writer.Write(BlockHuman);
+            writer.Write(BlockVehicle);
+            writer.Write(false); // Padding?
+            BBox.WriteToFile(writer, isBigEndian);
+        }
+
+        public int GetSize()
+        {
+            return 16;
+        }
+    }
+
+    public class ActorActionPointSearch : IActorExtraDataInterface
+    {
+        public float WalkRange { get; set; }
+        public string ScriptEntity { get; set; }
+
+        public ActorActionPointSearch()
+        {
+            ScriptEntity = "";
+        }
+
+        public ActorActionPointSearch(MemoryStream stream, bool isBigEndian)
+        {
+            ReadFromFile(stream, isBigEndian);
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            WalkRange = stream.ReadSingle(isBigEndian);
+            ScriptEntity = stream.ReadStringBuffer(128);
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            writer.Write(WalkRange, isBigEndian);
+            writer.WriteStringBuffer(128, ScriptEntity);
+        }
+
+        public int GetSize()
+        {
+            return 16;
+        }
+    }
+
+    public class ActorCrashObject : ActorPhysicsBase
+    {
+        public class ActorCrashObjectEntry
+        {
+            public ulong Hash { get; set; }
+            public float Unk01 { get; set; }
+            public int Unk02 { get; set; }
+        }
+
+        public float RemoveDistance { get; set; }
+        public int RemoveTime { get; set; }
+        public int RemoveRule { get; set; }
+        public int MainPartRule { get; set; }
+        public int DropEndTime { get; set; }
+        public int HitPlayerFilter { get; set; }
+        public int HumanRule { get; set; }
+        public bool CameraCollision { get; set; }
+        public bool BlinkingAnimation { get; set; }
+        public bool ActiveInDayOnly { get; set; }
+        public int NumEntries { get; set; }
+        // Padding (4 Bytes here)
+        public ActorCrashObjectEntry[] Entries { get; set; }
+        public int Unk01 { get; set; }
+        public int Unk02 { get; set; }
+
+        public override int GetSize()
+        {
+            return 416;
+        }
+
+        public ActorCrashObject() : base()
+        {
+            Entries = new ActorCrashObjectEntry[8];
+            for(int i = 0; i < 8; i++)
+            {
+                Entries[i] = new ActorCrashObjectEntry();
+            }
+        }
+
+        public ActorCrashObject(MemoryStream stream, bool isBigEndian)
+        {
+            ReadFromFile(stream, isBigEndian);
+        }
+
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.ReadFromFile(stream, isBigEndian);
+            stream.Seek(240, SeekOrigin.Begin);
+
+            RemoveDistance = stream.ReadSingle(isBigEndian);
+            RemoveTime = stream.ReadInt32(isBigEndian);
+            RemoveRule = stream.ReadInt32(isBigEndian);
+            MainPartRule = stream.ReadInt32(isBigEndian);
+            DropEndTime = stream.ReadInt32(isBigEndian);
+            HitPlayerFilter = stream.ReadInt32(isBigEndian);
+            HumanRule = stream.ReadInt32(isBigEndian);
+            CameraCollision = stream.ReadBoolean();
+            BlinkingAnimation = stream.ReadBoolean();
+            ActiveInDayOnly = stream.ReadBoolean();
+
+            stream.ReadByte(); // Padding?
+
+            NumEntries = stream.ReadInt32(isBigEndian);
+
+            stream.ReadInt32(isBigEndian);
+
+            Entries = new ActorCrashObjectEntry[8];
+            for(int i = 0; i < 8; i++)
+            {
+                ActorCrashObjectEntry Entry = new ActorCrashObjectEntry();
+                Entry.Hash = stream.ReadUInt64(isBigEndian);
+                Entry.Unk01 = stream.ReadSingle(isBigEndian);
+                Entry.Unk02 = stream.ReadInt32(isBigEndian);
+                Entries[i] = Entry;
+            }
+
+            Unk01 = stream.ReadInt32(isBigEndian);
+            Unk02 = stream.ReadInt32(isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            base.WriteToFile(writer, isBigEndian);
+            writer.Seek(240, SeekOrigin.Begin);
+
+            writer.Write(RemoveDistance, isBigEndian);
+            writer.Write(RemoveTime, isBigEndian);
+            writer.Write(RemoveRule, isBigEndian);
+            writer.Write(MainPartRule, isBigEndian);
+            writer.Write(DropEndTime, isBigEndian);
+            writer.Write(HitPlayerFilter, isBigEndian);
+            writer.Write(HumanRule, isBigEndian);
+            writer.Write(CameraCollision);
+            writer.Write(BlinkingAnimation);
+            writer.Write(ActiveInDayOnly);
+
+            writer.Write(false); // Padding?
+
+            writer.Write(NumEntries, isBigEndian);
+
+            writer.Write(0, isBigEndian);
+
+            for(int i = 0; i < 8; i++)
+            {
+                writer.Write(Entries[i].Hash, isBigEndian);
+                writer.Write(Entries[i].Unk01, isBigEndian);
+                writer.Write(Entries[i].Unk02, isBigEndian);
+            }
+
+            writer.Write(Unk01, isBigEndian);
+            writer.Write(Unk02, isBigEndian);
+        }
+    }
+
 
 }

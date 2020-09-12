@@ -9,12 +9,12 @@ namespace ResourceTypes.Cutscene.AnimEntities
     public class AeBase
     {
         public short Unk01 { get; set; }
-        public string Name1 { get; set; }
-        public string Name2 { get; set; }
+        public string EntityName0 { get; set; }
+        public string EntityName1 { get; set; }
         public byte Unk02 { get; set; }
-        public ulong Hash0 { get; set; }
+        public ulong FrameHash { get; set; }
         public ulong Hash1 { get; set; }
-        public string Name3 { get; set; }
+        public string FrameName { get; set; }
         public int Unk03 { get; set; }
         public int Unk04 { get; set; }
         public int Unk044 { get; set; }
@@ -29,17 +29,17 @@ namespace ResourceTypes.Cutscene.AnimEntities
                 return;
             }
 
-            Name1 = stream.ReadString16(isBigEndian);
-            Name2 = stream.ReadString16(isBigEndian);
+            EntityName0 = stream.ReadString16(isBigEndian);
+            EntityName1 = stream.ReadString16(isBigEndian);
 
-            if (!string.IsNullOrEmpty(Name2))
+            if (!string.IsNullOrEmpty(EntityName1))
             {
                 Unk02 = stream.ReadByte8();
             }
 
-            Hash0 = stream.ReadUInt64(isBigEndian);
+            FrameHash = stream.ReadUInt64(isBigEndian);
             Hash1 = stream.ReadUInt64(isBigEndian);
-            Name3 = stream.ReadString16(isBigEndian);
+            FrameName = stream.ReadString16(isBigEndian);
             Unk03 = stream.ReadInt32(isBigEndian);
             Unk04 = stream.ReadInt32(isBigEndian);
             Unk044 = stream.ReadInt32(isBigEndian);

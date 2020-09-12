@@ -1,5 +1,6 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace ResourceTypes.Actors
@@ -12,6 +13,8 @@ namespace ResourceTypes.Actors
             {
                 case ActorTypes.Human:
                     return new ActorHuman();
+                case ActorTypes.C_CrashObject:
+                    return new ActorCrashObject();
                 case ActorTypes.C_TrafficCar:
                     return new ActorTrafficCar();
                 case ActorTypes.C_TrafficHuman:
@@ -22,6 +25,8 @@ namespace ResourceTypes.Actors
                     return new ActorActionPoint();
                 case ActorTypes.ActionPointScript:
                     return new ActorActionPointScript();
+                case ActorTypes.ActionPointSearch:
+                    return new ActorActionPointSearch();
                 case ActorTypes.C_Item:
                     return new ActorItem();
                 case ActorTypes.C_Door:
@@ -32,10 +37,14 @@ namespace ResourceTypes.Actors
                     return new ActorSoundEntity();
                 case ActorTypes.StaticEntity:
                     return new ActorStaticEntity();
+                case ActorTypes.Garage:
+                    return new ActorGarage();
                 case ActorTypes.FrameWrapper:
                     return new ActorFrameWrapper();
                 case ActorTypes.C_ActorDetector:
                     return new ActorActorDetector();
+                case ActorTypes.Blocker:
+                    return new ActorBlocker();
                 case ActorTypes.C_StaticParticle:
                     return new ActorStaticParticle();
                 case ActorTypes.LightEntity:
@@ -72,6 +81,8 @@ namespace ResourceTypes.Actors
             {
                 case ActorTypes.Human:
                     return new ActorHuman(stream, isBigEndian);
+                case ActorTypes.C_CrashObject:
+                    return new ActorCrashObject(stream, isBigEndian);
                 case ActorTypes.C_TrafficCar:
                     return new ActorTrafficCar(stream, isBigEndian);
                 case ActorTypes.C_TrafficHuman:
@@ -82,6 +93,8 @@ namespace ResourceTypes.Actors
                     return new ActorActionPoint(stream, isBigEndian);
                 case ActorTypes.ActionPointScript:
                     return new ActorActionPointScript(stream, isBigEndian);
+                case ActorTypes.ActionPointSearch:
+                    return new ActorActionPointSearch(stream, isBigEndian);
                 case ActorTypes.C_Item:
                     return new ActorItem(stream, isBigEndian);
                 case ActorTypes.C_Door:
@@ -94,10 +107,14 @@ namespace ResourceTypes.Actors
                     return new ActorRadio(stream, isBigEndian);
                 case ActorTypes.StaticEntity:
                     return new ActorStaticEntity(stream, isBigEndian);
+                case ActorTypes.Garage:
+                    return new ActorGarage(stream, isBigEndian);
                 case ActorTypes.FrameWrapper:
                     return new ActorFrameWrapper(stream, isBigEndian);
                 case ActorTypes.C_ActorDetector:
                     return new ActorActorDetector(stream, isBigEndian);
+                case ActorTypes.Blocker:
+                    return new ActorBlocker(stream, isBigEndian);
                 case ActorTypes.C_StaticParticle:
                     return new ActorStaticParticle(stream, isBigEndian);
                 case ActorTypes.LightEntity:
@@ -114,6 +131,18 @@ namespace ResourceTypes.Actors
                     return new ActorWardrobe(stream, isBigEndian);
                 case ActorTypes.CleanEntity:
                     return new ActorCleanEntity(stream, isBigEndian);
+                default:
+                    Console.WriteLine("Cannot read type: " + type);
+                    return null;
+            }
+        }
+
+        public static IActorExtraDataInterface CreateDuplicateExtraData(ActorTypes type, IActorExtraDataInterface extraData)
+        {
+            switch(type)
+            {
+                case ActorTypes.C_Sound:
+                    return new ActorSoundEntity(extraData);
                 default:
                     return null;
             }

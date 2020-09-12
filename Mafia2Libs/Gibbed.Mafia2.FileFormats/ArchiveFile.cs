@@ -186,6 +186,7 @@ namespace Gibbed.Mafia2.FileFormats
             fileHeader.SlotVramRequired = this.SlotVramRequired;
             fileHeader.OtherRamRequired = this.OtherRamRequired;
             fileHeader.OtherVramRequired = this.OtherVramRequired;
+            fileHeader.SlotRamRequired = fileHeader.SlotVramRequired = fileHeader.OtherRamRequired = fileHeader.OtherVramRequired = 0;
             fileHeader.Flags = 1;
             fileHeader.Unknown20 = this._Unknown20 ?? new byte[16];
 
