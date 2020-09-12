@@ -69,6 +69,7 @@
             this.ActorTreeView.Size = new System.Drawing.Size(368, 410);
             this.ActorTreeView.TabIndex = 11;
             this.ActorTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
+            this.ActorTreeView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ActorTreeView_OnKeyUp);
             // 
             // ActorContext
             // 

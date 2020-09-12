@@ -15,6 +15,7 @@ using ResourceTypes.Actors;
 using ResourceTypes.Collisions;
 using ResourceTypes.Navigation;
 using ResourceTypes.Translokator;
+using ResourceTypes.Prefab;
 using ResourceTypes.Misc;
 using Utils.Types;
 using System.Diagnostics;
@@ -40,6 +41,7 @@ namespace Mafia2Tool
         public static HPDData HPDData;
         public static TranslokatorLoader Translokator;
         public static FrameProps FrameProperties;
+        public static PrefabLoader Prefabs;
         public static string ScenePath = "";
 
         private static SDSContentFile sdsContent;
@@ -148,6 +150,13 @@ namespace Mafia2Tool
                 {
                     Console.WriteLine("Failed to read AnimalTrafficPaths {0}", ex.Message);
                 }
+            }
+
+            if (!isBigEndian && sdsContent.HasResource("PREFAB"))
+            {
+                var name = sdsContent.GetResourceFiles("PREFAB", true)[0];
+                PrefabLoader loader = new PrefabLoader(new FileInfo(name));
+                Prefabs = loader;
             }
 
             //RoadMap

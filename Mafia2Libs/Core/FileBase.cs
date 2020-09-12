@@ -8,6 +8,8 @@ namespace Core.IO
     public class FileBase
     {
         protected FileInfo file;
+        protected DirectoryBase parentDirectory;
+
         private string extension;
 
         public FileBase(FileInfo info)
@@ -50,6 +52,11 @@ namespace Core.IO
         public virtual string GetExtensionUpper()
         {
             return extension;
+        }
+
+        public void SetParent(DirectoryBase info)
+        {
+            parentDirectory = info;
         }
 
         public virtual bool Open()

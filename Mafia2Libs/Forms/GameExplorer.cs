@@ -162,8 +162,12 @@ namespace Mafia2Tool
                 return;
             }
 
+            DirectoryBase directoryInfo = new DirectoryBase(directory);
+
             foreach (DirectoryInfo dir in directory.GetDirectories())
             {
+                DirectoryBase childInfo = new DirectoryBase(dir);
+
                 if (searchMode && !string.IsNullOrEmpty(filename))
                 {
                     if (!dir.Name.Contains(filename))
@@ -172,7 +176,7 @@ namespace Mafia2Tool
                     }
                 }
                 item = new ListViewItem(dir.Name, 0);
-                item.Tag = dir;
+                item.Tag = childInfo;
                 subItems = new ListViewItem.ListViewSubItem[]
                 {
                     new ListViewItem.ListViewSubItem(item, "Directory"),
@@ -209,6 +213,7 @@ namespace Mafia2Tool
                     new ListViewItem.ListViewSubItem(item, file.GetLastTimeWrite()),
                 };
 
+                directoryInfo.AddLoadedFile(file);
                 item.SubItems.AddRange(subItems);
                 fileListView.Items.Add(item);
             }
@@ -338,7 +343,8 @@ namespace Mafia2Tool
             }
             else if(item.SubItems[1].Text.Equals("Directory"))
             {
-                OpenDirectory((DirectoryInfo)item.Tag);
+                var directory = (item.Tag as DirectoryBase);
+                OpenDirectory(directory.GetDirectoryInfo());
                 return;
             }
         }
@@ -606,6 +612,12 @@ namespace Mafia2Tool
 
         private void UnpackSDSRecurse(DirectoryInfo info)
         {
+            DialogResult Result = MessageBox.Show("Are you sure you want to unpack all SDS Archives?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if(Result == DialogResult.No)
+            {
+                return;
+            }
+
             foreach (var file in info.GetFiles())
             {
                 CheckValidSDS(file);

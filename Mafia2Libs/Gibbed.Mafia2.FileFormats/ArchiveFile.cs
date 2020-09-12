@@ -151,6 +151,7 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceHeader.SlotVramRequired = resourceEntry.SlotVramRequired;
                 resourceHeader.OtherRamRequired = resourceEntry.OtherRamRequired;
                 resourceHeader.OtherVramRequired = resourceEntry.OtherVramRequired;
+                resourceHeader.SlotRamRequired = resourceHeader.SlotVramRequired = resourceHeader.OtherRamRequired = resourceHeader.OtherVramRequired = 0;
 
                 using (var data = new MemoryStream())
                 {
@@ -176,6 +177,7 @@ namespace Gibbed.Mafia2.FileFormats
             fileHeader.SlotVramRequired = this.SlotVramRequired;
             fileHeader.OtherRamRequired = this.OtherRamRequired;
             fileHeader.OtherVramRequired = this.OtherVramRequired;
+            fileHeader.SlotRamRequired = fileHeader.SlotVramRequired = fileHeader.OtherRamRequired = fileHeader.OtherVramRequired = 0;
             fileHeader.Flags = 1;
             fileHeader.Unknown20 = this._Unknown20 ?? new byte[16];
 

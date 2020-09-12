@@ -26,6 +26,7 @@ using System.Diagnostics;
 using ResourceTypes.Actors;
 using Utils.Extensions;
 using Rendering.Core;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2Tool
 {
@@ -354,8 +355,10 @@ namespace Mafia2Tool
         {
             bool camUpdated = false;
 
-            if(Input.IsKeyDown(Keys.Delete))
+            if (Input.IsKeyDown(Keys.Delete))
+            {
                 dSceneTree.DeleteButton.PerformClick();
+            }
 
             if (RenderPanel.Focused)
             {
@@ -414,7 +417,7 @@ namespace Mafia2Tool
                 if (Input.IsKeyDown(Keys.ShiftKey))
                     multiplier *= 2.0f;
 
-                float speed = Graphics.Timer.FrameTime * multiplier;
+                float speed = Graphics.Profile.DeltaTime * multiplier;
 
                 if (Input.IsKeyDown(Keys.A))
                 {
@@ -456,8 +459,6 @@ namespace Mafia2Tool
                     selectTimer -= 0.1f;
             }
             lastMousePos = mousePos;
-            Graphics.Timer.Frame2();
-            Graphics.FPS.Frame();
             Graphics.Frame();
             if (camUpdated)
             {
@@ -473,7 +474,7 @@ namespace Mafia2Tool
             }
             Process process = Process.GetCurrentProcess();
             Label_MemoryUsage.Text = string.Format("Usage: {0}", process.WorkingSet64.ConvertToMemorySize());
-            Label_FPS.Text = string.Format("{0} FPS", Graphics.FPS.FPS);
+            Label_FPS.Text = Graphics.Profile.ToString();
             return true;
         }
 
@@ -1058,34 +1059,27 @@ namespace Mafia2Tool
                 for (int c = 0; c != actor.Items.Count; c++)
                 {
                     ActorEntry item = actor.Items[c];
-                    if (definition.DefinitionHash == item.FrameNameHash)
+                    if (definition.FrameNameHash == item.FrameNameHash)
                     {
-                        if (frame == null)
+                        bool sorted = false;
+                        for (int x = 0; x < frames.Count; x++)
                         {
-                            bool sorted = false;
-                            for (int x = 0; x < frames.Count; x++)
+                            FrameObjectFrame nFrame = frames[x];
+                            if (nFrame.Name.uHash == item.FrameNameHash)
                             {
-                                FrameObjectFrame nFrame = frames[x];
-                                if (nFrame.Name.uHash == item.FrameNameHash)
+                                if (!nFrame.ActorHash.String.Equals(item.DefinitionName))
                                 {
-                                    if (nFrame.ActorHash.String.Equals(item.DefinitionName))
-                                    {
-                                        Console.WriteLine("ActorHash and Definition Match");
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("ActorHash and Definition Do NotMatch");
-                                    }
-                                    definition.FrameIndex = (uint)frameIndexes[x];
-                                    frame = nFrame;
-                                    frame.Item = actor.Items[c];
-                                    frame.LocalTransform = MatrixExtensions.SetMatrix(actor.Items[c].Rotation, actor.Items[c].Scale, actor.Items[c].Position);
-                                    sorted = true;
+                                    Console.WriteLine("ActorHash and Definition Do NotMatch");
                                 }
+                                definition.FrameIndex = (uint)frameIndexes[x];
+                                frame = nFrame;
+                                frame.Item = actor.Items[c];
+                                frame.LocalTransform = MatrixExtensions.SetMatrix(actor.Items[c].Rotation, actor.Items[c].Scale, actor.Items[c].Position);
+                                sorted = true;
                             }
-
-                            Debug.Assert(sorted, "Error: Did not detect the frame accompanying this actor " + item.EntityName + "; This means it will probably cause errors in game. Check your actors in the toolkit!");
                         }
+
+                        Debug.Assert(sorted, "Error: Did not detect the frame accompanying this actor " + item.EntityName + "; This means it will probably cause errors in game. Check your actors in the toolkit!");
                     }
                 }
             }
@@ -1324,6 +1318,9 @@ namespace Mafia2Tool
                     break;
                 case 11:
                     frame = new FrameObjectCollision();
+                    break;
+                case 12:
+                    frame = new FrameObjectJoint();
                     break;
                 default:
                     frame = new FrameObjectBase();
@@ -2204,14 +2201,16 @@ namespace Mafia2Tool
 
         private void OnKeyUpDockedPanel(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Delete)
-            {
-                dSceneTree.DeleteButton.PerformClick();
-            }
-            else if (e.KeyCode == Keys.ControlKey)
+            if (e.KeyCode == Keys.ControlKey)
             {
                 bHideChildren = false;
             }
+            else if(e.KeyCode == Keys.Delete)
+            {
+                dSceneTree.DeleteButton.PerformClick();
+            }
+
+            e.Handled = true;
         }
 
         private void OnKeyDownDockedPanel(object sender, KeyEventArgs e)
@@ -2220,6 +2219,8 @@ namespace Mafia2Tool
             {
                 bHideChildren = true;
             }
+
+            e.Handled = true;
         }
 
         private void OnViewSide2ButtonClicked(object sender, EventArgs e)

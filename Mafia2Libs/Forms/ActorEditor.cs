@@ -16,6 +16,8 @@ namespace Mafia2Tool
         private TreeNode definitions;
         private TreeNode items;
 
+        private object clipboard;
+
 
         public ActorEditor(FileInfo file)
         {
@@ -48,7 +50,7 @@ namespace Mafia2Tool
             for (int i = 0; i != actors.Definitions.Count; i++)
             {
                 TreeNode node = new TreeNode(actors.Definitions[i].Name);
-                node.Name = actors.Definitions[i].DefinitionHash.ToString();
+                node.Name = actors.Definitions[i].FrameNameHash.ToString();
                 node.Tag = actors.Definitions[i];
                 definitions.Nodes.Add(node);
             }
@@ -78,6 +80,35 @@ namespace Mafia2Tool
             }
             ActorTreeView.Nodes.Add(definitions);
             ActorTreeView.Nodes.Add(items);
+        }
+
+        private void Copy()
+        {
+            TreeNode SelectedNode = ActorTreeView.SelectedNode;
+            if (ActorTreeView.SelectedNode.Text.Equals("Extra Data"))
+            {
+                ActorExtraData ExtraData = (SelectedNode.Tag as ActorExtraData);
+                clipboard = ExtraData;
+            }
+        }
+
+        private void Paste()
+        {
+            if(clipboard is ActorExtraData)
+            {
+                ActorExtraData ExtraData = (clipboard as ActorExtraData);
+                IActorExtraDataInterface NewExtraData = ActorFactory.CreateDuplicateExtraData(ExtraData.BufferType, ExtraData.Data);
+
+                TreeNode SelectedNode = ActorTreeView.SelectedNode;
+                if (ActorTreeView.SelectedNode.Text.Equals("Extra Data"))
+                {
+                    ActorExtraData ExistingExtraData = (SelectedNode.Tag as ActorExtraData);
+                    if(ExtraData.BufferType == ExistingExtraData.BufferType)
+                    {
+                        ExistingExtraData.Data = NewExtraData;
+                    }
+                }
+            }
         }
 
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
@@ -162,7 +193,7 @@ namespace Mafia2Tool
             {
                 ActorDefinition definition = actors.CreateActorDefinition((window.chosenObject as ActorEntry));
                 TreeNode node = new TreeNode(definition.Name);
-                node.Name = definition.DefinitionHash.ToString();
+                node.Name = definition.FrameNameHash.ToString();
                 node.Tag = definition;
                 definitions.Nodes.Add(node);
             }
@@ -171,6 +202,18 @@ namespace Mafia2Tool
         private void ActorGrid_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             ActorGrid.Refresh();
+        }
+
+        private void ActorTreeView_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                Copy();
+            }
+            else if (e.Control && e.KeyCode == Keys.V)
+            {
+                Paste();
+            }
         }
     }
 }

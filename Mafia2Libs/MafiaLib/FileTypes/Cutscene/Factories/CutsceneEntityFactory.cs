@@ -102,6 +102,10 @@ namespace ResourceTypes.Cutscene.AnimEntities
                     Entity.Definition = new AeUnk30();
                     Entity.Data = new AeBaseData();
                     break;
+                case AnimEntityTypes.AeUnk31:
+                    Entity.Definition = new AeUnk31();
+                    Entity.Data = new AeBaseData();
+                    break;
                 case AnimEntityTypes.AeUnk32:
                     Entity.Definition = new AeUnk32();
                     Entity.Data = new AeBaseData();

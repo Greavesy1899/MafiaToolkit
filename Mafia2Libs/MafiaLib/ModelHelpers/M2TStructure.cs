@@ -10,6 +10,7 @@ using ResourceTypes.Materials;
 using ResourceTypes.Collisions;
 using ResourceTypes.Collisions.Opcode;
 using Utils.StringHelpers;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Utils.Models
 {
@@ -612,7 +613,7 @@ namespace Utils.Models
                     lods[i].Vertices[x] = vert;
                 }
 
-                //write mesh count and texture names.
+                //read mesh count and texture names.
                 Lods[i].Parts = new ModelPart[reader.ReadInt32()];
                 for (int x = 0; x != Lods[i].Parts.Length; x++)
                 {

@@ -6,6 +6,8 @@ using System;
 using Utils.Settings;
 using SharpDX.Direct3D11;
 using System.Diagnostics;
+using Gibbed.Illusion.FileFormats.Hashing;
+using Utils.Types;
 
 namespace ResourceTypes.Materials
 {
@@ -111,7 +113,8 @@ namespace ResourceTypes.Materials
 
             foreach(var pair in materials)
             {
-                if(pair.Value.MaterialName.Equals(name))
+                var MatName = pair.Value.MaterialName.String;
+                if(MatName.Equals(name))
                 {
                     mat = pair.Value;
                 }

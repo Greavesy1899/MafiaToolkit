@@ -16,15 +16,12 @@ namespace Rendering.Graphics
 
     public class GraphicsClass
     {
-        public FPSClass FPS { get; set; }
         public InputClass Input { get; private set; }
         public WorldSettings WorldSettings { get; set; }
         public Camera Camera { get; set; }
         public Dictionary<int, IRenderer> Assets { get; private set; }
         public Dictionary<int, IRenderer> InitObjectStack { get; set; }
-        public RenderModel Gizmo { get { return gizmo; } }
-
-        public TimerClass Timer;
+        public Profiler Profile { get; set; }
 
         public EventHandler<UpdateSelectedEventArgs> OnSelectedObjectUpdated;
 
@@ -32,7 +29,7 @@ namespace Rendering.Graphics
         private RenderBoundingBox selectionBox;
         private RenderModel sky;
         private RenderModel clouds;
-        private RenderModel gizmo;
+        private GizmoTool TranslationGizmo;
 
         private DirectX11Class D3D;
 
@@ -43,6 +40,7 @@ namespace Rendering.Graphics
         public GraphicsClass()
         {
             InitObjectStack = new Dictionary<int, IRenderer>();
+            Profile = new Profiler();
             Assets = new Dictionary<int, IRenderer>();
             selectionBox = new RenderBoundingBox();
             translokatorGrid = new SpatialGrid();
@@ -58,21 +56,18 @@ namespace Rendering.Graphics
             {
                 MessageBox.Show("Failed to initialize DirectX11!");
             }
-            Timer = new TimerClass();
-            FPS = new FPSClass();
-
-            Timer.Init();
-            FPS.Init();
+            Profile.Init();
             if(!RenderStorageSingleton.Instance.IsInitialised())
             {
                 bool result = RenderStorageSingleton.Instance.Initialise(D3D);
                 var structure = new M2TStructure();
                 //import gizmo
-                gizmo = new RenderModel();
+                RenderModel gizmo = new RenderModel();
                 structure.ReadFromM2T("Resources/GizmoModel.m2t");
                 gizmo.ConvertMTKToRenderModel(structure);
                 gizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
                 gizmo.DoRender = true;
+                TranslationGizmo = new GizmoTool(gizmo);
 
                 sky = new RenderModel();
                 structure = new M2TStructure();
@@ -87,6 +82,7 @@ namespace Rendering.Graphics
                 clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
                 clouds.DoRender = false;
             }
+
             selectionBox.SetColour(System.Drawing.Color.Red);
             selectionBox.Init(new BoundingBox(new Vector3(0.5f), new Vector3(-0.5f)));          
             selectionBox.DoRender = false;
@@ -102,7 +98,7 @@ namespace Rendering.Graphics
             Camera.SetProjectionMatrix(width, height);
             ClearRenderStack();
             selectionBox.InitBuffers(D3D.Device, D3D.DeviceContext);
-            gizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
+            TranslationGizmo.InitBuffers(D3D.Device, D3D.DeviceContext);
             sky.InitBuffers(D3D.Device, D3D.DeviceContext);
             sky.DoRender = WorldSettings.RenderSky;
             clouds.InitBuffers(D3D.Device, D3D.DeviceContext);
@@ -141,7 +137,6 @@ namespace Rendering.Graphics
             WorldSettings.Shutdown();
             WorldSettings = null;
             Camera = null;
-            Timer = null;
 
             foreach (KeyValuePair<int, IRenderer> model in Assets)
             {
@@ -158,8 +153,8 @@ namespace Rendering.Graphics
             translokatorGrid = null;
             selectionBox.Shutdown();
             selectionBox = null;
-            gizmo.Shutdown();
-            gizmo = null;
+            TranslationGizmo.Shutdown();
+            TranslationGizmo = null;
             clouds.Shutdown();
             clouds = null;
             sky.Shutdown();
@@ -168,10 +163,11 @@ namespace Rendering.Graphics
             D3D?.Shutdown();
             D3D = null;
         }
-        public bool Frame()
+        public void Frame()
         {
             ClearRenderStack();
-            return Render();
+            Render();
+            Profile.Update();
         }
         public bool Render()
         {
@@ -198,8 +194,8 @@ namespace Rendering.Graphics
             translokatorGrid.Render(D3D.Device, D3D.DeviceContext, Camera);
             selectionBox.UpdateBuffers(D3D.Device, D3D.DeviceContext);
             selectionBox.Render(D3D.Device, D3D.DeviceContext, Camera);
-            gizmo.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-            gizmo.Render(D3D.Device, D3D.DeviceContext, Camera);
+            TranslationGizmo.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+            TranslationGizmo.Render(D3D.Device, D3D.DeviceContext, Camera);
             clouds.UpdateBuffers(D3D.Device, D3D.DeviceContext);
             clouds.Render(D3D.Device, D3D.DeviceContext, Camera);
             sky.DoRender = WorldSettings.RenderSky;
@@ -237,14 +233,18 @@ namespace Rendering.Graphics
                     oldObj.Unselect();
                 }
 
-                gizmo.SetTransform(newObj.Transform);
-                gizmo.DoRender = true;
+                TranslationGizmo.OnSelectEntry(newObj.Transform, true);
                 newObj.Select();
                 selectionBox.DoRender = true;
                 selectionBox.SetTransform(newObj.Transform);
                 selectionBox.Update(newObj.BoundingBox);
                 selectedID = id;
             }
+        }
+
+        public void MoveGizmo(int sx, int sy, int Width, int Height)
+        {
+            TranslationGizmo.ManipulateGizmo(Camera, sx, sy, Width, Height);
         }
 
         public void OnResize(int width, int height)

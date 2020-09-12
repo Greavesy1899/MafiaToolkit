@@ -5,15 +5,15 @@ namespace ResourceTypes.Actors
 {
     public class ActorDefinition
     {
-        ulong definitionHash; //hash, this is the same as in the frame.
+        ulong frameNameHash; //hash, this is the same as in the frame.
         ushort unk01; //always zero
         ushort namePos; //starting position for the name.
         uint frameIndex; //links to FrameResource
         string name;
 
-        public ulong DefinitionHash {
-            get { return definitionHash; }
-            set { definitionHash = value; }
+        public ulong FrameNameHash {
+            get { return frameNameHash; }
+            set { frameNameHash = value; }
         }
         public uint FrameIndex {
             get { return frameIndex; }
@@ -31,7 +31,7 @@ namespace ResourceTypes.Actors
 
         public ActorDefinition()
         {
-            definitionHash = 0;
+            frameNameHash = 0;
             unk01 = 0;
             namePos = 0;
             frameIndex = 0;
@@ -40,7 +40,7 @@ namespace ResourceTypes.Actors
 
         public ActorDefinition(BinaryReader reader)
         {
-            definitionHash = 0;
+            frameNameHash = 0;
             unk01 = 0;
             namePos = 0;
             frameIndex = 0;
@@ -50,7 +50,7 @@ namespace ResourceTypes.Actors
 
         public void ReadFromFile(BinaryReader reader)
         {
-            definitionHash = reader.ReadUInt64();
+            frameNameHash = reader.ReadUInt64();
             unk01 = reader.ReadUInt16();
             namePos = reader.ReadUInt16();
             frameIndex = reader.ReadUInt32();
@@ -59,7 +59,7 @@ namespace ResourceTypes.Actors
 
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(definitionHash);
+            writer.Write(frameNameHash);
             writer.Write(unk01);
             writer.Write(namePos);
             writer.Write(frameIndex);
@@ -67,7 +67,7 @@ namespace ResourceTypes.Actors
 
         public override string ToString()
         {
-            return string.Format("{0}, {1}", definitionHash, name);
+            return string.Format("{0}, {1}", frameNameHash, name);
         }
     }
 }

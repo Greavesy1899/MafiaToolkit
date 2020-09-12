@@ -58,6 +58,11 @@ namespace ResourceTypes.Cutscene
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public AeBaseData Data { get; set; }
 
+        public override string ToString()
+        {
+            return Definition.GetType().Name;
+        }
+
     }
 
     public class CutsceneLoader
@@ -84,7 +89,6 @@ namespace ResourceTypes.Cutscene
             for(int i = 0; i < cutscenes.Length; i++)
             {
                 cutscenes[i] = new Cutscene(reader);
-                return;
             }
         }
 
@@ -119,7 +123,15 @@ namespace ResourceTypes.Cutscene
                     //File.WriteAllBytes("CutsceneData/SPD_Data.bin", spdData.Data);
                 }
 
+                // TODO: Figure out the actual way of detecting this.
+                // Get vehicle data.. if it is an absurd value we know its a GCR.
                 int numGCR = reader.ReadInt32();
+                if(numGCR > 0xFF)
+                {
+                    reader.BaseStream.Position -= 4;
+                    return;
+                }
+
                 VehicleContent = new GCRData[numGCR];
 
                 for (int i = 0; i < numGCR; i++)

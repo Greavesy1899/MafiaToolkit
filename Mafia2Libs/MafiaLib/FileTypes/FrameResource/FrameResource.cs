@@ -367,8 +367,6 @@ namespace ResourceTypes.FrameResource
                 mesh.Geometry = frameGeometries[geometry.RefID];
                 mesh.AddRef(FrameEntryRefTypes.Material, material.RefID);
                 mesh.Material = frameMaterials[material.RefID];
-                mesh.AddRef(FrameEntryRefTypes.Parent1, parent.RefID);
-                mesh.AddRef(FrameEntryRefTypes.Parent2, parent.RefID);
 
                 //mesh.Parent.ParentIndex1
 
@@ -418,6 +416,11 @@ namespace ResourceTypes.FrameResource
             for(int i = 0; i < count; i++)
             { 
                 FrameObjectBase child = ReadFrame(stream);
+
+                // Add References early..
+                child.AddRef(FrameEntryRefTypes.Parent1, parent.RefID);
+                child.AddRef(FrameEntryRefTypes.Parent2, parent.RefID);
+
                 SetParentOfObject(0, child, parent);
                 SetParentOfObject(1, child, parent);
             }

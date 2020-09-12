@@ -69,6 +69,11 @@ namespace ResourceTypes.Materials
 
             return null;
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0}", MaterialName.ToString());
+        }
     }
 
     public class IMaterialSampler

@@ -56,6 +56,13 @@ namespace Utils.SharpDXExtensions
         {
             //doing the normal T * R * S does not work; I have to manually push in the vector into the final row.
             Matrix r = Matrix.RotationQuaternion(rotation);
+
+            //Matrix fixedRotation = new Matrix();
+            //fixedRotation.Column1 = r.Row1;
+            //fixedRotation.Column2 = r.Row2;
+            //fixedRotation.Column3 = r.Row3;
+
+
             Matrix s = Matrix.Scaling(scale);
             Matrix final = r * s;
             final.Row4 = new Vector4(position, 1.0f);
@@ -92,14 +99,22 @@ namespace Utils.SharpDXExtensions
         public static Matrix SetMatrix(Vector3 rotation, Vector3 scale, Vector3 position)
         {
             float radX, radY, radZ;
-            radX = MathUtil.DegreesToRadians(rotation.X);
-            radY = MathUtil.DegreesToRadians(rotation.Y);
-            radZ = MathUtil.DegreesToRadians(rotation.Z);
-            Quaternion qX = Quaternion.RotationAxis(Vector3.UnitX, radX);
-            Quaternion qY = Quaternion.RotationAxis(Vector3.UnitY, radY);
-            Quaternion qZ = Quaternion.RotationAxis(Vector3.UnitZ, radZ);
-            (qX * qY * qZ).ToEuler();
-            return SetMatrix(qX * qY * qZ, scale, position);
+            radX = -MathUtil.DegreesToRadians(rotation.X);
+            radY = -MathUtil.DegreesToRadians(rotation.Y);
+            radZ = -MathUtil.DegreesToRadians(rotation.Z);
+
+            Matrix x = Matrix.RotationX(radX);
+            Matrix y = Matrix.RotationY(radY);
+            Matrix z = Matrix.RotationZ(radZ);
+
+            Matrix result = x * y * z;
+
+            Matrix fixedRotation = new Matrix();
+            fixedRotation.Column1 = result.Row1;
+            fixedRotation.Column2 = result.Row2;
+            fixedRotation.Column3 = result.Row3;
+            Quaternion rotation1 = Quaternion.RotationMatrix(fixedRotation);
+            return SetMatrix(rotation1, scale, position);
         }
     }
 
@@ -146,7 +161,7 @@ namespace Utils.SharpDXExtensions
             if(Math.Abs(AxisZ.X) < 1.0f - SmallNumber)
             {
                 ResultVector.X = (float)Math.Atan2(AxisZ.Y, AxisZ.Z);
-                ResultVector.Z = (float)Math.Atan2(AxisZ.X, AxisX.X);
+                ResultVector.Z = (float)Math.Atan2(AxisY.X, AxisX.X);
             }
             else
             {

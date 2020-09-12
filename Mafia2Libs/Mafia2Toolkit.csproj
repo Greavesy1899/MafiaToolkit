@@ -219,6 +219,7 @@
     <Compile Include="Controls\TextureEntry.Designer.cs">
       <DependentUpon>TextureEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Core\DirectoryBase.cs" />
     <Compile Include="Core\FileActor.cs" />
     <Compile Include="Core\FileBase.cs" />
     <Compile Include="Core\FileBin.cs" />
@@ -228,6 +229,7 @@
     <Compile Include="Core\FileFrameResoure.cs" />
     <Compile Include="Core\FileLua.cs" />
     <Compile Include="Core\FileMaterialLibrary.cs" />
+    <Compile Include="Core\FilePrefab.cs" />
     <Compile Include="Core\FileSpeech.cs" />
     <Compile Include="Core\FileSDS.cs" />
     <Compile Include="Core\FileTable.cs" />
@@ -312,6 +314,12 @@
     <Compile Include="Forms\ShopMenu2Editor.Designer.cs">
       <DependentUpon>ShopMenu2Editor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\PrefabEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PrefabEditor.Designer.cs">
+      <DependentUpon>PrefabEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\StreamEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -354,6 +362,7 @@
     <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk18.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk23.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk30.cs" />
+    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk31.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk32.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk4.cs" />
     <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk7.cs" />
@@ -476,6 +485,8 @@
     <Compile Include="Gibbed.Mafia2.FileFormats\TEA.cs" />
     <Compile Include="MafiaLib\ModelHelpers\M2TStructure.cs" />
     <Compile Include="MafiaLib\ModelHelpers\ModelDefinition.cs" />
+    <Compile Include="Rendering\Core\GizmoTool.cs" />
+    <Compile Include="Rendering\Core\Profiler.cs" />
     <Compile Include="Rendering\Graphics\ConstantBufferFactory.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\IRenderer.cs" />
     <Compile Include="Rendering\Graphics\RenderTypes\Render2DPlane.cs" />
@@ -492,7 +503,6 @@
     <Compile Include="Rendering\Graphics\Shaders\Shader_50760736.cs" />
     <Compile Include="Rendering\Graphics\WorldSettings.cs" />
     <Compile Include="Rendering\RenderPrefabs.cs" />
-    <Compile Include="Rendering\Core\FPSClass.cs" />
     <Compile Include="Rendering\Core\SpatialCell.cs" />
     <Compile Include="Rendering\Core\SpatialGrid.cs" />
     <Compile Include="Utils\Helpers\MatrixExtensions.cs" />
@@ -606,7 +616,6 @@
     <Compile Include="Rendering\Graphics\Shaders\Shader_601151254.cs" />
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
-    <Compile Include="Rendering\Core\TimerClass.cs" />
     <Compile Include="Utils\Helpers\Extensions.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -847,6 +856,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ShopMenu2Editor.resx">
       <DependentUpon>ShopMenu2Editor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PrefabEditor.resx">
+      <DependentUpon>PrefabEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\StreamEditor.resx">
       <DependentUpon>StreamEditor.cs</DependentUpon>

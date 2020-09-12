@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
@@ -28,23 +30,27 @@ namespace ResourceTypes.Prefab
     public class PrefabLoader
     {
         int sizeOfFile; //-4 bytes
-        int unk01; //possible count
-
         int sizeOfFile2; //-12 bytes
 
-        PrefabStruct[] prefabs;
+        public PrefabStruct[] Prefabs { get; set; }
 
 
         public PrefabLoader(FileInfo file)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+            {
                 ReadFromFile(reader);
+            }
         }
 
-        public PrefabLoader(string fileName)
+        public void WriteToFile(FileInfo file)
         {
-            using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
-                ReadFromFile(reader);
+            UpdatePrefabMetaInfo();
+
+            using(BinaryWriter writer = new BinaryWriter(File.Open(file.FullName, FileMode.Create)))
+            {
+                WriteToFile(writer);
+            }
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -53,19 +59,43 @@ namespace ResourceTypes.Prefab
                 Directory.CreateDirectory("Prefabs");
 
             sizeOfFile = reader.ReadInt32();
-            unk01 = reader.ReadInt32();
+            int numPrefabs = reader.ReadInt32();
             sizeOfFile2 = reader.ReadInt32();
-            prefabs = new PrefabStruct[unk01];
+            Prefabs = new PrefabStruct[numPrefabs];
 
-            for (int i = 0; i != unk01; i++)
+            for (int i = 0; i < numPrefabs; i++)
             {
-                prefabs[i] = new PrefabStruct();
-                prefabs[i].ReadFromFile(reader);
+                Prefabs[i] = new PrefabStruct();
+                Prefabs[i].ReadFromFile(reader);
             }
-            if (reader.BaseStream.Position == reader.BaseStream.Length)
-                MessageBox.Show("Debug: Found EOF!");
-            else
-                MessageBox.Show("Debug: Not Found EOF! This may contain more data!");
+
+            Debug.Assert(reader.BaseStream.Position == reader.BaseStream.Position, "We did not reach the end of the prefab file!");
+        }
+
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(sizeOfFile);
+            writer.Write(Prefabs.Length);
+            writer.Write(sizeOfFile2);
+
+            foreach(var prefab in Prefabs)
+            {
+                prefab.WriteToFile(writer);
+            }
+        }
+
+        private void UpdatePrefabMetaInfo()
+        {
+            // Calculate size of file
+            int size = 8;
+
+            foreach (var prefab in Prefabs)
+            {
+                size += prefab.GetSize();
+            }
+
+            sizeOfFile = size;
+            sizeOfFile2 = size - 8;
         }
 
         public override string ToString()
@@ -73,24 +103,25 @@ namespace ResourceTypes.Prefab
             return string.Format("{0}, {1}", 1, 2);
         }
 
-        public struct PrefabStruct
+        public class PrefabStruct
         {
-            ulong hash;
-            int type; //type?
-            int unkSize; //maybe size
-            int prefabSize; //another size?
+            public ulong Hash { get; set; }
+            public string AssignedName { get; set; }
+            public int PrefabType { get; set; }
+            [ReadOnly(true)]
+            public int Unk0 {get;set;}
+            [ReadOnly(true)]
+            public int PrefabSize { get; set; }
+
             byte[] data;
-            int unk4; //4?
-            int unkHashCount;
-            ulong[] unkHashes;
 
             public void ReadFromFile(BinaryReader reader)
             {
-                hash = reader.ReadUInt64();
-                type = reader.ReadInt32();
-                unkSize = reader.ReadInt32();
-                prefabSize = reader.ReadInt32();
-                data = reader.ReadBytes(prefabSize);
+                Hash = reader.ReadUInt64();
+                PrefabType = reader.ReadInt32();
+                Unk0 = reader.ReadInt32();
+                PrefabSize = reader.ReadInt32();
+                data = reader.ReadBytes(PrefabSize);
 
                 //BitStreams.BitStream stream = new BitStreams.BitStream(reader.BaseStream);
                 //int globalInitVer = stream.ReadInt32();
@@ -113,7 +144,7 @@ namespace ResourceTypes.Prefab
                 //data = reader.ReadBytes(prefabSize-28);
 
                 //stream.ReadBits(464)
-                using (BinaryWriter writer = new BinaryWriter(File.Open("Prefabs/" + hash.ToString() + "Type_" + type + ".prefab", FileMode.Create)))
+                using (BinaryWriter writer = new BinaryWriter(File.Open("Prefabs/" + Hash.ToString() + "Type_" + PrefabType + ".prefab", FileMode.Create)))
                 {
                     writer.Write(data);
                 }
@@ -128,6 +159,20 @@ namespace ResourceTypes.Prefab
 
                 //if(reader.ReadInt32() != 0) //should be zero?
                 //    Console.WriteLine("Wasn't zero.");
+            }
+
+            public void WriteToFile(BinaryWriter writer)
+            {
+                writer.Write(Hash);
+                writer.Write(PrefabType);
+                writer.Write(Unk0);
+                writer.Write(PrefabSize);
+                writer.Write(data);
+            }
+
+            public int GetSize()
+            {
+                return PrefabSize + 20;
             }
         }
     }

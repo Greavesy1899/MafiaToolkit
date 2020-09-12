@@ -16,7 +16,7 @@ namespace Utils.Types
         public Dictionary<string, BaseResource> typeList = new Dictionary<string, BaseResource>();
         static Dictionary<string, string> typeExtension = new Dictionary<string, string>();
         static readonly List<string> sortList = new List<string>() {"IndexBufferPool", "VertexBufferPool", "Texture", "FrameResource", "Effects", "FrameNameTable",
-               "Actors", "EntityDataStorage",  "PREFAB", "Animation2",  "AnimalTrafficPaths", "Table", "NAV_OBJ_DATA", "NAV_AIWORLD_DATA", "NAV_HPD_DATA",
+               "Actors", "EntityDataStorage", "Animation2", "Table", "NAV_OBJ_DATA", "NAV_AIWORLD_DATA", "PREFAB", "AnimalTrafficPaths", "NAV_HPD_DATA",
                 "AudioSectors", "MemFile", "Collisions", "ItemDesc", "FxActor", "FxAnimSet", "Script", "Sound", "Speech", "Cutscene", "SoundTable", "XML", "Translokator", "Mipmap" };
         
         public Dictionary<string, List<TreeNode>> Resources {
@@ -44,9 +44,9 @@ namespace Utils.Types
             typeList.Add("Animation2", new BaseResource(1, "Animation2"));
             typeList.Add("Tables", new TableResource(1, "Tables"));
             typeList.Add("NAV_OBJ_DATA", new BaseResource(0, "NAV_OBJ_DATA"));
-            typeList.Add("NAV_AIWORLD_DATA", new BaseResource(1, "NAV_AIWORLD_DATA"));
-            typeList.Add("NAV_HPD_DATA", new BaseResource(1, "NAV_HPD_DATA"));
-            typeList.Add("AnimalTrafficPaths", new BaseResource(0, "AnimalTrafficPaths"));
+            typeList.Add("NAV_AIWORLD_DATA", new BaseResource(0, "NAV_AIWORLD_DATA"));
+            typeList.Add("NAV_HPD_DATA", new BaseResource(0, "NAV_HPD_DATA"));
+            typeList.Add("AnimalTrafficPaths", new BaseResource(1, "AnimalTrafficPaths"));
             typeList.Add("AudioSectors", new BaseResource(6, "AudioSectors"));
             typeList.Add("MemFile", new BaseResource(2, "MemFile"));
             typeList.Add("Collisions", new BaseResource(2, "Collisions"));

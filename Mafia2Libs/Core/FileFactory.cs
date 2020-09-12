@@ -38,8 +38,9 @@ namespace Core.IO
                     return new FileXML(info);
                 case "BIN":
                     return new FileBin(info);
+                case "PRF":
+                    return new FilePrefab(info);
                 default:
-                    Console.WriteLine(string.Format("Default selected. info.Extension is {0}", info.Extension));
                     return new FileBase(info);
             }
         }
