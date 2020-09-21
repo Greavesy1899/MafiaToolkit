@@ -54,13 +54,14 @@ namespace Gibbed.Illusion.FileFormats
                 remaining -= block;
             }
 
-            var hash = stream.ReadValueU32(endian);
-            if (hash != computedHash)
-            {
-                throw new InvalidDataException(string.Format("hash failure ({0:X} vs {1:X})",
-                                                             computedHash,
-                                                             hash));
-            }
+            stream.ReadValueU32(endian);
+            //var hash = stream.ReadValueU32(endian);
+            //if (hash != computedHash)
+            //{
+            //    throw new InvalidDataException(string.Format("hash failure ({0:X} vs {1:X})",
+            //                                                 computedHash,
+            //                                                 hash));
+            //}
 
             output.Position = 0;
             return output;

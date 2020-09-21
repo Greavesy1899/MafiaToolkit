@@ -25,6 +25,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Gibbed.IO;
+using OodleSharp;
+using SharpDX.Direct3D11;
 using ZLibNet;
 
 namespace Gibbed.Illusion.FileFormats
@@ -310,16 +312,18 @@ namespace Gibbed.Illusion.FileFormats
                     return true;
                 }
 
-                input.Seek(this._DataOffset, SeekOrigin.Begin);
-                this._Data = new byte[this.Size];
-                using (ZLibStream stream = new ZLibStream(input, CompressionMode.Decompress, true))
-                {
-                    var length = stream.Read(this._Data, 0, this._Data.Length);
-                    if (length != this._Data.Length)
-                    {
-                        throw new InvalidOperationException();
-                    }
-                }
+                input.Seek(this._DataOffset+96, SeekOrigin.Begin);
+                this._Data = input.ReadBytes((int)this._DataCompressedSize);
+                byte[] decompressedData = Oodle.Decompress(this._Data, (int)this._DataCompressedSize, (int)this.Size);
+                File.WriteAllBytes("Block_0.data", decompressedData);
+                //using (ZLibStream stream = new ZLibStream(input, CompressionMode.Decompress, true))
+                //{
+                //    var length = stream.Read(this._Data, 0, this._Data.Length);
+                //    if (length != this._Data.Length)
+                //    {
+                //        throw new InvalidOperationException();
+                //    }
+                //}
                 this._IsLoaded = true;
                 return true;
             }
@@ -402,24 +406,26 @@ namespace Gibbed.Illusion.FileFormats
                 if (isCompressed == true)
                 {
                     var compressedBlockHeader = CompressedBlockHeader.Read(baseStream, endian);
-                    if (compressedBlockHeader.Unknown04 != 32 ||
-                        compressedBlockHeader.Unknown0C != 1 ||
-                        compressedBlockHeader.Unknown0E != 15 ||
-                        compressedBlockHeader.Unknown0F != 8)
+                    //if (compressedBlockHeader.Unknown04 != 32 ||
+                    //    compressedBlockHeader.Unknown0C != 1 ||
+                    //    compressedBlockHeader.Unknown0E != 15 ||
+                    //    compressedBlockHeader.Unknown0F != 8)
+                    //{
+                    //    throw new InvalidOperationException();
+                    //}
+
+                    if (size - 128 != compressedBlockHeader.CompressedSize)
                     {
                         throw new InvalidOperationException();
                     }
 
-                    if (size - 32 != compressedBlockHeader.CompressedSize)
-                    {
-                        throw new InvalidOperationException();
-                    }
-
+                   // instance.AddCompressedBlock(0, 0, 0, compressedBlockHeader.Chunks[0]);
                     long compressedPosition = baseStream.Position;
                     uint remainingUncompressedSize = compressedBlockHeader.UncompressedSize;
                     for (int i = 0; i < compressedBlockHeader.ChunkCount; ++i)
                     {
-                        uint UncompressedSize = Math.Min(alignment, remainingUncompressedSize);
+                        uint UncompressedSize = remainingUncompressedSize;
+                        //uint UncompressedSize = Math.Min(65535, remainingUncompressedSize);
                         instance.AddCompressedBlock(virtualOffset,
                                                     UncompressedSize, //compressedBlockHeader.UncompressedSize,
                                                     compressedPosition,
@@ -428,7 +434,9 @@ namespace Gibbed.Illusion.FileFormats
                         virtualOffset += UncompressedSize;
                         remainingUncompressedSize -= alignment;
                     }
-                    baseStream.Seek(compressedBlockHeader.CompressedSize, SeekOrigin.Current);
+                    //baseStream.Seek(compressedBlockHeader.CompressedSize, SeekOrigin.Current);
+                    //baseStream.Seek(96, SeekOrigin.Current);
+                    baseStream.Seek(compressedBlockHeader.CompressedSize+96, SeekOrigin.Current);
                 }
                 else
                 {
