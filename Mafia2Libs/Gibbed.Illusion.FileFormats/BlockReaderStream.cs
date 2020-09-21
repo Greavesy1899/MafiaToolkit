@@ -313,9 +313,10 @@ namespace Gibbed.Illusion.FileFormats
                 }
 
                 input.Seek(this._DataOffset+96, SeekOrigin.Begin);
-                this._Data = input.ReadBytes((int)this._DataCompressedSize);
-                byte[] decompressedData = Oodle.Decompress(this._Data, (int)this._DataCompressedSize, (int)this.Size);
-                File.WriteAllBytes("Block_0.data", decompressedData);
+
+                byte[] compressedData = input.ReadBytes((int)this._DataCompressedSize);
+                this._Data = Oodle.Decompress(compressedData, (int)this._DataCompressedSize, (int)this.Size);
+                File.WriteAllBytes("Block_0.data", this._Data);
                 //using (ZLibStream stream = new ZLibStream(input, CompressionMode.Decompress, true))
                 //{
                 //    var length = stream.Read(this._Data, 0, this._Data.Length);

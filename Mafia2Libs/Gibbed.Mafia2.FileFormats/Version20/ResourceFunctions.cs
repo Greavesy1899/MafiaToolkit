@@ -35,7 +35,9 @@ namespace Gibbed.Mafia2.FileFormats
             string extractedPath = Path.Combine(file.Directory.FullName, "extracted");
 
             if (!Directory.Exists(extractedPath))
+            {
                 Directory.CreateDirectory(extractedPath);
+            }
 
             string finalPath = Path.Combine(extractedPath, file.Name);
             Directory.CreateDirectory(finalPath);

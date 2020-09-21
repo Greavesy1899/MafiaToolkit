@@ -554,42 +554,50 @@ namespace Gibbed.Mafia2.FileFormats
             }
             else
             {
-                int type = 0;
+                int type = -1;
                 for(int i = 0; i != ResourceTypes.Count; i++)
                 {
                     if (ResourceTypes[i].Name == "")
-                        type = (int)ResourceTypes[i].Id;                   
+                    {
+                        type = (int)ResourceTypes[i].Id;
+                    }
                 }
 
-                for(int i = 0; i < ResourceEntries.Count; i++)
+                if (type != -1)
                 {
-                    if (ResourceEntries[i].TypeId == type)
+                    for (int i = 0; i < ResourceEntries.Count; i++)
                     {
-                        using (MemoryStream stream = new MemoryStream(ResourceEntries[i].Data))
+                        if (ResourceEntries[i].TypeId == type)
                         {
-                            ushort authorLen = stream.ReadValueU16();
-                            stream.ReadBytes(authorLen);
-                            int fileSize = stream.ReadValueS32();
-                            int password = stream.ReadValueS32();
-
-                            using (var reader = new StringReader(Encoding.UTF8.GetString(stream.ReadBytes(fileSize))))
+                            using (MemoryStream stream = new MemoryStream(ResourceEntries[i].Data))
                             {
-                                doc = new XPathDocument(reader);
+                                ushort authorLen = stream.ReadValueU16();
+                                stream.ReadBytes(authorLen);
+                                int fileSize = stream.ReadValueS32();
+                                int password = stream.ReadValueS32();
+
+                                using (var reader = new StringReader(Encoding.UTF8.GetString(stream.ReadBytes(fileSize))))
+                                {
+                                    doc = new XPathDocument(reader);
+                                }
                             }
+                            ResourceEntries.RemoveAt(i);
+                            ResourceTypes.RemoveAt(type);
                         }
-                        ResourceEntries.RemoveAt(i);
-                        ResourceTypes.RemoveAt(type);
                     }
                 }
             }
 
-            var nav = doc.CreateNavigator();
-            var nodes = nav.Select("/xml/ResourceInfo/SourceDataDescription");
-            while (nodes.MoveNext() == true)
+            if (doc != null)
             {
-                _ResourceNames.Add(nodes.Current.Value);
+                var nav = doc.CreateNavigator();
+                var nodes = nav.Select("/xml/ResourceInfo/SourceDataDescription");
+                while (nodes.MoveNext() == true)
+                {
+                    _ResourceNames.Add(nodes.Current.Value);
+                }
+                Log.WriteLine("Found all items; count is " + nodes.Count);
             }
-            Log.WriteLine("Found all items; count is " + nodes.Count);
 
 
             if (_ResourceNames.Count == 0)
@@ -599,7 +607,21 @@ namespace Gibbed.Mafia2.FileFormats
                 Log.WriteLine("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", LoggingTypes.WARNING);
                 for (int i = 0; i != ResourceEntries.Count; i++)
                 {
-                    _ResourceNames.Add("unk_" + i);
+                    ResourceEntry Entry = ResourceEntries[i];
+                    string Typename = _ResourceTypes[Entry.TypeId].Name;
+
+                    string Extension = ".bin";
+                    if(Typename == "Texture")
+                    {
+                        Extension = ".dds";
+                    }
+                    else if(Typename == "Generic")
+                    {
+                        Extension = ".genr";
+                    }
+
+                    string FileName = string.Format("File_{0}{1}", i, Extension);
+                    _ResourceNames.Add(FileName);
                 }
             }
 
