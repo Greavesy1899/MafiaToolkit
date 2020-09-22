@@ -103,9 +103,13 @@ namespace ResourceTypes.M3.XBin
                 item.Price = reader.ReadInt32();
                 item.MaxDirt = reader.ReadSingle();
                 item.MaxRust = reader.ReadSingle();
+                reader.ReadSingle();
+                reader.ReadSingle();
                 item.RaceClass = (EVehicleRaceClass)reader.ReadInt32();
                 item.TrunkDockOffsetX = reader.ReadSingle();
                 item.TrunkDockOffsetY = reader.ReadSingle();
+                //item.WriteText(writer);
+
                 vehicles[i] = item;
             }
         }

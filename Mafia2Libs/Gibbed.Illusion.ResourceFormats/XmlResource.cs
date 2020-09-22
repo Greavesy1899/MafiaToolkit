@@ -82,7 +82,7 @@ namespace Gibbed.Mafia2.ResourceFormats
 
             if (this.Unk3 == false)
             {
-                this.Content = XmlResource0.Deserialize(input, endian);
+                //this.Content = XmlResource0.Deserialize(input, endian);
             }
             else
             {
