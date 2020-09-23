@@ -319,5 +319,35 @@ namespace Mafia2Tool
         {
             MaterialGrid.Refresh();
         }
+
+        private void Button_DumpTextures_Click(object sender, EventArgs e)
+        {
+            if (mtl.Version != VersionsEnumerator.V_63)
+            {
+                return;
+            }
+
+            Dictionary<ulong, bool> CurrentTextures = new Dictionary<ulong, bool>();
+
+            using (StreamWriter Writer = new StreamWriter(File.Open("TextureDump.txt", FileMode.Create)))
+            {
+                foreach (var Material in mtl.Materials)
+                {
+                    if (Material.Value is Material_v63)
+                    {
+                        Material_v63 Mat = (Material.Value as Material_v63);
+
+                        foreach(var Texture in Mat.Textures)
+                        {
+                            if (!CurrentTextures.ContainsKey(Texture.TextureName.uHash))
+                            {
+                                Writer.WriteLine(Texture.TextureName.String);
+                                CurrentTextures.Add(Texture.TextureName.uHash, true);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace Utils.Settings
         MafiaII = 1,
         MafiaII_DE = 2,
         MafiaIII = 3,
+        MafiaI_DE = 4
     }
     public class Game
     {
@@ -120,6 +121,10 @@ namespace Utils.Settings
             else if (type == GamesEnumerator.MafiaIII)
             {
                 return "mafia3definitiveedition.exe";
+            }
+            else if (type == GamesEnumerator.MafiaI_DE)
+            {
+                return "mafiadefinitiveedition.exe";
             }
             else
             {

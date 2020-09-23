@@ -24,7 +24,6 @@
 //SEE ORIGINAL CODE HERE::
 //https://github.com/gibbed/Gibbed.Illusion
 
-using System;
 using System.IO;
 using Gibbed.IO;
 using Utils.Logging;

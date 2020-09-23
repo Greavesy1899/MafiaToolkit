@@ -122,7 +122,7 @@ namespace Mafia2Tool
         {
             infoText.Text = "Building folders..";
 
-            if (game.GameType != GamesEnumerator.MafiaIII)
+            if (game.GameType != GamesEnumerator.MafiaIII && game.GameType != GamesEnumerator.MafiaI_DE)
             {
                 rootDirectory = pcDirectory.Parent;
             }
@@ -328,7 +328,8 @@ namespace Mafia2Tool
                 switch (item.SubItems[1].Text)
                 {
                     case "Directory":
-                        OpenDirectory((DirectoryInfo)item.Tag);
+                        var directory = (item.Tag as DirectoryBase);
+                        OpenDirectory(directory.GetDirectoryInfo());
                         return;
                     case "SDS":
                         OpenFile(item.Tag as FileBase);

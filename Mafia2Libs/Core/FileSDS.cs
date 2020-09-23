@@ -69,6 +69,15 @@ namespace Core.IO
             {
                 archiveFile.Unknown20 = new byte[16] { 55, 51, 57, 55, 57, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             }
+
+            if (game.GameType == GamesEnumerator.MafiaI_DE || game.GameType == GamesEnumerator.MafiaIII)
+            {
+                archiveFile.Version = 20;
+            }
+            else
+            {
+                archiveFile.Version = 19;
+            }
             
             // We should now to try pack the SDS.
             if (!archiveFile.BuildResources(file.Directory.FullName + "/extracted/" + file.Name))

@@ -356,47 +356,6 @@ namespace Gibbed.Illusion.FileFormats
             }
         }
 
-        private struct CompressedBlockHeader
-        {
-            public uint UncompressedSize;
-            public uint HeaderSize;
-            public short ChunkSize;
-            public short ChunkCount;
-            public short Unknown0C;
-            public uint CompressedSize;
-            public byte Unknown0E;
-            public byte Unknown0F;
-            public ushort[] Chunks;
-
-            public static CompressedBlockHeader Read(Stream input, Endian endian)
-            {
-                CompressedBlockHeader instance;
-                instance.UncompressedSize = input.ReadValueU32(endian);
-                instance.HeaderSize = input.ReadValueU32(endian);
-                instance.ChunkSize = input.ReadValueS16(endian);
-                instance.ChunkCount = input.ReadValueS16(endian);
-
-                // For Zlib, this is 15. For Oodle, this is 0.
-                instance.Unknown0C = input.ReadValueS16(endian); 
-
-                // This is usually 1.
-                instance.Unknown0E = input.ReadValueU8(); 
-
-                // This could very well be the number of available chunks. 
-                // (As in how many slots are in the array.)
-                instance.Unknown0F = input.ReadValueU8(); 
-
-                instance.Chunks = new ushort[8];
-                instance.CompressedSize = 0;
-                for (int i = 0; i < 8; ++i)
-                {
-                    instance.Chunks[i] = input.ReadValueU16(endian);
-                    instance.CompressedSize += instance.Chunks[i];
-                }
-                return instance;
-            }
-        }
-
         public const uint Signature = 0x6C7A4555; // 'zlEU'
 
         public static BlockReaderStream FromStream(Stream baseStream, Endian endian)

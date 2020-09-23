@@ -342,8 +342,10 @@
     <Compile Include="Forms\TranslokatorEditor.Designer.cs">
       <DependentUpon>TranslokatorEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Gibbed.Illusion.FileFormats\CompressedBlockHeader.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\XBinResource.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\FlashResource.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\ArchiveCommonResources.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\Version20\ResourceFunctions.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\Version19\ResourceFunctions.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorDefinition.cs" />
@@ -751,10 +753,10 @@
     <None Include="Resources\hashes.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\m2de_logo.jpg">
+    <None Include="Resources\GameImages\m2de_logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\m2_logo.jpg">
+    <None Include="Resources\GameImages\m2_logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\MissingMaterial.dds">
@@ -775,6 +777,13 @@
     <None Include="Resources\weather_clouds.m2t">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="Resources\GameData\M3_Textures.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GameImages\m1de_logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\games_release.xml" />
     <Content Include="Shaders\CollisionPS.hlsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -933,6 +942,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

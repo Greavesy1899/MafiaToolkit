@@ -40,13 +40,13 @@ namespace Mafia2Tool.Controls
             this.Label_GameDescription = new System.Windows.Forms.Label();
             this.Label_GameType = new System.Windows.Forms.Label();
             this.FolderDialog_MafiaFolder = new System.Windows.Forms.FolderBrowserDialog();
+            this.Label_MissingImage = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Picture_GameIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Picture_Status)).BeginInit();
             this.SuspendLayout();
             // 
             // Picture_GameIcon
             // 
-            this.Picture_GameIcon.Image = global::Mafia2Tool.Properties.Resources.m2_logo;
             this.Picture_GameIcon.InitialImage = null;
             this.Picture_GameIcon.Location = new System.Drawing.Point(3, 12);
             this.Picture_GameIcon.Name = "Picture_GameIcon";
@@ -132,11 +132,21 @@ namespace Mafia2Tool.Controls
             // 
             this.FolderDialog_MafiaFolder.Description = "$SELECT_MII_FOLDER";
             // 
+            // Label_MissingImage
+            // 
+            this.Label_MissingImage.AutoSize = true;
+            this.Label_MissingImage.Location = new System.Drawing.Point(103, 79);
+            this.Label_MissingImage.Name = "Label_MissingImage";
+            this.Label_MissingImage.Size = new System.Drawing.Size(89, 13);
+            this.Label_MissingImage.TabIndex = 13;
+            this.Label_MissingImage.Text = "MISSING IMAGE";
+            // 
             // ControlGameEntry
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Controls.Add(this.Label_MissingImage);
             this.Controls.Add(this.Label_GameType);
             this.Controls.Add(this.Label_GameDescription);
             this.Controls.Add(this.Button_SelectFolder);
@@ -167,5 +177,6 @@ namespace Mafia2Tool.Controls
         private System.Windows.Forms.Label Label_GameDescription;
         private System.Windows.Forms.Label Label_GameType;
         private System.Windows.Forms.FolderBrowserDialog FolderDialog_MafiaFolder;
+        private System.Windows.Forms.Label Label_MissingImage;
     }
 }

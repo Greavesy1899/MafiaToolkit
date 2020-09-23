@@ -21,8 +21,11 @@
  */
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using Gibbed.IO;
+using OodleSharp;
+using Utils.Settings;
 using ZLibNet;
 
 namespace Gibbed.Illusion.FileFormats
@@ -122,8 +125,6 @@ namespace Gibbed.Illusion.FileFormats
 
             if (this._IsCompressing == false || this.FlushCompressedBlock() == false)
             {
-                /*var blockLength = Array.FindLastIndex(this._BlockBytes, this._BlockOffset - 1, b => b != 0);
-                blockLength = 1 + (blockLength < 0 ? 0 : blockLength);*/
                 var blockLength = this._BlockOffset;
                 this._BaseStream.WriteValueS32(blockLength, this._Endian);
                 this._BaseStream.WriteValueU8(0);
@@ -132,69 +133,77 @@ namespace Gibbed.Illusion.FileFormats
             }
         }
 
-        private struct CompressedBlockHeader
+        private bool FlushCompressedBlock()
         {
-            public uint UncompressedSize;
-            public uint Unknown04;
-            public short ChunkSize;
-            public short ChunkCount;
-            public short Unknown0C;
-            public uint CompressedSize;
-            public byte Unknown0E;
-            public byte Unknown0F;
-            public ushort[] Chunks;
+            var game = GameStorage.Instance.GetSelectedGame();
+            bool bIsOodle = (game.GameType == GamesEnumerator.MafiaI_DE ? true : false);
 
-            public void Write(Stream output, Endian endian)
+            using (var data = new MemoryStream())
             {
-                output.WriteValueU32(this.UncompressedSize, endian);
-                output.WriteValueU32(this.Unknown04, endian);
-                output.WriteValueS16(this.ChunkSize, endian);
-                output.WriteValueS16(this.ChunkCount, endian);
-                output.WriteValueS16(this.Unknown0C, endian);
-                output.WriteValueU8(this.Unknown0E);
-                output.WriteValueU8(this.Unknown0F);
-                for(int i = 0; i < 8; i++)
+                var blockLength = this._BlockOffset;
+
+                if (bIsOodle)
                 {
-                    output.WriteValueU16(this.Chunks[i], endian);
+                    return FlushOodleCompressedBlock(data, blockLength);
+                }
+                else
+                {
+                    return FlushZlibCompressedBlock(data, blockLength);
                 }
             }
         }
 
-        private bool FlushCompressedBlock()
+        private bool FlushZlibCompressedBlock(MemoryStream data, int blockLength)
         {
-            using (var data = new MemoryStream())
+            var zlib = new ZLibStream(data, CompressionMode.Compress, CompressionLevel.Level6);
+            zlib.Write(this._BlockBytes, 0, blockLength);
+            zlib.Flush();
+            var compressedLength = (int)data.Length;
+            if (data.Length < blockLength)
             {
-                /*var blockLength = Array.FindLastIndex(this._BlockBytes, this._BlockOffset - 1, b => b != 0);
-                blockLength = 1 + (blockLength < 0 ? 0 : blockLength);*/
-                var blockLength = this._BlockOffset;
-
-                var zlib = new ZLibStream(data, CompressionMode.Compress, CompressionLevel.Level6);
-                zlib.Write(this._BlockBytes, 0, blockLength);
-                zlib.Flush();
-                var compressedLength = (int)data.Length;
-                if (data.Length < blockLength)
-                {
-                    this._BaseStream.WriteValueS32(32 + compressedLength, this._Endian);
-                    this._BaseStream.WriteValueU8(1);
-                    CompressedBlockHeader compressedBlockHeader;
-                    compressedBlockHeader.UncompressedSize = (uint)blockLength;
-                    compressedBlockHeader.Unknown04 = 32;
-                    compressedBlockHeader.Unknown0C = 1;
-                    compressedBlockHeader.Unknown0E = 15;
-                    compressedBlockHeader.Unknown0F = 8;
-                    compressedBlockHeader.CompressedSize = (uint)compressedLength;
-                    compressedBlockHeader.ChunkCount = 1;
-                    compressedBlockHeader.ChunkSize = 0;
-                    compressedBlockHeader.Chunks = new ushort[8];
-                    compressedBlockHeader.Chunks[0] = (ushort)compressedBlockHeader.CompressedSize;
-                    compressedBlockHeader.Write(this._BaseStream, this._Endian);
-                    this._BaseStream.Write(data.GetBuffer(), 0, compressedLength);
-                    this._BlockOffset = 0;
-                    zlib.Close();
-                    zlib.Dispose();
-                    return true;
-                }
+                this._BaseStream.WriteValueS32(32 + compressedLength, this._Endian);
+                this._BaseStream.WriteValueU8(1);
+                CompressedBlockHeader compressedBlockHeader = new CompressedBlockHeader();
+                compressedBlockHeader.SetZlibPreset();
+                compressedBlockHeader.UncompressedSize = (uint)blockLength;
+                compressedBlockHeader.CompressedSize = (uint)compressedLength;
+                compressedBlockHeader.ChunkSize = (short)blockLength;
+                compressedBlockHeader.Chunks[0] = (ushort)compressedBlockHeader.CompressedSize;
+                compressedBlockHeader.Write(this._BaseStream, this._Endian);
+                this._BaseStream.Write(data.GetBuffer(), 0, compressedLength);
+                this._BlockOffset = 0;
+                zlib.Close();
+                zlib.Dispose();
+                return true;
             }
+
+            return false;
+        }
+
+        private bool FlushOodleCompressedBlock(MemoryStream data, int blockLength)
+        {
+            byte[] compressed = Oodle.Compress(this._BlockBytes, blockLength, OodleFormat.Kraken, OodleCompressionLevel.Normal);
+            Debug.Assert(compressed.Length != 0, "Compressed Block should not be empty");
+            data.WriteBytes(compressed);
+
+            var compressedLength = (int)data.Length;
+            if(data.Length < blockLength)
+            {
+                this._BaseStream.WriteValueS32(128 + compressedLength, this._Endian);
+                this._BaseStream.WriteValueU8(1);
+                CompressedBlockHeader compressedBlockHeader = new CompressedBlockHeader();
+                compressedBlockHeader.SetOodlePreset();
+                compressedBlockHeader.UncompressedSize = (uint)blockLength;
+                compressedBlockHeader.CompressedSize = (uint)compressedLength;
+                compressedBlockHeader.ChunkSize = 1;
+                compressedBlockHeader.Chunks[0] = (ushort)compressedBlockHeader.CompressedSize;
+                compressedBlockHeader.Write(this._BaseStream, this._Endian);
+                this._BaseStream.Write(new byte[96], 0, 96); // Empty padding.
+                this._BaseStream.Write(data.GetBuffer(), 0, compressedLength);
+                this._BlockOffset = 0;
+                return true;
+            }
+
             return false;
         }
 
@@ -209,6 +218,9 @@ namespace Gibbed.Illusion.FileFormats
         {
             var instance = new BlockWriterStream(baseStream, alignment, endian, compress);
             baseStream.WriteValueU32(Signature, endian);
+
+            var game = GameStorage.Instance.GetSelectedGame();
+            alignment = (game.GameType == GamesEnumerator.MafiaI_DE ? 16842752 : alignment);
             baseStream.WriteValueU32(alignment, endian);
             baseStream.WriteValueU8(4);
             return instance;

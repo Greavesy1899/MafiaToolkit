@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
 using Utils.Logging;
-using Utils.Settings;
 
 namespace Gibbed.Mafia2.FileFormats
 {
@@ -62,12 +61,13 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceXML.WriteAttributeString("SlotRam", entry.SlotRamRequired.ToString());
                 resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
                 string saveName = "";
+                string NameToPass = "";
                 Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
                 switch (ResourceTypes[entry.TypeId].Name)
                 {
                     case "Texture":
-                        ReadTextureEntry(entry, resourceXML, itemNames[i]);
-                        saveName = itemNames[i];
+                        NameToPass = (ResourceInfoXml == null ? "" : itemNames[i]);
+                        saveName = ReadTextureEntry(entry, resourceXML, NameToPass);
                         break;
                     case "hkAnimation":
                     case "Generic":
@@ -79,19 +79,20 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = itemNames[i];
                         break;
                     case "MemFile":
-                        ReadMemEntry(entry, resourceXML, itemNames[i], finalPath);
-                        saveName = itemNames[i];
+                        NameToPass = (ResourceInfoXml == null ? "" : itemNames[i]);
+                        saveName = ReadMemEntry(entry, resourceXML, NameToPass, finalPath);
                         break;
                     case "SystemObjectDatabase":
                         string name = ReadXBinEntry(entry, resourceXML, itemNames[i], finalPath);
                         name = itemNames[i];
                         continue;
                     case "XML":
-                        ReadXMLEntry(entry, resourceXML, itemNames[i], finalPath);
+                        NameToPass = (ResourceInfoXml == null ? "" : itemNames[i]);
+                        name = ReadXMLEntry(entry, resourceXML, NameToPass, finalPath);
                         continue;
                     case "Flash":
-                        ReadFlashEntry(entry, resourceXML, itemNames[i], finalPath);
-                        saveName = itemNames[i];
+                        NameToPass = (ResourceInfoXml == null ? "" : itemNames[i]);
+                        saveName = ReadFlashEntry(entry, resourceXML, NameToPass, finalPath);
                         break;
                     case "Script":
                         ReadScriptEntry(entry, resourceXML, finalPath);
@@ -253,8 +254,24 @@ namespace Gibbed.Mafia2.FileFormats
             descNode.InnerText = resource.FileName;
             return entry;
         }
-        private void ReadFlashEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string flashDir)
+        private string ReadFlashEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string flashDir)
         {
+            // Read the resource first; we have the nicety of having the flash name stored 
+            // in the meta info.
+            FlashResource resource = new FlashResource();
+            using (var stream = new MemoryStream(entry.Data))
+            {
+                resource.Deserialize(entry.Version, stream, Endian);
+                entry.Data = resource.Data;
+            }
+
+            // Since we know that flash will have the filename, 
+            // we collect it from here instead.
+            if(string.IsNullOrEmpty(name))
+            {
+                name = resource.FileName;
+            }
+
             string[] dirs = name.Split('/');
 
             string newPath = flashDir;
@@ -264,15 +281,12 @@ namespace Gibbed.Mafia2.FileFormats
                 Directory.CreateDirectory(newPath);
             }
 
-            FlashResource resource = new FlashResource();
-            using (var stream = new MemoryStream(entry.Data))
-            {
-                resource.Deserialize(entry.Version, stream, Endian);
-                entry.Data = resource.Data;
-            }
             newPath += "/" + dirs[dirs.Length - 1];
             resourceXML.WriteElementString("File", name);
             resourceXML.WriteElementString("Name", resource.Name);
+
+            // In this case this is valid; we will no doubt get a name.
+            return name;
         }
 
         public ResourceEntry WriteXBinEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)

@@ -55,6 +55,8 @@
             this.MergeButton = new System.Windows.Forms.Button();
             this.OverwriteListBox = new System.Windows.Forms.CheckedListBox();
             this.MTLSaveDialog = new System.Windows.Forms.SaveFileDialog();
+            this.Button_Debug = new System.Windows.Forms.ToolStripDropDownButton();
+            this.Button_DumpTextures = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.Panel_Main.SuspendLayout();
@@ -86,7 +88,8 @@
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.contextFileButton,
-            this.toolButton});
+            this.toolButton,
+            this.Button_Debug});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(785, 25);
@@ -152,28 +155,28 @@
             // addMaterialToolStripMenuItem
             // 
             this.addMaterialToolStripMenuItem.Name = "addMaterialToolStripMenuItem";
-            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
+            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addMaterialToolStripMenuItem.Text = "Add Material";
             this.addMaterialToolStripMenuItem.Click += new System.EventHandler(this.AddMaterial);
             // 
             // DeleteSelectedMaterialButton
             // 
             this.DeleteSelectedMaterialButton.Name = "DeleteSelectedMaterialButton";
-            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(178, 22);
+            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(180, 22);
             this.DeleteSelectedMaterialButton.Text = "$DELETE_SEL_MAT";
             this.DeleteSelectedMaterialButton.Click += new System.EventHandler(this.DeleteMaterial);
             // 
             // MergeMTLButton
             // 
             this.MergeMTLButton.Name = "MergeMTLButton";
-            this.MergeMTLButton.Size = new System.Drawing.Size(178, 22);
+            this.MergeMTLButton.Size = new System.Drawing.Size(180, 22);
             this.MergeMTLButton.Text = "$MERGE_MTL";
             this.MergeMTLButton.Click += new System.EventHandler(this.MergeMTLButton_Click);
             // 
             // Button_ExportSelected
             // 
             this.Button_ExportSelected.Name = "Button_ExportSelected";
-            this.Button_ExportSelected.Size = new System.Drawing.Size(178, 22);
+            this.Button_ExportSelected.Size = new System.Drawing.Size(180, 22);
             this.Button_ExportSelected.Text = "$EXPORT_SELECTED";
             this.Button_ExportSelected.Click += new System.EventHandler(this.Button_ExportedSelected_Clicked);
             // 
@@ -368,6 +371,24 @@
             // 
             this.MTLSaveDialog.Filter = "Material Library|*.mtl";
             // 
+            // Button_Debug
+            // 
+            this.Button_Debug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.Button_Debug.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Button_DumpTextures});
+            this.Button_Debug.Image = ((System.Drawing.Image)(resources.GetObject("Button_Debug.Image")));
+            this.Button_Debug.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Button_Debug.Name = "Button_Debug";
+            this.Button_Debug.Size = new System.Drawing.Size(85, 22);
+            this.Button_Debug.Text = "Debug Tools";
+            // 
+            // Button_DumpTextures
+            // 
+            this.Button_DumpTextures.Name = "Button_DumpTextures";
+            this.Button_DumpTextures.Size = new System.Drawing.Size(188, 22);
+            this.Button_DumpTextures.Text = "Dump Texture Names";
+            this.Button_DumpTextures.Click += new System.EventHandler(this.Button_DumpTextures_Click);
+            // 
             // MaterialEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -424,5 +445,7 @@
         private System.Windows.Forms.ToolStripMenuItem Button_ExportSelected;
         private System.Windows.Forms.SaveFileDialog MTLSaveDialog;
         private System.Windows.Forms.Button Button_Search;
+        private System.Windows.Forms.ToolStripDropDownButton Button_Debug;
+        private System.Windows.Forms.ToolStripMenuItem Button_DumpTextures;
     }
 }
