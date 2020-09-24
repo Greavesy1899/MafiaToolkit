@@ -18,7 +18,7 @@ namespace Utils.Discord
             handlers.readyCallback = ReadyCallback;
             handlers.disconnectedCallback += DisconnectedCallback;
             handlers.errorCallback += ErrorCallback;
-            DiscordRPC.Initialize(applicationId, ref handlers, true, optionalSteamId);
+            //DiscordRPC.Initialize(applicationId, ref handlers, true, optionalSteamId);
         }
 
         public void ReadyCallback()

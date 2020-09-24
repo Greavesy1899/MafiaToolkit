@@ -19,13 +19,9 @@ namespace Mafia2Tool
 
             CheckINIExists();
             ToolkitSettings.ReadINI();
-            MessageBox.Show("Init Read INI");
             GameStorage.Instance.InitStorage();
-            MessageBox.Show("Init GameStorage");
             Language.ReadLanguageXML();
-            MessageBox.Show("Init LanguageXML");
             CheckLatestRelease();
-            MessageBox.Show("Checked Latest");
 
             if (ToolkitSettings.SkipGameSelector)
             {
