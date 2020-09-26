@@ -24,6 +24,8 @@ namespace ResourceTypes.M3.XBin
         public int Price { get; set; }
         public float MaxDirt { get; set; }
         public float MaxRust { get; set; }
+        public float M1DE_Unk0 { get; set; }
+        public float M1DE_Unk1 { get; set; }
         public EVehicleRaceClass RaceClass { get; set; } //E_VehicleRaceClass
         public float TrunkDockOffsetX { get; set; }
         public float TrunkDockOffsetY { get; set; }
@@ -54,6 +56,8 @@ namespace ResourceTypes.M3.XBin
             writer.WriteLine("Price: {0}", Price);
             writer.WriteLine("MaxDirt: {0}", MaxDirt);
             writer.WriteLine("MaxRust: {0}", MaxRust);
+            writer.WriteLine("M1DE_Unk0: {0}", M1DE_Unk0);
+            writer.WriteLine("M1DE_Unk0: {0}", M1DE_Unk1);
             writer.WriteLine("RaceClass: {0}", RaceClass);
             writer.WriteLine("TrunkDockOffsetX: {0}", TrunkDockOffsetX);
             writer.WriteLine("TrunkDockOffsetY: {0}", TrunkDockOffsetY);
@@ -81,41 +85,46 @@ namespace ResourceTypes.M3.XBin
             uint count1 = reader.ReadUInt32();
             vehicles = new VehicleTableItem[count0];
 
-            for (int i = 0; i < count1; i++)
+            using (StreamWriter writer = new StreamWriter("M1DE_Vehicles.txt"))
             {
-                VehicleTableItem item = new VehicleTableItem();
-                item.Unk0 = reader.ReadInt32();
-                item.ID = reader.ReadInt32();
-                item.CommonFlags = (ETrafficCommonFlags)reader.ReadInt32();
-                item.VehicleFlags = (ETrafficVehicleFlags)reader.ReadInt32();
-                item.VehicleLookFlags = (ETrafficVehicleLookFlags)reader.ReadInt32();
-                item.VehicleFunctionFlags = (EVehiclesTableFunctionFlags)reader.ReadInt32();
-                item.ModelName = StringHelpers.ReadStringBuffer(reader, 32).TrimEnd('\0');
-                item.SoundVehicleSwitch = StringHelpers.ReadStringBuffer(reader, 32).TrimEnd('\0');
-                item.RadioRandom = (ERadioStation)reader.ReadInt32();
-                item.RadioSoundQuality = reader.ReadSingle();
-                item.TexID = reader.ReadInt32();
-                item.TexHash = reader.ReadUInt64();
-                item.BrandNameUI = StringHelpers.ReadStringBuffer(reader, 32).TrimEnd('\0');
-                item.ModelNameUI = StringHelpers.ReadStringBuffer(reader, 32).TrimEnd('\0');
-                item.LogoNameUI = StringHelpers.ReadStringBuffer(reader, 32).TrimEnd('\0');
-                item.StealKoeficient = reader.ReadInt32();
-                item.Price = reader.ReadInt32();
-                item.MaxDirt = reader.ReadSingle();
-                item.MaxRust = reader.ReadSingle();
-                reader.ReadSingle();
-                reader.ReadSingle();
-                item.RaceClass = (EVehicleRaceClass)reader.ReadInt32();
-                item.TrunkDockOffsetX = reader.ReadSingle();
-                item.TrunkDockOffsetY = reader.ReadSingle();
-                //item.WriteText(writer);
+                for (int i = 0; i < count1; i++)
+                {
+                    VehicleTableItem item = new VehicleTableItem();
+                    item.Unk0 = reader.ReadInt32();
+                    item.ID = reader.ReadInt32();
+                    item.CommonFlags = (ETrafficCommonFlags)reader.ReadInt32();
+                    item.VehicleFlags = (ETrafficVehicleFlags)reader.ReadInt32();
+                    item.VehicleLookFlags = (ETrafficVehicleLookFlags)reader.ReadInt32();
+                    item.VehicleFunctionFlags = (EVehiclesTableFunctionFlags)reader.ReadInt32();
+                    item.ModelName = StringHelpers.ReadStringBuffer(reader, 32).TrimEnd('\0');
+                    item.SoundVehicleSwitch = StringHelpers.ReadStringBuffer(reader, 32).TrimEnd('\0');
+                    item.RadioRandom = (ERadioStation)reader.ReadInt32();
+                    item.RadioSoundQuality = reader.ReadSingle();
+                    item.TexID = reader.ReadInt32();
+                    item.TexHash = reader.ReadUInt64();
+                    item.BrandNameUI = StringHelpers.ReadStringBuffer(reader, 32).TrimEnd('\0');
+                    item.ModelNameUI = StringHelpers.ReadStringBuffer(reader, 32).TrimEnd('\0');
+                    item.LogoNameUI = StringHelpers.ReadStringBuffer(reader, 32).TrimEnd('\0');
+                    item.StealKoeficient = reader.ReadInt32();
+                    item.Price = reader.ReadInt32();
+                    item.MaxDirt = reader.ReadSingle();
+                    item.MaxRust = reader.ReadSingle();
+                    item.M1DE_Unk0 = reader.ReadSingle();
+                    item.M1DE_Unk1 = reader.ReadSingle();
+                    item.RaceClass = (EVehicleRaceClass)reader.ReadInt32();
+                    item.TrunkDockOffsetX = reader.ReadSingle();
+                    item.TrunkDockOffsetY = reader.ReadSingle();
+                    item.WriteText(writer);
 
-                vehicles[i] = item;
+                    vehicles[i] = item;
+                }
             }
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
+            DebugAddAllToCarPedia();
+
             writer.Write(vehicles.Length);
             writer.Write(vehicles.Length);
 
@@ -140,9 +149,22 @@ namespace ResourceTypes.M3.XBin
                 writer.Write(vehicle.Price);
                 writer.Write(vehicle.MaxDirt);
                 writer.Write(vehicle.MaxRust);
+                writer.Write(vehicle.M1DE_Unk0);
+                writer.Write(vehicle.M1DE_Unk1);
                 writer.Write((int)vehicle.RaceClass);
                 writer.Write(vehicle.TrunkDockOffsetX);
                 writer.Write(vehicle.TrunkDockOffsetY);
+            }
+        }
+
+        private void DebugAddAllToCarPedia()
+        {
+            foreach (var vehicle in vehicles)
+            {
+                if (!vehicle.VehicleFunctionFlags.HasFlag(EVehiclesTableFunctionFlags.E_VTFF_SHOW_IN_CARCYCLOPEDIA))
+                {
+                    vehicle.VehicleFunctionFlags |= EVehiclesTableFunctionFlags.E_VTFF_SHOW_IN_CARCYCLOPEDIA;
+                }
             }
         }
     }

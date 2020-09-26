@@ -30,6 +30,8 @@ namespace Core.IO
                 xbin.ReadFromFile(reader);
             }
 
+            Save();
+
             return true;
         }
         public override void Save()

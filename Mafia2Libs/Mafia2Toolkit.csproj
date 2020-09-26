@@ -343,9 +343,11 @@
       <DependentUpon>TranslokatorEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Gibbed.Illusion.FileFormats\CompressedBlockHeader.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\GenericResource.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\XBinResource.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\FlashResource.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\ArchiveCommonResources.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Utils\ArchiveUtils.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\Version20\ResourceFunctions.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\Version19\ResourceFunctions.cs" />
     <Compile Include="MafiaLib\FileTypes\Actors\ActorDefinition.cs" />

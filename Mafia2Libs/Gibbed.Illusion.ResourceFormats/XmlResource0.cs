@@ -36,6 +36,13 @@ namespace Gibbed.Mafia2.ResourceFormats
 {
     public class XmlResource0
     {
+        private static readonly Dictionary<string, string> AttributeReplacement = new Dictionary<string, string>()
+        {
+            { "xmlns:xsd", "xmlns_xsd" },
+            { "xmlns:xsi", "xmlsn_xsi" },
+            { "xsi:type", "xsi_type" },
+        };
+
         public static void Serialize(Stream output, string content, Endian endian)
         {
             var nodes = new List<NodeEntry>();
@@ -296,6 +303,16 @@ namespace Gibbed.Mafia2.ResourceFormats
                     if (attribute.Name.Value.ToString() == "__type")
                     {
                         throw new FormatException("someone used __type?");
+                    }
+
+                    if (attribute.Name.Type == DataType.String)
+                    {
+                        var name = (attribute.Name.Value as string);
+                        if(AttributeReplacement.ContainsKey(name))
+                        {
+                            attribute.Name.Value = AttributeReplacement[name];
+                        }
+
                     }
                     node.Attributes.Add(attribute);
                 }

@@ -63,7 +63,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             else
             {
                 //todo
-                //XmlResource1.Serialize(output, this.Content, endian);
+                XmlResource1.Serialize(output, this.Content, endian);
             }
         }
 
@@ -87,7 +87,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             else
             {
                 //todo
-                //this.Content = XmlResource1.Deserialize(input, endian);
+                this.Content = XmlResource1.Deserialize(input, endian);
             }
         }
     }

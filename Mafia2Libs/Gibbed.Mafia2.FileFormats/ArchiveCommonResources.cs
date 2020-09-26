@@ -60,7 +60,8 @@ namespace Gibbed.Mafia2.FileFormats
             ulong hash = 0;
             if (bIsMaf3)
             {
-                hash = (ulong)nodes.Current.ValueAsLong;
+                string hashString = nodes.Current.ToString();
+                hash = Convert.ToUInt64(hashString);
                 nodes.Current.MoveToNext();
             }
             byte hasMIP = Convert.ToByte(nodes.Current.Value);
@@ -80,14 +81,6 @@ namespace Gibbed.Mafia2.FileFormats
                 byte[] texData = File.ReadAllBytes(sdsFolder + "/" + file);
                 resource = new TextureResource(FNV64.Hash(file), hasMIP, texData);
 
-                // Configure VRAM information for the SDS.
-                entry.OtherVramRequired = (uint)(texData.Length - 128);
-                //if (hasMIP == 1)
-                //{
-                //    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/MIP_" + file, FileMode.Open)))
-                //        entry.SlotVramRequired += (uint)(reader.BaseStream.Length - 128);
-                //}
-
                 // Do Version specific handling;
                 if (bIsMaf3)
                 {
@@ -97,6 +90,23 @@ namespace Gibbed.Mafia2.FileFormats
                 // Serialise to the TextureResource and pack it into the ResourceEntry.
                 resource.Serialize(entry.Version, stream, _Endian);
                 entry.Data = stream.ToArray();
+
+                // Configure VRAM information for the SDS.
+                if (game.GameType == GamesEnumerator.MafiaII_DE || game.GameType == GamesEnumerator.MafiaII)
+                {
+                    entry.OtherVramRequired = (uint)(texData.Length - 128);
+                    //if (hasMIP == 1)
+                    //{
+                    //    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/MIP_" + file, FileMode.Open)))
+                    //        entry.SlotVramRequired += (uint)(reader.BaseStream.Length - 128);
+                    //}
+                }
+
+                if (game.GameType == GamesEnumerator.MafiaI_DE)
+                {
+                    var size = (resource.bIsDX10 ? 157 : 137);
+                    entry.OtherVramRequired = (uint)(stream.Length - size);
+                }
             }
             return entry;
         }
@@ -226,11 +236,16 @@ namespace Gibbed.Mafia2.FileFormats
             //finish
             nodes.Current.MoveToNext();
             ushort version = Convert.ToUInt16(nodes.Current.Value);
-            MemoryStream stream = new MemoryStream();
-            resource.Serialize(version, stream, Endian.Little);
-            entry.Version = version;
-            entry.Data = stream.ToArray();
-            entry.SlotRamRequired = (uint)stream.Length;
+
+            using(MemoryStream stream = new MemoryStream())
+            {
+                resource.Serialize(version, stream, Endian.Little);
+                entry.Data = stream.ToArray();
+                entry.OtherRamRequired = (uint)resource.GetRawBytes();
+            }
+
+            entry.Version = version;        
+
             descNode.InnerText = path;
             return entry;
         }
@@ -259,18 +274,18 @@ namespace Gibbed.Mafia2.FileFormats
                 string FileName = Path.Combine(xmldir, Path.GetFileName(name) + ".xml");
 
                 //Write contents of file. (Either binary or ASCII).
-                if (resource.Unk3)
-                {
-                    File.WriteAllBytes(FileName, entry.Data);
-                }
-                else
-                {
+                //if (resource.Unk3)
+                //{
+                //    File.WriteAllBytes(FileName, entry.Data);
+                //}
+                //else
+                //{
                     // 08/08/2020. Originally was File.WriteAllText, but caused problems with some XML documents.
                     using (StreamWriter writer = new StreamWriter(File.Open(FileName, FileMode.Create)))
                     {
                         writer.WriteLine(resource.Content);
                     }
-                }
+                //}
             }
 
             resourceXML.WriteElementString("File", name);
@@ -314,7 +329,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             if (resource.Unk3)
             {
-                entry.Data = File.ReadAllBytes(sdsFolder + "/" + file + ".xml");
+                entry.Data = stream.ToArray();
             }
             else
             {
@@ -451,13 +466,16 @@ namespace Gibbed.Mafia2.FileFormats
             };
             resource.Data = File.ReadAllBytes(sdsFolder + "/" + file);
 
-            if (Version == 19)
+            if(entry.Version == 4)
             {
-                entry.SlotRamRequired = (uint)resource.Data.Length;
+                if(resource.Unk2_V4 == 4)
+                {
+                    entry.OtherRamRequired = (uint)resource.Data.Length;
+                }
             }
             else
             {
-                entry.OtherRamRequired = (uint)resource.Data.Length;
+                entry.SlotRamRequired = (uint)resource.Data.Length;
             }
 
             //serialize.

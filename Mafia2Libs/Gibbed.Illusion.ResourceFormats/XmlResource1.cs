@@ -33,7 +33,15 @@ namespace Gibbed.Mafia2.ResourceFormats
     {
         public static void Serialize(Stream output, string content, Endian endian)
         {
-            throw new NotImplementedException();
+            // Serialize header. It is BX with a 1 after.
+            output.WriteValueU16(0x5842, endian);
+            output.WriteValueU16(1, endian);
+
+            // Read the XMLDocument.
+            XmlDocument document = new XmlDocument();
+            document.LoadXml(File.ReadAllText(content));
+            XmlNodeList ChildNodes = document.ChildNodes;
+            SerializeNodeEntry(output, ChildNodes, endian);
         }
 
         public static string Deserialize(Stream input, Endian endian)
@@ -52,6 +60,7 @@ namespace Gibbed.Mafia2.ResourceFormats
 
             var settings = new XmlWriterSettings();
             settings.Indent = true;
+            settings.OmitXmlDeclaration = true;
 
             var output = new StringBuilder();
             var writer = XmlWriter.Create(output, settings);
@@ -88,6 +97,58 @@ namespace Gibbed.Mafia2.ResourceFormats
             }
 
             writer.WriteEndElement();
+        }
+
+        private static void SerializeNodeEntry(Stream output, XmlNodeList ChildNodes, Endian endian)
+        {
+            foreach(XmlNode ChildNode in ChildNodes)
+            {
+                if(ChildNode.NodeType == XmlNodeType.Text && ChildNode.Value != null)
+                {
+                    output.WriteValueU16((ushort)(ChildNode.Value.Length + 1), endian);
+                    output.WriteValueU8(4);
+                    output.WriteValueU8(0);
+                    output.WriteValueU16((ushort)ChildNode.Value.Length, endian);
+                    output.WriteStringZ(ChildNode.Value);
+                }
+                if (ChildNode.NodeType == XmlNodeType.Element)
+                {
+                    string name = ChildNode.Name;
+                    int NumChildren = ChildNode.ChildNodes != null ? ChildNode.ChildNodes.Count : 0;
+                    int NumAttributes = ChildNode.Attributes != null ? ChildNode.Attributes.Count : 0;
+                    int NumBytes = name.Length + 1 + 16 * NumChildren + 16 * NumAttributes;
+                    output.WriteValueU16((ushort)NumBytes, endian);
+                    output.WriteValueU8(1);
+                    output.WriteValueU8((byte)name.Length);
+                    output.WriteValueU16((ushort)NumChildren, endian);
+                    output.WriteValueU8((byte)NumAttributes);
+                    output.WriteStringZ(name);
+
+                    if(ChildNode.HasChildNodes)
+                    {
+                        SerializeNodeEntry(output, ChildNode.ChildNodes, endian);
+                    }
+
+                    foreach(XmlAttribute AttributeNode in ChildNode.Attributes)
+                    {
+                        if(AttributeNode.Name != null)
+                        {
+                            output.WriteValueU16((ushort)(AttributeNode.Name.Length + 1), endian);
+                            output.WriteValueU8(5);
+                            output.WriteValueU8((byte)AttributeNode.Name.Length);
+                            output.WriteStringZ(AttributeNode.Name);
+                        }
+                        if (AttributeNode.Value != null)
+                        {
+                            output.WriteValueU16((ushort)(AttributeNode.Value.Length + 1), endian);
+                            output.WriteValueU8(4);
+                            output.WriteValueU8(0);
+                            output.WriteValueU16((ushort)AttributeNode.Value.Length);
+                            output.WriteStringZ(AttributeNode.Value);
+                        }
+                    }
+                }
+            }
         }
 
         private static object DeserializeNodeEntry(Stream input, Endian endian)

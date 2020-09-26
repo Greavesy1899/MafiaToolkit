@@ -22,8 +22,8 @@
 
 using Gibbed.Illusion.FileFormats;
 using Gibbed.Illusion.FileFormats.Hashing;
-using Gibbed.IO;
 using Gibbed.Mafia2.FileFormats.Archive;
+using Gibbed.IO;
 using Gibbed.Mafia2.ResourceFormats;
 using System;
 using System.Collections.Generic;
@@ -33,6 +33,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
+using Utils.Language;
 using Utils.Logging;
 using Utils.Settings;
 
@@ -184,7 +185,7 @@ namespace Gibbed.Mafia2.FileFormats
             fileHeader.SlotVramRequired = this.SlotVramRequired;
             fileHeader.OtherRamRequired = this.OtherRamRequired;
             fileHeader.OtherVramRequired = this.OtherVramRequired;
-            fileHeader.SlotRamRequired = fileHeader.SlotVramRequired = fileHeader.OtherRamRequired = fileHeader.OtherVramRequired = 0;
+            //fileHeader.SlotRamRequired = fileHeader.SlotVramRequired = fileHeader.OtherRamRequired = fileHeader.OtherVramRequired = 0;
             fileHeader.Flags = 1;
             fileHeader.Unknown20 = this._Unknown20 ?? new byte[16];
 
@@ -201,6 +202,16 @@ namespace Gibbed.Mafia2.FileFormats
             // Read Texture Names before we start.
             // They are from an external file, taken from MTL.
             ReadTextureNames();
+
+            var game = GameStorage.Instance.GetSelectedGame();
+            if(game.GameType == GamesEnumerator.MafiaI_DE)
+            {
+                if(!File.Exists("libs/oo2core_8_win64.dll"))
+                {
+                    MessageBox.Show(Language.GetString("$M1DE_OODLEERROR"), "Toolkit");
+                    return;
+                }
+            }
 
             var basePosition = input.Position;
 
@@ -625,6 +636,10 @@ namespace Gibbed.Mafia2.FileFormats
                     else if (Typename == "Flash")
                     {
                         Extension = ".fla";
+                    }
+                    else if(Typename == "hkAnimation")
+                    {
+                        Extension = ".hkx";
                     }
 
                     string FileName = string.Format("File_{0}{1}", i, Extension);

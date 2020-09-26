@@ -182,7 +182,7 @@ namespace Gibbed.Illusion.FileFormats
 
         private bool FlushOodleCompressedBlock(MemoryStream data, int blockLength)
         {
-            byte[] compressed = Oodle.Compress(this._BlockBytes, blockLength, OodleFormat.Kraken, OodleCompressionLevel.Normal);
+            byte[] compressed = Oodle.Compress(this._BlockBytes, blockLength, OodleFormat.Kraken, OodleCompressionLevel.Optimal5);
             Debug.Assert(compressed.Length != 0, "Compressed Block should not be empty");
             data.WriteBytes(compressed);
 
@@ -220,7 +220,7 @@ namespace Gibbed.Illusion.FileFormats
             baseStream.WriteValueU32(Signature, endian);
 
             var game = GameStorage.Instance.GetSelectedGame();
-            alignment = (game.GameType == GamesEnumerator.MafiaI_DE ? 16842752 : alignment);
+            alignment = (game.GameType == GamesEnumerator.MafiaI_DE && compress ? 16842752 : alignment);
             baseStream.WriteValueU32(alignment, endian);
             baseStream.WriteValueU8(4);
             return instance;

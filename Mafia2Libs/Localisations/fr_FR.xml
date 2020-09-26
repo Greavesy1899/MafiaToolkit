@@ -35,6 +35,7 @@
   <String ID="$REFRESH">Actualiser</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Chemin du dossier</String>
   <String ID="$UP_TOOLTIP">Up</String>
+  <String ID="$M1DE_OODLEERROR">The Oodle DLL is a non-free library by RAD Game Tools and is thus not included due to legal issues. Please copy 'oo2core_8_win64.dll' from the Mafia: Definitive Edition installation folder to the folder where the Toolkit is located.</String>
   
   <!-- Main Options Strings-->
   <String ID="$GENERAL">Général</String>

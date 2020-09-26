@@ -24,6 +24,7 @@
 //SEE ORIGINAL CODE HERE::
 //https://github.com/gibbed/Gibbed.Illusion
 
+using System;
 using System.IO;
 using Gibbed.IO;
 using Utils.Logging;
@@ -37,6 +38,8 @@ namespace Gibbed.Mafia2.ResourceFormats
         public byte HasMIP;
         public byte[] Data;
 
+        public bool bIsDX10;
+
         public TextureResource()
         {
         }
@@ -47,6 +50,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             Unknown8 = 0;
             HasMIP = hasMIP;
             Data = data;
+            bIsDX10 = false;
         }
 
         public void Serialize(ushort version, Stream output, Endian endian)
@@ -57,6 +61,8 @@ namespace Gibbed.Mafia2.ResourceFormats
                 output.WriteValueU8(this.HasMIP);
 
             output.WriteBytes(this.Data);
+
+            DetermineDX10();
             Log.WriteLine("Packing: " + ToString());
         }
 
@@ -65,6 +71,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             output.WriteValueU64(this.NameHash, endian);
             output.WriteValueU8(this.Unknown8);
             output.WriteBytes(this.Data);
+
             Log.WriteLine("Packing Mip: " + ToString());
         }
 
@@ -86,6 +93,16 @@ namespace Gibbed.Mafia2.ResourceFormats
             this.Unknown8 = input.ReadValueU8();
             this.Data = input.ReadBytes((int)(input.Length - input.Position));
             Log.WriteLine("Unpacking Mip: " + ToString());
+        }
+
+        private void DetermineDX10()
+        {
+            uint Magic = BitConverter.ToUInt32(Data, 0x54);
+            
+            if(Magic == 0x30315844)
+            {
+                bIsDX10 = true;
+            }
         }
 
         public override string ToString()

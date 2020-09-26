@@ -398,6 +398,7 @@ namespace Gibbed.Illusion.FileFormats
                     bool bIsUsingOodleCompression = (HeaderSize == 128);
                     long compressedPosition = baseStream.Position;
                     uint remainingUncompressedSize = compressedBlockHeader.UncompressedSize;
+
                     for (int i = 0; i < compressedBlockHeader.ChunkCount; ++i)
                     {
                         uint UncompressedSize = remainingUncompressedSize;

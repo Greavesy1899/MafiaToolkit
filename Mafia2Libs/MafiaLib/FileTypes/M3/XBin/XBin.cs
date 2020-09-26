@@ -37,12 +37,6 @@ namespace ResourceTypes.M3.XBin
                 vehicles = new VehicleTable();
                 vehicles.ReadFromFile(reader);
                 unk1 = reader.ReadInt32();
-
-                //paintCombinations = new PaintCombinationsTable();
-                //paintCombinations.ReadFromFile(reader);
-
-                StreamMapTable table = new StreamMapTable();
-                table.ReadFromFile(reader);
             }
         }
 

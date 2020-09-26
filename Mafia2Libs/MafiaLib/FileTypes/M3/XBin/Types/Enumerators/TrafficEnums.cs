@@ -17,6 +17,16 @@ namespace ResourceTypes.M3.XBin
         E_TCF_LOC_PUERTOLIBRE = 0x20,
         E_TCF_LOC_EMPIREBAY = 0x40,
         E_TCF_LOC_SAIGON = 0x80,
+
+        E_TCF_LOC_LOSTHEAVEN = 0x100,
+
+        E_TCF_LOC_UNKNOWN_01 = 0x200,
+        E_TCF_LOC_UNKNOWN_02 = 0x400,
+        E_TCF_LOC_UNKNOWN_03 = 0x800,
+        E_TCF_LOC_LOST_HEAVEN = 0x1000,
+
+        // Freeride
+        E_TCF_FREERIDE = 0x10000
     }
 
     [Flags]
@@ -52,6 +62,9 @@ namespace ResourceTypes.M3.XBin
         E_TVF_CIVILIAN = 0x200000,
         E_TVF_CAR = 0x400000,
         E_TVF_POLICE_STATE = 0x800000,
+
+        E_TVF_TRAIN = 0x1000000,
+        E_TVF_CONVERTIBLE_CLOSED = 0x2000000,
     }
 
     [Flags]
@@ -79,5 +92,6 @@ namespace ResourceTypes.M3.XBin
         E_TVFL_OLD = 0x80000,
         E_TVFL_NEW = 0x100000,
         E_TVFL_SPORTS = 0x200000,
+        E_TVFL_RACING = 0x400000,
     }
 }
