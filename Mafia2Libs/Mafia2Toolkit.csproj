@@ -344,6 +344,7 @@
     </Compile>
     <Compile Include="Gibbed.Illusion.FileFormats\CompressedBlockHeader.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\GenericResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\HavokResource.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\XBinResource.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\FlashResource.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\ArchiveCommonResources.cs" />
@@ -709,7 +710,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="libs\oo2core_8_win64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="libs\OodleSharp.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -779,9 +780,8 @@
     <None Include="Resources\weather_clouds.m2t">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="Resources\GameData\M3_Textures.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Resources\GameData\M1_Textures.txt" />
+    <Content Include="Resources\GameData\M3DE_ResourceNameDatabase.txt" />
     <Content Include="Resources\GameImages\m1de_logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

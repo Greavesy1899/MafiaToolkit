@@ -273,32 +273,38 @@ namespace Gibbed.Mafia2.FileFormats
             var blockStream = BlockReaderStream.FromStream(input, endian);
             
             var resources = new Archive.ResourceEntry[fileHeader.ResourceCount];
-            for (uint i = 0; i < fileHeader.ResourceCount; i++)
+
+            using (StringWriter writer = new StringWriter())
             {
-                Archive.ResourceHeader resourceHeader;
-                var size = (_Version == 20 ? 34 : 26);
-                using (var data = blockStream.ReadToMemoryStreamSafe(size, endian))
+                for (uint i = 0; i < fileHeader.ResourceCount; i++)
                 {
-                    resourceHeader = Archive.ResourceHeader.Read(data, endian, _Version);
-                    
-                }
+                    Archive.ResourceHeader resourceHeader;
+                    var size = (_Version == 20 ? 34 : 26);
+                    using (var data = blockStream.ReadToMemoryStreamSafe(size, endian))
+                    {
+                        resourceHeader = Archive.ResourceHeader.Read(data, endian, _Version);
 
-                if (resourceHeader.Size < 30)
-                {
-                    throw new FormatException();
-                }
+                    }
 
-                resources[i] = new Archive.ResourceEntry()
-                {
-                    TypeId = (int)resourceHeader.TypeId,
-                    Version = resourceHeader.Version,
-                    Data = blockStream.ReadBytes((int)resourceHeader.Size - (size+4)),
-                    SlotRamRequired = resourceHeader.SlotRamRequired,
-                    SlotVramRequired = resourceHeader.SlotVramRequired,
-                    OtherRamRequired = resourceHeader.OtherRamRequired,
-                    OtherVramRequired = resourceHeader.OtherVramRequired,
-                };
-                Console.WriteLine("{0}: SlotRam: {1} SlotVRam: {2} OtherRam: {3} OtherVRam: {4} ActualSize: {5}", i, resources[i].SlotRamRequired, resources[i].SlotVramRequired, resources[i].OtherRamRequired, resources[i].OtherVramRequired, resources[i].Data.Length);
+                    if (resourceHeader.Size < 30)
+                    {
+                        throw new FormatException();
+                    }
+
+                    resources[i] = new Archive.ResourceEntry()
+                    {
+                        TypeId = (int)resourceHeader.TypeId,
+                        Version = resourceHeader.Version,
+                        Data = blockStream.ReadBytes((int)resourceHeader.Size - (size + 4)),
+                        SlotRamRequired = resourceHeader.SlotRamRequired,
+                        SlotVramRequired = resourceHeader.SlotVramRequired,
+                        OtherRamRequired = resourceHeader.OtherRamRequired,
+                        OtherVramRequired = resourceHeader.OtherVramRequired,
+                    };
+                    //writer.WriteLine(string.Format("{0}: SlotRam: {1} SlotVRam: {2} OtherRam: {3} OtherVRam: {4} ActualSize: {5}", i, resources[i].SlotRamRequired, resources[i].SlotVramRequired, resources[i].OtherRamRequired, resources[i].OtherVramRequired, resources[i].Data.Length));
+                }
+                //string content = writer.ToString();
+                //File.WriteAllText("File.txt", content);
             }
             if (fileHeader.XmlOffset != 0)
             {
@@ -616,7 +622,7 @@ namespace Gibbed.Mafia2.FileFormats
             if (_ResourceNames.Count == 0)
             {
                 //Fix for friends for life SDS files.
-                MessageBox.Show("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //MessageBox.Show("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Log.WriteLine("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", LoggingTypes.WARNING);
                 for (int i = 0; i != ResourceEntries.Count; i++)
                 {
@@ -674,13 +680,10 @@ namespace Gibbed.Mafia2.FileFormats
             _TextureNames = new Dictionary<ulong, string>();
 
             var game = GameStorage.Instance.GetSelectedGame();
+
             if(game.GameType == GamesEnumerator.MafiaI_DE)
             {
-                FileName = "/Resources/GameData/M3_Textures.txt";
-            }
-            else if(game.GameType == GamesEnumerator.MafiaIII)
-            {
-                FileName = "/Resources/GameData/M3_Textures.txt";
+                FileName = "/Resources/GameData/M1_Textures.txt";
             }
 
             string[] Files = File.ReadAllLines(Application.StartupPath + "/" + FileName);

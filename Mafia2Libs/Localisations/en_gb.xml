@@ -7,7 +7,7 @@
   <String ID="$COPY">Copy</String>
   <String ID="$PASTE">Paste</String>
   <String ID="$ENTRY_NAME">Entry Name</String>
-  <String ID="$UPDATE_MESSAGE1">A new version of the Mafia II: Toolkit is available!</String>
+  <String ID="$UPDATE_MESSAGE1">A new version of the Mafia: Toolkit is available!</String>
   <String ID="$UPDATE_MESSAGE2">To download, press OK.</String>
   <String ID="$UPDATE_MESSAGE3">To use the current version, press cancel.</String>
   <String ID="$FAILED_UPDATE_CHECK">Failed to checking for updates!</String>
@@ -17,8 +17,8 @@
   <String ID="$VIEW">View</String>
   <String ID="$FILE">File</String>
   <String ID="$TOOLS">Tools</String>
-  <String ID="$BTN_OPEN_MII">Open Mafia II</String>
-  <String ID="$BTN_RUN_MII">Run Mafia II</String>
+  <String ID="$BTN_OPEN_MII">Open Game Folder</String>
+  <String ID="$BTN_RUN_MII">Run Game</String>
   <String ID="$EXIT">Exit</String>
   <String ID="$OPTIONS">Options</String>
   <String ID="$SELECT_MII_FOLDER">Select your MafiaII folder. The folder should contain "mafia2.exe" or "mafia II Definitive Edition.exe"</String>
@@ -27,7 +27,7 @@
   <String ID="$SMALL_ICON">Small Icon</String>
   <String ID="$LIST">List</String>
   <String ID="$TILE">Tile</String>
-  <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Game Explorer</String>
+  <String ID="$MII_TK_GAME_EXPLORER">Mafia Toolkit: Game Explorer</String>
   <String ID="$UNPACK_ALL_SDS">Unpack All SDS</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Open Folder in Explorer</String>
   <String ID="$PACK">Pack</String>
@@ -41,7 +41,7 @@
   <String ID="$REFRESH">Refresh</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Folder Path</String>
   <String ID="$UP_TOOLTIP">Up</String>
-  <String ID="$M1DE_OODLEERROR">The Oodle DLL is a non-free library by RAD Game Tools and is thus not included due to legal issues. Please copy 'oo2core_8_win64.dll' from the Mafia: Definitive Edition installation folder to the folder where the Toolkit is located.</String>
+  <String ID="$M1DE_OODLEERROR">The Oodle DLL is a non-free library by RAD Game Tools and is thus not included due to legal issues. Please copy 'oo2core_8_win64.dll' from the Mafia: Definitive Edition installation folder to the folder where the Toolkit's 'libs' folder is located.</String>
   
   <!-- Game Selector -->
   <String ID="$START_TOOLKIT">Start Toolkit</String>
