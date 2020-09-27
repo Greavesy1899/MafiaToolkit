@@ -366,7 +366,10 @@ namespace Gibbed.Illusion.FileFormats
             var alignment = baseStream.ReadValueU32(endian);
             var flags = baseStream.ReadValueU8();
 
-            if (magic != Signature || /*alignment != 0x4000 ||*/ flags != 4)
+            // We can check if this particular block uses Oodle compression.
+            bool bUsesOodleCompression = (alignment & (0x1000000)) != 0;
+
+            if (magic != Signature || flags != 4)
             {
                 throw new InvalidOperationException();
             }
@@ -395,7 +398,7 @@ namespace Gibbed.Illusion.FileFormats
                         throw new InvalidOperationException();
                     }
 
-                    bool bIsUsingOodleCompression = (HeaderSize == 128);
+                    bool bIsUsingOodleCompression = (HeaderSize == 128 && bUsesOodleCompression);
                     long compressedPosition = baseStream.Position;
                     uint remainingUncompressedSize = compressedBlockHeader.UncompressedSize;
 

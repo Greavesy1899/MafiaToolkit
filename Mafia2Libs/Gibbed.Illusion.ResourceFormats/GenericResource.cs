@@ -35,6 +35,8 @@ namespace Gibbed.Mafia2.ResourceFormats
             { 0xA27F694D, ".iprofai" },
             { 0x4A336D64, ".iproftime" },
             { 0x73CB32C9, ".fmv.compiled.effects" },
+            { 0x222FDF72B2F3E413, ".lodbaked.[lod0].compiled" },
+            //{ 0x45F07C8B, ".scene.gxml"  },
         };
 
         readonly Dictionary<string, ulong> TypeExtensionString = new Dictionary<string, ulong>()
@@ -63,6 +65,8 @@ namespace Gibbed.Mafia2.ResourceFormats
             { ".iprofai", 0xA27F694D },
             { ".iproftime", 0x4A336D64 },
             { ".fmv", 0x428F61D4 },
+            { ".lodbaked.[lod0].compiled", 0x222FDF72B2F3E413 },
+            //{ ".scene.gxml", 0x45F07C8B  }
         };
 
 

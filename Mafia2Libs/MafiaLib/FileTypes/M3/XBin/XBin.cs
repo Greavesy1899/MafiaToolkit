@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Mafia2Tool.MafiaLib.FileTypes.M3.XBin.Types;
+using System.IO;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -10,8 +11,11 @@ namespace ResourceTypes.M3.XBin
         private int offset;
 
         private int unk0; //could be with the table;
+
+        // TODO: Sort this out; make a factory.
         private VehicleTable vehicles; // test;
         private PaintCombinationsTable paintCombinations;
+        private StringTable tables;
 
         private int unk1;
 
@@ -34,9 +38,15 @@ namespace ResourceTypes.M3.XBin
             {
                 unk0 = reader.ReadInt32();
 
-                vehicles = new VehicleTable();
-                vehicles.ReadFromFile(reader);
-                unk1 = reader.ReadInt32();
+                //tables = new StringTable();
+                //tables.ReadFromFile(reader);
+
+                StreamMapTable map = new StreamMapTable();
+                map.ReadFromFile(reader);
+
+                //vehicles = new VehicleTable();
+                //vehicles.ReadFromFile(reader);
+                //unk1 = reader.ReadInt32();
             }
         }
 
@@ -47,7 +57,8 @@ namespace ResourceTypes.M3.XBin
             writer.Write(numTables);
             writer.Write(offset);
             writer.Write(unk0);
-            vehicles.WriteToFile(writer);
+            tables.WriteToFile(writer);
+            //vehicles.WriteToFile(writer);
             writer.Write(unk1);
         }
     }

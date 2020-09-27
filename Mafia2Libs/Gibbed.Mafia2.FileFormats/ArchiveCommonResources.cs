@@ -8,7 +8,6 @@ using System.Xml;
 using System.Xml.XPath;
 using Utils.Settings;
 using Utils.Lua;
-using Utils.Extensions;
 
 namespace Gibbed.Mafia2.FileFormats
 {
@@ -23,10 +22,15 @@ namespace Gibbed.Mafia2.FileFormats
                 resource.Deserialize(entry.Version, stream, Endian);
             }
 
-            string FetchedName = _TextureNames.TryGet(resource.NameHash);
-            if (!string.IsNullOrEmpty(FetchedName))
+            string FetchedName = "";
+            if (_TextureNames.ContainsKey(resource.NameHash))
             {
-                name = FetchedName;
+                FetchedName = _TextureNames[resource.NameHash];
+
+                if (!string.IsNullOrEmpty(FetchedName))
+                {
+                    name = FetchedName;
+                }
             }
 
             resourceXML.WriteElementString("File", name);
@@ -273,25 +277,26 @@ namespace Gibbed.Mafia2.FileFormats
                 // Set the filename we want to save the file too.
                 string FileName = Path.Combine(xmldir, Path.GetFileName(name) + ".xml");
 
-                //Write contents of file. (Either binary or ASCII).
-                //if (resource.Unk3)
-                //{
-                //    File.WriteAllBytes(FileName, entry.Data);
-                //}
-                //else
-                //{
+                if (resource.bFailedToDecompile)
+                {
+                    byte[] data = stream.ReadBytes((int)(stream.Length - stream.Position));
+                    File.WriteAllBytes(FileName, data);
+                }
+                else
+                {
                     // 08/08/2020. Originally was File.WriteAllText, but caused problems with some XML documents.
                     using (StreamWriter writer = new StreamWriter(File.Open(FileName, FileMode.Create)))
                     {
                         writer.WriteLine(resource.Content);
                     }
-                //}
+                }
             }
 
             resourceXML.WriteElementString("File", name);
             resourceXML.WriteElementString("XMLTag", resource.Tag);
             resourceXML.WriteElementString("Unk1", Convert.ToByte(resource.Unk1).ToString());
             resourceXML.WriteElementString("Unk3", Convert.ToByte(resource.Unk3).ToString());
+            resourceXML.WriteElementString("FailedToDecompile", Convert.ToByte(resource.bFailedToDecompile).ToString());
             resourceXML.WriteElementString("Version", entry.Version.ToString());
             resourceXML.WriteEndElement(); //finish early.
             return name;
@@ -311,6 +316,9 @@ namespace Gibbed.Mafia2.FileFormats
             nodes.Current.MoveToNext();
             bool unk3 = nodes.Current.ValueAsBoolean;
 
+            nodes.Current.MoveToNext();
+            bool failedToDecompile = nodes.Current.ValueAsBoolean;
+
             //need to do version early.
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
@@ -323,8 +331,10 @@ namespace Gibbed.Mafia2.FileFormats
                 Content = sdsFolder + "/" + file + ".xml",
                 Tag = tag,
                 Unk1 = unk1,
-                Unk3 = unk3
+                Unk3 = unk3,
+                bFailedToDecompile = failedToDecompile
             };
+
             resource.Serialize(entry.Version, stream, Endian.Little);
 
             if (resource.Unk3)

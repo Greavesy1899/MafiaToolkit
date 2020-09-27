@@ -686,12 +686,15 @@ namespace Gibbed.Mafia2.FileFormats
                 FileName = "/Resources/GameData/M1_Textures.txt";
             }
 
-            string[] Files = File.ReadAllLines(Application.StartupPath + "/" + FileName);
-            
-            foreach(var File in Files)
+            if (!string.IsNullOrEmpty(FileName))
             {
-                ulong Hash = FNV64.Hash(File);
-                _TextureNames.Add(Hash, File);
+                string[] Files = File.ReadAllLines(Application.StartupPath + "/" + FileName);
+
+                foreach (var File in Files)
+                {
+                    ulong Hash = FNV64.Hash(File);
+                    _TextureNames.Add(Hash, File);
+                }
             }
         }
     }

@@ -104,6 +104,7 @@ namespace Gibbed.Mafia2.FileFormats
                     case "NAV_PATH_DATA":
                     case "NAV_AIWORLD_DATA":
                     case "RoadMap":
+                    case "EnlightenResource":
                         ConstructPath(finalPath, itemNames[i]);
                         ReadBasicEntry(resourceXML, itemNames[i]);
                         saveName = itemNames[i];
@@ -213,6 +214,7 @@ namespace Gibbed.Mafia2.FileFormats
                     case "NAV_PATH_DATA":
                     case "NAV_AIWORLD_DATA":
                     case "RoadMap":
+                    case "EnlightenResource":
                         resourceEntry = WriteBasicEntry(resourceEntry, nodes, sdsFolder, sddescNode);
                         resourceEntry.OtherRamRequired += (uint)(resourceEntry.Data.Length);
                         break;
@@ -336,7 +338,7 @@ namespace Gibbed.Mafia2.FileFormats
         public string ReadGenericEntry(ResourceEntry entry, XmlWriter resourceXML, string name, string genericDir)
         {
             GenericResource resource = new GenericResource();
-            
+
             // Read generic resource
             using(MemoryStream stream = new MemoryStream(entry.Data))
             {

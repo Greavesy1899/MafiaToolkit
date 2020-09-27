@@ -40,6 +40,7 @@ namespace Gibbed.Illusion.FileFormats
         private readonly byte[] _BlockBytes;
         private int _BlockOffset;
         private readonly bool _IsCompressing;
+        private readonly bool _bUseOodle;
 
         private BlockWriterStream(Stream baseStream, uint alignment, Endian endian, bool compress)
         {
@@ -54,6 +55,13 @@ namespace Gibbed.Illusion.FileFormats
             this._BlockBytes = new byte[alignment];
             this._BlockOffset = 0;
             this._IsCompressing = compress;
+            this._Alignment = alignment;
+
+            var game = GameStorage.Instance.GetSelectedGame();
+            if (game.GameType == GamesEnumerator.MafiaI_DE)
+            {
+                this._bUseOodle = ToolkitSettings.bUseOodleCompression;
+            }
         }
 
         #region Stream
@@ -135,14 +143,11 @@ namespace Gibbed.Illusion.FileFormats
 
         private bool FlushCompressedBlock()
         {
-            var game = GameStorage.Instance.GetSelectedGame();
-            bool bIsOodle = (game.GameType == GamesEnumerator.MafiaI_DE ? true : false);
-
             using (var data = new MemoryStream())
             {
                 var blockLength = this._BlockOffset;
 
-                if (bIsOodle)
+                if (this._bUseOodle)
                 {
                     return FlushOodleCompressedBlock(data, blockLength);
                 }
@@ -182,7 +187,7 @@ namespace Gibbed.Illusion.FileFormats
 
         private bool FlushOodleCompressedBlock(MemoryStream data, int blockLength)
         {
-            byte[] compressed = Oodle.Compress(this._BlockBytes, blockLength, OodleFormat.Kraken, OodleCompressionLevel.Optimal5);
+            byte[] compressed = Oodle.Compress(this._BlockBytes, blockLength, OodleFormat.Kraken, OodleCompressionLevel.Normal);
             Debug.Assert(compressed.Length != 0, "Compressed Block should not be empty");
             data.WriteBytes(compressed);
 
@@ -217,11 +222,9 @@ namespace Gibbed.Illusion.FileFormats
         public static BlockWriterStream ToStream(Stream baseStream, uint alignment, Endian endian, bool compress)
         {
             var instance = new BlockWriterStream(baseStream, alignment, endian, compress);
-            baseStream.WriteValueU32(Signature, endian);
-
-            var game = GameStorage.Instance.GetSelectedGame();
-            alignment = (game.GameType == GamesEnumerator.MafiaI_DE && compress ? 16842752 : alignment);
-            baseStream.WriteValueU32(alignment, endian);
+            baseStream.WriteValueU32(Signature, endian);          
+            var headerAlignment = (instance._bUseOodle && compress ? (alignment | 0x1000000) : alignment);
+            baseStream.WriteValueU32(headerAlignment, endian);
             baseStream.WriteValueU8(4);
             return instance;
         }

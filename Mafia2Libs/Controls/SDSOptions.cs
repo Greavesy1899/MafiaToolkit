@@ -32,6 +32,7 @@ namespace Forms.OptionControls
             UnpackLUABox.Checked = ToolkitSettings.DecompileLUA;
             SDSToolFormat.Checked = ToolkitSettings.UseSDSToolFormat;
             CookCollisionsBox.Checked = ToolkitSettings.CookCollisions;
+            CheckBox_UseOodle.Checked = ToolkitSettings.bUseOodleCompression;
         }
 
         private void SDSCompress_IndexChanged(object sender, EventArgs e)
@@ -62,6 +63,12 @@ namespace Forms.OptionControls
         {
             ToolkitSettings.CookCollisions = CookCollisionsBox.Checked;
             ToolkitSettings.WriteKey("CookCollisions", "SDS", ToolkitSettings.CookCollisions.ToString());
+        }
+
+        private void CheckBox_UseOodle_CheckedChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.bUseOodleCompression = CheckBox_UseOodle.Checked;
+            ToolkitSettings.WriteKey("UseOodleCompression", "SDS", ToolkitSettings.bUseOodleCompression.ToString());
         }
     }
 }
