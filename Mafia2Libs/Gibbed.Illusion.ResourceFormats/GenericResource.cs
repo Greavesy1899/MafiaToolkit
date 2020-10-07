@@ -36,6 +36,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             { 0x4A336D64, ".iproftime" },
             { 0x73CB32C9, ".fmv.compiled.effects" },
             { 0x222FDF72B2F3E413, ".lodbaked.[lod0].compiled" },
+            { 0xF3BB3621, ".ccdb" },
             //{ 0x45F07C8B, ".scene.gxml"  },
         };
 
@@ -66,6 +67,7 @@ namespace Gibbed.Mafia2.ResourceFormats
             { ".iproftime", 0x4A336D64 },
             { ".fmv", 0x428F61D4 },
             { ".lodbaked.[lod0].compiled", 0x222FDF72B2F3E413 },
+            { ".ccdb", 0xF3BB3621 },
             //{ ".scene.gxml", 0x45F07C8B  }
         };
 

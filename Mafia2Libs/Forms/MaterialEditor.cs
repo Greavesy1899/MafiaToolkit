@@ -110,9 +110,11 @@ namespace Mafia2Tool
         private void AddMaterial(object sender, EventArgs e)
         {
             if (!Panel_Main.Visible)
+            {
                 return;
+            }
 
-            //ask user for material name.
+            // Ask user for material name.
             NewObjectForm form = new NewObjectForm(true);
             form.SetLabel(Language.GetString("$QUESTION_NAME_OF_MAT"));
             form.LoadOption(new MaterialAddOption());
@@ -125,15 +127,15 @@ namespace Mafia2Tool
                     return;
                 }
 
-                //create material with new name.
-                IMaterial mat = new IMaterial();
+                // Create material with new name.
+                IMaterial mat = MaterialFactory.ConstructMaterial(mtl.Version);
                 mat.SetName(form.GetInputText());
 
                 mtl.Materials.Add(mat.GetMaterialHash(), mat);
                 dataGridView1.Rows.Add(BuildRowData(mat));
             }
 
-            //cleanup and reload.
+            // Cleanup and reload.
             form.Dispose();
         }
 

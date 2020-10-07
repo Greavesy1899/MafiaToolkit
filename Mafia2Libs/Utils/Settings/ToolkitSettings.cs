@@ -47,7 +47,7 @@ namespace Utils.Settings
         public static bool CheckForUpdates;
         public static bool SkipGameSelector;
         public static int DefaultGame;
-        public static readonly float Version = 2.09f;
+        public static readonly float Version = 2.10f;
 
         public static void ReadINI()
         {
@@ -133,7 +133,7 @@ namespace Utils.Settings
         {
             if (!DiscordEnabled)
             {
-                //DiscordRPC.Shutdown();
+                DiscordRPC.Shutdown();
                 controller = null;
             }
             else
@@ -142,14 +142,14 @@ namespace Utils.Settings
                     InitRichPresence();
 
                 details = ""; //don't like current imp.
-                string detailsLine = string.IsNullOrEmpty(details) ? ToolkitSettings.CustomStateText : details;
+                string detailsLine = string.IsNullOrEmpty(details) ? CustomStateText : details;
                 controller.presence.state = DiscordStateEnabled ? detailsLine : null;
                 string vString = Debugger.IsAttached ? "DEBUG " : "RELEASE ";
                 vString += Version;
                 controller.presence.details = DiscordDetailsEnabled ? vString : null;
                 controller.presence.startTimestamp = DiscordElapsedTimeEnabled ? ElapsedTime : 0;
 
-               // DiscordRPC.UpdatePresence(ref controller.presence);
+                DiscordRPC.UpdatePresence(ref controller.presence);
             }
         }
     }

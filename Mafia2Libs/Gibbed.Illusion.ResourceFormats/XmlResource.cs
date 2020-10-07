@@ -83,12 +83,6 @@ namespace Gibbed.Mafia2.ResourceFormats
             this.Name = input.ReadStringU32(endian);
             this.Unk3 = version >= 2 ? input.ReadValueU8() != 0 : false;
 
-            if(GameStorage.Instance.GetSelectedGame().GameType == GamesEnumerator.MafiaIII)
-            {
-                this.Content = "";
-                return;
-            }
-
             // Super hacky solution to unpack XMLs with xml:xsi etc.
             if (this.Unk3 == false)
             {

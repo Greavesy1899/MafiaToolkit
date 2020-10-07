@@ -185,7 +185,6 @@ namespace Gibbed.Mafia2.FileFormats
             fileHeader.SlotVramRequired = this.SlotVramRequired;
             fileHeader.OtherRamRequired = this.OtherRamRequired;
             fileHeader.OtherVramRequired = this.OtherVramRequired;
-            //fileHeader.SlotRamRequired = fileHeader.SlotVramRequired = fileHeader.OtherRamRequired = fileHeader.OtherVramRequired = 0;
             fileHeader.Flags = 1;
             fileHeader.Unknown20 = this._Unknown20 ?? new byte[16];
 
@@ -204,9 +203,9 @@ namespace Gibbed.Mafia2.FileFormats
             ReadTextureNames();
 
             var game = GameStorage.Instance.GetSelectedGame();
-            if(game.GameType == GamesEnumerator.MafiaI_DE)
+            if (game.GameType == GamesEnumerator.MafiaI_DE)
             {
-                if(!File.Exists("libs/oo2core_8_win64.dll"))
+                if (!File.Exists("libs/oo2core_8_win64.dll"))
                 {
                     MessageBox.Show(Language.GetString("$M1DE_OODLEERROR"), "Toolkit");
                     return;
@@ -271,40 +270,34 @@ namespace Gibbed.Mafia2.FileFormats
 
             input.Position = basePosition + fileHeader.BlockTableOffset;
             var blockStream = BlockReaderStream.FromStream(input, endian);
-            
+
             var resources = new Archive.ResourceEntry[fileHeader.ResourceCount];
 
-            using (StringWriter writer = new StringWriter())
+            for (uint i = 0; i < fileHeader.ResourceCount; i++)
             {
-                for (uint i = 0; i < fileHeader.ResourceCount; i++)
+                Archive.ResourceHeader resourceHeader;
+                var size = (_Version == 20 ? 34 : 26);
+                using (var data = blockStream.ReadToMemoryStreamSafe(size, endian))
                 {
-                    Archive.ResourceHeader resourceHeader;
-                    var size = (_Version == 20 ? 34 : 26);
-                    using (var data = blockStream.ReadToMemoryStreamSafe(size, endian))
-                    {
-                        resourceHeader = Archive.ResourceHeader.Read(data, endian, _Version);
+                    resourceHeader = Archive.ResourceHeader.Read(data, endian, _Version);
 
-                    }
-
-                    if (resourceHeader.Size < 30)
-                    {
-                        throw new FormatException();
-                    }
-
-                    resources[i] = new Archive.ResourceEntry()
-                    {
-                        TypeId = (int)resourceHeader.TypeId,
-                        Version = resourceHeader.Version,
-                        Data = blockStream.ReadBytes((int)resourceHeader.Size - (size + 4)),
-                        SlotRamRequired = resourceHeader.SlotRamRequired,
-                        SlotVramRequired = resourceHeader.SlotVramRequired,
-                        OtherRamRequired = resourceHeader.OtherRamRequired,
-                        OtherVramRequired = resourceHeader.OtherVramRequired,
-                    };
-                    //writer.WriteLine(string.Format("{0}: SlotRam: {1} SlotVRam: {2} OtherRam: {3} OtherVRam: {4} ActualSize: {5}", i, resources[i].SlotRamRequired, resources[i].SlotVramRequired, resources[i].OtherRamRequired, resources[i].OtherVramRequired, resources[i].Data.Length));
                 }
-                //string content = writer.ToString();
-                //File.WriteAllText("File.txt", content);
+
+                if (resourceHeader.Size < 30)
+                {
+                    throw new FormatException();
+                }
+
+                resources[i] = new Archive.ResourceEntry()
+                {
+                    TypeId = (int)resourceHeader.TypeId,
+                    Version = resourceHeader.Version,
+                    Data = blockStream.ReadBytes((int)resourceHeader.Size - (size + 4)),
+                    SlotRamRequired = resourceHeader.SlotRamRequired,
+                    SlotVramRequired = resourceHeader.SlotVramRequired,
+                    OtherRamRequired = resourceHeader.OtherRamRequired,
+                    OtherVramRequired = resourceHeader.OtherVramRequired,
+                };
             }
             if (fileHeader.XmlOffset != 0)
             {

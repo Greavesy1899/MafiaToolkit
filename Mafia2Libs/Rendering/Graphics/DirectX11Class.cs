@@ -38,8 +38,8 @@ namespace Rendering.Graphics
             var modes = monitor.GetDisplayModeList(Format.R8G8B8A8_UNorm, DisplayModeEnumerationFlags.Interlaced);
             var rational = new Rational(0, 1);
             var adapterDescription = adapter.Description;
-            VideoCardMemory = adapterDescription.DedicatedVideoMemory >> 10 >> 10;
-            VideoCardDescription = adapterDescription.Description.Trim('\0');
+            //VideoCardMemory = adapterDescription.DedicatedVideoMemory >> 10 >> 10;
+            //VideoCardDescription = adapterDescription.Description.Trim('\0');
             monitor.Dispose();
             adapter.Dispose();
             factory.Dispose();

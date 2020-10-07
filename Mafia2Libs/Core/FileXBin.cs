@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using ResourceTypes.FileTypes.M3.XBin;
 using ResourceTypes.M3.XBin;
 
 namespace Core.IO
@@ -36,7 +37,8 @@ namespace Core.IO
         }
         public override void Save()
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Open(file.FullName, FileMode.Create)))
+            File.Copy(file.FullName, file.FullName + ".back");
+            using (XBinWriter writer = new XBinWriter(File.Open(file.FullName, FileMode.Create)))
             {
                 xbin.WriteToFile(writer);
             }

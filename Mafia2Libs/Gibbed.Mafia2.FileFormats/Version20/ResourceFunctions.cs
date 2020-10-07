@@ -178,7 +178,7 @@ namespace Gibbed.Mafia2.FileFormats
 
                     //TODO
                     if (resource.Name == "NAV_PATH_DATA")
-                        resource.Parent = 0;
+                        resource.Parent = 1;
 
                     ResourceTypes.Add(resource);
                     entries.Add(resourceType, new List<ResourceEntry>());
