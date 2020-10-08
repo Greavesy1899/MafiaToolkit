@@ -1,13 +1,10 @@
 ﻿using System.IO;
-using ResourceTypes.FileTypes.M3.XBin;
-using ResourceTypes.M3.XBin;
+using Mafia2Tool;
 
 namespace Core.IO
 {
     public class FileXBin : FileBase
     {
-        private XBin xbin;
-
         public FileXBin(FileInfo info) : base(info)
         {
 
@@ -25,23 +22,12 @@ namespace Core.IO
 
         public override bool Open()
         {
-            xbin = new XBin();
-            using(BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
-            {
-                xbin.ReadFromFile(reader);
-            }
-
-            Save();
-
+            XBinEditor editor = new XBinEditor(file);
             return true;
         }
         public override void Save()
         {
-            File.Copy(file.FullName, file.FullName + ".back");
-            using (XBinWriter writer = new XBinWriter(File.Open(file.FullName, FileMode.Create)))
-            {
-                xbin.WriteToFile(writer);
-            }
+            // guhh
         }
     }
 }

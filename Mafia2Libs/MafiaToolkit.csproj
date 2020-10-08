@@ -318,6 +318,12 @@
     <Compile Include="ApexSDK\IOFX\ScaleVsLifeModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SimpleScaleModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SubtextureVsLifeModifier.cs" />
+    <Compile Include="Forms\XBinEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\XBinEditor.Designer.cs">
+      <DependentUpon>XBinEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ShopMenu2Editor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -435,6 +441,7 @@
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StringTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\VehiclesTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBin.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBinFactory.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBinWriter.cs" />
     <Compile Include="ResourceTypes\FileTypes\Material\Enumerator.cs" />
     <Compile Include="ResourceTypes\FileTypes\Material\MaterialFactory.cs" />
@@ -917,6 +924,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MaterialBrowser.resx">
       <DependentUpon>MaterialBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\XBinEditor.resx">
+      <DependentUpon>XBinEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SDSContentEditor.resx">
       <DependentUpon>SDSContentEditor.cs</DependentUpon>

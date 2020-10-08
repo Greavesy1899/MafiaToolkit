@@ -1,6 +1,7 @@
 ﻿using FileTypes.XBin.StreamMap.Commands;
 using ResourceTypes.FileTypes.M3.XBin;
 using System.IO;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Helpers.Reflection;
 
@@ -131,15 +132,25 @@ namespace ResourceTypes.M3.XBin
 
         }
 
-        public void ReadFromXML()
+        public void ReadFromXML(string file)
         {
             //ReflectionHelpers.ConvertPropertyToXML<StreamMapLine[]>(Lines);
         }
 
-        public void WriteToXML()
+        public void WriteToXML(string file)
         {
             XElement Elements = ReflectionHelpers.ConvertPropertyToXML(Lines);
-            Elements.Save("StreamMapTable.xml", SaveOptions.None);
+            Elements.Save(file, SaveOptions.None);
+        }
+
+        public TreeNode GetAsTreeNodes()
+        {
+            return null;
+        }
+
+        public void SetFromTreeNodes(TreeNode Root)
+        {
+           // do stuff
         }
     }
 }

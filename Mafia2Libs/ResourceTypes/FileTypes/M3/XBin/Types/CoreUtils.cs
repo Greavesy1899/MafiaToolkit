@@ -15,7 +15,7 @@ namespace ResourceTypes.M3.XBin
         {
             long currentPosition = reader.BaseStream.Position;
             reader.BaseStream.Seek((currentPosition - 4) + offset, SeekOrigin.Begin);
-            var data = StringHelpers.ReadString(reader);
+            var data = StringHelpers.ReadStringEncoded(reader);
             reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
             return data;
         }

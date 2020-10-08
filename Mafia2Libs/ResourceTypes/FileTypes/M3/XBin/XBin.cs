@@ -1,6 +1,5 @@
 ﻿using ResourceTypes.FileTypes.M3.XBin;
 using System.IO;
-using System.Reflection;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -12,19 +11,12 @@ namespace ResourceTypes.M3.XBin
         private int offset;
 
         private int unk0; //could be with the table;
-
-        // TODO: Sort this out; make a factory.
-        private VehicleTable vehicles; // test;
-        private PaintCombinationsTable paintCombinations;
-        private StringTable tables;
-        private StreamMapTable streamMap;
-
-        private int unk1;
+        public BaseTable TableInformation { get; set; }
+        private int unk1; // Unknown.
 
         public void ReadFromFile(BinaryReader reader)
         {
-            //float pp = 1.525879E-05f;
-            hash = reader.ReadUInt64();
+            hash = reader.ReadUInt64(); // I *think* this is to UInt32's molded together.
             version = reader.ReadInt32();
             numTables = reader.ReadInt32();
             offset = reader.ReadInt32();
@@ -40,35 +32,26 @@ namespace ResourceTypes.M3.XBin
             else
             {
                 unk0 = reader.ReadInt32();
-
-                //tables = new StringTable();
-                //tables.ReadFromFile(reader);
-                //tables.WriteToXML();
-                //tables.ReadFromXML();
-
-                streamMap = new StreamMapTable();
-                streamMap.ReadFromFile(reader);
-
-                //tables = new StringTable();
-               // tables.ReadFromFile(reader);
-                //tables.WriteToXML();
-
-                //vehicles = new VehicleTable();
-                //vehicles.ReadFromXML();
-                //vehicles.ReadFromFile(reader);
-                //vehicles.WriteToXML();
-                //unk1 = reader.ReadInt32();
+                TableInformation = XBinFactory.ReadXBin(reader, hash);
             }
         }
 
-        public void WriteToFile(XBinWriter writer)
+        public void WriteToFile(FileInfo file)
+        {
+            using(XBinWriter writer = new XBinWriter(File.Open(file.FullName, FileMode.Open)))
+            {
+                InternalWriteToFile(writer);
+            }
+        }
+
+        private void InternalWriteToFile(XBinWriter writer)
         {
             writer.Write(hash);
             writer.Write(version);
             writer.Write(numTables);
             writer.Write(offset);
             writer.Write(unk0);
-            streamMap.WriteToFile(writer);
+            TableInformation.WriteToFile(writer);
             writer.Write(unk1);
         }
     }

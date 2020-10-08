@@ -1,5 +1,6 @@
 ﻿using ResourceTypes.FileTypes.M3.XBin;
 using System.IO;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Helpers.Reflection;
 using Utils.StringHelpers;
@@ -158,9 +159,9 @@ namespace ResourceTypes.M3.XBin
             }
         }
 
-        public void ReadFromXML()
+        public void ReadFromXML(string file)
         {
-            XElement Root = XElement.Load("Vehicles.xml");
+            XElement Root = XElement.Load(file);
 
             foreach(XElement Element in Root.Elements())
             {
@@ -168,10 +169,20 @@ namespace ResourceTypes.M3.XBin
             }
         }
 
-        public void WriteToXML()
+        public void WriteToXML(string file)
         {
             XElement RootElement = ReflectionHelpers.ConvertPropertyToXML(Vehicles);
-            RootElement.Save("Vehicles.xml", SaveOptions.None);
+            RootElement.Save(file, SaveOptions.None);
+        }
+
+        public TreeNode GetAsTreeNodes()
+        {
+            return null;
+        }
+
+        public void SetFromTreeNodes(TreeNode Root)
+        {
+            // do stuff
         }
     }
 }

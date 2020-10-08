@@ -1,9 +1,7 @@
 ﻿using ResourceTypes.FileTypes.M3.XBin;
-using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Xml;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Helpers.Reflection;
 using Utils.StringHelpers;
@@ -12,9 +10,18 @@ namespace ResourceTypes.M3.XBin
 {
     public class LocalisableString
     {
+        [PropertyIgnoreByReflector]
         public uint Unk0 { get; set; } // I'm guessing this used to be a pointer to the stringID.
-        public ulong Hash { get; set; } // Hash of the StringID which no longer exists. *cry ever tim*
+        [PropertyForceAsAttribute]
+        public ulong StringID { get; set; } // Hash of the StringID which no longer exists. *cry ever tim*
         public string Content { get; set; } // Text
+
+        public LocalisableString()
+        {
+            Unk0 = 0;
+            StringID = 0;
+            Content = "";
+        }
 
         public override string ToString()
         {
@@ -25,6 +32,7 @@ namespace ResourceTypes.M3.XBin
     public class StringTable : BaseTable
     {
         private readonly ulong XBinMagic = 0x5E42EF29E8A3E1D3;
+
         public LocalisableString[] Items { get; set; }
 
         public StringTable()
@@ -45,12 +53,10 @@ namespace ResourceTypes.M3.XBin
             {
                 LocalisableString Entry = new LocalisableString();
                 Entry.Unk0 = reader.ReadUInt32();
-                Entry.Hash = reader.ReadUInt64();
+                Entry.StringID = reader.ReadUInt64();
                 Entry.Content = XBinCoreUtils.ReadStringPtrWithOffset(reader);
                 Items[i] = Entry;
             }
-
-            DumpStringData();
         }
 
         public void WriteToFile(XBinWriter writer)
@@ -64,7 +70,7 @@ namespace ResourceTypes.M3.XBin
             {
                 LocalisableString Entry = Items[i];
                 writer.Write(Entry.Unk0);
-                writer.Write(Entry.Hash);
+                writer.Write(Entry.StringID);
 
                 positions[i] = writer.BaseStream.Position;
                 writer.Write(-1);
@@ -92,32 +98,45 @@ namespace ResourceTypes.M3.XBin
             positions = new long[0];
         }
 
-        public void ReadFromXML()
+        public void ReadFromXML(string file)
         {
-            XElement Root = XElement.Load("StringTable_EN.xml");
+            XElement Root = XElement.Load(file);
+            StringTable Entry = ReflectionHelpers.ConvertToPropertyFromXML<StringTable>(Root);
+            Items = Entry.Items;
+        }
 
-            foreach (XElement Element in Root.Elements())
+        public void WriteToXML(string file)
+        {
+            XElement Elements = ReflectionHelpers.ConvertPropertyToXML(this);
+            Elements.Save(file);
+        }
+
+        public TreeNode GetAsTreeNodes()
+        {
+            TreeNode Root = new TreeNode();
+            Root.Text = "StringTable Contents";
+
+            foreach(var Entry in Items)
             {
-                StringTable Entry = ReflectionHelpers.ConvertToPropertyFromXML<StringTable>(Element);
+                TreeNode ChildNode = new TreeNode();
+                ChildNode.Tag = Entry;
+                ChildNode.Text = Entry.Content;
+
+                Root.Nodes.Add(ChildNode);
             }
+
+            return Root;
         }
 
-        public void WriteToXML()
+        public void SetFromTreeNodes(TreeNode Root)
         {
-            XElement Elements = ReflectionHelpers.ConvertPropertyToXML(Items);
-            Elements.Save("StringTable.xml");
-        }
+            Items = new LocalisableString[Root.Nodes.Count];
 
-        private void DumpStringData()
-        {
-            using (StringWriter writer = new StringWriter())
+            for(int i = 0; i < Items.Length; i++)
             {
-                for (int i = 0; i < Items.Length; i++)
-                {
-                    string text = string.Format("{2} {0:X8} = {1}", Items[i].Hash, Items[i].Content, i);
-                    writer.WriteLine(text);
-                }
-                File.WriteAllText("StringTable_EN.txt", writer.ToString());
+                TreeNode ChildNode = Root.Nodes[i];
+                LocalisableString Entry = (LocalisableString)ChildNode.Tag;
+                Items[i] = Entry;
             }
         }
     }

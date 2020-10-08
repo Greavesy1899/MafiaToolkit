@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 
@@ -12,17 +14,84 @@ namespace Utils.Helpers.Reflection
 
             foreach (PropertyInfo Info in TypedObject.GetType().GetProperties())
             {
-                XElement Element = Node.Element(Info.Name);
-                if (Element != null)
+                // Check if this Property has been flagged to be ignored.
+                if (!AllowPropertyToReflect(Info))
+                {
+                    continue;
+                }
+
+                // Should this property be read from an Attribute.
+                bool bForceAsAttribute = ForcePropertyAsAttribute(Info);
+
+                if (Info.PropertyType.IsArray)
+                {
+                    // Get Element.
+                    XElement Element = Node.Element(Info.Name);
+
+                    // Create an Array using the element type of the array, with the number of elements to set the length.
+                    Array ArrayObject = Array.CreateInstance(Info.PropertyType.GetElementType(), Element.Elements().Count());
+
+                    // Iterate through the elements, construct the object using our reflection system and push them into the array.
+                    for (int i = 0; i < ArrayObject.Length; i++)
+                    {
+                        object ElementObject = InternalConvertProperty(Element.Elements().ElementAt(i), Info.PropertyType.GetElementType());
+                        ArrayObject.SetValue(ElementObject, i);
+                    }
+
+                    // Finally, replace the array on our TypedObject.
+                    TypedObject.GetType().GetProperty(Info.Name).SetValue(TypedObject, ArrayObject);
+                    continue;
+                }
+
+                // Arrays CANNOT be arrays. So we first check if it is an array, and then try and parts this parts which can be an attribute.
+                string NodeContent = bForceAsAttribute ?  Node.Attribute(Info.Name).Value : Node.Element(Info.Name).Value;
+                if (!string.IsNullOrEmpty(NodeContent))
                 {
                     if (Info.PropertyType.IsEnum)
                     {
-                        object Value = Enum.Parse(Info.PropertyType, Element.Value);
+                        object Value = Enum.Parse(Info.PropertyType, NodeContent);
                         Info.SetValue(TypedObject, Value);
                         continue;
                     }
+                    else
+                    {
+                        Info.SetValue(TypedObject, Convert.ChangeType(NodeContent, Info.PropertyType));
+                    }               
+                }
+            }
 
-                    Info.SetValue(TypedObject, Convert.ChangeType(Element.Value, Info.PropertyType));
+            return TypedObject;
+        }
+
+        private static object InternalConvertProperty(XElement Node, Type ElementType)
+        {
+            object TypedObject = Activator.CreateInstance(ElementType);
+
+            foreach (PropertyInfo Info in ElementType.GetProperties())
+            {
+                // Check if this Property has been flagged to be ignored.
+                if (!AllowPropertyToReflect(Info))
+                {
+                    continue;
+                }
+
+                // Should this property be read from an Attribute.
+                bool bForceAsAttribute = ForcePropertyAsAttribute(Info);
+
+                string NodeContent = bForceAsAttribute ? Node.Attribute(Info.Name).Value : Node.Element(Info.Name).Value;
+
+                if (!string.IsNullOrEmpty(NodeContent))
+                {
+                    if (Info.PropertyType.IsEnum)
+                    {
+                        object Value = Enum.Parse(Info.PropertyType, NodeContent);
+                        Info.SetValue(TypedObject, Value);
+                        continue;
+                    }
+                    else
+                    {
+                        Info.SetValue(TypedObject, Convert.ChangeType(NodeContent, Info.PropertyType));
+                    }
                 }
             }
 
@@ -36,7 +105,7 @@ namespace Utils.Helpers.Reflection
             // If Object is an Array, we get the Array and iterate through elements.
             if (ObjectType.IsArray)
             {
-                XElement RootElement = new XElement("root");
+                XElement RootElement = new XElement("Root");
                 Array ArrayContent = (Array)Convert.ChangeType(PropertyData, ObjectType);
 
                 foreach (object Element in ArrayContent)
@@ -102,9 +171,16 @@ namespace Utils.Helpers.Reflection
 
             if (PropertyAttritbute != null)
             {
-                Console.WriteLine("Hello");
+                PropertyInfo[] PropertyInfos = Info.PropertyType.GetProperties();
+
+                // Check if this property has nested properties.
+                Debug.Assert(PropertyInfos.Length == 0, "ERROR: Cannot save property with nested properties as attribute.",
+                    "We cannot save a property with more child properties. Please remove the attribute from this property: " + Info.Name);
+
+                return true;
             }
-            return PropertyAttritbute != null;
+
+            return false;
         }
 
         private static bool AllowPropertyToReflect(PropertyInfo Info)

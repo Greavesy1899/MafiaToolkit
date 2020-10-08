@@ -1,5 +1,6 @@
 ﻿using ResourceTypes.FileTypes.M3.XBin;
 using System.IO;
+using System.Windows.Forms;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -10,7 +11,11 @@ namespace ResourceTypes.M3.XBin
         void WriteToFile(XBinWriter writer);
 
         // Serialization/Deserialization from XML.
-        void ReadFromXML();
-        void WriteToXML();
+        void ReadFromXML(string file);
+        void WriteToXML(string file);
+
+        // Util functions to interact with the editor.
+        TreeNode GetAsTreeNodes();
+        void SetFromTreeNodes(TreeNode Root);
     }
 }
