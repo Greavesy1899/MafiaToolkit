@@ -160,7 +160,7 @@ namespace Gibbed.Illusion.FileFormats
 
         private bool FlushZlibCompressedBlock(MemoryStream data, int blockLength)
         {
-            var zlib = new ZLibStream(data, CompressionMode.Compress, CompressionLevel.Level6);
+            var zlib = new ZLibStream(data, CompressionMode.Compress, CompressionLevel.Default);
             zlib.Write(this._BlockBytes, 0, blockLength);
             zlib.Flush();
             var compressedLength = (int)data.Length;
@@ -172,7 +172,8 @@ namespace Gibbed.Illusion.FileFormats
                 compressedBlockHeader.SetZlibPreset();
                 compressedBlockHeader.UncompressedSize = (uint)blockLength;
                 compressedBlockHeader.CompressedSize = (uint)compressedLength;
-                compressedBlockHeader.ChunkSize = (short)blockLength;
+                compressedBlockHeader.ChunkSize = (short)_Alignment;
+                compressedBlockHeader.Unknown0C = 135200769;
                 compressedBlockHeader.Chunks[0] = (ushort)compressedBlockHeader.CompressedSize;
                 compressedBlockHeader.Write(this._BaseStream, this._Endian);
                 this._BaseStream.Write(data.GetBuffer(), 0, compressedLength);
@@ -201,7 +202,9 @@ namespace Gibbed.Illusion.FileFormats
                 compressedBlockHeader.UncompressedSize = (uint)blockLength;
                 compressedBlockHeader.CompressedSize = (uint)compressedLength;
                 compressedBlockHeader.ChunkSize = 1;
+                compressedBlockHeader.Unknown0C = (uint)blockLength;
                 compressedBlockHeader.Chunks[0] = (ushort)compressedBlockHeader.CompressedSize;
+                Console.WriteLine(compressedBlockHeader);
                 compressedBlockHeader.Write(this._BaseStream, this._Endian);
                 this._BaseStream.Write(new byte[96], 0, 96); // Empty padding.
                 this._BaseStream.Write(data.GetBuffer(), 0, compressedLength);
