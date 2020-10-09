@@ -39,7 +39,6 @@
             this.Button_Tools = new System.Windows.Forms.ToolStripDropDownButton();
             this.Button_Import = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_Export = new System.Windows.Forms.ToolStripMenuItem();
-            this.Button_Delete = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip_Main.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -112,8 +111,7 @@
             this.Button_Tools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.Button_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Button_Import,
-            this.Button_Export,
-            this.Button_Delete});
+            this.Button_Export});
             this.Button_Tools.Image = ((System.Drawing.Image)(resources.GetObject("Button_Tools.Image")));
             this.Button_Tools.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Button_Tools.Name = "Button_Tools";
@@ -123,23 +121,16 @@
             // Button_Import
             // 
             this.Button_Import.Name = "Button_Import";
-            this.Button_Import.Size = new System.Drawing.Size(167, 22);
-            this.Button_Import.Text = "$IMPORT_PREFAB";
+            this.Button_Import.Size = new System.Drawing.Size(153, 22);
+            this.Button_Import.Text = "$IMPORT_XBIN";
             this.Button_Import.Click += new System.EventHandler(this.Button_Import_Click);
             // 
             // Button_Export
             // 
             this.Button_Export.Name = "Button_Export";
-            this.Button_Export.Size = new System.Drawing.Size(167, 22);
-            this.Button_Export.Text = "$EXPORT_PREFAB";
+            this.Button_Export.Size = new System.Drawing.Size(153, 22);
+            this.Button_Export.Text = "$EXPORT_XBIN";
             this.Button_Export.Click += new System.EventHandler(this.Button_Export_Click);
-            // 
-            // Button_Delete
-            // 
-            this.Button_Delete.Name = "Button_Delete";
-            this.Button_Delete.Size = new System.Drawing.Size(167, 22);
-            this.Button_Delete.Text = "$DELETE_PREFAB";
-            this.Button_Delete.Click += new System.EventHandler(this.Button_Delete_Click);
             // 
             // XBinEditor
             // 
@@ -171,6 +162,5 @@
         private System.Windows.Forms.ToolStripDropDownButton Button_Tools;
         private System.Windows.Forms.ToolStripMenuItem Button_Import;
         private System.Windows.Forms.ToolStripMenuItem Button_Export;
-        private System.Windows.Forms.ToolStripMenuItem Button_Delete;
     }
 }

@@ -13,8 +13,12 @@ namespace ResourceTypes.FileTypes.M3.XBin
 
             switch(hash)
             {
-                case 0x5E42EF29E8A3E1D3: //StringTable
+                case 0x5E42EF29E8A3E1D3: // StringTable
                     XBinData = new StringTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0xA869F8A3ED0CDAFC:
+                    XBinData = new VehicleTable(); // VehicleTable
                     XBinData.ReadFromFile(reader);
                     break;
                 default:
