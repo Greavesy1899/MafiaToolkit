@@ -247,7 +247,7 @@ namespace Utils.Types
             BaseResource resource = new BaseResource();
             resource.SetFileName(fromRoot);
             resource.SetEntryVersion(version);
-            AddResource(typeName, BuildResourceTreeNode(fromRoot, resource));
+            AddResource(typeName, BuildResourceTreeNode(resource.GetFileName(), resource));
         }
 
         private void CreateTableResource(List<string> tables)

@@ -62,6 +62,11 @@ namespace ResourceTypes.FrameResource
 
         public virtual void SetFileName(string file)
         {
+            if(file.Contains('\\'))
+            {
+                file = file.Replace('\\', '/');
+            }
+            
             FileName = file;
         }
 

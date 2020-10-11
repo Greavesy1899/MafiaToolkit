@@ -897,7 +897,7 @@ namespace ResourceTypes.FrameResource
 
                     foreach(var attachment in mesh.AttachmentReferences)
                     {
-                        attachment.AttachmentIndex = frameObjects.IndexOfValue(offsets[6] + attachment.Attachment.RefID);
+                        attachment.AttachmentIndex = offsets[6] + frameObjects.IndexOfValue(attachment.Attachment.RefID);
                     }
 
                     block = mesh;

@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using System.ComponentModel;
 using Utils.Extensions;
 using System.IO;
+using SharpDX;
+using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.City
 {
@@ -168,14 +170,40 @@ namespace ResourceTypes.City
 
         public class ItemConfig
         {
+            [TypeConverter(typeof(ExpandableObjectConverter))]
+            public class ItemCamera
+            {
+                public Vector3 Position { get; set; }
+                public Quaternion Rotation { get; set; }
+                public float Unk01 { get; set; }
+
+                public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+                {
+                    Position = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+                    Rotation = QuaternionExtensions.ReadFromFile(stream, isBigEndian);
+                    Unk01 = stream.ReadSingle(isBigEndian);
+                }
+
+                public void WriteToFile(MemoryStream stream, bool isBigEndian)
+                {
+                    Position.WriteToFile(stream, isBigEndian);
+                    Rotation.WriteToFile(stream, isBigEndian);
+                    stream.Write(Unk01, isBigEndian);
+                }
+            }
+
             LocalisedString unkDB0;
             LocalisedString unkDB1;
             LocalisedString unkDB2;
             LocalisedString unkDB3;
             LocalisedString unkDB4;
             LocalisedString unkDB5;
-            int[] unkInts;
-            float[] unkFloats;
+            int itemUnk0;
+            int itemPrice;
+            int itemUnk1;
+            int itemChangeTimeIn;
+            int itemChangeTimeOut;
+            ItemCamera cameraConfig;
             byte unkByte;
             float[] unkMatrix;
 
@@ -208,13 +236,34 @@ namespace ResourceTypes.City
                 get { return unkDB5; }
                 set { unkDB5 = value; }
             }
-            public int[] UnkInts {
-                get { return unkInts; }
-                set { unkInts = value; }
+            [Category("Item Information")]
+            public int ItemUnk0 {
+                get { return itemUnk0; }
+                set { itemUnk0 = value; }
             }
-            public float[] UnkFloats {
-                get { return unkFloats; }
-                set { unkFloats = value; }
+            [Category("Item Information")]
+            public int ItemPrice {
+                get { return itemPrice; }
+                set { itemPrice = value; }
+            }
+            [Category("Item Information")]
+            public int ItemUnk1 {
+                get { return itemUnk1; }
+                set { itemUnk1 = value; }
+            }
+            [Category("Item Information")]
+            public int ItemChangeTimeIn {
+                get { return itemChangeTimeIn; }
+                set { itemChangeTimeIn = value; }
+            }
+            [Category("Item Information")]
+            public int ItemChangeTimeOut {
+                get { return itemChangeTimeOut; }
+                set { itemChangeTimeOut = value; }
+            }
+            public ItemCamera CameraConfig {
+                get { return cameraConfig; }
+                set { cameraConfig = value; }
             }
             public byte UnkByte {
                 get { return unkByte; }
@@ -235,8 +284,7 @@ namespace ResourceTypes.City
 
             public ItemConfig()
             {
-                unkInts = new int[5];
-                unkFloats = new float[8];
+                CameraConfig = new ItemCamera();
                 unkMatrix = new float[10];
                 section1 = new Item[0];
                 section2 = new Item[0];
@@ -376,17 +424,14 @@ namespace ResourceTypes.City
                         item.UnkDB5 = new LocalisedString(stream.ReadUInt32(isBigEndian));
                         GetFromDB(item.UnkDB5);
 
-                        item.UnkInts = new int[5];
-                        for (int z = 0; z < 5; z++)
-                        {
-                            item.UnkInts[z] = stream.ReadInt32(isBigEndian);
-                        }
+                        item.ItemUnk0 = stream.ReadInt32(isBigEndian);
+                        item.ItemPrice = stream.ReadInt32(isBigEndian);
+                        item.ItemUnk1 = stream.ReadInt32(isBigEndian);
+                        item.ItemChangeTimeIn = stream.ReadInt32(isBigEndian);
+                        item.ItemChangeTimeOut = stream.ReadInt32(isBigEndian);
 
-                        item.UnkFloats = new float[8];
-                        for (int z = 0; z < 8; z++)
-                        {
-                            item.UnkFloats[z] = stream.ReadSingle(isBigEndian);
-                        }
+                        item.CameraConfig = new ItemConfig.ItemCamera();
+                        item.CameraConfig.ReadFromFile(stream, isBigEndian);
 
                         item.UnkByte = stream.ReadByte8();
                         item.UnkMatrixFloats = new float[10];
@@ -490,15 +535,13 @@ namespace ResourceTypes.City
                         stream.Write(item.UnkDB4.ID, isBigEndian);
                         stream.Write(item.UnkDB5.ID, isBigEndian);
 
-                        for (int z = 0; z < 5; z++)
-                        {
-                            stream.Write(item.UnkInts[z], isBigEndian);
-                        }
+                        stream.Write(item.ItemUnk0, isBigEndian);
+                        stream.Write(item.ItemPrice, isBigEndian);
+                        stream.Write(item.ItemUnk1, isBigEndian);
+                        stream.Write(item.ItemChangeTimeIn, isBigEndian);
+                        stream.Write(item.ItemChangeTimeOut, isBigEndian);
 
-                        for (int z = 0; z < 8; z++)
-                        {
-                            stream.Write(item.UnkFloats[z], isBigEndian);
-                        }
+                        item.CameraConfig.WriteToFile(stream, isBigEndian);
 
                         stream.WriteByte(item.UnkByte);
                         for (int z = 0; z < 10; z++)

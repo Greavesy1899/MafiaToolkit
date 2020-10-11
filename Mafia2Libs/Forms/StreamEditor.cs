@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Pipes;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ResourceTypes.Misc;
 using Utils.Language;
@@ -220,6 +218,7 @@ namespace Mafia2Tool
             linesTree.Nodes.Clear();
             blockView.Nodes.Clear();
             groupTree.Nodes.Clear();
+            PropertyGrid_Stream.SelectedObject = null;
             stream = new StreamMapLoader(file);
 
             for (int i = 0; i < stream.GroupHeaders.Length; i++)
