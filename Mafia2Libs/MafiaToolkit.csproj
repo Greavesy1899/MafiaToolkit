@@ -417,6 +417,7 @@
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarGearBoxesTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarInteriorColorsTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarTrafficTuningTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarTuningModificators.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CoreUtils.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_Barrier.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_CloseTraffic.cs" />
