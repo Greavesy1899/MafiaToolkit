@@ -7,7 +7,7 @@
   <String ID="$COPY">Kopírovat</String>
   <String ID="$PASTE">Vložit</String>
   <String ID="$ENTRY_NAME">Entry Name</String>
-  <String ID="$UPDATE_MESSAGE1">K dispozici je nová verze Mafia II: Toolkit!</String>
+  <String ID="$UPDATE_MESSAGE1">K dispozici je nová verze Mafia: Toolkit!</String>
   <String ID="$UPDATE_MESSAGE2">Chcete-li stáhnout novou verzi, stiskněte tlačítko OK.</String>
   <String ID="$UPDATE_MESSAGE3">Chcete-li použít aktuální verzi, stiskněte Storno.</String>
   <String ID="$FAILED_UPDATE_CHECK">Při kontrole aktualizací se nezdařilo!</String>
@@ -27,7 +27,7 @@
   <String ID="$SMALL_ICON">Malá Ikona</String>
   <String ID="$LIST">List</String>
   <String ID="$TILE">Dlaždice</String>
-  <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Herní Prohlížeč</String>
+  <String ID="$MII_TK_GAME_EXPLORER">Mafia Toolkit: Herní Prohlížeč</String>
   <String ID="$UNPACK_ALL_SDS">Extrahovat všechny SDS</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Otevřít složku v průzkumníku souborů</String>
   <String ID="$PACK">Zabalit</String>
@@ -41,6 +41,7 @@
   <String ID="$REFRESH">Obnovit</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Umístění složky</String>
   <String ID="$UP_TOOLTIP">Nahoru</String>
+  <String ID="$M1DE_OODLEERROR">The Oodle DLL is a non-free library by RAD Game Tools and is thus not included due to legal issues. Please copy 'oo2core_8_win64.dll' from the Mafia: Definitive Edition installation folder to the folder where the Toolkit's 'libs' folder.</String>
 
   <!-- Game Selector -->
   <String ID="$START_TOOLKIT">Zapnout Toolkit</String>

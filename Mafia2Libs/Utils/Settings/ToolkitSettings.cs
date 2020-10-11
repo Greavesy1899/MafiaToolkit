@@ -39,6 +39,7 @@ namespace Utils.Settings
         public static bool LoggingEnabled;
         public static int Language;
         public static int SerializeSDSOption;
+        public static bool bUseOodleCompression;
         public static bool DecompileLUA;
         public static bool AddTimeDataBackup;
         public static bool UseSDSToolFormat;
@@ -46,7 +47,7 @@ namespace Utils.Settings
         public static bool CheckForUpdates;
         public static bool SkipGameSelector;
         public static int DefaultGame;
-        public static readonly float Version = 2.09f;
+        public static readonly float Version = 2.11f;
 
         public static void ReadINI()
         {
@@ -60,6 +61,7 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("StateEmabled", "Discord", "True"), out DiscordStateEnabled);
             bool.TryParse(ReadKey("DetailsEnabled", "Discord", "True"), out DiscordDetailsEnabled);
             int.TryParse(ReadKey("SerializeOption", "SDS", "0"), out SerializeSDSOption);
+            bool.TryParse(ReadKey("UseOodleCompression", "SDS", "1"), out bUseOodleCompression);
             bool.TryParse(ReadKey("VSync", "ModelViewer", "True"), out VSync);
             bool.TryParse(ReadKey("UseMIPS", "ModelViewer", "True"), out UseMIPS);
             float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "10000"), out ScreenDepth);
@@ -140,7 +142,7 @@ namespace Utils.Settings
                     InitRichPresence();
 
                 details = ""; //don't like current imp.
-                string detailsLine = string.IsNullOrEmpty(details) ? ToolkitSettings.CustomStateText : details;
+                string detailsLine = string.IsNullOrEmpty(details) ? CustomStateText : details;
                 controller.presence.state = DiscordStateEnabled ? detailsLine : null;
                 string vString = Debugger.IsAttached ? "DEBUG " : "RELEASE ";
                 vString += Version;

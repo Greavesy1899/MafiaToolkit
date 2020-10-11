@@ -110,9 +110,11 @@ namespace Mafia2Tool
         private void AddMaterial(object sender, EventArgs e)
         {
             if (!Panel_Main.Visible)
+            {
                 return;
+            }
 
-            //ask user for material name.
+            // Ask user for material name.
             NewObjectForm form = new NewObjectForm(true);
             form.SetLabel(Language.GetString("$QUESTION_NAME_OF_MAT"));
             form.LoadOption(new MaterialAddOption());
@@ -125,15 +127,15 @@ namespace Mafia2Tool
                     return;
                 }
 
-                //create material with new name.
-                IMaterial mat = new IMaterial();
+                // Create material with new name.
+                IMaterial mat = MaterialFactory.ConstructMaterial(mtl.Version);
                 mat.SetName(form.GetInputText());
 
                 mtl.Materials.Add(mat.GetMaterialHash(), mat);
                 dataGridView1.Rows.Add(BuildRowData(mat));
             }
 
-            //cleanup and reload.
+            // Cleanup and reload.
             form.Dispose();
         }
 
@@ -318,6 +320,36 @@ namespace Mafia2Tool
         private void MaterialGrid_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             MaterialGrid.Refresh();
+        }
+
+        private void Button_DumpTextures_Click(object sender, EventArgs e)
+        {
+            if (mtl.Version != VersionsEnumerator.V_63)
+            {
+                return;
+            }
+
+            Dictionary<ulong, bool> CurrentTextures = new Dictionary<ulong, bool>();
+
+            using (StreamWriter Writer = new StreamWriter(File.Open("TextureDump.txt", FileMode.Create)))
+            {
+                foreach (var Material in mtl.Materials)
+                {
+                    if (Material.Value is Material_v63)
+                    {
+                        Material_v63 Mat = (Material.Value as Material_v63);
+
+                        foreach(var Texture in Mat.Textures)
+                        {
+                            if (!CurrentTextures.ContainsKey(Texture.TextureName.uHash))
+                            {
+                                Writer.WriteLine(Texture.TextureName.String);
+                                CurrentTextures.Add(Texture.TextureName.uHash, true);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

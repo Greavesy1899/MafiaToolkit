@@ -34,7 +34,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -46,6 +46,7 @@
     </DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>6</LangVersion>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -94,7 +95,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <LangVersion>7.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
@@ -128,6 +129,10 @@
     </Reference>
     <Reference Include="Octokit, Version=0.36.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Octokit.0.36.0\lib\net46\Octokit.dll</HintPath>
+    </Reference>
+    <Reference Include="OodleSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\OodleSharp-master\OodleSharp\bin\Debug\OodleSharp.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -174,6 +179,10 @@
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="zlibnet, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\zlibnet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApexSDK\IOFX\ScaleAlongVelocityModifier.cs" />
@@ -219,6 +228,7 @@
     <Compile Include="Controls\TextureEntry.Designer.cs">
       <DependentUpon>TextureEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Core\FileXBin.cs" />
     <Compile Include="Core\DirectoryBase.cs" />
     <Compile Include="Core\FileActor.cs" />
     <Compile Include="Core\FileBase.cs" />
@@ -235,6 +245,7 @@
     <Compile Include="Core\FileTable.cs" />
     <Compile Include="Core\FileTextureDDS.cs" />
     <Compile Include="Core\FileTranslokator.cs" />
+    <Compile Include="Core\FileXlaybin.cs" />
     <Compile Include="Core\FileXML.cs" />
     <Compile Include="Forms\CutsceneEditor.cs">
       <SubType>Form</SubType>
@@ -308,6 +319,12 @@
     <Compile Include="ApexSDK\IOFX\ScaleVsLifeModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SimpleScaleModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SubtextureVsLifeModifier.cs" />
+    <Compile Include="Forms\XBinEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\XBinEditor.Designer.cs">
+      <DependentUpon>XBinEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ShopMenu2Editor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -332,131 +349,173 @@
     <Compile Include="Forms\TranslokatorEditor.Designer.cs">
       <DependentUpon>TranslokatorEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="MafiaLib\FileTypes\Actors\ActorDefinition.cs" />
-    <Compile Include="MafiaLib\FileTypes\Actors\ActorEntry.cs" />
-    <Compile Include="MafiaLib\FileTypes\Actors\ActorExtraData.cs" />
-    <Compile Include="MafiaLib\FileTypes\Actors\ActorFactory.cs" />
-    <Compile Include="MafiaLib\FileTypes\Actors\Types\ActorActionPointScript.cs" />
-    <Compile Include="MafiaLib\FileTypes\Actors\Types\ActorCar.cs" />
-    <Compile Include="MafiaLib\FileTypes\BufferTypes\BufferHelpers.cs" />
-    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Model.cs" />
-    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\OpcodeException.cs" />
-    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Serialization.cs" />
-    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\Trees.cs" />
-    <Compile Include="MafiaLib\FileTypes\Collisions\Opcode\TriangleMesh.cs" />
-    <Compile Include="MafiaLib\FileTypes\Collisions\CollisionBuilder.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeBase.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeEffects.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeFrame.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeModel.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeOmniLight.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSound_Type28.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSound_Type33.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSound_Type8.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSpotLight.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeSunLight.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeTargetCamera.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk10.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk12.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk13.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk18.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk23.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk30.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk31.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk32.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk4.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeUnk7.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\AeVehicle.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\EntityTypes\Enumerators.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\Factories\CutsceneEntityFactory.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\Factories\CutsceneKeyParamFactory.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\Enumerators.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\IKeyType.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_0.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_13.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_18.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_19.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_28.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_30.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_43.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_6.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyType_Temp.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\KeyParamTypes\KeyWeatherParam.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameNameTable\FrameNameTableEnums.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameFactory.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceEnums.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResourceXML.cs" />
-    <Compile Include="MafiaLib\FileTypes\ItemDesc\ItemDescEnums.cs" />
-    <Compile Include="MafiaLib\FileTypes\Material\Enumerator.cs" />
-    <Compile Include="MafiaLib\FileTypes\Material\MaterialFactory.cs" />
-    <Compile Include="MafiaLib\FileTypes\Material\MaterialParameter.cs" />
-    <Compile Include="MafiaLib\FileTypes\Material\Versions\IMaterial.cs" />
-    <Compile Include="MafiaLib\FileTypes\Material\Versions\Material_v58.cs" />
-    <Compile Include="MafiaLib\FileTypes\Material\Versions\Material_v57.cs" />
-    <Compile Include="MafiaLib\FileTypes\Navigation\AIWorld\AIWorld.cs" />
-    <Compile Include="MafiaLib\FileTypes\Navigation\AnimalTraffic.cs" />
-    <Compile Include="MafiaLib\FileTypes\Navigation\Enums.cs" />
-    <Compile Include="MafiaLib\FileTypes\Navigation\HPD.cs" />
-    <Compile Include="MafiaLib\FileTypes\Navigation\OBJ_DATA\KynogonRuntimeMesh.cs" />
-    <Compile Include="MafiaLib\FileTypes\Navigation\OBJ_DATA\OBJData.cs" />
-    <Compile Include="MafiaLib\FileTypes\SdsConfigFile.cs" />
-    <Compile Include="MafiaLib\FileTypes\Actors\ActorEnums.cs" />
-    <Compile Include="MafiaLib\FileTypes\Actors\Actor.cs" />
-    <Compile Include="MafiaLib\FileTypes\Actors\ActorTypes.cs" />
-    <Compile Include="MafiaLib\FileTypes\Animations\Animation2.cs" />
-    <Compile Include="MafiaLib\FileTypes\Collisions\CollisionEnums.cs" />
-    <Compile Include="MafiaLib\FileTypes\Collisions\Collisions.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\Cutscene.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\FXAnimSet.cs" />
-    <Compile Include="MafiaLib\FileTypes\Cutscene\Speech.cs" />
-    <Compile Include="MafiaLib\FileTypes\EntityDataStorage\EntityDataStorage.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameNameTable\FrameNameTable.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameEntry.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameHeader.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\FrameResource.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectArea.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectBase.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectCamera.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectCollision.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectComponent_U005.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectDeflector.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectDummy.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectFrame.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectJoint.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectLight.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectModel.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectSector.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectSingleMesh.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ObjectTypes\FrameObjectTarget.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameBlendInfo.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameGeometry.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameHeaderScene.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameLOD.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameMaterial.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameSkeleton.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameResource\ResourcesTypes\FrameSkeletonHierachy.cs" />
-    <Compile Include="MafiaLib\FileTypes\BufferTypes\IndexBufferPool.cs" />
-    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionBox.cs" />
-    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionCapsule.cs" />
-    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionSphere.cs" />
-    <Compile Include="MafiaLib\FileTypes\ItemDesc\CollisionTypes\CollisionConvex.cs" />
-    <Compile Include="MafiaLib\FileTypes\ItemDesc\ItemDescParse.cs" />
-    <Compile Include="MafiaLib\FileTypes\AnimatedTexture.cs" />
-    <Compile Include="MafiaLib\FileTypes\CityAreas.cs" />
-    <Compile Include="MafiaLib\FileTypes\CityShops.cs" />
-    <Compile Include="MafiaLib\FileTypes\FrameProps.cs" />
-    <Compile Include="MafiaLib\FileTypes\Navigation\Roadmap.cs" />
-    <Compile Include="MafiaLib\FileTypes\CGameData.cs" />
-    <Compile Include="MafiaLib\FileTypes\Navigation\TAPIndices.cs" />
-    <Compile Include="MafiaLib\FileTypes\Material\MaterialLibrary.cs" />
-    <Compile Include="MafiaLib\FileTypes\Material\MaterialManager.cs" />
-    <Compile Include="MafiaLib\FileTypes\Navigation\NAV_AI.cs" />
-    <Compile Include="MafiaLib\FileTypes\PREFAB\Prefab.cs" />
-    <Compile Include="MafiaLib\FileTypes\ShopMenu2.cs" />
-    <Compile Include="MafiaLib\FileTypes\SoundSectors\SoundSector.cs" />
-    <Compile Include="MafiaLib\FileTypes\StreamMap.cs" />
-    <Compile Include="MafiaLib\FileTypes\Translokator\Translokator.cs" />
-    <Compile Include="MafiaLib\FileTypes\BufferTypes\VertexBufferPool.cs" />
+    <Compile Include="Gibbed.Illusion.FileFormats\CompressedBlockHeader.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\GenericResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\HavokResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\XBinResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\FlashResource.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\ArchiveCommonResources.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Utils\ArchiveUtils.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Version20\ResourceFunctions.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Version19\ResourceFunctions.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\ActorDefinition.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\ActorEntry.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\ActorExtraData.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\ActorFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\Types\ActorActionPointScript.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\Types\ActorCar.cs" />
+    <Compile Include="ResourceTypes\FileTypes\BufferTypes\BufferHelpers.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\Opcode\Model.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\Opcode\OpcodeException.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\Opcode\Serialization.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\Opcode\Trees.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\Opcode\TriangleMesh.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\CollisionBuilder.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeBase.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeEffects.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeFrame.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeModel.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeOmniLight.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSound_Type28.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSound_Type33.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSound_Type8.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSpotLight.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSunLight.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeTargetCamera.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk10.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk12.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk13.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk18.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk23.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk30.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk31.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk32.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk4.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk7.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeVehicle.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\Enumerators.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\Factories\CutsceneEntityFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\Factories\CutsceneKeyParamFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\Enumerators.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\IKeyType.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_0.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_13.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_18.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_19.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_28.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_30.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_43.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_6.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_Temp.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyWeatherParam.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameNameTable\FrameNameTableEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameResourceEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameResourceXML.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ItemDesc\ItemDescEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\BaseTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CoreUtils.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_Barrier.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_CloseTraffic.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_EndIf.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_Factory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_If.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_LoadSDS.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_LoadVehicle.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_OpenSlot.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_OpenTraffic.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_PlayCutscene.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_PlayVideo.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_Save.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_SetPosDirPlayer.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\StreamMapEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_Suspend.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_UnlockSDS.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_UnlockVehicle.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_WaitForMovie.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\ICommand.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\StreamMapTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\PaintCombinationTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\TableEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\TrafficEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\VehicleEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StringTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\VehiclesTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBin.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBinFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBinWriter.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\Enumerator.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\MaterialFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\MaterialParameter.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\MaterialTexture.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\Versions\IMaterial.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\Versions\Material_v58.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\Versions\Material_v57.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\Versions\Material_v63.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\AnimalTraffic.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\Enums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\HPD.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\OBJ_DATA\KynogonRuntimeMesh.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\OBJ_DATA\OBJData.cs" />
+    <Compile Include="ResourceTypes\FileTypes\SdsConfigFile.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\ActorEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\Actor.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\ActorTypes.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Animations\Animation2.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\CollisionEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\Collisions.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\Cutscene.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\FXAnimSet.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\Speech.cs" />
+    <Compile Include="ResourceTypes\FileTypes\EntityDataStorage\EntityDataStorage.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameNameTable\FrameNameTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameEntry.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameHeader.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameResource.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectArea.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectBase.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectCamera.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectCollision.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectComponent_U005.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectDeflector.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectDummy.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectFrame.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectJoint.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectLight.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectModel.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectSector.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectSingleMesh.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectTarget.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameBlendInfo.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameGeometry.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameHeaderScene.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameLOD.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameMaterial.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameSkeleton.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameSkeletonHierachy.cs" />
+    <Compile Include="ResourceTypes\FileTypes\BufferTypes\IndexBufferPool.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ItemDesc\CollisionTypes\CollisionBox.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ItemDesc\CollisionTypes\CollisionCapsule.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ItemDesc\CollisionTypes\CollisionSphere.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ItemDesc\CollisionTypes\CollisionConvex.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ItemDesc\ItemDescParse.cs" />
+    <Compile Include="ResourceTypes\FileTypes\AnimatedTexture.cs" />
+    <Compile Include="ResourceTypes\FileTypes\CityAreas.cs" />
+    <Compile Include="ResourceTypes\FileTypes\CityShops.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameProps.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\Roadmap.cs" />
+    <Compile Include="ResourceTypes\FileTypes\CGameData.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\TAPIndices.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\MaterialLibrary.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\MaterialManager.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\NAV_AI.cs" />
+    <Compile Include="ResourceTypes\FileTypes\PREFAB\Prefab.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ShopMenu2.cs" />
+    <Compile Include="ResourceTypes\FileTypes\SoundSectors\SoundSector.cs" />
+    <Compile Include="ResourceTypes\FileTypes\StreamMap.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Translokator\Translokator.cs" />
+    <Compile Include="ResourceTypes\FileTypes\BufferTypes\VertexBufferPool.cs" />
     <Compile Include="Gibbed.Illusion.FileFormats\BlockReaderStream.cs" />
     <Compile Include="Gibbed.Illusion.FileFormats\BlockWriterStream.cs" />
     <Compile Include="Gibbed.Illusion.FileFormats\FNV32.cs" />
@@ -483,8 +542,9 @@
     <Compile Include="Gibbed.Mafia2.FileFormats\Archive\ResourceType.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\PatchFile.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\TEA.cs" />
-    <Compile Include="MafiaLib\ModelHelpers\M2TStructure.cs" />
-    <Compile Include="MafiaLib\ModelHelpers\ModelDefinition.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\M2TStructure.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\M3_Experiments.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\ModelDefinition.cs" />
     <Compile Include="Rendering\Core\GizmoTool.cs" />
     <Compile Include="Rendering\Core\Profiler.cs" />
     <Compile Include="Rendering\Graphics\ConstantBufferFactory.cs" />
@@ -507,9 +567,11 @@
     <Compile Include="Rendering\Core\SpatialGrid.cs" />
     <Compile Include="Utils\Helpers\MatrixExtensions.cs" />
     <Compile Include="Utils\Helpers\BoundExtensions.cs" />
-    <Compile Include="MafiaLib\ModelHelpers\Enums.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\Enums.cs" />
     <Compile Include="Utils\Helpers\FBXHelper.cs" />
     <Compile Include="Utils\Helpers\LuaHelper.cs" />
+    <Compile Include="Utils\Helpers\Reflection\ReflectionAttributes.cs" />
+    <Compile Include="Utils\Helpers\Reflection\ReflectionHelpers.cs" />
     <Compile Include="Utils\Helpers\StreamExtensions.cs" />
     <Compile Include="Utils\Helpers\StringHelpers.cs" />
     <Compile Include="Utils\Settings\GameStorage.cs" />
@@ -519,8 +581,8 @@
     <Compile Include="Utils\Types\SDSContentFile.cs" />
     <Compile Include="Utils\Types\Types.cs" />
     <Compile Include="Utils\Helpers\VectorExtensions.cs" />
-    <Compile Include="MafiaLib\ModelHelpers\Vertex.cs" />
-    <Compile Include="MafiaLib\ModelHelpers\VertexTranslator.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\Vertex.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\VertexTranslator.cs" />
     <Compile Include="Rendering\Graphics\RenderSingleton.cs" />
     <Compile Include="Rendering\Graphics\Shaders\BaseShader.cs" />
     <Compile Include="Rendering\Graphics\Camera.cs" />
@@ -680,6 +742,12 @@
     <Content Include="libs\ICSharpCode.SharpZipLib.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="libs\oo2core_8_win64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\OodleSharp.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="libs\squish_32.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -689,6 +757,7 @@
     <Content Include="libs\UnluacNET.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="libs\zlibnet.dll" />
     <Content Include="Localisations\cz_CZ.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -720,10 +789,10 @@
     <None Include="Resources\hashes.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\m2de_logo.jpg">
+    <None Include="Resources\GameImages\m2de_logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\m2_logo.jpg">
+    <None Include="Resources\GameImages\m2_logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\MissingMaterial.dds">
@@ -744,6 +813,12 @@
     <None Include="Resources\weather_clouds.m2t">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="Resources\GameData\M1_Textures.txt" />
+    <Content Include="Resources\GameData\M3DE_ResourceNameDatabase.txt" />
+    <Content Include="Resources\GameImages\m1de_logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\games_release.xml" />
     <Content Include="Shaders\CollisionPS.hlsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -851,6 +926,9 @@
     <EmbeddedResource Include="Forms\MaterialBrowser.resx">
       <DependentUpon>MaterialBrowser.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\XBinEditor.resx">
+      <DependentUpon>XBinEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\SDSContentEditor.resx">
       <DependentUpon>SDSContentEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -902,6 +980,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

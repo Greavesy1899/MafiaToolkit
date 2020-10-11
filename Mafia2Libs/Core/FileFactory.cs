@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Core.IO
 {
@@ -8,14 +7,24 @@ namespace Core.IO
         public static FileBase ConstructFromFileInfo(FileInfo info)
         {
             string extension = info.Extension.Replace(".", "").ToUpper();
+            FileBase File = null;
+
             switch (extension)
             {
+                case "XBIN":
+                    File = new FileXBin(info);
+                    break;
+                case "XLAYBIN":
+                    File = new FileXlaybin(info);
+                    break;
                 case "CUT":
                     return new FileCutscene(info);
                 case "DDS":
-                    return new FileTextureDDS(info);
+                    File = new FileTextureDDS(info);
+                    break;
                 case "SDS":
-                    return new FileSDS(info);
+                    File = new FileSDS(info);
+                    break;
                 case "FR":
                     return new FileFrameResource(info);
                 case "MTL":
@@ -35,7 +44,8 @@ namespace Core.IO
                 case "ACT":
                     return new FileActor(info);
                 case "XML":
-                    return new FileXML(info);
+                    File = new FileXML(info);
+                    break;
                 case "BIN":
                     return new FileBin(info);
                 case "PRF":
@@ -43,6 +53,8 @@ namespace Core.IO
                 default:
                     return new FileBase(info);
             }
+
+            return File;
         }
 
     }

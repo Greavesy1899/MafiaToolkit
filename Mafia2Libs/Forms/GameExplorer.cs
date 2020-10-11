@@ -94,7 +94,6 @@ namespace Mafia2Tool
             game = GameStorage.Instance.GetSelectedGame();
             pcDirectory = new DirectoryInfo(game.Directory);
             launcher = new FileInfo(pcDirectory.FullName + "/" + GameStorage.GetExecutableName(game.GameType));
-            rootDirectory = pcDirectory.Parent;
 
             if(!launcher.Exists)
             {
@@ -122,7 +121,16 @@ namespace Mafia2Tool
         private void InitTreeView()
         {
             infoText.Text = "Building folders..";
-            rootDirectory = pcDirectory.Parent;
+
+            if (game.GameType != GamesEnumerator.MafiaIII && game.GameType != GamesEnumerator.MafiaI_DE)
+            {
+                rootDirectory = pcDirectory.Parent;
+            }
+            else
+            {
+                rootDirectory = pcDirectory;
+            }
+
             TreeNode rootTreeNode = new TreeNode(rootDirectory.Name);
             rootTreeNode.Tag = rootDirectory;
             folderView.Nodes.Add(rootTreeNode);
@@ -320,7 +328,8 @@ namespace Mafia2Tool
                 switch (item.SubItems[1].Text)
                 {
                     case "Directory":
-                        OpenDirectory((DirectoryInfo)item.Tag);
+                        var directory = (item.Tag as DirectoryBase);
+                        OpenDirectory(directory.GetDirectoryInfo());
                         return;
                     case "SDS":
                         OpenFile(item.Tag as FileBase);
@@ -545,7 +554,16 @@ namespace Mafia2Tool
         private void OnViewSmallIconClicked(object sender, EventArgs e) => FileListViewTypeController(2);
         private void OnViewListClicked(object sender, EventArgs e) => FileListViewTypeController(3);
         private void OnViewTileClicked(object sender, EventArgs e) => FileListViewTypeController(4);
-        private void UnpackAllSDSButton_Click(object sender, EventArgs e) => UnpackSDSRecurse(rootDirectory);
+        private void UnpackAllSDSButton_Click(object sender, EventArgs e)
+        {
+            DialogResult Result = MessageBox.Show("Are you sure you want to unpack all SDS Archives?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (Result == DialogResult.No)
+            {
+                return;
+            }
+
+            UnpackSDSRecurse(rootDirectory);
+        }
 
         private void OnCredits_Pressed(object sender, EventArgs e)
         {
@@ -597,7 +615,7 @@ namespace Mafia2Tool
                 var SDSFile = (file as FileSDS);
                 Debug.WriteLine("Unpacking " + info.FullName);
                 SDSFile.Open();
-                OpenSDSDirectory(SDSFile.GetUnderlyingFileInfo(), false);
+                //OpenSDSDirectory(SDSFile.GetUnderlyingFileInfo(), false);
             }
         }
 
@@ -612,12 +630,6 @@ namespace Mafia2Tool
 
         private void UnpackSDSRecurse(DirectoryInfo info)
         {
-            DialogResult Result = MessageBox.Show("Are you sure you want to unpack all SDS Archives?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if(Result == DialogResult.No)
-            {
-                return;
-            }
-
             foreach (var file in info.GetFiles())
             {
                 CheckValidSDS(file);
@@ -625,7 +637,10 @@ namespace Mafia2Tool
 
             foreach (var directory in info.GetDirectories())
             {
-                UnpackSDSRecurse(directory);
+                if (!directory.Name.Contains("BackupSDS"))
+                {
+                    UnpackSDSRecurse(directory);
+                }
             }
 
             Debug.WriteLine("Finished Unpack All SDS Function");

@@ -30,11 +30,19 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Gibbed.IO;
+using Utils.Logging;
 
 namespace Gibbed.Mafia2.ResourceFormats
 {
     public class XmlResource0
     {
+        private static readonly Dictionary<string, string> AttributeReplacement = new Dictionary<string, string>()
+        {
+            { "xmlns:xsd", "xmlns_xsd" },
+            { "xmlns:xsi", "xmlsn_xsi" },
+            { "xsi:type", "xsi_type" },
+        };
+
         public static void Serialize(Stream output, string content, Endian endian)
         {
             var nodes = new List<NodeEntry>();
@@ -296,6 +304,16 @@ namespace Gibbed.Mafia2.ResourceFormats
                     {
                         throw new FormatException("someone used __type?");
                     }
+
+                    if (attribute.Name.Type == DataType.String)
+                    {
+                        var name = (attribute.Name.Value as string);
+                        if(AttributeReplacement.ContainsKey(name))
+                        {
+                            attribute.Name.Value = AttributeReplacement[name];
+                        }
+
+                    }
                     node.Attributes.Add(attribute);
                 }
 
@@ -357,8 +375,9 @@ namespace Gibbed.Mafia2.ResourceFormats
 
                     var value = input.ReadStringZ(Encoding.UTF8);
 
-                    if (string.IsNullOrEmpty(value) || value.Contains("--") || value.Contains("\n\t >"))
+                    if (string.IsNullOrEmpty(value) || value.Contains("--") || value.Contains("\n\t >") || value.Contains("\t"))
                     {
+                        Log.WriteLine("Detect unusual special: " + value);
                         return null;
                     }
 

@@ -22,10 +22,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Gibbed.IO;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using OodleSharp;
+using ZLibNet;
 
 namespace Gibbed.Illusion.FileFormats
 {
@@ -61,9 +63,9 @@ namespace Gibbed.Illusion.FileFormats
             this._Blocks.Add(new UncompressedBlock(virtualOffset, virtualSize, dataOffset));
         }
 
-        private void AddCompressedBlock(long virtualOffset, uint virtualSize, long dataOffset, uint dataCompressedSize)
+        private void AddCompressedBlock(long virtualOffset, uint virtualSize, long dataOffset, uint dataCompressedSize, bool bIsOodle)
         {
-            this._Blocks.Add(new CompressedBlock(virtualOffset, virtualSize, dataOffset, dataCompressedSize));
+            this._Blocks.Add(new CompressedBlock(virtualOffset, virtualSize, dataOffset, dataCompressedSize, bIsOodle));
         }
 
         private bool LoadBlock(long offset)
@@ -285,13 +287,15 @@ namespace Gibbed.Illusion.FileFormats
             private readonly long _DataOffset;
             private uint _DataCompressedSize;
             private bool _IsLoaded;
+            private bool _UsesOodle;
             private byte[] _Data;
 
-            public CompressedBlock(long virtualOffset, uint virtualSize, long dataOffset, uint dataCompressedSize)
+            public CompressedBlock(long virtualOffset, uint virtualSize, long dataOffset, uint dataCompressedSize, bool bIsOodle)
                 : base(virtualOffset, virtualSize)
             {
                 this._DataOffset = dataOffset;
                 this._DataCompressedSize = dataCompressedSize;
+                this._UsesOodle = bIsOodle;
 
                 this._IsLoaded = false;
                 this._Data = null;
@@ -310,14 +314,28 @@ namespace Gibbed.Illusion.FileFormats
                     return true;
                 }
 
-                input.Seek(this._DataOffset, SeekOrigin.Begin);
-                this._Data = new byte[this.Size];
-                var inflater = new InflaterInputStream(input);
-                if (inflater.Read(this._Data, 0, this._Data.Length) != this._Data.Length)
+                // Now that the engine supports both Zlib and Oodle, we need to know the type of block.
+                // With M1: DE, we do this by adding a simple flag to the block which will be initialised
+                // during the blocks construction.
+                if (_UsesOodle)
                 {
-                    throw new InvalidOperationException();
+                    input.Seek(this._DataOffset + 96, SeekOrigin.Begin);
+                    byte[] compressedData = input.ReadBytes((int)this._DataCompressedSize);
+                    this._Data = Oodle.Decompress(compressedData, (int)this._DataCompressedSize, (int)this.Size);
                 }
-
+                else
+                {
+                    input.Seek(this._DataOffset, SeekOrigin.Begin);
+                    this._Data = new byte[this.Size];
+                    using (ZLibStream stream = new ZLibStream(input, CompressionMode.Decompress, true))
+                    {
+                        var length = stream.Read(this._Data, 0, this._Data.Length);
+                        if (length != this._Data.Length)
+                        {
+                            throw new InvalidOperationException();
+                        }
+                    }
+                }
                 this._IsLoaded = true;
                 return true;
             }
@@ -338,39 +356,6 @@ namespace Gibbed.Illusion.FileFormats
             }
         }
 
-        private struct CompressedBlockHeader
-        {
-            public uint UncompressedSize;
-            public uint Unknown04;
-            public short ChunkSize;
-            public short ChunkCount;
-            public short Unknown0C;
-            public uint CompressedSize;
-            public byte Unknown0E;
-            public byte Unknown0F;
-            public short[] Chunks;
-
-            public static CompressedBlockHeader Read(Stream input, Endian endian)
-            {
-                CompressedBlockHeader instance;
-                instance.UncompressedSize = input.ReadValueU32(endian);
-                instance.Unknown04 = input.ReadValueU32(endian);
-                instance.ChunkSize = input.ReadValueS16(endian);
-                instance.ChunkCount = input.ReadValueS16(endian);
-                instance.Unknown0C = input.ReadValueS16(endian);
-                instance.Unknown0E = input.ReadValueU8();
-                instance.Unknown0F = input.ReadValueU8();
-                instance.Chunks = new short[8];
-                instance.CompressedSize = 0;
-                for (int i = 0; i < 8; ++i)
-                {
-                    instance.Chunks[i] = input.ReadValueS16(endian);
-                    instance.CompressedSize += (uint)instance.Chunks[i];
-                }
-                return instance;
-            }
-        }
-
         public const uint Signature = 0x6C7A4555; // 'zlEU'
 
         public static BlockReaderStream FromStream(Stream baseStream, Endian endian)
@@ -381,7 +366,10 @@ namespace Gibbed.Illusion.FileFormats
             var alignment = baseStream.ReadValueU32(endian);
             var flags = baseStream.ReadValueU8();
 
-            if (magic != Signature || /*alignment != 0x4000 ||*/ flags != 4)
+            // We can check if this particular block uses Oodle compression.
+            bool bUsesOodleCompression = (alignment & (0x1000000)) != 0;
+
+            if (magic != Signature || flags != 4)
             {
                 throw new InvalidOperationException();
             }
@@ -399,34 +387,37 @@ namespace Gibbed.Illusion.FileFormats
 
                 if (isCompressed == true)
                 {
+                    // TODO: Consider if we can check if this is still a valid header.
                     var compressedBlockHeader = CompressedBlockHeader.Read(baseStream, endian);
-                    if (compressedBlockHeader.Unknown04 != 32 ||
-                        compressedBlockHeader.Unknown0C != 1 ||
-                        compressedBlockHeader.Unknown0E != 15 ||
-                        compressedBlockHeader.Unknown0F != 8)
+                    int HeaderSize = (int)compressedBlockHeader.HeaderSize;
+                    Debug.Assert(HeaderSize != 32 || HeaderSize != 128, "The CompressedBlockheader did not equal 32 or 128.");
+
+                    // Make sure the Size equals CompressedSize on the block header.
+                    if (size - HeaderSize != compressedBlockHeader.CompressedSize)
                     {
                         throw new InvalidOperationException();
                     }
 
-                    if (size - 32 != compressedBlockHeader.CompressedSize)
-                    {
-                        throw new InvalidOperationException();
-                    }
-
+                    bool bIsUsingOodleCompression = (HeaderSize == 128 && bUsesOodleCompression);
                     long compressedPosition = baseStream.Position;
                     uint remainingUncompressedSize = compressedBlockHeader.UncompressedSize;
+
                     for (int i = 0; i < compressedBlockHeader.ChunkCount; ++i)
                     {
-                        uint UncompressedSize = Math.Min(alignment, remainingUncompressedSize);
+                        uint UncompressedSize = remainingUncompressedSize;
                         instance.AddCompressedBlock(virtualOffset,
                                                     UncompressedSize, //compressedBlockHeader.UncompressedSize,
                                                     compressedPosition,
-                                                    (uint)compressedBlockHeader.Chunks[i]);
-                        compressedPosition += (uint)compressedBlockHeader.Chunks[i];
+                                                    compressedBlockHeader.Chunks[i],
+                                                    bIsUsingOodleCompression);
+                        compressedPosition += compressedBlockHeader.Chunks[i];
                         virtualOffset += UncompressedSize;
                         remainingUncompressedSize -= alignment;
                     }
-                    baseStream.Seek(compressedBlockHeader.CompressedSize, SeekOrigin.Current);
+
+                    // TODO: Consider if there is a better option for this.
+                    int SeekStride = (compressedBlockHeader.HeaderSize == 128 ? 96 : 0);
+                    baseStream.Seek(compressedBlockHeader.CompressedSize + SeekStride, SeekOrigin.Current);
                 }
                 else
                 {

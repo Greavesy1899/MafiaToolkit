@@ -6,7 +6,7 @@ using Utils.Language;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Mafia2Tool.Forms;
-using Core.IO;
+using Mafia2Tool.MafiaLib.ModelHelpers;
 
 namespace Mafia2Tool
 {
@@ -24,7 +24,10 @@ namespace Mafia2Tool
             Language.ReadLanguageXML();
             CheckLatestRelease();
 
-            if(ToolkitSettings.SkipGameSelector)
+ //M3_ExperimentalTests Experiments = new M3_ExperimentalTests();
+ //Experiments.ReadPrerequisites();
+
+            if (ToolkitSettings.SkipGameSelector)
             {
                 GameStorage.Instance.SetSelectedGameByIndex(ToolkitSettings.DefaultGame);
                 OpenGameExplorer();

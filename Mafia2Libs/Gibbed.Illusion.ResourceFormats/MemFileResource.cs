@@ -32,39 +32,43 @@ namespace Gibbed.Mafia2.ResourceFormats
 {
     public class MemFileResource : IResourceType
     {
+        public uint Unk0_V4;
         public string Name;
         public uint Unk1;
+        public uint Unk2_V4;
         public byte[] Data;
 
         public void Serialize(ushort version, Stream output, Endian endian)
         {
+            if(version == 4)
+            {
+                output.WriteValueU32(Unk0_V4);
+            }
             output.WriteStringU32(this.Name, endian);
             output.WriteValueU32(this.Unk1, endian);
+            if (version == 4)
+            {
+                output.WriteValueU32(Unk2_V4);
+            }
             output.WriteValueS32(this.Data.Length, endian);
             output.WriteBytes(this.Data);
         }
 
         public void Deserialize(ushort version, Stream input, Endian endian)
         {
+            if (version == 4)
+            {
+                Unk0_V4 = input.ReadValueU32(endian);
+            }
             this.Name = input.ReadStringU32(endian);
             this.Unk1 = input.ReadValueU32(endian);
             if (this.Unk1 != 1)
             {
                 throw new InvalidOperationException();
             }
-            uint size = input.ReadValueU32(endian);
-            this.Data = input.ReadBytes((int)size);
-        }
-
-        public void Deserialize(byte[] data, Endian endian)
-        {
-            MemoryStream input = new MemoryStream(data);
-
-            this.Name = input.ReadStringU32(endian);
-            this.Unk1 = input.ReadValueU32(endian);
-            if (this.Unk1 != 1)
+            if (version == 4)
             {
-                throw new InvalidOperationException();
+                Unk2_V4 = input.ReadValueU32(endian);
             }
             uint size = input.ReadValueU32(endian);
             this.Data = input.ReadBytes((int)size);

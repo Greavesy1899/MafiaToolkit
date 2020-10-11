@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Windows.Documents;
 
 namespace Utils.StringHelpers
 {
@@ -47,9 +49,22 @@ namespace Utils.StringHelpers
             return newString;
         }
 
+        public static string ReadStringEncoded(BinaryReader reader)
+        {
+            List<byte> StringBytes = new List<byte>();
+
+            while (reader.PeekChar() != '\0')
+            {
+                StringBytes.Add(reader.ReadByte());
+            }
+            reader.ReadByte();
+            return Encoding.UTF8.GetString(StringBytes.ToArray());
+        }
+
         public static string ReadStringBuffer(BinaryReader reader, int size)
         {
-            return new string(reader.ReadChars(size));
+            string Result = new string(reader.ReadChars(size));
+            return Result.Trim('\0');
         }
 
         public static void WriteStringBuffer(BinaryWriter writer, int size, string text, char trim = ' ', Encoding encoding = null)

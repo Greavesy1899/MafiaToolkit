@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using Gibbed.Illusion.FileFormats;
 using Gibbed.IO;
+using Utils.Settings;
 
 namespace Gibbed.Mafia2.ResourceFormats
 {
@@ -39,6 +40,8 @@ namespace Gibbed.Mafia2.ResourceFormats
         public bool Unk3;
 
         public string Content;
+
+        public bool bFailedToDecompile = false;
 
         public void Serialize(ushort version, Stream output, Endian endian)
         {
@@ -57,12 +60,19 @@ namespace Gibbed.Mafia2.ResourceFormats
             }
             if (this.Unk3 == false)
             {
-                XmlResource0.Serialize(output, this.Content, endian);
+                if (!bFailedToDecompile)
+                {
+                    XmlResource0.Serialize(output, this.Content, endian);
+                }
+                else
+                {
+                    byte[] data = File.ReadAllBytes(this.Content);
+                    output.WriteBytes(data);
+                }
             }
             else
             {
-                //todo
-                //XmlResource1.Serialize(output, this.Content, endian);
+                XmlResource1.Serialize(output, this.Content, endian);
             }
         }
 
@@ -73,13 +83,24 @@ namespace Gibbed.Mafia2.ResourceFormats
             this.Name = input.ReadStringU32(endian);
             this.Unk3 = version >= 2 ? input.ReadValueU8() != 0 : false;
 
+            // Super hacky solution to unpack XMLs with xml:xsi etc.
             if (this.Unk3 == false)
             {
-                this.Content = XmlResource0.Deserialize(input, endian);
+                long currentPositon = input.Position;
+
+                try
+                {
+                    this.Content = XmlResource0.Deserialize(input, endian);
+                }
+                catch(Exception ex)
+                {
+                    input.Position = currentPositon;
+                    Console.WriteLine(ex.Message);
+                    bFailedToDecompile = true;
+                }
             }
             else
             {
-                //todo
                 this.Content = XmlResource1.Deserialize(input, endian);
             }
         }

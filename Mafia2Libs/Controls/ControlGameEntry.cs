@@ -32,7 +32,13 @@ namespace Mafia2Tool.Controls
             Label_GameName.Text = game.Name;
             Label_GameDescription.Text = game.Description;
             Label_GameType.Text = game.GameType.ToString();
-            Picture_GameIcon.Image = Image.FromFile(game.Logo);
+
+            if(File.Exists(game.Logo))
+            {
+                Picture_GameIcon.Image = Image.FromFile(game.Logo);
+                Label_MissingImage.Visible = false;
+            }
+
             TextBox_FolderPath.Text = game.Directory;
             ValidatePath();
         }
