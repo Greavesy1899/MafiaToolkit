@@ -67,6 +67,12 @@ namespace Utils.Helpers.Reflection
         {
             object TypedObject = Activator.CreateInstance(ElementType);
 
+            if(ElementType.GetProperties().Length == 0)
+            {
+                TypedObject = Convert.ChangeType(Node.Value, ElementType);
+                return TypedObject;
+            }
+
             foreach (PropertyInfo Info in ElementType.GetProperties())
             {
                 // Check if this Property has been flagged to be ignored.
@@ -90,7 +96,22 @@ namespace Utils.Helpers.Reflection
                     }
                     else if(Info.PropertyType.IsArray)
                     {
-                        InternalConvertProperty(Node, Info.PropertyType);
+                        // Get Element.
+                        XElement Element = Node.Element(Info.Name);
+
+                        // Create an Array using the element type of the array, with the number of elements to set the length.
+                        Array ArrayObject = Array.CreateInstance(Info.PropertyType.GetElementType(), Element.Elements().Count());
+
+                        // Iterate through the elements, construct the object using our reflection system and push them into the array.
+                        for (int i = 0; i < ArrayObject.Length; i++)
+                        {
+                            object ElementObject = InternalConvertProperty(Element.Elements().ElementAt(i), Info.PropertyType.GetElementType());
+                            ArrayObject.SetValue(ElementObject, i);
+                        }
+
+                        // Finally, replace the array on our TypedObject.
+                        TypedObject.GetType().GetProperty(Info.Name).SetValue(TypedObject, ArrayObject);
+                        continue;
                     }
                     else
                     {
@@ -126,7 +147,7 @@ namespace Utils.Helpers.Reflection
 
                 // If the ObjectType has no properties, then just attempt to write.
                 // TODO: Consider if this is actually a good idea?
-                // Maybe there is a way of determing if it is a type like char, byte, int32 etc.
+                // Maybe there is a way of determine if it is a type like char, byte, int32 etc.
                 if (ObjectType.GetProperties().Length == 0)
                 {
                     // Set the value and early return. We know we have no properties so no need to carry on.
