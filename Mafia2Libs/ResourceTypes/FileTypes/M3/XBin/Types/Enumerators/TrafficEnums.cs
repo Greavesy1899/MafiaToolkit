@@ -2,31 +2,24 @@
 
 namespace ResourceTypes.M3.XBin
 {
-
     [Flags]
     public enum ETrafficCommonFlags : uint
     {
-        //time periods
+        // Time Periods
         E_TCF_TIME_PREREVOLUTION = 0x1,
         E_TCF_TIME_REVOLUTION = 0x2,
         E_TCF_TIME_FIFTIES = 0x4,
         E_TCF_TIME_SIXTIES = 0x8,
 
-        //locations
+        // Locations
         E_TCF_LOC_BOURBONCITY = 0x10,
         E_TCF_LOC_PUERTOLIBRE = 0x20,
         E_TCF_LOC_EMPIREBAY = 0x40,
         E_TCF_LOC_SAIGON = 0x80,
 
-        E_TCF_LOC_LOSTHEAVEN = 0x100,
+        E_TCF_TIME_FREERIDE = 0x1000,
 
-        E_TCF_LOC_UNKNOWN_01 = 0x200,
-        E_TCF_LOC_UNKNOWN_02 = 0x400,
-        E_TCF_LOC_UNKNOWN_03 = 0x800,
-        E_TCF_LOC_LOST_HEAVEN = 0x1000,
-
-        // Freeride
-        E_TCF_FREERIDE = 0x10000
+        E_TCF_LOC_LOSTHEAVEN = 0x10000
     }
 
     [Flags]

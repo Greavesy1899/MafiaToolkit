@@ -21,6 +21,10 @@ namespace ResourceTypes.FileTypes.M3.XBin
                     XBinData = new VehicleTable(); // VehicleTable
                     XBinData.ReadFromFile(reader);
                     break;
+                //case 0xDC327944DD83627E: // TODO: Fix for M1: DE. look for 0xA for PaintCombination array entries.
+                //    XBinData = new PaintCombinationsTable(); // PaintCombinations
+                //    XBinData.ReadFromFile(reader);
+                //    break;
                 default:
                     throw new Exception("We lack the support for this type.");
                     break;

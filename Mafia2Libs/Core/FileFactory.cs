@@ -14,6 +14,9 @@ namespace Core.IO
                 case "XBIN":
                     File = new FileXBin(info);
                     break;
+                case "XLAYBIN":
+                    File = new FileXlaybin(info);
+                    break;
                 case "CUT":
                     return new FileCutscene(info);
                 case "DDS":

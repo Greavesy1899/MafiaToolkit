@@ -28,5 +28,6 @@ namespace ResourceTypes.M3.XBin
         E_VTFF_NO_FLIPOVER = 0x80000,
         E_VTFF_UNDRIVEABLE = 0x100000,
         E_VTFF_VISIBLE_CARGO_SPACE = 0x200000,
+		E_VTFF_SINGLE_SEATER = 0x400000,
     }
 }

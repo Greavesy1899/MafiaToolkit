@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿using ResourceTypes.FileTypes.M3.XBin;
+using System.IO;
+using System.Windows.Forms;
+using System.Xml.Linq;
+using Utils.Helpers.Reflection;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.M3.XBin
@@ -12,20 +16,13 @@ namespace ResourceTypes.M3.XBin
         public string CarName { get; set; }
         public int[] ColorIndex { get; set; }
 
-        public void WriteText(StreamWriter writer)
+        public override string ToString()
         {
-            writer.WriteLine("Start --------------------------------");
-            writer.WriteLine("ID: {0}", ID);
-            writer.WriteLine("CarName: {0}", CarName);
-            foreach (var index in ColorIndex)
-            {
-                writer.WriteLine("ColorIndex: {0}", index);
-            }
-            writer.WriteLine("End --------------------------------");
+            return string.Format("{0} {1}", ID, CarName);
         }
     }
 
-    public class PaintCombinationsTable
+    public class PaintCombinationsTable : BaseTable
     {
         public PaintCombinationsTableItem[] PaintCombinations { get; set; }
 
@@ -55,6 +52,72 @@ namespace ResourceTypes.M3.XBin
                     item.ColorIndex[z] = reader.ReadInt32();
                 }
                 PaintCombinations[i] = item;
+            }
+        }
+
+        public void WriteToFile(XBinWriter writer)
+        {
+            writer.Write(PaintCombinations.Length);
+            writer.Write(PaintCombinations.Length);
+
+            for(int i = 0; i < PaintCombinations.Length; i++)
+            {
+                PaintCombinationsTableItem Item = PaintCombinations[i];
+                writer.Write(Item.ID);
+                writer.Write(Item.Unk01);
+                writer.Write(Item.MinOccurs);
+                writer.Write(Item.MaxOccurs);
+                StringHelpers.WriteString32(writer, Item.CarName);
+            }
+
+            for (int i = 0; i < PaintCombinations.Length; i++)
+            {
+                PaintCombinationsTableItem Item = PaintCombinations[i];
+                for (int z = 0; z < Item.MaxOccurs; z++)
+                {
+                    writer.Write(Item.ColorIndex[z]);
+                }
+            }
+        }
+
+        public void ReadFromXML(string file)
+        {
+            XElement Root = XElement.Load(file);
+            PaintCombinationsTable TableInformation = ReflectionHelpers.ConvertToPropertyFromXML<PaintCombinationsTable>(Root);
+            this.PaintCombinations = TableInformation.PaintCombinations;
+        }
+
+        public void WriteToXML(string file)
+        {
+            XElement RootElement = ReflectionHelpers.ConvertPropertyToXML(this);
+            RootElement.Save(file, SaveOptions.None);
+        }
+
+        public TreeNode GetAsTreeNodes()
+        {
+            TreeNode Root = new TreeNode();
+            Root.Text = "Paint Combinations Table";
+
+            foreach (var Item in PaintCombinations)
+            {
+                TreeNode ChildNode = new TreeNode();
+                ChildNode.Tag = Item;
+                ChildNode.Text = Item.ToString();
+                Root.Nodes.Add(ChildNode);
+            }
+
+            return Root;
+        }
+
+        public void SetFromTreeNodes(TreeNode Root)
+        {
+            PaintCombinations = new PaintCombinationsTableItem[Root.Nodes.Count];
+
+            for (int i = 0; i < PaintCombinations.Length; i++)
+            {
+                TreeNode ChildNode = Root.Nodes[i];
+                PaintCombinationsTableItem Entry = (PaintCombinationsTableItem)ChildNode.Tag;
+                PaintCombinations[i] = Entry;
             }
         }
     }
