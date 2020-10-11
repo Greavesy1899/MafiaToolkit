@@ -21,6 +21,22 @@ namespace ResourceTypes.FileTypes.M3.XBin
                     XBinData = new VehicleTable(); // VehicleTable
                     XBinData.ReadFromFile(reader);
                     break;
+                case 0x3759788EC437536C: // CarGearboxTable
+                    XBinData = new CarGearBoxesTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0xF5D56763013A2B0A: // CarInteriorColorsTable
+                    XBinData = new CarInteriorColorsTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x44FA070D73C43CBD: // CarTrafficTuningTable for M1:DE
+                    XBinData = new CarTrafficTuningTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x44FA070D55388F65: // CarTrafficTuningTable for M3
+                    XBinData = new CarTrafficTuningTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
                 //case 0xDC327944DD83627E: // TODO: Fix for M1: DE. look for 0xA for PaintCombination array entries.
                 //    XBinData = new PaintCombinationsTable(); // PaintCombinations
                 //    XBinData.ReadFromFile(reader);

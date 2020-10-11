@@ -88,6 +88,10 @@ namespace Utils.Helpers.Reflection
                         Info.SetValue(TypedObject, Value);
                         continue;
                     }
+                    else if(Info.PropertyType.IsArray)
+                    {
+                        InternalConvertProperty(Node, Info.PropertyType);
+                    }
                     else
                     {
                         Info.SetValue(TypedObject, Convert.ChangeType(NodeContent, Info.PropertyType));
@@ -119,6 +123,16 @@ namespace Utils.Helpers.Reflection
             else
             {
                 XElement Element = new XElement(ObjectType.Name);
+
+                // If the ObjectType has no properties, then just attempt to write.
+                // TODO: Consider if this is actually a good idea?
+                // Maybe there is a way of determing if it is a type like char, byte, int32 etc.
+                if (ObjectType.GetProperties().Length == 0)
+                {
+                    // Set the value and early return. We know we have no properties so no need to carry on.
+                    Element.SetValue(PropertyData);
+                    return Element;
+                }
 
                 foreach (PropertyInfo Info in ObjectType.GetProperties())
                 {
