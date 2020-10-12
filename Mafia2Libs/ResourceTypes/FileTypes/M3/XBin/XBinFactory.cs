@@ -41,6 +41,18 @@ namespace ResourceTypes.FileTypes.M3.XBin
                     XBinData = new CarTuningModificatorsTable();
                     XBinData.ReadFromFile(reader);
                     break;
+                case 0x2793BB7847F84081: // GameMeshBindingTable
+                    XBinData = new GameMeshBindingTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x493DEA76C9A390F0: // SlotTable
+                    XBinData = new SlotTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0xB77D0A522C8E12A3: // MissionsTable
+                    XBinData = new MissionsTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
                 //case 0xDC327944DD83627E: // TODO: Fix for M1: DE. look for 0xA for PaintCombination array entries.
                 //    XBinData = new PaintCombinationsTable(); // PaintCombinations
                 //    XBinData.ReadFromFile(reader);

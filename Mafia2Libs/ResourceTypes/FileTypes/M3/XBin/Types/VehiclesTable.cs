@@ -43,6 +43,14 @@ namespace ResourceTypes.M3.XBin
         public float TrunkDockOffsetX { get; set; }
         public float TrunkDockOffsetY { get; set; }
 
+        public VehicleTableItem()
+        {
+            ModelName = "";
+            BrandNameUI = "";
+            ModelNameUI = "";
+            LogoNameUI = "";
+        }
+
         public override string ToString()
         {
             return string.Format("{0} {1}", ID, ModelName);

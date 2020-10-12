@@ -38,7 +38,7 @@ namespace ResourceTypes.M3.XBin
 
         public void WriteToFile(FileInfo file)
         {
-            using(XBinWriter writer = new XBinWriter(File.Open(file.FullName, FileMode.Open)))
+            using(XBinWriter writer = new XBinWriter(File.Open(file.FullName, FileMode.Create)))
             {
                 InternalWriteToFile(writer);
             }

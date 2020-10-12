@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
 
-namespace ResourceTypes.FileTypes.M3.XBin
+namespace ResourceTypes.M3.XBin
 {
     public class XBinWriter : BinaryWriter
     {

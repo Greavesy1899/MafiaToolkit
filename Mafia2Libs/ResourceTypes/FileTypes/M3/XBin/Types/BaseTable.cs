@@ -1,5 +1,4 @@
-﻿using ResourceTypes.FileTypes.M3.XBin;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
 
 namespace ResourceTypes.M3.XBin

@@ -1,5 +1,4 @@
-﻿using ResourceTypes.FileTypes.M3.XBin;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Helpers.Reflection;
