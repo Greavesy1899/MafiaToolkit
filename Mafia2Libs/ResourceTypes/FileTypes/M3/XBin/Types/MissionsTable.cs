@@ -4,7 +4,6 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
-using Utils.Settings;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.M3.XBin
@@ -43,7 +42,6 @@ namespace ResourceTypes.M3.XBin
     public class MissionsTable : BaseTable
     {
         private MissionItem[] missions;
-        private GamesEnumerator gameVersion;
 
         public MissionItem[] Missions {
             get { return missions; }
@@ -53,7 +51,6 @@ namespace ResourceTypes.M3.XBin
         public MissionsTable()
         {
             missions = new MissionItem[0];
-            gameVersion = GameStorage.Instance.GetSelectedGame().GameType;
         }
 
         public void ReadFromFile(BinaryReader reader)

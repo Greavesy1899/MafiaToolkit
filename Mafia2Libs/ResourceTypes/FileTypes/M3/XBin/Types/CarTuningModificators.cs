@@ -2,7 +2,6 @@
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Helpers.Reflection;
-using Utils.Settings;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -23,7 +22,6 @@ namespace ResourceTypes.M3.XBin
     public class CarTuningModificatorsTable : BaseTable
     {
         private CarTuningModificatorsItem[] modificators;
-        private GamesEnumerator gameVersion;
 
         public CarTuningModificatorsItem[] TuningModificators {
             get { return modificators; }
@@ -33,7 +31,6 @@ namespace ResourceTypes.M3.XBin
         public CarTuningModificatorsTable()
         {
             modificators = new CarTuningModificatorsItem[0];
-            gameVersion = GameStorage.Instance.GetSelectedGame().GameType;
         }
 
         public void ReadFromFile(BinaryReader reader)

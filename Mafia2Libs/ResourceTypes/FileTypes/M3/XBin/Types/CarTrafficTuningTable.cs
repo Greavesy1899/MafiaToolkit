@@ -4,7 +4,6 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
-using Utils.Settings;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -35,7 +34,6 @@ namespace ResourceTypes.M3.XBin
     public class CarTrafficTuningTable : BaseTable
     {
         private CarTrafficTuningItem[] traffic_tunings;
-        private GamesEnumerator gameVersion;
 
         public CarTrafficTuningItem[] TrafficTuning {
             get { return traffic_tunings; }
@@ -45,7 +43,6 @@ namespace ResourceTypes.M3.XBin
         public CarTrafficTuningTable()
         {
             traffic_tunings = new CarTrafficTuningItem[0];
-            gameVersion = GameStorage.Instance.GetSelectedGame().GameType;
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -90,16 +87,15 @@ namespace ResourceTypes.M3.XBin
             writer.Write(0);
 
             int i = 0;
-            int k = traffic_tunings.Length * 40 - 4; // 40 entry size
+            long[] offsets = new long[traffic_tunings.Length];
             foreach (var tuning in traffic_tunings)
             {
                 CarTrafficTuningItem Item = traffic_tunings[i];
-                //updating offset and count :)
-                Item.CollectionOffset = k;
                 Item.CollectionCount1 = Item.TuningItems.Length;
                 Item.CollectionCount2 = Item.TuningItems.Length;
                 writer.Write(Item.ID);
-                writer.Write(Item.CollectionOffset);
+                offsets[i] = writer.BaseStream.Position;
+                writer.Write(0xDEADBEEF); //placeholder
                 writer.Write(Item.TuningItems.Length);
                 writer.Write(Item.TuningItems.Length);
                 writer.Write(Item.VehicleID);
@@ -108,17 +104,25 @@ namespace ResourceTypes.M3.XBin
                 writer.Write(Item.Weight);
                 writer.Write(Item.NameHash);
                 i++;
-                k -= Item.TuningItems.Length * sizeof(int);
             }
 
             for (int j = 0; j < traffic_tunings.Length; j++)
             {
                 CarTrafficTuningItem Item = traffic_tunings[j];
+                uint thisPosition = (uint)(writer.BaseStream.Position);
+
                 for (int z = 0; z < Item.CollectionCount1; z++)
                 {
                     writer.Write(Item.TuningItems[z]);
                 }
+
+                long currentPosition = writer.BaseStream.Position;
+                writer.BaseStream.Position = offsets[j];
+                var offset = (uint)(thisPosition - offsets[j]);
+                writer.Write(offset);
+                writer.BaseStream.Position = currentPosition;
             }
+            offsets = new long[0];
         }
 
         public void ReadFromXML(string file)
@@ -139,7 +143,7 @@ namespace ResourceTypes.M3.XBin
             TreeNode Root = new TreeNode();
             Root.Text = "CarTrafficTuningTable";
 
-            foreach(var Item in TrafficTuning)
+            foreach (var Item in TrafficTuning)
             {
                 TreeNode ChildNode = new TreeNode();
                 ChildNode.Tag = Item;

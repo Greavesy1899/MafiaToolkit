@@ -2,7 +2,6 @@
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Helpers.Reflection;
-using Utils.Settings;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -20,7 +19,6 @@ namespace ResourceTypes.M3.XBin
     public class GameMeshBindingTable : BaseTable
     {
         private GameMeshBindingItem[] bindings;
-        private GamesEnumerator gameVersion;
 
         public GameMeshBindingItem[] MeshBindings {
             get { return bindings; }
@@ -30,7 +28,6 @@ namespace ResourceTypes.M3.XBin
         public GameMeshBindingTable()
         {
             bindings = new GameMeshBindingItem[0];
-            gameVersion = GameStorage.Instance.GetSelectedGame().GameType;
         }
 
         public void ReadFromFile(BinaryReader reader)

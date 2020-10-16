@@ -46,7 +46,7 @@ namespace ResourceTypes.M3.XBin
         public CarInteriorColorsTable()
         {
             colors = new CarInteriorColorsItem[0];
-            gameVersion = GameStorage.Instance.GetSelectedGame().GameType;
+            gameVersion = gameVersion = GameStorage.Instance.GetSelectedGame().GameType;
         }
 
         public void ReadFromFile(BinaryReader reader)

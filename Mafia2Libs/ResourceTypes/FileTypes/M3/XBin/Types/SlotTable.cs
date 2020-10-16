@@ -4,7 +4,6 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
-using Utils.Settings;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.M3.XBin
@@ -40,7 +39,6 @@ namespace ResourceTypes.M3.XBin
     public class SlotTable : BaseTable
     {
         private SlotItem[] slots;
-        private GamesEnumerator gameVersion;
 
         public SlotItem[] Slots {
             get { return slots; }
@@ -50,7 +48,6 @@ namespace ResourceTypes.M3.XBin
         public SlotTable()
         {
             slots = new SlotItem[0];
-            gameVersion = GameStorage.Instance.GetSelectedGame().GameType;
         }
 
         public void ReadFromFile(BinaryReader reader)

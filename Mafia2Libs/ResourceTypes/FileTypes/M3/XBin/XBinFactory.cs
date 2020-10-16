@@ -53,6 +53,14 @@ namespace ResourceTypes.FileTypes.M3.XBin
                     XBinData = new MissionsTable();
                     XBinData.ReadFromFile(reader);
                     break;
+                case 0x3990790678078A1C: // GenericSpeechSituations
+                    XBinData = new GenericSpeechSituationsTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0xEF795C84CA85E193: // CharacterCinematicsTable
+                    XBinData = new CharacterCinematicsTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
                 //case 0xDC327944DD83627E: // TODO: Fix for M1: DE. look for 0xA for PaintCombination array entries.
                 //    XBinData = new PaintCombinationsTable(); // PaintCombinations
                 //    XBinData.ReadFromFile(reader);

@@ -2,7 +2,6 @@
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Utils.Helpers.Reflection;
-using Utils.Settings;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.M3.XBin
@@ -49,7 +48,6 @@ namespace ResourceTypes.M3.XBin
     public class CarGearBoxesTable : BaseTable
     {
         private CarGearBoxesItem[] gearboxes;
-        private GamesEnumerator gameVersion;
 
         public CarGearBoxesItem[] Gearboxes {
             get { return gearboxes; }
@@ -59,7 +57,6 @@ namespace ResourceTypes.M3.XBin
         public CarGearBoxesTable()
         {
             gearboxes = new CarGearBoxesItem[0];
-            gameVersion = GameStorage.Instance.GetSelectedGame().GameType;
         }
 
         public void ReadFromFile(BinaryReader reader)
