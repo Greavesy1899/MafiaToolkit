@@ -13,7 +13,7 @@ namespace ResourceTypes.FrameResource
 {
     public class FrameObjectBase : FrameEntry
     {
-        protected Hash name;
+        protected HashName name;
         protected int secondaryFlags;
         protected short unk3;
         protected ParentStruct parentIndex1;
@@ -43,7 +43,7 @@ namespace ResourceTypes.FrameResource
             set { children = value; }
         }
 
-        public Hash Name {
+        public HashName Name {
             get { return name; }
             set { name = value; }
         }
@@ -102,7 +102,7 @@ namespace ResourceTypes.FrameResource
         public FrameObjectBase() : base()
         {
             //do example name.
-            name = new Hash("NewObject");
+            name = new HashName("NewObject");
             secondaryFlags = 1;
             localTransform = Matrix.Identity;
             worldTransform = Matrix.Identity;
@@ -114,7 +114,7 @@ namespace ResourceTypes.FrameResource
 
         public FrameObjectBase(FrameObjectBase other) : base(other)
         {
-            name = new Hash(other.name.String);
+            name = new HashName(other.name.String);
             secondaryFlags = other.secondaryFlags;
             localTransform = other.localTransform;
             worldTransform = other.worldTransform;
@@ -128,7 +128,7 @@ namespace ResourceTypes.FrameResource
 
         public virtual void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            name = new Hash(stream, isBigEndian);
+            name = new HashName(stream, isBigEndian);
             secondaryFlags = stream.ReadInt32(isBigEndian);
             localTransform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
             unk3 = stream.ReadInt16(isBigEndian);
@@ -138,9 +138,9 @@ namespace ResourceTypes.FrameResource
 
             if (SceneData.FrameProperties != null)
             {
-                if (SceneData.FrameProperties.FrameExtraData.ContainsKey(name.uHash))
+                if (SceneData.FrameProperties.FrameExtraData.ContainsKey(name.Hash))
                 {
-                    extraData = SceneData.FrameProperties.FrameExtraData[name.uHash].Data;
+                    extraData = SceneData.FrameProperties.FrameExtraData[name.Hash].Data;
                 }
             }
         }

@@ -55,7 +55,7 @@ namespace ResourceTypes.Materials
                 for (int i = 0; i != numMats; i++)
                 {
                     IMaterial mat = MaterialFactory.ReadMaterialFromFile(reader, version);
-                    materials.Add(mat.MaterialName.uHash, mat);
+                    materials.Add(mat.MaterialName.Hash, mat);
                 }
             }
         }

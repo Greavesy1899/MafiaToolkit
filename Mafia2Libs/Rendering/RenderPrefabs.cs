@@ -15,11 +15,11 @@ namespace Rendering
             GizmoBlue = new IMaterial();
             GizmoGreen = new IMaterial();
             GizmoRed.MaterialName.String = "GizmoRed";
-            GizmoRed.MaterialName.uHash = 1337;
+            GizmoRed.MaterialName.Hash = 1337;
             GizmoBlue.MaterialName.String = "GizmoBlue";
-            GizmoBlue.MaterialName.uHash = 1338;
+            GizmoBlue.MaterialName.Hash = 1338;
             GizmoGreen.MaterialName.String = "GizmoGreen";
-            GizmoGreen.MaterialName.uHash = 1339;
+            GizmoGreen.MaterialName.Hash = 1339;
             GizmoRed.ShaderID = GizmoBlue.ShaderID = GizmoGreen.ShaderID = 3854590933660942049;
             GizmoRed.ShaderHash = GizmoBlue.ShaderHash = GizmoGreen.ShaderHash = 601151254;
 

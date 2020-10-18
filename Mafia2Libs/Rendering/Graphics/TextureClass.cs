@@ -103,11 +103,11 @@ namespace Rendering.Graphics
             ulong SamplerHash = 0;
             if (material != null)
             {
-                Hash TextureHash = material.GetTextureByID("S000");
+                HashName TextureHash = material.GetTextureByID("S000");
 
                 if (TextureHash != null)
                 {
-                    SamplerHash = TextureHash.uHash;
+                    SamplerHash = TextureHash.Hash;
 
                     // If our storage doesn't contain a thumbnail, then we go ahead and produce another.
                     if (!RenderStorageSingleton.Instance.TextureThumbnails.TryGetValue(SamplerHash, out Thumbnail))

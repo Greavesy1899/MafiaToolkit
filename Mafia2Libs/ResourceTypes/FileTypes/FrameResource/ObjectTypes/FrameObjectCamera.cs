@@ -65,13 +65,13 @@ namespace ResourceTypes.FrameResource
         public class LensData
         {
             float[] unkFloats;
-            Hash unkHash;
+            HashName unkHash;
 
             public float[] UnkFloats {
                 get { return unkFloats; }
                 set { unkFloats = value; }
             }
-            public Hash UnkHash {
+            public HashName UnkHash {
                 get { return unkHash; }
                 set { unkHash = value; }
             }
@@ -83,7 +83,7 @@ namespace ResourceTypes.FrameResource
                 for (int i = 0; i != 5; i++)
                     unkFloats[i] = reader.ReadSingle(isBigEndian);
 
-                unkHash = new Hash(reader, isBigEndian);
+                unkHash = new HashName(reader, isBigEndian);
             }
 
             public void WriteToFile(BinaryWriter writer)

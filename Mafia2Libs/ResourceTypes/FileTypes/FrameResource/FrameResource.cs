@@ -97,7 +97,7 @@ namespace ResourceTypes.FrameResource
         public FrameHeaderScene AddSceneFolder(string name)
         {
             FrameHeaderScene scene = new FrameHeaderScene();
-            scene.Name = new Utils.Types.Hash(name);
+            scene.Name = new Utils.Types.HashName(name);
             header.SceneFolders.Add(scene);
             frameScenes.Add(scene.RefID, scene);
             return scene;
@@ -501,8 +501,8 @@ namespace ResourceTypes.FrameResource
                 {
                     using (var stream = new MemoryStream())
                     {
-                        SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.uHash).WriteToFile(stream, false);
-                        SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.uHash).WriteToFile(stream, false);
+                        SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
+                        SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
                         writer.Write(stream.ToArray());
                     }
                 }
@@ -524,8 +524,8 @@ namespace ResourceTypes.FrameResource
                 {
                     using (var stream = new MemoryStream())
                     {
-                        SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.uHash).WriteToFile(stream, false);
-                        SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.uHash).WriteToFile(stream, false);
+                        SceneData.IndexBufferPool.GetBuffer(lod.IndexBufferRef.Hash).WriteToFile(stream, false);
+                        SceneData.VertexBufferPool.GetBuffer(lod.VertexBufferRef.Hash).WriteToFile(stream, false);
                         writer.Write(stream.ToArray());
                     }
                 }

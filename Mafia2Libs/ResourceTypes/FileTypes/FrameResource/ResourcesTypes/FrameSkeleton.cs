@@ -15,7 +15,7 @@ namespace ResourceTypes.FrameResource
         int numLods;
         int[] unkLodData;
         byte idType;
-        Hash[] boneNames;
+        HashName[] boneNames;
         Matrix[] jointTransforms; //maybe joint space
         int numUnkCount2;
         byte[] boneLODUsage;
@@ -42,7 +42,7 @@ namespace ResourceTypes.FrameResource
             get { return idType; }
             set { idType = value; }
         }
-        public Hash[] BoneNames {
+        public HashName[] BoneNames {
             get { return boneNames; }
             set { boneNames = value; }
         }
@@ -71,7 +71,7 @@ namespace ResourceTypes.FrameResource
         {
             numBones = new int[4];
             unkLodData = new int[0];
-            boneNames = new Hash[0];
+            boneNames = new HashName[0];
             jointTransforms = new Matrix[0];
             worldTransforms = new Matrix[0];
             mappingForBlendingInfos = new MappingForBlendingInfo[0];
@@ -99,9 +99,9 @@ namespace ResourceTypes.FrameResource
             idType = stream.ReadByte8();
 
             //Bone Names and LOD data.
-            boneNames = new Hash[numBones[0]];
+            boneNames = new HashName[numBones[0]];
             for (int i = 0; i != boneNames.Length; i++)
-                boneNames[i] = new Hash(stream, isBigEndian);
+                boneNames[i] = new HashName(stream, isBigEndian);
 
             //Matrices;
             jointTransforms = new Matrix[numBones[1]];

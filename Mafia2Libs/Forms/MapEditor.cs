@@ -161,7 +161,7 @@ namespace Mafia2Tool
                             ActorEntry entry = SceneData.Actors[0].CreateActorEntry(type, objectForm.GetInputText());
                             entry.DefinitionName = def;
                             entry.FrameName = frame.Name.String;
-                            entry.FrameNameHash = frame.Name.uHash;
+                            entry.FrameNameHash = frame.Name.Hash;
                             frame.Item = entry;
 
                             //create the definition
@@ -460,9 +460,9 @@ namespace Mafia2Tool
             {
                 foreach(var lod in pair.Value.LOD)
                 {
-                    if (bufferPools.ContainsKey(lod.VertexBufferRef.uHash))
+                    if (bufferPools.ContainsKey(lod.VertexBufferRef.Hash))
                     {
-                        bufferPools[lod.VertexBufferRef.uHash] = true;
+                        bufferPools[lod.VertexBufferRef.Hash] = true;
                     }
                 }
             }
@@ -491,9 +491,9 @@ namespace Mafia2Tool
             {
                 foreach (var lod in pair.Value.LOD)
                 {
-                    if(bufferPools.ContainsKey(lod.IndexBufferRef.uHash))
+                    if(bufferPools.ContainsKey(lod.IndexBufferRef.Hash))
                     {
-                        bufferPools[lod.IndexBufferRef.uHash] = true;
+                        bufferPools[lod.IndexBufferRef.Hash] = true;
                     }
                 }
             }
@@ -665,8 +665,8 @@ namespace Mafia2Tool
             //we need to retrieve buffers first.
             for (int c = 0; c != geom.LOD.Length; c++)
             {
-                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.uHash);
-                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.uHash);
+                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.Hash);
+                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.Hash);
             }
 
             if(indexBuffers[0] == null || vertexBuffers[0] == null)
@@ -1032,7 +1032,7 @@ namespace Mafia2Tool
                         for (int x = 0; x < frames.Count; x++)
                         {
                             FrameObjectFrame nFrame = frames[x];
-                            if (nFrame.Name.uHash == item.FrameNameHash)
+                            if (nFrame.Name.Hash == item.FrameNameHash)
                             {
                                 if (!nFrame.ActorHash.String.Equals(item.DefinitionName))
                                 {
@@ -1852,8 +1852,8 @@ namespace Mafia2Tool
             //we need to retrieve buffers first.
             for (int c = 0; c != model.Geometry.LOD.Length; c++)
             {
-                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(model.Geometry.LOD[c].IndexBufferRef.uHash);
-                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(model.Geometry.LOD[c].VertexBufferRef.uHash);
+                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(model.Geometry.LOD[c].IndexBufferRef.Hash);
+                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(model.Geometry.LOD[c].VertexBufferRef.Hash);
             }
 
             Model newModel = null;

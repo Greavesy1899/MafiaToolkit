@@ -28,7 +28,7 @@ namespace ResourceTypes.Materials
             ulong materialHash = reader.ReadUInt64();
             string materialName = StringHelpers.ReadString32(reader);
             MaterialName.String = materialName;
-            MaterialName.uHash = materialHash;
+            MaterialName.Hash = materialHash;
             Unk0 = reader.ReadUInt32();
             Unk1 = reader.ReadBytes(2);
             Flags = (MaterialFlags)reader.ReadInt32();
@@ -66,7 +66,7 @@ namespace ResourceTypes.Materials
         public override void WriteToFile(BinaryWriter writer, VersionsEnumerator version)
         {
             // Material Name doesn't use standard hex serialization.
-            writer.Write(MaterialName.uHash);
+            writer.Write(MaterialName.Hash);
             writer.WriteString32(MaterialName.String);
 
             // Unknown Values.
@@ -100,7 +100,7 @@ namespace ResourceTypes.Materials
             }
         }
 
-        public override Hash GetTextureByID(string SamplerName)
+        public override HashName GetTextureByID(string SamplerName)
         {
             foreach(var texture in Textures)
             {

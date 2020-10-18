@@ -2,11 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
+using Utils.Types;
 
 namespace ResourceTypes.Translokator
 {
@@ -129,8 +131,7 @@ namespace ResourceTypes.Translokator
     {
         short numInstance2;
         short unk02;
-        ulong hash;
-        string name;
+        HashName name;
         byte[] unkBytes1;
         float gridMax;
         float gridMin;
@@ -146,11 +147,7 @@ namespace ResourceTypes.Translokator
             get { return unk02; }
             set { unk02 = value; }
         }
-        public ulong Hash {
-            get { return hash; }
-            set { hash = value; }
-        }
-        public string Name {
+        public HashName Name {
             get { return name; }
             set { name = value; }
         }
@@ -189,7 +186,6 @@ namespace ResourceTypes.Translokator
             numInstances = 0;
             instances = new Instance[0];
             unk02 = other.unk02;
-            hash = other.hash;
             name = other.name;
             unkBytes1 = other.unkBytes1;
             gridMax = other.gridMax;
@@ -453,7 +449,7 @@ namespace ResourceTypes.Translokator
                     Object obj = objectGroup.Objects[x];
 
                     obj.NumInstance2 = (short)obj.NumInstances;
-                    obj.UnkBytes1 = new byte[31 - obj.Name.Length];
+                    obj.UnkBytes1 = new byte[31 - obj.Name.ToString().Length];
 
                     for (int y = 0; y != obj.NumInstances; y++)
                     {
@@ -589,9 +585,14 @@ namespace ResourceTypes.Translokator
                     Object obj = new Object();
                     obj.NumInstance2 = reader.ReadInt16();
                     obj.Unk02 = reader.ReadInt16();
-                    obj.Hash = reader.ReadUInt64();
-                    obj.Name = StringHelpers.ReadString(reader);
-                    obj.UnkBytes1 = reader.ReadBytes(31 - obj.Name.Length);
+
+                    obj.Name = new HashName();
+                    ulong hashvalue = reader.ReadUInt64();
+                    obj.Name.Hash = hashvalue;
+                    obj.Name.String = StringHelpers.ReadString(reader);
+                    Debug.Assert(obj.Name.Hash == hashvalue, "Object Hash and Name should be identical");
+
+                    obj.UnkBytes1 = reader.ReadBytes(31 - obj.Name.ToString().Length);
                     obj.GridMax = reader.ReadSingle();
                     obj.GridMin = reader.ReadSingle();
                     obj.NumInstances = reader.ReadInt32();
@@ -667,8 +668,8 @@ namespace ResourceTypes.Translokator
                     Object obj = objectGroup.Objects[x];
                     writer.Write(obj.NumInstance2);
                     writer.Write(obj.Unk02);
-                    writer.Write(obj.Hash);
-                    StringHelpers.WriteString(writer, obj.Name);
+                    writer.Write(obj.Name.Hash);
+                    StringHelpers.WriteString(writer, obj.Name.String);
                     writer.Write(obj.UnkBytes1);
                     writer.Write(obj.GridMax);
                     writer.Write(obj.GridMin);

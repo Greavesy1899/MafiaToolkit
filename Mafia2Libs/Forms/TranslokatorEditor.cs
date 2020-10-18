@@ -64,7 +64,7 @@ namespace Mafia2Tool.Forms
                 for (int y = 0; y < objectGroup.Objects.Length; y++)
                 {
                     ResourceTypes.Translokator.Object obj = objectGroup.Objects[y];
-                    TreeNode objNode = new TreeNode(obj.Name);
+                    TreeNode objNode = new TreeNode(obj.Name.ToString());
                     objNode.Tag = obj;
                     objectGroupNode.Nodes.Add(objNode);
 
@@ -224,7 +224,7 @@ namespace Mafia2Tool.Forms
             {
                 ObjectGroup group = (TranslokatorTree.SelectedNode.Tag as ObjectGroup);
                 ResourceTypes.Translokator.Object obj = new ResourceTypes.Translokator.Object();
-                obj.Name = "NewObject";
+                obj.Name.Set("NewObject");
                 TreeNode instanceNode = new TreeNode(obj.Name + " " + TranslokatorTree.SelectedNode.GetNodeCount(false));
                 instanceNode.Tag = obj;
                 TranslokatorTree.SelectedNode.Nodes.Add(instanceNode);
@@ -285,6 +285,8 @@ namespace Mafia2Tool.Forms
                     }
                 }
             }
+
+            PropertyGrid.Refresh();
             Cursor.Current = Cursors.Default;
         }
         private void ViewNumInstButton_Click(object sender, EventArgs e)
@@ -298,7 +300,9 @@ namespace Mafia2Tool.Forms
                     for (int z = 0; z < (TranslokatorTree.Nodes[2].Nodes[i].Nodes[y].GetNodeCount(false)); z++)
                     {
                         if (TranslokatorTree.Nodes[2].Nodes[i].Nodes[y].Nodes[z].Tag is Instance)
+                        {
                             num++;
+                        }
                     }
                 }
             }
@@ -363,7 +367,7 @@ namespace Mafia2Tool.Forms
                     for (int y = 0; y < objectGroup.Objects.Length; y++)
                     {
                         ResourceTypes.Translokator.Object obj = objectGroup.Objects[y];
-                        TreeNode objNode = new TreeNode(obj.Name);
+                        TreeNode objNode = new TreeNode(obj.Name.ToString());
                         objNode.Tag = obj;
                         objectGroupNode.Nodes.Add(objNode);
 

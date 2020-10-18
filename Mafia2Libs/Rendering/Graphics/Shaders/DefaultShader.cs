@@ -66,11 +66,11 @@ namespace Rendering.Graphics
             else
             {
                 
-                Hash TextureFile = material.GetTextureByID("S000");
+                HashName TextureFile = material.GetTextureByID("S000");
                 ShaderResourceView texture = null;
                 if (TextureFile != null)
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[TextureFile.uHash];
+                    texture = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
                 }
                 else
                 {
@@ -82,7 +82,7 @@ namespace Rendering.Graphics
                 TextureFile = material.GetTextureByID("S001");
                 if (TextureFile != null)
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[TextureFile.uHash];
+                    texture = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
                     extraParams.hasTangentSpace = 1;
                 }
                 else

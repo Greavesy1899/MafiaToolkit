@@ -24,7 +24,7 @@ namespace ResourceTypes.Materials
             ulong materialHash = reader.ReadUInt64();
             string materialName = StringHelpers.ReadString32(reader);
             MaterialName.String = materialName;
-            MaterialName.uHash = materialHash;
+            MaterialName.Hash = materialHash;
 
             Unk0 = reader.ReadByte();
             Unk1 = reader.ReadByte();
@@ -58,7 +58,7 @@ namespace ResourceTypes.Materials
         public override void WriteToFile(BinaryWriter writer, VersionsEnumerator version)
         {
             // Material Name doesn't use standard hex serialization.
-            writer.Write(MaterialName.uHash);
+            writer.Write(MaterialName.Hash);
             writer.WriteString32(MaterialName.String);
 
             // Unknown Values.
@@ -88,15 +88,15 @@ namespace ResourceTypes.Materials
             }
         }
 
-        public override Hash GetTextureByID(string SamplerName)
+        public override HashName GetTextureByID(string SamplerName)
         {
             foreach (var sampler in Samplers)
             {
                 if (sampler.ID == SamplerName)
                 {
-                    Hash TextureFile = new Hash();
+                    HashName TextureFile = new HashName();
                     TextureFile.String = sampler.GetFileName();
-                    TextureFile.uHash = sampler.GetFileHash();
+                    TextureFile.Hash = sampler.GetFileHash();
                     return TextureFile;
                 }
             }
@@ -119,7 +119,7 @@ namespace ResourceTypes.Materials
     public class MaterialSampler_v57 : IMaterialSampler
     {
         public int[] UnkSet0 { get; set; }
-        public Hash TextureName { get; set; }
+        public HashName TextureName { get; set; }
         public byte TexType { get; set; }
         public byte UnkZero { get; set; }
         public int[] UnkSet1 { get; set; }
@@ -128,7 +128,7 @@ namespace ResourceTypes.Materials
         {
             UnkSet0 = new int[2];
             UnkSet1 = new int[2];
-            TextureName = new Hash();
+            TextureName = new HashName();
         }
 
         public override void ReadFromFile(BinaryReader reader, VersionsEnumerator version)
@@ -149,7 +149,7 @@ namespace ResourceTypes.Materials
                 UnkSet1[i] = reader.ReadInt32();
             }
             TextureName.String = StringHelpers.ReadString32(reader);
-            TextureName.uHash = TextureHash;
+            TextureName.Hash = TextureHash;
         }
 
         public override void WriteToFile(BinaryWriter writer, VersionsEnumerator version)
@@ -159,7 +159,7 @@ namespace ResourceTypes.Materials
             {
                 writer.Write(UnkSet0[i]);
             }
-            writer.Write(TextureName.uHash);
+            writer.Write(TextureName.Hash);
             writer.Write(TexType);
             writer.Write(UnkZero);
             writer.Write(SamplerStates);
@@ -178,7 +178,7 @@ namespace ResourceTypes.Materials
 
         public override ulong GetFileHash()
         {
-            return TextureName.uHash;
+            return TextureName.Hash;
         }
 
         public override string ToString()

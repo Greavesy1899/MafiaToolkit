@@ -76,18 +76,18 @@ namespace ResourceTypes.FrameResource
         {
 
             int unk1;
-            Hash unk2;
-            Hash unk3;
+            HashName unk2;
+            HashName unk3;
 
             public int Unk_01 {
                 get { return unk1; }
                 set { unk1 = value; }
             }
-            public Hash Unk_02_Hash {
+            public HashName Unk_02_Hash {
                 get { return unk2; }
                 set { unk2 = value; }
             }
-            public Hash Unk_03_Hash {
+            public HashName Unk_03_Hash {
                 get { return unk3; }
                 set { unk3 = value; }
             }
@@ -95,8 +95,8 @@ namespace ResourceTypes.FrameResource
             public NodeStruct(MemoryStream reader, bool isBigEndian)
             {
                 unk1 = reader.ReadInt32(isBigEndian);
-                unk2 = new Hash(reader, isBigEndian);
-                unk3 = new Hash(reader, isBigEndian);
+                unk2 = new HashName(reader, isBigEndian);
+                unk3 = new HashName(reader, isBigEndian);
             }
 
             public void WriteToFile(BinaryWriter writer)

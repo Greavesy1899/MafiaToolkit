@@ -6,7 +6,7 @@ namespace ResourceTypes.FrameResource
 {
     public class FrameHeaderScene : FrameEntry
     {
-        Hash name;
+        HashName name;
 
         List<FrameObjectBase> children = new List<FrameObjectBase>();
 
@@ -15,20 +15,20 @@ namespace ResourceTypes.FrameResource
             set { children = value; }
         }
 
-        public Hash Name {
+        public HashName Name {
             get { return name; }
             set { name = value; }
         }
 
         public FrameHeaderScene() : base() { }
-        public FrameHeaderScene(Hash name) : base()
+        public FrameHeaderScene(HashName name) : base()
         {
             this.name = name;
 
         }
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
-            name = new Hash(reader, isBigEndian);
+            name = new HashName(reader, isBigEndian);
         }
 
         public void WriteToFile(BinaryWriter writer)

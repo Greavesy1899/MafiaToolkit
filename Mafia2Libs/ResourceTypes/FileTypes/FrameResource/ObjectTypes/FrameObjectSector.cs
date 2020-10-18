@@ -16,7 +16,7 @@ namespace ResourceTypes.FrameResource
         BoundingBox bounds;
         Vector3 unk_13_vector3;
         Vector3 unk_14_vector3;
-        Hash sectorName;
+        HashName sectorName;
 
         public int Unk08 {
             get { return unk_08_int; }
@@ -44,7 +44,7 @@ namespace ResourceTypes.FrameResource
             get { return unk_14_vector3; }
             set { unk_14_vector3 = value; }
         }
-        public Hash SectorName {
+        public HashName SectorName {
             get { return sectorName; }
             set { sectorName = value; }
         }
@@ -79,7 +79,7 @@ namespace ResourceTypes.FrameResource
             bounds = new BoundingBox();
             unk_13_vector3 = new Vector3(0);
             unk_14_vector3 = new Vector3(0);
-            sectorName = new Hash();
+            sectorName = new HashName();
         }
 
         public FrameObjectSector(FrameObjectSector other) : base(other)
@@ -94,7 +94,7 @@ namespace ResourceTypes.FrameResource
             }
             unk_13_vector3 = other.unk_13_vector3;
             unk_14_vector3 = other.unk_14_vector3;
-            sectorName = new Hash(other.sectorName.String);
+            sectorName = new HashName(other.sectorName.String);
         }
 
         public FrameObjectSector(MemoryStream reader, bool isBigEndian) : base()
@@ -117,7 +117,7 @@ namespace ResourceTypes.FrameResource
             bounds = BoundingBoxExtenders.ReadFromFile(reader, isBigEndian);
             unk_13_vector3 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
             unk_14_vector3 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-            sectorName = new Hash(reader, isBigEndian);
+            sectorName = new HashName(reader, isBigEndian);
 
         }
 

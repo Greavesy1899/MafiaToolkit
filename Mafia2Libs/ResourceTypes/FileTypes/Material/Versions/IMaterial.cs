@@ -9,7 +9,7 @@ namespace ResourceTypes.Materials
     // TODO: Consider some unified approach for IMaterialSampler to be stored here.
     public class IMaterial
     {
-        public Hash MaterialName { get; set; }
+        public HashName MaterialName { get; set; }
 
         [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public MaterialFlags Flags { get; set; }
@@ -19,7 +19,7 @@ namespace ResourceTypes.Materials
 
         public IMaterial()
         {
-            MaterialName = new Hash();
+            MaterialName = new HashName();
             Parameters = new List<MaterialParameter>();
 
             // TODO: Remove this from base class, make some kind of factory of Shader Types.
@@ -45,9 +45,9 @@ namespace ResourceTypes.Materials
 
         public ulong GetMaterialHash()
         {
-            return MaterialName.uHash;
+            return MaterialName.Hash;
         }
-        public virtual Hash GetTextureByID(string SamplerName)
+        public virtual HashName GetTextureByID(string SamplerName)
         {
             return null;
         }

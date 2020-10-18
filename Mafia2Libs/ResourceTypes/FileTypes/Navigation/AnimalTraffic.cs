@@ -45,7 +45,7 @@ namespace ResourceTypes.Navigation
             private byte[] data1;
             private byte[] data2;
             private BoundingBox bbox;
-            private Hash hash;
+            private HashName hash;
             private float unk0;
             private float unk1;
             private byte unk2;
@@ -64,7 +64,7 @@ namespace ResourceTypes.Navigation
                 get { return data2; }
                 set { data2 = value; }
             }
-            public Hash Hash {
+            public HashName Hash {
                 get { return hash; }
                 set { hash = value; }
             }
@@ -102,9 +102,9 @@ namespace ResourceTypes.Navigation
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public class AnimalTrafficInstance
         {
-            private Hash name;
+            private HashName name;
 
-            public Hash Name {
+            public HashName Name {
                 get { return name; }
                 set { name = value; }
             }
@@ -153,7 +153,7 @@ namespace ResourceTypes.Navigation
             for (int i = 0; i < animalInsCount; i++)
             {
                 AnimalTrafficInstance instance = new AnimalTrafficInstance();
-                instance.Name = new Hash();
+                instance.Name = new HashName();
                 instance.Name.ReadFromFile(reader);
                 instances[i] = instance;
             }
@@ -172,7 +172,7 @@ namespace ResourceTypes.Navigation
                 path.Data1 = reader.ReadBytes(count2);
                 path.Data2 = reader.ReadBytes(count3);
                 path.BoundingBox = BoundingBoxExtenders.ReadFromFile(reader);
-                path.Hash = new Hash();
+                path.Hash = new HashName();
                 path.Hash.ReadFromFile(reader); //decompiled exe says this is a hash but its always empty
                 path.Unk0 = reader.ReadSingle(); //5
                 path.Unk1 = reader.ReadSingle(); //15

@@ -16,10 +16,10 @@ namespace ResourceTypes.FrameResource
         float[] unkFloat3 = new float[17];
         byte unk_byte2;
         float[] unkFloat4 = new float[5];
-        Hash nameLight;
+        HashName nameLight;
         int unk_int2;
         float[] unkFloat5 = new float[20];
-        Hash[] names = new Hash[4];
+        HashName[] names = new HashName[4];
         Vector3 unkVector1;
         Vector3 unkVector2;
         byte unk_byte3;
@@ -60,7 +60,7 @@ namespace ResourceTypes.FrameResource
             get { return unkFloat4; }
             set { unkFloat4 = value; }
         }
-        public Hash NameLight {
+        public HashName NameLight {
             get { return nameLight; }
             set { nameLight = value; }
         }
@@ -72,7 +72,7 @@ namespace ResourceTypes.FrameResource
             get { return unkFloat5; }
             set { unkFloat5 = value; }
         }
-        public Hash[] UnkHashes {
+        public HashName[] UnkHashes {
             get { return names; }
             set { names = value; }
         }
@@ -115,13 +115,13 @@ namespace ResourceTypes.FrameResource
             unkFloat3 = new float[17];
             unk_byte2 = 0;
             unkFloat4 = new float[5];
-            nameLight = new Hash();
+            nameLight = new HashName();
             unk_int2 = 0;
             unkFloat5 = new float[20];
-            names = new Hash[4];
+            names = new HashName[4];
 
             for (int i = 0; i != 4; i++)
-                names[i] = new Hash();
+                names[i] = new HashName();
 
             unkVector1 = new Vector3(0);
             unkVector2 = new Vector3(0);
@@ -142,13 +142,13 @@ namespace ResourceTypes.FrameResource
             unkFloat3 = other.unkFloat1;
             unk_byte2 = other.unk_byte2;
             unkFloat4 = other.unkFloat4;
-            nameLight = new Hash(other.name.String);
+            nameLight = new HashName(other.name.String);
             unk_int2 = other.unk_int2;
             unkFloat5 = other.unkFloat5;
 
-            names = new Hash[4];
+            names = new HashName[4];
             for (int i = 0; i != 4; i++)
-                names[i] = new Hash(names[i].String);
+                names[i] = new HashName(names[i].String);
 
             unkVector1 = other.unkVector1;
             unkVector2 = other.unkVector2;
@@ -187,7 +187,7 @@ namespace ResourceTypes.FrameResource
             for (int i = 0; i < 5; i++)
                 unkFloat4[i] = reader.ReadSingle(isBigEndian);
 
-            nameLight = new Hash(reader, isBigEndian);
+            nameLight = new HashName(reader, isBigEndian);
 
             unk_int2 = reader.ReadInt32(isBigEndian);
 
@@ -195,7 +195,7 @@ namespace ResourceTypes.FrameResource
                 unkFloat5[i] = reader.ReadSingle(isBigEndian);
 
             for (int i = 0; i < 4; i++)
-                names[i] = new Hash(reader, isBigEndian);
+                names[i] = new HashName(reader, isBigEndian);
 
             unkVector1 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
             unkVector2 = Vector3Extenders.ReadFromFile(reader, isBigEndian);

@@ -684,8 +684,8 @@ namespace ResourceTypes.Actors
         int unk09;
         byte count;
         int unk10;
-        Hash[] sceneLinks;
-        Hash[] frameLinks;
+        HashName[] sceneLinks;
+        HashName[] frameLinks;
         int[] frameIdxLinks;
         int flags;
         float[] unkFloat1 = new float[7];
@@ -695,10 +695,10 @@ namespace ResourceTypes.Actors
         float[] unkFloat3 = new float[17];
         byte unk_byte2;
         float[] unkFloat4 = new float[5];
-        Hash nameLight;
+        HashName nameLight;
         int unk_int2;
         float[] unkFloat5 = new float[20];
-        Hash[] names = new Hash[4];
+        HashName[] names = new HashName[4];
         BoundingBox boundingBox;
         byte unk_byte3;
         Matrix uMatrix1;
@@ -757,11 +757,11 @@ namespace ResourceTypes.Actors
             get { return unk10; }
             set { unk10 = value; }
         }
-        public Hash[] SceneLinks {
+        public HashName[] SceneLinks {
             get { return sceneLinks; }
             set { sceneLinks = value; }
         }
-        public Hash[] FrameLinks {
+        public HashName[] FrameLinks {
             get { return frameLinks; }
             set { frameLinks = value; }
         }
@@ -797,7 +797,7 @@ namespace ResourceTypes.Actors
             get { return unkFloat4; }
             set { unkFloat4 = value; }
         }
-        public Hash NameLight {
+        public HashName NameLight {
             get { return nameLight; }
             set { nameLight = value; }
         }
@@ -809,7 +809,7 @@ namespace ResourceTypes.Actors
             get { return unkFloat5; }
             set { unkFloat5 = value; }
         }
-        public Hash[] UnkHashes {
+        public HashName[] UnkHashes {
             get { return names; }
             set { names = value; }
         }
@@ -863,21 +863,21 @@ namespace ResourceTypes.Actors
             uMatrix0 = Matrix.Identity;
             uMatrix1 = Matrix.Identity;
             count = 0;
-            frameLinks = new Hash[0];
-            sceneLinks = new Hash[0];
+            frameLinks = new HashName[0];
+            sceneLinks = new HashName[0];
             frameIdxLinks = new int[0];
             unkFloat1 = new float[7];
             unkFloat2 = new float[5];
             unkFloat3 = new float[17];
             unkFloat4 = new float[5];
             unkFloat5 = new float[20];
-            names = new Hash[4];
+            names = new HashName[4];
             for (int i = 0; i < 4; i++)
             {
-                names[i] = new Hash();
+                names[i] = new HashName();
             }
 
-            nameLight = new Hash();
+            nameLight = new HashName();
             uMatrix0Quat = Quaternion.RotationMatrix(uMatrix0);
             uMatrix1Quat = Quaternion.RotationMatrix(uMatrix1);
         }
@@ -896,13 +896,13 @@ namespace ResourceTypes.Actors
                 count = stream.ReadByte8();
                 unk10 = stream.ReadInt32(isBigEndian);
 
-                frameLinks = new Hash[count];
-                sceneLinks = new Hash[count];
+                frameLinks = new HashName[count];
+                sceneLinks = new HashName[count];
                 frameIdxLinks = new int[count];
                 for (int i = 0; i < count; i++)
                 {
-                    sceneLinks[i] = new Hash(stream, isBigEndian);
-                    frameLinks[i] = new Hash(stream, isBigEndian);
+                    sceneLinks[i] = new HashName(stream, isBigEndian);
+                    frameLinks[i] = new HashName(stream, isBigEndian);
                     frameIdxLinks[i] = stream.ReadInt32(isBigEndian);
                 }
 
@@ -924,7 +924,7 @@ namespace ResourceTypes.Actors
                 for (int i = 0; i < 5; i++)
                     unkFloat4[i] = stream.ReadSingle(isBigEndian);
 
-                nameLight = new Hash(stream, isBigEndian);
+                nameLight = new HashName(stream, isBigEndian);
 
                 unk_int2 = stream.ReadInt32(isBigEndian);
 
@@ -932,7 +932,7 @@ namespace ResourceTypes.Actors
                     unkFloat5[i] = stream.ReadSingle(isBigEndian);
 
                 for (int i = 0; i < 4; i++)
-                    names[i] = new Hash(stream, isBigEndian);
+                    names[i] = new HashName(stream, isBigEndian);
 
                 boundingBox = BoundingBoxExtenders.ReadFromFile(stream, isBigEndian);
                 unk_byte3 = stream.ReadByte8();

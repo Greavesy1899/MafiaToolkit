@@ -93,10 +93,12 @@ namespace Mafia2Tool
                 File.Move("Mafia2Toolkit.ini", "MafiaToolkit.ini");
                 File.Delete("Mafia2Toolkit.ini");
             }
-            if (File.Exists(Path.Combine(Application.ExecutablePath, "MafiaToolkit.ini")))
-                return;
-            else
+
+            string PathToIni = Path.Combine(Application.ExecutablePath, "MafiaToolkit.ini");
+            if (!File.Exists(PathToIni))
+            {
                 new IniFile();
+            }
         }
     }
 }

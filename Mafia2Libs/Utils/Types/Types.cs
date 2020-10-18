@@ -9,18 +9,17 @@ using Utils.Models;
 namespace Utils.Types
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public class Hash
+    public class HashName
     {
         ulong hash;
-        string _string;
+        string name;
 
-        //[ReadOnly(true)]
-        public ulong uHash {
+        public ulong Hash {
             get { return hash; }
             set { hash = value; }
         }
         public string String {
-            get { return _string; }
+            get { return name; }
             set { Set(value); }
         }
 
@@ -28,25 +27,25 @@ namespace Utils.Types
         public string Hex {
             get { return string.Format("{0:X}", hash); }
         }
-        public Hash()
+        public HashName()
         {
-            _string = "";
+            name = "";
             hash = 0;
         }
-        public Hash(string name)
+        public HashName(string name)
         {
             Set(name);
         }
-        public Hash(Hash other)
+        public HashName(HashName other)
         {
             this.hash = other.hash;
-            this._string = other._string;
+            this.name = other.name;
         }
-        public Hash(BinaryReader reader)
+        public HashName(BinaryReader reader)
         {
             ReadFromFile(reader);
         }
-        public Hash(MemoryStream stream, bool isBigEndian)
+        public HashName(MemoryStream stream, bool isBigEndian)
         {
             ReadFromFile(stream, isBigEndian);
         }
@@ -54,49 +53,52 @@ namespace Utils.Types
         public void ReadFromFile(BinaryReader reader)
         {
             hash = reader.ReadUInt64();
-            _string = reader.ReadString16();
+            name = reader.ReadString16();
         }
         public void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             hash = stream.ReadUInt64(isBigEndian);
-            _string = stream.ReadString16(isBigEndian);
+            name = stream.ReadString16(isBigEndian);
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(hash);
-            writer.WriteString16(_string);
+            writer.WriteString16(name);
         }
 
         public void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             stream.Write(hash, isBigEndian);
-            stream.WriteString16(_string, isBigEndian);
+            stream.WriteString16(name, isBigEndian);
         }
 
-        public void Set(string name)
+        public void Set(string value)
         {
-            _string = name;
+            name = value;
 
-            if (_string == "")
-                hash = 0;
-            else
+            // Cannot check string.IsNullOrWhitespace
+            if(name != "")
+            {
                 hash = FNV64.Hash(name);
+            }
         }
 
         public int CalculateSize()
         {
             int size = 10;
-            size += (_string.Length);
+            size += (name.Length);
             return size;
         }
 
         public override string ToString()
         {
-            if (string.IsNullOrEmpty(_string))
+            if (string.IsNullOrEmpty(name))
+            {
                 return ((SkeletonBoneIDs)hash).ToString();
-            else
-                return _string;
+            }
+
+            return name;
         }
     }
 
@@ -149,9 +151,11 @@ namespace Utils.Types
         public override string ToString()
         {
             if (index == -1)
+            {
                 return string.Format("{0}, root", index);
-            else
-                return string.Format("{0}. {1}", index, name);
+            }
+            
+            return string.Format("{0}, {1}", index, name);
         }
     }
 
@@ -161,16 +165,6 @@ namespace Utils.Types
         public ushort S2 { get; set; }
         public ushort S3 { get; set; }
 
-        /// <summary>
-        /// SET all values to -100
-        /// </summary>
-        public Short3()
-        {
-            S1 = ushort.MaxValue;
-            S2 = ushort.MaxValue;
-            S3 = ushort.MaxValue;
-        }
-
         public Short3(Short3 other)
         {
             S1 = other.S1;
@@ -178,10 +172,6 @@ namespace Utils.Types
             S3 = other.S3;
         }
 
-        /// <summary>
-        /// Construct Short3 from file data.
-        /// </summary>
-        /// <param name="reader"></param>
         public Short3(MemoryStream reader, bool isBigEndian)
         {
             S1 = reader.ReadUInt16(isBigEndian);
@@ -189,30 +179,6 @@ namespace Utils.Types
             S3 = reader.ReadUInt16(isBigEndian);
         }
 
-        public Short3(BinaryReader reader)
-        {
-            S1 = reader.ReadUInt16();
-            S2 = reader.ReadUInt16();
-            S3 = reader.ReadUInt16();
-        }
-
-        /// <summary>
-        /// Construct Short3 from three integers.
-        /// </summary>
-        /// <param name="i1"></param>
-        /// <param name="i2"></param>
-        /// <param name="i3"></param>
-        public Short3(int i1, int i2, int i3)
-        {
-            S1 = (ushort)i1;
-            S2 = (ushort)i2;
-            S3 = (ushort)i3;
-        }
-
-        /// <summary>
-        /// Write Short3 data to file.
-        /// </summary>
-        /// <param name="writer"></param>
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(S1);

@@ -7,12 +7,12 @@ namespace ResourceTypes.Materials
     public class MaterialTexture
     {
         public string ID { get; set; }
-        public Hash TextureName { get; set; }
+        public HashName TextureName { get; set; }
 
         public MaterialTexture()
         {
             ID = "";
-            TextureName = new Hash();
+            TextureName = new HashName();
         }
 
         public void ReadFromFile(BinaryReader reader)

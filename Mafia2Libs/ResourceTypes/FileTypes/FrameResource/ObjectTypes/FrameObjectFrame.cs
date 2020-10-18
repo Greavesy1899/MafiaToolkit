@@ -6,10 +6,10 @@ namespace ResourceTypes.FrameResource
 {
     public class FrameObjectFrame : FrameObjectJoint
     {
-        Hash actorHash;
+        HashName actorHash;
         ActorEntry item;
 
-        public Hash ActorHash {
+        public HashName ActorHash {
             get { return actorHash; }
             set { actorHash = value; }
         }
@@ -30,13 +30,13 @@ namespace ResourceTypes.FrameResource
 
         public FrameObjectFrame() : base()
         {
-            actorHash = new Hash();
+            actorHash = new HashName();
         }
 
         public override void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             base.ReadFromFile(reader, isBigEndian);
-            actorHash = new Hash(reader, isBigEndian);
+            actorHash = new HashName(reader, isBigEndian);
         }
 
         public override void WriteToFile(BinaryWriter writer)

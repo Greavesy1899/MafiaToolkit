@@ -345,8 +345,8 @@ namespace Utils.Models
                 var size = 0;
                 lod.GetVertexOffsets(out size);
                 if (vertexBuffers[i].Data.Length != (size * lod.NumVerts)) throw new SystemException();
-                lod.IndexBufferRef = new Hash("M2TK." + model.Name + ".IB" + i);
-                lod.VertexBufferRef = new Hash("M2TK." + model.Name + ".VB" + i);
+                lod.IndexBufferRef = new HashName("M2TK." + model.Name + ".IB" + i);
+                lod.VertexBufferRef = new HashName("M2TK." + model.Name + ".VB" + i);
             }
 
             if(model.IsSkinned)
@@ -362,7 +362,7 @@ namespace Utils.Models
             skeletonHierarchy = new FrameSkeletonHierachy();
 
             int jointCount = model.SkeletonData.Joints.Length;
-            skeleton.BoneNames = new Hash[jointCount];
+            skeleton.BoneNames = new HashName[jointCount];
             skeleton.NumBones = new int[4];
             skeleton.UnkLodData = new int[1];
             skeleton.BoneLODUsage = new byte[jointCount];
@@ -379,7 +379,7 @@ namespace Utils.Models
 
             for (int i = 0; i < jointCount; i++)
             {
-                Hash bone = new Hash();
+                HashName bone = new HashName();
                 bone.Set(model.SkeletonData.Joints[i].Name);
                 skeleton.BoneNames[i] = bone;
 

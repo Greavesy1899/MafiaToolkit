@@ -18,7 +18,7 @@ namespace ResourceTypes.FrameResource
         int numSkelHierachies = 0;
         int numObjects = 0;
 
-        Hash sceneName;
+        HashName sceneName;
         List<FrameHeaderScene> sceneFolders;
 
         float unk1;
@@ -65,7 +65,7 @@ namespace ResourceTypes.FrameResource
             get { return numSkelHierachies; }
             set { numSkelHierachies = value; }
         }
-        public Hash SceneName {
+        public HashName SceneName {
             get { return sceneName; }
             set { sceneName = value; }
         }
@@ -94,7 +94,7 @@ namespace ResourceTypes.FrameResource
         public FrameHeader()
         {
             sceneFolders = new List<FrameHeaderScene>();
-            sceneName = new Hash();
+            sceneName = new HashName();
             unkData = new float[4 * 3];
         }
 
@@ -117,7 +117,7 @@ namespace ResourceTypes.FrameResource
             {
                 unk1 = reader.ReadSingle(isBigEndian);
                 unk2 = reader.ReadSingle(isBigEndian);
-                sceneName = new Hash(reader, isBigEndian);
+                sceneName = new HashName(reader, isBigEndian);
 
                 for (int i = 0; i < (4 * 3); i++)
                 {

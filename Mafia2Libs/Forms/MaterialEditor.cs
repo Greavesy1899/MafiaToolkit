@@ -341,10 +341,10 @@ namespace Mafia2Tool
 
                         foreach(var Texture in Mat.Textures)
                         {
-                            if (!CurrentTextures.ContainsKey(Texture.TextureName.uHash))
+                            if (!CurrentTextures.ContainsKey(Texture.TextureName.Hash))
                             {
                                 Writer.WriteLine(Texture.TextureName.String);
-                                CurrentTextures.Add(Texture.TextureName.uHash, true);
+                                CurrentTextures.Add(Texture.TextureName.Hash, true);
                             }
                         }
                     }

@@ -31,9 +31,9 @@ namespace ResourceTypes.FrameResource
         };
 
         float distance = 0;
-        Hash indexBufferRef;
+        HashName indexBufferRef;
         VertexFlags vertexDeclaration;
-        Hash vertexBufferRef;
+        HashName vertexBufferRef;
         int numVerts;
         int nZero1;
         int zeroTail;
@@ -46,11 +46,11 @@ namespace ResourceTypes.FrameResource
             get { return distance; }
             set { distance = value; }
         }
-        public Hash IndexBufferRef {
+        public HashName IndexBufferRef {
             get { return indexBufferRef; }
             set { indexBufferRef = value; }
         }
-        public Hash VertexBufferRef {
+        public HashName VertexBufferRef {
             get { return vertexBufferRef; }
             set { vertexBufferRef = value; }
         }
@@ -75,9 +75,9 @@ namespace ResourceTypes.FrameResource
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             distance = reader.ReadSingle(isBigEndian);
-            indexBufferRef = new Hash(reader, isBigEndian);
+            indexBufferRef = new HashName(reader, isBigEndian);
             vertexDeclaration = (VertexFlags)reader.ReadUInt32(isBigEndian);
-            vertexBufferRef = new Hash(reader, isBigEndian);
+            vertexBufferRef = new HashName(reader, isBigEndian);
             numVerts = reader.ReadInt32(isBigEndian);
             nZero1 = reader.ReadInt32(isBigEndian);
 

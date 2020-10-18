@@ -28,7 +28,7 @@ namespace Rendering.Graphics
             public BaseShader Shader;
         }
 
-        private Hash aoHash;
+        private HashName aoHash;
         public ShaderResourceView AOTexture { get; set; }
         public Color SelectionColour { get; private set; }
 
@@ -204,12 +204,12 @@ namespace Rendering.Graphics
             {
                 ShaderResourceView texture;
 
-                if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(aoHash.uHash, out texture))
+                if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(aoHash.Hash, out texture))
                 {
                     if (!string.IsNullOrEmpty(aoHash.String))
                     {
                         texture = TextureLoader.LoadTexture(d3d, d3dContext, aoHash.String);
-                        RenderStorageSingleton.Instance.TextureCache.Add(aoHash.uHash, texture);
+                        RenderStorageSingleton.Instance.TextureCache.Add(aoHash.Hash, texture);
                     }
                 }
 
@@ -303,12 +303,12 @@ namespace Rendering.Graphics
 
         private void GetTextureFromSampler(Device d3d, DeviceContext d3dContext, ModelPart part, string SamplerKey)
         {
-            Hash sampler = part.Material.GetTextureByID(SamplerKey);
+            HashName sampler = part.Material.GetTextureByID(SamplerKey);
             if (sampler != null)
             {
                 ShaderResourceView texture;
 
-                ulong SamplerHash = sampler.uHash;
+                ulong SamplerHash = sampler.Hash;
                 string SamplerName = sampler.String;
 
                 if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(SamplerHash, out texture))
