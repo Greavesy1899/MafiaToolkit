@@ -23,9 +23,10 @@ namespace ResourceTypes.M3.XBin
 
             TableInformation = XBinFactory.ReadXBin(reader, hash);
 
+            /*
             if (numTables > 0)
             {
-                for(int i = 0; i < numTables; i++)
+                for (int i = 0; i < numTables; i++)
                 {
                     uint offset = reader.ReadUInt32();
                 }
@@ -35,6 +36,7 @@ namespace ResourceTypes.M3.XBin
                 unk0 = reader.ReadInt32();
                 TableInformation = XBinFactory.ReadXBin(reader, hash);
             }
+            */
         }
 
         public void WriteToFile(FileInfo file)

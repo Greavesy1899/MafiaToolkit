@@ -1,5 +1,6 @@
 ﻿using ResourceTypes.M3.XBin;
 using ResourceTypes.M3.XBin.TableContainers;
+using ResourceTypes.M3.XBin.GfxContainers;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -68,6 +69,10 @@ namespace ResourceTypes.FileTypes.M3.XBin
                     break;
                 case 0x5D69A41CDC82936C: // TableContainer (Mafia III)
                     XBinData = new TableContainer();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x06F579D595DA02AD: // GfxEnvContainer (Mafia I: DE)
+                    XBinData = new GfxEnvContainer();
                     XBinData.ReadFromFile(reader);
                     break;
                 //case 0xDC327944DD83627E: // TODO: Fix for M1: DE. look for 0xA for PaintCombination array entries.
