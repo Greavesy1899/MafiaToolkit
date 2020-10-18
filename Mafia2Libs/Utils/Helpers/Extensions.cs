@@ -6,16 +6,14 @@ using System.Drawing.Design;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using System.Windows.Media.Converters;
 
 namespace Utils.Extensions
 {
     public sealed class MTreeView : TreeView
     {
+
         //fix from: (gotta love stack overflow!)
         //https://stackoverflow.com/questions/14647216/c-sharp-treeview-ignore-double-click-only-at-checkbox
         protected override void WndProc(ref Message m)

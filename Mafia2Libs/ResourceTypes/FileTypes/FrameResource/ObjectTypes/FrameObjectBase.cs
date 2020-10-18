@@ -78,7 +78,7 @@ namespace ResourceTypes.FrameResource
             get { return unk6; }
             set { unk6 = value; }
         }
-        [Category("Frame Properties"), Description("Data stored in FrameProps.bin")]
+        [Category("Frame Properties"), Description("Data stored in FrameProps.bin"), Browsable(false)]
         public string[] ExtraData {
             get { return extraData; }
             set { extraData = value; }
@@ -116,7 +116,8 @@ namespace ResourceTypes.FrameResource
         {
             name = new Hash(other.name.String);
             secondaryFlags = other.secondaryFlags;
-            localTransform = new Matrix(other.localTransform.ToArray());
+            localTransform = other.localTransform;
+            worldTransform = other.worldTransform;
             unk3 = other.unk3;
             parentIndex1 = new ParentStruct(other.parentIndex1);
             parentIndex2 = new ParentStruct(other.parentIndex2);

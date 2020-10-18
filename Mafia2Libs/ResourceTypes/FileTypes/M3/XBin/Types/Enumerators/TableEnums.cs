@@ -1,4 +1,6 @@
-﻿namespace ResourceTypes.M3.XBin
+﻿using System;
+
+namespace ResourceTypes.M3.XBin
 {
 
     public enum ERadioStation
@@ -19,5 +21,11 @@
         E_VRC_STREET,
         E_VRC_STANDARD,
         E_VRC_UTILITY
+    }
+
+    [Flags]
+    public enum ECarMtrStuffFlags
+    {
+        E_CMSF_RIM_SPARKS = 1
     }
 }

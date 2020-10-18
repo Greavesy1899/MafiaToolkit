@@ -26,7 +26,6 @@ using System.Diagnostics;
 using ResourceTypes.Actors;
 using Utils.Extensions;
 using Rendering.Core;
-using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2Tool
 {
@@ -56,6 +55,8 @@ namespace Mafia2Tool
         private float selectTimer = 0.0f;
         private bool bHideChildren = false;
 
+        private Dictionary<string, int> NamesAndDuplicationStore;
+
         public MapEditor(FileInfo info)
         {
             InitializeComponent();
@@ -70,6 +71,7 @@ namespace Mafia2Tool
             fileLocation = info;
             InitDockingControls();
             PopulateList();
+            NamesAndDuplicationStore = new Dictionary<string, int>();
             CameraSpeedTool.Value = (decimal)ToolkitSettings.CameraSpeed;
             KeyPreview = true;
             Text += " -" + info.Directory.Name;
@@ -353,7 +355,7 @@ namespace Mafia2Tool
 
         public bool Frame()
         {
-            bool camUpdated = false;
+            bool bCameraUpdated = false;
 
             if (Input.IsKeyDown(Keys.Delete))
             {
@@ -367,7 +369,7 @@ namespace Mafia2Tool
                     var dx = -0.25f * (mousePos.X - lastMousePos.X);
                     var dy = -0.25f * (mousePos.Y - lastMousePos.Y);
                     Graphics.RotateCamera(dx, dy);
-                    camUpdated = true;
+                    bCameraUpdated = true;
                     
                 }
                 else if (Input.IsButtonDown(MouseButtons.Left) && selectTimer <= 0.0f)
@@ -412,56 +414,21 @@ namespace Mafia2Tool
                     }
                 }
 
-                float multiplier = ToolkitSettings.CameraSpeed;
-
-                if (Input.IsKeyDown(Keys.ShiftKey))
-                    multiplier *= 2.0f;
-
-                float speed = Graphics.Profile.DeltaTime * multiplier;
-
-                if (Input.IsKeyDown(Keys.A))
-                {
-                    Graphics.Camera.Position -= Vector3Extenders.FromVector4(Vector4.Multiply(Graphics.Camera.ViewMatrix.Column1, speed));
-                    camUpdated = true;
-                }
-
-                if (Input.IsKeyDown(Keys.D))
-                {
-                    Graphics.Camera.Position += Vector3Extenders.FromVector4(Vector4.Multiply(Graphics.Camera.ViewMatrix.Column1, speed));
-                    camUpdated = true;
-                }
-
-                if (Input.IsKeyDown(Keys.W))
-                {
-                    Graphics.Camera.Position -= Vector3Extenders.FromVector4(Vector4.Multiply(Graphics.Camera.ViewMatrix.Column3, speed));
-                    camUpdated = true;
-                }
-
-                if (Input.IsKeyDown(Keys.S))
-                {
-                    Graphics.Camera.Position += Vector3Extenders.FromVector4(Vector4.Multiply(Graphics.Camera.ViewMatrix.Column3, speed));
-                    camUpdated = true;
-                }
-
-                if (Input.IsKeyDown(Keys.Q))
-                {
-                    Graphics.Camera.Position.Z += speed;
-                    camUpdated = true;
-                }
-
-                if (Input.IsKeyDown(Keys.E))
-                {
-                    Graphics.Camera.Position.Z -= speed;
-                    camUpdated = true;
-                }
+                bCameraUpdated = Graphics.UpdateInput();
 
                 if (selectTimer > 0.0f)
+                {
                     selectTimer -= 0.1f;
+                }
             }
+
             lastMousePos = mousePos;
             Graphics.Frame();
-            if (camUpdated)
+
+            if (bCameraUpdated)
             {
+                // Hack: We have to remove the delegate before we can change the values, 
+                // or we'll fire some unnecessary code.
                 PositionXTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
                 PositionYTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
                 PositionZTool.ValueChanged -= new EventHandler(CameraToolsOnValueChanged);
@@ -1770,7 +1737,34 @@ namespace Mafia2Tool
                 else
                     newEntry = new FrameObjectBase((FrameObjectBase)node.Tag);
 
-                newEntry.Name.Set(newEntry.Name.String + "_dupe");
+                // Try and add the numeric value to the end of the name.
+                // Either increment on the numeric value or add it.
+                string FrameName = newEntry.Name.String;
+                int LastIndex = FrameName.LastIndexOf('_');
+                bool bIsValid = false;
+                if (LastIndex != -1)
+                {
+                    int NumericValue = 0;
+                    string NameSplit = FrameName.Substring(LastIndex).Remove(0, 1);
+                    string LeftSplit = FrameName.Substring(0, LastIndex);
+                    bool bHasNumericValue = int.TryParse(NameSplit, out NumericValue);
+
+                    if (bHasNumericValue)
+                    {
+                        NumericValue = CheckIfDuplicationContainsString(LeftSplit);
+                        string NumericValueStringed = string.Format("_{0}", NumericValue);
+                        newEntry.Name.Set(LeftSplit + NumericValueStringed);
+                        bIsValid = true;
+                    }
+                }
+
+                if(!bIsValid)
+                {
+                    int NewNumericValue = CheckIfDuplicationContainsString(FrameName);
+                    string NumericString = string.Format("_{0}", NewNumericValue);
+                    newEntry.Name.Set(newEntry.Name.String + NumericString);
+                }
+
                 TreeNode tNode = new TreeNode(newEntry.ToString());
                 tNode.Tag = newEntry;
                 tNode.Name = newEntry.RefID.ToString();
@@ -1802,6 +1796,21 @@ namespace Mafia2Tool
                 instance.SetTransform(placement.Transform);
                 Graphics.InitObjectStack.Add(refID, instance);
             }
+        }
+
+        private int CheckIfDuplicationContainsString(string Key)
+        {
+            int NewNumericValue = 0;
+            if (NamesAndDuplicationStore.ContainsKey(Key))
+            {
+                NewNumericValue = ++NamesAndDuplicationStore[Key];
+            }
+            else
+            {
+                NamesAndDuplicationStore.Add(Key, NewNumericValue);
+            }
+
+            return NewNumericValue;
         }
 
         private void Export3DButton_Click(object sender, EventArgs e)

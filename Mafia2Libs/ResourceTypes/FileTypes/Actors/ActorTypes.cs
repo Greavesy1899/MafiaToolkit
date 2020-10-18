@@ -2429,7 +2429,7 @@ namespace ResourceTypes.Actors
 
         public int GetSize()
         {
-            return 16;
+            return 132;
         }
     }
 

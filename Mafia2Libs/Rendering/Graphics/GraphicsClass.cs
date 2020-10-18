@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using Rendering.Core;
 using Utils.Models;
 using ResourceTypes.Translokator;
+using Utils.Settings;
+using Utils.SharpDXExtensions;
 
 namespace Rendering.Graphics
 {
@@ -169,6 +171,57 @@ namespace Rendering.Graphics
             Render();
             Profile.Update();
         }
+        public bool UpdateInput()
+        {
+            bool bCameraUpdated = false;
+            float Multiplier = ToolkitSettings.CameraSpeed;
+
+            if (Input.IsKeyDown(Keys.ShiftKey))
+            {
+                Multiplier *= 2.0f;
+            }
+
+            float speed = Profile.DeltaTime * Multiplier;
+
+            if (Input.IsKeyDown(Keys.A))
+            {
+                Camera.Position -= Vector3Extenders.FromVector4(Vector4.Multiply(Camera.ViewMatrix.Column1, speed));
+                bCameraUpdated = true;
+            }
+
+            if (Input.IsKeyDown(Keys.D))
+            {
+                Camera.Position += Vector3Extenders.FromVector4(Vector4.Multiply(Camera.ViewMatrix.Column1, speed));
+                bCameraUpdated = true;
+            }
+
+            if (Input.IsKeyDown(Keys.W))
+            {
+                Camera.Position -= Vector3Extenders.FromVector4(Vector4.Multiply(Camera.ViewMatrix.Column3, speed));
+                bCameraUpdated = true;
+            }
+
+            if (Input.IsKeyDown(Keys.S))
+            {
+                Camera.Position += Vector3Extenders.FromVector4(Vector4.Multiply(Camera.ViewMatrix.Column3, speed));
+                bCameraUpdated = true;
+            }
+
+            if (Input.IsKeyDown(Keys.Q))
+            {
+                Camera.Position.Z += speed;
+                bCameraUpdated = true;
+            }
+
+            if (Input.IsKeyDown(Keys.E))
+            {
+                Camera.Position.Z -= speed;
+                bCameraUpdated = true;
+            }
+
+            return bCameraUpdated;
+        }
+
         public bool Render()
         {
             D3D.BeginScene(0.0f, 0f, 0f, 1.0f);

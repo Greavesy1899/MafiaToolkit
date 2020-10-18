@@ -30,4 +30,15 @@ namespace ResourceTypes.M3.XBin
         E_VTFF_VISIBLE_CARGO_SPACE = 0x200000,
 		E_VTFF_SINGLE_SEATER = 0x400000,
     }
+
+    [Flags]
+    public enum ECarTuningItemFlags : uint
+    {
+        E_CTIF_OPEN_TOP = 0x1,
+        E_CTIF_SOUND_BLOWER = 0x2,
+        E_CTIF_SOUND_TURBO = 0x4,
+        E_CTIF_BULLETPROOF_TIRES = 0x8,
+        E_CTIF_POLICE_SCANNER = 0x10,
+        E_CTIF_ARMORED = 0x20
+    }
 }

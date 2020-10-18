@@ -24,8 +24,8 @@ namespace Mafia2Tool
             Language.ReadLanguageXML();
             CheckLatestRelease();
 
- //M3_ExperimentalTests Experiments = new M3_ExperimentalTests();
- //Experiments.ReadPrerequisites();
+            //M3_ExperimentalTests Experiments = new M3_ExperimentalTests();
+            //Experiments.ReadPrerequisites();
 
             if (ToolkitSettings.SkipGameSelector)
             {

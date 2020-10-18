@@ -21,12 +21,13 @@ namespace ResourceTypes.M3.XBin
             numTables = reader.ReadInt32();
             offset = reader.ReadInt32();
 
+            TableInformation = XBinFactory.ReadXBin(reader, hash);
+
             if (numTables > 0)
             {
                 for(int i = 0; i < numTables; i++)
                 {
                     uint offset = reader.ReadUInt32();
-                    uint size = reader.ReadUInt32();
                 }
             }
             else
