@@ -41,13 +41,14 @@ namespace Utils.Settings
         public static int SerializeSDSOption;
         public static bool bUseOodleCompression;
         public static bool DecompileLUA;
+        public static bool bBackupEnabled;
         public static bool AddTimeDataBackup;
         public static bool UseSDSToolFormat;
         public static bool CookCollisions;
         public static bool CheckForUpdates;
         public static bool SkipGameSelector;
         public static int DefaultGame;
-        public static readonly float Version = 2.11f;
+        public static readonly float Version = 2.12f;
 
         public static void ReadINI()
         {
@@ -73,6 +74,7 @@ namespace Utils.Settings
             int.TryParse(ReadKey("Language", "Misc", "0"), out Language);
             int.TryParse(ReadKey("Format", "Exporting", "0"), out Format);
             int.TryParse(ReadKey("DefaultGame", "Misc", "0"), out DefaultGame);
+            bool.TryParse(ReadKey("BackupEnabled", "SDS", "True"), out bBackupEnabled);
             bool.TryParse(ReadKey("AddTimeDataBackup", "SDS", "True"), out AddTimeDataBackup);
             bool.TryParse(ReadKey("DecompileLUA", "SDS", "False"), out DecompileLUA);
             bool.TryParse(ReadKey("UseSDSToolFormat", "SDS", "False"), out UseSDSToolFormat);

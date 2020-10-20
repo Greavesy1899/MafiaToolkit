@@ -15,7 +15,6 @@ namespace ResourceTypes.M3.XBin
         public ulong DescriptionID { get; set; }
         public uint IconID { get; set; }
         public uint CityID { get; set; }
-        [Editor(typeof(FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor))]
         public EMissionType Type { get; set; }
         [Browsable(false), PropertyIgnoreByReflector]
         public uint DescOffset1 { get; set; }
@@ -41,6 +40,7 @@ namespace ResourceTypes.M3.XBin
 
     public class MissionsTable : BaseTable
     {
+        private uint unk0;
         private MissionItem[] missions;
 
         public MissionItem[] Missions {
@@ -55,9 +55,9 @@ namespace ResourceTypes.M3.XBin
 
         public void ReadFromFile(BinaryReader reader)
         {
+            unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
-            uint unknown = reader.ReadUInt32();
             missions = new MissionItem[count0];
 
             for (int i = 0; i < count1; i++)
@@ -69,73 +69,35 @@ namespace ResourceTypes.M3.XBin
                 item.IconID = reader.ReadUInt32();
                 item.CityID = reader.ReadUInt32();
                 item.Type = (EMissionType)reader.ReadUInt32();
-
-                item.DescOffset1 = reader.ReadUInt32();
-                item.DescOffset2 = reader.ReadUInt32();
                 item.Unknown = reader.ReadUInt32();
-
-                missions[i] = item;
-            }
-
-            for (int i = 0; i < count1; i++)
-            {
-                var item = missions[i];
-                item.MissionID = StringHelpers.ReadString(reader).TrimEnd('\0');
-                item.CheckPointFile = StringHelpers.ReadString(reader).TrimEnd('\0');
+                item.MissionID = XBinCoreUtils.ReadStringPtrWithOffset(reader);
+                item.CheckPointFile = XBinCoreUtils.ReadStringPtrWithOffset(reader);
                 missions[i] = item;
             }
         }
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(missions.Length);
             writer.Write(missions.Length);
-            writer.Write(0);
 
-            int i = 0;
-            int k = 0;
-            long[] offsets = new long[missions.Length * 2];
             foreach (var slot in missions)
             {
-                //offsets[i] = writer.BaseStream.Position;
-                MissionItem Item = missions[i];
+                MissionItem Item = slot;
                 writer.Write(Item.ID);
                 writer.Write(Item.TextID);
                 writer.Write(Item.DescriptionID);
                 writer.Write(Item.IconID);
                 writer.Write(Item.CityID);
                 writer.Write((int)Item.Type);
-                offsets[k++] = writer.BaseStream.Position;
-                writer.Write(0xDEADBEEF); // placeholder
-                offsets[k++] = writer.BaseStream.Position;
-                writer.Write(0xDEADBEEF); // placeholder
                 writer.Write(Item.Unknown);
-                i++;
+                writer.PushStringPtr(Item.MissionID);
+                writer.PushStringPtr(Item.CheckPointFile);
             }
 
-            k = 0;
-            for (int j = 0; j < missions.Length; j++)
-            {
-                MissionItem Item = missions[j];
-                uint DescOffset1 = (uint)(writer.BaseStream.Position);
-                StringHelpers.WriteString(writer, Item.MissionID);
-                uint DescOffset2 = (uint)(writer.BaseStream.Position);
-                StringHelpers.WriteString(writer, Item.CheckPointFile);
-
-                long currentPosition = writer.BaseStream.Position;
-
-                writer.BaseStream.Position = offsets[k];
-                var offset1 = (uint)(DescOffset1 - offsets[k++]);
-                writer.Write(offset1);
-
-                writer.BaseStream.Position = offsets[k];
-                var offset2 = (uint)(DescOffset2 - offsets[k++]);
-                writer.Write(offset2);
-
-                writer.BaseStream.Position = currentPosition;
-            }
-
-            offsets = new long[0];
+            writer.Write(0); // padding?
+            writer.FixUpStringPtrs();
         }
 
         public void ReadFromXML(string file)
@@ -154,7 +116,7 @@ namespace ResourceTypes.M3.XBin
         public TreeNode GetAsTreeNodes()
         {
             TreeNode Root = new TreeNode();
-            Root.Text = "MissionsTable";
+            Root.Text = "Missions Table";
 
             foreach(var Item in Missions)
             {

@@ -19,16 +19,20 @@ namespace Core.IO
             string backupFolder = Path.Combine(file.Directory.FullName, "BackupSDS");
             string extractedFolder = Path.Combine(file.Directory.FullName, "extracted");
 
-            // We should backup file before unpacking..
-            if (!Directory.Exists(backupFolder))
+            // Only create backups if enabled.
+            if (ToolkitSettings.bBackupEnabled)
             {
-                Directory.CreateDirectory(backupFolder);
-            }
+                // We should backup file before unpacking..
+                if (!Directory.Exists(backupFolder))
+                {
+                    Directory.CreateDirectory(backupFolder);
+                }
 
-            // Place the backup in the folder recently created
-            string time = string.Format("{0}_{1}_{2}_{3}_{4}", DateTime.Now.TimeOfDay.Hours, DateTime.Now.TimeOfDay.Minutes, DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
-            string filename = ToolkitSettings.AddTimeDataBackup == true ? file.Name.Insert(file.Name.Length - 4, "_" + time) : file.Name;
-            File.Copy(file.FullName, Path.Combine(backupFolder, filename), true);
+                // Place the backup in the folder recently created
+                string time = string.Format("{0}_{1}_{2}_{3}_{4}", DateTime.Now.TimeOfDay.Hours, DateTime.Now.TimeOfDay.Minutes, DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+                string filename = ToolkitSettings.AddTimeDataBackup == true ? file.Name.Insert(file.Name.Length - 4, "_" + time) : file.Name;
+                File.Copy(file.FullName, Path.Combine(backupFolder, filename), true);
+            }
 
             // Begin the unpacking process.
             Log.WriteLine("Opening SDS: " + file.Name);

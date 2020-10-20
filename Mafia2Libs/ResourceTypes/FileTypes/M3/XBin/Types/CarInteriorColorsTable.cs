@@ -35,6 +35,7 @@ namespace ResourceTypes.M3.XBin
 
     public class CarInteriorColorsTable : BaseTable
     {
+        private uint unk0;
         private CarInteriorColorsItem[] colors;
         private GamesEnumerator gameVersion;
 
@@ -51,6 +52,7 @@ namespace ResourceTypes.M3.XBin
 
         public void ReadFromFile(BinaryReader reader)
         {
+            unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
             colors = new CarInteriorColorsItem[count0];
@@ -89,6 +91,7 @@ namespace ResourceTypes.M3.XBin
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(colors.Length);
             writer.Write(colors.Length);
 

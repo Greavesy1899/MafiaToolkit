@@ -26,7 +26,9 @@ namespace ResourceTypes.M3.XBin
 	
     public class GenericSpeechSituationsTable : BaseTable
     {
+        private uint unk0;
         private GenericSpeechSituationsItem[] speechsituations;
+        private uint unk1;
 
         public GenericSpeechSituationsItem[] SpeechSituations {
             get { return speechsituations; }
@@ -40,9 +42,9 @@ namespace ResourceTypes.M3.XBin
 
         public void ReadFromFile(BinaryReader reader)
         {
+            unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
-            uint unknown = reader.ReadUInt32();
             speechsituations = new GenericSpeechSituationsItem[count0];
 
             for (int i = 0; i < count1; i++)
@@ -59,13 +61,15 @@ namespace ResourceTypes.M3.XBin
 
                 speechsituations[i] = item;
             }
+
+            unk1 = reader.ReadUInt32();
         }
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(speechsituations.Length);
             writer.Write(speechsituations.Length);
-            writer.Write(0);
 
             foreach (var speechsituation in speechsituations)
             {
@@ -78,6 +82,8 @@ namespace ResourceTypes.M3.XBin
                 writer.Write(speechsituation.IsForeground);
                 writer.Write(speechsituation.FNV64InitHash);
             }
+
+            writer.Write(unk1);
         }
 
         public void ReadFromXML(string file)

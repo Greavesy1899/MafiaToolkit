@@ -418,9 +418,11 @@
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarInteriorColorsTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarTrafficTuningTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarTuningModificators.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarTuningPackAvailabilityTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CharacterCinematicsTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CoreUtils.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\DecalsEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\GuiEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GameMeshBindingTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\MissionsEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GenericSpeechSituationsTable.cs" />
@@ -430,6 +432,12 @@
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GfxContainers\GfxGlassBreakTypeTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GfxContainers\GfxGlassMatTemplateTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GfxContainers\MultiDecalPatternTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GuiContainers\FlashInputMapTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GuiContainers\GameGuiContainer.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GuiContainers\GuiFontMapTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GuiContainers\GuiInputMapTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GuiContainers\GuiLanguageMapTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GuiContainers\GuiSoundMapTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\MissionsTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\SlotTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_Barrier.cs" />

@@ -99,6 +99,7 @@
   <String ID="$DECOMPILE_LUA_UNPACK">Decompile lua when unpacking.</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Use SDS Tool GUI Format when unpacking.</String>
   <String ID="$COOK_COLLISIONS">Cook collisions when saving.</String>
+  <String ID="$BACKUP_SDS_LABEL">Create SDS Backups when unpacking.</String>
   
   <!-- Map Editor -->
   <String ID="$NO_COL_FILE_CREATE_NEW">No Collision file is present. Create new Collision File?</String>

@@ -33,6 +33,7 @@ namespace ResourceTypes.M3.XBin
 
     public class CarTrafficTuningTable : BaseTable
     {
+        private uint unk0;
         private CarTrafficTuningItem[] traffic_tunings;
 
         public CarTrafficTuningItem[] TrafficTuning {
@@ -47,9 +48,9 @@ namespace ResourceTypes.M3.XBin
 
         public void ReadFromFile(BinaryReader reader)
         {
+            unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
-            uint unknown = reader.ReadUInt32();
             traffic_tunings = new CarTrafficTuningItem[count0];
 
             for (int i = 0; i < count1; i++)
@@ -82,9 +83,9 @@ namespace ResourceTypes.M3.XBin
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(traffic_tunings.Length);
             writer.Write(traffic_tunings.Length);
-            writer.Write(0);
 
             int i = 0;
             long[] offsets = new long[traffic_tunings.Length];

@@ -32,14 +32,12 @@ namespace ResourceTypes.M3.XBin.TableContainers
 
             long currentPosition = reader.BaseStream.Position + 4;
             XBinCoreUtils.GotoPtrWithOffset(reader);
-            uint CarColoursValue = reader.ReadUInt32();
             CarColours = new CarColoursTable();
             CarColours.ReadFromFile(reader);
 
             reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
             currentPosition = reader.BaseStream.Position + 4;
             XBinCoreUtils.GotoPtrWithOffset(reader);
-            uint CarWindowTintsValue = reader.ReadUInt32();
             CarWindowTints = new CarWindowTintTable();
             CarWindowTints.ReadFromFile(reader);
 
@@ -49,21 +47,18 @@ namespace ResourceTypes.M3.XBin.TableContainers
 
             currentPosition = reader.BaseStream.Position + 4;
             XBinCoreUtils.GotoPtrWithOffset(reader);
-            uint CarMtrStuffTable = reader.ReadUInt32();
             CarMtrStuff = new CarMtrStuffTable();
             CarMtrStuff.ReadFromFile(reader);
 
             reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
             currentPosition = reader.BaseStream.Position + 4;
             XBinCoreUtils.GotoPtrWithOffset(reader);
-            uint CarSkidmarksValue = reader.ReadUInt32();
             CarSkidmarks = new CarSkidmarksTable();
             CarSkidmarks.ReadFromFile(reader);
 
             reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
             currentPosition = reader.BaseStream.Position + 4;
             XBinCoreUtils.GotoPtrWithOffset(reader);
-            uint CarTuningItem = reader.ReadUInt32();
             CarTuningItems = new CarTuningItemTable();
             CarTuningItems.ReadFromFile(reader);
 

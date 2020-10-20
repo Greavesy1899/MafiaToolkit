@@ -34,10 +34,12 @@ namespace ResourceTypes.M3.XBin.TableContainers
             }
         }
 
+        private int unk0;
         public CarColoursItem[] CarColours { get; set; }
 
         public void ReadFromFile(BinaryReader reader)
         {
+            unk0 = reader.ReadInt32();
             uint count1 = reader.ReadUInt32();
             uint count2 = reader.ReadUInt32();
             CarColours = new CarColoursItem[count1];
@@ -60,6 +62,7 @@ namespace ResourceTypes.M3.XBin.TableContainers
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(CarColours.Length);
             writer.Write(CarColours.Length);
 

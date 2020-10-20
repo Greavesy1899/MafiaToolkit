@@ -2290,8 +2290,8 @@ namespace ResourceTypes.Actors
             writer.Write(WalkRange, isBigEndian);
             writer.Write(SensorType, isBigEndian);
             writer.Write(Radius, isBigEndian);
-            writer.WriteStringBuffer(128, ScriptEntity);
             Vector3Extenders.WriteToFile(BBox, writer, isBigEndian);
+            writer.WriteStringBuffer(128, ScriptEntity);
             writer.Write(Data);
             writer.Write(Type, isBigEndian);
             writer.Write(NumActors, isBigEndian);

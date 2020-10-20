@@ -33,6 +33,7 @@ namespace ResourceTypes.M3.XBin
     {
         private readonly ulong XBinMagic = 0x5E42EF29E8A3E1D3;
 
+        private uint unk0;
         public LocalisableString[] Items { get; set; }
 
         public StringTable()
@@ -43,6 +44,7 @@ namespace ResourceTypes.M3.XBin
         public void ReadFromFile(BinaryReader reader)
         {
             // XBin files store the count twice.
+            unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
             Debug.Assert(count0 == count1, "These numbers should be identical.");
@@ -61,6 +63,7 @@ namespace ResourceTypes.M3.XBin
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(Items.Length);
             writer.Write(Items.Length);
 

@@ -47,6 +47,7 @@ namespace ResourceTypes.M3.XBin
 
     public class CarGearBoxesTable : BaseTable
     {
+        private uint unk0;
         private CarGearBoxesItem[] gearboxes;
 
         public CarGearBoxesItem[] Gearboxes {
@@ -61,6 +62,7 @@ namespace ResourceTypes.M3.XBin
 
         public void ReadFromFile(BinaryReader reader)
         {
+            unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
             gearboxes = new CarGearBoxesItem[count0];
@@ -105,6 +107,7 @@ namespace ResourceTypes.M3.XBin
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(gearboxes.Length);
             writer.Write(gearboxes.Length);
 

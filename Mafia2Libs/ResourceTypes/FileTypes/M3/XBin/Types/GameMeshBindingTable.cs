@@ -18,7 +18,9 @@ namespace ResourceTypes.M3.XBin
 
     public class GameMeshBindingTable : BaseTable
     {
+        private uint unk0;
         private GameMeshBindingItem[] bindings;
+        private uint unk1;
 
         public GameMeshBindingItem[] MeshBindings {
             get { return bindings; }
@@ -32,9 +34,9 @@ namespace ResourceTypes.M3.XBin
 
         public void ReadFromFile(BinaryReader reader)
         {
+            unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
-            uint unknown = reader.ReadUInt32();
             bindings = new GameMeshBindingItem[count0];
 
             for (int i = 0; i < count1; i++)
@@ -46,13 +48,15 @@ namespace ResourceTypes.M3.XBin
 
                 bindings[i] = item;
             }
+
+            unk1 = reader.ReadUInt32();
         }
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(bindings.Length);
             writer.Write(bindings.Length);
-            writer.Write(0);
 
             foreach(var bind in bindings)
             {
@@ -60,6 +64,8 @@ namespace ResourceTypes.M3.XBin
                 writer.Write(bind.SingleMeshIndex);
                 writer.Write(bind.HavokIndex);
             }
+
+            writer.Write(unk1);
         }
 
         public void ReadFromXML(string file)

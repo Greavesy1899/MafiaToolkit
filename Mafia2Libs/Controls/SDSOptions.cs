@@ -23,6 +23,7 @@ namespace Forms.OptionControls
             UnpackLUABox.Text = Language.GetString("$DECOMPILE_LUA_UNPACK");
             SDSToolFormat.Text = Language.GetString("$USE_SDS_TOOL_FORMAT");
             CookCollisionsBox.Text = Language.GetString("$COOK_COLLISIONS");
+            CheckBox_BackupSDS.Text = Language.GetString("$BACKUP_SDS_LABEL");
         }
 
         private void LoadSettings()
@@ -33,6 +34,9 @@ namespace Forms.OptionControls
             SDSToolFormat.Checked = ToolkitSettings.UseSDSToolFormat;
             CookCollisionsBox.Checked = ToolkitSettings.CookCollisions;
             CheckBox_UseOodle.Checked = ToolkitSettings.bUseOodleCompression;
+            CheckBox_BackupSDS.Checked = ToolkitSettings.bBackupEnabled;
+
+            AddTimeDateBackupsBox.Enabled = ToolkitSettings.bBackupEnabled;
         }
 
         private void SDSCompress_IndexChanged(object sender, EventArgs e)
@@ -69,6 +73,14 @@ namespace Forms.OptionControls
         {
             ToolkitSettings.bUseOodleCompression = CheckBox_UseOodle.Checked;
             ToolkitSettings.WriteKey("UseOodleCompression", "SDS", ToolkitSettings.bUseOodleCompression.ToString());
+        }
+
+        private void CheckBox_BackupSDS_CheckedChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.bBackupEnabled = CheckBox_BackupSDS.Checked;
+            ToolkitSettings.WriteKey("BackupEnabled", "SDS", ToolkitSettings.bBackupEnabled.ToString());
+
+            AddTimeDateBackupsBox.Enabled = ToolkitSettings.bBackupEnabled;
         }
     }
 }

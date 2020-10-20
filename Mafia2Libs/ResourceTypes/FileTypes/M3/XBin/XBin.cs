@@ -10,7 +10,6 @@ namespace ResourceTypes.M3.XBin
         private int numTables;
         private int offset;
 
-        private int unk0; //could be with the table;
         public BaseTable TableInformation { get; set; }
         private int unk1; // Unknown.
 
@@ -53,9 +52,7 @@ namespace ResourceTypes.M3.XBin
             writer.Write(version);
             writer.Write(numTables);
             writer.Write(offset);
-            writer.Write(unk0);
             TableInformation.WriteToFile(writer);
-            writer.Write(unk1);
         }
     }
 }

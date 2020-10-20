@@ -59,6 +59,7 @@ namespace ResourceTypes.M3.XBin
 
     public class VehicleTable : BaseTable
     {
+        private uint unk0;
         private VehicleTableItem[] vehicles;
         private GamesEnumerator gameVersion;
 
@@ -75,6 +76,7 @@ namespace ResourceTypes.M3.XBin
 
         public void ReadFromFile(BinaryReader reader)
         {
+            unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
             vehicles = new VehicleTableItem[count0];
@@ -119,6 +121,7 @@ namespace ResourceTypes.M3.XBin
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(vehicles.Length);
             writer.Write(vehicles.Length);
 
@@ -173,7 +176,7 @@ namespace ResourceTypes.M3.XBin
         public TreeNode GetAsTreeNodes()
         {
             TreeNode Root = new TreeNode();
-            Root.Text = "VehicleTable";
+            Root.Text = "Vehicles Table";
 
             foreach(var Item in Vehicles)
             {

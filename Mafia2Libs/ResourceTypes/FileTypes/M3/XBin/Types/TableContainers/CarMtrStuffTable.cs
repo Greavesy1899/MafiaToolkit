@@ -29,10 +29,12 @@ namespace ResourceTypes.M3.XBin.TableContainers
             }
         }
 
+        private uint unk0;
         public CarMtrStuffItem[] CarWindowTints { get; set; }
 
         public void ReadFromFile(BinaryReader reader)
         {
+            unk0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
             uint count2 = reader.ReadUInt32();
             CarWindowTints = new CarMtrStuffItem[count1];
@@ -53,6 +55,7 @@ namespace ResourceTypes.M3.XBin.TableContainers
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(CarWindowTints.Length);
             writer.Write(CarWindowTints.Length);
 

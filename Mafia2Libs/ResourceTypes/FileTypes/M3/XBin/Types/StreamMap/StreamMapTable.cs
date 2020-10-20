@@ -30,10 +30,12 @@ namespace ResourceTypes.M3.XBin
             }
         }
 
+        private uint unk0;
         public StreamMapLine[] Lines { get; set; }
 
         public void ReadFromFile(BinaryReader reader)
         {
+            unk0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
             uint count2 = reader.ReadUInt32();
             Lines = new StreamMapLine[count1];
@@ -95,6 +97,7 @@ namespace ResourceTypes.M3.XBin
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(Lines.Length);
             writer.Write(Lines.Length);
 

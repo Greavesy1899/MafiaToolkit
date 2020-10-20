@@ -69,12 +69,13 @@ namespace ResourceTypes.M3.XBin
 
                 BaseStream.Seek(Ptr.FileOffset, SeekOrigin.Begin);
                 int StringOffset = (int)(BufferStartOffset + Offset);
-                int Gap = (int)(StringOffset - Ptr.FileOffset) + 2;
+                int Gap = (int)(StringOffset - Ptr.FileOffset);
                 Write(Gap);
             }
 
             BaseStream.Seek(BufferStartOffset, SeekOrigin.Begin);
-            Write(RawStringBuffer);
+            Utils.StringHelpers.StringHelpers.WriteString(this, RawStringBuffer);
+            PtrsToFix.Clear();
         }
 
         private void AddStringToBuffer(string Text)

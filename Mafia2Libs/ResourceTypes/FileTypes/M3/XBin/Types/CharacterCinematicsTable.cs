@@ -18,6 +18,7 @@ namespace ResourceTypes.M3.XBin
 	
     public class CharacterCinematicsTable : BaseTable
     {
+        private uint unk0;
         private CharacterCinematicsItem[] charactercinematics;
 
         public CharacterCinematicsItem[] CharacterCinematics {
@@ -32,9 +33,9 @@ namespace ResourceTypes.M3.XBin
 
         public void ReadFromFile(BinaryReader reader)
         {
+            unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
-            uint unknown = reader.ReadUInt32();
             charactercinematics = new CharacterCinematicsItem[count0];
 
             for (int i = 0; i < count1; i++)
@@ -49,9 +50,9 @@ namespace ResourceTypes.M3.XBin
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(charactercinematics.Length);
             writer.Write(charactercinematics.Length);
-            writer.Write(0);
 
             foreach (var charactercinematic in charactercinematics)
             {

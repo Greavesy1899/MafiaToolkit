@@ -38,6 +38,7 @@ namespace ResourceTypes.M3.XBin
 
     public class SlotTable : BaseTable
     {
+        private uint unk0;
         private SlotItem[] slots;
 
         public SlotItem[] Slots {
@@ -52,6 +53,7 @@ namespace ResourceTypes.M3.XBin
 
         public void ReadFromFile(BinaryReader reader)
         {
+            unk0 = reader.ReadUInt32();
             uint count0 = reader.ReadUInt32();
             uint count1 = reader.ReadUInt32();
             slots = new SlotItem[count0];
@@ -84,6 +86,7 @@ namespace ResourceTypes.M3.XBin
 
         public void WriteToFile(XBinWriter writer)
         {
+            writer.Write(unk0);
             writer.Write(slots.Length);
             writer.Write(slots.Length);
 

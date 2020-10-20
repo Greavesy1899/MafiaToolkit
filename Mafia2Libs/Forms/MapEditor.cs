@@ -272,12 +272,6 @@ namespace Mafia2Tool
         {
             bool result = false;
 
-            if (Input == null)
-            {
-                Input = new InputClass();
-                Input.Init();
-            }
-
             if (Graphics == null)
             {
                 Graphics = new GraphicsClass();
@@ -285,6 +279,12 @@ namespace Mafia2Tool
                 BuildRenderObjects();
                 result = Graphics.InitScene(RenderPanel.Width, RenderPanel.Height);
             }
+
+            if (Input == null)
+            {
+                Input = Graphics.Input;
+            }
+
             return result;
         }
 
