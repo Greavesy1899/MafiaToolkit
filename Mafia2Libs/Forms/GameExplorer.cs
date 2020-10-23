@@ -199,7 +199,11 @@ namespace Mafia2Tool
             {
                 if (!imageBank.Images.ContainsKey(info.Extension))
                 {
-                    imageBank.Images.Add(info.Extension, Icon.ExtractAssociatedIcon(info.FullName));
+                    var icon = Icon.ExtractAssociatedIcon(info.FullName);
+                    if (icon != null)
+                    {
+                        imageBank.Images.Add(info.Extension, icon);
+                    }
                 }
 
                 if (searchMode && !string.IsNullOrEmpty(filename))
