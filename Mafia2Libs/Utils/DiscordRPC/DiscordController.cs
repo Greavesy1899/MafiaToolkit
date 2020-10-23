@@ -21,6 +21,16 @@ namespace Utils.Discord
             DiscordRPC.Initialize(applicationId, ref handlers, true, optionalSteamId);
         }
 
+        public void UpdatePresence()
+        {
+            DiscordRPC.UpdatePresence(ref presence);
+        }
+
+        public void Shutdown()
+        {
+            DiscordRPC.Shutdown();
+        }
+
         public void ReadyCallback()
         {
             Console.WriteLine("Discord RPC is ready!");

@@ -135,7 +135,7 @@ namespace Utils.Settings
         {
             if (!DiscordEnabled)
             {
-                DiscordRPC.Shutdown();
+                controller?.Shutdown();
                 controller = null;
             }
             else
@@ -151,7 +151,7 @@ namespace Utils.Settings
                 controller.presence.details = DiscordDetailsEnabled ? vString : null;
                 controller.presence.startTimestamp = DiscordElapsedTimeEnabled ? ElapsedTime : 0;
 
-                DiscordRPC.UpdatePresence(ref controller.presence);
+                controller.UpdatePresence();
             }
         }
     }
