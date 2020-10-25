@@ -98,7 +98,7 @@ namespace Gibbed.Mafia2.FileFormats
                 // Configure VRAM information for the SDS.
                 if (game.GameType == GamesEnumerator.MafiaII_DE || game.GameType == GamesEnumerator.MafiaII)
                 {
-                    entry.OtherVramRequired = (uint)(texData.Length - 128);
+                    entry.SlotVramRequired = (uint)(texData.Length - 128);
                     //if (hasMIP == 1)
                     //{
                     //    using (BinaryReader reader = new BinaryReader(File.Open(sdsFolder + "/MIP_" + file, FileMode.Open)))
@@ -158,6 +158,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             //finish
             entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
+            entry.SlotRamRequired = (uint)entry.Data.Length;
             descNode.InnerText = file;
             return entry;
         }
@@ -591,7 +592,7 @@ namespace Gibbed.Mafia2.FileFormats
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
             entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
-            entry.SlotRamRequired = (uint)(entry.Data.Length + 30);
+            entry.SlotRamRequired = (uint)(entry.Data.Length);
 
             //finish
             descNode.InnerText = "not available";

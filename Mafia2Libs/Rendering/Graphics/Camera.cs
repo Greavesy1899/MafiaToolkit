@@ -16,7 +16,7 @@ namespace Rendering.Graphics
         private Vector3 Right { get; set; }
         private Vector3 Up { get; set; }
 
-        private Plane[] frustrumPlanes = new Plane[6];
+        private Plane[] frustumPlanes = new Plane[6];
 
         public Camera()
         {
@@ -50,31 +50,91 @@ namespace Rendering.Graphics
             ViewMatrix = v;
         }
 
-        public void ContructFrustrum()
+        public void ContructFrustum(bool bNormalise = false)
         {
             Matrix inverse = Matrix.Invert(ProjectionMatrix);
 
-            frustrumPlanes[0] = Plane.Normalize(Plane.Transform(new Plane(0.0f, 0.0f, 1.0f, 0.0f), inverse));
-            frustrumPlanes[1] = Plane.Normalize(Plane.Transform(new Plane(0.0f, 0.0f, -1.0f, 1.0f), inverse));
-            frustrumPlanes[2] = Plane.Normalize(Plane.Transform(new Plane(1.0f, 0.0f, 0.0f, 1.0f), inverse));
-            frustrumPlanes[3] = Plane.Normalize(Plane.Transform(new Plane(-1.0f, 0.0f, 0.0f, 1.0f), inverse));
-            frustrumPlanes[4] = Plane.Normalize(Plane.Transform(new Plane(0.0f, -1.0f, 0.0f, 1.0f), inverse));
-            frustrumPlanes[5] = Plane.Normalize(Plane.Transform(new Plane(0.0f, 1.0f, 0.0f, 1.0f), inverse));
+            // Left clipping plane
+            Plane LeftPlane = new Plane(ProjectionMatrix.M14 + ProjectionMatrix.M11, ProjectionMatrix.M24 + ProjectionMatrix.M21, ProjectionMatrix.M34 + ProjectionMatrix.M31, ProjectionMatrix.M44 + ProjectionMatrix.M41);
+            frustumPlanes[0] = LeftPlane;
 
+            // Right clipping plane
+            Plane RightPlane = new Plane(ProjectionMatrix.M14 + ProjectionMatrix.M11, ProjectionMatrix.M24 + ProjectionMatrix.M21, ProjectionMatrix.M34 + ProjectionMatrix.M31, ProjectionMatrix.M44 + ProjectionMatrix.M41);
+            frustumPlanes[1] = RightPlane;
+
+            // Top clipping plane
+            Plane TopPlane = new Plane(ProjectionMatrix.M14 + ProjectionMatrix.M12, ProjectionMatrix.M24 + ProjectionMatrix.M22, ProjectionMatrix.M34 + ProjectionMatrix.M32, ProjectionMatrix.M44 + ProjectionMatrix.M42);
+            frustumPlanes[2] = TopPlane;
+
+            // Bottom clipping plane
+            Plane BottomPlane = new Plane(ProjectionMatrix.M14 + ProjectionMatrix.M12, ProjectionMatrix.M24 + ProjectionMatrix.M22, ProjectionMatrix.M34 + ProjectionMatrix.M32, ProjectionMatrix.M44 + ProjectionMatrix.M42);
+            frustumPlanes[3] = BottomPlane;
+
+            // Near clipping plane
+            Plane NearPlane = new Plane(ProjectionMatrix.M13, ProjectionMatrix.M23, ProjectionMatrix.M33, ProjectionMatrix.M43);
+            frustumPlanes[4] = NearPlane;
+
+            // Far clipping plane
+            Plane FarPlane = new Plane(ProjectionMatrix.M14 - ProjectionMatrix.M13, ProjectionMatrix.M24 - ProjectionMatrix.M23, ProjectionMatrix.M34 - ProjectionMatrix.M33, ProjectionMatrix.M44 - ProjectionMatrix.M44);
+            frustumPlanes[5] = FarPlane;
+
+            // Normalise if asked too.
+            if (bNormalise)
+            {
+                for (int i = 0; i < frustumPlanes.Length; i++)
+                {
+                    Vector3 Normal = frustumPlanes[i].Normal;
+                    float Mag = (float)Math.Sqrt(Normal.X * Normal.X + Normal.Y * Normal.Y + Normal.Z * Normal.Z);
+
+                    Normal.X /= Mag;
+                    Normal.Y /= Mag;
+                    Normal.Z /= Mag;
+
+                    frustumPlanes[i].Normal = Normal;
+                }
+            }
         }
 
-        public bool CheckBBoxFrustrum(BoundingBox box)
+        private float Frustum_DistanceToPoint(Plane ClippingPlane, Vector3 Position)
+        {
+            Vector3 Normal = ClippingPlane.Normal;
+            return Normal.X * Position.X + Normal.Y * Position.Y + Normal.Z * Position.Z + ClippingPlane.D;
+        }
+
+        private int Frustum_ClassifyPoint(Plane ClippingPlane, Vector3 Position)
+        {
+            float Distance = Frustum_DistanceToPoint(ClippingPlane, Position);
+            Console.Write(Distance);
+
+            if(Distance < 0.0f)
+            {
+                // Negative
+                return -1;
+            }
+            else if(Distance > 0.0f)
+            {
+                // Position
+                return 1;
+            }
+            else
+            {
+                // On Plane
+                return 0;
+            }
+        }
+
+        public bool CheckBBoxFrustum(Vector3 Position, BoundingBox box)
         {
             bool result = false;
             for (int i = 0; i < 6; i++) 
             {
-                float distance = Vector3.Distance(box.Maximum, frustrumPlanes[i].Normal);
-                float distance2 = Vector3.Distance(box.Minimum, frustrumPlanes[i].Normal);
-
-                if(distance < 0 || distance2 < 0)
+                if(result)
                 {
                     return true;
                 }
+
+                int Result = Frustum_ClassifyPoint(frustumPlanes[i], Position + box.Center);
+                result = Result == 1;
             }
             return result;
         }
@@ -103,7 +163,7 @@ namespace Rendering.Graphics
         public void Render()
         {
             UpdateViewMatrix();
-            ContructFrustrum();
+            ContructFrustum();
         }
 
         public void SetRotation(float pitch, float yaw, float roll = 0.0f)

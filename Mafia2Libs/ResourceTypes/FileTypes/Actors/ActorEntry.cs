@@ -3,6 +3,7 @@ using SharpDX;
 using System.ComponentModel;
 using System.IO;
 using Utils.SharpDXExtensions;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Actors
 {
@@ -174,17 +175,8 @@ namespace ResourceTypes.Actors
         private string readString(BinaryReader reader)
         {
             byte length = reader.ReadByte();
-            string text = "";
-            //if(length > 30)
-            //{
-            //    reader.BaseStream.Position--;
-            //    text = StringHelpers.ReadString(reader);
-            //}
-            //else if(length > 0)
-            //{
-            text = new string(reader.ReadChars(length - 2));
+            string text = StringHelpers.ReadStringBuffer(reader, length - 2);
             reader.ReadByte();
-            //}
             return text;
         }
 

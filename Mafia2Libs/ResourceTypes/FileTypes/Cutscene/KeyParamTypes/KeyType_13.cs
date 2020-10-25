@@ -25,10 +25,8 @@ namespace ResourceTypes.Cutscene.KeyParams
             }
         }
 
-        private int animationCount;
-        private ushort unk01;
-
         public AnimationData[] Animations { get; set; }
+        public ushort Unk01 { get; set; }
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
@@ -52,7 +50,28 @@ namespace ResourceTypes.Cutscene.KeyParams
                 Animations[i] = animation;
             }
 
-            unk01 = stream.ReadUInt16(isBigEndian);
+            Unk01 = stream.ReadUInt16(isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            stream.Write(Animations.Length, isBigEndian);
+
+            foreach(AnimationData Animation in Animations)
+            {
+                stream.Write(Animation.Unk01, isBigEndian);
+                stream.Write(Animation.Unk02, isBigEndian);
+                stream.Write(Animation.Unk03, isBigEndian);
+                stream.WriteByte(Animation.Unk04);
+                stream.WriteString16(Animation.AnimationName, isBigEndian);
+                stream.Write(Animation.Unk05, isBigEndian);
+                stream.Write(Animation.Unk06, isBigEndian);
+                stream.Write(Animation.Unk07, isBigEndian);
+                stream.Write(Animation.Unk08, isBigEndian);
+            }
+
+            stream.Write(Unk01, isBigEndian);
         }
 
         public override string ToString()

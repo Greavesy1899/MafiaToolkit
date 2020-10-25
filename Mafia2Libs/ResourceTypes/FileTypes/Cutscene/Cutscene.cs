@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene
@@ -92,8 +93,29 @@ namespace ResourceTypes.Cutscene
             }
         }
 
+        public void WriteToFile(string Filename)
+        {
+            File.Copy(Filename, Filename + "_old", true);
+            using (BinaryWriter Writer = new BinaryWriter(File.Open(Filename, FileMode.Create)))
+            {
+                InternalWriteToFile(Writer);
+            }
+        }
+
+        private void InternalWriteToFile(BinaryWriter Writer)
+        {
+            Writer.Write(Cutscenes.Length);
+            foreach(var Scene in Cutscenes)
+            {
+                Scene.WriteToFile(Writer);
+            }
+        }
+
         public class Cutscene
         {
+            private byte[] unk05; // Padding?
+            private int gcsSize; // Will need to be replaced
+
             public string CutsceneName { get; set; }
             public GCSData AssetContent { get; set; }
             public SPDData SoundContent { get; set; }
@@ -108,18 +130,24 @@ namespace ResourceTypes.Cutscene
             {
                 short length = reader.ReadInt16();
                 CutsceneName = new string(reader.ReadChars(length));
-                byte[] unkBytes1 = reader.ReadBytes(5);
-                int gcsSize = reader.ReadInt32();
+
+                if(!Directory.Exists("CutsceneInfo/"+ CutsceneName))
+                {
+                    Directory.CreateDirectory("CutsceneInfo/" + CutsceneName);
+                }
+
+                unk05 = reader.ReadBytes(5);
+                gcsSize = reader.ReadInt32();
 
                 long start = reader.BaseStream.Position;
                 AssetContent = new GCSData();
-                AssetContent.ReadFromFile(reader);
+                AssetContent.ReadFromFile(reader, CutsceneName);
 
                 bool hasSPD = reader.ReadBoolean();
                 if(hasSPD)
                 {
                     SoundContent = new SPDData();
-                    SoundContent.ReadFromFile(reader);
+                    SoundContent.ReadFromFile(reader, CutsceneName);
                     //File.WriteAllBytes("CutsceneData/SPD_Data.bin", spdData.Data);
                 }
 
@@ -142,6 +170,22 @@ namespace ResourceTypes.Cutscene
                 return;
             }
 
+            public void WriteToFile(BinaryWriter Writer)
+            {
+                StringHelpers.WriteString16(Writer, CutsceneName);
+                Writer.Write(unk05);
+                Writer.Write(gcsSize);
+                AssetContent.WriteToFile(Writer);
+
+                if(SoundContent != null)
+                {
+                    Writer.Write(true); // Has SPD
+                    SoundContent.WriteToFile(Writer);
+                }
+
+                Writer.Write(0); // Num GCR
+            }
+
             public class GCSData
             {
                 private string header; //usually equals !GCS.
@@ -161,8 +205,12 @@ namespace ResourceTypes.Cutscene
                 public float unk13;
                 public int unk14;
 
-                public void ReadFromFile(BinaryReader reader)
+                private string CutsceneName;
+
+                public void ReadFromFile(BinaryReader reader, string name)
                 {
+                    CutsceneName = name;
+
                     header = new string(reader.ReadChars(4));
                     unk02 = reader.ReadInt32();
                     unk03 = reader.ReadSingle();
@@ -187,15 +235,13 @@ namespace ResourceTypes.Cutscene
                         byte[] DefintionData = reader.ReadBytes(Size - 12);
                         using (MemoryStream Reader = new MemoryStream(DefintionData))
                         {
-                            AnimEntity AnimEntity = CutsceneEntityFactory.ReadAnimEntityFromFile(AnimEntityType, Reader);
+                            AnimEntity Entity = CutsceneEntityFactory.ReadAnimEntityFromFile(AnimEntityType, Reader);
+                            Entity.Definition.Size = Size;
 
-                            // Debugging: If a debugger is attached, we should save it to the disc.
-                            if(Debugger.IsAttached)
-                            {
-                                File.WriteAllBytes("CutSceneData/Entity" + AnimEntityType + "_" + i + ".bin", DefintionData);
-                            }
+                            string format = string.Format("CutsceneInfo/{2}/Entity_{0}_{1}.bin", AnimEntityType, i, CutsceneName);
+                            File.WriteAllBytes(format, DefintionData);
 
-                            entities[i] = AnimEntity;
+                            entities[i] = Entity;
                         }
                     }
 
@@ -206,7 +252,9 @@ namespace ResourceTypes.Cutscene
                         int size = reader.ReadInt32();
                         reader.BaseStream.Position -= 8;
                         byte[] dataBytes = reader.ReadBytes(size);
-                        File.WriteAllBytes("CutSceneData/" + entities[z] + "_" + z.ToString() + ".bin", dataBytes);
+
+                        string format = string.Format("CutsceneInfo/{2}/{0}_{1}.bin", entities[z], z, CutsceneName);
+                        File.WriteAllBytes(format, dataBytes);
 
                         // And then This
                         using(MemoryStream stream = new MemoryStream(dataBytes))
@@ -222,6 +270,65 @@ namespace ResourceTypes.Cutscene
                     unk13 = reader.ReadSingle();
                     unk14 = reader.ReadInt32();
                 }
+
+                public void WriteToFile(BinaryWriter writer)
+                {
+                    writer.Write(header.ToCharArray());
+                    writer.Write(unk02);
+                    writer.Write(unk03);
+                    writer.Write(unk04);
+                    writer.Write(unk05);
+                    writer.Write(unk06);
+                    writer.Write(unk07);
+                    writer.Write(unk08);
+                    writer.Write(unk09);
+                    writer.Write(numEntities);
+
+                    foreach(var Entity in entities)
+                    {
+                        writer.Write(126); //Header for types is 126.
+
+                        long sizePosition = writer.BaseStream.Position;
+                        writer.Write(-1);
+                        writer.Write((int)Entity.Definition.GetEntityType());
+
+                        using(MemoryStream stream = new MemoryStream())
+                        {
+                            CutsceneEntityFactory.WriteAnimEntityToFile(stream, Entity);
+                            writer.Write(stream.ToArray());
+
+                            Debug.Assert(Entity.Definition.Size == stream.Length + 12, "Oof");
+                            if(Entity.Definition.Size != stream.Length + 12)
+                            {
+                                File.WriteAllBytes("File.bin", stream.ToArray());
+                            }
+
+                            long currentPosition = writer.BaseStream.Position;
+                            writer.BaseStream.Seek(sizePosition, SeekOrigin.Begin);
+                            writer.Write((uint)stream.Length + 12);
+                            writer.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+                        }
+                    }
+
+                    foreach (var Entity in entities)
+                    {
+                        //writer.Write(1000); //Header for types is 1000.
+                        using (MemoryStream stream = new MemoryStream())
+                        {
+                            bool isBigEndian = false;
+                            Entity.Data.WriteToFile(stream, isBigEndian);
+                            writer.Write(stream.ToArray());
+
+                            Debug.Assert(stream.Length == Entity.Data.Size, "Oof");
+                        }
+                    }
+
+                    writer.Write(unk10);
+                    writer.Write(unk11);
+                    writer.Write(unk12);
+                    writer.Write(unk13);
+                    writer.Write(unk14);
+                }
             }
 
             public class SPDData
@@ -229,13 +336,19 @@ namespace ResourceTypes.Cutscene
                 public int Unk01 { get; set; }
                 public float Unk02 { get; set; } // For GCS this is FPS i think.
                 public AnimEntity[] EntityDefinitions { get; set; }
-                public void ReadFromFile(BinaryReader reader)
+
+                private uint Size; // Will be removed when we have proper saving.
+                private string CutsceneName; // For debugging
+
+                public void ReadFromFile(BinaryReader reader, string name)
                 {
+                    CutsceneName = name;
+
                     int magic = reader.ReadInt32();
                     if(magic == 1000)
                     {
                         //the size includes the size and the magic, A.K.A: (magic and size == 8)
-                        int size = reader.ReadInt32();
+                        Size = reader.ReadUInt32();
 
                         int fourcc = reader.ReadInt32();
                         if(fourcc == 0x21445053)
@@ -258,12 +371,10 @@ namespace ResourceTypes.Cutscene
                                 using (MemoryStream Reader = new MemoryStream(DefintionData))
                                 {
                                     AnimEntity Entity = CutsceneEntityFactory.ReadAnimEntityFromFile(AnimEntityType, Reader);
-
+                                    Entity.Definition.Size = Size;
                                     // Debugging: If the AnimEntity is null and a debugger is attached, we should save it to the disc.
-                                    if (Entity == null && Debugger.IsAttached)
-                                    {
-                                        File.WriteAllBytes("CutSceneData/Entity_SPD_" + AnimEntityType + "_" + i + ".bin", DefintionData);
-                                    }
+                                    string format = string.Format("CutsceneInfo/{0}/Entity_SPD_{1}_{2}.bin", CutsceneName, AnimEntityType, i);
+                                    File.WriteAllBytes(format, DefintionData);
 
                                     EntityDefinitions[i] = Entity;
                                 }
@@ -276,14 +387,61 @@ namespace ResourceTypes.Cutscene
                                 int entitySize = reader.ReadInt32();
                                 reader.BaseStream.Position -= 8;
                                 byte[] dataBytes = reader.ReadBytes(entitySize);
-                                File.WriteAllBytes("CutSceneData/" + EntityDefinitions[z] + "_SPD_" + z.ToString() + ".bin", dataBytes);
+
+                                string format = string.Format("CutsceneInfo/{2}/{0}_SPD_{1}.bin", EntityDefinitions[z], z, CutsceneName);
+                                File.WriteAllBytes(format, dataBytes);
 
                                 // And then This
                                 using (MemoryStream stream = new MemoryStream(dataBytes))
                                 {
                                     EntityDefinitions[z].Data.ReadFromFile(stream, false);
+                                    Debug.Assert(stream.Position == stream.Length, "When reading the AnimEntity Data, we did not reach the end of the stream!");
                                 }
                             }
+                        }
+                    }
+                }
+
+                public void WriteToFile(BinaryWriter Writer)
+                {
+                    Writer.Write(1000); // Magic
+                    Writer.Write(Size);
+                    Writer.Write(0x21445053);
+                    Writer.Write(Unk01);
+                    Writer.Write(Unk02);
+                    Writer.Write(EntityDefinitions.Length);
+
+                    foreach (var Entity in EntityDefinitions)
+                    {
+                        Writer.Write(126); //Header for types is 126.
+
+                        long sizePosition = Writer.BaseStream.Position;
+                        Writer.Write(-1);
+                        Writer.Write((int)Entity.Definition.GetEntityType());
+
+                        using (MemoryStream EntityStream = new MemoryStream())
+                        {
+                            CutsceneEntityFactory.WriteAnimEntityToFile(EntityStream, Entity);
+                            Writer.Write(EntityStream.ToArray());
+
+                            Debug.Assert(Entity.Definition.Size == EntityStream.Length + 12, "Oof");
+
+                            long currentPosition = Writer.BaseStream.Position;
+                            Writer.BaseStream.Seek(sizePosition, SeekOrigin.Begin);
+                            Writer.Write((uint)EntityStream.Length + 12);
+                            Writer.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+                        }
+                    }
+
+                    foreach (var Entity in EntityDefinitions)
+                    {
+                        using (MemoryStream EntityStream = new MemoryStream())
+                        {
+                            bool isBigEndian = false;
+                            Entity.Data.WriteToFile(EntityStream, isBigEndian);
+                            Writer.Write(EntityStream.ToArray());
+
+                            Debug.Assert(EntityStream.Length == Entity.Data.Size, "Oof");
                         }
                     }
                 }

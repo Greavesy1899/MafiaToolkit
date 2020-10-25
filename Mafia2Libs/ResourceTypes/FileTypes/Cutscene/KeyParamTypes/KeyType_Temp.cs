@@ -13,6 +13,12 @@ namespace ResourceTypes.Cutscene.KeyParams
             KeyData = stream.ReadBytes(Size - 12);
         }
 
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            stream.Write(KeyData);
+        }
+
         public override string ToString()
         {
             return string.Format("NOT_REVERSED::KeyType: {0}", KeyType);

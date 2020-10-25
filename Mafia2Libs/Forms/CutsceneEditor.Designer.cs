@@ -60,7 +60,6 @@
             this.SaveButton,
             this.ReloadButton,
             this.ExitButton});
-            this.Button_File.Enabled = false;
             this.Button_File.Image = ((System.Drawing.Image)(resources.GetObject("Button_File.Image")));
             this.Button_File.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Button_File.Name = "Button_File";
@@ -69,24 +68,24 @@
             // 
             // SaveButton
             // 
-            this.SaveButton.Enabled = false;
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(180, 22);
             this.SaveButton.Text = "$SAVE";
+            this.SaveButton.Click += new System.EventHandler(this.SaveButton_OnClick);
             // 
             // ReloadButton
             // 
-            this.ReloadButton.Enabled = false;
             this.ReloadButton.Name = "ReloadButton";
             this.ReloadButton.Size = new System.Drawing.Size(180, 22);
             this.ReloadButton.Text = "$RELOAD";
+            this.ReloadButton.Click += new System.EventHandler(this.Reload_OnClick);
             // 
             // ExitButton
             // 
-            this.ExitButton.Enabled = false;
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(180, 22);
             this.ExitButton.Text = "$EXIT";
+            this.ExitButton.Click += new System.EventHandler(this.ExitButton_OnClick);
             // 
             // Button_Edit
             // 
@@ -105,14 +104,14 @@
             // 
             this.AddItemButton.Enabled = false;
             this.AddItemButton.Name = "AddItemButton";
-            this.AddItemButton.Size = new System.Drawing.Size(180, 22);
+            this.AddItemButton.Size = new System.Drawing.Size(171, 22);
             this.AddItemButton.Text = "$ADD_ITEM";
             // 
             // AddDefinitionButton
             // 
             this.AddDefinitionButton.Enabled = false;
             this.AddDefinitionButton.Name = "AddDefinitionButton";
-            this.AddDefinitionButton.Size = new System.Drawing.Size(180, 22);
+            this.AddDefinitionButton.Size = new System.Drawing.Size(171, 22);
             this.AddDefinitionButton.Text = "$ADD_DEFINITION";
             // 
             // PropertyGrid_Cutscene

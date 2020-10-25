@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Utils.Extensions;
+﻿using System.IO;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
@@ -14,6 +12,10 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
+        }
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeUnk12;
         }
     }
 }

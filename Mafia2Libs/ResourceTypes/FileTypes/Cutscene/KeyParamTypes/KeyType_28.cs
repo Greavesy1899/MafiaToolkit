@@ -28,19 +28,20 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         }
 
-        public UnkWrapper[] Wrapper { get; set; }
+        public uint Unk01 { get; set; }
+        public UnkWrapper[] Wrappers { get; set; }
         public ushort Unk05 { get; set; }
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
 
-            Wrapper = new UnkWrapper[3];
-            stream.ReadInt32(isBigEndian);
+            Wrappers = new UnkWrapper[3];
+            Unk01 = stream.ReadUInt32(isBigEndian);
             for (int x = 0; x < 3; x++)
             {
                 UnkWrapper data = new UnkWrapper();
-                stream.ReadInt32(isBigEndian);
+                data.Unk0 = stream.ReadInt32(isBigEndian);
                 data.NumUnkData = stream.ReadInt32(isBigEndian);
                 data.Frames = new UnkWrapper.UnkData[data.NumUnkData];
 
@@ -62,10 +63,38 @@ namespace ResourceTypes.Cutscene.KeyParams
                     data.Frames[i] = frames;
                 }
 
-                Wrapper[x] = data;
+                Wrappers[x] = data;
             }
 
             Unk05 = stream.ReadUInt16(isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            stream.Write(Unk01, isBigEndian);
+
+            foreach(UnkWrapper Wrapper in Wrappers)
+            {
+                stream.Write(Wrapper.Unk0, isBigEndian);
+                stream.Write(Wrapper.NumUnkData, isBigEndian);
+
+                foreach(UnkWrapper.UnkData Info in Wrapper.Frames)
+                {
+                    stream.Write(Info.Unk01, isBigEndian);
+                    stream.Write(Info.Unk02, isBigEndian);
+                    stream.Write(Info.Unk03, isBigEndian);
+                    stream.Write(Info.Unk04, isBigEndian);
+                    stream.WriteByte(Info.Unk05);
+
+                    foreach(float Value in Info.Unk06)
+                    {
+                        stream.Write(Value, isBigEndian);
+                    }
+                }
+            }
+
+            stream.Write(Unk05, isBigEndian);
         }
     }
 }

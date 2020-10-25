@@ -13,5 +13,9 @@ namespace ResourceTypes.Cutscene.AnimEntities
         {
             base.WriteToFile(stream, isBigEndian);
         }
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeSound_Type28;
+        }
     }
 }

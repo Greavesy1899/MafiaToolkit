@@ -24,6 +24,14 @@ namespace ResourceTypes.Cutscene.AnimEntities
             return Entity;
         }
 
+        public static void WriteAnimEntityToFile(MemoryStream Writer, AnimEntity Entity)
+        {
+            Debug.Assert(Entity != null, "The passed Entity was not valid. Maybe the Toolkit does not support it?");
+
+            bool isBigEndian = false;
+            Entity.Definition.WriteToFile(Writer, isBigEndian);
+        }
+
         public static AnimEntity ConstructAnimEntity(AnimEntityTypes EntityType)
         {
             AnimEntity Entity = new AnimEntity();
@@ -36,11 +44,11 @@ namespace ResourceTypes.Cutscene.AnimEntities
                     break;
                 case AnimEntityTypes.AeSpotLight:
                     Entity.Definition = new AeSpotLight();
-                    Entity.Data = new AeBaseData();
+                    Entity.Data = new AeSpotLightData();
                     break;
                 case AnimEntityTypes.AeUnk4:
                     Entity.Definition = new AeUnk4();
-                    Entity.Data = new AeBaseData();
+                    Entity.Data = new AeUnk4Data();
                     break;
                 case AnimEntityTypes.AeTargetCamera:
                     Entity.Definition = new AeTargetCamera();
@@ -52,11 +60,11 @@ namespace ResourceTypes.Cutscene.AnimEntities
                     break;
                 case AnimEntityTypes.AeUnk7:
                     Entity.Definition = new AeUnk7();
-                    Entity.Data = new AeBaseData();
+                    Entity.Data = new AeUnk7Data();
                     break;
                 case AnimEntityTypes.AeSound_Type8:
                     Entity.Definition = new AeSound_Type8();
-                    Entity.Data = new AeBaseData();
+                    Entity.Data = new AeUnk7Data();
                     break;
                 case AnimEntityTypes.AeUnk10:
                     Entity.Definition = new AeUnk10();
@@ -104,11 +112,11 @@ namespace ResourceTypes.Cutscene.AnimEntities
                     break;
                 case AnimEntityTypes.AeUnk31:
                     Entity.Definition = new AeUnk31();
-                    Entity.Data = new AeBaseData();
+                    Entity.Data = new AeUnk31Data();
                     break;
                 case AnimEntityTypes.AeUnk32:
                     Entity.Definition = new AeUnk32();
-                    Entity.Data = new AeBaseData();
+                    Entity.Data = new AeUnk32Data();
                     break;
                 case AnimEntityTypes.AeSound_Type33:
                     Entity.Definition = new AeSound_Type33();

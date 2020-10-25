@@ -1,14 +1,6 @@
 ﻿using Core.IO;
 using ResourceTypes.Cutscene;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Mafia2Tool.Forms
@@ -91,6 +83,22 @@ namespace Mafia2Tool.Forms
             {
                 PropertyGrid_Cutscene.SelectedObject = e.Node.Tag;
             }
+        }
+
+        private void SaveButton_OnClick(object sender, EventArgs e)
+        {
+            CutsceneLoader Loader = OriginalFile.GetCutsceneLoader();
+            Loader.WriteToFile(OriginalFile.GetUnderlyingFileInfo().FullName);
+        }
+
+        private void ExitButton_OnClick(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void Reload_OnClick(object sender, EventArgs e)
+        {
+
         }
     }
 }

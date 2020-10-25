@@ -1,11 +1,12 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using SharpDX;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
+    // TODO: I don't really understand this data; we need to understand it though.
+    // It looks to reference prior hashes which can be found in the base class, 
+    // and then stores hashes/transforms for these objects? Unknown though, most fail to save.
     public class AeFrame : AeBase
     {
         public byte Unk06 { get; set; }
@@ -15,24 +16,62 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public float Unk08 { get; set; }
         public Matrix Transform1 { get; set; }
         public ulong Hash3 { get; set; }
+        public byte[] UnknownData { get; set; }
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
-            File.WriteAllBytes("frame.bin", stream.ToArray());
             base.ReadFromFile(stream, isBigEndian);
+            UnknownData = stream.ReadBytes(Unk044-8);
+            /*
             Unk06 = stream.ReadByte8();
+
             Hash2 = stream.ReadUInt64(isBigEndian);
-            Hash3 = stream.ReadUInt64(isBigEndian);
+
+            if (!string.IsNullOrEmpty(EntityName1))
+            {
+                Hash3 = stream.ReadUInt64(isBigEndian);
+            }
+                
             Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
 
-            //if(Unk05 == 121)
-            //{
+            // TODO: Find out what this actually means.
+            // This cannot be distinguished by size alone.
+            if(Unk044 == 121)
+            {
+                Transform1 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            }
+            */
+        }
 
-            //}
-            //Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
-            //Unk07 = stream.ReadSingle(isBigEndian);
-            //Unk08 = stream.ReadSingle(isBigEndian);
-            //Transform1 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            stream.Write(UnknownData);
+
+            /*
+            stream.WriteByte(Unk06);
+
+            stream.Write(Hash2, isBigEndian);
+
+            if (!string.IsNullOrEmpty(FrameName))
+            {
+                stream.Write(Hash3, isBigEndian);
+            }
+            
+            Transform.WriteToFile(stream, isBigEndian);
+
+            // TODO: Find out what this actually means.
+            // This cannot be distinguished by size alone.
+            if (Unk044 == 121)
+            {
+                Transform1.WriteToFile(stream, isBigEndian);
+            }
+            */
+        }
+
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeFrame;
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO;
+using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -18,7 +19,8 @@ namespace ResourceTypes.Cutscene.KeyParams
 
         public virtual void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
-
+            //stream.Write(Size, isBigEndian);
+            //stream.Write(KeyType, isBigEndian);b
         }
     }
 }

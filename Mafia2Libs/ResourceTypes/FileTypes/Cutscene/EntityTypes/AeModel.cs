@@ -23,6 +23,20 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
             Name4 = stream.ReadString16(isBigEndian);
         }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            stream.WriteByte(Unk06);
+            stream.Write(Unk07, isBigEndian);
+            stream.Write(Unk08, isBigEndian);
+            Transform.WriteToFile(stream, isBigEndian);
+            stream.WriteString16(Name4, isBigEndian);
+        }
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeModel;
+        }
     }
 
     public class AeModelData : AeBaseData
@@ -34,30 +48,43 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public float Unk06 { get; set; } // 1.0f;
         public int Unk07 { get; set; }
         public byte Unk08 { get; set; }
+
+        // Not saved in file, but required.
+        private bool bDoesHaveExtraData;
+
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
             Debug.Assert(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
 
-            Unk02 = stream.ReadInt32(isBigEndian);
-            Unk03 = Vector3Extenders.ReadFromFile(stream, isBigEndian);
-            Unk04 = stream.ReadSingle(isBigEndian);
-            Unk05 = stream.ReadBytes(24);
-            Unk06 = stream.ReadSingle(isBigEndian);
-            Unk07 = stream.ReadInt32(isBigEndian);
-            Unk08 = stream.ReadByte8();
+            if (stream.Position != stream.Length)
+            {
+                Unk02 = stream.ReadInt32(isBigEndian);
+                Unk03 = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+                Unk04 = stream.ReadSingle(isBigEndian);
+                Unk05 = stream.ReadBytes(24);
+                Unk06 = stream.ReadSingle(isBigEndian);
+                Unk07 = stream.ReadInt32(isBigEndian);
+                Unk08 = stream.ReadByte8();
+
+                bDoesHaveExtraData = true;
+            }
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
-            stream.Write(Unk02, isBigEndian);
-            Unk03.WriteToFile(stream, isBigEndian);
-            stream.Write(Unk04, isBigEndian);
-            stream.Write(Unk05);
-            stream.Write(Unk06, isBigEndian);
-            stream.Write(Unk07, isBigEndian);
-            stream.Write(Unk07, isBigEndian);
+
+            if (bDoesHaveExtraData)
+            {
+                stream.Write(Unk02, isBigEndian);
+                Unk03.WriteToFile(stream, isBigEndian);
+                stream.Write(Unk04, isBigEndian);
+                stream.Write(Unk05);
+                stream.Write(Unk06, isBigEndian);
+                stream.Write(Unk07, isBigEndian);
+                stream.WriteByte(Unk08);
+            }
         }
     }
 }

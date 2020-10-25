@@ -44,6 +44,23 @@ namespace ResourceTypes.Cutscene.KeyParams
             Unk05 = stream.ReadUInt16(isBigEndian);
         }
 
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            stream.Write(NumPositions, isBigEndian);
+
+            for(int i = 0; i < Positions.Length; i++)
+            {
+                PositionData Entry = Positions[i];
+                stream.Write(Entry.Unk01, isBigEndian);
+                stream.Write(Entry.Unk02, isBigEndian);
+                stream.WriteByte(Entry.Unk03);
+                Entry.Position.WriteToFile(stream, isBigEndian);
+            }
+
+            stream.Write(Unk05, isBigEndian);
+        }
+
         public override string ToString()
         {
             return string.Format("NumPositions: {0}", Positions.Length);

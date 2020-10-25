@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using SharpDX;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
@@ -55,7 +54,38 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
-            throw new NotImplementedException();
+            base.WriteToFile(stream, isBigEndian);
+            stream.WriteByte(Unk05);
+            stream.Write(Unk06, isBigEndian);
+            stream.Write(Unk07, isBigEndian);
+            Transform.WriteToFile(stream, isBigEndian);
+            stream.Write(Unk09, isBigEndian);
+            stream.Write(Unk10, isBigEndian);
+
+            foreach(var Value in Unk08)
+            {
+                stream.Write(Value, isBigEndian);
+            }
+
+            stream.Write(Unk11, isBigEndian);
+            stream.Write(Unk12, isBigEndian);
+            stream.WriteString16(Name33, isBigEndian);
+
+            foreach (var Value in Unk14)
+            {
+                stream.Write(Value, isBigEndian);
+            }
+
+            stream.WriteByte(Unk15);
+
+            foreach (var Value in Unk16)
+            {
+                stream.Write(Value, isBigEndian);
+            }
+        }
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeSunLight;
         }
     }
 }

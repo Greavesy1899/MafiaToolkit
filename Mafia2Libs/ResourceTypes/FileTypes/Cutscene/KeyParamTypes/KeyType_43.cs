@@ -75,6 +75,37 @@ namespace ResourceTypes.Cutscene.KeyParams
             Unk05 = stream.ReadUInt16(isBigEndian);
         }
 
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            stream.Write(NumFrames, isBigEndian);
+
+            foreach(FrameData Entry in Frames)
+            {
+                stream.Write(Entry.Unk01, isBigEndian);
+                stream.Write(Entry.Unk02, isBigEndian);
+                stream.WriteByte(Entry.Unk03);
+                stream.WriteString16(Entry.SoundFile, isBigEndian);
+                stream.WriteByte(Entry.Unk04);
+                stream.Write(Entry.Unk05, isBigEndian);
+                stream.Write(Entry.Unk06, isBigEndian);
+                stream.Write(Entry.Unk07, isBigEndian);
+                stream.Write(Entry.Unk08, isBigEndian);
+                stream.Write(Entry.Unk09, isBigEndian);
+                stream.Write(Entry.Unk10, isBigEndian);
+                stream.Write(Entry.Unk11, isBigEndian);
+                stream.Write(Entry.Unk12, isBigEndian);
+                stream.Write(Entry.Unk13, isBigEndian);
+                stream.Write(Entry.Unk14, isBigEndian);
+                stream.WriteByte(Entry.Unk15);
+                Entry.Position.WriteToFile(stream, isBigEndian);
+                Entry.Rotation.WriteToFile(stream, isBigEndian);
+                stream.WriteByte(Entry.Unk16);
+            }
+
+            stream.Write(Unk05, isBigEndian);
+        }
+
         public override string ToString()
         {
             return string.Format("NumFrames: {0}", Frames.Length);

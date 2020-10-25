@@ -160,7 +160,7 @@ namespace Gibbed.Illusion.FileFormats
 
         private bool FlushZlibCompressedBlock(MemoryStream data, int blockLength)
         {
-            var zlib = new ZLibStream(data, CompressionMode.Compress, CompressionLevel.Default);
+            var zlib = new ZLibStream(data, CompressionMode.Compress, CompressionLevel.Level9);
             zlib.Write(this._BlockBytes, 0, blockLength);
             zlib.Flush();
             var compressedLength = (int)data.Length;
@@ -170,7 +170,7 @@ namespace Gibbed.Illusion.FileFormats
                 this._BaseStream.WriteValueU8(1);
                 CompressedBlockHeader compressedBlockHeader = new CompressedBlockHeader();
                 compressedBlockHeader.SetZlibPreset();
-                compressedBlockHeader.UncompressedSize = (uint)blockLength;
+                compressedBlockHeader.UncompressedSize = (uint)blockLength; //TODO: I think this should actually be alignment?
                 compressedBlockHeader.CompressedSize = (uint)compressedLength;
                 compressedBlockHeader.ChunkSize = (short)_Alignment;
                 compressedBlockHeader.Unknown0C = 135200769;

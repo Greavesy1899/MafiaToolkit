@@ -254,7 +254,7 @@ namespace Rendering.Graphics
             if (!DoRender)
                 return;
 
-            //if (!camera.CheckBBoxFrustrum(BoundingBox.BBox))
+           // if (!camera.CheckBBoxFrustum(Transform.TranslationVector, BoundingBox))
             //    return;
 
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));

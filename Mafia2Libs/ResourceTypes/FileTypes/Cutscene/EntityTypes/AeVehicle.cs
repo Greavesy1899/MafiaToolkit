@@ -23,5 +23,19 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
             Name4 = stream.ReadString16(isBigEndian);
         }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            stream.WriteByte(Unk06);
+            stream.Write(Unk07, isBigEndian);
+            stream.Write(Unk08, isBigEndian);
+            Transform.WriteToFile(stream, isBigEndian);
+            stream.WriteString16(Name4, isBigEndian);
+        }
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeVehicle;
+        }
     }
 }

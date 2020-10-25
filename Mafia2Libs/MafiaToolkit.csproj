@@ -402,8 +402,12 @@
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_13.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_18.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_19.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_21.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_27.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_28.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_30.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_39.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_40.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_43.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_6.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_Temp.cs" />

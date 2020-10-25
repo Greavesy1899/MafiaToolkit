@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using Utils.Extensions;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
@@ -18,6 +19,8 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public int Unk03 { get; set; }
         public int Unk04 { get; set; }
         public int Unk044 { get; set; }
+
+        public int Size { get; set; } // Not in file
 
         public virtual void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
@@ -47,7 +50,32 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
         public virtual void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
+            stream.Write(Unk01, isBigEndian);
 
+            if(Unk01 == 0)
+            {
+                return;
+            }
+
+            stream.WriteString16(EntityName0, isBigEndian);
+            stream.WriteString16(EntityName1, isBigEndian);
+
+            if(!string.IsNullOrEmpty(EntityName1))
+            {
+                stream.WriteByte(Unk02);
+            }
+
+            stream.Write(FrameHash, isBigEndian);
+            stream.Write(Hash1, isBigEndian);
+            stream.WriteString16(FrameName, isBigEndian);
+            stream.Write(Unk03, isBigEndian);
+            stream.Write(Unk04, isBigEndian);
+            stream.Write(Unk044, isBigEndian);
+        }
+
+        public virtual AnimEntityTypes GetEntityType()
+        {
+            return 0;
         }
     }
 
@@ -63,12 +91,6 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public int Unk01 { get; set; }
         public int NumKeyFrames { get; set; } // Number of keyframes. Start with 0xE803 or 1000
         public IKeyType[] KeyFrames { get; set; }
-        //public int Unk02 { get; set; } // 0x70 - 112
-        //public int Unk03 { get; set; } // 0x15 - 21
-        //public float Unk04 { get; set; } // 0x803F - 1.0f;
-        //public int Unk05 { get; set; } // 0x0
-        //public int Unk06 { get; set; } // 0xFFFF
-        //public byte Unk07 { get; set; } // 0x0
 
         public virtual void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
@@ -98,6 +120,22 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
         public virtual void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
+            stream.Write(DataType, isBigEndian);
+            stream.Write(Size, isBigEndian);
+            stream.Write(Unk00, isBigEndian);
+            stream.Write(KeyDataSize, isBigEndian);
+            stream.Write(Unk01, isBigEndian);
+            stream.Write(NumKeyFrames, isBigEndian);
+
+            for(int i = 0; i < NumKeyFrames; i++)
+            {
+                // Get KeyParam
+                IKeyType KeyParam = KeyFrames[i];
+                stream.Write(1000, isBigEndian); // Write the header
+                stream.Write(KeyParam.Size, isBigEndian);
+                stream.Write(KeyParam.KeyType, isBigEndian);
+                KeyParam.WriteToFile(stream, isBigEndian);
+            }
         }
 
         public override string ToString()

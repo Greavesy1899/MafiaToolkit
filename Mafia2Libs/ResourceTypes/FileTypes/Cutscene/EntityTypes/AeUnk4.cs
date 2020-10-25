@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using SharpDX;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
@@ -26,6 +27,41 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Unk08 = stream.ReadSingle(isBigEndian);
             Unk09 = stream.ReadSingle(isBigEndian);
             Unk10 = stream.ReadSingle(isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            stream.WriteByte(Unk05);
+            stream.Write(Unk06, isBigEndian);
+            stream.Write(Unk07, isBigEndian);
+            Transform.WriteToFile(stream, isBigEndian);
+            stream.Write(Unk08, isBigEndian);
+            stream.Write(Unk09, isBigEndian);
+            stream.Write(Unk10, isBigEndian);
+        }
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeUnk4;
+        }
+    }
+
+    public class AeUnk4Data : AeBaseData
+    {
+        public int Unk4_01 { get; set; }
+
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.ReadFromFile(stream, isBigEndian);
+
+            Debug.Assert(stream.Position != stream.Length, "AeUnk4Data's ReadFromFile has reached the eos, but we still need to read an extra piece of data!");
+            Unk4_01 = stream.ReadInt32(isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            stream.Write(Unk4_01, isBigEndian);
         }
     }
 }

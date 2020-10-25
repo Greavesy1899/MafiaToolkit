@@ -11,6 +11,7 @@ namespace ResourceTypes.Cutscene.KeyParams
             IKeyType KeyParam = null;
             bool isBigEndian = false;
 
+            
             switch (KeyParamType)
             {
                 case AnimKeyParamTypes.KeyType_0:
@@ -25,11 +26,23 @@ namespace ResourceTypes.Cutscene.KeyParams
                 case AnimKeyParamTypes.KeyType_18:
                     KeyParam = new KeyType_18();
                     break;
-                //case AnimKeyParamTypes.KeyType_19:
-                //    KeyParam = new KeyType_19();
-                //    break;
+                case AnimKeyParamTypes.KeyType_19:
+                    KeyParam = new KeyType_19();
+                    break;
+                case AnimKeyParamTypes.KeyType_21:
+                    KeyParam = new KeyType_21();
+                    break;
+                case AnimKeyParamTypes.KeyType_27:
+                    KeyParam = new KeyType_27();
+                    break;
                 case AnimKeyParamTypes.KeyType_28:
                     KeyParam = new KeyType_28();
+                    break;
+                case AnimKeyParamTypes.KeyType_39:
+                    KeyParam = new KeyType_39();
+                    break;
+                case AnimKeyParamTypes.KeyType_40:
+                    KeyParam = new KeyType_40();
                     break;
                 case AnimKeyParamTypes.KeyType_43:
                     KeyParam = new KeyType_43();

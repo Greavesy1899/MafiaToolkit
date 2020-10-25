@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics;
 using System.IO;
 using SharpDX;
 using Utils.Extensions;
@@ -61,7 +61,37 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
-            throw new NotImplementedException();
+            base.WriteToFile(stream, isBigEndian);
+            stream.WriteByte(Unk05);
+            stream.Write(Unk06, isBigEndian);
+            stream.Write(Unk07, isBigEndian);
+            Transform.WriteToFile(stream, isBigEndian);
+            stream.Write(Unk08, isBigEndian);
+            stream.Write(Unk09, isBigEndian);
+            stream.Write(Unk10, isBigEndian);
+            stream.Write(Hash4, isBigEndian);
+            stream.Write(Hash5, isBigEndian);
+            stream.WriteString16(Name33, isBigEndian);
+            stream.Write(Unk11, isBigEndian);
+            stream.Write(Unk12, isBigEndian);
+            stream.Write(Unk13, isBigEndian);
+            stream.WriteByte(Unk14);
+            stream.Write(Hash6, isBigEndian);
+
+            if(Hash6 != 0)
+            {
+                stream.Write(Hash7, isBigEndian);
+                Transform1.WriteToFile(stream, isBigEndian);
+            }
+            else
+            {
+                Transform1.WriteToFile(stream, isBigEndian);
+                stream.Write(Hash7, isBigEndian);
+            }
+        }
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeTargetCamera;
         }
     }
 
@@ -72,6 +102,8 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
+            Debug.Assert(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
+
             Unk02 = stream.ReadInt32(isBigEndian);
             Unk03 = stream.ReadByte8();
         }
@@ -80,7 +112,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
         {
             base.WriteToFile(stream, isBigEndian);
             stream.Write(Unk02, isBigEndian);
-            stream.Write(Unk03, isBigEndian);
+            stream.WriteByte(Unk03);
         }
     }
 }
