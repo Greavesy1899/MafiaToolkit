@@ -13,15 +13,15 @@ namespace Mafia2Tool.Forms
         TextureEntry SelectedEntry = null;
         IMaterial SelectedMaterial = null;
 
-        public MaterialBrowser()
+        public MaterialBrowser(string materialName)
         {
             InitializeComponent();
-            Init();
+            Init(materialName);
             Localise();
             ShowDialog();
         }
 
-        private void Init()
+        private void Init(string materialName)
         {
             // Populate Material Libraries;
             for (int i = 0; i < MaterialsManager.MaterialLibraries.Count; i++)
@@ -33,6 +33,9 @@ namespace Mafia2Tool.Forms
             ComboBox_Materials.SelectedIndex = 0;
             ComboBox_SearchType.SelectedIndex = 0;
             Label_MaterialCount.Text = "";
+            TextBox_SearchBar.Text = materialName;
+
+            PerformSearch();
         }
 
         private void Localise()
@@ -71,6 +74,19 @@ namespace Mafia2Tool.Forms
             }
         }
 
+        private void PerformSearch()
+        {
+            string text = TextBox_SearchBar.Text;
+
+            // We should not search if the search bar is empty, or we'll get some terrible results!
+            if (!string.IsNullOrEmpty(text))
+            {
+                IMaterial[] filtered = SelectedLibrary.SelectSearchTypeAndProceedSearch(text, ComboBox_SearchType.SelectedIndex);
+                PopulateBrowser(filtered);
+                Label_MaterialCount.Text = string.Format("(Found: {0} Materials)", filtered.Length);
+            }
+        }
+
         private void TextureEntry_OnDoubleClick(object sender, EventArgs e)
         {
             // Add the new selected one
@@ -95,15 +111,7 @@ namespace Mafia2Tool.Forms
 
         private void Button_SearchOnClicked(object sender, EventArgs e)
         {
-            string text = TextBox_SearchBar.Text;
-
-            // We should not search if the search bar is empty, or we'll get some terrible results!
-            if (!string.IsNullOrEmpty(text))
-            {
-                IMaterial[] filtered = SelectedLibrary.SelectSearchTypeAndProceedSearch(text, ComboBox_SearchType.SelectedIndex);
-                PopulateBrowser(filtered);
-                Label_MaterialCount.Text = string.Format("(Found: {0} Materials)", filtered.Length);
-            }
+            PerformSearch();
         }
 
         private void ComboBox_MaterialsSelectedIndexChanged(object sender, EventArgs e)
