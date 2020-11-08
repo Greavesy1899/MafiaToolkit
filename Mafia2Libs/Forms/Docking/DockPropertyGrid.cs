@@ -191,7 +191,7 @@ namespace Forms.Docking
             TextureEntry Entry = (sender as TextureEntry);
 
             // Create our browser; once the user has finished with this menu they should? have a material.
-            MaterialBrowser Browser = new MaterialBrowser();
+            MaterialBrowser Browser = new MaterialBrowser(Entry.GetMaterial().GetMaterialName());
             IMaterial SelectedMaterial = Browser.GetSelectedMaterial();
 
             // Set the new material data, notify the map editor that a change has been made.
