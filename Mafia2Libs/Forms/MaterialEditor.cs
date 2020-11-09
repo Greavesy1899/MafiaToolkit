@@ -181,7 +181,9 @@ namespace Mafia2Tool
         private void MergeMTLButton_Click(object sender, EventArgs e)
         {
             if (!Panel_Main.Visible)
+            {
                 return;
+            }
 
             MaterialLibrary matLib = new MaterialLibrary();
             if(MTLBrowser.ShowDialog() == DialogResult.OK)
@@ -194,6 +196,10 @@ namespace Mafia2Tool
                 {
                     MessageBox.Show("Failed to load the selected .MTL!");
                 }
+            }
+            else
+            {
+                return;
             }
 
             if (matLib.Materials.Count == 0)
@@ -349,6 +355,14 @@ namespace Mafia2Tool
                         }
                     }
                 }
+            }
+        }
+
+        private void MaterialSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                Button_Search.PerformClick();
             }
         }
     }

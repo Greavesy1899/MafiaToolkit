@@ -31,19 +31,20 @@ namespace Forms.OptionControls
             }
         }
 
-        private void addLibrary_Click(object sender, EventArgs e)
+        private void AddLibrary_Click(object sender, EventArgs e)
         {
-            if(MTLBrowser.ShowDialog() == DialogResult.OK)
+            if (MTLBrowser.ShowDialog() == DialogResult.OK)
             {
                 foreach(string file in MTLBrowser.FileNames)
                 {
                     MTLListBox.Items.Add(file);
                 }
             }
+
             UpdateINIKey();
         }
 
-        private void removeSelected_Click(object sender, EventArgs e)
+        private void RemoveSelected_Click(object sender, EventArgs e)
         {
             if (MTLListBox.SelectedItem == null && MTLListBox.SelectedIndex > 0)
                 return;
@@ -61,6 +62,7 @@ namespace Forms.OptionControls
                 value += file;
                 value += ",";
             }
+
             GameStorage.Instance.GetSelectedGame().Materials = value;
         }
     }
