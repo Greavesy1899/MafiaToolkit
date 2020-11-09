@@ -71,6 +71,7 @@
             this.MaterialSearch.Name = "MaterialSearch";
             this.MaterialSearch.Size = new System.Drawing.Size(209, 20);
             this.MaterialSearch.TabIndex = 0;
+            this.MaterialSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MaterialSearch_KeyDown);
             // 
             // MaterialGrid
             // 
