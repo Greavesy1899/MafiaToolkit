@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using SharpDX;
 using Utils.Extensions;
@@ -6,7 +7,35 @@ using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
-    public class AeUnk23 : AeBase
+    public class AeHumanFxWrapper : AnimEntityWrapper
+    {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeHumanFx Unk23Entity { get; set; }
+
+        public AeHumanFxWrapper() : base()
+        {
+            Unk23Entity = new AeHumanFx();
+            AnimEntityData = new AeUnk23Data();
+        }
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.ReadFromFile(stream, isBigEndian);
+            Unk23Entity.ReadFromFile(stream, isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            Unk23Entity.WriteToFile(stream, isBigEndian);
+        }
+
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeHumanFx;
+        }
+    }
+
+    public class AeHumanFx : AnimEntity
     {
         public byte Unk06 { get; set; }
         public ulong Unk07 { get; set; }
@@ -32,7 +61,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
         }
         public override AnimEntityTypes GetEntityType()
         {
-            return AnimEntityTypes.AeUnk23;
+            return AnimEntityTypes.AeHumanFx;
         }
     }
 

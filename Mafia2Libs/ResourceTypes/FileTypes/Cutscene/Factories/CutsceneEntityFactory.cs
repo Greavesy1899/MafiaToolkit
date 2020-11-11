@@ -7,16 +7,16 @@ namespace ResourceTypes.Cutscene.AnimEntities
     {
         // Finds the correct type of AnimEntity and returns the data.
         // TODO: Ideally move this to our friend MemoryStream.
-        public static AnimEntity ReadAnimEntityFromFile(AnimEntityTypes EntityType, MemoryStream Reader)
+        public static AnimEntityWrapper ReadAnimEntityWrapperFromFile(AnimEntityTypes EntityType, MemoryStream Reader)
         {
             // Construct our AnimEntity
-            AnimEntity Entity = ConstructAnimEntity(EntityType);
+            AnimEntityWrapper Entity = ConstructAnimEntityWrapper(EntityType);
             bool isBigEndian = false;
 
             // Make sure our entity is not valid, and read our data
             if(Entity != null)
             {
-                Entity.Definition.ReadFromFile(Reader, isBigEndian);
+                Entity.ReadFromFile(Reader, isBigEndian);
             }
             
             Debug.Assert(Entity != null, "Did not find a AnimEntityType. Maybe the Toolkit does not support it?");
@@ -24,103 +24,82 @@ namespace ResourceTypes.Cutscene.AnimEntities
             return Entity;
         }
 
-        public static void WriteAnimEntityToFile(MemoryStream Writer, AnimEntity Entity)
+        public static void WriteAnimEntityToFile(MemoryStream Writer, AnimEntityWrapper EntityWrapper)
         {
-            Debug.Assert(Entity != null, "The passed Entity was not valid. Maybe the Toolkit does not support it?");
+            Debug.Assert(EntityWrapper != null, "The passed Entity was not valid. Maybe the Toolkit does not support it?");
 
             bool isBigEndian = false;
-            Entity.Definition.WriteToFile(Writer, isBigEndian);
+            EntityWrapper.WriteToFile(Writer, isBigEndian);
         }
 
-        public static AnimEntity ConstructAnimEntity(AnimEntityTypes EntityType)
+        public static AnimEntityWrapper ConstructAnimEntityWrapper(AnimEntityTypes EntityType)
         {
-            AnimEntity Entity = new AnimEntity();
-
+            AnimEntityWrapper Entity = new AnimEntityWrapper();
+            
             switch (EntityType)
             {
                 case AnimEntityTypes.AeOmniLight:
-                    Entity.Definition = new AeOmniLight();
-                    Entity.Data = new AeOmniLightData();
+                    Entity = new AeOmniLightWrapper();
                     break;
                 case AnimEntityTypes.AeSpotLight:
-                    Entity.Definition = new AeSpotLight();
-                    Entity.Data = new AeSpotLightData();
+                    Entity = new AeSpotLightWrapper();
                     break;
-                case AnimEntityTypes.AeUnk4:
-                    Entity.Definition = new AeUnk4();
-                    Entity.Data = new AeUnk4Data();
+                case AnimEntityTypes.AeCamera:
+                    Entity = new AeCameraWrapper();
                     break;
                 case AnimEntityTypes.AeTargetCamera:
-                    Entity.Definition = new AeTargetCamera();
-                    Entity.Data = new AeTargetCameraData();
+                    Entity = new AeTargetCameraWrapper();
                     break;
                 case AnimEntityTypes.AeModel:
-                    Entity.Definition = new AeModel();
-                    Entity.Data = new AeModelData();
+                    Entity = new AeModelWrapper();
                     break;
                 case AnimEntityTypes.AeUnk7:
-                    Entity.Definition = new AeUnk7();
-                    Entity.Data = new AeUnk7Data();
+                    Entity = new AeUnk7Wrapper();
                     break;
-                case AnimEntityTypes.AeSound_Type8:
-                    Entity.Definition = new AeSound_Type8();
-                    Entity.Data = new AeUnk7Data();
+                case AnimEntityTypes.AeSoundPoint:
+                    Entity = new AeSoundPointWrapper();
                     break;
-                case AnimEntityTypes.AeUnk10:
-                    Entity.Definition = new AeUnk10();
-                    Entity.Data = new AeUnk10Data();
+                case AnimEntityTypes.AeScript:
+                    Entity = new AeScriptWrapper();
                     break;
-                case AnimEntityTypes.AeUnk12:
-                    Entity.Definition = new AeUnk12();
-                    Entity.Data = new AeBaseData();
+                case AnimEntityTypes.AeSubtitles:
+                    Entity = new AeSubtitlesWrapper();
                     break;
-                case AnimEntityTypes.AeUnk13:
-                    Entity.Definition = new AeUnk13();
-                    Entity.Data = new AeUnk13Data();
+                case AnimEntityTypes.AeParticles:
+                    Entity = new AeParticlesWrapper();
                     break;
-                case AnimEntityTypes.AeUnk18:
-                    Entity.Definition = new AeUnk18();
-                    Entity.Data = new AeUnk18Data();
+                case AnimEntityTypes.AeCutEdit:
+                    Entity = new AeCutEditWrapper();
                     break;
                 case AnimEntityTypes.AeVehicle:
-                    Entity.Definition = new AeVehicle();
-                    Entity.Data = new AeBaseData();
+                    Entity = new AeVehicleWrapper();
                     break;
                 case AnimEntityTypes.AeFrame:
-                    Entity.Definition = new AeFrame();
-                    Entity.Data = new AeFrameData();
+                    Entity = new AeFrameWrapper();
                     break;
-                case AnimEntityTypes.AeUnk23:
-                    Entity.Definition = new AeUnk23();
-                    Entity.Data = new AeUnk23Data();
+                case AnimEntityTypes.AeHumanFx:
+                    Entity = new AeHumanFxWrapper();
                     break;
                 case AnimEntityTypes.AeEffects:
-                    Entity.Definition = new AeEffects();
-                    Entity.Data = new AeEffectsBase();
+                    Entity = new AeEffectsWrapper();
                     break;
-                case AnimEntityTypes.AeSound_Type28:
-                    Entity.Definition = new AeSound_Type28();
-                    Entity.Data = new AeBaseData();
+                case AnimEntityTypes.AeSoundSphereAmbient:
+                    Entity = new AeSoundSphereAmbientWrapper();
                     break;
                 case AnimEntityTypes.AeSunLight:
-                    Entity.Definition = new AeSunLight();
-                    Entity.Data = new AeBaseData();
+                    Entity = new AeSunLightWrapper();
                     break;
-                case AnimEntityTypes.AeUnk30:
-                    Entity.Definition = new AeUnk30();
-                    Entity.Data = new AeBaseData();
+                case AnimEntityTypes.AeSoundListener:
+                    Entity = new AeSoundListenerWrapper();
                     break;
-                case AnimEntityTypes.AeUnk31:
-                    Entity.Definition = new AeUnk31();
-                    Entity.Data = new AeUnk31Data();
+                case AnimEntityTypes.AeSoundEntity:
+                    Entity = new AeSoundEntityWrapper();
                     break;
                 case AnimEntityTypes.AeUnk32:
-                    Entity.Definition = new AeUnk32();
-                    Entity.Data = new AeUnk32Data();
+                    Entity = new AeUnk32Wrapper();
                     break;
                 case AnimEntityTypes.AeSound_Type33:
-                    Entity.Definition = new AeSound_Type33();
-                    Entity.Data = new AeBaseData();
+                    Entity = new AeSound_Type33Wrapper();
                     break;
             }
 

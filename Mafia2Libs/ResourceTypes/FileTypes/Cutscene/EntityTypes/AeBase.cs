@@ -4,81 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using Utils.Extensions;
 using Utils.StringHelpers;
+using Utils.Types;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
-    public class AeBase
-    {
-        public short Unk01 { get; set; }
-        public string EntityName0 { get; set; }
-        public string EntityName1 { get; set; }
-        public byte Unk02 { get; set; }
-        public ulong FrameHash { get; set; }
-        public ulong Hash1 { get; set; }
-        public string FrameName { get; set; }
-        public int Unk03 { get; set; }
-        public int Unk04 { get; set; }
-        public int Unk044 { get; set; }
-
-        public int Size { get; set; } // Not in file
-
-        public virtual void ReadFromFile(MemoryStream stream, bool isBigEndian)
-        {
-            Unk01 = stream.ReadInt16(isBigEndian);
-
-            if(Unk01 == 0)
-            {
-                // Nothing here. return.
-                return;
-            }
-
-            EntityName0 = stream.ReadString16(isBigEndian);
-            EntityName1 = stream.ReadString16(isBigEndian);
-
-            if (!string.IsNullOrEmpty(EntityName1))
-            {
-                Unk02 = stream.ReadByte8();
-            }
-
-            FrameHash = stream.ReadUInt64(isBigEndian);
-            Hash1 = stream.ReadUInt64(isBigEndian);
-            FrameName = stream.ReadString16(isBigEndian);
-            Unk03 = stream.ReadInt32(isBigEndian);
-            Unk04 = stream.ReadInt32(isBigEndian);
-            Unk044 = stream.ReadInt32(isBigEndian);
-        }
-
-        public virtual void WriteToFile(MemoryStream stream, bool isBigEndian)
-        {
-            stream.Write(Unk01, isBigEndian);
-
-            if(Unk01 == 0)
-            {
-                return;
-            }
-
-            stream.WriteString16(EntityName0, isBigEndian);
-            stream.WriteString16(EntityName1, isBigEndian);
-
-            if(!string.IsNullOrEmpty(EntityName1))
-            {
-                stream.WriteByte(Unk02);
-            }
-
-            stream.Write(FrameHash, isBigEndian);
-            stream.Write(Hash1, isBigEndian);
-            stream.WriteString16(FrameName, isBigEndian);
-            stream.Write(Unk03, isBigEndian);
-            stream.Write(Unk04, isBigEndian);
-            stream.Write(Unk044, isBigEndian);
-        }
-
-        public virtual AnimEntityTypes GetEntityType()
-        {
-            return 0;
-        }
-    }
-
     public class AeBaseData
     {
         [Browsable(false)]
@@ -129,12 +58,20 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
             for(int i = 0; i < NumKeyFrames; i++)
             {
-                // Get KeyParam
-                IKeyType KeyParam = KeyFrames[i];
-                stream.Write(1000, isBigEndian); // Write the header
-                stream.Write(KeyParam.Size, isBigEndian);
-                stream.Write(KeyParam.KeyType, isBigEndian);
-                KeyParam.WriteToFile(stream, isBigEndian);
+                using (MemoryStream KeyParamStream = new MemoryStream())
+                {
+                    // Get KeyParam
+                    IKeyType KeyParam = KeyFrames[i];
+                    KeyParamStream.Write(1000, isBigEndian); // Write the header
+                    KeyParamStream.Write(KeyParam.Size, isBigEndian);
+                    KeyParamStream.Write(KeyParam.KeyType, isBigEndian);
+                    KeyParam.WriteToFile(KeyParamStream, isBigEndian);
+
+                    KeyParamStream.Seek(4, SeekOrigin.Begin);
+                    KeyParamStream.Write((uint)KeyParamStream.Length, isBigEndian);
+                    KeyParamStream.Seek(0, SeekOrigin.End);
+                    stream.Write(KeyParamStream.ToArray());
+                }
             }
         }
 

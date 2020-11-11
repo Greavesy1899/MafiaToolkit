@@ -4,24 +4,20 @@ using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
-    public class AeUnk18 : AeBase
+    public class AeCutEditWrapper : AnimEntityWrapper
     {
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public AeCutEditWrapper() : base()
         {
-            base.ReadFromFile(stream, isBigEndian);
+            AnimEntityData = new AeCutEditData();
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
-        {
-            base.WriteToFile(stream, isBigEndian);
-        }
         public override AnimEntityTypes GetEntityType()
         {
-            return AnimEntityTypes.AeUnk18;
+            return AnimEntityTypes.AeCutEdit;
         }
     }
 
-    public class AeUnk18Data : AeBaseData
+    public class AeCutEditData : AeBaseData
     {
         public int Unk02 { get; set; }
         public byte Unk03 { get; set; }

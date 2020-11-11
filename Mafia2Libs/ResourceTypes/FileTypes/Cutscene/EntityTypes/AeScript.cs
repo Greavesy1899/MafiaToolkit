@@ -4,38 +4,34 @@ using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
-    public class AeUnk13 : AeBase
+    public class AeScriptWrapper : AnimEntityWrapper
     {
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public AeScriptWrapper() : base()
         {
-            base.ReadFromFile(stream, isBigEndian);
+            AnimEntityData = new AeScriptData();
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
-        {
-            base.WriteToFile(stream, isBigEndian);
-        }
         public override AnimEntityTypes GetEntityType()
         {
-            return AnimEntityTypes.AeUnk13;
+            return AnimEntityTypes.AeScript;
         }
     }
 
-    public class AeUnk13Data : AeBaseData
+    public class AeScriptData : AeBaseData
     {
-        public int Unk02 { get; set; }
+        public string ScriptName { get; set; }
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
             Debug.Assert(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
 
-            Unk02 = stream.ReadInt32(isBigEndian);
+            ScriptName = stream.ReadString16(isBigEndian);
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
-            stream.Write(Unk02, isBigEndian);
+            stream.WriteString16(ScriptName, isBigEndian);
         }
     }
 }

@@ -17,3 +17,18 @@
     }
 
 }
+
+/*
+ *  Cutscene: C_Key
+ *  
+ *  m_Handle = C_Handle
+ *  m_Interval = C_Interval
+ *  m_Enabled = bool
+ *  
+ *  C_Handle:
+ *  m_Handle = int
+ *  
+ *  C_Interval:
+ *  m_Start = int
+ *  m_End = int
+ */

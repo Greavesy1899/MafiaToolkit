@@ -1,12 +1,36 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using SharpDX;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
+    public class AeSunLightWrapper : AnimEntityWrapper
+    {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeSunLight SunLightEntity { get; set; }
+
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.ReadFromFile(stream, isBigEndian);
+            SunLightEntity.ReadFromFile(stream, isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            SunLightEntity.WriteToFile(stream, isBigEndian);
+        }
+
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeSound_Type33;
+        }
+    }
+
     //AeSunLight
-    public class AeSunLight : AeBase
+    public class AeSunLight : AnimEntity
     {
         public byte Unk05 { get; set; }
         public int Unk06 { get; set; }

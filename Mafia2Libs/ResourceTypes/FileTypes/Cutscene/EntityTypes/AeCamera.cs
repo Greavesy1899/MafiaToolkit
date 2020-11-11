@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using SharpDX;
 using Utils.Extensions;
@@ -6,8 +7,33 @@ using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
+    public class AeCameraWrapper : AnimEntityWrapper
+    {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeCamera Unk4Entity { get; set; }
+        public AeCameraWrapper() : base()
+        {
+            Unk4Entity = new AeCamera();
+            AnimEntityData = new AeCameraData();
+        }
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.ReadFromFile(stream, isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+        }
+
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeCamera;
+        }
+    }
+
     //AeCameraLink
-    public class AeUnk4 : AeBase
+    public class AeCamera : AnimEntity
     {
         public byte Unk05 { get; set; }
         public int Unk06 { get; set; }
@@ -42,11 +68,11 @@ namespace ResourceTypes.Cutscene.AnimEntities
         }
         public override AnimEntityTypes GetEntityType()
         {
-            return AnimEntityTypes.AeUnk4;
+            return AnimEntityTypes.AeCamera;
         }
     }
 
-    public class AeUnk4Data : AeBaseData
+    public class AeCameraData : AeBaseData
     {
         public int Unk4_01 { get; set; }
 

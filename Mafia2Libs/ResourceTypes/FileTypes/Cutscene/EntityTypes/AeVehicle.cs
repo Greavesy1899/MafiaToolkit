@@ -1,13 +1,43 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using SharpDX;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
-    public class AeVehicle : AeBase
+    public class AeVehicleWrapper : AnimEntityWrapper
     {
-        public int Unk05 { get; set; }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeVehicle VehicleEntity { get; set; }
+
+        public AeVehicleWrapper() : base()
+        {
+            VehicleEntity = new AeVehicle();
+        }
+
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.ReadFromFile(stream, isBigEndian);
+
+            VehicleEntity = new AeVehicle();
+            VehicleEntity.ReadFromFile(stream, isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            VehicleEntity.WriteToFile(stream, isBigEndian);
+        }
+
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeFrame;
+        }
+    }
+
+    public class AeVehicle : AnimEntity
+    {
         public byte Unk06 { get; set; }
         public int Unk07 { get; set; }
         public int Unk08 { get; set; }

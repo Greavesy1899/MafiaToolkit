@@ -1,14 +1,42 @@
-﻿using System;
-using System.Diagnostics;
+﻿using SharpDX;
+using System.ComponentModel;
 using System.IO;
-using SharpDX;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
-    //AeOmniLight
-    public class AeOmniLight : AeBase
+    public class AeOmniLightWrapper : AnimEntityWrapper
+    {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeOmniLight OmniLightEntity { get; set; }
+
+        public AeOmniLightWrapper() : base()
+        {
+            OmniLightEntity = new AeOmniLight();
+        }
+
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.ReadFromFile(stream, isBigEndian);
+
+            OmniLightEntity = new AeOmniLight();
+            OmniLightEntity.ReadFromFile(stream, isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            OmniLightEntity.WriteToFile(stream, isBigEndian);
+        }
+
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeOmniLight;
+        }
+    }
+
+    public class AeOmniLight : AnimEntity
     {
         public byte Unk05 { get; set; }
         public int Unk06 { get; set; }
@@ -67,7 +95,6 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
-
             stream.WriteByte(Unk05);
             stream.Write(Unk06, isBigEndian);
             stream.Write(Unk07, isBigEndian);
@@ -99,49 +126,8 @@ namespace ResourceTypes.Cutscene.AnimEntities
                 stream.Write(Unk12, isBigEndian);
                 stream.WriteString16(ProjectorTexture, isBigEndian);
             }
-        }
-        public override AnimEntityTypes GetEntityType()
-        {
-            return AnimEntityTypes.AeOmniLight;
-        }
-    }
 
-    public class AeOmniLightData : AeBaseData
-    {
-        public byte Unk02 { get; set; }
-        public int Unk03 { get; set; }
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
-        {
-            base.ReadFromFile(stream, isBigEndian);
-            Debug.Assert(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
-
-            Unk02 = stream.ReadByte8();
-
-            // Could be an array of integers
-            if (Unk02 == 1)
-            {
-                Unk03 = stream.ReadInt32(isBigEndian);
-            }
-            else if(Unk02 != 0)
-            {
-                Console.WriteLine("oof");
-            }
-        }
-
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
-        {
-            base.WriteToFile(stream, isBigEndian);
-            stream.WriteByte(Unk02);
-
-            // Could be an array of integers
-            if(Unk02 == 1)
-            {
-                stream.Write(Unk03, isBigEndian);
-            }
-            else if (Unk02 != 0)
-            {
-                Console.WriteLine("oof");
-            }
+            UpdateSize(stream, isBigEndian);
         }
     }
 }

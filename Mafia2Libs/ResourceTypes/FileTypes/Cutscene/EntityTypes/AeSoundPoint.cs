@@ -1,10 +1,10 @@
 ﻿namespace ResourceTypes.Cutscene.AnimEntities
 {
-    public class AeSound_Type33Wrapper : AnimEntityWrapper
+    public class AeSoundPointWrapper : AnimEntityWrapper
     {
         public override AnimEntityTypes GetEntityType()
         {
-            return AnimEntityTypes.AeSound_Type33;
+            return AnimEntityTypes.AeSoundPoint;
         }
     }
 }

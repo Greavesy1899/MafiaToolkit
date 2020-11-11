@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
+using Utils.Extensions;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Cutscene
@@ -52,19 +52,6 @@ namespace ResourceTypes.Cutscene
     //__cstring:01E80D40 aU011_blindtime db 'U011_BlindTime',0
     //__cstring:01E80D4F aU012_blindfade db 'U012_BlindFadeOutTime',0
     //__cstring:01E80D65 aU013_monofadeo db 'U013_MonoFadeOutTime',0
-    public class AnimEntity
-    {
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public AeBase Definition { get; set; }
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public AeBaseData Data { get; set; }
-
-        public override string ToString()
-        {
-            return Definition.GetType().Name;
-        }
-
-    }
 
     public class CutsceneLoader
     {
@@ -148,7 +135,6 @@ namespace ResourceTypes.Cutscene
                 {
                     SoundContent = new SPDData();
                     SoundContent.ReadFromFile(reader, CutsceneName);
-                    //File.WriteAllBytes("CutsceneData/SPD_Data.bin", spdData.Data);
                 }
 
                 // TODO: Figure out the actual way of detecting this.
@@ -198,7 +184,7 @@ namespace ResourceTypes.Cutscene
                 private byte[] unk08; //size from unk07; facefx data
                 private int unk09; //possible size of entries;
                 private ushort numEntities; //numEntities;
-                public AnimEntity[] entities;
+                public AnimEntityWrapper[] entities;
                 public int unk10;
                 public float unk11;
                 public int unk12;
@@ -221,7 +207,7 @@ namespace ResourceTypes.Cutscene
                     unk08 = reader.ReadBytes(unk07-4);
                     unk09 = reader.ReadInt32();
                     numEntities = reader.ReadUInt16();
-                    entities = new AnimEntity[numEntities];
+                    entities = new AnimEntityWrapper[numEntities];
 
                     for(int i = 0; i < numEntities; i++)
                     {
@@ -235,13 +221,12 @@ namespace ResourceTypes.Cutscene
                         byte[] DefintionData = reader.ReadBytes(Size - 12);
                         using (MemoryStream Reader = new MemoryStream(DefintionData))
                         {
-                            AnimEntity Entity = CutsceneEntityFactory.ReadAnimEntityFromFile(AnimEntityType, Reader);
-                            Entity.Definition.Size = Size;
+                            AnimEntityWrapper EntityWrapper = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
 
                             string format = string.Format("CutsceneInfo/{2}/Entity_{0}_{1}.bin", AnimEntityType, i, CutsceneName);
                             File.WriteAllBytes(format, DefintionData);
 
-                            entities[i] = Entity;
+                            entities[i] = EntityWrapper;
                         }
                     }
 
@@ -259,7 +244,7 @@ namespace ResourceTypes.Cutscene
                         // And then This
                         using(MemoryStream stream = new MemoryStream(dataBytes))
                         {
-                            entities[z].Data.ReadFromFile(stream, false);
+                            entities[z].AnimEntityData.ReadFromFile(stream, false);
                             Debug.Assert(stream.Position == stream.Length, "When reading the AnimEntity Data, we did not reach the end of the stream!");
                         }
                     }
@@ -290,19 +275,15 @@ namespace ResourceTypes.Cutscene
 
                         long sizePosition = writer.BaseStream.Position;
                         writer.Write(-1);
-                        writer.Write((int)Entity.Definition.GetEntityType());
+                        writer.Write((int)Entity.GetEntityType());
 
                         using(MemoryStream stream = new MemoryStream())
                         {
+                            // Write Entity to the Stream
                             CutsceneEntityFactory.WriteAnimEntityToFile(stream, Entity);
                             writer.Write(stream.ToArray());
 
-                            Debug.Assert(Entity.Definition.Size == stream.Length + 12, "Oof");
-                            if(Entity.Definition.Size != stream.Length + 12)
-                            {
-                                File.WriteAllBytes("File.bin", stream.ToArray());
-                            }
-
+                            // Update Size.
                             long currentPosition = writer.BaseStream.Position;
                             writer.BaseStream.Seek(sizePosition, SeekOrigin.Begin);
                             writer.Write((uint)stream.Length + 12);
@@ -312,14 +293,16 @@ namespace ResourceTypes.Cutscene
 
                     foreach (var Entity in entities)
                     {
-                        //writer.Write(1000); //Header for types is 1000.
-                        using (MemoryStream stream = new MemoryStream())
+                        using (MemoryStream EntityStream = new MemoryStream())
                         {
                             bool isBigEndian = false;
-                            Entity.Data.WriteToFile(stream, isBigEndian);
-                            writer.Write(stream.ToArray());
+                            Entity.AnimEntityData.WriteToFile(EntityStream, isBigEndian);
 
-                            Debug.Assert(stream.Length == Entity.Data.Size, "Oof");
+                            EntityStream.Seek(4, SeekOrigin.Begin);
+                            EntityStream.Write((uint)EntityStream.Length, isBigEndian);
+                            EntityStream.Seek(0, SeekOrigin.End);
+
+                            writer.Write(EntityStream.ToArray());
                         }
                     }
 
@@ -335,7 +318,7 @@ namespace ResourceTypes.Cutscene
             {
                 public int Unk01 { get; set; }
                 public float Unk02 { get; set; } // For GCS this is FPS i think.
-                public AnimEntity[] EntityDefinitions { get; set; }
+                public AnimEntityWrapper[] EntityDefinitions { get; set; }
 
                 private uint Size; // Will be removed when we have proper saving.
                 private string CutsceneName; // For debugging
@@ -356,7 +339,7 @@ namespace ResourceTypes.Cutscene
                             Unk01 = reader.ReadInt32();
                             Unk02 = reader.ReadSingle();
                             int NumEntities = reader.ReadInt32();
-                            EntityDefinitions = new AnimEntity[NumEntities];
+                            EntityDefinitions = new AnimEntityWrapper[NumEntities];
 
                             for (int i = 0; i < NumEntities; i++)
                             {
@@ -370,8 +353,8 @@ namespace ResourceTypes.Cutscene
                                 byte[] DefintionData = reader.ReadBytes(Size - 12);
                                 using (MemoryStream Reader = new MemoryStream(DefintionData))
                                 {
-                                    AnimEntity Entity = CutsceneEntityFactory.ReadAnimEntityFromFile(AnimEntityType, Reader);
-                                    Entity.Definition.Size = Size;
+                                    AnimEntityWrapper Entity = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
+
                                     // Debugging: If the AnimEntity is null and a debugger is attached, we should save it to the disc.
                                     string format = string.Format("CutsceneInfo/{0}/Entity_SPD_{1}_{2}.bin", CutsceneName, AnimEntityType, i);
                                     File.WriteAllBytes(format, DefintionData);
@@ -394,8 +377,7 @@ namespace ResourceTypes.Cutscene
                                 // And then This
                                 using (MemoryStream stream = new MemoryStream(dataBytes))
                                 {
-                                    EntityDefinitions[z].Data.ReadFromFile(stream, false);
-                                    Debug.Assert(stream.Position == stream.Length, "When reading the AnimEntity Data, we did not reach the end of the stream!");
+                                    EntityDefinitions[z].AnimEntityData.ReadFromFile(stream, false);
                                 }
                             }
                         }
@@ -405,6 +387,7 @@ namespace ResourceTypes.Cutscene
                 public void WriteToFile(BinaryWriter Writer)
                 {
                     Writer.Write(1000); // Magic
+                    long SPDSizePosition = Writer.BaseStream.Position;
                     Writer.Write(Size);
                     Writer.Write(0x21445053);
                     Writer.Write(Unk01);
@@ -417,14 +400,12 @@ namespace ResourceTypes.Cutscene
 
                         long sizePosition = Writer.BaseStream.Position;
                         Writer.Write(-1);
-                        Writer.Write((int)Entity.Definition.GetEntityType());
+                        Writer.Write((int)Entity.GetEntityType());
 
                         using (MemoryStream EntityStream = new MemoryStream())
                         {
                             CutsceneEntityFactory.WriteAnimEntityToFile(EntityStream, Entity);
                             Writer.Write(EntityStream.ToArray());
-
-                            Debug.Assert(Entity.Definition.Size == EntityStream.Length + 12, "Oof");
 
                             long currentPosition = Writer.BaseStream.Position;
                             Writer.BaseStream.Seek(sizePosition, SeekOrigin.Begin);
@@ -438,12 +419,20 @@ namespace ResourceTypes.Cutscene
                         using (MemoryStream EntityStream = new MemoryStream())
                         {
                             bool isBigEndian = false;
-                            Entity.Data.WriteToFile(EntityStream, isBigEndian);
-                            Writer.Write(EntityStream.ToArray());
+                            Entity.AnimEntityData.WriteToFile(EntityStream, isBigEndian);
 
-                            Debug.Assert(EntityStream.Length == Entity.Data.Size, "Oof");
+                            EntityStream.Seek(4, SeekOrigin.Begin);
+                            EntityStream.Write((uint)EntityStream.Length, isBigEndian);
+                            EntityStream.Seek(0, SeekOrigin.End);
+
+                            Writer.Write(EntityStream.ToArray());
                         }
                     }
+
+                    Writer.Seek((int)SPDSizePosition, SeekOrigin.Begin);
+                    uint SPDSize = (uint)(Writer.BaseStream.Length - SPDSizePosition) + 4;
+                    Writer.Write(SPDSize);
+                    Writer.Seek(0, SeekOrigin.End);
                 }
             }
 

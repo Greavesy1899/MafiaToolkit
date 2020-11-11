@@ -1,15 +1,42 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using Gibbed.IO;
 using SharpDX;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
+    public class AeSpotLightWrapper : AnimEntityWrapper
+    {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeSpotLight SpotLightEntity { get; set; }
+        
+        public AeSpotLightWrapper() : base()
+        {
+            SpotLightEntity = new AeSpotLight();
+            AnimEntityData = new AeSpotLightData();
+        }
+
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            SpotLightEntity.ReadFromFile(stream, isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            SpotLightEntity.WriteToFile(stream, isBigEndian);
+        }
+
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeSpotLight;
+        }
+    }
+
     //AeSpotLight
-    public class AeSpotLight : AeBase
+    public class AeSpotLight : AnimEntity
     {
         public byte Unk05 { get; set; }
         public int Unk06 { get; set; }

@@ -195,41 +195,50 @@ namespace Gibbed.Mafia2.FileFormats
             resource.Deserialize(entry.Version, new MemoryStream(entry.Data), _Endian);
             resourceXML.WriteElementString("File", resource.Path);
             resourceXML.WriteElementString("ScriptNum", resource.Scripts.Count.ToString());
+
             for (int x = 0; x != resource.Scripts.Count; x++)
             {
-                string scrdir = scriptDir;
-                string[] dirs = resource.Scripts[x].Name.Split('/');
-                for (int z = 0; z != dirs.Length - 1; z++)
-                {
-                    scrdir += "/" + dirs[z];
-                    Directory.CreateDirectory(scrdir);
-                }
+                // Get the script resource.
+                ScriptData ScriptItem = resource.Scripts[x];
 
-                File.WriteAllBytes(scriptDir + "/" + resource.Scripts[x].Name, resource.Scripts[x].Data);
+                // Get directory and Script name.
+                string ScriptDirectory = Path.GetDirectoryName(ScriptItem.Name);
+                string ScriptName = Path.GetFileName(ScriptItem.Name);
 
+                // Create the new directory.
+                string NewDirectory = scriptDir + ScriptDirectory;
+                Directory.CreateDirectory(NewDirectory);
+
+                // Write the script data to the designated file.
+                string ScriptPath = Path.Combine(NewDirectory, ScriptName);
+                File.WriteAllBytes(ScriptPath, ScriptItem.Data);
+
+                // If user requests, decompile the Lua file.
                 if (ToolkitSettings.DecompileLUA)
                 {
-                    LuaHelper.ReadFile(new FileInfo(scriptDir + "/" + resource.Scripts[x].Name));
+                    FileInfo Info = new FileInfo(ScriptPath);
+                    LuaHelper.ReadFile(Info);
                 }
 
-                resourceXML.WriteElementString("Name", resource.Scripts[x].Name);
+                resourceXML.WriteElementString("Name", ScriptItem.Name);
             }
             resourceXML.WriteElementString("Version", entry.Version.ToString());
-            resourceXML.WriteEndElement(); //finish early.
+            resourceXML.WriteEndElement(); // We finish early with scripts, as this has an alternate layout.
         }
         public ResourceEntry WriteScriptEntry(ResourceEntry entry, XPathNodeIterator nodes, string sdsFolder, XmlNode descNode)
         {
-            //get xml data.
+            // Get data from Xml.
             nodes.Current.MoveToNext();
             string path = nodes.Current.Value;
             nodes.Current.MoveToNext();
             int numScripts = Convert.ToInt32(nodes.Current.Value);
 
-            //main stuff
+            // Create the new resource, add path.
             ScriptResource resource = new ScriptResource();
             resource.Path = path;
 
-            for (int i = 0; i != numScripts; i++)
+            // Iterate through scripts, reading each one and pushing them into the list.
+            for (int i = 0; i < numScripts; i++)
             {
                 ScriptData data = new ScriptData();
                 nodes.Current.MoveToNext();
@@ -238,10 +247,11 @@ namespace Gibbed.Mafia2.FileFormats
                 resource.Scripts.Add(data);
             }
 
-            //finish
+            // Finish reading the Xml by getting the version.
             nodes.Current.MoveToNext();
             ushort version = Convert.ToUInt16(nodes.Current.Value);
 
+            // Create the stream and serialize the resource package into said stream.
             using(MemoryStream stream = new MemoryStream())
             {
                 resource.Serialize(version, stream, Endian.Little);
@@ -249,8 +259,8 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.OtherRamRequired = (uint)resource.GetRawBytes();
             }
 
+            // Set the entry version and setup the data for the meta info.
             entry.Version = version;        
-
             descNode.InnerText = path;
             return entry;
         }
@@ -391,7 +401,7 @@ namespace Gibbed.Mafia2.FileFormats
             string[] dirs = name.Split(new char[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries);
 
             string tempDir = soundDir;
-            for (int z = 0; z != dirs.Length - 1; z++)
+            for (int z = 0; z < dirs.Length - 1; z++)
             {
                 tempDir = Path.Combine(tempDir, dirs[z]);
                 Directory.CreateDirectory(tempDir);

@@ -4,16 +4,11 @@ using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
-    public class AeEffects : AeBase
+    public class AeEffectsWrapper : AnimEntityWrapper
     {
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public AeEffectsWrapper() : base()
         {
-            base.ReadFromFile(stream, isBigEndian);
-        }
-
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
-        {
-            base.WriteToFile(stream, isBigEndian);
+            AnimEntityData = new AeEffectsBase();
         }
 
         public override AnimEntityTypes GetEntityType()

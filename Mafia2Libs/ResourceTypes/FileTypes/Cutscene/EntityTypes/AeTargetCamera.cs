@@ -1,12 +1,43 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using SharpDX;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
+using Utils.Types;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
-    public class AeTargetCamera : AeBase
+    public class AeTargetCameraWrapper : AnimEntityWrapper
+    {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeTargetCamera TargetCameraEntity { get; set; }
+
+        public AeTargetCameraWrapper() : base()
+        {
+            TargetCameraEntity = new AeTargetCamera();
+            AnimEntityData = new AeTargetCameraData();
+        }
+
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.ReadFromFile(stream, isBigEndian);
+            TargetCameraEntity.ReadFromFile(stream, isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            TargetCameraEntity.WriteToFile(stream, isBigEndian);
+        }
+
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeTargetCamera;
+        }
+    }
+
+    public class AeTargetCamera : AnimEntity
     {
         public byte Unk05 { get; set; }
         public int Unk06 { get; set; }
@@ -15,9 +46,8 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public float Unk08 { get; set; }
         public float Unk09 { get; set; }
         public float Unk10 { get; set; }
-        public ulong Hash4 { get; set; }
         public ulong Hash5 { get; set; }
-        public string Name33 { get; set; }
+        public HashName TargetName { get; set; }
         public int Unk11 { get; set; }
         public int Unk12 { get; set; }
         public int Unk13 { get; set; }
@@ -38,14 +68,18 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Unk08 = stream.ReadSingle(isBigEndian);
             Unk09 = stream.ReadSingle(isBigEndian);
             Unk10 = stream.ReadSingle(isBigEndian);
-            Hash4 = stream.ReadUInt64(isBigEndian);
+            ulong TempTargetHash = stream.ReadUInt64(isBigEndian);
             Hash5 = stream.ReadUInt64(isBigEndian);
-            Name33 = stream.ReadString16(isBigEndian);
+            string TempTargetString = stream.ReadString16(isBigEndian);
             Unk11 = stream.ReadInt32(isBigEndian);
             Unk12 = stream.ReadInt32(isBigEndian);
             Unk13 = stream.ReadInt32(isBigEndian);
             Unk14 = stream.ReadByte8();
             Hash6 = stream.ReadUInt64(isBigEndian);
+
+            TargetName = new HashName();
+            TargetName.String = TempTargetString;
+            TargetName.Hash = TempTargetHash;
 
             if (Hash6 != 0)
             {
@@ -69,9 +103,9 @@ namespace ResourceTypes.Cutscene.AnimEntities
             stream.Write(Unk08, isBigEndian);
             stream.Write(Unk09, isBigEndian);
             stream.Write(Unk10, isBigEndian);
-            stream.Write(Hash4, isBigEndian);
+            stream.Write(TargetName.Hash, isBigEndian);
             stream.Write(Hash5, isBigEndian);
-            stream.WriteString16(Name33, isBigEndian);
+            stream.WriteString16(TargetName.String, isBigEndian);
             stream.Write(Unk11, isBigEndian);
             stream.Write(Unk12, isBigEndian);
             stream.Write(Unk13, isBigEndian);

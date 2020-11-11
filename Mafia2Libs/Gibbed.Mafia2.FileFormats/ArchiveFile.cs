@@ -222,14 +222,7 @@ namespace Gibbed.Mafia2.FileFormats
                 throw new FormatException(FormatError);
             }
 
-            // Check Version, should be 19 (Mafia: II) or 20 (Mafia III).
-            var version = input.ReadValueU32(Endian.Little);
-            if (version != 19 && version != 20)
-            {
-                string FormatError = string.Format("Unsupported Archive Version: {0}", version);
-                throw new FormatException(FormatError);
-            }
-
+            input.Seek(8, SeekOrigin.Begin);
             // Check Platform. There may be values for XboxOne and PS4, but that is unknown.
             var platform = (Platform)input.ReadValueU32(Endian.Big);
             if (platform != Platform.PC && platform != Platform.Xbox360 && platform != Platform.PS3)
@@ -240,6 +233,16 @@ namespace Gibbed.Mafia2.FileFormats
 
             var endian = platform == Archive.Platform.PC ? Endian.Little : Endian.Big;
 
+            input.Seek(4, SeekOrigin.Begin);
+            // Check Version, should be 19 (Mafia: II) or 20 (Mafia III).
+            var version = input.ReadValueU32(endian);
+            if (version != 19 && version != 20)
+            {
+                string FormatError = string.Format("Unsupported Archive Version: {0}", version);
+                throw new FormatException(FormatError);
+            }
+
+            input.Seek(12, SeekOrigin.Begin);
             input.Position = basePosition;
 
             using (var data = input.ReadToMemoryStreamSafe(12, endian))

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using SharpDX;
 using Utils.Extensions;
@@ -6,7 +7,38 @@ using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
-    public class AeModel : AeBase
+    public class AeModelWrapper : AnimEntityWrapper
+    {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeModel ModelEntity { get; set; }
+
+        public AeModelWrapper()
+        {
+            ModelEntity = new AeModel();
+            AnimEntityData = new AeModelData();
+        }
+
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.ReadFromFile(stream, isBigEndian);
+
+            ModelEntity = new AeModel();
+            ModelEntity.ReadFromFile(stream, isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            ModelEntity.WriteToFile(stream, isBigEndian);
+        }
+
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeModel;
+        }
+    }
+
+    public class AeModel : AnimEntity
     {
         public byte Unk06 { get; set; }
         public int Unk07 { get; set; }
@@ -32,10 +64,6 @@ namespace ResourceTypes.Cutscene.AnimEntities
             stream.Write(Unk08, isBigEndian);
             Transform.WriteToFile(stream, isBigEndian);
             stream.WriteString16(Name4, isBigEndian);
-        }
-        public override AnimEntityTypes GetEntityType()
-        {
-            return AnimEntityTypes.AeModel;
         }
     }
 

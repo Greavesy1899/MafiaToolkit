@@ -1,13 +1,43 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using SharpDX;
 using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
+    public class AeFrameWrapper : AnimEntityWrapper
+    {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeFrame FrameEntity { get; set; }
+
+        public AeFrameWrapper() : base()
+        {
+            FrameEntity = new AeFrame();
+            AnimEntityData = new AeFrameData();
+        }
+
+        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.ReadFromFile(stream, isBigEndian);
+            FrameEntity.ReadFromFile(stream, isBigEndian);
+        }
+
+        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
+        {
+            base.WriteToFile(stream, isBigEndian);
+            FrameEntity.WriteToFile(stream, isBigEndian);
+        }
+
+        public override AnimEntityTypes GetEntityType()
+        {
+            return AnimEntityTypes.AeFrame;
+        }
+    }
+
     // TODO: I don't really understand this data; we need to understand it though.
     // It looks to reference prior hashes which can be found in the base class, 
     // and then stores hashes/transforms for these objects? Unknown though, most fail to save.
-    public class AeFrame : AeBase
+    public class AeFrame : AnimEntity
     {
         public byte Unk06 { get; set; }
         public ulong Hash2 { get; set; }
@@ -21,7 +51,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
-            UnknownData = stream.ReadBytes(Unk044-8);
+            UnknownData = stream.ReadBytes((int)Size-8);
             /*
             Unk06 = stream.ReadByte8();
 

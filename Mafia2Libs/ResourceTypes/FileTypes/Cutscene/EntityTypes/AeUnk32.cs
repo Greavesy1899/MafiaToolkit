@@ -4,17 +4,13 @@ using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
-    public class AeUnk32 : AeBase
+    public class AeUnk32Wrapper : AnimEntityWrapper
     {
-        public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        public AeUnk32Wrapper() : base()
         {
-            base.ReadFromFile(stream, isBigEndian);
+            AnimEntityData = new AeUnk32Data();
         }
 
-        public override void WriteToFile(MemoryStream stream, bool isBigEndian)
-        {
-            base.WriteToFile(stream, isBigEndian);
-        }
         public override AnimEntityTypes GetEntityType()
         {
             return AnimEntityTypes.AeUnk32;
