@@ -106,6 +106,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             {
                 stream.Write(Value, isBigEndian);
             }
+            UpdateSize(stream, isBigEndian);
         }
         public override AnimEntityTypes GetEntityType()
         {

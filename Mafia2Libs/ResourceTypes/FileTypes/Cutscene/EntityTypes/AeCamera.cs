@@ -19,11 +19,13 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
+            Unk4Entity.ReadFromFile(stream, isBigEndian);
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
+            Unk4Entity.WriteToFile(stream, isBigEndian);
         }
 
         public override AnimEntityTypes GetEntityType()
@@ -65,6 +67,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             stream.Write(Unk08, isBigEndian);
             stream.Write(Unk09, isBigEndian);
             stream.Write(Unk10, isBigEndian);
+            UpdateSize(stream, isBigEndian);
         }
         public override AnimEntityTypes GetEntityType()
         {

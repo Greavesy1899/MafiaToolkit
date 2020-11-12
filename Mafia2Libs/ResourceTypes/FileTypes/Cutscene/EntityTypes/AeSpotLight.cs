@@ -12,21 +12,28 @@ namespace ResourceTypes.Cutscene.AnimEntities
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public AeSpotLight SpotLightEntity { get; set; }
-        
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeSpotLightTarget SpotLightTargetEntity { get; set; }
+
         public AeSpotLightWrapper() : base()
         {
             SpotLightEntity = new AeSpotLight();
+            SpotLightTargetEntity = new AeSpotLightTarget();
             AnimEntityData = new AeSpotLightData();
         }
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
+            base.ReadFromFile(stream, isBigEndian);
             SpotLightEntity.ReadFromFile(stream, isBigEndian);
+            SpotLightTargetEntity.ReadFromFile(stream, isBigEndian);
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
+            base.WriteToFile(stream, isBigEndian);
             SpotLightEntity.WriteToFile(stream, isBigEndian);
+            SpotLightTargetEntity.WriteToFile(stream, isBigEndian);
         }
 
         public override AnimEntityTypes GetEntityType()
@@ -40,29 +47,16 @@ namespace ResourceTypes.Cutscene.AnimEntities
     {
         public byte Unk05 { get; set; }
         public int Unk06 { get; set; }
-        public int Unk07 { get; set; }
-       
+        public int Unk07 { get; set; }     
         public Matrix Transform { get; set; }
         public int Unk09 { get; set; }
         public int UnknownSize { get; set; }
-        public int[] UnknownData { get; set; } // Size is UnknownSize/
         public float[] Unk08 { get; set; }
         public int Unk11 { get; set; }
         public int Unk12 { get; set; }
         public string Name33 { get; set; }
         public float[] Unk14 { get; set; }
         public string[] Unk15 { get; set; }
-        public ulong Hash4 { get; set; }
-        public ulong Hash5 { get; set; }
-        public string Name4 { get; set; }
-        public int Unk16 { get; set; }
-        public int Unk17 { get; set; }
-        public int Unk18 { get; set; }
-        public byte Unk19 { get; set; }
-        public int Unk20 { get; set; }
-        public int Unk21 { get; set; }
-        public Matrix Transform1 { get; set; }
-        public ulong Unk22 { get; set; }
 
         // Only available if UnknownSize == 1
         public int Type_1_Unk0 { get; set; }
@@ -113,18 +107,6 @@ namespace ResourceTypes.Cutscene.AnimEntities
                     Unk15[i] = stream.ReadString16(isBigEndian);
                 }
             }
-
-            Hash4 = stream.ReadUInt64(isBigEndian);
-            Hash5 = stream.ReadUInt64(isBigEndian);
-            Name4 = stream.ReadString16(isBigEndian);
-            Unk16 = stream.ReadInt32(isBigEndian);
-            Unk17 = stream.ReadInt32(isBigEndian);
-            Unk18 = stream.ReadInt32(isBigEndian);
-            Unk19 = stream.ReadByte8();
-            Unk20 = stream.ReadInt32(isBigEndian);
-            Unk21 = stream.ReadInt32(isBigEndian);
-            Transform1 = MatrixExtensions.ReadFromFile(stream, isBigEndian);
-            Unk22 = stream.ReadUInt64(isBigEndian);
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
@@ -169,17 +151,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
                 }
             }
 
-            stream.Write(Hash4, isBigEndian);
-            stream.Write(Hash5, isBigEndian);
-            stream.WriteString16(Name4, isBigEndian);
-            stream.Write(Unk16, isBigEndian);
-            stream.Write(Unk17, isBigEndian);
-            stream.Write(Unk18, isBigEndian);
-            stream.WriteByte(Unk19);
-            stream.Write(Unk20, isBigEndian);
-            stream.Write(Unk21, isBigEndian);
-            Transform1.WriteToFile(stream, isBigEndian);
-            stream.Write(Unk22, isBigEndian);
+            UpdateSize(stream, isBigEndian);
         }
         public override AnimEntityTypes GetEntityType()
         {

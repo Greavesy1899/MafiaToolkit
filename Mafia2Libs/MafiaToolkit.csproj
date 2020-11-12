@@ -380,6 +380,7 @@
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSound_Type33.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSoundPoint.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSpotLight.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSpotlightTarget.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSunLight.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeTargetCamera.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeScript.cs" />
@@ -765,6 +766,9 @@
   <ItemGroup>
     <Compile Include="ApexSDK\ApexClothingAsset.cs" />
     <Content Include="build.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="games.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="libs\discord-rpc.dll">

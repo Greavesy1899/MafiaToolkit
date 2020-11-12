@@ -97,6 +97,8 @@ namespace ResourceTypes.Cutscene.AnimEntities
                 Transform1.WriteToFile(stream, isBigEndian);
             }
             */
+
+            UpdateSize(stream, isBigEndian);
         }
 
         public override AnimEntityTypes GetEntityType()

@@ -3,8 +3,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using Utils.Extensions;
-using Utils.StringHelpers;
-using Utils.Types;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {

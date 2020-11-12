@@ -4,17 +4,19 @@ using System.IO;
 using SharpDX;
 using Utils.Extensions;
 using Utils.SharpDXExtensions;
-using Utils.Types;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
     public class AeTargetCameraWrapper : AnimEntityWrapper
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
+        public AeCamera CameraEntity { get; set; }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
         public AeTargetCamera TargetCameraEntity { get; set; }
 
         public AeTargetCameraWrapper() : base()
         {
+            CameraEntity = new AeCamera();
             TargetCameraEntity = new AeTargetCamera();
             AnimEntityData = new AeTargetCameraData();
         }
@@ -22,12 +24,14 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
+            CameraEntity.ReadFromFile(stream, isBigEndian);
             TargetCameraEntity.ReadFromFile(stream, isBigEndian);
         }
 
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
+            CameraEntity.WriteToFile(stream, isBigEndian);
             TargetCameraEntity.WriteToFile(stream, isBigEndian);
         }
 
@@ -39,21 +43,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
     public class AeTargetCamera : AnimEntity
     {
-        public byte Unk05 { get; set; }
-        public int Unk06 { get; set; }
-        public int Unk07 { get; set; }
-        public Matrix Transform { get; set; }
-        public float Unk08 { get; set; }
-        public float Unk09 { get; set; }
-        public float Unk10 { get; set; }
-        public ulong Hash5 { get; set; }
-        public HashName TargetName { get; set; }
-        public int Unk11 { get; set; }
-        public int Unk12 { get; set; }
-        public int Unk13 { get; set; }
         public byte Unk14 { get; set; }
-        public int Unk15 { get; set; }
-        public int Unk16 { get; set; }
         public ulong Hash6 { get; set; }
         public ulong Hash7 { get; set; }
         public Matrix Transform1 { get; set; }
@@ -61,25 +51,8 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
             base.ReadFromFile(stream, isBigEndian);
-            Unk05 = stream.ReadByte8();
-            Unk06 = stream.ReadInt32(isBigEndian);
-            Unk07 = stream.ReadInt32(isBigEndian);
-            Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
-            Unk08 = stream.ReadSingle(isBigEndian);
-            Unk09 = stream.ReadSingle(isBigEndian);
-            Unk10 = stream.ReadSingle(isBigEndian);
-            ulong TempTargetHash = stream.ReadUInt64(isBigEndian);
-            Hash5 = stream.ReadUInt64(isBigEndian);
-            string TempTargetString = stream.ReadString16(isBigEndian);
-            Unk11 = stream.ReadInt32(isBigEndian);
-            Unk12 = stream.ReadInt32(isBigEndian);
-            Unk13 = stream.ReadInt32(isBigEndian);
             Unk14 = stream.ReadByte8();
             Hash6 = stream.ReadUInt64(isBigEndian);
-
-            TargetName = new HashName();
-            TargetName.String = TempTargetString;
-            TargetName.Hash = TempTargetHash;
 
             if (Hash6 != 0)
             {
@@ -96,19 +69,6 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public override void WriteToFile(MemoryStream stream, bool isBigEndian)
         {
             base.WriteToFile(stream, isBigEndian);
-            stream.WriteByte(Unk05);
-            stream.Write(Unk06, isBigEndian);
-            stream.Write(Unk07, isBigEndian);
-            Transform.WriteToFile(stream, isBigEndian);
-            stream.Write(Unk08, isBigEndian);
-            stream.Write(Unk09, isBigEndian);
-            stream.Write(Unk10, isBigEndian);
-            stream.Write(TargetName.Hash, isBigEndian);
-            stream.Write(Hash5, isBigEndian);
-            stream.WriteString16(TargetName.String, isBigEndian);
-            stream.Write(Unk11, isBigEndian);
-            stream.Write(Unk12, isBigEndian);
-            stream.Write(Unk13, isBigEndian);
             stream.WriteByte(Unk14);
             stream.Write(Hash6, isBigEndian);
 
@@ -122,6 +82,8 @@ namespace ResourceTypes.Cutscene.AnimEntities
                 Transform1.WriteToFile(stream, isBigEndian);
                 stream.Write(Hash7, isBigEndian);
             }
+            UpdateSize(stream, isBigEndian);
+            
         }
         public override AnimEntityTypes GetEntityType()
         {

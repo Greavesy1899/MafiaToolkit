@@ -10,9 +10,10 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public ulong Hash0 { get; set; }
         public HashName FrameName { get; set; }
         public int EntityFlags { get; set; }
-        public AeBaseData AnimEntityData { get; set; }
 
         // Util for loading
+        // AeFrame uses this as it is NOT reversed.
+        // When AeFrame is solved, we can remove this.
         protected uint Size;
 
         // Util offset when saving

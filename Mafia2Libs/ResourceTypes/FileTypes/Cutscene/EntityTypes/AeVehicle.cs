@@ -62,6 +62,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             stream.Write(Unk08, isBigEndian);
             Transform.WriteToFile(stream, isBigEndian);
             stream.WriteString16(Name4, isBigEndian);
+            UpdateSize(stream, isBigEndian);
         }
         public override AnimEntityTypes GetEntityType()
         {

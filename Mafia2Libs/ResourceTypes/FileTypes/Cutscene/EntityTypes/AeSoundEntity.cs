@@ -19,8 +19,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
     public class AeSoundEntityData : AeBaseData
     {
-        public byte NumUnknownSize { get; set; }
-        public byte[] Unk0 { get; set; }
+        public ulong[] UnkHashes_0 { get; set; }
 
         private bool bHasDerivedData;
 
@@ -31,15 +30,14 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
             if(stream.Position != stream.Length)
             {
-                NumUnknownSize = stream.ReadByte8();
-                Debug.Assert(NumUnknownSize == 0, "Detected AeUnk31Data::NumUnknownSize != 0. This means data we do not understand!");
+                byte Size = stream.ReadByte8();             
+                UnkHashes_0 = new ulong[Size];
+                for(int i = 0; i < Size; i++)
+                {
+                    UnkHashes_0[i] = stream.ReadUInt64(isBigEndian);
+                }
 
                 bHasDerivedData = true;
-
-                if (NumUnknownSize > 0)
-                {
-                    Unk0 = stream.ReadBytes(96);
-                }
             }         
         }
 
@@ -49,11 +47,10 @@ namespace ResourceTypes.Cutscene.AnimEntities
 
             if(bHasDerivedData)
             {
-                stream.WriteByte(NumUnknownSize);
-
-                if (NumUnknownSize > 0)
+                stream.WriteByte((byte)UnkHashes_0.Length);
+                foreach(var HashValue in UnkHashes_0)
                 {
-                    stream.Write(Unk0);
+                    stream.Write(HashValue, isBigEndian);
                 }
             }
         }
