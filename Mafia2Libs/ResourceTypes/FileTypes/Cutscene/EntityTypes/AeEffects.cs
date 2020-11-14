@@ -33,6 +33,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public int Unk02 { get; set; }
         public int Unk03 { get; set; }
         public int Unk04 { get; set; }
+        public byte[] Unk05 { get; set; }
         /*
         public Effect[] Unk04_Effects { get; set; }
         public int Unk05 { get; set; }
@@ -52,6 +53,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Unk02 = stream.ReadInt32(isBigEndian);
             Unk03 = stream.ReadInt32(isBigEndian);
             Unk04 = stream.ReadInt32(isBigEndian);
+            Unk05 = stream.ReadBytes(112);
             /*
             Debug.Assert(stream.Position != stream.Length, "I've read the parent class data, although i've hit the eof!");
 
@@ -108,6 +110,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             stream.Write(Unk02, isBigEndian);
             stream.Write(Unk03, isBigEndian);
             stream.Write(Unk04, isBigEndian);
+            stream.Write(Unk05);
         }
     }
 }

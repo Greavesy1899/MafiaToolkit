@@ -1,4 +1,4 @@
-﻿using System;
+﻿using ResourceTypes.Cutscene.AnimEntities.LightTypes;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -51,15 +51,8 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public Matrix Transform { get; set; }
         public int Unk09 { get; set; }
         public int UnknownSize { get; set; }
-        public float[] Unk08 { get; set; }
-        public int Unk11 { get; set; }
-        public int Unk12 { get; set; }
-        public string Name33 { get; set; }
-        public float[] Unk14 { get; set; }
-        public string[] Unk15 { get; set; }
-
-        // Only available if UnknownSize == 1
-        public int Type_1_Unk0 { get; set; }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public IAeLightType LightInfo { get; set; }
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
         {
@@ -70,42 +63,28 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
             Unk09 = stream.ReadInt32(isBigEndian);
             UnknownSize = stream.ReadInt32(isBigEndian);
-            Unk08 = new float[12];
-            for (int i = 0; i < 12; i++)
-            {
-                Unk08[i] = stream.ReadSingle(isBigEndian);
-            }
-            Unk11 = stream.ReadInt32(isBigEndian);
-            Unk12 = stream.ReadInt32(isBigEndian);
-            Name33 = stream.ReadString16(isBigEndian);
 
-            if(UnknownSize == 2)
+            if (UnknownSize == 0) // Mostly the same as AeOmniLight, but with 12 floats rather than 10.
             {
-                Unk14 = new float[20];
-                for (int i = 0; i < 20; i++)
-                {
-                    Unk14[i] = stream.ReadSingle(isBigEndian);
-                }
-                Unk15 = new string[3];
-                for (int i = 0; i < 3; i++)
-                {
-                    Unk15[i] = stream.ReadString16(isBigEndian);
-                }
+                // TODO: Why does OmniLight and SpotLight have different array sizes?
+                AeLightType0 LightType0 = new AeLightType0();
+                LightType0.SetNumFloats(12);
+                LightType0.ReadFromFile(stream, isBigEndian);
+                LightInfo = LightType0;
             }
-            else if(UnknownSize == 1)
+            else if(UnknownSize == 1) // This is exactly the same as AeOmniLight. Maybe this is apart of some big type for lights?
             {
-                Type_1_Unk0 = stream.ReadInt32(isBigEndian);
-
-                Unk14 = new float[21];
-                for (int i = 0; i < 21; i++)
-                {
-                    Unk14[i] = stream.ReadSingle(isBigEndian);
-                }
-                Unk15 = new string[1];
-                for (int i = 0; i < 1; i++)
-                {
-                    Unk15[i] = stream.ReadString16(isBigEndian);
-                }
+                LightInfo = new AeLightType1();
+                LightInfo.ReadFromFile(stream, isBigEndian);
+            }
+            else if(UnknownSize == 2) // Mostly the same as AeOmniLight, but with 12 floats rather than 10.
+            {
+                LightInfo = new AeLightType2();
+                LightInfo.ReadFromFile(stream, isBigEndian);
+            }
+            else
+            {
+                throw new FileFormatException();
             }
         }
 
@@ -118,39 +97,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Transform.WriteToFile(stream, isBigEndian);
             stream.Write(Unk09, isBigEndian);
             stream.Write(UnknownSize, isBigEndian);
-            foreach (var Value in Unk08)
-            {
-                stream.Write(Value, isBigEndian);
-            }
-            stream.Write(Unk11, isBigEndian);
-            stream.Write(Unk12, isBigEndian);
-            stream.WriteString16(Name33, isBigEndian);
-
-            if(UnknownSize == 2)
-            {
-                foreach (var Value in Unk14)
-                {
-                    stream.Write(Value, isBigEndian);
-                }
-                foreach (var Value in Unk15)
-                {
-                    stream.WriteString16(Value, isBigEndian);
-                }
-            }
-            else if (UnknownSize == 1)
-            {
-                stream.Write(Type_1_Unk0, isBigEndian);
-
-                foreach (var Value in Unk14)
-                {
-                    stream.Write(Value, isBigEndian);
-                }
-                foreach (var Value in Unk15)
-                {
-                    stream.WriteString16(Value, isBigEndian);
-                }
-            }
-
+            LightInfo.WriteToFile(stream, isBigEndian);
             UpdateSize(stream, isBigEndian);
         }
         public override AnimEntityTypes GetEntityType()
@@ -177,7 +124,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             }
             else if (Unk02 != 0)
             {
-                Console.WriteLine("oof");
+                throw new FileFormatException();
             }
         }
 
@@ -193,7 +140,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             }
             else if (Unk02 != 0)
             {
-                Console.WriteLine("oof");
+                throw new FileFormatException();
             }
         }
     }

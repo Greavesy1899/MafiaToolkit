@@ -395,6 +395,9 @@
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk7.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeVehicle.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\Enumerators.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\LightTypes\AeLightType0.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\LightTypes\AeLightType1.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\LightTypes\AeLightType2.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes_New\AnimEntity.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes_New\AnimEntityWrapper.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\Factories\CutsceneEntityFactory.cs" />
