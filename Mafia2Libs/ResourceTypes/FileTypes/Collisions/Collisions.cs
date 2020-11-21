@@ -114,6 +114,38 @@ namespace ResourceTypes.Collisions
             WriteToFile();
         }
 
+        /** Util to remove model from Collisions file. */
+        public void RemoveModel(ulong Hash)
+        {
+            if(Models.ContainsKey(Hash))
+            {
+                Models.Remove(Hash);
+            }
+
+            RemoveAllPlacementsForModels(Hash);
+        }
+
+        /** Util to remove model from Collisions file */
+        public void RemoveModel(CollisionModel Model)
+        {
+            RemoveModel(Model.Hash);
+        }
+
+        /** Remove Placements for given Collision Object. */
+        private void RemoveAllPlacementsForModels(ulong CollisionHash)
+        {
+            // Check if the placement has the collision hash, 
+            // If so, delete from list.
+            for (int i = Placements.Count - 1; i >= 0; i--)
+            {
+                Placement Instance = Placements[i];
+                if(Instance.Hash == CollisionHash)
+                {
+                    Placements.RemoveAt(i);
+                }
+            }
+        }
+
         public class Placement
         {
             public Vector3 Position { get; set; }

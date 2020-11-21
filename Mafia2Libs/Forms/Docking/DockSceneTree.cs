@@ -3,7 +3,6 @@ using System.Windows.Forms;
 using ResourceTypes.FrameResource;
 using SharpDX;
 using System;
-using Utils.Extensions;
 
 namespace Forms.Docking
 {
@@ -84,6 +83,29 @@ namespace Forms.Docking
                 parentNode.Nodes.Add(node);
             else
                 treeView1.Nodes.Add(node);
+        }
+
+        public TreeNode GetTreeNode(string TreeNodeKey, TreeNode ParentNode = null, bool bSearchChildren = false)
+        {
+            // Search for the node
+            TreeNode[] AttemptedFoundNodes = null;
+            if(ParentNode != null)
+            {
+                AttemptedFoundNodes = ParentNode.Nodes.Find(TreeNodeKey, bSearchChildren);
+            }
+            else
+            {
+                AttemptedFoundNodes = treeView1.Nodes.Find(TreeNodeKey, bSearchChildren);
+            }
+
+            // If we have found nodes, then get the first one
+            if(AttemptedFoundNodes.Length > 0)
+            {
+                return AttemptedFoundNodes[0];
+            }
+
+            // We have failed, return null.
+            return null;
         }
 
         /* Helper functions */

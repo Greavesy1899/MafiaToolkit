@@ -27,6 +27,7 @@ using ResourceTypes.Actors;
 using Utils.Extensions;
 using Rendering.Core;
 using Rendering.Factories;
+using Gibbed.Illusion.FileFormats.Hashing;
 
 namespace Mafia2Tool
 {
@@ -973,7 +974,6 @@ namespace Mafia2Tool
                 {
                     dPropertyGrid.UpdateObject();
                     Collision.Placement placement = (selected.Tag as Collision.Placement);
-                    selected.Text = placement.Hash.ToString();
                     IRenderer asset;
                     Graphics.Assets.TryGetValue(int.Parse(selected.Name), out asset);
                     RenderInstance instance = (asset as RenderInstance);
@@ -1546,6 +1546,7 @@ namespace Mafia2Tool
                 dSceneTree.RemoveNode(node);
 
                 Collision.CollisionModel data = (node.Tag as Collision.CollisionModel);
+                SceneData.Collisions.RemoveModel(data);
                 RenderStorageSingleton.Instance.StaticCollisions.TryRemove(data.Hash);
 
                 for (int i = 0; i != node.Nodes.Count; i++)
@@ -1989,71 +1990,11 @@ namespace Mafia2Tool
 
         private void AddCollisionButton_Click(object sender, EventArgs e)
         {
-            if (SceneData.Collisions != null)
-            {
-                if (MeshBrowser.ShowDialog() != DialogResult.OK)
-                {
-                    MessageBox.Show("Failed to select model.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                M2TStructure m2tColModel = new M2TStructure();
-
-                if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
-                {
-                    using(BinaryReader reader = new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)))
-                    {
-                        m2tColModel.ReadFromM2T(reader);
-                    }
-                }                  
-                else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
-                {
-                    m2tColModel.ReadFromFbx(MeshBrowser.FileName);
-                }
-
-                //crash happened/
-                if (m2tColModel.Lods[0] == null)
-                {
-                    MessageBox.Show("Failed to load model! No LOD[0] is present.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromM2TStructure(m2tColModel);
-
-                RenderStaticCollision collision = new RenderStaticCollision();
-                collision.ConvertCollisionToRender(collisionModel.Mesh);
-                RenderStorageSingleton.Instance.StaticCollisions.Add(collisionModel.Hash, collision);
-
-                Collision.Placement placement = new Collision.Placement();
-                placement.Hash = collisionModel.Hash;
-
-                //add to render storage
-                TreeNode treeNode = new TreeNode(collisionModel.Hash.ToString());
-                treeNode.Text = collisionModel.Hash.ToString();
-                treeNode.Name = collisionModel.Hash.ToString();
-                treeNode.Tag = collisionModel;
-
-                //add instance of object.
-                int refID = StringHelpers.GetNewRefID();
-                TreeNode child = new TreeNode();
-                child.Text = treeNode.Nodes.Count.ToString();
-                child.Name = refID.ToString();
-                child.Tag = placement;
-                treeNode.Nodes.Add(child);
-
-                //complete
-                RenderInstance instance = new RenderInstance();
-                instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
-                instance.SetTransform(placement.Transform);
-                Graphics.InitObjectStack.Add(refID, instance);
-                dSceneTree.AddToTree(treeNode, collisionRoot);
-                SceneData.Collisions.Models.Add(collisionModel.Hash, collisionModel);
-                SceneData.Collisions.Placements.Add(placement);
-            }
-            else
+            // Check if we need to create a collisions folder
+            if (SceneData.Collisions == null)
             {
                 DialogResult result = MessageBox.Show(Language.GetString("$NO_COL_FILE_CREATE_NEW"), "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if(result == DialogResult.Yes)
+                if (result == DialogResult.Yes)
                 {
                     SceneData.Collisions = new Collision();
                     SceneData.Collisions.Name = Path.Combine(SceneData.ScenePath, "Collisions_0.col");
@@ -2070,6 +2011,93 @@ namespace Mafia2Tool
                     return;
                 }
             }
+
+            // Try and select a model
+            if (MeshBrowser.ShowDialog() != DialogResult.OK)
+            {
+                MessageBox.Show("Failed to select model.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Read M2T file
+            M2TStructure m2tColModel = new M2TStructure();
+            if (MeshBrowser.FileName.ToLower().EndsWith(".m2t"))
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open(MeshBrowser.FileName, FileMode.Open)))
+                {
+                    m2tColModel.ReadFromM2T(reader);
+                }
+            }
+            else if (MeshBrowser.FileName.ToLower().EndsWith(".fbx"))
+            {
+                m2tColModel.ReadFromFbx(MeshBrowser.FileName);
+            }
+
+            // If we have no LODs, crash happened.
+            if (m2tColModel.Lods[0] == null)
+            {
+                MessageBox.Show("Failed to load model! No LOD[0] is present.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            ulong CollisionHash = FNV64.Hash(m2tColModel.Name);
+            Collision.CollisionModel CollisionModel = null;
+            if(!SceneData.Collisions.Models.ContainsKey(CollisionHash))
+            {
+                // Create a new renderable for collision object
+                Collision.CollisionModel collisionModel = new CollisionModelBuilder().BuildFromM2TStructure(m2tColModel);
+                RenderStaticCollision collision = new RenderStaticCollision();
+                collision.ConvertCollisionToRender(collisionModel.Mesh);
+                RenderStorageSingleton.Instance.StaticCollisions.TryAdd(collisionModel.Hash, collision);
+
+                // Push it onto the collisions dictionary
+                SceneData.Collisions.Models.Add(collisionModel.Hash, collisionModel);
+                CollisionModel = collisionModel;
+
+                // Create a new TreeNode for the CollisionModel
+                TreeNode CollisionNode = new TreeNode(CollisionHash.ToString());
+                CollisionNode.Text = CollisionHash.ToString();
+                CollisionNode.Name = CollisionHash.ToString();
+                CollisionNode.Tag = collisionModel;
+                dSceneTree.AddToTree(CollisionNode, collisionRoot);
+            }
+            else
+            {
+                // Get the model if it exists
+                CollisionModel = SceneData.Collisions.Models[CollisionHash];
+            }
+
+            // Create a new placement for this mesh
+            Collision.Placement placement = new Collision.Placement();
+            placement.Hash = CollisionHash;
+
+            // Try and find the collision node
+            TreeNode ExistingCollisionNode = dSceneTree.GetTreeNode(CollisionHash.ToString(), collisionRoot, true);
+            if (ExistingCollisionNode == null)
+            {
+                // Create a new TreeNode for the CollisionModel
+                TreeNode CollisionNode = new TreeNode(CollisionHash.ToString());
+                CollisionNode.Text = CollisionHash.ToString();
+                CollisionNode.Name = CollisionHash.ToString();
+                CollisionNode.Tag = CollisionModel;
+                ExistingCollisionNode = CollisionNode;
+                dSceneTree.AddToTree(CollisionNode, collisionRoot);
+            }
+
+            // Add new Placement object
+            int refID = StringHelpers.GetNewRefID();
+            TreeNode child = new TreeNode();
+            child.Text = ExistingCollisionNode.Nodes.Count.ToString();
+            child.Name = refID.ToString();
+            child.Tag = placement;
+            ExistingCollisionNode.Nodes.Add(child);
+
+            // Complete it
+            RenderInstance instance = new RenderInstance();
+            instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
+            instance.SetTransform(placement.Transform);
+            Graphics.InitObjectStack.Add(refID, instance);
+            SceneData.Collisions.Placements.Add(placement);
         }
 
         private void CameraToolsOnValueChanged(object sender, EventArgs e)

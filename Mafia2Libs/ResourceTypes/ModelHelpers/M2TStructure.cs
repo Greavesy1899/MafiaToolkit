@@ -11,6 +11,7 @@ using ResourceTypes.Collisions;
 using ResourceTypes.Collisions.Opcode;
 using Utils.StringHelpers;
 using Gibbed.Illusion.FileFormats.Hashing;
+using System.Windows.Forms;
 
 namespace Utils.Models
 {
@@ -244,7 +245,23 @@ namespace Utils.Models
 
         public void ExportToM2T(string exportPath)
         {
-
+            // Check if the directory exists
+            if(!Directory.Exists(exportPath))
+            {
+                // Ask if we can create it
+                DialogResult Result = MessageBox.Show("The path does not exist. Do you want to create it?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if(Result == DialogResult.Yes)
+                {
+                    Directory.CreateDirectory(exportPath);
+                }
+                else
+                {
+                    // Can't export file with no valid directory.
+                    MessageBox.Show("Cannot export a mesh with no valid directory. Please change your directory.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            
             using (BinaryWriter writer = new BinaryWriter(File.Create(exportPath + name + ".m2t")))
             {
                 writer.Write(fileHeader.ToCharArray());
