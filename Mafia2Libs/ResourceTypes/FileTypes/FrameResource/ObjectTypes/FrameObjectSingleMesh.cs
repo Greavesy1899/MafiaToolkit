@@ -4,6 +4,8 @@ using SharpDX;
 using Utils.SharpDXExtensions;
 using Utils.Extensions;
 using Utils.Types;
+using Rendering.Factories;
+using Rendering.Graphics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -139,6 +141,13 @@ namespace ResourceTypes.FrameResource
         public override string ToString()
         {
             return string.Format("{0}", Name);
+        }
+
+        public override void ConstructRenderable()
+        {
+            RenderModel Renderable = RenderableFactory.BuildRenderModelFromFrame(this);
+            RenderAdapter = new Rendering.Core.RenderableAdapter();
+            RenderAdapter.InitAdaptor(Renderable, this);
         }
     }
 }

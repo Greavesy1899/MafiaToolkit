@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
-using System.IO;
+﻿using System.IO;
 using SharpDX;
 using Utils.SharpDXExtensions;
+using Rendering.Graphics;
+using Rendering.Factories;
 
 namespace ResourceTypes.FrameResource
 {
@@ -13,7 +14,6 @@ namespace ResourceTypes.FrameResource
             get { return bounds; }
             set { bounds = value; }
         }
-
         public float BoundsMinimumX {
             get { return bounds.Minimum.X; }
             set { bounds.Minimum.X = value; }
@@ -71,5 +71,11 @@ namespace ResourceTypes.FrameResource
             return name.ToString();
         }
 
+        public override void ConstructRenderable()
+        {
+            RenderBoundingBox Renderable = RenderableFactory.BuildBoundingBox(Bounds, WorldTransform);
+            RenderAdapter = new Rendering.Core.RenderableAdapter();
+            RenderAdapter.InitAdaptor(Renderable, this);
+        }
     }
 }

@@ -26,6 +26,7 @@ using System.Diagnostics;
 using ResourceTypes.Actors;
 using Utils.Extensions;
 using Rendering.Core;
+using Rendering.Factories;
 
 namespace Mafia2Tool
 {
@@ -606,129 +607,16 @@ namespace Mafia2Tool
             }
         }
 
-        private RenderBoundingBox BuildRenderBounds(FrameObjectDummy dummy)
-        {
-            RenderBoundingBox dummyBBox = new RenderBoundingBox();
-            dummyBBox.SetTransform(dummy.WorldTransform);
-            dummyBBox.Init(dummy.Bounds);
-            return dummyBBox;
-        }
-
-        private RenderBoundingBox BuildRenderBounds(FrameObjectArea area)
-        {
-            RenderBoundingBox areaBBox = new RenderBoundingBox();
-            areaBBox.SetTransform(area.WorldTransform);
-            areaBBox.Init(area.Bounds);
-            return areaBBox;
-        }
-
-        private RenderBoundingBox BuildRenderBounds(FrameObjectSector sector)
-        {
-            RenderBoundingBox areaBBox = new RenderBoundingBox();
-            areaBBox.SetTransform(sector.WorldTransform);
-            areaBBox.Init(sector.Bounds);
-            return areaBBox;
-        }
-
-        private RenderBoundingBox BuildRenderBounds(FrameObjectFrame frame)
-        {
-            RenderBoundingBox frameBBox = new RenderBoundingBox();
-            frameBBox.SetTransform(frame.WorldTransform);
-            frameBBox.Init(new BoundingBox(new Vector3(0.5f), new Vector3(0.5f)));
-            return frameBBox;
-        }
-
-        private RenderStaticCollision BuildRenderItemDesc(ulong refID)
-        {
-            foreach(var itemDesc in SceneData.ItemDescs)
-            {
-                if(itemDesc.frameRef == refID)
-                {
-                    if (itemDesc.colType == ResourceTypes.ItemDesc.CollisionTypes.Convex)
-                    {
-                        RenderStaticCollision iDesc = new RenderStaticCollision();
-                        iDesc.SetTransform(itemDesc.Matrix);
-                        iDesc.ConvertCollisionToRender((ResourceTypes.ItemDesc.CollisionConvex)itemDesc.collision);
-                        return iDesc;
-                    }
-                }
-            }
-            return null;
-        }
-
-        private RenderModel BuildRenderModel(FrameObjectSingleMesh mesh)
-        {
-            if (mesh.MaterialIndex == -1 && mesh.MeshIndex == -1)
-                return null;
-
-            FrameGeometry geom = SceneData.FrameResource.FrameGeometries[mesh.Refs[FrameEntry.GeometryRef]];
-            FrameMaterial mat = SceneData.FrameResource.FrameMaterials[mesh.Refs[FrameEntry.MaterialRef]];
-            IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
-            VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
-
-            //we need to retrieve buffers first.
-            for (int c = 0; c != geom.LOD.Length; c++)
-            {
-                indexBuffers[c] = SceneData.IndexBufferPool.GetBuffer(geom.LOD[c].IndexBufferRef.Hash);
-                vertexBuffers[c] = SceneData.VertexBufferPool.GetBuffer(geom.LOD[c].VertexBufferRef.Hash);
-            }
-
-            if(indexBuffers[0] == null || vertexBuffers[0] == null)
-            {
-                return null;
-            }
-            RenderModel model = new RenderModel();
-            model.ConvertFrameToRenderModel(mesh, geom, mat, indexBuffers, vertexBuffers);
-            return model;
-        }
         private IRenderer BuildRenderObjectFromFrame(FrameObjectBase fObject)
         {
-            if (fObject.GetType() == typeof(FrameObjectSingleMesh) || fObject.GetType() == typeof(FrameObjectModel))
+            fObject.ConstructRenderable();
+            IRenderer Renderable = fObject.GetRenderItem();
+            if(Renderable != null)
             {
-                FrameObjectSingleMesh mesh = (fObject as FrameObjectSingleMesh);
-                RenderModel model = BuildRenderModel(mesh);
-
-                if (model == null)
-                {
-                    return null;
-                }
-
-                return model;
-            }
-
-            if (fObject.GetType() == typeof(FrameObjectArea))
-            {
-                FrameObjectArea area = (fObject as FrameObjectArea);
-                return BuildRenderBounds(area);
-            }
-
-            if (fObject.GetType() == typeof(FrameObjectSector))
-            {
-                FrameObjectSector sector = (fObject as FrameObjectSector);
-                return BuildRenderBounds(sector);
-            }
-
-            if (fObject.GetType() == typeof(FrameObjectDummy))
-            {
-                FrameObjectDummy dummy = (fObject as FrameObjectDummy);
-                return BuildRenderBounds(dummy);
-            }
-
-            if (fObject.GetType() == typeof(FrameObjectFrame))
-            {
-                FrameObjectFrame frame = (fObject as FrameObjectFrame);
-                return BuildRenderBounds(frame);
+                return Renderable;
             }
 
             return null;
-
-            //if(fObject.GetType() == typeof(FrameObjectCollision))
-            //{
-            //    FrameObjectCollision frame = (fObject as FrameObjectCollision);
-            //    var mesh = BuildRenderItemDesc(frame.Hash);
-            //    if(mesh != null)
-            //        assets.Add(fObject.RefID, mesh);
-            //}
         }
 
         private void BuildRenderObjects()
@@ -1692,7 +1580,8 @@ namespace Mafia2Tool
                 {
                     newEntry = new FrameObjectArea((FrameObjectArea)node.Tag);
                     FrameObjectArea area = (newEntry as FrameObjectArea);
-                    Graphics.InitObjectStack.Add(area.RefID, BuildRenderBounds(area));
+                    RenderBoundingBox RenderBox = RenderableFactory.BuildBoundingBox(area.Bounds, area.WorldTransform);
+                    Graphics.InitObjectStack.Add(area.RefID, RenderBox);
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectCamera))
                     newEntry = new FrameObjectCamera((FrameObjectCamera)node.Tag);
@@ -1704,7 +1593,8 @@ namespace Mafia2Tool
                 {
                     newEntry = new FrameObjectDummy((FrameObjectDummy)node.Tag);
                     FrameObjectDummy dummy = (newEntry as FrameObjectDummy);
-                    Graphics.InitObjectStack.Add(dummy.RefID, BuildRenderBounds(dummy));
+                    RenderBoundingBox RenderBox = RenderableFactory.BuildBoundingBox(dummy.Bounds, dummy.WorldTransform);
+                    Graphics.InitObjectStack.Add(dummy.RefID, RenderBox);
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectDeflector))
                     newEntry = new FrameObjectDeflector((FrameObjectDeflector)node.Tag);
@@ -1719,21 +1609,22 @@ namespace Mafia2Tool
                     newEntry = new FrameObjectModel((FrameObjectModel)node.Tag);
                     FrameObjectModel mesh = (newEntry as FrameObjectModel);
                     SceneData.FrameResource.DuplicateBlocks(mesh);
-                    RenderModel model = BuildRenderModel(mesh);
+                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh);
                     Graphics.InitObjectStack.Add(mesh.RefID, model);
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectSector))
                 {
                     newEntry = new FrameObjectSector((FrameObjectSector)node.Tag);
                     FrameObjectSector sector = (newEntry as FrameObjectSector);
-                    Graphics.InitObjectStack.Add(sector.RefID, BuildRenderBounds(sector));
+                    RenderBoundingBox RenderBox = RenderableFactory.BuildBoundingBox(sector.Bounds, sector.WorldTransform);
+                    Graphics.InitObjectStack.Add(sector.RefID, RenderBox);
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectSingleMesh))
                 {
                     newEntry = new FrameObjectSingleMesh((FrameObjectSingleMesh)node.Tag);
                     FrameObjectSingleMesh mesh = (newEntry as FrameObjectSingleMesh);
                     SceneData.FrameResource.DuplicateBlocks(mesh);
-                    RenderModel model = BuildRenderModel(mesh);
+                    RenderModel model = RenderableFactory.BuildRenderModelFromFrame(mesh);
                     Graphics.InitObjectStack.Add(mesh.RefID, model);
                 }
                 else if (node.Tag.GetType() == typeof(FrameObjectTarget))
@@ -2184,8 +2075,6 @@ namespace Mafia2Tool
         private void CameraToolsOnValueChanged(object sender, EventArgs e)
         {
             Graphics.Camera.Position = new Vector3(Convert.ToSingle(PositionXTool.Value), Convert.ToSingle(PositionYTool.Value), Convert.ToSingle(PositionZTool.Value));
-            //Graphics.Camera.SetRotation(Convert.ToSingle(RotationXTool.Value), Convert.ToSingle(RotationYTool.Value));
-            //lastMousePos = new Point(RenderPanel.Height / 2, RenderPanel.Width / 2);
         }
 
         private void OnViewTopButtonClicked(object sender, EventArgs e)

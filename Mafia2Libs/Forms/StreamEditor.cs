@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -9,7 +10,7 @@ using Utils.Settings;
 using static ResourceTypes.Misc.StreamMapLoader;
 
 namespace Mafia2Tool
-{
+{ 
     public partial class StreamEditor : Form
     {
         private FileInfo file;
@@ -65,16 +66,22 @@ namespace Mafia2Tool
 
             foreach (TreeNode node in linesTree.Nodes)
             {
+                StreamHeaderGroup HeaderGroup = (StreamHeaderGroup)node.Tag;
+                Debug.Assert(HeaderGroup != null, "We expect to be looking at a valid HeaderGroup.");
+
                 foreach (TreeNode child in node.Nodes)
                 {
                     StreamLine line = (child.Tag as StreamLine);
                     line.lineID = lines.Count;
+                    line.Group = HeaderGroup.HeaderName;
                     
                     lines.Add(line);
                     temp = new Dictionary<int, bool>();
 
                     for (int i = 0; i != currentLoaders.Count; i++)
+                    {
                         temp.Add(currentLoaders.ElementAt(i).Key.GetHashCode(), false);
+                    }
 
                     foreach (var loader in currentLoaders)
                     {
@@ -225,7 +232,9 @@ namespace Mafia2Tool
             {
                 TreeNode node = new TreeNode("group" + i);
                 node.Text = stream.GroupHeaders[i];
-                node.Tag = "Header";
+                StreamHeaderGroup HeaderGroup = new StreamHeaderGroup();
+                HeaderGroup.HeaderName = node.Text;
+                node.Tag = HeaderGroup;
                 linesTree.Nodes.Add(node);
             }
             for (int i = 0; i < stream.Groups.Length; i++)
@@ -288,19 +297,23 @@ namespace Mafia2Tool
 
         private void OnContextMenuOpening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            for(int i = 0; i != LineContextStrip.Items.Count; i++)
-            LineContextStrip.Items[i].Visible = false;
+            for (int i = 0; i != LineContextStrip.Items.Count; i++)
+            {
+                LineContextStrip.Items[i].Visible = false;
+            }
 
             if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null)
             {
-                if (linesTree.SelectedNode.Tag.GetType() == typeof(string) && (linesTree.SelectedNode.Tag as string == "Header"))
+                if (linesTree.SelectedNode.Tag.GetType() == typeof(StreamHeaderGroup))
                 {
                     LineContextStrip.Items[0].Visible = true;
                 }
                 else if (linesTree.SelectedNode.Tag.GetType() == typeof(StreamLine))
                 {
                     for (int i = 1; i != 4; i++)
+                    {
                         LineContextStrip.Items[i].Visible = true;
+                    }
                 }
             }
         }
@@ -331,12 +344,16 @@ namespace Mafia2Tool
                 foreach (TreeNode node in linesTree.Nodes)
                 {
                     if (node.Text.Contains(SearchBox.Text))
+                    {
                         linesTree.SelectedNode = node;
+                    }
 
                     foreach (TreeNode child in node.Nodes)
                     {
                         if (child.Text.Contains(SearchBox.Text))
+                        {
                             linesTree.SelectedNode = child;
+                        }
                     }
                 }
             }
@@ -425,6 +442,15 @@ namespace Mafia2Tool
                     groupTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
                 }
             }
+            else if(e.ChangedItem.Label == "HeaderName")
+            {
+                if (tabControl.SelectedTab == StreamLinesPage)
+                {
+                    TreeNode selected = linesTree.SelectedNode;
+                    linesTree.SelectedNode.Text = e.ChangedItem.Value.ToString();
+                }
+            }
+
             PropertyGrid_Stream.Refresh();
             Cursor.Current = Cursors.Default;
         }
@@ -485,5 +511,22 @@ namespace Mafia2Tool
                 clipboard = linesTree.SelectedNode.Tag;
             }
         }
+
+        private void Button_CreateLineGroup_Click(object sender, EventArgs e)
+        {
+            StreamHeaderGroup HeaderGroup = new StreamHeaderGroup();
+            HeaderGroup.HeaderName = "New_Line_Group";
+
+            TreeNode NewHeaderNode = new TreeNode();
+            NewHeaderNode.Text = "New_Line_Group";
+            NewHeaderNode.Tag = HeaderGroup;
+            linesTree.Nodes.Add(NewHeaderNode);
+        }
     }
+
+    public class StreamHeaderGroup
+    {
+        public string HeaderName { get; set; }
+    }
+
 }

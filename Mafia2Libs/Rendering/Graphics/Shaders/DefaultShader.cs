@@ -1,5 +1,4 @@
 ﻿using SharpDX.Direct3D11;
-using ResourceTypes.Materials;
 using Rendering.Core;
 using System.Runtime.InteropServices;
 using SharpDX;
@@ -39,17 +38,9 @@ namespace Rendering.Graphics
 
             return true;
         }
-        public override void InitCBuffersFrame(DeviceContext context, Camera camera, WorldSettings settings)
-        {
-            base.InitCBuffersFrame(context, camera, settings);
-        }
         public override void Render(DeviceContext context, SharpDX.Direct3D.PrimitiveTopology type, int size, uint offset)
         {
-            context.InputAssembler.InputLayout = Layout;
-            context.VertexShader.Set(VertexShader);
-            context.PixelShader.Set(PixelShader);
-            context.PixelShader.SetSampler(0, SamplerState);
-            context.DrawIndexed(size, (int)offset, 0);
+            base.Render(context, type, size, offset);
         }
         public override void SetShaderParameters(Device device, DeviceContext context, MaterialParameters matParams)
         {           

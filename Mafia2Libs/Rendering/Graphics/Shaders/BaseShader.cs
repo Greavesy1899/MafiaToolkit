@@ -59,10 +59,10 @@ namespace Rendering.Graphics
         protected Buffer ConstantEditorParamsBuffer { get; set; }
         protected SamplerState SamplerState { get; set; }
 
-        protected LightClass previousLighting = null;
-
-        //this will be replaced with the editor param data
-        protected Vector4 previousEditorParams;
+        // These allow the editor to only make changes if the 
+        // incoming changes are different.
+        protected LightClass previousLighting = null;      
+        protected Vector3 previousEditorParams;
 
         public virtual bool Init(Device device, InputElement[] elements, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
         {
@@ -157,6 +157,7 @@ namespace Rendering.Graphics
                 };
 
                 ConstantBufferFactory.UpdatePixelBuffer(deviceContext, ConstantEditorParamsBuffer, 1, editorParams);
+                previousEditorParams = editorParams.selectionColour;
             }
 
             //experiments with samplers; currently the toolkit doesn't not support any types.

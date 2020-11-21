@@ -8,6 +8,8 @@ using Utils.SharpDXExtensions;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Mafia2Tool;
+using Rendering.Core;
+using Rendering.Graphics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -29,6 +31,8 @@ namespace ResourceTypes.FrameResource
         FrameObjectBase parent;
         FrameObjectBase root;
         List<FrameObjectBase> children = new List<FrameObjectBase>();
+
+        public RenderableAdapter RenderAdapter { get; set; }
 
         public FrameObjectBase Parent {
             get { return parent; }
@@ -197,6 +201,22 @@ namespace ResourceTypes.FrameResource
             {
                 child.SetWorldTransform();
             }
+        }
+
+        public IRenderer GetRenderItem()
+        {
+            if (RenderAdapter != null)
+            {
+                return RenderAdapter.GetRenderItem();
+            }
+
+            return null;
+        }
+
+        public virtual void ConstructRenderable()
+        {
+            // Empty, FrameObjectBase doesn't have anything to create.
+            // TODO: Consider making empty adapter?5
         }
     }
 }

@@ -1,5 +1,8 @@
 ﻿using System.IO;
+using Rendering.Factories;
+using Rendering.Graphics;
 using ResourceTypes.Actors;
+using SharpDX;
 using Utils.Types;
 
 namespace ResourceTypes.FrameResource
@@ -48,6 +51,14 @@ namespace ResourceTypes.FrameResource
         public override string ToString()
         {
             return string.Format("{0}", Name);
+        }
+
+        public override void ConstructRenderable()
+        {
+            BoundingBox TempBox = new BoundingBox(new Vector3(0.5f), new Vector3(0.5f));
+            RenderBoundingBox Renderable = RenderableFactory.BuildBoundingBox(TempBox, WorldTransform);
+            RenderAdapter = new Rendering.Core.RenderableAdapter();
+            RenderAdapter.InitAdaptor(Renderable, this);
         }
     }
 }

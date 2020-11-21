@@ -86,7 +86,7 @@ namespace ResourceTypes.Misc
             set { blocks = value; }
         }
 
-        //Only used after the streamap has been updated.
+        //Only used after the StreamMap has been updated.
         private ulong[] upGroupHeaders;
         private string rawPool;
 
@@ -149,7 +149,7 @@ namespace ResourceTypes.Misc
                 get { return name; }
                 set { name = value; }
             }
-            [Description("Group this line comes under. This needs to exist of the editor will break!")]
+            [Browsable(false)]
             public string Group {
                 get { return group; }
                 set { group = value; }
@@ -556,9 +556,13 @@ namespace ResourceTypes.Misc
                     loaderIDX++;
                     var loader = loaders[x];
                     if (loader.LoaderSubID == 1)
+                    {
                         loader.LoaderID = x != 0 ? loaders[x - 1].LoaderID : 1;
+                    }
                     else
+                    {
                         loader.LoaderID = loaderIDX;
+                    }
 
                     idx = -1;
                     if (!pool.TryGetValue(loader.Path, out idx))
@@ -654,7 +658,6 @@ namespace ResourceTypes.Misc
         }
         private void InternalWriteToFile(BinaryWriter writer)
         {
-            long position = 0;
             int groupOffset = 0;
             int headerOffset = 0;
             int lineOffset = 0;
@@ -680,7 +683,9 @@ namespace ResourceTypes.Misc
             headerOffset = (int)writer.BaseStream.Position;
 
             foreach (var value in upGroupHeaders)
+            {
                 writer.Write(value);
+            }
 
             lineOffset = (int)writer.BaseStream.Position;
 
@@ -725,7 +730,9 @@ namespace ResourceTypes.Misc
             hashOffset = (int)writer.BaseStream.Position;
 
             foreach (var value in hashes)
+            {
                 writer.Write(value);
+            }
 
             poolOffset = (int)writer.BaseStream.Position;
 

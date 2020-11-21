@@ -52,30 +52,30 @@ namespace Rendering.Graphics
 
         public void ContructFrustum(bool bNormalise = false)
         {
-            Matrix inverse = Matrix.Invert(ProjectionMatrix);
+            Matrix inverse = Matrix.Invert(ViewMatrix);
 
             // Left clipping plane
-            Plane LeftPlane = new Plane(ProjectionMatrix.M14 + ProjectionMatrix.M11, ProjectionMatrix.M24 + ProjectionMatrix.M21, ProjectionMatrix.M34 + ProjectionMatrix.M31, ProjectionMatrix.M44 + ProjectionMatrix.M41);
+            Plane LeftPlane = new Plane(ViewMatrix.M14 + ViewMatrix.M11, ViewMatrix.M24 + ViewMatrix.M21, ViewMatrix.M34 + ViewMatrix.M31, ViewMatrix.M44 + ViewMatrix.M41);
             frustumPlanes[0] = LeftPlane;
 
             // Right clipping plane
-            Plane RightPlane = new Plane(ProjectionMatrix.M14 + ProjectionMatrix.M11, ProjectionMatrix.M24 + ProjectionMatrix.M21, ProjectionMatrix.M34 + ProjectionMatrix.M31, ProjectionMatrix.M44 + ProjectionMatrix.M41);
+            Plane RightPlane = new Plane(ViewMatrix.M14 + ViewMatrix.M11, ViewMatrix.M24 + ViewMatrix.M21, ViewMatrix.M34 + ViewMatrix.M31, ViewMatrix.M44 + ViewMatrix.M41);
             frustumPlanes[1] = RightPlane;
 
             // Top clipping plane
-            Plane TopPlane = new Plane(ProjectionMatrix.M14 + ProjectionMatrix.M12, ProjectionMatrix.M24 + ProjectionMatrix.M22, ProjectionMatrix.M34 + ProjectionMatrix.M32, ProjectionMatrix.M44 + ProjectionMatrix.M42);
+            Plane TopPlane = new Plane(ViewMatrix.M14 + ViewMatrix.M12, ViewMatrix.M24 + ViewMatrix.M22, ViewMatrix.M34 + ViewMatrix.M32, ViewMatrix.M44 + ViewMatrix.M42);
             frustumPlanes[2] = TopPlane;
 
             // Bottom clipping plane
-            Plane BottomPlane = new Plane(ProjectionMatrix.M14 + ProjectionMatrix.M12, ProjectionMatrix.M24 + ProjectionMatrix.M22, ProjectionMatrix.M34 + ProjectionMatrix.M32, ProjectionMatrix.M44 + ProjectionMatrix.M42);
+            Plane BottomPlane = new Plane(ViewMatrix.M14 + ViewMatrix.M12, ViewMatrix.M24 + ViewMatrix.M22, ViewMatrix.M34 + ViewMatrix.M32, ViewMatrix.M44 + ViewMatrix.M42);
             frustumPlanes[3] = BottomPlane;
 
             // Near clipping plane
-            Plane NearPlane = new Plane(ProjectionMatrix.M13, ProjectionMatrix.M23, ProjectionMatrix.M33, ProjectionMatrix.M43);
+            Plane NearPlane = new Plane(ViewMatrix.M14 - ViewMatrix.M13, ViewMatrix.M24 - ViewMatrix.M23, ViewMatrix.M34 - ViewMatrix.M33, ViewMatrix.M44 - ViewMatrix.M44);
             frustumPlanes[4] = NearPlane;
 
             // Far clipping plane
-            Plane FarPlane = new Plane(ProjectionMatrix.M14 - ProjectionMatrix.M13, ProjectionMatrix.M24 - ProjectionMatrix.M23, ProjectionMatrix.M34 - ProjectionMatrix.M33, ProjectionMatrix.M44 - ProjectionMatrix.M44);
+            Plane FarPlane = new Plane(ViewMatrix.M13, ViewMatrix.M23, ViewMatrix.M33, ViewMatrix.M43);
             frustumPlanes[5] = FarPlane;
 
             // Normalise if asked too.

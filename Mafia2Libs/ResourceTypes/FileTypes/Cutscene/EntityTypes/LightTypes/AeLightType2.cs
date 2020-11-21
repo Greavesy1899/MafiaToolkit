@@ -5,8 +5,8 @@ namespace ResourceTypes.Cutscene.AnimEntities.LightTypes
 {
     public interface IAeLightType
     {
-        void ReadFromFile(MemoryStream stream, bool IsBigEndian);
-        void WriteToFile(MemoryStream stream, bool IsBigEndian);
+        void ReadFromFile(MemoryStream stream, bool isBigEndian);
+        void WriteToFile(MemoryStream stream, bool isBigEndian);
     }
     public class AeLightType2 : IAeLightType
     {

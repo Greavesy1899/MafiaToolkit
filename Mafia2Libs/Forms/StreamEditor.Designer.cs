@@ -44,6 +44,8 @@ namespace Mafia2Tool
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_Tools = new System.Windows.Forms.ToolStripDropDownButton();
+            this.Button_CreateLineGroup = new System.Windows.Forms.ToolStripMenuItem();
             this.PropertyGrid_Stream = new System.Windows.Forms.PropertyGrid();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.StreamLinesPage = new System.Windows.Forms.TabPage();
@@ -124,7 +126,8 @@ namespace Mafia2Tool
             // ToolStrip
             // 
             this.ToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolButton});
+            this.fileToolButton,
+            this.Button_Tools});
             this.ToolStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Size = new System.Drawing.Size(934, 25);
@@ -164,6 +167,24 @@ namespace Mafia2Tool
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.exitToolStripMenuItem.Text = "$EXIT";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitButtonPressed);
+            // 
+            // Button_Tools
+            // 
+            this.Button_Tools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.Button_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Button_CreateLineGroup});
+            this.Button_Tools.Image = ((System.Drawing.Image)(resources.GetObject("Button_Tools.Image")));
+            this.Button_Tools.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Button_Tools.Name = "Button_Tools";
+            this.Button_Tools.Size = new System.Drawing.Size(61, 22);
+            this.Button_Tools.Text = "$TOOLS";
+            // 
+            // Button_CreateLineGroup
+            // 
+            this.Button_CreateLineGroup.Name = "Button_CreateLineGroup";
+            this.Button_CreateLineGroup.Size = new System.Drawing.Size(193, 22);
+            this.Button_CreateLineGroup.Text = "$CREATE_LINE_GROUP";
+            this.Button_CreateLineGroup.Click += new System.EventHandler(this.Button_CreateLineGroup_Click);
             // 
             // PropertyGrid_Stream
             // 
@@ -257,7 +278,7 @@ namespace Mafia2Tool
             this.Controls.Add(this.tabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "StreamEditor";
-            this.Text = "$SPEECH_EDITOR_TITLE";
+            this.Text = "$STREAM_MAP_EDITOR_TITLE";
             this.LineContextStrip.ResumeLayout(false);
             this.ToolStrip.ResumeLayout(false);
             this.ToolStrip.PerformLayout();
@@ -291,5 +312,7 @@ namespace Mafia2Tool
         private ToolStripMenuItem MoveItemUpButton;
         private ToolStripMenuItem MoveItemDownButton;
         private ToolStripMenuItem DuplicateLine;
+        private ToolStripDropDownButton Button_Tools;
+        private ToolStripMenuItem Button_CreateLineGroup;
     }
 }

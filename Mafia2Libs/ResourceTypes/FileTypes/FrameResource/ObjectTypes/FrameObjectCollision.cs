@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using Rendering.Factories;
+using Rendering.Graphics;
+using System.IO;
 using Utils.Extensions;
 
 namespace ResourceTypes.FrameResource
@@ -43,6 +45,16 @@ namespace ResourceTypes.FrameResource
         public override string ToString()
         {
             return string.Format("{0}", Name);
+        }
+
+        public override void ConstructRenderable()
+        {
+            // We don't want to use this code yet, it's from old-old stuff which needs to be looked at.
+            // TODO: Look at bringing this old feature back.
+            return;
+            RenderStaticCollision CollisionMesh = RenderableFactory.BuildRenderItemDesc(Hash);
+            RenderAdapter = new Rendering.Core.RenderableAdapter();
+            RenderAdapter.InitAdaptor(CollisionMesh, this);
         }
     }
 }

@@ -12,8 +12,8 @@ using Utils.SharpDXExtensions;
 using System;
 using System.Windows;
 using Color = System.Drawing.Color;
-using static Rendering.Graphics.BaseShader;
 using Utils.Extensions;
+using static Rendering.Graphics.BaseShader;
 
 namespace Rendering.Graphics
 {
@@ -254,18 +254,20 @@ namespace Rendering.Graphics
             if (!DoRender)
                 return;
 
-           // if (!camera.CheckBBoxFrustum(Transform.TranslationVector, BoundingBox))
-            //    return;
+           //if (!camera.CheckBBoxFrustum(Transform.TranslationVector, BoundingBox))
+           //     return;
 
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             deviceContext.PixelShader.SetShaderResource(2, AOTexture);
+
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
             {
-                LODs[0].ModelParts[i].Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(LODs[0].ModelParts[i].Material, SelectionColour.Normalize()));
-                LODs[0].ModelParts[i].Shader.SetSceneVariables(deviceContext, Transform, camera);
-                LODs[0].ModelParts[i].Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(LODs[0].ModelParts[i].NumFaces * 3), LODs[0].ModelParts[i].StartIndex);
+                ModelPart Segment = LODs[0].ModelParts[i];
+                Segment.Shader.SetShaderParameters(device, deviceContext, new MaterialParameters(Segment.Material, SelectionColour.Normalize()));
+                Segment.Shader.SetSceneVariables(deviceContext, Transform, camera);
+                Segment.Shader.Render(deviceContext, PrimitiveTopology.TriangleList, (int)(Segment.NumFaces * 3), Segment.StartIndex);
             }
         }
 

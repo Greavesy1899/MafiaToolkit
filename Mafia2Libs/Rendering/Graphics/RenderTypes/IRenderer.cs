@@ -5,13 +5,14 @@ namespace Rendering.Graphics
 {
     public abstract class IRenderer
     {
-        public bool DoRender;
         protected BaseShader shader;
         protected bool isUpdatedNeeded;
-        public Matrix Transform { get; protected set; }
-        public BoundingBox BoundingBox { get; protected set; }
         protected Buffer indexBuffer;
         protected Buffer vertexBuffer;
+
+        public bool DoRender { get; set; }
+        public Matrix Transform { get; protected set; }
+        public BoundingBox BoundingBox { get; protected set; }
 
         public abstract void Select();
         public abstract void Unselect();

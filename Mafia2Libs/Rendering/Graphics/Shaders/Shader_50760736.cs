@@ -1,6 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using Rendering.Core;
-using ResourceTypes.Materials;
 using SharpDX;
 using SharpDX.Direct3D11;
 using Utils.Types;
@@ -33,18 +31,6 @@ namespace Rendering.Graphics
             }
             ConstantShaderParamBuffer = ConstantBufferFactory.ConstructBuffer<Shader_50760736Params>(device, "ShaderParamBuffer");
             return true;
-        }
-        public override void Render(DeviceContext deviceContext, SharpDX.Direct3D.PrimitiveTopology type, int numTriangles, uint offset)
-        {
-            deviceContext.InputAssembler.InputLayout = Layout;
-            deviceContext.VertexShader.Set(VertexShader);
-            deviceContext.PixelShader.Set(PixelShader);
-            deviceContext.PixelShader.SetSampler(0, SamplerState);
-            deviceContext.DrawIndexed(numTriangles, (int)offset, 0);
-        }
-        public override void InitCBuffersFrame(DeviceContext context, Camera camera, WorldSettings settings)
-        {
-            base.InitCBuffersFrame(context, camera, settings);
         }
         public override void SetSceneVariables(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera)
         {

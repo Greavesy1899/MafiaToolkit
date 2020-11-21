@@ -358,6 +358,8 @@
     <Compile Include="Gibbed.Mafia2.FileFormats\Utils\ArchiveUtils.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\Version20\ResourceFunctions.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\Version19\ResourceFunctions.cs" />
+    <Compile Include="Rendering\Core\RenderableAdapter.cs" />
+    <Compile Include="Rendering\Factories\RenderableFactory.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorDefinition.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorEntry.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorExtraData.cs" />
@@ -398,8 +400,8 @@
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\LightTypes\AeLightType0.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\LightTypes\AeLightType1.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\LightTypes\AeLightType2.cs" />
-    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes_New\AnimEntity.cs" />
-    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes_New\AnimEntityWrapper.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AnimEntity.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AnimEntityWrapper.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\Factories\CutsceneEntityFactory.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\Factories\CutsceneKeyParamFactory.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\Enumerators.cs" />
