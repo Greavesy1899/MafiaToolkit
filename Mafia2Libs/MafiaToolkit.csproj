@@ -613,6 +613,7 @@
     <Compile Include="ResourceTypes\ModelHelpers\Enums.cs" />
     <Compile Include="Utils\Helpers\FBXHelper.cs" />
     <Compile Include="Utils\Helpers\LuaHelper.cs" />
+    <Compile Include="Utils\Helpers\PhysXHelper.cs" />
     <Compile Include="Utils\Helpers\Reflection\ReflectionAttributes.cs" />
     <Compile Include="Utils\Helpers\Reflection\ReflectionHelpers.cs" />
     <Compile Include="Utils\Helpers\StreamExtensions.cs" />

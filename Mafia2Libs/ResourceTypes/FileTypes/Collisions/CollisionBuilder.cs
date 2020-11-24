@@ -5,9 +5,10 @@ using System.Linq;
 using Gibbed.Illusion.FileFormats.Hashing;
 using ResourceTypes.Collisions.Opcode;
 using SharpDX;
-using Utils;
+using Utils.SharpDXExtensions;
 using Utils.Models;
 using static Utils.Models.M2TStructure;
+using Utils.Helpers;
 
 namespace ResourceTypes.Collisions
 {
@@ -77,15 +78,33 @@ namespace ResourceTypes.Collisions
     {
         public TriangleMesh Cook(TriangleMesh mesh)
         {
-            using (BinaryWriter writer = new BinaryWriter(File.Open("mesh.bin", FileMode.Create)))
+            using (BinaryWriter writer = new BinaryWriter(File.Open("Mesh.bin", FileMode.Create)))
             {
-                mesh.Save(writer);
+                writer.Write(mesh.NumVertices);
+                foreach(var Entry in mesh.Vertices)
+                {
+                    Vector3Extenders.WriteToFile(Entry, writer);
+                }
+
+                writer.Write(mesh.NumTriangles * 3); // Write Number of Indices, not triangles.
+                foreach (var Entry in mesh.Triangles)
+                {
+                    writer.Write(Entry.v0);
+                    writer.Write(Entry.v1);
+                    writer.Write(Entry.v2);
+                }
+
+                writer.Write(mesh.MaterialIndices.Count);
+                foreach(var Entry in mesh.MaterialIndices)
+                {
+                    writer.Write(Entry);
+                }
             }
 
-            FBXHelper.CookTriangleCollision("mesh.bin", "cook.bin");
+            PhysXHelper.CookTriangleCollision("Mesh.bin", "Cook.bin");
 
             TriangleMesh cookedTriangleMesh = new TriangleMesh();
-            using (BinaryReader reader = new BinaryReader(File.Open("cook.bin", FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open("Cook.bin", FileMode.Open)))
             {
                 cookedTriangleMesh.Load(reader);
             }

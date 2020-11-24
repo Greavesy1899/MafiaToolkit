@@ -82,7 +82,7 @@ int ConvertM2T(const char* pSource, const char* pDest, unsigned char isBin)
 		return 0;
 
 	// Load Model data, and close stream.
-	ModelStructure file = ModelStructure();
+ 	ModelStructure file = ModelStructure();
 	file.ReadFromStream(stream);
 	fclose(stream);
 

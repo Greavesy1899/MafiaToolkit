@@ -64,21 +64,6 @@ namespace ResourceTypes.Materials
         {
             this.name = name;
 
-            //var size = (version == VersionsEnumerator.V_58 ? 4 : 2);
-            //for (int i = 0; i < materials.Count; i++)
-            //{
-            //    var mat = materials.ElementAt(i).Value;
-            //    foreach (var sampler in mat.Samplers)
-            //    {
-            //        if (sampler.UnkSet0.Length != size)
-            //        {
-            //            var array = sampler.UnkSet0;
-            //            Array.Resize(ref array, size);
-            //            sampler.UnkSet0 = array;
-            //        }
-            //    }
-            //}
-
             using (BinaryWriter writer = new BinaryWriter(File.Open(name, FileMode.Create)))
             {
                 writer.Write("MTLB".ToCharArray());

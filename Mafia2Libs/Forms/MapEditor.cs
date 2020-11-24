@@ -2003,7 +2003,6 @@ namespace Mafia2Tool
                     collisionRoot = node;
                     dSceneTree.AddToTree(node);
                     collisionRoot.Collapse(false);
-                    AddCollisionButton_Click(sender, e);
                 }
                 else
                 {
@@ -2090,7 +2089,7 @@ namespace Mafia2Tool
             child.Text = ExistingCollisionNode.Nodes.Count.ToString();
             child.Name = refID.ToString();
             child.Tag = placement;
-            ExistingCollisionNode.Nodes.Add(child);
+            dSceneTree.AddToTree(child, ExistingCollisionNode);
 
             // Complete it
             RenderInstance instance = new RenderInstance();

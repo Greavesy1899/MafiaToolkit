@@ -1,5 +1,6 @@
 #include "CPhysXCooking.h"
 #include "CStream.h"
+#include <conio.h>
 
 #define SUPPORT_CONVEX_PARTS
 
@@ -9,6 +10,7 @@ int CookTriangle(const char* source, const char* dest)
 	if (!gCooking)
 	{
 		WriteLine("Failed to load PhysX cooking library!");
+		_getch();
 		return -10;
 	}
 	gCooking->NxInitCooking();
@@ -21,12 +23,28 @@ int CookTriangle(const char* source, const char* dest)
 	CStream out(dest, false);
 	WriteLine("Set IO streams");
 	NxPhysicsSDK* sdk = NxCreatePhysicsSDK(NX_PHYSICS_SDK_VERSION);
+	if (!sdk)
+	{
+		WriteLine("Failed to load PhysicsSDK: %i", NX_PHYSICS_SDK_VERSION);
+		_getch();
+		return -10;
+	}
+
+	WriteLine("Got a valid SDK");
+
 	NxTriangleMesh* mesh2 = sdk->createTriangleMesh(in);
 	NxTriangleMeshDesc desc;
 	mesh2->saveToDesc(desc);
+	
+	WriteLine("Got cooked mesh");
+
 	gCooking->NxCookTriangleMesh(desc, out);
+
+	WriteLine("Writing to cook.bin");
+
 	gCooking->NxCloseCooking();
 	WriteLine("Completed cooking!");
+	_getch();
 	return 0;
 }
 
