@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Utils.Logging;
-using System;
 using Utils.Settings;
-using SharpDX.Direct3D11;
 using System.Diagnostics;
-using Gibbed.Illusion.FileFormats.Hashing;
-using Utils.Types;
 
 namespace ResourceTypes.Materials
 {
@@ -74,6 +70,18 @@ namespace ResourceTypes.Materials
                 {
                     materials.ElementAt(i).Value.WriteToFile(writer, version);
                 }
+            }
+        }
+
+        public void BuildMaterialLibrary(List<IMaterial> Materials, VersionsEnumerator InVersion)
+        {
+            version = InVersion;
+            materials = new Dictionary<ulong, IMaterial>();
+
+            foreach(var Material in Materials)
+            {
+                ulong Hash = Material.MaterialName.Hash;
+                materials.Add(Hash, Material);
             }
         }
 
