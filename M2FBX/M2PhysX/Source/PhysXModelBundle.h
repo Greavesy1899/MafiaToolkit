@@ -5,6 +5,7 @@
 #include <vector>
 
 class PhysXModel;
+class PhysXStream;
 
 /*
 * A collection of models which require cooking by PhysX
@@ -12,6 +13,12 @@ class PhysXModel;
 class PhysXModelBundle
 {
 public:
+
+	void AddToCollection(PhysXModel* Model);
+
+	void CookModelBundle(PhysXStream* OutStream);
+
+	NxU32 GetNumModels() { return ModelCollection.size(); }
 
 private:
 

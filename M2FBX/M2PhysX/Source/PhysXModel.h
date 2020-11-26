@@ -22,6 +22,7 @@ public:
 	void SetVertices(std::vector<NxVec3>& InVertices) { Vertices = InVertices; }
 	void SetIndices(std::vector<NxU32>& InIndices) { Indices = InIndices; }
 	void SetMaterialIDs(std::vector<NxU16>& InMaterialIDs) { MaterialIDs = InMaterialIDs; }
+	void SetCookedInfo(void* Content, NxU32 Size) { CookedData = Content; SizeOfCookedData = Size; }
 
 	// Accessors
 	std::vector<NxVec3>& GetVertices() { return Vertices; }
@@ -35,5 +36,8 @@ private:
 	std::vector<NxVec3> Vertices;
 	std::vector<NxU32> Indices;
 	std::vector<NxU16> MaterialIDs;
+
+	NxU32 SizeOfCookedData = 0;
+	void* CookedData = nullptr;
 };
 

@@ -3,8 +3,9 @@
 #include <cstdio>
 #include <NxSimpleTypes.h>
 #include <NxStream.h>
-
 #include <vector>
+
+typedef unsigned char byte;
 
 class PhysXStream : public NxStream
 {
@@ -29,12 +30,7 @@ public:
 	bool OpenStream(const char* FileName, const char* Mode);
 	void CloseStream();
 
-	// broken
-	char* GetContentsAsBuffer(NxU32& Size);
-
 private:
 
 	FILE* Stream = nullptr;
-
-	std::vector<byte> StreamArray;
 };

@@ -80,25 +80,7 @@ namespace ResourceTypes.Collisions
         {
             using (BinaryWriter writer = new BinaryWriter(File.Open("Mesh.bin", FileMode.Create)))
             {
-                writer.Write(mesh.NumVertices);
-                foreach(var Entry in mesh.Vertices)
-                {
-                    Vector3Extenders.WriteToFile(Entry, writer);
-                }
-
-                writer.Write(mesh.NumTriangles * 3); // Write Number of Indices, not triangles.
-                foreach (var Entry in mesh.Triangles)
-                {
-                    writer.Write(Entry.v0);
-                    writer.Write(Entry.v1);
-                    writer.Write(Entry.v2);
-                }
-
-                writer.Write(mesh.MaterialIndices.Count);
-                foreach(var Entry in mesh.MaterialIndices)
-                {
-                    writer.Write(Entry);
-                }
+                WriteRawFormatToFile(writer, mesh);
             }
 
             PhysXHelper.CookTriangleCollision("Mesh.bin", "Cook.bin");
@@ -109,18 +91,43 @@ namespace ResourceTypes.Collisions
                 cookedTriangleMesh.Load(reader);
             }
 
-            if(File.Exists("mesh.bin"))
+            if (File.Exists("Mesh.bin"))
             {
-                File.Delete("mesh.bin");
+                File.Delete("Mesh.bin");
             }
-            if (File.Exists("cook.bin"))
+
+            if (File.Exists("Cook.bin"))
             {
-                File.Delete("cook.bin");
+                File.Delete("Cook.bin");
             }
 
             cookedTriangleMesh.Force32BitIndices();
             return cookedTriangleMesh;
         }
+
+        public void WriteRawFormatToFile(BinaryWriter writer, TriangleMesh mesh)
+        {
+            writer.Write(mesh.NumVertices);
+            foreach (var Entry in mesh.Vertices)
+            {
+                Vector3Extenders.WriteToFile(Entry, writer);
+            }
+
+            writer.Write(mesh.NumTriangles * 3); // Write Number of Indices, not triangles.
+            foreach (var Entry in mesh.Triangles)
+            {
+                writer.Write(Entry.v0);
+                writer.Write(Entry.v1);
+                writer.Write(Entry.v2);
+            }
+
+            writer.Write(mesh.MaterialIndices.Count);
+            foreach (var Entry in mesh.MaterialIndices)
+            {
+                writer.Write(Entry);
+            }
+        }
+
     }
     public class TriangleMeshBuilder : TriangleMesh
     {

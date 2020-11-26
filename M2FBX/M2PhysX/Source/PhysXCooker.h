@@ -18,19 +18,15 @@ class PhysXCooker
 {
 public:
 
-	void Initialise(const char* DestinationFile);
-	void CookTriangleMeshFromModel(PhysXModel& Model);
+	void Initialise();
+	void CookTriangleMeshFromModel(PhysXModel& Model, PhysXStream* OutStream);
 	void Deinitialise();
 
 private:
 
-	void* CookTriangleMesh(const NxTriangleMeshDesc& MeshDesc);
+	void* CookTriangleMesh(const NxTriangleMeshDesc& MeshDesc, NxU32& CookedSize, PhysXStream* OutStream);
 
 	NxCookingInterface* CookingLib = nullptr;
 	NxPhysicsSDK* PhysicsSDK = nullptr;
-
-	const char* DestinationName;
-
-	PhysXStream InStream;
 
 };

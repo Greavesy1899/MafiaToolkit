@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Utils.Extensions;
 using Utils.Language;
 using Utils.Settings;
 
@@ -37,6 +38,11 @@ namespace Forms.OptionControls
             CheckBox_BackupSDS.Checked = ToolkitSettings.bBackupEnabled;
 
             AddTimeDateBackupsBox.Enabled = ToolkitSettings.bBackupEnabled;
+
+            Label_IBSize.Text = FileInfoUtils.ConvertToMemorySize(ToolkitSettings.IndexMemorySizePerBuffer);
+            Label_VBSize.Text = FileInfoUtils.ConvertToMemorySize(ToolkitSettings.VertexMemorySizePerBuffer);
+            NumericBox_IBSize.Value = ToolkitSettings.IndexMemorySizePerBuffer;
+            NumericBox_VBSize.Value = ToolkitSettings.VertexMemorySizePerBuffer;
         }
 
         private void SDSCompress_IndexChanged(object sender, EventArgs e)
@@ -81,6 +87,20 @@ namespace Forms.OptionControls
             ToolkitSettings.WriteKey("BackupEnabled", "SDS", ToolkitSettings.bBackupEnabled.ToString());
 
             AddTimeDateBackupsBox.Enabled = ToolkitSettings.bBackupEnabled;
+        }
+
+        private void NumericBox_IBSize_ValueChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.IndexMemorySizePerBuffer = Convert.ToInt32(NumericBox_IBSize.Value);
+            ToolkitSettings.WriteKey("IndexMemorySizePerBuffer", "SDS", ToolkitSettings.IndexMemorySizePerBuffer.ToString());
+            Label_IBSize.Text = FileInfoUtils.ConvertToMemorySize(ToolkitSettings.IndexMemorySizePerBuffer);
+        }
+
+        private void NumericBox_VBSize_ValueChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.VertexMemorySizePerBuffer = Convert.ToInt32(NumericBox_VBSize.Value);
+            ToolkitSettings.WriteKey("VertexMemorySizePerBuffer", "SDS", ToolkitSettings.VertexMemorySizePerBuffer.ToString());
+            Label_VBSize.Text = FileInfoUtils.ConvertToMemorySize(ToolkitSettings.VertexMemorySizePerBuffer);
         }
     }
 }

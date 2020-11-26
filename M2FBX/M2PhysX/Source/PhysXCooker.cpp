@@ -5,7 +5,7 @@
 #include <NxStream.h>
 #include <conio.h>
 
-void PhysXCooker::Initialise(const char* InDestinationFile)
+void PhysXCooker::Initialise()
 {
 	CookingLib = NxGetCookingLib(NX_PHYSICS_SDK_VERSION);
 	if (!CookingLib)
@@ -22,11 +22,9 @@ void PhysXCooker::Initialise(const char* InDestinationFile)
 		printf("Didn't get Physics SDK \n");
 		return;
 	}
-
-	DestinationName = InDestinationFile;
 }
 
-void PhysXCooker::CookTriangleMeshFromModel(PhysXModel& Model)
+void PhysXCooker::CookTriangleMeshFromModel(PhysXModel& Model, PhysXStream* OutStream)
 {
 	const bool bIsInited = CookingLib->NxInitCooking();
 	if (!bIsInited)
@@ -66,7 +64,11 @@ void PhysXCooker::CookTriangleMeshFromModel(PhysXModel& Model)
 	MeshDesc.points = Model.GetVertices().data();
 	MeshDesc.numVertices = Model.GetNumVertices();
 	printf("Attempting to cook.\n");
-	CookTriangleMesh(MeshDesc);
+
+	// Move cooked information to PhysXModel.
+	NxU32 CookedSize = 0;
+	void* CookedInfo = CookTriangleMesh(MeshDesc, CookedSize, OutStream);
+	Model.SetCookedInfo(CookedInfo, CookedSize);
 }
 
 void PhysXCooker::Deinitialise()
@@ -77,25 +79,15 @@ void PhysXCooker::Deinitialise()
 	PhysicsSDK = nullptr;
 }
 
-void* PhysXCooker::CookTriangleMesh(const NxTriangleMeshDesc& MeshDesc)
+void* PhysXCooker::CookTriangleMesh(const NxTriangleMeshDesc& MeshDesc, NxU32& CookedSize, PhysXStream* OutStream)
 {
-	InStream.OpenStream(DestinationName, "wb");
-	if (!CookingLib->NxCookTriangleMesh(MeshDesc, InStream))
+	if (!CookingLib->NxCookTriangleMesh(MeshDesc, *OutStream))
 	{
 		printf("Failed to cook TriangleMesh \n");
 		return nullptr;
 	}
 
-	InStream.CloseStream();
-
-	printf("Cooked and saved to stream: %s\n", DestinationName);
-
-	// Broken
-	/*
-	NxU32 Size = 0;
-	char* Buffer = InStream.GetContentsAsBuffer(Size);
-	std::vector<char> CookedData(Buffer, Buffer+Size);*/
-	//InStream.CloseStream();
+	printf("Cooked and saved to stream.\n");
 
 	return nullptr;
 }

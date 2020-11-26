@@ -2,19 +2,6 @@
 #include <Nxf.h>
 #include <array>
 
-typedef unsigned char byte;
-
-template<typename T> std::array<byte, sizeof(T)> to_bytes(const T& object)
-{
-	std::array<byte, sizeof(T)> bytes;
-
-	const byte* begin = reinterpret_cast<const byte*>(std::addressof(object));
-	const byte* end = begin + sizeof(T);
-	std::copy(begin, end, std::begin(bytes));
-
-	return bytes;
-}
-
 NxU8 PhysXStream::readByte() const
 {
 	NxU8 Value = 0;
@@ -105,7 +92,6 @@ NxStream& PhysXStream::storeBuffer(const void* buffer, NxU32 size)
 
 bool PhysXStream::OpenStream(const char* FileName, const char* Mode)
 {
-	std::to_bytes()
 	fopen_s(&Stream, FileName, Mode);
 	return true;
 }
@@ -117,35 +103,4 @@ void PhysXStream::CloseStream()
 		fclose(Stream);
 		Stream = nullptr;
 	}
-}
-
-char* PhysXStream::GetContentsAsBuffer(NxU32& Size)
-{
-	// Current position so we can go back.
-	NxU32 CurrentPosition = ftell(Stream);
-
-	// Move to the end, get size
-	fseek(Stream, 0, SEEK_END);
-	NxU32 SizeOfBuffer = ftell(Stream);
-
-	// Get the data from the buffer.
-	char* Buffer = new char[SizeOfBuffer];
-	fseek(Stream, 0, SEEK_CUR);
-	NxU32 Pos = ftell(Stream);
-
-	float Value = 0.0f;
-	NxU32 Test = fread(&Value, sizeof(NxF32), 1, Stream);
-
-	NxU32 Read = fread(&Buffer, sizeof(char), 1, Stream);
-	Size = SizeOfBuffer;
-
-	// Move back to original place.
-	fseek(Stream, CurrentPosition, SEEK_CUR);
-	fclose(Stream);
-
-	FILE* TestStream = nullptr;
-	fopen_s(&TestStream, "test.bin", "wb");
-	fwrite(Buffer, 1, SizeOfBuffer, TestStream);
-	fclose(TestStream);
-	return nullptr;
 }

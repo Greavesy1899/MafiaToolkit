@@ -44,6 +44,8 @@ namespace Utils.Settings
         public static bool bBackupEnabled;
         public static bool AddTimeDataBackup;
         public static bool UseSDSToolFormat;
+        public static int IndexMemorySizePerBuffer;
+        public static int VertexMemorySizePerBuffer;
         public static bool CookCollisions;
         public static bool CheckForUpdates;
         public static bool SkipGameSelector;
@@ -81,6 +83,8 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("CookCollisions", "SDS", "False"), out CookCollisions);
             bool.TryParse(ReadKey("CheckForUpdates", "Misc", "True"), out CheckForUpdates);
             bool.TryParse(ReadKey("SkipGameSelector", "Misc", "False"), out SkipGameSelector);
+            int.TryParse(ReadKey("IndexMemorySizePerBuffer", "SDS", "945000"), out IndexMemorySizePerBuffer);
+            int.TryParse(ReadKey("VertexMemorySizePerBuffer", "SDS", "20900000"), out VertexMemorySizePerBuffer);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
 
 

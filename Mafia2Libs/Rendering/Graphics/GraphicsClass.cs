@@ -303,7 +303,6 @@ namespace Rendering.Graphics
         public void OnResize(int width, int height)
         {
             Camera.SetProjectionMatrix(width, height);
-            //D3D.Resize(width, height);
         }
 
         public void RotateCamera(float deltaX, float deltaY)

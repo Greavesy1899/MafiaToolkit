@@ -29,6 +29,10 @@
         private void InitializeComponent()
         {
             this.groupSDS = new System.Windows.Forms.GroupBox();
+            this.NumericBox_IBSize = new System.Windows.Forms.NumericUpDown();
+            this.Label_IBSize = new System.Windows.Forms.Label();
+            this.Label_IndexBufferSize = new System.Windows.Forms.Label();
+            this.CheckBox_BackupSDS = new System.Windows.Forms.CheckBox();
             this.CheckBox_UseOodle = new System.Windows.Forms.CheckBox();
             this.CookCollisionsBox = new System.Windows.Forms.CheckBox();
             this.SDSToolFormat = new System.Windows.Forms.CheckBox();
@@ -36,13 +40,23 @@
             this.AddTimeDateBackupsBox = new System.Windows.Forms.CheckBox();
             this.CompressionDropdownBox = new System.Windows.Forms.ComboBox();
             this.M2Label = new System.Windows.Forms.Label();
-            this.CheckBox_BackupSDS = new System.Windows.Forms.CheckBox();
+            this.NumericBox_VBSize = new System.Windows.Forms.NumericUpDown();
+            this.Label_VBSize = new System.Windows.Forms.Label();
+            this.Label_VertexBufferSize = new System.Windows.Forms.Label();
             this.groupSDS.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericBox_IBSize)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericBox_VBSize)).BeginInit();
             this.SuspendLayout();
             // 
             // groupSDS
             // 
             this.groupSDS.AutoSize = true;
+            this.groupSDS.Controls.Add(this.NumericBox_VBSize);
+            this.groupSDS.Controls.Add(this.Label_VBSize);
+            this.groupSDS.Controls.Add(this.Label_VertexBufferSize);
+            this.groupSDS.Controls.Add(this.NumericBox_IBSize);
+            this.groupSDS.Controls.Add(this.Label_IBSize);
+            this.groupSDS.Controls.Add(this.Label_IndexBufferSize);
             this.groupSDS.Controls.Add(this.CheckBox_BackupSDS);
             this.groupSDS.Controls.Add(this.CheckBox_UseOodle);
             this.groupSDS.Controls.Add(this.CookCollisionsBox);
@@ -54,10 +68,52 @@
             this.groupSDS.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupSDS.Location = new System.Drawing.Point(0, 0);
             this.groupSDS.Name = "groupSDS";
-            this.groupSDS.Size = new System.Drawing.Size(300, 184);
+            this.groupSDS.Size = new System.Drawing.Size(337, 236);
             this.groupSDS.TabIndex = 0;
             this.groupSDS.TabStop = false;
             this.groupSDS.Text = "SDS Options";
+            // 
+            // NumericBox_IBSize
+            // 
+            this.NumericBox_IBSize.Location = new System.Drawing.Point(164, 174);
+            this.NumericBox_IBSize.Maximum = new decimal(new int[] {
+            99999999,
+            0,
+            0,
+            0});
+            this.NumericBox_IBSize.Name = "NumericBox_IBSize";
+            this.NumericBox_IBSize.Size = new System.Drawing.Size(110, 20);
+            this.NumericBox_IBSize.TabIndex = 13;
+            this.NumericBox_IBSize.ValueChanged += new System.EventHandler(this.NumericBox_IBSize_ValueChanged);
+            // 
+            // Label_IBSize
+            // 
+            this.Label_IBSize.AutoSize = true;
+            this.Label_IBSize.Location = new System.Drawing.Point(280, 176);
+            this.Label_IBSize.Name = "Label_IBSize";
+            this.Label_IBSize.Size = new System.Drawing.Size(37, 13);
+            this.Label_IBSize.TabIndex = 12;
+            this.Label_IBSize.Text = "$SIZE";
+            // 
+            // Label_IndexBufferSize
+            // 
+            this.Label_IndexBufferSize.AutoSize = true;
+            this.Label_IndexBufferSize.Location = new System.Drawing.Point(6, 176);
+            this.Label_IndexBufferSize.Name = "Label_IndexBufferSize";
+            this.Label_IndexBufferSize.Size = new System.Drawing.Size(152, 13);
+            this.Label_IndexBufferSize.TabIndex = 11;
+            this.Label_IndexBufferSize.Text = "$INDEX_SIZE_PER_BUFFER";
+            // 
+            // CheckBox_BackupSDS
+            // 
+            this.CheckBox_BackupSDS.AutoSize = true;
+            this.CheckBox_BackupSDS.Location = new System.Drawing.Point(6, 61);
+            this.CheckBox_BackupSDS.Name = "CheckBox_BackupSDS";
+            this.CheckBox_BackupSDS.Size = new System.Drawing.Size(142, 17);
+            this.CheckBox_BackupSDS.TabIndex = 9;
+            this.CheckBox_BackupSDS.Text = "$BACKUP_SDS_LABEL";
+            this.CheckBox_BackupSDS.UseVisualStyleBackColor = true;
+            this.CheckBox_BackupSDS.CheckedChanged += new System.EventHandler(this.CheckBox_BackupSDS_CheckedChanged);
             // 
             // CheckBox_UseOodle
             // 
@@ -135,16 +191,36 @@
             this.M2Label.TabIndex = 2;
             this.M2Label.Text = "$SDS_COMPRESSION_TYPE";
             // 
-            // CheckBox_BackupSDS
+            // NumericBox_VBSize
             // 
-            this.CheckBox_BackupSDS.AutoSize = true;
-            this.CheckBox_BackupSDS.Location = new System.Drawing.Point(6, 61);
-            this.CheckBox_BackupSDS.Name = "CheckBox_BackupSDS";
-            this.CheckBox_BackupSDS.Size = new System.Drawing.Size(142, 17);
-            this.CheckBox_BackupSDS.TabIndex = 9;
-            this.CheckBox_BackupSDS.Text = "$BACKUP_SDS_LABEL";
-            this.CheckBox_BackupSDS.UseVisualStyleBackColor = true;
-            this.CheckBox_BackupSDS.CheckedChanged += new System.EventHandler(this.CheckBox_BackupSDS_CheckedChanged);
+            this.NumericBox_VBSize.Location = new System.Drawing.Point(164, 199);
+            this.NumericBox_VBSize.Maximum = new decimal(new int[] {
+            99999999,
+            0,
+            0,
+            0});
+            this.NumericBox_VBSize.Name = "NumericBox_VBSize";
+            this.NumericBox_VBSize.Size = new System.Drawing.Size(110, 20);
+            this.NumericBox_VBSize.TabIndex = 16;
+            this.NumericBox_VBSize.ValueChanged += new System.EventHandler(this.NumericBox_VBSize_ValueChanged);
+            // 
+            // Label_VBSize
+            // 
+            this.Label_VBSize.AutoSize = true;
+            this.Label_VBSize.Location = new System.Drawing.Point(280, 201);
+            this.Label_VBSize.Name = "Label_VBSize";
+            this.Label_VBSize.Size = new System.Drawing.Size(37, 13);
+            this.Label_VBSize.TabIndex = 15;
+            this.Label_VBSize.Text = "$SIZE";
+            // 
+            // Label_VertexBufferSize
+            // 
+            this.Label_VertexBufferSize.AutoSize = true;
+            this.Label_VertexBufferSize.Location = new System.Drawing.Point(6, 201);
+            this.Label_VertexBufferSize.Name = "Label_VertexBufferSize";
+            this.Label_VertexBufferSize.Size = new System.Drawing.Size(162, 13);
+            this.Label_VertexBufferSize.TabIndex = 14;
+            this.Label_VertexBufferSize.Text = "$VERTEX_SIZE_PER_BUFFER";
             // 
             // SDSOptions
             // 
@@ -152,9 +228,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupSDS);
             this.Name = "SDSOptions";
-            this.Size = new System.Drawing.Size(300, 184);
+            this.Size = new System.Drawing.Size(337, 236);
             this.groupSDS.ResumeLayout(false);
             this.groupSDS.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericBox_IBSize)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumericBox_VBSize)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -171,5 +249,11 @@
         private System.Windows.Forms.CheckBox CookCollisionsBox;
         private System.Windows.Forms.CheckBox CheckBox_UseOodle;
         private System.Windows.Forms.CheckBox CheckBox_BackupSDS;
+        private System.Windows.Forms.Label Label_IndexBufferSize;
+        private System.Windows.Forms.Label Label_IBSize;
+        private System.Windows.Forms.NumericUpDown NumericBox_IBSize;
+        private System.Windows.Forms.NumericUpDown NumericBox_VBSize;
+        private System.Windows.Forms.Label Label_VBSize;
+        private System.Windows.Forms.Label Label_VertexBufferSize;
     }
 }

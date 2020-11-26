@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Utils.Extensions;
+using Utils.Settings;
 
 namespace ResourceTypes.BufferPools
 {
@@ -147,7 +148,7 @@ namespace ResourceTypes.BufferPools
             foreach (var buffer in buffArray)
             {
                 int prePoolSize = (poolSize) + (buffer.Data.Length);
-                if (pool.Buffers.Count == 128 || prePoolSize > 20900000)
+                if (pool.Buffers.Count == 128 || prePoolSize > ToolkitSettings.VertexMemorySizePerBuffer)
                 {
                     string name = Path.Combine(root.FullName, string.Format("VertexBufferPool_{0}.vbp", numPool));
                     SavePool(pool, name, isBigEndian);

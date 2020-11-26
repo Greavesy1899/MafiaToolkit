@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using ResourceTypes.Collisions.Opcode;
 using SharpDX;
+using Utils.Helpers;
 using Utils.SharpDXExtensions;
 
 namespace ResourceTypes.Collisions
@@ -73,10 +75,39 @@ namespace ResourceTypes.Collisions
             //force cook collisions
             if (Utils.Settings.ToolkitSettings.CookCollisions)
             {
-                foreach (var collisionModel in Models)
+                using(BinaryWriter writer = new BinaryWriter(File.Open("MeshBundle.bin", FileMode.Create)))
                 {
+                    writer.Write(Models.Count);
+
                     TriangleCooking cooker = new TriangleCooking();
-                    collisionModel.Value.Mesh = cooker.Cook(collisionModel.Value.Mesh);
+
+                    foreach (var collisionModel in Models)
+                    {
+                        cooker.WriteRawFormatToFile(writer, collisionModel.Value.Mesh);
+                    }
+                }
+
+                PhysXHelper.MultiCookTriangleCollision("MeshBundle.bin", "CookedBundle.bin");
+
+                using(BinaryReader reader = new BinaryReader(File.Open("CookedBundle.bin", FileMode.Open)))
+                {
+                    uint NumModels = reader.ReadUInt32();
+                    for(int i = 0; i < NumModels; i++)
+                    {
+                        TriangleMesh CookedMesh = new TriangleMesh();
+                        CookedMesh.Load(reader);
+                        Models.ElementAt(i).Value.Mesh = CookedMesh;
+                    }
+                }
+
+                if (File.Exists("MeshBundle.bin"))
+                {
+                    File.Delete("MeshBundle.bin");
+                }
+
+                if (File.Exists("CookedBundle.bin"))
+                {
+                    File.Delete("CookedBundle.bin");
                 }
             }
 

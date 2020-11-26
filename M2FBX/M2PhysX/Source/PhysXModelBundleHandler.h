@@ -24,5 +24,9 @@ public:
 
 	/** Save the Model to the provided file. */
 	static bool SaveModel(const PhysXModel& ModelObject, const char* NameOfFile);
+
+private:
+
+	static PhysXModel* InternalLoadModel(FILE* InStream);
 };
 

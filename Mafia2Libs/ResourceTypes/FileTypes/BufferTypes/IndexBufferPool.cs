@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Utils.Extensions;
+using Utils.Settings;
 
 namespace ResourceTypes.BufferPools
 {
@@ -147,7 +148,7 @@ namespace ResourceTypes.BufferPools
             foreach (var buffer in buffArray)
             {
                 int prePoolSize = (poolSize) + (int)(buffer.GetLength());
-                if (pool.Buffers.Count == 128 || prePoolSize > 920000)
+                if (pool.Buffers.Count == 128 || prePoolSize > ToolkitSettings.IndexMemorySizePerBuffer)
                 {
                     string name = Path.Combine(root.FullName, string.Format("IndexBufferPool_{0}.ibp", numPool));
                     SavePool(pool, name, isBigEndian);

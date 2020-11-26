@@ -17,9 +17,34 @@ namespace Utils.Helpers
                 return -1;
             }
 
-            string ExePath = GetExecutablePath();
             string Arguments = string.Format("-CookTriangleMesh {0} {1}", source, dest);
-            Process PhysXProcess = Process.Start(ExePath, Arguments);
+            int ExitCode = RunExecutable(Arguments);
+            return ExitCode;
+        }
+
+        public static int MultiCookTriangleCollision(string source, string dest)
+        {
+            if (!DoesExecutableExist())
+            {
+                MessageBox.Show("Missing M2PhysX.dll! Cannot use multi cook");
+                return -1;
+            }
+
+            string Arguments = string.Format("-MultiCookTriangleMesh {0} {1}", source, dest);
+            int ExitCode = RunExecutable(Arguments);
+            return ExitCode;
+        }
+
+        private static int RunExecutable(string Arguments)
+        {
+            string ExePath = GetExecutablePath();
+            Process PhysXProcess = new Process();
+            PhysXProcess.StartInfo.FileName = ExePath;
+            PhysXProcess.StartInfo.Arguments = Arguments;
+            PhysXProcess.StartInfo.CreateNoWindow = true;
+            PhysXProcess.StartInfo.UseShellExecute = false;
+            PhysXProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            PhysXProcess.Start();
 
             while (!PhysXProcess.HasExited)
             {
