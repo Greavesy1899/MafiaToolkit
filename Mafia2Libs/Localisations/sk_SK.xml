@@ -96,6 +96,8 @@
   <String ID="$DECOMPILE_LUA_UNPACK">Dekompilovať Lua keď sa rozbaľuje.</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Použiť SDS Tool GUI formát keď sa rozbaľuje.</String>
   <String ID="$COOK_COLLISIONS">Cook kolízie keď sa ukláda.</String>
+  <String ID="$VERTEX_BUFFER_SIZE_LABEL">Vertex Buffer Limit</String>
+  <String ID="$INDEX_BUFFER_SIZE_LABEL">Index Buffer Limit</String>
   
   <!-- Render Options -->
   <String ID="$RENDER">Vykreslovanie</String>

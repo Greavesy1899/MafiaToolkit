@@ -25,6 +25,8 @@ namespace Forms.OptionControls
             SDSToolFormat.Text = Language.GetString("$USE_SDS_TOOL_FORMAT");
             CookCollisionsBox.Text = Language.GetString("$COOK_COLLISIONS");
             CheckBox_BackupSDS.Text = Language.GetString("$BACKUP_SDS_LABEL");
+            Label_IndexBufferSize.Text = Language.GetString("$INDEX_BUFFER_SIZE_LABEL");
+            Label_VertexBufferSize.Text = Language.GetString("$VERTEX_BUFFER_SIZE_LABEL");
         }
 
         private void LoadSettings()

@@ -97,6 +97,8 @@
   <String ID="$DECOMPILE_LUA_UNPACK">Dekompiluj skrypty lua podczas rozpakowywania.</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Podczas rozpakowywania używaj formatu narzędzia SDS Tool Gui (stare)</String>
   <String ID="$COOK_COLLISIONS">Napraw kolizje podczas zapisywania</String>
+  <String ID="$VERTEX_BUFFER_SIZE_LABEL">Vertex Buffer Limit</String>
+  <String ID="$INDEX_BUFFER_SIZE_LABEL">Index Buffer Limit</String>
   
   <!-- Render Options -->
   <String ID="$RENDER">Renderowanie</String>

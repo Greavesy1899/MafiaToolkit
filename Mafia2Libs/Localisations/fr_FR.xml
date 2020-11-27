@@ -79,6 +79,13 @@
   <String ID="$SDS_UNCOMPRESSED">Décompressé</String>
   <String ID="$SDS_COMPRESSED">Compressé</String>
   <String ID="$SDS_ONEBLOCK">Un seul bloc</String>
+  <String ID="$ADD_TIME_DATE_BACKUP">Add time and date to backups.</String>
+  <String ID="$DECOMPILE_LUA_UNPACK">Decompile lua when unpacking.</String>
+  <String ID="$USE_SDS_TOOL_FORMAT">Use SDS Tool GUI Format when unpacking.</String>
+  <String ID="$COOK_COLLISIONS">Cook collisions when saving.</String>
+  <String ID="$BACKUP_SDS_LABEL">Create SDS Backups when unpacking.</String>
+  <String ID="$VERTEX_BUFFER_SIZE_LABEL">Vertex Buffer Limit</String>
+  <String ID="$INDEX_BUFFER_SIZE_LABEL">Index Buffer Limit</String>
 
   <!-- Render Options -->
   <String ID="$RENDER">Render</String>

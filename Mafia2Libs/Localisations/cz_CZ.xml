@@ -103,6 +103,8 @@
   <String ID="$DECOMPILE_LUA_UNPACK">Rozšifrovat lua při extrahování</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Použít SDS Tool GUI Formát při extrahování.</String>
   <String ID="$COOK_COLLISIONS">Cook kolize při ukládání.</String>
+  <String ID="$VERTEX_BUFFER_SIZE_LABEL">Vertex Buffer Limit</String>
+  <String ID="$INDEX_BUFFER_SIZE_LABEL">Index Buffer Limit</String>
   
   <!-- Render Options -->
   <String ID="$RENDER">Render</String>
