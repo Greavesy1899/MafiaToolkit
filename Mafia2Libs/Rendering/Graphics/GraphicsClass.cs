@@ -315,7 +315,9 @@ namespace Rendering.Graphics
         {
             if(selectedID == Args.RefID)
             {
-                selectionBox.SetTransform(Assets[Args.RefID].Transform);
+                IRenderer RenderAsset = Assets[Args.RefID];
+                selectionBox.SetTransform(RenderAsset.Transform);
+                selectionBox.Update(RenderAsset.BoundingBox);
             }
         }
 

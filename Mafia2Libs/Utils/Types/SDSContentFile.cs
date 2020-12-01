@@ -48,7 +48,7 @@ namespace Utils.Types
             typeList.Add("NAV_HPD_DATA", new BaseResource(0, "NAV_HPD_DATA"));
             typeList.Add("AnimalTrafficPaths", new BaseResource(1, "AnimalTrafficPaths"));
             typeList.Add("AudioSectors", new BaseResource(6, "AudioSectors"));
-            typeList.Add("MemFile", new BaseResource(2, "MemFile"));
+            typeList.Add("MemFile", new MemFileResource(2, "MemFile"));
             typeList.Add("Collisions", new BaseResource(2, "Collisions"));
             typeList.Add("Sound", new BaseResource(5, "Sound"));
             typeList.Add("Cutscene", new BaseResource(3, "Cutscene"));
@@ -162,7 +162,7 @@ namespace Utils.Types
                     case "Mipmap":
                     case "Sound":
                     case "MemFile":
-                        resource = new BaseResource();
+                        resource = new MemFileResource();
                         resource.ReadResourceEntry(nodes);
                         break;
                     case "Texture":

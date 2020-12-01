@@ -96,6 +96,7 @@ namespace ResourceTypes.Collisions
                     {
                         TriangleMesh CookedMesh = new TriangleMesh();
                         CookedMesh.Load(reader);
+                        CookedMesh.Force32BitIndices();
                         Models.ElementAt(i).Value.Mesh = CookedMesh;
                     }
                 }

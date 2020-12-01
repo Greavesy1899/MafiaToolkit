@@ -1,7 +1,6 @@
 ﻿using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
-using Utils.Extensions;
 using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics

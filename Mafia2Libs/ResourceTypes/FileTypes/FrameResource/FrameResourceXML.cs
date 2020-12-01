@@ -223,6 +223,43 @@ namespace ResourceTypes.FrameResource
             writer.WriteElementString("Version", GetEntryVersionString());
         }
     }
+    public class MemFileResource : BaseResource
+    {
+        public MemFileResource()
+        {
+        }
+
+        public MemFileResource(int version, string name) : base(version, name)
+        {
+        }
+
+        public int Unk2_V4 { get; set; }
+
+        public override void ReadResourceEntry(XPathNodeIterator iterator)
+        {
+            iterator.Current.MoveToNext();
+            FileName = iterator.Current.Value;
+
+            // Sanity check for older SDSContent.XMLs which may not have this.
+            iterator.Current.MoveToNext();
+            if (iterator.Current.Name.Equals("Unk2_V4"))
+            {
+                Unk2_V4 = iterator.Current.ValueAsInt;
+                iterator.Current.MoveToNext();
+            }
+
+            // Whichever outcomes happens, we will be at the version value by now.
+            EntryVersion = iterator.Current.ValueAsInt;
+        }
+
+        public override void WriteResourceEntry(XmlWriter writer)
+        {
+            writer.WriteElementString("File", GetFileName());
+            writer.WriteElementString("Unk2_V4", Unk2_V4.ToString());
+            writer.WriteElementString("Version", GetEntryVersionString());
+        }
+    }
+
     public class TextureResource : BaseResource
     {
         private int hasMIP;

@@ -959,11 +959,6 @@ namespace Mafia2Tool
                     selected.Text = fObject.ToString();
                     dPropertyGrid.UpdateObject();
                     ApplyChangesToRenderable(fObject);
-
-                    // Send an event to update our selected item. (if this is indeed our selected)
-                    UpdateSelectedEventArgs Arguments = new UpdateSelectedEventArgs();
-                    Arguments.RefID = int.Parse(selected.Name);
-                    Graphics.OnSelectedObjectUpdated(this, Arguments);
                 }
                 else if (selected.Tag is FrameHeaderScene)
                 {
@@ -994,6 +989,7 @@ namespace Mafia2Tool
                 FrameObjectArea area = (obj as FrameObjectArea);
                 area.FillPlanesArray();
                 RenderBoundingBox bbox = (Graphics.Assets[obj.RefID] as RenderBoundingBox);
+                bbox.SetTransform(area.WorldTransform);
                 bbox.Update(area.Bounds);
             }
             else if(obj is FrameObjectDummy)
@@ -1022,6 +1018,11 @@ namespace Mafia2Tool
             {
                 ApplyChangesToRenderable(child);
             }
+
+            // Send an event to update our selected item. (if this is indeed our selected)
+            UpdateSelectedEventArgs Arguments = new UpdateSelectedEventArgs();
+            Arguments.RefID = obj.RefID;
+            Graphics.OnSelectedObjectUpdated(this, Arguments);
         }
 
         private Model LoadModelFromFile()
