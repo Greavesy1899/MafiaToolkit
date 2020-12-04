@@ -1,6 +1,7 @@
 ﻿using Mafia2Tool;
 using System.Diagnostics;
 using System.IO;
+using Utils.Settings;
 
 namespace Core.IO
 {
@@ -20,7 +21,7 @@ namespace Core.IO
         {
             var filename = GetNameWithoutExtension();
 
-            if (filename.Equals("SDSContent"))
+            if (filename.Equals("SDSContent") && !ToolkitSettings.UseSDSToolFormat)
             {
                 SDSContentEditor editor = new SDSContentEditor(file);
                 return true;

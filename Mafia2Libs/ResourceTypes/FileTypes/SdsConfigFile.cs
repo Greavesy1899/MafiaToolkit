@@ -29,6 +29,14 @@ namespace ResourceTypes.SDSConfig
         Dictionary<int, string> names = new Dictionary<int, string>();
         Unk1Struct[] data;
 
+        public void ReadFromFile(FileInfo file)
+        {
+            using(BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
+            {
+                ReadFromFile(reader);
+            }
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             int magic = reader.ReadInt32();
@@ -84,8 +92,8 @@ namespace ResourceTypes.SDSConfig
                         short unk14 = reader.ReadInt16();
                         //var name4 = stringTable.ToStringUTF8Z(unk14);
 
-                        short unk15 = reader.ReadInt16();
-                        short unk16 = reader.ReadInt16();
+                        int unk15 = reader.ReadInt32();
+                        int unk16 = reader.ReadInt32();
                         byte unk17 = reader.ReadByte();
 
                         uint unk18 = reader.ReadUInt16();
@@ -95,8 +103,10 @@ namespace ResourceTypes.SDSConfig
                             short unk20 = reader.ReadInt16();
                             short unk21 = reader.ReadInt16();
                             short unk22 = reader.ReadInt16();
-                            short unk23 = reader.ReadInt16();
+                            ushort unk23 = reader.ReadUInt16();
                             short unk24 = reader.ReadInt16();
+                            short unk25 = reader.ReadInt16();
+                            short unk26 = reader.ReadInt16();
                         }
                     }
                 }

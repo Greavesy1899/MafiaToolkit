@@ -79,6 +79,7 @@ namespace Mafia2Tool
             this.TxtBrowser = new System.Windows.Forms.OpenFileDialog();
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.FrameBrowser = new System.Windows.Forms.OpenFileDialog();
+            this.Button_DumpTexture = new System.Windows.Forms.ToolStripMenuItem();
             StatusStrip = new System.Windows.Forms.StatusStrip();
             StatusStrip.SuspendLayout();
             this.ToolbarStrip.SuspendLayout();
@@ -135,7 +136,7 @@ namespace Mafia2Tool
             this.PositionXTool.Name = "PositionXTool";
             this.PositionXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionXTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionXTool.Size = new System.Drawing.Size(80, 24);
+            this.PositionXTool.Size = new System.Drawing.Size(76, 24);
             this.PositionXTool.Text = "0.00000";
             this.PositionXTool.Value = new decimal(new int[] {
             0,
@@ -168,7 +169,7 @@ namespace Mafia2Tool
             this.PositionYTool.Name = "PositionYTool";
             this.PositionYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionYTool.Size = new System.Drawing.Size(80, 24);
+            this.PositionYTool.Size = new System.Drawing.Size(76, 24);
             this.PositionYTool.Text = "0.00000";
             this.PositionYTool.Value = new decimal(new int[] {
             0,
@@ -201,7 +202,7 @@ namespace Mafia2Tool
             this.PositionZTool.Name = "PositionZTool";
             this.PositionZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionZTool.Size = new System.Drawing.Size(80, 24);
+            this.PositionZTool.Size = new System.Drawing.Size(76, 24);
             this.PositionZTool.Text = "0.00000";
             this.PositionZTool.Value = new decimal(new int[] {
             0,
@@ -234,7 +235,7 @@ namespace Mafia2Tool
             this.CameraSpeedTool.Name = "CameraSpeedTool";
             this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.CameraSpeedTool.Size = new System.Drawing.Size(80, 24);
+            this.CameraSpeedTool.Size = new System.Drawing.Size(76, 24);
             this.CameraSpeedTool.Text = "0.00000";
             this.CameraSpeedTool.Value = new decimal(new int[] {
             0,
@@ -413,14 +414,14 @@ namespace Mafia2Tool
             // ViewTopButton
             // 
             this.ViewTopButton.Name = "ViewTopButton";
-            this.ViewTopButton.Size = new System.Drawing.Size(126, 22);
+            this.ViewTopButton.Size = new System.Drawing.Size(180, 22);
             this.ViewTopButton.Text = "$TOP";
             this.ViewTopButton.Click += new System.EventHandler(this.OnViewTopButtonClicked);
             // 
             // ViewFrontButton
             // 
             this.ViewFrontButton.Name = "ViewFrontButton";
-            this.ViewFrontButton.Size = new System.Drawing.Size(126, 22);
+            this.ViewFrontButton.Size = new System.Drawing.Size(180, 22);
             this.ViewFrontButton.Text = "$FRONT";
             this.ViewFrontButton.Click += new System.EventHandler(this.OnViewFrontButtonClicked);
             // 
@@ -428,7 +429,7 @@ namespace Mafia2Tool
             // 
             this.ViewSideButton.Enabled = false;
             this.ViewSideButton.Name = "ViewSideButton";
-            this.ViewSideButton.Size = new System.Drawing.Size(126, 22);
+            this.ViewSideButton.Size = new System.Drawing.Size(180, 22);
             this.ViewSideButton.Text = "$SIDE";
             this.ViewSideButton.Visible = false;
             this.ViewSideButton.Click += new System.EventHandler(this.OnViewSideButtonClicked);
@@ -437,7 +438,7 @@ namespace Mafia2Tool
             // 
             this.ViewBottomButton.Enabled = false;
             this.ViewBottomButton.Name = "ViewBottomButton";
-            this.ViewBottomButton.Size = new System.Drawing.Size(126, 22);
+            this.ViewBottomButton.Size = new System.Drawing.Size(180, 22);
             this.ViewBottomButton.Text = "$BOTTOM";
             this.ViewBottomButton.Visible = false;
             this.ViewBottomButton.Click += new System.EventHandler(this.OnViewBottomButtonClicked);
@@ -446,7 +447,7 @@ namespace Mafia2Tool
             // 
             this.ViewSide2Button.Enabled = false;
             this.ViewSide2Button.Name = "ViewSide2Button";
-            this.ViewSide2Button.Size = new System.Drawing.Size(126, 22);
+            this.ViewSide2Button.Size = new System.Drawing.Size(180, 22);
             this.ViewSide2Button.Text = "$SIDE 2";
             this.ViewSide2Button.Visible = false;
             this.ViewSide2Button.Click += new System.EventHandler(this.OnViewSide2ButtonClicked);
@@ -459,7 +460,8 @@ namespace Mafia2Tool
             this.ToggleCullingButton,
             this.EditLighting,
             this.Button_TestConvert32,
-            this.Button_TestConvert16});
+            this.Button_TestConvert16,
+            this.Button_DumpTexture});
             this.OptionsButton.Image = ((System.Drawing.Image)(resources.GetObject("OptionsButton.Image")));
             this.OptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.OptionsButton.Name = "OptionsButton";
@@ -571,6 +573,13 @@ namespace Mafia2Tool
             // 
             this.FrameBrowser.Filter = "Toolkit Frame Data|*framedata";
             // 
+            // Button_DumpTexture
+            // 
+            this.Button_DumpTexture.Name = "Button_DumpTexture";
+            this.Button_DumpTexture.Size = new System.Drawing.Size(193, 22);
+            this.Button_DumpTexture.Text = "$DUMP_TEXTURES";
+            this.Button_DumpTexture.Click += new System.EventHandler(this.Button_DumpTexture_Click);
+            // 
             // MapEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -639,5 +648,6 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripStatusLabel Label_MemoryUsage;
         private System.Windows.Forms.ToolStripMenuItem Button_ImportFrame;
         private System.Windows.Forms.OpenFileDialog FrameBrowser;
+        private System.Windows.Forms.ToolStripMenuItem Button_DumpTexture;
     }
 }

@@ -2232,6 +2232,51 @@ namespace Mafia2Tool
                 ConvertNodeToFrame(parent);
             }
         }
+
+        private void Button_DumpTexture_Click(object sender, EventArgs e)
+        {
+            List<string> AllTextures = new List<string>();
+
+            // Get header scene name
+            string HeaderSceneName = SceneData.FrameResource.Header.SceneName.String;
+            if (!string.IsNullOrEmpty(HeaderSceneName))
+            {
+                if(!AllTextures.Contains(HeaderSceneName))
+                {
+                    AllTextures.Add(HeaderSceneName);
+                }
+            }
+
+            // Iterate through FrameObjects
+            foreach(var Frame in SceneData.FrameResource.FrameObjects)
+            {
+                // We can only take textures from SingleMesh
+                var SingleMesh = (Frame.Value as FrameObjectSingleMesh);
+                if (SingleMesh != null)
+                {
+                    // Store OM texture
+                    if(!AllTextures.Contains(SingleMesh.OMTextureHash.String))
+                    {
+                        AllTextures.Add(SingleMesh.OMTextureHash.String);
+                    }              
+
+                    // Collect textures from FrameMaterial object.
+                    List<string> CollectedTextures = SingleMesh.Material.CollectAllTextureNames();
+                    if (CollectedTextures != null)
+                    {
+                        foreach(var Texture in CollectedTextures)
+                        {
+                            if(!AllTextures.Contains(Texture))
+                            {
+                                AllTextures.Add(Texture);
+                            }
+                        }
+                    }
+                }
+            }
+
+            File.WriteAllLines("AllTextures.txt", AllTextures.ToArray());
+        }
     }
 }
 

@@ -114,6 +114,17 @@ namespace ResourceTypes.Materials
 
             return false;
         }
+
+        public override List<string> CollectTextures()
+        {
+            List<string> FoundTextures = new List<string>();
+            foreach(var Sampler in Samplers)
+            {
+                FoundTextures.Add(Sampler.GetFileName());
+            }
+
+            return FoundTextures;
+        }
     }
 
     public class MaterialSampler_v57 : IMaterialSampler

@@ -33,6 +33,8 @@ namespace ResourceTypes.Materials
 
         public virtual void WriteToFile(BinaryWriter writer, VersionsEnumerator version) { }
 
+        public virtual List<string> CollectTextures() { return null; }
+
         public void SetName(string name)
         {
             MaterialName.Set(name);

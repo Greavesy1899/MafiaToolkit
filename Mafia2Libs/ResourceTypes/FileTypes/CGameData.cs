@@ -36,17 +36,6 @@ namespace ResourceTypes.Misc
             }
         }
 
-        public static bool CheckHeader(FileInfo info)
-        {
-            using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
-            {
-                if (reader.ReadInt32() == Magic)
-                    return true;
-            }
-
-            return false;
-        }
-
         public void ReadFromFile(BinaryReader reader)
         {
             //see C_Game::ParseData for source code.
