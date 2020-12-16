@@ -38,6 +38,9 @@
             this.ToolsButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AutoAddFilesBUtton = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.Button_BatchImportTextures = new System.Windows.Forms.ToolStripMenuItem();
+            this.FileDialog_Generic = new System.Windows.Forms.OpenFileDialog();
+            this.FolderBrowser_Generic = new System.Windows.Forms.FolderBrowserDialog();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,7 +50,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.ResourceTreeView.Location = new System.Drawing.Point(12, 28);
             this.ResourceTreeView.Name = "ResourceTreeView";
-            this.ResourceTreeView.Size = new System.Drawing.Size(184, 410);
+            this.ResourceTreeView.Size = new System.Drawing.Size(184, 156);
             this.ResourceTreeView.TabIndex = 0;
             // 
             // toolStrip1
@@ -97,7 +100,8 @@
             // 
             this.ToolsButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.ToolsButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AutoAddFilesBUtton});
+            this.AutoAddFilesBUtton,
+            this.Button_BatchImportTextures});
             this.ToolsButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolsButton.Image")));
             this.ToolsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ToolsButton.Name = "ToolsButton";
@@ -107,7 +111,7 @@
             // AutoAddFilesBUtton
             // 
             this.AutoAddFilesBUtton.Name = "AutoAddFilesBUtton";
-            this.AutoAddFilesBUtton.Size = new System.Drawing.Size(153, 22);
+            this.AutoAddFilesBUtton.Size = new System.Drawing.Size(187, 22);
             this.AutoAddFilesBUtton.Text = "Auto-Add Files";
             this.AutoAddFilesBUtton.Click += new System.EventHandler(this.AutoAddFilesButton_Click);
             // 
@@ -117,14 +121,31 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.panel1.Location = new System.Drawing.Point(203, 28);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(585, 410);
+            this.panel1.Size = new System.Drawing.Size(585, 156);
             this.panel1.TabIndex = 16;
+            // 
+            // Button_BatchImportTextures
+            // 
+            this.Button_BatchImportTextures.Name = "Button_BatchImportTextures";
+            this.Button_BatchImportTextures.Size = new System.Drawing.Size(187, 22);
+            this.Button_BatchImportTextures.Text = "$BATCH_IMPORT_TEX";
+            this.Button_BatchImportTextures.Click += new System.EventHandler(this.Button_BatchImportTextures_Click);
+            // 
+            // FileDialog_Generic
+            // 
+            this.FileDialog_Generic.FileName = "AllTextures";
+            this.FileDialog_Generic.Filter = "Text Files|*.txt";
+            // 
+            // FolderBrowser_Generic
+            // 
+            this.FolderBrowser_Generic.Description = "Select folder which contains textures.";
+            this.FolderBrowser_Generic.ShowNewFolderButton = false;
             // 
             // SDSContentEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 196);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.ResourceTreeView);
@@ -149,5 +170,8 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ToolStripDropDownButton ToolsButton;
         private System.Windows.Forms.ToolStripMenuItem AutoAddFilesBUtton;
+        private System.Windows.Forms.ToolStripMenuItem Button_BatchImportTextures;
+        private System.Windows.Forms.OpenFileDialog FileDialog_Generic;
+        private System.Windows.Forms.FolderBrowserDialog FolderBrowser_Generic;
     }
 }

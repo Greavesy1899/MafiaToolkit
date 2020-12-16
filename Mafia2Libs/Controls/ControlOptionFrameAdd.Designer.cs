@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.Group_General = new System.Windows.Forms.GroupBox();
+            this.CheckBox_AddToNameTable = new System.Windows.Forms.CheckBox();
+            this.Label_AddToNameTable = new System.Windows.Forms.Label();
             this.Label_Type = new System.Windows.Forms.Label();
             this.ComboBox_Type = new System.Windows.Forms.ComboBox();
-            this.Label_AddToNameTable = new System.Windows.Forms.Label();
-            this.CheckBox_AddToNameTable = new System.Windows.Forms.CheckBox();
             this.Group_General.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,6 +49,24 @@
             this.Group_General.TabIndex = 2;
             this.Group_General.TabStop = false;
             this.Group_General.Text = "$GENERAL";
+            // 
+            // CheckBox_AddToNameTable
+            // 
+            this.CheckBox_AddToNameTable.AutoSize = true;
+            this.CheckBox_AddToNameTable.Location = new System.Drawing.Point(182, 51);
+            this.CheckBox_AddToNameTable.Name = "CheckBox_AddToNameTable";
+            this.CheckBox_AddToNameTable.Size = new System.Drawing.Size(15, 14);
+            this.CheckBox_AddToNameTable.TabIndex = 3;
+            this.CheckBox_AddToNameTable.UseVisualStyleBackColor = true;
+            // 
+            // Label_AddToNameTable
+            // 
+            this.Label_AddToNameTable.AutoSize = true;
+            this.Label_AddToNameTable.Location = new System.Drawing.Point(6, 52);
+            this.Label_AddToNameTable.Name = "Label_AddToNameTable";
+            this.Label_AddToNameTable.Size = new System.Drawing.Size(121, 13);
+            this.Label_AddToNameTable.TabIndex = 2;
+            this.Label_AddToNameTable.Text = "$FRADD_NAMETABLE";
             // 
             // Label_Type
             // 
@@ -74,36 +92,19 @@
             "Area",
             "Target",
             "Model",
-            "Collision"});
+            "Collision",
+            "Joint"});
             this.ComboBox_Type.Location = new System.Drawing.Point(182, 24);
             this.ComboBox_Type.Name = "ComboBox_Type";
             this.ComboBox_Type.Size = new System.Drawing.Size(152, 21);
             this.ComboBox_Type.TabIndex = 0;
             // 
-            // Label_AddToNameTable
-            // 
-            this.Label_AddToNameTable.AutoSize = true;
-            this.Label_AddToNameTable.Location = new System.Drawing.Point(6, 52);
-            this.Label_AddToNameTable.Name = "Label_AddToNameTable";
-            this.Label_AddToNameTable.Size = new System.Drawing.Size(121, 13);
-            this.Label_AddToNameTable.TabIndex = 2;
-            this.Label_AddToNameTable.Text = "$FRADD_NAMETABLE";
-            // 
-            // CheckBox_AddToNameTable
-            // 
-            this.CheckBox_AddToNameTable.AutoSize = true;
-            this.CheckBox_AddToNameTable.Location = new System.Drawing.Point(182, 51);
-            this.CheckBox_AddToNameTable.Name = "CheckBox_AddToNameTable";
-            this.CheckBox_AddToNameTable.Size = new System.Drawing.Size(15, 14);
-            this.CheckBox_AddToNameTable.TabIndex = 3;
-            this.CheckBox_AddToNameTable.UseVisualStyleBackColor = true;
-            // 
-            // FrameResourceAddOption
+            // ControlOptionFrameAdd
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.Group_General);
-            this.Name = "FrameResourceAddOption";
+            this.Name = "ControlOptionFrameAdd";
             this.Size = new System.Drawing.Size(340, 78);
             this.Group_General.ResumeLayout(false);
             this.Group_General.PerformLayout();

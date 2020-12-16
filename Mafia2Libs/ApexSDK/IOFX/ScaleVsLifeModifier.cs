@@ -46,10 +46,14 @@ namespace ApexSDK
             controlPointsY = controlPointsX = new float[numControlPoints];
 
             for (int i = 0; i != numControlPoints; i++)
+            {
                 controlPointsX[i] = reader.ReadSingle();
+            }
 
             for (int i = 0; i != numControlPoints; i++)
+            {
                 controlPointsY[i] = reader.ReadSingle();
+            }
         }
 
         public override void WriteToFile(BinaryWriter writer)
@@ -59,7 +63,7 @@ namespace ApexSDK
 
         public override string ToString()
         {
-            return string.Format("ScaleVsLifeModifierParams");
+            return "ScaleVsLifeModifierParams";
         }
     }
 }

@@ -41,6 +41,7 @@
   <String ID="$REFRESH">Obnoviť</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Cesta priečinka</String>
   <String ID="$UP_TOOLTIP">Hore</String>
+  <String ID="$M1DE_OODLEERROR">The Oodle DLL is a non-free library by RAD Game Tools and is thus not included due to legal issues. Please copy 'oo2core_8_win64.dll' from the Mafia: Definitive Edition installation folder to the folder where the Toolkit's 'libs' folder is located.</String>
   
   <!-- Main Options Strings-->
   <String ID="$GENERAL">Všeobecné</String>
@@ -95,6 +96,8 @@
   <String ID="$DECOMPILE_LUA_UNPACK">Dekompilovať Lua keď sa rozbaľuje.</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Použiť SDS Tool GUI formát keď sa rozbaľuje.</String>
   <String ID="$COOK_COLLISIONS">Cook kolízie keď sa ukláda.</String>
+  <String ID="$VERTEX_BUFFER_SIZE_LABEL">Vertex Buffer Limit</String>
+  <String ID="$INDEX_BUFFER_SIZE_LABEL">Index Buffer Limit</String>
   
   <!-- Render Options -->
   <String ID="$RENDER">Vykreslovanie</String>
@@ -123,6 +126,17 @@
   <String ID="$MATERIAL_EDITOR_TITLE">Editor knižníc s materiálom</String>
   <String ID="$OPEN">Otvoriť</String>
   <String ID="$QUESTION_NAME_OF_MAT">Prosím, vložte názov materiálu:</String>
+  <String ID="$EXPORT_MATS">Export Selected Materials</String>
+  <String ID="$LABEL_SEARCHTYPE">Type of Search:</String>
+  <String ID="$LABEL_MATERIALNAME">Material Name</String>
+  <String ID="$LABEL_MATERIALHASH">Material Hash</String>
+  <String ID="$LABEL_SHADERID">Shader ID</String>
+  <String ID="$LABEL_SHADERHASH">Shader Hash</String>
+  <String ID="$LABEL_TEXTURENAME">Texture Name</String>
+  <String ID="$SEARCH">Vyhľadávanie</String>
+  <String ID="$LABEL_SEARCHBAR">Search for a Material:</String>
+  <String ID="$LABEL_SELECTMATLIBRARY">Select Material Library:</String>
+  <String ID="$TITLE_MATERIALBROWSER">Material Browser</String>
   
   <!-- FrameResource Editor Form Strings-->
   <String ID="$FRAME_EDITOR_EXPORT_BTN">Exportovať modely..</String>

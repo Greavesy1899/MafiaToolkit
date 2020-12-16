@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using System.Xml;
-using System.Xml.XPath;
 using Utils.Settings;
 using Utils.Language;
 using ResourceTypes.BufferPools;
@@ -17,6 +15,7 @@ using ResourceTypes.Actors;
 using ResourceTypes.Collisions;
 using ResourceTypes.Navigation;
 using ResourceTypes.Translokator;
+using ResourceTypes.Prefab;
 using ResourceTypes.Misc;
 using Utils.Types;
 using System.Diagnostics;
@@ -42,6 +41,7 @@ namespace Mafia2Tool
         public static HPDData HPDData;
         public static TranslokatorLoader Translokator;
         public static FrameProps FrameProperties;
+        public static PrefabLoader Prefabs;
         public static string ScenePath = "";
 
         private static SDSContentFile sdsContent;
@@ -152,6 +152,13 @@ namespace Mafia2Tool
                 }
             }
 
+            if (!isBigEndian && sdsContent.HasResource("PREFAB"))
+            {
+                var name = sdsContent.GetResourceFiles("PREFAB", true)[0];
+                PrefabLoader loader = new PrefabLoader(new FileInfo(name));
+                Prefabs = loader;
+            }
+
             //RoadMap
             if (!isBigEndian)
             {
@@ -166,35 +173,36 @@ namespace Mafia2Tool
             }
 
             //Translokator
-            if (!isBigEndian && sdsContent.HasResource("Translokator"))
-            {
-                var name = sdsContent.GetResourceFiles("Translokator", true)[0];
-                Translokator = new TranslokatorLoader(new FileInfo(name));
-            }
+            //if (!isBigEndian && sdsContent.HasResource("Translokator"))
+            //{
+            //    var name = sdsContent.GetResourceFiles("Translokator", true)[0];
+            //    Translokator = new TranslokatorLoader(new FileInfo(name));
+            //}
 
             //Kynapse OBJ_DATA
-            if (!isBigEndian)
-            {
-                //tis' broken for now
-                paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
-                foreach (var item in paths)
-                {
-                    obj.Add(new NAVData(new FileInfo(item)));
-                }
+            //if (!isBigEndian)
+            //{
+            //    //tis' broken for now
+            //    paths = sdsContent.GetResourceFiles("NAV_OBJ_DATA", true);
+            //    foreach (var item in paths)
+            //    {
+            //        obj.Add(new NAVData(new FileInfo(item)));
+            //    }
 
-                //for(int i = 0; i < obj.Count; i++)
-                //{
-                //    obj[i].WriteToFile();
-                //}
-            }
-            if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
-            {
-                var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
-                var data = new NAVData(new FileInfo(name));
-                HPDData = (data.data as HPDData);
-            }
-            IndexBufferPool = new IndexBufferManager(ibps, isBigEndian);
-            VertexBufferPool = new VertexBufferManager(vbps, isBigEndian);
+            //    //for (int i = 0; i < obj.Count; i++)
+            //    //{
+            //    //    obj[i].WriteToFile();
+            //    //}
+            //}
+            //if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
+            //{
+            //    var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
+            //    var data = new NAVData(new FileInfo(name));
+            //    HPDData = (data.data as HPDData);
+            //    data.WriteToFile();
+            //}
+            IndexBufferPool = new IndexBufferManager(ibps, dirInfo, isBigEndian);
+            VertexBufferPool = new VertexBufferManager(vbps, dirInfo, isBigEndian);
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
             OBJData = obj.ToArray();

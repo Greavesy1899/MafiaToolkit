@@ -1,5 +1,6 @@
 ﻿using SharpDX;
 using System;
+using System.Globalization;
 using System.IO;
 using Utils.Extensions;
 
@@ -29,6 +30,7 @@ namespace Utils.SharpDXExtensions
             matrix.Column3 = Vector4Extenders.ReadFromFile(stream, isBigEndian);
             if(matrix.IsNaN())
             {
+                System.Diagnostics.Debug.Assert(matrix.IsNaN(), "Matrix.IsNan() during ReadFromFile");
                 matrix.Row1 = new Vector4(1.0f, 0.0f, 0.0f, 0.0f);
                 matrix.Row2 = new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
                 matrix.Row3 = new Vector4(0.0f, 0.0f, 1.0f, 0.0f);
@@ -54,6 +56,13 @@ namespace Utils.SharpDXExtensions
         {
             //doing the normal T * R * S does not work; I have to manually push in the vector into the final row.
             Matrix r = Matrix.RotationQuaternion(rotation);
+
+            //Matrix fixedRotation = new Matrix();
+            //fixedRotation.Column1 = r.Row1;
+            //fixedRotation.Column2 = r.Row2;
+            //fixedRotation.Column3 = r.Row3;
+
+
             Matrix s = Matrix.Scaling(scale);
             Matrix final = r * s;
             final.Row4 = new Vector4(position, 1.0f);
@@ -90,13 +99,22 @@ namespace Utils.SharpDXExtensions
         public static Matrix SetMatrix(Vector3 rotation, Vector3 scale, Vector3 position)
         {
             float radX, radY, radZ;
-            radX = MathUtil.DegreesToRadians(rotation.X);
-            radY = MathUtil.DegreesToRadians(rotation.Y);
-            radZ = MathUtil.DegreesToRadians(rotation.Z);
-            Quaternion qX = Quaternion.RotationAxis(Vector3.UnitX, radX);
-            Quaternion qY = Quaternion.RotationAxis(Vector3.UnitY, radY);
-            Quaternion qZ = Quaternion.RotationAxis(Vector3.UnitZ, radZ);
-            return SetMatrix(qX * qY * qZ, scale, position);
+            radX = -MathUtil.DegreesToRadians(rotation.X);
+            radY = -MathUtil.DegreesToRadians(rotation.Y);
+            radZ = -MathUtil.DegreesToRadians(rotation.Z);
+
+            Matrix x = Matrix.RotationX(radX);
+            Matrix y = Matrix.RotationY(radY);
+            Matrix z = Matrix.RotationZ(radZ);
+
+            Matrix result = x * y * z;
+
+            Matrix fixedRotation = new Matrix();
+            fixedRotation.Column1 = result.Row1;
+            fixedRotation.Column2 = result.Row2;
+            fixedRotation.Column3 = result.Row3;
+            Quaternion rotation1 = Quaternion.RotationMatrix(fixedRotation);
+            return SetMatrix(rotation1, scale, position);
         }
     }
 
@@ -104,26 +122,57 @@ namespace Utils.SharpDXExtensions
     {
         public static Vector3 ToEuler(this Quaternion quat)
         {
-            Vector3 euler = new Vector3();
-            var qw = quat.W;
-            var qx = quat.X;
-            var qy = quat.Y;
-            var qz = quat.Z;
-            var eX = Math.Atan2(-2 * ((qy * qz) - (qw * qx)), (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
-            //double test = qx * qy + qz * qw;
-            //var eY = Math.Asin(2 * test);
-            var eY = Math.Asin(2 * ((qx * qz) + (qw * qy)));
-            var eZ = Math.Atan2(-2 * ((qx * qy) - (qw * qz)), (qw * qw) + (qx * qx) - (qy * qy) - (qz * qz));
-            euler.Z = (float)Math.Round(eZ * 180 / Math.PI);
-            euler.Y = (float)Math.Round(eY * 180 / Math.PI);
-            euler.X = (float)Math.Round(eX * 180 / Math.PI);
+            float X = quat.X;
+            float Y = quat.Y;
+            float Z = quat.Z;
+            float W = quat.W;
+            float X2 = X * 2.0f;
+            float Y2 = Y * 2.0f;
+            float Z2 = Z * 2.0f;
+            float XX2 = X * X2;
+            float XY2 = X * Y2;
+            float XZ2 = X * Z2;
+            float YX2 = Y * X2;
+            float YY2 = Y * Y2;
+            float YZ2 = Y * Z2;
+            float ZX2 = Z * X2;
+            float ZY2 = Z * Y2;
+            float ZZ2 = Z * Z2;
+            float WX2 = W * X2;
+            float WY2 = W * Y2;
+            float WZ2 = W * Z2;
 
-            if (euler.IsNaN())
+            Vector3 AxisX, AxisY, AxisZ;
+            AxisX.X = (1.0f - (YY2 + ZZ2));
+            AxisY.X = (XY2 + WZ2);
+            AxisZ.X = (XZ2 - WY2);
+            AxisX.Y = (XY2 - WZ2);
+            AxisY.Y = (1.0f - (XX2 + ZZ2));
+            AxisZ.Y = (YZ2 + WX2);
+            AxisX.Z = (XZ2 + WY2);
+            AxisY.Z = (YZ2 - WX2);
+            AxisZ.Z = (1.0f - (XX2 + YY2));
+
+            double SmallNumber = double.Parse("1E-08", NumberStyles.Float);
+            Vector3 ResultVector = new Vector3();
+
+            ResultVector.Y = (float)Math.Asin(-MathUtil.Clamp(AxisZ.X, -1.0f, 1.0f));
+
+            if(Math.Abs(AxisZ.X) < 1.0f - SmallNumber)
             {
-                throw new Exception("Triggered NaN check in QuaternionExtensions.ToEuler();");
+                ResultVector.X = (float)Math.Atan2(AxisZ.Y, AxisZ.Z);
+                ResultVector.Z = (float)Math.Atan2(AxisY.X, AxisX.X);
+            }
+            else
+            {
+                ResultVector.X = 0.0f;
+                ResultVector.Z = (float)Math.Atan2(-AxisX.Y, AxisY.Y);
             }
 
-            return euler;
+            ResultVector.Z = MathUtil.RadiansToDegrees(ResultVector.Z);
+            ResultVector.Y = MathUtil.RadiansToDegrees(ResultVector.Y);
+            ResultVector.X = MathUtil.RadiansToDegrees(ResultVector.X);
+            return ResultVector;
         }
 
         public static Quaternion ReadFromFile(BinaryReader reader)

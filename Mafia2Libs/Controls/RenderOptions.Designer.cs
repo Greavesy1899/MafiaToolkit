@@ -43,6 +43,7 @@
             this.ScreenFarLabel = new System.Windows.Forms.Label();
             this.ScreenNearLabel = new System.Windows.Forms.Label();
             this.TexBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            this.CheckBox_VSync = new System.Windows.Forms.CheckBox();
             this.RenderGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FieldOfViewNumDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CameraSpeedUpDown)).BeginInit();
@@ -52,6 +53,7 @@
             // 
             // RenderGroup
             // 
+            this.RenderGroup.Controls.Add(this.CheckBox_VSync);
             this.RenderGroup.Controls.Add(this.FieldOfViewNumDown);
             this.RenderGroup.Controls.Add(this.RenderFieldOfView);
             this.RenderGroup.Controls.Add(this.UseMIPsBox);
@@ -170,7 +172,7 @@
             65536});
             this.CameraSpeedUpDown.Location = new System.Drawing.Point(7, 126);
             this.CameraSpeedUpDown.Maximum = new decimal(new int[] {
-            10,
+            500,
             0,
             0,
             0});
@@ -251,6 +253,17 @@
             // 
             this.TexBrowser.Description = "$SELECT_TEX_FOLDER";
             // 
+            // CheckBox_VSync
+            // 
+            this.CheckBox_VSync.AutoSize = true;
+            this.CheckBox_VSync.Location = new System.Drawing.Point(235, 84);
+            this.CheckBox_VSync.Name = "CheckBox_VSync";
+            this.CheckBox_VSync.Size = new System.Drawing.Size(57, 17);
+            this.CheckBox_VSync.TabIndex = 14;
+            this.CheckBox_VSync.Text = "VSync";
+            this.CheckBox_VSync.UseVisualStyleBackColor = true;
+            this.CheckBox_VSync.CheckedChanged += new System.EventHandler(this.CheckBox_VSync_OnChecked);
+            // 
             // RenderOptions
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -285,5 +298,6 @@
         private System.Windows.Forms.CheckBox UseMIPsBox;
         private System.Windows.Forms.NumericUpDown FieldOfViewNumDown;
         private System.Windows.Forms.Label RenderFieldOfView;
+        private System.Windows.Forms.CheckBox CheckBox_VSync;
     }
 }

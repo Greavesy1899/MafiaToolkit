@@ -39,14 +39,18 @@ namespace Utils.Settings
         public static bool LoggingEnabled;
         public static int Language;
         public static int SerializeSDSOption;
+        public static bool bUseOodleCompression;
         public static bool DecompileLUA;
+        public static bool bBackupEnabled;
         public static bool AddTimeDataBackup;
         public static bool UseSDSToolFormat;
+        public static int IndexMemorySizePerBuffer;
+        public static int VertexMemorySizePerBuffer;
         public static bool CookCollisions;
         public static bool CheckForUpdates;
         public static bool SkipGameSelector;
         public static int DefaultGame;
-        public static readonly float Version = 2.06f;
+        public static readonly float Version = 2.13f;
 
         public static void ReadINI()
         {
@@ -60,6 +64,7 @@ namespace Utils.Settings
             bool.TryParse(ReadKey("StateEmabled", "Discord", "True"), out DiscordStateEnabled);
             bool.TryParse(ReadKey("DetailsEnabled", "Discord", "True"), out DiscordDetailsEnabled);
             int.TryParse(ReadKey("SerializeOption", "SDS", "0"), out SerializeSDSOption);
+            bool.TryParse(ReadKey("UseOodleCompression", "SDS", "1"), out bUseOodleCompression);
             bool.TryParse(ReadKey("VSync", "ModelViewer", "True"), out VSync);
             bool.TryParse(ReadKey("UseMIPS", "ModelViewer", "True"), out UseMIPS);
             float.TryParse(ReadKey("ScreenDepth", "ModelViewer", "10000"), out ScreenDepth);
@@ -71,12 +76,15 @@ namespace Utils.Settings
             int.TryParse(ReadKey("Language", "Misc", "0"), out Language);
             int.TryParse(ReadKey("Format", "Exporting", "0"), out Format);
             int.TryParse(ReadKey("DefaultGame", "Misc", "0"), out DefaultGame);
+            bool.TryParse(ReadKey("BackupEnabled", "SDS", "True"), out bBackupEnabled);
             bool.TryParse(ReadKey("AddTimeDataBackup", "SDS", "True"), out AddTimeDataBackup);
             bool.TryParse(ReadKey("DecompileLUA", "SDS", "False"), out DecompileLUA);
             bool.TryParse(ReadKey("UseSDSToolFormat", "SDS", "False"), out UseSDSToolFormat);
             bool.TryParse(ReadKey("CookCollisions", "SDS", "False"), out CookCollisions);
             bool.TryParse(ReadKey("CheckForUpdates", "Misc", "True"), out CheckForUpdates);
             bool.TryParse(ReadKey("SkipGameSelector", "Misc", "False"), out SkipGameSelector);
+            int.TryParse(ReadKey("IndexMemorySizePerBuffer", "SDS", "945000"), out IndexMemorySizePerBuffer);
+            int.TryParse(ReadKey("VertexMemorySizePerBuffer", "SDS", "6000000 "), out VertexMemorySizePerBuffer);
             ExportPath = ReadKey("ModelExportPath", "Directories", Application.StartupPath);
 
 
@@ -131,7 +139,7 @@ namespace Utils.Settings
         {
             if (!DiscordEnabled)
             {
-                DiscordRPC.Shutdown();
+                controller?.Shutdown();
                 controller = null;
             }
             else
@@ -140,14 +148,14 @@ namespace Utils.Settings
                     InitRichPresence();
 
                 details = ""; //don't like current imp.
-                string detailsLine = string.IsNullOrEmpty(details) ? ToolkitSettings.CustomStateText : details;
+                string detailsLine = string.IsNullOrEmpty(details) ? CustomStateText : details;
                 controller.presence.state = DiscordStateEnabled ? detailsLine : null;
                 string vString = Debugger.IsAttached ? "DEBUG " : "RELEASE ";
                 vString += Version;
                 controller.presence.details = DiscordDetailsEnabled ? vString : null;
                 controller.presence.startTimestamp = DiscordElapsedTimeEnabled ? ElapsedTime : 0;
 
-                DiscordRPC.UpdatePresence(ref controller.presence);
+                controller.UpdatePresence();
             }
         }
     }

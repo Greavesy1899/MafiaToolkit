@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SharpDX;
 using SharpDX.Direct3D11;
 using ResourceTypes.Navigation;
@@ -26,48 +23,40 @@ namespace Rendering.Graphics
             {
                 foreach (var unk10 in set.unk10Boxes)
                 {
-                    RenderBoundingBox bbox = new RenderBoundingBox();
-                    bbox.SetColour(new Vector4(1.0f, 0.0f, 0.0f, 1.0f), true);
-                    bbox.InitSwap(unk10.B1);
-                    
-                    boundingBoxes.Add(bbox);
+                    RenderLine line = new RenderLine();
+                    line.SetUnselectedColour(System.Drawing.Color.Turquoise);
+                    line.InitSwap(new Vector3[2] { unk10.B1.Maximum, unk10.B1.Minimum });
+                    lines.Add(line);
                 }
 
                 foreach (var unk12 in set.unk12Boxes)
                 {
-                    RenderBoundingBox bbox = new RenderBoundingBox();
-                    bbox.SetColour(new Vector4(0.0f, 1.0f, 0.0f, 1.0f), true);
-                    bbox.InitSwap(unk12.B1);
-                    
-                    boundingBoxes.Add(bbox);
+                    RenderLine line = new RenderLine();
+                    line.SetUnselectedColour(System.Drawing.Color.Green);
+                    line.InitSwap(new Vector3[2] { unk12.B1.Maximum, unk12.B1.Minimum });
+                    lines.Add(line);
                 }
 
                 foreach (var unk14 in set.unk14Boxes)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(new Vector4(0.992f, 0.992f, 0.168f, 1.0f));
+                    line.SetUnselectedColour(System.Drawing.Color.FromArgb(253, 253, 34));
                     line.InitSwap(unk14.Points);
                     lines.Add(line);
                 }
 
                 foreach (var unk16 in set.EdgeBoxes)
                 {
-                    //RenderBoundingBox bbox = new RenderBoundingBox();
-                    //bbox.SetColour(new Vector4(0.0f, 0.0f, 1.0f, 1.0f), true);
-                    //bbox.InitSwap(unk16);
-
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(new Vector4(0.992f, 0.992f, 0.168f, 1.0f));
+                    line.SetUnselectedColour(System.Drawing.Color.FromArgb(253, 253, 34));
                     line.InitSwap(new Vector3[2] { unk16.Maximum, unk16.Minimum});
                     lines.Add(line);
-
-                    //boundingBoxes.Add(bbox);
                 }
 
                 foreach(var unk18 in set.unk18Set)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(new Vector4(1.0f));
+                    line.SetUnselectedColour(System.Drawing.Color.White);
                     line.InitSwap(unk18.Points);
                     lines.Add(line);
                 }
@@ -92,7 +81,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera, LightClass light)
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if(DoRender)
             {
@@ -100,7 +89,7 @@ namespace Rendering.Graphics
                 {
                     foreach(var bbox in boundingBoxes)
                     {
-                        bbox.Render(device, deviceContext, camera, light);
+                        bbox.Render(device, deviceContext, camera);
                     }
                 }
 
@@ -108,7 +97,7 @@ namespace Rendering.Graphics
                 {
                     foreach (var line in lines)
                     {
-                        line.Render(device, deviceContext, camera, light);
+                        line.Render(device, deviceContext, camera);
                     }
                 }
             }

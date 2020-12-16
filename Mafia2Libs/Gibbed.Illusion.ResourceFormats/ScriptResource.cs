@@ -20,6 +20,7 @@
  *    distribution.
  */
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Gibbed.Illusion.FileFormats;
@@ -53,6 +54,23 @@ namespace Gibbed.Mafia2.ResourceFormats
                 script.Deserialize(version, input, endian);
                 this.Scripts.Add(script);
             }
+
+            GetRawBytes();
         }
+
+        // Util function to get size of bytes of all scripts
+        public int GetRawBytes()
+        {
+            int TotalSize = 0;
+
+            foreach(var script in Scripts)
+            {
+                TotalSize += script.Data.Length;
+            }
+
+            Console.WriteLine("Total size of Lua Data: " + TotalSize);
+            return TotalSize;
+        }
+
     }
 }

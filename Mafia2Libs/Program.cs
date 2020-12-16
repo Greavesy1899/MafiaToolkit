@@ -6,6 +6,7 @@ using Utils.Language;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Mafia2Tool.Forms;
+using Mafia2Tool.MafiaLib.ModelHelpers;
 
 namespace Mafia2Tool
 {
@@ -16,13 +17,17 @@ namespace Mafia2Tool
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
             CheckINIExists();
             ToolkitSettings.ReadINI();
             GameStorage.Instance.InitStorage();
             Language.ReadLanguageXML();
             CheckLatestRelease();
 
-            if(ToolkitSettings.SkipGameSelector)
+            //M3_ExperimentalTests Experiments = new M3_ExperimentalTests();
+            //Experiments.ReadPrerequisites();
+
+            if (ToolkitSettings.SkipGameSelector)
             {
                 GameStorage.Instance.SetSelectedGameByIndex(ToolkitSettings.DefaultGame);
                 OpenGameExplorer();
@@ -66,6 +71,7 @@ namespace Mafia2Tool
             var releases = await client.Repository.Release.GetAll("Greavesy1899", "Mafia2Toolkit");
             var release = releases[0];
             var version = release.TagName.Replace("v", "");
+            version = version.Replace(".", System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
             float value = 0.0f;
             float.TryParse(version, out value);
             if (ToolkitSettings.Version < value)
@@ -87,10 +93,12 @@ namespace Mafia2Tool
                 File.Move("Mafia2Toolkit.ini", "MafiaToolkit.ini");
                 File.Delete("Mafia2Toolkit.ini");
             }
-            if (File.Exists(Path.Combine(Application.ExecutablePath, "MafiaToolkit.ini")))
-                return;
-            else
+
+            string PathToIni = Path.Combine(Application.ExecutablePath, "MafiaToolkit.ini");
+            if (!File.Exists(PathToIni))
+            {
                 new IniFile();
+            }
         }
     }
 }

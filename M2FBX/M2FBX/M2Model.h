@@ -51,9 +51,8 @@ private:
 	const int magicVersion2 = 39072333;
 	std::string name;
 	bool isSkinned;
-	std::vector<std::string> boneNames;
-	std::vector<byte> boneIDs;
-	std::vector<Matrix> transforms;
+	std::vector<std::string> jointNames;
+	std::vector<Joint> joints;
 	char partSize;
 	ModelPart* parts;
 public:
@@ -62,16 +61,14 @@ public:
 	void SetName(std::string name);
 	void SetPartSize(char& count);
 	void SetParts(ModelPart* parts);
-	void SetBoneNames(std::vector<std::string>& names);
-	void SetBoneIDs(std::vector<byte>& boneIDs);
-	void SetBoneMatrices(std::vector<Matrix>& transforms);
+	void SetJointNames(const std::vector<std::string>& names);
+	void SetJoints(const std::vector<Joint>& boneIDs);
 	void SetIsSkinned(bool skinned);
 	std::string GetName() const;
 	char GetPartSize() const;
 	ModelPart* GetParts() const;
-	std::vector<std::string>& GetBoneNames();
-	std::vector<byte>& GetBoneIDs();
-	std::vector<Matrix>& GetBoneMatrices();
+	std::vector<std::string>& GetJointNames();
+	std::vector<Joint>& GetJoints();
 	bool GetIsSkinned();
 
 	void ReadFromStream(FILE* stream);

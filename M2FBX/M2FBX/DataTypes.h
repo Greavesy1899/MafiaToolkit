@@ -20,26 +20,49 @@ enum VertexFlags
 	DamageGroup = (1 << 20), // 0x00100000
 };
 
-typedef struct {
+struct Int3 
+{
 	unsigned int i1;
 	unsigned int i2;
 	unsigned int i3;
-} Int3;
-typedef struct {
+};
+
+struct Point3
+{
 	float x;
 	float y;
 	float z;
-} Point3;
-typedef struct {
+};
+
+struct Quaternion 
+{
 	float x;
 	float y;
-} UVVert;
-typedef struct {
+	float z;
+	float w;
+};
+
+struct UVVert
+{	
+	float x;
+	float y;
+};
+
+struct Matrix 
+{
 	Point3 position;
-	Point3 rotation;
+	Quaternion rotation;
 	Point3 scale;
-} Matrix;
-typedef struct {
+};
+
+struct Joint
+{
+	unsigned char parentID;
+	Matrix transform;
+};
+
+struct Vertex
+{
 	Point3 position;
 	Point3 normals;
 	Point3 tangent;
@@ -51,4 +74,4 @@ typedef struct {
 	UVVert uv1;
 	UVVert uv2;
 	UVVert uv3;
-} Vertex;
+};

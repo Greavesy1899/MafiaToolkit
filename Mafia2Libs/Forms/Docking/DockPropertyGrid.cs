@@ -1,15 +1,13 @@
-﻿using Gibbed.Squish;
-using Mafia2Tool;
+﻿using Mafia2Tool;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
 using SharpDX;
 using System;
 using Mafia2Tool.Forms;
-using System.Drawing;
-using System.IO;
 using Utils.Language;
 using WeifenLuo.WinFormsUI.Docking;
 using Utils.SharpDXExtensions;
+using System.Collections.Generic;
 
 namespace Forms.Docking
 {
@@ -18,16 +16,23 @@ namespace Forms.Docking
         private bool isMaterialTabFocused;
         private bool hasLoadedMaterials;
         private object currentObject;
+        private TextureEntry currentEntry;
+        private Dictionary<TextureEntry, MaterialStruct> currentMaterials;
+
         public bool IsEntryReady;
+
+        public event EventHandler<EventArgs> OnObjectUpdated;
 
         public DockPropertyGrid()
         {
             InitializeComponent();
             Localise();
             currentObject = null;
+            currentEntry = null;
             IsEntryReady = false;
             isMaterialTabFocused = false;
             hasLoadedMaterials = false;
+            currentMaterials = new Dictionary<TextureEntry, MaterialStruct>();
         }
 
         private void Localise()
@@ -56,6 +61,7 @@ namespace Forms.Docking
         private void SetMaterialTab()
         {
             hasLoadedMaterials = false;
+            currentEntry = null;
             LODComboBox.Items.Clear();
             if (FrameResource.IsFrameType(currentObject))
             {
@@ -77,22 +83,26 @@ namespace Forms.Docking
             if (isMaterialTabFocused && !hasLoadedMaterials)
             {
                 MatViewPanel.Controls.Clear();
+                currentMaterials.Clear();
                 if (FrameResource.IsFrameType(currentObject))
                 {
                     if (currentObject is FrameObjectSingleMesh)
                     {
                         var entry = (currentObject as FrameObjectSingleMesh);
-                        for (int i = 0; i != entry.Material.NumLods; i++)
+                        MaterialStruct[] materialAssignments = entry.Material.Materials[LODComboBox.SelectedIndex];
+                        for (int x = 0; x != materialAssignments.Length; x++)
                         {
-                            for (int x = 0; x != entry.Material.Materials[i].Length; x++)
-                            {
-                                var mat = entry.Material.Materials[i][x];
-                                TextureEntry textEntry = new TextureEntry();
-                                textEntry.WasClicked += MatViewerPanel_WasClicked;
-                                textEntry.SetMaterialName(mat.MaterialName);
-                                textEntry.SetMaterialTexture(GetThumbnail(mat));
-                                MatViewPanel.Controls.Add(textEntry);
-                            }
+                            TextureEntry textEntry = new TextureEntry();
+
+                            var mat = materialAssignments[x];
+                            IMaterial material = MaterialsManager.LookupMaterialByHash(mat.MaterialHash);
+
+                            textEntry.OnEntrySingularClick += MatViewPanel_TextureEntryOnSingularClick;
+                            textEntry.OnEntryDoubleClick += MatViewPanel_TextureEntryOnDoubleClick;
+                            textEntry.SetMaterial(material);
+
+                            currentMaterials.Add(textEntry, mat);
+                            MatViewPanel.Controls.Add(textEntry);
                         }
                     }
                 }
@@ -169,90 +179,71 @@ namespace Forms.Docking
             }
         }
 
-        public bool ThumbnailCallback()
-        {
-            return false;
-        }
-
-        private Image LoadDDSSquish(string name)
-        {
-            Image.GetThumbnailImageAbort myCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
-            DdsFile dds = new DdsFile();
-
-            name = File.Exists(name) == false ? "Resources/texture.dds" : name;
-
-            var bLoaded = false;
-            using (var stream = File.Open(name, FileMode.Open))
-            {
-                try
-                {
-                    dds.Load(stream);
-                    bLoaded = true;
-                }
-                catch(Exception ex)
-                {
-                    Utils.Logging.Log.WriteLine("Failed to load DDS: " + name, Utils.Logging.LoggingTypes.WARNING);
-                }
-            }
-
-            Image thumbnail = null;
-            if (bLoaded)
-                thumbnail = dds.Image().GetThumbnailImage(128, 120, myCallback, IntPtr.Zero);
-            else
-                thumbnail = LoadDDSSquish("Resources/texture.dds");
-
-            dds = null;
-            return thumbnail;
-        }
-
-        private Image GetThumbnail(MaterialStruct material)
-        {
-            Material mat = MaterialsManager.LookupMaterialByHash(material.MaterialHash);
-            Image thumbnail = null;
-            if (mat != null)
-            {
-                if(mat.Samplers.ContainsKey("S000"))
-                {
-                    thumbnail = LoadDDSSquish(Path.Combine(SceneData.ScenePath, mat.Samplers["S000"].File));
-                }
-                else
-                {
-                    thumbnail = LoadDDSSquish("Resources/texture.dds");
-                }
-            }
-            else
-            {
-                thumbnail = LoadDDSSquish("Resources/MissingMaterial.dds");
-            }
-            return thumbnail;
-        }
-
         private void SelectedIndexChanged(object sender, EventArgs e)
         {
             hasLoadedMaterials = false;
             LoadMaterials();
         }
 
-        void MatViewerPanel_WasClicked(object sender, EventArgs e)
+        private void MatViewPanel_TextureEntryOnDoubleClick(object sender, EventArgs e)
+        {
+            // Get our entry
+            TextureEntry Entry = (sender as TextureEntry);
+
+            // Create our browser; once the user has finished with this menu they should? have a material.
+            string MaterialName = "";
+            IMaterial OurMaterial = Entry.GetMaterial();
+            if(OurMaterial != null)
+            {
+                MaterialName = OurMaterial.GetMaterialName();
+            }
+
+            MaterialBrowser Browser = new MaterialBrowser(MaterialName);
+            IMaterial SelectedMaterial = Browser.GetSelectedMaterial();
+
+            // Set the new material data, notify the map editor that a change has been made.
+            if (SelectedMaterial != null)
+            {
+                currentMaterials[Entry].MaterialName = SelectedMaterial.GetMaterialName();
+                currentMaterials[Entry].MaterialHash = SelectedMaterial.GetMaterialHash();
+                Entry.SetMaterial(SelectedMaterial);
+                OnObjectUpdated(sender, e);
+            }
+
+            // Yeet the browser into the shadow realm.
+            Browser.Dispose();
+            Browser = null;
+            Entry.IsSelected = false;
+        }
+
+        void MatViewPanel_TextureEntryOnSingularClick(object sender, EventArgs e)
         {
             // Set IsSelected for all UCs in the FlowLayoutPanel to false. 
-            MatBrowser browser = null;
-            foreach (var c in MatViewPanel.Controls)
-            {
-                if (c is TextureEntry)
-                {
-                    if(((TextureEntry)c).IsSelected)
-                        browser = new MatBrowser();
+            // Add the new selected one
+            TextureEntry Entry = (sender as TextureEntry);
 
-                    ((TextureEntry)c).IsSelected = false;
-                }
+            // Remove the previous entry
+            if (currentEntry != null)
+            {
+                currentEntry.IsSelected = false;
             }
+
+            currentEntry = Entry;
         }
 
         private void MainTabControl_OnTabIndexChanged(object sender, EventArgs e)
         {
             isMaterialTabFocused = (MainTabControl.SelectedIndex == 2);
-            LoadMaterials();
+
+            if (currentObject != null)
+            {
+                LoadMaterials();
+            }
+        }
+
+        private void ObjectHasUpdated(object sender, EventArgs e)
+        {
+            OnObjectUpdated(this, EventArgs.Empty);
         }
     }
 }

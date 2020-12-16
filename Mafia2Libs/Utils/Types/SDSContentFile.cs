@@ -6,6 +6,10 @@ using System.Xml;
 using System.Xml.XPath;
 using System.Linq;
 using System;
+using Utils.Extensions;
+
+// TODO: Make all resource types a constant variable so we can reuse the same strings
+// TODO: Support for Mafia III and Mafia DE.
 
 namespace Utils.Types
 {
@@ -16,7 +20,7 @@ namespace Utils.Types
         public Dictionary<string, BaseResource> typeList = new Dictionary<string, BaseResource>();
         static Dictionary<string, string> typeExtension = new Dictionary<string, string>();
         static readonly List<string> sortList = new List<string>() {"IndexBufferPool", "VertexBufferPool", "Texture", "FrameResource", "Effects", "FrameNameTable",
-               "Actors", "EntityDataStorage",  "PREFAB", "Animation2",  "AnimalTrafficPaths", "Table", "NAV_OBJ_DATA", "NAV_AIWORLD_DATA", "NAV_HPD_DATA",
+               "Actors", "EntityDataStorage", "Table", "NAV_OBJ_DATA", "NAV_AIWORLD_DATA", "PREFAB", "AnimalTrafficPaths", "Animation2","NAV_HPD_DATA",
                 "AudioSectors", "MemFile", "Collisions", "ItemDesc", "FxActor", "FxAnimSet", "Script", "Sound", "Speech", "Cutscene", "SoundTable", "XML", "Translokator", "Mipmap" };
         
         public Dictionary<string, List<TreeNode>> Resources {
@@ -44,11 +48,11 @@ namespace Utils.Types
             typeList.Add("Animation2", new BaseResource(1, "Animation2"));
             typeList.Add("Tables", new TableResource(1, "Tables"));
             typeList.Add("NAV_OBJ_DATA", new BaseResource(0, "NAV_OBJ_DATA"));
-            typeList.Add("NAV_AIWORLD_DATA", new BaseResource(1, "NAV_AIWORLD_DATA"));
-            typeList.Add("NAV_HPD_DATA", new BaseResource(1, "NAV_HPD_DATA"));
-            typeList.Add("AnimalTrafficPaths", new BaseResource(0, "AnimalTrafficPaths"));
+            typeList.Add("NAV_AIWORLD_DATA", new BaseResource(0, "NAV_AIWORLD_DATA"));
+            typeList.Add("NAV_HPD_DATA", new BaseResource(0, "NAV_HPD_DATA"));
+            typeList.Add("AnimalTrafficPaths", new BaseResource(1, "AnimalTrafficPaths"));
             typeList.Add("AudioSectors", new BaseResource(6, "AudioSectors"));
-            typeList.Add("MemFile", new BaseResource(2, "MemFile"));
+            typeList.Add("MemFile", new MemFileResource(2, "MemFile"));
             typeList.Add("Collisions", new BaseResource(2, "Collisions"));
             typeList.Add("Sound", new BaseResource(5, "Sound"));
             typeList.Add("Cutscene", new BaseResource(3, "Cutscene"));
@@ -161,8 +165,11 @@ namespace Utils.Types
                     case "Animation2":
                     case "Mipmap":
                     case "Sound":
-                    case "MemFile":
                         resource = new BaseResource();
+                        resource.ReadResourceEntry(nodes);
+                        break;
+                    case "MemFile":
+                        resource = new MemFileResource();
                         resource.ReadResourceEntry(nodes);
                         break;
                     case "Texture":
@@ -223,20 +230,40 @@ namespace Utils.Types
 
         private void Sort()
         {
+            // TODO: Is there a way for us to make some kind of util function for this?
+            if (resources.ContainsKey("Texture"))
+            {
+                resources["Texture"] = resources["Texture"].OrderBy(r => r.Text).ToList();
+            }
+
+            if (resources.ContainsKey("Mipmap"))
+            {
+                resources["Mipmap"] = resources["Mipmap"].OrderBy(r => r.Text).ToList();
+            }
+
             resources = resources.OrderBy(d => sortList.IndexOf(d.Key)).ToDictionary(x => x.Key, x => x.Value);
         }
 
         private void AddResource(string typeName, TreeNode node)
         {
-            if(resources.ContainsKey(typeName))
-            {
-                resources[typeName].Add(node);
-            }
-            else
+            // Check if resource has an array, if not we can create one
+            if(!resources.ContainsKey(typeName))
             {
                 resources.Add(typeName, new List<TreeNode>());
-                resources[typeName].Add(node);
             }
+
+            // Check if this node already exists.
+            TreeNode ExistingNode = resources[typeName].Find(n => n.Text == node.Text);
+            if (ExistingNode != null)
+            {
+                // Warning, found existing node.
+                string Message = string.Format("Error! Found existing node: {0}. Not adding new node.", node.Text);
+                Console.WriteLine(Message);
+                return;
+            }
+
+            // Only add node if we have no node collision
+            resources[typeName].Add(node);
         }
 
         private void CreateBaseResource(string typeName, FileInfo info)
@@ -247,7 +274,7 @@ namespace Utils.Types
             BaseResource resource = new BaseResource();
             resource.SetFileName(fromRoot);
             resource.SetEntryVersion(version);
-            AddResource(typeName, BuildResourceTreeNode(fromRoot, resource));
+            AddResource(typeName, BuildResourceTreeNode(resource.GetFileName(), resource));
         }
 
         private void CreateTableResource(List<string> tables)
@@ -259,14 +286,34 @@ namespace Utils.Types
             AddResource("Tables", BuildResourceTreeNode("", resource));
         }
 
-        private void CreateTextureResource(string name, bool mipped)
+        public void CreateTextureResource(string name)
         {
             var typeResource = typeList["Texture"];
             TextureResource resource = new TextureResource();
-            resource.HasMIP = Convert.ToInt32(mipped);
+            resource.HasMIP = 0;
             resource.SetEntryVersion(typeResource.GetSerializationVersion());
             resource.SetFileName(name);
             AddResource("Texture", BuildResourceTreeNode(name, resource));
+
+            // Try and add the Mipmap only if it exists in the parent folder.
+            string MippedTexture = "MIP_" + name;
+            string MippedPath = GetParentFolder() + "//" + MippedTexture;
+            if (File.Exists(MippedPath))
+            {
+                // See if we can construct MipMap resource.
+                var MipMapTypeResource = typeList["Mipmap"];
+                FileInfo MipInfo = new FileInfo(MippedPath);
+                CreateBaseResource("Mipmap", MipInfo);
+
+                // Set 'HasMIP' because we have one now.
+                resource.HasMIP = 1;
+            }
+        }
+
+        public void WipeResourceType(string TypeName)
+        {
+            // Util function deletes for us
+            resources.TryRemove(TypeName);
         }
 
         private void ScanFolder(DirectoryInfo directory, ref List<string> tables, ref List<string> textures, ref List<string> mips)
@@ -325,33 +372,14 @@ namespace Utils.Types
             }
         }
 
-        private Dictionary<string, bool> BuildHasMipsDict(List<string> textures, List<string> mips)
-        {
-            var dict = new Dictionary<string, bool>();
-            foreach(var tex in textures)
-            {
-                dict.Add(tex, false);
-            }
-
-            foreach(var mip in mips)
-            {
-                string name = mip.Substring(4, mip.Length - 4);
-                if(dict.ContainsKey(name))
-                {
-                    dict[name] = true;
-                }
-            }
-            return dict;
-        }
-
         public void CreateFileFromFolder()
         {
-            //we have to do these after initial resource population
+            // we have to do these after initial resource population
             List<string> tables = new List<string>();
             List<string> textures = new List<string>();
             List<string> mips = new List<string>();
 
-            //we keep resources which require human knowledge
+            // we keep resources which require human knowledge
             var scripts = ProtectResourceType("Script");
             var xmls = ProtectResourceType("XML");
             var memfile = ProtectResourceType("MemFile");
@@ -359,26 +387,19 @@ namespace Utils.Types
             var entityDataStorage = ProtectResourceType("EntityDataStorage");
             var tablesProtected = ProtectResourceType("Tables");
 
-            //clear and scan
+            // clear and scan
             resources.Clear();
             ScanFolder(parent, ref tables, ref textures, ref mips);
 
-            //get new dict of HasMips
             if (textures.Count > 0)
             {
-                var dict = BuildHasMipsDict(textures, mips);
-                foreach (var item in dict)
+                // Create Texture has built in system to construct MIPs
+                foreach(string TextureEntry in textures)
                 {
-                    CreateTextureResource(item.Key, item.Value);
-
-                    if (item.Value)
-                    {
-                        string name = "MIP_" + item.Key;
-                        var info = new FileInfo(Path.Combine(parent.FullName, name));
-                        CreateBaseResource("Mipmap", info);
-                    }
+                    CreateTextureResource(TextureEntry);
                 }
             }
+
             if(tables.Count > 0)
             {
                 CreateTableResource(tables);
@@ -391,6 +412,11 @@ namespace Utils.Types
             ReapplyResourceType("EntityDataStorage", entityDataStorage);
             ReapplyResourceType("Tables", tablesProtected);
             Sort();
+        }
+
+        public string GetParentFolder()
+        {
+            return parent.FullName;
         }
     }
 }

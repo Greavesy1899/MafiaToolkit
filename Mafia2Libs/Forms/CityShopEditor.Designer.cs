@@ -36,7 +36,7 @@
             this.openM2T = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_SaveNonDLC = new System.Windows.Forms.ToolStripMenuItem();
             this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolButton = new System.Windows.Forms.ToolStripDropDownButton();
@@ -52,6 +52,7 @@
             this.PropertyGridTab = new System.Windows.Forms.TabPage();
             this.DataGridTab = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Button_SaveDLC = new System.Windows.Forms.ToolStripMenuItem();
             this.CollisionContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.TabControl.SuspendLayout();
@@ -101,7 +102,8 @@
             // 
             this.fileToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.fileToolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.SaveButton,
+            this.Button_SaveNonDLC,
+            this.Button_SaveDLC,
             this.ReloadButton,
             this.ExitButton});
             this.fileToolButton.Image = ((System.Drawing.Image)(resources.GetObject("fileToolButton.Image")));
@@ -110,24 +112,24 @@
             this.fileToolButton.Size = new System.Drawing.Size(47, 22);
             this.fileToolButton.Text = "$FILE";
             // 
-            // SaveButton
+            // Button_SaveNonDLC
             // 
-            this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(124, 22);
-            this.SaveButton.Text = "$SAVE";
-            this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
+            this.Button_SaveNonDLC.Name = "Button_SaveNonDLC";
+            this.Button_SaveNonDLC.Size = new System.Drawing.Size(180, 22);
+            this.Button_SaveNonDLC.Text = "$SAVE";
+            this.Button_SaveNonDLC.Click += new System.EventHandler(this.SaveButton_Click);
             // 
             // ReloadButton
             // 
             this.ReloadButton.Name = "ReloadButton";
-            this.ReloadButton.Size = new System.Drawing.Size(124, 22);
+            this.ReloadButton.Size = new System.Drawing.Size(180, 22);
             this.ReloadButton.Text = "$RELOAD";
             this.ReloadButton.Click += new System.EventHandler(this.ReloadButton_Click);
             // 
             // ExitButton
             // 
             this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(124, 22);
+            this.ExitButton.Size = new System.Drawing.Size(180, 22);
             this.ExitButton.Text = "$EXIT";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -255,6 +257,13 @@
             this.dataGridView1.Size = new System.Drawing.Size(447, 378);
             this.dataGridView1.TabIndex = 0;
             // 
+            // Button_SaveDLC
+            // 
+            this.Button_SaveDLC.Name = "Button_SaveDLC";
+            this.Button_SaveDLC.Size = new System.Drawing.Size(180, 22);
+            this.Button_SaveDLC.Text = "$SAVE_DLC";
+            this.Button_SaveDLC.Click += new System.EventHandler(this.SaveButtonDLC_Click);
+            // 
             // CityShopEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -283,7 +292,7 @@
         private System.Windows.Forms.TabControl TabControl;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton fileToolButton;
-        private System.Windows.Forms.ToolStripMenuItem SaveButton;
+        private System.Windows.Forms.ToolStripMenuItem Button_SaveNonDLC;
         private System.Windows.Forms.ToolStripMenuItem ReloadButton;
         private System.Windows.Forms.ToolStripMenuItem ExitButton;
         private System.Windows.Forms.ContextMenuStrip CollisionContext;
@@ -301,5 +310,6 @@
         private System.Windows.Forms.ToolStripMenuItem DuplicateDataButton;
         private System.Windows.Forms.ToolStripMenuItem DeleteAreaButton;
         private System.Windows.Forms.ToolStripMenuItem DeleteDataButton;
+        private System.Windows.Forms.ToolStripMenuItem Button_SaveDLC;
     }
 }

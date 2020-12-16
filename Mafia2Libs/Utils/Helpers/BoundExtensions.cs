@@ -35,6 +35,13 @@ namespace Utils.SharpDXExtensions
             bbox.Maximum.WriteToFile(writer, isBigEndian);
         }
 
+        public static BoundingBox Swap(this BoundingBox box)
+        {
+            box.Minimum = Vector3Extenders.Swap(box.Minimum);
+            box.Maximum = Vector3Extenders.Swap(box.Maximum);
+            return box;
+        }
+
         public static BoundingBox CalculateBounds(List<Vertex[]> data)
         {
             BoundingBox bbox = new BoundingBox

@@ -263,3 +263,5 @@ __pycache__/
 *.pyc
 
 M2FBX/M2FBX/SDKs/
+M2FBX/M2PhysX/SDKs/
+

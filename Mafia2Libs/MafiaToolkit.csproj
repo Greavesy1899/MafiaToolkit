@@ -1,0 +1,1043 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{38DB9B9C-5E78-4E92-B4A8-96A219924F5E}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Mafia2Tool</RootNamespace>
+    <AssemblyName>MafiaToolkit</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>publish.htm</WebPage>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>6</LangVersion>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.0</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Mafia2Tool.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>ECEBC1D26FFB2386CF2C12237C8B7067EEED7348</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>Mafia2Toolkit_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Toolkit.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.0</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <LangVersion>7.0</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BitStreams, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\rubendal.BitStream.1.2\lib\net40\BitStreams.dll</HintPath>
+    </Reference>
+    <Reference Include="Gibbed.IO, Version=1.1.6802.1783, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\Gibbed.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="Gibbed.Squish, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\Gibbed.Squish.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.2.0.246, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.1.2.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Octokit, Version=0.36.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Octokit.0.36.0\lib\net46\Octokit.dll</HintPath>
+    </Reference>
+    <Reference Include="OodleSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\OodleSharp-master\OodleSharp\bin\Debug\OodleSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.D3DCompiler, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.D3DCompiler.4.2.0\lib\net45\SharpDX.D3DCompiler.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Desktop, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Desktop.4.2.0\lib\net45\SharpDX.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Direct3D11.4.2.0\lib\net45\SharpDX.Direct3D11.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DirectInput, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DirectInput.4.2.0\lib\net45\SharpDX.DirectInput.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.DXGI.4.2.0\lib\net45\SharpDX.DXGI.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpDX.Mathematics.4.2.0\lib\net45\SharpDX.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UnluacNET, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\UnluacNET.dll</HintPath>
+    </Reference>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=3.0.6.0, Culture=neutral, PublicKeyToken=5cded1a1a0a7b481, processorArchitecture=MSIL">
+      <HintPath>..\packages\DockPanelSuite.3.0.6\lib\net40\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="zlibnet, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libs\zlibnet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApexSDK\IOFX\ScaleAlongVelocityModifier.cs" />
+    <Compile Include="Controls\ActorItemAddOption.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ActorItemAddOption.Designer.cs">
+      <DependentUpon>ActorItemAddOption.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ControlGameEntry.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ControlGameEntry.Designer.cs">
+      <DependentUpon>ControlGameEntry.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ListWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\ListWindow.Designer.cs">
+      <DependentUpon>ListWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FrameResourceModelOptions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\FrameResourceModelOptions.Designer.cs">
+      <DependentUpon>FrameResourceModelOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\RenderOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\RenderOptions.Designer.cs">
+      <DependentUpon>RenderOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\NewObjectWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\NewObjectWindow.Designer.cs">
+      <DependentUpon>NewObjectWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TextureEntry.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TextureEntry.Designer.cs">
+      <DependentUpon>TextureEntry.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\FileXBin.cs" />
+    <Compile Include="Core\DirectoryBase.cs" />
+    <Compile Include="Core\FileActor.cs" />
+    <Compile Include="Core\FileBase.cs" />
+    <Compile Include="Core\FileBin.cs" />
+    <Compile Include="Core\FileCutscene.cs" />
+    <Compile Include="Core\FileEntityDataStorage.cs" />
+    <Compile Include="Core\FileFactory.cs" />
+    <Compile Include="Core\FileFrameResoure.cs" />
+    <Compile Include="Core\FileLua.cs" />
+    <Compile Include="Core\FileMaterialLibrary.cs" />
+    <Compile Include="Core\FilePrefab.cs" />
+    <Compile Include="Core\FileSpeech.cs" />
+    <Compile Include="Core\FileSDS.cs" />
+    <Compile Include="Core\FileTable.cs" />
+    <Compile Include="Core\FileTextureDDS.cs" />
+    <Compile Include="Core\FileTranslokator.cs" />
+    <Compile Include="Core\FileXlaybin.cs" />
+    <Compile Include="Core\FileXML.cs" />
+    <Compile Include="Forms\CutsceneEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CutsceneEditor.Designer.cs">
+      <DependentUpon>CutsceneEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EntityDataStorageEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EntityDataStorageEditor.Designer.cs">
+      <DependentUpon>EntityDataStorageEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Docking\DockPropertyGrid.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Docking\DockPropertyGrid.Designer.cs">
+      <DependentUpon>DockPropertyGrid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Docking\DockViewProperties.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Docking\DockViewProperties.Designer.cs">
+      <DependentUpon>DockViewProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Docking\DockSceneTree.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Docking\DockSceneTree.Designer.cs">
+      <DependentUpon>DockSceneTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GameSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GameSelector.Designer.cs">
+      <DependentUpon>GameSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\M2FBXTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\M2FBXTool.Designer.cs">
+      <DependentUpon>M2FBXTool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MaterialBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MaterialBrowser.Designer.cs">
+      <DependentUpon>MaterialBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MapEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MapEditor.Designer.cs">
+      <DependentUpon>MapEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ApexSDK\ApexRenderMesh.cs" />
+    <Compile Include="ApexSDK\Emitter\EmitterGeomExplicit.cs" />
+    <Compile Include="ApexSDK\Emitter\EmitterGeomSphere.cs" />
+    <Compile Include="ApexSDK\Emitter\Enums.cs" />
+    <Compile Include="ApexSDK\Emitter\File.cs" />
+    <Compile Include="ApexSDK\IOFX\ColorVsDensityModifier.cs" />
+    <Compile Include="ApexSDK\IOFX\ColorVsLifeModifier.cs" />
+    <Compile Include="ApexSDK\IOFX\Enums.cs" />
+    <Compile Include="ApexSDK\IOFX\File.cs" />
+    <Compile Include="ApexSDK\IOFX\IModifier.cs" />
+    <Compile Include="ApexSDK\IOFX\Modifier.cs" />
+    <Compile Include="ApexSDK\IOFX\RandomRotationModifier.cs" />
+    <Compile Include="ApexSDK\IOFX\RandomScaleModifier.cs" />
+    <Compile Include="ApexSDK\IOFX\RandomSubtextureModifier.cs" />
+    <Compile Include="ApexSDK\IOFX\RotationModifier.cs" />
+    <Compile Include="ApexSDK\IOFX\ScaleVsLifeModifier.cs" />
+    <Compile Include="ApexSDK\IOFX\SimpleScaleModifier.cs" />
+    <Compile Include="ApexSDK\IOFX\SubtextureVsLifeModifier.cs" />
+    <Compile Include="Forms\XBinEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\XBinEditor.Designer.cs">
+      <DependentUpon>XBinEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ShopMenu2Editor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ShopMenu2Editor.Designer.cs">
+      <DependentUpon>ShopMenu2Editor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\PrefabEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PrefabEditor.Designer.cs">
+      <DependentUpon>PrefabEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\StreamEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\StreamEditor.Designer.cs">
+      <DependentUpon>StreamEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TranslokatorEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TranslokatorEditor.Designer.cs">
+      <DependentUpon>TranslokatorEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gibbed.Illusion.FileFormats\CompressedBlockHeader.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\GenericResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\HavokResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\XBinResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\FlashResource.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\ArchiveCommonResources.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Utils\ArchiveUtils.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Version20\ResourceFunctions.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Version19\ResourceFunctions.cs" />
+    <Compile Include="Rendering\Core\RenderableAdapter.cs" />
+    <Compile Include="Rendering\Factories\RenderableFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\ActorDefinition.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\ActorEntry.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\ActorExtraData.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\ActorFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\Types\ActorActionPointScript.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\Types\ActorCar.cs" />
+    <Compile Include="ResourceTypes\FileTypes\BufferTypes\BufferHelpers.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\Opcode\Model.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\Opcode\OpcodeException.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\Opcode\Serialization.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\Opcode\Trees.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\Opcode\TriangleMesh.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\CollisionBuilder.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeBase.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeEffects.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeFrame.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeModel.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeOmniLight.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSoundSphereAmbient.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSound_Type33.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSoundPoint.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSpotLight.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSpotlightTarget.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSunLight.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeTargetCamera.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeScript.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSubtitles.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeParticles.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeCutEdit.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeHumanFx.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSoundListener.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeSoundEntity.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk32.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeCamera.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeUnk7.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AeVehicle.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\Enumerators.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\LightTypes\AeLightType0.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\LightTypes\AeLightType1.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\LightTypes\AeLightType2.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AnimEntity.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AnimEntityWrapper.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\Factories\CutsceneEntityFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\Factories\CutsceneKeyParamFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\Enumerators.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\IKeyType.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_0.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_13.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_18.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_19.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_21.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_27.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_28.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_30.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_39.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_40.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_43.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_6.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_Temp.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyWeatherParam.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameNameTable\FrameNameTableEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameResourceEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameResourceXML.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ItemDesc\ItemDescEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\BaseTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarGearBoxesTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarInteriorColorsTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarTrafficTuningTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarTuningModificators.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarTuningPackAvailabilityTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CharacterCinematicsTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CoreUtils.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\DecalsEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\GuiEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GameMeshBindingTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\MissionsEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GenericSpeechSituationsTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GfxContainers\DecalGroupPatternTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GfxContainers\DecalPatternTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GfxContainers\GfxEnvContainer.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GfxContainers\GfxGlassBreakTypeTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GfxContainers\GfxGlassMatTemplateTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GfxContainers\MultiDecalPatternTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GuiContainers\FlashInputMapTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GuiContainers\GameGuiContainer.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GuiContainers\GuiFontMapTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GuiContainers\GuiInputMapTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GuiContainers\GuiLanguageMapTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\GuiContainers\GuiSoundMapTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\MissionsTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\SlotTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_Barrier.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_CloseTraffic.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_EndIf.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_Factory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_If.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_LoadSDS.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_LoadVehicle.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_OpenSlot.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_OpenTraffic.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_PlayCutscene.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_PlayVideo.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_Save.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_SetPosDirPlayer.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\StreamMapEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_Suspend.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_UnlockSDS.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_UnlockVehicle.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\Command_WaitForMovie.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\Commands\ICommand.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StreamMap\StreamMapTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\PaintCombinationTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\TableEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\TrafficEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\VehicleEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\StringTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\CarColoursTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\CarMtrStuffTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\CarSkidmarksTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\CarTuningItemTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\CarWindowTintTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\TableContainer.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\VehiclesTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBin.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBinFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBinWriter.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\Enumerator.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\MaterialFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\MaterialParameter.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\MaterialTexture.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\Versions\IMaterial.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\Versions\Material_v58.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\Versions\Material_v57.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\Versions\Material_v63.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\AnimalTraffic.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\Enums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\HPD.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\OBJ_DATA\KynogonRuntimeMesh.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\OBJ_DATA\OBJData.cs" />
+    <Compile Include="ResourceTypes\FileTypes\SdsConfigFile.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\ActorEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\Actor.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\ActorTypes.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Animations\Animation2.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\CollisionEnums.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Collisions\Collisions.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\Cutscene.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\FXAnimSet.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\Speech.cs" />
+    <Compile Include="ResourceTypes\FileTypes\EntityDataStorage\EntityDataStorage.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameNameTable\FrameNameTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameEntry.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameHeader.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameResource.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectArea.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectBase.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectCamera.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectCollision.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectComponent_U005.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectDeflector.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectDummy.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectFrame.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectJoint.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectLight.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectModel.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectSector.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectSingleMesh.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ObjectTypes\FrameObjectTarget.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameBlendInfo.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameGeometry.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameHeaderScene.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameLOD.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameMaterial.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameSkeleton.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\ResourcesTypes\FrameSkeletonHierachy.cs" />
+    <Compile Include="ResourceTypes\FileTypes\BufferTypes\IndexBufferPool.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ItemDesc\CollisionTypes\CollisionBox.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ItemDesc\CollisionTypes\CollisionCapsule.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ItemDesc\CollisionTypes\CollisionSphere.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ItemDesc\CollisionTypes\CollisionConvex.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ItemDesc\ItemDescParse.cs" />
+    <Compile Include="ResourceTypes\FileTypes\AnimatedTexture.cs" />
+    <Compile Include="ResourceTypes\FileTypes\CityAreas.cs" />
+    <Compile Include="ResourceTypes\FileTypes\CityShops.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameProps.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\Roadmap.cs" />
+    <Compile Include="ResourceTypes\FileTypes\CGameData.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\TAPIndices.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\MaterialLibrary.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Material\MaterialManager.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\NAV_AI.cs" />
+    <Compile Include="ResourceTypes\FileTypes\PREFAB\Prefab.cs" />
+    <Compile Include="ResourceTypes\FileTypes\ShopMenu2.cs" />
+    <Compile Include="ResourceTypes\FileTypes\SoundSectors\SoundSector.cs" />
+    <Compile Include="ResourceTypes\FileTypes\StreamMap.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Translokator\Translokator.cs" />
+    <Compile Include="ResourceTypes\FileTypes\BufferTypes\VertexBufferPool.cs" />
+    <Compile Include="Gibbed.Illusion.FileFormats\BlockReaderStream.cs" />
+    <Compile Include="Gibbed.Illusion.FileFormats\BlockWriterStream.cs" />
+    <Compile Include="Gibbed.Illusion.FileFormats\FNV32.cs" />
+    <Compile Include="Gibbed.Illusion.FileFormats\FNV64.cs" />
+    <Compile Include="Gibbed.Illusion.FileFormats\StreamHelpers.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\IResourceType.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\MemFileResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\ScriptData.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\ScriptResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\SoundResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\TableData.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\TableResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\TextureResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\XmlResource.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\XmlResource0.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\XmlResource1.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\ArchiveEncryption.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\ArchiveFile.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\ArchiveSerializeOptions.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Archive\FileHeader.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Archive\Platform.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Archive\ResourceEntry.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Archive\ResourceHeader.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\Archive\ResourceType.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\PatchFile.cs" />
+    <Compile Include="Gibbed.Mafia2.FileFormats\TEA.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\M2TStructure.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\M3_Experiments.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\ModelDefinition.cs" />
+    <Compile Include="Rendering\Core\GizmoTool.cs" />
+    <Compile Include="Rendering\Core\Profiler.cs" />
+    <Compile Include="Rendering\Graphics\ConstantBufferFactory.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\IRenderer.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\Render2DPlane.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderATP.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderFrame.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderInstance.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderJunction.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderLine.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderNav.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderNavCell.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderRoad.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderStaticCollision.cs" />
+    <Compile Include="Rendering\Graphics\Shaders\CollisionShader.cs" />
+    <Compile Include="Rendering\Graphics\Shaders\Shader_50760736.cs" />
+    <Compile Include="Rendering\Graphics\WorldSettings.cs" />
+    <Compile Include="Rendering\RenderPrefabs.cs" />
+    <Compile Include="Rendering\Core\SpatialCell.cs" />
+    <Compile Include="Rendering\Core\SpatialGrid.cs" />
+    <Compile Include="Utils\Helpers\MatrixExtensions.cs" />
+    <Compile Include="Utils\Helpers\BoundExtensions.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\Enums.cs" />
+    <Compile Include="Utils\Helpers\FBXHelper.cs" />
+    <Compile Include="Utils\Helpers\LuaHelper.cs" />
+    <Compile Include="Utils\Helpers\PhysXHelper.cs" />
+    <Compile Include="Utils\Helpers\Reflection\ReflectionAttributes.cs" />
+    <Compile Include="Utils\Helpers\Reflection\ReflectionHelpers.cs" />
+    <Compile Include="Utils\Helpers\StreamExtensions.cs" />
+    <Compile Include="Utils\Helpers\StringHelpers.cs" />
+    <Compile Include="Utils\Settings\GameStorage.cs" />
+    <Compile Include="Utils\Types\Half.cs" />
+    <Compile Include="Utils\Helpers\HalfHelper.cs" />
+    <Compile Include="Utils\Logger.cs" />
+    <Compile Include="Utils\Types\SDSContentFile.cs" />
+    <Compile Include="Utils\Types\Types.cs" />
+    <Compile Include="Utils\Helpers\VectorExtensions.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\Vertex.cs" />
+    <Compile Include="ResourceTypes\ModelHelpers\VertexTranslator.cs" />
+    <Compile Include="Rendering\Graphics\RenderSingleton.cs" />
+    <Compile Include="Rendering\Graphics\Shaders\BaseShader.cs" />
+    <Compile Include="Rendering\Graphics\Camera.cs" />
+    <Compile Include="Rendering\Graphics\DDSTexLoader.cs" />
+    <Compile Include="Rendering\Graphics\DirectX11Class.cs" />
+    <Compile Include="Forms\CityShopEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CityShopEditor.Designer.cs">
+      <DependentUpon>CityShopEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FrameResourceAddSceneOption.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\FrameResourceAddSceneOption.Designer.cs">
+      <DependentUpon>FrameResourceAddSceneOption.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ControlOptionFrameAdd.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ControlOptionFrameAdd.Designer.cs">
+      <DependentUpon>ControlOptionFrameAdd.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MaterialAddOption.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\MaterialAddOption.Designer.cs">
+      <DependentUpon>MaterialAddOption.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CityAreaEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CityAreaEditor.Designer.cs">
+      <DependentUpon>CityAreaEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ActorEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ActorEditor.Designer.cs">
+      <DependentUpon>ActorEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SDSContentEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SDSContentEditor.Designer.cs">
+      <DependentUpon>SDSContentEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SpeechEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SpeechEditor.Designer.cs">
+      <DependentUpon>SpeechEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Utils\DiscordRPC\DiscordController.cs" />
+    <Compile Include="Utils\DiscordRPC\DiscordRPC.cs" />
+    <Compile Include="Forms\GameExplorer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GameExplorer.Designer.cs">
+      <DependentUpon>GameExplorer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SplashForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SplashForm.Designer.cs">
+      <DependentUpon>SplashForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TableEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TableEditor.Designer.cs">
+      <DependentUpon>TableEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Graphics\GraphicsClass.cs" />
+    <Compile Include="Rendering\Graphics\LightClass.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderBoundingBox.cs" />
+    <Compile Include="Rendering\Graphics\Shaders\DebugShader.cs" />
+    <Compile Include="Rendering\Graphics\Shaders\DefaultShader.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderModel.cs" />
+    <Compile Include="Controls\ModelOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ModelOptions.Designer.cs">
+      <DependentUpon>ModelOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MTLOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\MTLOptions.Designer.cs">
+      <DependentUpon>MTLOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Graphics\ShaderManager.cs" />
+    <Compile Include="Rendering\Graphics\Shaders\Shader_601151254.cs" />
+    <Compile Include="Rendering\Graphics\TextureClass.cs" />
+    <Compile Include="Rendering\Input\InputClass.cs" />
+    <Compile Include="Utils\Helpers\Extensions.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Utils\Types\IniFile.cs" />
+    <Compile Include="Forms\MaterialEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MaterialEditor.Designer.cs">
+      <DependentUpon>MaterialEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GeneralOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GeneralOptions.Designer.cs">
+      <DependentUpon>GeneralOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SDSOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\SDSOptions.Designer.cs">
+      <DependentUpon>SDSOptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\OptionsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\OptionsForm.Designer.cs">
+      <DependentUpon>OptionsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Utils\Settings\Language.cs" />
+    <Compile Include="Utils\SceneData.cs" />
+    <Compile Include="Utils\Settings\ToolkitSettings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="build.cmd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Configs\App.config" />
+    <None Include="Configs\packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApexSDK\ApexClothingAsset.cs" />
+    <Content Include="build.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="games.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\discord-rpc.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\Gibbed.IO.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\Gibbed.Squish.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\ICSharpCode.SharpZipLib.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\oo2core_8_win64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\OodleSharp.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\squish_32.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\squish_64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\UnluacNET.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libs\zlibnet.dll" />
+    <Content Include="Localisations\cz_CZ.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Localisations\en_gb.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Localisations\fr_FR.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Localisations\pl_PL.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Localisations\ru_RU.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Localisations\sk_SK.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\cross.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\default_n.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\GizmoModel.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\hashes.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\GameImages\m2de_logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\GameImages\m2_logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\MissingMaterial.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\sky_backdrop.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\SoundDummy.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\texture.dds">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\tick.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\weather_clouds.m2t">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Content Include="Resources\GameData\M1_Textures.txt" />
+    <Content Include="Resources\GameData\M3DE_ResourceNameDatabase.txt" />
+    <Content Include="Resources\GameImages\m1de_logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\games_release.xml" />
+    <Content Include="Shaders\CollisionPS.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\CollisionVS.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\DebugPS.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\DebugVS.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\LightPS.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Shaders\LightVS.hlsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="packages.config" />
+    <Compile Include="Rendering\Graphics\VertexLayouts.cs" />
+    <None Include="Resources\Splash.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Toolkit.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\ActorItemAddOption.resx">
+      <DependentUpon>ActorItemAddOption.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ControlGameEntry.resx">
+      <DependentUpon>ControlGameEntry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ListWindow.resx">
+      <DependentUpon>ListWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FrameResourceModelOptions.resx">
+      <DependentUpon>FrameResourceModelOptions.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\RenderOptions.resx">
+      <DependentUpon>RenderOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\NewObjectWindow.resx">
+      <DependentUpon>NewObjectWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\TextureEntry.resx">
+      <DependentUpon>TextureEntry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CutsceneEditor.resx">
+      <DependentUpon>CutsceneEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EntityDataStorageEditor.resx">
+      <DependentUpon>EntityDataStorageEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CityShopEditor.resx">
+      <DependentUpon>CityShopEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\FrameResourceAddSceneOption.resx">
+      <DependentUpon>FrameResourceAddSceneOption.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ControlOptionFrameAdd.resx">
+      <DependentUpon>ControlOptionFrameAdd.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MaterialAddOption.resx">
+      <DependentUpon>MaterialAddOption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CityAreaEditor.resx">
+      <DependentUpon>CityAreaEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ActorEditor.resx">
+      <DependentUpon>ActorEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Docking\DockPropertyGrid.resx">
+      <DependentUpon>DockPropertyGrid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Docking\DockViewProperties.resx">
+      <DependentUpon>DockViewProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Docking\DockSceneTree.resx">
+      <DependentUpon>DockSceneTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GameSelector.resx">
+      <DependentUpon>GameSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\M2FBXTool.resx">
+      <DependentUpon>M2FBXTool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MaterialBrowser.resx">
+      <DependentUpon>MaterialBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\XBinEditor.resx">
+      <DependentUpon>XBinEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SDSContentEditor.resx">
+      <DependentUpon>SDSContentEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ShopMenu2Editor.resx">
+      <DependentUpon>ShopMenu2Editor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\PrefabEditor.resx">
+      <DependentUpon>PrefabEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\StreamEditor.resx">
+      <DependentUpon>StreamEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SpeechEditor.resx">
+      <DependentUpon>SpeechEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GameExplorer.resx">
+      <DependentUpon>GameExplorer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MaterialEditor.resx">
+      <DependentUpon>MaterialEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SplashForm.resx">
+      <DependentUpon>SplashForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TableEditor.resx">
+      <DependentUpon>TableEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MapEditor.resx">
+      <DependentUpon>MapEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\GeneralOptions.resx">
+      <DependentUpon>GeneralOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ModelOptions.resx">
+      <DependentUpon>ModelOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\MTLOptions.resx">
+      <DependentUpon>MTLOptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\SDSOptions.resx">
+      <DependentUpon>SDSOptions.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OptionsForm.resx">
+      <DependentUpon>OptionsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TranslokatorEditor.resx">
+      <DependentUpon>TranslokatorEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>call "$(TargetDir)build.cmd"
+cd $(TargetDir)
+del *.py
+del *.cmd</PostBuildEvent>
+  </PropertyGroup>
+</Project>

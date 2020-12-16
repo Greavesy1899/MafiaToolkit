@@ -1,0 +1,34 @@
+﻿<Games>
+	<Game>
+		<Name>Mafia II</Name>
+		<Description>The original game from 2010.</Description>
+		<LogoPath>Resources/GameImages/m2_logo.jpg</LogoPath>
+		<DirectoryKey>M2_Directory</DirectoryKey>
+		<MaterialKey>M2_Materials</MaterialKey>
+		<Type>MafiaII</Type>
+	</Game>
+	<Game>
+		<Name>Mafia II: Definitive Edition</Name>
+		<Description>The remastered version of the game from 2020.</Description>
+		<LogoPath>Resources/GameImages/m2de_logo.jpg</LogoPath>
+		<DirectoryKey>M2DE_Directory</DirectoryKey>
+		<MaterialKey>M2DE_Materials</MaterialKey>
+		<Type>MafiaII_DE</Type>
+	</Game>
+		<Game>
+		<Name>Mafia III: Definitive Edition</Name>
+		<Description>The third installment from 2016</Description>
+		<LogoPath>Resources/GameImages/m3_logo.jpg</LogoPath>
+		<DirectoryKey>M3_Directory</DirectoryKey>
+		<MaterialKey>M3_Materials</MaterialKey>
+		<Type>MafiaIII</Type>
+	</Game>
+	<Game>
+		<Name>Mafia: Definitive Edition</Name>
+		<Description>The remake of the first installment from 2020.</Description>
+		<LogoPath>Resources/GameImages/m1de_logo.jpg</LogoPath>
+		<DirectoryKey>M1DE_Directory</DirectoryKey>
+		<MaterialKey>M1DE_Materials</MaterialKey>
+		<Type>MafiaI_DE</Type>
+	</Game>
+</Games>

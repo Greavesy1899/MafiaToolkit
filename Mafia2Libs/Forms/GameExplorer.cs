@@ -3,26 +3,14 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
-using Gibbed.Mafia2.FileFormats;
-using Gibbed.Mafia2.FileFormats.Archive;
 using Utils.Extensions;
-using ApexSDK;
 using System.Drawing;
 using Utils.Language;
-using Utils.Logging;
 using Utils.Settings;
-using ResourceTypes.Cutscene;
-using ResourceTypes.Navigation;
-using ResourceTypes.Prefab;
-using ResourceTypes.Sound;
-using ResourceTypes.SDSConfig;
-using Utils.Lua;
 using ResourceTypes.Misc;
 using Mafia2Tool.Forms;
-using ResourceTypes.FrameResource;
 using SharpDX;
-using Collision = ResourceTypes.Collisions.Collision;
-using System.Text;
+using Core.IO;
 
 namespace Mafia2Tool
 {
@@ -106,12 +94,15 @@ namespace Mafia2Tool
             game = GameStorage.Instance.GetSelectedGame();
             pcDirectory = new DirectoryInfo(game.Directory);
             launcher = new FileInfo(pcDirectory.FullName + "/" + GameStorage.GetExecutableName(game.GameType));
-            rootDirectory = pcDirectory.Parent;
 
             if(!launcher.Exists)
             {
-                MessageBox.Show("Could not find executable!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Close();
+                DialogResult result = MessageBox.Show("Could not find executable! Would you like to change the selected game?", "Toolkit", MessageBoxButtons.OKCancel, MessageBoxIcon.Error);
+                if(result == DialogResult.OK)
+                {
+                    OpenGameSelectorWindow();
+                }
+                //Close();
                 return;
             }
 
@@ -130,11 +121,20 @@ namespace Mafia2Tool
         private void InitTreeView()
         {
             infoText.Text = "Building folders..";
-            rootDirectory = pcDirectory.Parent;
+
+            if (game.GameType != GamesEnumerator.MafiaIII && game.GameType != GamesEnumerator.MafiaI_DE)
+            {
+                rootDirectory = pcDirectory.Parent;
+            }
+            else
+            {
+                rootDirectory = pcDirectory;
+            }
+
             TreeNode rootTreeNode = new TreeNode(rootDirectory.Name);
             rootTreeNode.Tag = rootDirectory;
             folderView.Nodes.Add(rootTreeNode);
-            infoText.Text = "Done builidng folders..";
+            infoText.Text = "Done building folders..";
             OpenDirectory(rootDirectory);
         }
 
@@ -170,8 +170,12 @@ namespace Mafia2Tool
                 return;
             }
 
+            DirectoryBase directoryInfo = new DirectoryBase(directory);
+
             foreach (DirectoryInfo dir in directory.GetDirectories())
             {
+                DirectoryBase childInfo = new DirectoryBase(dir);
+
                 if (searchMode && !string.IsNullOrEmpty(filename))
                 {
                     if (!dir.Name.Contains(filename))
@@ -180,7 +184,7 @@ namespace Mafia2Tool
                     }
                 }
                 item = new ListViewItem(dir.Name, 0);
-                item.Tag = dir;
+                item.Tag = childInfo;
                 subItems = new ListViewItem.ListViewSubItem[]
                 {
                     new ListViewItem.ListViewSubItem(item, "Directory"),
@@ -191,30 +195,37 @@ namespace Mafia2Tool
                 fileListView.Items.Add(item);
             }
 
-            foreach (FileInfo file in directory.GetFiles())
+            foreach (FileInfo info in directory.GetFiles())
             {
-                if (!imageBank.Images.ContainsKey(file.Extension))
+                if (!imageBank.Images.ContainsKey(info.Extension))
                 {
-                    imageBank.Images.Add(file.Extension, Icon.ExtractAssociatedIcon(file.FullName));
+                    var icon = Icon.ExtractAssociatedIcon(info.FullName);
+                    if (icon != null)
+                    {
+                        imageBank.Images.Add(info.Extension, icon);
+                    }
                 }
 
                 if (searchMode && !string.IsNullOrEmpty(filename))
                 {
-                    if (!file.Name.Contains(filename))
+                    if (!info.Name.Contains(filename))
                     {
                         continue;
                     }
                 }
 
-                item = new ListViewItem(file.Name, imageBank.Images.IndexOfKey(file.Extension));
+                var file = FileFactory.ConstructFromFileInfo(info);
+
+                item = new ListViewItem(info.Name, imageBank.Images.IndexOfKey(info.Extension));
                 item.Tag = file;
                 subItems = new ListViewItem.ListViewSubItem[]
                 {
-                    new ListViewItem.ListViewSubItem(item, DetermineFileType(file.Extension)),
-                    new ListViewItem.ListViewSubItem(item, file.CalculateFileSize()),
-                    new ListViewItem.ListViewSubItem(item, file.LastWriteTime.ToShortDateString()),
+                    new ListViewItem.ListViewSubItem(item, file.GetExtensionUpper()),
+                    new ListViewItem.ListViewSubItem(item, file.GetFileSizeAsString()),
+                    new ListViewItem.ListViewSubItem(item, file.GetLastTimeWrite()),
                 };
 
+                directoryInfo.AddLoadedFile(file);
                 item.SubItems.AddRange(subItems);
                 fileListView.Items.Add(item);
             }
@@ -226,7 +237,7 @@ namespace Mafia2Tool
             FolderPath.Text = directoryPath;
             fileListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
-            //we have to remove the AfterExpand event before we expand the node.
+            // We have to remove the AfterExpand event before we expand the node.
             folderView.AfterExpand -= FolderViewAfterExpand;
             TreeNode folderNode = folderView.Nodes.FindTreeNodeByFullPath(directoryPath);
 
@@ -245,87 +256,9 @@ namespace Mafia2Tool
             folderView.AfterExpand += FolderViewAfterExpand;
         }
 
-        /// <summary>
-        /// Pack an SDS from the FileInfo given.
-        /// </summary>
-        /// <param name="file">location of SDS.</param>
-        private void PackSDS(FileInfo file)
+        private void OpenSDSDirectory(FileInfo file, bool openDirectory = true)
         {
-
-            if (file == null)
-                MessageBox.Show("File is null");
-
-            //begin..
-            infoText.Text = "Saving SDS..";
-            ArchiveFile archiveFile = new ArchiveFile();
-            archiveFile.Platform = Platform.PC;
-            //MII: DE no longer has this data in the header.
-            if(game.GameType == GamesEnumerator.MafiaII)
-            {
-                archiveFile.Unknown20 = new byte[16] { 55, 51, 57, 55, 57, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-            }
-            //end of game specific code.
-            if(!archiveFile.BuildResources(file.Directory.FullName + "/extracted/" + file.Name))
-            {
-                MessageBox.Show("Failed to pack SDS.", "Toolkit", MessageBoxButtons.OK);
-                return;
-            }
-
-            foreach (ResourceEntry entry in archiveFile.ResourceEntries)
-            {
-                if (entry.Data == null)
-                {
-                    throw new FormatException();
-                }
-            }
-            using (var output = File.Create(file.FullName))
-            {
-                archiveFile.Serialize(output, ToolkitSettings.SerializeSDSOption == 0 ? ArchiveSerializeOptions.OneBlock : ArchiveSerializeOptions.Compress);
-            }
-            infoText.Text = "Saved SDS.";
-            archiveFile = null;
-        }
-
-        private void OpenSDS(FileInfo file, bool openDirectory = true)
-        {
-            string backupFolder = Path.Combine(file.Directory.FullName, "BackupSDS");
             string extractedFolder = Path.Combine(file.Directory.FullName, "extracted");
-
-            //backup file before unpacking..
-            if (!Directory.Exists(backupFolder))
-            {
-                Directory.CreateDirectory(backupFolder);
-            }
-
-            //place copy in new folder.
-            string time = string.Format("{0}_{1}_{2}_{3}_{4}", DateTime.Now.TimeOfDay.Hours, DateTime.Now.TimeOfDay.Minutes, DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
-            string filename = ToolkitSettings.AddTimeDataBackup == true ? file.Name.Insert(file.Name.Length - 4, "_" + time) : file.Name;
-            File.Copy(file.FullName, Path.Combine(backupFolder, filename), true);
-
-            Log.WriteLine("Opening SDS: " + file.Name);
-            fileListView.Items.Clear();
-            ArchiveFile archiveFile;
-            using (var input = File.OpenRead(file.FullName))
-            {
-                using (Stream data = ArchiveEncryption.Unwrap(input))
-                {
-                    archiveFile = new ArchiveFile();
-                    archiveFile.Deserialize(data ?? input);
-                }
-            }
-
-            Log.WriteLine("Succesfully unwrapped compressed data");
-
-            archiveFile.SaveResources(file);
-
-            //if(File.Exists(file.FullName + ".patch") && GameStorage.Instance.GetSelectedGame().GameType == GamesEnumerator.MafiaII_DE)
-            //{
-            //    DialogResult result = MessageBox.Show("Detected Patch file. Would you like to unpack?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            //    if(result == DialogResult.Yes)
-            //    {
-            //        archiveFile.ExtractPatch(new FileInfo(file.FullName + ".patch"));
-            //    }
-            //}
 
             if (openDirectory)
             {
@@ -351,79 +284,6 @@ namespace Mafia2Tool
             }  
         }
 
-        private void HandleLuaFile(FileInfo file)
-        {
-            bool doDecompile = false;
-            using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
-            {
-                if (reader.ReadInt32() == 1635077147)
-                    doDecompile = true;
-            }
-
-            if (doDecompile)
-                LuaHelper.ReadFile(file);
-            else Process.Start(file.FullName);
-
-            OnRefreshButtonClicked(null, null);
-        }
-
-        private void HandleSDSMap(FileInfo info, bool forceBigEndian = false)
-        {
-            //make sure to load materials.
-            MaterialData.Load();
-
-
-            //we now build scene data from GameExplorer rather than d3d viewer.
-            SceneData.ScenePath = info.DirectoryName;
-            SceneData.BuildData(forceBigEndian);
-
-            //d3d viewer expects data inside scenedata.
-            D3DForm d3dForm = new D3DForm(info);
-            d3dForm.Dispose();
-        }
-
-        private bool HandleStreamMap(FileInfo file)
-        {
-            using (BinaryReader reader = new BinaryReader(File.Open(file.FullName, FileMode.Open)))
-            {
-                if (reader.ReadInt32() == 1299346515)
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Check extension and return file type string.
-        /// </summary>
-        /// <param name="extension">extension of file.</param>
-        private string DetermineFileType(string extension)
-        {
-            //TODO. Sort extensions with localisations.
-            switch (extension)
-            {
-                case ".sds":
-                    return "SDS Archive";
-                case ".patch":
-                    return "PATCH Archive";
-                case ".dds":
-                    return "Direct-Draw Surface";
-                case ".spe":
-                    return "Speech Data";
-                case ".exe":
-                    return "Executable";
-                case ".dll":
-                    return "Dynamic-Link Library";
-                case ".mtl":
-                    return "Material Library";
-                case ".tbl":
-                    return "Table";
-                case "": //fix for content files.
-                    return "File";
-                default:
-                    return extension.Remove(0, 1).ToUpper();
-            }
-        }
-
         private void toolStrip1_Resize(object sender, EventArgs e)
         {
             int width = toolStrip2.DisplayRectangle.Width;
@@ -442,11 +302,29 @@ namespace Mafia2Tool
         private void listView1_ItemActivate(object sender, EventArgs e)
         {
             if (fileListView.SelectedItems.Count > 0)
+            {
                 HandleFile(fileListView.SelectedItems[0]);
+            }
         }
 
+        private bool OpenFile(FileBase asset)
+        {
+            if(!asset.Open())
+            {
+                return false;
+            }
 
-        //Improve this, its bad.
+            if (asset is FileSDS)
+            {
+                OpenSDSDirectory(asset.GetUnderlyingFileInfo());
+            }
+            else
+            {
+                OpenDirectory(currentDirectory);
+            }
+            return true;
+        }
+
         private void HandleFile(ListViewItem item)
         {
             if (ToolkitSettings.UseSDSToolFormat)
@@ -454,11 +332,12 @@ namespace Mafia2Tool
                 switch (item.SubItems[1].Text)
                 {
                     case "Directory":
-                        OpenDirectory((DirectoryInfo)item.Tag);
+                        var directory = (item.Tag as DirectoryBase);
+                        OpenDirectory(directory.GetDirectoryInfo());
                         return;
-                    case "SDS Archive":
-                        OpenSDS((FileInfo)item.Tag);
-                        break;
+                    case "SDS":
+                        OpenFile(item.Tag as FileBase);
+                        return;
                     default:
                         Process.Start(((FileInfo)item.Tag).FullName);
                         break;
@@ -466,151 +345,20 @@ namespace Mafia2Tool
                 return;
             }
 
-            MaterialTool mTool;
-            ActorEditor aTool;
-            PrefabLoader prefabs;
-            SpeechEditor sTool;
-            CutsceneLoader cutscene;
-            IOFxFile iofx;
-            EmitterFile emitterFile;
-            TableEditor tTool;
-            NAVData nav;
-            ApexRenderMesh mesh;
-            ApexClothingAssetLoader aca;
-            CityAreaEditor caEditor;
-            CityShopEditor csEditor;
-            SoundSectorLoader soundSector;
-
-            //special case:
-            if (item.SubItems[0].Text.Contains("SDSContent") && item.SubItems[1].Text == "XML")
+            if(item.Tag is FileBase)
             {
-                new SDSContentEditor((FileInfo)item.Tag);
-                return;
-            }
-            else if (item.SubItems[0].Text.Contains("cityareas") && item.SubItems[1].Text == "BIN")
-            {
-                caEditor = new CityAreaEditor((FileInfo)item.Tag);
-                return;
-            }
-            else if (item.SubItems[0].Text.Contains("FrameProps") && item.SubItems[1].Text == "BIN")
-            {
-                FrameProps fProps = new FrameProps((FileInfo)item.Tag);
-                return;
-            }
-            else if (item.SubItems[0].Text.Contains("cityshop") && item.SubItems[1].Text == "BIN")
-            {
-                csEditor = new CityShopEditor((FileInfo)item.Tag);
-                return;
-            }
-            else if (item.SubItems[0].Text.Contains("roadmap") && item.SubItems[1].Text == "GSD")
-            {
-                Roadmap roadmap = new Roadmap((item.Tag as FileInfo));
-                return;
-            }
-            else if (item.SubItems[0].Text.Contains("shopmenu2") && item.SubItems[1].Text == "BIN")
-            {
-                ShopMenu2Editor editor = new ShopMenu2Editor((item.Tag as FileInfo));
-                return;
-            }
-            else if (item.SubItems[1].Text == "BIN" && HandleStreamMap((item.Tag as FileInfo)))
-            {
-                StreamEditor editor = new StreamEditor((item.Tag as FileInfo));
-                return;
-            }
-            else if (item.SubItems[1].Text == "BIN" && CGameData.CheckHeader((item.Tag as FileInfo)))
-            {
-                CGameData data = new CGameData((item.Tag as FileInfo));
-                return;
-            }
-            else if (item.SubItems[0].Text.Contains("sdsconfig") && item.SubItems[1].Text == "BIN")
-            {
-                using (BinaryReader reader = new BinaryReader(File.Open((item.Tag as FileInfo).FullName, FileMode.Open)))
+                var asset = (item.Tag as FileBase);
+                
+                if(OpenFile(asset))
                 {
-                    SdsConfigFile sdsConfig = new SdsConfigFile();
-                    sdsConfig.ReadFromFile(reader);
+                    return;
                 }
-                return;
             }
-
-            switch (item.SubItems[1].Text)
+            else if(item.SubItems[1].Text.Equals("Directory"))
             {
-
-                case "ARM":
-                    mesh = new ApexRenderMesh((FileInfo)item.Tag);
-                    return;
-                case "ATP":
-                    AnimalTrafficLoader loader = new AnimalTrafficLoader((FileInfo)item.Tag);
-                    return;
-                case "ACA":
-                    aca = new ApexClothingAssetLoader((FileInfo)item.Tag);
-                    return;
-                case "Directory":
-                    OpenDirectory((DirectoryInfo)item.Tag);
-                    return;
-                case "Material Library":
-                    mTool = new MaterialTool((FileInfo)item.Tag);
-                    return;
-                case "NAV":
-                case "NOV":
-                case "NHV":
-                    nav = new NAVData((FileInfo)item.Tag);
-                    return;
-                case "Speech Data":
-                    sTool = new SpeechEditor((FileInfo)item.Tag);
-                    return;
-                case "CUT":
-                    cutscene = new CutsceneLoader((FileInfo)item.Tag);
-                    return;
-                case "SDS Archive":
-                    OpenSDS((FileInfo)item.Tag);
-                    break;
-                //case "PATCH Archive":
-                //    OpenPATCH((FileInfo)item.Tag);
-                //    break;
-                case "FR":
-                    HandleSDSMap((FileInfo)item.Tag);
-                    return;
-                case "COL":
-                    MessageBox.Show("$COLLISION_EDITOR_REMOVED", "Toolkit", MessageBoxButtons.OK);
-                    return;
-                case "IOFX":
-                    iofx = new IOFxFile((FileInfo)item.Tag);
-                    return;
-                case "AEA":
-                    emitterFile = new EmitterFile((FileInfo)item.Tag);
-                    return;
-                case "Table":
-                    tTool = new TableEditor((FileInfo)item.Tag);
-                    return;
-                case "TRA":
-                    TranslokatorEditor editor = new TranslokatorEditor((FileInfo)item.Tag);
-                    return;
-                case "ACT":
-                    aTool = new ActorEditor((FileInfo)item.Tag);
-                    break;
-                case "PRF":
-                    prefabs = new PrefabLoader((FileInfo)item.Tag);
-                    return;
-                case "LUA":
-                case "AP":
-                case "SHP":
-                    HandleLuaFile((FileInfo)item.Tag);
-                    return;
-                case "IFL":
-                    ResourceTypes.AnimatedTexture.AnimatedTextureLoader an = new ResourceTypes.AnimatedTexture.AnimatedTextureLoader((FileInfo)item.Tag);
-                    return;
-                case "IDS":
-                    ResourceTypes.ItemDesc.ItemDescLoader itemDesc = new ResourceTypes.ItemDesc.ItemDescLoader((item.Tag as FileInfo).FullName);
-                    return;
-                case "BIN":
-                    SoundSectorLoader sLoader = new SoundSectorLoader(item.Tag as FileInfo);
-                    return;
-                case "EDS":
-                    EntityDataStorageEditor edsEditor = new EntityDataStorageEditor(item.Tag as FileInfo);
-                    return;
-                default:
-                    Process.Start(((FileInfo)item.Tag).FullName);
-                    break;
+                var directory = (item.Tag as DirectoryBase);
+                OpenDirectory(directory.GetDirectoryInfo());
+                return;
             }
         }
 
@@ -622,7 +370,8 @@ namespace Mafia2Tool
                 return;
             }
 
-            var info = fileListView.SelectedItems[0].Tag as FileInfo;
+            var file = fileListView.SelectedItems[0].Tag as FileBase;
+            var info = file.GetUnderlyingFileInfo();
 
             if(info.Attributes.HasFlag(FileAttributes.ReadOnly))
             {
@@ -636,14 +385,21 @@ namespace Mafia2Tool
                 info.Attributes -= FileAttributes.ReadOnly;
             }
 
-            PackSDS(info);
+            if(file is FileSDS)
+            {
+                (file as FileSDS).Save();
+                infoText.Text = string.Format("Packed SDS: {0}", file.GetName());
+            }
         }
+
         private void ContextSDSUnpack_Click(object sender, EventArgs e)
         {
             foreach (ListViewItem item in fileListView.SelectedItems)
             {
-                if (item.SubItems[1].Text == "SDS Archive")
-                    HandleFile(item);
+                if(item.Tag is FileSDS)
+                {
+                    (item.Tag as FileSDS).Open();
+                }
             }
         }
 
@@ -654,41 +410,50 @@ namespace Mafia2Tool
                 string newDir = FolderPath.Text;
                 int idx = newDir.IndexOf(rootDirectory.Name);
                 if (newDir.IndexOf(rootDirectory.Name) == 0)
+                {
                     newDir = Path.Combine(rootDirectory.Parent.FullName, FolderPath.Text);
+                }
 
                 if (Directory.Exists(newDir) && FolderPath.Text.Contains(currentDirectory.Name))
+                {
                     OpenDirectory(new DirectoryInfo(newDir));
+                }
                 else
+                {
                     MessageBox.Show("Game Explorer cannot find path '" + newDir + "'. Make sure the path exists and try again.", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                }
             }
         }
+
         private void ContextOpenFolder_Click(object sender, EventArgs e)
         {
             Process.Start(currentDirectory.FullName);
         }
+
         private void OnOpening(object sender, CancelEventArgs e)
         {
-            GEContext.Items[0].Visible = false;
-            GEContext.Items[1].Visible = false;
-            //GEContext.Items[6].Visible = false;
+            ContextSDSUnpack.Visible = false;
+            ContextSDSPack.Visible = false;
+            ContextForceBigEndian.Visible = false;
 
             if (fileListView.SelectedItems.Count == 0)
             {
                 return;
             }
 
-            if (fileListView.SelectedItems[0].Tag.GetType() == typeof(FileInfo))
+            if (fileListView.SelectedItems[0].Tag is FileBase)
             {
-                string extension = (fileListView.SelectedItems[0].Tag as FileInfo).Extension;
+                string extension = (fileListView.SelectedItems[0].Tag as FileBase).GetExtensionUpper();
 
-                if (extension == ".sds")
+                if (extension == "SDS")
                 {
-                    GEContext.Items[0].Visible = true;
-                    GEContext.Items[1].Visible = true;
+                    ContextSDSUnpack.Visible = true;
+                    ContextSDSPack.Visible = true;
                 }
-                else if(extension == ".fr")
+                else if(extension == "FR")
                 {
-                    //GEContext.Items[6].Visible = true;
+                    ContextForceBigEndian.Visible = true;
                 }
             }
         }
@@ -709,8 +474,10 @@ namespace Mafia2Tool
         {
             foreach (ListViewItem item in fileListView.Items)
             {
-                if (item.SubItems[1].Text == "SDS Archive")
-                    HandleFile(item);
+                if(item.Tag is FileSDS)
+                {
+                    (item.Tag as FileSDS).Open();
+                }
             }
         }
 
@@ -791,7 +558,16 @@ namespace Mafia2Tool
         private void OnViewSmallIconClicked(object sender, EventArgs e) => FileListViewTypeController(2);
         private void OnViewListClicked(object sender, EventArgs e) => FileListViewTypeController(3);
         private void OnViewTileClicked(object sender, EventArgs e) => FileListViewTypeController(4);
-        private void UnpackAllSDSButton_Click(object sender, EventArgs e) => UnpackSDSRecurse(rootDirectory);
+        private void UnpackAllSDSButton_Click(object sender, EventArgs e)
+        {
+            DialogResult Result = MessageBox.Show("Are you sure you want to unpack all SDS Archives?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (Result == DialogResult.No)
+            {
+                return;
+            }
+
+            UnpackSDSRecurse(rootDirectory);
+        }
 
         private void OnCredits_Pressed(object sender, EventArgs e)
         {
@@ -811,7 +587,9 @@ namespace Mafia2Tool
         private void OnKeyPressed(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 0x8)
+            {
                 OnUpButtonClicked(null, null);
+            }
         }
 
         private void FolderViewAfterExpand(object sender, TreeViewEventArgs e)
@@ -821,7 +599,9 @@ namespace Mafia2Tool
                 DirectoryInfo dir = (DirectoryInfo)e.Node.Tag;
 
                 if (currentDirectory != dir)
+                {
                     OpenDirectory(dir);
+                }
             }
         }
 
@@ -832,12 +612,26 @@ namespace Mafia2Tool
 
         private void CheckValidSDS(FileInfo info)
         {
-            if (info.Extension.Contains(".sds"))
+            var file = FileFactory.ConstructFromFileInfo(info);
+
+            if(file is FileSDS)
             {
+                var SDSFile = (file as FileSDS);
                 Debug.WriteLine("Unpacking " + info.FullName);
-                OpenSDS(info, false);
+                SDSFile.Open();
+                //OpenSDSDirectory(SDSFile.GetUnderlyingFileInfo(), false);
             }
         }
+
+        private void OpenGameSelectorWindow()
+        {
+            GameSelector selector = new GameSelector();
+            if (selector.ShowDialog() == DialogResult.OK)
+            {
+                InitExplorerSettings();
+            }
+        }
+
         private void UnpackSDSRecurse(DirectoryInfo info)
         {
             foreach (var file in info.GetFiles())
@@ -847,7 +641,10 @@ namespace Mafia2Tool
 
             foreach (var directory in info.GetDirectories())
             {
-                UnpackSDSRecurse(directory);
+                if (!directory.Name.Contains("BackupSDS"))
+                {
+                    UnpackSDSRecurse(directory);
+                }
             }
 
             Debug.WriteLine("Finished Unpack All SDS Function");
@@ -855,15 +652,43 @@ namespace Mafia2Tool
 
         private void ContextForceBigEndian_Click(object sender, EventArgs e)
         {
-            HandleSDSMap((FileInfo)fileListView.SelectedItems[0].Tag, true);
+            var file = (fileListView.SelectedItems[0].Tag as FileBase);
+            if(file is FileFrameResource)
+            {
+                FileFrameResource frameResource = (file as FileFrameResource);
+                frameResource.SetBigEndian(true);
+                frameResource.Open();
+            }
         }
 
         private void Button_SelectGame_OnClick(object sender, EventArgs e)
         {
-            GameSelector selector = new GameSelector();
-            if(selector.ShowDialog() == DialogResult.OK)
+            OpenGameSelectorWindow();
+        }
+
+        private void ListView_OnDragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
+        }
+
+        private void ListView_OnDragLeave(object sender, EventArgs e)
+        {
+        }
+
+        private void ListView_OnDragDrop(object sender, DragEventArgs e)
+        {
+            var formats = e.Data.GetFormats();
+            if(e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                InitExplorerSettings();
+                string[] s = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+
+                if (s.Length > 0)
+                {
+                    FileInfo info = new FileInfo(s[0]);
+                    FileBase file = FileFactory.ConstructFromFileInfo(info);
+                    bool result = OpenFile(file);
+                }
+
             }
         }
     }

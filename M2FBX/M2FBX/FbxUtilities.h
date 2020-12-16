@@ -9,4 +9,7 @@
 
 void InitializeSdkObjects(FbxManager*& pManager);
 void DestroySdkObjects(FbxManager* pManager, bool pExitStatus);
+
+FbxVector4 ConvertVector3(const Point3& Vector3);
+
 #endif

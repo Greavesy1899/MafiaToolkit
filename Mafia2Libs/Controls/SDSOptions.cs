@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Utils.Extensions;
 using Utils.Language;
 using Utils.Settings;
 
@@ -23,6 +24,9 @@ namespace Forms.OptionControls
             UnpackLUABox.Text = Language.GetString("$DECOMPILE_LUA_UNPACK");
             SDSToolFormat.Text = Language.GetString("$USE_SDS_TOOL_FORMAT");
             CookCollisionsBox.Text = Language.GetString("$COOK_COLLISIONS");
+            CheckBox_BackupSDS.Text = Language.GetString("$BACKUP_SDS_LABEL");
+            Label_IndexBufferSize.Text = Language.GetString("$INDEX_BUFFER_SIZE_LABEL");
+            Label_VertexBufferSize.Text = Language.GetString("$VERTEX_BUFFER_SIZE_LABEL");
         }
 
         private void LoadSettings()
@@ -32,6 +36,15 @@ namespace Forms.OptionControls
             UnpackLUABox.Checked = ToolkitSettings.DecompileLUA;
             SDSToolFormat.Checked = ToolkitSettings.UseSDSToolFormat;
             CookCollisionsBox.Checked = ToolkitSettings.CookCollisions;
+            CheckBox_UseOodle.Checked = ToolkitSettings.bUseOodleCompression;
+            CheckBox_BackupSDS.Checked = ToolkitSettings.bBackupEnabled;
+
+            AddTimeDateBackupsBox.Enabled = ToolkitSettings.bBackupEnabled;
+
+            Label_IBSize.Text = FileInfoUtils.ConvertToMemorySize(ToolkitSettings.IndexMemorySizePerBuffer);
+            Label_VBSize.Text = FileInfoUtils.ConvertToMemorySize(ToolkitSettings.VertexMemorySizePerBuffer);
+            NumericBox_IBSize.Value = ToolkitSettings.IndexMemorySizePerBuffer;
+            NumericBox_VBSize.Value = ToolkitSettings.VertexMemorySizePerBuffer;
         }
 
         private void SDSCompress_IndexChanged(object sender, EventArgs e)
@@ -62,6 +75,34 @@ namespace Forms.OptionControls
         {
             ToolkitSettings.CookCollisions = CookCollisionsBox.Checked;
             ToolkitSettings.WriteKey("CookCollisions", "SDS", ToolkitSettings.CookCollisions.ToString());
+        }
+
+        private void CheckBox_UseOodle_CheckedChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.bUseOodleCompression = CheckBox_UseOodle.Checked;
+            ToolkitSettings.WriteKey("UseOodleCompression", "SDS", ToolkitSettings.bUseOodleCompression.ToString());
+        }
+
+        private void CheckBox_BackupSDS_CheckedChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.bBackupEnabled = CheckBox_BackupSDS.Checked;
+            ToolkitSettings.WriteKey("BackupEnabled", "SDS", ToolkitSettings.bBackupEnabled.ToString());
+
+            AddTimeDateBackupsBox.Enabled = ToolkitSettings.bBackupEnabled;
+        }
+
+        private void NumericBox_IBSize_ValueChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.IndexMemorySizePerBuffer = Convert.ToInt32(NumericBox_IBSize.Value);
+            ToolkitSettings.WriteKey("IndexMemorySizePerBuffer", "SDS", ToolkitSettings.IndexMemorySizePerBuffer.ToString());
+            Label_IBSize.Text = FileInfoUtils.ConvertToMemorySize(ToolkitSettings.IndexMemorySizePerBuffer);
+        }
+
+        private void NumericBox_VBSize_ValueChanged(object sender, EventArgs e)
+        {
+            ToolkitSettings.VertexMemorySizePerBuffer = Convert.ToInt32(NumericBox_VBSize.Value);
+            ToolkitSettings.WriteKey("VertexMemorySizePerBuffer", "SDS", ToolkitSettings.VertexMemorySizePerBuffer.ToString());
+            Label_VBSize.Text = FileInfoUtils.ConvertToMemorySize(ToolkitSettings.VertexMemorySizePerBuffer);
         }
     }
 }

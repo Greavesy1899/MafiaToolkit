@@ -1,33 +1,37 @@
 
-# Mafia II: Toolkit
+# Mafia: Toolkit
 
 [![Build status](https://ci.appveyor.com/api/projects/status/62dtija7vekn7htn/branch/master?svg=true)](https://ci.appveyor.com/project/Greavesy1899/mafia2toolkit)
 
-This toolkit is a group of programs which aims to achieve new type of mods and reversing the lesser known formats of this game.
+This Toolkit is a group of programs which aims to achieve better mod support for the 'Mafia' series, developed by 2K Czech and Hangar 13. Mafia 1 (Classic) is not supported. However, the remake is.
 
-## Features:
+## Note:
 
-All features of the toolkit are heavily work in progress, and are constantly being improved to improve usability and mobility. The list below includes all the current features, which may or may not be complete. 
+All features of the Toolkit are always a WIP, and are constantly being improved to improve usability and modability. The list below includes all the current features, which may or may not be complete. 
+
+## Features For All Games:
 
 **Game Explorer:**
 
-Not the best feature in this toolkit, its primary reason it exists is because it makes it easier to load up different editors and manage SDS files. This feature needs serious improvements to usability however.
+Not the best feature in this Toolkit, its primary reason it exists is because it makes it easier to load up different editors and manage SDS files. This feature needs serious improvements to usability however.
 
 **SDS Packing/Repacking:**
 
-This feature uses Gibbed's SDS code from his [repository](https://github.com/gibbed/Gibbed.Illusion), with multiple fixes and improvements. XML files and the games tables are automatically decompiled, with the option to decompile the LUA files. There is an option to unpack SDS files in the format like "SDS Tools GUI", for the people who would like to open the contents in ZModeler3. For repacking, the modder can either choose compressed or uncompressed in the toolkits options. Double clicking any SDS in the game explorer will unpack, and to repack right click the SDS you unpacked, and click "pack".
+This feature uses Gibbed's SDS code from his [repository](https://github.com/gibbed/Gibbed.Illusion), with multiple fixes and improvements. XML files and the games tables are automatically decompiled, with the option to decompile the LUA files. There is an option to unpack SDS files in the format like "SDS Tools GUI", for the people who would like to open the contents in ZModeler3. For repacking, the modder can either choose compressed or uncompressed in the toolkits options. Double clicking any SDS in the game explorer will unpack, and to repack right click the SDS you unpacked, and click "pack". SDS's from Mafia III and Mafia: DE are also supported. However, with Mafia: DE, the Toolkit requires the end-user (you) to copy and paste the 'Oodle' dll from the game folder into the Toolkit's library folder to function. The Toolkit *does not* redistribute this DLL.
+
+**Material Editor:**
+
+This editor can be opened by double-clicking on any file with the ".mtl" extension. They are usually named "default", with some suffix. While this is an old editor, it still has many features available for the end-user. It has the ability to add/remove materials, add parameters or samplers to materials, and even merge to .MTL files giving the option to add new materials and overwrite existing ones. The merging system has been improved to allow the end-user to select which materials should be merged or added to the loaded .MTL, and tries to be very verbose in what is being merged. This editor supports all three versions of the MTL format. 
+
+## Mafia II:
 
 **Map Editor:**
 
-The map editor is the main feature of the toolkit. The main objective is to allow modders to use this to edit maps, navigation, and animated objects. Currently, it has the ability to edit maps geometry and their collisions. More experimental features include "animal paths", road traffic, "actors" which are animated objects, and "translocators" which are instanced objects placed around the map. To load this up, double click on any "FrameResource_X.fr" file in any SDS.
+The map editor is the main feature of the Toolkit for Mafia II. The main objective is to allow modders to use this to edit portions of the map. Currently, it has the ability to edit map geometry and their collisions. To load the Map Editor, you can double click on any "FrameResource.fr". Sadly there is a lack of tutorials avaiable for this editor, but some are on the way shortly. I am fully aware that it's difficult from a usability standpoint, but I am trying to improve this. In regards to geometry, the user can change the materials the geometry uses. The geometry can also be modified externally, by being exported, editing in a 3D modelling package, and then reimported. This also supports collisions.
 
 **M2FBX:**
 
 This library is used alongside the map editor to allow modders to export/import Mafia II models, and the ability to "cook" the collision - improving ingame performance and stability. The library is under a heavy rework to allow the editing of skinned objects, and a general refactor of the code.
-
-**Material Editor:**
-
-One of the earliest features implemented into the toolkit and one of the least updated features; but still has the ability to add/remove materials, add parameters or samplers to materials, and even merge to .MTL files giving the option to add new materials and overwrite existing ones. This editor can be loaded up by double click the ".MTL" files either generated by ZModeler3 or the "default_X.mtl".
 
 **Translocator Editor:**
 
@@ -40,6 +44,12 @@ Both separate editors but achieve the same thing - add new city parts and shops 
 **Table Editor:**
 
 A basic table editor which allows modders to manipulate data and add new rows. 
+
+## Mafia III & Mafia I: DE:
+
+** XBin Editor: **
+
+An extremely prototype editor, capable of loading & saving certain XBin files. This editor also has the ability to export these XBins to a friendly XML format, which can also be re-imported. This does not support all types of XBin's yet, but support is coming. 
 
 ## Building:
 Only Windows is supported. Use Visual Studio 2019 to build the GitHub repository. 

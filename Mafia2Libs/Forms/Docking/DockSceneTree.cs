@@ -3,7 +3,6 @@ using System.Windows.Forms;
 using ResourceTypes.FrameResource;
 using SharpDX;
 using System;
-using Utils.Extensions;
 
 namespace Forms.Docking
 {
@@ -36,11 +35,27 @@ namespace Forms.Docking
             }
         }
 
+        public void RemoveEventHandler(string eventType, TreeViewEventHandler handler)
+        {
+            if (eventType.Equals("AfterCheck"))
+            {
+                treeView1.AfterCheck -= handler;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public void SetKeyHandler(string eventType, KeyEventHandler handler)
         {
             if (eventType.Equals("KeyUp"))
             {
                 treeView1.KeyUp += handler;
+            }
+            else if (eventType.Equals("KeyDown"))
+            {
+                treeView1.KeyDown += handler;
             }
             else
             {
@@ -68,6 +83,29 @@ namespace Forms.Docking
                 parentNode.Nodes.Add(node);
             else
                 treeView1.Nodes.Add(node);
+        }
+
+        public TreeNode GetTreeNode(string TreeNodeKey, TreeNode ParentNode = null, bool bSearchChildren = false)
+        {
+            // Search for the node
+            TreeNode[] AttemptedFoundNodes = null;
+            if(ParentNode != null)
+            {
+                AttemptedFoundNodes = ParentNode.Nodes.Find(TreeNodeKey, bSearchChildren);
+            }
+            else
+            {
+                AttemptedFoundNodes = treeView1.Nodes.Find(TreeNodeKey, bSearchChildren);
+            }
+
+            // If we have found nodes, then get the first one
+            if(AttemptedFoundNodes.Length > 0)
+            {
+                return AttemptedFoundNodes[0];
+            }
+
+            // We have failed, return null.
+            return null;
         }
 
         /* Helper functions */
@@ -185,7 +223,7 @@ namespace Forms.Docking
                 return (data as Rendering.Graphics.RenderJunction).Data.Position;
 
             if (data.GetType() == typeof(Rendering.Graphics.RenderNav))
-                return (data as Rendering.Graphics.RenderNav).BoundingBox.Transform.TranslationVector;
+                return (data as Rendering.Graphics.RenderNav).NavigationBox.Transform.TranslationVector;
 
             if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
                 return (data as ResourceTypes.Actors.ActorEntry).Position;

@@ -180,6 +180,7 @@ namespace Mafia2Tool
             // FolderPath
             // 
             this.FolderPath.AutoSize = false;
+            this.FolderPath.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.FolderPath.Name = "FolderPath";
             this.FolderPath.Size = new System.Drawing.Size(200, 23);
             this.FolderPath.ToolTipText = "$FOLDER_PATH_TOOLTIP";
@@ -198,6 +199,7 @@ namespace Mafia2Tool
             // SearchEntryText
             // 
             this.SearchEntryText.AutoSize = false;
+            this.SearchEntryText.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.SearchEntryText.Name = "SearchEntryText";
             this.SearchEntryText.Size = new System.Drawing.Size(200, 23);
             this.SearchEntryText.ToolTipText = "$SEARCH_TOOLTIP";
@@ -205,6 +207,7 @@ namespace Mafia2Tool
             // 
             // fileListView
             // 
+            this.fileListView.AllowDrop = true;
             this.fileListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -224,6 +227,9 @@ namespace Mafia2Tool
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.Details;
             this.fileListView.ItemActivate += new System.EventHandler(this.listView1_ItemActivate);
+            this.fileListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.ListView_OnDragDrop);
+            this.fileListView.DragEnter += new System.Windows.Forms.DragEventHandler(this.ListView_OnDragEnter);
+            this.fileListView.DragLeave += new System.EventHandler(this.ListView_OnDragLeave);
             this.fileListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPressed);
             // 
             // columnName
@@ -255,7 +261,7 @@ namespace Mafia2Tool
             this.ContextView,
             this.ContextForceBigEndian});
             this.GEContext.Name = "SDSContext";
-            this.GEContext.Size = new System.Drawing.Size(219, 158);
+            this.GEContext.Size = new System.Drawing.Size(219, 136);
             this.GEContext.Text = "$VIEW";
             this.GEContext.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpening);
             // 
@@ -563,7 +569,6 @@ namespace Mafia2Tool
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GameExplorer";
             this.Text = "$MII_TK_GAME_EXPLORER";
-            this.Activated += new System.EventHandler(this.OnRefreshButtonClicked);
             this.Load += new System.EventHandler(this.toolStrip1_Resize);
             this.mainContainer.Panel1.ResumeLayout(false);
             this.mainContainer.Panel2.ResumeLayout(false);

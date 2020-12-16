@@ -61,7 +61,7 @@
             this.removeSelectedButton.TabIndex = 3;
             this.removeSelectedButton.Text = "$MATERIAL_LIB_REMOVE";
             this.removeSelectedButton.UseVisualStyleBackColor = true;
-            this.removeSelectedButton.Click += new System.EventHandler(this.removeSelected_Click);
+            this.removeSelectedButton.Click += new System.EventHandler(this.RemoveSelected_Click);
             // 
             // addLibraryButton
             // 
@@ -71,7 +71,7 @@
             this.addLibraryButton.TabIndex = 2;
             this.addLibraryButton.Text = "$MATERIAL_LIB_ADD";
             this.addLibraryButton.UseVisualStyleBackColor = true;
-            this.addLibraryButton.Click += new System.EventHandler(this.addLibrary_Click);
+            this.addLibraryButton.Click += new System.EventHandler(this.AddLibrary_Click);
             // 
             // MTLListBox
             // 
@@ -93,7 +93,7 @@
             // 
             // MTLBrowser
             // 
-            this.MTLBrowser.Filter = "\"MTL Files|*.mtl|All files|*.*\"\"";
+            this.MTLBrowser.Filter = "MTL Files|*.mtl|All files|*.*";
             this.MTLBrowser.Multiselect = true;
             // 
             // MTLOptions

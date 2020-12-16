@@ -1,8 +1,7 @@
 ﻿using System.Runtime.InteropServices;
-using Rendering.Sys;
-using ResourceTypes.Materials;
 using SharpDX;
 using SharpDX.Direct3D11;
+using Utils.Types;
 
 namespace Rendering.Graphics
 {
@@ -33,18 +32,6 @@ namespace Rendering.Graphics
             ConstantShaderParamBuffer = ConstantBufferFactory.ConstructBuffer<Shader_50760736Params>(device, "ShaderParamBuffer");
             return true;
         }
-        public override void Render(DeviceContext deviceContext, SharpDX.Direct3D.PrimitiveTopology type, int numTriangles, uint offset)
-        {
-            deviceContext.InputAssembler.InputLayout = Layout;
-            deviceContext.VertexShader.Set(VertexShader);
-            deviceContext.PixelShader.Set(PixelShader);
-            deviceContext.PixelShader.SetSampler(0, SamplerState);
-            deviceContext.DrawIndexed(numTriangles, (int)offset, 0);
-        }
-        public override void InitCBuffersFrame(DeviceContext context, Camera camera, WorldSettings settings)
-        {
-            base.InitCBuffersFrame(context, camera, settings);
-        }
         public override void SetSceneVariables(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera)
         {
             base.SetSceneVariables(deviceContext, WorldMatrix, camera);
@@ -58,14 +45,10 @@ namespace Rendering.Graphics
             Shader_50760736Params parameters = new Shader_50760736Params();
             var material = matParams.MaterialData;
 
-            if (material.Parameters.ContainsKey("C005"))
+            var param = material.GetParameterByKey("C005");
+            if (param != null)
             {
-                ShaderParameter param = material.Parameters["C005"];
                 parameters.C005_EmissiveFacadeColorAndIntensity = new Vector4(param.Paramaters[0], param.Paramaters[1], param.Paramaters[2], param.Paramaters[3]);
-            }
-            else
-            {
-                parameters.C005_EmissiveFacadeColorAndIntensity = new Vector4(0f);
             }
 
             if (material == null)
@@ -77,20 +60,22 @@ namespace Rendering.Graphics
             else
             {
 
-                ShaderParameterSampler sampler;
                 ShaderResourceView[] textures = new ShaderResourceView[2];
-                if (material.Samplers.TryGetValue("S000", out sampler))
+
+                HashName TextureFile = material.GetTextureByID("S000");
+                if (TextureFile != null)
                 {
-                    textures[0] = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
+                    textures[0] = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
                 }
                 else
                 {
                     textures[0] = RenderStorageSingleton.Instance.TextureCache[0];
                 }
 
-                if (material.Samplers.TryGetValue("S011", out sampler))
+                TextureFile = material.GetTextureByID("S011");
+                if (TextureFile != null)
                 {
-                    textures[1] = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
+                    textures[1] = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
                 }
                 else
                 {

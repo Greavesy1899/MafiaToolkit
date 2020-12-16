@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using Gibbed.Illusion.FileFormats;
 using Gibbed.Illusion.FileFormats.Hashing;
@@ -150,16 +149,16 @@ namespace Gibbed.Mafia2.ResourceFormats
                             writer.Write(value.GetType() == typeof(string) ? Convert.ToUInt32(value): (uint)Rows[i].Values[x]);
                             break;
                         case ColumnType.Float32:
-                            writer.Write(value.GetType() == typeof(string) ? Convert.ToSingle(value) : (float)Rows[i].Values[x]);
+                            writer.Write(value.GetType() == typeof(float) ? Convert.ToSingle(value) : (float)Rows[i].Values[x]);
                             break;
                         case ColumnType.Signed32:
-                            writer.Write(value.GetType() == typeof(string) ? Convert.ToInt32(value) : (int)Rows[i].Values[x]);
+                            writer.Write(value.GetType() == typeof(int) ? Convert.ToInt32(value) : (int)Rows[i].Values[x]);
                             break;
                         case ColumnType.Unsigned32:
-                            writer.Write(value.GetType() == typeof(string) ? Convert.ToUInt32(value) : (uint)Rows[i].Values[x]);
+                            writer.Write(value.GetType() == typeof(int) ? Convert.ToUInt32(value) : (uint)Rows[i].Values[x]);
                             break;
                         case ColumnType.Flags32:
-                            writer.Write(value.GetType() == typeof(string) ? Convert.ToUInt32(value) : (uint)Rows[i].Values[x]);
+                            writer.Write(value.GetType() == typeof(int) ? Convert.ToUInt32(value) : (uint)Rows[i].Values[x]);
                             break;
                         case ColumnType.Hash64:
                             writer.Write(value.GetType() == typeof(string) ? Convert.ToUInt64(value) : (ulong)Rows[i].Values[x]);
@@ -230,8 +229,6 @@ namespace Gibbed.Mafia2.ResourceFormats
                 });
             }
 
-            //input = null;
-
             this.Rows.Clear();
             for (uint i = 0; i < rowCount; i++)
             {
@@ -245,104 +242,8 @@ namespace Gibbed.Mafia2.ResourceFormats
                         throw new FormatException();
                     }
 
-                    switch (column.Type)
-                    {
-                        case ColumnType.Boolean:
-                            {
-                                var value = data.ReadValueU32(endian);
-                                if (value != 0 && value != 1)
-                                {
-                                    throw new FormatException();
-                                }
-                                row.Values.Add(value != 0);
-                                break;
-                            }
-
-                        case ColumnType.Float32:
-                            {
-                                var value = data.ReadValueF32(endian);
-                                row.Values.Add(value);
-                                break;
-                            }
-
-                        case ColumnType.Signed32:
-                            {
-                                var value = data.ReadValueS32(endian);
-                                row.Values.Add(value);
-                                break;
-                            }
-
-                        case ColumnType.Unsigned32:
-                            {
-                                var value = data.ReadValueU32(endian);
-                                row.Values.Add(value);
-                                break;
-                            }
-
-                        case ColumnType.Flags32:
-                            {
-                                var value = data.ReadValueU32(endian);
-                                row.Values.Add(value);
-                                break;
-                            }
-
-                        case ColumnType.Hash64:
-                            {
-                                var value = data.ReadValueU64(endian);
-                                row.Values.Add(value);
-                                break;
-                            }
-
-                        case ColumnType.String8:
-                            {
-                                string value = data.ReadString(8, true);
-                                row.Values.Add(value);
-                                break;
-                            }
-
-                        case ColumnType.String16:
-                            {
-                                string value = data.ReadString(16, true);
-                                row.Values.Add(value);
-                                break;
-                            }
-
-                        case ColumnType.String32:
-                            {
-                                string value = data.ReadString(32, true, System.Text.Encoding.GetEncoding(1250));
-                                row.Values.Add(value);
-                                break;
-                            }
-
-                        case ColumnType.String64:
-                            {
-                                string value = data.ReadString(64, true);
-                                row.Values.Add(value);
-                                break;
-                            }
-
-                        case ColumnType.Color:
-                            {
-                                float r = data.ReadValueF32(endian);
-                                float g = data.ReadValueF32(endian);
-                                float b = data.ReadValueF32(endian);
-                                row.Values.Add(r + " " + g + " " + b);
-                                break;
-                            }
-
-                        case ColumnType.Hash64AndString32:
-                            {
-                                var hash = data.ReadValueU64(endian);
-                                string value = data.ReadString(32, true);
-                                row.Values.Add(value);
-                                break;
-                            }
-
-                        default:
-                            {
-                                throw new FormatException();
-                            }
-                    }
+                    object DeserializedObject = column.DeserializeType(data, endian);
+                    row.Values.Add(DeserializedObject);
                 }
 
                 this.Rows.Add(row);
@@ -370,6 +271,112 @@ namespace Gibbed.Mafia2.ResourceFormats
                 writer.Write((byte)Type);
                 writer.Write(Unknown2);
                 writer.Write(Unknown3);
+            }
+
+            public object DeserializeType(MemoryStream data, Endian endian)
+            {
+                object DeserializedObject = null;
+
+                switch (Type)
+                {
+                    case ColumnType.Boolean:
+                        {
+                            var value = data.ReadValueU32(endian);
+                            if (value != 0 && value != 1)
+                            {
+                                throw new FormatException();
+                            }
+                            DeserializedObject = value != 0;
+                            break;
+                        }
+
+                    case ColumnType.Float32:
+                        {
+                            var value = data.ReadValueF32(endian);
+                            DeserializedObject = value;
+                            break;
+                        }
+
+                    case ColumnType.Signed32:
+                        {
+                            var value = data.ReadValueS32(endian);
+                            DeserializedObject = value;
+                            break;
+                        }
+
+                    case ColumnType.Unsigned32:
+                        {
+                            var value = data.ReadValueU32(endian);
+                            DeserializedObject = value;
+                            break;
+                        }
+
+                    case ColumnType.Flags32:
+                        {
+                            var value = data.ReadValueU32(endian);
+                            DeserializedObject = value;
+                            break;
+                        }
+
+                    case ColumnType.Hash64:
+                        {
+                            var value = data.ReadValueU64(endian);
+                            DeserializedObject = value;
+                            break;
+                        }
+
+                    case ColumnType.String8:
+                        {
+                            string value = data.ReadString(8, true);
+                            DeserializedObject = value;
+                            break;
+                        }
+
+                    case ColumnType.String16:
+                        {
+                            string value = data.ReadString(16, true);
+                            DeserializedObject = value;
+                            break;
+                        }
+
+                    case ColumnType.String32:
+                        {
+                            string value = data.ReadString(32, true, System.Text.Encoding.GetEncoding(1250));
+                            DeserializedObject = value;
+                            break;
+                        }
+
+                    case ColumnType.String64:
+                        {
+                            string value = data.ReadString(64, true);
+                            DeserializedObject = value;
+                            break;
+                        }
+
+                    case ColumnType.Color:
+                        {
+                            float r = data.ReadValueF32(endian);
+                            float g = data.ReadValueF32(endian);
+                            float b = data.ReadValueF32(endian);
+                            DeserializedObject = string.Format("{0} {1} {2}", r, g, b);
+                            break;
+                        }
+
+                    case ColumnType.Hash64AndString32:
+                        {
+                            var hash = data.ReadValueU64(endian);
+                            string value = data.ReadString(32, true);
+                            DeserializedObject = value;
+                            break;
+                        }
+
+                    default:
+                        {
+                            throw new FormatException();
+                        }
+                }
+
+                return DeserializedObject;
             }
 
             public override string ToString()

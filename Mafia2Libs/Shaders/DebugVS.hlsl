@@ -28,7 +28,7 @@ VS_OUTPUT DebugVertexShader(VS_INPUT input)
 	output.Position = mul(input.Position, worldMatrix);
 	output.Position = mul(output.Position, viewMatrix);
 	output.Position = mul(output.Position, projectionMatrix);
-    output.Colour = input.Colour;
+    output.Colour = input.Colour.bgra;
 
 	return output;
 }

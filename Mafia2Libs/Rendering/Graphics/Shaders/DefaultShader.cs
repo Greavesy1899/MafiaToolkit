@@ -1,8 +1,8 @@
 ﻿using SharpDX.Direct3D11;
-using ResourceTypes.Materials;
-using Rendering.Sys;
+using Rendering.Core;
 using System.Runtime.InteropServices;
 using SharpDX;
+using Utils.Types;
 
 namespace Rendering.Graphics
 {
@@ -38,17 +38,9 @@ namespace Rendering.Graphics
 
             return true;
         }
-        public override void InitCBuffersFrame(DeviceContext context, Camera camera, WorldSettings settings)
-        {
-            base.InitCBuffersFrame(context, camera, settings);
-        }
         public override void Render(DeviceContext context, SharpDX.Direct3D.PrimitiveTopology type, int size, uint offset)
         {
-            context.InputAssembler.InputLayout = Layout;
-            context.VertexShader.Set(VertexShader);
-            context.PixelShader.Set(PixelShader);
-            context.PixelShader.SetSampler(0, SamplerState);
-            context.DrawIndexed(size, (int)offset, 0);
+            base.Render(context, type, size, offset);
         }
         public override void SetShaderParameters(Device device, DeviceContext context, MaterialParameters matParams)
         {           
@@ -65,11 +57,11 @@ namespace Rendering.Graphics
             else
             {
                 
-                ShaderParameterSampler sampler;
+                HashName TextureFile = material.GetTextureByID("S000");
                 ShaderResourceView texture = null;
-                if (material.Samplers.TryGetValue("S000", out sampler))
+                if (TextureFile != null)
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
+                    texture = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
                 }
                 else
                 {
@@ -78,9 +70,10 @@ namespace Rendering.Graphics
 
                 context.PixelShader.SetShaderResource(0, texture);
 
-                if (material.Samplers.TryGetValue("S001", out sampler))
+                TextureFile = material.GetTextureByID("S001");
+                if (TextureFile != null)
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[sampler.TextureHash];
+                    texture = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
                     extraParams.hasTangentSpace = 1;
                 }
                 else

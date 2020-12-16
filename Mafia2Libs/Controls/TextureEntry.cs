@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Rendering.Graphics;
+using ResourceTypes.Materials;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -8,6 +10,7 @@ namespace Mafia2Tool
     {
         private bool isSelected;
         private Color defaultColour;
+        private IMaterial material;
 
         public bool IsSelected {
             get { return isSelected; }
@@ -23,33 +26,49 @@ namespace Mafia2Tool
             defaultColour = MaterialName.BackColor;
         }
 
-        public event EventHandler<EventArgs> WasClicked;
-
-        public void SetMaterialName(string value)
+        public void SetMaterial(IMaterial material)
         {
-            MaterialName.Text = value;
-        }
-
-        public void SetMaterialTexture(Image image)
-        {
-            TextureImage.Image = image;
-        }
-
-        private void OnDoubleClick(object sender, System.EventArgs e)
-        {
-            var wasClicked = WasClicked;
-            if (wasClicked != null)
+            if (material != null)
             {
-                WasClicked(this, EventArgs.Empty);
+                MaterialName.Text = material.GetMaterialName();
+                TextureImage.Image = TextureLoader.LoadThumbnail(material);
+                this.material = material;
+            }
+        }
+
+        public IMaterial GetMaterial()
+        {
+            return material;
+        }
+
+        public event EventHandler<EventArgs> OnEntrySingularClick;
+        public event EventHandler<EventArgs> OnEntryDoubleClick;
+
+        private void OnSingularClick(object sender, EventArgs e)
+        {
+            var SingularClick = OnEntrySingularClick;
+            if (SingularClick != null)
+            {
+                OnEntrySingularClick(this, EventArgs.Empty);
             }
             IsSelected = true;
+        }
+
+        private void OnDoubleClick(object sender, EventArgs e)
+        {
+            var DoubleClick = OnEntryDoubleClick;
+            if(DoubleClick != null)
+            {
+                OnEntryDoubleClick(this, EventArgs.Empty);
+            }
         }
 
         private void RecurseMouseClick(ControlCollection Controls)
         {
             foreach (Control control in Controls)
             {
-                control.MouseClick += OnDoubleClick;
+                control.MouseClick += OnSingularClick;
+                control.MouseDoubleClick += OnDoubleClick;
                 RecurseMouseClick(control.Controls);
             }
         }
@@ -57,7 +76,8 @@ namespace Mafia2Tool
         {
             foreach (Control control in Controls)
             {
-                control.MouseClick += OnDoubleClick;
+                control.MouseClick += OnSingularClick;
+                control.MouseDoubleClick += OnDoubleClick;
                 RecurseMouseClick(control.Controls);
             }
         }

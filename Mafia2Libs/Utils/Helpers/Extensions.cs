@@ -6,7 +6,6 @@ using System.Drawing.Design;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
@@ -14,6 +13,7 @@ namespace Utils.Extensions
 {
     public sealed class MTreeView : TreeView
     {
+
         //fix from: (gotta love stack overflow!)
         //https://stackoverflow.com/questions/14647216/c-sharp-treeview-ignore-double-click-only-at-checkbox
         protected override void WndProc(ref Message m)
@@ -614,6 +614,15 @@ namespace Utils.Extensions
         }
     }
 
+    public static class ColorExtender
+    {
+        public static Vector3 Normalize(this System.Drawing.Color color)
+        {
+            return new Vector3(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
+        }
+    }
+
+
     public static class TreeNodeExtender
     {
         public static bool CheckIfParentsAreValid(this TreeNode node)
@@ -648,14 +657,49 @@ namespace Utils.Extensions
             }
             return -1;
         }
+
+        public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue value)
+        {
+            bool bHasKey = dic.ContainsKey(key);
+
+            if(!bHasKey)
+            {
+                dic.Add(key, value);
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryRemove<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key)
+        {
+            bool bHasKey = dic.ContainsKey(key);
+
+            if(bHasKey)
+            {
+                return dic.Remove(key);
+            }
+
+            return false;
+        }
+
+        public static TValue TryGet<Tkey, TValue>(this Dictionary<Tkey, TValue> dic, Tkey key)
+        {
+            if(dic.ContainsKey(key))
+            {
+                return dic[key];
+            }
+
+            return default(TValue);
+        }
     }
 
     public static class FileInfoUtils
     {
-        public static string CalculateFileSize(this FileInfo file)
+        public static string ConvertToMemorySize(this long value)
         {
             string[] sizes = { "B", "KB", "MB", "GB", "TB" };
-            double len = file.Length;
+            double len = value;
             int order = 0;
             while (len >= 1024 && order < sizes.Length - 1)
             {
@@ -665,7 +709,12 @@ namespace Utils.Extensions
 
             // Adjust the format string to your preferences. For example "{0:0.#}{1}" would
             // show a single decimal place, and no space.
-            return String.Format("{0:0.##} {1}", len, sizes[order]);
+            return string.Format("{0:0.##} {1}", len, sizes[order]);
+        }
+
+        public static string CalculateFileSize(this FileInfo file)
+        {
+            return file.Length.ConvertToMemorySize();
         }
     }
 

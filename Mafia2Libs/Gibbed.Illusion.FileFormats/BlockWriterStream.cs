@@ -21,9 +21,12 @@
  */
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using Gibbed.IO;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using OodleSharp;
+using Utils.Settings;
+using ZLibNet;
 
 namespace Gibbed.Illusion.FileFormats
 {
@@ -37,6 +40,7 @@ namespace Gibbed.Illusion.FileFormats
         private readonly byte[] _BlockBytes;
         private int _BlockOffset;
         private readonly bool _IsCompressing;
+        private readonly bool _bUseOodle;
 
         private BlockWriterStream(Stream baseStream, uint alignment, Endian endian, bool compress)
         {
@@ -51,6 +55,13 @@ namespace Gibbed.Illusion.FileFormats
             this._BlockBytes = new byte[alignment];
             this._BlockOffset = 0;
             this._IsCompressing = compress;
+            this._Alignment = alignment;
+
+            var game = GameStorage.Instance.GetSelectedGame();
+            if (game.GameType == GamesEnumerator.MafiaI_DE)
+            {
+                this._bUseOodle = ToolkitSettings.bUseOodleCompression;
+            }
         }
 
         #region Stream
@@ -122,8 +133,6 @@ namespace Gibbed.Illusion.FileFormats
 
             if (this._IsCompressing == false || this.FlushCompressedBlock() == false)
             {
-                /*var blockLength = Array.FindLastIndex(this._BlockBytes, this._BlockOffset - 1, b => b != 0);
-                blockLength = 1 + (blockLength < 0 ? 0 : blockLength);*/
                 var blockLength = this._BlockOffset;
                 this._BaseStream.WriteValueS32(blockLength, this._Endian);
                 this._BaseStream.WriteValueU8(0);
@@ -132,63 +141,77 @@ namespace Gibbed.Illusion.FileFormats
             }
         }
 
-        private struct CompressedBlockHeader
-        {
-            public uint UncompressedSize;
-            public uint Unknown04;
-            public uint Unknown08;
-            public uint Unknown0C;
-            public uint CompressedSize;
-            public uint Unknown14;
-            public uint Unknown18;
-            public uint Unknown1C;
-
-            public void Write(Stream output, Endian endian)
-            {
-                output.WriteValueU32(this.UncompressedSize, endian);
-                output.WriteValueU32(this.Unknown04, endian);
-                output.WriteValueU32(this.Unknown08, endian);
-                output.WriteValueU32(this.Unknown0C, endian);
-                output.WriteValueU32(this.CompressedSize, endian);
-                output.WriteValueU32(this.Unknown14, endian);
-                output.WriteValueU32(this.Unknown18, endian);
-                output.WriteValueU32(this.Unknown1C, endian);
-            }
-        }
-
         private bool FlushCompressedBlock()
         {
             using (var data = new MemoryStream())
             {
-                /*var blockLength = Array.FindLastIndex(this._BlockBytes, this._BlockOffset - 1, b => b != 0);
-                blockLength = 1 + (blockLength < 0 ? 0 : blockLength);*/
                 var blockLength = this._BlockOffset;
 
-                var zlib = new DeflaterOutputStream(data);
-                zlib.Write(this._BlockBytes, 0, blockLength);
-                zlib.Finish();
-                data.Flush();
-
-                var compressedLength = (int)data.Length;
-                if (data.Length < blockLength)
+                if (this._bUseOodle)
                 {
-                    this._BaseStream.WriteValueS32(32 + compressedLength, this._Endian);
-                    this._BaseStream.WriteValueU8(1);
-                    CompressedBlockHeader compressedBlockHeader;
-                    compressedBlockHeader.UncompressedSize = (uint)blockLength;
-                    compressedBlockHeader.Unknown04 = 32;
-                    compressedBlockHeader.Unknown08 = 81920;
-                    compressedBlockHeader.Unknown0C = 135200769;
-                    compressedBlockHeader.CompressedSize = (uint)compressedLength;
-                    compressedBlockHeader.Unknown14 = 0;
-                    compressedBlockHeader.Unknown18 = 0;
-                    compressedBlockHeader.Unknown1C = 0;
-                    compressedBlockHeader.Write(this._BaseStream, this._Endian);
-                    this._BaseStream.Write(data.GetBuffer(), 0, compressedLength);
-                    this._BlockOffset = 0;
-                    return true;
+                    return FlushOodleCompressedBlock(data, blockLength);
+                }
+                else
+                {
+                    return FlushZlibCompressedBlock(data, blockLength);
                 }
             }
+        }
+
+        private bool FlushZlibCompressedBlock(MemoryStream data, int blockLength)
+        {
+            var zlib = new ZLibStream(data, CompressionMode.Compress, CompressionLevel.Level9);
+            zlib.Write(this._BlockBytes, 0, blockLength);
+            zlib.Flush();
+            var compressedLength = (int)data.Length;
+            if (data.Length < blockLength)
+            {
+                this._BaseStream.WriteValueS32(32 + compressedLength, this._Endian);
+                this._BaseStream.WriteValueU8(1);
+                CompressedBlockHeader compressedBlockHeader = new CompressedBlockHeader();
+                compressedBlockHeader.SetZlibPreset();
+                compressedBlockHeader.UncompressedSize = (uint)blockLength; //TODO: I think this should actually be alignment?
+                compressedBlockHeader.CompressedSize = (uint)compressedLength;
+                compressedBlockHeader.ChunkSize = (short)_Alignment;
+                compressedBlockHeader.Unknown0C = 135200769;
+                compressedBlockHeader.Chunks[0] = (ushort)compressedBlockHeader.CompressedSize;
+                compressedBlockHeader.Write(this._BaseStream, this._Endian);
+                this._BaseStream.Write(data.GetBuffer(), 0, compressedLength);
+                this._BlockOffset = 0;
+                zlib.Close();
+                zlib.Dispose();
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool FlushOodleCompressedBlock(MemoryStream data, int blockLength)
+        {
+            byte[] compressed = Oodle.Compress(this._BlockBytes, blockLength, OodleFormat.Kraken, OodleCompressionLevel.Normal);
+            Debug.Assert(compressed.Length != 0, "Compressed Block should not be empty");
+            data.WriteBytes(compressed);
+
+            var compressedLength = (int)data.Length;
+            if(data.Length < blockLength)
+            {
+                this._BaseStream.WriteValueS32(128 + compressedLength, this._Endian);
+                this._BaseStream.WriteValueU8(1);
+                CompressedBlockHeader compressedBlockHeader = new CompressedBlockHeader();
+                compressedBlockHeader.SetOodlePreset();
+                compressedBlockHeader.UncompressedSize = (uint)blockLength;
+                compressedBlockHeader.CompressedSize = (uint)compressedLength;
+                compressedBlockHeader.ChunkSize = 1;
+                compressedBlockHeader.Unknown0C = (uint)blockLength;
+                compressedBlockHeader.Chunks[0] = (ushort)compressedBlockHeader.CompressedSize;
+                Console.WriteLine(compressedBlockHeader);
+                compressedBlockHeader.Write(this._BaseStream, this._Endian);
+                this._BaseStream.Write(new byte[96], 0, 96); // Empty padding.
+                this._BaseStream.Write(data.GetBuffer(), 0, compressedLength);
+                this._BlockOffset = 0;
+                return true;
+            }
+
             return false;
         }
 
@@ -202,8 +225,9 @@ namespace Gibbed.Illusion.FileFormats
         public static BlockWriterStream ToStream(Stream baseStream, uint alignment, Endian endian, bool compress)
         {
             var instance = new BlockWriterStream(baseStream, alignment, endian, compress);
-            baseStream.WriteValueU32(Signature, endian);
-            baseStream.WriteValueU32(alignment, endian);
+            baseStream.WriteValueU32(Signature, endian);          
+            var headerAlignment = (instance._bUseOodle && compress ? (alignment | 0x1000000) : alignment);
+            baseStream.WriteValueU32(headerAlignment, endian);
             baseStream.WriteValueU8(4);
             return instance;
         }

@@ -35,7 +35,8 @@
   <String ID="$REFRESH">Обновить</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Путь к папке </String>
   <String ID="$UP_TOOLTIP">Вверх</String>
-
+  <String ID="$M1DE_OODLEERROR">The Oodle DLL is a non-free library by RAD Game Tools and is thus not included due to legal issues. Please copy 'oo2core_8_win64.dll' from the Mafia: Definitive Edition installation folder to the folder where the Toolkit's 'libs' folder is located.</String>
+  
   <!-- Game Selector -->
   <String ID="$START_TOOLKIT">Запуск Toolkit</String>
   <String ID="$FOLDER_PATH_LABEL">Папка с игрой:</String>
@@ -84,7 +85,14 @@
   <String ID="$SDS_UNCOMPRESSED">Несжатый</String>
   <String ID="$SDS_COMPRESSED">Сжатый</String>
   <String ID="$SDS_ONEBLOCK">Один блок</String>
-
+  <String ID="$ADD_TIME_DATE_BACKUP">Add time and date to backups.</String>
+  <String ID="$DECOMPILE_LUA_UNPACK">Decompile lua when unpacking.</String>
+  <String ID="$USE_SDS_TOOL_FORMAT">Use SDS Tool GUI Format when unpacking.</String>
+  <String ID="$COOK_COLLISIONS">Cook collisions when saving.</String>
+  <String ID="$BACKUP_SDS_LABEL">Create SDS Backups when unpacking.</String>
+  <String ID="$VERTEX_BUFFER_SIZE_LABEL">Vertex Buffer Limit</String>
+  <String ID="$INDEX_BUFFER_SIZE_LABEL">Index Buffer Limit</String>
+  
   <!-- Render Options -->
   <String ID="$RENDER">Рендеринг</String>
   <String ID="$RENDER_OPTIONS">Настройки рендера</String>
@@ -111,6 +119,17 @@
   <String ID="$MATERIAL_EDITOR_TITLE">Редактор Библиотеки Материалов.</String>
   <String ID="$OPEN">Открыть</String>
   <String ID="$QUESTION_NAME_OF_MAT">Пожалуйста, введите название материала:</String>
+  <String ID="$EXPORT_MATS">Export Selected Materials</String>
+  <String ID="$LABEL_SEARCHTYPE">Type of Search:</String>
+  <String ID="$LABEL_MATERIALNAME">Material Name</String>
+  <String ID="$LABEL_TEXTURENAME">Texture Name</String>
+  <String ID="$LABEL_MATERIALHASH">Material Hash</String>
+  <String ID="$LABEL_SHADERID">Shader ID</String>
+  <String ID="$LABEL_SHADERHASH">Shader Hash</String>
+  <String ID="$SEARCH">Поиск</String>
+  <String ID="$LABEL_SEARCHBAR">Search for a Material:</String>
+  <String ID="$LABEL_SELECTMATLIBRARY">Select Material Library:</String>
+  <String ID="$TITLE_MATERIALBROWSER">Material Browser</String>
   
   <!-- FrameResource Editor Form Strings-->
   <String ID="$FRAME_EDITOR_EXPORT_BTN">Экспортируем модели....</String>

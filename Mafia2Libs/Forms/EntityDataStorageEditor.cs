@@ -28,6 +28,8 @@ namespace Mafia2Tool
             Button_Save.Text = Language.GetString("$SAVE");
             Button_Reload.Text = Language.GetString("$RELOAD");
             Button_Exit.Text = Language.GetString("$EXIT");
+            Button_CopyData.Text = Language.GetString("$COPY");
+            Button_PasteData.Text = Language.GetString("$PASTE");
         }
 
         private void BuildData()
@@ -70,6 +72,16 @@ namespace Mafia2Tool
         private void Button_Exit_OnClick(object sender, System.EventArgs e)
         {
             Close();
+        }
+
+        private void Button_CopyData_Click(object sender, System.EventArgs e)
+        {
+
+        }
+
+        private void Button_Paste_Click(object sender, System.EventArgs e)
+        {
+
         }
     }
 }

@@ -81,22 +81,9 @@ namespace Gibbed.Mafia2.FileFormats
             int pos = (int)reader.Position;
 
             var blockStream = BlockReaderStream.FromStream(reader, endian);
-
-            if (!Directory.Exists("patches/"))
-                Directory.CreateDirectory("patches/");
-
-            File.WriteAllLines("patches/patchIDX_of_" + file.Name + ".txt", indexes.ToArray());
-            using (BinaryWriter writer = new BinaryWriter(File.Open("patches/patch_of_" + file.Name + ".bin", FileMode.Create)))
-            {
-                blockStream.SaveUncompressed(writer.BaseStream);
-            }
-
             reader.Position = pos;
-            blockStream = BlockReaderStream.FromStream(reader, endian);
 
-            //return;
-
-            resources = new Archive.ResourceEntry[UnkTotal];
+            resources = new ResourceEntry[UnkTotal];
             for (uint i = 0; i < resources.Length; i++)
             {
                 Archive.ResourceHeader resourceHeader;
@@ -104,7 +91,7 @@ namespace Gibbed.Mafia2.FileFormats
                 
                 using (var data = blockStream.ReadToMemoryStream(26))
                 {
-                    resourceHeader = Archive.ResourceHeader.Read(data, endian);
+                    resourceHeader = Archive.ResourceHeader.Read(data, endian, 19);
                 }
                 blockStream.ReadBytes(4); //checksum i think
                 if (resourceHeader.Size < 30)
@@ -121,11 +108,6 @@ namespace Gibbed.Mafia2.FileFormats
                     OtherRamRequired = resourceHeader.OtherRamRequired,
                     OtherVramRequired = resourceHeader.OtherVramRequired,
                 };
-
-                using (BinaryWriter writer = new BinaryWriter(File.Open("patches/"+file.Name + "_" + i + ".bin", FileMode.Create)))
-                {
-                    writer.Write(resources[i].Data);
-                }
             }
         }
     }

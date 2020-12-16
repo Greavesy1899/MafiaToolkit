@@ -7,7 +7,7 @@
   <String ID="$COPY">Kopírovat</String>
   <String ID="$PASTE">Vložit</String>
   <String ID="$ENTRY_NAME">Entry Name</String>
-  <String ID="$UPDATE_MESSAGE1">K dispozici je nová verze Mafia II: Toolkit!</String>
+  <String ID="$UPDATE_MESSAGE1">K dispozici je nová verze Mafia: Toolkit!</String>
   <String ID="$UPDATE_MESSAGE2">Chcete-li stáhnout novou verzi, stiskněte tlačítko OK.</String>
   <String ID="$UPDATE_MESSAGE3">Chcete-li použít aktuální verzi, stiskněte Storno.</String>
   <String ID="$FAILED_UPDATE_CHECK">Při kontrole aktualizací se nezdařilo!</String>
@@ -27,7 +27,7 @@
   <String ID="$SMALL_ICON">Malá Ikona</String>
   <String ID="$LIST">List</String>
   <String ID="$TILE">Dlaždice</String>
-  <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Herní Prohlížeč</String>
+  <String ID="$MII_TK_GAME_EXPLORER">Mafia Toolkit: Herní Prohlížeč</String>
   <String ID="$UNPACK_ALL_SDS">Extrahovat všechny SDS</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Otevřít složku v průzkumníku souborů</String>
   <String ID="$PACK">Zabalit</String>
@@ -41,6 +41,7 @@
   <String ID="$REFRESH">Obnovit</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Umístění složky</String>
   <String ID="$UP_TOOLTIP">Nahoru</String>
+  <String ID="$M1DE_OODLEERROR">The Oodle DLL is a non-free library by RAD Game Tools and is thus not included due to legal issues. Please copy 'oo2core_8_win64.dll' from the Mafia: Definitive Edition installation folder to the folder where the Toolkit's 'libs' folder.</String>
 
   <!-- Game Selector -->
   <String ID="$START_TOOLKIT">Zapnout Toolkit</String>
@@ -102,6 +103,8 @@
   <String ID="$DECOMPILE_LUA_UNPACK">Rozšifrovat lua při extrahování</String>
   <String ID="$USE_SDS_TOOL_FORMAT">Použít SDS Tool GUI Formát při extrahování.</String>
   <String ID="$COOK_COLLISIONS">Cook kolize při ukládání.</String>
+  <String ID="$VERTEX_BUFFER_SIZE_LABEL">Vertex Buffer Limit</String>
+  <String ID="$INDEX_BUFFER_SIZE_LABEL">Index Buffer Limit</String>
   
   <!-- Render Options -->
   <String ID="$RENDER">Render</String>
@@ -130,6 +133,17 @@
   <String ID="$MATERIAL_EDITOR_TITLE">Editor knihovny materiálů</String>
   <String ID="$OPEN">Otevřít</String>
   <String ID="$QUESTION_NAME_OF_MAT">Prosím zadejte jméno materiálu</String>
+  <String ID="$EXPORT_MATS">Export Selected Materials</String>
+  <String ID="$LABEL_SEARCHTYPE">Type of Search:</String>
+  <String ID="$LABEL_MATERIALNAME">Material Name</String>
+  <String ID="$LABEL_MATERIALHASH">Material Hash</String>
+  <String ID="$LABEL_TEXTURENAME">Texture Name</String>
+  <String ID="$LABEL_SHADERID">Shader ID</String>
+  <String ID="$LABEL_SHADERHASH">Shader Hash</String>
+  <String ID="$SEARCH">Vyhledávání</String>
+  <String ID="$LABEL_SEARCHBAR">Search for a Material:</String>
+  <String ID="$LABEL_SELECTMATLIBRARY">Select Material Library:</String>
+  <String ID="$TITLE_MATERIALBROWSER">Material Browser</String>
   
   <!-- FrameResource Editor Form Strings-->
   <String ID="$FRAME_EDITOR_EXPORT_BTN">Extrahovat modely..</String>

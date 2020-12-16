@@ -4,7 +4,7 @@ using SharpDX.D3DCompiler;
 using SharpDX.Direct3D11;
 using System.Runtime.InteropServices;
 using Utils.Settings;
-using Rendering.Sys;
+using Rendering.Core;
 
 namespace Rendering.Graphics
 {
@@ -41,13 +41,13 @@ namespace Rendering.Graphics
 
         public struct MaterialParameters
         {
-            public MaterialParameters(Material material, Vector3 vector)
+            public MaterialParameters(IMaterial material, Vector3 vector)
             {
                 MaterialData = material;
                 SelectionColour = vector;
             }
 
-            public Material MaterialData { get; set; }
+            public IMaterial MaterialData { get; set; }
             public Vector3 SelectionColour { get; set; }
         }
         protected VertexShader VertexShader { get; set; }
@@ -59,10 +59,10 @@ namespace Rendering.Graphics
         protected Buffer ConstantEditorParamsBuffer { get; set; }
         protected SamplerState SamplerState { get; set; }
 
-        protected LightClass previousLighting = null;
-
-        //this will be replaced with the editor param data
-        protected Vector4 previousEditorParams;
+        // These allow the editor to only make changes if the 
+        // incoming changes are different.
+        protected LightClass previousLighting = null;      
+        protected Vector3 previousEditorParams;
 
         public virtual bool Init(Device device, InputElement[] elements, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
         {
@@ -85,11 +85,11 @@ namespace Rendering.Graphics
                 AddressV = TextureAddressMode.Wrap,
                 AddressW = TextureAddressMode.Wrap,
                 MipLodBias = 0,
-                MaximumAnisotropy = 16,
+                MaximumAnisotropy = 8,
                 ComparisonFunction = Comparison.Always,
                 BorderColor = new Color4(0, 0, 0, 0),
                 MinimumLod = 0,
-                MaximumLod = float.MaxValue
+                MaximumLod = 0
             };
 
             SamplerState = new SamplerState(device, samplerDesc);
@@ -157,6 +157,7 @@ namespace Rendering.Graphics
                 };
 
                 ConstantBufferFactory.UpdatePixelBuffer(deviceContext, ConstantEditorParamsBuffer, 1, editorParams);
+                previousEditorParams = editorParams.selectionColour;
             }
 
             //experiments with samplers; currently the toolkit doesn't not support any types.
