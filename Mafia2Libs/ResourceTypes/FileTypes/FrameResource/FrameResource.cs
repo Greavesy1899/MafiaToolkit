@@ -770,16 +770,21 @@ namespace ResourceTypes.FrameResource
                     isBlendInfoUsed[mesh.Refs[FrameEntry.BlendInfoRef]] = true;
                     isSkelHierUsed[mesh.Refs[FrameEntry.SkeletonHierRef]] = true;
                     isSkelUsed[mesh.Refs[FrameEntry.SkeletonRef]] = true;
+
                 }
                 else if (entry.Value is FrameObjectSingleMesh)
                 {
                     FrameObjectSingleMesh mesh = (entry.Value as FrameObjectSingleMesh);
 
                     if (mesh.MeshIndex > -1)
+                    {
                         isGeomUsed[mesh.Refs[FrameEntry.GeometryRef]] = true;
+                    }
 
                     if (mesh.MaterialIndex > -1)
+                    {
                         isMatUsed[mesh.Refs[FrameEntry.MaterialRef]] = true;
+                    }
                 }
             }
 

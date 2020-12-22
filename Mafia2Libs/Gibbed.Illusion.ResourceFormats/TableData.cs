@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 using Gibbed.Illusion.FileFormats;
 using Gibbed.Illusion.FileFormats.Hashing;
 using Gibbed.IO;
@@ -127,6 +128,104 @@ namespace Gibbed.Mafia2.ResourceFormats
             }
         }
 
+        public bool Validate()
+        {
+            bool bIsTableValid = true;
+
+            for (int i = 0; i < Rows.Count; i++)
+            {
+                for (int x = 0; x < Columns.Count; x++)
+                {
+                    Column column = Columns[x];
+                    object value = Rows[i].Values[x];
+                    bool bIsCellValid = true;
+
+                    switch (column.Type)
+                    {
+                        case ColumnType.Boolean:
+                            ConvertToType<bool>(value, ref bIsCellValid);
+                            break;
+                        case ColumnType.Float32:
+                            ConvertToType<float>(value, ref bIsCellValid);
+                            break;
+                        case ColumnType.Signed32:
+                            ConvertToType<int>(value, ref bIsCellValid);
+                            break;
+                        case ColumnType.Unsigned32:
+                        case ColumnType.Flags32:
+                            ConvertToType<uint>(value, ref bIsCellValid);
+                            break;
+                        case ColumnType.Hash64:
+                            ConvertToType<ulong>(value, ref bIsCellValid);
+                            break;
+                        case ColumnType.String8:
+                        case ColumnType.String16:
+                        case ColumnType.String32:
+                        case ColumnType.String64:
+                            // TODO: Should we check this?
+                            break;
+                        case ColumnType.Color:
+                            string[] colors = (Rows[i].Values[x] as string).Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            if(colors.Length == 3)
+                            {
+                                foreach(var colour in colors)
+                                {
+                                    ConvertToType<float>(colour, ref bIsCellValid);
+                                }
+                            }
+                            break;
+                        case ColumnType.Hash64AndString32:
+                            // TODO: Should we check this?
+                            break;
+                        default:
+                            throw new FormatException();
+                    }
+
+                    if(!bIsCellValid)
+                    {
+                        string ErrorMessage = string.Format("Error validating cell X: {0} Y: {1}", i, x);
+                        MessageBox.Show(ErrorMessage, "Toolkit", MessageBoxButton.OK);
+                    }
+
+                    // TODO: Do we want to do this? is it better to iterate through them all and tell them 
+                    // which ones failed validation?
+
+                    // If cell is invalid break the validation, as we know the table contains invalid data
+                    bIsTableValid = bIsCellValid;
+                    if(!bIsTableValid)
+                    {
+                        return bIsTableValid;
+                    }
+                }
+            }
+
+            return bIsTableValid;
+        }
+
+        private T ConvertToType<T>(object ObjectToConvert, ref bool bIsValid)
+        {
+            // Get type we can to cast to.
+            T TypeToCast = Activator.CreateInstance<T>();
+            Type TypeOfObject = TypeToCast.GetType();
+
+            // Try and attempt to cast
+            T Output = Activator.CreateInstance<T>();
+
+            try
+            {
+                Output = (T)Convert.ChangeType(ObjectToConvert, TypeOfObject);
+            }
+            catch (Exception ex)
+            {
+                Type TypeOfPassedObject = ObjectToConvert.GetType();
+                string ErrorMessage = string.Format("Failed to cast object of type {0} to {1}", TypeOfObject.Name, TypeOfPassedObject.Name);
+                MessageBox.Show(ErrorMessage, "Toolkit", MessageBoxButton.OK);
+                bIsValid = false;
+            }
+
+            return Output;
+        }
+
         public void Serialize(BinaryWriter writer)
         {
             writer.Write(NameHash);
@@ -143,25 +242,25 @@ namespace Gibbed.Mafia2.ResourceFormats
                 {
                     Column column = Columns[x];
                     object value = Rows[i].Values[x];
+                    bool isValid = true;
+
                     switch (column.Type)
                     {
                         case ColumnType.Boolean:
-                            writer.Write(value.GetType() == typeof(string) ? Convert.ToUInt32(value): (uint)Rows[i].Values[x]);
+                            writer.Write(ConvertToType<bool>(value, ref isValid));
                             break;
                         case ColumnType.Float32:
-                            writer.Write(value.GetType() == typeof(float) ? Convert.ToSingle(value) : (float)Rows[i].Values[x]);
+                            writer.Write(ConvertToType<float>(value, ref isValid));
                             break;
                         case ColumnType.Signed32:
-                            writer.Write(value.GetType() == typeof(int) ? Convert.ToInt32(value) : (int)Rows[i].Values[x]);
+                            writer.Write(ConvertToType<int>(value, ref isValid));
                             break;
                         case ColumnType.Unsigned32:
-                            writer.Write(value.GetType() == typeof(int) ? Convert.ToUInt32(value) : (uint)Rows[i].Values[x]);
-                            break;
                         case ColumnType.Flags32:
-                            writer.Write(value.GetType() == typeof(int) ? Convert.ToUInt32(value) : (uint)Rows[i].Values[x]);
+                            writer.Write(ConvertToType<uint>(value, ref isValid));
                             break;
                         case ColumnType.Hash64:
-                            writer.Write(value.GetType() == typeof(string) ? Convert.ToUInt64(value) : (ulong)Rows[i].Values[x]);
+                            writer.Write(ConvertToType<ulong>(value, ref isValid));
                             break;
                         case ColumnType.String8:
                             StringHelpers.WriteStringBuffer(writer, 8, (string)Rows[i].Values[x]);
@@ -177,9 +276,11 @@ namespace Gibbed.Mafia2.ResourceFormats
                             break;
                         case ColumnType.Color:
                             string[] colors = (Rows[i].Values[x] as string).Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                            writer.Write(float.Parse(colors[0]));
-                            writer.Write(float.Parse(colors[1]));
-                            writer.Write(float.Parse(colors[2]));
+                            foreach(var colour in colors)
+                            {
+                                writer.Write(ConvertToType<float>(colour, ref isValid));
+
+                            }
                             break;
                         case ColumnType.Hash64AndString32:
                             string name = (string)Rows[i].Values[x];

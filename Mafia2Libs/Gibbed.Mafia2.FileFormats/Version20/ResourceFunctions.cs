@@ -132,6 +132,9 @@ namespace Gibbed.Mafia2.FileFormats
                     case "Script":
                         ReadScriptEntry(entry, resourceXML, finalPath);
                         continue;
+                    case "Cutscene":
+                        ReadCutsceneEntry(entry, resourceXML, finalPath);
+                        continue;
                     default:
                         string TypeName = ResourceTypes[entry.TypeId].Name;
                         string FormatError = string.Format("Found Unknown Type: {0}\nClicking continue will proceed with unpacking the SDS.", TypeName);
@@ -232,6 +235,9 @@ namespace Gibbed.Mafia2.FileFormats
                         break;
                     case "Flash":
                         resourceEntry = WriteFlashEntry(resourceEntry, nodes, sdsFolder, sddescNode);
+                        break;
+                    case "Cutscene":
+                        resourceEntry = WriteCutsceneEntry(resourceEntry, nodes, sdsFolder, sddescNode);
                         break;
                     default:
                         MessageBox.Show("Did not pack type: " + resourceType, "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -512,6 +518,67 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteElementString("FileHash", resource.FileHash.ToString());
             resourceXML.WriteElementString("Unk02", resource.Unk02.ToString());
             return name;
+        }
+
+        private ResourceEntry WriteCutsceneEntry(ResourceEntry entry, XPathNodeIterator nodes, string SDSFolder, XmlNode descNode)
+        {
+            // Read contents from SDSContent.xml
+            nodes.Current.MoveToNext();
+            int NumGCRs = nodes.Current.ValueAsInt;
+            nodes.Current.MoveToNext();
+
+            // construct new resource
+            CutsceneResource Resource = new CutsceneResource();
+            Resource.GCREntityRecords = new CutsceneResource.GCRResource[NumGCRs];
+
+            for(int i = 0; i < NumGCRs; i++)
+            {
+                string Name = nodes.Current.Value;
+                CutsceneResource.GCRResource Record = new CutsceneResource.GCRResource();
+
+                string CombinedPath = Path.Combine(SDSFolder, Name);
+                Record.Name = Name;
+                Record.Content = File.ReadAllBytes(CombinedPath);
+
+                nodes.Current.MoveToNext();
+
+                Resource.GCREntityRecords[i] = Record;
+            }
+
+            ushort version = ushort.Parse(nodes.Current.Value);
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                Resource.Serialize(entry.Version, stream, _Endian);
+                entry.Data = stream.ToArray();
+            }
+
+            entry.Version = version;
+
+            return entry;
+        }
+
+        private string ReadCutsceneEntry(ResourceEntry entry, XmlWriter writer, string SDSFolder)
+        {
+            CutsceneResource Resource = new CutsceneResource();
+
+            using (MemoryStream stream = new MemoryStream(entry.Data))
+            {
+                Resource.Deserialize(entry.Version, stream, _Endian);
+            }
+
+            // Write all EntityRecords to individual files
+            writer.WriteElementString("GCRNum", Resource.GCREntityRecords.Length.ToString());
+            foreach(var Record in Resource.GCREntityRecords)
+            {
+                File.WriteAllBytes(Path.Combine(SDSFolder, Record.Name), Record.Content);
+                writer.WriteElementString("Name", Record.Name);
+            }
+
+            writer.WriteElementString("Version", entry.Version.ToString());
+            writer.WriteEndElement();
+
+            return SDSFolder;
         }
     }
 }

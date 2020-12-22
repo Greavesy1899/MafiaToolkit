@@ -138,6 +138,34 @@ namespace ResourceTypes.FrameResource
             writer.Write(unk18_3);
         }
 
+        protected override void SanitizeOnSave()
+        {
+            base.SanitizeOnSave();
+
+            /* Start check regarding OM Flag */
+
+            // Check if OM Texture is valid
+            bool bIsOMTextureValid = (omTextureHash.Hash != 0);
+
+            // Cache-Off flag
+            bool bHasOMFlag = flags.HasFlag(SingleMeshFlags.OM_Flag);
+
+            // If we have the flag but we it isn't valid
+            if (bHasOMFlag && !bIsOMTextureValid)
+            {
+                // Remove flag
+                flags &= ~SingleMeshFlags.OM_Flag;
+            }
+
+            // If we have a valid hash but don't have the flag.
+            if(bIsOMTextureValid && !bHasOMFlag)
+            {
+                // Add flag
+                flags |= SingleMeshFlags.OM_Flag;
+            }
+            /* End check regarding OM Flag */
+        }
+
         public override string ToString()
         {
             return string.Format("{0}", Name);

@@ -350,6 +350,7 @@
       <DependentUpon>TranslokatorEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Gibbed.Illusion.FileFormats\CompressedBlockHeader.cs" />
+    <Compile Include="Gibbed.Illusion.ResourceFormats\CutsceneResource.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\GenericResource.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\HavokResource.cs" />
     <Compile Include="Gibbed.Illusion.ResourceFormats\XBinResource.cs" />

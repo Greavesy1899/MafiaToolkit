@@ -151,6 +151,8 @@ namespace ResourceTypes.FrameResource
 
         public virtual void WriteToFile(BinaryWriter writer)
         {
+            SanitizeOnSave();
+
             name.WriteToFile(writer);
             writer.Write(secondaryFlags);
             MatrixExtensions.WriteToFile(localTransform, writer);
@@ -159,6 +161,8 @@ namespace ResourceTypes.FrameResource
             writer.Write(parentIndex2.Index);
             writer.Write(unk6);
         }
+
+        protected virtual void SanitizeOnSave() { }
 
         public void SetWorldTransform()
         {

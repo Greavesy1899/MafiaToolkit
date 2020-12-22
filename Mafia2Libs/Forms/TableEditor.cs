@@ -66,7 +66,9 @@ namespace Mafia2Tool
         private string GetColumnName(uint hash)
         {
             if (columnNames.ContainsKey(hash))
+            {
                 return columnNames[hash];
+            }
 
             return hash.ToString("X8");
         }
@@ -81,6 +83,7 @@ namespace Mafia2Tool
             {
                 data.Deserialize(0, reader.BaseStream, Gibbed.IO.Endian.Little);
             }
+
             foreach (TableData.Column column in data.Columns)
             {
                 MTableColumn newCol = new MTableColumn();
@@ -136,8 +139,18 @@ namespace Mafia2Tool
             {
                 TableData.Row row = new TableData.Row();
                 for (int x = 0; x != DataGrid.ColumnCount; x++)
+                {
                     row.Values.Add(DataGrid.Rows[i].Cells[x].Value);
+                }
+
                 newData.Rows.Add(row);
+            }
+
+            // Don't save the file if we fail to validate
+            if(!newData.Validate())
+            {
+                MessageBox.Show("Failed to validate. Not saving data.", "Toolkit", MessageBoxButtons.OK);
+                return;
             }
 
             using (BinaryWriter writer = new BinaryWriter(File.Open(file.FullName, FileMode.Create)))
