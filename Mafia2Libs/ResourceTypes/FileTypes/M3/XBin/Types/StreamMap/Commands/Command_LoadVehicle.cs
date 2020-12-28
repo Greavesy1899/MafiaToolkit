@@ -22,11 +22,11 @@ namespace FileTypes.XBin.StreamMap.Commands
             LoadFlags = reader.ReadUInt32();
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
             Position.WriteToFile(writer);
             Direction.WriteToFile(writer);
-            writer.Write(-1); // EntityName
+            writer.PushStringPtr(EntityName);
             writer.Write(LoadFlags);
         }
 
@@ -69,18 +69,19 @@ namespace FileTypes.XBin.StreamMap.Commands
             }
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
-            writer.Write(-1); // VehicleOffset
+            writer.PushObjectPtr("Command_VehicleOffset");
             writer.Write(Instances.Length); // Two because its an array
             writer.Write(Instances.Length); // Two because its an array
             writer.Write((uint)SlotType);
-            writer.Write(-1); // SDSName
-            writer.Write(-1); // QuotaID
+            writer.PushStringPtr(SDSName);
+            writer.PushStringPtr(QuotaID);
             writer.Write(GUID);
             writer.Write(SlotID);
 
-            foreach(var Instance in Instances)
+            writer.FixUpObjectPtr("Command_VehicleOffset");
+            foreach (var Instance in Instances)
             {
                 Instance.WriteToFile(writer);
             }

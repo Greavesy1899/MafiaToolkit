@@ -1,5 +1,7 @@
-﻿using ResourceTypes.FileTypes.M3.XBin;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using System.Collections.Generic;
 using System.IO;
+using Utils.Extensions;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -11,31 +13,19 @@ namespace ResourceTypes.M3.XBin
         private int offset;
 
         public BaseTable TableInformation { get; set; }
-        private int unk1; // Unknown.
+
+        private Dictionary<ulong, string> XBinHashes;
 
         public void ReadFromFile(BinaryReader reader)
         {
+            ConstructHashPool();
+
             hash = reader.ReadUInt64(); // I *think* this is to UInt32's molded together.
             version = reader.ReadInt32();
             numTables = reader.ReadInt32();
             offset = reader.ReadInt32();
 
-            TableInformation = XBinFactory.ReadXBin(reader, hash);
-
-            /*
-            if (numTables > 0)
-            {
-                for (int i = 0; i < numTables; i++)
-                {
-                    uint offset = reader.ReadUInt32();
-                }
-            }
-            else
-            {
-                unk0 = reader.ReadInt32();
-                TableInformation = XBinFactory.ReadXBin(reader, hash);
-            }
-            */
+            TableInformation = XBinFactory.ReadXBin(reader, this, hash);
         }
 
         public void WriteToFile(FileInfo file)
@@ -53,6 +43,24 @@ namespace ResourceTypes.M3.XBin
             writer.Write(numTables);
             writer.Write(offset);
             TableInformation.WriteToFile(writer);
+        }
+
+        private void ConstructHashPool()
+        {
+            string[] Lines = File.ReadAllLines("Resources/GameData/XBin_Hashes.txt");
+
+            XBinHashes = new Dictionary<ulong, string>();
+
+            foreach(var Line in Lines)
+            {
+                ulong Hash = FNV64.Hash(Line);
+                XBinHashes.TryAdd(Hash, Line);
+            }
+        }
+
+        public string GetFromHashPool(ulong Hash)
+        {
+            return XBinHashes.TryGet(Hash);
         }
     }
 }

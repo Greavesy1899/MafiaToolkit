@@ -15,9 +15,9 @@ namespace FileTypes.XBin.StreamMap.Commands
             CutsceneName = XBinCoreUtils.ReadStringPtrWithOffset(reader);
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
-            throw new NotImplementedException();
+            writer.PushStringPtr(CutsceneName);
         }
 
         public int GetSize()

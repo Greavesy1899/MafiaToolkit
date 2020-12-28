@@ -42,7 +42,7 @@ namespace Gibbed.Illusion.FileFormats
         private readonly bool _IsCompressing;
         private readonly bool _bUseOodle;
 
-        private BlockWriterStream(Stream baseStream, uint alignment, Endian endian, bool compress)
+        private BlockWriterStream(Stream baseStream, uint alignment, Endian endian, bool compress, bool bUseOodle)
         {
             if (baseStream == null)
             {
@@ -56,9 +56,7 @@ namespace Gibbed.Illusion.FileFormats
             this._BlockOffset = 0;
             this._IsCompressing = compress;
             this._Alignment = alignment;
-
-            var game = GameStorage.Instance.GetSelectedGame();
-            if (game.GameType == GamesEnumerator.MafiaI_DE)
+            if (bUseOodle)
             {
                 this._bUseOodle = ToolkitSettings.bUseOodleCompression;
             }
@@ -222,9 +220,9 @@ namespace Gibbed.Illusion.FileFormats
         }
         #endregion
 
-        public static BlockWriterStream ToStream(Stream baseStream, uint alignment, Endian endian, bool compress)
+        public static BlockWriterStream ToStream(Stream baseStream, uint alignment, Endian endian, bool compress, bool bUseOodle)
         {
-            var instance = new BlockWriterStream(baseStream, alignment, endian, compress);
+            var instance = new BlockWriterStream(baseStream, alignment, endian, compress, bUseOodle);
             baseStream.WriteValueU32(Signature, endian);          
             var headerAlignment = (instance._bUseOodle && compress ? (alignment | 0x1000000) : alignment);
             baseStream.WriteValueU32(headerAlignment, endian);

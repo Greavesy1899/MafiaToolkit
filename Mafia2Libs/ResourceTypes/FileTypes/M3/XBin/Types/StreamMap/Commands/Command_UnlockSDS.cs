@@ -15,9 +15,9 @@ namespace FileTypes.XBin.StreamMap.Commands
             SDSName = XBinCoreUtils.ReadStringPtrWithOffset(reader);
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
-            writer.Write(-1); // SDSName
+            writer.PushStringPtr(SDSName);
         }
         public int GetSize()
         {

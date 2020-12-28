@@ -80,9 +80,8 @@ namespace Utils.Types
             byte[] LeftHand = new byte[4];
             Array.Copy(GuidBytes, LeftHand, 4);
 
-            byte[] RightHand = new byte[5];
+            byte[] RightHand = new byte[4];
             Array.Copy(GuidBytes, 4, RightHand, 0, 4);
-            RightHand[4] = Convert.ToByte(name.Length);
 
             string SLeftHand = BitConverter.ToString(LeftHand).Replace("-", "");
             string SRightHand = BitConverter.ToString(RightHand).Replace("-", "");

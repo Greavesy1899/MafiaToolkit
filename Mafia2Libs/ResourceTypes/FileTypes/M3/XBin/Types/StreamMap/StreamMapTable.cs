@@ -108,7 +108,7 @@ namespace ResourceTypes.M3.XBin
                 writer.PushStringPtr(Line.GameID);
                 writer.PushStringPtr(Line.MissionID);
                 writer.PushStringPtr(Line.PartID);
-                writer.Write(-1); // TableOffset
+                writer.PushObjectPtr(string.Format("TableOffset_{0}", i));
                 writer.Write(Line.TableCommands.Length); // This file stores it twice.
                 writer.Write(Line.TableCommands.Length);
                 writer.Write(Line.IsAsync);
@@ -118,14 +118,17 @@ namespace ResourceTypes.M3.XBin
             {
                 StreamMapLine Line = Lines[i];
                 
-                for(int x = 0; x < Line.TableCommands.Length; x++)
+                writer.FixUpObjectPtr(string.Format("TableOffset_{0}", i));
+
+                for (int x = 0; x < Line.TableCommands.Length; x++)
                 {
-                    writer.Write(-1); // Offset
+                    writer.PushObjectPtr(string.Format("TableCommandsOffset_{0}", x));
                     writer.Write(Line.TableCommands[x].GetMagic());
                 }
 
                 for (int x = 0; x < Line.TableCommands.Length; x++)
                 {
+                    writer.FixUpObjectPtr(string.Format("TableCommandsOffset_{0}", x));
                     Line.TableCommands[x].WriteToFile(writer);
                 }
             }
@@ -147,7 +150,18 @@ namespace ResourceTypes.M3.XBin
 
         public TreeNode GetAsTreeNodes()
         {
-            return null;
+            TreeNode Root = new TreeNode();
+            Root.Text = "StreamMap Table";
+
+            foreach (var Item in Lines)
+            {
+                TreeNode ChildNode = new TreeNode();
+                ChildNode.Tag = Item;
+                ChildNode.Text = Item.ToString();
+                Root.Nodes.Add(ChildNode);
+            }
+
+            return Root;
         }
 
         public void SetFromTreeNodes(TreeNode Root)

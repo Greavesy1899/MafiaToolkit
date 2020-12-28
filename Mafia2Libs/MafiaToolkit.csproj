@@ -433,6 +433,7 @@
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarTuningModificators.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CarTuningPackAvailabilityTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CharacterCinematicsTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CitiesTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\CoreUtils.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\DecalsEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\Enumerators\GuiEnums.cs" />
@@ -831,6 +832,7 @@
     <None Include="Resources\default_n.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="Resources\GameData\XBin_Hashes.txt" />
     <None Include="Resources\GizmoModel.m2t">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

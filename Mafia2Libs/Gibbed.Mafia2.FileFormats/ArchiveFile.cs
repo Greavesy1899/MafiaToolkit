@@ -56,6 +56,9 @@ namespace Gibbed.Mafia2.FileFormats
         private readonly List<Archive.ResourceEntry> _ResourceEntries;
         private readonly List<string> _ResourceNames;
         private Dictionary<ulong, string> _TextureNames;
+        private Game ChosenGame;
+        private GamesEnumerator ChosenGameType;
+        private bool bHasSetGameType;
         #endregion
         #region Properties
         public Endian Endian {
@@ -111,6 +114,19 @@ namespace Gibbed.Mafia2.FileFormats
             this._ResourceEntries = new List<Archive.ResourceEntry>();
             this._ResourceNames = new List<string>();
             Unknown20 = new byte[16];
+
+            // Get Chosen Game and Type.
+            // Sanity check the GameStorage and
+            // pull from it if possible.
+            if (GameStorage.Instance != null)
+            {
+                ChosenGame = GameStorage.Instance.GetSelectedGame();
+
+                if (ChosenGame != null)
+                {
+                    ChosenGameType = ChosenGame.GameType;
+                }
+            }
         }
         #endregion
         #region Functions
@@ -146,7 +162,7 @@ namespace Gibbed.Mafia2.FileFormats
             var blockAlignment = (options & ArchiveSerializeOptions.OneBlock) != ArchiveSerializeOptions.None ? (uint)this._ResourceEntries.Sum(re => stride + (re.Data == null ? 0 : re.Data.Length)) : alignment;
             fileHeader.BlockTableOffset = (uint)(output.Position - basePosition);
             fileHeader.ResourceCount = 0;
-            var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress);           
+            var blockStream = BlockWriterStream.ToStream(output, blockAlignment, endian, compress, ChosenGameType == GamesEnumerator.MafiaI_DE);           
             foreach (var resourceEntry in this._ResourceEntries)
             {
                 Archive.ResourceHeader resourceHeader;
@@ -202,8 +218,7 @@ namespace Gibbed.Mafia2.FileFormats
             // They are from an external file, taken from MTL.
             ReadTextureNames();
 
-            var game = GameStorage.Instance.GetSelectedGame();
-            if (game.GameType == GamesEnumerator.MafiaI_DE)
+            if (IsGameType(GamesEnumerator.MafiaI_DE))
             {
                 if (!File.Exists("libs/oo2core_8_win64.dll"))
                 {
@@ -364,6 +379,24 @@ namespace Gibbed.Mafia2.FileFormats
                 result = BuildResourcesVersion20(document, xmlDoc, rootNode, sdsFolder);
             }
             return result;
+        }
+
+        // Util function to set game type.
+        // This is used for functionality where a selected game does not exist.
+        public void SetGameType(GamesEnumerator SelectedGameType)
+        {
+            ChosenGameType = SelectedGameType;
+        }
+
+        private bool IsGameType(GamesEnumerator TypeToCheck)
+        {
+            if(bHasSetGameType)
+            {
+                return ChosenGameType.Equals(TypeToCheck);
+            }
+
+            // TODO: Throw assert?
+            return false;
         }
 
         public void ExtractPatch(FileInfo file)
@@ -565,7 +598,9 @@ namespace Gibbed.Mafia2.FileFormats
             if (string.IsNullOrEmpty(ResourceInfoXml) == false)
             {
                 using (var reader = new StringReader(ResourceInfoXml))
+                {
                     doc = new XPathDocument(reader);
+                }
             }
             else
             {

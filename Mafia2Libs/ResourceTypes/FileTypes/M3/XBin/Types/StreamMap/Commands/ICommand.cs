@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using ResourceTypes.M3.XBin;
+using System.IO;
 
 namespace FileTypes.XBin.StreamMap.Commands
 {
@@ -6,7 +7,7 @@ namespace FileTypes.XBin.StreamMap.Commands
     {
         void ReadFromFile(BinaryReader reader);
 
-        void WriteToFile(BinaryWriter writer);
+        void WriteToFile(XBinWriter writer);
         int GetSize();
         uint GetMagic();
     }

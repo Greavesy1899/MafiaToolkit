@@ -23,11 +23,11 @@ namespace FileTypes.XBin.StreamMap.Commands
             LoadFlags = reader.ReadUInt32();
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
             writer.Write((uint)SlotType);
-            writer.Write(-1); // SDSName
-            writer.Write(-1); // QuotaID
+            writer.PushStringPtr(SDSName);
+            writer.PushStringPtr(QuotaID);
             writer.Write(LoadFlags);
         }
 

@@ -17,7 +17,7 @@ namespace FileTypes.XBin.StreamMap.Commands
             SaveId = StringHelpers.ReadStringBuffer(reader, 64);
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
             writer.Write((uint)SaveType);
             StringHelpers.WriteStringBuffer(writer, 64, SaveId);

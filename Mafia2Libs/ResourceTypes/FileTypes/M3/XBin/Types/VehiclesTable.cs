@@ -1,5 +1,4 @@
-﻿using ResourceTypes.FileTypes.M3.XBin;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;

@@ -64,17 +64,23 @@ namespace Core.IO
         public override void Save()
         {
             var game = GameStorage.Instance.GetSelectedGame();
+            string Folder = Path.Combine(file.Directory.FullName, "extracted", file.Name);
+            SaveSDSWithCustomFolder(game.GameType, Folder);
+        }
 
+        public void SaveSDSWithCustomFolder(GamesEnumerator GameType, string Folder)
+        {
             ArchiveFile archiveFile = new ArchiveFile();
             archiveFile.Platform = Platform.PC;
+            archiveFile.SetGameType(GameType);
 
             // MII: DE no longer has this data in the header.
-            if (game.GameType == GamesEnumerator.MafiaII)
+            if (GameType == GamesEnumerator.MafiaII)
             {
                 archiveFile.Unknown20 = new byte[16] { 55, 51, 57, 55, 57, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             }
 
-            if (game.GameType == GamesEnumerator.MafiaI_DE || game.GameType == GamesEnumerator.MafiaIII)
+            if (GameType == GamesEnumerator.MafiaI_DE || GameType == GamesEnumerator.MafiaIII)
             {
                 archiveFile.Version = 20;
             }
@@ -82,9 +88,9 @@ namespace Core.IO
             {
                 archiveFile.Version = 19;
             }
-            
+
             // We should now to try pack the SDS.
-            if (!archiveFile.BuildResources(file.Directory.FullName + "/extracted/" + file.Name))
+            if (!archiveFile.BuildResources(Folder))
             {
                 MessageBox.Show("Failed to pack SDS.", "Toolkit", MessageBoxButtons.OK);
                 return;

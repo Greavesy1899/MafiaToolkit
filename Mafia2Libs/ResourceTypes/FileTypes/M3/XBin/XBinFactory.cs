@@ -6,11 +6,11 @@ using System.Diagnostics;
 using System.IO;
 using ResourceTypes.M3.XBin.GuiContainers;
 
-namespace ResourceTypes.FileTypes.M3.XBin
+namespace ResourceTypes.M3.XBin
 {
     public static class XBinFactory
     {
-        public static BaseTable ReadXBin(BinaryReader reader, ulong hash)
+        public static BaseTable ReadXBin(BinaryReader reader, XBin Parent, ulong hash)
         {
             BaseTable XBinData = null;
 
@@ -79,6 +79,16 @@ namespace ResourceTypes.FileTypes.M3.XBin
                     break;
                 case 0x0E2FBBCF46754F66: // CarTuningPackAvailabilityTable (Mafia I: DE and Mafia III)
                     XBinData = new CarTuningPackAvailabilityTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0xA32C16191BC63EEF: // StreamMap Table (Mafia I: DE)
+                case 0xA32C1619D5261223: // StreamMap Table (Mafia III)
+                    XBinData = new StreamMapTable();
+                    XBinData.ReadFromFile(reader);
+                    break;
+                case 0x2B673F12DCA4BBF1:
+                case 0x2B673F120D288C9A:
+                    XBinData = new CitiesTable();
                     XBinData.ReadFromFile(reader);
                     break;
                 //case 0xDC327944DD83627E: // TODO: Fix for M1: DE. look for 0xA for PaintCombination array entries.

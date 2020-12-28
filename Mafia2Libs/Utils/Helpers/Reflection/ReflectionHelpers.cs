@@ -180,6 +180,10 @@ namespace Utils.Helpers.Reflection
 
                         Element.Add(RootElement);
                     }
+                    else if (Info.PropertyType.IsClass && AllowClassReflection(Info.PropertyType))
+                    {
+                        // TODO: This will need to be done if we want to have our custom classes as properties.
+                    }
                     else
                     {
                         object info = PropertyData.GetType().GetProperty(Info.Name).GetValue(PropertyData);
@@ -191,7 +195,7 @@ namespace Utils.Helpers.Reflection
                         else
                         {
                             Element.Add(new XElement(Info.Name, info));
-                        }                     
+                        }
                     }
                 }
 
@@ -223,6 +227,13 @@ namespace Utils.Helpers.Reflection
             // Is our Attribute Valid?
             Attribute PropertyAttritbute = Info.GetCustomAttribute(typeof(PropertyIgnoreByReflector));
             return PropertyAttritbute == null;
+        }
+
+        private static bool AllowClassReflection(Type Info)
+        {
+            // Is our Class allowed to reflect?
+            Attribute PropertyAttritbute = Info.GetCustomAttribute(typeof(PropertyClassAllowReflection));
+            return PropertyAttritbute != null;
         }
     }
 }

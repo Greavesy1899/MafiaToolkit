@@ -1,16 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using Utils.Helpers.Reflection;
 
 namespace ResourceTypes.M3.XBin.GuiContainers
 {
     public class GameGuiContainer : BaseTable
     {
-        public uint GuiInputMapPtr { get; set; }
-        public uint FlashInputMapPtr { get; set; }
-        public uint GuiFontMapPtr { get; set; }
-        public uint GuiSoundMapPtr { get; set; }
-        public uint GuiLanguageMapPtr { get; set; }
         public GuiInputMapTable GuiInputMap { get; set; }
         public FlashInputMapTable FlashInputMap { get; set; }
         public GuiFontMapTable GuiFontMap { get; set; }
@@ -19,11 +16,11 @@ namespace ResourceTypes.M3.XBin.GuiContainers
 
         public void ReadFromFile(BinaryReader reader)
         {
-            GuiInputMapPtr = reader.ReadUInt32();
-            FlashInputMapPtr = reader.ReadUInt32();
-            GuiFontMapPtr = reader.ReadUInt32();
-            GuiSoundMapPtr = reader.ReadUInt32();
-            GuiLanguageMapPtr = reader.ReadUInt32();
+            uint GuiInputMapPtr = reader.ReadUInt32();
+            uint FlashInputMapPtr = reader.ReadUInt32();
+            uint GuiFontMapPtr = reader.ReadUInt32();
+            uint GuiSoundMapPtr = reader.ReadUInt32();
+            uint GuiLanguageMapPtr = reader.ReadUInt32();
 
             uint GuiInputMapValue = reader.ReadUInt32();
             GuiInputMap = new GuiInputMapTable();
@@ -48,17 +45,57 @@ namespace ResourceTypes.M3.XBin.GuiContainers
 
         public void WriteToFile(XBinWriter writer)
         {
-            throw new NotImplementedException();
+            writer.PushObjectPtr("GuiInputMapPtr");
+            writer.PushObjectPtr("FlashInputMapPtr");
+            writer.PushObjectPtr("GuiFontMapPtr");
+            writer.PushObjectPtr("GuiSoundMapPtr");
+            writer.PushObjectPtr("GuiLanguageMapPtr");
+
+            // Write GuiInputMap table
+            writer.FixUpObjectPtr("GuiInputMapPtr");
+            writer.Write(0xC);
+            GuiInputMap.WriteToFile(writer);
+
+            // Write FlashInputMap table
+            writer.FixUpObjectPtr("FlashInputMapPtr");
+            writer.Write(0xC);
+            FlashInputMap.WriteToFile(writer);
+
+            // Write GuiFontMap table
+            writer.FixUpObjectPtr("GuiFontMapPtr");
+            writer.Write(0xC);
+            GuiFontMap.WriteToFile(writer);
+
+            // Write GuiSoundMap table
+            writer.FixUpObjectPtr("GuiSoundMapPtr");
+            writer.Write(0xC);
+            GuiSoundMap.WriteToFile(writer);
+
+            // Write GuiLanguageMap table
+            writer.FixUpObjectPtr("GuiLanguageMapPtr");
+            writer.Write(0xC);
+            GuiLanguageMap.WriteToFile(writer);
         }
 
         public void ReadFromXML(string file)
         {
-            throw new NotImplementedException();
+            XElement Root = XElement.Load(file);
+            GuiInputMap = ReflectionHelpers.ConvertToPropertyFromXML<GuiInputMapTable>(Root.Element("GuiInputMapTable"));
+            FlashInputMap = ReflectionHelpers.ConvertToPropertyFromXML<FlashInputMapTable>(Root.Element("FlashInputMapTable"));
+            GuiFontMap = ReflectionHelpers.ConvertToPropertyFromXML<GuiFontMapTable>(Root.Element("GuiFontMapTable"));
+            GuiSoundMap = ReflectionHelpers.ConvertToPropertyFromXML<GuiSoundMapTable>(Root.Element("GuiSoundMapTable"));
+            GuiLanguageMap = ReflectionHelpers.ConvertToPropertyFromXML<GuiLanguageMapTable>(Root.Element("GuiLanguageMapTable"));
         }
 
         public void WriteToXML(string file)
         {
-            throw new NotImplementedException();
+            XElement RootElement = new XElement("GfxEnvContainer");
+            RootElement.Add(ReflectionHelpers.ConvertPropertyToXML(GuiInputMap));
+            RootElement.Add(ReflectionHelpers.ConvertPropertyToXML(FlashInputMap));
+            RootElement.Add(ReflectionHelpers.ConvertPropertyToXML(GuiFontMap));
+            RootElement.Add(ReflectionHelpers.ConvertPropertyToXML(GuiSoundMap));
+            RootElement.Add(ReflectionHelpers.ConvertPropertyToXML(GuiLanguageMap));
+            RootElement.Save(file, SaveOptions.None);
         }
 
         public TreeNode GetAsTreeNodes()
@@ -76,12 +113,11 @@ namespace ResourceTypes.M3.XBin.GuiContainers
 
         public void SetFromTreeNodes(TreeNode Root)
         {
-            throw new NotImplementedException();
-        }
-
-        private void GotoTablePtr(BinaryReader reader)
-        {
-
+            GuiInputMap.SetFromTreeNodes(Root.Nodes[0]);
+            FlashInputMap.SetFromTreeNodes(Root.Nodes[1]);
+            GuiFontMap.SetFromTreeNodes(Root.Nodes[2]);
+            GuiSoundMap.SetFromTreeNodes(Root.Nodes[3]);
+            GuiLanguageMap.SetFromTreeNodes(Root.Nodes[4]);
         }
     }
 }

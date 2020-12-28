@@ -1,4 +1,5 @@
-﻿using SharpDX;
+﻿using ResourceTypes.M3.XBin;
+using SharpDX;
 using System.IO;
 using Utils.SharpDXExtensions;
 
@@ -17,7 +18,7 @@ namespace FileTypes.XBin.StreamMap.Commands
             Direction = Vector3Extenders.ReadFromFile(reader);
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
             Position.WriteToFile(writer);
             Direction.WriteToFile(writer);

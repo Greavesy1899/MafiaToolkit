@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using ResourceTypes.M3.XBin;
+using System.IO;
 
 namespace FileTypes.XBin.StreamMap.Commands
 {
@@ -7,7 +8,6 @@ namespace FileTypes.XBin.StreamMap.Commands
     public class Command_EndIf : ICommand
     {
         private readonly uint Magic = 0x20AE48F2;
-
         public uint Unk0 { get; set; }
 
         public void ReadFromFile(BinaryReader reader)
@@ -15,7 +15,7 @@ namespace FileTypes.XBin.StreamMap.Commands
             Unk0 = reader.ReadUInt32();
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
             writer.Write(Unk0);
         }

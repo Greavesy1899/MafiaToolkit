@@ -15,10 +15,11 @@ namespace FileTypes.XBin.StreamMap.Commands
             VideoName = XBinCoreUtils.ReadStringPtrWithOffset(reader);
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
-            writer.Write(-1); // VideoName
+            writer.PushStringPtr(VideoName);
         }
+
         public int GetSize()
         {
             return 4;

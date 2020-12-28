@@ -19,11 +19,11 @@ namespace FileTypes.XBin.StreamMap.Commands
             Value = XBinCoreUtils.ReadStringPtrWithOffset(reader);
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(XBinWriter writer)
         {
-            writer.Write(-1); // Variable
+            writer.PushStringPtr(Variable);
             writer.Write((uint)Operator);
-            writer.Write(-1); // Value
+            writer.PushStringPtr(Value);
         }
         public int GetSize()
         {

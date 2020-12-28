@@ -36,8 +36,7 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.WriteElementString("File", name);
 
             // We lack the file hash in M3 and M1: DE. So we have to add it to the file.
-            var game = GameStorage.Instance.GetSelectedGame();
-            if(game.GameType == GamesEnumerator.MafiaI_DE || game.GameType == GamesEnumerator.MafiaIII)
+            if(IsGameType(GamesEnumerator.MafiaI_DE) || IsGameType(GamesEnumerator.MafiaIII))
             {
                 resourceXML.WriteElementString("FileHash", resource.NameHash.ToString());
             }
@@ -50,8 +49,7 @@ namespace Gibbed.Mafia2.FileFormats
         {
             // We lack the file hash in M3 and M1: DE. So we have to get it from the file.
             bool bIsMaf3 = false;
-            var game = GameStorage.Instance.GetSelectedGame();
-            if (game.GameType == GamesEnumerator.MafiaI_DE || game.GameType == GamesEnumerator.MafiaIII)
+            if (IsGameType(GamesEnumerator.MafiaI_DE) || IsGameType(GamesEnumerator.MafiaIII))
             {
                 bIsMaf3 = true;
             }
@@ -96,7 +94,7 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.Data = stream.ToArray();
 
                 // Configure VRAM information for the SDS.
-                if (game.GameType == GamesEnumerator.MafiaII_DE || game.GameType == GamesEnumerator.MafiaII)
+                if (IsGameType(GamesEnumerator.MafiaII_DE) || IsGameType(GamesEnumerator.MafiaII))
                 {
                     entry.SlotVramRequired = (uint)(texData.Length - 128);
                     //if (hasMIP == 1)
@@ -106,7 +104,7 @@ namespace Gibbed.Mafia2.FileFormats
                     //}
                 }
 
-                if (game.GameType == GamesEnumerator.MafiaI_DE)
+                if (IsGameType(GamesEnumerator.MafiaI_DE))
                 {
                     var size = (resource.bIsDX10 ? 157 : 137);
                     entry.OtherVramRequired = (uint)(stream.Length - size);
