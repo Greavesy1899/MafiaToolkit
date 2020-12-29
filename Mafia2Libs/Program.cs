@@ -16,6 +16,7 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
+
             if (args.Length > 0)
             {
                 CheckINIExists();
@@ -27,10 +28,6 @@ namespace Mafia2Tool
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            FileInfo XBinInfo = new FileInfo("cities_game_group.xbin");
-            FileXBin XBinFile = new FileXBin(XBinInfo);
-            XBinFile.Open();
-
             CheckINIExists();
             ToolkitSettings.ReadINI();
             GameStorage.Instance.InitStorage();
@@ -39,6 +36,11 @@ namespace Mafia2Tool
 
             //M3_ExperimentalTests Experiments = new M3_ExperimentalTests();
             //Experiments.ReadPrerequisites();
+
+            GameStorage.Instance.SetSelectedGameByIndex(ToolkitSettings.DefaultGame);
+            FileInfo XBinInfo = new FileInfo("cities_game_group.xbin");
+            FileXBin XBinObject = new FileXBin(XBinInfo);
+            XBinObject.Open();
 
             if (ToolkitSettings.SkipGameSelector)
             {

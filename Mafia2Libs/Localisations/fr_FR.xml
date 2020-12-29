@@ -197,4 +197,8 @@
   <String ID="$ROTATION_X">Rotation X</String>
   <String ID="$ROTATION_Y">Rotation Y</String>
   <String ID="$ROTATION_Z">Rotation Z</String>
+
+  <!-- Property Descriptions Strings-->
+  <String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
+  
 </Localisation>

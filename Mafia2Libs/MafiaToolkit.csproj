@@ -124,9 +124,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>libs\Gibbed.Squish.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=1.2.0.246, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpZipLib.1.2.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
     <Reference Include="Octokit, Version=0.36.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Octokit.0.36.0\lib\net46\Octokit.dll</HintPath>
     </Reference>
@@ -228,6 +225,9 @@
     <Compile Include="Controls\TextureEntry.Designer.cs">
       <DependentUpon>TextureEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Core\FileNavigation_HPD.cs" />
+    <Compile Include="Core\FileNavigation_NAV.cs" />
+    <Compile Include="Core\FileNavigation_OBJ.cs" />
     <Compile Include="Core\FileXBin.cs" />
     <Compile Include="Core\DirectoryBase.cs" />
     <Compile Include="Core\FileActor.cs" />
@@ -236,7 +236,7 @@
     <Compile Include="Core\FileCutscene.cs" />
     <Compile Include="Core\FileEntityDataStorage.cs" />
     <Compile Include="Core\FileFactory.cs" />
-    <Compile Include="Core\FileFrameResoure.cs" />
+    <Compile Include="Core\FileFrameResource.cs" />
     <Compile Include="Core\FileLua.cs" />
     <Compile Include="Core\FileMaterialLibrary.cs" />
     <Compile Include="Core\FilePrefab.cs" />
@@ -488,6 +488,7 @@
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\VehiclesTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBin.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBinFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBinHashName.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\XBinWriter.cs" />
     <Compile Include="ResourceTypes\FileTypes\Material\Enumerator.cs" />
     <Compile Include="ResourceTypes\FileTypes\Material\MaterialFactory.cs" />
@@ -610,6 +611,7 @@
     <Compile Include="Rendering\RenderPrefabs.cs" />
     <Compile Include="Rendering\Core\SpatialCell.cs" />
     <Compile Include="Rendering\Core\SpatialGrid.cs" />
+    <Compile Include="Utils\Helpers\CustomAttributes.cs" />
     <Compile Include="Utils\Helpers\MatrixExtensions.cs" />
     <Compile Include="Utils\Helpers\BoundExtensions.cs" />
     <Compile Include="ResourceTypes\ModelHelpers\Enums.cs" />
@@ -788,9 +790,6 @@
     <Content Include="libs\Gibbed.Squish.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="libs\ICSharpCode.SharpZipLib.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="libs\oo2core_8_win64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -832,7 +831,9 @@
     <None Include="Resources\default_n.dds">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="Resources\GameData\XBin_Hashes.txt" />
+    <Content Include="Resources\GameData\XBin_Hashes.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Resources\GizmoModel.m2t">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

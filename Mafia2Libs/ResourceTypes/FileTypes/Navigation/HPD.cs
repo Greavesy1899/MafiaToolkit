@@ -119,10 +119,10 @@ namespace ResourceTypes.Navigation
                 // And then serialize it as usual; X X -Y -Y Z Z
                 writer.Write(min.X);
                 writer.Write(max.X);
-                writer.Write(min.Y);
-                writer.Write(max.Y);
-                writer.Write(-min.Z);
-                writer.Write(-max.Z);
+                writer.Write(-min.Y);
+                writer.Write(-max.Y);
+                writer.Write(min.Z);
+                writer.Write(max.Z);
 
                 writer.Write(data.unk2);
                 writer.Write(data.fileSize);
@@ -171,7 +171,7 @@ namespace ResourceTypes.Navigation
             writer.WriteLine(unk2);
             writer.WriteLine(unk3);
             writer.WriteLine(unk4);
-            writer.WriteLine(unkFooter);
+            //writer.WriteLine(unkFooter);
             writer.Close();
         }
     }

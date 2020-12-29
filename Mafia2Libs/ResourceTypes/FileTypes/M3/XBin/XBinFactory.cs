@@ -50,7 +50,8 @@ namespace ResourceTypes.M3.XBin
                     XBinData = new SlotTable();
                     XBinData.ReadFromFile(reader);
                     break;
-                case 0xB77D0A522C8E12A3: // MissionsTable
+                case 0xB77D0A522C8E12A3: // MissionsTable (Mafia I: DE)
+                case 0xB77D0A52FD0225D0: // MissionTable (Mafia III)
                     XBinData = new MissionsTable();
                     XBinData.ReadFromFile(reader);
                     break;

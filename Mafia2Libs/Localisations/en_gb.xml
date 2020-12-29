@@ -269,4 +269,8 @@
   <String ID="$DELETE_OBJECT">Delete Object</String>
   <String ID="$DELETE_INSTANCE">Delete Instance</String>
   <String ID="$VIEW_NUM_INST">View Number of Instances</String>
+  
+  <!-- Property Descriptions Strings-->
+  <String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
+  
 </Localisation>

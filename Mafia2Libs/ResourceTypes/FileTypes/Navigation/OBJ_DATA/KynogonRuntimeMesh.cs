@@ -1,4 +1,5 @@
-﻿using SharpDX;
+﻿
+using SharpDX;
 using System;
 using System.IO;
 using Utils.SharpDXExtensions;

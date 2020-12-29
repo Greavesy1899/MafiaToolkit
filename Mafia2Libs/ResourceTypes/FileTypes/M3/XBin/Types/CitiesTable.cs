@@ -1,4 +1,5 @@
 ﻿using SharpDX;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -15,29 +16,57 @@ namespace ResourceTypes.M3.XBin
             public Vector3 PosPlayer { get; set; }
             public Vector3 DirPlayer { get; set; }
             public ERespawnPlaceType RespawnType { get; set; }
+
+            public CityRespawnPlace()
+            {
+                StreamMapPart = "";
+            }
         }
 
         public class CityPolygon
         {
             public string Name { get; set; }
-            public ulong TextID { get; set; }
+            public XBinHashName TextID { get; set; }
             public ulong Unk0 { get; set; } // TODO: Could include property - PoliceArrivalMultiplier?
             public ushort[] Indexes { get; set; }
+
+            public CityPolygon()
+            {
+                Name = "";
+                TextID = new XBinHashName();
+                Indexes = new ushort[0];
+            }
         }
 
         public uint ID { get; set; }
         public string Name { get; set; }
         public string MissionLine { get; set; }
         public string SDSPrefix { get; set; }
-        public ulong TextID { get; set; }
-        public ulong CarGarageType { get; set; }
-        public ulong BoatGarageType { get; set; }
+        public XBinHashName TextID { get; set; }
+        public XBinHashName CarGarageType { get; set; }
+        public XBinHashName BoatGarageType { get; set; }
         public string Map { get; set; }
         public CityRespawnPlace[] RespawnPlaces { get; set; }
+        [Browsable(false), PropertyIgnoreByReflector]
         public uint RespawnPlaceOffset { get; set; }
+        [Browsable(false), PropertyIgnoreByReflector]
         public uint RespawnPlaceCount { get; set; }
         public Vector2[] Points { get; set; }
         public CityPolygon[] Polygons { get; set; }
+
+        public CitiesTableItem()
+        {
+            Name = "";
+            MissionLine = "";
+            SDSPrefix = "";
+            TextID = new XBinHashName();
+            CarGarageType = new XBinHashName();
+            BoatGarageType = new XBinHashName();
+            Map = "";
+            RespawnPlaces = new CityRespawnPlace[0];
+            Points = new Vector2[0];
+            Polygons = new CityPolygon[0];
+        }
 
         public override string ToString()
         {
@@ -81,9 +110,9 @@ namespace ResourceTypes.M3.XBin
                 item.Name = XBinCoreUtils.ReadStringPtrWithOffset(reader);
                 item.MissionLine = XBinCoreUtils.ReadStringPtrWithOffset(reader);
                 item.SDSPrefix = XBinCoreUtils.ReadStringPtrWithOffset(reader);
-                item.TextID = reader.ReadUInt64();
-                item.CarGarageType = reader.ReadUInt64();
-                item.BoatGarageType = reader.ReadUInt64();
+                item.TextID.ReadFromFile(reader);
+                item.CarGarageType.ReadFromFile(reader);
+                item.BoatGarageType.ReadFromFile(reader);
                 item.Map = XBinCoreUtils.ReadStringPtrWithOffset(reader);
                 cities[i] = item;
             }
@@ -126,7 +155,7 @@ namespace ResourceTypes.M3.XBin
 
                     CitiesTableItem.CityPolygon Polygon = new CitiesTableItem.CityPolygon();
                     Polygon.Name = XBinCoreUtils.ReadStringPtrWithOffset(reader);
-                    Polygon.TextID = reader.ReadUInt64();
+                    Polygon.TextID.ReadFromFile(reader);
                     Polygon.Unk0 = reader.ReadUInt64();
                     Polygon.Indexes = new ushort[PolygonPointCount0];
 
@@ -158,9 +187,9 @@ namespace ResourceTypes.M3.XBin
                 writer.PushStringPtr(Item.Name);
                 writer.PushStringPtr(Item.MissionLine);
                 writer.PushStringPtr(Item.SDSPrefix);
-                writer.Write(Item.TextID);
-                writer.Write(Item.CarGarageType);
-                writer.Write(Item.BoatGarageType);
+                Item.TextID.WriteToFile(writer);
+                Item.CarGarageType.WriteToFile(writer);
+                Item.BoatGarageType.WriteToFile(writer);
                 writer.PushStringPtr(Item.Map);
             }
 
@@ -195,7 +224,7 @@ namespace ResourceTypes.M3.XBin
                     writer.Write(Entry.Indexes.Length);
 
                     writer.PushStringPtr(Entry.Name);
-                    writer.Write(Entry.TextID);
+                    Entry.TextID.WriteToFile(writer);
                     writer.Write(Entry.Unk0);
 
                     foreach (var Index in Entry.Indexes)

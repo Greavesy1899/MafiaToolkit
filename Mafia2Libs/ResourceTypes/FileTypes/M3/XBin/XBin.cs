@@ -1,7 +1,4 @@
-﻿using Gibbed.Illusion.FileFormats.Hashing;
-using System.Collections.Generic;
-using System.IO;
-using Utils.Extensions;
+﻿using System.IO;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -13,8 +10,6 @@ namespace ResourceTypes.M3.XBin
         private int offset;
 
         public BaseTable TableInformation { get; set; }
-
-        private Dictionary<ulong, string> XBinHashes;
 
         public void ReadFromFile(BinaryReader reader)
         {
@@ -47,20 +42,7 @@ namespace ResourceTypes.M3.XBin
 
         private void ConstructHashPool()
         {
-            string[] Lines = File.ReadAllLines("Resources/GameData/XBin_Hashes.txt");
-
-            XBinHashes = new Dictionary<ulong, string>();
-
-            foreach(var Line in Lines)
-            {
-                ulong Hash = FNV64.Hash(Line);
-                XBinHashes.TryAdd(Hash, Line);
-            }
-        }
-
-        public string GetFromHashPool(ulong Hash)
-        {
-            return XBinHashes.TryGet(Hash);
+            XBinHashStorage.LoadStorage();
         }
     }
 }

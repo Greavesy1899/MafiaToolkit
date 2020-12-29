@@ -256,4 +256,8 @@
   <String ID="$DELETE_OBJECT">Vymazať objekt</String>
   <String ID="$DELETE_INSTANCE">Vymazať inštanciu</String>
   <String ID="$VIEW_NUM_INST">Ukázať počet inštancií</String>
+
+  <!-- Property Descriptions Strings-->
+  <String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
+  
 </Localisation>

@@ -50,6 +50,12 @@ namespace Core.IO
                     return new FileBin(info);
                 case "PRF":
                     return new FilePrefab(info);
+                case "HPD":
+                    return new FileNavigation_HPD(info);
+                case "NAV":
+                    return new FileNavigation_NAV(info);
+                case "NOV":
+                    return new FileNavigation_OBJ(info);
                 default:
                     return new FileBase(info);
             }

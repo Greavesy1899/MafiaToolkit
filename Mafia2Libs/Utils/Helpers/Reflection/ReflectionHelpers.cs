@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
@@ -73,6 +72,7 @@ namespace Utils.Helpers.Reflection
                 return TypedObject;
             }
 
+            var Properties = ElementType.GetProperties();
             foreach (PropertyInfo Info in ElementType.GetProperties())
             {
                 // Check if this Property has been flagged to be ignored.
@@ -82,7 +82,15 @@ namespace Utils.Helpers.Reflection
                 }
 
                 // Should this property be read from an Attribute.
-                bool bForceAsAttribute = ForcePropertyAsAttribute(Info);
+                bool bForceAsAttribute = ForcePropertyAsAttribute(Info);    
+
+                if (Info.PropertyType.IsClass && AllowClassReflection(Info.PropertyType))
+                {
+                    // Get Element
+                    XElement Element = Node.Element(Info.Name);
+                    object ClassObject = InternalConvertProperty(Element, Info.PropertyType);
+                    Info.SetValue(TypedObject, ClassObject);
+                }
 
                 string NodeContent = bForceAsAttribute ? Node.Attribute(Info.Name).Value : Node.Element(Info.Name).Value;
 
@@ -113,6 +121,13 @@ namespace Utils.Helpers.Reflection
                         TypedObject.GetType().GetProperty(Info.Name).SetValue(TypedObject, ArrayObject);
                         continue;
                     }
+                    else if(Info.PropertyType.IsClass && AllowClassReflection(Info.PropertyType))
+                    {
+                        // Get Element
+                        XElement Element = Node.Element(Info.Name);
+                        object ClassObject = InternalConvertProperty(Element, Info.PropertyType);
+                        Info.SetValue(TypedObject, ClassObject);
+                    }
                     else
                     {
                         Info.SetValue(TypedObject, Convert.ChangeType(NodeContent, Info.PropertyType));
@@ -123,10 +138,11 @@ namespace Utils.Helpers.Reflection
             return TypedObject;
         }
 
-        public static XElement ConvertPropertyToXML<TObject>(TObject PropertyData)
+        /*
+         * Utility function to convert object from C# -> XML.
+         */
+        private static XElement InternalConvertProperty<TObject>(TObject PropertyData, Type ObjectType, string PropertyName)
         {
-            Type ObjectType = PropertyData.GetType();
-
             // If Object is an Array, we get the Array and iterate through elements.
             if (ObjectType.IsArray)
             {
@@ -141,66 +157,86 @@ namespace Utils.Helpers.Reflection
 
                 return RootElement;
             }
+            else if(AllowClassReflection(ObjectType))
+            {
+                XElement Element = new XElement(PropertyName);
+                ConvertObject(Element, PropertyData, ObjectType);
+                return Element;
+            }
             else
             {
                 XElement Element = new XElement(ObjectType.Name);
+                ConvertObject(Element, PropertyData, ObjectType);
+                return Element;
+            }
+        }
 
-                // If the ObjectType has no properties, then just attempt to write.
-                // TODO: Consider if this is actually a good idea?
-                // Maybe there is a way of determine if it is a type like char, byte, int32 etc.
-                if (ObjectType.GetProperties().Length == 0)
+        /*
+         * Utility function to convert object from C# -> XML.
+         */
+        private static void ConvertObject<TObject>(XElement Element, TObject PropertyData, Type ObjectType)
+        {
+            // If the ObjectType has no properties, then just attempt to write.
+            // TODO: Consider if this is actually a good idea?
+            // Maybe there is a way of determine if it is a type like char, byte, int32 etc.
+            if (ObjectType.GetProperties().Length == 0)
+            {
+                // Set the value and early return. We know we have no properties so no need to carry on.
+                Element.SetValue(PropertyData);
+            }
+
+            foreach (PropertyInfo Info in ObjectType.GetProperties())
+            {
+                // Check if this Property has been flagged to be ignored.
+                if (!AllowPropertyToReflect(Info))
                 {
-                    // Set the value and early return. We know we have no properties so no need to carry on.
-                    Element.SetValue(PropertyData);
-                    return Element;
+                    continue;
                 }
 
-                foreach (PropertyInfo Info in ObjectType.GetProperties())
+                // Should this property be saved as an Attribute.
+                bool bForceAsAttribute = ForcePropertyAsAttribute(Info);
+
+                // Is this an Array, if so, we have to iterate.
+                if (Info.PropertyType.IsArray)
                 {
-                    // Check if this Property has been flagged to be ignored.
-                    if(!AllowPropertyToReflect(Info))
+                    XElement RootElement = new XElement(Info.Name);
+                    Array ArrayContent = (Array)PropertyData.GetType().GetProperty(Info.Name).GetValue(PropertyData);
+
+                    foreach (object ArrayElement in ArrayContent)
                     {
-                        continue;
+                        XElement Entry = ConvertPropertyToXML(ArrayElement);
+                        RootElement.Add(Entry);
                     }
 
-                    // Should this property be saved as an Attribute.
-                    bool bForceAsAttribute = ForcePropertyAsAttribute(Info);
+                    Element.Add(RootElement);
+                }
+                else if (Info.PropertyType.IsClass && AllowClassReflection(Info.PropertyType))
+                {
+                    object ClassObject = PropertyData.GetType().GetProperty(Info.Name).GetValue(PropertyData);
+                    Element.Add(InternalConvertProperty(ClassObject, Info.PropertyType, Info.Name));
+                }
+                else
+                {
+                    object info = PropertyData.GetType().GetProperty(Info.Name).GetValue(PropertyData);
 
-                    // Is this an Array, if so, we have to iterate.
-                    if (Info.PropertyType.IsArray)
+                    // Sanity check for null
+                    info = (info != null ? info : "");
+
+                    if (bForceAsAttribute)
                     {
-                        XElement RootElement = new XElement(Info.Name);
-                        Array ArrayContent = (Array)PropertyData.GetType().GetProperty(Info.Name).GetValue(PropertyData);
-
-                        foreach (object ArrayElement in ArrayContent)
-                        {
-                            XElement Entry = ConvertPropertyToXML(ArrayElement);
-                            RootElement.Add(Entry);
-                        }
-
-                        Element.Add(RootElement);
-                    }
-                    else if (Info.PropertyType.IsClass && AllowClassReflection(Info.PropertyType))
-                    {
-                        // TODO: This will need to be done if we want to have our custom classes as properties.
+                        Element.Add(new XAttribute(Info.Name, info));
                     }
                     else
                     {
-                        object info = PropertyData.GetType().GetProperty(Info.Name).GetValue(PropertyData);
-
-                        if (bForceAsAttribute)
-                        {
-                            Element.Add(new XAttribute(Info.Name, info));
-                        }
-                        else
-                        {
-                            Element.Add(new XElement(Info.Name, info));
-                        }
+                        Element.Add(new XElement(Info.Name, info));
                     }
                 }
-
-                return Element;
             }
+        }
+
+        public static XElement ConvertPropertyToXML<TObject>(TObject PropertyData)
+        {
+            return InternalConvertProperty(PropertyData, PropertyData.GetType(), "N/A");
         }
 
         private static bool ForcePropertyAsAttribute(PropertyInfo Info)
