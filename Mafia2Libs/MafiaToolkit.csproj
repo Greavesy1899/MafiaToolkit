@@ -403,6 +403,8 @@
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\LightTypes\AeLightType2.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AnimEntity.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\EntityTypes\AnimEntityWrapper.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\FaceFX\FxActor.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\FaceFX\FxEnumerators.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\Factories\CutsceneEntityFactory.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\Factories\CutsceneKeyParamFactory.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\Enumerators.cs" />

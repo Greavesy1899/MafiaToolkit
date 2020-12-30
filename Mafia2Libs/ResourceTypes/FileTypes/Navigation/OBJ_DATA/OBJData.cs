@@ -157,6 +157,8 @@ namespace ResourceTypes.Navigation
             writer.WriteLine(string.Format("{0} {1} {2} {3}", unk0, fileIDHPD, unk3HPD, bitFlagsHPD));
 
             //List<string> data = new List<string>();
+            List<Vector3> Points = new List<Vector3>();
+
             vertices = new VertexStruct[vertSize];
             for (int i = 0; i < vertSize; i++)
             {
@@ -177,10 +179,11 @@ namespace ResourceTypes.Navigation
                 vertex.Unk5 = reader.ReadInt32();
                 vertex.Unk6 = reader.ReadInt32();
                 vertices[i] = vertex;
+
+                Points.Add(vertex.Position);
             }
+
             writer.WriteLine("");
-            //data.Add("");
-            //data.Add("g mesh");
             connections = new ConnectionStruct[triSize];
             for (int i = 0; i < triSize; i++)
             {

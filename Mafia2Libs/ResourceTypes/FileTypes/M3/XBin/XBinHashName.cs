@@ -29,9 +29,11 @@ namespace ResourceTypes.M3.XBin
             }
         }
 
-        public static string GetNameFromHash(ulong Hash)
+        public static string GetNameFromHash(ulong Hash, out bool bSuccessful)
         {
-            return HashStorage.TryGet(Hash);
+            string Value = "";
+            bSuccessful = HashStorage.TryGetValue(Hash, out Value);
+            return Value != null ? Value : "";
         }
     }
 
@@ -63,6 +65,7 @@ namespace ResourceTypes.M3.XBin
             if (bIsOnlyUlong)
             {
                 HashName.Hash = Hash;
+                HashName.ForceToCheckStorage();
                 Result = HashName;
                 return Result ?? base.ConvertFrom(context, culture, value);
             }
@@ -93,26 +96,28 @@ namespace ResourceTypes.M3.XBin
     [TypeConverter(typeof(XBinHashNameConverter)), PropertyClassAllowReflection()]
     public class XBinHashName
     {
-        private ulong _hash;
+        private string _name;
 
         [PropertyForceAsAttribute]
-        public ulong Hash {
-            get { return _hash; }
-            set { SetHash(value); }
-        }
+        public ulong Hash { get; set; }
         [LocalisedDescription("$XBIN_PROP_DESC_NAME_UNSTORED"), PropertyForceAsAttribute]
-        public string Name { get; set; }
+        public string Name {
+            get { return _name; }
+            set { SetName(value); }
+        }
 
         public XBinHashName()
         {
             Hash = 0;
-            Name = "";
+            _name = "";
         }
 
         public void ReadFromFile(BinaryReader reader)
         {
             Hash = reader.ReadUInt64();
-            Name = XBinHashStorage.GetNameFromHash(Hash);
+
+            bool bSuccess = false;
+            _name = XBinHashStorage.GetNameFromHash(Hash, out bSuccess);
         }
 
         public void WriteToFile(BinaryWriter writer)
@@ -120,10 +125,21 @@ namespace ResourceTypes.M3.XBin
             writer.Write(Hash);
         }
 
-        public void SetHash(ulong Value)
+        public void SetName(string Value)
         {
-            _hash = Value;
-            Name = XBinHashStorage.GetNameFromHash(Value);
+            _name = Value;
+            Hash = FNV64.Hash(Name);
+        }
+
+        public void ForceToCheckStorage()
+        {
+            bool bSuccess = false;
+            string ReturnedName = XBinHashStorage.GetNameFromHash(Hash, out bSuccess);
+
+            if(bSuccess)
+            {
+                _name = ReturnedName;
+            }
         }
 
         public override string ToString()

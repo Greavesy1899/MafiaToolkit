@@ -52,6 +52,7 @@
             this.Grid_XBin.PropertySort = System.Windows.Forms.PropertySort.Categorized;
             this.Grid_XBin.Size = new System.Drawing.Size(386, 410);
             this.Grid_XBin.TabIndex = 10;
+            this.Grid_XBin.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.OnPropertyValidChanged);
             // 
             // TreeView_XBin
             // 

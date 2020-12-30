@@ -18,9 +18,10 @@ namespace ResourceTypes.Navigation
 
         public class unkStruct
         {
+            /* Unk00 and Unk01 is Nodes bounding box */
             public int fileID;
-            public Vector3 unk0;
-            public Vector3 unk1;
+            public Vector3 unk0; // Calculated from OBJ_DATA Nodes
+            public Vector3 unk1; // Calculated from OBJ_DATA Nodes
             public int unk2; // 0
             public int fileSize;
             public int accumulatingSize;

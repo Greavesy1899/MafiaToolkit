@@ -124,7 +124,7 @@ namespace Gibbed.Mafia2.FileFormats
 
                 if (ChosenGame != null)
                 {
-                    ChosenGameType = ChosenGame.GameType;
+                    SetGameType(ChosenGame.GameType);
                 }
             }
         }
@@ -386,6 +386,7 @@ namespace Gibbed.Mafia2.FileFormats
         public void SetGameType(GamesEnumerator SelectedGameType)
         {
             ChosenGameType = SelectedGameType;
+            bHasSetGameType = true;
         }
 
         private bool IsGameType(GamesEnumerator TypeToCheck)

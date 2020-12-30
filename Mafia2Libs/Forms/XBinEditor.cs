@@ -57,13 +57,16 @@ namespace Mafia2Tool
 
         private void Button_Export_Click(object sender, EventArgs e)
         {
+            Cursor.Current = Cursors.WaitCursor;
             var XMLFileName = Path.Combine(xbinfile.DirectoryName, Path.GetFileNameWithoutExtension(xbinfile.FullName));
             XMLFileName += ".xml";
             xbin.TableInformation.WriteToXML(XMLFileName);
+            Cursor.Current = Cursors.Default;
         }
 
         private void Button_Import_Click(object sender, EventArgs e)
         {
+            Cursor.Current = Cursors.WaitCursor;
             // Lets make sure the actual XML document exists first.
             var XMLFileName = Path.Combine(xbinfile.DirectoryName, Path.GetFileNameWithoutExtension(xbinfile.FullName));
             XMLFileName += ".xml";
@@ -76,6 +79,7 @@ namespace Mafia2Tool
 
             xbin.TableInformation.ReadFromXML(XMLFileName);
             Initialise();
+            Cursor.Current = Cursors.Default;
         }
 
         private void Button_Delete_Click(object sender, EventArgs e)
@@ -95,6 +99,11 @@ namespace Mafia2Tool
             // Create backup, set our new xbins, and then save.
             File.Copy(xbinfile.FullName, xbinfile.FullName + "_old", true);
             xbin.WriteToFile(xbinfile);
+        }
+
+        private void OnPropertyValidChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            Grid_XBin.Refresh();
         }
     }
 }

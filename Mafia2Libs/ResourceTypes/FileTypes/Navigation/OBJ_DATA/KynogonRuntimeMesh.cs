@@ -1,6 +1,8 @@
 ﻿
 using SharpDX;
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
@@ -56,15 +58,15 @@ namespace ResourceTypes.Navigation
         public float cellUnk7;
         public int cellUnk8;
         public int cellUnk9;
-        public int cellUnk10;
+        public int NumUnk10Boxes;
         public int cellUnk11;
-        public int cellUnk12;
+        public int NumUnk12Boxes;
         public int cellUnk13;
-        public int cellUnk14;
+        public int NumUn14Boxes;
         public int cellUnk15;
         public int NumEdges;
         public int cellUnk17;
-        public int cellUnk18;
+        public int NumUnk18Boxes;
         public int cellUnk19;
         public Unk10DataSet[] unk10Boxes;
         public Unk12DataSet[] unk12Boxes;
@@ -80,6 +82,7 @@ namespace ResourceTypes.Navigation
 
     }
 
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class KynogonRuntimeMesh
     {
         public class Cell
@@ -93,17 +96,18 @@ namespace ResourceTypes.Navigation
             }
         }
 
-        public int Unk0;
-        public int Unk1;
-        public float Unk2;
-        public float Unk3;
-        public Vector2 BoundMin;
-        public Vector2 BoundMax;
-        public int CellSizeX;
-        public int CellSizeY;
-        public float Radius;
+        public int Unk0 { get; set; }
+        public int Unk1 { get; set; }
+        public float Unk2 { get; set; }
+        public float Unk3 { get; set; }
+        public Vector2 BoundMin { get; set; }
+        public Vector2 BoundMax { get; set; }
+        public int CellSizeX { get; set; }
+        public int CellSizeY { get; set; }
+        public float Radius { get; set; }
         public int Unk4;
-        public int Height;
+        public int Height { get; set; }
+
         public int Offset;
         public int[] Grid;
         public Cell[] Cells;
@@ -171,6 +175,7 @@ namespace ResourceTypes.Navigation
             }
 
             int end = reader.ReadInt32();
+            int Count = 0;
 
             for (int i = 0; i < Cells.Length; i++)
             {
@@ -220,16 +225,19 @@ namespace ResourceTypes.Navigation
                     set.cellUnk7 = reader.ReadSingle();
                     set.cellUnk8 = reader.ReadInt32();
                     set.cellUnk9 = reader.ReadInt32(); //-1?
-                    set.cellUnk10 = reader.ReadInt32(); //1;
+                    set.NumUnk10Boxes = reader.ReadInt32(); //1;
                     set.cellUnk11 = reader.ReadInt32();
-                    set.cellUnk12 = reader.ReadInt32(); //0
+                    set.NumUnk12Boxes = reader.ReadInt32(); //0
                     set.cellUnk13 = reader.ReadInt32(); //-1;
-                    set.cellUnk14 = reader.ReadInt32(); //0
+                    set.NumUn14Boxes = reader.ReadInt32(); //0
                     set.cellUnk15 = reader.ReadInt32(); //-1;
                     set.NumEdges = reader.ReadInt32(); //8;
                     set.cellUnk17 = reader.ReadInt32(); //112;
-                    set.cellUnk18 = reader.ReadInt32(); //0;
+                    set.NumUnk18Boxes = reader.ReadInt32(); //0;
                     set.cellUnk19 = reader.ReadInt32(); //-1;
+
+                    Count += set.NumUnk12Boxes;
+
                     writer.WriteLine(string.Format("Unk1: {0}", set.cellUnk1));
                     writer.WriteLine(string.Format("Unk2: {0}", set.cellUnk2));
                     writer.WriteLine(string.Format("Unk3: {0}", set.cellUnk3));
@@ -239,21 +247,21 @@ namespace ResourceTypes.Navigation
                     writer.WriteLine(string.Format("Unk7: {0}", set.cellUnk7));
                     writer.WriteLine(string.Format("Unk8: {0}", set.cellUnk8));
                     writer.WriteLine(string.Format("Unk9: {0}", set.cellUnk9));
-                    writer.WriteLine(string.Format("Unk10: {0}", set.cellUnk10));
+                    writer.WriteLine(string.Format("Unk10: {0}", set.NumUnk10Boxes));
                     writer.WriteLine(string.Format("Unk11: {0}", set.cellUnk11));
-                    writer.WriteLine(string.Format("Unk12: {0}", set.cellUnk12));
+                    writer.WriteLine(string.Format("Unk12: {0}", set.NumUnk12Boxes));
                     writer.WriteLine(string.Format("Unk13: {0}", set.cellUnk13));
-                    writer.WriteLine(string.Format("Unk14: {0}", set.cellUnk14));
+                    writer.WriteLine(string.Format("Unk14: {0}", set.NumUn14Boxes));
                     writer.WriteLine(string.Format("Unk15: {0}", set.cellUnk15));
                     writer.WriteLine(string.Format("Unk16: {0}", set.NumEdges));
                     writer.WriteLine(string.Format("Unk17: {0}", set.cellUnk17));
-                    writer.WriteLine(string.Format("Unk18: {0}", set.cellUnk18));
+                    writer.WriteLine(string.Format("Unk18: {0}", set.NumUnk18Boxes));
                     writer.WriteLine(string.Format("Unk19: {0}", set.cellUnk19));
                     writer.WriteLine("");
                     //THIS BIT IS UNKNOWN, UPTO CELLUNK20
-                    set.unk10Boxes = new Unk10DataSet[set.cellUnk10];
+                    set.unk10Boxes = new Unk10DataSet[set.NumUnk10Boxes];
                     writer.WriteLine("Unk10 Boxes");
-                    for (int x = 0; x < set.cellUnk10; x++)
+                    for (int x = 0; x < set.NumUnk10Boxes; x++)
                     {
                         Unk10DataSet unk10Set = new Unk10DataSet();
                         unk10Set.B1 = BoundingBoxExtenders.ReadFromFile(reader);
@@ -270,9 +278,9 @@ namespace ResourceTypes.Navigation
 
 
                     //THIS BIT IS UNKNOWN, BUT IS CELLUNK12
-                    set.unk12Boxes = new Unk12DataSet[set.cellUnk12];
+                    set.unk12Boxes = new Unk12DataSet[set.NumUnk12Boxes];
                     writer.WriteLine("Unk12 Boxes");
-                    for (int x = 0; x < set.cellUnk12; x++)
+                    for (int x = 0; x < set.NumUnk12Boxes; x++)
                     {
                         Unk12DataSet unk12Set = new Unk12DataSet();
                         unk12Set.B1 = BoundingBoxExtenders.ReadFromFile(reader);
@@ -296,8 +304,8 @@ namespace ResourceTypes.Navigation
 
                     //THIS LOOPS THROUGH OFFSETS TO BBOX'S
                     writer.WriteLine("Unk14 Offsets");
-                    set.unk14Boxes = new Unk14DataSet[set.cellUnk14];
-                    for (int x = 0; x < set.cellUnk14; x++)
+                    set.unk14Boxes = new Unk14DataSet[set.NumUn14Boxes];
+                    for (int x = 0; x < set.NumUn14Boxes; x++)
                     {
                         var dataSet = new Unk14DataSet();
                         dataSet.Offset = reader.ReadInt32();
@@ -306,14 +314,14 @@ namespace ResourceTypes.Navigation
                     }
 
                     //ALWAYS A 4-BYTE INTEGER WHICH DENOTES THE END OF THE BATCH
-                    if (set.cellUnk14 > 0)
+                    if (set.NumUn14Boxes > 0)
                     {
                         set.unk14End = reader.ReadInt32();
                         var currentOffset = set.unk14Boxes[0].Offset;
-                        for (int x = 0; x < set.cellUnk14; x++)
+                        for (int x = 0; x < set.NumUn14Boxes; x++)
                         {
                             var dataSet = set.unk14Boxes[x];
-                            var offset = (x + 1 < set.cellUnk14 ? set.unk14Boxes[x + 1].Offset : set.unk14End);
+                            var offset = (x + 1 < set.NumUn14Boxes ? set.unk14Boxes[x + 1].Offset : set.unk14End);
                             var size = offset - currentOffset;
                             currentOffset = offset;
                             var count = size / 12;
@@ -350,13 +358,13 @@ namespace ResourceTypes.Navigation
                         writer.WriteLine(string.Format("{0} ", set.EdgeBoxes[x]));
                     }
 
-                    set.unk18Set = new Unk18DataSet[set.cellUnk18];
+                    set.unk18Set = new Unk18DataSet[set.NumUnk18Boxes];
                     writer.WriteLine("");
-                    if (set.cellUnk18 > 0)
+                    if (set.NumUnk18Boxes > 0)
                     {
                         set.unk18End = reader.ReadInt32();                    
                         writer.WriteLine("Unk18 Boxes:");
-                        for (int x = 0; x < set.cellUnk18; x++)
+                        for (int x = 0; x < set.NumUnk18Boxes; x++)
                         {
                             //THIS COULD BE AN OFFSET LIST WITH SOMEKIND OF FLOAT/ROTATION DATA
                             Unk18DataSet dataSet = new Unk18DataSet();
@@ -371,7 +379,7 @@ namespace ResourceTypes.Navigation
                         byte[] unknown_data = reader.ReadBytes(12); //usually padding
 
                         var currentOffset = set.unk18End;
-                        for (int x = 0; x < set.cellUnk18; x++)
+                        for (int x = 0; x < set.NumUnk18Boxes; x++)
                         {
                             var dataSet = set.unk18Set[x];
                             var size = dataSet.Offset - currentOffset;
@@ -395,6 +403,20 @@ namespace ResourceTypes.Navigation
                 //byte[] data = reader.ReadBytes(size);
                 //File.WriteAllBytes("grid_" + i + ".bin", data);
             }
+
+            uint UnkFooter0 = reader.ReadUInt32();/*
+            if(UnkFooter0 == 0)
+            {
+                throw new NotImplementedException();
+            }
+
+            uint OffsetToFooter = reader.ReadUInt32(); // should be same as reader.position - kynogon mesh start
+            uint FooterPadding = reader.ReadUInt32(); // Usually zero for me.
+            string FooterName = StringHelpers.ReadString(reader); // A null terminated string.
+            uint FooterUnk0 = reader.ReadUInt32(); // Size of string. Goes _after_ the string has been stored.
+            uint FooterMagic = reader.ReadUInt32(); // should be 0x1213F001
+            Debug.Assert(FooterMagic == 0x1213F001, "Didn't reach end of file.");
+            */
             writer.Close();
 
             //File.WriteAllLines("model.obj", data.ToArray());
@@ -458,15 +480,15 @@ namespace ResourceTypes.Navigation
                     writer.Write(set.cellUnk7);
                     writer.Write(set.cellUnk8);
                     writer.Write(set.cellUnk9);
-                    writer.Write(set.cellUnk10);
+                    writer.Write(set.NumUnk10Boxes);
                     writer.Write(set.cellUnk11);
-                    writer.Write(set.cellUnk12);
+                    writer.Write(set.NumUnk12Boxes);
                     writer.Write(set.cellUnk13);
-                    writer.Write(set.cellUnk14);
+                    writer.Write(set.NumUn14Boxes);
                     writer.Write(set.cellUnk15);
                     writer.Write(set.NumEdges);
                     writer.Write(set.cellUnk17);
-                    writer.Write(set.cellUnk18);
+                    writer.Write(set.NumUnk18Boxes);
                     writer.Write(set.cellUnk19);
 
                     foreach(var dataSet in set.unk10Boxes)
@@ -486,7 +508,7 @@ namespace ResourceTypes.Navigation
                         writer.Write(dataSet.Unk05);
                     }
 
-                    if(set.cellUnk14 > 0)
+                    if(set.NumUn14Boxes > 0)
                     {
                         foreach (var offset in set.unk14Offsets)
                         {
@@ -518,7 +540,7 @@ namespace ResourceTypes.Navigation
                         }
                     }
 
-                    if(set.cellUnk18 > 0)
+                    if(set.NumUnk18Boxes > 0)
                     {
                         writer.Write(set.unk18End);
 

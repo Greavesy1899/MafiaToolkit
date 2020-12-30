@@ -80,11 +80,11 @@ namespace ResourceTypes.M3.XBin
                 item.MissionID = XBinCoreUtils.ReadStringPtrWithOffset(reader);
 
                 // Only read checkpoint file if we are running M1: DE...
-                //if (gameVersion == GamesEnumerator.MafiaI_DE)
-                //{
+                if (gameVersion == GamesEnumerator.MafiaI_DE)
+                {
                     item.CheckPointFile = XBinCoreUtils.ReadStringPtrWithOffset(reader);
                     item.Unknown = reader.ReadUInt32();
-                //}
+                }
 
                 missions[i] = item;
             }
@@ -108,11 +108,11 @@ namespace ResourceTypes.M3.XBin
                 writer.Write((int)Item.Type);
                 writer.PushStringPtr(Item.MissionID);
 
-                //if (gameVersion == GamesEnumerator.MafiaI_DE)
-                //{
+                if (gameVersion == GamesEnumerator.MafiaI_DE)
+                {
                     writer.PushStringPtr(Item.CheckPointFile);
                     writer.Write(Item.Unknown);
-                //}
+                }
             }
 
             writer.Write(0); // padding?

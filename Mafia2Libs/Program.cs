@@ -8,6 +8,7 @@ using System.Diagnostics;
 using Mafia2Tool.Forms;
 using Mafia2Tool.MafiaLib.ModelHelpers;
 using Core.IO;
+using ResourceTypes.OC3.FaceFX;
 
 namespace Mafia2Tool
 {
@@ -37,10 +38,8 @@ namespace Mafia2Tool
             //M3_ExperimentalTests Experiments = new M3_ExperimentalTests();
             //Experiments.ReadPrerequisites();
 
-            GameStorage.Instance.SetSelectedGameByIndex(ToolkitSettings.DefaultGame);
-            FileInfo XBinInfo = new FileInfo("cities_game_group.xbin");
-            FileXBin XBinObject = new FileXBin(XBinInfo);
-            XBinObject.Open();
+           // FxActor ActorObject = new FxActor();
+            //ActorObject.ReadFromFile("face.facefx");
 
             if (ToolkitSettings.SkipGameSelector)
             {

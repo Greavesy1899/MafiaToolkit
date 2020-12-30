@@ -90,6 +90,7 @@ namespace Utils.Helpers.Reflection
                     XElement Element = Node.Element(Info.Name);
                     object ClassObject = InternalConvertProperty(Element, Info.PropertyType);
                     Info.SetValue(TypedObject, ClassObject);
+                    continue;
                 }
 
                 string NodeContent = bForceAsAttribute ? Node.Attribute(Info.Name).Value : Node.Element(Info.Name).Value;
