@@ -22,9 +22,12 @@ namespace ResourceTypes.ItemDesc
         public byte unkByte;
         public object collision;
 
+        public string FileName { get; private set; }
+
         public ItemDescLoader(string fileName)
         {
             Log.WriteLine("Trying to Parse: " + fileName, LoggingTypes.WARNING, LogCategoryTypes.FUNCTION);
+            FileName = Path.GetFileName(fileName);
 
             using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
             {
