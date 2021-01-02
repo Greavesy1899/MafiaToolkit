@@ -98,94 +98,6 @@ namespace ResourceTypes.OC3.FaceFX
         }
     }
 
-    public class FxCompiledFaceGraphLink
-    {
-        public uint NodeIndex { get; set; }
-        public FxLinkFnType LinkFnType { get; set; }
-        public uint NumParameters { get; set; }
-        public float[] Parameters { get; set; }
-
-        public void ReadFromFile(BinaryReader reader)
-        {
-            NodeIndex = reader.ReadUInt32();
-            LinkFnType = (FxLinkFnType)reader.ReadUInt32();
-            NumParameters = reader.ReadUInt32();
-
-            Parameters = new float[NumParameters];
-            for (int i = 0; i < NumParameters; i++)
-            {
-                Parameters[i] = reader.ReadSingle();
-            }
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(NodeIndex);
-            writer.Write((uint)LinkFnType);
-
-            writer.Write(Parameters.Length);
-            foreach(float Parameter in Parameters)
-            {
-                writer.Write(Parameter);
-            }
-        }
-    }
-
-    public class FxCompiledFaceGraphNode
-    {
-        public FxCompiledFaceGraphNodeType NodeType { get; set; }
-        public uint NodeName { get; set; }
-        public float NodeMin { get; set; }
-        public float OneOverNodeMin { get; set; }
-        public float NodeMax { get; set; }
-        public float OneOverNodeMax { get; set; }
-        public FxInputOp InputOperation { get; set; }
-        public uint ArrayUnk0 { get; set; }
-        public uint ArrayUnk1 { get; set; }
-        public FxCompiledFaceGraphLink[] InputLinks { get; set; }
-
-        public void ReadFromFile(BinaryReader reader)
-        {
-            NodeType = (FxCompiledFaceGraphNodeType)reader.ReadUInt32();
-            NodeName = reader.ReadUInt32();
-            NodeMin = reader.ReadSingle();
-            OneOverNodeMin = reader.ReadSingle();
-            NodeMax = reader.ReadSingle();
-            OneOverNodeMax = reader.ReadSingle();
-            InputOperation = (FxInputOp)reader.ReadUInt32();
-            ArrayUnk0 = reader.ReadUInt32();
-
-            InputLinks = new FxCompiledFaceGraphLink[ArrayUnk0];
-            for(int i = 0; i < ArrayUnk0; i++)
-            {
-                FxCompiledFaceGraphLink LinkObject = new FxCompiledFaceGraphLink();
-                LinkObject.ReadFromFile(reader);
-                InputLinks[i] = LinkObject;
-            }
-
-            ArrayUnk1 = reader.ReadUInt32();
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write((uint)NodeType);
-            writer.Write(NodeName);
-            writer.Write(NodeMin);
-            writer.Write(OneOverNodeMin);
-            writer.Write(NodeMax);
-            writer.Write(OneOverNodeMax);
-            writer.Write((uint)InputOperation);
-
-            writer.Write(InputLinks.Length);
-            foreach(FxCompiledFaceGraphLink GraphLink in InputLinks)
-            {
-                GraphLink.WriteToFile(writer);
-            }
-
-            writer.Write(ArrayUnk1);
-        }
-    }
-
     public class FxUnk3
     {
         public class FxUnk3_Node
@@ -250,21 +162,21 @@ namespace ResourceTypes.OC3.FaceFX
         }
     }
 
-    public class FxActor
+    public class FxActor : FxArchive
     {
-        FxClass[] OC3Types;
-        string[] StringTable;
-        FxPhonToNameMap[] PhoneToNameMap;
-
-        uint ActorNameID;
-        uint Unk10;
+        private uint ActorNameID;
+        private uint Unk10;
 
         public FxMasterBoneListEntry[] MasterBoneList { get; set; }
         public FxUnk3[] Unk03s { get; set; }
-        private uint Unk04; // Data in between these two arrays
-        public uint Unk05;
-        public uint Unk06;
+
+        // Data in between these two arrays
+        private uint Unk04;
+        private uint Unk05;
+        private uint Unk06;
+
         public FxCompiledFaceGraphNode[] FaceGraphNodes { get; set; }
+        public FxPhonToNameMap[] PhoneToNameMap { get; set; }
         public uint[] Unk3s { get; set; }
 
         public void ReadFromFile(string filename)
@@ -283,56 +195,9 @@ namespace ResourceTypes.OC3.FaceFX
             }
         }
 
-        public void ReadFromFile(BinaryReader reader)
+        public override void ReadFromFile(BinaryReader reader)
         {
-            uint FaceMagic = reader.ReadUInt32();
-            if(FaceMagic != 0x45434146)
-            {
-                // Invalid 'FACE' Magic
-                return;
-            }
-
-            uint SDKVersion = reader.ReadUInt32();
-            if(SDKVersion != 1730)
-            {
-                // Invalid SDKVersion. 1730 == 1073
-                return;
-            }
-
-            // 0 == Little, 1 == Big
-            uint EndianOrder = reader.ReadUInt32();
-            if(EndianOrder != 0)
-            {
-                // Invalid EndianOrder
-                return;
-            }
-
-            string LicenseeName = StringHelpers.ReadString32(reader);           // 'Illusion Softworks'
-            string LicenseeProjectName = StringHelpers.ReadString32(reader);    // 'Mafia II'
-
-            uint Unk01 = reader.ReadUInt32(); // 1000
-            ushort Unk02 = reader.ReadUInt16(); // 1
-            uint Unk03 = reader.ReadUInt32(); // 10 - 7. Types of serialized OC3 classes
-
-            // Read used OC3 types
-            OC3Types = new FxClass[Unk03];
-            for(int i = 0; i < OC3Types.Length; i++)
-            {
-                FxClass ClassType = new FxClass();
-                ClassType.Unk01 = reader.ReadUInt32();
-                ClassType.Unk02 = reader.ReadUInt32();
-                ClassType.Name = StringHelpers.ReadString32(reader);
-                ClassType.Unk03 = reader.ReadUInt16();
-                OC3Types[i] = ClassType;
-            }
-
-            // Read StringTable
-            uint NumStrings = reader.ReadUInt32();
-            StringTable = new string[NumStrings];
-            for (int i = 0; i < StringTable.Length; i++)
-            {
-                StringTable[i] = StringHelpers.ReadString32(reader);
-            }
+            base.ReadFromFile(reader);
 
             // ActorNameID
             ActorNameID = reader.ReadUInt32();
@@ -354,7 +219,7 @@ namespace ResourceTypes.OC3.FaceFX
             for (int i = 0; i < FaceGraphNodes.Length; i++)
             {
                 FxCompiledFaceGraphNode DataObject = new FxCompiledFaceGraphNode();
-                DataObject.ReadFromFile(reader);
+                DataObject.ReadFromFile(reader, this);
                 FaceGraphNodes[i] = DataObject;
             }
 
@@ -388,30 +253,9 @@ namespace ResourceTypes.OC3.FaceFX
             }
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public override void WriteToFile(BinaryWriter writer)
         {
-            // Begin to write FaceFX header
-            writer.Write(0x45434146);
-            writer.Write(1730);
-            writer.Write(0); // Only support Little-Endian
-            StringHelpers.WriteString32(writer, "IllusionSoftworks\0");
-            StringHelpers.WriteString32(writer, "Mafia 2\0");
-            writer.Write(1000); // Guessed
-            writer.Write((ushort)1); // Guessed
-
-            // Write OC3 types
-            writer.Write(OC3Types.Length);
-            foreach (var TypeObject in OC3Types)
-            {
-                TypeObject.WriteToFile(writer);
-            }
-
-            // Write StringTable
-            writer.Write(StringTable.Length);
-            foreach (var Name in StringTable)
-            {
-                StringHelpers.WriteString32(writer, Name);
-            }
+            base.WriteToFile(writer);
 
             writer.Write(ActorNameID);
             writer.Write(Unk10);

@@ -407,7 +407,10 @@
     <Compile Include="ResourceTypes\FileTypes\Cutscene\FaceFX\FxAnimSet.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\FaceFX\FxEnumerators.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\FaceFX\Types\FxAnim.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\FaceFX\Types\FxArchive.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\FaceFX\Types\FxClass.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\FaceFX\Types\FxCompiledFaceGraph.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Cutscene\FaceFX\Types\FxName.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\Factories\CutsceneEntityFactory.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\Factories\CutsceneKeyParamFactory.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\Enumerators.cs" />
@@ -517,7 +520,6 @@
     <Compile Include="ResourceTypes\FileTypes\Collisions\CollisionEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\Collisions\Collisions.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\Cutscene.cs" />
-    <Compile Include="ResourceTypes\FileTypes\Cutscene\FXAnimSet.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\Speech.cs" />
     <Compile Include="ResourceTypes\FileTypes\EntityDataStorage\EntityDataStorage.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameNameTable\FrameNameTable.cs" />

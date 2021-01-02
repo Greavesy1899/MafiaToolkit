@@ -38,8 +38,11 @@ namespace Mafia2Tool
             //M3_ExperimentalTests Experiments = new M3_ExperimentalTests();
             //Experiments.ReadPrerequisites();
 
-           // FxActor ActorObject = new FxActor();
-            //ActorObject.ReadFromFile("face.facefx");
+            FxActor ActorObject = new FxActor();
+            ActorObject.ReadFromFile("face.facefx");
+
+            FxAnimSet AnimObject = new FxAnimSet();
+            AnimObject.ReadFromFile("FxAnimSet_61.fas");
 
             if (ToolkitSettings.SkipGameSelector)
             {
