@@ -338,47 +338,53 @@ namespace Gibbed.Mafia2.FileFormats
             this._ResourceEntries.AddRange(resources);
         }
 
-        /// <summary>
-        /// Build resources from given folder.
-        /// </summary>
-        /// <param name="folder"></param>
         public bool BuildResources(string folder)
         {
-            //TODO: MAKE THIS CLEANER
             string sdsFolder = folder;
-            XmlDocument document = new XmlDocument();
-            XmlDocument xmlDoc = new XmlDocument();
-            XmlNode rootNode;
-            if(!File.Exists(sdsFolder + "/SDSContent.xml"))
+            XmlDocument document = null;
+
+            // Open a FileStream which contains the SDSContent data.
+            string SDSContentPath = Path.Combine(sdsFolder, "SDSContent.xml");
+            using (FileStream XMLStream = new FileStream(SDSContentPath, FileMode.Open))
             {
-                MessageBox.Show("Could not find 'SDSContent.xml'. Folder Path: " + sdsFolder + "/SDSContent.xml", "Game Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
+                try
+                {
+                    document = new XmlDocument();
+                    document.Load(XMLStream);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Format("Error while parsing SDSContent.XML. \n{0}", ex.Message));
+                    return false;
+                }
             }
-            try
+
+            // Check if document is valid. If it is, then we know it has been found and loaded without problems.
+            if(document == null)
             {
-                document = new XmlDocument();
-                document.Load(sdsFolder + "/SDSContent.xml");
-                xmlDoc = new XmlDocument();
-                rootNode = xmlDoc.CreateElement("xml");
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(string.Format("Error while parsing SDSContent.XML. \n{0}", ex.Message));
+                MessageBox.Show(string.Format("Failed to open SDSContent.XML. \n{0}", SDSContentPath));
                 return false;
             }
 
+            // GoAhead and begin creating the document to save inside the SDSContent.
+            XmlDocument xmlDoc = new XmlDocument();
+            XmlNode rootNode = xmlDoc.CreateElement("xml");
             xmlDoc.AppendChild(rootNode);
-            bool result = false;
+
+            // Try and pack the resources found in SDSContent.
+            bool bResult = false;
 
             if(_Version == 19)
             {
-                result = BuildResourcesVersion19(document, xmlDoc, rootNode, sdsFolder);
+                bResult = BuildResourcesVersion19(document, xmlDoc, rootNode, sdsFolder);
             }
             else if(_Version == 20)
             {
-                result = BuildResourcesVersion20(document, xmlDoc, rootNode, sdsFolder);
+                bResult = BuildResourcesVersion20(document, xmlDoc, rootNode, sdsFolder);
             }
-            return result;
+
+            document = null;
+            return bResult;
         }
 
         // Util function to set game type.

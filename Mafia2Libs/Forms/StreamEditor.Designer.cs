@@ -84,42 +84,45 @@ namespace Mafia2Tool
             this.MoveItemUpButton,
             this.MoveItemDownButton});
             this.LineContextStrip.Name = "AddLineButton";
-            this.LineContextStrip.Size = new System.Drawing.Size(169, 114);
+            this.LineContextStrip.Size = new System.Drawing.Size(199, 136);
             this.LineContextStrip.Text = "Context Strip";
             this.LineContextStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OnContextMenuOpening);
             // 
             // AddLineButton
             // 
             this.AddLineButton.Name = "AddLineButton";
-            this.AddLineButton.Size = new System.Drawing.Size(168, 22);
+            this.AddLineButton.Size = new System.Drawing.Size(198, 22);
             this.AddLineButton.Text = "$ADD_LINE";
             this.AddLineButton.Click += new System.EventHandler(this.AddLineButtonPressed);
             // 
             // DeleteLineButton
             // 
             this.DeleteLineButton.Name = "DeleteLineButton";
-            this.DeleteLineButton.Size = new System.Drawing.Size(168, 22);
+            this.DeleteLineButton.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.DeleteLineButton.Size = new System.Drawing.Size(198, 22);
             this.DeleteLineButton.Text = "$DELETE_LINE";
             this.DeleteLineButton.Click += new System.EventHandler(this.DeleteLineButtonPressed);
             // 
             // DuplicateLine
             // 
             this.DuplicateLine.Name = "DuplicateLine";
-            this.DuplicateLine.Size = new System.Drawing.Size(168, 22);
+            this.DuplicateLine.Size = new System.Drawing.Size(198, 22);
             this.DuplicateLine.Text = "$DUPLICATE_LINE";
             this.DuplicateLine.Click += new System.EventHandler(this.CopyLoadListAbove_Click);
             // 
             // MoveItemUpButton
             // 
             this.MoveItemUpButton.Name = "MoveItemUpButton";
-            this.MoveItemUpButton.Size = new System.Drawing.Size(168, 22);
+            this.MoveItemUpButton.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
+            this.MoveItemUpButton.Size = new System.Drawing.Size(198, 22);
             this.MoveItemUpButton.Text = "$MOVE_UP";
             this.MoveItemUpButton.Click += new System.EventHandler(this.MoveItemUp_Click);
             // 
             // MoveItemDownButton
             // 
             this.MoveItemDownButton.Name = "MoveItemDownButton";
-            this.MoveItemDownButton.Size = new System.Drawing.Size(168, 22);
+            this.MoveItemDownButton.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.MoveItemDownButton.Size = new System.Drawing.Size(198, 22);
             this.MoveItemDownButton.Text = "$MOVE_DOWN";
             this.MoveItemDownButton.Click += new System.EventHandler(this.MoveItemDown_Click);
             // 
@@ -150,21 +153,21 @@ namespace Mafia2Tool
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "$SAVE";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveButtonPressed);
             // 
             // reloadToolStripMenuItem
             // 
             this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.reloadToolStripMenuItem.Text = "$RELOAD";
             this.reloadToolStripMenuItem.Click += new System.EventHandler(this.ReloadButtonPressed);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "$EXIT";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitButtonPressed);
             // 

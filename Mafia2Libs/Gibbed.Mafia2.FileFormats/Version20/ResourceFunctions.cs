@@ -148,6 +148,7 @@ namespace Gibbed.Mafia2.FileFormats
             }
 
             resourceXML.WriteEndElement();
+            resourceXML.Close();
             resourceXML.Flush();
             resourceXML.Dispose();
 

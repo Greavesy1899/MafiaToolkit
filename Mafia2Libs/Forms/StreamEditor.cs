@@ -306,14 +306,14 @@ namespace Mafia2Tool
             {
                 if (linesTree.SelectedNode.Tag.GetType() == typeof(StreamHeaderGroup))
                 {
-                    LineContextStrip.Items[0].Visible = true;
+                    AddLineButton.Visible = true;
                 }
                 else if (linesTree.SelectedNode.Tag.GetType() == typeof(StreamLine))
                 {
-                    for (int i = 1; i != 4; i++)
-                    {
-                        LineContextStrip.Items[i].Visible = true;
-                    }
+                    DeleteLineButton.Visible = true;
+                    DuplicateLine.Visible = true;
+                    MoveItemDownButton.Visible = true;
+                    MoveItemUpButton.Visible = true;
                 }
             }
         }
