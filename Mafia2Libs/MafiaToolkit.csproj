@@ -425,6 +425,7 @@
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyWeatherParam.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameNameTable\FrameNameTableEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameFactory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\FrameResource\FramePack.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameResourceEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameResourceXML.cs" />
     <Compile Include="ResourceTypes\FileTypes\ItemDesc\ItemDescEnums.cs" />

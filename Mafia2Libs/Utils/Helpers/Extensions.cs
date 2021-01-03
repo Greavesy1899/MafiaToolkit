@@ -658,6 +658,18 @@ namespace Utils.Extensions
             return -1;
         }
 
+        public static bool AddRange<TKey, TValue>(this Dictionary<TKey, TValue> Dic, Dictionary<TKey, TValue> OtherDic)
+        {
+            bool bResult = true;
+
+            foreach(var Pair in OtherDic)
+            {
+                bResult = Dic.TryAdd(Pair.Key, Pair.Value);
+            }
+
+            return bResult;
+        }
+
         public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue value)
         {
             bool bHasKey = dic.ContainsKey(key);
