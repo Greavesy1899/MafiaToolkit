@@ -1,6 +1,5 @@
 ﻿using Mafia2Tool;
 using ResourceTypes.BufferPools;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,9 +8,16 @@ using Utils.Settings;
 
 namespace ResourceTypes.FrameResource
 {
+    /*
+     * Toolkit Creation to give the user the ability to export sections of frames and re-import into another file.
+     */
     public class FramePack
     {
-        private Dictionary<ulong, List<ulong>> ModelAttachments;
+        // Used for both
+        private Dictionary<ulong, List<int>> ModelAttachments;
+
+        // Used for loading
+        private Dictionary<int, FrameObjectBase> OldRefIDLookupTable;
 
         // Used when saving
         public FrameObjectBase RootFrame { get; private set; }
@@ -25,6 +31,7 @@ namespace ResourceTypes.FrameResource
         private void SaveFrame(FrameObjectBase frame, BinaryWriter writer)
         {
             //is this even needed? hmm.
+            writer.Write(frame.RefID); // Save old RefID
             Debug.WriteLine(frame.ToString());
             if (frame.GetType() == typeof(FrameObjectArea))
             {
@@ -84,10 +91,10 @@ namespace ResourceTypes.FrameResource
                 mesh.WriteToFilePart2(writer);
 
                 // Write Attachment hashes to the dictionary
-                List<ulong> AttachmentHashes = new List<ulong>();
+                List<int> AttachmentHashes = new List<int>();
                 foreach(FrameObjectModel.AttachmentReference Attachment in mesh.AttachmentReferences)
                 {
-                    AttachmentHashes.Add(Attachment.Attachment.Name.Hash);
+                    AttachmentHashes.Add(Attachment.Attachment.RefID);
                 }
 
                 ModelAttachments.Add(mesh.Name.Hash, AttachmentHashes);
@@ -140,6 +147,10 @@ namespace ResourceTypes.FrameResource
             writer.Write(frame.IsOnFrameTable);
             writer.Write((uint)frame.FrameNameTableFlags);
 
+            // Write ParentIndex1 and ParentIndex2 info
+            writer.Write(frame.ParentIndex1.RefID);
+            writer.Write(frame.ParentIndex2.RefID);
+
             writer.Write(frame.Children.Count);
             for (int i = 0; i < frame.Children.Count; i++)
             {
@@ -149,6 +160,8 @@ namespace ResourceTypes.FrameResource
 
         private FrameObjectBase ReadFrame(MemoryStream stream)
         {
+            int OldRefID = stream.ReadInt32(false); // read old RefID so we can make lookup dictionary
+
             ObjectType frameType = (ObjectType)stream.ReadInt16(false);
             FrameObjectBase parent = FrameFactory.ReadFrameByObjectID(stream, frameType, false);
             Debug.WriteLine(parent.ToString());
@@ -198,14 +211,13 @@ namespace ResourceTypes.FrameResource
                     model.ReadFromFilePart2(stream, false);
                 }
 
-                // Read the buffers;
-                IndexBuffer indexBuffer = new IndexBuffer(stream, false);
-                VertexBuffer vertexBuffer = new VertexBuffer(stream, false);
-
                 // We have to make sure we have index and buffer pools available
                 // We have to do it for all LODs too; if any more than 1.
                 foreach (var lod in geometry.LOD)
                 {
+                    IndexBuffer indexBuffer = new IndexBuffer(stream, false);
+                    VertexBuffer vertexBuffer = new VertexBuffer(stream, false);
+
                     SceneData.IndexBufferPool.TryAddBuffer(indexBuffer);
                     SceneData.VertexBufferPool.TryAddBuffer(vertexBuffer);
                 }
@@ -215,23 +227,25 @@ namespace ResourceTypes.FrameResource
             parent.IsOnFrameTable = stream.ReadBoolean();
             parent.FrameNameTableFlags = (FrameNameTable.NameTableFlags)stream.ReadUInt32(false);
 
+            // Read ParentIndex from previous SDS
+            int OldParentIndex1RefId = stream.ReadInt32(false);
+            int OldParentIndex2RefId = stream.ReadInt32(false);
+
+            // Temporarily store it as a reference.
+            parent.AddRef(FrameEntryRefTypes.Parent1, OldParentIndex1RefId);
+            parent.AddRef(FrameEntryRefTypes.Parent2, OldParentIndex2RefId);
+
             // We can finally add our new frame object
             FrameObjects.Add(parent.RefID, parent);
+
+            // Push new FrameObject int OldRefLookupTable
+            OldRefIDLookupTable.Add(OldRefID, parent);
 
             // Read how many children this frame has, and proceed to read them too.
             int count = stream.ReadInt32(false);
             for (int i = 0; i < count; i++)
             {
                 FrameObjectBase child = ReadFrame(stream);
-                child.Parent = parent;
-                parent.Children.Add(child);
-
-                // Add References early..
-                child.AddRef(FrameEntryRefTypes.Parent1, parent.RefID);
-                child.AddRef(FrameEntryRefTypes.Parent2, parent.RefID);
-                
-                //SetParentOfObject(0, child, parent);
-                //SetParentOfObject(1, child, parent);
             }
 
             return parent;
@@ -239,7 +253,7 @@ namespace ResourceTypes.FrameResource
 
         public void WriteToFile(FrameObjectBase Frame)
         {
-            ModelAttachments = new Dictionary<ulong, List<ulong>>();
+            ModelAttachments = new Dictionary<ulong, List<int>>();
 
             string FrameName = Frame.Name.String;
             string ExportName = Path.Combine(ToolkitSettings.ExportPath, FrameName) + ".framedata";
@@ -268,7 +282,8 @@ namespace ResourceTypes.FrameResource
             FrameSkeletonHierarchy = new Dictionary<int, FrameSkeletonHierachy>();
             FrameBlendInfos = new Dictionary<int, FrameBlendInfo>();
             FrameSkeletons = new Dictionary<int, FrameSkeleton>();
-            ModelAttachments = new Dictionary<ulong, List<ulong>>();
+            ModelAttachments = new Dictionary<ulong, List<int>>();
+            OldRefIDLookupTable = new Dictionary<int, FrameObjectBase>();
 
             using (MemoryStream stream = new MemoryStream(File.ReadAllBytes(FileName)))
             {
@@ -277,14 +292,14 @@ namespace ResourceTypes.FrameResource
                 uint NumModelAttachments = stream.ReadUInt32(false);
                 for(int i = 0; i < NumModelAttachments; i++)
                 {
-                    List<ulong> AttachmentRefs = new List<ulong>();
+                    List<int> AttachmentRefs = new List<int>();
 
                     ulong ModelHash = stream.ReadUInt64(false);
                     uint NumAttachmentsInModel = stream.ReadUInt32(false);
                     for(int z = 0; z < NumAttachmentsInModel; z++)
                     {
-                        ulong AttachmentHash = stream.ReadUInt64(false);
-                        AttachmentRefs.Add(AttachmentHash);
+                        int AttachmentRefID = stream.ReadInt32(false);
+                        AttachmentRefs.Add(AttachmentRefID);
                     }
 
                     ModelAttachments.Add(ModelHash, AttachmentRefs);
@@ -294,7 +309,7 @@ namespace ResourceTypes.FrameResource
 
         public void PushPacketIntoFrameResource(FrameResource FrameResource)
         {
-            Dictionary<ulong, FrameObjectBase> AttachmentRefLookup = new Dictionary<ulong, FrameObjectBase>();
+            Dictionary<int, FrameObjectBase> AttachmentRefLookup = new Dictionary<int, FrameObjectBase>();
 
             FrameResource.FrameBlendInfos.AddRange(FrameBlendInfos);
             FrameResource.FrameGeometries.AddRange(FrameGeometries);
@@ -309,7 +324,6 @@ namespace ResourceTypes.FrameResource
             {
                 FrameObjectBase CurrentObject = (Pair.Value as FrameObjectBase);
                 UpdateParentChildRelations(FrameResource, CurrentObject);
-                AttachmentRefLookup.Add(CurrentObject.Name.Hash, CurrentObject);
             }
 
             // Update AttachmentReferences on FrameObjectModels    
@@ -318,11 +332,11 @@ namespace ResourceTypes.FrameResource
                 if(Pair.Value is FrameObjectModel)
                 {
                     FrameObjectModel ModelObject = (Pair.Value as FrameObjectModel);
-                    List<ulong> AttachmentRefs = ModelAttachments[ModelObject.Name.Hash];
+                    List<int> AttachmentRefs = ModelAttachments[ModelObject.Name.Hash];
 
                     for(int i = 0; i < AttachmentRefs.Count; i++)
                     {
-                        ModelObject.AttachmentReferences[i].Attachment = AttachmentRefLookup[AttachmentRefs[i]];
+                        ModelObject.AttachmentReferences[i].Attachment = OldRefIDLookupTable[AttachmentRefs[i]];
                     }
                 }
             }
@@ -330,13 +344,38 @@ namespace ResourceTypes.FrameResource
 
         private void UpdateParentChildRelations(FrameResource FrameResource, FrameObjectBase ObjectToUpdate)
         {
-            for(int i = 0; i < ObjectToUpdate.Children.Count; i++)
-            {
-                FrameObjectBase Child = ObjectToUpdate.Children[i];
-                FrameResource.SetParentOfObject(0, Child, ObjectToUpdate);
-                FrameResource.SetParentOfObject(1, Child, ObjectToUpdate);
+            FrameObjectBase Child = ObjectToUpdate;
 
-                UpdateParentChildRelations(FrameResource, Child);
+            // Parent Frames
+            FrameObjectBase Parent1 = null;
+            FrameObjectBase Parent2 = null;
+
+            if (Child.Refs.ContainsKey(FrameEntryRefTypes.Parent1.ToString()))
+            {
+                if (OldRefIDLookupTable.TryGetValue(Child.Refs[FrameEntryRefTypes.Parent1.ToString()], out Parent1))
+                {
+                    Child.SubRef(FrameEntryRefTypes.Parent1);
+                    FrameResource.SetParentOfObject(0, Child, Parent1);
+                }
+                else
+                {
+                    Child.SubRef(FrameEntryRefTypes.Parent1);
+                    FrameResource.SetParentOfObject(0, Child, null);
+                }
+            }
+
+            if (Child.Refs.ContainsKey(FrameEntryRefTypes.Parent2.ToString()))
+            {
+                if (OldRefIDLookupTable.TryGetValue(Child.Refs[FrameEntryRefTypes.Parent2.ToString()], out Parent2))
+                {
+                    Child.SubRef(FrameEntryRefTypes.Parent2);
+                    FrameResource.SetParentOfObject(1, Child, Parent2);
+                }
+                else
+                {
+                    Child.SubRef(FrameEntryRefTypes.Parent2);
+                    FrameResource.SetParentOfObject(1, Child, null);
+                }
             }
         }
     }

@@ -353,7 +353,7 @@ namespace ResourceTypes.FrameResource
             return BuildFromFrames(null, Packet.RootFrame);
         }
 
-        public void SaveFramesToFile(FrameObjectBase frame, string file)
+        public void SaveFramesToFile(FrameObjectBase frame)
         {
             FramePack Packet = new FramePack();
             Packet.WriteToFile(frame);

@@ -101,6 +101,10 @@ namespace ResourceTypes.FrameResource
             {
                 refs[type.ToString()] = objRef;
             }
+            else
+            {
+                refs.Add(type.ToString(), objRef);
+            }
         }
 
         /// <summary>

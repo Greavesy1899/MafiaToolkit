@@ -208,17 +208,11 @@ namespace Mafia2Tool
 
             FrameObjectBase frame = (node.Tag as FrameObjectBase);
 
-            // We can remove this when we have support. 
-            if(node.Nodes.Count > 0)
-            {
-                MessageBox.Show("Warning: Child Frames are not currently supported!", "Toolkit", MessageBoxButtons.OK);
-            }
-
             if (node != null)
             {
                 if(node.Tag != null)
                 {
-                    SceneData.FrameResource.SaveFramesToFile(frame, "file.frame");
+                    SceneData.FrameResource.SaveFramesToFile(frame);
                 }
             }        
         }
