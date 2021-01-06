@@ -256,7 +256,14 @@ namespace ResourceTypes.FrameResource
             ModelAttachments = new Dictionary<ulong, List<int>>();
 
             string FrameName = Frame.Name.String;
-            string ExportName = Path.Combine(ToolkitSettings.ExportPath, FrameName) + ".framedata";
+            string ExportPath = Path.Combine(ToolkitSettings.ExportPath, FrameName);
+            string ExportName = ExportPath + ".framedata";
+
+            if (!Directory.Exists(ExportPath))
+            {
+                Directory.CreateDirectory(ExportPath);
+            }
+
             using (BinaryWriter writer = new BinaryWriter(File.Open(ExportName, FileMode.Create)))
             {
                 SaveFrame(Frame, writer);
@@ -350,9 +357,9 @@ namespace ResourceTypes.FrameResource
             FrameObjectBase Parent1 = null;
             FrameObjectBase Parent2 = null;
 
-            if (Child.Refs.ContainsKey(FrameEntryRefTypes.Parent1.ToString()))
+            if (Child.Refs.ContainsKey(FrameEntryRefTypes.Parent1))
             {
-                if (OldRefIDLookupTable.TryGetValue(Child.Refs[FrameEntryRefTypes.Parent1.ToString()], out Parent1))
+                if (OldRefIDLookupTable.TryGetValue(Child.Refs[FrameEntryRefTypes.Parent1], out Parent1))
                 {
                     Child.SubRef(FrameEntryRefTypes.Parent1);
                     FrameResource.SetParentOfObject(0, Child, Parent1);
@@ -364,9 +371,9 @@ namespace ResourceTypes.FrameResource
                 }
             }
 
-            if (Child.Refs.ContainsKey(FrameEntryRefTypes.Parent2.ToString()))
+            if (Child.Refs.ContainsKey(FrameEntryRefTypes.Parent2))
             {
-                if (OldRefIDLookupTable.TryGetValue(Child.Refs[FrameEntryRefTypes.Parent2.ToString()], out Parent2))
+                if (OldRefIDLookupTable.TryGetValue(Child.Refs[FrameEntryRefTypes.Parent2], out Parent2))
                 {
                     Child.SubRef(FrameEntryRefTypes.Parent2);
                     FrameResource.SetParentOfObject(1, Child, Parent2);

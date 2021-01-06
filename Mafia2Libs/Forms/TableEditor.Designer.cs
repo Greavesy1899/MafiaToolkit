@@ -36,12 +36,12 @@
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.EditButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AddRowButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddColumnButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DataGrid = new System.Windows.Forms.DataGridView();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.ColumnIndexLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.RowIndexLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.DataTypeLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.DeleteRowButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DataGrid)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -99,7 +99,7 @@
             this.EditButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.EditButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.AddRowButton,
-            this.AddColumnButton});
+            this.DeleteRowButton});
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
             this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EditButton.Name = "EditButton";
@@ -109,16 +109,9 @@
             // AddRowButton
             // 
             this.AddRowButton.Name = "AddRowButton";
-            this.AddRowButton.Size = new System.Drawing.Size(160, 22);
+            this.AddRowButton.Size = new System.Drawing.Size(180, 22);
             this.AddRowButton.Text = "$ADD_ROW";
             this.AddRowButton.Click += new System.EventHandler(this.AddRowOnClick);
-            // 
-            // AddColumnButton
-            // 
-            this.AddColumnButton.Name = "AddColumnButton";
-            this.AddColumnButton.Size = new System.Drawing.Size(160, 22);
-            this.AddColumnButton.Text = "$ADD_COLUMN";
-            this.AddColumnButton.Click += new System.EventHandler(this.AddColumnOnClick);
             // 
             // DataGrid
             // 
@@ -166,6 +159,13 @@
             this.DataTypeLabel.Size = new System.Drawing.Size(118, 17);
             this.DataTypeLabel.Text = "toolStripStatusLabel1";
             // 
+            // DeleteRowButton
+            // 
+            this.DeleteRowButton.Name = "DeleteRowButton";
+            this.DeleteRowButton.Size = new System.Drawing.Size(180, 22);
+            this.DeleteRowButton.Text = "$DELETE_ROW";
+            this.DeleteRowButton.Click += new System.EventHandler(this.DeleteRowOnClick);
+            // 
             // TableEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -197,10 +197,10 @@
         private System.Windows.Forms.DataGridView DataGrid;
         private System.Windows.Forms.ToolStripDropDownButton EditButton;
         private System.Windows.Forms.ToolStripMenuItem AddRowButton;
-        private System.Windows.Forms.ToolStripMenuItem AddColumnButton;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel ColumnIndexLabel;
         private System.Windows.Forms.ToolStripStatusLabel RowIndexLabel;
         private System.Windows.Forms.ToolStripStatusLabel DataTypeLabel;
+        private System.Windows.Forms.ToolStripMenuItem DeleteRowButton;
     }
 }

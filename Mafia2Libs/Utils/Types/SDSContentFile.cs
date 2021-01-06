@@ -385,7 +385,7 @@ namespace Utils.Types
             var memfile = ProtectResourceType("MemFile");
             var audioSectors = ProtectResourceType("AudioSectors");
             var entityDataStorage = ProtectResourceType("EntityDataStorage");
-            var tablesProtected = ProtectResourceType("Tables");
+            var tablesProtected = ProtectResourceType("Table");
 
             // clear and scan
             resources.Clear();
@@ -400,17 +400,18 @@ namespace Utils.Types
                 }
             }
 
+            /*
             if(tables.Count > 0)
             {
                 CreateTableResource(tables);
-            }
+            }*/
             
             ReapplyResourceType("Script", scripts);
             ReapplyResourceType("XML", xmls);
             ReapplyResourceType("MemFile", memfile);
             ReapplyResourceType("AudioSectors", audioSectors);
             ReapplyResourceType("EntityDataStorage", entityDataStorage);
-            ReapplyResourceType("Tables", tablesProtected);
+            ReapplyResourceType("Table", tablesProtected);
             Sort();
         }
 

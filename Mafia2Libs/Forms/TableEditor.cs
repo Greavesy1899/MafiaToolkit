@@ -32,13 +32,11 @@ namespace Mafia2Tool
             SaveButton.Text = Language.GetString("$SAVE");
             ExitButton.Text = Language.GetString("$EXIT");
             ReloadButton.Text = Language.GetString("$RELOAD");
-            AddColumnButton.Text = Language.GetString("$TABLE_ADD_COLUMN");
             AddRowButton.Text = Language.GetString("$TABLE_ADD_ROW");
         }
 
         public void Initialise()
         {
-            AddColumnButton.Enabled = false;
             ReadExternalHashes();
             LoadTableData();
             GetCellProperties(0, 0);
@@ -199,15 +197,19 @@ namespace Mafia2Tool
             DataGrid.Rows.Add(data.ToArray());
         }
 
-        private void AddColumnOnClick(object sender, EventArgs e)
-        {
-        }
-
         private void OnSelectedChange(object sender, EventArgs e)
         {
             if (DataGrid.SelectedCells.Count > 0)
             {
                 GetCellProperties(DataGrid.SelectedCells[0].RowIndex, DataGrid.SelectedCells[0].ColumnIndex);
+            }
+        }
+
+        private void DeleteRowOnClick(object sender, EventArgs e)
+        {
+            if(DataGrid.SelectedRows.Count > 0)
+            {
+                DataGrid.Rows.Remove(DataGrid.SelectedRows[0]);
             }
         }
     }

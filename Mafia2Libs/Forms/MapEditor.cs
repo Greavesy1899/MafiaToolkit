@@ -1489,9 +1489,11 @@ namespace Mafia2Tool
                 if (FrameResource.IsFrameType(node.Nodes[i].Tag))
                 {
                     FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
-                    SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
+                    bool bDidRemove = SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
                     Graphics.Assets.TryRemove(entry.RefID);
                     DeleteFrames(node.Nodes[i]);
+
+                    Debug.Assert(bDidRemove == true, "Failed to remove!");
                 }
             }
         }

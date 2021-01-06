@@ -165,28 +165,28 @@ namespace ResourceTypes.FrameResource
                         if (mesh.MeshIndex != -1)
                         {
                             mesh.AddRef(FrameEntryRefTypes.Geometry, refs[mesh.MeshIndex]);
-                            mesh.Geometry = frameGeometries[mesh.Refs[FrameEntry.GeometryRef]];
+                            mesh.Geometry = frameGeometries[mesh.Refs[FrameEntryRefTypes.Geometry]];
                         }
 
                         if (mesh.MaterialIndex != -1)
                         {
                             mesh.AddRef(FrameEntryRefTypes.Material, refs[mesh.MaterialIndex]);
-                            mesh.Material = frameMaterials[mesh.Refs[FrameEntry.MaterialRef]];
+                            mesh.Material = frameMaterials[mesh.Refs[FrameEntryRefTypes.Material]];
                         }
                     }
                     else if (objectTypes[i] == (int)ObjectType.Model)
                     {
                         FrameObjectModel mesh = newObject as FrameObjectModel;
                         mesh.AddRef(FrameEntryRefTypes.Geometry, refs[mesh.MeshIndex]);
-                        mesh.Geometry = frameGeometries[mesh.Refs[FrameEntry.GeometryRef]];
+                        mesh.Geometry = frameGeometries[mesh.Refs[FrameEntryRefTypes.Geometry]];
                         mesh.AddRef(FrameEntryRefTypes.Material, refs[mesh.MaterialIndex]);
-                        mesh.Material = frameMaterials[mesh.Refs[FrameEntry.MaterialRef]];
+                        mesh.Material = frameMaterials[mesh.Refs[FrameEntryRefTypes.Material]];
                         mesh.AddRef(FrameEntryRefTypes.BlendInfo, refs[mesh.BlendInfoIndex]);
-                        mesh.BlendInfo = frameBlendInfos[mesh.Refs[FrameEntry.BlendInfoRef]];
+                        mesh.BlendInfo = frameBlendInfos[mesh.Refs[FrameEntryRefTypes.BlendInfo]];
                         mesh.AddRef(FrameEntryRefTypes.Skeleton, refs[mesh.SkeletonIndex]);
-                        mesh.Skeleton = frameSkeletons[mesh.Refs[FrameEntry.SkeletonRef]];
+                        mesh.Skeleton = frameSkeletons[mesh.Refs[FrameEntryRefTypes.Skeleton]];
                         mesh.AddRef(FrameEntryRefTypes.SkeletonHierachy, refs[mesh.SkeletonHierachyIndex]);
-                        mesh.SkeletonHierarchy = frameSkeletonHierachies[mesh.Refs[FrameEntry.SkeletonHierRef]];
+                        mesh.SkeletonHierarchy = frameSkeletonHierachies[mesh.Refs[FrameEntryRefTypes.SkeletonHierachy]];
 
                         mesh.ReadFromFilePart2(reader, isBigEndian);
 
@@ -569,11 +569,11 @@ namespace ResourceTypes.FrameResource
                 if (entry.Value is FrameObjectModel)
                 {
                     FrameObjectModel mesh = (entry.Value as FrameObjectModel);
-                    isGeomUsed[mesh.Refs[FrameEntry.GeometryRef]] = true;
-                    isMatUsed[mesh.Refs[FrameEntry.MaterialRef]] = true;
-                    isBlendInfoUsed[mesh.Refs[FrameEntry.BlendInfoRef]] = true;
-                    isSkelHierUsed[mesh.Refs[FrameEntry.SkeletonHierRef]] = true;
-                    isSkelUsed[mesh.Refs[FrameEntry.SkeletonRef]] = true;
+                    isGeomUsed[mesh.Refs[FrameEntryRefTypes.Geometry]] = true;
+                    isMatUsed[mesh.Refs[FrameEntryRefTypes.Material]] = true;
+                    isBlendInfoUsed[mesh.Refs[FrameEntryRefTypes.BlendInfo]] = true;
+                    isSkelHierUsed[mesh.Refs[FrameEntryRefTypes.SkeletonHierachy]] = true;
+                    isSkelUsed[mesh.Refs[FrameEntryRefTypes.Skeleton]] = true;
 
                 }
                 else if (entry.Value is FrameObjectSingleMesh)
@@ -582,12 +582,12 @@ namespace ResourceTypes.FrameResource
 
                     if (mesh.MeshIndex > -1)
                     {
-                        isGeomUsed[mesh.Refs[FrameEntry.GeometryRef]] = true;
+                        isGeomUsed[mesh.Refs[FrameEntryRefTypes.Geometry]] = true;
                     }
 
                     if (mesh.MaterialIndex > -1)
                     {
-                        isMatUsed[mesh.Refs[FrameEntry.MaterialRef]] = true;
+                        isMatUsed[mesh.Refs[FrameEntryRefTypes.Material]] = true;
                     }
                 }
             }
@@ -659,28 +659,28 @@ namespace ResourceTypes.FrameResource
                 FrameObjectBase block = (frameObjects.ElementAt(i).Value as FrameObjectBase);
                 Console.WriteLine("Working on block " + block.Name.String);
 
-                if (block.Refs.ContainsKey(FrameEntry.Parent1Ref))
+                if (block.Refs.ContainsKey(FrameEntryRefTypes.Parent1))
                 {
-                    if (frameScenes.ContainsKey(block.Refs[FrameEntry.Parent1Ref]))
+                    if (frameScenes.ContainsKey(block.Refs[FrameEntryRefTypes.Parent1]))
                     {
-                        block.ParentIndex1.Index = frameScenes.IndexOfValue(block.Refs[FrameEntry.Parent1Ref]);
+                        block.ParentIndex1.Index = frameScenes.IndexOfValue(block.Refs[FrameEntryRefTypes.Parent1]);
                     }
                     else
                     {
-                        block.ParentIndex1.Index = offsets[6] + (block.Refs.ContainsKey(FrameEntry.Parent1Ref) ? frameObjects.IndexOfValue(block.Refs[FrameEntry.Parent1Ref]) : -1);
+                        block.ParentIndex1.Index = offsets[6] + (block.Refs.ContainsKey(FrameEntryRefTypes.Parent1) ? frameObjects.IndexOfValue(block.Refs[FrameEntryRefTypes.Parent1]) : -1);
                     }
                 }
 
 
-                if (block.Refs.ContainsKey(FrameEntry.Parent2Ref))
+                if (block.Refs.ContainsKey(FrameEntryRefTypes.Parent2))
                 {
-                    if (frameScenes.ContainsKey(block.Refs[FrameEntry.Parent2Ref]))
+                    if (frameScenes.ContainsKey(block.Refs[FrameEntryRefTypes.Parent2]))
                     {
-                        block.ParentIndex2.Index = frameScenes.IndexOfValue(block.Refs[FrameEntry.Parent2Ref]);
+                        block.ParentIndex2.Index = frameScenes.IndexOfValue(block.Refs[FrameEntryRefTypes.Parent2]);
                     }
                     else
                     {
-                        block.ParentIndex2.Index = offsets[6] + (block.Refs.ContainsKey(FrameEntry.Parent2Ref) ? frameObjects.IndexOfValue(block.Refs[FrameEntry.Parent2Ref]) : -1);
+                        block.ParentIndex2.Index = offsets[6] + (block.Refs.ContainsKey(FrameEntryRefTypes.Parent2) ? frameObjects.IndexOfValue(block.Refs[FrameEntryRefTypes.Parent2]) : -1);
                     }
                 }
 
@@ -689,8 +689,8 @@ namespace ResourceTypes.FrameResource
                 {
                     FrameObjectSingleMesh mesh = (block as FrameObjectSingleMesh);
                     Console.WriteLine(string.Format("Updating: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
-                    if (mesh.MeshIndex != -1) mesh.MeshIndex = offsets[1] + frameGeometries.IndexOfValue(mesh.Refs[FrameEntry.GeometryRef]);
-                    if (mesh.MaterialIndex != -1) mesh.MaterialIndex = offsets[2] + frameMaterials.IndexOfValue(mesh.Refs[FrameEntry.MaterialRef]);
+                    if (mesh.MeshIndex != -1) mesh.MeshIndex = offsets[1] + frameGeometries.IndexOfValue(mesh.Refs[FrameEntryRefTypes.Geometry]);
+                    if (mesh.MaterialIndex != -1) mesh.MaterialIndex = offsets[2] + frameMaterials.IndexOfValue(mesh.Refs[FrameEntryRefTypes.Material]);
                     block = mesh;
                     Console.WriteLine(string.Format("Updated: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
                 }
@@ -698,11 +698,11 @@ namespace ResourceTypes.FrameResource
                 {
                     FrameObjectModel mesh = (block as FrameObjectModel);
                     Console.WriteLine(string.Format("Updating: {0}, {1}, {2}", block.Name, mesh.MaterialIndex, mesh.MeshIndex));
-                    if (mesh.MeshIndex != -1) mesh.MeshIndex = offsets[1] + frameGeometries.IndexOfValue(mesh.Refs[FrameEntry.GeometryRef]);
-                    if (mesh.MaterialIndex != -1) mesh.MaterialIndex = offsets[2] + frameMaterials.IndexOfValue(mesh.Refs[FrameEntry.MaterialRef]);
-                    if (mesh.BlendInfoIndex != -1) mesh.BlendInfoIndex = offsets[3] + frameBlendInfos.IndexOfValue(mesh.Refs[FrameEntry.BlendInfoRef]);
-                    if (mesh.SkeletonIndex != -1) mesh.SkeletonIndex = offsets[4] + frameSkeletons.IndexOfValue(mesh.Refs[FrameEntry.SkeletonRef]);
-                    if (mesh.SkeletonHierachyIndex != -1) mesh.SkeletonHierachyIndex = offsets[5] + frameSkeletonHierachies.IndexOfValue(mesh.Refs[FrameEntry.SkeletonHierRef]);
+                    if (mesh.MeshIndex != -1) mesh.MeshIndex = offsets[1] + frameGeometries.IndexOfValue(mesh.Refs[FrameEntryRefTypes.Geometry]);
+                    if (mesh.MaterialIndex != -1) mesh.MaterialIndex = offsets[2] + frameMaterials.IndexOfValue(mesh.Refs[FrameEntryRefTypes.Material]);
+                    if (mesh.BlendInfoIndex != -1) mesh.BlendInfoIndex = offsets[3] + frameBlendInfos.IndexOfValue(mesh.Refs[FrameEntryRefTypes.BlendInfo]);
+                    if (mesh.SkeletonIndex != -1) mesh.SkeletonIndex = offsets[4] + frameSkeletons.IndexOfValue(mesh.Refs[FrameEntryRefTypes.Skeleton]);
+                    if (mesh.SkeletonHierachyIndex != -1) mesh.SkeletonHierachyIndex = offsets[5] + frameSkeletonHierachies.IndexOfValue(mesh.Refs[FrameEntryRefTypes.SkeletonHierachy]);
 
                     foreach (var attachment in mesh.AttachmentReferences)
                     {

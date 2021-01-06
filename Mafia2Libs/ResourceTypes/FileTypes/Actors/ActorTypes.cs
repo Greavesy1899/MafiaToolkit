@@ -1593,8 +1593,11 @@ namespace ResourceTypes.Actors
     public class ActorFrameWrapper : IActorExtraDataInterface
     {
         int unk0;
-        private MemoryStream stream;
-        private bool isBigEndian;
+
+        public int Unk0 {
+            get { return unk0; }
+            set { unk0 = value; }
+        }
 
         public ActorFrameWrapper()
         {
@@ -1606,16 +1609,6 @@ namespace ResourceTypes.Actors
             ReadFromFile(stream, isBigEndian);
         }
 
-        public int Unk0 {
-            get { return unk0; }
-            set { unk0 = value; }
-        }
-
-        public int GetSize()
-        {
-            return 4;
-        }
-
         public void ReadFromFile(MemoryStream reader, bool isBigEndian)
         {
             unk0 = reader.ReadInt32(isBigEndian);
@@ -1624,6 +1617,11 @@ namespace ResourceTypes.Actors
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
         {
             writer.Write(unk0, isBigEndian);
+        }
+
+        public int GetSize()
+        {
+            return 4;
         }
     }
     public class ActorAircraft : IActorExtraDataInterface
@@ -2038,8 +2036,13 @@ namespace ResourceTypes.Actors
         public float ShootDispZ { get; set; }
         public float ShootDispCorrectionTimeMin { get; set; }
         public float ShootDispCorrectionTimeMax { get; set; }
-        public byte[] Unknown { get; set; }
-
+        public float Unk0 { get; set; }
+        public float Unk1 { get; set; }
+        public ulong Archetype { get; set; }
+        public int Unk2 { get; set; }
+        public float Unk3 { get; set; }
+        public float Unk4 { get; set; }
+        public int Unk5 { get; set; }
         public ActorHuman(MemoryStream stream, bool isBigEndian)
         {
             ReadFromFile(stream, isBigEndian);
@@ -2080,7 +2083,13 @@ namespace ResourceTypes.Actors
             ShootDispZ = stream.ReadSingle(isBigEndian);
             ShootDispCorrectionTimeMin = stream.ReadSingle(isBigEndian);
             ShootDispCorrectionTimeMax = stream.ReadSingle(isBigEndian);
-            Unknown = stream.ReadBytes((int)(stream.Length - stream.Position));
+            Unk0 = stream.ReadSingle(isBigEndian);
+            Unk1 = stream.ReadSingle(isBigEndian);
+            Archetype = stream.ReadUInt64(isBigEndian);
+            Unk2 = stream.ReadInt32(isBigEndian);
+            Unk3 = stream.ReadSingle(isBigEndian);
+            Unk4 = stream.ReadSingle(isBigEndian);
+            Unk5 = stream.ReadInt32(isBigEndian);
         }
 
         public void WriteToFile(MemoryStream writer, bool isBigEndian)
@@ -2109,7 +2118,13 @@ namespace ResourceTypes.Actors
             writer.Write(ShootDispZ, isBigEndian);
             writer.Write(ShootDispCorrectionTimeMin, isBigEndian);
             writer.Write(ShootDispCorrectionTimeMax, isBigEndian);
-            writer.Write(Unknown);
+            writer.Write(Unk0, isBigEndian);
+            writer.Write(Unk1, isBigEndian);
+            writer.Write(Archetype, isBigEndian);
+            writer.Write(Unk2, isBigEndian);
+            writer.Write(Unk3, isBigEndian);
+            writer.Write(Unk4, isBigEndian);
+            writer.Write(Unk5, isBigEndian);
         }
     }
     public class ActorScriptEntity : IActorExtraDataInterface

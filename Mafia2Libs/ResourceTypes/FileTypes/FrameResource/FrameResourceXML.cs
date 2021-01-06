@@ -176,6 +176,7 @@ namespace ResourceTypes.FrameResource
         private string xmlTag;
         private int unk1;
         private int unk3;
+        private int failedToDecompile;
 
         public string XMLTag {
             get { return xmlTag; }
@@ -188,6 +189,10 @@ namespace ResourceTypes.FrameResource
         public int Unk3 {
             get { return unk3; }
             set { unk3 = value; }
+        }
+        public int FailedToDecompile {
+            get { return failedToDecompile; }
+            set { failedToDecompile = value; }
         }
 
         public XMLResource()
@@ -211,6 +216,8 @@ namespace ResourceTypes.FrameResource
             iterator.Current.MoveToNext();
             Unk3 = iterator.Current.ValueAsInt;
             iterator.Current.MoveToNext();
+            FailedToDecompile = iterator.Current.ValueAsInt;
+            iterator.Current.MoveToNext();
             EntryVersion = iterator.Current.ValueAsInt;
         }
 
@@ -220,6 +227,7 @@ namespace ResourceTypes.FrameResource
             writer.WriteElementString("XMLTag", XMLTag);
             writer.WriteElementString("Unk1", Unk1.ToString());
             writer.WriteElementString("Unk3", Unk3.ToString());
+            writer.WriteElementString("FailedToDecompile", FailedToDecompile.ToString());
             writer.WriteElementString("Version", GetEntryVersionString());
         }
     }

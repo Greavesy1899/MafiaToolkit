@@ -23,8 +23,8 @@ namespace Rendering.Factories
                 return null;
             }
 
-            FrameGeometry geom = SceneData.FrameResource.FrameGeometries[Mesh.Refs[FrameEntry.GeometryRef]];
-            FrameMaterial mat = SceneData.FrameResource.FrameMaterials[Mesh.Refs[FrameEntry.MaterialRef]];
+            FrameGeometry geom = SceneData.FrameResource.FrameGeometries[Mesh.Refs[FrameEntryRefTypes.Geometry]];
+            FrameMaterial mat = SceneData.FrameResource.FrameMaterials[Mesh.Refs[FrameEntryRefTypes.Material]];
             IndexBuffer[] indexBuffers = new IndexBuffer[geom.LOD.Length];
             VertexBuffer[] vertexBuffers = new VertexBuffer[geom.LOD.Length];
 
