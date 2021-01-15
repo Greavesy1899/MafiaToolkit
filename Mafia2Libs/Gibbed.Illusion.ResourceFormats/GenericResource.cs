@@ -125,10 +125,17 @@ namespace Gibbed.Mafia2.ResourceFormats
         {
             bool bGotDebugName = false;
 
+            // Make sure we use the debug name.
+            if (!string.IsNullOrEmpty(DebugName))
+            {
+                name = DebugName;
+                bGotDebugName = true;
+            }
+
             // Our database tool has figured out this file name.
             // Return.
             // TODO: Consider an easier approach for this, maybe have a flag?
-            if (!name.Contains("File_"))
+            if (!name.Contains("File_") && !bGotDebugName)
             {
                 string extension = GetFullExtensionUtil(name);
                 if(!TypeExtensionString.ContainsKey(extension))
@@ -136,13 +143,6 @@ namespace Gibbed.Mafia2.ResourceFormats
                     Console.WriteLine("Detected missing extension from DB.");
                 }
                 return name;
-            }
-
-            // Make sure we use the debug name.
-            if (!string.IsNullOrEmpty(DebugName))
-            {
-                name = DebugName;
-                bGotDebugName = true;
             }
 
             if (!bGotDebugName)

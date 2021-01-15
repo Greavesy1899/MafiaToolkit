@@ -36,6 +36,9 @@ namespace ResourceTypes.Actors
         public int StaticFriction { get; set; }
         public float DynamicFriction { get; set; }
         public float Restitution { get; set; }
+        public float Unk1C { get; set; }
+        public uint Unk20 { get; set; }
+        public uint Unk24 { get; set; }
         public int POType { get; set; }
         [TypeConverter(typeof(Vector3Converter))]
         public Vector3 POPos { get; set; }
@@ -91,6 +94,9 @@ namespace ResourceTypes.Actors
             StaticFriction = reader.ReadInt32(isBigEndian);
             DynamicFriction = reader.ReadSingle(isBigEndian);
             Restitution = reader.ReadSingle(isBigEndian);
+            Unk1C = reader.ReadSingle(isBigEndian);
+            Unk20 = reader.ReadUInt32(isBigEndian);
+            Unk24 = reader.ReadUInt32(isBigEndian);
             reader.Seek(212, SeekOrigin.Begin);
             POType = reader.ReadInt32(isBigEndian);
             POPos = Vector3Extenders.ReadFromFile(reader, isBigEndian);
@@ -142,6 +148,9 @@ namespace ResourceTypes.Actors
             writer.Write(StaticFriction, isBigEndian);
             writer.Write(DynamicFriction, isBigEndian);
             writer.Write(Restitution, isBigEndian);
+            writer.Write(Unk1C, isBigEndian);
+            writer.Write(Unk20, isBigEndian);
+            writer.Write(Unk24, isBigEndian);
             writer.Seek(212, SeekOrigin.Begin);
             writer.Write(POType, isBigEndian);
             Vector3Extenders.WriteToFile(POPos, writer, isBigEndian);

@@ -199,7 +199,7 @@ namespace ResourceTypes.Materials
         {
             IMaterial[] Filtered = null;
 
-            if (currentSearchType >= 3)
+            if (currentSearchType >= 2)
             {
                 Filtered = SearchForMaterialsByHash(text, (SearchTypesHashes)currentSearchType);
             }
