@@ -28,7 +28,8 @@ namespace Mafia2Tool
             // If it doesn't exist, then we should try and read it as a fallback.
             if(mtl == null)
             {
-                mtl = new MaterialLibrary();
+                // Version will be replaced when reading file
+                mtl = new MaterialLibrary(VersionsEnumerator.V_57);
                 mtl.ReadMatFile(file.FullName);
             }
 
@@ -185,7 +186,8 @@ namespace Mafia2Tool
                 return;
             }
 
-            MaterialLibrary matLib = new MaterialLibrary();
+            // Version will be replaced when loaded
+            MaterialLibrary matLib = new MaterialLibrary(VersionsEnumerator.V_57);
             if(MTLBrowser.ShowDialog() == DialogResult.OK)
             {
                 try
@@ -288,7 +290,7 @@ namespace Mafia2Tool
 
         private void Button_ExportedSelected_Clicked(object sender, EventArgs e)
         {
-            MaterialLibrary library = new MaterialLibrary();
+            MaterialLibrary library = new MaterialLibrary(mtl.Version);
 
             foreach(DataGridViewCell cell in dataGridView1.SelectedCells)
             {

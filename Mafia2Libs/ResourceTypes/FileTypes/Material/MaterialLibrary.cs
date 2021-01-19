@@ -26,14 +26,12 @@ namespace ResourceTypes.Materials
             set { name = value; }
         }
 
-        public MaterialLibrary()
+        public MaterialLibrary(VersionsEnumerator InVersion)
         {
             name = "";
             materials = new Dictionary<ulong, IMaterial>();
             unk2 = 0;
-            version = GameStorage.Instance.GetSelectedGame().GameType == GamesEnumerator.MafiaII_DE 
-                ? VersionsEnumerator.V_58 
-                : VersionsEnumerator.V_57;
+            version = InVersion;
         }
 
         public void ReadMatFile(string name)
