@@ -62,6 +62,8 @@ namespace Utils.Types
             typeList.Add("XML", new XMLResource(3, "XML"));
             typeList.Add("Translokator", new BaseResource(1, "Translokator"));
             typeList.Add("Mipmap", new BaseResource(2, "Mipmap"));
+            typeList.Add("FxActor", new BaseResource(1, "FxActor"));
+            typeList.Add("FxAnimSet", new BaseResource(1, "FxAnimSet"));
 
             typeExtension = new Dictionary<string, string>();
             typeExtension.Add("ibp", "IndexBufferPool");
@@ -82,6 +84,8 @@ namespace Utils.Types
             typeExtension.Add("ids", "ItemDesc");
             typeExtension.Add("stbl", "SoundTable");
             typeExtension.Add("tra", "Translokator");
+            typeExtension.Add("fxa", "FxActor");
+            typeExtension.Add("fxs", "FxAnimSet");
         }
 
         public static TreeNode BuildResourceTreeNode(string name, object data = null)
