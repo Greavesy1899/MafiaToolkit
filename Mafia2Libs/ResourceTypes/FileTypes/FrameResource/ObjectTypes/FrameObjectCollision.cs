@@ -62,9 +62,9 @@ namespace ResourceTypes.FrameResource
             // We don't want to use this code yet, it's from old-old stuff which needs to be looked at.
             // TODO: Look at bringing this old feature back.
             return;
-            RenderStaticCollision CollisionMesh = RenderableFactory.BuildRenderItemDesc(Hash);
-            RenderAdapter = new Rendering.Core.RenderableAdapter();
-            RenderAdapter.InitAdaptor(CollisionMesh, this);
+            //RenderStaticCollision CollisionMesh = RenderableFactory.BuildRenderItemDesc(Hash);
+            //RenderAdapter = new Rendering.Core.RenderableAdapter();
+            //RenderAdapter.InitAdaptor(CollisionMesh, this);
         }
 
         // TODO: Move this to a different location.

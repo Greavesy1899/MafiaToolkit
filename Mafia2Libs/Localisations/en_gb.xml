@@ -29,6 +29,7 @@
   <String ID="$TILE">Tile</String>
   <String ID="$MII_TK_GAME_EXPLORER">Mafia Toolkit: Game Explorer</String>
   <String ID="$UNPACK_ALL_SDS">Unpack All SDS</String>
+  <String ID="$DELETE_SELECTED_OBJECTS">Delete Selected Files and Folders</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Open Folder in Explorer</String>
   <String ID="$PACK">Pack</String>
   <String ID="$UNPACK">Unpack</String>

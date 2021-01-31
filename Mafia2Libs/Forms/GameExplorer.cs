@@ -65,6 +65,7 @@ namespace Mafia2Tool
             ContextSDSPack.Text = Language.GetString("$PACK");
             ContextOpenFolder.Text = Language.GetString("$OPEN_FOLDER_EXPLORER");
             ContextSDSUnpackAll.Text = Language.GetString("$UNPACK_ALL_SDS");
+            ContextDeleteSelectedFiles.Text = Language.GetString("$DELETE_SELECTED_OBJECTS");
             ContextView.Text = Language.GetString("$VIEW");
             ContextViewIcon.Text = Language.GetString("$ICON");
             ContextViewDetails.Text = Language.GetString("$DETAILS");
@@ -456,6 +457,8 @@ namespace Mafia2Tool
                     ContextForceBigEndian.Visible = true;
                 }
             }
+
+            ContextDeleteSelectedFiles.Visible = true;
         }
         private void OnOptionsItem_Clicked(object sender, EventArgs e)
         {
@@ -577,7 +580,7 @@ namespace Mafia2Tool
                 "Thanks to Hurikejnis and Zeuvera for Slovenčina localization." +
                 "\n\n" +
                 "Also, a very special thanks to PayPal donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider \nNemesis7675" +
-                "\n Foxite \n\n" +
+                "\n Foxite \n MafiaGameVideo \nKamzik123 \n" +
                 "And Patreons: \nHamAndRock \nMelber",
                 "Toolkit",
                 MessageBoxButtons.OK,
@@ -690,6 +693,33 @@ namespace Mafia2Tool
                 }
 
             }
+        }
+
+        private void ContextDeleteSelectedFiles_OnClick(object sender, EventArgs e)
+        {
+            DialogResult Result = MessageBox.Show("Are you sure? This will delete all selected files and folders.", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            // If not yes, then end function
+            if(Result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            foreach(ListViewItem SelectedObject in fileListView.SelectedItems)
+            {
+                object ActualObject = SelectedObject.Tag;
+
+                if(ActualObject is FileBase)
+                {
+                    (ActualObject as FileBase).Delete();
+                }
+                else if(ActualObject is DirectoryBase)
+                {
+                    (ActualObject as DirectoryBase).Delete();
+                }
+            }
+
+            OpenDirectory(currentDirectory);
         }
     }
 }

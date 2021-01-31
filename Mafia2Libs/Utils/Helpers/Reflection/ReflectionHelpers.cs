@@ -237,7 +237,7 @@ namespace Utils.Helpers.Reflection
 
         public static XElement ConvertPropertyToXML<TObject>(TObject PropertyData)
         {
-            return InternalConvertProperty(PropertyData, PropertyData.GetType(), "N/A");
+            return InternalConvertProperty(PropertyData, PropertyData.GetType(), "Element");
         }
 
         private static bool ForcePropertyAsAttribute(PropertyInfo Info)

@@ -68,5 +68,16 @@ namespace Core.IO
         {
             throw new NotImplementedException("Override the base class for this method to function");
         }
+
+        public virtual void Delete()
+        {
+            if(file != null)
+            {
+                if(file.Exists)
+                {
+                    file.Delete();
+                }
+            }
+        }
     }
 }

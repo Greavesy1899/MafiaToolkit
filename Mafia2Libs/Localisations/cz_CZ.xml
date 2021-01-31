@@ -29,6 +29,7 @@
   <String ID="$TILE">Dlaždice</String>
   <String ID="$MII_TK_GAME_EXPLORER">Mafia Toolkit: Herní Prohlížeč</String>
   <String ID="$UNPACK_ALL_SDS">Extrahovat všechny SDS</String>
+  <String ID="$DELETE_SELECTED_OBJECTS">Delete Selected Files and Folders</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Otevřít složku v průzkumníku souborů</String>
   <String ID="$PACK">Zabalit</String>
   <String ID="$UNPACK">Extrahovat</String>

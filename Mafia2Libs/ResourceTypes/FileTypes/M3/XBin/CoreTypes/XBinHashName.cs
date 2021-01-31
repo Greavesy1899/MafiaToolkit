@@ -7,7 +7,6 @@ using System.IO;
 using Utils.Extensions;
 using Utils.Helpers;
 using Utils.Helpers.Reflection;
-using Utils.Language;
 
 namespace ResourceTypes.M3.XBin
 {

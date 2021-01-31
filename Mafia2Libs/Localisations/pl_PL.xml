@@ -29,6 +29,7 @@
   <String ID="$TILE">Widok kafelkowy</String>
   <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Eksplorator plików gry</String>
   <String ID="$UNPACK_ALL_SDS">Wypakuj wszystkie archiwa gry</String>
+  <String ID="$DELETE_SELECTED_OBJECTS">Delete Selected Files and Folders</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Otwórz folder w eskploratorze Windows</String>
   <String ID="$PACK">Zapakuj archiwum</String>
   <String ID="$UNPACK">Wypakuj archiwum</String>

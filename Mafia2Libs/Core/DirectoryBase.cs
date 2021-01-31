@@ -45,5 +45,16 @@ namespace Core.IO
 
             return collectedFiles;
         }
+
+        public void Delete()
+        {
+            if(directory != null)
+            {
+                if(directory.Exists)
+                {
+                    directory.Delete(true);
+                }
+            }
+        }
     }
 }

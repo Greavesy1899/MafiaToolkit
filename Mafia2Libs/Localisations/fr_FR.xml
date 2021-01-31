@@ -23,6 +23,7 @@
   <String ID="$TILE">Tile</String>
   <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Explorateur de jeu</String>
   <String ID="$UNPACK_ALL_SDS">Unpacker tous les SDS</String>
+  <String ID="$DELETE_SELECTED_OBJECTS">Delete Selected Files and Folders</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Ouvrir le dossier dans l'explorateur</String>
   <String ID="$PACK">Pack</String>
   <String ID="$UNPACK">Unpack</String>

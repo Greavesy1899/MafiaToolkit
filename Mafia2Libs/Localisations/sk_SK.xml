@@ -29,6 +29,7 @@
   <String ID="$TILE">Dlaždica</String>
   <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: Prehliadač hry</String>
   <String ID="$UNPACK_ALL_SDS">Rozbaliť všetky SDS súbory</String>
+  <String ID="$DELETE_SELECTED_OBJECTS">Delete Selected Files and Folders</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Otvoriť priečinok v prehliadači</String>
   <String ID="$PACK">Zabaliť</String>
   <String ID="$UNPACK">Vybaliť</String>

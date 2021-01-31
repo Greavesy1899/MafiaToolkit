@@ -80,6 +80,7 @@ namespace Mafia2Tool
             this.bottomContainer = new System.Windows.Forms.ToolStripContainer();
             this.status = new System.Windows.Forms.StatusStrip();
             this.infoText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.ContextDeleteSelectedFiles = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mainContainer)).BeginInit();
             this.mainContainer.Panel1.SuspendLayout();
             this.mainContainer.Panel2.SuspendLayout();
@@ -180,7 +181,6 @@ namespace Mafia2Tool
             // FolderPath
             // 
             this.FolderPath.AutoSize = false;
-            this.FolderPath.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.FolderPath.Name = "FolderPath";
             this.FolderPath.Size = new System.Drawing.Size(200, 23);
             this.FolderPath.ToolTipText = "$FOLDER_PATH_TOOLTIP";
@@ -199,7 +199,6 @@ namespace Mafia2Tool
             // SearchEntryText
             // 
             this.SearchEntryText.AutoSize = false;
-            this.SearchEntryText.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.SearchEntryText.Name = "SearchEntryText";
             this.SearchEntryText.Size = new System.Drawing.Size(200, 23);
             this.SearchEntryText.ToolTipText = "$SEARCH_TOOLTIP";
@@ -259,9 +258,10 @@ namespace Mafia2Tool
             this.ContextOpenFolder,
             this.ContextSDSUnpackAll,
             this.ContextView,
-            this.ContextForceBigEndian});
+            this.ContextForceBigEndian,
+            this.ContextDeleteSelectedFiles});
             this.GEContext.Name = "SDSContext";
-            this.GEContext.Size = new System.Drawing.Size(219, 136);
+            this.GEContext.Size = new System.Drawing.Size(219, 180);
             this.GEContext.Text = "$VIEW";
             this.GEContext.Opening += new System.ComponentModel.CancelEventHandler(this.OnOpening);
             // 
@@ -558,6 +558,13 @@ namespace Mafia2Tool
             this.infoText.Name = "infoText";
             this.infoText.Size = new System.Drawing.Size(0, 21);
             // 
+            // ContextDeleteSelectedFiles
+            // 
+            this.ContextDeleteSelectedFiles.Name = "ContextDeleteSelectedFiles";
+            this.ContextDeleteSelectedFiles.Size = new System.Drawing.Size(218, 22);
+            this.ContextDeleteSelectedFiles.Text = "$DELETE_SELECTED_FILES";
+            this.ContextDeleteSelectedFiles.Click += new System.EventHandler(this.ContextDeleteSelectedFiles_OnClick);
+            // 
             // GameExplorer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -646,5 +653,6 @@ namespace Mafia2Tool
         private ToolStripMenuItem UnpackAllSDSButton;
         private ToolStripMenuItem ContextForceBigEndian;
         private ToolStripMenuItem Button_SelectGame;
+        private ToolStripMenuItem ContextDeleteSelectedFiles;
     }
 }

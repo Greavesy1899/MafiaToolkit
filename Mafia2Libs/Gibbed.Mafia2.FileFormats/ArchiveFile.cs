@@ -626,6 +626,7 @@ namespace Gibbed.Mafia2.FileFormats
                     {
                         if (ResourceEntries[i].TypeId == type)
                         {
+                            // Fix for CrySDS archives
                             using (MemoryStream stream = new MemoryStream(ResourceEntries[i].Data))
                             {
                                 ushort authorLen = stream.ReadValueU16();
