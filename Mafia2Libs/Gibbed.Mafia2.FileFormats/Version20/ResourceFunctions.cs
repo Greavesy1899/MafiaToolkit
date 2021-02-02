@@ -79,7 +79,7 @@ namespace Gibbed.Mafia2.FileFormats
                 string FileName = HasFilename(FileNamesAndHash, entry);
                 if (!string.IsNullOrEmpty(FileName))
                 {
-                    Console.WriteLine(string.Format("{0}", FileName));
+                    //Console.WriteLine(string.Format("{0}", FileName));
                     itemNames[i] = FileName;
                 }
 
@@ -89,7 +89,7 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
                 string saveName = "";
                 string NameToPass = "";
-                Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
+                //Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
                 switch (ResourceTypes[entry.TypeId].Name)
                 {
                     case "Texture":
@@ -105,6 +105,7 @@ namespace Gibbed.Mafia2.FileFormats
                     case "NAV_AIWORLD_DATA":
                     case "RoadMap":
                     case "EnlightenResource":
+                        itemNames[i] = string.Format("File_{0}.enl", i);
                         ConstructPath(finalPath, itemNames[i]);
                         ReadBasicEntry(resourceXML, itemNames[i]);
                         saveName = itemNames[i];
@@ -495,6 +496,8 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.Data = stream.ToArray();
                 entry.Version = version;
             }
+
+            descNode.InnerText = name;
 
             return entry;
         }

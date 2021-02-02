@@ -663,7 +663,7 @@ namespace Gibbed.Mafia2.FileFormats
                 //Fix for friends for life SDS files.
                 //MessageBox.Show("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 Log.WriteLine("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", LoggingTypes.WARNING);
-                for (int i = 0; i != ResourceEntries.Count; i++)
+                for (int i = 0; i < ResourceEntries.Count; i++)
                 {
                     ResourceEntry Entry = ResourceEntries[i];
                     string Typename = _ResourceTypes[Entry.TypeId].Name;

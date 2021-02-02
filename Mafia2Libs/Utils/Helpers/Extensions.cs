@@ -56,6 +56,11 @@ namespace Utils.Extensions
         }
     }
 
+    public class MToolStripStatusLabel : ToolStripStatusLabel
+    {
+
+    }
+
     public static class ConverterUtils
     {
         private static string[] replacementList = { "X", "Y", "Z", "W", ":" };

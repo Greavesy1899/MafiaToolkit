@@ -139,12 +139,14 @@ namespace ResourceTypes.M3.XBin
 
         public void ReadFromXML(string file)
         {
-            //ReflectionHelpers.ConvertPropertyToXML<StreamMapLine[]>(Lines);
+            XElement Root = XElement.Load(file);
+            StreamMapTable TableInformation = ReflectionHelpers.ConvertToPropertyFromXML<StreamMapTable>(Root);
+            this.Lines = TableInformation.Lines;
         }
 
         public void WriteToXML(string file)
         {
-            XElement Elements = ReflectionHelpers.ConvertPropertyToXML(Lines);
+            XElement Elements = ReflectionHelpers.ConvertPropertyToXML(this);
             Elements.Save(file, SaveOptions.None);
         }
 
@@ -166,7 +168,14 @@ namespace ResourceTypes.M3.XBin
 
         public void SetFromTreeNodes(TreeNode Root)
         {
-           // do stuff
+            Lines = new StreamMapLine[Root.Nodes.Count];
+
+            for (int i = 0; i < Lines.Length; i++)
+            {
+                TreeNode ChildNode = Root.Nodes[i];
+                StreamMapLine Entry = (StreamMapLine)ChildNode.Tag;
+                Lines[i] = Entry;
+            }
         }
     }
 }

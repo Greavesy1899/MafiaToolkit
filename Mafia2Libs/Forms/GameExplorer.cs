@@ -66,6 +66,8 @@ namespace Mafia2Tool
             ContextOpenFolder.Text = Language.GetString("$OPEN_FOLDER_EXPLORER");
             ContextSDSUnpackAll.Text = Language.GetString("$UNPACK_ALL_SDS");
             ContextDeleteSelectedFiles.Text = Language.GetString("$DELETE_SELECTED_OBJECTS");
+            ContextUnpackSelectedSDS.Text = Language.GetString("$UNPACK_SELECTED_SDS");
+            ContextPackSelectedSDS.Text = Language.GetString("$PACK_SELECTED_SDS");
             ContextView.Text = Language.GetString("$VIEW");
             ContextViewIcon.Text = Language.GetString("$ICON");
             ContextViewDetails.Text = Language.GetString("$DETAILS");
@@ -437,6 +439,9 @@ namespace Mafia2Tool
             ContextSDSUnpack.Visible = false;
             ContextSDSPack.Visible = false;
             ContextForceBigEndian.Visible = false;
+            ContextDeleteSelectedFiles.Visible = false;
+            ContextUnpackSelectedSDS.Visible = false;
+            ContextPackSelectedSDS.Visible = false;
 
             if (fileListView.SelectedItems.Count == 0)
             {
@@ -445,16 +450,25 @@ namespace Mafia2Tool
 
             if (fileListView.SelectedItems[0].Tag is FileBase)
             {
-                string extension = (fileListView.SelectedItems[0].Tag as FileBase).GetExtensionUpper();
+                object Tag = fileListView.SelectedItems[0].Tag;
 
-                if (extension == "SDS")
+                if (Tag is FileSDS)
                 {
                     ContextSDSUnpack.Visible = true;
                     ContextSDSPack.Visible = true;
                 }
-                else if(extension == "FR")
+                else if(Tag is FileFrameResource)
                 {
                     ContextForceBigEndian.Visible = true;
+                }
+            }
+
+            foreach (ListViewItem item in fileListView.Items)
+            {
+                if(item.Tag is FileSDS)
+                {
+                    ContextPackSelectedSDS.Visible = true;
+                    ContextUnpackSelectedSDS.Visible = true;
                 }
             }
 
@@ -622,7 +636,6 @@ namespace Mafia2Tool
                 var SDSFile = (file as FileSDS);
                 Debug.WriteLine("Unpacking " + info.FullName);
                 SDSFile.Open();
-                //OpenSDSDirectory(SDSFile.GetUnderlyingFileInfo(), false);
             }
         }
 
@@ -720,6 +733,32 @@ namespace Mafia2Tool
             }
 
             OpenDirectory(currentDirectory);
+        }
+
+        private void ContextUnpackSelectedSDS_OnClick(object sender, EventArgs e)
+        {
+            foreach (ListViewItem SelectedObject in fileListView.SelectedItems)
+            {
+                object ActualObject = SelectedObject.Tag;
+
+                if (ActualObject is FileSDS)
+                {
+                    (ActualObject as FileSDS).Open();
+                }
+            }
+        }
+
+        private void ContextPackSelectedSDS_OnClick(object sender, EventArgs e)
+        {
+            foreach (ListViewItem SelectedObject in fileListView.SelectedItems)
+            {
+                object ActualObject = SelectedObject.Tag;
+
+                if (ActualObject is FileSDS)
+                {
+                    (ActualObject as FileSDS).Save();
+                }
+            }
         }
     }
 }

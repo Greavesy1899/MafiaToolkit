@@ -36,6 +36,8 @@ namespace Gibbed.Mafia2.ResourceFormats
             { 0x4A336D64, ".iproftime" },
             { 0x73CB32C9, ".fmv.compiled.effects" },
             { 0x222FDF72B2F3E413, ".lodbaked.[lod0].compiled" },
+            { 0x222FDF73B2F3E413, ".lodbaked.[lod1].compiled" },
+            { 0x222FDF70B2F3E413, ".lodbaked.[lod2].compiled" },
             { 0xF3BB3621, ".ccdb" },
             { 0x28930A39, ".egr" },
             { 0x1D4AD8D9E, ".cegr.compiled" },
@@ -70,6 +72,8 @@ namespace Gibbed.Mafia2.ResourceFormats
             { ".iproftime", 0x4A336D64 },
             { ".fmv", 0x428F61D4 },
             { ".lodbaked.[lod0].compiled", 0x222FDF72B2F3E413 },
+            { ".lodbaked.[lod1].compiled", 0x222FDF73B2F3E413 },
+            { ".lodbaked.[lod2].compiled", 0x222FDF70B2F3E413 },
             { ".ccdb", 0xF3BB3621 },
             { ".fmv.compiled.effects",  0x73CB32C9 },
             { ".egr", 0x28930A39 },
@@ -88,9 +92,11 @@ namespace Gibbed.Mafia2.ResourceFormats
         {
             GenericType = DetermineMagic(DebugName);
 
+            string TempName = string.IsNullOrEmpty(DebugName) ? "" : DebugName;
+
             output.WriteValueU64(GenericType);
             output.WriteValueU16(Unk0);
-            output.WriteValueU16(0);
+            output.WriteStringU16(TempName, endian);
             output.WriteBytes(Data);
         }
 
@@ -99,6 +105,9 @@ namespace Gibbed.Mafia2.ResourceFormats
             GenericType = input.ReadValueU64();
             Unk0 = input.ReadValueU16();
             DebugName = input.ReadStringU16(endian);
+
+            string Message = string.Format("{0} {1}", DebugName, GenericType);
+            Console.WriteLine(Message);
 
             // We do not have any size so we do (FILE_LENGTH - CURRENT_POS);
             Data = input.ReadBytes((int)(input.Length - input.Position));
@@ -109,7 +118,17 @@ namespace Gibbed.Mafia2.ResourceFormats
             string extension = GetFullExtensionUtil(name);
             ulong magic = 0;
 
-            if(TypeExtensionString.ContainsKey(extension))
+            bool bHasFound = TypeExtensionString.ContainsKey(extension);
+
+            if(!bHasFound)
+            {
+                string RemovedDot = extension.Remove(0, 1);
+                string OtherExtension = GetFullExtensionUtil(RemovedDot);
+                bHasFound = TypeExtensionString.ContainsKey(OtherExtension);
+                extension = OtherExtension;
+            }
+
+            if(bHasFound)
             {
                 magic = TypeExtensionString[extension];
             }
@@ -140,7 +159,7 @@ namespace Gibbed.Mafia2.ResourceFormats
                 string extension = GetFullExtensionUtil(name);
                 if(!TypeExtensionString.ContainsKey(extension))
                 {
-                    Console.WriteLine("Detected missing extension from DB.");
+                    MessageBox.Show("Detected missing extension from DB. Please contract Greavesy with SDS name.", "Toolkit");
                 }
                 return name;
             }

@@ -24,6 +24,8 @@
   <String ID="$MII_TK_GAME_EXPLORER">Mafia II Toolkit: проводник по игровым файлам</String>
   <String ID="$UNPACK_ALL_SDS">Распаковать все SDS</String>
   <String ID="$DELETE_SELECTED_OBJECTS">Delete Selected Files and Folders</String>
+  <String ID="$UNPACK_SELECTED_SDS">Unpack Selected SDS's</String>
+  <String ID="$PACK_SELECTED_SDS">Pack Selected SDS's</String>
   <String ID="$OPEN_FOLDER_EXPLORER">Открыть папку в Проводнике</String>
   <String ID="$PACK">Запаковать</String>
   <String ID="$UNPACK">Распаковать</String>
