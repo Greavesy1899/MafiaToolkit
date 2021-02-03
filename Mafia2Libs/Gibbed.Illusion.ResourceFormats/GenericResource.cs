@@ -116,16 +116,14 @@ namespace Gibbed.Mafia2.ResourceFormats
         public ulong DetermineMagic(string name)
         {
             string extension = GetFullExtensionUtil(name);
+            Console.WriteLine(extension);
             ulong magic = 0;
 
             bool bHasFound = TypeExtensionString.ContainsKey(extension);
 
             if(!bHasFound)
             {
-                string RemovedDot = extension.Remove(0, 1);
-                string OtherExtension = GetFullExtensionUtil(RemovedDot);
-                bHasFound = TypeExtensionString.ContainsKey(OtherExtension);
-                extension = OtherExtension;
+                bHasFound = RecursiveExtensionCheck(ref extension);
             }
 
             if(bHasFound)
@@ -183,6 +181,23 @@ namespace Gibbed.Mafia2.ResourceFormats
             }
 
             return name;
+        }
+
+        private bool RecursiveExtensionCheck(ref string Extension)
+        {
+            while(Extension.LastIndexOf('.') != 0)
+            {
+                string RemovedDot = Extension.Remove(0, 1);
+                Extension = GetFullExtensionUtil(RemovedDot);
+
+                bool bHasFound = TypeExtensionString.ContainsKey(Extension);
+                if(bHasFound)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private string GetFullExtensionUtil(string FileName)
