@@ -2457,6 +2457,32 @@ namespace ResourceTypes.Actors
         }
     }
 
+    public class ActorStaticWeapon : IActorExtraDataInterface
+    {
+        public int Unk01 { get; set; }
+
+        public ActorStaticWeapon() { }
+        public ActorStaticWeapon(MemoryStream stream, bool isBigEndian)
+        {
+            ReadFromFile(stream, isBigEndian);
+        }
+
+        public void ReadFromFile(MemoryStream stream, bool isBigEndian)
+        {
+            Unk01 = stream.ReadInt32(isBigEndian);
+        }
+
+        public void WriteToFile(MemoryStream writer, bool isBigEndian)
+        {
+            writer.Write(Unk01, isBigEndian);
+        }
+
+        public int GetSize()
+        {
+            return 4;
+        }
+    }
+
     public class ActorCrashObject : ActorPhysicsBase
     {
         public class ActorCrashObjectEntry

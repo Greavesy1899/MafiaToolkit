@@ -11,6 +11,7 @@ namespace Forms.EditorControls
             InitializeComponent();
             Localise();
 
+            TypeCombo.Items.Add(ActorTypes.Human);
             TypeCombo.Items.Add(ActorTypes.C_CrashObject);
             TypeCombo.Items.Add(ActorTypes.C_TrafficCar);
             TypeCombo.Items.Add(ActorTypes.C_TrafficHuman);
@@ -27,6 +28,7 @@ namespace Forms.EditorControls
             TypeCombo.Items.Add(ActorTypes.FrameWrapper);
             TypeCombo.Items.Add(ActorTypes.C_ActorDetector);
             TypeCombo.Items.Add(ActorTypes.Blocker);
+            TypeCombo.Items.Add(ActorTypes.C_StaticWeapon);
             TypeCombo.Items.Add(ActorTypes.LightEntity);
             TypeCombo.Items.Add(ActorTypes.C_Cutscene);
             TypeCombo.Items.Add(ActorTypes.C_ScriptEntity);
