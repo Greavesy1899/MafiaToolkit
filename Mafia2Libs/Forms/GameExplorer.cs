@@ -397,11 +397,14 @@ namespace Mafia2Tool
 
         private void ContextSDSUnpack_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in fileListView.SelectedItems)
+            if (fileListView.SelectedItems.Count > 0)
             {
-                if(item.Tag is FileSDS)
+                object Tag = fileListView.SelectedItems[0].Tag;
+                if (Tag is FileSDS)
                 {
-                    (item.Tag as FileSDS).Open();
+                    FileSDS SDSFile = (Tag as FileSDS);
+                    SDSFile.Open();
+                    OpenSDSDirectory(SDSFile.GetUnderlyingFileInfo());
                 }
             }
         }
@@ -489,6 +492,14 @@ namespace Mafia2Tool
 
         private void ContextSDSUnpackAll_Click(object sender, EventArgs e)
         {
+            DialogResult Result = MessageBox.Show("Are you sure you want to unpack all SDS?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            // Return if user said no
+            if(Result == DialogResult.No)
+            {
+                return;
+            }
+
             foreach (ListViewItem item in fileListView.Items)
             {
                 if(item.Tag is FileSDS)

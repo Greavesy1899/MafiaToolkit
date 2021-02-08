@@ -1,4 +1,5 @@
 ﻿using FileTypes.XBin.StreamMap.Commands;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -11,17 +12,22 @@ namespace ResourceTypes.M3.XBin
         public class StreamMapLine
         {
             public EStreamMapLineType LineType { get; set; }
+            [PropertyForceAsAttribute]
             public string GameID { get; set; }
+            [PropertyForceAsAttribute]
             public string MissionID { get; set; }
+            [PropertyForceAsAttribute]
             public string PartID { get; set; }
-            [PropertyIgnoreByReflector]
-            public int TableCommandsOffset_DEBUG { get; set; }
-            [PropertyIgnoreByReflector]
+            [Browsable(false), PropertyIgnoreByReflector]
             public int TableCommandsOffset { get; set; }
+            [Browsable(false), PropertyIgnoreByReflector]
+            public int TableCommandsOffset_DEBUG { get; set; }
+            [Browsable(false), PropertyIgnoreByReflector]
             public int NumTableCommands0 { get; set; }
-            [PropertyIgnoreByReflector]
+            [Browsable(false), PropertyIgnoreByReflector]
             public int NumTableCommands1 { get; set; }
             public ICommand[] TableCommands { get; set; }
+            [PropertyForceAsAttribute]
             public int IsAsync { get; set; }
 
             public override string ToString()

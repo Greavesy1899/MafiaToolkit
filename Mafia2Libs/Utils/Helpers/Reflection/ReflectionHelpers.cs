@@ -64,9 +64,21 @@ namespace Utils.Helpers.Reflection
 
         private static object InternalConvertProperty(XElement Node, Type ElementType)
         {
+            // If interface, then we may have to do extra steps.
+            if(ElementType.IsInterface)
+            {
+                // We get the namespace the interface lives in, then the name on the XElement.
+                // Then risk finding the type by adding the two together.
+                string NameSpace = ElementType.Namespace;
+                string Name = Node.Name.LocalName;
+                Type Test = Type.GetType(NameSpace + "." + Name, true);
+                ElementType = Test;
+            }
+
+            // Construct the new object
             object TypedObject = Activator.CreateInstance(ElementType);
 
-            if(ElementType.GetProperties().Length == 0)
+            if (ElementType.GetProperties().Length == 0)
             {
                 TypedObject = Convert.ChangeType(Node.Value, ElementType);
                 return TypedObject;
