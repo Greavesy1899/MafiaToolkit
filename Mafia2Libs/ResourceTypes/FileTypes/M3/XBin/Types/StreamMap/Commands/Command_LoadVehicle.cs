@@ -16,6 +16,7 @@ namespace FileTypes.XBin.StreamMap.Commands
         {
             Position = new XBinVector3();
             Direction = new XBinVector3();
+            EntityName = "";
         }
 
         public void ReadFromFile(BinaryReader reader)
@@ -50,6 +51,13 @@ namespace FileTypes.XBin.StreamMap.Commands
         public string QuotaID { get; set; }
         public uint GUID { get; set; }
         public uint SlotID { get; set; }
+
+        public Command_LoadVehicle()
+        {
+            Instances = new VehicleInstance[0];
+            SDSName = "";
+            QuotaID = "";
+        }
 
         public void ReadFromFile(BinaryReader reader)
         {

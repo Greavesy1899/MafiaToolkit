@@ -10,6 +10,11 @@ namespace FileTypes.XBin.StreamMap.Commands
 
         public string SDSName { get; set; }
 
+        public Command_UnlockSDS()
+        {
+            SDSName = "";
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             SDSName = XBinCoreUtils.ReadStringPtrWithOffset(reader);

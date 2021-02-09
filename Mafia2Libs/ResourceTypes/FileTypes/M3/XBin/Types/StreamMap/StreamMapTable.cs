@@ -30,6 +30,14 @@ namespace ResourceTypes.M3.XBin
             [PropertyForceAsAttribute]
             public int IsAsync { get; set; }
 
+            public StreamMapLine()
+            {
+                GameID = "";
+                MissionID = "";
+                PartID = "";
+                TableCommands = new ICommand[0];
+            }
+
             public override string ToString()
             {
                 return string.Format("{0} {1} {2}", GameID, MissionID, PartID);

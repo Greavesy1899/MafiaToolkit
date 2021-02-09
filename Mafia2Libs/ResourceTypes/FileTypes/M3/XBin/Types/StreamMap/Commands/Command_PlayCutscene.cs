@@ -10,6 +10,11 @@ namespace FileTypes.XBin.StreamMap.Commands
 
         public string CutsceneName { get; set; }
 
+        public Command_PlayCutscene()
+        {
+            CutsceneName = "";
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             CutsceneName = XBinCoreUtils.ReadStringPtrWithOffset(reader);

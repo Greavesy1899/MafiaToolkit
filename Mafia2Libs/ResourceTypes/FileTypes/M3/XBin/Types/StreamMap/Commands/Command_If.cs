@@ -12,6 +12,12 @@ namespace FileTypes.XBin.StreamMap.Commands
         public ECommandIfOperator Operator { get; set; }
         public string Value { get; set; }
 
+        public Command_If()
+        {
+            Variable = "";
+            Value = "";
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             Variable = XBinCoreUtils.ReadStringPtrWithOffset(reader);
