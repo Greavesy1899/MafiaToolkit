@@ -6,7 +6,6 @@ namespace ResourceTypes.Materials
     public class MaterialParameter
     {
         string id;
-        int paramCount;
         float[] paramaters;
 
         public string ID {
@@ -15,16 +14,19 @@ namespace ResourceTypes.Materials
         }
         public float[] Paramaters {
             get { return paramaters; }
-            set {
-                paramaters = value;
-                paramCount = value.Length;
-            }
+            set { paramaters = value; }
         }
 
         public MaterialParameter()
         {
             id = "";
             paramaters = new float[0];
+        }
+
+        public MaterialParameter(MaterialParameter OtherParameter)
+        {
+            ID = OtherParameter.ID;
+            Paramaters = OtherParameter.paramaters;
         }
 
         public MaterialParameter(BinaryReader reader)
@@ -35,7 +37,7 @@ namespace ResourceTypes.Materials
         public void ReadFromFile(BinaryReader reader)
         {
             id = new string(reader.ReadChars(4));
-            paramCount = reader.ReadInt32() / 4;
+            int paramCount = reader.ReadInt32() / 4;
             paramaters = new float[paramCount];
             for (int i = 0; i != paramCount; i++)
             {
@@ -46,8 +48,8 @@ namespace ResourceTypes.Materials
         public void WriteToFile(BinaryWriter writer)
         {
             writer.Write(id.ToCharArray());
-            writer.Write(paramCount * 4);
-            for (int i = 0; i != paramCount; i++)
+            writer.Write(paramaters.Length * 4);
+            for (int i = 0; i != paramaters.Length; i++)
             {
                 writer.Write(paramaters[i]);
             }
@@ -55,7 +57,7 @@ namespace ResourceTypes.Materials
 
         public override string ToString()
         {
-            return string.Format("{0}, {1}", id, paramCount);
+            return string.Format("{0}, {1}", id, paramaters.Length);
         }
     }
 }
