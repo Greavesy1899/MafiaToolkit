@@ -34,14 +34,15 @@ namespace Gibbed.Mafia2.ResourceFormats
             { 0x1256CA1DB, ".trb.compiled" },
             { 0xA27F694D, ".iprofai" },
             { 0x4A336D64, ".iproftime" },
-            { 0x73CB32C9, ".fmv.compiled.effects" },
             { 0x222FDF72B2F3E413, ".lodbaked.[lod0].compiled" },
             { 0x222FDF73B2F3E413, ".lodbaked.[lod1].compiled" },
             { 0x222FDF70B2F3E413, ".lodbaked.[lod2].compiled" },
             { 0xF3BB3621, ".ccdb" },
             { 0x28930A39, ".egr" },
             { 0x1D4AD8D9E, ".cegr.compiled" },
-            { 0x428F61D4, ".fmv.compiled" } // NOTE: Type is a guess, used in cine_ in M1: DE.
+            { 0x428F61D4, ".fmv.compiled" }, // NOTE: Type is a guess, used in cine_ in M1: DE.
+            { 0x118E35C27, ".animprojectreflected.compiled" },
+            { 0x73CB32C9, ".effects" }
             //{ 0x45F07C8B, ".scene.gxml"  },
         };
 
@@ -75,10 +76,11 @@ namespace Gibbed.Mafia2.ResourceFormats
             { ".lodbaked.[lod1].compiled", 0x222FDF73B2F3E413 },
             { ".lodbaked.[lod2].compiled", 0x222FDF70B2F3E413 },
             { ".ccdb", 0xF3BB3621 },
-            { ".fmv.compiled.effects",  0x73CB32C9 },
             { ".egr", 0x28930A39 },
             { ".cegr.compiled", 0x1D4AD8D9E },
-            { ".fmv.compiled", 0x428F61D4 } // NOTE: Type is a guess, used in cine_ in M1: DE.
+            { ".fmv.compiled", 0x428F61D4 }, // NOTE: Type is a guess, used in cine_ in M1: DE.
+            { ".animprojectreflected.compiled",  0x118E35C27},
+            { ".effects", 0x73CB32C9 }
             //{ ".scene.gxml", 0x45F07C8B  }
         };
 
