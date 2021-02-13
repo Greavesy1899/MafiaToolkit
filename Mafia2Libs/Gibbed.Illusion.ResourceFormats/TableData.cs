@@ -140,29 +140,47 @@ namespace Gibbed.Mafia2.ResourceFormats
                     object value = Rows[i].Values[x];
                     bool bIsCellValid = true;
 
+                    string Message = "";
+
                     switch (column.Type)
                     {
                         case ColumnType.Boolean:
                             ConvertToType<bool>(value, ref bIsCellValid);
+                            Message = string.Format("Failed to convert {0} to 'Boolean'", value.GetType().Name);
                             break;
                         case ColumnType.Float32:
                             ConvertToType<float>(value, ref bIsCellValid);
+                            Message = string.Format("Failed to convert {0} to 'Float/Single'", value.GetType().Name);
                             break;
                         case ColumnType.Signed32:
                             ConvertToType<int>(value, ref bIsCellValid);
+                            Message = string.Format("Failed to convert {0} to 'Int32'", value.GetType().Name);
                             break;
                         case ColumnType.Unsigned32:
                         case ColumnType.Flags32:
                             ConvertToType<uint>(value, ref bIsCellValid);
+                            Message = string.Format("Failed to convert {0} to 'UInt32'", value.GetType().Name);
                             break;
                         case ColumnType.Hash64:
                             ConvertToType<ulong>(value, ref bIsCellValid);
+                            Message = string.Format("Failed to convert {0} to 'ULong64'", value.GetType().Name);
                             break;
                         case ColumnType.String8:
+                            bIsCellValid = DoesFitInString(value.ToString(), 8);
+                            Message = string.Format("'{0}' exceeds string limit of: 8 characters", value.ToString());
+                            break;
                         case ColumnType.String16:
+                            bIsCellValid = DoesFitInString(value.ToString(), 16);
+                            Message = string.Format("'{0}' exceeds string limit of: 16 characters", value.ToString());
+                            break;
                         case ColumnType.String32:
+                        case ColumnType.Hash64AndString32:
+                            bIsCellValid = DoesFitInString(value.ToString(), 32);
+                            Message = string.Format("'{0}' exceeds string limit of: 32 characters", value.ToString());
+                            break;
                         case ColumnType.String64:
-                            // TODO: Should we check this?
+                            bIsCellValid = DoesFitInString(value.ToString(), 64);
+                            Message = string.Format("'{0}' exceeds string limit of: 64 characters", value.ToString());
                             break;
                         case ColumnType.Color:
                             string[] colors = (Rows[i].Values[x] as string).Split(new char[1] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -174,16 +192,13 @@ namespace Gibbed.Mafia2.ResourceFormats
                                 }
                             }
                             break;
-                        case ColumnType.Hash64AndString32:
-                            // TODO: Should we check this?
-                            break;
                         default:
                             throw new FormatException();
                     }
 
                     if(!bIsCellValid)
                     {
-                        string ErrorMessage = string.Format("Error validating cell X: {0} Y: {1}", i, x);
+                        string ErrorMessage = string.Format("Error validating cell X: {0} Y: {1} \nError Message: {2}", i, x, Message);
                         MessageBox.Show(ErrorMessage, "Toolkit", MessageBoxButton.OK);
                     }
 
@@ -224,6 +239,16 @@ namespace Gibbed.Mafia2.ResourceFormats
             }
 
             return Output;
+        }
+
+        private bool DoesFitInString(string Text, int Size)
+        {
+            if(Text.Length <= Size)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public void Serialize(BinaryWriter writer)

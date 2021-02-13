@@ -88,6 +88,13 @@ namespace Mafia2Tool
             OptionsItem.Text = Language.GetString("$OPTIONS");
             UnpackAllSDSButton.Text = Language.GetString("$UNPACK_ALL_SDS");
             Button_SelectGame.Text = Language.GetString("$SELECT_GAME");
+
+            Button_UnpackSDS.Text = Language.GetString("$UNPACK");
+            Button_UnpackSDS.ToolTipText = Language.GetString("$UNPACK");
+            Button_PackSDS.Text = Language.GetString("$PACK");
+            Button_PackSDS.ToolTipText = Language.GetString("$PACK");
+            Button_Settings.Text = Language.GetString("$OPTIONS");
+            Button_Settings.ToolTipText = Language.GetString("$OPTIONS");
         }
 
         public void InitExplorerSettings()
@@ -161,6 +168,10 @@ namespace Mafia2Tool
 
         private void OpenDirectory(DirectoryInfo directory, bool searchMode = false, string filename = null)
         {
+            // Make sure toolstrip buttons are reset
+            Button_UnpackSDS.Enabled = false;
+            Button_PackSDS.Enabled = false;
+
             infoText.Text = "Loading Directory..";
             fileListView.Items.Clear();
             ListViewItem.ListViewSubItem[] subItems;
@@ -612,11 +623,26 @@ namespace Mafia2Tool
                 MessageBoxIcon.Information);
         }
 
-        private void OnKeyPressed(object sender, KeyPressEventArgs e)
+        private void ListView_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyChar == 0x8)
+            if (e.KeyCode == Keys.Back)
             {
                 OnUpButtonClicked(null, null);
+            }
+            else if(e.Control && e.KeyCode == Keys.P)
+            {
+                // TODO: Make this not use the function which is wired up to a delegate
+                ContextSDSPack_Click(sender, null);
+            }
+            else if (e.Control && e.KeyCode == Keys.U)
+            {
+                // TODO: Make this not use the function which is wired up to a delegate
+                ContextSDSUnpack_Click(sender, null);
+            }
+            else if(e.Control && e.KeyCode == Keys.Delete)
+            {
+                // TODO: Make this not use the function which is wired up to a delegate
+                ContextDeleteSelectedFiles_OnClick(sender, null);
             }
         }
 
@@ -768,6 +794,22 @@ namespace Mafia2Tool
                 if (ActualObject is FileSDS)
                 {
                     (ActualObject as FileSDS).Save();
+                }
+            }
+        }
+
+        private void ListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            Button_UnpackSDS.Enabled = false;
+            Button_PackSDS.Enabled = false;
+
+            if (e.Item != null)
+            {
+                object Tag = e.Item.Tag;
+                if(Tag is FileSDS)
+                {
+                    Button_UnpackSDS.Enabled = true;
+                    Button_PackSDS.Enabled = true;
                 }
             }
         }
