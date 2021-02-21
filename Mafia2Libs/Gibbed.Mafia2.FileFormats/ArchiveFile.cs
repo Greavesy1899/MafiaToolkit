@@ -494,7 +494,12 @@ namespace Gibbed.Mafia2.FileFormats
                     {
                         if (!res.Value)
                         {
-                            name = sortedResources[type][res.Key];
+                            string StoredName = sortedResources[type][res.Key];
+                            if(!StoredName.Equals("not available"))
+                            {
+                                name = StoredName;
+                            }
+
                             resPatchAvailable[type][z] = new KeyValuePair<int, bool>(res.Key, true);
                             break;
                         }
