@@ -564,6 +564,7 @@
     <Compile Include="ResourceTypes\FileTypes\PREFAB\Prefab.cs" />
     <Compile Include="ResourceTypes\FileTypes\ShopMenu2.cs" />
     <Compile Include="ResourceTypes\FileTypes\SoundSectors\SoundSector.cs" />
+    <Compile Include="ResourceTypes\FileTypes\SoundTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\StreamMap.cs" />
     <Compile Include="ResourceTypes\FileTypes\Translokator\Translokator.cs" />
     <Compile Include="ResourceTypes\FileTypes\BufferTypes\VertexBufferPool.cs" />
