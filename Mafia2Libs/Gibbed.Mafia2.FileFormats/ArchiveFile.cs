@@ -691,6 +691,18 @@ namespace Gibbed.Mafia2.FileFormats
                     {
                         Extension = ".hkx";
                     }
+                    else if (Typename == "NAV_PATH_DATA")
+                    {
+                        Extension = ".hkt";
+                    }
+                    else if(Typename == "EnlightenResource")
+                    {
+                        Extension = ".enl";
+                    }
+                    else if(Typename == "RoadMap")
+                    {
+                        Extension = ".gsd";
+                    }
 
                     string FileName = string.Format("File_{0}{1}", i, Extension);
                     _ResourceNames.Add(FileName);

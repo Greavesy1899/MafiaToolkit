@@ -105,7 +105,6 @@ namespace Gibbed.Mafia2.FileFormats
                     case "NAV_AIWORLD_DATA":
                     case "RoadMap":
                     case "EnlightenResource":
-                        itemNames[i] = string.Format("File_{0}.enl", i);
                         ConstructPath(finalPath, itemNames[i]);
                         ReadBasicEntry(resourceXML, itemNames[i]);
                         saveName = itemNames[i];
