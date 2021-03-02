@@ -40,7 +40,6 @@ namespace Mafia2Tool
         public static NAVData[] OBJData;
         public static HPDData HPDData;
         public static TranslokatorLoader Translokator;
-        public static FrameProps FrameProperties;
         public static PrefabLoader Prefabs;
         public static string ScenePath = "";
 
