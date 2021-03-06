@@ -314,6 +314,16 @@ namespace Mafia2Tool
 
         private bool OpenFile(FileBase asset)
         {
+            // cannot open files if this format is selected
+            if ((asset as FileSDS) == null)
+            {
+                if (ToolkitSettings.UseSDSToolFormat)
+                {
+                    MessageBox.Show("These files are not supported with SDSTools format. Please navigate to the settings and de-select 'Use SDS Tool Format'", "Toolkit");
+                    return false;
+                }
+            }
+
             if(!asset.Open())
             {
                 return false;
