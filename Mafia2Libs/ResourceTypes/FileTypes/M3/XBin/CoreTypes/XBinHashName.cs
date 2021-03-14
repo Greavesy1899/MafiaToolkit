@@ -111,6 +111,13 @@ namespace ResourceTypes.M3.XBin
             _name = "";
         }
 
+        public static XBinHashName ConstructAndReadFromFile(BinaryReader reader)
+        {
+            XBinHashName NewObject = new XBinHashName();
+            NewObject.ReadFromFile(reader);
+            return NewObject;
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             Hash = reader.ReadUInt64();

@@ -487,6 +487,10 @@
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\CarSkidmarksTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\CarTuningItemTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\CarWindowTintTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\HealthSystem\HealthSystemItem.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\HealthSystem\HealthSystemTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\HumanDamageZonesTable.cs" />
+    <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\HumanWeaponImpactTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\TableContainers\TableContainer.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\Types\VehiclesTable.cs" />
     <Compile Include="ResourceTypes\FileTypes\M3\XBin\CoreTypes\XBinVector2.cs" />

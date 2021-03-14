@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using ResourceTypes.M3.XBin.TableContainers.HealthSystem;
 
 namespace ResourceTypes.M3.XBin.TableContainers
 {
@@ -23,6 +24,9 @@ namespace ResourceTypes.M3.XBin.TableContainers
         public uint DamageMultiplierTablePtr { get; set; } // Not implemented in game.
         public uint FamilyAlbumExtrasTablePtr { get; set; } // Not implemented in game.
         public uint FamilyAlbumTablePtr { get; set; } // Not implemented in game.
+        public HealthSystemTable HealthSystem { get; set; }
+        public HumanWeaponImpactTable HumanWeaponImpacts { get; set; }
+        public HumanDamageZonesTable HumanDamageZones { get; set; }
 
         public void ReadFromFile(BinaryReader reader)
         {
@@ -62,6 +66,7 @@ namespace ResourceTypes.M3.XBin.TableContainers
             CarTuningItems = new CarTuningItemTable();
             CarTuningItems.ReadFromFile(reader);
 
+            reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
             CarTuningModificatorsTableMPPtr = reader.ReadUInt32();
             CombinableCharactersTableMPPtr = reader.ReadUInt32();
             CrashObjectTablePtr = reader.ReadUInt32();
@@ -69,10 +74,26 @@ namespace ResourceTypes.M3.XBin.TableContainers
             DamageMultiplierTablePtr = reader.ReadUInt32();
             FamilyAlbumExtrasTablePtr = reader.ReadUInt32();
             FamilyAlbumTablePtr = reader.ReadUInt32();
+            currentPosition = reader.BaseStream.Position;
 
             reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
             currentPosition = reader.BaseStream.Position + 4;
             XBinCoreUtils.GotoPtrWithOffset(reader);
+            HealthSystem = new HealthSystemTable();
+            HealthSystem.ReadFromFile(reader);
+
+            reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+            currentPosition = reader.BaseStream.Position + 4;
+            XBinCoreUtils.GotoPtrWithOffset(reader);
+            HumanWeaponImpacts = new HumanWeaponImpactTable();
+            HumanWeaponImpacts.ReadFromFile(reader);
+
+            reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+            currentPosition = reader.BaseStream.Position + 4;
+            XBinCoreUtils.GotoPtrWithOffset(reader);
+            HumanDamageZones = new HumanDamageZonesTable();
+            HumanDamageZones.ReadFromFile(reader);
+            HumanDamageZones.WriteToXML("HumanDamageZones.xml");
         }
 
         public void WriteToFile(XBinWriter writer)
@@ -99,6 +120,7 @@ namespace ResourceTypes.M3.XBin.TableContainers
             Root.Nodes.Add(CarMtrStuff.GetAsTreeNodes());
             Root.Nodes.Add(CarSkidmarks.GetAsTreeNodes());
             Root.Nodes.Add(CarTuningItems.GetAsTreeNodes());
+            Root.Nodes.Add(HealthSystem.GetAsTreeNodes());
 
             return Root;
         }
@@ -106,11 +128,6 @@ namespace ResourceTypes.M3.XBin.TableContainers
         public void SetFromTreeNodes(TreeNode Root)
         {
             throw new NotImplementedException();
-        }
-
-        private void GotoTablePtr(BinaryReader reader)
-        {
-
         }
     }
 }
