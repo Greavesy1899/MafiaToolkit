@@ -423,6 +423,7 @@
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_6.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyType_Temp.cs" />
     <Compile Include="ResourceTypes\FileTypes\Cutscene\KeyParamTypes\KeyWeatherParam.cs" />
+    <Compile Include="ResourceTypes\FileTypes\EntityActivator.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameNameTable\FrameNameTableEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\FrameFactory.cs" />
     <Compile Include="ResourceTypes\FileTypes\FrameResource\FramePack.cs" />
