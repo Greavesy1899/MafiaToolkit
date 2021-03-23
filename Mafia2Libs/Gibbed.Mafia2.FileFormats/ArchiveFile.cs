@@ -169,13 +169,11 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceHeader.TypeId = (uint)resourceEntry.TypeId;
                 resourceHeader.Size = stride + (uint)(resourceEntry.Data == null ? 0 : resourceEntry.Data.Length);
                 resourceHeader.Version = resourceEntry.Version;
+                resourceHeader.FileHash = resourceEntry.FileHash;
                 resourceHeader.SlotRamRequired = resourceEntry.SlotRamRequired;
                 resourceHeader.SlotVramRequired = resourceEntry.SlotVramRequired;
                 resourceHeader.OtherRamRequired = resourceEntry.OtherRamRequired;
                 resourceHeader.OtherVramRequired = resourceEntry.OtherVramRequired;
-                resourceHeader.Unk01 = 0;
-                resourceHeader.Unk02 = 0;
-                resourceHeader.Unk03 = 0;
 
                 using (var data = new MemoryStream())
                 {
@@ -212,6 +210,7 @@ namespace Gibbed.Mafia2.FileFormats
                 output.WriteFromMemoryStreamSafe(data, endian);
             }
         }
+
         public void Deserialize(Stream input)
         {
             // Read Texture Names before we start.
@@ -311,6 +310,7 @@ namespace Gibbed.Mafia2.FileFormats
                     TypeId = (int)resourceHeader.TypeId,
                     Version = resourceHeader.Version,
                     Data = blockStream.ReadBytes((int)resourceHeader.Size - (size + 4)),
+                    FileHash = resourceHeader.FileHash,
                     SlotRamRequired = resourceHeader.SlotRamRequired,
                     SlotVramRequired = resourceHeader.SlotVramRequired,
                     OtherRamRequired = resourceHeader.OtherRamRequired,

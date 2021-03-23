@@ -20,6 +20,7 @@
  *    distribution.
  */
 
+using System.Diagnostics;
 using System.IO;
 using Gibbed.IO;
 
@@ -30,36 +31,32 @@ namespace Gibbed.Mafia2.FileFormats.Archive
         public uint TypeId;
         public uint Size; // includes this header
         public ushort Version;
+        public ulong FileHash;
         public uint SlotRamRequired;
         public uint SlotVramRequired;
         public uint OtherRamRequired;
         public uint OtherVramRequired;
-        public ushort Unk01;
-        public uint Unk02;
-        public ushort Unk03;
 
         public static ResourceHeader Read(Stream input, Endian endian, uint version)
         {
             ResourceHeader instance;
+            instance.FileHash = 0;
+
             instance.TypeId = input.ReadValueU32(endian);
             instance.Size = input.ReadValueU32(endian);
             instance.Version = input.ReadValueU16(endian);
+
+            // File guid, only on version 20
+            if(version == 20)
+            {
+                instance.FileHash = input.ReadValueU64(endian);
+            }
+
             instance.SlotRamRequired = input.ReadValueU32(endian);
             instance.SlotVramRequired = input.ReadValueU32(endian);
             instance.OtherRamRequired = input.ReadValueU32(endian);
             instance.OtherVramRequired = input.ReadValueU32(endian);
 
-            if (version == 20)
-            {
-                instance.Unk01 = input.ReadValueU16(endian);
-                instance.Unk02 = input.ReadValueU32(endian);
-                instance.Unk03 = input.ReadValueU16(endian);
-            } else
-            {
-                instance.Unk01 = 0;
-                instance.Unk02 = 0;
-                instance.Unk03 = 0;
-            }
             return instance;
         }
 
@@ -68,17 +65,17 @@ namespace Gibbed.Mafia2.FileFormats.Archive
             output.WriteValueU32(this.TypeId, endian);
             output.WriteValueU32(this.Size, endian);
             output.WriteValueU16(this.Version, endian);
+
+            // Write exclusive version 20 data
+            if(version == 20)
+            {
+                output.WriteValueU64(this.FileHash);
+            }
+
             output.WriteValueU32(this.SlotRamRequired, endian);
             output.WriteValueU32(this.SlotVramRequired, endian);
             output.WriteValueU32(this.OtherRamRequired, endian);
             output.WriteValueU32(this.OtherVramRequired, endian);
-
-            if (version == 20)
-            {
-                output.WriteValueU16(this.Unk01, endian);
-                output.WriteValueU32(this.Unk02, endian);
-                output.WriteValueU16(this.Unk03, endian);
-            }
         }
     }
 }
