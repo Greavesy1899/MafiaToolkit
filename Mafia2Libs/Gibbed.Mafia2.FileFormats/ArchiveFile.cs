@@ -599,14 +599,12 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.Dispose();
         }
 
-        /// <summary>
-        /// Save resource data from given sds data.
-        /// </summary>
-        /// <param name="xml"></param>
         public void SaveResources(FileInfo file)
         {
             XPathDocument doc = null;
 
+            // pull XML from resource info XML
+            // If it doesn't exist, attempt to check for CrySDS lock
             if (string.IsNullOrEmpty(ResourceInfoXml) == false)
             {
                 using (var reader = new StringReader(ResourceInfoXml))
@@ -614,99 +612,43 @@ namespace Gibbed.Mafia2.FileFormats
                     doc = new XPathDocument(reader);
                 }
             }
-            else
+            else if(Version == 19)
             {
-                int type = -1;
-                for(int i = 0; i != ResourceTypes.Count; i++)
-                {
-                    if (ResourceTypes[i].Name == "")
-                    {
-                        type = (int)ResourceTypes[i].Id;
-                    }
-                }
-
-                if (type != -1)
-                {
-                    for (int i = 0; i < ResourceEntries.Count; i++)
-                    {
-                        if (ResourceEntries[i].TypeId == type)
-                        {
-                            // Fix for CrySDS archives
-                            using (MemoryStream stream = new MemoryStream(ResourceEntries[i].Data))
-                            {
-                                ushort authorLen = stream.ReadValueU16();
-                                stream.ReadBytes(authorLen);
-                                int fileSize = stream.ReadValueS32();
-                                int password = stream.ReadValueS32();
-
-                                using (var reader = new StringReader(Encoding.UTF8.GetString(stream.ReadBytes(fileSize))))
-                                {
-                                    doc = new XPathDocument(reader);
-                                }
-                            }
-                            ResourceEntries.RemoveAt(i);
-                            ResourceTypes.RemoveAt(type);
-                        }
-                    }
-                }
+                doc = CheckForCrySDS();
             }
 
+            // stub out file names
+            for(int i = 0; i < ResourceEntries.Count; i++)
+            {
+                ResourceEntry Entry = ResourceEntries[i];
+
+                // Get extension, format filename properly.
+                string Extension = DetermineFileExtension(_ResourceTypes[Entry.TypeId].Name);
+                string FileName = string.Format("File_{0}{1}", i, Extension);
+
+                _ResourceNames.Add(FileName);
+            }
+
+            // Pull names from XML
             if (doc != null)
             {
                 var nav = doc.CreateNavigator();
                 var nodes = nav.Select("/xml/ResourceInfo/SourceDataDescription");
+
+                // iterate and update name
+                int index = 0;
                 while (nodes.MoveNext() == true)
                 {
-                    _ResourceNames.Add(nodes.Current.Value);
+                    string Name = nodes.Current.Value;
+                    if(!Name.Equals("not available"))
+                    {
+                        _ResourceNames[index] = Name;
+                    }
+
+                    index++;
                 }
+
                 Log.WriteLine("Found all items; count is " + nodes.Count);
-            }
-
-
-            if (_ResourceNames.Count == 0)
-            {
-                //Fix for friends for life SDS files.
-                //MessageBox.Show("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                Log.WriteLine("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", LoggingTypes.WARNING);
-                for (int i = 0; i < ResourceEntries.Count; i++)
-                {
-                    ResourceEntry Entry = ResourceEntries[i];
-                    string Typename = _ResourceTypes[Entry.TypeId].Name;
-
-                    // TODO: Find a new place for this.
-                    string Extension = ".bin";
-                    if(Typename == "Texture")
-                    {
-                        Extension = ".dds";
-                    }
-                    else if(Typename == "Generic")
-                    {
-                        Extension = ".genr";
-                    }
-                    else if (Typename == "Flash")
-                    {
-                        Extension = ".fla";
-                    }
-                    else if(Typename == "hkAnimation")
-                    {
-                        Extension = ".hkx";
-                    }
-                    else if (Typename == "NAV_PATH_DATA")
-                    {
-                        Extension = ".hkt";
-                    }
-                    else if(Typename == "EnlightenResource")
-                    {
-                        Extension = ".enl";
-                    }
-                    else if(Typename == "RoadMap")
-                    {
-                        Extension = ".gsd";
-                    }
-
-                    string FileName = string.Format("File_{0}{1}", i, Extension);
-                    _ResourceNames.Add(FileName);
-                }
             }
 
             if(Version == 19)
