@@ -3,6 +3,7 @@ using Utils.Logging;
 using Utils.Discord;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace Utils.Settings
 {
@@ -50,7 +51,7 @@ namespace Utils.Settings
         public static bool CheckForUpdates;
         public static bool SkipGameSelector;
         public static int DefaultGame;
-        public static readonly float Version = 2.13f;
+        public static readonly float Version = 2.14f;
 
         public static void ReadINI()
         {
