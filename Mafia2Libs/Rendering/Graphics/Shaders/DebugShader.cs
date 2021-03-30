@@ -5,23 +5,7 @@ namespace Rendering.Graphics
 {
     public class DebugShader : BaseShader
     {
-        public DebugShader(Device device, InputElement[] elements, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
-        {
-            if (!Init(device, elements, vsPath, psPath, vsEntryPoint, psEntryPoint))
-            {
-                throw new System.Exception("Failed to load Shader!");
-            }
-        }
-
-        public override bool Init(Device device, InputElement[] elements, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
-        {
-            if (!base.Init(device, elements, vsFileName, psFileName, vsEntryPoint, psEntryPoint))
-            {
-                return false;
-            }
-
-            return true;
-        }
+        public DebugShader(Device Dx11Device, ShaderInitParams InitParams) : base(Dx11Device, InitParams) { }
 
         public override void InitCBuffersFrame(DeviceContext context, Camera camera, WorldSettings settings)
         {
@@ -31,8 +15,8 @@ namespace Rendering.Graphics
         public override void Render(DeviceContext deviceContext, SharpDX.Direct3D.PrimitiveTopology type, int size, uint offset)
         {
             deviceContext.InputAssembler.InputLayout = Layout;
-            deviceContext.VertexShader.Set(VertexShader);
-            deviceContext.PixelShader.Set(PixelShader);
+            deviceContext.VertexShader.Set(OurVertexShader);
+            deviceContext.PixelShader.Set(OurPixelShader);
 
             switch (type)
             {
@@ -46,6 +30,8 @@ namespace Rendering.Graphics
                 default:
                     break;
             }
+
+            Profiler.NumDrawCallsThisFrame++;
         }
 
         public override void SetShaderParameters(Device device, DeviceContext context, MaterialParameters material)

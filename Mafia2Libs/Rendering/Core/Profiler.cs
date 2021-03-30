@@ -5,6 +5,8 @@ namespace Rendering.Core
 {
     public class Profiler
     {
+        public static uint NumDrawCallsThisFrame;
+
         public float FramesPerSecond { get; set; }
         public float FrameTime { get; set; }
         public float DeltaTime { get; set; }
@@ -15,6 +17,8 @@ namespace Rendering.Core
         private float TickPerMs;
         private long LastFrameTime;
         private float CumulativeFrameTime;
+
+        private uint LastFramesNumDrawCalls;
 
         public Profiler()
         {
@@ -32,6 +36,9 @@ namespace Rendering.Core
             CalculateFPS();
             CalculateFrameTime();
             DeltaTime = 1.0f / FramesPerSecond;
+
+            LastFramesNumDrawCalls = NumDrawCallsThisFrame;
+            NumDrawCallsThisFrame = 0;
         }
 
         private void CalculateFrameTime()
@@ -56,7 +63,7 @@ namespace Rendering.Core
 
         public override string ToString()
         {
-            return string.Format("FPS: {0} FrameTime: {1}", FramesPerSecond, FrameTime);
+            return string.Format("FPS: {0} FrameTime: {1} DrawCalls: {2}", FramesPerSecond, FrameTime, LastFramesNumDrawCalls);
         }
     }
 }

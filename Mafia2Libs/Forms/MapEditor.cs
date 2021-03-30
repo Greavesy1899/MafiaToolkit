@@ -620,13 +620,12 @@ namespace Mafia2Tool
 
             if (SceneData.FrameResource != null && SceneData.FrameNameTable != null)
             {
-                for (int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
+                foreach(FrameObjectBase FrameObject in SceneData.FrameResource.FrameObjects.Values)
                 {
-                    FrameObjectBase fObject = (SceneData.FrameResource.FrameObjects.ElementAt(i).Value as FrameObjectBase);
-                    IRenderer asset = BuildRenderObjectFromFrame(fObject);
-                    if (asset != null)
+                    IRenderer NewAsset = BuildRenderObjectFromFrame(FrameObject);
+                    if(NewAsset != null)
                     {
-                        assets.Add(fObject.RefID, asset);
+                        assets.Add(FrameObject.RefID, NewAsset);
                     }
                 }
             }
@@ -882,7 +881,8 @@ namespace Mafia2Tool
                 int result = 0;
                 if(int.TryParse(node.Name, out result))
                 {
-                    Graphics.SelectEntry(result);
+                    SelectEntryParams SelectParams = new SelectEntryParams(result);
+                    Graphics.SelectEntry(SelectParams);
                 }
                 
             }

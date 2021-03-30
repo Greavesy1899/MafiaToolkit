@@ -106,36 +106,36 @@ namespace ResourceTypes.FrameResource
             header.ReadFromFile(reader, isBigEndian);
             List<int> refs = new List<int>();
 
-            for (int i = 0; i != header.SceneFolders.Count; i++)
+            for (int i = 0; i < header.SceneFolders.Count; i++)
             {
                 frameScenes.Add(header.SceneFolders[i].RefID, header.SceneFolders[i]);
                 refs.Add(header.SceneFolders[i].RefID);
             }
-            for (int i = 0; i != header.NumGeometries; i++)
+            for (int i = 0; i < header.NumGeometries; i++)
             {
                 FrameGeometry geo = new FrameGeometry(reader, isBigEndian);
                 frameGeometries.Add(geo.RefID, geo);
                 refs.Add(geo.RefID);
             }
-            for (int i = 0; i != header.NumMaterialResources; i++)
+            for (int i = 0; i < header.NumMaterialResources; i++)
             {
                 FrameMaterial mat = new FrameMaterial(reader, isBigEndian);
                 frameMaterials.Add(mat.RefID, mat);
                 refs.Add(mat.RefID);
             }
-            for (int i = 0; i != header.NumBlendInfos; i++)
+            for (int i = 0; i < header.NumBlendInfos; i++)
             {
                 FrameBlendInfo blendInfo = new FrameBlendInfo(reader, isBigEndian);
                 frameBlendInfos.Add(blendInfo.RefID, blendInfo);
                 refs.Add(blendInfo.RefID);
             }
-            for (int i = 0; i != header.NumSkeletons; i++)
+            for (int i = 0; i < header.NumSkeletons; i++)
             {
                 FrameSkeleton skeleton = new FrameSkeleton(reader, isBigEndian);
                 frameSkeletons.Add(skeleton.RefID, skeleton);
                 refs.Add(skeleton.RefID);
             }
-            for (int i = 0; i != header.NumSkelHierachies; i++)
+            for (int i = 0; i < header.NumSkelHierachies; i++)
             {
                 FrameSkeletonHierachy skeletonHierachy = new FrameSkeletonHierachy(reader, isBigEndian);
                 frameSkeletonHierachies.Add(skeletonHierachy.RefID, skeletonHierachy);
@@ -146,12 +146,12 @@ namespace ResourceTypes.FrameResource
 
             if (header.NumObjects > 0)
             {
-                for (int i = 0; i != header.NumObjects; i++)
+                for (int i = 0; i < header.NumObjects; i++)
                 {
                     objectTypes[i] = reader.ReadInt32(isBigEndian);
                 }
 
-                for (int i = 0; i != header.NumObjects; i++)
+                for (int i = 0; i < header.NumObjects; i++)
                 {
                     FrameObjectBase newObject = FrameFactory.ReadFrameByObjectID(reader, (ObjectType)objectTypes[i], isBigEndian);
 
@@ -211,34 +211,34 @@ namespace ResourceTypes.FrameResource
             UpdateFrameData();
             header.WriteToFile(writer);
 
-            foreach (var pair in frameGeometries)
+            foreach (var Geometry in frameGeometries.Values)
             {
-                pair.Value.WriteToFile(writer);
+                Geometry.WriteToFile(writer);
             }
 
-            foreach (var pair in frameMaterials)
+            foreach (var Material in frameMaterials.Values)
             {
-                pair.Value.WriteToFile(writer);
+                Material.WriteToFile(writer);
             }
 
-            foreach (var pair in frameBlendInfos)
+            foreach (var BlendInfo in frameBlendInfos.Values)
             {
-                pair.Value.WriteToFile(writer);
+                BlendInfo.WriteToFile(writer);
             }
 
-            foreach (var pair in frameSkeletons)
+            foreach (var Skeleton in frameSkeletons.Values)
             {
-                pair.Value.WriteToFile(writer);
+                Skeleton.WriteToFile(writer);
             }
 
-            foreach (var pair in frameSkeletonHierachies)
+            foreach (var SkeletonHierarchy in frameSkeletonHierachies.Values)
             {
-                pair.Value.WriteToFile(writer);
+                SkeletonHierarchy.WriteToFile(writer);
             }
 
-            foreach (var pair in frameObjects)
+            foreach (var FObject in frameObjects.Values)
             {
-                FrameObjectBase entry = (pair.Value as FrameObjectBase);
+                FrameObjectBase entry = (FObject as FrameObjectBase);
                 if (entry.GetType() == typeof(FrameObjectJoint))
                     writer.Write((int)ObjectType.Joint);
                 else if (entry.GetType() == typeof(FrameObjectSingleMesh))
@@ -267,9 +267,9 @@ namespace ResourceTypes.FrameResource
                     writer.Write((int)ObjectType.Collision);
             }
 
-            foreach (var pair in frameObjects)
+            foreach (var FObject in frameObjects.Values)
             {
-                FrameObjectBase entry = (pair.Value as FrameObjectBase);
+                FrameObjectBase entry = (FObject as FrameObjectBase);
                 entry.WriteToFile(writer);
             }
         }
