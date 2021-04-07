@@ -250,12 +250,22 @@ namespace Mafia2Tool
                 for(int i = 0; i < NewMatListBox.CheckedItems.Count; i++)
                 {
                     var mat = (NewMatListBox.CheckedItems[i] as IMaterial);
+                    if(mat.GetMTLVersion() != mtl.Version)
+                    {
+                        mat = MaterialFactory.ConvertMaterial(mtl.Version, mat);
+                    }
+
                     mtl.Materials.Add(mat.GetMaterialHash(), mat);
                 }
 
                 for(int i = 0; i < OverwriteListBox.CheckedItems.Count; i++)
                 {
                     var mat = (OverwriteListBox.CheckedItems[i] as IMaterial);
+                    if (mat.GetMTLVersion() != mtl.Version)
+                    {
+                        mat = MaterialFactory.ConvertMaterial(mtl.Version, mat);
+                    }
+
                     mtl.Materials[mat.GetMaterialHash()] = mat;
                 }
 
