@@ -39,4 +39,12 @@ namespace ResourceTypes.M3.XBin
     {
         E_CMSF_RIM_SPARKS = 1
     }
+
+    [Flags]
+    public enum EHumanMaterialsTableItemFlags
+    {
+        E_HMTIF_BUSH = 0x2,
+        E_HMTIF_SIDEWALK = 0x8000,
+        E_HMTIF_ROAD = 0x40000
+    }
 }

@@ -27,9 +27,11 @@ namespace ResourceTypes.M3.XBin.TableContainers
         public HealthSystemTable HealthSystem { get; set; }
         public HumanWeaponImpactTable HumanWeaponImpacts { get; set; }
         public HumanDamageZonesTable HumanDamageZones { get; set; }
+        public HumanMaterialsTable HumanMaterials { get; set; }
 
         public void ReadFromFile(BinaryReader reader)
         {
+            // NB: Only suitable for M3 for now.
             AIWeaponPtr = reader.ReadUInt32();
             AnimParticlesPtr = reader.ReadUInt32();
             AttackParamsPtr = reader.ReadUInt32();
@@ -93,7 +95,16 @@ namespace ResourceTypes.M3.XBin.TableContainers
             XBinCoreUtils.GotoPtrWithOffset(reader);
             HumanDamageZones = new HumanDamageZonesTable();
             HumanDamageZones.ReadFromFile(reader);
-            HumanDamageZones.WriteToXML("HumanDamageZones.xml");
+
+            reader.BaseStream.Seek(currentPosition, SeekOrigin.Begin);
+            currentPosition = reader.BaseStream.Position + 4;
+            XBinCoreUtils.GotoPtrWithOffset(reader);
+            HumanMaterials = new HumanMaterialsTable();
+            HumanMaterials.ReadFromFile(reader);
+
+            // TODO: Everything in this function was always "temporary".
+            // Maybe check the other table container files, see if they 
+            // are good enough. Otherwise I need to create a new solution
         }
 
         public void WriteToFile(XBinWriter writer)
@@ -121,6 +132,7 @@ namespace ResourceTypes.M3.XBin.TableContainers
             Root.Nodes.Add(CarSkidmarks.GetAsTreeNodes());
             Root.Nodes.Add(CarTuningItems.GetAsTreeNodes());
             Root.Nodes.Add(HealthSystem.GetAsTreeNodes());
+            Root.Nodes.Add(HumanMaterials.GetAsTreeNodes());
 
             return Root;
         }
