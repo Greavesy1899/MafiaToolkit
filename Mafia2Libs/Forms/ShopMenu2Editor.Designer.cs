@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShopMenu2Editor));
             this.PropertyGrid_ShopMenu2 = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_ShopMenu2 = new System.Windows.Forms.TreeView();
+            this.TreeView_ShopMenu2 = new Controls.MTreeView();
             this.CollisionContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.deletePlacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();

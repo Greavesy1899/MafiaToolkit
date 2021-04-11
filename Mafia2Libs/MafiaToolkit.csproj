@@ -207,6 +207,12 @@
     <Compile Include="Controls\FrameResourceModelOptions.Designer.cs">
       <DependentUpon>FrameResourceModelOptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\MListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\RenderOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -737,9 +743,7 @@
     <Compile Include="Rendering\Graphics\Shaders\Shader_601151254.cs" />
     <Compile Include="Rendering\Graphics\TextureClass.cs" />
     <Compile Include="Rendering\Input\InputClass.cs" />
-    <Compile Include="Utils\Helpers\Extensions.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Utils\Helpers\Extensions.cs" />
     <Compile Include="Utils\Types\IniFile.cs" />
     <Compile Include="Forms\MaterialEditor.cs">
       <SubType>Form</SubType>

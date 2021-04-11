@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EntityDataStorageEditor));
             this.PropertyGrid_Item = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_Tables = new System.Windows.Forms.TreeView();
+            this.TreeView_Tables = new Controls.MTreeView();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.Button_File = new System.Windows.Forms.ToolStripDropDownButton();
             this.Button_Save = new System.Windows.Forms.ToolStripMenuItem();

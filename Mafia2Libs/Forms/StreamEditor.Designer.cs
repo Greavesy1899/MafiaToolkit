@@ -50,9 +50,9 @@ namespace Mafia2Tool
             this.tabControl = new System.Windows.Forms.TabControl();
             this.StreamLinesPage = new System.Windows.Forms.TabPage();
             this.StreamGroupPage = new System.Windows.Forms.TabPage();
-            this.groupTree = new Utils.Extensions.MTreeView();
+            this.groupTree = new Mafia2Tool.Controls.MTreeView();
             this.StreamBlocksPage = new System.Windows.Forms.TabPage();
-            this.blockView = new Utils.Extensions.MTreeView();
+            this.blockView = new Mafia2Tool.Controls.MTreeView();
             this.SearchBox = new System.Windows.Forms.TextBox();
             this.LineContextStrip.SuspendLayout();
             this.ToolStrip.SuspendLayout();
@@ -306,8 +306,8 @@ namespace Mafia2Tool
         private TabPage StreamLinesPage;
         private TabPage StreamGroupPage;
         private TabPage StreamBlocksPage;
-        private Utils.Extensions.MTreeView groupTree;
-        private Utils.Extensions.MTreeView blockView;
+        private Mafia2Tool.Controls.MTreeView groupTree;
+        private Mafia2Tool.Controls.MTreeView blockView;
         private ContextMenuStrip LineContextStrip;
         private ToolStripMenuItem AddLineButton;
         private ToolStripMenuItem DeleteLineButton;

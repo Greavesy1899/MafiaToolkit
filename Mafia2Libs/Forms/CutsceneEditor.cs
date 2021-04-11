@@ -2,6 +2,7 @@
 using ResourceTypes.Cutscene;
 using System;
 using System.Windows.Forms;
+using Utils.Helpers;
 
 namespace Mafia2Tool.Forms
 {
