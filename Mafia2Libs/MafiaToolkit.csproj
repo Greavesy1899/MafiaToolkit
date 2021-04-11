@@ -622,6 +622,7 @@
     <Compile Include="Rendering\RenderPrefabs.cs" />
     <Compile Include="Rendering\Core\SpatialCell.cs" />
     <Compile Include="Rendering\Core\SpatialGrid.cs" />
+    <Compile Include="Utils\Helpers\Win32Helpers.cs" />
     <Compile Include="Utils\Helpers\CustomAttributes.cs" />
     <Compile Include="Utils\Helpers\MatrixExtensions.cs" />
     <Compile Include="Utils\Helpers\BoundExtensions.cs" />

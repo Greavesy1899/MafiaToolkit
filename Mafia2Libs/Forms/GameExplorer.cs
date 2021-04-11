@@ -11,6 +11,7 @@ using ResourceTypes.Misc;
 using Mafia2Tool.Forms;
 using SharpDX;
 using Core.IO;
+using Utils.Helpers;
 
 namespace Mafia2Tool
 {
@@ -25,6 +26,10 @@ namespace Mafia2Tool
         public GameExplorer()
         {
             InitializeComponent();
+
+            folderView.SetDoubleBuffered();
+            fileListView.SetDoubleBuffered();
+
             LoadForm();
         }
 
