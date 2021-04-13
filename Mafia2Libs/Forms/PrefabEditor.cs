@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using Gibbed.Illusion.FileFormats.Hashing;
 using ResourceTypes.Prefab;
+using Utils.Helpers;
 using Utils.Language;
 using Utils.StringHelpers;
 
@@ -17,6 +18,7 @@ namespace Mafia2Tool
         public PrefabEditor(FileInfo file)
         {
             InitializeComponent();
+            TreeView_Prefabs.SetDoubleBuffered();
             Localise();
             prefabFile = file;
         }

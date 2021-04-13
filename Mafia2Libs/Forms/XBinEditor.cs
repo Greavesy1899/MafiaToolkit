@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.M3.XBin;
+using Utils.Helpers;
 using Utils.Language;
 
 namespace Mafia2Tool
@@ -14,6 +15,7 @@ namespace Mafia2Tool
         public XBinEditor(FileInfo file)
         {
             InitializeComponent();
+            TreeView_XBin.SetDoubleBuffered();
 
             xbin = new XBin();
             xbinfile = file;

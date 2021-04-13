@@ -2,6 +2,7 @@
 using ResourceTypes.Cutscene;
 using System;
 using System.Windows.Forms;
+using Utils.Helpers;
 
 namespace Mafia2Tool.Forms
 {
@@ -15,6 +16,7 @@ namespace Mafia2Tool.Forms
         public CutsceneEditor(FileCutscene CutsceneFile)
         {
             InitializeComponent();
+            TreeView_Cutscene.SetDoubleBuffered();
             OriginalFile = CutsceneFile;
 
             Localise();

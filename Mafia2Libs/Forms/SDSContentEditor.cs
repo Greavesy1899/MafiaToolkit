@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using Utils.Helpers;
 using Utils.Types;
 
 namespace Mafia2Tool
@@ -11,6 +12,7 @@ namespace Mafia2Tool
         public SDSContentEditor()
         {
             InitializeComponent();
+            ResourceTreeView.SetDoubleBuffered();
             Localise();
         }
 

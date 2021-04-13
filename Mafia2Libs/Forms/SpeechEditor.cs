@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.Speech;
+using Utils.Helpers;
 using Utils.Language;
 using Utils.Settings;
 
@@ -14,6 +15,7 @@ namespace Mafia2Tool
         public SpeechEditor(FileInfo file)
         {
             InitializeComponent();
+            TreeView_Speech.SetDoubleBuffered();
             Localise();
             speechFile = file;
             BuildData();
@@ -58,7 +60,7 @@ namespace Mafia2Tool
                         num = 0;
                     }
                 }
-                treeView1.Nodes.Add(node);
+                TreeView_Speech.Nodes.Add(node);
             }
         }
 

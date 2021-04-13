@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Windows.Forms;
+using Utils.Helpers;
 using Utils.Language;
 using ResourceTypes.City;
 
@@ -13,6 +14,7 @@ namespace Mafia2Tool
         public ShopMenu2Editor(FileInfo file)
         {
             InitializeComponent();
+            TreeView_ShopMenu2.SetDoubleBuffered();
             Localise();
             menuFile = file;
             BuildData();

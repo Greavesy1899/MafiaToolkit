@@ -3,6 +3,7 @@ using System.IO;
 using ResourceTypes.Translokator;
 using System.Windows.Forms;
 using Utils.Language;
+using Utils.Helpers;
 
 namespace Mafia2Tool.Forms
 {
@@ -15,6 +16,7 @@ namespace Mafia2Tool.Forms
         public TranslokatorEditor(FileInfo info)
         {
             InitializeComponent();
+            TranslokatorTree.SetDoubleBuffered();
             file = info;
             Localise();
             LoadFile();
