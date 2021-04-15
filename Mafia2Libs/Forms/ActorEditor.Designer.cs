@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ActorEditor));
             this.ActorGrid = new System.Windows.Forms.PropertyGrid();
-            this.ActorTreeView = new System.Windows.Forms.TreeView();
+            this.ActorTreeView = new Controls.MTreeView();
             this.ActorContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.openM2T = new System.Windows.Forms.OpenFileDialog();

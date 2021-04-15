@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.Actors;
+using Utils.Helpers;
 using Utils.Language;
 using Utils.Settings;
 using Forms.EditorControls;

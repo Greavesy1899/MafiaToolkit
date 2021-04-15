@@ -37,6 +37,7 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.Button_SaveNonDLC = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_SaveDLC = new System.Windows.Forms.ToolStripMenuItem();
             this.ReloadButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ExitButton = new System.Windows.Forms.ToolStripMenuItem();
             this.toolButton = new System.Windows.Forms.ToolStripDropDownButton();
@@ -46,13 +47,12 @@
             this.PopulateTranslokatorButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteAreaButton = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteDataButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.TreeView_CityShop = new Controls.MTreeView();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.TabControl = new System.Windows.Forms.TabControl();
             this.PropertyGridTab = new System.Windows.Forms.TabPage();
             this.DataGridTab = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.Button_SaveDLC = new System.Windows.Forms.ToolStripMenuItem();
             this.CollisionContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.TabControl.SuspendLayout();
@@ -115,21 +115,28 @@
             // Button_SaveNonDLC
             // 
             this.Button_SaveNonDLC.Name = "Button_SaveNonDLC";
-            this.Button_SaveNonDLC.Size = new System.Drawing.Size(180, 22);
+            this.Button_SaveNonDLC.Size = new System.Drawing.Size(134, 22);
             this.Button_SaveNonDLC.Text = "$SAVE";
             this.Button_SaveNonDLC.Click += new System.EventHandler(this.SaveButton_Click);
+            // 
+            // Button_SaveDLC
+            // 
+            this.Button_SaveDLC.Name = "Button_SaveDLC";
+            this.Button_SaveDLC.Size = new System.Drawing.Size(134, 22);
+            this.Button_SaveDLC.Text = "$SAVE_DLC";
+            this.Button_SaveDLC.Click += new System.EventHandler(this.SaveButtonDLC_Click);
             // 
             // ReloadButton
             // 
             this.ReloadButton.Name = "ReloadButton";
-            this.ReloadButton.Size = new System.Drawing.Size(180, 22);
+            this.ReloadButton.Size = new System.Drawing.Size(134, 22);
             this.ReloadButton.Text = "$RELOAD";
             this.ReloadButton.Click += new System.EventHandler(this.ReloadButton_Click);
             // 
             // ExitButton
             // 
             this.ExitButton.Name = "ExitButton";
-            this.ExitButton.Size = new System.Drawing.Size(180, 22);
+            this.ExitButton.Size = new System.Drawing.Size(134, 22);
             this.ExitButton.Text = "$EXIT";
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
             // 
@@ -146,60 +153,60 @@
             this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
             this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolButton.Name = "toolButton";
-            this.toolButton.Size = new System.Drawing.Size(61, 22);
+            this.toolButton.Size = new System.Drawing.Size(63, 22);
             this.toolButton.Text = "$TOOLS";
             // 
             // AddAreaButton
             // 
             this.AddAreaButton.Name = "AddAreaButton";
-            this.AddAreaButton.Size = new System.Drawing.Size(233, 22);
+            this.AddAreaButton.Size = new System.Drawing.Size(239, 22);
             this.AddAreaButton.Text = "$ADD_AREA";
             this.AddAreaButton.Click += new System.EventHandler(this.AddAreaButton_Click);
             // 
             // AddDataButton
             // 
             this.AddDataButton.Name = "AddDataButton";
-            this.AddDataButton.Size = new System.Drawing.Size(233, 22);
+            this.AddDataButton.Size = new System.Drawing.Size(239, 22);
             this.AddDataButton.Text = "$ADD_DATA";
             this.AddDataButton.Click += new System.EventHandler(this.AddDataButton_Click);
             // 
             // DuplicateDataButton
             // 
             this.DuplicateDataButton.Name = "DuplicateDataButton";
-            this.DuplicateDataButton.Size = new System.Drawing.Size(233, 22);
+            this.DuplicateDataButton.Size = new System.Drawing.Size(239, 22);
             this.DuplicateDataButton.Text = "$DUPLICATE_DATA";
             this.DuplicateDataButton.Click += new System.EventHandler(this.DuplicateData_OnClick);
             // 
             // PopulateTranslokatorButton
             // 
             this.PopulateTranslokatorButton.Name = "PopulateTranslokatorButton";
-            this.PopulateTranslokatorButton.Size = new System.Drawing.Size(233, 22);
+            this.PopulateTranslokatorButton.Size = new System.Drawing.Size(239, 22);
             this.PopulateTranslokatorButton.Text = "$POPULATE_TRANSLOKATORS";
             this.PopulateTranslokatorButton.Click += new System.EventHandler(this.PopulateTranslokatorButton_Click);
             // 
             // DeleteAreaButton
             // 
             this.DeleteAreaButton.Name = "DeleteAreaButton";
-            this.DeleteAreaButton.Size = new System.Drawing.Size(233, 22);
+            this.DeleteAreaButton.Size = new System.Drawing.Size(239, 22);
             this.DeleteAreaButton.Text = "$DELETE_AREA";
             this.DeleteAreaButton.Click += new System.EventHandler(this.DeleteArea_Click);
             // 
             // DeleteDataButton
             // 
             this.DeleteDataButton.Name = "DeleteDataButton";
-            this.DeleteDataButton.Size = new System.Drawing.Size(233, 22);
+            this.DeleteDataButton.Size = new System.Drawing.Size(239, 22);
             this.DeleteDataButton.Text = "$DELETE_DATA";
             this.DeleteDataButton.Click += new System.EventHandler(this.DeleteData_Click);
             // 
-            // treeView1
+            // TreeView_CityShop
             // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.TreeView_CityShop.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.treeView1.Location = new System.Drawing.Point(12, 28);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(309, 410);
-            this.treeView1.TabIndex = 16;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnAfterSelect);
+            this.TreeView_CityShop.Location = new System.Drawing.Point(12, 28);
+            this.TreeView_CityShop.Name = "TreeView_CityShop";
+            this.TreeView_CityShop.Size = new System.Drawing.Size(309, 410);
+            this.TreeView_CityShop.TabIndex = 16;
+            this.TreeView_CityShop.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnAfterSelect);
             // 
             // propertyGrid1
             // 
@@ -257,19 +264,12 @@
             this.dataGridView1.Size = new System.Drawing.Size(447, 378);
             this.dataGridView1.TabIndex = 0;
             // 
-            // Button_SaveDLC
-            // 
-            this.Button_SaveDLC.Name = "Button_SaveDLC";
-            this.Button_SaveDLC.Size = new System.Drawing.Size(180, 22);
-            this.Button_SaveDLC.Text = "$SAVE_DLC";
-            this.Button_SaveDLC.Click += new System.EventHandler(this.SaveButtonDLC_Click);
-            // 
             // CityShopEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.TreeView_CityShop);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.TabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -300,7 +300,7 @@
         private System.Windows.Forms.ToolStripMenuItem deletePlacementToolStripMenuItem;
         private System.Windows.Forms.ToolStripDropDownButton toolButton;
         private System.Windows.Forms.ToolStripMenuItem AddAreaButton;
-        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.TreeView TreeView_CityShop;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.ToolStripMenuItem PopulateTranslokatorButton;
         private System.Windows.Forms.ToolStripMenuItem AddDataButton;
