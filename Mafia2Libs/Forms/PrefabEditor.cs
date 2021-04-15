@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using Gibbed.Illusion.FileFormats.Hashing;
 using ResourceTypes.Prefab;
+using Utils.Helpers;
 using Utils.Language;
 using Utils.StringHelpers;
 

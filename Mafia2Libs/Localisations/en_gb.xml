@@ -275,5 +275,10 @@
   
   <!-- Property Descriptions Strings-->
   <String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
+
+  <!-- XBIN Editor Strings-->
+  <String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
+  <String ID="$IMPORT_XBIN">Import from .xml</String>
+  <String ID="$EXPORT_XBIN">Export to .xml</String>
   
 </Localisation>

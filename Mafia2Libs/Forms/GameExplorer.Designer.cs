@@ -34,7 +34,7 @@ namespace Mafia2Tool
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameExplorer));
             this.mainContainer = new System.Windows.Forms.SplitContainer();
-            this.folderView = new System.Windows.Forms.TreeView();
+            this.folderView = new Controls.MTreeView();
             this.imageBank = new System.Windows.Forms.ImageList(this.components);
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
@@ -42,7 +42,7 @@ namespace Mafia2Tool
             this.FolderPath = new System.Windows.Forms.ToolStripTextBox();
             this.buttonStripRefresh = new System.Windows.Forms.ToolStripButton();
             this.SearchEntryText = new System.Windows.Forms.ToolStripTextBox();
-            this.fileListView = new System.Windows.Forms.ListView();
+            this.fileListView = new Controls.MListView();
             this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));

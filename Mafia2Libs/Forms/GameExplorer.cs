@@ -11,6 +11,7 @@ using ResourceTypes.Misc;
 using Mafia2Tool.Forms;
 using SharpDX;
 using Core.IO;
+using Utils.Helpers;
 
 namespace Mafia2Tool
 {

@@ -46,7 +46,7 @@ namespace Forms.Docking
             this.Label_FilterFrame = new System.Windows.Forms.Label();
             this.TextBox_FilterFrame = new System.Windows.Forms.TextBox();
             this.Button_Search = new System.Windows.Forms.Button();
-            this.treeView1 = new Utils.Extensions.MTreeView();
+            this.treeView1 = new Mafia2Tool.Controls.MTreeView();
             this.EntryMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Split_Main)).BeginInit();
             this.Split_Main.Panel1.SuspendLayout();
@@ -233,7 +233,7 @@ namespace Forms.Docking
         public System.Windows.Forms.ToolStripMenuItem DeleteButton;
         public System.Windows.Forms.ToolStripMenuItem DuplicateButton;
         public System.Windows.Forms.ToolStripMenuItem Export3DButton;
-        private Utils.Extensions.MTreeView treeView1;
+        private Mafia2Tool.Controls.MTreeView treeView1;
         public System.Windows.Forms.ToolStripMenuItem UpdateParent1Button;
         public System.Windows.Forms.ToolStripMenuItem UpdateParent2Button;
         private System.Windows.Forms.ToolStripMenuItem FrameActions;

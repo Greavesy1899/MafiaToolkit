@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SDSContentEditor));
-            this.ResourceTreeView = new System.Windows.Forms.TreeView();
+            this.ResourceTreeView = new Controls.MTreeView();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
