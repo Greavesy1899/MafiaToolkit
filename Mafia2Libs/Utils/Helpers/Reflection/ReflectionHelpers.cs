@@ -7,6 +7,66 @@ namespace Utils.Helpers.Reflection
 {
     public class ReflectionHelpers
     {
+        public static void Copy<T>(T FromObject, T ToObject)
+        {
+            Type ObjectType = FromObject.GetType();
+            foreach(PropertyInfo Info in ObjectType.GetProperties())
+            {
+                if(Info.PropertyType.IsGenericType)
+                {
+                    // need support
+                    continue;
+                }
+
+                if(Info.PropertyType.IsArray)
+                {
+                    // Create an Array using the element type of the array, with the number of elements to set the length.
+                    Array FromObjectArray = (Array)Info.GetValue(FromObject);
+                    Array ArrayObject = Array.CreateInstance(Info.PropertyType.GetElementType(), FromObjectArray.Length);
+
+                    // Iterate through the elements, construct the object using our reflection system and push them into the array.
+                    for (int i = 0; i < ArrayObject.Length; i++)
+                    {
+                        object FromItem = FromObjectArray.GetValue(i);
+                        object ToItem = Activator.CreateInstance(FromItem.GetType());
+                        Copy(FromItem, ToItem);
+
+                        // Set element in the array
+                        ArrayObject.SetValue(ToItem, i);
+                    }
+
+                    // Set new array
+                    Info.SetValue(ToObject, ArrayObject);
+                }
+                else if(Info.PropertyType.IsClass)
+                {
+                    object FromItem = Info.GetValue(FromObject);
+                    Type FromType = FromItem.GetType();
+
+                    // If we have a parameterless constructor, then we can try to 
+                    // copy over the data from one object to another
+                    if(FromType.GetConstructor(Type.EmptyTypes) != null)
+                    {
+                        object ToItem = Activator.CreateInstance(FromItem.GetType());
+                        Copy(FromItem, ToItem);
+
+                        // Set class object
+                        Info.SetValue(ToObject, ToItem);
+
+                        continue;
+                    }
+
+                    // TODO: Not spectacular, as this will probably copy references from one object to another.
+                    // Particularly problematic with strings. 
+                    Info.SetValue(ToObject, Info.GetValue(FromObject));
+                }
+                else
+                {
+                    Info.SetValue(ToObject, Info.GetValue(FromObject));
+                }
+            }
+        }
+
         public static T ConvertToPropertyFromXML<T>(XElement Node)
         {
             T TypedObject = Activator.CreateInstance<T>();

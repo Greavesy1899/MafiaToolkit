@@ -1,7 +1,9 @@
 ﻿using SharpDX;
 using System.IO;
 using Utils.Extensions;
+using Utils.Helpers.Reflection;
 using Utils.SharpDXExtensions;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Actors
 {
@@ -25,12 +27,11 @@ namespace ResourceTypes.Actors
         {
             public float ViscousClutch { get; set; }
             public float ViscousClutchRotLim { get; set; }
-            public byte[] DiffLock { get; set; }
             public float DiffInertia { get; set; }
 
             public override string ToString()
             {
-                return string.Format("{0} {1} {2} {3}", ViscousClutch, ViscousClutchRotLim, DiffLock, DiffInertia);
+                return string.Format("{0} {1} {2}", ViscousClutch, ViscousClutchRotLim, DiffInertia);
             }
         }
         public class WheelTableData
@@ -58,6 +59,12 @@ namespace ResourceTypes.Actors
             public float BrakeCoeffRight { get; set; }
             public byte Steering { get; set; }
             public byte HandBrake { get; set; }
+
+            public WheelTableData()
+            {
+                WheelModel = "";
+                Tyre = "";
+            }
         }
         public class SmokeMotorTableData
         {
@@ -379,6 +386,11 @@ namespace ResourceTypes.Actors
             ReadFromFile(stream, isBigEndian);
         }
 
+        public ActorCar(ActorCar OtherCar)
+        {
+            ReflectionHelpers.Copy(OtherCar, this);
+        }
+
         public int GetSize()
         {
             return 3400;
@@ -388,7 +400,9 @@ namespace ResourceTypes.Actors
         {
             UnkInts0 = new int[8];
             for (int z = 0; z < 8; z++)
+            {
                 UnkInts0[z] = stream.ReadInt32(isBigEndian);
+            }
 
             Mass = stream.ReadSingle(isBigEndian);
             CenterOfMass = Vector3Extenders.ReadFromFile(stream, isBigEndian);
@@ -423,25 +437,35 @@ namespace ResourceTypes.Actors
 
             for (int z = 0; z < 7; z++)
             {
-                var gearData = new GearTableData();
+                GearTableData gearData = new GearTableData();
                 gearData.GearRatio = stream.ReadSingle(isBigEndian);
                 GearData[z] = gearData;
             }
 
             for (int z = 0; z < 7; z++)
+            {
                 GearData[z].RotationsGearUp = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 7; z++)
+            {
                 GearData[z].RotationsGearDown = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 7; z++)
+            {
                 GearData[z].SlowStyleGearUpCoeff = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 7; z++)
+            {
                 GearData[z].MinClutch = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 7; z++)
+            {
                 GearData[z].MinClutchAngleCoeff = stream.ReadSingle(isBigEndian);
+            }
             #endregion
 
             MinClutchGlobal = stream.ReadSingle(isBigEndian);
@@ -468,12 +492,16 @@ namespace ResourceTypes.Actors
             }
 
             for (int z = 0; z < 10; z++)
+            {
                 DifferentialData[z].ViscousClutchRotLim = stream.ReadSingle(isBigEndian);
+            }
 
             UnknownDifferential = stream.ReadBytes(12);
 
             for (int z = 0; z < 10; z++)
+            {
                 DifferentialData[z].DiffInertia = stream.ReadSingle(isBigEndian);
+            }
             #endregion
 
             CDRatio = stream.ReadSingle(isBigEndian);
@@ -489,75 +517,119 @@ namespace ResourceTypes.Actors
             for (int z = 0; z < 10; z++)
             {
                 var wheelData = new WheelTableData();
-                wheelData.WheelModel = stream.ReadStringBuffer(32);
+                wheelData.WheelModel = stream.ReadStringBuffer(32, true);
                 WheelData[z] = wheelData;
             }
 
             for (int z = 0; z < 10; z++)
-                WheelData[z].Tyre = stream.ReadStringBuffer(8);
+            {
+                WheelData[z].Tyre = stream.ReadStringBuffer(8, true);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].Scale = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].TyreStiffness = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].Pressure = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].SpringK = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].SpringLength = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].SpringPreLoad = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].DamperBound = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].DamperRebound = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].DifferentialIndex = stream.ReadInt32(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].AntiRollBarTorque = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].AxleAngleCorrectCoeff = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].ToeIn = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].KPInclination = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].KPCaster = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].Camber = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].RollDamper = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].SteeringCoeff = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].BrakeCoeffLeft = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].BrakeCoeffRight = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].Steering = stream.ReadByte8();
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 WheelData[z].HandBrake = stream.ReadByte8();
+            }
             #endregion
 
             BrakeTorque = stream.ReadSingle(isBigEndian);
@@ -611,10 +683,14 @@ namespace ResourceTypes.Actors
             }
 
             for (int z = 0; z < 3; z++)
+            {
                 SmokeMotorData[z].SmokeMotorDamage = stream.ReadSingle(isBigEndian);
+            }
 
             for (int z = 0; z < 3; z++)
+            {
                 SmokeMotorData[z].SmokeMotorUnk01 = stream.ReadSingle(isBigEndian);
+            }
 
             SmokeExhaustID = stream.ReadInt16(isBigEndian);
             ExplosionID = stream.ReadInt16(isBigEndian);
@@ -1019,19 +1095,29 @@ namespace ResourceTypes.Actors
             }
 
             for (int z = 0; z < 7; z++)
+            {
                 writer.Write(GearData[z].RotationsGearUp, isBigEndian);
+            }
 
             for (int z = 0; z < 7; z++)
+            {
                 writer.Write(GearData[z].RotationsGearDown, isBigEndian);
+            }
 
             for (int z = 0; z < 7; z++)
+            {
                 writer.Write(GearData[z].SlowStyleGearUpCoeff, isBigEndian);
+            }
 
             for (int z = 0; z < 7; z++)
+            {
                 writer.Write(GearData[z].MinClutch, isBigEndian);
+            }
 
             for (int z = 0; z < 7; z++)
+            {
                 writer.Write(GearData[z].MinClutchAngleCoeff, isBigEndian);
+            }
             #endregion
 
             writer.Write(MinClutchGlobal, isBigEndian);
@@ -1055,12 +1141,16 @@ namespace ResourceTypes.Actors
             }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(DifferentialData[z].ViscousClutchRotLim, isBigEndian);
+            }
 
             writer.Write(UnknownDifferential);
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(DifferentialData[z].DiffInertia, isBigEndian);
+            }
             #endregion
 
             writer.Write(CDRatio, isBigEndian);
@@ -1078,70 +1168,114 @@ namespace ResourceTypes.Actors
             }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.WriteStringBuffer(8, WheelData[z].Tyre);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].Scale, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].TyreStiffness, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].Pressure, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].SpringK, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].SpringLength, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].SpringPreLoad, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].DamperBound, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].DamperRebound, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].DifferentialIndex, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].AntiRollBarTorque, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].AxleAngleCorrectCoeff, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].ToeIn, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].KPInclination, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].KPCaster, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].Camber, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].RollDamper, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].SteeringCoeff, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].BrakeCoeffLeft, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.Write(WheelData[z].BrakeCoeffRight, isBigEndian);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.WriteByte(WheelData[z].Steering);
+            }
 
             for (int z = 0; z < 10; z++)
+            {
                 writer.WriteByte(WheelData[z].HandBrake);
+            }
             #endregion
 
             writer.Write(BrakeTorque, isBigEndian);
@@ -1190,10 +1324,14 @@ namespace ResourceTypes.Actors
             }
 
             for (int z = 0; z < 3; z++)
+            {
                 writer.Write(SmokeMotorData[z].SmokeMotorDamage, isBigEndian);
+            }
 
             for (int z = 0; z < 3; z++)
+            {
                 writer.Write(SmokeMotorData[z].SmokeMotorUnk01, isBigEndian);
+            }
 
             writer.Write(SmokeExhaustID, isBigEndian);
             writer.Write(ExplosionID, isBigEndian);

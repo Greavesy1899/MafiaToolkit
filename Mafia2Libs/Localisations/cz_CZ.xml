@@ -165,6 +165,9 @@
   <String ID="$QUESTION_FRADD">Napište jméno a typ framu.</String>
   <String ID="$FRADD_NAME_TABLE">Přidat Frame do Name Table?</String>
   
+  <!-- EntityDataStorage Editor -->
+  <String ID="$$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
+  
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Jméno</String>
   <String ID="$QUESTION_NOT_NEEDED">Tahle možnost nepotřebuje jméno</String>

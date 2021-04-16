@@ -165,6 +165,9 @@
   <String ID="$FRADD_TYPE">Frame Type</String>
   <String ID="$FRADD_NAME_TABLE">Add Frame To Name Table?</String>
   <String ID="$QUESTION_FRADD">Enter the name and type of the frame.</String>
+
+  <!-- EntityDataStorage Editor -->
+  <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Input Name</String>

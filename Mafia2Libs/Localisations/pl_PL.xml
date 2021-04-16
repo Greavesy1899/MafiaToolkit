@@ -156,6 +156,9 @@
   <String ID="$FRAME_EDITOR_TITLE">Edytor FrameResource</String>
   <String ID="$FRADD_TYPE">Typ Frame</String>
   <String ID="$QUESTION_FRADD">Wpisz nazwę i typ frame.</String>
+
+  <!-- EntityDataStorage Editor -->
+  <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Nazwa wejściowa</String>

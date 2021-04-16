@@ -150,6 +150,9 @@
   <String ID="$FRADD_TYPE">Тип кадра</String>
   <String ID="$FRADD_NAME_TABLE">Добавить кадр/рамку для имени таблиц ?</String>
   <String ID="$QUESTION_FRADD">Введите имя и тип кадра.</String>
+
+  <!-- EntityDataStorage Editor -->
+  <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Ввод имени</String>
