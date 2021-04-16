@@ -5,9 +5,6 @@ using System.Linq;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Utils.Extensions;
-using Utils.Settings;
-using Mafia2Tool;
-using ResourceTypes.BufferPools;
 
 namespace ResourceTypes.FrameResource
 {
@@ -288,6 +285,31 @@ namespace ResourceTypes.FrameResource
         public void DuplicateBlocks(FrameObjectModel model)
         {
             DuplicateBlocks((FrameObjectSingleMesh)model);
+        }
+
+        public bool DeleteFrame(FrameEntry EntryToDelete)
+        {
+            // Early return out if its invalid
+            if(EntryToDelete == null)
+            {
+                return false;
+            }
+
+            // Remove Parent reference
+            FrameObjectBase BaseObject = (EntryToDelete as FrameObjectBase);
+            if(BaseObject != null)
+            {
+                FrameObjectBase ParentObject = BaseObject.Parent;
+                if(ParentObject != null)
+                {
+                    bool bDeleted = ParentObject.Children.Remove(BaseObject);
+                    Debug.Assert(bDeleted, "Failed to delete an object which should be in the child array.");
+
+                    BaseObject.Parent = null;
+                }
+            }
+
+            return FrameObjects.Remove(EntryToDelete.RefID);
         }
 
         public void SetParentOfObject(int parentId, FrameEntry childEntry, FrameEntry parentEntry)

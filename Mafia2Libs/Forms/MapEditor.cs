@@ -1489,7 +1489,7 @@ namespace Mafia2Tool
                 if (FrameResource.IsFrameType(node.Nodes[i].Tag))
                 {
                     FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
-                    bool bDidRemove = SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
+                    bool bDidRemove = SceneData.FrameResource.DeleteFrame(entry);
                     Graphics.Assets.TryRemove(entry.RefID);
                     DeleteFrames(node.Nodes[i]);
 
@@ -1509,9 +1509,12 @@ namespace Mafia2Tool
                 {
                     dSceneTree.RemoveNode(node);
                     Graphics.Assets.Remove(obj.RefID);
-                    SceneData.FrameResource.FrameObjects.Remove(obj.RefID);
+                    bool bDidRemove = SceneData.FrameResource.DeleteFrame(obj);
                     Graphics.Assets.TryRemove(obj.RefID);
+
+                    Debug.Assert(bDidRemove == true, "Failed to remove!");
                 }
+
                 DeleteFrames(node);
             }
             else if(node.Tag.GetType() == typeof(FrameHeaderScene))
