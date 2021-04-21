@@ -135,7 +135,7 @@
             this.ToolStrip_Copy,
             this.ToolStrip_Paste});
             this.Context_Menu.Name = "Context_Menu";
-            this.Context_Menu.Size = new System.Drawing.Size(168, 48);
+            this.Context_Menu.Size = new System.Drawing.Size(181, 70);
             this.Context_Menu.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenu_Opening);
             // 
             // ToolStrip_Copy
@@ -149,8 +149,8 @@
             // ToolStrip_Paste
             // 
             this.ToolStrip_Paste.Name = "ToolStrip_Paste";
-            this.ToolStrip_Paste.ShortcutKeyDisplayString = "CTRL + P";
-            this.ToolStrip_Paste.Size = new System.Drawing.Size(167, 22);
+            this.ToolStrip_Paste.ShortcutKeyDisplayString = "CTRL + V";
+            this.ToolStrip_Paste.Size = new System.Drawing.Size(180, 22);
             this.ToolStrip_Paste.Text = "$PASTE";
             this.ToolStrip_Paste.Click += new System.EventHandler(this.ToolStrip_Paste_Click);
             // 
@@ -164,6 +164,7 @@
             this.TreeView_Tables.Size = new System.Drawing.Size(368, 410);
             this.TreeView_Tables.TabIndex = 11;
             this.TreeView_Tables.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
+            this.TreeView_Tables.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form_OnKeyUp);
             // 
             // EntityDataStorageEditor
             // 
@@ -176,7 +177,6 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "EntityDataStorageEditor";
             this.Text = "$ACTOR_EDITOR_TITLE";
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form_OnKeyUp);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.Context_Menu.ResumeLayout(false);

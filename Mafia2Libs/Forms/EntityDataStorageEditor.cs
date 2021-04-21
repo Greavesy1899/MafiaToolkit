@@ -100,11 +100,12 @@ namespace Mafia2Tool
                 {
                     CopyTagData();
                 }
-                else if (e.Control && e.KeyCode == Keys.P)
+                else if (e.Control && e.KeyCode == Keys.V)
                 {
                     PasteTagData();
                 }
             }
+
         }
 
         private void CopyTagData()

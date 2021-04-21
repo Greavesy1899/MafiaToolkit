@@ -157,6 +157,11 @@
   <String ID="$FRADD_TYPE">Typ Frame</String>
   <String ID="$QUESTION_FRADD">Wpisz nazwę i typ frame.</String>
 
+  <!-- Actor Editor -->
+  <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
+  <String ID="$ADD_ITEM">Add Item</String>
+  <String ID="$ADD_DEFINITION">Add Definition</String>
+  
   <!-- EntityDataStorage Editor -->
   <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
   

@@ -151,6 +151,11 @@
   <String ID="$FRADD_NAME_TABLE">Добавить кадр/рамку для имени таблиц ?</String>
   <String ID="$QUESTION_FRADD">Введите имя и тип кадра.</String>
 
+  <!-- Actor Editor -->
+  <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
+  <String ID="$ADD_ITEM">Add Item</String>
+  <String ID="$ADD_DEFINITION">Add Definition</String>
+  
   <!-- EntityDataStorage Editor -->
   <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
   
