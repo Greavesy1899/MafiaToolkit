@@ -51,11 +51,16 @@ namespace Mafia2Tool
 
         private void Localise()
         {
-            creditsToolStripMenuItem.Text = Language.GetString("$CREDITS");
+            dropdownFile.Text = Language.GetString("$FILE");
+            dropdownView.Text = Language.GetString("$VIEW");
+            dropdownTools.Text = Language.GetString("$TOOLS");
+            dropdownAbout.Text = Language.GetString("$ABOUT");
+
+            AboutButton.Text = Language.GetString("$ABOUT");
             Text = Language.GetString("$MII_TK_GAME_EXPLORER");
-            UpButton.ToolTipText = Language.GetString("$UP_TOOLTIP");
+            FolderUpButton.ToolTipText = Language.GetString("$UP_TOOLTIP");
             FolderPath.ToolTipText = Language.GetString("$FOLDER_PATH_TOOLTIP");
-            buttonStripRefresh.Text = Language.GetString("$REFRESH");
+            FolderRefreshButton.Text = Language.GetString("$REFRESH");
             SearchEntryText.ToolTipText = Language.GetString("$SEARCH_TOOLTIP");
             columnName.Text = Language.GetString("$NAME");
             columnType.Text = Language.GetString("$TYPE");
@@ -80,15 +85,14 @@ namespace Mafia2Tool
             ViewStripMenuSmallIcon.Text = Language.GetString("$SMALL_ICON");
             ViewStripMenuList.Text = Language.GetString("$LIST");
             ViewStripMenuTile.Text = Language.GetString("$TILE");
-            dropdownFile.Text = Language.GetString("$FILE");
-            openMafiaIIToolStripMenuItem.Text = Language.GetString("$BTN_OPEN_MII");
-            runMafiaIIToolStripMenuItem.Text = Language.GetString("$BTN_RUN_MII");
-            exitToolStripMenuItem.Text = Language.GetString("$EXIT");
-            dropdownView.Text = Language.GetString("$VIEW");
-            dropdownTools.Text = Language.GetString("$TOOLS");
+            OpenGameFolderButton.Text = Language.GetString("$BTN_OPEN_MII");
+            RunGameButton.Text = Language.GetString("$BTN_RUN_MII");
+            ExitEditorButton.Text = Language.GetString("$EXIT");
             OptionsItem.Text = Language.GetString("$OPTIONS");
+            PackCurrentSDSButton.Text = Language.GetString("$UNPACK_SELECTED_SDS");
+            UnpackCurrentSDSButton.Text = Language.GetString("$PACK_SELECTED_SDS");
             UnpackAllSDSButton.Text = Language.GetString("$UNPACK_ALL_SDS");
-            Button_SelectGame.Text = Language.GetString("$SELECT_GAME");
+            SelectGameButton.Text = Language.GetString("$SELECT_GAME");
 
             Button_UnpackSDS.Text = Language.GetString("$UNPACK");
             Button_UnpackSDS.ToolTipText = Language.GetString("$UNPACK");
@@ -161,8 +165,7 @@ namespace Mafia2Tool
         private void OpenDirectory(DirectoryInfo directory, bool searchMode = false, string filename = null)
         {
             // Make sure toolstrip buttons are reset
-            Button_UnpackSDS.Enabled = false;
-            Button_PackSDS.Enabled = false;
+            SetPackUnpackButtonEnabled(false);
 
             infoText.Text = "Loading Directory..";
             fileListView.Items.Clear();
@@ -612,17 +615,8 @@ namespace Mafia2Tool
 
         private void OnCredits_Pressed(object sender, EventArgs e)
         {
-            MessageBox.Show("Toolkit developed by Greavesy. \n\n" +
-                "Special thanks to: \nOleg @ ZModeler 3 \nRick 'Gibbed' \nFireboyd for developing UnluacNET" +
-                "\n\n" +
-                "Thanks to Hurikejnis and Zeuvera for Slovenčina localization." +
-                "\n\n" +
-                "Also, a very special thanks to PayPal donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider \nNemesis7675" +
-                "\n Foxite \n MafiaGameVideo \nKamzik123 \n" +
-                "And Patreons: \nHamAndRock \nMelber",
-                "Toolkit",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            var aboutBox = new AboutBox();
+            aboutBox.ShowDialog();
         }
 
         private void ListView_OnKeyUp(object sender, KeyEventArgs e)
@@ -802,18 +796,24 @@ namespace Mafia2Tool
 
         private void ListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            Button_UnpackSDS.Enabled = false;
-            Button_PackSDS.Enabled = false;
+            SetPackUnpackButtonEnabled(false);
 
             if (e.Item != null)
             {
                 object Tag = e.Item.Tag;
                 if(Tag is FileSDS)
                 {
-                    Button_UnpackSDS.Enabled = true;
-                    Button_PackSDS.Enabled = true;
+                    SetPackUnpackButtonEnabled(true);
                 }
             }
+        }
+
+        private void SetPackUnpackButtonEnabled(bool enabled)
+        {
+            Button_UnpackSDS.Enabled = enabled;
+            Button_PackSDS.Enabled = enabled;
+            UnpackCurrentSDSButton.Enabled = enabled;
+            PackCurrentSDSButton.Enabled = enabled;
         }
     }
 }

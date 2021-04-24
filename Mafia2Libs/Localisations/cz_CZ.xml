@@ -13,7 +13,8 @@
   <String ID="$FAILED_UPDATE_CHECK">Při kontrole aktualizací se nezdařilo!</String>
   
   <!-- Game Explorer Strings -->
-  <String ID="$CREDITS">Poděkování</String>
+  <String ID="$ABOUT">About</String>
+  <String ID="$THANKS">Poděkování</String>
   <String ID="$VIEW">Zobrazení</String>
   <String ID="$FILE">Soubor</String>
   <String ID="$TOOLS">Nástroje</String>

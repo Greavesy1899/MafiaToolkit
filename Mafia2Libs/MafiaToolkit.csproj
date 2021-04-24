@@ -253,6 +253,12 @@
     <Compile Include="Core\FileTranslokator.cs" />
     <Compile Include="Core\FileXlaybin.cs" />
     <Compile Include="Core\FileXML.cs" />
+    <Compile Include="Forms\AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\CutsceneEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -884,6 +890,9 @@
     <Content Include="Resources\GameImages\m1de_logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\GameImages\m3_logo.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\games_release.xml" />
     <Content Include="Shaders\CollisionPS.hlsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -947,6 +956,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TextureEntry.resx">
       <DependentUpon>TextureEntry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CutsceneEditor.resx">
       <DependentUpon>CutsceneEditor.cs</DependentUpon>

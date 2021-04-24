@@ -13,7 +13,8 @@
   <String ID="$FAILED_UPDATE_CHECK">Failed to checking for updates!</String>
   
   <!-- Game Explorer Strings -->
-  <String ID="$CREDITS">Special Thanks</String>
+  <String ID="$ABOUT">About</String>
+  <String ID="$THANKS">Special Thanks</String>
   <String ID="$VIEW">View</String>
   <String ID="$FILE">File</String>
   <String ID="$TOOLS">Tools</String>
