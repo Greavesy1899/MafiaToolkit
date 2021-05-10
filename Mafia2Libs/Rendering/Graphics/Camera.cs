@@ -1,5 +1,4 @@
-﻿using Mafia2Tool;
-using SharpDX;
+﻿using SharpDX;
 using System;
 using Utils.Settings;
 
@@ -11,6 +10,8 @@ namespace Rendering.Graphics
         public Vector3 Rotation = new Vector3(0);
         public Matrix ViewMatrix { get; private set; }
         public Matrix ProjectionMatrix { get; private set; }
+        public Matrix ViewMatrixTransposed { get; private set; }
+        public Matrix ProjectionMatrixTransposed { get;  private set; }
 
         private Vector3 Look { get; set; }
         private Vector3 Right { get; set; }
@@ -23,8 +24,11 @@ namespace Rendering.Graphics
             Right = new Vector3(1, 0, 0);
             Up = new Vector3(0, 1, 0);
             Look = new Vector3(0, 0, 1);
+
             ViewMatrix = Matrix.Identity;
             ProjectionMatrix = Matrix.Identity;
+            ViewMatrixTransposed = Matrix.Identity;
+            ProjectionMatrixTransposed = Matrix.Identity;
         }
 
         public void UpdateViewMatrix()
@@ -48,6 +52,9 @@ namespace Rendering.Graphics
             v.Column3 = new Vector4(Look, z);
             v.Column4 = new Vector4(0, 0, 0, 1);
             ViewMatrix = v;
+
+            // Transose ViewMatrix
+            ViewMatrixTransposed = Matrix.Transpose(ViewMatrix);
         }
 
         public void ContructFrustum(bool bNormalise = false)
@@ -145,6 +152,9 @@ namespace Rendering.Graphics
             height = (height == 0 ? 768 : height);
             float aspectRatio = (float)width / (float)height;
             ProjectionMatrix = Matrix.PerspectiveFovRH(MathUtil.DegreesToRadians(ToolkitSettings.FieldOfView), aspectRatio, ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
+
+            // Transpose Projection Matrix
+            ProjectionMatrixTransposed = Matrix.Transpose(ProjectionMatrix);
         }
 
         public Ray GetPickingRay(Vector2 pos, Vector2 screenDims)

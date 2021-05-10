@@ -132,17 +132,13 @@ namespace Rendering.Graphics
         public virtual void SetSceneVariables(DeviceContext context, Matrix WorldMatrix, Camera camera)
         {
             Matrix tMatrix = WorldMatrix;
-            Matrix vMatrix = camera.ViewMatrix;
-            Matrix cMatrix = camera.ProjectionMatrix;
-            vMatrix.Transpose();
-            cMatrix.Transpose();
             tMatrix.Transpose();
 
             MatrixBuffer matrixBuffer = new MatrixBuffer()
             {
                 world = tMatrix,
-                view = vMatrix,
-                projection = cMatrix
+                view = camera.ViewMatrixTransposed,
+                projection = camera.ProjectionMatrixTransposed
             };
             ConstantBufferFactory.UpdateVertexBuffer(context, ConstantMatrixBuffer, 0, matrixBuffer);
         }
