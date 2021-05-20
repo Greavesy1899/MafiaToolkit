@@ -5,12 +5,45 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml.XPath;
+using Utils.Settings;
 
 namespace Gibbed.Mafia2.FileFormats
 {
     // Util class for dumping file names and possible IDs
     public partial class ArchiveFile
     {
+        // TODO: Make one for fusion games (M3 and M1DE)
+        // For M2 and M2DE.
+        private Dictionary<string, string> FileExtensionLookup = new Dictionary<string, string>
+        {
+            { "Texture", ".dds" },
+            { "Mipmap", ".dds" },
+            { "IndexBufferPool", ".ibp" },
+            { "VertexBufferPool", ".vbp" },
+            { "AnimalTrafficPaths", ".atp" },
+            { "FrameResource", ".fr" },
+            { "Effects", ".eff" },
+            { "FrameNameTable", ".fnt" },
+            { "EntityDataStorage", ".eds" },
+            { "PREFAB", ".prf" },
+            { "ItemDesc", ".ids" },
+            { "Actors", ".act" },
+            { "Collisions", ".col" },
+            { "SoundTable", ".stbl" },
+            { "Speech", ".spe" },
+            { "FxAnimSet", ".fas" },
+            { "FxActor", ".fxa" },
+            { "Cutscene", ".cut" },
+            { "Translokator", ".tra" },
+            { "Animation2", ".an2" },
+            { "NAV_AIWORLD_DATA", ".nav" },
+            { "NAV_OBJ_DATA", ".nov" },
+            { "NAV_HPD_DATA", ".nhv" },
+            { "AudioSectors", ".auds" },
+            { "Script", ".luapack" },
+            { "Table", ".tblpack" },
+            { "Sound", ".fsb" },
+        };
         private KeyValuePair<ulong, string> GetFileName(ResourceEntry entry, string item)
         {
             if (item != "not available")
@@ -38,6 +71,13 @@ namespace Gibbed.Mafia2.FileFormats
         {
             // TODO: Find a new place for this.
             string Extension = ".bin";
+
+            if (ChosenGameType == GamesEnumerator.MafiaII || ChosenGameType == GamesEnumerator.MafiaII_DE)
+            {
+                Extension = FileExtensionLookup[Typename];
+                return Extension;
+            }
+
             if (Typename == "Texture")
             {
                 Extension = ".dds";
@@ -110,7 +150,7 @@ namespace Gibbed.Mafia2.FileFormats
                             ResourceTypes.RemoveAt(CrySDSType);
 
                             // Return document
-                            if(XMLDoc != null)
+                            if (XMLDoc != null)
                             {
                                 return XMLDoc;
                             }
@@ -125,7 +165,7 @@ namespace Gibbed.Mafia2.FileFormats
         private Dictionary<ulong, string> ReadFileNameDB(string database)
         {
             // Check if the file exists; if not, we send back an empty dictionary.
-            if(!File.Exists(database))
+            if (!File.Exists(database))
             {
                 return new Dictionary<ulong, string>();
             }
@@ -134,7 +174,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             Dictionary<ulong, string> DictionaryDB = new Dictionary<ulong, string>();
 
-            foreach(var Line in DatabaseLines)
+            foreach (var Line in DatabaseLines)
             {
                 string[] SplitLine = Line.Split(' ');
                 ulong NameHash = ulong.Parse(SplitLine[0]);
@@ -150,7 +190,7 @@ namespace Gibbed.Mafia2.FileFormats
             string[] DatabaseLines = new string[dictionary.Count];
 
             int index = 0;
-            foreach(var pair in dictionary)
+            foreach (var pair in dictionary)
             {
                 string line = "";
                 line += pair.Key.ToString();
