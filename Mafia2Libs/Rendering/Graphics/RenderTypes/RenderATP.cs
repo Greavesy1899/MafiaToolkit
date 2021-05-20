@@ -1,6 +1,7 @@
 ﻿using ResourceTypes.Navigation;
 using SharpDX;
 using SharpDX.Direct3D11;
+using Utils.StringHelpers;
 using Utils.Types;
 
 namespace Rendering.Graphics
@@ -11,12 +12,19 @@ namespace Rendering.Graphics
         public RenderLine Path { get; set; }
         public AnimalTrafficLoader.AnimalTrafficPath ATP { get; set; }
 
-        public RenderATP()
+        private int BBoxHandle = 0;
+        private int PathHandle = 0;
+        private GraphicsClass OwnGraphics;
+
+        // TODO: Make OwnGraphics in the base class
+        public RenderATP(GraphicsClass InGraphicsOwner)
         {
             DoRender = true;
             Transform = Matrix.Identity;
             BBox = new RenderBoundingBox();
             Path = new RenderLine();
+
+            OwnGraphics = InGraphicsOwner;
         }
 
         public void Init(AnimalTrafficLoader.AnimalTrafficPath path)
@@ -36,20 +44,26 @@ namespace Rendering.Graphics
         {
             BBox.InitBuffers(d3d, deviceContext);
             Path.InitBuffers(d3d, deviceContext);
+
+            BBoxHandle = StringHelpers.GetNewRefID();
+            OwnGraphics.OurPrimitiveManager.PushPrimitiveObject(Core.PrimitiveType.Box, BBoxHandle, BBox);
+
+            //PathHandle = StringHelpers.GetNewRefID();
+            //OwnGraphics.OurPrimitiveManager.PushPrimitiveObject(Core.PrimitiveType.Line, PathHandle, Path);
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera)
         {
             if (DoRender != false)
             {
-                BBox.Render(device, deviceContext, camera);
+                //BBox.Render(device, deviceContext, camera);
                 Path.Render(device, deviceContext, camera);
             }
         }
 
         public override void Select()
         {
-            BBox.Select();
+            //BBox.Select();
             Path.Select();
         }
         public override void SetTransform(Matrix matrix)
@@ -65,13 +79,13 @@ namespace Rendering.Graphics
 
         public override void Unselect()
         {
-            BBox.Unselect();
+            //BBox.Unselect();
             Path.Unselect();
         }
 
         public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
-            BBox.UpdateBuffers(device, deviceContext);
+            //BBox.UpdateBuffers(device, deviceContext);
             Path.UpdateBuffers(device, deviceContext);
         }
     }

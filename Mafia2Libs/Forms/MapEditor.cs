@@ -786,7 +786,7 @@ namespace Mafia2Tool
                 for (int i = 0; i < SceneData.ATLoader.Paths.Length; i++)
                 {
                     int refID = StringHelpers.GetNewRefID();
-                    RenderATP atp = new RenderATP();
+                    RenderATP atp = new RenderATP(Graphics);
                     atp.Init(SceneData.ATLoader.Paths[i]);
                     TreeNode child = new TreeNode();
                     child.Text = animalTrafficRoot.Nodes.Count.ToString();
@@ -833,16 +833,20 @@ namespace Mafia2Tool
                 }
                 dSceneTree.AddToTree(actorRoot);
             }
-            for(int i = 0; i < SceneData.FrameNameTable.FrameData.Length; i++)
+
+            if (SceneData.FrameNameTable != null)
             {
-                FrameNameTable.Data data = SceneData.FrameNameTable.FrameData[i];
-                if (data.FrameIndex != -1)
+                for (int i = 0; i < SceneData.FrameNameTable.FrameData.Length; i++)
                 {
-                    FrameObjectBase frame = (SceneData.FrameResource.FrameObjects.ElementAt(data.FrameIndex).Value as FrameObjectBase);
-                    if (frame != null)
+                    FrameNameTable.Data data = SceneData.FrameNameTable.FrameData[i];
+                    if (data.FrameIndex != -1)
                     {
-                        frame.FrameNameTableFlags = data.Flags;
-                        frame.IsOnFrameTable = true;
+                        FrameObjectBase frame = (SceneData.FrameResource.FrameObjects.ElementAt(data.FrameIndex).Value as FrameObjectBase);
+                        if (frame != null)
+                        {
+                            frame.FrameNameTableFlags = data.Flags;
+                            frame.IsOnFrameTable = true;
+                        }
                     }
                 }
             }
@@ -881,8 +885,7 @@ namespace Mafia2Tool
                 int result = 0;
                 if(int.TryParse(node.Name, out result))
                 {
-                    SelectEntryParams SelectParams = new SelectEntryParams(result);
-                    Graphics.SelectEntry(SelectParams);
+                    Graphics.SelectEntry(result);
                 }
                 
             }

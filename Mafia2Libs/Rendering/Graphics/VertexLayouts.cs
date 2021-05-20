@@ -45,6 +45,54 @@ namespace Rendering.Graphics
             }
         }
 
+        public class BasicInstancedLayout
+        {
+            [StructLayout(LayoutKind.Sequential)]
+            public struct Vertex
+            {
+                public Vector3 Position;
+                public int Colour;
+                public Vector3 InstancedPosition;
+            }
+
+            public static InputElement[] GetLayout()
+            {
+                return new InputElement[]
+                {
+                    new InputElement()
+                    {
+                        SemanticName = "POSITION",
+                        SemanticIndex = 0,
+                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Slot = 0,
+                        AlignedByteOffset = 0,
+                        Classification = InputClassification.PerVertexData,
+                        InstanceDataStepRate = 0
+                    },
+                    new InputElement()
+                    {
+                        SemanticName = "COLOR",
+                        SemanticIndex = 0,
+                        Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
+                        Slot = 0,
+                        AlignedByteOffset = InputElement.AppendAligned,
+                        Classification = InputClassification.PerVertexData,
+                        InstanceDataStepRate = 0
+                    },
+                    new InputElement()
+                    {
+                        SemanticName = "TEXCOORD",
+                        SemanticIndex = 0,
+                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Slot = 1,
+                        AlignedByteOffset = 0,
+                        Classification = InputClassification.PerInstanceData,
+                        InstanceDataStepRate = 1
+                    },
+                };
+            }
+        }
+
         public class CollisionLayout
         {
             [StructLayout(LayoutKind.Sequential)]

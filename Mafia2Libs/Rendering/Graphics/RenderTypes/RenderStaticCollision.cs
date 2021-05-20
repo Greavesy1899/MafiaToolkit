@@ -18,6 +18,9 @@ namespace Rendering.Graphics
         public BaseShader Shader;
         private CollisionMaterials[] materials;
         public Color SelectionColour { get; private set; }
+
+        private VertexBufferBinding OurVertexBufferBinding;
+
         public RenderStaticCollision()
         {
             DoRender = true;
@@ -29,6 +32,9 @@ namespace Rendering.Graphics
         {
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, Vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, Indices);
+
+            OurVertexBufferBinding = new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.CollisionLayout.Vertex>(), 0);
+
             Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[2];
         }
 
@@ -149,7 +155,7 @@ namespace Rendering.Graphics
             if (!DoRender)
                 return;
 
-            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.CollisionLayout.Vertex>(), 0));
+            deviceContext.InputAssembler.SetVertexBuffers(0, OurVertexBufferBinding);
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             Shader.SetSceneVariables(deviceContext, Transform, camera);

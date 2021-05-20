@@ -9,8 +9,6 @@ namespace Rendering.Graphics
 {
     public class RenderLine : IRenderer
     {
-
-        private Vector3[] points;
         public Vector3[] Points {
             get { return points; }
             set {
@@ -18,6 +16,12 @@ namespace Rendering.Graphics
                 UpdateVertices();
             }
         }
+
+        public ushort[] GetStrippedIndices { get { return InternalGetStrippedIndices(); } }
+
+        public VertexLayouts.BasicLayout.Vertex[] GetVertices { get { return vertices; } }
+
+        private Vector3[] points;
         private VertexLayouts.BasicLayout.Vertex[] vertices;
         private Color SelectedColour;
         private Color UnselectedColour;
@@ -94,6 +98,17 @@ namespace Rendering.Graphics
 
             shader.SetSceneVariables(deviceContext, Transform, camera);
             shader.Render(deviceContext, PrimitiveTopology.LineStrip, vertices.Length, 0);
+        }
+
+        public ushort[] InternalGetStrippedIndices()
+        {
+            ushort[] Indices = new ushort[points.Length];
+            for(ushort i = 0; i < points.Length; i++)
+            {
+                Indices[i] = i;
+            }
+
+            return Indices;
         }
 
         public override void SetTransform(Matrix matrix)

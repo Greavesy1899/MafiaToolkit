@@ -31,7 +31,7 @@ namespace Gibbed.Mafia2.FileFormats
 
         public void SaveResourcesVersion20(FileInfo file, List<string> itemNames)
         {
-            FileNamesAndHash = ReadFileNameDB("Resources/GameData/M3DE_ResourceNameDatabase.txt");
+            FileNamesAndHash = ReadFileNameDB("Resources/ResourceNameDatabase.txt");
 
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
@@ -73,13 +73,16 @@ namespace Gibbed.Mafia2.FileFormats
                         {
                             FileNamesAndHash.Add(pair.Key, pair.Value);
                         }
+                        else
+                        {
+                            FileNamesAndHash[pair.Key] = pair.Value;
+                        }
                     }
                 }
 
                 string FileName = HasFilename(FileNamesAndHash, entry);
                 if (!string.IsNullOrEmpty(FileName))
                 {
-                    //Console.WriteLine(string.Format("{0}", FileName));
                     itemNames[i] = FileName;
                 }
 
@@ -88,7 +91,6 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
                 string saveName = "";
                 string NameToPass = "";
-                //Log.WriteLine("Resource: " + i + ", name: " + itemNames[i] + ", type: " + entry.TypeId);
                 switch (ResourceTypes[entry.TypeId].Name)
                 {
                     case "Texture":
@@ -380,9 +382,7 @@ namespace Gibbed.Mafia2.FileFormats
                 entry.Data = stream.ToArray();
             }
 
-            int extensionStart = resource.DebugName.IndexOf(".");
-            string filename = resource.DebugName.Remove(extensionStart);
-            descNode.InnerText = filename;
+            descNode.InnerText = resource.DebugName;
 
             return entry;
         }

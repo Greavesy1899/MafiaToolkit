@@ -7,6 +7,9 @@ namespace Rendering.Graphics
 {
     public class RenderBoundingBox : IRenderer
     {
+        public VertexLayouts.BasicLayout.Vertex[] Vertices { get { return vertices; } }
+        public ushort[] Indices { get { return indices; } }
+
         private VertexLayouts.BasicLayout.Vertex[] vertices;
         private ushort[] indices;
         private Color colour;
@@ -138,6 +141,20 @@ namespace Rendering.Graphics
             }
 
             isUpdatedNeeded = true;
+        }
+
+        public VertexLayouts.BasicLayout.Vertex[] GetTransformVertices()
+        {
+            VertexLayouts.BasicLayout.Vertex[] NewVertices = new VertexLayouts.BasicLayout.Vertex[vertices.Length];
+            System.Array.Copy(vertices, NewVertices, vertices.Length);
+
+            for(int i = 0; i < NewVertices.Length; i++)
+            {
+                Vector4 Result = Vector3.Transform(vertices[i].Position, Transform);
+                NewVertices[i].Position = new Vector3(Result.X, Result.Y, Result.Z);
+            }
+
+            return NewVertices;
         }
     }
 }

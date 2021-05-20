@@ -41,6 +41,8 @@ namespace Rendering.Graphics
 
         public LOD[] LODs { get; private set; }
 
+        private VertexBufferBinding[] VertexBufferBindings;
+
         public RenderModel()
         {
             DoRender = true;
@@ -241,6 +243,8 @@ namespace Rendering.Graphics
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, LODs[0].Vertices);
             indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, LODs[0].Indices);
 
+            VertexBufferBindings = new VertexBufferBinding[1];
+            VertexBufferBindings[0] = new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
             InitTextures(d3d, d3dContext);
         }
 
@@ -257,7 +261,7 @@ namespace Rendering.Graphics
            //if (!camera.CheckBBoxFrustum(Transform.TranslationVector, BoundingBox))
            //     return;
 
-            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0));
+            deviceContext.InputAssembler.SetVertexBuffers(0, VertexBufferBindings[0]);
             deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             deviceContext.PixelShader.SetShaderResource(2, AOTexture);

@@ -371,6 +371,7 @@
     <Compile Include="Gibbed.Mafia2.FileFormats\Utils\ArchiveUtils.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\Version20\ResourceFunctions.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\Version19\ResourceFunctions.cs" />
+    <Compile Include="Rendering\Core\PrimitiveManager.cs" />
     <Compile Include="Rendering\Core\RenderableAdapter.cs" />
     <Compile Include="Rendering\Factories\RenderableFactory.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorDefinition.cs" />

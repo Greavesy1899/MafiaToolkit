@@ -38,6 +38,7 @@ namespace Rendering.Graphics
         private SpatialGrid translokatorGrid;
         private SpatialGrid[] navigationGrids;
 
+        public PrimitiveManager OurPrimitiveManager { get; private set; }
 
         public GraphicsClass()
         {
@@ -47,6 +48,7 @@ namespace Rendering.Graphics
             selectionBox = new RenderBoundingBox();
             translokatorGrid = new SpatialGrid();
             navigationGrids = new SpatialGrid[0];
+            OurPrimitiveManager = new PrimitiveManager();
 
             OnSelectedObjectUpdated += OnSelectedObjectHasUpdated;
         }
@@ -244,6 +246,8 @@ namespace Rendering.Graphics
                 grid.Render(D3D.Device, D3D.DeviceContext, Camera);
             }
 
+            OurPrimitiveManager.RenderPrimitives(D3D.Device, D3D.DeviceContext, Camera);
+
             translokatorGrid.Render(D3D.Device, D3D.DeviceContext, Camera);
             selectionBox.UpdateBuffers(D3D.Device, D3D.DeviceContext);
             selectionBox.Render(D3D.Device, D3D.DeviceContext, Camera);
@@ -263,36 +267,58 @@ namespace Rendering.Graphics
             foreach (KeyValuePair<int, IRenderer> asset in InitObjectStack)
             {
                 asset.Value.InitBuffers(D3D.Device, D3D.DeviceContext);
-                Assets.Add(asset.Key, asset.Value);
+
+                if (asset.Value is RenderBoundingBox)
+                {
+                    OurPrimitiveManager.PushPrimitiveObject(PrimitiveType.Box, asset.Key, asset.Value);
+                }
+                else if (asset.Value is RenderLine)
+                {
+                    OurPrimitiveManager.PushPrimitiveObject(PrimitiveType.Line, asset.Key, asset.Value);
+                }
+                else
+                {
+                    Assets.Add(asset.Key, asset.Value);
+                }
             }
+
             InitObjectStack.Clear();
         }
 
         public void SelectEntry(int id)
         {
-            IRenderer newObj, oldObj;
-            bool foundNew = Assets.TryGetValue(id, out newObj);
-            bool foundOld = Assets.TryGetValue(selectedID, out oldObj);
+            IRenderer NewObject = GetAsset(id);
+            IRenderer OldObject = GetAsset(selectedID);
 
             if (selectedID == id)
             {
                 return;
             }
 
-            if (foundNew)
+            if (NewObject != null)
             {
-                if (foundOld)
+                if (OldObject != null)
                 {
-                    oldObj.Unselect();
+                    OldObject.Unselect();
                 }
 
-                TranslationGizmo.OnSelectEntry(newObj.Transform, true);
-                newObj.Select();
+                TranslationGizmo.OnSelectEntry(NewObject.Transform, true);
+                NewObject.Select();
                 selectionBox.DoRender = true;
-                selectionBox.SetTransform(newObj.Transform);
-                selectionBox.Update(newObj.BoundingBox);
+                selectionBox.SetTransform(NewObject.Transform);
+                selectionBox.Update(NewObject.BoundingBox);
                 selectedID = id;
             }
+        }
+
+        private IRenderer GetAsset(int RefID)
+        {
+            if(Assets.ContainsKey(RefID))
+            {
+                return Assets[RefID];
+            }
+
+            return OurPrimitiveManager.GetObject(RefID);
         }
 
         public void MoveGizmo(int sx, int sy, int Width, int Height)
