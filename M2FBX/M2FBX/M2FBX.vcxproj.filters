@@ -33,12 +33,6 @@
     <ClCompile Include="FbxUtilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CStream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CPhysXCooking.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="M2Model.h">
@@ -57,12 +51,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CPhysXCooking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataTypes.h">

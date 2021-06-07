@@ -43,7 +43,26 @@ namespace Gibbed.Mafia2.FileFormats
             { "Script", ".luapack" },
             { "Table", ".tblpack" },
             { "Sound", ".fsb" },
+            { "MemFile", ".txt" },
+            { "XML", ".xml" },
         };
+
+        private Dictionary<string, string> FileExtensionLookupFusion = new Dictionary<string, string>
+        {
+            { "Texture", ".dds" },
+            { "Generic", ".genr" },
+            { "Flash", ".fla" },
+            { "hkAnimation", ".hkx" },
+            { "NAV_PATH_DATA", ".hkt" },
+            { "EnlightenResource", ".enl" },
+            { "RoadMap", ".gsd" },
+            { "NAV_AIWORLD_DATA", ".nav" },
+            { "MemFile", ".txt" },
+            { "XML", ".xml" },
+            { "Script", ".luapack" },
+            { "SystemObjectDatabase", ".xbin" },
+        };
+
         private KeyValuePair<ulong, string> GetFileName(ResourceEntry entry, string item)
         {
             if (item != "not available")
@@ -77,34 +96,10 @@ namespace Gibbed.Mafia2.FileFormats
                 Extension = FileExtensionLookup[Typename];
                 return Extension;
             }
-
-            if (Typename == "Texture")
+            else
             {
-                Extension = ".dds";
-            }
-            else if (Typename == "Generic")
-            {
-                Extension = ".genr";
-            }
-            else if (Typename == "Flash")
-            {
-                Extension = ".fla";
-            }
-            else if (Typename == "hkAnimation")
-            {
-                Extension = ".hkx";
-            }
-            else if (Typename == "NAV_PATH_DATA")
-            {
-                Extension = ".hkt";
-            }
-            else if (Typename == "EnlightenResource")
-            {
-                Extension = ".enl";
-            }
-            else if (Typename == "RoadMap")
-            {
-                Extension = ".gsd";
+                Extension = FileExtensionLookupFusion[Typename];
+                return Extension;
             }
 
             return Extension;

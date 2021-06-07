@@ -627,7 +627,7 @@ namespace Gibbed.Mafia2.FileFormats
                 if (Entry.TypeId != -1)
                 {
                     // TODO: Determine if this could be done for fusion games
-                    string NameOfFile = "File_";
+                    string NameOfFile = "File";
                     if (IsGameType(GamesEnumerator.MafiaII) || IsGameType(GamesEnumerator.MafiaII_DE))
                     {
                         NameOfFile = ResourceTypes[Entry.TypeId].Name;
@@ -635,7 +635,7 @@ namespace Gibbed.Mafia2.FileFormats
 
                     // Get extension, format filename properly.
                     string Extension = DetermineFileExtension(_ResourceTypes[Entry.TypeId].Name);
-                    FileName = string.Format("{0}{1}{2}", NameOfFile, i, Extension);
+                    FileName = string.Format("{0}_{1}{2}", NameOfFile, i, Extension);
                 }
 
                 _ResourceNames.Add(FileName);

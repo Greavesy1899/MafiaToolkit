@@ -45,7 +45,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -111,11 +111,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)SDKs\Cooking\include;$(ProjectDir)SDKs\Physics\include;$(ProjectDir)SDKs\Foundation\include;$(ProjectDir)SDKs\PhysXLoader\include;$(ProjectDir)SDKs\FBX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)SDKs\Cooking\include;$(ProjectDir)SDKs\Physics\include;$(ProjectDir)SDKs\Foundation\include;$(ProjectDir)SDKs\PhysXLoader\include;$(ProjectDir)vendors\fbx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libfbxsdk-md.lib;PhysXLoader64.lib;PhysXCooking64.lib;PhysXCore64.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDKs\libs\Win64;$(ProjectDir)SDKs\libs\vs2015\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)vendors\fbx\lib\vs2019\x64\release;$(ProjectDir)SDKs\libs\vs2015\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -143,18 +143,16 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)SDKs\Cooking\include;$(ProjectDir)SDKs\Physics\include;$(ProjectDir)SDKs\Foundation\include;$(ProjectDir)SDKs\PhysXLoader\include;$(ProjectDir)SDKs\FBX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)SDKs\Cooking\include;$(ProjectDir)SDKs\Physics\include;$(ProjectDir)SDKs\Foundation\include;$(ProjectDir)SDKs\PhysXLoader\include;$(ProjectDir)vendors\fbx\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)SDKs\libs\Win64;$(ProjectDir)SDKs\libs\vs2015\x64\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libfbxsdk-md.lib;PhysXLoader64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)vendors\fbx\lib\vs2019\x64\release;$(ProjectDir)SDKs\libs\vs2015\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libfbxsdk-md.lib;zlib-md.lib;libxml2-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CPhysXCooking.cpp" />
-    <ClCompile Include="CStream.cpp" />
     <ClCompile Include="FbxUtilities.cpp" />
     <ClCompile Include="FBXWrangler.cpp" />
     <ClCompile Include="M2Model.cpp" />
@@ -164,8 +162,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
-    <ClInclude Include="CPhysXCooking.h" />
-    <ClInclude Include="CStream.h" />
     <ClInclude Include="DataTypes.h" />
     <ClInclude Include="FbxUtilities.h" />
     <ClInclude Include="FbxWrangler.h" />

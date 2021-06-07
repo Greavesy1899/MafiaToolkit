@@ -881,8 +881,7 @@ namespace Mafia2Tool
                 int result = 0;
                 if(int.TryParse(node.Name, out result))
                 {
-                    SelectEntryParams SelectParams = new SelectEntryParams(result);
-                    Graphics.SelectEntry(SelectParams);
+                    Graphics.SelectEntry(result);
                 }
                 
             }
