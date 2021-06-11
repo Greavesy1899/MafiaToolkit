@@ -384,18 +384,22 @@ namespace ResourceTypes.Collisions.Opcode
         private void ReadPhysProperties(BinaryReader reader, bool platformMismatch)
         {
             mass = ReadFloat(reader, platformMismatch);
-            inertiaTensor.M11 = ReadFloat(reader, platformMismatch);
-            inertiaTensor.M12 = ReadFloat(reader, platformMismatch);
-            inertiaTensor.M13 = ReadFloat(reader, platformMismatch);
-            inertiaTensor.M21 = ReadFloat(reader, platformMismatch);
-            inertiaTensor.M22 = ReadFloat(reader, platformMismatch);
-            inertiaTensor.M23 = ReadFloat(reader, platformMismatch);
-            inertiaTensor.M31 = ReadFloat(reader, platformMismatch);
-            inertiaTensor.M32 = ReadFloat(reader, platformMismatch);
-            inertiaTensor.M33 = ReadFloat(reader, platformMismatch);
-            centerOfMass.X = ReadFloat(reader, platformMismatch);
-            centerOfMass.Y = ReadFloat(reader, platformMismatch);
-            centerOfMass.Z = ReadFloat(reader, platformMismatch);
+
+            if (mass != -1.0f)
+            {
+                inertiaTensor.M11 = ReadFloat(reader, platformMismatch);
+                inertiaTensor.M12 = ReadFloat(reader, platformMismatch);
+                inertiaTensor.M13 = ReadFloat(reader, platformMismatch);
+                inertiaTensor.M21 = ReadFloat(reader, platformMismatch);
+                inertiaTensor.M22 = ReadFloat(reader, platformMismatch);
+                inertiaTensor.M23 = ReadFloat(reader, platformMismatch);
+                inertiaTensor.M31 = ReadFloat(reader, platformMismatch);
+                inertiaTensor.M32 = ReadFloat(reader, platformMismatch);
+                inertiaTensor.M33 = ReadFloat(reader, platformMismatch);
+                centerOfMass.X = ReadFloat(reader, platformMismatch);
+                centerOfMass.Y = ReadFloat(reader, platformMismatch);
+                centerOfMass.Z = ReadFloat(reader, platformMismatch);
+            }
         }
 
         private void ReadExtraTriangleData(uint numTriangles, BinaryReader reader, bool platformMismatch)
@@ -609,18 +613,23 @@ namespace ResourceTypes.Collisions.Opcode
             // but theoretically it can issue for user-created collisions.
             // So we can process this thing here in future if we really need it (and reading code also).
             WriteFloat(mass, writer, platformMismatch);
-            WriteFloat(inertiaTensor.M11, writer, platformMismatch);
-            WriteFloat(inertiaTensor.M12, writer, platformMismatch);
-            WriteFloat(inertiaTensor.M13, writer, platformMismatch);
-            WriteFloat(inertiaTensor.M21, writer, platformMismatch);
-            WriteFloat(inertiaTensor.M22, writer, platformMismatch);
-            WriteFloat(inertiaTensor.M23, writer, platformMismatch);
-            WriteFloat(inertiaTensor.M31, writer, platformMismatch);
-            WriteFloat(inertiaTensor.M32, writer, platformMismatch);
-            WriteFloat(inertiaTensor.M33, writer, platformMismatch);
-            WriteFloat(centerOfMass.X, writer, platformMismatch);
-            WriteFloat(centerOfMass.Y, writer, platformMismatch);
-            WriteFloat(centerOfMass.Z, writer, platformMismatch);
+
+            // TODO: Read the info above - we may need to call our own 'computeMassInfo'
+            if (mass != -1.0f)
+            {
+                WriteFloat(inertiaTensor.M11, writer, platformMismatch);
+                WriteFloat(inertiaTensor.M12, writer, platformMismatch);
+                WriteFloat(inertiaTensor.M13, writer, platformMismatch);
+                WriteFloat(inertiaTensor.M21, writer, platformMismatch);
+                WriteFloat(inertiaTensor.M22, writer, platformMismatch);
+                WriteFloat(inertiaTensor.M23, writer, platformMismatch);
+                WriteFloat(inertiaTensor.M31, writer, platformMismatch);
+                WriteFloat(inertiaTensor.M32, writer, platformMismatch);
+                WriteFloat(inertiaTensor.M33, writer, platformMismatch);
+                WriteFloat(centerOfMass.X, writer, platformMismatch);
+                WriteFloat(centerOfMass.Y, writer, platformMismatch);
+                WriteFloat(centerOfMass.Z, writer, platformMismatch);
+            }
         }
 
         private void WriteExtraTriangleData(BinaryWriter writer, bool platformMismatch)
