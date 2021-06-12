@@ -45,6 +45,7 @@ namespace Gibbed.Mafia2.FileFormats
             { "Sound", ".fsb" },
             { "MemFile", ".txt" },
             { "XML", ".xml" },
+            { "Animated Texture", ".ifl" },
         };
 
         private Dictionary<string, string> FileExtensionLookupFusion = new Dictionary<string, string>
