@@ -28,6 +28,8 @@ namespace Rendering.Graphics
             context.MapSubresource(buffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
             mappedResource.Write(data);
             context.UnmapSubresource(buffer, 0);
+
+            mappedResource.Dispose();
         }
 
         public static void UpdatePixelBuffer<T>(DeviceContext context, Buffer buffer, int slot, T data) where T : struct
@@ -37,6 +39,8 @@ namespace Rendering.Graphics
             mappedResource.Write(data);
             context.UnmapSubresource(buffer, 0);
             context.PixelShader.SetConstantBuffer(slot, buffer);
+
+            mappedResource.Dispose();
         }
 
         public static void UpdateVertexBuffer<T>(DeviceContext context, Buffer buffer, int slot, T data) where T : struct
@@ -46,6 +50,8 @@ namespace Rendering.Graphics
             mappedResource.Write(data);
             context.UnmapSubresource(buffer, 0);
             context.VertexShader.SetConstantBuffer(slot, buffer);
+
+            mappedResource.Dispose();
         }
     }
 }

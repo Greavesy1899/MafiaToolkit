@@ -371,8 +371,11 @@
     <Compile Include="Gibbed.Mafia2.FileFormats\Utils\ArchiveUtils.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\Version20\ResourceFunctions.cs" />
     <Compile Include="Gibbed.Mafia2.FileFormats\Version19\ResourceFunctions.cs" />
-    <Compile Include="Rendering\Core\PrimitiveManager.cs" />
+    <Compile Include="Rendering\Core\Primitive\PrimitiveBatch.cs" />
+    <Compile Include="Rendering\Core\Primitive\PrimitiveManager.cs" />
     <Compile Include="Rendering\Core\RenderableAdapter.cs" />
+    <Compile Include="Rendering\Core\Spatial\SpatialCell_ObjData.cs" />
+    <Compile Include="Rendering\Core\Spatial\SpatialCell_Translokator.cs" />
     <Compile Include="Rendering\Factories\RenderableFactory.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorDefinition.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorEntry.cs" />
@@ -633,8 +636,8 @@
     <Compile Include="Rendering\Graphics\Shaders\Shader_50760736.cs" />
     <Compile Include="Rendering\Graphics\WorldSettings.cs" />
     <Compile Include="Rendering\RenderPrefabs.cs" />
-    <Compile Include="Rendering\Core\SpatialCell.cs" />
-    <Compile Include="Rendering\Core\SpatialGrid.cs" />
+    <Compile Include="Rendering\Core\Spatial\SpatialCell.cs" />
+    <Compile Include="Rendering\Core\Spatial\SpatialGrid.cs" />
     <Compile Include="Utils\Helpers\CustomAttributes.cs" />
     <Compile Include="Utils\Helpers\MatrixExtensions.cs" />
     <Compile Include="Utils\Helpers\BoundExtensions.cs" />

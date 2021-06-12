@@ -31,7 +31,7 @@ namespace ResourceTypes.Navigation
                 set { connectedNodeID = value; }
             }
         }
-        public struct VertexStruct
+        public class VertexStruct
         {
             uint unk7;
             Vector3 position;
@@ -80,6 +80,14 @@ namespace ResourceTypes.Navigation
                 set { unk6 = value; }
             }
 
+            public List<VertexStruct> IncomingConnections { get; set; }
+            public List<VertexStruct> OutgoingConnections { get; set; }
+
+            public VertexStruct()
+            {
+                IncomingConnections = new List<VertexStruct>();
+                OutgoingConnections = new List<VertexStruct>();
+            }
 
             public override string ToString()
             {
@@ -198,6 +206,39 @@ namespace ResourceTypes.Navigation
             //Read KynogonRuntimeMesh
             runtimeMesh = new KynogonRuntimeMesh();
             runtimeMesh.ReadFromFile(reader, writer);
+
+            GenerateConnections();
+        }
+
+        public void GenerateConnections()
+        {
+            for (int i = 0; i < vertSize; i++)
+            {
+                VertexStruct vertex = vertices[i];
+
+                int ConnectionOffset = vertex.Unk2 - 1;
+                if (ConnectionOffset != -1)
+                {
+                    bool bEndOfArray = false;
+                    ConnectionStruct CurConnection = connections[ConnectionOffset];
+                    while(CurConnection.NodeID == i && !bEndOfArray)
+                    {
+                        VertexStruct ConnectedVertex = vertices[CurConnection.ConnectedNodeID];
+                        vertex.OutgoingConnections.Add(ConnectedVertex);
+                        ConnectedVertex.IncomingConnections.Add(vertex);
+
+                        ConnectionOffset++;
+                        if (ConnectionOffset >= connections.Length)
+                        {
+                            bEndOfArray = true;
+                        }
+                        else
+                        {
+                            CurConnection = connections[ConnectionOffset];
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -3,21 +3,33 @@ using System.Collections.Generic;
 using SharpDX;
 using SharpDX.Direct3D11;
 using ResourceTypes.Navigation;
+using Rendering.Core;
+using Utils.StringHelpers;
 
 namespace Rendering.Graphics
 {
+    //[TypeConverter(typeof(ExpandableObjectConverter))]
     public class RenderNavCell : IRenderer
     {
-        KynogonRuntimeMesh.Cell cell;
-        List<RenderBoundingBox> boundingBoxes;
-        List<RenderLine> lines;
+        private KynogonRuntimeMesh.Cell cell;
+        private GraphicsClass OwnGraphics;
+
+        private PrimitiveBatch LineBatch = null;
+        private PrimitiveBatch BBoxBatch = null;
+
+        // TODO: Make OwnGraphics in the base class
+        public RenderNavCell(GraphicsClass InGraphicsOwner)
+        {
+            OwnGraphics = InGraphicsOwner;
+        }
 
         public void Init(KynogonRuntimeMesh.Cell cell)
         {
             this.cell = cell;
+
             DoRender = true;
-            boundingBoxes = new List<RenderBoundingBox>();
-            lines = new List<RenderLine>();
+            List<RenderBoundingBox> boundingBoxes = new List<RenderBoundingBox>();
+            List<RenderLine> lines = new List<RenderLine>();
 
             foreach(var set in cell.Sets)
             {
@@ -61,47 +73,37 @@ namespace Rendering.Graphics
                     lines.Add(line);
                 }
             }
-        }
-        public override void InitBuffers(Device d3d, DeviceContext deviceContext)
-        {
-            if(boundingBoxes != null)
-            {
-                foreach(var bbox in boundingBoxes)
-                {
-                    bbox.InitBuffers(d3d, deviceContext);
-                }
-            }
 
-            if(lines != null)
+            if (lines.Count > 0)
             {
-                foreach(var line in lines)
+                string LineBatchID = string.Format("NavCellLineBatch_{0}", StringHelpers.GetNewRefID());
+               LineBatch = new PrimitiveBatch(PrimitiveType.Line, LineBatchID);
+                foreach (RenderLine line in lines)
                 {
-                    line.InitBuffers(d3d, deviceContext);
-                }
-            }
-        }
-
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
-        {
-            if(DoRender)
-            {
-                if(boundingBoxes != null)
-                {
-                    foreach(var bbox in boundingBoxes)
-                    {
-                        bbox.Render(device, deviceContext, camera);
-                    }
+                    int PathHandle = StringHelpers.GetNewRefID();
+                    LineBatch.AddObject(PathHandle, line);
                 }
 
-                if (lines != null)
+                OwnGraphics.OurPrimitiveManager.AddPrimitiveBatch(LineBatch);
+            }
+
+            if (boundingBoxes.Count > 0)
+            {
+                string BBoxBatchID = string.Format("NavCellBBoxBatch_{0}", StringHelpers.GetNewRefID());
+                BBoxBatch = new PrimitiveBatch(PrimitiveType.Box, BBoxBatchID);
+                foreach (RenderBoundingBox bbox in boundingBoxes)
                 {
-                    foreach (var line in lines)
-                    {
-                        line.Render(device, deviceContext, camera);
-                    }
+                    int PathHandle = StringHelpers.GetNewRefID();
+                    BBoxBatch.AddObject(PathHandle, bbox);
                 }
+
+                OwnGraphics.OurPrimitiveManager.AddPrimitiveBatch(BBoxBatch);
             }
         }
+
+        public override void InitBuffers(Device d3d, DeviceContext deviceContext) {}
+
+        public override void Render(Device device, DeviceContext deviceContext, Camera camera) {}
 
         public override void Select()
         {
@@ -115,26 +117,17 @@ namespace Rendering.Graphics
 
         public override void Shutdown()
         {
-            if(boundingBoxes != null)
+            if(BBoxBatch != null)
             {
-                foreach(var bbox in boundingBoxes)
-                {
-                    bbox.Shutdown();
-                }
+                OwnGraphics.OurPrimitiveManager.RemovePrimitiveBatch(BBoxBatch);
+                BBoxBatch = null;
             }
 
-            if (lines != null)
+            if(LineBatch != null)
             {
-                foreach (var line in lines)
-                {
-                    line.Shutdown();
-                }
+                OwnGraphics.OurPrimitiveManager.RemovePrimitiveBatch(LineBatch);
+                LineBatch = null;
             }
-
-            boundingBoxes.Clear();
-            boundingBoxes = null;
-            lines.Clear();
-            lines = null;
         }
 
         public override void Unselect()
@@ -142,23 +135,6 @@ namespace Rendering.Graphics
             throw new NotImplementedException();
         }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
-        {
-            if (boundingBoxes != null)
-            {
-                foreach (var bbox in boundingBoxes)
-                {
-                    bbox.UpdateBuffers(device, deviceContext);
-                }
-            }
-
-            if (lines != null)
-            {
-                foreach (var line in lines)
-                {
-                    line.UpdateBuffers(device, deviceContext);
-                }
-            }
-        }
+        public override void UpdateBuffers(Device device, DeviceContext deviceContext) {}
     }
 }

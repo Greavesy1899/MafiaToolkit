@@ -24,6 +24,7 @@ namespace Rendering.Core
         private int previousCell = -1;
         private int currentCell = -1;
 
+        private GraphicsClass OwnGraphicsClass;
         private bool bIsReady = false;
 
         public SpatialGrid()
@@ -31,8 +32,10 @@ namespace Rendering.Core
             cells = new SpatialCell[0];
         }
 
-        public SpatialGrid(KynogonRuntimeMesh mesh)
+        public SpatialGrid(GraphicsClass InGraphics, KynogonRuntimeMesh mesh)
         {
+            OwnGraphicsClass = InGraphics;
+
             bIsReady = true;
             var min = new Vector3(mesh.BoundMin, float.MinValue);
             var max = new Vector3(mesh.BoundMax, float.MaxValue);
@@ -63,19 +66,32 @@ namespace Rendering.Core
                             gridBounds.Maximum.Z = set.Y;
                         }
                     }
-                
-                    var extents = new BoundingBox();
-                    extents.Minimum = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 0.0f);
-                    extents.Maximum = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 0.0f);
-                    cells[index] = new SpatialCell(cell, extents);
+
+                    // Construct cell extents
+                    BoundingBox CellExtents = new BoundingBox();
+                    CellExtents.Minimum = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 0.0f);
+                    CellExtents.Maximum = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 0.0f);
+
+                    // Construct Init params
+                    SpatialCell_ObjDataParams InitParams = new SpatialCell_ObjDataParams();
+                    InitParams.OwnGraphics = OwnGraphicsClass;
+                    InitParams.CellExtents = CellExtents;
+                    InitParams.CellInfo = cell;
+
+                    // Construct ObjData cell
+                    SpatialCell_ObjData ObjDataCell = new SpatialCell_ObjData(InitParams);
+                    ObjDataCell.PreInitialise();
+                    cells[index] = ObjDataCell;
 
                     index++;
                 }
             }
         }
 
-        public SpatialGrid(TranslokatorLoader translokator)
+        public SpatialGrid(GraphicsClass InGraphics, TranslokatorLoader translokator)
         {
+            OwnGraphicsClass = InGraphics;
+
             bIsReady = true;
             gridBounds = translokator.Bounds;
             width = translokator.Grids[0].Width;
@@ -85,14 +101,14 @@ namespace Rendering.Core
             origin = gridBounds.Minimum;
 
             var index = 0;
-            for (int i = 0; i < width; i++)
+            /*for (int i = 0; i < width; i++)
             {
                 for (int x = 0; x < height; x++)
                 {
                     var extents = new BoundingBox();
                     extents.Minimum = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 10.0f);
                     extents.Maximum = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 10.0f);
-                    cells[index++] = new SpatialCell(extents);
+                    cells[index++] = new SpatialCell(InGraphics, extents);
                 }
             }
 
@@ -114,7 +130,7 @@ namespace Rendering.Core
                         cells[cell].AddAsset(box, StringHelpers.GetNewRefID());
                     }
                 }
-            }
+            }*/
         }
 
         public void Initialise(Device device, DeviceContext deviceContext)
@@ -147,13 +163,13 @@ namespace Rendering.Core
                     cells[currentCell].Render(device, deviceContext, camera);
                 }
 
-                /*
+                
                 foreach (var cell in cells)
                 {
                     cell.Render(device, deviceContext, camera);
                 }
 
-                cellBoundingBox.Render(device, deviceContext, camera);
+                /*cellBoundingBox.Render(device, deviceContext, camera);
                 currentCell = GetCell(camera.Position);
                 //cells[currentCell].Render(device, deviceContext, camera);
                 //Debug.WriteLine(cells[currentCell].BoundingBox.ToString());

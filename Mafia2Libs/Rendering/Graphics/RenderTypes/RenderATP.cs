@@ -23,7 +23,6 @@ namespace Rendering.Graphics
             Transform = Matrix.Identity;
             BBox = new RenderBoundingBox();
             Path = new RenderLine();
-
             OwnGraphics = InGraphicsOwner;
         }
 
@@ -31,25 +30,32 @@ namespace Rendering.Graphics
         {
             ATP = path;
             BBox.Init(path.BoundingBox);
-
-            Vector3[] points = new Vector3[path.Vectors.Length];
-            for(int i = 0; i != path.Vectors.Length; i++)
+           
+            if (path.Vectors.Length > 1)
             {
-                points[i] = path.Vectors[i].Position;
+                Vector3[] points = new Vector3[path.Vectors.Length];
+                for (int i = 0; i != path.Vectors.Length; i++)
+                {
+                    points[i] = path.Vectors[i].Position;
+                }
+
+                Path.Init(points);
             }
-            Path.Init(points);
         }
 
         public override void InitBuffers(Device d3d, DeviceContext deviceContext)
         {
-            BBox.InitBuffers(d3d, deviceContext);
-            Path.InitBuffers(d3d, deviceContext);
+            if (Path.GetVertices.Length > 1)
+            {
+                BBox.InitBuffers(d3d, deviceContext);
+                Path.InitBuffers(d3d, deviceContext);
 
-            BBoxHandle = StringHelpers.GetNewRefID();
-            OwnGraphics.OurPrimitiveManager.PushPrimitiveObject(Core.PrimitiveType.Box, BBoxHandle, BBox);
+                BBoxHandle = StringHelpers.GetNewRefID();
+                //OwnGraphics.OurPrimitiveManager.PushPrimitiveObject(Core.PrimitiveType.Box, BBoxHandle, BBox);
 
-            //PathHandle = StringHelpers.GetNewRefID();
-            //OwnGraphics.OurPrimitiveManager.PushPrimitiveObject(Core.PrimitiveType.Line, PathHandle, Path);
+                PathHandle = StringHelpers.GetNewRefID();
+               // OwnGraphics.OurPrimitiveManager.PushPrimitiveObject(Core.PrimitiveType.Line, PathHandle, Path);
+            }
         }
 
         public override void Render(Device device, DeviceContext deviceContext, Camera camera)
@@ -57,14 +63,14 @@ namespace Rendering.Graphics
             if (DoRender != false)
             {
                 //BBox.Render(device, deviceContext, camera);
-                Path.Render(device, deviceContext, camera);
+                //Path.Render(device, deviceContext, camera);
             }
         }
 
         public override void Select()
         {
             //BBox.Select();
-            Path.Select();
+            //Path.Select();
         }
         public override void SetTransform(Matrix matrix)
         {
@@ -80,13 +86,13 @@ namespace Rendering.Graphics
         public override void Unselect()
         {
             //BBox.Unselect();
-            Path.Unselect();
+            //Path.Unselect();
         }
 
         public override void UpdateBuffers(Device device, DeviceContext deviceContext)
         {
             //BBox.UpdateBuffers(device, deviceContext);
-            Path.UpdateBuffers(device, deviceContext);
+            //Path.UpdateBuffers(device, deviceContext);
         }
     }
 }

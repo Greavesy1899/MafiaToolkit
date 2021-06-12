@@ -7,11 +7,16 @@ namespace Rendering.Graphics
 {
     public class RenderBoundingBox : IRenderer
     {
+        private static readonly uint[] ReadOnlyIndices = {
+                0, 1, 1, 2, 2, 3, 3, 0, // Front edges
+                4, 5, 5, 6, 6, 7, 7, 4, // Back edges
+                0, 4, 1, 5, 2, 6, 3, 7 // Side edges connecting front and back
+        };
+
         public VertexLayouts.BasicLayout.Vertex[] Vertices { get { return vertices; } }
-        public ushort[] Indices { get { return indices; } }
+        public uint[] Indices { get { return ReadOnlyIndices; } }
 
         private VertexLayouts.BasicLayout.Vertex[] vertices;
-        private ushort[] indices;
         private Color colour;
 
         public RenderBoundingBox()
@@ -51,12 +56,6 @@ namespace Rendering.Graphics
                 vertices[i].Colour = colour.ToArgb();
             }
 
-            indices = new ushort[] {
-                0, 1, 1, 2, 2, 3, 3, 0, // Front edges
-                4, 5, 5, 6, 6, 7, 7, 4, // Back edges
-                0, 4, 1, 5, 2, 6, 3, 7 // Side edges connecting front and back
-            };
-
             shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
             return true;
         }
@@ -70,7 +69,7 @@ namespace Rendering.Graphics
         public override void InitBuffers(Device d3d, DeviceContext context)
         {
             vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
-            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, ReadOnlyIndices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
         }
 
         public void SetColour(Color newColour, bool update = false)
@@ -90,17 +89,16 @@ namespace Rendering.Graphics
                 return;
 
             deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0));
-            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
+            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
             deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
 
             shader.SetSceneVariables(deviceContext, Transform, camera);
-            shader.Render(deviceContext, PrimitiveTopology.LineList, indices.Length, 0);
+            shader.Render(deviceContext, PrimitiveTopology.LineList, ReadOnlyIndices.Length, 0);
         }
 
         public override void Shutdown()
         {
             vertices = null;
-            indices = null;
             indexBuffer?.Dispose();
             indexBuffer = null;
             vertexBuffer?.Dispose();

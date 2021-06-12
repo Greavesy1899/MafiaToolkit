@@ -8,6 +8,9 @@ using Utils.Models;
 using ResourceTypes.Translokator;
 using Utils.Settings;
 using Utils.SharpDXExtensions;
+using Utils.StringHelpers;
+using Mafia2Tool;
+using ResourceTypes.FrameResource;
 
 namespace Rendering.Graphics
 {
@@ -21,7 +24,7 @@ namespace Rendering.Graphics
         public InputClass Input { get; private set; }
         public WorldSettings WorldSettings { get; set; }
         public Camera Camera { get; set; }
-        public Dictionary<int, IRenderer> Assets { get; private set; }
+        private Dictionary<int, IRenderer> Assets { get; set; }
         public Dictionary<int, IRenderer> InitObjectStack { get; set; }
         public Profiler Profile { get; set; }
 
@@ -38,6 +41,9 @@ namespace Rendering.Graphics
         private SpatialGrid translokatorGrid;
         private SpatialGrid[] navigationGrids;
 
+        private PrimitiveBatch LineBatch = null;
+        private PrimitiveBatch BBoxBatch = null;
+
         public PrimitiveManager OurPrimitiveManager { get; private set; }
 
         public GraphicsClass()
@@ -51,6 +57,16 @@ namespace Rendering.Graphics
             OurPrimitiveManager = new PrimitiveManager();
 
             OnSelectedObjectUpdated += OnSelectedObjectHasUpdated;
+
+            // Create bespoke batches for any lines or boxes passed in via the construct stack
+            string LineBatchID = string.Format("Graphics_LineBatcher_{0}", StringHelpers.GetNewRefID());
+            LineBatch = new PrimitiveBatch(PrimitiveType.Line, LineBatchID);
+
+            string BBoxBatchID = string.Format("Graphics_BBoxBatcher_{0}", StringHelpers.GetNewRefID());
+            BBoxBatch = new PrimitiveBatch(PrimitiveType.Box, BBoxBatchID);
+
+            OurPrimitiveManager.AddPrimitiveBatch(LineBatch);
+            OurPrimitiveManager.AddPrimitiveBatch(BBoxBatch);
         }
 
         public bool PreInit(IntPtr WindowHandle)
@@ -113,7 +129,7 @@ namespace Rendering.Graphics
 
         public TreeNode SetTranslokatorGrid(TranslokatorLoader translokator)
         {
-            translokatorGrid = new SpatialGrid(translokator);
+            translokatorGrid = new SpatialGrid(this, translokator);
             translokatorGrid.Initialise(D3D.Device, D3D.DeviceContext);
             return translokatorGrid.GetTreeNodes();
         }
@@ -125,7 +141,7 @@ namespace Rendering.Graphics
 
             for(int i = 0; i < navigationGrids.Length; i++)
             {
-                navigationGrids[i] = new SpatialGrid(data[i].runtimeMesh);
+                navigationGrids[i] = new SpatialGrid(this, data[i].runtimeMesh);
                 navigationGrids[i].Initialise(D3D.Device, D3D.DeviceContext);
                 Grids[i] = navigationGrids[i].GetTreeNodes();
                 Grids[i].Text = string.Format("Grid: {0}", i);
@@ -136,43 +152,112 @@ namespace Rendering.Graphics
             return Parent;
         }
 
-        public void Shutdown()
+        public int Pick(int sx, int sy, int Width, int Height)
         {
-            WorldSettings.Shutdown();
-            WorldSettings = null;
-            Camera = null;
+            float lowest = float.MaxValue;
+            int lowestRefID = -1;
 
-            foreach (IRenderer RenderAsset in Assets.Values)
+            Ray ray = Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(Width, Height));
+
+            int index = 0;
+            foreach (KeyValuePair<int, IRenderer> model in Assets)
             {
-                RenderAsset.Shutdown();
+                if (!model.Value.DoRender)
+                {
+                    continue;
+                }
+
+                var vWM = Matrix.Invert(model.Value.Transform);
+                var localRay = new Ray(
+                    Vector3.TransformCoordinate(ray.Position, vWM),
+                    Vector3.TransformNormal(ray.Direction, vWM)
+                );
+                if (model.Value is RenderModel)
+                {
+                    RenderModel mesh = (model.Value as RenderModel);
+                    var bbox = mesh.BoundingBox;
+
+                    if (!localRay.Intersects(ref bbox)) continue;
+
+                    for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
+                    {
+                        var v0 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3]].Position;
+                        var v1 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 1]].Position;
+                        var v2 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position;
+                        float t;
+
+                        if (!localRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+
+                        if (t < 0.0f || float.IsNaN(t))
+                        {
+                            // TODO: Remove this from Graphics class. This should be an ambiguous class - 
+                            // Maybe we can send this to another class which handles erroneous requests
+                            if (SceneData.FrameResource.FrameObjects.ContainsKey(model.Key))
+                            {
+                                var frame = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase);
+                                Utils.Logging.Log.WriteLine(string.Format("The toolkit has failed to analyse a model: {0} {1}", frame.Name, t));
+                            }
+                        }
+
+                        var worldPosition = ray.Position + t * ray.Direction;
+                        var distance = (worldPosition - ray.Position).LengthSquared();
+                        if (distance < lowest)
+                        {
+                            lowest = distance;
+                            lowestRefID = model.Key;
+                        }
+                    }
+                }
+                if (model.Value is RenderInstance)
+                {
+                    RenderInstance instance = (model.Value as RenderInstance);
+                    RenderStaticCollision collision = instance.GetCollision();
+                    var bbox = collision.BoundingBox;
+
+                    if (!localRay.Intersects(ref bbox)) continue;
+
+                    for (var i = 0; i < collision.Indices.Length / 3; i++)
+                    {
+                        var v0 = collision.Vertices[collision.Indices[i * 3]].Position;
+                        var v1 = collision.Vertices[collision.Indices[i * 3 + 1]].Position;
+                        var v2 = collision.Vertices[collision.Indices[i * 3 + 2]].Position;
+                        float t;
+
+                        if (!localRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+
+                        if (t < 0.0f || float.IsNaN(t))
+                        {
+                            //if (SceneData.FrameResource.FrameObjects.ContainsKey(model.Key))
+                            //{
+                            //    var frame = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase);
+                            //    Utils.Logging.Log.WriteLine(string.Format("The toolkit has failed to analyse a model: {0} {1}", frame.Name, t));
+                            //}
+                        }
+
+                        var worldPosition = ray.Position + t * ray.Direction;
+                        var distance = (worldPosition - ray.Position).LengthSquared();
+
+                        if (distance < lowest)
+                        {
+                            lowest = distance;
+                            lowestRefID = model.Key;
+                        }
+                    }
+                }
+
+                index++;
             }
 
-            foreach (SpatialGrid grid in navigationGrids)
-            {
-                grid?.Shutdown();
-            }
-
-            navigationGrids = null;
-            translokatorGrid?.Shutdown();
-            translokatorGrid = null;
-            selectionBox.Shutdown();
-            selectionBox = null;
-            TranslationGizmo.Shutdown();
-            TranslationGizmo = null;
-            clouds.Shutdown();
-            clouds = null;
-            sky.Shutdown();
-            sky = null;
-            Assets = null;
-            D3D?.Shutdown();
-            D3D = null;
+            return lowestRefID;
         }
+
         public void Frame()
         {
             ClearRenderStack();
             Render();
             Profile.Update();
         }
+
         public bool UpdateInput()
         {
             bool bCameraUpdated = false;
@@ -270,11 +355,11 @@ namespace Rendering.Graphics
 
                 if (asset.Value is RenderBoundingBox)
                 {
-                    OurPrimitiveManager.PushPrimitiveObject(PrimitiveType.Box, asset.Key, asset.Value);
+                    BBoxBatch.AddObject(asset.Key, asset.Value);
                 }
                 else if (asset.Value is RenderLine)
                 {
-                    OurPrimitiveManager.PushPrimitiveObject(PrimitiveType.Line, asset.Key, asset.Value);
+                    LineBatch.AddObject(asset.Key, asset.Value);
                 }
                 else
                 {
@@ -311,7 +396,7 @@ namespace Rendering.Graphics
             }
         }
 
-        private IRenderer GetAsset(int RefID)
+        public IRenderer GetAsset(int RefID)
         {
             if(Assets.ContainsKey(RefID))
             {
@@ -319,6 +404,17 @@ namespace Rendering.Graphics
             }
 
             return OurPrimitiveManager.GetObject(RefID);
+        }
+
+        public bool DeleteAsset(int RefID)
+        {
+            if(Assets.ContainsKey(RefID))
+            {
+                return Assets.Remove(RefID);
+            }
+
+            // TODO: The owner if a 'PrimitiveBatch' is pretty ambiguous right now.
+            return OurPrimitiveManager.RemoveObject(RefID);
         }
 
         public void MoveGizmo(int sx, int sy, int Width, int Height)
@@ -341,10 +437,44 @@ namespace Rendering.Graphics
         {
             if(selectedID == Args.RefID)
             {
-                IRenderer RenderAsset = Assets[Args.RefID];
+                IRenderer RenderAsset = GetAsset(Args.RefID);
                 selectionBox.SetTransform(RenderAsset.Transform);
                 selectionBox.Update(RenderAsset.BoundingBox);
             }
+        }
+
+        public void Shutdown()
+        {
+            WorldSettings.Shutdown();
+            WorldSettings = null;
+            Camera = null;
+
+            foreach (IRenderer RenderAsset in Assets.Values)
+            {
+                RenderAsset.Shutdown();
+            }
+
+            foreach (SpatialGrid grid in navigationGrids)
+            {
+                grid?.Shutdown();
+            }
+
+            OurPrimitiveManager?.Shutdown();
+            OurPrimitiveManager = null;
+            navigationGrids = null;
+            translokatorGrid?.Shutdown();
+            translokatorGrid = null;
+            selectionBox.Shutdown();
+            selectionBox = null;
+            TranslationGizmo.Shutdown();
+            TranslationGizmo = null;
+            clouds.Shutdown();
+            clouds = null;
+            sky.Shutdown();
+            sky = null;
+            Assets = null;
+            D3D?.Shutdown();
+            D3D = null;
         }
 
         public void ToggleD3DFillMode() => D3D.ToggleFillMode();
