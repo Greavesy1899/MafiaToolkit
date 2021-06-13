@@ -1,6 +1,10 @@
-﻿using SharpDX;
+﻿using Rendering.Core;
+using Rendering.Graphics;
+using SharpDX;
 using System.IO;
+using System.Windows.Forms;
 using Utils.SharpDXExtensions;
+using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
 {
@@ -19,7 +23,7 @@ namespace ResourceTypes.Navigation
         public uint[] Unk8 { get; set; }
         public uint Unk9 { get; set; }
 
-        public AIWorld_Type4()
+        public AIWorld_Type4() : base()
         {
             Position = Vector3.Zero;
             Rotation = Vector3.Zero;
@@ -97,6 +101,35 @@ namespace ResourceTypes.Navigation
             {
                 Writer.WriteLine("Value: {0}", Value);
             }
+        }
+
+        public override void ConstructRenderable(PrimitiveBatch BBoxBatcher)
+        {
+            base.ConstructRenderable(BBoxBatcher);
+
+            RenderBoundingBox navigationBox = new RenderBoundingBox();
+            navigationBox.SetColour(System.Drawing.Color.White);
+            navigationBox.Init(new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f)));
+            navigationBox.SetTransform(Matrix.Translation(Position));
+            
+            BBoxBatcher.AddObject(RefID, navigationBox);
+        }
+
+        public override TreeNode PopulateTreeNode()
+        {
+            base.PopulateTreeNode();
+
+            TreeNode ThisNode = new TreeNode();
+            ThisNode.Text = "Type4";
+            ThisNode.Name = RefID.ToString();
+            ThisNode.Tag = this;
+
+            return ThisNode;
+        }
+
+        public override Vector3 GetPosition()
+        {
+            return Position;
         }
     }
 }

@@ -1,14 +1,23 @@
-﻿using System;
+﻿using Rendering.Core;
+using SharpDX;
+using System;
 using System.IO;
+using System.Windows.Forms;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
 {
     public class IType
     {
+        protected int RefID;
+
+        public IType() { RefID = StringHelpers.GetNewRefID(); }
         public virtual void Read(BinaryReader Reader) { }
         public virtual void Write(BinaryWriter Writer) { }
         public virtual void DebugWrite(StreamWriter Writer) { }
+        public virtual void ConstructRenderable(PrimitiveBatch BBoxBatcher) {  }
+        public virtual TreeNode PopulateTreeNode() { return null; }
+        public virtual Vector3 GetPosition() { return Vector3.Zero; }
     }
 
     public class AIWorld
@@ -121,6 +130,29 @@ namespace ResourceTypes.Navigation
                 Writer.WriteLine("OriginStream: {0}", OriginStream);
                 Writer.WriteLine("Unk8: {0}", Unk8);
             }
+        }
+
+        public void PopulatePrimitiveBatch(PrimitiveBatch BBoxBatch)
+        {
+            foreach (IType AIPoint in AIPoints)
+            {
+                AIPoint.ConstructRenderable(BBoxBatch);
+            }
+        }
+
+        public TreeNode PopulateTreeNode()
+        {
+            TreeNode Parent = new TreeNode();
+            Parent.Text = PartName;
+            Parent.Name = PartName;
+            Parent.Tag = this;
+
+            foreach (IType AIPoint in AIPoints)
+            {
+                Parent.Nodes.Add(AIPoint.PopulateTreeNode());
+            }
+            
+            return Parent;
         }
     }
 }

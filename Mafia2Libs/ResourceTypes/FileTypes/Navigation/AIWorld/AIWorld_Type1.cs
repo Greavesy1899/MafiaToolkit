@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using Rendering.Core;
+using System.IO;
+using System.Windows.Forms;
 
 namespace ResourceTypes.Navigation
 {
@@ -7,7 +9,7 @@ namespace ResourceTypes.Navigation
         public byte Unk01 { get; set; }
         public IType[] AIPoints { get; set; }
 
-        public AIWorld_Type1()
+        public AIWorld_Type1() : base()
         {
             AIPoints = new IType[0];
         }
@@ -54,6 +56,33 @@ namespace ResourceTypes.Navigation
                 AIPoint.DebugWrite(Writer);
                 Writer.WriteLine("");
             }
+        }
+
+        public override void ConstructRenderable(PrimitiveBatch BBoxBatcher)
+        {
+            base.ConstructRenderable(BBoxBatcher);
+
+            foreach (IType AIPoint in AIPoints)
+            {
+                AIPoint.ConstructRenderable(BBoxBatcher);
+            }
+        }
+
+        public override TreeNode PopulateTreeNode()
+        {
+            base.PopulateTreeNode();
+
+            TreeNode ThisNode = new TreeNode();
+            ThisNode.Text = "Type1 Group";
+            ThisNode.Name = RefID.ToString();
+            ThisNode.Tag = this;
+
+            foreach (IType AIPoint in AIPoints)
+            {
+                ThisNode.Nodes.Add(AIPoint.PopulateTreeNode());
+            }
+
+            return ThisNode;
         }
     }
 }

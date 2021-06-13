@@ -7,20 +7,20 @@ using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
-{
-    public class AIWorld_Type11 : IType
+{ 
+    public class AIWorld_Type9 : IType
     {
         public byte Unk0 { get; set; }
-        public Vector3 Unk1 { get; set; }
+        public uint Unk1 { get; set; }
         public Vector3 Unk2 { get; set; }
-        public Vector3 Unk3 { get; set; }
-        public uint Unk4 { get; set; }
+        public float Unk3 { get; set; }
+        public float Unk4 { get; set; }
+        public uint[] Unk5 { get; set; }
 
-        public AIWorld_Type11() : base()
+        public AIWorld_Type9() : base()
         {
-            Unk1 = Vector3.Zero;
             Unk2 = Vector3.Zero;
-            Unk3 = Vector3.Zero;
+            Unk5 = new uint[0];
         }
 
         public override void Read(BinaryReader Reader)
@@ -28,10 +28,17 @@ namespace ResourceTypes.Navigation
             base.Read(Reader);
 
             Unk0 = Reader.ReadByte();
-            Unk1 = Vector3Extenders.ReadFromFile(Reader);
+            Unk1 = Reader.ReadUInt32();
             Unk2 = Vector3Extenders.ReadFromFile(Reader);
-            Unk3 = Vector3Extenders.ReadFromFile(Reader);
-            Unk4 = Reader.ReadUInt32(); // int32 (could be split into two shorts)
+            Unk3 = Reader.ReadSingle();
+            Unk4 = Reader.ReadSingle();
+
+            ushort Size = Reader.ReadUInt16();
+            Unk5 = new uint[Size];
+            for (int i = 0; i < Size; i++)
+            {
+                Unk5[i] = Reader.ReadUInt32();
+            }
         }
 
         public override void Write(BinaryWriter Writer)
@@ -39,21 +46,34 @@ namespace ResourceTypes.Navigation
             base.Write(Writer);
 
             Writer.Write(Unk0);
-            Unk1.WriteToFile(Writer);
+            Writer.Write(Unk1);
             Unk2.WriteToFile(Writer);
-            Unk3.WriteToFile(Writer);
+            Writer.Write(Unk3);
             Writer.Write(Unk4);
+
+            Writer.Write((ushort)Unk5.Length);
+            foreach (uint Value in Unk5)
+            {
+                Writer.Write(Value);
+            }
         }
 
         public override void DebugWrite(StreamWriter Writer)
         {
             base.DebugWrite(Writer);
 
-            Writer.WriteLine("Type11: ");
+            Writer.WriteLine("Type 9:");
+            Writer.WriteLine("Unk0: {0}", Unk0);
             Writer.WriteLine("Unk1: {0}", Unk1);
-            Writer.WriteLine("Unk2: {0}", Unk2);
+            Writer.WriteLine("Unk2: {0}", Unk2.ToString());
             Writer.WriteLine("Unk3: {0}", Unk3);
             Writer.WriteLine("Unk4: {0}", Unk4);
+
+            Writer.WriteLine("Unk5 Size: {0}", Unk5.Length);
+            foreach (uint Value in Unk5)
+            {
+                Writer.WriteLine("Value: {0}", Value);
+            }
         }
 
         public override void ConstructRenderable(PrimitiveBatch BBoxBatcher)
@@ -61,9 +81,9 @@ namespace ResourceTypes.Navigation
             base.ConstructRenderable(BBoxBatcher);
 
             RenderBoundingBox navigationBox = new RenderBoundingBox();
-            navigationBox.SetColour(System.Drawing.Color.LightBlue);
+            navigationBox.SetColour(System.Drawing.Color.Blue);
             navigationBox.Init(new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f)));
-            navigationBox.SetTransform(Matrix.Translation(Unk1));
+            navigationBox.SetTransform(Matrix.Translation(Unk2));
 
             BBoxBatcher.AddObject(RefID, navigationBox);
         }
@@ -73,7 +93,7 @@ namespace ResourceTypes.Navigation
             base.PopulateTreeNode();
 
             TreeNode ThisNode = new TreeNode();
-            ThisNode.Text = "Type11";
+            ThisNode.Text = string.Format("Type9 - {0}", Unk1);
             ThisNode.Name = RefID.ToString();
             ThisNode.Tag = this;
 
@@ -82,7 +102,7 @@ namespace ResourceTypes.Navigation
 
         public override Vector3 GetPosition()
         {
-            return Unk1;
+            return Unk2;
         }
     }
 }

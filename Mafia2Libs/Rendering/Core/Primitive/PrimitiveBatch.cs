@@ -3,6 +3,7 @@ using SharpDX;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Utils.Extensions;
 

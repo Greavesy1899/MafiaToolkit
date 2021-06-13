@@ -17,13 +17,16 @@ namespace Rendering.Graphics
         public uint[] Indices { get { return ReadOnlyIndices; } }
 
         private VertexLayouts.BasicLayout.Vertex[] vertices;
-        private Color colour;
+        private Color CurrentColour;
+        private Color UnselectedColour;
 
         public RenderBoundingBox()
         {
             DoRender = true;
             SetTransform(Matrix.Identity);
-            colour = Color.White;
+
+            UnselectedColour = Color.White;
+            CurrentColour = UnselectedColour;
         }
 
         public bool InitSwap(BoundingBox bbox)
@@ -53,7 +56,7 @@ namespace Rendering.Graphics
             {
                 vertices[i] = new VertexLayouts.BasicLayout.Vertex();
                 vertices[i].Position = corners[i];
-                vertices[i].Colour = colour.ToArgb();
+                vertices[i].Colour = CurrentColour.ToArgb();
             }
 
             shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
@@ -74,7 +77,9 @@ namespace Rendering.Graphics
 
         public void SetColour(Color newColour, bool update = false)
         {
-            colour = newColour;
+            UnselectedColour = newColour;
+            CurrentColour = UnselectedColour;
+
             isUpdatedNeeded = update;
         }
 
@@ -119,11 +124,11 @@ namespace Rendering.Graphics
 
         public override void Select()
         {
-            colour = Color.Red;
+            CurrentColour = Color.Red;
 
             for (int i = 0; i < vertices.Length; i++)
             {
-                vertices[i].Colour = colour.ToArgb();
+                vertices[i].Colour = CurrentColour.ToArgb();
             }
 
             isUpdatedNeeded = true;
@@ -131,11 +136,9 @@ namespace Rendering.Graphics
 
         public override void Unselect()
         {
-            colour = Color.White;
-
             for (int i = 0; i < vertices.Length; i++)
             {
-                vertices[i].Colour = colour.ToArgb();
+                vertices[i].Colour = UnselectedColour.ToArgb();
             }
 
             isUpdatedNeeded = true;

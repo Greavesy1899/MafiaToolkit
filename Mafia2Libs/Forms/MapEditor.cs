@@ -699,7 +699,7 @@ namespace Mafia2Tool
                 }
                 dSceneTree.AddToTree(navNode);
             }
-            if (SceneData.OBJData != null)
+            /*if (SceneData.OBJData != null)
             {
                 var data = new OBJData[SceneData.OBJData.Length];
                 for (int i = 0; i < SceneData.OBJData.Length; i++)
@@ -730,6 +730,20 @@ namespace Mafia2Tool
                     }
 
                     dSceneTree.AddToTree(navNode);
+                }
+            }*/
+            if (SceneData.AIWorlds != null)
+            {
+                var data = new AIWorld[SceneData.AIWorlds.Length];
+                for (int i = 0; i < SceneData.AIWorlds.Length; i++)
+                {
+                    data[i] = (AIWorld)SceneData.AIWorlds[i].data;
+
+                    RenderAIWorld AIWorld = new RenderAIWorld(Graphics);
+                    AIWorld.Init(data[i]);
+
+                    TreeNode AIWorldNode = data[i].PopulateTreeNode();
+                    dSceneTree.AddToTree(AIWorldNode);
                 }
             }
             if (SceneData.Collisions != null)

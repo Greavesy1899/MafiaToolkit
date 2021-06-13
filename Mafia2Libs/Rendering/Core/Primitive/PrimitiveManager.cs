@@ -25,6 +25,11 @@ namespace Rendering.Core
             foreach (PrimitiveBatch Batch in Batches.Values)
             {
                 Result = Batch.GetObject(RefID);
+
+                if(Result != null)
+                {
+                    return Result;
+                }
             }
 
             return Result;

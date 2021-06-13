@@ -24,7 +24,7 @@
                     Output = new AIWorld_Type8();
                     break;
                 case 9:
-                    Output = new AIWorld_Type8();
+                    Output = new AIWorld_Type9();
                     break;
                 case 11:
                     Output = new AIWorld_Type11();

@@ -193,6 +193,17 @@ namespace Mafia2Tool
                 //    obj[i].WriteToFile();
                 //}
             }
+
+            // AI WORLD
+            if(!isBigEndian)
+            {
+                paths = sdsContent.GetResourceFiles("NAV_AIWORLD_DATA", true);
+                foreach(var Item in paths)
+                {
+                    aiw.Add(new NAVData(new FileInfo(Item)));
+                }
+            }
+
             //if (!isBigEndian && sdsContent.HasResource("NAV_HPD_DATA"))
             //{
             //    var name = sdsContent.GetResourceFiles("NAV_HPD_DATA", true)[0];
@@ -205,6 +216,7 @@ namespace Mafia2Tool
             ItemDescs = ids.ToArray();
             Actors = act.ToArray();
             OBJData = obj.ToArray();
+            AIWorlds = aiw.ToArray();
         }
 
         public static void UpdateResourceType()

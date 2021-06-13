@@ -377,6 +377,7 @@
     <Compile Include="Rendering\Core\Spatial\SpatialCell_ObjData.cs" />
     <Compile Include="Rendering\Core\Spatial\SpatialCell_Translokator.cs" />
     <Compile Include="Rendering\Factories\RenderableFactory.cs" />
+    <Compile Include="Rendering\Graphics\RenderTypes\RenderAIWorld.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorDefinition.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorEntry.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorExtraData.cs" />
@@ -532,6 +533,7 @@
     <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Type4.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Type7.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Type8.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Type9.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\AnimalTraffic.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\Enums.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\HPD.cs" />
