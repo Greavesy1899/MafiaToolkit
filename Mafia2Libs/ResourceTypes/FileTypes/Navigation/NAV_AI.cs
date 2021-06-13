@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Utils.StringHelpers;
 
@@ -39,6 +40,11 @@ namespace ResourceTypes.Navigation
             using (BinaryReader reader = new BinaryReader(File.Open(info.FullName, FileMode.Open)))
             {
                 ReadFromFile(reader);
+            }
+
+            if(Debugger.IsAttached)
+            {
+                WriteToFile();
             }
         }
 
@@ -109,6 +115,10 @@ namespace ResourceTypes.Navigation
                     writer.Write((uint)(writer.BaseStream.Length - 12));
                     return;
                 }
+            }
+            else if(unk01_flags == 1005)
+            {
+                (data as AIWorld).WriteToFile(writer);
             }
 
             writer.BaseStream.Position = 0;

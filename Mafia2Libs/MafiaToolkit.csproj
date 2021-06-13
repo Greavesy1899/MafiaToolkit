@@ -526,6 +526,12 @@
     <Compile Include="ResourceTypes\FileTypes\Material\Versions\Material_v57.cs" />
     <Compile Include="ResourceTypes\FileTypes\Material\Versions\Material_v63.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Factory.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Type1.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Type11.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Type4.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Type7.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Type8.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\AnimalTraffic.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\Enums.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\HPD.cs" />

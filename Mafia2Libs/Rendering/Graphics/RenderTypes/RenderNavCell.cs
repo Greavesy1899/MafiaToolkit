@@ -68,7 +68,7 @@ namespace Rendering.Graphics
                 foreach(var unk18 in set.unk18Set)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(System.Drawing.Color.White);
+                    line.SetUnselectedColour(System.Drawing.Color.Red);
                     line.InitSwap(unk18.Points);
                     lines.Add(line);
                 }
