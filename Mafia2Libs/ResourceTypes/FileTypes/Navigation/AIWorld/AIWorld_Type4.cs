@@ -75,5 +75,28 @@ namespace ResourceTypes.Navigation
 
             Writer.Write(Unk9);
         }
+
+        public override void DebugWrite(StreamWriter Writer)
+        {
+            base.DebugWrite(Writer);
+
+            Writer.WriteLine("Type 4: ");
+            Writer.WriteLine("Unk0: {0}", Unk0);
+            Writer.WriteLine("Position: {0}", Position);
+            Writer.WriteLine("Rotation: {0}", Rotation);
+            Writer.WriteLine("Unk1: {0}", Unk1);
+            Writer.WriteLine("Unk2: {0}", Unk2);
+            Writer.WriteLine("Unk3: {0}", Unk3);
+            Writer.WriteLine("Unk4: {0}", Unk4);
+            Writer.WriteLine("Unk5: {0}", Unk5);
+            Writer.WriteLine("Unk6: {0}", Unk6);
+            Writer.WriteLine("Unk7: {0}", Unk7);
+
+            Writer.WriteLine("Unk8 Size: {0}", Unk8.Length);
+            foreach(uint Value in Unk8)
+            {
+                Writer.WriteLine("Value: {0}", Value);
+            }
+        }
     }
 }

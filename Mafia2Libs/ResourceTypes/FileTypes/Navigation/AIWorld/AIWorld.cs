@@ -8,6 +8,7 @@ namespace ResourceTypes.Navigation
     {
         public virtual void Read(BinaryReader Reader) { }
         public virtual void Write(BinaryWriter Writer) { }
+        public virtual void DebugWrite(StreamWriter Writer) { }
     }
 
     public class AIWorld
@@ -21,8 +22,8 @@ namespace ResourceTypes.Navigation
         public string OriginStream { get; set; }
 
         // Always the same
-        private int unk02; // 1005
-        private short unk04; //might always == 2 (NB: This could actually "Type2")
+        private int Unk02; // 1005
+        private short Unk04; //might always == 2 (NB: This could actually "Type2")
 
         private string Unk01; // Usually empty?
         private string ConstAIWorldPart; // always AIWORLDPART.
@@ -36,9 +37,9 @@ namespace ResourceTypes.Navigation
 
         public void ReadFromFile(BinaryReader reader)
         {
-            unk02 = reader.ReadInt32();
+            Unk02 = reader.ReadInt32();
             Unk03 = reader.ReadInt32(); 
-            unk04 = reader.ReadInt16(); // NB: This could actually "Type2".
+            Unk04 = reader.ReadInt16(); // NB: This could actually "Type2".
             PartName = StringHelpers.ReadString16(reader);
             Unk05 = reader.ReadInt32();
             KynogonString = StringHelpers.ReadString16(reader);
@@ -66,13 +67,15 @@ namespace ResourceTypes.Navigation
             OriginStream = StringHelpers.ReadString(reader);
             uint originFileSize = reader.ReadUInt32();
             Unk8 = reader.ReadUInt32();
+
+            DebugWriteToFile();
         }
 
         public void WriteToFile(BinaryWriter Writer)
         {
-            Writer.Write(unk02);
+            Writer.Write(Unk02);
             Writer.Write(Unk03);
-            Writer.Write(unk04);
+            Writer.Write(Unk04);
             StringHelpers.WriteString16(Writer, PartName);
             Writer.Write(Unk05);
             StringHelpers.WriteString16(Writer, KynogonString); 
@@ -93,6 +96,31 @@ namespace ResourceTypes.Navigation
             StringHelpers.WriteString(Writer, OriginStream);
             Writer.Write(OriginStream.Length + 1);
             Writer.Write(Unk8);
+        }
+
+        public void DebugWriteToFile()
+        {
+            using(StreamWriter Writer = new StreamWriter(PartName + ".txt"))
+            {
+                Writer.WriteLine("Unk01: {0}", Unk01);
+                Writer.WriteLine("Unk02: {0}", Unk02);
+                Writer.WriteLine("Unk03: {0}", Unk03);
+                Writer.WriteLine("Unk04: {0}", Unk04);
+                Writer.WriteLine("PartName: {0}", PartName);
+                Writer.WriteLine("Unk05: {0}", Unk05);
+                Writer.WriteLine("KynogonString: {0}", KynogonString);
+                Writer.WriteLine("ConstAIWorldPart: {0}", ConstAIWorldPart);
+                Writer.WriteLine("Unk06: {0}", Unk06);
+
+                foreach (IType AIPoint in AIPoints)
+                {
+                    AIPoint.DebugWrite(Writer);
+                    Writer.WriteLine("");
+                }
+
+                Writer.WriteLine("OriginStream: {0}", OriginStream);
+                Writer.WriteLine("Unk8: {0}", Unk8);
+            }
         }
     }
 }

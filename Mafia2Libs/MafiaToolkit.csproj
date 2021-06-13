@@ -537,6 +537,7 @@
     <Compile Include="ResourceTypes\FileTypes\Navigation\HPD.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\OBJ_DATA\KynogonRuntimeMesh.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\OBJ_DATA\OBJData.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\Utilities\NavigationWriter.cs" />
     <Compile Include="ResourceTypes\FileTypes\SdsConfigFile.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorEnums.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\Actor.cs" />

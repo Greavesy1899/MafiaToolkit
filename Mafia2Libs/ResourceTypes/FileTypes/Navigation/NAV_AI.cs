@@ -51,7 +51,7 @@ namespace ResourceTypes.Navigation
         public void WriteToFile()
         {
             var backup = file.FullName.Insert(file.FullName.Length - 4, "_test");
-            using (BinaryWriter writer = new BinaryWriter(File.Open(backup, FileMode.Create)))
+            using (NavigationWriter writer = new NavigationWriter(File.Open(backup, FileMode.Create)))
             {
                 WriteToFile(writer);
             }
@@ -93,7 +93,7 @@ namespace ResourceTypes.Navigation
             }
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public void WriteToFile(NavigationWriter writer)
         {
             writer.Write(-1); //file size
             writer.Write(unk01_flags);

@@ -42,5 +42,18 @@ namespace ResourceTypes.Navigation
                 AIPoint.Write(Writer);
             }
         }
+
+        public override void DebugWrite(StreamWriter Writer)
+        {
+            base.DebugWrite(Writer);
+
+            Writer.WriteLine("Unk0: {0}", Unk01);
+            Writer.WriteLine("NumPoints: {0}", AIPoints.Length);
+            foreach(IType AIPoint in AIPoints)
+            {
+                AIPoint.DebugWrite(Writer);
+                Writer.WriteLine("");
+            }
+        }
     }
 }

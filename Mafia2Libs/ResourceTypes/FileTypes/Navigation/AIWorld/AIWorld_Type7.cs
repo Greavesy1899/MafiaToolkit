@@ -40,5 +40,17 @@ namespace ResourceTypes.Navigation
             Unk2.WriteToFile(Writer);
             Writer.Write(Unk3);
         }
+
+        public override void DebugWrite(StreamWriter Writer)
+        {
+            base.DebugWrite(Writer);
+
+            Writer.WriteLine("Type 7:");
+            Writer.WriteLine("Unk0: {0}", Unk0);
+            Writer.WriteLine("Position: {0}", Position.ToString());
+            Writer.WriteLine("Direction: {0}", Direction.ToString());
+            Writer.WriteLine("Unk2: {0}", Unk2.ToString());
+            Writer.WriteLine("Unke3: {0}", Unk3);
+        }
     }
 }
