@@ -17,13 +17,13 @@ namespace ResourceTypes.Navigation
         public uint Unk2 { get; set; }
         public uint Unk3 { get; set; }
         public Vector3 Unk4 { get; set; }
-        public uint Unk5 { get; set; }
+        public float Unk5 { get; set; }
         public byte Unk6 { get; set; }
         public byte Unk7 { get; set; }
         public uint[] Unk8 { get; set; }
         public uint Unk9 { get; set; }
 
-        public AIWorld_Type4() : base()
+        public AIWorld_Type4(AIWorld InWorld) : base(InWorld)
         {
             Position = Vector3.Zero;
             Rotation = Vector3.Zero;
@@ -42,7 +42,7 @@ namespace ResourceTypes.Navigation
             Unk2 = Reader.ReadUInt32();
             Unk3 = Reader.ReadUInt32();
             Unk4 = Vector3Extenders.ReadFromFile(Reader);
-            Unk5 = Reader.ReadUInt32();
+            Unk5 = Reader.ReadSingle();
             Unk6 = Reader.ReadByte();
             Unk7 = Reader.ReadByte();
 
@@ -120,7 +120,7 @@ namespace ResourceTypes.Navigation
             base.PopulateTreeNode();
 
             TreeNode ThisNode = new TreeNode();
-            ThisNode.Text = "Type4";
+            ThisNode.Text = string.Format("Type4: {0}", Unk1);
             ThisNode.Name = RefID.ToString();
             ThisNode.Tag = this;
 

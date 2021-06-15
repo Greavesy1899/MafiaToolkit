@@ -19,6 +19,12 @@ namespace Rendering.Graphics
         public int RefID { get; set; }
     }
 
+    public struct PickOutParams
+    {
+        public int LowestRefID { get; set; }
+        public Vector3 WorldPosition { get; set; }
+    }
+
     public class GraphicsClass
     {
         public InputClass Input { get; private set; }
@@ -43,6 +49,10 @@ namespace Rendering.Graphics
 
         private PrimitiveBatch LineBatch = null;
         private PrimitiveBatch BBoxBatch = null;
+
+
+        private int CoordBoxID;
+        private RenderBoundingBox CoordBox;
 
         public PrimitiveManager OurPrimitiveManager { get; private set; }
 
@@ -106,6 +116,11 @@ namespace Rendering.Graphics
             selectionBox.SetColour(System.Drawing.Color.Red);
             selectionBox.Init(new BoundingBox(new Vector3(0.5f), new Vector3(-0.5f)));          
             selectionBox.DoRender = false;
+
+            CoordBox = new RenderBoundingBox();
+            CoordBox.Init(new BoundingBox(new Vector3(-1.0f), new Vector3(1.0f)));
+            CoordBoxID = StringHelpers.GetNewRefID();
+            BBoxBatch.AddObject(CoordBoxID, CoordBox);
             return true;
         }
 
@@ -152,10 +167,11 @@ namespace Rendering.Graphics
             return Parent;
         }
 
-        public int Pick(int sx, int sy, int Width, int Height)
+        public PickOutParams Pick(int sx, int sy, int Width, int Height)
         {
             float lowest = float.MaxValue;
             int lowestRefID = -1;
+            Vector3 WorldPosIntersect = Vector3.Zero;
 
             Ray ray = Camera.GetPickingRay(new Vector2(sx, sy), new Vector2(Width, Height));
 
@@ -241,6 +257,7 @@ namespace Rendering.Graphics
                         {
                             lowest = distance;
                             lowestRefID = model.Key;
+                            WorldPosIntersect = worldPosition;
                         }
                     }
                 }
@@ -248,7 +265,11 @@ namespace Rendering.Graphics
                 index++;
             }
 
-            return lowestRefID;
+            PickOutParams OutputParams = new PickOutParams();
+            OutputParams.LowestRefID = lowestRefID;
+            OutputParams.WorldPosition = WorldPosIntersect;
+
+            return OutputParams;
         }
 
         public void Frame()

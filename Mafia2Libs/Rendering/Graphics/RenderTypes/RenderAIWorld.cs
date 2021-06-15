@@ -15,6 +15,7 @@ namespace Rendering.Graphics
     {
         private GraphicsClass OwnGraphics;
 
+        private AIWorld InitWorldInfo;
         private PrimitiveBatch AIWorldBatch;
 
         public RenderAIWorld(GraphicsClass InOwnGraphics)
@@ -24,9 +25,22 @@ namespace Rendering.Graphics
 
         public void Init(AIWorld WorldInfo)
         {
+            InitWorldInfo = WorldInfo;
+
             string BoxID = string.Format("AIWorld_{0}", StringHelpers.GetNewRefID());
             AIWorldBatch = new PrimitiveBatch(PrimitiveType.Box, BoxID);
             WorldInfo.PopulatePrimitiveBatch(AIWorldBatch);
+
+            OwnGraphics.OurPrimitiveManager.AddPrimitiveBatch(AIWorldBatch);
+        }
+
+        public void RequestUpdate()
+        {
+            OwnGraphics.OurPrimitiveManager.RemovePrimitiveBatch(AIWorldBatch);
+
+            string BoxID = string.Format("AIWorld_{0}", StringHelpers.GetNewRefID());
+            AIWorldBatch = new PrimitiveBatch(PrimitiveType.Box, BoxID);
+            InitWorldInfo.PopulatePrimitiveBatch(AIWorldBatch);
 
             OwnGraphics.OurPrimitiveManager.AddPrimitiveBatch(AIWorldBatch);
         }

@@ -1,4 +1,5 @@
 ﻿using Rendering.Graphics;
+using System;
 
 namespace Rendering.Core
 {
@@ -16,6 +17,11 @@ namespace Rendering.Core
         public IRenderer GetRenderItem()
         {
             return RenderItem;
+        }
+
+        public T GetRenderItem<T>() where T : IRenderer
+        {
+            return (T)Convert.ChangeType(RenderItem, typeof(T));
         }
     }
 }

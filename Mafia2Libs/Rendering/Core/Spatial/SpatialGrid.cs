@@ -222,6 +222,7 @@ namespace Rendering.Core
             {
                 TreeNode Child = new TreeNode();
                 Child.Text = string.Format("CELL {0}", i);
+                Child.Name = cells[i].GetRefID().ToString();
                 Child.Tag = cells[i];
                 ChildCells[i] = Child;
             }

@@ -3,17 +3,14 @@ using Rendering.Graphics;
 using SharpDX;
 using System.IO;
 using System.Windows.Forms;
-using Utils.SharpDXExtensions;
-using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
 {
-    // Also type 9
     public class AIWorld_Type8 : AIWorld_Type9
     {
         public uint Unk6 { get; set; }
 
-        public AIWorld_Type8() : base() { }
+        public AIWorld_Type8(AIWorld InWorld) : base(InWorld) { }
 
         public override void Read(BinaryReader Reader)
         {

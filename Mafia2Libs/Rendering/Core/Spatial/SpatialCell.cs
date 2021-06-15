@@ -19,8 +19,8 @@ namespace Rendering.Core
         protected Dictionary<int, IRenderer> assets;
         protected BoundingBox boundingBox;
         protected GraphicsClass OwnGraphicsClass;
+        protected int RefID;
 
-        
         public BoundingBox BoundingBox {
             get { return boundingBox; }
         }
@@ -30,16 +30,9 @@ namespace Rendering.Core
             OwnGraphicsClass = InitParams.OwnGraphics;
             boundingBox = InitParams.CellExtents;
 
-            assets = new Dictionary<int, IRenderer>();          
-        }
-
-        public SpatialCell(GraphicsClass InGraphicsClass, KynogonRuntimeMesh.Cell cellData, BoundingBox extents)
-        {
-            OwnGraphicsClass = InGraphicsClass;
-
             assets = new Dictionary<int, IRenderer>();
 
-            boundingBox = extents;
+            RefID = StringHelpers.GetNewRefID();
         }
 
         public void AddAsset(IRenderer asset, int key)
@@ -71,6 +64,11 @@ namespace Rendering.Core
             {
                 entry.Value.Shutdown();
             }
+        }
+
+        public int GetRefID()
+        {
+            return RefID;
         }
 
         public override string ToString()

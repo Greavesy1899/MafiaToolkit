@@ -48,10 +48,15 @@ namespace ResourceTypes.Navigation
             }
         }
 
-        public void WriteToFile()
+        public void WriteToFile(bool bIsTest = true)
         {
-            var backup = file.FullName.Insert(file.FullName.Length - 4, "_test");
-            using (NavigationWriter writer = new NavigationWriter(File.Open(backup, FileMode.Create)))
+            string OutputName = file.FullName;
+            if (bIsTest)
+            {
+                var backup = OutputName.Insert(OutputName.Length - 4, "_test");
+            }
+
+            using (NavigationWriter writer = new NavigationWriter(File.Open(OutputName, FileMode.Create)))
             {
                 WriteToFile(writer);
             }

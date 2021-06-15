@@ -16,7 +16,7 @@ namespace ResourceTypes.Navigation
         public Vector3 Unk3 { get; set; }
         public uint Unk4 { get; set; }
 
-        public AIWorld_Type11() : base()
+        public AIWorld_Type11(AIWorld InWorld) : base(InWorld)
         {
             Unk1 = Vector3.Zero;
             Unk2 = Vector3.Zero;

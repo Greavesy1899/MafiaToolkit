@@ -9,7 +9,7 @@ namespace ResourceTypes.Navigation
         public byte Unk01 { get; set; }
         public IType[] AIPoints { get; set; }
 
-        public AIWorld_Type1() : base()
+        public AIWorld_Type1(AIWorld InWorld) : base(InWorld)
         {
             AIPoints = new IType[0];
         }
@@ -25,7 +25,7 @@ namespace ResourceTypes.Navigation
             for(uint i = 0; i < NumPoints; i++)
             {
                 ushort TypeID = Reader.ReadUInt16();
-                AIPoints[i] = AIWorld_Factory.ConstructByTypeID(TypeID);
+                AIPoints[i] = AIWorld_Factory.ConstructByTypeID(OwnWorld, TypeID);
                 AIPoints[i].Read(Reader);
             }
         }

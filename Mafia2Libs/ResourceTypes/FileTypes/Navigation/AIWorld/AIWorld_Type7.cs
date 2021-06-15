@@ -1,6 +1,7 @@
 ﻿using Rendering.Core;
 using Rendering.Graphics;
 using SharpDX;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using Utils.SharpDXExtensions;
@@ -16,7 +17,19 @@ namespace ResourceTypes.Navigation
         public Vector3 Unk2 { get; set; }
         public uint Unk3 { get; set; }
 
-        public AIWorld_Type7() : base()
+        [Category("Rotation Test")]
+        public float Yaw { get; set; }
+        [Category("Rotation Test")]
+        public float Pitch { get; set; }
+        [Category("Rotation Test")]
+        public float Roll { get; set; }
+
+        [Category("BBox Test")]
+        public Vector3 Minimum { get; set; }
+        [Category("BBox Test")]
+        public Vector3 Maximum { get; set; }
+
+        public AIWorld_Type7(AIWorld InWorld) : base(InWorld)
         {
             Position = Vector3.Zero;
             Direction = Vector3.Zero;
@@ -32,6 +45,9 @@ namespace ResourceTypes.Navigation
             Direction = Vector3Extenders.ReadFromFile(Reader);
             Unk2 = Vector3Extenders.ReadFromFile(Reader);
             Unk3 = Reader.ReadUInt32();
+
+            Minimum = new Vector3(-Unk2.Y, -Unk2.X, -Unk2.Z);
+            Maximum = new Vector3(Unk2.Y, Unk2.X, Unk2.Z);
         }
 
         public override void Write(BinaryWriter Writer)
@@ -63,8 +79,16 @@ namespace ResourceTypes.Navigation
 
             RenderBoundingBox navigationBox = new RenderBoundingBox();
             navigationBox.SetColour(System.Drawing.Color.Yellow);
-            navigationBox.Init(new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f)));
-            navigationBox.SetTransform(Matrix.Translation(Position));
+
+            BoundingBox BBox = new BoundingBox();
+            BBox.Minimum = Minimum;
+            BBox.Maximum = Maximum;
+
+            Matrix Transform = Matrix.RotationYawPitchRoll(MathUtil.DegreesToRadians(Yaw), MathUtil.DegreesToRadians(Pitch), MathUtil.DegreesToRadians(Roll));
+            Transform.TranslationVector = Position;
+
+            navigationBox.Init(BBox);
+            navigationBox.SetTransform(Transform);
 
             BBoxBatcher.AddObject(RefID, navigationBox);
         }

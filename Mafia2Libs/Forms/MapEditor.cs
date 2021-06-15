@@ -28,6 +28,7 @@ using Utils.Extensions;
 using Rendering.Core;
 using Rendering.Factories;
 using Gibbed.Illusion.FileFormats.Hashing;
+using Utils.Helpers;
 
 namespace Mafia2Tool
 {
@@ -374,6 +375,10 @@ namespace Mafia2Tool
                     bCameraUpdated = true;
                     
                 }
+                else if(Input.IsKeyDown(Keys.Home))
+                {
+                    GetPosAt(mousePos.X, mousePos.Y);
+                }
                 else if (Input.IsButtonDown(MouseButtons.Left) && selectTimer <= 0.0f)
                 {
                     if (bSelectMode)
@@ -699,7 +704,7 @@ namespace Mafia2Tool
                 }
                 dSceneTree.AddToTree(navNode);
             }
-            /*if (SceneData.OBJData != null)
+            if (SceneData.OBJData != null)
             {
                 var data = new OBJData[SceneData.OBJData.Length];
                 for (int i = 0; i < SceneData.OBJData.Length; i++)
@@ -723,7 +728,7 @@ namespace Mafia2Tool
                     for (int x = 0; x < obj.vertices.Length; x++)
                     {
                         TreeNode childNode = new TreeNode();
-                        childNode.Text = string.Format("NAVNode: {0}", x);
+                        childNode.Text = string.Format("NAVNode: {0}", obj.vertices[x].Unk7);
                         childNode.Name = "NAV_INDEXED_NODE";
                         childNode.Tag = obj.vertices[x];
                         navNode.Nodes.Add(childNode);
@@ -731,16 +736,14 @@ namespace Mafia2Tool
 
                     dSceneTree.AddToTree(navNode);
                 }
-            }*/
+            }
             if (SceneData.AIWorlds != null)
             {
                 var data = new AIWorld[SceneData.AIWorlds.Length];
                 for (int i = 0; i < SceneData.AIWorlds.Length; i++)
                 {
                     data[i] = (AIWorld)SceneData.AIWorlds[i].data;
-
-                    RenderAIWorld AIWorld = new RenderAIWorld(Graphics);
-                    AIWorld.Init(data[i]);
+                    data[i].ConstructRenderable(Graphics);
 
                     TreeNode AIWorldNode = data[i].PopulateTreeNode();
                     dSceneTree.AddToTree(AIWorldNode);
@@ -884,10 +887,15 @@ namespace Mafia2Tool
             {
                 Graphics.SelectEntry((node.Tag as FrameEntry).RefID);
             }
-            else if(node.Tag is SpatialCell)
+            else if(ToolkitUtils.IsSubclassOf(node.Tag, typeof(SpatialCell)))
             {
-                SpatialGrid grid = (node.Parent.Tag as SpatialGrid);
-                grid.SetSelectedCell(node.Index);
+                int result = 0;
+                if (int.TryParse(node.Name, out result))
+                {
+                    Graphics.SelectEntry(result);
+                }
+                //SpatialGrid grid = (node.Parent.Tag as SpatialGrid);
+                //grid.SetSelectedCell(node.Index);
             }
             else if (node.Name.Equals("NAV_INDEXED_NODE"))
             {
@@ -1231,14 +1239,20 @@ namespace Mafia2Tool
 
         private void Pick(int sx, int sy)
         {
-            int LowestRefID = Graphics.Pick(sx, sy, RenderPanel.Size.Width, RenderPanel.Size.Height);
-            TreeNode[] nodes = dSceneTree.Find(LowestRefID.ToString(), true);
+            PickOutParams OutParams = Graphics.Pick(sx, sy, RenderPanel.Size.Width, RenderPanel.Size.Height);
+            TreeNode[] nodes = dSceneTree.Find(OutParams.LowestRefID.ToString(), true);
 
             if (nodes.Length > 0)
             {
                 dSceneTree.SelectedNode = nodes[0];
                 TreeViewUpdateSelected();
             }
+        }
+
+        private void GetPosAt(int sx, int sy)
+        {
+            PickOutParams OutParams = Graphics.Pick(sx, sy, RenderPanel.Size.Width, RenderPanel.Size.Height);
+            TextBox_WorldIntersect.Text = OutParams.WorldPosition.ToString();
         }
 
         public void Shutdown()
@@ -1394,6 +1408,18 @@ namespace Mafia2Tool
                     selected.Text = (pGrid.SelectedObject as FrameHeaderScene).Name.ToString();
                 }
             }
+            if(ToolkitUtils.IsSubclassOf(pGrid.SelectedObject, typeof(IType)))
+            {
+                TreeNode CurrentNode = dSceneTree.SelectedNode;
+                TreeNode ParentNode = CurrentNode.Parent;
+
+                (pGrid.SelectedObject as IType).NotifyUpdate();
+
+                // Send an event to update our selected item. (if this is indeed our selected)
+                UpdateSelectedEventArgs Arguments = new UpdateSelectedEventArgs();
+                Arguments.RefID = int.Parse(CurrentNode.Name);
+                Graphics.OnSelectedObjectUpdated(this, Arguments);
+            }
             pGrid.Refresh();
         }
 
@@ -1490,6 +1516,11 @@ namespace Mafia2Tool
                     int iName = Convert.ToInt32(node.Nodes[i].Name);
                     Graphics.DeleteAsset(iName);
                 }
+            }
+            else if(ToolkitUtils.IsSubclassOf(node.Tag, typeof(IType)))
+            {
+                TreeNode Parent = node.Parent;
+                (Parent.Tag as AIWorld).DeletePoint((node.Tag as IType));
             }
         }
 
@@ -2211,6 +2242,14 @@ namespace Mafia2Tool
             }
 
             File.WriteAllLines("AllTextures.txt", AllTextures.ToArray());
+        }
+
+        private void Button_SaveAI_Click(object sender, EventArgs e)
+        {
+            foreach(NAVData AIWorld in SceneData.AIWorlds)
+            {
+                AIWorld.WriteToFile(false);
+            }
         }
     }
 }

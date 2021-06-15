@@ -1,6 +1,10 @@
 ﻿using Rendering.Core;
+using Rendering.Factories;
+using Rendering.Graphics;
 using SharpDX;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using Utils.StringHelpers;
@@ -10,14 +14,15 @@ namespace ResourceTypes.Navigation
     public class IType
     {
         protected int RefID;
-
-        public IType() { RefID = StringHelpers.GetNewRefID(); }
+        protected AIWorld OwnWorld;
+        public IType(AIWorld InWorld) { RefID = StringHelpers.GetNewRefID(); OwnWorld = InWorld; }
         public virtual void Read(BinaryReader Reader) { }
         public virtual void Write(BinaryWriter Writer) { }
         public virtual void DebugWrite(StreamWriter Writer) { }
         public virtual void ConstructRenderable(PrimitiveBatch BBoxBatcher) {  }
         public virtual TreeNode PopulateTreeNode() { return null; }
         public virtual Vector3 GetPosition() { return Vector3.Zero; }
+        public void NotifyUpdate() { OwnWorld.RequestPrimitiveBatchUpdate(); }
     }
 
     public class AIWorld
@@ -27,8 +32,11 @@ namespace ResourceTypes.Navigation
 
         public string PartName { get; set; }
         public string KynogonString { get; set; }
-        public IType[] AIPoints { get; set; }
+        public List<IType> AIPoints { get; private set; }
         public string OriginStream { get; set; }
+
+        [Browsable(false)]
+        public RenderableAdapter RenderObject { get; private set; }
 
         // Always the same
         private int Unk02; // 1005
@@ -41,6 +49,8 @@ namespace ResourceTypes.Navigation
 
         public AIWorld(BinaryReader reader)
         {
+            AIPoints = new List<IType>();
+
             ReadFromFile(reader);
         }
 
@@ -64,12 +74,13 @@ namespace ResourceTypes.Navigation
 
             // Read AIPoints
             int unkCount = reader.ReadInt32();
-            AIPoints = new IType[unkCount];
             for (int i = 0; i < unkCount; i++)
             {
                 ushort TypeID = reader.ReadUInt16();
-                AIPoints[i] = AIWorld_Factory.ConstructByTypeID(TypeID);
-                AIPoints[i].Read(reader);
+                IType Point = AIWorld_Factory.ConstructByTypeID(this, TypeID);
+                Point.Read(reader);
+
+                AIPoints.Add(Point);
             }
 
             // Read footer data
@@ -93,7 +104,7 @@ namespace ResourceTypes.Navigation
             Writer.Write(Unk06);
 
             // Write AI Points
-            Writer.Write(AIPoints.Length);
+            Writer.Write(AIPoints.Count);
             foreach(IType AIPoint in AIPoints)
             {
                 ushort TypeID = AIWorld_Factory.GetIDByType(AIPoint);
@@ -132,12 +143,30 @@ namespace ResourceTypes.Navigation
             }
         }
 
+        public void DeletePoint(IType AIPointToRemove)
+        {
+            AIPoints.Remove(AIPointToRemove);
+
+            RequestPrimitiveBatchUpdate();
+        }
+
         public void PopulatePrimitiveBatch(PrimitiveBatch BBoxBatch)
         {
             foreach (IType AIPoint in AIPoints)
             {
                 AIPoint.ConstructRenderable(BBoxBatch);
             }
+        }
+
+        public void ConstructRenderable(GraphicsClass InGraphicsClass)
+        {
+            RenderObject = new RenderableAdapter();
+            RenderObject.InitAdaptor(RenderableFactory.BuildAIWorld(InGraphicsClass, this), this);
+        }
+
+        public void RequestPrimitiveBatchUpdate()
+        {
+            RenderObject.GetRenderItem<RenderAIWorld>().RequestUpdate();
         }
 
         public TreeNode PopulateTreeNode()

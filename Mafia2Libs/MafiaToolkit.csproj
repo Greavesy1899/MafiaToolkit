@@ -658,6 +658,7 @@
     <Compile Include="Utils\Helpers\Reflection\ReflectionHelpers.cs" />
     <Compile Include="Utils\Helpers\StreamExtensions.cs" />
     <Compile Include="Utils\Helpers\StringHelpers.cs" />
+    <Compile Include="Utils\Helpers\ToolkitUtils.cs" />
     <Compile Include="Utils\Settings\GameStorage.cs" />
     <Compile Include="Utils\Types\Half.cs" />
     <Compile Include="Utils\Helpers\HalfHelper.cs" />

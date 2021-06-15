@@ -2,32 +2,32 @@
 {
     public static class AIWorld_Factory
     {
-        public static IType ConstructByTypeID(ushort ID)
+        public static IType ConstructByTypeID(AIWorld InWorld, ushort ID)
         {
             IType Output = null;
 
             switch (ID)
             {
                 case 1:
-                    Output = new AIWorld_Type1();
+                    Output = new AIWorld_Type1(InWorld);
                     break;
                 case 2:
                     //Output = new AIWorld_Type2();
                     break;
                 case 4:
-                    Output = new AIWorld_Type4();
+                    Output = new AIWorld_Type4(InWorld);
                     break;
                 case 7:
-                    Output = new AIWorld_Type7();
+                    Output = new AIWorld_Type7(InWorld);
                     break;
                 case 8:
-                    Output = new AIWorld_Type8();
+                    Output = new AIWorld_Type8(InWorld);
                     break;
                 case 9:
-                    Output = new AIWorld_Type9();
+                    Output = new AIWorld_Type9(InWorld);
                     break;
                 case 11:
-                    Output = new AIWorld_Type11();
+                    Output = new AIWorld_Type11(InWorld);
                     break;
                 default:
                     break;

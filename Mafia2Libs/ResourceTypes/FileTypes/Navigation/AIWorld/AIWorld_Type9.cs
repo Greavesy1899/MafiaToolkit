@@ -17,7 +17,7 @@ namespace ResourceTypes.Navigation
         public float Unk4 { get; set; }
         public uint[] Unk5 { get; set; }
 
-        public AIWorld_Type9() : base()
+        public AIWorld_Type9(AIWorld InWorld) : base(InWorld)
         {
             Unk2 = Vector3.Zero;
             Unk5 = new uint[0];

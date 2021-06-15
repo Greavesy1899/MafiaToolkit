@@ -52,7 +52,7 @@ namespace Rendering.Graphics
                 foreach (var unk14 in set.unk14Boxes)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(System.Drawing.Color.FromArgb(253, 253, 34));
+                    line.SetUnselectedColour(System.Drawing.Color.Yellow);
                     line.InitSwap(unk14.Points);
                     lines.Add(line);
                 }
@@ -60,7 +60,7 @@ namespace Rendering.Graphics
                 foreach (var unk16 in set.EdgeBoxes)
                 {
                     RenderLine line = new RenderLine();
-                    line.SetUnselectedColour(System.Drawing.Color.FromArgb(253, 253, 34));
+                    line.SetUnselectedColour(System.Drawing.Color.Brown);
                     line.InitSwap(new Vector3[2] { unk16.Maximum, unk16.Minimum});
                     lines.Add(line);
                 }
