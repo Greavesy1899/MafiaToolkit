@@ -13,7 +13,8 @@
   <String ID="$FAILED_UPDATE_CHECK">Failed to checking for updates!</String>
   
   <!-- Game Explorer Strings -->
-  <String ID="$CREDITS">Special Thanks</String>
+  <String ID="$ABOUT">About</String>
+  <String ID="$THANKS">Special Thanks</String>
   <String ID="$VIEW">View</String>
   <String ID="$FILE">File</String>
   <String ID="$TOOLS">Tools</String>
@@ -165,6 +166,14 @@
   <String ID="$FRADD_TYPE">Frame Type</String>
   <String ID="$FRADD_NAME_TABLE">Add Frame To Name Table?</String>
   <String ID="$QUESTION_FRADD">Enter the name and type of the frame.</String>
+
+  <!-- Actor Editor -->
+  <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
+  <String ID="$ADD_ITEM">Add Item</String>
+  <String ID="$ADD_DEFINITION">Add Definition</String>
+  
+  <!-- EntityDataStorage Editor -->
+  <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Input Name</String>
@@ -275,5 +284,10 @@
   
   <!-- Property Descriptions Strings-->
   <String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
+
+  <!-- XBIN Editor Strings-->
+  <String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
+  <String ID="$IMPORT_XBIN">Import from .xml</String>
+  <String ID="$EXPORT_XBIN">Export to .xml</String>
   
 </Localisation>

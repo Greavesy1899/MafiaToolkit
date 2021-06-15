@@ -177,7 +177,8 @@ namespace ResourceTypes.Translokator
 
         public Object()
         {
-
+            name = new HashName();
+            instances = new Instance[0];
         }
 
         public Object(Object other)

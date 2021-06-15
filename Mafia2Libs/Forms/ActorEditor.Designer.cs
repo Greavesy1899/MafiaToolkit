@@ -31,10 +31,9 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ActorEditor));
             this.ActorGrid = new System.Windows.Forms.PropertyGrid();
-            this.ActorTreeView = new System.Windows.Forms.TreeView();
+            this.ActorTreeView = new Mafia2Tool.Controls.MTreeView();
             this.ActorContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.openM2T = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.FileButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.SaveButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,6 +42,8 @@
             this.EditButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.AddItemButton = new System.Windows.Forms.ToolStripMenuItem();
             this.AddDefinitionButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.ContextCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this.ContextPaste = new System.Windows.Forms.ToolStripMenuItem();
             this.ActorContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -74,22 +75,19 @@
             // ActorContext
             // 
             this.ActorContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ContextDelete});
+            this.ContextDelete,
+            this.ContextCopy,
+            this.ContextPaste});
             this.ActorContext.Name = "SDSContext";
-            this.ActorContext.Size = new System.Drawing.Size(108, 26);
+            this.ActorContext.Size = new System.Drawing.Size(181, 92);
+            this.ActorContext.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenu_OnOpening);
             // 
             // ContextDelete
             // 
             this.ContextDelete.Name = "ContextDelete";
-            this.ContextDelete.Size = new System.Drawing.Size(107, 22);
+            this.ContextDelete.Size = new System.Drawing.Size(180, 22);
             this.ContextDelete.Text = "Delete";
             this.ContextDelete.Click += new System.EventHandler(this.ContextDelete_Click);
-            // 
-            // openM2T
-            // 
-            this.openM2T.FileName = "Select M2T file.";
-            this.openM2T.Filter = "Model File|*.m2t|All Files|*.*|FBX Model|*.fbx";
-            this.openM2T.Tag = "";
             // 
             // toolStrip1
             // 
@@ -151,16 +149,30 @@
             // AddItemButton
             // 
             this.AddItemButton.Name = "AddItemButton";
-            this.AddItemButton.Size = new System.Drawing.Size(171, 22);
+            this.AddItemButton.Size = new System.Drawing.Size(180, 22);
             this.AddItemButton.Text = "$ADD_ITEM";
             this.AddItemButton.Click += new System.EventHandler(this.AddItemButton_Click);
             // 
             // AddDefinitionButton
             // 
             this.AddDefinitionButton.Name = "AddDefinitionButton";
-            this.AddDefinitionButton.Size = new System.Drawing.Size(171, 22);
+            this.AddDefinitionButton.Size = new System.Drawing.Size(180, 22);
             this.AddDefinitionButton.Text = "$ADD_DEFINITION";
             this.AddDefinitionButton.Click += new System.EventHandler(this.AddDefinitionButton_Click);
+            // 
+            // ContextCopy
+            // 
+            this.ContextCopy.Name = "ContextCopy";
+            this.ContextCopy.Size = new System.Drawing.Size(180, 22);
+            this.ContextCopy.Text = "$COPY";
+            this.ContextCopy.Click += new System.EventHandler(this.ContextCopy_Click);
+            // 
+            // ContextPaste
+            // 
+            this.ContextPaste.Name = "ContextPaste";
+            this.ContextPaste.Size = new System.Drawing.Size(180, 22);
+            this.ContextPaste.Text = "$PASTE";
+            this.ContextPaste.Click += new System.EventHandler(this.ContextPaste_Click);
             // 
             // ActorEditor
             // 
@@ -184,8 +196,6 @@
         #endregion
 
         private System.Windows.Forms.PropertyGrid ActorGrid;
-        private System.Windows.Forms.TreeView ActorTreeView;
-        private System.Windows.Forms.OpenFileDialog openM2T;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton FileButton;
         private System.Windows.Forms.ToolStripMenuItem SaveButton;
@@ -196,5 +206,8 @@
         private System.Windows.Forms.ToolStripDropDownButton EditButton;
         private System.Windows.Forms.ToolStripMenuItem AddItemButton;
         private System.Windows.Forms.ToolStripMenuItem AddDefinitionButton;
+        private System.Windows.Forms.ToolStripMenuItem ContextCopy;
+        private System.Windows.Forms.ToolStripMenuItem ContextPaste;
+        private Controls.MTreeView ActorTreeView;
     }
 }

@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PrefabEditor));
             this.Grid_Prefabs = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_Prefabs = new System.Windows.Forms.TreeView();
+            this.TreeView_Prefabs = new Controls.MTreeView();
             this.Browser_ImportPRB = new System.Windows.Forms.OpenFileDialog();
             this.ToolStrip_Main = new System.Windows.Forms.ToolStrip();
             this.Button_File = new System.Windows.Forms.ToolStripDropDownButton();

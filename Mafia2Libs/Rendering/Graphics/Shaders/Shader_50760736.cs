@@ -15,21 +15,17 @@ namespace Rendering.Graphics
         protected Buffer ConstantShaderParamBuffer { get; set; }
         protected Shader_50760736Params ShaderParams { get; private set; }
 
-        public Shader_50760736(Device device, InputElement[] elements, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
-        {
-            if (!Init(device, elements, vsPath, psPath, vsEntryPoint, psEntryPoint))
-            {
-                throw new System.Exception("Failed to load Shader!");
-            }
-        }
+        public Shader_50760736(Device Dx11Device, ShaderInitParams InitParams) : base(Dx11Device, InitParams) { }
 
-        public override bool Init(Device device, InputElement[] elements, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
+        public override bool Init(Device Dx11Device, ShaderInitParams InitParams)
         {
-            if (!base.Init(device, elements, vsFileName, psFileName, vsEntryPoint, psEntryPoint))
+            if (!base.Init(Dx11Device, InitParams))
             {
                 return false;
             }
-            ConstantShaderParamBuffer = ConstantBufferFactory.ConstructBuffer<Shader_50760736Params>(device, "ShaderParamBuffer");
+
+            ConstantShaderParamBuffer = ConstantBufferFactory.ConstructBuffer<Shader_50760736Params>(Dx11Device, "ShaderParamBuffer");
+
             return true;
         }
         public override void SetSceneVariables(DeviceContext deviceContext, Matrix WorldMatrix, Camera camera)

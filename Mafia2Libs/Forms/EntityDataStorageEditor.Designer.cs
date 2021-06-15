@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EntityDataStorageEditor));
             this.PropertyGrid_Item = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_Tables = new System.Windows.Forms.TreeView();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.Button_File = new System.Windows.Forms.ToolStripDropDownButton();
             this.Button_Save = new System.Windows.Forms.ToolStripMenuItem();
@@ -39,7 +39,12 @@
             this.Button_Tools = new System.Windows.Forms.ToolStripDropDownButton();
             this.Button_CopyData = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_PasteData = new System.Windows.Forms.ToolStripMenuItem();
+            this.Context_Menu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ToolStrip_Copy = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStrip_Paste = new System.Windows.Forms.ToolStripMenuItem();
+            this.TreeView_Tables = new Mafia2Tool.Controls.MTreeView();
             this.toolStrip1.SuspendLayout();
+            this.Context_Menu.SuspendLayout();
             this.SuspendLayout();
             // 
             // PropertyGrid_Item
@@ -52,16 +57,6 @@
             this.PropertyGrid_Item.PropertySort = System.Windows.Forms.PropertySort.Categorized;
             this.PropertyGrid_Item.Size = new System.Drawing.Size(386, 410);
             this.PropertyGrid_Item.TabIndex = 10;
-            // 
-            // TreeView_Tables
-            // 
-            this.TreeView_Tables.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.TreeView_Tables.Location = new System.Drawing.Point(12, 28);
-            this.TreeView_Tables.Name = "TreeView_Tables";
-            this.TreeView_Tables.Size = new System.Drawing.Size(368, 410);
-            this.TreeView_Tables.TabIndex = 11;
-            this.TreeView_Tables.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
             // 
             // toolStrip1
             // 
@@ -123,16 +118,53 @@
             // Button_CopyData
             // 
             this.Button_CopyData.Name = "Button_CopyData";
-            this.Button_CopyData.Size = new System.Drawing.Size(180, 22);
+            this.Button_CopyData.Size = new System.Drawing.Size(112, 22);
             this.Button_CopyData.Text = "$COPY";
             this.Button_CopyData.Click += new System.EventHandler(this.Button_CopyData_Click);
             // 
             // Button_PasteData
             // 
             this.Button_PasteData.Name = "Button_PasteData";
-            this.Button_PasteData.Size = new System.Drawing.Size(180, 22);
+            this.Button_PasteData.Size = new System.Drawing.Size(112, 22);
             this.Button_PasteData.Text = "$PASTE";
             this.Button_PasteData.Click += new System.EventHandler(this.Button_Paste_Click);
+            // 
+            // Context_Menu
+            // 
+            this.Context_Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStrip_Copy,
+            this.ToolStrip_Paste});
+            this.Context_Menu.Name = "Context_Menu";
+            this.Context_Menu.Size = new System.Drawing.Size(181, 70);
+            this.Context_Menu.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenu_Opening);
+            // 
+            // ToolStrip_Copy
+            // 
+            this.ToolStrip_Copy.Name = "ToolStrip_Copy";
+            this.ToolStrip_Copy.ShortcutKeyDisplayString = "CTRL + C";
+            this.ToolStrip_Copy.Size = new System.Drawing.Size(167, 22);
+            this.ToolStrip_Copy.Text = "$COPY";
+            this.ToolStrip_Copy.Click += new System.EventHandler(this.ToolStrip_Copy_Click);
+            // 
+            // ToolStrip_Paste
+            // 
+            this.ToolStrip_Paste.Name = "ToolStrip_Paste";
+            this.ToolStrip_Paste.ShortcutKeyDisplayString = "CTRL + V";
+            this.ToolStrip_Paste.Size = new System.Drawing.Size(180, 22);
+            this.ToolStrip_Paste.Text = "$PASTE";
+            this.ToolStrip_Paste.Click += new System.EventHandler(this.ToolStrip_Paste_Click);
+            // 
+            // TreeView_Tables
+            // 
+            this.TreeView_Tables.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.TreeView_Tables.ContextMenuStrip = this.Context_Menu;
+            this.TreeView_Tables.Location = new System.Drawing.Point(12, 28);
+            this.TreeView_Tables.Name = "TreeView_Tables";
+            this.TreeView_Tables.Size = new System.Drawing.Size(368, 410);
+            this.TreeView_Tables.TabIndex = 11;
+            this.TreeView_Tables.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
+            this.TreeView_Tables.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form_OnKeyUp);
             // 
             // EntityDataStorageEditor
             // 
@@ -147,6 +179,7 @@
             this.Text = "$ACTOR_EDITOR_TITLE";
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.Context_Menu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -155,7 +188,7 @@
         #endregion
 
         private System.Windows.Forms.PropertyGrid PropertyGrid_Item;
-        private System.Windows.Forms.TreeView TreeView_Tables;
+        private Controls.MTreeView TreeView_Tables;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton Button_File;
         private System.Windows.Forms.ToolStripMenuItem Button_Save;
@@ -164,5 +197,8 @@
         private System.Windows.Forms.ToolStripDropDownButton Button_Tools;
         private System.Windows.Forms.ToolStripMenuItem Button_CopyData;
         private System.Windows.Forms.ToolStripMenuItem Button_PasteData;
+        private System.Windows.Forms.ContextMenuStrip Context_Menu;
+        private System.Windows.Forms.ToolStripMenuItem ToolStrip_Copy;
+        private System.Windows.Forms.ToolStripMenuItem ToolStrip_Paste;
     }
 }

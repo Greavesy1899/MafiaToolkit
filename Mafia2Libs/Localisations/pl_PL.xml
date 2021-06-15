@@ -13,7 +13,8 @@
   <String ID="$FAILED_UPDATE_CHECK">Nie można sprawdzić aktualizacji!</String>
   
   <!-- Game Explorer Strings -->
-  <String ID="$CREDITS">Specjalne podziękowania</String>
+  <String ID="$ABOUT">About</String>
+  <String ID="$THANKS">Specjalne podziękowania</String>
   <String ID="$VIEW">Widok</String>
   <String ID="$FILE">Plik</String>
   <String ID="$TOOLS">Narzędzia</String>
@@ -45,8 +46,15 @@
   <String ID="$FOLDER_PATH_TOOLTIP">Ścieżka do folderu</String>
   <String ID="$UP_TOOLTIP">Widok w górę</String>
   <String ID="$M1DE_OODLEERROR">Oodle DLL nie jest darmową biblioteką stworzoną przez RAD Game Tools i nie została ona umieszczona razem z Toolkitem. Skopiuj plik oo2core_8_win64.dll z folderu gry Folder instalacyjny Mafia: Definitive Edition do folderu gdzie znajduje się folder Libs programu Toolkit.</String>
-  
-  <!-- Main Options Strings-->
+
+  <!-- Game Selector -->
+  <String ID="$START_TOOLKIT">Start Toolkit</String>
+  <String ID="$FOLDER_PATH_LABEL">Game Directory:</String>
+  <String ID="$SELECT_AS_DEFAULT">Skip This Window In The Future</String>
+  <String ID="$SELECT_FOLDER">Select Folder</String>
+  <String ID="$SELECT_GAME">Select Game</String>
+
+	<!-- Main Options Strings-->
   <String ID="$GENERAL">Główne ustawienia</String>
   <String ID="$SDS_OPTIONS">Ustawienia dot. plików SDS</String>
   <String ID="$MODEL_EXPORTING">Modele i ich eksportowanie</String>
@@ -156,6 +164,14 @@
   <String ID="$FRAME_EDITOR_TITLE">Edytor FrameResource</String>
   <String ID="$FRADD_TYPE">Typ Frame</String>
   <String ID="$QUESTION_FRADD">Wpisz nazwę i typ frame.</String>
+
+  <!-- Actor Editor -->
+  <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
+  <String ID="$ADD_ITEM">Add Item</String>
+  <String ID="$ADD_DEFINITION">Add Definition</String>
+  
+  <!-- EntityDataStorage Editor -->
+  <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Nazwa wejściowa</String>
@@ -262,5 +278,10 @@
   
   <!-- Property Descriptions Strings-->
   <String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
-  
+
+  <!-- XBIN Editor Strings-->
+  <String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
+  <String ID="$IMPORT_XBIN">Import from .xml</String>
+  <String ID="$EXPORT_XBIN">Export to .xml</String>
+
 </Localisation>

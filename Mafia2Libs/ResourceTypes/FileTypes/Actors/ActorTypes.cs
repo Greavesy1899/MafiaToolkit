@@ -2036,7 +2036,7 @@ namespace ResourceTypes.Actors
         public int RecogniseTime { get; set; }
         public int RecogniseRange { get; set; }
         public int PreferMelee { get; set; }
-        public float MeleeAttackLevel { get; set; }
+        public int MeleeAttackLevel { get; set; }
         public float MeleeBlockLevel { get; set; }
         public float MeleeAggressiveness { get; set; }
         public float MeleeCounterBlockSkill { get; set; }
@@ -2083,7 +2083,7 @@ namespace ResourceTypes.Actors
             RecogniseTime = stream.ReadInt32(isBigEndian);
             RecogniseRange = stream.ReadInt32(isBigEndian);
             PreferMelee = stream.ReadInt32(isBigEndian);
-            MeleeAttackLevel = stream.ReadSingle(isBigEndian);
+            MeleeAttackLevel = stream.ReadInt32(isBigEndian);
             MeleeBlockLevel = stream.ReadSingle(isBigEndian);
             MeleeAggressiveness = stream.ReadSingle(isBigEndian);
             MeleeCounterBlockSkill = stream.ReadSingle(isBigEndian);

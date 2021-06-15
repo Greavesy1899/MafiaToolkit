@@ -32,10 +32,11 @@ namespace ResourceTypes.EntityDataStorage
                     MessageBox.Show(string.Format("Detected unsupported entity. The EntityStorageData will not load."), "Toolkit", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
+
                 Hash = fileStream.ReadUInt64(isBigEndian);
                 TableSize = fileStream.ReadInt32(isBigEndian);
 
-                var numTables = fileStream.ReadInt32(isBigEndian);
+                uint numTables = fileStream.ReadUInt32(isBigEndian);
                 TableHashes = new ulong[numTables];
                 Tables = new IActorExtraDataInterface[numTables];
 
@@ -46,7 +47,7 @@ namespace ResourceTypes.EntityDataStorage
 
                 for (int i = 0; i < numTables; i++)
                 {
-                    using (var stream = new MemoryStream(fileStream.ReadBytes(TableSize)))
+                    using (MemoryStream stream = new MemoryStream(fileStream.ReadBytes(TableSize)))
                     {
                         var item = ActorFactory.LoadEntityDataStorage(EntityType, stream, isBigEndian);
                         Tables[i] = item;
@@ -71,7 +72,7 @@ namespace ResourceTypes.EntityDataStorage
 
                 for (int i = 0; i < Tables.Length; i++)
                 {
-                    using (var stream = new MemoryStream())
+                    using (MemoryStream stream = new MemoryStream())
                     {
                         Tables[i].WriteToFile(stream, isBigEndian);
                         fileStream.Write(stream.ToArray());

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.M3.XBin;
+using Utils.Helpers;
 using Utils.Language;
 
 namespace Mafia2Tool
@@ -31,6 +32,9 @@ namespace Mafia2Tool
             Button_Save.Text = Language.GetString("$SAVE");
             Button_Reload.Text = Language.GetString("$RELOAD");
             Button_Exit.Text = Language.GetString("$EXIT");
+            Button_Tools.Text = Language.GetString("$TOOLS");
+            Button_Import.Text = Language.GetString("$IMPORT_XBIN");
+            Button_Export.Text = Language.GetString("$EXPORT_XBIN");
         }
 
         private void ReadFromFile()

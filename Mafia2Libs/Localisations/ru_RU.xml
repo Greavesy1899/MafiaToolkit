@@ -7,7 +7,8 @@
   <String ID="$ENTRY_NAME">Наименование записи</String>
   
   <!-- Game Explorer Strings -->
-  <String ID="$CREDITS">Особая благодарность</String>
+  <String ID="$ABOUT">About</String>
+  <String ID="$THANKS">Особая благодарность</String>
   <String ID="$VIEW">Вид</String>
   <String ID="$FILE">Файл</String>
   <String ID="$TOOLS">Инструменты</String>
@@ -150,6 +151,14 @@
   <String ID="$FRADD_TYPE">Тип кадра</String>
   <String ID="$FRADD_NAME_TABLE">Добавить кадр/рамку для имени таблиц ?</String>
   <String ID="$QUESTION_FRADD">Введите имя и тип кадра.</String>
+
+  <!-- Actor Editor -->
+  <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
+  <String ID="$ADD_ITEM">Add Item</String>
+  <String ID="$ADD_DEFINITION">Add Definition</String>
+  
+  <!-- EntityDataStorage Editor -->
+  <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Ввод имени</String>
@@ -211,5 +220,10 @@
 
   <!-- Property Descriptions Strings-->
   <String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
-  
+
+  <!-- XBIN Editor Strings-->
+  <String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
+  <String ID="$IMPORT_XBIN">Import from .xml</String>
+  <String ID="$EXPORT_XBIN">Export to .xml</String>
+
 </Localisation>

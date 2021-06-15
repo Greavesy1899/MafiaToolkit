@@ -50,7 +50,9 @@ namespace ResourceTypes.XBin.Types
     [TypeConverter(typeof(XBinVector2Converter)), PropertyClassAllowReflection]
     public class XBinVector2
     {
+        [PropertyForceAsAttribute]
         public float X { get; set; }
+        [PropertyForceAsAttribute]
         public float Y { get; set; }
 
         public XBinVector2() { }

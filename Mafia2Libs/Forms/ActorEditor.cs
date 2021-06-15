@@ -39,6 +39,8 @@ namespace Mafia2Tool
             EditButton.Text = Language.GetString("$EDIT");
             AddDefinitionButton.Text = Language.GetString("$ADD_DEFINITION");
             AddItemButton.Text = Language.GetString("$ADD_ITEM");
+            ContextCopy.Text = Language.GetString("$COPY");
+            ContextPaste.Text = Language.GetString("$PASTE");
         }
 
         private void BuildData()
@@ -152,11 +154,6 @@ namespace Mafia2Tool
             BuildData();
         }
 
-        private void ExitButton_OnClick(object sender, System.EventArgs e)
-        {
-            Close();
-        }
-
         private void AddItemButton_Click(object sender, System.EventArgs e)
         {
             NewObjectForm objectForm = new NewObjectForm(true);
@@ -199,11 +196,6 @@ namespace Mafia2Tool
             }
         }
 
-        private void ActorGrid_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
-        {
-            ActorGrid.Refresh();
-        }
-
         private void ActorTreeView_OnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.C)
@@ -213,6 +205,30 @@ namespace Mafia2Tool
             else if (e.Control && e.KeyCode == Keys.V)
             {
                 Paste();
+            }
+        }
+
+        private void ExitButton_OnClick(object sender, System.EventArgs e) => Close();
+
+        private void ActorGrid_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e) => ActorGrid.Refresh();
+
+        private void ContextCopy_Click(object sender, System.EventArgs e) => Copy();
+
+        private void ContextPaste_Click(object sender, System.EventArgs e) => Paste();
+
+        private void ContextMenu_OnOpening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            ContextCopy.Visible = false;
+            ContextPaste.Visible = false;
+
+            TreeNode SelectedNode = ActorTreeView.SelectedNode;
+            if(SelectedNode != null && SelectedNode.Tag != null)
+            {
+                if(SelectedNode.Text.Equals("Extra Data") || SelectedNode.Tag is ActorExtraData)
+                {
+                    ContextCopy.Visible = true;
+                    ContextPaste.Visible = true;
+                }
             }
         }
     }

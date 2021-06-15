@@ -118,7 +118,6 @@ namespace Gibbed.Mafia2.ResourceFormats
         public ulong DetermineMagic(string name)
         {
             string extension = GetFullExtensionUtil(name);
-            Console.WriteLine(extension);
             ulong magic = 0;
 
             bool bHasFound = TypeExtensionString.ContainsKey(extension);

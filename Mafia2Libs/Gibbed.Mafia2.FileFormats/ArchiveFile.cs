@@ -169,13 +169,11 @@ namespace Gibbed.Mafia2.FileFormats
                 resourceHeader.TypeId = (uint)resourceEntry.TypeId;
                 resourceHeader.Size = stride + (uint)(resourceEntry.Data == null ? 0 : resourceEntry.Data.Length);
                 resourceHeader.Version = resourceEntry.Version;
+                resourceHeader.FileHash = resourceEntry.FileHash;
                 resourceHeader.SlotRamRequired = resourceEntry.SlotRamRequired;
                 resourceHeader.SlotVramRequired = resourceEntry.SlotVramRequired;
                 resourceHeader.OtherRamRequired = resourceEntry.OtherRamRequired;
                 resourceHeader.OtherVramRequired = resourceEntry.OtherVramRequired;
-                resourceHeader.Unk01 = 0;
-                resourceHeader.Unk02 = 0;
-                resourceHeader.Unk03 = 0;
 
                 using (var data = new MemoryStream())
                 {
@@ -212,6 +210,7 @@ namespace Gibbed.Mafia2.FileFormats
                 output.WriteFromMemoryStreamSafe(data, endian);
             }
         }
+
         public void Deserialize(Stream input)
         {
             // Read Texture Names before we start.
@@ -311,6 +310,7 @@ namespace Gibbed.Mafia2.FileFormats
                     TypeId = (int)resourceHeader.TypeId,
                     Version = resourceHeader.Version,
                     Data = blockStream.ReadBytes((int)resourceHeader.Size - (size + 4)),
+                    FileHash = resourceHeader.FileHash,
                     SlotRamRequired = resourceHeader.SlotRamRequired,
                     SlotVramRequired = resourceHeader.SlotVramRequired,
                     OtherRamRequired = resourceHeader.OtherRamRequired,
@@ -466,58 +466,68 @@ namespace Gibbed.Mafia2.FileFormats
             {
                 var entry = patchFile.resources[i];
 
-                if (entry.TypeId > ResourceTypes.Count)
+                string type = "";
+                if(entry.TypeId < ResourceTypes.Count)
                 {
-                    File.WriteAllBytes("Unk" + i + ".bin", entry.Data);
-                    continue;
+                    type = ResourceTypes[entry.TypeId].Name;
+                }
+                else
+                {
+                    // NB: M2DE's midtown.sds.patch seems to have a bogus type. I think its a MipMap, but 
+                    // I've had to implement a huge-ass fallback hack just to accomodate this bogus entry.
+                    type = "Unknown";
                 }
 
-                var type = ResourceTypes[entry.TypeId].Name;
                 string name = string.Format("{0}_{1}", type, i);
-                for (int z = 0; z < resPatchAvailable[type].Count; z++)
+                if (resPatchAvailable.ContainsKey(type))
                 {
-                    var res = resPatchAvailable[type][z];
-                    if (type == "Texture" || type == "Mipmap")
+                    for (int z = 0; z < resPatchAvailable[type].Count; z++)
                     {
-                        TextureResource tRes = new TextureResource();
-                        tRes.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
-                        var resName = sortedResources[type][res.Key];
-                        var hash = FNV64.Hash(resName);
-                        if (tRes.NameHash == hash)
+                        var res = resPatchAvailable[type][z];
+                        if (type == "Texture" || type == "Mipmap")
                         {
-                            Console.WriteLine("Detected possible candidate: {0}", resName);
-                            name = resName;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        if (!res.Value)
-                        {
-                            string StoredName = sortedResources[type][res.Key];
-                            if(!StoredName.Equals("not available"))
+                            TextureResource tRes = new TextureResource();
+                            tRes.Deserialize(entry.Version, new MemoryStream(entry.Data), Endian.Little);
+                            var resName = sortedResources[type][res.Key];
+                            var hash = FNV64.Hash(resName);
+                            if (tRes.NameHash == hash)
                             {
-                                name = StoredName;
+                                Console.WriteLine("Detected possible candidate: {0}", resName);
+                                name = resName;
+                                break;
                             }
-
-                            resPatchAvailable[type][z] = new KeyValuePair<int, bool>(res.Key, true);
-                            break;
                         }
-                    }
+                        else
+                        {
+                            if (!res.Value)
+                            {
+                                string StoredName = sortedResources[type][res.Key];
+                                if (!StoredName.Equals("not available"))
+                                {
+                                    name = StoredName;
+                                }
 
+                                resPatchAvailable[type][z] = new KeyValuePair<int, bool>(res.Key, true);
+                                break;
+                            }
+                        }
+
+                    }
                 }
+
+                bool bContainsDDS = (name.Contains(".dds"));
                 var saveName = "";
                 resourceXML.WriteStartElement("ResourceEntry");
-                resourceXML.WriteElementString("Type", ResourceTypes[entry.TypeId].Name);
+                resourceXML.WriteElementString("Type", type);
                 switch (type)
                 {
                     case "Texture":
-                        var textureName = name + ".dds";
+                        var textureName = (!bContainsDDS) ? name + ".dds" : name;
                         ReadTextureEntry(entry, resourceXML, name);
                         saveName = textureName;
                         break;
                     case "Mipmap":
-                        var mipName = "MIP_" + name + ".dds";
+                        var mipName = (!bContainsDDS) ? "MIP_ " + name + ".dds" : "MIP_ " + name;
                         ReadMipmapEntry(entry, resourceXML, name);
                         saveName = mipName;
                         break;
@@ -587,6 +597,7 @@ namespace Gibbed.Mafia2.FileFormats
                         saveName = name;
                         break;
                     default:
+                        saveName = name;
                         Console.WriteLine("Unhandled Resource Type {0}", type);
                         break;
                 }
@@ -599,14 +610,12 @@ namespace Gibbed.Mafia2.FileFormats
             resourceXML.Dispose();
         }
 
-        /// <summary>
-        /// Save resource data from given sds data.
-        /// </summary>
-        /// <param name="xml"></param>
         public void SaveResources(FileInfo file)
         {
             XPathDocument doc = null;
 
+            // pull XML from resource info XML
+            // If it doesn't exist, attempt to check for CrySDS lock
             if (string.IsNullOrEmpty(ResourceInfoXml) == false)
             {
                 using (var reader = new StringReader(ResourceInfoXml))
@@ -614,87 +623,55 @@ namespace Gibbed.Mafia2.FileFormats
                     doc = new XPathDocument(reader);
                 }
             }
-            else
+            else if(Version == 19)
             {
-                int type = -1;
-                for(int i = 0; i != ResourceTypes.Count; i++)
-                {
-                    if (ResourceTypes[i].Name == "")
-                    {
-                        type = (int)ResourceTypes[i].Id;
-                    }
-                }
-
-                if (type != -1)
-                {
-                    for (int i = 0; i < ResourceEntries.Count; i++)
-                    {
-                        if (ResourceEntries[i].TypeId == type)
-                        {
-                            // Fix for CrySDS archives
-                            using (MemoryStream stream = new MemoryStream(ResourceEntries[i].Data))
-                            {
-                                ushort authorLen = stream.ReadValueU16();
-                                stream.ReadBytes(authorLen);
-                                int fileSize = stream.ReadValueS32();
-                                int password = stream.ReadValueS32();
-
-                                using (var reader = new StringReader(Encoding.UTF8.GetString(stream.ReadBytes(fileSize))))
-                                {
-                                    doc = new XPathDocument(reader);
-                                }
-                            }
-                            ResourceEntries.RemoveAt(i);
-                            ResourceTypes.RemoveAt(type);
-                        }
-                    }
-                }
+                doc = CheckForCrySDS();
             }
 
+            // stub out file names
+            for(int i = 0; i < ResourceEntries.Count; i++)
+            {
+                ResourceEntry Entry = ResourceEntries[i];
+
+                string FileName = "Unknown_0";
+
+                if (Entry.TypeId != -1)
+                {
+                    // TODO: Determine if this could be done for fusion games
+                    string NameOfFile = "File";
+                    if (IsGameType(GamesEnumerator.MafiaII) || IsGameType(GamesEnumerator.MafiaII_DE))
+                    {
+                        NameOfFile = ResourceTypes[Entry.TypeId].Name;
+                    }
+
+                    // Get extension, format filename properly.
+                    string Extension = DetermineFileExtension(_ResourceTypes[Entry.TypeId].Name);
+                    FileName = string.Format("{0}_{1}{2}", NameOfFile, i, Extension);
+                }
+
+                _ResourceNames.Add(FileName);
+            }
+
+            // Pull names from XML
             if (doc != null)
             {
                 var nav = doc.CreateNavigator();
                 var nodes = nav.Select("/xml/ResourceInfo/SourceDataDescription");
+
+                // iterate and update name
+                int index = 0;
                 while (nodes.MoveNext() == true)
                 {
-                    _ResourceNames.Add(nodes.Current.Value);
+                    string Name = nodes.Current.Value;
+                    if(!Name.Equals("not available"))
+                    {
+                        _ResourceNames[index] = Name;
+                    }
+
+                    index++;
                 }
+
                 Log.WriteLine("Found all items; count is " + nodes.Count);
-            }
-
-
-            if (_ResourceNames.Count == 0)
-            {
-                //Fix for friends for life SDS files.
-                //MessageBox.Show("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                Log.WriteLine("Detected SDS with no ResourceXML. I do not recommend repacking this SDS. It could cause crashes!", LoggingTypes.WARNING);
-                for (int i = 0; i < ResourceEntries.Count; i++)
-                {
-                    ResourceEntry Entry = ResourceEntries[i];
-                    string Typename = _ResourceTypes[Entry.TypeId].Name;
-
-                    // TODO: Find a new place for this.
-                    string Extension = ".bin";
-                    if(Typename == "Texture")
-                    {
-                        Extension = ".dds";
-                    }
-                    else if(Typename == "Generic")
-                    {
-                        Extension = ".genr";
-                    }
-                    else if (Typename == "Flash")
-                    {
-                        Extension = ".fla";
-                    }
-                    else if(Typename == "hkAnimation")
-                    {
-                        Extension = ".hkx";
-                    }
-
-                    string FileName = string.Format("File_{0}{1}", i, Extension);
-                    _ResourceNames.Add(FileName);
-                }
             }
 
             if(Version == 19)

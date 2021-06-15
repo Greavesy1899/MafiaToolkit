@@ -107,7 +107,7 @@ namespace Gibbed.Mafia2.FileFormats
                 if (IsGameType(GamesEnumerator.MafiaI_DE))
                 {
                     var size = (resource.bIsDX10 ? 157 : 137);
-                    entry.OtherVramRequired = (uint)(stream.Length - size);
+                    entry.SlotVramRequired = (uint)(stream.Length - size);
                 }
             }
             return entry;
@@ -483,19 +483,10 @@ namespace Gibbed.Mafia2.FileFormats
                 Unk1 = 1,
                 Unk2_V4 = unk2
             };
-            resource.Data = File.ReadAllBytes(sdsFolder + "/" + file);
 
-            if(entry.Version == 4)
-            {
-                if(resource.Unk2_V4 == 4)
-                {
-                    entry.OtherRamRequired = (uint)resource.Data.Length;
-                }
-            }
-            else
-            {
-                entry.SlotRamRequired = (uint)resource.Data.Length;
-            }
+            // Read all the data, then allocate memory required
+            resource.Data = File.ReadAllBytes(sdsFolder + "/" + file);
+            entry.SlotRamRequired = (uint)resource.Data.Length;
 
             //serialize.
             using (MemoryStream stream = new MemoryStream())

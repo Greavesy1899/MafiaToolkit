@@ -7,7 +7,8 @@
   <String ID="$ENTRY_NAME">Nom</String>
   
   <!-- Game Explorer Strings -->
-  <String ID="$CREDITS">Remerciements spéciaux</String>
+  <String ID="$ABOUT">About</String>
+  <String ID="$THANKS">Remerciements spéciaux</String>
   <String ID="$VIEW">Vue</String>
   <String ID="$FILE">Fichier</String>
   <String ID="$TOOLS">Outils</String>
@@ -39,7 +40,14 @@
   <String ID="$FOLDER_PATH_TOOLTIP">Chemin du dossier</String>
   <String ID="$UP_TOOLTIP">Up</String>
   <String ID="$M1DE_OODLEERROR">The Oodle DLL is a non-free library by RAD Game Tools and is thus not included due to legal issues. Please copy 'oo2core_8_win64.dll' from the Mafia: Definitive Edition installation folder to the folder where the Toolkit's 'libs' folder is located.</String>
-  
+
+  <!-- Game Selector -->
+  <String ID="$START_TOOLKIT">Start Toolkit</String>
+  <String ID="$FOLDER_PATH_LABEL">Game Directory:</String>
+  <String ID="$SELECT_AS_DEFAULT">Skip This Window In The Future</String>
+  <String ID="$SELECT_FOLDER">Select Folder</String>
+  <String ID="$SELECT_GAME">Select Game</String>
+
   <!-- Main Options Strings-->
   <String ID="$GENERAL">Général</String>
   <String ID="$SDS_OPTIONS">Options SDS</String>
@@ -143,6 +151,14 @@
   <String ID="$FRAME_EDITOR_TITLE">Editeur de FrameResource</String>
   <String ID="$FRADD_TYPE">Type de frame</String>
   <String ID="$QUESTION_FRADD">Entrer le nom et le type de la frame.</String>
+
+  <!-- Actor Editor -->
+  <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
+  <String ID="$ADD_ITEM">Add Item</String>
+  <String ID="$ADD_DEFINITION">Add Definition</String>
+  
+  <!-- EntityDataStorage Editor -->
+  <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">No;</String>
@@ -203,5 +219,10 @@
 
   <!-- Property Descriptions Strings-->
   <String ID="$XBIN_PROP_DESC_NAME_UNSTORED">Note: This is NOT stored in the file and taken from the 'Hash' value.</String>
+
+  <!-- XBIN Editor Strings-->
+  <String ID="$XBIN_EDITOR_TITLE">XBIN Editor</String>
+  <String ID="$IMPORT_XBIN">Import from .xml</String>
+  <String ID="$EXPORT_XBIN">Export to .xml</String>
   
 </Localisation>

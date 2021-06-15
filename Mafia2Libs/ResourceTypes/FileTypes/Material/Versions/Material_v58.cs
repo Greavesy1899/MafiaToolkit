@@ -34,6 +34,13 @@ namespace ResourceTypes.Materials
                 Unk3 = CastedMaterial.Unk3;
                 Unk4 = CastedMaterial.Unk4;
                 Unk5 = CastedMaterial.Unk5;
+
+                Samplers = new List<MaterialSampler_v58>();
+                foreach (var Sampler in CastedMaterial.Samplers)
+                {
+                    MaterialSampler_v58 NewSampler = new MaterialSampler_v58(Sampler);
+                    Samplers.Add(NewSampler);
+                }
             }
             else if (OtherMaterial.GetMTLVersion() == VersionsEnumerator.V_58)
             {
@@ -45,6 +52,13 @@ namespace ResourceTypes.Materials
                 Unk5 = CastedMaterial.Unk5;
                 Unk6 = CastedMaterial.Unk6;
                 Unk7 = CastedMaterial.Unk7;
+
+                Samplers = new List<MaterialSampler_v58>();
+                foreach (var Sampler in CastedMaterial.Samplers)
+                {
+                    MaterialSampler_v58 NewSampler = new MaterialSampler_v58(Sampler);
+                    Samplers.Add(NewSampler);
+                }
             }
             else
             {
@@ -53,11 +67,11 @@ namespace ResourceTypes.Materials
                 return;
             }
 
-            Samplers = new List<MaterialSampler_v58>();
-            foreach (var Sampler in Samplers)
+            Parameters = new List<MaterialParameter>();
+            foreach(var Param in OtherMaterial.Parameters)
             {
-                MaterialSampler_v58 NewSampler = new MaterialSampler_v58(Sampler);
-                Samplers.Add(Sampler);
+                MaterialParameter NewParam = new MaterialParameter(Param);
+                Parameters.Add(NewParam);
             }
         }
 
@@ -201,21 +215,25 @@ namespace ResourceTypes.Materials
             // TODO: Setup is essentially the same, maybe we can somehow make v57 and v58 share the same interface?
             if (OtherSampler.GetVersion() == VersionsEnumerator.V_57)
             {
-                MaterialSampler_v57 CastedSampler = (OtherSampler as MaterialSampler_v57);
-                UnkSet0 = CastedSampler.UnkSet0;
+                MaterialSampler_v57 CastedSampler = (OtherSampler as MaterialSampler_v57);             
                 TextureName = new HashName(CastedSampler.TextureName);
                 TexType = CastedSampler.TexType;
                 UnkZero = CastedSampler.UnkZero;
                 UnkSet1 = CastedSampler.UnkSet1;
+
+                UnkSet0 = new int[4];
+                Array.Copy(CastedSampler.UnkSet0, 0, UnkSet0, 0, 2);
             }
             else if (OtherSampler.GetVersion() == VersionsEnumerator.V_58)
             {
                 MaterialSampler_v58 CastedSampler = (OtherSampler as MaterialSampler_v58);
-                UnkSet0 = CastedSampler.UnkSet0;
                 TextureName = new HashName(CastedSampler.TextureName);
                 TexType = CastedSampler.TexType;
                 UnkZero = CastedSampler.UnkZero;
                 UnkSet1 = CastedSampler.UnkSet1;
+
+                UnkSet0 = new int[4];
+                Array.Copy(CastedSampler.UnkSet0, 0, UnkSet0, 0, 2);
             }
             else
             {
