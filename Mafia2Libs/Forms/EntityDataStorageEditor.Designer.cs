@@ -61,6 +61,7 @@
             this.PropertyGrid_Item.PropertySort = System.Windows.Forms.PropertySort.Categorized;
             this.PropertyGrid_Item.Size = new System.Drawing.Size(386, 410);
             this.PropertyGrid_Item.TabIndex = 10;
+            this.PropertyGrid_Item.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.PropertyGrid_OnValueChanged);
             // 
             // toolStrip1
             // 

@@ -178,6 +178,29 @@
   <String ID="$OPEN_TITLE">Open File</String>
   <String ID="$EXPORT_XML">Export To XML</String>
   <String ID="$IMPORT_XML">Import From XML</String>
+  <String ID="$PHYSICS_RB">Physics/Rigidbody</String>
+  <String ID="$MOTOR_TORQUE">Motor/Torque</String>
+  <String ID="$FUEL">Fuel</String>
+  <String ID="$GEARBOX">Gearbox</String>
+  <String ID="$STEERING">Steering</String>
+  <String ID="$DIFFERENTIAL">Differential</String>
+  <String ID="$BRAKES">Brakes</String>
+  <String ID="$AERODYNAMICS">Aerodynamics</String>
+  <String ID="$EFFECTS">Effects</String>
+  <String ID="$ENGINE">Engine</String>
+  <String ID="$ENVIRONMENT">Environment</String>
+  <String ID="$AIR_PUMP">Air Pump</String>
+  <String ID="$DOORS">Doors</String>
+  <String ID="$BONNET_TRUNK">Bonnet/Trunk</String>
+  <String ID="$WHEELS">Wheels</String>
+  <String ID="$HORN_SIREN">Horn/Siren</String>
+  <String ID="$GLASS_BREAK">Glass Effects</String>
+  <String ID="$EXPLOSION">Explosion Effects</String>
+  <String ID="$FIRE">Fire Effects</String>
+  <String ID="$RAIN_CONTACT">Rain Effects</String>
+  <String ID="$HEDGE_CONTACT">Hedge Collision Effects</String>
+  <String ID="$SKIDDING_SLIDING">Powersliding/Skidding</String>
+  <String ID="$ROLL">Rolling (Car Flipping, Upside down, etc)</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Input Name</String>

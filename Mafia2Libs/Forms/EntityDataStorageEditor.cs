@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.Actors;
@@ -55,7 +56,8 @@ namespace Toolkit.Forms
 
         private void CreateTable()
         {
-            TreeNode entityNode = new TreeNode("Entity");
+            string EntityName = string.Format("Entity [{0}]", tables.Hash);
+            TreeNode entityNode = new TreeNode(EntityName);
             entityNode.Tag = tables;
             TreeView_Tables.Nodes.Add(entityNode);
 
@@ -63,7 +65,8 @@ namespace Toolkit.Forms
             {
                 for (int i = 0; i < tables.Tables.Length; i++)
                 {
-                    TreeNode node = new TreeNode("Table_" + i);
+                    string TableName = string.Format("Table [{0}]", tables.TableHashes[i]);
+                    TreeNode node = new TreeNode(TableName);
                     node.Tag = tables.Tables[i];
                     entityNode.Nodes.Add(node);
                 }
@@ -207,6 +210,38 @@ namespace Toolkit.Forms
                     PropertyGrid_Item.SelectedObject = null;
 
                     CreateTable();
+                }
+            }
+        }
+
+        private void PropertyGrid_OnValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            // Check if property 'Hash' needs to be updated
+            if (PropertyGrid_Item.SelectedObject is EntityDataStorageLoader)
+            {
+                if (e.ChangedItem.Label.Equals("Hash"))
+                {
+                    string NewEntityName = string.Format("Entity [{0}]", e.ChangedItem.Value);
+                    TreeView_Tables.SelectedNode.Text = NewEntityName;
+                    TreeView_Tables.SelectedNode.Name = NewEntityName;
+                }
+                else
+                {
+                    EntityDataStorageLoader EDSLoader = (PropertyGrid_Item.SelectedObject as EntityDataStorageLoader);
+                    string NewEntityName = string.Format("Entity [{0}]", EDSLoader.Hash);
+
+                    Debug.Assert(EDSLoader.TableHashes.Length == TreeView_Tables.SelectedNode.Nodes.Count, "WARNING: This editor does not support deleting/adding new tables. " +
+                        "The length of 'TableHashes' NEEDS to equal the same amount of child nodes attached to " + NewEntityName);
+
+                    int Index = 0;
+                    foreach (TreeNode ChildNode in TreeView_Tables.SelectedNode.Nodes)
+                    {
+                        string NewTableName = string.Format("Table [{0}]", EDSLoader.TableHashes[Index]);
+                        ChildNode.Text = NewTableName;
+                        ChildNode.Name = NewTableName;
+
+                        Index++;
+                    }
                 }
             }
         }
