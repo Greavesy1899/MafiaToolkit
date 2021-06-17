@@ -1,4 +1,4 @@
-﻿namespace Mafia2Tool
+﻿namespace Toolkit.Forms
 {
     partial class EntityDataStorageEditor
     {
@@ -39,10 +39,14 @@
             this.Button_Tools = new System.Windows.Forms.ToolStripDropDownButton();
             this.Button_CopyData = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_PasteData = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_ExportXML = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_ImportXML = new System.Windows.Forms.ToolStripMenuItem();
             this.Context_Menu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ToolStrip_Copy = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip_Paste = new System.Windows.Forms.ToolStripMenuItem();
             this.TreeView_Tables = new Mafia2Tool.Controls.MTreeView();
+            this.FileDialog_Open = new System.Windows.Forms.OpenFileDialog();
+            this.FileDialog_Save = new System.Windows.Forms.SaveFileDialog();
             this.toolStrip1.SuspendLayout();
             this.Context_Menu.SuspendLayout();
             this.SuspendLayout();
@@ -108,7 +112,9 @@
             this.Button_Tools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.Button_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Button_CopyData,
-            this.Button_PasteData});
+            this.Button_PasteData,
+            this.Button_ExportXML,
+            this.Button_ImportXML});
             this.Button_Tools.Image = ((System.Drawing.Image)(resources.GetObject("Button_Tools.Image")));
             this.Button_Tools.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.Button_Tools.Name = "Button_Tools";
@@ -118,16 +124,30 @@
             // Button_CopyData
             // 
             this.Button_CopyData.Name = "Button_CopyData";
-            this.Button_CopyData.Size = new System.Drawing.Size(112, 22);
+            this.Button_CopyData.Size = new System.Drawing.Size(151, 22);
             this.Button_CopyData.Text = "$COPY";
             this.Button_CopyData.Click += new System.EventHandler(this.Button_CopyData_Click);
             // 
             // Button_PasteData
             // 
             this.Button_PasteData.Name = "Button_PasteData";
-            this.Button_PasteData.Size = new System.Drawing.Size(112, 22);
+            this.Button_PasteData.Size = new System.Drawing.Size(151, 22);
             this.Button_PasteData.Text = "$PASTE";
             this.Button_PasteData.Click += new System.EventHandler(this.Button_Paste_Click);
+            // 
+            // Button_ExportXML
+            // 
+            this.Button_ExportXML.Name = "Button_ExportXML";
+            this.Button_ExportXML.Size = new System.Drawing.Size(151, 22);
+            this.Button_ExportXML.Text = "$EXPORT_XML";
+            this.Button_ExportXML.Click += new System.EventHandler(this.Button_ExportXML_Click);
+            // 
+            // Button_ImportXML
+            // 
+            this.Button_ImportXML.Name = "Button_ImportXML";
+            this.Button_ImportXML.Size = new System.Drawing.Size(151, 22);
+            this.Button_ImportXML.Text = "$IMPORT_XML";
+            this.Button_ImportXML.Click += new System.EventHandler(this.Button_ImportXML_Click);
             // 
             // Context_Menu
             // 
@@ -135,7 +155,7 @@
             this.ToolStrip_Copy,
             this.ToolStrip_Paste});
             this.Context_Menu.Name = "Context_Menu";
-            this.Context_Menu.Size = new System.Drawing.Size(181, 70);
+            this.Context_Menu.Size = new System.Drawing.Size(168, 48);
             this.Context_Menu.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenu_Opening);
             // 
             // ToolStrip_Copy
@@ -150,7 +170,7 @@
             // 
             this.ToolStrip_Paste.Name = "ToolStrip_Paste";
             this.ToolStrip_Paste.ShortcutKeyDisplayString = "CTRL + V";
-            this.ToolStrip_Paste.Size = new System.Drawing.Size(180, 22);
+            this.ToolStrip_Paste.Size = new System.Drawing.Size(167, 22);
             this.ToolStrip_Paste.Text = "$PASTE";
             this.ToolStrip_Paste.Click += new System.EventHandler(this.ToolStrip_Paste_Click);
             // 
@@ -165,6 +185,18 @@
             this.TreeView_Tables.TabIndex = 11;
             this.TreeView_Tables.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
             this.TreeView_Tables.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form_OnKeyUp);
+            // 
+            // FileDialog_Open
+            // 
+            this.FileDialog_Open.DefaultExt = "xml";
+            this.FileDialog_Open.Filter = "XML|*xml";
+            this.FileDialog_Open.Title = "$OPEN_FILE";
+            // 
+            // FileDialog_Save
+            // 
+            this.FileDialog_Save.DefaultExt = "xml";
+            this.FileDialog_Save.Filter = "XML|.xml";
+            this.FileDialog_Save.Title = "$SAVE_FILE";
             // 
             // EntityDataStorageEditor
             // 
@@ -188,7 +220,7 @@
         #endregion
 
         private System.Windows.Forms.PropertyGrid PropertyGrid_Item;
-        private Controls.MTreeView TreeView_Tables;
+        private Mafia2Tool.Controls.MTreeView TreeView_Tables;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton Button_File;
         private System.Windows.Forms.ToolStripMenuItem Button_Save;
@@ -200,5 +232,9 @@
         private System.Windows.Forms.ContextMenuStrip Context_Menu;
         private System.Windows.Forms.ToolStripMenuItem ToolStrip_Copy;
         private System.Windows.Forms.ToolStripMenuItem ToolStrip_Paste;
+        private System.Windows.Forms.ToolStripMenuItem Button_ExportXML;
+        private System.Windows.Forms.ToolStripMenuItem Button_ImportXML;
+        private System.Windows.Forms.OpenFileDialog FileDialog_Open;
+        private System.Windows.Forms.SaveFileDialog FileDialog_Save;
     }
 }

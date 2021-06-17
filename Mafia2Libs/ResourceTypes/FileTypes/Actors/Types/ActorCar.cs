@@ -1,12 +1,13 @@
-﻿using SharpDX;
-using System.IO;
+﻿using System.IO;
 using Utils.Extensions;
 using Utils.Helpers.Reflection;
 using Utils.SharpDXExtensions;
-using Utils.StringHelpers;
 
 namespace ResourceTypes.Actors
 {
+    /*
+     * Used with EntityDataStorage, NOT the actor (.act) data file.
+     */
     public class ActorCar : IActorExtraDataInterface
     {
         public class GearTableData
@@ -108,9 +109,9 @@ namespace ResourceTypes.Actors
 
         public int[] UnkInts0 { get; set; }
         public float Mass { get; set; }
-        public Vector3 CenterOfMass { get; set; }
+        public EDSVector3 CenterOfMass { get; set; }
         public float InteriaMax { get; set; }
-        public Vector3 Inertia { get; set; }
+        public EDSVector3 Inertia { get; set; }
         public int MaterialID { get; set; }
         public float StaticFriction { get; set; }
         public float DynamicFriction { get; set; }
@@ -370,6 +371,8 @@ namespace ResourceTypes.Actors
         public ActorCar()
         {
             UnkInts0 = new int[8];
+            CenterOfMass = new EDSVector3();
+            Inertia = new EDSVector3();
             GearData = new GearTableData[7];
             DifferentialData = new DifferentialTableData[10];
             WheelData = new WheelTableData[10];
@@ -383,6 +386,9 @@ namespace ResourceTypes.Actors
 
         public ActorCar(MemoryStream stream, bool isBigEndian)
         {
+            CenterOfMass = new EDSVector3();
+            Inertia = new EDSVector3();
+
             ReadFromFile(stream, isBigEndian);
         }
 
@@ -405,9 +411,9 @@ namespace ResourceTypes.Actors
             }
 
             Mass = stream.ReadSingle(isBigEndian);
-            CenterOfMass = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            CenterOfMass.ReadFromFile(stream, isBigEndian);
             InteriaMax = stream.ReadSingle(isBigEndian);
-            Inertia = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            Inertia.ReadFromFile(stream, isBigEndian);
             MaterialID = stream.ReadInt32(isBigEndian);
             StaticFriction = stream.ReadSingle(isBigEndian);
             DynamicFriction = stream.ReadSingle(isBigEndian);

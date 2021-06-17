@@ -379,6 +379,7 @@
     <Compile Include="ResourceTypes\FileTypes\Actors\ActorFactory.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\Types\ActorActionPointScript.cs" />
     <Compile Include="ResourceTypes\FileTypes\Actors\Types\ActorCar.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Actors\Types\ActorCoreTypes.cs" />
     <Compile Include="ResourceTypes\FileTypes\BufferTypes\BufferHelpers.cs" />
     <Compile Include="ResourceTypes\FileTypes\Collisions\Opcode\Model.cs" />
     <Compile Include="ResourceTypes\FileTypes\Collisions\Opcode\OpcodeException.cs" />

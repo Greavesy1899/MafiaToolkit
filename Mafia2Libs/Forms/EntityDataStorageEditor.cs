@@ -7,8 +7,9 @@ using Utils.Helpers.Reflection;
 using Utils.Language;
 using Utils.Settings;
 
-namespace Mafia2Tool
+namespace Toolkit.Forms
 {
+    // TODO: IsTypeofInterface is going to be redundant once we merge branches.
     public partial class EntityDataStorageEditor : Form
     {
         private FileInfo edsFile;
@@ -21,7 +22,7 @@ namespace Mafia2Tool
             InitializeComponent();
             Localise();
             edsFile = file;
-            BuildData();
+            LoadAndBuildData();
             Show();
             ToolkitSettings.UpdateRichPresence("Using the EDS editor.");
         }
@@ -36,15 +37,24 @@ namespace Mafia2Tool
             Button_Exit.Text = Language.GetString("$EXIT");
             Button_CopyData.Text = Language.GetString("$COPY");
             Button_PasteData.Text = Language.GetString("$PASTE");
+            Button_ExportXML.Text = Language.GetString("$EXPORT_XML");
+            Button_ImportXML.Text = Language.GetString("$IMPORT_XML");
             ToolStrip_Copy.Text = Language.GetString("$COPY");
             ToolStrip_Paste.Text = Language.GetString("$PASTE");
+            FileDialog_Open.Title = Language.GetString("$OPEN_TITLE");
+            FileDialog_Save.Title = Language.GetString("$SAVE_TITLE");
         }
 
-        private void BuildData()
+        private void LoadAndBuildData()
         {
             tables = new EntityDataStorageLoader();
             tables.ReadFromFile(edsFile.FullName, false);
 
+            CreateTable();
+        }
+
+        private void CreateTable()
+        {
             TreeNode entityNode = new TreeNode("Entity");
             entityNode.Tag = tables;
             TreeView_Tables.Nodes.Add(entityNode);
@@ -84,7 +94,7 @@ namespace Mafia2Tool
         private void Button_Reload_OnClick(object sender, EventArgs e)
         {
             TreeView_Tables.Nodes.Clear();
-            BuildData();
+            LoadAndBuildData();
         }
 
         private void Button_Exit_OnClick(object sender, EventArgs e)
@@ -105,7 +115,6 @@ namespace Mafia2Tool
                     PasteTagData();
                 }
             }
-
         }
 
         private void CopyTagData()
@@ -174,6 +183,32 @@ namespace Mafia2Tool
         {
             Type TypeOfObject = ObjectToCheck.GetType();
             return InterfaceType.IsAssignableFrom(TypeOfObject);
+        }
+
+        private void Button_ExportXML_Click(object sender, EventArgs e)
+        {
+            if(FileDialog_Save.ShowDialog() == DialogResult.OK)
+            {
+                tables.ConvertToXML(FileDialog_Save.FileName);
+            }   
+        }
+
+        private void Button_ImportXML_Click(object sender, EventArgs e)
+        {
+            if(FileDialog_Open.ShowDialog() == DialogResult.OK)
+            {
+                string FileToOpen = FileDialog_Open.FileName;
+                if(File.Exists(FileToOpen))
+                {
+                    tables.ConvertFromXML(FileToOpen);
+
+                    // Reload TreeVieew and PropertyGrid, the import may mean our 'visual' part of the data is extremely outdated
+                    TreeView_Tables.Nodes.Clear();
+                    PropertyGrid_Item.SelectedObject = null;
+
+                    CreateTable();
+                }
+            }
         }
     }
 }
