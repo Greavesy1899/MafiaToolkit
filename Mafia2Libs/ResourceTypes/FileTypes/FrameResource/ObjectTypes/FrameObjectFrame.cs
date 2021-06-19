@@ -48,6 +48,16 @@ namespace ResourceTypes.FrameResource
             actorHash.WriteToFile(writer);
         }
 
+        protected override void SanitizeOnSave()
+        {
+            base.SanitizeOnSave();
+
+            if(ActorHash.Hash != 0)
+            {
+                LocalTransform = Matrix.Identity;
+            }
+        }
+
         public override string ToString()
         {
             return string.Format("{0}", Name);
