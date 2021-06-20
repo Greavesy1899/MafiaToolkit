@@ -53,7 +53,7 @@ namespace ResourceTypes.Navigation
             string OutputName = file.FullName;
             if (bIsTest)
             {
-                var backup = OutputName.Insert(OutputName.Length - 4, "_test");
+                OutputName = OutputName.Insert(OutputName.Length - 4, "_test");
             }
 
             using (NavigationWriter writer = new NavigationWriter(File.Open(OutputName, FileMode.Create)))

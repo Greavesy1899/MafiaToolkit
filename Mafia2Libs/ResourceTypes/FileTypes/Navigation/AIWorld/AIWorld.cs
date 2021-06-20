@@ -46,6 +46,8 @@ namespace ResourceTypes.Navigation
         private string ConstAIWorldPart; // always AIWORLDPART.
         private byte Unk06;
         private uint Unk8; // NB: Do we have to assert if this isn't the usual value?
+        private uint Unk9;
+        private uint Unk10;
 
         public AIWorld(BinaryReader reader)
         {
@@ -87,6 +89,8 @@ namespace ResourceTypes.Navigation
             OriginStream = StringHelpers.ReadString(reader);
             uint originFileSize = reader.ReadUInt32();
             Unk8 = reader.ReadUInt32();
+            Unk9 = reader.ReadUInt32();
+            Unk10 = reader.ReadUInt32();
 
             DebugWriteToFile();
         }
@@ -116,6 +120,8 @@ namespace ResourceTypes.Navigation
             StringHelpers.WriteString(Writer, OriginStream);
             Writer.Write(OriginStream.Length + 1);
             Writer.Write(Unk8);
+            Writer.Write(Unk9);
+            Writer.Write(Unk10);
         }
 
         public void DebugWriteToFile()
@@ -140,6 +146,8 @@ namespace ResourceTypes.Navigation
 
                 Writer.WriteLine("OriginStream: {0}", OriginStream);
                 Writer.WriteLine("Unk8: {0}", Unk8);
+                Writer.WriteLine("Unk9: {0}", Unk9);
+                Writer.WriteLine("Unk10: {0}", Unk10);
             }
         }
 

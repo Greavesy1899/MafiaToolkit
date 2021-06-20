@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using Utils.SharpDXExtensions;
-using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
 {
@@ -16,13 +15,6 @@ namespace ResourceTypes.Navigation
         public Vector3 Direction { get; set; }
         public Vector3 Unk2 { get; set; }
         public uint Unk3 { get; set; }
-
-        [Category("Rotation Test")]
-        public float Yaw { get; set; }
-        [Category("Rotation Test")]
-        public float Pitch { get; set; }
-        [Category("Rotation Test")]
-        public float Roll { get; set; }
 
         [Category("BBox Test")]
         public Vector3 Minimum { get; set; }
@@ -84,11 +76,11 @@ namespace ResourceTypes.Navigation
             BBox.Minimum = Minimum;
             BBox.Maximum = Maximum;
 
-            Matrix Transform = Matrix.RotationYawPitchRoll(MathUtil.DegreesToRadians(Yaw), MathUtil.DegreesToRadians(Pitch), MathUtil.DegreesToRadians(Roll));
-            Transform.TranslationVector = Position;
+            Matrix RotationMatrix = MatrixExtensions.ConvertFromDirection(Direction);
+            RotationMatrix.TranslationVector = Position;
 
             navigationBox.Init(BBox);
-            navigationBox.SetTransform(Transform);
+            navigationBox.SetTransform(RotationMatrix);
 
             BBoxBatcher.AddObject(RefID, navigationBox);
         }

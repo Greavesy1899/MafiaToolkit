@@ -57,12 +57,6 @@ namespace Utils.SharpDXExtensions
             //doing the normal T * R * S does not work; I have to manually push in the vector into the final row.
             Matrix r = Matrix.RotationQuaternion(rotation);
 
-            //Matrix fixedRotation = new Matrix();
-            //fixedRotation.Column1 = r.Row1;
-            //fixedRotation.Column2 = r.Row2;
-            //fixedRotation.Column3 = r.Row3;
-
-
             Matrix s = Matrix.Scaling(scale);
             Matrix final = r * s;
             final.Row4 = new Vector4(position, 1.0f);
@@ -115,6 +109,24 @@ namespace Utils.SharpDXExtensions
             fixedRotation.Column3 = result.Row3;
             Quaternion rotation1 = Quaternion.RotationMatrix(fixedRotation);
             return SetMatrix(rotation1, scale, position);
+        }
+
+        public static Matrix ConvertFromDirection(Vector3 Direction)
+        {
+            Vector3 UpDirection = new Vector3(0.0f, 0.0f, 1.0f);
+
+            Matrix NewMatrix = Matrix.Identity;
+
+            Vector3 XAxis = Vector3.Cross(UpDirection, Direction);
+            XAxis.Normalize();
+
+            Vector3 YAxis = Vector3.Cross(Direction, XAxis);
+            YAxis.Normalize();
+
+            NewMatrix.Column1 = new Vector4(XAxis.X, YAxis.X, Direction.X, 1.0f);
+            NewMatrix.Column2 = new Vector4(XAxis.Y, YAxis.Y, Direction.Y, 1.0f);
+            NewMatrix.Column3 = new Vector4(XAxis.Z, YAxis.Z, Direction.Z, 1.0f);
+            return NewMatrix;
         }
     }
 

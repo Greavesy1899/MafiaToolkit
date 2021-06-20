@@ -58,6 +58,10 @@
             {
                 return 8;
             }
+            else if(Object is AIWorld_Type9)
+            {
+                return 9;
+            }
             else
             {
                 return ushort.MaxValue;

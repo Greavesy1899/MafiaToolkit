@@ -1521,6 +1521,7 @@ namespace Mafia2Tool
             {
                 TreeNode Parent = node.Parent;
                 (Parent.Tag as AIWorld).DeletePoint((node.Tag as IType));
+                dSceneTree.RemoveNode(node);
             }
         }
 
