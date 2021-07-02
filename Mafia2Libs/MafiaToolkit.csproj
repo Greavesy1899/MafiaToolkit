@@ -231,6 +231,8 @@
     <Compile Include="Controls\TextureEntry.Designer.cs">
       <DependentUpon>TextureEntry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Core\FileFxActor.cs" />
+    <Compile Include="Core\FileFxAnimSet.cs" />
     <Compile Include="Core\FileNavigation_HPD.cs" />
     <Compile Include="Core\FileNavigation_NAV.cs" />
     <Compile Include="Core\FileNavigation_OBJ.cs" />
@@ -289,6 +291,12 @@
     <Compile Include="Forms\Docking\DockSceneTree.Designer.cs">
       <DependentUpon>DockSceneTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FxAnimSetEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FxAnimSetEditor.Designer.cs">
+      <DependentUpon>FxAnimSetEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\GameSelector.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -331,6 +339,12 @@
     <Compile Include="ApexSDK\IOFX\ScaleVsLifeModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SimpleScaleModifier.cs" />
     <Compile Include="ApexSDK\IOFX\SubtextureVsLifeModifier.cs" />
+    <Compile Include="Forms\FxActorEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FxActorEditor.Designer.cs">
+      <DependentUpon>FxActorEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\XBinEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1001,6 +1015,9 @@
     <EmbeddedResource Include="Forms\Docking\DockSceneTree.resx">
       <DependentUpon>DockSceneTree.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FxAnimSetEditor.resx">
+      <DependentUpon>FxAnimSetEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\GameSelector.resx">
       <DependentUpon>GameSelector.cs</DependentUpon>
     </EmbeddedResource>
@@ -1009,6 +1026,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MaterialBrowser.resx">
       <DependentUpon>MaterialBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FxActorEditor.resx">
+      <DependentUpon>FxActorEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\XBinEditor.resx">
       <DependentUpon>XBinEditor.cs</DependentUpon>
