@@ -38,7 +38,7 @@
             this.AddItemButton = new System.Windows.Forms.ToolStripMenuItem();
             this.AddDefinitionButton = new System.Windows.Forms.ToolStripMenuItem();
             this.PropertyGrid_Cutscene = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_Cutscene = new System.Windows.Forms.TreeView();
+            this.TreeView_Cutscene = new Controls.MTreeView();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 

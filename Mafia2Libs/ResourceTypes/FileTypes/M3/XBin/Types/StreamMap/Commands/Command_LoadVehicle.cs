@@ -1,23 +1,28 @@
 ﻿using ResourceTypes.M3.XBin;
-using SharpDX;
-using System;
+using ResourceTypes.XBin.Types;
 using System.Diagnostics;
 using System.IO;
-using Utils.SharpDXExtensions;
 
 namespace FileTypes.XBin.StreamMap.Commands
 {
     public class VehicleInstance
     {
-        public Vector3 Position { get; set; }
-        public Vector3 Direction { get; set; }
+        public XBinVector3 Position { get; set; }
+        public XBinVector3 Direction { get; set; }
         public string EntityName { get; set; }
         public uint LoadFlags { get; set; }
 
+        public VehicleInstance()
+        {
+            Position = new XBinVector3();
+            Direction = new XBinVector3();
+            EntityName = "";
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
-            Position = Vector3Extenders.ReadFromFile(reader);
-            Direction = Vector3Extenders.ReadFromFile(reader);
+            Position.ReadFromFile(reader);
+            Direction.ReadFromFile(reader);
             EntityName = XBinCoreUtils.ReadStringPtrWithOffset(reader);
             LoadFlags = reader.ReadUInt32();
         }
@@ -46,6 +51,13 @@ namespace FileTypes.XBin.StreamMap.Commands
         public string QuotaID { get; set; }
         public uint GUID { get; set; }
         public uint SlotID { get; set; }
+
+        public Command_LoadVehicle()
+        {
+            Instances = new VehicleInstance[0];
+            SDSName = "";
+            QuotaID = "";
+        }
 
         public void ReadFromFile(BinaryReader reader)
         {

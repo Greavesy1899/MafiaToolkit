@@ -19,22 +19,16 @@ namespace Rendering.Graphics
         protected Buffer ConstantExtraParameterBuffer { get; set; }
         protected int previousRenderType;
 
-        public DefaultShader(Device device, InputElement[] elements, string psPath, string vsPath, string vsEntryPoint, string psEntryPoint)
-        {
-            if (!Init(device, elements, vsPath, psPath, vsEntryPoint, psEntryPoint))
-            {
-                throw new System.Exception("Failed to load Shader!");
-            }
-        }
+        public DefaultShader(Device Dx11Device, ShaderInitParams InitParams) : base(Dx11Device, InitParams) { }
 
-        public override bool Init(Device device, InputElement[] elements, string vsFileName, string psFileName, string vsEntryPoint, string psEntryPoint)
+        public override bool Init(Device Dx11Device, ShaderInitParams InitParams)
         {
-            if(!base.Init(device, elements, vsFileName, psFileName, vsEntryPoint, psEntryPoint))
+            if(!base.Init(Dx11Device, InitParams))
             {
                 return false;
             }
 
-            ConstantExtraParameterBuffer = ConstantBufferFactory.ConstructBuffer<ExtraParameterBuffer>(device, "ExtraBuffer");
+            ConstantExtraParameterBuffer = ConstantBufferFactory.ConstructBuffer<ExtraParameterBuffer>(Dx11Device, "ExtraBuffer");
 
             return true;
         }
@@ -55,33 +49,31 @@ namespace Rendering.Graphics
                 context.PixelShader.SetShaderResource(0, texture);
             }
             else
-            {
-                
+            {     
                 HashName TextureFile = material.GetTextureByID("S000");
-                ShaderResourceView texture = null;
+                ShaderResourceView[] ShaderTextures = new ShaderResourceView[2];
                 if (TextureFile != null)
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
+                    ShaderTextures[0] = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
                 }
                 else
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[0];
+                    ShaderTextures[0] = RenderStorageSingleton.Instance.TextureCache[0];
                 }
-
-                context.PixelShader.SetShaderResource(0, texture);
 
                 TextureFile = material.GetTextureByID("S001");
                 if (TextureFile != null)
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
+                    ShaderTextures[1] = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
                     extraParams.hasTangentSpace = 1;
                 }
                 else
                 {
-                    texture = RenderStorageSingleton.Instance.TextureCache[1];
+                    ShaderTextures[1] = RenderStorageSingleton.Instance.TextureCache[1];
                     extraParams.hasTangentSpace = 0;
                 }
-                context.PixelShader.SetShaderResource(1, texture);
+
+                context.PixelShader.SetShaderResources(0, ShaderTextures.Length, ShaderTextures);
             }
 
             if(previousRenderType != extraParams.hasTangentSpace)

@@ -10,6 +10,11 @@ namespace FileTypes.XBin.StreamMap.Commands
 
         public string VideoName { get; set; }
 
+        public Command_PlayVideo()
+        {
+            VideoName = "";
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             VideoName = XBinCoreUtils.ReadStringPtrWithOffset(reader);

@@ -49,6 +49,7 @@ artifacts/
 *_i.c
 *_p.c
 *_i.h
+*.exe
 *.ilk
 *.meta
 *.obj
@@ -262,6 +263,6 @@ paket-files/
 __pycache__/
 *.pyc
 
-M2FBX/M2FBX/SDKs/
-M2FBX/M2PhysX/SDKs/
+M2FBX/M2FBX/vendors/
+M2FBX/M2PhysX/vendors/
 

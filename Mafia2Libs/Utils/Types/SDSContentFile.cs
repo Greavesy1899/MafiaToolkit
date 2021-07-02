@@ -62,6 +62,8 @@ namespace Utils.Types
             typeList.Add("XML", new XMLResource(3, "XML"));
             typeList.Add("Translokator", new BaseResource(1, "Translokator"));
             typeList.Add("Mipmap", new BaseResource(2, "Mipmap"));
+            typeList.Add("FxActor", new BaseResource(1, "FxActor"));
+            typeList.Add("FxAnimSet", new BaseResource(1, "FxAnimSet"));
 
             typeExtension = new Dictionary<string, string>();
             typeExtension.Add("ibp", "IndexBufferPool");
@@ -82,6 +84,8 @@ namespace Utils.Types
             typeExtension.Add("ids", "ItemDesc");
             typeExtension.Add("stbl", "SoundTable");
             typeExtension.Add("tra", "Translokator");
+            typeExtension.Add("fxa", "FxActor");
+            typeExtension.Add("fas", "FxAnimSet");
         }
 
         public static TreeNode BuildResourceTreeNode(string name, object data = null)
@@ -385,7 +389,7 @@ namespace Utils.Types
             var memfile = ProtectResourceType("MemFile");
             var audioSectors = ProtectResourceType("AudioSectors");
             var entityDataStorage = ProtectResourceType("EntityDataStorage");
-            var tablesProtected = ProtectResourceType("Tables");
+            var tablesProtected = ProtectResourceType("Table");
 
             // clear and scan
             resources.Clear();
@@ -400,17 +404,18 @@ namespace Utils.Types
                 }
             }
 
+            /*
             if(tables.Count > 0)
             {
                 CreateTableResource(tables);
-            }
+            }*/
             
             ReapplyResourceType("Script", scripts);
             ReapplyResourceType("XML", xmls);
             ReapplyResourceType("MemFile", memfile);
             ReapplyResourceType("AudioSectors", audioSectors);
             ReapplyResourceType("EntityDataStorage", entityDataStorage);
-            ReapplyResourceType("Tables", tablesProtected);
+            ReapplyResourceType("Table", tablesProtected);
             Sort();
         }
 

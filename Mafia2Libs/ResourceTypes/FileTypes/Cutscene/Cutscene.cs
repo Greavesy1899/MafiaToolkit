@@ -169,7 +169,16 @@ namespace ResourceTypes.Cutscene
                     SoundContent.WriteToFile(Writer);
                 }
 
-                Writer.Write(0); // Num GCR
+                // TODO: Not sure if this is fully valid or not..
+                if (VehicleContent != null && VehicleContent.Length > 0)
+                {
+                    Writer.Write(VehicleContent.Length); // Num GCR
+
+                    foreach(GCRData VehicleData in VehicleContent)
+                    {
+                        VehicleData.WriteToFile(Writer);
+                    }
+                }
             }
 
             public class GCSData
@@ -355,9 +364,12 @@ namespace ResourceTypes.Cutscene
                                 {
                                     AnimEntityWrapper Entity = CutsceneEntityFactory.ReadAnimEntityWrapperFromFile(AnimEntityType, Reader);
 
-                                    // Debugging: If the AnimEntity is null and a debugger is attached, we should save it to the disc.
-                                    string format = string.Format("CutsceneInfo/{0}/Entity_SPD_{1}_{2}.bin", CutsceneName, AnimEntityType, i);
-                                    File.WriteAllBytes(format, DefintionData);
+                                    if (Debugger.IsAttached)
+                                    {
+                                        // Debugging: If the AnimEntity is null and a debugger is attached, we should save it to the disc.
+                                        string format = string.Format("CutsceneInfo/{0}/Entity_SPD_{1}_{2}.bin", CutsceneName, AnimEntityType, i);
+                                        File.WriteAllBytes(format, DefintionData);
+                                    }
 
                                     EntityDefinitions[i] = Entity;
                                 }
@@ -371,8 +383,11 @@ namespace ResourceTypes.Cutscene
                                 reader.BaseStream.Position -= 8;
                                 byte[] dataBytes = reader.ReadBytes(entitySize);
 
-                                string format = string.Format("CutsceneInfo/{2}/{0}_SPD_{1}.bin", EntityDefinitions[z], z, CutsceneName);
-                                File.WriteAllBytes(format, dataBytes);
+                                if (Debugger.IsAttached)
+                                {
+                                    string format = string.Format("CutsceneInfo/{2}/{0}_SPD_{1}.bin", EntityDefinitions[z], z, CutsceneName);
+                                    File.WriteAllBytes(format, dataBytes);
+                                }
 
                                 // And then This
                                 using (MemoryStream stream = new MemoryStream(dataBytes))
@@ -438,17 +453,31 @@ namespace ResourceTypes.Cutscene
 
             public class GCRData
             {
-                public string Name;
-                public byte[] Data;
+                public string Name { get; set; }
+                public int Unk0 { get; set; }
+                public byte[] Data { get; set; }
+
                 public void ReadFromFile(BinaryReader reader)
                 {
                     Name = StringHelpers.ReadString16(reader);
-                    int unk0 = reader.ReadInt32();
+                    Unk0 = reader.ReadInt32();
                     int size = reader.ReadInt32();
                     reader.BaseStream.Position -= 8;
                     //Data = reader.ReadBytes(size-8);
                     Data = reader.ReadBytes(size);
-                    File.WriteAllBytes("CutSceneData/" + Name + ".gcr", Data);
+
+                    if (Debugger.IsAttached)
+                    {
+                        File.WriteAllBytes("CutsceneInfo/" + Name + ".gcr", Data);
+                    }
+                }
+
+                public void WriteToFile(BinaryWriter writer)
+                {
+                    StringHelpers.WriteString16(writer, Name);
+                    writer.Write(Unk0);
+                    writer.Write(Data.Length + 8); // writing size here
+                    writer.Write(Data);
                 }
             }
         }

@@ -21,7 +21,8 @@ namespace ResourceTypes.Materials
         {
             for (int i = 0; i != names.Length; i++)
             {
-                MaterialLibrary mtl = new MaterialLibrary();
+                // Version will be replaced in ReadMatFile()
+                MaterialLibrary mtl = new MaterialLibrary(VersionsEnumerator.V_57);
                 mtl.ReadMatFile(names[i]);
                 matLibs.Add(mtl.Name, mtl);
                 Log.WriteLine("Succesfully read MTL: " + names[i]);

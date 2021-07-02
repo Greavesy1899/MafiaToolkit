@@ -30,6 +30,20 @@ namespace ResourceTypes.Materials
             Flags = (MaterialFlags)31461376;
         }
 
+        public IMaterial(IMaterial OtherMaterial)
+        {
+            MaterialName = new HashName(OtherMaterial.MaterialName);
+            Flags = OtherMaterial.Flags;
+            ShaderID = OtherMaterial.ShaderID;
+            ShaderHash = OtherMaterial.ShaderHash;
+
+            Parameters = new List<MaterialParameter>();
+            foreach(var Param in OtherMaterial.Parameters)
+            {
+                Parameters.Add(Param);
+            }
+        }
+
         public virtual void ReadFromFile(BinaryReader reader, VersionsEnumerator version) { }
 
         public virtual void WriteToFile(BinaryWriter writer, VersionsEnumerator version) { }
@@ -73,6 +87,11 @@ namespace ResourceTypes.Materials
             return null;
         }
 
+        public virtual VersionsEnumerator GetMTLVersion()
+        {
+            return VersionsEnumerator.Nill;
+        }
+
         public override string ToString()
         {
             return string.Format("{0}", MaterialName.ToString());
@@ -91,9 +110,20 @@ namespace ResourceTypes.Materials
             SamplerStates = new byte[6] { 3, 3, 2, 0, 0, 0 };
         }
 
+        public IMaterialSampler(IMaterialSampler OtherSampler)
+        {
+            ID = OtherSampler.ID;
+            SamplerStates = OtherSampler.SamplerStates;
+        }
+
         public virtual void ReadFromFile(BinaryReader reader, VersionsEnumerator version) { }
 
         public virtual void WriteToFile(BinaryWriter writer, VersionsEnumerator version) { }
+
+        public virtual VersionsEnumerator GetVersion() 
+        { 
+            return VersionsEnumerator.Nill; 
+        }
 
         public virtual string GetFileName()
         {

@@ -6,9 +6,7 @@ using Utils.Language;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Mafia2Tool.Forms;
-using Mafia2Tool.MafiaLib.ModelHelpers;
 using Core.IO;
-using ResourceTypes.OC3.FaceFX;
 
 namespace Mafia2Tool
 {
@@ -17,6 +15,8 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
+            //ResourceTypes.EntityActivator.EntityActivator entity = new ResourceTypes.EntityActivator.EntityActivator();
+            //entity.ReadFromFile(new FileInfo("EntityActivator.bin"));
 
             if (args.Length > 0)
             {
@@ -34,15 +34,6 @@ namespace Mafia2Tool
             GameStorage.Instance.InitStorage();
             Language.ReadLanguageXML();
             CheckLatestRelease();
-
-            //M3_ExperimentalTests Experiments = new M3_ExperimentalTests();
-            //Experiments.ReadPrerequisites();
-
-            FxActor ActorObject = new FxActor();
-            ActorObject.ReadFromFile("face.facefx");
-
-            FxAnimSet AnimObject = new FxAnimSet();
-            AnimObject.ReadFromFile("FxAnimSet_61.fas");
 
             if (ToolkitSettings.SkipGameSelector)
             {
@@ -124,13 +115,6 @@ namespace Mafia2Tool
 
         private static void CheckINIExists()
         {
-            //only here because the exe name was changed, and lots of people had different .ini names.
-            if (File.Exists("Mafia2Toolkit.ini") && !File.Exists("MafiaToolkit.ini"))
-            {
-                File.Move("Mafia2Toolkit.ini", "MafiaToolkit.ini");
-                File.Delete("Mafia2Toolkit.ini");
-            }
-
             string PathToIni = Path.Combine(Application.ExecutablePath, "MafiaToolkit.ini");
             if (!File.Exists(PathToIni))
             {

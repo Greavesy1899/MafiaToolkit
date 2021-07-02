@@ -34,12 +34,15 @@ namespace Gibbed.Mafia2.ResourceFormats
             { 0x1256CA1DB, ".trb.compiled" },
             { 0xA27F694D, ".iprofai" },
             { 0x4A336D64, ".iproftime" },
-            { 0x73CB32C9, ".fmv.compiled.effects" },
             { 0x222FDF72B2F3E413, ".lodbaked.[lod0].compiled" },
+            { 0x222FDF73B2F3E413, ".lodbaked.[lod1].compiled" },
+            { 0x222FDF70B2F3E413, ".lodbaked.[lod2].compiled" },
             { 0xF3BB3621, ".ccdb" },
             { 0x28930A39, ".egr" },
             { 0x1D4AD8D9E, ".cegr.compiled" },
-            { 0x428F61D4, ".fmv.compiled" } // NOTE: Type is a guess, used in cine_ in M1: DE.
+            { 0x428F61D4, ".fmv.compiled" }, // NOTE: Type is a guess, used in cine_ in M1: DE.
+            { 0x118E35C27, ".animprojectreflected.compiled" },
+            { 0x73CB32C9, ".effects" }
             //{ 0x45F07C8B, ".scene.gxml"  },
         };
 
@@ -70,11 +73,14 @@ namespace Gibbed.Mafia2.ResourceFormats
             { ".iproftime", 0x4A336D64 },
             { ".fmv", 0x428F61D4 },
             { ".lodbaked.[lod0].compiled", 0x222FDF72B2F3E413 },
+            { ".lodbaked.[lod1].compiled", 0x222FDF73B2F3E413 },
+            { ".lodbaked.[lod2].compiled", 0x222FDF70B2F3E413 },
             { ".ccdb", 0xF3BB3621 },
-            { ".fmv.compiled.effects",  0x73CB32C9 },
             { ".egr", 0x28930A39 },
             { ".cegr.compiled", 0x1D4AD8D9E },
-            { ".fmv.compiled", 0x428F61D4 } // NOTE: Type is a guess, used in cine_ in M1: DE.
+            { ".fmv.compiled", 0x428F61D4 }, // NOTE: Type is a guess, used in cine_ in M1: DE.
+            { ".animprojectreflected.compiled",  0x118E35C27},
+            { ".effects", 0x73CB32C9 }
             //{ ".scene.gxml", 0x45F07C8B  }
         };
 
@@ -88,9 +94,11 @@ namespace Gibbed.Mafia2.ResourceFormats
         {
             GenericType = DetermineMagic(DebugName);
 
+            string TempName = string.IsNullOrEmpty(DebugName) ? "" : DebugName;
+
             output.WriteValueU64(GenericType);
             output.WriteValueU16(Unk0);
-            output.WriteValueU16(0);
+            output.WriteStringU16(TempName, endian);
             output.WriteBytes(Data);
         }
 
@@ -99,6 +107,9 @@ namespace Gibbed.Mafia2.ResourceFormats
             GenericType = input.ReadValueU64();
             Unk0 = input.ReadValueU16();
             DebugName = input.ReadStringU16(endian);
+
+            string Message = string.Format("{0} {1}", DebugName, GenericType);
+            Console.WriteLine(Message);
 
             // We do not have any size so we do (FILE_LENGTH - CURRENT_POS);
             Data = input.ReadBytes((int)(input.Length - input.Position));
@@ -109,7 +120,14 @@ namespace Gibbed.Mafia2.ResourceFormats
             string extension = GetFullExtensionUtil(name);
             ulong magic = 0;
 
-            if(TypeExtensionString.ContainsKey(extension))
+            bool bHasFound = TypeExtensionString.ContainsKey(extension);
+
+            if(!bHasFound)
+            {
+                bHasFound = RecursiveExtensionCheck(ref extension);
+            }
+
+            if(bHasFound)
             {
                 magic = TypeExtensionString[extension];
             }
@@ -125,24 +143,24 @@ namespace Gibbed.Mafia2.ResourceFormats
         {
             bool bGotDebugName = false;
 
-            // Our database tool has figured out this file name.
-            // Return.
-            // TODO: Consider an easier approach for this, maybe have a flag?
-            if (!name.Contains("File_"))
-            {
-                string extension = GetFullExtensionUtil(name);
-                if(!TypeExtensionString.ContainsKey(extension))
-                {
-                    Console.WriteLine("Detected missing extension from DB.");
-                }
-                return name;
-            }
-
             // Make sure we use the debug name.
             if (!string.IsNullOrEmpty(DebugName))
             {
                 name = DebugName;
                 bGotDebugName = true;
+            }
+
+            // Our database tool has figured out this file name.
+            // Return.
+            // TODO: Consider an easier approach for this, maybe have a flag?
+            if (!name.Contains("File_") && !bGotDebugName)
+            {
+                string extension = GetFullExtensionUtil(name);
+                if(!TypeExtensionString.ContainsKey(extension))
+                {
+                    MessageBox.Show("Detected missing extension from DB. Please contract Greavesy with SDS name.", "Toolkit");
+                }
+                return name;
             }
 
             if (!bGotDebugName)
@@ -164,6 +182,23 @@ namespace Gibbed.Mafia2.ResourceFormats
             }
 
             return name;
+        }
+
+        private bool RecursiveExtensionCheck(ref string Extension)
+        {
+            while(Extension.LastIndexOf('.') != 0)
+            {
+                string RemovedDot = Extension.Remove(0, 1);
+                Extension = GetFullExtensionUtil(RemovedDot);
+
+                bool bHasFound = TypeExtensionString.ContainsKey(Extension);
+                if(bHasFound)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private string GetFullExtensionUtil(string FileName)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Utils.StringHelpers;
 using Utils.Types;
@@ -14,9 +15,45 @@ namespace ResourceTypes.Materials
         public int Unk5 { get; set; }
         public List<MaterialSampler_v57> Samplers { get; set; }
 
-        public Material_v57()
+        public Material_v57() : base()
         {
             Samplers = new List<MaterialSampler_v57>();
+        }
+
+        public Material_v57(IMaterial OtherMaterial) : base(OtherMaterial)
+        {
+            // TODO: I wonder if we could make v57 and v58 use the same interface?
+            if (OtherMaterial.GetMTLVersion() == VersionsEnumerator.V_57)
+            {
+                Material_v57 CastedMaterial = (OtherMaterial as Material_v57);
+                Unk0 = CastedMaterial.Unk0;
+                Unk1 = CastedMaterial.Unk1;
+                Unk3 = CastedMaterial.Unk3;
+                Unk4 = CastedMaterial.Unk4;
+                Unk5 = CastedMaterial.Unk5;
+            }
+            else if (OtherMaterial.GetMTLVersion() == VersionsEnumerator.V_58)
+            {
+                Material_v58 CastedMaterial = (OtherMaterial as Material_v58);
+                Unk0 = CastedMaterial.Unk0;
+                Unk1 = CastedMaterial.Unk1;
+                Unk3 = CastedMaterial.Unk3;
+                Unk4 = CastedMaterial.Unk4;
+                Unk5 = CastedMaterial.Unk5;
+            }
+            else
+            {
+                string message = string.Format("Version {0} cannot be converted from Version {1}", GetMTLVersion(), OtherMaterial.GetMTLVersion());
+                Console.WriteLine(message);
+                return;
+            }
+
+            Samplers = new List<MaterialSampler_v57>();
+            foreach (var Sampler in Samplers)
+            {
+                MaterialSampler_v57 NewSampler = new MaterialSampler_v57(Sampler);
+                Samplers.Add(Sampler);
+            }
         }
 
         public override void ReadFromFile(BinaryReader reader, VersionsEnumerator version)
@@ -125,6 +162,11 @@ namespace ResourceTypes.Materials
 
             return FoundTextures;
         }
+
+        public override VersionsEnumerator GetMTLVersion()
+        {
+            return VersionsEnumerator.V_57;
+        }
     }
 
     public class MaterialSampler_v57 : IMaterialSampler
@@ -140,6 +182,37 @@ namespace ResourceTypes.Materials
             UnkSet0 = new int[2];
             UnkSet1 = new int[2];
             TextureName = new HashName();
+        }
+
+        public MaterialSampler_v57(IMaterialSampler OtherSampler) : base(OtherSampler)
+        {
+            ID = OtherSampler.ID;
+            SamplerStates = OtherSampler.SamplerStates;
+
+            // TODO: Setup is essentially the same, maybe we can somehow make v57 and v58 share the same interface?
+            if(OtherSampler.GetVersion() == VersionsEnumerator.V_57)
+            {
+                MaterialSampler_v57 CastedSampler = (OtherSampler as MaterialSampler_v57);
+                UnkSet0 = CastedSampler.UnkSet0;
+                TextureName = new HashName(CastedSampler.TextureName);
+                TexType = CastedSampler.TexType;
+                UnkZero = CastedSampler.UnkZero;
+                UnkSet1 = CastedSampler.UnkSet1;
+            }
+            else if (OtherSampler.GetVersion() == VersionsEnumerator.V_58)
+            {
+                MaterialSampler_v58 CastedSampler = (OtherSampler as MaterialSampler_v58);
+                UnkSet0 = CastedSampler.UnkSet0;
+                TextureName = new HashName(CastedSampler.TextureName);
+                TexType = CastedSampler.TexType;
+                UnkZero = CastedSampler.UnkZero;
+                UnkSet1 = CastedSampler.UnkSet1;
+            }
+            else
+            {
+                string message = string.Format("Version {0} cannot be converted from Version {1}", GetVersion(), OtherSampler.GetVersion());
+                Console.WriteLine(message);
+            }
         }
 
         public override void ReadFromFile(BinaryReader reader, VersionsEnumerator version)
@@ -166,7 +239,7 @@ namespace ResourceTypes.Materials
         public override void WriteToFile(BinaryWriter writer, VersionsEnumerator version)
         {
             writer.Write(ID.ToCharArray());
-            for (int i = 0; i < UnkSet0.Length; i++)
+            for (int i = 0; i < 2; i++)
             {
                 writer.Write(UnkSet0[i]);
             }
@@ -175,11 +248,16 @@ namespace ResourceTypes.Materials
             writer.Write(UnkZero);
             writer.Write(SamplerStates);
 
-            for (int i = 0; i < UnkSet1.Length; i++)
+            for (int i = 0; i < 2; i++)
             {
                 writer.Write(UnkSet1[i]);
             }
             writer.WriteString32(TextureName.String);
+        }
+
+        public override VersionsEnumerator GetVersion()
+        {
+            return VersionsEnumerator.V_57;
         }
 
         public override string GetFileName()

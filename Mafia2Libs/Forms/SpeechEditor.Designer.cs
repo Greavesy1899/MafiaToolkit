@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpeechEditor));
             this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.TreeView_Speech = new Controls.MTreeView();
             this.CollisionContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.deletePlacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,16 +56,16 @@
             this.FrameResourceGrid.Size = new System.Drawing.Size(386, 410);
             this.FrameResourceGrid.TabIndex = 10;
             // 
-            // treeView1
+            // TreeView_Speech
             // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.TreeView_Speech.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.treeView1.ContextMenuStrip = this.CollisionContext;
-            this.treeView1.Location = new System.Drawing.Point(12, 28);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(368, 410);
-            this.treeView1.TabIndex = 11;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
+            this.TreeView_Speech.ContextMenuStrip = this.CollisionContext;
+            this.TreeView_Speech.Location = new System.Drawing.Point(12, 28);
+            this.TreeView_Speech.Name = "TreeView_Speech";
+            this.TreeView_Speech.Size = new System.Drawing.Size(368, 410);
+            this.TreeView_Speech.TabIndex = 11;
+            this.TreeView_Speech.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
             // 
             // CollisionContext
             // 
@@ -144,7 +144,7 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.FrameResourceGrid);
-            this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.TreeView_Speech);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SpeechEditor";
             this.Text = "$SPEECH_EDITOR_TITLE";
@@ -159,7 +159,7 @@
         #endregion
 
         private System.Windows.Forms.PropertyGrid FrameResourceGrid;
-        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.TreeView TreeView_Speech;
         private System.Windows.Forms.OpenFileDialog openM2T;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton fileToolButton;

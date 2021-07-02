@@ -15,6 +15,12 @@ namespace FileTypes.XBin.StreamMap.Commands
         public string QuotaID { get; set; }
         public uint LoadFlags { get; set; }
 
+        public Command_LoadSDS()
+        {
+            SDSName = "";
+            QuotaID = "";
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             SlotType = (ESlotType)reader.ReadUInt32();

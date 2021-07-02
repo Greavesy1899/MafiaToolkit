@@ -7,7 +7,6 @@ using System.IO;
 using Utils.Extensions;
 using Utils.Helpers;
 using Utils.Helpers.Reflection;
-using Utils.Language;
 
 namespace ResourceTypes.M3.XBin
 {
@@ -110,6 +109,13 @@ namespace ResourceTypes.M3.XBin
         {
             Hash = 0;
             _name = "";
+        }
+
+        public static XBinHashName ConstructAndReadFromFile(BinaryReader reader)
+        {
+            XBinHashName NewObject = new XBinHashName();
+            NewObject.ReadFromFile(reader);
+            return NewObject;
         }
 
         public void ReadFromFile(BinaryReader reader)

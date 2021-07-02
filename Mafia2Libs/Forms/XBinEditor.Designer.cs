@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(XBinEditor));
             this.Grid_XBin = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_XBin = new System.Windows.Forms.TreeView();
+            this.TreeView_XBin = new Controls.MTreeView();
             this.ToolStrip_Main = new System.Windows.Forms.ToolStrip();
             this.Button_File = new System.Windows.Forms.ToolStripDropDownButton();
             this.Button_Save = new System.Windows.Forms.ToolStripMenuItem();

@@ -7,6 +7,66 @@ namespace Utils.Helpers.Reflection
 {
     public class ReflectionHelpers
     {
+        public static void Copy<T>(T FromObject, T ToObject)
+        {
+            Type ObjectType = FromObject.GetType();
+            foreach(PropertyInfo Info in ObjectType.GetProperties())
+            {
+                if(Info.PropertyType.IsGenericType)
+                {
+                    // need support
+                    continue;
+                }
+
+                if(Info.PropertyType.IsArray)
+                {
+                    // Create an Array using the element type of the array, with the number of elements to set the length.
+                    Array FromObjectArray = (Array)Info.GetValue(FromObject);
+                    Array ArrayObject = Array.CreateInstance(Info.PropertyType.GetElementType(), FromObjectArray.Length);
+
+                    // Iterate through the elements, construct the object using our reflection system and push them into the array.
+                    for (int i = 0; i < ArrayObject.Length; i++)
+                    {
+                        object FromItem = FromObjectArray.GetValue(i);
+                        object ToItem = Activator.CreateInstance(FromItem.GetType());
+                        Copy(FromItem, ToItem);
+
+                        // Set element in the array
+                        ArrayObject.SetValue(ToItem, i);
+                    }
+
+                    // Set new array
+                    Info.SetValue(ToObject, ArrayObject);
+                }
+                else if(Info.PropertyType.IsClass)
+                {
+                    object FromItem = Info.GetValue(FromObject);
+                    Type FromType = FromItem.GetType();
+
+                    // If we have a parameterless constructor, then we can try to 
+                    // copy over the data from one object to another
+                    if(FromType.GetConstructor(Type.EmptyTypes) != null)
+                    {
+                        object ToItem = Activator.CreateInstance(FromItem.GetType());
+                        Copy(FromItem, ToItem);
+
+                        // Set class object
+                        Info.SetValue(ToObject, ToItem);
+
+                        continue;
+                    }
+
+                    // TODO: Not spectacular, as this will probably copy references from one object to another.
+                    // Particularly problematic with strings. 
+                    Info.SetValue(ToObject, Info.GetValue(FromObject));
+                }
+                else
+                {
+                    Info.SetValue(ToObject, Info.GetValue(FromObject));
+                }
+            }
+        }
+
         public static T ConvertToPropertyFromXML<T>(XElement Node)
         {
             T TypedObject = Activator.CreateInstance<T>();
@@ -64,9 +124,21 @@ namespace Utils.Helpers.Reflection
 
         private static object InternalConvertProperty(XElement Node, Type ElementType)
         {
+            // If interface, then we may have to do extra steps.
+            if(ElementType.IsInterface)
+            {
+                // We get the namespace the interface lives in, then the name on the XElement.
+                // Then risk finding the type by adding the two together.
+                string NameSpace = ElementType.Namespace;
+                string Name = Node.Name.LocalName;
+                Type Test = Type.GetType(NameSpace + "." + Name, true);
+                ElementType = Test;
+            }
+
+            // Construct the new object
             object TypedObject = Activator.CreateInstance(ElementType);
 
-            if(ElementType.GetProperties().Length == 0)
+            if (ElementType.GetProperties().Length == 0)
             {
                 TypedObject = Convert.ChangeType(Node.Value, ElementType);
                 return TypedObject;
@@ -237,7 +309,7 @@ namespace Utils.Helpers.Reflection
 
         public static XElement ConvertPropertyToXML<TObject>(TObject PropertyData)
         {
-            return InternalConvertProperty(PropertyData, PropertyData.GetType(), "N/A");
+            return InternalConvertProperty(PropertyData, PropertyData.GetType(), "Element");
         }
 
         private static bool ForcePropertyAsAttribute(PropertyInfo Info)

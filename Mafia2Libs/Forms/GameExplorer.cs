@@ -11,6 +11,7 @@ using ResourceTypes.Misc;
 using Mafia2Tool.Forms;
 using SharpDX;
 using Core.IO;
+using Utils.Helpers;
 
 namespace Mafia2Tool
 {
@@ -50,11 +51,16 @@ namespace Mafia2Tool
 
         private void Localise()
         {
-            creditsToolStripMenuItem.Text = Language.GetString("$CREDITS");
+            dropdownFile.Text = Language.GetString("$FILE");
+            dropdownView.Text = Language.GetString("$VIEW");
+            dropdownTools.Text = Language.GetString("$TOOLS");
+            dropdownAbout.Text = Language.GetString("$ABOUT");
+
+            AboutButton.Text = Language.GetString("$ABOUT");
             Text = Language.GetString("$MII_TK_GAME_EXPLORER");
-            UpButton.ToolTipText = Language.GetString("$UP_TOOLTIP");
+            FolderUpButton.ToolTipText = Language.GetString("$UP_TOOLTIP");
             FolderPath.ToolTipText = Language.GetString("$FOLDER_PATH_TOOLTIP");
-            buttonStripRefresh.Text = Language.GetString("$REFRESH");
+            FolderRefreshButton.Text = Language.GetString("$REFRESH");
             SearchEntryText.ToolTipText = Language.GetString("$SEARCH_TOOLTIP");
             columnName.Text = Language.GetString("$NAME");
             columnType.Text = Language.GetString("$TYPE");
@@ -65,6 +71,9 @@ namespace Mafia2Tool
             ContextSDSPack.Text = Language.GetString("$PACK");
             ContextOpenFolder.Text = Language.GetString("$OPEN_FOLDER_EXPLORER");
             ContextSDSUnpackAll.Text = Language.GetString("$UNPACK_ALL_SDS");
+            ContextDeleteSelectedFiles.Text = Language.GetString("$DELETE_SELECTED_OBJECTS");
+            ContextUnpackSelectedSDS.Text = Language.GetString("$UNPACK_SELECTED_SDS");
+            ContextPackSelectedSDS.Text = Language.GetString("$PACK_SELECTED_SDS");
             ContextView.Text = Language.GetString("$VIEW");
             ContextViewIcon.Text = Language.GetString("$ICON");
             ContextViewDetails.Text = Language.GetString("$DETAILS");
@@ -76,15 +85,21 @@ namespace Mafia2Tool
             ViewStripMenuSmallIcon.Text = Language.GetString("$SMALL_ICON");
             ViewStripMenuList.Text = Language.GetString("$LIST");
             ViewStripMenuTile.Text = Language.GetString("$TILE");
-            dropdownFile.Text = Language.GetString("$FILE");
-            openMafiaIIToolStripMenuItem.Text = Language.GetString("$BTN_OPEN_MII");
-            runMafiaIIToolStripMenuItem.Text = Language.GetString("$BTN_RUN_MII");
-            exitToolStripMenuItem.Text = Language.GetString("$EXIT");
-            dropdownView.Text = Language.GetString("$VIEW");
-            dropdownTools.Text = Language.GetString("$TOOLS");
+            OpenGameFolderButton.Text = Language.GetString("$BTN_OPEN_MII");
+            RunGameButton.Text = Language.GetString("$BTN_RUN_MII");
+            ExitEditorButton.Text = Language.GetString("$EXIT");
             OptionsItem.Text = Language.GetString("$OPTIONS");
+            PackCurrentSDSButton.Text = Language.GetString("$UNPACK_SELECTED_SDS");
+            UnpackCurrentSDSButton.Text = Language.GetString("$PACK_SELECTED_SDS");
             UnpackAllSDSButton.Text = Language.GetString("$UNPACK_ALL_SDS");
-            Button_SelectGame.Text = Language.GetString("$SELECT_GAME");
+            SelectGameButton.Text = Language.GetString("$SELECT_GAME");
+
+            Button_UnpackSDS.Text = Language.GetString("$UNPACK");
+            Button_UnpackSDS.ToolTipText = Language.GetString("$UNPACK");
+            Button_PackSDS.Text = Language.GetString("$PACK");
+            Button_PackSDS.ToolTipText = Language.GetString("$PACK");
+            Button_Settings.Text = Language.GetString("$OPTIONS");
+            Button_Settings.ToolTipText = Language.GetString("$OPTIONS");
         }
 
         public void InitExplorerSettings()
@@ -107,15 +122,6 @@ namespace Mafia2Tool
             }
 
             InitTreeView();
-
-            string path = pcDirectory.FullName + "/edit/tables/FrameProps.bin";
-            if(File.Exists(path))
-            {
-                FileInfo info = new FileInfo(path);
-                FrameProps props = new FrameProps(info);
-                SceneData.FrameProperties = props;
-            }
-
         }
 
         private void InitTreeView()
@@ -158,6 +164,9 @@ namespace Mafia2Tool
 
         private void OpenDirectory(DirectoryInfo directory, bool searchMode = false, string filename = null)
         {
+            // Make sure toolstrip buttons are reset
+            SetPackUnpackButtonEnabled(false);
+
             infoText.Text = "Loading Directory..";
             fileListView.Items.Clear();
             ListViewItem.ListViewSubItem[] subItems;
@@ -309,6 +318,16 @@ namespace Mafia2Tool
 
         private bool OpenFile(FileBase asset)
         {
+            // cannot open files if this format is selected
+            if ((asset as FileSDS) == null)
+            {
+                if (ToolkitSettings.UseSDSToolFormat)
+                {
+                    MessageBox.Show("These files are not supported with SDSTools format. Please navigate to the settings and de-select 'Use SDS Tool Format'", "Toolkit");
+                    return false;
+                }
+            }
+
             if(!asset.Open())
             {
                 return false;
@@ -394,11 +413,14 @@ namespace Mafia2Tool
 
         private void ContextSDSUnpack_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in fileListView.SelectedItems)
+            if (fileListView.SelectedItems.Count > 0)
             {
-                if(item.Tag is FileSDS)
+                object Tag = fileListView.SelectedItems[0].Tag;
+                if (Tag is FileSDS)
                 {
-                    (item.Tag as FileSDS).Open();
+                    FileSDS SDSFile = (Tag as FileSDS);
+                    SDSFile.Open();
+                    OpenSDSDirectory(SDSFile.GetUnderlyingFileInfo());
                 }
             }
         }
@@ -436,6 +458,9 @@ namespace Mafia2Tool
             ContextSDSUnpack.Visible = false;
             ContextSDSPack.Visible = false;
             ContextForceBigEndian.Visible = false;
+            ContextDeleteSelectedFiles.Visible = false;
+            ContextUnpackSelectedSDS.Visible = false;
+            ContextPackSelectedSDS.Visible = false;
 
             if (fileListView.SelectedItems.Count == 0)
             {
@@ -444,18 +469,29 @@ namespace Mafia2Tool
 
             if (fileListView.SelectedItems[0].Tag is FileBase)
             {
-                string extension = (fileListView.SelectedItems[0].Tag as FileBase).GetExtensionUpper();
+                object Tag = fileListView.SelectedItems[0].Tag;
 
-                if (extension == "SDS")
+                if (Tag is FileSDS)
                 {
                     ContextSDSUnpack.Visible = true;
                     ContextSDSPack.Visible = true;
                 }
-                else if(extension == "FR")
+                else if(Tag is FileFrameResource)
                 {
                     ContextForceBigEndian.Visible = true;
                 }
             }
+
+            foreach (ListViewItem item in fileListView.Items)
+            {
+                if(item.Tag is FileSDS)
+                {
+                    ContextPackSelectedSDS.Visible = true;
+                    ContextUnpackSelectedSDS.Visible = true;
+                }
+            }
+
+            ContextDeleteSelectedFiles.Visible = true;
         }
         private void OnOptionsItem_Clicked(object sender, EventArgs e)
         {
@@ -472,6 +508,14 @@ namespace Mafia2Tool
 
         private void ContextSDSUnpackAll_Click(object sender, EventArgs e)
         {
+            DialogResult Result = MessageBox.Show("Are you sure you want to unpack all SDS?", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            // Return if user said no
+            if(Result == DialogResult.No)
+            {
+                return;
+            }
+
             foreach (ListViewItem item in fileListView.Items)
             {
                 if(item.Tag is FileSDS)
@@ -571,24 +615,30 @@ namespace Mafia2Tool
 
         private void OnCredits_Pressed(object sender, EventArgs e)
         {
-            MessageBox.Show("Toolkit developed by Greavesy. \n\n" +
-                "Special thanks to: \nOleg @ ZModeler 3 \nRick 'Gibbed' \nFireboyd for developing UnluacNET" +
-                "\n\n" +
-                "Thanks to Hurikejnis and Zeuvera for Slovenčina localization." +
-                "\n\n" +
-                "Also, a very special thanks to PayPal donators: \nInlife \nT3mas1 \nJaqub \nxEptun \nL//oO//nyRider \nNemesis7675" +
-                "\n Foxite \n\n" +
-                "And Patreons: \nHamAndRock \nMelber",
-                "Toolkit",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            var aboutBox = new AboutBox();
+            aboutBox.ShowDialog();
         }
 
-        private void OnKeyPressed(object sender, KeyPressEventArgs e)
+        private void ListView_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyChar == 0x8)
+            if (e.KeyCode == Keys.Back)
             {
                 OnUpButtonClicked(null, null);
+            }
+            else if(e.Control && e.KeyCode == Keys.P)
+            {
+                // TODO: Make this not use the function which is wired up to a delegate
+                ContextSDSPack_Click(sender, null);
+            }
+            else if (e.Control && e.KeyCode == Keys.U)
+            {
+                // TODO: Make this not use the function which is wired up to a delegate
+                ContextSDSUnpack_Click(sender, null);
+            }
+            else if(e.Control && e.KeyCode == Keys.Delete)
+            {
+                // TODO: Make this not use the function which is wired up to a delegate
+                ContextDeleteSelectedFiles_OnClick(sender, null);
             }
         }
 
@@ -619,7 +669,6 @@ namespace Mafia2Tool
                 var SDSFile = (file as FileSDS);
                 Debug.WriteLine("Unpacking " + info.FullName);
                 SDSFile.Open();
-                //OpenSDSDirectory(SDSFile.GetUnderlyingFileInfo(), false);
             }
         }
 
@@ -690,6 +739,81 @@ namespace Mafia2Tool
                 }
 
             }
+        }
+
+        private void ContextDeleteSelectedFiles_OnClick(object sender, EventArgs e)
+        {
+            DialogResult Result = MessageBox.Show("Are you sure? This will delete all selected files and folders.", "Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            // If not yes, then end function
+            if(Result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            foreach(ListViewItem SelectedObject in fileListView.SelectedItems)
+            {
+                object ActualObject = SelectedObject.Tag;
+
+                if(ActualObject is FileBase)
+                {
+                    (ActualObject as FileBase).Delete();
+                }
+                else if(ActualObject is DirectoryBase)
+                {
+                    (ActualObject as DirectoryBase).Delete();
+                }
+            }
+
+            OpenDirectory(currentDirectory);
+        }
+
+        private void ContextUnpackSelectedSDS_OnClick(object sender, EventArgs e)
+        {
+            foreach (ListViewItem SelectedObject in fileListView.SelectedItems)
+            {
+                object ActualObject = SelectedObject.Tag;
+
+                if (ActualObject is FileSDS)
+                {
+                    (ActualObject as FileSDS).Open();
+                }
+            }
+        }
+
+        private void ContextPackSelectedSDS_OnClick(object sender, EventArgs e)
+        {
+            foreach (ListViewItem SelectedObject in fileListView.SelectedItems)
+            {
+                object ActualObject = SelectedObject.Tag;
+
+                if (ActualObject is FileSDS)
+                {
+                    (ActualObject as FileSDS).Save();
+                }
+            }
+        }
+
+        private void ListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            SetPackUnpackButtonEnabled(false);
+
+            if (e.Item != null)
+            {
+                object Tag = e.Item.Tag;
+                if(Tag is FileSDS)
+                {
+                    SetPackUnpackButtonEnabled(true);
+                }
+            }
+        }
+
+        private void SetPackUnpackButtonEnabled(bool enabled)
+        {
+            Button_UnpackSDS.Enabled = enabled;
+            Button_PackSDS.Enabled = enabled;
+            UnpackCurrentSDSButton.Enabled = enabled;
+            PackCurrentSDSButton.Enabled = enabled;
         }
     }
 }

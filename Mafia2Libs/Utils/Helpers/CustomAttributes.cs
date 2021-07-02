@@ -14,4 +14,15 @@ namespace Utils.Helpers
             DescriptionValue = Language.Language.GetString(description);
         }
     }
+
+    // Custom attribute which supports Toolkit localisation.
+    public class LocalisedCategoryAttribute : CategoryAttribute
+    {
+        public LocalisedCategoryAttribute(string category) : base(category) { }
+
+        protected override string GetLocalizedString(string value)
+        {
+            return Language.Language.GetString(value);
+        }
+    }
 }

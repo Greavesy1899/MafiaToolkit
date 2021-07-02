@@ -140,9 +140,9 @@ namespace Rendering.Graphics
             WorldSettings = null;
             Camera = null;
 
-            foreach (KeyValuePair<int, IRenderer> model in Assets)
+            foreach (IRenderer RenderAsset in Assets.Values)
             {
-                model.Value?.Shutdown();
+                RenderAsset.Shutdown();
             }
 
             foreach (SpatialGrid grid in navigationGrids)
@@ -227,15 +227,15 @@ namespace Rendering.Graphics
             D3D.BeginScene(0.0f, 0f, 0f, 1.0f);
             Camera.Render();
 
-            foreach (KeyValuePair<ulong, BaseShader> shader in RenderStorageSingleton.Instance.ShaderManager.shaders)
+            foreach (BaseShader Shader in RenderStorageSingleton.Instance.ShaderManager.shaders.Values)
             {
-                shader.Value.InitCBuffersFrame(D3D.DeviceContext, Camera, WorldSettings);
+                Shader.InitCBuffersFrame(D3D.DeviceContext, Camera, WorldSettings);
             }
 
-            foreach (KeyValuePair<int, IRenderer> entry in Assets)
+            foreach (IRenderer RenderEntry in Assets.Values)
             {
-                entry.Value.UpdateBuffers(D3D.Device, D3D.DeviceContext);
-                entry.Value.Render(D3D.Device, D3D.DeviceContext, Camera);
+                RenderEntry.UpdateBuffers(D3D.Device, D3D.DeviceContext);
+                RenderEntry.Render(D3D.Device, D3D.DeviceContext, Camera);
             }
 
             //navigationGrids[0].Render(D3D.Device, D3D.DeviceContext, Camera);

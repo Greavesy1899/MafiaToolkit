@@ -11,26 +11,6 @@ using System.Windows.Forms.Design;
 
 namespace Utils.Extensions
 {
-    public sealed class MTreeView : TreeView
-    {
-
-        //fix from: (gotta love stack overflow!)
-        //https://stackoverflow.com/questions/14647216/c-sharp-treeview-ignore-double-click-only-at-checkbox
-        protected override void WndProc(ref Message m)
-        {
-            if (m.Msg == 0x0203 && CheckBoxes)
-            {
-                var localPos = this.PointToClient(Cursor.Position);
-                var hitTestInfo = this.HitTest(localPos);
-                if (hitTestInfo.Location == TreeViewHitTestLocations.StateImage)
-                {
-                    m.Msg = 0x0201;
-                }
-            }
-            base.WndProc(ref m);
-        }
-    }
-
     public class MTableColumn : DataGridViewColumn
     {
         private byte unk2;
@@ -53,6 +33,15 @@ namespace Utils.Extensions
         public uint NameHash {
             get { return hash; }
             set { hash = value; }
+        }
+    }
+
+    public class MToolStripStatusLabel : ToolStripStatusLabel
+    {
+        public void SetTextWithTimeStamp(string InText)
+        {
+            string Message = string.Format("{0} - {1}", DateTime.Now.ToLongTimeString(), InText);
+            Text = Message;
         }
     }
 
@@ -656,6 +645,18 @@ namespace Utils.Extensions
                     index++;
             }
             return -1;
+        }
+
+        public static bool AddRange<TKey, TValue>(this Dictionary<TKey, TValue> Dic, Dictionary<TKey, TValue> OtherDic)
+        {
+            bool bResult = true;
+
+            foreach(var Pair in OtherDic)
+            {
+                bResult = Dic.TryAdd(Pair.Key, Pair.Value);
+            }
+
+            return bResult;
         }
 
         public static bool TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key, TValue value)

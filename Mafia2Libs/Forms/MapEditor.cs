@@ -208,17 +208,11 @@ namespace Mafia2Tool
 
             FrameObjectBase frame = (node.Tag as FrameObjectBase);
 
-            // We can remove this when we have support. 
-            if(node.Nodes.Count > 0)
-            {
-                MessageBox.Show("Warning: Child Frames are not currently supported!", "Toolkit", MessageBoxButtons.OK);
-            }
-
             if (node != null)
             {
                 if(node.Tag != null)
                 {
-                    SceneData.FrameResource.SaveFramesToFile(frame, "file.frame");
+                    SceneData.FrameResource.SaveFramesToFile(frame);
                 }
             }        
         }
@@ -626,13 +620,12 @@ namespace Mafia2Tool
 
             if (SceneData.FrameResource != null && SceneData.FrameNameTable != null)
             {
-                for (int i = 0; i != SceneData.FrameResource.FrameObjects.Count; i++)
+                foreach(FrameObjectBase FrameObject in SceneData.FrameResource.FrameObjects.Values)
                 {
-                    FrameObjectBase fObject = (SceneData.FrameResource.FrameObjects.ElementAt(i).Value as FrameObjectBase);
-                    IRenderer asset = BuildRenderObjectFromFrame(fObject);
-                    if (asset != null)
+                    IRenderer NewAsset = BuildRenderObjectFromFrame(FrameObject);
+                    if(NewAsset != null)
                     {
-                        assets.Add(fObject.RefID, asset);
+                        assets.Add(FrameObject.RefID, NewAsset);
                     }
                 }
             }
@@ -1495,9 +1488,11 @@ namespace Mafia2Tool
                 if (FrameResource.IsFrameType(node.Nodes[i].Tag))
                 {
                     FrameEntry entry = node.Nodes[i].Tag as FrameEntry;
-                    SceneData.FrameResource.FrameObjects.Remove(entry.RefID);
+                    bool bDidRemove = SceneData.FrameResource.DeleteFrame(entry);
                     Graphics.Assets.TryRemove(entry.RefID);
                     DeleteFrames(node.Nodes[i]);
+
+                    Debug.Assert(bDidRemove == true, "Failed to remove!");
                 }
             }
         }
@@ -1513,9 +1508,12 @@ namespace Mafia2Tool
                 {
                     dSceneTree.RemoveNode(node);
                     Graphics.Assets.Remove(obj.RefID);
-                    SceneData.FrameResource.FrameObjects.Remove(obj.RefID);
+                    bool bDidRemove = SceneData.FrameResource.DeleteFrame(obj);
                     Graphics.Assets.TryRemove(obj.RefID);
+
+                    Debug.Assert(bDidRemove == true, "Failed to remove!");
                 }
+
                 DeleteFrames(node);
             }
             else if(node.Tag.GetType() == typeof(FrameHeaderScene))

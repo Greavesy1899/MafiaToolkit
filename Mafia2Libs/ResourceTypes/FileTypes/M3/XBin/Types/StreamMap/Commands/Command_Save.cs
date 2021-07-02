@@ -11,6 +11,11 @@ namespace FileTypes.XBin.StreamMap.Commands
         public ESaveType SaveType { get; set; }
         public string SaveId { get; set; }
 
+        public Command_Save()
+        {
+            SaveId = "";
+        }
+
         public void ReadFromFile(BinaryReader reader)
         {
             SaveType = (ESaveType)reader.ReadUInt32();
