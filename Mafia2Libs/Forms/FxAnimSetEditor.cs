@@ -9,7 +9,7 @@ namespace Toolkit.Forms
     {
         private FileInfo OriginFile;
 
-        private FxAnimSet AnimSetContainer;
+        private FxContainer<FxAnimSet> AnimSetContainer;
 
         public FxAnimSetEditor(FileInfo InOriginFile)
         {
@@ -38,7 +38,7 @@ namespace Toolkit.Forms
         {
             using (BinaryReader Reader = new BinaryReader(File.Open(OriginFile.FullName, FileMode.Open)))
             {
-                AnimSetContainer = new FxAnimSet();
+                AnimSetContainer = new FxContainer<FxAnimSet>();
                 AnimSetContainer.ReadFromFile(Reader);
             }
 

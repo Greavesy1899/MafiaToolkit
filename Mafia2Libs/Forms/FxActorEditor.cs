@@ -9,7 +9,7 @@ namespace Toolkit.Forms
     {
         private FileInfo OriginFile;
 
-        private FxActorContainer ActorContainer;
+        private FxContainer<FxActor> ActorContainer;
 
         public FxActorEditor(FileInfo InOriginFile)
         {
@@ -38,7 +38,7 @@ namespace Toolkit.Forms
         {
             using(BinaryReader Reader = new BinaryReader(File.Open(OriginFile.FullName, FileMode.Open)))
             {
-                ActorContainer = new FxActorContainer();
+                ActorContainer = new FxContainer<FxActor>();
                 ActorContainer.ReadFromFile(Reader);
             }
 

@@ -49,54 +49,7 @@ namespace ResourceTypes.OC3.FaceFX
         }
     }
 
-    public class FxMasterBoneListEntry
-    {
-        public uint PossibleIdx { get; set; }
-        public FxBoneTransform Transform { get; set; }
-        byte[] UnkQuaternion { get; set; } // 4 floats.. could be quat?
-        public uint PossibleIdx2 { get; set; }
-        public float Unk0 { get; set; }
-        public FxBoneLink[] Links { get; set; }
 
-        public void ReadFromFile(BinaryReader reader)
-        {
-            PossibleIdx = reader.ReadUInt32();
-            Transform = new FxBoneTransform();
-            Transform.ReadFromFile(reader);
-            UnkQuaternion = reader.ReadBytes(16);
-            PossibleIdx2 = reader.ReadUInt32();
-            Unk0 = reader.ReadSingle();
-
-            uint NumLinks = reader.ReadUInt32();
-            Links = new FxBoneLink[NumLinks];
-            for (int i = 0; i < NumLinks; i++)
-            {
-                FxBoneLink LinkObject = new FxBoneLink();
-                LinkObject.ReadFromFile(reader);
-                Links[i] = LinkObject;
-            }
-        }
-
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(PossibleIdx);
-            Transform.WriteToFile(writer);
-            writer.Write(UnkQuaternion);
-            writer.Write(PossibleIdx2);
-            writer.Write(Unk0);
-
-            writer.Write(Links.Length);
-            foreach(FxBoneLink Link in Links)
-            {
-                Link.WriteToFile(writer);
-            }
-        }
-
-        public override string ToString()
-        {
-            return PossibleIdx.ToString();
-        }
-    }
 
     public class FxUnk3
     {
@@ -141,30 +94,50 @@ namespace ResourceTypes.OC3.FaceFX
         }
     }
 
-    public class FxPhonToNameMap
+    public class FxPhonToNameMap : FxObject
     {
         public FxPhoneme Phoneme { get; set; }
-        public uint Name { get; set; } // FxName
+        public FxName Name { get; set; }
         public float Amount { get; set; }
 
-        public void ReadFromFIle(BinaryReader reader)
+        public FxPhonToNameMap() : base()
         {
-            Phoneme = (FxPhoneme)reader.ReadUInt32();
-            Name = reader.ReadUInt32();
-            Amount = reader.ReadSingle();
+            Name = new FxName();
         }
 
-        public void WriteToFile(BinaryWriter writer)
+        public override void Deserialize(FxArchive Owner, BinaryReader Reader)
         {
-            writer.Write((uint)Phoneme);
-            writer.Write(Name);
-            writer.Write(Amount);
+            base.Deserialize(Owner, Reader);
+
+            Phoneme = (FxPhoneme)Reader.ReadUInt32();
+            Name.ReadFromFile(Owner, Reader);
+            Amount = Reader.ReadSingle();
+        }
+
+        public override void Serialize(FxArchive Owner, BinaryWriter Writer)
+        {
+            base.Serialize(Owner, Writer);
+
+            Writer.Write((uint)Phoneme);
+            Name.WriteToFile(Owner, Writer);
+            Writer.Write(Amount);
+        }
+
+        public override void PopulateStringTable(FxArchive Owner)
+        {
+            base.PopulateStringTable(Owner);
+
+            Name.AddToStringTable(Owner);
+        }
+
+        public override string ToString()
+        {
+            return Name.ToString();
         }
     }
 
-    public class FxActor : FxArchive
+    public class FxActor : FxNamedObject
     {
-        private uint ActorNameID;
         private uint Unk10;
 
         public FxMasterBoneListEntry[] MasterBoneList { get; set; }
@@ -179,28 +152,10 @@ namespace ResourceTypes.OC3.FaceFX
         public FxPhonToNameMap[] PhoneToNameMap { get; set; }
         public uint[] Unk3s { get; set; }
 
-        public void ReadFromFile(string filename)
+        public override void Deserialize(FxArchive Owner, BinaryReader reader)
         {
-            using(BinaryReader reader = new BinaryReader(File.Open(filename, FileMode.Open)))
-            {
-                ReadFromFile(reader);
-            }
-        }
+            base.Deserialize(Owner, reader);
 
-        public void WriteToFile(string filename)
-        {
-            using (BinaryWriter writer = new BinaryWriter(File.Open("face2.facefx", FileMode.Create)))
-            {
-                WriteToFile(writer);
-            }
-        }
-
-        public override void ReadFromFile(BinaryReader reader)
-        {
-            base.ReadFromFile(reader);
-
-            // ActorNameID
-            ActorNameID = reader.ReadUInt32();
             Unk10 = reader.ReadUInt32(); // Unknown; could be data about published or not.
 
             // Read FxMasterBoneListEntries
@@ -209,17 +164,17 @@ namespace ResourceTypes.OC3.FaceFX
             for (int i = 0; i < MasterBoneList.Length; i++)
             {
                 FxMasterBoneListEntry DataObject = new FxMasterBoneListEntry();
-                DataObject.ReadFromFile(reader);
+                DataObject.ReadFromFile(Owner, reader);
                 MasterBoneList[i] = DataObject;
             }
 
             // Read FxCompiledFaceGraphNodes
-            uint NumFaceGraphNodes = reader.ReadUInt32();         
+            uint NumFaceGraphNodes = reader.ReadUInt32();
             FaceGraphNodes = new FxCompiledFaceGraphNode[NumFaceGraphNodes];
             for (int i = 0; i < FaceGraphNodes.Length; i++)
             {
                 FxCompiledFaceGraphNode DataObject = new FxCompiledFaceGraphNode();
-                DataObject.ReadFromFile(reader, this);
+                DataObject.ReadFromFile(Owner, reader);
                 FaceGraphNodes[i] = DataObject;
             }
 
@@ -241,7 +196,7 @@ namespace ResourceTypes.OC3.FaceFX
             for (int i = 0; i < PhoneToNameMap.Length; i++)
             {
                 FxPhonToNameMap PhonToName = new FxPhonToNameMap();
-                PhonToName.ReadFromFIle(reader);
+                PhonToName.Deserialize(Owner, reader);
                 PhoneToNameMap[i] = PhonToName;
             }
 
@@ -253,30 +208,29 @@ namespace ResourceTypes.OC3.FaceFX
             }
         }
 
-        public override void WriteToFile(BinaryWriter writer)
+        public override void Serialize(FxArchive Owner, BinaryWriter writer)
         {
-            base.WriteToFile(writer);
+            base.Serialize(Owner, writer);
 
-            writer.Write(ActorNameID);
             writer.Write(Unk10);
 
             // Write FxMasterBoneList
             writer.Write(MasterBoneList.Length);
-            foreach(FxMasterBoneListEntry Entry in MasterBoneList)
+            foreach (FxMasterBoneListEntry Entry in MasterBoneList)
             {
-                Entry.WriteToFile(writer);
+                Entry.WriteToFile(Owner, writer);
             }
 
             // Write FxCompiledFaceGraphNodes
             writer.Write(FaceGraphNodes.Length);
             foreach (FxCompiledFaceGraphNode GraphNode in FaceGraphNodes)
             {
-                GraphNode.WriteToFile(writer);
+                GraphNode.WriteToFile(Owner, writer);
             }
 
             // Write Unk03
             writer.Write(Unk03s.Length);
-            foreach(FxUnk3 MapNode in Unk03s)
+            foreach (FxUnk3 MapNode in Unk03s)
             {
                 MapNode.WriteToFile(writer);
             }
@@ -287,49 +241,43 @@ namespace ResourceTypes.OC3.FaceFX
 
             // Write PhonemeMapToNode
             writer.Write(PhoneToNameMap.Length);
-            foreach(FxPhonToNameMap Entry in PhoneToNameMap)
+            foreach (FxPhonToNameMap Entry in PhoneToNameMap)
             {
-                Entry.WriteToFile(writer);
+                Entry.Serialize(Owner, writer);
             }
 
             // Write Unk3s
             writer.Write(Unk3s.Length);
-            foreach(uint Value in Unk3s)
+            foreach (uint Value in Unk3s)
             {
                 writer.Write(Value);
             }
         }
-    }
 
-    public class FxActorContainer
-    {
-        uint[] ActorSize;
-        FxActor[] Actors;
-
-        public void ReadFromFile(BinaryReader reader)
+        public override void PopulateStringTable(FxArchive Owner)
         {
-            uint NumActors = reader.ReadUInt32();
+            base.PopulateStringTable(Owner);
 
-            Actors = new FxActor[NumActors];
-            ActorSize = new uint[NumActors];
-            for (int i = 0; i < NumActors; i++)
+            foreach(FxMasterBoneListEntry Entry in MasterBoneList)
             {
-                ActorSize[i] = reader.ReadUInt32();
-                FxActor ActorObject = new FxActor();
-                ActorObject.ReadFromFile(reader);
-                Actors[i] = ActorObject;
+                Entry.PopulateStringTable(Owner);
             }
-        }
 
-        public void WriteToFile(BinaryWriter writer)
-        {
-            writer.Write(Actors.Length);
-
-            for (int i = 0; i < Actors.Length; i++)
+            foreach(FxCompiledFaceGraphNode GraphNode in FaceGraphNodes)
             {
-                writer.Write(ActorSize[i]);
-                Actors[i].WriteToFile(writer);
+                GraphNode.PopulateStringTable(Owner);
             }
+
+            // NB:
+            // Unk03s is empty
+
+            foreach (FxPhonToNameMap Entry in PhoneToNameMap)
+            {
+                Entry.PopulateStringTable(Owner);
+            }
+
+            // Seems to be standard?
+            Owner.AddToStringTable("Default");
         }
     }
 }

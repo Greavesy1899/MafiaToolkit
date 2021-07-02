@@ -1,20 +1,25 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.OC3.FaceFX
 {
     /*
      * Contains the data from a loaded file.
-     * In the actual SDK, I think this is a container holding the data and classes.
-     * But here, its just a base class for FxAnimSet and FxActor.
-     * Maybe in the future this can be rearranged into the kind of setup.
+     * Stores the StringTable, FaceFx classes present in the archive,
+     * and the object itself.
      */
     public class FxArchive
     {
         // Set of consts for validity.
         private const uint FaceMagic = 0x45434146;
-        private const uint ExpectedSDKVersion = 1730; // FaceFX Studio reads this as 1073
+        private const uint ExpectedSDKVersion = 1730; // FaceFX Studio reads this as 1073 // M2C is 1730, M2DE is 1740
 
+        // Interial variables
+        private uint SDKVersion;
         private string LicenseeName;
         private string LicenseeProjectName;
 
@@ -25,7 +30,11 @@ namespace ResourceTypes.OC3.FaceFX
         private FxClass[] SerializedTypes;
         private string[] StringTable;
 
-        public virtual void ReadFromFile(BinaryReader reader)
+        public FxObject ObjectData { get; set; }
+
+        private Dictionary<string, bool> TempStringTable;
+
+        public virtual void ReadFromFile<T>(BinaryReader reader) where T : FxObject
         {
             uint FileFaceMagic = reader.ReadUInt32();
             if (FileFaceMagic != FaceMagic)
@@ -34,11 +43,11 @@ namespace ResourceTypes.OC3.FaceFX
                 return;
             }
 
-            uint SDKVersion = reader.ReadUInt32();
+            SDKVersion = reader.ReadUInt32();
             if (SDKVersion != ExpectedSDKVersion)
             {
                 // Invalid SDKVersion. 1730 == 1073
-                return;
+                //return;
             }
 
             // 0 == Little, 1 == Big
@@ -72,18 +81,23 @@ namespace ResourceTypes.OC3.FaceFX
             {
                 StringTable[i] = StringHelpers.ReadString32(reader);
             }
+
+            ObjectData = Activator.CreateInstance<T>();
+            ObjectData.Deserialize(this, reader);
         }
 
         public virtual void WriteToFile(BinaryWriter writer)
         {
+            PopulateStringTable();
+
             // Begin to write FaceFX header
             writer.Write(FaceMagic);
-            writer.Write(ExpectedSDKVersion);
-            writer.Write(0); // Only support Little-Endian
-            StringHelpers.WriteString32(writer, "IllusionSoftworks\0");
-            StringHelpers.WriteString32(writer, "Mafia 2\0");
-            writer.Write(1000); // Guessed
-            writer.Write((ushort)1); // Guessed
+            writer.Write(SDKVersion);
+            writer.Write(0);
+            StringHelpers.WriteString32(writer, LicenseeName);
+            StringHelpers.WriteString32(writer, LicenseeProjectName);
+            writer.Write(Unk0);
+            writer.Write(Unk1);
 
             // Write OC3 types
             writer.Write(SerializedTypes.Length);
@@ -98,13 +112,23 @@ namespace ResourceTypes.OC3.FaceFX
             {
                 StringHelpers.WriteString32(writer, Name);
             }
+
+            ObjectData.Serialize(this, writer);
         }
 
-        public string GetFileName()
+        /*
+         * Util function to cast the object as the type you want.
+         * Example use case: GetObjectAs<FxAnimSet>().
+         */
+        public T GetObjectAs<T>() where T : FxObject
         {
-            return GetFromStringTable(0);
+            T CastedObject = (ObjectData as T);
+            Debug.Assert(CastedObject == null, "This Object was not of type");
+
+            return CastedObject;
         }
 
+        // INTERNAL USE ONLY
         public string GetFromStringTable(uint Index)
         {
             if (StringTable != null && StringTable.Length > 0)
@@ -113,6 +137,37 @@ namespace ResourceTypes.OC3.FaceFX
             }
 
             return string.Empty;
+        }
+
+        // INTERNAL USE ONLY
+        public int GetFromStringTable(string Text)
+        {
+            return Array.FindIndex(StringTable, e => e == Text);
+        }
+
+        // INTERNAL USE ONLY
+        public void AddToStringTable(string Text)
+        {
+            if(!TempStringTable.ContainsKey(Text))
+            {
+                TempStringTable.Add(Text, false);
+            }
+        }
+
+        // INTERNAL USE ONLY
+        private void PopulateStringTable()
+        {
+            // Clean existing table and temp table
+            TempStringTable = new Dictionary<string, bool>();
+            StringTable = new string[0];
+
+            // Generate string table
+            ObjectData.PopulateStringTable(this);
+
+            // Move result back into the StringTable,
+            // then remove the Temp table
+            StringTable = TempStringTable.Keys.ToArray();
+            TempStringTable = new Dictionary<string, bool>();
         }
     }
 }
