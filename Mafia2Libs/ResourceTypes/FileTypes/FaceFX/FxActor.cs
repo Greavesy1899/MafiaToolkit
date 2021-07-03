@@ -1,10 +1,12 @@
 ﻿using SharpDX;
 using System.IO;
+using System.ComponentModel;
 using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.OC3.FaceFX
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FxBoneTransform
     {
         public Vector3 Position { get; set; }
@@ -26,6 +28,7 @@ namespace ResourceTypes.OC3.FaceFX
         }
     }
 
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FxBoneLink
     {
         public uint Unk0 { get; set; } // Could be NodeIndex
@@ -50,9 +53,10 @@ namespace ResourceTypes.OC3.FaceFX
     }
 
 
-
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FxUnk3
     {
+        [TypeConverter(typeof(ExpandableObjectConverter))]
         public class FxUnk3_Node
         {
             public string NodeName { get; set; }
@@ -94,6 +98,7 @@ namespace ResourceTypes.OC3.FaceFX
         }
     }
 
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FxPhonToNameMap : FxObject
     {
         public FxPhoneme Phoneme { get; set; }

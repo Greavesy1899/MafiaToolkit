@@ -28,15 +28,25 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FxActorEditor));
             this.Grid_Actors = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_Actors = new Mafia2Tool.Controls.MTreeView();
             this.ToolStrip_Top = new System.Windows.Forms.ToolStrip();
             this.Button_File = new System.Windows.Forms.ToolStripDropDownButton();
             this.Button_Save = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_Reload = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_Exit = new System.Windows.Forms.ToolStripMenuItem();
+            this.FxActorToolsDrop = new System.Windows.Forms.ToolStripDropDownButton();
+            this.FxActToolCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this.FxActToolPaste = new System.Windows.Forms.ToolStripMenuItem();
+            this.FxActToolDelete = new System.Windows.Forms.ToolStripMenuItem();
+            this.FxActContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ContextMenu_Copy = new System.Windows.Forms.ToolStripMenuItem();
+            this.ContextMenu_Paste = new System.Windows.Forms.ToolStripMenuItem();
+            this.ContextMenu_Delete = new System.Windows.Forms.ToolStripMenuItem();
+            this.FxActorTreeView = new Mafia2Tool.Controls.MTreeView();
             this.ToolStrip_Top.SuspendLayout();
+            this.FxActContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // Grid_Actors
@@ -49,21 +59,13 @@
             this.Grid_Actors.PropertySort = System.Windows.Forms.PropertySort.Categorized;
             this.Grid_Actors.Size = new System.Drawing.Size(386, 410);
             this.Grid_Actors.TabIndex = 10;
-            // 
-            // TreeView_Actors
-            // 
-            this.TreeView_Actors.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.TreeView_Actors.Location = new System.Drawing.Point(12, 28);
-            this.TreeView_Actors.Name = "TreeView_Actors";
-            this.TreeView_Actors.Size = new System.Drawing.Size(368, 410);
-            this.TreeView_Actors.TabIndex = 11;
-            this.TreeView_Actors.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_Actors_AfterSelect);
+            this.Grid_Actors.Click += new System.EventHandler(this.Grid_Actors_Click);
             // 
             // ToolStrip_Top
             // 
             this.ToolStrip_Top.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Button_File});
+            this.Button_File,
+            this.FxActorToolsDrop});
             this.ToolStrip_Top.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip_Top.Name = "ToolStrip_Top";
             this.ToolStrip_Top.Size = new System.Drawing.Size(800, 25);
@@ -104,6 +106,83 @@
             this.Button_Exit.Text = "$EXIT";
             this.Button_Exit.Click += new System.EventHandler(this.Button_Exit_Click);
             // 
+            // FxActorToolsDrop
+            // 
+            this.FxActorToolsDrop.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.FxActorToolsDrop.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.FxActToolCopy,
+            this.FxActToolPaste,
+            this.FxActToolDelete});
+            this.FxActorToolsDrop.Image = ((System.Drawing.Image)(resources.GetObject("FxActorToolsDrop.Image")));
+            this.FxActorToolsDrop.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.FxActorToolsDrop.Name = "FxActorToolsDrop";
+            this.FxActorToolsDrop.Size = new System.Drawing.Size(61, 22);
+            this.FxActorToolsDrop.Text = "$TOOLS";
+            // 
+            // FxActToolCopy
+            // 
+            this.FxActToolCopy.Name = "FxActToolCopy";
+            this.FxActToolCopy.Size = new System.Drawing.Size(118, 22);
+            this.FxActToolCopy.Text = "$COPY";
+            this.FxActToolCopy.Click += new System.EventHandler(this.FxActToolCopy_Click);
+            // 
+            // FxActToolPaste
+            // 
+            this.FxActToolPaste.Name = "FxActToolPaste";
+            this.FxActToolPaste.Size = new System.Drawing.Size(118, 22);
+            this.FxActToolPaste.Text = "$PASTE";
+            this.FxActToolPaste.Click += new System.EventHandler(this.FxActToolPaste_Click);
+            // 
+            // FxActToolDelete
+            // 
+            this.FxActToolDelete.Name = "FxActToolDelete";
+            this.FxActToolDelete.Size = new System.Drawing.Size(118, 22);
+            this.FxActToolDelete.Text = "$DELETE";
+            this.FxActToolDelete.Click += new System.EventHandler(this.FxActToolDelete_Click);
+            // 
+            // FxActContextMenu
+            // 
+            this.FxActContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ContextMenu_Copy,
+            this.ContextMenu_Paste,
+            this.ContextMenu_Delete});
+            this.FxActContextMenu.Name = "FxActContextMenu";
+            this.FxActContextMenu.Size = new System.Drawing.Size(119, 70);
+            this.FxActContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.FxActContextMenu_Opening);
+            // 
+            // ContextMenu_Copy
+            // 
+            this.ContextMenu_Copy.Name = "ContextMenu_Copy";
+            this.ContextMenu_Copy.Size = new System.Drawing.Size(118, 22);
+            this.ContextMenu_Copy.Text = "$COPY";
+            this.ContextMenu_Copy.Click += new System.EventHandler(this.FxActContextCopy_Click);
+            // 
+            // ContextMenu_Paste
+            // 
+            this.ContextMenu_Paste.Name = "ContextMenu_Paste";
+            this.ContextMenu_Paste.Size = new System.Drawing.Size(118, 22);
+            this.ContextMenu_Paste.Text = "$PASTE";
+            this.ContextMenu_Paste.Click += new System.EventHandler(this.FxActContextPaste_Click);
+            // 
+            // ContextMenu_Delete
+            // 
+            this.ContextMenu_Delete.Name = "ContextMenu_Delete";
+            this.ContextMenu_Delete.Size = new System.Drawing.Size(118, 22);
+            this.ContextMenu_Delete.Text = "$DELETE";
+            this.ContextMenu_Delete.Click += new System.EventHandler(this.FxActContextDelete_Click);
+            // 
+            // FxActorTreeView
+            // 
+            this.FxActorTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.FxActorTreeView.ContextMenuStrip = this.FxActContextMenu;
+            this.FxActorTreeView.Location = new System.Drawing.Point(12, 28);
+            this.FxActorTreeView.Name = "FxActorTreeView";
+            this.FxActorTreeView.Size = new System.Drawing.Size(368, 410);
+            this.FxActorTreeView.TabIndex = 11;
+            this.FxActorTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.FxActorTreeView_AfterSelect);
+            this.FxActorTreeView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FxActorTreeView_OnKeyUp);
+            // 
             // FxActorEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -111,12 +190,13 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.ToolStrip_Top);
             this.Controls.Add(this.Grid_Actors);
-            this.Controls.Add(this.TreeView_Actors);
+            this.Controls.Add(this.FxActorTreeView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FxActorEditor";
             this.Text = "$FXACTOR_EDITOR";
             this.ToolStrip_Top.ResumeLayout(false);
             this.ToolStrip_Top.PerformLayout();
+            this.FxActContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -130,6 +210,14 @@
         private System.Windows.Forms.ToolStripMenuItem Button_Save;
         private System.Windows.Forms.ToolStripMenuItem Button_Reload;
         private System.Windows.Forms.ToolStripMenuItem Button_Exit;
-        private Mafia2Tool.Controls.MTreeView TreeView_Actors;
+        private Mafia2Tool.Controls.MTreeView FxActorTreeView;
+        private System.Windows.Forms.ContextMenuStrip FxActContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem ContextMenu_Copy;
+        private System.Windows.Forms.ToolStripMenuItem ContextMenu_Paste;
+        private System.Windows.Forms.ToolStripMenuItem ContextMenu_Delete;
+        private System.Windows.Forms.ToolStripDropDownButton FxActorToolsDrop;
+        private System.Windows.Forms.ToolStripMenuItem FxActToolDelete;
+        private System.Windows.Forms.ToolStripMenuItem FxActToolCopy;
+        private System.Windows.Forms.ToolStripMenuItem FxActToolPaste;
     }
 }

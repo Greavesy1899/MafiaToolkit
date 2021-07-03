@@ -1,7 +1,9 @@
 ﻿using System.IO;
+using System.ComponentModel;
 
 namespace ResourceTypes.OC3.FaceFX
 {
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FxMasterBoneListEntry 
     {
         public FxName BoneName { get; set; }
