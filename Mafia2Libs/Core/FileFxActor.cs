@@ -14,7 +14,7 @@ namespace Core.IO
 
         public override bool Open()
         {
-            Editor_FxActors ActorEditor = new Editor_FxActors(GetUnderlyingFileInfo());
+            FxActorEditor ActorEditor = new FxActorEditor(GetUnderlyingFileInfo());
             return true;
         }
     }

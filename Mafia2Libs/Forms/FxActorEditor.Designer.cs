@@ -1,6 +1,6 @@
 ﻿namespace Toolkit.Forms
 {
-    partial class Editor_FxActors
+    partial class FxActorEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Editor_FxActors));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FxActorEditor));
             this.Grid_Actors = new System.Windows.Forms.PropertyGrid();
             this.ToolStrip_Top = new System.Windows.Forms.ToolStrip();
             this.Button_File = new System.Windows.Forms.ToolStripDropDownButton();
@@ -121,21 +121,21 @@
             // Button_Copy
             // 
             this.Button_Copy.Name = "Button_Copy";
-            this.Button_Copy.Size = new System.Drawing.Size(180, 22);
+            this.Button_Copy.Size = new System.Drawing.Size(118, 22);
             this.Button_Copy.Text = "$COPY";
             this.Button_Copy.Click += new System.EventHandler(this.Button_Copy_Click);
             // 
             // Button_Paste
             // 
             this.Button_Paste.Name = "Button_Paste";
-            this.Button_Paste.Size = new System.Drawing.Size(180, 22);
+            this.Button_Paste.Size = new System.Drawing.Size(118, 22);
             this.Button_Paste.Text = "$PASTE";
             this.Button_Paste.Click += new System.EventHandler(this.Button_Paste_Click);
             // 
             // Button_Delete
             // 
             this.Button_Delete.Name = "Button_Delete";
-            this.Button_Delete.Size = new System.Drawing.Size(180, 22);
+            this.Button_Delete.Size = new System.Drawing.Size(118, 22);
             this.Button_Delete.Text = "$DELETE";
             this.Button_Delete.Click += new System.EventHandler(this.Button_Delete_Click);
             // 
@@ -181,7 +181,7 @@
             this.TreeView_FxActors.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_FxActors_AfterSelect);
             this.TreeView_FxActors.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TreeView_FxActors_OnKeyUp);
             // 
-            // Editor_FxActors
+            // FxActorEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -190,7 +190,7 @@
             this.Controls.Add(this.Grid_Actors);
             this.Controls.Add(this.TreeView_FxActors);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Editor_FxActors";
+            this.Name = "FxActorEditor";
             this.Text = "$FXACTOR_EDITOR";
             this.ToolStrip_Top.ResumeLayout(false);
             this.ToolStrip_Top.PerformLayout();

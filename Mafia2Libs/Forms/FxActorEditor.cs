@@ -5,7 +5,7 @@ using Utils.Language;
 
 namespace Toolkit.Forms
 {
-    public partial class Editor_FxActors : Form
+    public partial class FxActorEditor : Form
     {
         private FileInfo FxActorFile;
 
@@ -13,7 +13,7 @@ namespace Toolkit.Forms
 
         private object clipboard;
 
-        public Editor_FxActors(FileInfo InOriginFile)
+        public FxActorEditor(FileInfo InOriginFile)
         {
             InitializeComponent();
 
