@@ -5,19 +5,19 @@ using Utils.Language;
 
 namespace Toolkit.Forms
 {
-    public partial class FxActorEditor : Form
+    public partial class Editor_FxActors : Form
     {
-        private FileInfo fxActorFile;
+        private FileInfo FxActorFile;
 
         private FxContainer<FxActor> ActorContainer;
 
         private object clipboard;
 
-        public FxActorEditor(FileInfo InOriginFile)
+        public Editor_FxActors(FileInfo InOriginFile)
         {
             InitializeComponent();
 
-            fxActorFile = InOriginFile;
+            FxActorFile = InOriginFile;
             ActorContainer = null;
 
             Localise();
@@ -38,7 +38,7 @@ namespace Toolkit.Forms
 
         private void BuildData()
         {
-            using (BinaryReader Reader = new BinaryReader(File.Open(fxActorFile.FullName, FileMode.Open)))
+            using (BinaryReader Reader = new BinaryReader(File.Open(FxActorFile.FullName, FileMode.Open)))
             {
                 ActorContainer = new FxContainer<FxActor>();
                 ActorContainer.ReadFromFile(Reader);
@@ -52,16 +52,30 @@ namespace Toolkit.Forms
 
                 actorNode.Tag = actor;
 
-                FxActorTreeView.Nodes.Add(actorNode);
+                TreeView_FxActors.Nodes.Add(actorNode);
             }
+        }
 
+        private void Save()
+        {
+            File.Copy(FxActorFile.FullName, FxActorFile.FullName + "_old", true);
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FxActorFile.FullName, FileMode.Create)))
+            {
+                ActorContainer.WriteToFile(writer);
+            }
+        }
 
-            // TODO: On a succesfull read, we should then propagate the TreeView.
+        private void Reload()
+        {
+            Grid_Actors.SelectedObject = null;
+            TreeView_FxActors.SelectedNode = null;
+            TreeView_FxActors.Nodes.Clear();
+            BuildData();
         }
 
         private void Copy()
         {
-            int index = FxActorTreeView.SelectedNode.Index;
+            int index = TreeView_FxActors.SelectedNode.Index;
             clipboard = ActorContainer.Archives[index];
         }
 
@@ -69,25 +83,33 @@ namespace Toolkit.Forms
         {
             if (clipboard is FxArchive)
             {
-                FxArchive archive = (clipboard as FxArchive);
-                ActorContainer.Archives.Add(archive);
+                FxArchive Archive = (clipboard as FxArchive);
+                ActorContainer.Archives.Add(Archive);
 
-                FxActor actor = archive.GetObjectAs<FxActor>();
+                FxActor Actor = Archive.GetObjectAs<FxActor>();
 
-                TreeNode actorNode = new TreeNode(actor.Name.ToString());
+                TreeNode ActorNode = new TreeNode(Actor.Name.ToString());
 
-                actorNode.Tag = actor;
+                ActorNode.Tag = Actor;
 
-                FxActorTreeView.Nodes.Add(actorNode);
+                TreeView_FxActors.Nodes.Add(ActorNode);
             }
         }
 
-        private void FxActorTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        private void Delete()
+        {
+            int Index = TreeView_FxActors.SelectedNode.Index;
+
+            ActorContainer.Archives.RemoveAt(Index);
+            TreeView_FxActors.Nodes.Remove(TreeView_FxActors.SelectedNode);
+        }
+
+        private void TreeView_FxActors_AfterSelect(object sender, TreeViewEventArgs e)
         {
             Grid_Actors.SelectedObject = e.Node.Tag;
         }
 
-        private void FxActorTreeView_OnKeyUp(object sender, KeyEventArgs e)
+        private void TreeView_FxActors_OnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Control && e.KeyCode == Keys.C)
             {
@@ -97,67 +119,44 @@ namespace Toolkit.Forms
             {
                 Paste();
             }
-        }
-
-        private void Button_Save_Click(object sender, System.EventArgs e)
-        {
-            // TODO: Idea for this is to 'sanitize' - effectively run through the data and update any indexes/offesets etc.
-            // Then save to file as usual.
-
-            File.Copy(fxActorFile.FullName, fxActorFile.FullName + "_old", true);
-            using (BinaryWriter writer = new BinaryWriter(File.Open(fxActorFile.FullName, FileMode.Create)))
+            else if (e.Control && e.KeyCode == Keys.Delete)
             {
-                ActorContainer.WriteToFile(writer);
+                Delete();
             }
-        }
-
-        private void Button_Reload_Click(object sender, System.EventArgs e)
-        {
-            // TODO: File should be reloaded from origin file, and editor should be wiped
-            Grid_Actors.SelectedObject = null;
-            FxActorTreeView.Nodes.Clear();
-            BuildData();
+            else if (e.Control && e.KeyCode == Keys.D)
+            {
+                Grid_Actors.SelectedObject = null;
+                TreeView_FxActors.SelectedNode = null;
+            }
+            else if (e.Control && e.KeyCode == Keys.S)
+            {
+                Save();
+            }
+            else if (e.Control && e.KeyCode == Keys.R)
+            {
+                Reload();
+            }
         }
 
         private void Button_Exit_Click(object sender, System.EventArgs e)
         {
-            // TODO: Message Box - Do you want to lose unsaved changes?
+            System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNo);
+
+            if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+            {
+                Save();
+            }
+
             Close();
         }
 
-        private void Grid_Actors_Click(object sender, System.EventArgs e)
-        {
-
-        }
-
-        private void FxActToolDelete_Click(object sender, System.EventArgs e)
-        {
-            int index = FxActorTreeView.SelectedNode.Index;
-
-            ActorContainer.Archives.RemoveAt(index);
-            FxActorTreeView.Nodes.Remove(FxActorTreeView.SelectedNode);
-        }
-        private void FxActToolCopy_Click(object sender, System.EventArgs e) => Copy();
-        private void FxActToolPaste_Click(object sender, System.EventArgs e) => Paste();
-
-        private void FxActContextDelete_Click(object sender, System.EventArgs e)
-        {
-            int index = FxActorTreeView.SelectedNode.Index;
-
-            ActorContainer.Archives.RemoveAt(index);
-            FxActorTreeView.Nodes.Remove(FxActorTreeView.SelectedNode);
-        }
-        private void FxActContextCopy_Click(object sender, System.EventArgs e) => Copy();
-        private void FxActContextPaste_Click(object sender, System.EventArgs e) => Paste();
-
-        private void FxActContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-
-        }
-
-        private void TreeView_Actors_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-
-        }
+        private void Button_Save_Click(object sender, System.EventArgs e) => Save();
+        private void Button_Reload_Click(object sender, System.EventArgs e) => Reload();
+        private void Button_Copy_Click(object sender, System.EventArgs e) => Copy();
+        private void Button_Paste_Click(object sender, System.EventArgs e) => Paste();
+        private void Button_Delete_Click(object sender, System.EventArgs e) => Delete();
+        private void Context_Copy_Click(object sender, System.EventArgs e) => Copy();
+        private void Context_Paste_Click(object sender, System.EventArgs e) => Paste();
+        private void Context_Delete_Click(object sender, System.EventArgs e) => Delete();
     }
 }
