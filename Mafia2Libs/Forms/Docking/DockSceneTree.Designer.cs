@@ -46,6 +46,8 @@ namespace Forms.Docking
             this.Label_FilterFrame = new System.Windows.Forms.Label();
             this.TextBox_FilterFrame = new System.Windows.Forms.TextBox();
             this.Button_Search = new System.Windows.Forms.Button();
+            this.Button_NavActions = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_AddAIType = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new Mafia2Tool.Controls.MTreeView();
             this.EntryMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Split_Main)).BeginInit();
@@ -61,9 +63,10 @@ namespace Forms.Docking
             this.DeleteButton,
             this.DuplicateButton,
             this.Export3DButton,
-            this.FrameActions});
+            this.FrameActions,
+            this.Button_NavActions});
             this.EntryMenuStrip.Name = "EntryMenuStrip";
-            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 136);
+            this.EntryMenuStrip.Size = new System.Drawing.Size(181, 158);
             this.EntryMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.OpenEntryContext);
             // 
             // JumpToButton
@@ -104,25 +107,25 @@ namespace Forms.Docking
             // UpdateParent1Button
             // 
             this.UpdateParent1Button.Name = "UpdateParent1Button";
-            this.UpdateParent1Button.Size = new System.Drawing.Size(180, 22);
+            this.UpdateParent1Button.Size = new System.Drawing.Size(166, 22);
             this.UpdateParent1Button.Text = "Update Parent 1";
             // 
             // UpdateParent2Button
             // 
             this.UpdateParent2Button.Name = "UpdateParent2Button";
-            this.UpdateParent2Button.Size = new System.Drawing.Size(180, 22);
+            this.UpdateParent2Button.Size = new System.Drawing.Size(166, 22);
             this.UpdateParent2Button.Text = "Update Parent 2";
             // 
             // ExportFrameButton
             // 
             this.ExportFrameButton.Name = "ExportFrameButton";
-            this.ExportFrameButton.Size = new System.Drawing.Size(180, 22);
+            this.ExportFrameButton.Size = new System.Drawing.Size(166, 22);
             this.ExportFrameButton.Text = "Export Frame";
             // 
             // LinkToActorButton
             // 
             this.LinkToActorButton.Name = "LinkToActorButton";
-            this.LinkToActorButton.Size = new System.Drawing.Size(180, 22);
+            this.LinkToActorButton.Size = new System.Drawing.Size(166, 22);
             this.LinkToActorButton.Text = "$LINK_TO_ACTOR";
             // 
             // imageList1
@@ -190,6 +193,20 @@ namespace Forms.Docking
             this.Button_Search.UseVisualStyleBackColor = true;
             this.Button_Search.Click += new System.EventHandler(this.button1_Click);
             // 
+            // Button_NavActions
+            // 
+            this.Button_NavActions.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Button_AddAIType});
+            this.Button_NavActions.Name = "Button_NavActions";
+            this.Button_NavActions.Size = new System.Drawing.Size(180, 22);
+            this.Button_NavActions.Text = "Navigation Actions";
+            // 
+            // Button_AddAIType
+            // 
+            this.Button_AddAIType.Name = "Button_AddAIType";
+            this.Button_AddAIType.Size = new System.Drawing.Size(180, 22);
+            this.Button_AddAIType.Text = "Add Type8";
+            // 
             // treeView1
             // 
             this.treeView1.CheckBoxes = true;
@@ -243,5 +260,7 @@ namespace Forms.Docking
         private System.Windows.Forms.TextBox TextBox_FilterFrame;
         private System.Windows.Forms.Button Button_Search;
         private System.Windows.Forms.Label Label_FilterFrame;
+        private System.Windows.Forms.ToolStripMenuItem Button_NavActions;
+        public System.Windows.Forms.ToolStripMenuItem Button_AddAIType;
     }
 }

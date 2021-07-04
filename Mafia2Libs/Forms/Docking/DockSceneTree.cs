@@ -176,6 +176,8 @@ namespace Forms.Docking
             EntryMenuStrip.Items[3].Visible = false;
             EntryMenuStrip.Items[4].Visible = false;
             FrameActions.DropDownItems[3].Visible = false;
+            Button_NavActions.Visible = false;
+            Button_AddAIType.Visible = false;
 
             if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag != null)
             {
@@ -204,6 +206,12 @@ namespace Forms.Docking
                     {
                         FrameActions.DropDownItems[3].Visible = true;
                     }
+                }
+
+                if(ToolkitUtils.Is<ResourceTypes.Navigation.AIWorld>(data))
+                {
+                    Button_NavActions.Visible = true;
+                    Button_AddAIType.Visible = true;
                 }
             }
         }

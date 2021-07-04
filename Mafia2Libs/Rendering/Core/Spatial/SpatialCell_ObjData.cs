@@ -36,5 +36,15 @@ namespace Rendering.Core
             NavCell.Init(OurCellInfo);
             assets.Add(StringHelpers.GetNewRefID(), NavCell);
         }
+
+        public override void SetVisibility(bool bNewVisiblity)
+        {
+            base.SetVisibility(bNewVisiblity);
+
+            foreach (var Asset in assets.Values)
+            {
+                (Asset as RenderNavCell).SetVisibility(bNewVisiblity);
+            }
+        }
     }
 }

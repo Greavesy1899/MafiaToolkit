@@ -180,5 +180,17 @@ namespace ResourceTypes.Navigation
             
             return Parent;
         }
+
+        public TreeNode AddType<T>() where T : IType
+        {
+            T NewObject = (T)Activator.CreateInstance(typeof(T), this);
+            AIPoints.Add(NewObject);
+
+            TreeNode NewNode = NewObject.PopulateTreeNode();
+
+            RequestPrimitiveBatchUpdate();
+
+            return NewNode;
+        }
     }
 }

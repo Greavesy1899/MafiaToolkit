@@ -121,6 +121,7 @@ namespace Mafia2Tool
             dSceneTree.JumpToButton.Click += new EventHandler(JumpButton_Click);
             dSceneTree.DeleteButton.Click += new EventHandler(DeleteButton_Click);
             dSceneTree.DuplicateButton.Click += new EventHandler(DuplicateButton_Click);
+            dSceneTree.Button_AddAIType.Click += new EventHandler(AddAIType_Click);
             dSceneTree.SetEventHandler("AfterCheck", new TreeViewEventHandler(OutlinerAfterCheck));
             dSceneTree.SetKeyHandler("KeyUp", new KeyEventHandler(OnKeyUpDockedPanel));
             dSceneTree.SetKeyHandler("KeyDown", new KeyEventHandler(OnKeyDownDockedPanel));
@@ -130,6 +131,17 @@ namespace Mafia2Tool
             dSceneTree.UpdateParent2Button.Click += new EventHandler(UpdateParent_Click);
             dPropertyGrid.PropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(OnPropertyValueChanged);
             dPropertyGrid.OnObjectUpdated += ApplyEntryChanges;
+        }
+
+        private void AddAIType_Click(object sender, EventArgs e)
+        {
+            TreeNode SelectedNode = dSceneTree.SelectedNode;
+            if(ToolkitUtils.Is<AIWorld>(SelectedNode.Tag))
+            {
+                AIWorld World = ToolkitUtils.Cast<AIWorld>(SelectedNode.Tag);
+                TreeNode NewNode = World.AddType<AIWorld_Type8>();
+                dSceneTree.AddToTree(NewNode, SelectedNode);
+            }
         }
 
         private void RenderPanel_MouseWheel(object sender, MouseEventArgs e)
@@ -239,6 +251,11 @@ namespace Mafia2Tool
                 {
                     IType AIObject = ToolkitUtils.Cast<IType>(node.Tag);
                     AIObject.SetVisiblity(node.Checked && node.CheckIfParentsAreValid());
+                }
+                else if(ToolkitUtils.Is<SpatialCell_ObjData>(node.Tag))
+                {
+                    SpatialCell_ObjData Cell = ToolkitUtils.Cast<SpatialCell_ObjData>(node.Tag);
+                    Cell.SetVisibility(node.Checked && node.CheckIfParentsAreValid());
                 }
                 else
                 {
@@ -1913,6 +1930,14 @@ namespace Mafia2Tool
             else if(e.KeyCode == Keys.Delete)
             {
                 dSceneTree.DeleteButton.PerformClick();
+            }
+            else if(e.KeyCode == Keys.Up)
+            {
+                dSceneTree.SelectedNode = dSceneTree.SelectedNode.PrevNode;
+            }
+            else if(e.KeyCode == Keys.Down)
+            {
+                dSceneTree.SelectedNode = dSceneTree.SelectedNode.NextNode;
             }
 
             e.Handled = true;

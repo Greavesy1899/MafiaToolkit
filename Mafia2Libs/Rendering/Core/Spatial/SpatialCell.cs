@@ -58,6 +58,8 @@ namespace Rendering.Core
             }*/
         }
 
+        public virtual void SetVisibility(bool bNewVisiblity) { }
+
         public void Shutdown()
         {
             foreach (KeyValuePair<int, IRenderer> entry in assets)
