@@ -228,18 +228,25 @@ namespace Toolkit.Forms
             IsFileEdited = true;
         }
 
-        private void Button_Exit_Click(object sender, System.EventArgs e)
+        private void FxAnimSetEditor_Closing(object sender, FormClosingEventArgs e)
         {
             if (IsFileEdited)
             {
-                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNo);
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNoCancel);
 
                 if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {
                     Save();
                 }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
             }
+        }
 
+        private void Button_Exit_Click(object sender, System.EventArgs e)
+        {
             Close();
         }
 

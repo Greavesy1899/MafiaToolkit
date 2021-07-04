@@ -223,6 +223,7 @@
             this.ToolStrip_Top.ResumeLayout(false);
             this.ToolStrip_Top.PerformLayout();
             this.Context_Menu.ResumeLayout(false);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FxActorEditor_Closing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
