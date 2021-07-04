@@ -62,6 +62,7 @@
             this.Grid_Actors.PropertySort = System.Windows.Forms.PropertySort.Categorized;
             this.Grid_Actors.Size = new System.Drawing.Size(386, 410);
             this.Grid_Actors.TabIndex = 10;
+            this.Grid_Actors.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.Grid_Actors_PropertyChanged);
             // 
             // ToolStrip_Top
             // 

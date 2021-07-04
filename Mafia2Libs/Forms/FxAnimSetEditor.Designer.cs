@@ -62,6 +62,7 @@
             this.Grid_AnimSet.PropertySort = System.Windows.Forms.PropertySort.Categorized;
             this.Grid_AnimSet.Size = new System.Drawing.Size(386, 410);
             this.Grid_AnimSet.TabIndex = 10;
+            this.Grid_AnimSet.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.Grid_AnimSet_PropertyChanged);
             // 
             // ToolStrip_Top
             // 

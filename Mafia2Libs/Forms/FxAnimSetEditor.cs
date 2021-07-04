@@ -14,6 +14,8 @@ namespace Toolkit.Forms
 
         private object clipboard;
 
+        private bool IsFileEdited = false;
+
         public FxAnimSetEditor(FileInfo InOriginFile)
         {
             InitializeComponent();
@@ -73,10 +75,15 @@ namespace Toolkit.Forms
             {
                 AnimSetContainer.WriteToFile(writer);
             }
+
+            Text = Language.GetString("$FXANIMSET_EDITOR");
+            IsFileEdited = false;
         }
 
         private void Reload()
         {
+            Text = Language.GetString("$FXANIMSET_EDITOR");
+            IsFileEdited = false;
             Grid_AnimSet.SelectedObject = null;
             TreeView_FxAnimSets.SelectedNode = null;
             TreeView_FxAnimSets.Nodes.Clear();
@@ -103,6 +110,9 @@ namespace Toolkit.Forms
                 AnimSetNode.Tag = AnimSet;
 
                 TreeView_FxAnimSets.Nodes.Add(AnimSetNode);
+
+                Text = Language.GetString("$FXANIMSET_EDITOR") + "*";
+                IsFileEdited = true;
             }
         }
 
@@ -112,6 +122,9 @@ namespace Toolkit.Forms
 
             AnimSetContainer.Archives.RemoveAt(Index);
             TreeView_FxAnimSets.Nodes.Remove(TreeView_FxAnimSets.SelectedNode);
+
+            Text = Language.GetString("$FXANIMSET_EDITOR") + "*";
+            IsFileEdited = true;
         }
 
         private void Import()
@@ -144,6 +157,9 @@ namespace Toolkit.Forms
 
                     TreeView_FxAnimSets.Nodes.Add(AnimSetNode);
                 }
+
+                Text = Language.GetString("$FXANIMSET_EDITOR") + "*";
+                IsFileEdited = true;
             }
         }
 
@@ -206,13 +222,22 @@ namespace Toolkit.Forms
             }
         }
 
+        private void Grid_AnimSet_PropertyChanged(object sender, PropertyValueChangedEventArgs e)
+        {
+            Text = Language.GetString("$FXANIMSET_EDITOR") + "*";
+            IsFileEdited = true;
+        }
+
         private void Button_Exit_Click(object sender, System.EventArgs e)
         {
-            System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNo);
-
-            if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+            if (IsFileEdited)
             {
-                Save();
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNo);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
             }
 
             Close();
