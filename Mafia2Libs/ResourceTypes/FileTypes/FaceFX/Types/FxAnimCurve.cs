@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.ComponentModel;
 
 namespace ResourceTypes.OC3.FaceFX
 {
@@ -7,6 +8,7 @@ namespace ResourceTypes.OC3.FaceFX
     * an animation. Uses AnimKeys to pinpoint where in the animation 
     * the manipulation should take place and how strong it should be.
     */
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FxAnimCurve : FxNamedObject
     {
         public uint Unk0 { get; set; }
