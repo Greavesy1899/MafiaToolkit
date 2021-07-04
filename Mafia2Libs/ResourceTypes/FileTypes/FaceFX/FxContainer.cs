@@ -1,31 +1,32 @@
 ﻿using System.IO;
+using System.Collections.Generic;
 
 namespace ResourceTypes.OC3.FaceFX
 {
     public class FxContainer<T> where T : FxObject
     {
-        public FxArchive[] Archives { get; set; }
+        public List<FxArchive> Archives { get; set; }
 
         public void ReadFromFile(BinaryReader reader)
         {
             uint NumArchives = reader.ReadUInt32();
 
-            Archives = new FxArchive[NumArchives];
+            Archives = new List<FxArchive>();
             for (int i = 0; i < NumArchives; i++)
             {
                 uint ArchiveSize = reader.ReadUInt32();
 
                 FxArchive AnimSetObject = new FxArchive();
                 AnimSetObject.ReadFromFile<T>(reader);
-                Archives[i] = AnimSetObject;
+                Archives.Add(AnimSetObject);
             }
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(Archives.Length);
+            writer.Write(Archives.Count);
 
-            for (int i = 0; i < Archives.Length; i++)
+            for (int i = 0; i < Archives.Count; i++)
             {
                 // Write Archive to file
                 long CurrentPosition = writer.BaseStream.Position;

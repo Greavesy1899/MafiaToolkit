@@ -7,15 +7,17 @@ namespace Toolkit.Forms
 {
     public partial class FxActorEditor : Form
     {
-        private FileInfo OriginFile;
+        private FileInfo FxActorFile;
 
         private FxContainer<FxActor> ActorContainer;
+
+        private object clipboard;
 
         public FxActorEditor(FileInfo InOriginFile)
         {
             InitializeComponent();
 
-            OriginFile = InOriginFile;
+            FxActorFile = InOriginFile;
             ActorContainer = null;
 
             Localise();
@@ -36,35 +38,125 @@ namespace Toolkit.Forms
 
         private void BuildData()
         {
-            using(BinaryReader Reader = new BinaryReader(File.Open(OriginFile.FullName, FileMode.Open)))
+            using (BinaryReader Reader = new BinaryReader(File.Open(FxActorFile.FullName, FileMode.Open)))
             {
                 ActorContainer = new FxContainer<FxActor>();
                 ActorContainer.ReadFromFile(Reader);
             }
 
-            // TODO: On a succesfull read, we should then propagate the TreeView.
+            foreach (FxArchive archive in ActorContainer.Archives)
+            {
+                FxActor actor = archive.GetObjectAs<FxActor>();
+
+                TreeNode actorNode = new TreeNode(actor.Name.ToString());
+
+                actorNode.Tag = actor;
+
+                TreeView_FxActors.Nodes.Add(actorNode);
+            }
         }
 
-        private void TreeView_Actors_AfterSelect(object sender, TreeViewEventArgs e)
+        private void Save()
         {
-            Grid_Actors.SelectedObject = e.Node;
+            File.Copy(FxActorFile.FullName, FxActorFile.FullName + "_old", true);
+            using (BinaryWriter writer = new BinaryWriter(File.Open(FxActorFile.FullName, FileMode.Create)))
+            {
+                ActorContainer.WriteToFile(writer);
+            }
         }
 
-        private void Button_Save_Click(object sender, System.EventArgs e)
+        private void Reload()
         {
-            // TODO: Idea for this is to 'sanitize' - effectively run through the data and update any indexes/offesets etc.
-            // Then save to file as usual.
+            Grid_Actors.SelectedObject = null;
+            TreeView_FxActors.SelectedNode = null;
+            TreeView_FxActors.Nodes.Clear();
+            BuildData();
         }
 
-        private void Button_Reload_Click(object sender, System.EventArgs e)
+        private void Copy()
         {
-            // TODO: File should be reloaded from origin file, and editor should be wiped
+            int index = TreeView_FxActors.SelectedNode.Index;
+            clipboard = ActorContainer.Archives[index];
+        }
+
+        private void Paste()
+        {
+            if (clipboard is FxArchive)
+            {
+                FxArchive Archive = (clipboard as FxArchive);
+                ActorContainer.Archives.Add(Archive);
+
+                FxActor Actor = Archive.GetObjectAs<FxActor>();
+
+                TreeNode ActorNode = new TreeNode(Actor.Name.ToString());
+
+                ActorNode.Tag = Actor;
+
+                TreeView_FxActors.Nodes.Add(ActorNode);
+            }
+        }
+
+        private void Delete()
+        {
+            int Index = TreeView_FxActors.SelectedNode.Index;
+
+            ActorContainer.Archives.RemoveAt(Index);
+            TreeView_FxActors.Nodes.Remove(TreeView_FxActors.SelectedNode);
+        }
+
+        private void TreeView_FxActors_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            Grid_Actors.SelectedObject = e.Node.Tag;
+        }
+
+        private void TreeView_FxActors_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                Copy();
+            }
+            else if (e.Control && e.KeyCode == Keys.V)
+            {
+                Paste();
+            }
+            else if (e.Control && e.KeyCode == Keys.Delete)
+            {
+                Delete();
+            }
+            else if (e.Control && e.KeyCode == Keys.D)
+            {
+                Grid_Actors.SelectedObject = null;
+                TreeView_FxActors.SelectedNode = null;
+            }
+            else if (e.Control && e.KeyCode == Keys.S)
+            {
+                Save();
+            }
+            else if (e.Control && e.KeyCode == Keys.R)
+            {
+                Reload();
+            }
         }
 
         private void Button_Exit_Click(object sender, System.EventArgs e)
         {
-            // TODO: Message Box - Do you want to lose unsaved changes?
+            System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNo);
+
+            if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+            {
+                Save();
+            }
+
             Close();
         }
+
+        private void Button_Save_Click(object sender, System.EventArgs e) => Save();
+        private void Button_Reload_Click(object sender, System.EventArgs e) => Reload();
+        private void Button_Copy_Click(object sender, System.EventArgs e) => Copy();
+        private void Button_Paste_Click(object sender, System.EventArgs e) => Paste();
+        private void Button_Delete_Click(object sender, System.EventArgs e) => Delete();
+        private void Context_Copy_Click(object sender, System.EventArgs e) => Copy();
+        private void Context_Paste_Click(object sender, System.EventArgs e) => Paste();
+        private void Context_Delete_Click(object sender, System.EventArgs e) => Delete();
     }
 }

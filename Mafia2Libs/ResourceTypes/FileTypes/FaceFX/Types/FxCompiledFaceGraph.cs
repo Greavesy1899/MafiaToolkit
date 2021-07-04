@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.ComponentModel;
 
 namespace ResourceTypes.OC3.FaceFX
 {
@@ -41,6 +42,7 @@ namespace ResourceTypes.OC3.FaceFX
         }
     }
 
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FxCompiledFaceGraphNode
     {
         public FxCompiledFaceGraphNodeType NodeType { get; set; }

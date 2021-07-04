@@ -123,7 +123,7 @@ namespace ResourceTypes.OC3.FaceFX
         public T GetObjectAs<T>() where T : FxObject
         {
             T CastedObject = (ObjectData as T);
-            Debug.Assert(CastedObject == null, "This Object was not of type");
+            Debug.Assert(CastedObject != null, "This Object was not of type");
 
             return CastedObject;
         }
