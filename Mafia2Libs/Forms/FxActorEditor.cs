@@ -34,6 +34,12 @@ namespace Toolkit.Forms
             Button_Save.Text = Language.GetString("$SAVE");
             Button_Reload.Text = Language.GetString("$RELOAD");
             Button_Exit.Text = Language.GetString("$EXIT");
+            Button_Copy.Text = Language.GetString("$COPY");
+            Button_Paste.Text = Language.GetString("$PASTE");
+            Button_Delete.Text = Language.GetString("$DELETE");
+            Context_Copy.Text = Language.GetString("$COPY");
+            Context_Paste.Text = Language.GetString("$PASTE");
+            Context_Delete.Text = Language.GetString("$DELETE");
         }
 
         private void BuildData()
@@ -44,15 +50,15 @@ namespace Toolkit.Forms
                 ActorContainer.ReadFromFile(Reader);
             }
 
-            foreach (FxArchive archive in ActorContainer.Archives)
+            foreach (FxArchive Archive in ActorContainer.Archives)
             {
-                FxActor actor = archive.GetObjectAs<FxActor>();
+                FxActor Actor = Archive.GetObjectAs<FxActor>();
 
-                TreeNode actorNode = new TreeNode(actor.Name.ToString());
+                TreeNode ActorNode = new TreeNode(Actor.Name.ToString());
 
-                actorNode.Tag = actor;
+                ActorNode.Tag = Actor;
 
-                TreeView_FxActors.Nodes.Add(actorNode);
+                TreeView_FxActors.Nodes.Add(ActorNode);
             }
         }
 

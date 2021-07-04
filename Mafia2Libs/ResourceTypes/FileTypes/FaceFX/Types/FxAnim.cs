@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.ComponentModel;
 
 namespace ResourceTypes.OC3.FaceFX
 {
     // A key used for an FxAnimCurve.
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FxAnimKey
     {
         public float TimeIn { get; set; }
@@ -32,7 +34,7 @@ namespace ResourceTypes.OC3.FaceFX
             return string.Format("{0} {1}", TimeIn, Value);
         }
     }
-
+    [TypeConverter(typeof(ExpandableObjectConverter))]
     public class FxAnim : FxNamedObject
     {
         public FxAnimCurve[] Curves { get; set; }
