@@ -14,7 +14,7 @@ namespace Toolkit.Forms
 
         private object clipboard;
 
-        private bool IsFileEdited = false;
+        private bool bIsFileEdited = false;
 
         public FxActorEditor(FileInfo InOriginFile)
         {
@@ -77,13 +77,13 @@ namespace Toolkit.Forms
             }
 
             Text = Language.GetString("$FXACTOR_EDITOR");
-            IsFileEdited = false;
+            bIsFileEdited = false;
         }
 
         private void Reload()
         {
             Text = Language.GetString("$FXACTOR_EDITOR");
-            IsFileEdited = false;
+            bIsFileEdited = false;
 
             Grid_Actors.SelectedObject = null;
             TreeView_FxActors.SelectedNode = null;
@@ -113,7 +113,7 @@ namespace Toolkit.Forms
                 TreeView_FxActors.Nodes.Add(ActorNode);
 
                 Text = Language.GetString("$FXACTOR_EDITOR") + "*";
-                IsFileEdited = true;
+                bIsFileEdited = true;
             }
         }
 
@@ -125,7 +125,7 @@ namespace Toolkit.Forms
             TreeView_FxActors.Nodes.Remove(TreeView_FxActors.SelectedNode);
 
             Text = Language.GetString("$FXACTOR_EDITOR") + "*";
-            IsFileEdited = true;
+            bIsFileEdited = true;
         }
 
         private void Import()
@@ -160,7 +160,7 @@ namespace Toolkit.Forms
                 }
 
                 Text = Language.GetString("$FXACTOR_EDITOR") + "*";
-                IsFileEdited = true;
+                bIsFileEdited = true;
             }
         }
 
@@ -226,12 +226,12 @@ namespace Toolkit.Forms
         private void Grid_Actors_PropertyChanged(object sender, PropertyValueChangedEventArgs e)
         {
             Text = Language.GetString("$FXACTOR_EDITOR") + "*";
-            IsFileEdited = true;
+            bIsFileEdited = true;
         }
 
         private void FxActorEditor_Closing(object sender, FormClosingEventArgs e)
         {
-            if (IsFileEdited)
+            if (bIsFileEdited)
             {
                 System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNoCancel);
 
