@@ -64,7 +64,10 @@ namespace ResourceTypes.Navigation
 
             foreach (IType AIPoint in AIPoints)
             {
-                AIPoint.ConstructRenderable(BBoxBatcher);
+                if (AIPoint.bIsVisible)
+                {
+                    AIPoint.ConstructRenderable(BBoxBatcher);
+                }
             }
         }
 

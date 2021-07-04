@@ -51,13 +51,6 @@ namespace Mafia2Tool
             this.Button_ImportFrame = new System.Windows.Forms.ToolStripMenuItem();
             this.AddSceneFolderButton = new System.Windows.Forms.ToolStripMenuItem();
             this.AddCollisionButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.roadDebuggingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddBackward = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddToward = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddRoadSplineButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddSplineTxT = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddJunctionButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.EditUnkSet3 = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.ViewTopButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewFrontButton = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,13 +68,13 @@ namespace Mafia2Tool
             this.SceneTreeButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ObjectPropertiesButton = new System.Windows.Forms.ToolStripMenuItem();
             this.ViewOptionProperties = new System.Windows.Forms.ToolStripMenuItem();
+            this.TextBox_WorldIntersect = new System.Windows.Forms.ToolStripTextBox();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.RenderPanel = new System.Windows.Forms.Panel();
             this.MeshBrowser = new System.Windows.Forms.OpenFileDialog();
             this.TxtBrowser = new System.Windows.Forms.OpenFileDialog();
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.FrameBrowser = new System.Windows.Forms.OpenFileDialog();
-            this.TextBox_WorldIntersect = new System.Windows.Forms.ToolStripTextBox();
             StatusStrip = new System.Windows.Forms.StatusStrip();
             StatusStrip.SuspendLayout();
             this.ToolbarStrip.SuspendLayout();
@@ -138,7 +131,7 @@ namespace Mafia2Tool
             this.PositionXTool.Name = "PositionXTool";
             this.PositionXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionXTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionXTool.Size = new System.Drawing.Size(68, 24);
+            this.PositionXTool.Size = new System.Drawing.Size(64, 24);
             this.PositionXTool.Text = "0.00000";
             this.PositionXTool.Value = new decimal(new int[] {
             0,
@@ -171,7 +164,7 @@ namespace Mafia2Tool
             this.PositionYTool.Name = "PositionYTool";
             this.PositionYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionYTool.Size = new System.Drawing.Size(68, 24);
+            this.PositionYTool.Size = new System.Drawing.Size(64, 24);
             this.PositionYTool.Text = "0.00000";
             this.PositionYTool.Value = new decimal(new int[] {
             0,
@@ -204,7 +197,7 @@ namespace Mafia2Tool
             this.PositionZTool.Name = "PositionZTool";
             this.PositionZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionZTool.Size = new System.Drawing.Size(68, 24);
+            this.PositionZTool.Size = new System.Drawing.Size(64, 24);
             this.PositionZTool.Text = "0.00000";
             this.PositionZTool.Value = new decimal(new int[] {
             0,
@@ -237,7 +230,7 @@ namespace Mafia2Tool
             this.CameraSpeedTool.Name = "CameraSpeedTool";
             this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.CameraSpeedTool.Size = new System.Drawing.Size(68, 24);
+            this.CameraSpeedTool.Size = new System.Drawing.Size(64, 24);
             this.CameraSpeedTool.Text = "0.00000";
             this.CameraSpeedTool.Value = new decimal(new int[] {
             0,
@@ -316,8 +309,7 @@ namespace Mafia2Tool
             this.AddButton,
             this.Button_ImportFrame,
             this.AddSceneFolderButton,
-            this.AddCollisionButton,
-            this.roadDebuggingToolStripMenuItem});
+            this.AddCollisionButton});
             this.EditButton.Image = ((System.Drawing.Image)(resources.GetObject("EditButton.Image")));
             this.EditButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.EditButton.Name = "EditButton";
@@ -351,61 +343,6 @@ namespace Mafia2Tool
             this.AddCollisionButton.Size = new System.Drawing.Size(191, 22);
             this.AddCollisionButton.Text = "$ADD_COLLISION";
             this.AddCollisionButton.Click += new System.EventHandler(this.AddCollisionButton_Click);
-            // 
-            // roadDebuggingToolStripMenuItem
-            // 
-            this.roadDebuggingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AddBackward,
-            this.AddToward,
-            this.AddRoadSplineButton,
-            this.AddSplineTxT,
-            this.AddJunctionButton,
-            this.EditUnkSet3});
-            this.roadDebuggingToolStripMenuItem.Name = "roadDebuggingToolStripMenuItem";
-            this.roadDebuggingToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
-            this.roadDebuggingToolStripMenuItem.Text = "Road Debugging";
-            // 
-            // AddBackward
-            // 
-            this.AddBackward.Name = "AddBackward";
-            this.AddBackward.Size = new System.Drawing.Size(183, 22);
-            this.AddBackward.Text = "$ADD_BACKWARD";
-            this.AddBackward.Click += new System.EventHandler(this.AddBackwardClick);
-            // 
-            // AddToward
-            // 
-            this.AddToward.Name = "AddToward";
-            this.AddToward.Size = new System.Drawing.Size(183, 22);
-            this.AddToward.Text = "$ADD_TOWARD";
-            this.AddToward.Click += new System.EventHandler(this.AddTowardClick);
-            // 
-            // AddRoadSplineButton
-            // 
-            this.AddRoadSplineButton.Name = "AddRoadSplineButton";
-            this.AddRoadSplineButton.Size = new System.Drawing.Size(183, 22);
-            this.AddRoadSplineButton.Text = "$ADD_ROAD_SPLINE";
-            this.AddRoadSplineButton.Click += new System.EventHandler(this.AddRoadSplineButton_Click);
-            // 
-            // AddSplineTxT
-            // 
-            this.AddSplineTxT.Name = "AddSplineTxT";
-            this.AddSplineTxT.Size = new System.Drawing.Size(183, 22);
-            this.AddSplineTxT.Text = "$ADD_SPLINE_TXT";
-            this.AddSplineTxT.Click += new System.EventHandler(this.AddSplineTxT_Click);
-            // 
-            // AddJunctionButton
-            // 
-            this.AddJunctionButton.Name = "AddJunctionButton";
-            this.AddJunctionButton.Size = new System.Drawing.Size(183, 22);
-            this.AddJunctionButton.Text = "$ADD_JUNCTION";
-            this.AddJunctionButton.Click += new System.EventHandler(this.AddJunctionOnClick);
-            // 
-            // EditUnkSet3
-            // 
-            this.EditUnkSet3.Name = "EditUnkSet3";
-            this.EditUnkSet3.Size = new System.Drawing.Size(183, 22);
-            this.EditUnkSet3.Text = "$EDIT_UNKSET3";
-            this.EditUnkSet3.Click += new System.EventHandler(this.EditUnkSet3Click);
             // 
             // ViewButton
             // 
@@ -555,6 +492,11 @@ namespace Mafia2Tool
             this.ViewOptionProperties.Text = "$VIEW_OPTIONS";
             this.ViewOptionProperties.Click += new System.EventHandler(this.ViewOptionProperties_Click);
             // 
+            // TextBox_WorldIntersect
+            // 
+            this.TextBox_WorldIntersect.Name = "TextBox_WorldIntersect";
+            this.TextBox_WorldIntersect.Size = new System.Drawing.Size(600, 25);
+            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -590,12 +532,6 @@ namespace Mafia2Tool
             // FrameBrowser
             // 
             this.FrameBrowser.Filter = "Toolkit Frame Data|*framedata";
-            // 
-            // TextBox_WorldIntersect
-            // 
-            this.TextBox_WorldIntersect.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.TextBox_WorldIntersect.Name = "TextBox_WorldIntersect";
-            this.TextBox_WorldIntersect.Size = new System.Drawing.Size(600, 25);
             // 
             // MapEditor
             // 
@@ -636,16 +572,9 @@ namespace Mafia2Tool
         private System.Windows.Forms.ToolStripMenuItem ToggleWireframeButton;
         private System.Windows.Forms.ToolStripMenuItem ToggleCullingButton;
         private System.Windows.Forms.ToolStripMenuItem AddSceneFolderButton;
-        private System.Windows.Forms.ToolStripMenuItem AddRoadSplineButton;
         private System.Windows.Forms.ToolStripMenuItem ViewOptionProperties;
-        private System.Windows.Forms.ToolStripMenuItem AddSplineTxT;
         private System.Windows.Forms.OpenFileDialog TxtBrowser;
-        private System.Windows.Forms.ToolStripMenuItem AddJunctionButton;
-        private System.Windows.Forms.ToolStripMenuItem EditUnkSet3;
-        private System.Windows.Forms.ToolStripMenuItem AddBackward;
-        private System.Windows.Forms.ToolStripMenuItem AddToward;
         private System.Windows.Forms.ToolStripMenuItem AddCollisionButton;
-        private System.Windows.Forms.ToolStripMenuItem roadDebuggingToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel Label_FPS;
         private NumericUpDownToolStrip PositionYTool;
         private NumericUpDownToolStrip PositionZTool;

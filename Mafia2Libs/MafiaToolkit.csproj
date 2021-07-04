@@ -534,6 +534,7 @@
     <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Type7.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Type8.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\AIWorld_Type9.cs" />
+    <Compile Include="ResourceTypes\FileTypes\Navigation\AIWorld\IType.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\AnimalTraffic.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\Enums.cs" />
     <Compile Include="ResourceTypes\FileTypes\Navigation\HPD.cs" />

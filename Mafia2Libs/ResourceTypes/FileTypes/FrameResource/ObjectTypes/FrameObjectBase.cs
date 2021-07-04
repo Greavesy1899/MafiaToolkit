@@ -31,7 +31,7 @@ namespace ResourceTypes.FrameResource
         FrameObjectBase root;
         List<FrameObjectBase> children = new List<FrameObjectBase>();
 
-        public RenderableAdapter RenderAdapter { get; set; }
+        public RenderableAdapter RenderAdapter { get; protected set; }
 
         public FrameObjectBase Parent {
             get { return parent; }

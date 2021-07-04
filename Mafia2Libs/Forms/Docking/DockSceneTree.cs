@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using ResourceTypes.FrameResource;
 using SharpDX;
 using System;
+using Utils.Helpers;
 
 namespace Forms.Docking
 {
@@ -205,46 +206,6 @@ namespace Forms.Docking
                     }
                 }
             }
-        }
-
-        public Vector3 JumpToHelper()
-        {
-            TreeNode SelectedNode = treeView1.SelectedNode;
-            object data = treeView1.SelectedNode.Tag;
-
-            if (FrameResource.IsFrameType(data))
-            {
-                return (data as FrameObjectBase).WorldTransform.TranslationVector;
-            }
-
-            if(data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
-                return (data as ResourceTypes.Collisions.Collision.Placement).Position;
-
-            if(data.GetType() == typeof(Rendering.Graphics.RenderJunction))
-                return (data as Rendering.Graphics.RenderJunction).Data.Position;
-
-            if(SelectedNode.Name.Equals("NAV_INDEXED_NODE"))
-            {
-                TreeNode ParentNode = SelectedNode.Parent;
-                if(ParentNode.Name.Equals("NAV_OBJ_DATA"))
-                {
-                    ResourceTypes.Navigation.OBJData.VertexStruct Vertex = (ResourceTypes.Navigation.OBJData.VertexStruct)data;
-                    return Vertex.Position;
-                }
-            }
-            else if(data.GetType().IsSubclassOf(typeof(ResourceTypes.Navigation.IType)))
-            {
-                ResourceTypes.Navigation.IType AIWorld = (ResourceTypes.Navigation.IType)data;
-                return AIWorld.GetPosition();
-            }
-
-           // if (data.GetType() == typeof(Rendering.Graphics.RenderNav))
-          //      return (data as Rendering.Graphics.RenderNav).NavigationBox.Transform.TranslationVector;
-
-            if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
-                return (data as ResourceTypes.Actors.ActorEntry).Position;
-
-            return new Vector3(0, 0, 0);
         }
 
         private void OnDoubleClick(object sender, EventArgs e)

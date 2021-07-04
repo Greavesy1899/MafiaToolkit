@@ -11,20 +11,6 @@ using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
 {
-    public class IType
-    {
-        protected int RefID;
-        protected AIWorld OwnWorld;
-        public IType(AIWorld InWorld) { RefID = StringHelpers.GetNewRefID(); OwnWorld = InWorld; }
-        public virtual void Read(BinaryReader Reader) { }
-        public virtual void Write(BinaryWriter Writer) { }
-        public virtual void DebugWrite(StreamWriter Writer) { }
-        public virtual void ConstructRenderable(PrimitiveBatch BBoxBatcher) {  }
-        public virtual TreeNode PopulateTreeNode() { return null; }
-        public virtual Vector3 GetPosition() { return Vector3.Zero; }
-        public void NotifyUpdate() { OwnWorld.RequestPrimitiveBatchUpdate(); }
-    }
-
     public class AIWorld
     {
         public int Unk03 { get; set; }
@@ -162,7 +148,10 @@ namespace ResourceTypes.Navigation
         {
             foreach (IType AIPoint in AIPoints)
             {
-                AIPoint.ConstructRenderable(BBoxBatch);
+                if (AIPoint.bIsVisible)
+                {
+                    AIPoint.ConstructRenderable(BBoxBatch);
+                }
             }
         }
 
