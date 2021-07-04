@@ -45,6 +45,9 @@
             this.Context_Paste = new System.Windows.Forms.ToolStripMenuItem();
             this.Context_Delete = new System.Windows.Forms.ToolStripMenuItem();
             this.TreeView_FxActors = new Mafia2Tool.Controls.MTreeView();
+            this.Button_Import = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_Export = new System.Windows.Forms.ToolStripMenuItem();
+            this.Context_Export = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip_Top.SuspendLayout();
             this.Context_Menu.SuspendLayout();
             this.SuspendLayout();
@@ -109,6 +112,8 @@
             // 
             this.Button_Tools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.Button_Tools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Button_Import,
+            this.Button_Export,
             this.Button_Copy,
             this.Button_Paste,
             this.Button_Delete});
@@ -121,51 +126,52 @@
             // Button_Copy
             // 
             this.Button_Copy.Name = "Button_Copy";
-            this.Button_Copy.Size = new System.Drawing.Size(118, 22);
+            this.Button_Copy.Size = new System.Drawing.Size(180, 22);
             this.Button_Copy.Text = "$COPY";
             this.Button_Copy.Click += new System.EventHandler(this.Button_Copy_Click);
             // 
             // Button_Paste
             // 
             this.Button_Paste.Name = "Button_Paste";
-            this.Button_Paste.Size = new System.Drawing.Size(118, 22);
+            this.Button_Paste.Size = new System.Drawing.Size(180, 22);
             this.Button_Paste.Text = "$PASTE";
             this.Button_Paste.Click += new System.EventHandler(this.Button_Paste_Click);
             // 
             // Button_Delete
             // 
             this.Button_Delete.Name = "Button_Delete";
-            this.Button_Delete.Size = new System.Drawing.Size(118, 22);
+            this.Button_Delete.Size = new System.Drawing.Size(180, 22);
             this.Button_Delete.Text = "$DELETE";
             this.Button_Delete.Click += new System.EventHandler(this.Button_Delete_Click);
             // 
             // Context_Menu
             // 
             this.Context_Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Context_Export,
             this.Context_Copy,
             this.Context_Paste,
             this.Context_Delete});
             this.Context_Menu.Name = "Context_Menu";
-            this.Context_Menu.Size = new System.Drawing.Size(119, 70);
+            this.Context_Menu.Size = new System.Drawing.Size(122, 92);
             // 
             // Context_Copy
             // 
             this.Context_Copy.Name = "Context_Copy";
-            this.Context_Copy.Size = new System.Drawing.Size(118, 22);
+            this.Context_Copy.Size = new System.Drawing.Size(121, 22);
             this.Context_Copy.Text = "$COPY";
             this.Context_Copy.Click += new System.EventHandler(this.Context_Copy_Click);
             // 
             // Context_Paste
             // 
             this.Context_Paste.Name = "Context_Paste";
-            this.Context_Paste.Size = new System.Drawing.Size(118, 22);
+            this.Context_Paste.Size = new System.Drawing.Size(121, 22);
             this.Context_Paste.Text = "$PASTE";
             this.Context_Paste.Click += new System.EventHandler(this.Context_Paste_Click);
             // 
             // Context_Delete
             // 
             this.Context_Delete.Name = "Context_Delete";
-            this.Context_Delete.Size = new System.Drawing.Size(118, 22);
+            this.Context_Delete.Size = new System.Drawing.Size(121, 22);
             this.Context_Delete.Text = "$DELETE";
             this.Context_Delete.Click += new System.EventHandler(this.Context_Delete_Click);
             // 
@@ -180,6 +186,27 @@
             this.TreeView_FxActors.TabIndex = 11;
             this.TreeView_FxActors.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_FxActors_AfterSelect);
             this.TreeView_FxActors.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TreeView_FxActors_OnKeyUp);
+            // 
+            // Button_Import
+            // 
+            this.Button_Import.Name = "Button_Import";
+            this.Button_Import.Size = new System.Drawing.Size(180, 22);
+            this.Button_Import.Text = "$IMPORT";
+            this.Button_Import.Click += new System.EventHandler(this.Button_Import_Click);
+            // 
+            // Button_Export
+            // 
+            this.Button_Export.Name = "Button_Export";
+            this.Button_Export.Size = new System.Drawing.Size(180, 22);
+            this.Button_Export.Text = "$EXPORT";
+            this.Button_Export.Click += new System.EventHandler(this.Button_Export_Click);
+            // 
+            // Context_Export
+            // 
+            this.Context_Export.Name = "Context_Export";
+            this.Context_Export.Size = new System.Drawing.Size(121, 22);
+            this.Context_Export.Text = "$EXPORT";
+            this.Context_Export.Click += new System.EventHandler(this.Context_Export_Click);
             // 
             // FxActorEditor
             // 
@@ -217,5 +244,8 @@
         private System.Windows.Forms.ToolStripMenuItem Button_Delete;
         private System.Windows.Forms.ToolStripMenuItem Button_Copy;
         private System.Windows.Forms.ToolStripMenuItem Button_Paste;
+        private System.Windows.Forms.ToolStripMenuItem Button_Import;
+        private System.Windows.Forms.ToolStripMenuItem Button_Export;
+        private System.Windows.Forms.ToolStripMenuItem Context_Export;
     }
 }

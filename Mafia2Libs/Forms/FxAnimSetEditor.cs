@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using ResourceTypes.OC3.FaceFX;
 using Utils.Language;
 
@@ -37,9 +38,12 @@ namespace Toolkit.Forms
             Button_Copy.Text = Language.GetString("$COPY");
             Button_Paste.Text = Language.GetString("$PASTE");
             Button_Delete.Text = Language.GetString("$DELETE");
+            Button_Import.Text = Language.GetString("$IMPORT");
+            Button_Export.Text = Language.GetString("$EXPORT");
             Context_Copy.Text = Language.GetString("$COPY");
             Context_Paste.Text = Language.GetString("$PASTE");
             Context_Delete.Text = Language.GetString("$DELETE");
+            Context_Export.Text = Language.GetString("$EXPORT");
         }
 
         private void BuildData()
@@ -110,6 +114,64 @@ namespace Toolkit.Forms
             TreeView_FxAnimSets.Nodes.Remove(TreeView_FxAnimSets.SelectedNode);
         }
 
+        private void Import()
+        {
+            Microsoft.Win32.OpenFileDialog ImportSet = new Microsoft.Win32.OpenFileDialog();
+            ImportSet.InitialDirectory = FxAnimSetFile.DirectoryName;
+            ImportSet.Multiselect = false;
+            ImportSet.Filter = "FxAnimSet file (*.fas)|*.fas";
+
+            if (ImportSet.ShowDialog() == true)
+            {
+                FxContainer<FxAnimSet> ImportAnimSetContainer;
+
+                using (BinaryReader Reader = new BinaryReader(File.Open(ImportSet.FileName, FileMode.Open)))
+                {
+                    ImportAnimSetContainer = new FxContainer<FxAnimSet>();
+                    ImportAnimSetContainer.ReadFromFile(Reader);
+                }
+
+                AnimSetContainer.Archives.AddRange(ImportAnimSetContainer.Archives);
+                TreeView_FxAnimSets.Nodes.Clear();
+
+                foreach (FxArchive Archive in AnimSetContainer.Archives)
+                {
+                    FxAnimSet AnimSet = Archive.GetObjectAs<FxAnimSet>();
+
+                    TreeNode AnimSetNode = new TreeNode(AnimSet.Name.ToString());
+
+                    AnimSetNode.Tag = AnimSet;
+
+                    TreeView_FxAnimSets.Nodes.Add(AnimSetNode);
+                }
+            }
+        }
+
+        private void Export()
+        {
+            int index = TreeView_FxAnimSets.SelectedNode.Index;
+            FxArchive SelectedArchive = AnimSetContainer.Archives[index];
+
+            FxAnimSet AnimSet = SelectedArchive.GetObjectAs<FxAnimSet>();
+
+            Microsoft.Win32.SaveFileDialog ExportSet = new Microsoft.Win32.SaveFileDialog();
+            ExportSet.InitialDirectory = FxAnimSetFile.DirectoryName;
+            ExportSet.FileName = AnimSet.Name.ToString();
+            ExportSet.Filter = "FxAnimSet file (*.fas)|*.fas";
+
+            if (ExportSet.ShowDialog() == true)
+            {
+                FxContainer<FxAnimSet> ExportAnimSetContainer = new FxContainer<FxAnimSet>();
+                ExportAnimSetContainer.Archives = new List<FxArchive>();
+                ExportAnimSetContainer.Archives.Add(SelectedArchive);
+
+                using (BinaryWriter Writer = new BinaryWriter(File.Open(ExportSet.FileName, FileMode.Create)))
+                {
+                    ExportAnimSetContainer.WriteToFile(Writer);
+                }
+            }
+        }
+
         private void TreeView_FxAnimSets_AfterSelect(object sender, TreeViewEventArgs e)
         {
             Grid_AnimSet.SelectedObject = e.Node.Tag;
@@ -161,8 +223,11 @@ namespace Toolkit.Forms
         private void Button_Copy_Click(object sender, System.EventArgs e) => Copy();
         private void Button_Paste_Click(object sender, System.EventArgs e) => Paste();
         private void Button_Delete_Click(object sender, System.EventArgs e) => Delete();
+        private void Button_Import_Click(object sender, System.EventArgs e) => Import();
+        private void Button_Export_Click(object sender, System.EventArgs e) => Export();
         private void Context_Copy_Click(object sender, System.EventArgs e) => Copy();
         private void Context_Paste_Click(object sender, System.EventArgs e) => Paste();
         private void Context_Delete_Click(object sender, System.EventArgs e) => Delete();
+        private void Context_Export_Click(object sender, System.EventArgs e) => Export();
     }
 }
