@@ -281,6 +281,7 @@
             this.TabControl.ResumeLayout(false);
             this.PropertyGridTab.ResumeLayout(false);
             this.DataGridTab.ResumeLayout(false);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CityShopEditor_Closing);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

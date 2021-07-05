@@ -15,6 +15,8 @@ namespace Mafia2Tool
         private CityShops shopsData;
         private CityShops.AreaData currentData;
 
+        private bool bIsFileEdited = false;
+
         public CityShopEditor(FileInfo file)
         {
             InitializeComponent();
@@ -89,6 +91,20 @@ namespace Mafia2Tool
             {
                 shopsData.WriteToFile(writer);
             }
+
+            FileIsNotEdited();
+        }
+
+        private void FileIsEdited()
+        {
+            Text = Language.GetString("$CITY_SHOP_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
+        }
+
+        private void FileIsNotEdited()
+        {
+            Text = Language.GetString("$CITY_SHOP_EDITOR_TITLE");
+            bIsFileEdited = false;
         }
 
         private void AddAreaButton_Click(object sender, EventArgs e)
@@ -100,6 +116,8 @@ namespace Mafia2Tool
             TreeView_CityShop.Nodes[0].Nodes.Add(node);
             shopsData.PopulateTranslokatorEntities();
             TreeView_CityShop.SelectedNode = node;
+
+            FileIsEdited();
         }
 
         private void SaveButtonDLC_Click(object sender, EventArgs e)
@@ -120,12 +138,11 @@ namespace Mafia2Tool
                 shopsData.ReadFromFile(reader);
 
             BuildData();
+
+            FileIsNotEdited();
         }
 
-        private void ExitButton_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
+        private void ExitButton_Click(object sender, EventArgs e) => Close();
 
         private void OnAfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -218,6 +235,8 @@ namespace Mafia2Tool
         {
             shopsData.PopulateTranslokatorEntities();
             MessageBox.Show("All translokators were checked for errors.", "Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            FileIsEdited();
         }
 
         private void AddDataButton_Click(object sender, EventArgs e)
@@ -229,12 +248,16 @@ namespace Mafia2Tool
             TreeView_CityShop.Nodes[1].Nodes.Add(node);
             shopsData.PopulateTranslokatorEntities();
             TreeView_CityShop.SelectedNode = node;
+
+            FileIsEdited();
         }
 
         private void OnPropertyChanged(object s, PropertyValueChangedEventArgs e)
         {
             if(e.ChangedItem.Label == "Name")
                 TreeView_CityShop.SelectedNode.Text = e.ChangedItem.Value.ToString();
+
+            FileIsEdited();
         }
 
         private void OnTabSelected(object sender, TabControlEventArgs e)
@@ -268,6 +291,8 @@ namespace Mafia2Tool
                     TreeView_CityShop.Nodes[1].Nodes.Add(node);
                     TreeView_CityShop.SelectedNode = node;
                 }
+
+                FileIsEdited();
             }
         }
 
@@ -280,6 +305,8 @@ namespace Mafia2Tool
                     TreeView_CityShop.Nodes.Remove(TreeView_CityShop.SelectedNode);
                     shopsData.Areas.Remove((CityShops.Area)TreeView_CityShop.SelectedNode.Tag);
                 }
+
+                FileIsEdited();
             }
         }
 
@@ -291,6 +318,25 @@ namespace Mafia2Tool
                 {
                     TreeView_CityShop.Nodes.Remove(TreeView_CityShop.SelectedNode);
                     shopsData.AreaDatas.Remove((CityShops.AreaData)TreeView_CityShop.SelectedNode.Tag);
+                }
+
+                FileIsEdited();
+            }
+        }
+
+        private void CityShopEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
                 }
             }
         }

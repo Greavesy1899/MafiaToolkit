@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using ResourceTypes.OC3.FaceFX;
 using Utils.Language;
+using Utils.Settings;
 
 namespace Toolkit.Forms
 {
@@ -28,6 +29,8 @@ namespace Toolkit.Forms
             BuildData();
 
             Show();
+
+            ToolkitSettings.UpdateRichPresence("Using the FxAnimSet editor.");
         }
 
         private void Localise()
@@ -224,6 +227,9 @@ namespace Toolkit.Forms
 
         private void Grid_AnimSet_PropertyChanged(object sender, PropertyValueChangedEventArgs e)
         {
+            if (e.ChangedItem.Label == "Name")
+                TreeView_FxAnimSets.SelectedNode.Text = e.ChangedItem.Value.ToString();
+
             Text = Language.GetString("$FXANIMSET_EDITOR") + "*";
             bIsFileEdited = true;
         }
@@ -245,11 +251,7 @@ namespace Toolkit.Forms
             }
         }
 
-        private void Button_Exit_Click(object sender, System.EventArgs e)
-        {
-            Close();
-        }
-
+        private void Button_Exit_Click(object sender, System.EventArgs e) => Close();
         private void Button_Save_Click(object sender, System.EventArgs e) => Save();
         private void Button_Reload_Click(object sender, System.EventArgs e) => Reload();
         private void Button_Copy_Click(object sender, System.EventArgs e) => Copy();
