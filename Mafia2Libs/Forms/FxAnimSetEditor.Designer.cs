@@ -215,10 +215,10 @@
             this.TreeView_FxAnimSets.Size = new System.Drawing.Size(368, 410);
             this.TreeView_FxAnimSets.TabIndex = 11;
             this.TreeView_FxAnimSets.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_FxAnimSets_AfterSelect);
-            this.TreeView_FxAnimSets.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TreeView_FxAnimSets_OnKeyUp);
             // 
             // FxAnimSetEditor
             // 
+            this.KeyPreview = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
@@ -229,6 +229,7 @@
             this.Name = "FxAnimSetEditor";
             this.Text = "$FXANIMSET_EDITOR";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FxAnimSetEditor_Closing);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FxAnimSetEditor_OnKeyUp);
             this.ToolStrip_Top.ResumeLayout(false);
             this.ToolStrip_Top.PerformLayout();
             this.Context_Menu.ResumeLayout(false);

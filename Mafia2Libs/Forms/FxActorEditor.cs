@@ -197,19 +197,23 @@ namespace Toolkit.Forms
             Grid_Actors.SelectedObject = e.Node.Tag;
         }
 
-        private void TreeView_FxActors_OnKeyUp(object sender, KeyEventArgs e)
+        private void FxActorEditor_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.C)
+            //TODO: Event fires twice? Might be my keyboard though
+            if (TreeView_FxActors.Focused)
             {
-                Copy();
-            }
-            else if (e.Control && e.KeyCode == Keys.V)
-            {
-                Paste();
-            }
-            else if (e.Control && e.KeyCode == Keys.Delete)
-            {
-                Delete();
+                if (e.Control && e.KeyCode == Keys.C)
+                {
+                    Copy();
+                }
+                else if (e.Control && e.KeyCode == Keys.V)
+                {
+                    Paste();
+                }
+                else if (e.Control && e.KeyCode == Keys.Delete)
+                {
+                    Delete();
+                }
             }
             else if (e.Control && e.KeyCode == Keys.D)
             {

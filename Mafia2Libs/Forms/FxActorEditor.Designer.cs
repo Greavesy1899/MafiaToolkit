@@ -215,10 +215,10 @@
             this.TreeView_FxActors.Size = new System.Drawing.Size(368, 410);
             this.TreeView_FxActors.TabIndex = 11;
             this.TreeView_FxActors.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_FxActors_AfterSelect);
-            this.TreeView_FxActors.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TreeView_FxActors_OnKeyUp);
             // 
             // FxActorEditor
             // 
+            this.KeyPreview = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
@@ -229,6 +229,7 @@
             this.Name = "FxActorEditor";
             this.Text = "$FXACTOR_EDITOR";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FxActorEditor_Closing);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FxActorEditor_OnKeyUp);
             this.ToolStrip_Top.ResumeLayout(false);
             this.ToolStrip_Top.PerformLayout();
             this.Context_Menu.ResumeLayout(false);

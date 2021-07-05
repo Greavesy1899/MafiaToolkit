@@ -139,6 +139,9 @@ namespace Mafia2Tool
 
             BuildData();
 
+            TreeView_CityShop.SelectedNode = null;
+            propertyGrid1.SelectedObject = null;
+
             FileIsNotEdited();
         }
 
