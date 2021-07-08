@@ -1,11 +1,12 @@
-﻿using System.ComponentModel;
+﻿using Rendering.Factories;
+using Rendering.Graphics;
+using System.ComponentModel;
 using System.IO;
-using SharpDX;
-using Utils.SharpDXExtensions;
+using System.Numerics;
 using Utils.Extensions;
 using Utils.Types;
-using Rendering.Factories;
-using Rendering.Graphics;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -103,7 +104,7 @@ namespace ResourceTypes.FrameResource
             unk14 = 255;
             meshIndex = 0;
             materialIndex = 0;
-            localTransform = new Matrix();
+            localTransform = new Matrix4x4();
             omTextureHash = new HashName();
             unk18_1 = 0;
             unk18_2 = 0;

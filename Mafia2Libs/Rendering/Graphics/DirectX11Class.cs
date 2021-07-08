@@ -1,9 +1,10 @@
 ﻿using System;
-using SharpDX;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
+using Vortice;
+using Vortice.Direct3D;
+using Vortice.Direct3D11;
+using Vortice.DXGI;
 using Utils.Settings;
+using Vortice.Mathematics;
 
 namespace Rendering.Graphics
 {
@@ -11,28 +12,36 @@ namespace Rendering.Graphics
     {
         public int VideoCardMemory { get; private set; }
         public string VideoCardDescription { get; private set; }
-        public SwapChain SwapChain { get; private set; }
-        public SharpDX.Direct3D11.Device Device { get; private set; }
-        public DeviceContext DeviceContext { get; private set; }
-        public DepthStencilState DepthStencilState { get; set; }
-        private RenderTargetView m_RenderTargetView { get; set; }
-        private Texture2D m_depthStencilBuffer { get; set; }
-        private DepthStencilView m_DepthStencilView { get; set; }  
-        private RasterizerState m_RSSolid { get; set; }
-        private RasterizerState m_RSWireFrame { get; set; }
-        private RasterizerState m_RSCullSolid { get; set; }
-        private RasterizerState m_RSCullWireFrame { get; set; }
+        public IDXGISwapChain SwapChain { get; private set; }
+        public ID3D11Device Device { get; private set; }
+        public ID3D11DeviceContext DeviceContext { get; private set; }
+        public ID3D11DepthStencilState DepthStencilState { get; set; }
+        private ID3D11RenderTargetView m_RenderTargetView { get; set; }
+        private ID3D11Texture2D m_depthStencilBuffer { get; set; }
+        private ID3D11DepthStencilView m_DepthStencilView { get; set; }  
+        private ID3D11RasterizerState m_RSSolid { get; set; }
+        private ID3D11RasterizerState m_RSWireFrame { get; set; }
+        private ID3D11RasterizerState m_RSCullSolid { get; set; }
+        private ID3D11RasterizerState m_RSCullWireFrame { get; set; }
 
-        private RasterizerStateDescription m_RSDesc;
+        private RasterizerDescription m_RSDesc;
         private FillMode m_FillMode = FillMode.Solid;
         private CullMode m_CullMode = CullMode.Back;
+
+        private static readonly FeatureLevel[] s_featureLevels = new[]
+{
+            FeatureLevel.Level_11_1,
+            FeatureLevel.Level_11_0,
+            FeatureLevel.Level_10_1,
+            FeatureLevel.Level_10_0
+        };
 
         public DirectX11Class()
         { }
 
         public bool Init(IntPtr WindowHandle)
         {
-            var factory = new Factory1();
+            var factory = DXGI.CreateDXGIFactory1<IDXGIFactory1>();
             var adapter = factory.GetAdapter1(0);
             var monitor = adapter.GetOutput(0);
             var modes = monitor.GetDisplayModeList(Format.R8G8B8A8_UNorm, DisplayModeEnumerationFlags.Interlaced);
@@ -42,73 +51,80 @@ namespace Rendering.Graphics
             //VideoCardDescription = adapterDescription.Description.Trim('\0');
             monitor.Dispose();
             adapter.Dispose();
-            factory.Dispose();
 
             var swapChainDesc = new SwapChainDescription()
             {
                 BufferCount = 2,
-                ModeDescription = new ModeDescription(1920, 1080, rational, Format.R8G8B8A8_UNorm),
+                BufferDescription = new ModeDescription(1920, 1080, rational, Format.R8G8B8A8_UNorm),
                 Usage = Usage.RenderTargetOutput,
-                OutputHandle = WindowHandle,
+                OutputWindow = WindowHandle,
                 SampleDescription = new SampleDescription(1, 0),
                 IsWindowed = true,
                 Flags = SwapChainFlags.None,
                 SwapEffect = SwapEffect.Discard
             };
 
-            SharpDX.Direct3D11.Device device;
-            SwapChain swapChain;
-            SharpDX.Direct3D11.Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.None, swapChainDesc, out device, out swapChain);
-            Device = device;
-            SwapChain = swapChain;
-            DeviceContext = device.ImmediateContext;
-            var backBuffer = Texture2D.FromSwapChain<Texture2D>(SwapChain, 0);
-            m_RenderTargetView = new RenderTargetView(device, backBuffer);
+            // Create Device and DeviceContext
+            ID3D11Device TempDevice = null;
+            ID3D11DeviceContext TempDeviceContext = null;
+            D3D11.D3D11CreateDevice(adapter, DriverType.Hardware, DeviceCreationFlags.None, s_featureLevels, out TempDevice, out TempDeviceContext);
+            Device = TempDevice.QueryInterface<ID3D11Device1>();
+            DeviceContext = TempDeviceContext.QueryInterface<ID3D11DeviceContext1>();
+            TempDevice.Dispose();
+            TempDeviceContext.Dispose();
+
+            // Create SwapChain
+            SwapChain = factory.CreateSwapChain(Device, swapChainDesc);
+            factory.MakeWindowAssociation(WindowHandle, WindowAssociationFlags.IgnoreAltEnter);
+
+            var backBuffer = SwapChain.GetBuffer<ID3D11Texture2D>(0);
+            m_RenderTargetView = Device.CreateRenderTargetView(backBuffer);
             backBuffer.Dispose();
 
-            BlendStateDescription bsd = new BlendStateDescription()
+            // Create blend state
+            BlendDescription bsd = new BlendDescription()
             {
                 AlphaToCoverageEnable = false,//true,
                 IndependentBlendEnable = false,
             };
-            bsd.RenderTarget[0].AlphaBlendOperation = BlendOperation.Add;
+            bsd.RenderTarget[0].BlendOperationAlpha = BlendOperation.Add;
             bsd.RenderTarget[0].BlendOperation = BlendOperation.Add;
-            bsd.RenderTarget[0].DestinationAlphaBlend = BlendOption.One;
-            bsd.RenderTarget[0].DestinationBlend = BlendOption.InverseSourceAlpha;
+            bsd.RenderTarget[0].DestinationBlendAlpha = Blend.One;
+            bsd.RenderTarget[0].DestinationBlend = Blend.InverseSourceAlpha;
             bsd.RenderTarget[0].IsBlendEnabled = true;
-            bsd.RenderTarget[0].RenderTargetWriteMask = ColorWriteMaskFlags.All;
-            bsd.RenderTarget[0].SourceAlphaBlend = BlendOption.Zero;
-            bsd.RenderTarget[0].SourceBlend = BlendOption.SourceAlpha;
-            //bsDefault = new BlendState(device, bsd);
-
+            bsd.RenderTarget[0].RenderTargetWriteMask = ColorWriteEnable.All;
+            bsd.RenderTarget[0].SourceBlendAlpha = Blend.Zero;
+            bsd.RenderTarget[0].SourceBlend = Blend.SourceAlpha;
             bsd.AlphaToCoverageEnable = true;
-            BlendState bsAlpha = new BlendState(device, bsd);
 
-            DeviceContext.OutputMerger.BlendState = bsAlpha;
+            ID3D11BlendState bsAlpha = Device.CreateBlendState(bsd);
+
+            // Set Blend State
+            DeviceContext.OMSetBlendState(bsAlpha);
             BuildDepthStencilView(1920, 1080);
 
-            m_RSDesc = new RasterizerStateDescription()
+            // Create rasterizers
+            m_RSDesc = new RasterizerDescription()
             {
-                IsAntialiasedLineEnabled = false,
+                AntialiasedLineEnable = false,
                 CullMode = CullMode.Back,
                 DepthBias = 0,
                 DepthBiasClamp = .0f,
-                IsDepthClipEnabled = false,
+                DepthClipEnable = false,
                 FillMode = FillMode.Solid,
-                IsFrontCounterClockwise = true,
-                IsMultisampleEnabled = true,
-                IsScissorEnabled = false,
+                FrontCounterClockwise = true,
+                MultisampleEnable = true,
+                ScissorEnable = false,
                 SlopeScaledDepthBias = .0f
             };
 
-            
-            m_RSCullSolid = new RasterizerState(Device, m_RSDesc);
+            m_RSCullSolid = Device.CreateRasterizerState(m_RSDesc);
             m_RSDesc.CullMode = CullMode.None;
-            m_RSSolid = new RasterizerState(Device, m_RSDesc);
+            m_RSSolid = Device.CreateRasterizerState(m_RSDesc);
             m_RSDesc.FillMode = FillMode.Wireframe;
-            m_RSWireFrame = new RasterizerState(Device, m_RSDesc);
+            m_RSWireFrame = Device.CreateRasterizerState(m_RSDesc);
             m_RSDesc.CullMode = CullMode.Back;
-            m_RSCullWireFrame = new RasterizerState(Device, m_RSDesc);
+            m_RSCullWireFrame = Device.CreateRasterizerState(m_RSDesc);
 
             UpdateRasterizer();
             return true;
@@ -130,47 +146,47 @@ namespace Rendering.Graphics
                 OptionFlags = ResourceOptionFlags.None
             };
 
-            m_depthStencilBuffer = new Texture2D(Device, depthBufferDesc);
+            m_depthStencilBuffer = Device.CreateTexture2D(depthBufferDesc);
 
-            var depthStencilDecs = new DepthStencilStateDescription()
+            var depthStencilDecs = new DepthStencilDescription()
             {
-                IsDepthEnabled = true,
+                DepthEnable = true,
                 DepthWriteMask = DepthWriteMask.All,
-                DepthComparison = Comparison.Less,
-                IsStencilEnabled = true,
+                DepthFunc = ComparisonFunction.Less,
+                StencilEnable = true,
                 StencilReadMask = 0xFF,
                 StencilWriteMask = 0xFF,
                 FrontFace = new DepthStencilOperationDescription()
                 {
-                    FailOperation = StencilOperation.Keep,
-                    DepthFailOperation = StencilOperation.Increment,
-                    PassOperation = StencilOperation.Keep,
-                    Comparison = Comparison.Always,
+                    StencilFailOp = StencilOperation.Keep,
+                    StencilDepthFailOp = StencilOperation.Incr,
+                    StencilPassOp = StencilOperation.Keep,
+                    StencilFunc = ComparisonFunction.Always,
                 },
                 BackFace = new DepthStencilOperationDescription()
                 {
-                    FailOperation = StencilOperation.Keep,
-                    DepthFailOperation = StencilOperation.Decrement,
-                    PassOperation = StencilOperation.Keep,
-                    Comparison = Comparison.Always
+                    StencilFailOp = StencilOperation.Keep,
+                    StencilDepthFailOp = StencilOperation.Decr,
+                    StencilPassOp = StencilOperation.Keep,
+                    StencilFunc = ComparisonFunction.Always,
                 }
             };
 
-            DepthStencilState = new DepthStencilState(Device, depthStencilDecs);
-            DeviceContext.OutputMerger.SetDepthStencilState(DepthStencilState, 1);
+            DepthStencilState = Device.CreateDepthStencilState(depthStencilDecs);
+            DeviceContext.OMSetDepthStencilState(DepthStencilState);
 
             var depthStencilViewDesc = new DepthStencilViewDescription()
             {
                 Format = Format.D24_UNorm_S8_UInt,
-                Dimension = DepthStencilViewDimension.Texture2D,
-                Texture2D = new DepthStencilViewDescription.Texture2DResource()
+                ViewDimension = DepthStencilViewDimension.Texture2D,
+                Texture2D = new Texture2DDepthStencilView()
                 {
                     MipSlice = 0
                 }
             };
 
-            m_DepthStencilView = new DepthStencilView(Device, m_depthStencilBuffer, depthStencilViewDesc);
-            DeviceContext.OutputMerger.SetTargets(m_DepthStencilView, m_RenderTargetView);
+            m_DepthStencilView = Device.CreateDepthStencilView(m_depthStencilBuffer, depthStencilViewDesc);
+            DeviceContext.OMSetRenderTargets(m_RenderTargetView, m_DepthStencilView);
         }
 
         public void ToggleCullMode()
@@ -178,24 +194,35 @@ namespace Rendering.Graphics
             m_CullMode = m_CullMode == CullMode.None ? CullMode.Back : CullMode.None;
             UpdateRasterizer();
         }
+
         public void ToggleFillMode()
         {
             m_FillMode = m_FillMode == FillMode.Solid ? FillMode.Wireframe : FillMode.Solid;
             UpdateRasterizer();
         }
+
         private void UpdateRasterizer()
         {
-            if(m_CullMode == CullMode.None && m_FillMode == FillMode.Solid)
-                DeviceContext.Rasterizer.State = m_RSSolid;
+            if (m_CullMode == CullMode.None && m_FillMode == FillMode.Solid)
+            {
+                DeviceContext.RSSetState(m_RSCullSolid);
+            }
             else if (m_CullMode == CullMode.None && m_FillMode == FillMode.Wireframe)
-                DeviceContext.Rasterizer.State = m_RSWireFrame;
+            {
+                DeviceContext.RSSetState(m_RSWireFrame);
+            }
             else if (m_CullMode == CullMode.Back && m_FillMode == FillMode.Solid)
-                DeviceContext.Rasterizer.State = m_RSCullSolid;
+            {
+                DeviceContext.RSSetState(m_RSCullSolid);
+            }
             else if (m_CullMode == CullMode.Back && m_FillMode == FillMode.Wireframe)
-                DeviceContext.Rasterizer.State = m_RSCullWireFrame;
+            {
+                DeviceContext.RSSetState(m_RSCullWireFrame);
+            }
 
-            DeviceContext.Rasterizer.SetViewport(0, 0, 1920, 1080, 0, 1);
+            DeviceContext.RSSetViewport(0, 0, 1920, 1080, 0, 1);
         }
+
         public void Shutdown()
         {
             SwapChain?.SetFullscreenState(false, null);
@@ -231,15 +258,18 @@ namespace Rendering.Graphics
 
         public void Resize(int w, int h)
         {
-            DeviceContext.OutputMerger.SetRenderTargets(null, null, null);
+            // TODO:
+            //DeviceContext.OMSetRenderTargets(null);
             m_RenderTargetView.Dispose();
             SwapChain.ResizeBuffers(0, w, h, Format.Unknown, SwapChainFlags.None);
-            Texture2D buffer = SwapChain.GetBackBuffer<Texture2D>(0);
-            m_RenderTargetView = new RenderTargetView(Device, buffer);
-            buffer.Dispose();
-            BuildDepthStencilView(w, h);
-            DeviceContext.OutputMerger.SetRenderTargets(m_DepthStencilView, m_RenderTargetView);
-            DeviceContext.Rasterizer.SetViewport(0, 0, w, h, ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
+            ID3D11Texture2D buffer = SwapChain.GetBuffer<ID3D11Texture2D>(0);
+            //m_RenderTargetView = 
+            //buffer.Dispose();
+
+            //BuildDepthStencilView(w, h);
+
+            //DeviceContext.OMSetRenderTargets(m_RenderTargetView, m_DepthStencilView);
+            //DeviceContext.RSSetViewport(0, 0, w, h, ToolkitSettings.ScreenNear, ToolkitSettings.ScreenDepth);
         }
 
         public void EndScene()

@@ -1,12 +1,11 @@
-﻿using SharpDX;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.Numerics;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Windows.Forms;
+using Vortice.Mathematics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
 using Utils.StringHelpers;
 using Utils.Types;
 
@@ -284,16 +283,17 @@ namespace ResourceTypes.Translokator
                 v7 = 0.0001220852136611938 * ((instance.D4 & 0xF000 | (v10 >> 6) & 0xFF8) >> 3) * v8;
             }
             var Z = 2.0f * v7 - v8;
-            X = MathUtil.RadiansToDegrees((float)X);
-            Y = MathUtil.RadiansToDegrees((float)Y);
-            Z = MathUtil.RadiansToDegrees((float)Z);
+            X = MathHelper.ToDegrees((float)X);
+            Y = MathHelper.ToDegrees((float)Y);
+            Z = MathHelper.ToDegrees((float)Z);
             instance.Rotation = new Vector3((float)X, (float)Y, (float)Z);
         }
         private void CompressRotation(Instance instance)
         {
-            double x = MathUtil.DegreesToRadians(instance.Rotation.X);
-            double y = MathUtil.DegreesToRadians(instance.Rotation.Y);
-            double z = MathUtil.DegreesToRadians(instance.Rotation.Z);
+            MathHelper.ToRadians(instance.Rotation.X);
+            double x = MathHelper.ToRadians(instance.Rotation.X);
+            double y = MathHelper.ToRadians(instance.Rotation.Y);
+            double z = MathHelper.ToRadians(instance.Rotation.Z);
             var v8 = 3.141592741012573;
             if (instance.Scale != 1)
             {
@@ -434,13 +434,10 @@ namespace ResourceTypes.Translokator
         private void CompileData()
         {
             #region calculate bounding box
-            BoundingBox bbox = new BoundingBox
-            {
-                Minimum = new Vector3(0),
-                Maximum = new Vector3(0)
-            };
-
+            Vector3 Minimum = Vector3.Zero;
+            Vector3 Maximum = Vector3.Zero;
             ushort numInstance = 0;
+
             for (int i = 0; i != ObjectGroups.Length; i++)
             {
                 ObjectGroup objectGroup = ObjectGroups[i];
@@ -456,36 +453,49 @@ namespace ResourceTypes.Translokator
                     {
 
                         Instance instance = obj.Instances[y];
-                        if (instance.Position.X < bbox.Minimum.X)
-                            bbox.Minimum.X = instance.Position.X;
+                        if (instance.Position.X < Minimum.X)
+                        {
+                            Minimum.X = instance.Position.X;
+                        }
 
-                        if (instance.Position.X > bbox.Maximum.X)
-                            bbox.Maximum.X = instance.Position.X;
+                        if (instance.Position.X > Maximum.X)
+                        {
+                            Maximum.X = instance.Position.X;
+                        }
 
-                        if (instance.Position.Y < bbox.Minimum.Y)
-                            bbox.Minimum.Y = instance.Position.Y;
+                        if (instance.Position.Y < Minimum.Y)
+                        {
+                            Minimum.Y = instance.Position.Y;
+                        }
 
-                        if (instance.Position.Y > bbox.Maximum.Y)
-                            bbox.Maximum.Y = instance.Position.Y;
+                        if (instance.Position.Y > Maximum.Y)
+                        {
+                            Maximum.Y = instance.Position.Y;
+                        }
 
-                        if (instance.Position.Z < bbox.Minimum.Z)
-                            bbox.Minimum.Z = instance.Position.Z;
+                        if (instance.Position.Z < Minimum.Z)
+                        {
+                            Minimum.Z = instance.Position.Z;
+                        }
 
-                        if (instance.Position.Z > bbox.Maximum.Z)
-                            bbox.Maximum.Z = instance.Position.Z;
+                        if (instance.Position.Z > Maximum.Z)
+                        {
+                            Maximum.Z = instance.Position.Z;
+                        }
 
                         numInstance++;
                     }
                 }
-                bounds = bbox;
             }
+
+            bounds = new BoundingBox(Minimum, Maximum);
             #endregion calculate bounding box
 
             #region rebuild grid bounds
             for (int i = 0; i < Grids.Length; i++)
             {
                 var grid = Grids[i];
-                grid.CellSize = new Vector2(bounds.Width / grid.Width, bounds.Height / grid.Height);
+                grid.CellSize = new Vector2(bounds.GetWidth() / grid.Width, bounds.GetHeight() / grid.Height);
                 grid.Data = new ushort[grid.Width * grid.Height];
                 grid.Origin = bounds.Minimum;
             }
@@ -553,7 +563,7 @@ namespace ResourceTypes.Translokator
             {
                 Grid grid = new Grid();
                 grid.Key = reader.ReadInt16();
-                grid.Origin = Vector3Extenders.ReadFromFile(reader);
+                grid.Origin = Vector3Utils.ReadFromFile(reader);
                 grid.CellSize = Vector2Extenders.ReadFromFile(reader);
                 grid.Width = reader.ReadInt32();
                 grid.Height = reader.ReadInt32();
@@ -644,7 +654,7 @@ namespace ResourceTypes.Translokator
             {
                 Grid grid = Grids[i];
                 writer.Write(grid.Key);
-                Vector3Extenders.WriteToFile(grid.Origin, writer);
+                Vector3Utils.WriteToFile(grid.Origin, writer);
                 Vector2Extenders.WriteToFile(grid.CellSize, writer);
                 writer.Write(grid.Width);
                 writer.Write(grid.Height);

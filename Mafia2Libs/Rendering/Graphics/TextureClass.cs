@@ -1,15 +1,14 @@
 ﻿using Gibbed.Squish;
 using Mafia2Tool;
 using ResourceTypes.Materials;
-using SharpDX.Direct3D11;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using Utils.Extensions;
 using Utils.Logging;
 using Utils.Settings;
 using Utils.Types;
+using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
 {
@@ -124,12 +123,12 @@ namespace Rendering.Graphics
             return (Thumbnail != null ? Thumbnail : LoadDDSSquish(TexturePath, SamplerHash));
         }
 
-        public static ShaderResourceView LoadTexture(Device d3d, DeviceContext d3dContext, string fileName)
+        public static ID3D11ShaderResourceView LoadTexture(ID3D11Device d3d, ID3D11DeviceContext d3dContext, string fileName)
         {
             try
             {
-                Resource ddsResource;
-                ShaderResourceView _temp;
+                ID3D11Resource ddsResource;
+                ID3D11ShaderResourceView _temp;
                 DDSTextureLoader.DDS_ALPHA_MODE mode;
                 string texturePath = GetTextureFromPath(fileName);
                 DDSTextureLoader.CreateDDSTextureFromFile(d3d, d3dContext, texturePath, out ddsResource, out _temp, 4096, out mode);

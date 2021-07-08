@@ -1,8 +1,8 @@
-﻿using SharpDX.Direct3D11;
-using Rendering.Core;
+﻿using System.Numerics;
 using System.Runtime.InteropServices;
-using SharpDX;
 using Utils.Types;
+using Vortice.Direct3D;
+using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
 {
@@ -16,12 +16,12 @@ namespace Rendering.Graphics
         }
 
         private ExtraParameterBuffer extraParams;
-        protected Buffer ConstantExtraParameterBuffer { get; set; }
+        protected ID3D11Buffer ConstantExtraParameterBuffer { get; set; }
         protected int previousRenderType;
 
-        public DefaultShader(Device Dx11Device, ShaderInitParams InitParams) : base(Dx11Device, InitParams) { }
+        public DefaultShader(ID3D11Device Dx11Device, ShaderInitParams InitParams) : base(Dx11Device, InitParams) { }
 
-        public override bool Init(Device Dx11Device, ShaderInitParams InitParams)
+        public override bool Init(ID3D11Device Dx11Device, ShaderInitParams InitParams)
         {
             if(!base.Init(Dx11Device, InitParams))
             {
@@ -32,11 +32,11 @@ namespace Rendering.Graphics
 
             return true;
         }
-        public override void Render(DeviceContext context, SharpDX.Direct3D.PrimitiveTopology type, int size, uint offset)
+        public override void Render(ID3D11DeviceContext context, PrimitiveTopology type, int size, uint offset)
         {
             base.Render(context, type, size, offset);
         }
-        public override void SetShaderParameters(Device device, DeviceContext context, MaterialParameters matParams)
+        public override void SetShaderParameters(ID3D11Device device, ID3D11DeviceContext context, MaterialParameters matParams)
         {           
             base.SetShaderParameters(device, context, matParams);
 
@@ -45,13 +45,13 @@ namespace Rendering.Graphics
             var material = matParams.MaterialData;
             if (material == null)
             {
-                ShaderResourceView texture = RenderStorageSingleton.Instance.TextureCache[0];
-                context.PixelShader.SetShaderResource(0, texture);
+                ID3D11ShaderResourceView texture = RenderStorageSingleton.Instance.TextureCache[0];
+                context.PSSetShaderResource(0, texture);
             }
             else
             {     
                 HashName TextureFile = material.GetTextureByID("S000");
-                ShaderResourceView[] ShaderTextures = new ShaderResourceView[2];
+                ID3D11ShaderResourceView[] ShaderTextures = new ID3D11ShaderResourceView[2];
                 if (TextureFile != null)
                 {
                     ShaderTextures[0] = RenderStorageSingleton.Instance.TextureCache[TextureFile.Hash];
@@ -73,7 +73,7 @@ namespace Rendering.Graphics
                     extraParams.hasTangentSpace = 0;
                 }
 
-                context.PixelShader.SetShaderResources(0, ShaderTextures.Length, ShaderTextures);
+                context.PSSetShaderResources(0, ShaderTextures);
             }
 
             if(previousRenderType != extraParams.hasTangentSpace)

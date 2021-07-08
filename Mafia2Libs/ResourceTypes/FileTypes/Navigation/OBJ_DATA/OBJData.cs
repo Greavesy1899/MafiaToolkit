@@ -1,12 +1,7 @@
-﻿using SharpDX;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utils.SharpDXExtensions;
-using Utils.StringHelpers;
+using System.Numerics;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Navigation
 {
@@ -121,7 +116,7 @@ namespace ResourceTypes.Navigation
                 pos.Z = -pos.Y;
                 pos.Y = z;
                 vertex.Position = pos;
-                Vector3Extenders.WriteToFile(vertex.Position, writer);
+                Vector3Utils.WriteToFile(vertex.Position, writer);
                 writer.Write(vertex.Unk0);
                 writer.Write(vertex.Unk1);
                 writer.Write(vertex.Unk2);
@@ -164,7 +159,7 @@ namespace ResourceTypes.Navigation
             {
                 VertexStruct vertex = new VertexStruct();
                 vertex.Unk7 = reader.ReadUInt32() & 0x7FFFFFFF;
-                vertex.Position = Vector3Extenders.ReadFromFile(reader);
+                vertex.Position = Vector3Utils.ReadFromFile(reader);
                 Vector3 pos = vertex.Position;
                 float y = pos.Y;
                 pos.Y = -pos.Z;

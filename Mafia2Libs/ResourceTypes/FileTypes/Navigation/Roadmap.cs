@@ -1,11 +1,10 @@
-﻿using SharpDX;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
 //roadmap research
 //https://media.discordapp.net/attachments/464158725079564303/468180499806945310/unknown.png?width=1202&height=676
 //https://media.discordapp.net/attachments/464158725079564303/468180681646931969/unknown.png?width=1442&height=474
@@ -629,7 +628,7 @@ namespace ResourceTypes.Navigation
 
                 for (int y = 0; y != splines[i].NumSplines1; y++)
                 {
-                    data.Points[y] = Vector3Extenders.ReadFromFile(reader);
+                    data.Points[y] = Vector3Utils.ReadFromFile(reader);
                 }
 
                 splines[i] = data;
@@ -738,7 +737,7 @@ namespace ResourceTypes.Navigation
             for (int i = 0; i != junctionPropertiesCount; i++)
             {
                 JunctionDefinition data = new JunctionDefinition();
-                data.Position = Vector3Extenders.ReadFromFile(reader);
+                data.Position = Vector3Utils.ReadFromFile(reader);
                 data.offset0 = reader.ReadInt24();
                 reader.ReadByte();
                 data.junctionSize0 = reader.ReadInt16();
@@ -781,14 +780,14 @@ namespace ResourceTypes.Navigation
 
                     for (int z = 0; z != junctionData[i].Splines[y].PathSize0; z++)
                     {
-                        junctionData[i].Splines[y].Path[z] = Vector3Extenders.ReadFromFile(reader);
+                        junctionData[i].Splines[y].Path[z] = Vector3Utils.ReadFromFile(reader);
                     }
                 }
 
                 junctionData[i].Boundaries = new Vector3[junctionData[i].boundarySize0];
                 for (int y = 0; y != junctionData[i].boundarySize0; y++)
                 {
-                    junctionData[i].Boundaries[y] = Vector3Extenders.ReadFromFile(reader);
+                    junctionData[i].Boundaries[y] = Vector3Utils.ReadFromFile(reader);
                 }
 
                 if (junctionData[i].Unk5 >= 2)
@@ -926,7 +925,7 @@ namespace ResourceTypes.Navigation
                 SplineDefinition splineData = splines[i];
                 for (int y = 0; y != splineData.Points.Length; y++)
                 {
-                    Vector3Extenders.WriteToFile(splineData.Points[y], writer);
+                    Vector3Utils.WriteToFile(splineData.Points[y], writer);
                 }
             }
 
@@ -1026,7 +1025,7 @@ namespace ResourceTypes.Navigation
             for (int i = 0; i < junctionPropertiesCount; i++)
             {
                 JunctionDefinition data = junctionData[i];
-                Vector3Extenders.WriteToFile(data.Position, writer);
+                Vector3Utils.WriteToFile(data.Position, writer);
                 positions[i] = writer.BaseStream.Position;
                 writer.WriteInt24(data.offset0);
                 writer.Write(data.junctionSize0);
@@ -1080,7 +1079,7 @@ namespace ResourceTypes.Navigation
 
                     for (int z = 0; z != junctionData[i].Splines[y].PathSize0; z++)
                     {
-                        Vector3Extenders.WriteToFile(junctionData[i].Splines[y].Path[z], writer);
+                        Vector3Utils.WriteToFile(junctionData[i].Splines[y].Path[z], writer);
                     }
                 }
 
@@ -1094,7 +1093,7 @@ namespace ResourceTypes.Navigation
 
                 for (int y = 0; y < junctionData[i].boundarySize0; y++)
                 {
-                    Vector3Extenders.WriteToFile(junctionData[i].Boundaries[y], writer);
+                    Vector3Utils.WriteToFile(junctionData[i].Boundaries[y], writer);
                 }
 
                 //update unk position

@@ -35,7 +35,6 @@ namespace Utils.Settings
         //Misc vars;
         private static long ElapsedTime;
         private static DiscordController controller;
-        public const string DiscordLibLocation = "libs/discord-rpc";
         public static bool LoggingEnabled;
         public static int Language;
         public static int SerializeSDSOption;
@@ -50,7 +49,7 @@ namespace Utils.Settings
         public static bool CheckForUpdates;
         public static bool SkipGameSelector;
         public static int DefaultGame;
-        public static readonly float Version = 2.14f;
+        public static readonly float Version = 2.20f;
 
         public static void ReadINI()
         {

@@ -1,10 +1,9 @@
-﻿
-using SharpDX;
-using System;
+﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
+using System.Numerics;
 using System.IO;
-using Utils.SharpDXExtensions;
+using Vortice.Mathematics;
+using Utils.VorticeUtils;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
@@ -329,7 +328,7 @@ namespace ResourceTypes.Navigation
                             writer.WriteLine(string.Format("Unk14: {0} {1}", x, count));
                             for (int f = 0; f < dataSet.Points.Length; f++)
                             {
-                                dataSet.Points[f] = Vector3Extenders.ReadFromFile(reader);
+                                dataSet.Points[f] = Vector3Utils.ReadFromFile(reader);
                                 writer.WriteLine("{0}: {1}", f, dataSet.Points[f]);
                             }
                             set.unk14Boxes[x] = dataSet;
@@ -388,7 +387,7 @@ namespace ResourceTypes.Navigation
 
                             for(int f = 0; f < dataSet.Points.Length; f++)
                             {
-                                dataSet.Points[f] = Vector3Extenders.ReadFromFile(reader);
+                                dataSet.Points[f] = Vector3Utils.ReadFromFile(reader);
                                 writer.WriteLine("{0}: {1}", f, dataSet.Points[f]);
                             }
                             currentOffset = dataSet.Offset;
@@ -520,7 +519,7 @@ namespace ResourceTypes.Navigation
                         {
                             foreach(var point in dataSet.Points)
                             {
-                                Vector3Extenders.WriteToFile(point, writer);
+                                Vector3Utils.WriteToFile(point, writer);
                             }
                         }
                     }
@@ -558,7 +557,7 @@ namespace ResourceTypes.Navigation
                         {
                             foreach (var point in dataSet.Points)
                             {
-                                Vector3Extenders.WriteToFile(point, writer);
+                                Vector3Utils.WriteToFile(point, writer);
                             }
                         }
                     }

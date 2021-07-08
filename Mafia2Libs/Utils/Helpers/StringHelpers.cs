@@ -1,22 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Windows.Documents;
 
 namespace Utils.StringHelpers
 {
     public static class StringHelpers
     {
-        //set to 10 because the first 10 are placeholders for render assets.
-        private static int currentRefID = 10;
-
-        public static int GetNewRefID()
-        {
-            currentRefID++;
-            return currentRefID;
-        }
-
         public static string ReadString8(this BinaryReader reader)
         {
             byte size = reader.ReadByte();

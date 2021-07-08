@@ -1,9 +1,10 @@
-﻿using SharpDX;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Numerics;
+using Vortice.Mathematics;
 using static ResourceTypes.Collisions.Opcode.SerializationUtils;
 
 namespace ResourceTypes.Collisions.Opcode
@@ -359,26 +360,27 @@ namespace ResourceTypes.Collisions.Opcode
         {
             geomEpsilon = ReadFloat(reader, platformMismatch);
 
-            boundingSphere.Center.X = ReadFloat(reader, platformMismatch);
-            boundingSphere.Center.Y = ReadFloat(reader, platformMismatch);
-            boundingSphere.Center.Z = ReadFloat(reader, platformMismatch);
-            boundingSphere.Radius = ReadFloat(reader, platformMismatch);
+            // Read Bounding sphere
+            float XComp = ReadFloat(reader, platformMismatch);
+            float YComp = ReadFloat(reader, platformMismatch);
+            float ZComp = ReadFloat(reader, platformMismatch);
+            Vector3 Center = new Vector3(XComp, YComp, ZComp);
 
-            this.BoundingBox = new BoundingBox
-            {
-                Minimum =
-                {
-                    X = ReadFloat(reader, platformMismatch),
-                    Y = ReadFloat(reader, platformMismatch),
-                    Z = ReadFloat(reader, platformMismatch)
-                },
-                Maximum =
-                {
-                    X = ReadFloat(reader, platformMismatch),
-                    Y = ReadFloat(reader, platformMismatch),
-                    Z = ReadFloat(reader, platformMismatch)
-                }
-            };
+            float Radius = ReadFloat(reader, platformMismatch);
+            boundingSphere = new BoundingSphere(Center, Radius);
+
+            // Read bounding box
+            XComp = ReadFloat(reader, platformMismatch);
+            YComp = ReadFloat(reader, platformMismatch);
+            ZComp = ReadFloat(reader, platformMismatch);
+            Vector3 BBoxMin = new Vector3(XComp, YComp, ZComp);
+
+            XComp = ReadFloat(reader, platformMismatch);
+            YComp = ReadFloat(reader, platformMismatch);
+            ZComp = ReadFloat(reader, platformMismatch);
+            Vector3 BBoxMax = new Vector3(XComp, YComp, ZComp);
+
+            BoundingBox = new BoundingBox(BBoxMin, BBoxMax);
         }
 
         private void ReadPhysProperties(BinaryReader reader, bool platformMismatch)
@@ -387,15 +389,19 @@ namespace ResourceTypes.Collisions.Opcode
 
             if (mass != -1.0f)
             {
-                inertiaTensor.M11 = ReadFloat(reader, platformMismatch);
-                inertiaTensor.M12 = ReadFloat(reader, platformMismatch);
-                inertiaTensor.M13 = ReadFloat(reader, platformMismatch);
-                inertiaTensor.M21 = ReadFloat(reader, platformMismatch);
-                inertiaTensor.M22 = ReadFloat(reader, platformMismatch);
-                inertiaTensor.M23 = ReadFloat(reader, platformMismatch);
-                inertiaTensor.M31 = ReadFloat(reader, platformMismatch);
-                inertiaTensor.M32 = ReadFloat(reader, platformMismatch);
-                inertiaTensor.M33 = ReadFloat(reader, platformMismatch);
+                // Read Interia Tensor
+                float M11 = ReadFloat(reader, platformMismatch);
+                float M12 = ReadFloat(reader, platformMismatch);
+                float M13 = ReadFloat(reader, platformMismatch);
+                float M21 = ReadFloat(reader, platformMismatch);
+                float M22 = ReadFloat(reader, platformMismatch);
+                float M23 = ReadFloat(reader, platformMismatch);
+                float M31 = ReadFloat(reader, platformMismatch);
+                float M32 = ReadFloat(reader, platformMismatch);
+                float M33 = ReadFloat(reader, platformMismatch);
+                inertiaTensor = new Matrix3x3(M11, M12, M13, M21, M22, M23, M31, M32, M33);
+
+                // Read CenterOfMass
                 centerOfMass.X = ReadFloat(reader, platformMismatch);
                 centerOfMass.Y = ReadFloat(reader, platformMismatch);
                 centerOfMass.Z = ReadFloat(reader, platformMismatch);

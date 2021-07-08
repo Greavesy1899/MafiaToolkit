@@ -1,13 +1,13 @@
 ﻿using Mafia2Tool;
+using Mafia2Tool.Forms;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
-using SharpDX;
 using System;
-using Mafia2Tool.Forms;
-using Utils.Language;
-using WeifenLuo.WinFormsUI.Docking;
-using Utils.SharpDXExtensions;
 using System.Collections.Generic;
+using System.Numerics;
+using Utils.Language;
+using Utils.VorticeUtils;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Forms.Docking
 {
@@ -106,6 +106,7 @@ namespace Forms.Docking
                         }
                     }
                 }
+
                 hasLoadedMaterials = true;
             }
         }
@@ -116,10 +117,10 @@ namespace Forms.Docking
             if (FrameResource.IsFrameType(currentObject))
             {
                 FrameObjectBase fObject = (currentObject as FrameObjectBase);
-                Vector3 position;
-                Quaternion rotation2;
-                Vector3 scale;
-                fObject.LocalTransform.Decompose(out scale, out rotation2, out position);
+                Vector3 position = Vector3.Zero;
+                Quaternion rotation2 = Quaternion.Identity;
+                Vector3 scale = Vector3.Zero;
+                Matrix4x4.Decompose(fObject.LocalTransform, out scale, out rotation2, out position);
 
                 CurrentEntry.Text = fObject.Name.ToString();
                 PositionXNumeric.Value = Convert.ToDecimal(position.X);
@@ -168,7 +169,7 @@ namespace Forms.Docking
                 if (FrameResource.IsFrameType(currentObject))
                 {
                     FrameObjectBase fObject = (currentObject as FrameObjectBase);
-                    fObject.LocalTransform = MatrixExtensions.SetMatrix(rotation, scale, position);
+                    fObject.LocalTransform = MatrixUtils.SetMatrix(rotation, scale, position);
                 }
                 else if (currentObject is ResourceTypes.Collisions.Collision.Placement)
                 {

@@ -61,7 +61,11 @@ namespace Core.IO
 
         public virtual bool Open()
         {
-            return (Process.Start(file.FullName) != null ? true : false);
+            ProcessStartInfo StartInfo = new ProcessStartInfo();
+            StartInfo.UseShellExecute = true;
+            StartInfo.FileName = file.FullName;
+
+            return (Process.Start(StartInfo) != null ? true : false);
         }
 
         public virtual void Save()

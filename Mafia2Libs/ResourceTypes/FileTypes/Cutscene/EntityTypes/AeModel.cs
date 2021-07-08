@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using SharpDX;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
@@ -43,7 +43,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public byte Unk06 { get; set; }
         public int Unk07 { get; set; }
         public int Unk08 { get; set; }
-        public Matrix Transform { get; set; }
+        public Matrix4x4 Transform { get; set; }
         public string Name4 { get; set; }
 
         public override void ReadFromFile(MemoryStream stream, bool isBigEndian)
@@ -52,7 +52,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Unk06 = stream.ReadByte8();
             Unk07 = stream.ReadInt32(isBigEndian);
             Unk08 = stream.ReadInt32(isBigEndian);
-            Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            Transform = MatrixUtils.ReadFromFile(stream, isBigEndian);
             Name4 = stream.ReadString16(isBigEndian);
         }
 
@@ -89,7 +89,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             if (stream.Position != stream.Length)
             {
                 Unk02 = stream.ReadInt32(isBigEndian);
-                Unk03 = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+                Unk03 = Vector3Utils.ReadFromFile(stream, isBigEndian);
                 Unk04 = stream.ReadSingle(isBigEndian);
                 Unk05 = stream.ReadBytes(24);
                 Unk06 = stream.ReadSingle(isBigEndian);

@@ -1,8 +1,8 @@
-﻿using WeifenLuo.WinFormsUI.Docking;
-using System.Windows.Forms;
-using ResourceTypes.FrameResource;
-using SharpDX;
+﻿using ResourceTypes.FrameResource;
 using System;
+using System.Numerics;
+using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Forms.Docking
 {
@@ -213,7 +213,7 @@ namespace Forms.Docking
 
             if (FrameResource.IsFrameType(data))
             {
-                return (data as FrameObjectBase).WorldTransform.TranslationVector;
+                return (data as FrameObjectBase).WorldTransform.Translation;
             }
 
             if(data.GetType() == typeof(ResourceTypes.Collisions.Collision.Placement))
@@ -223,7 +223,7 @@ namespace Forms.Docking
                 return (data as Rendering.Graphics.RenderJunction).Data.Position;
 
             if (data.GetType() == typeof(Rendering.Graphics.RenderNav))
-                return (data as Rendering.Graphics.RenderNav).NavigationBox.Transform.TranslationVector;
+                return (data as Rendering.Graphics.RenderNav).NavigationBox.Transform.Translation;
 
             if (data.GetType() == typeof(ResourceTypes.Actors.ActorEntry))
                 return (data as ResourceTypes.Actors.ActorEntry).Position;

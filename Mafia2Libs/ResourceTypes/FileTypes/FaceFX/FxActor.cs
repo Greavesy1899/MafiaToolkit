@@ -1,8 +1,8 @@
-﻿using SharpDX;
-using System.IO;
+﻿using System.IO;
 using System.ComponentModel;
-using Utils.SharpDXExtensions;
 using Utils.StringHelpers;
+using System.Numerics;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.OC3.FaceFX
 {
@@ -15,16 +15,16 @@ namespace ResourceTypes.OC3.FaceFX
 
         public void ReadFromFile(BinaryReader reader)
         {
-            Position = Vector3Extenders.ReadFromFile(reader);
+            Position = Vector3Utils.ReadFromFile(reader);
             Rotation = QuaternionExtensions.ReadFromFile(reader);
-            Scale = Vector3Extenders.ReadFromFile(reader);
+            Scale = Vector3Utils.ReadFromFile(reader);
         }
 
         public void WriteToFile(BinaryWriter writer)
         {
-            Vector3Extenders.WriteToFile(Position, writer);
+            Vector3Utils.WriteToFile(Position, writer);
             QuaternionExtensions.WriteToFile(Rotation, writer);
-            Vector3Extenders.WriteToFile(Scale, writer);
+            Vector3Utils.WriteToFile(Scale, writer);
         }
     }
 
