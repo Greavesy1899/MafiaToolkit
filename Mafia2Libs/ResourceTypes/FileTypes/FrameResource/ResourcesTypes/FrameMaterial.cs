@@ -1,12 +1,11 @@
 ﻿using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.Materials;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SharpDX;
-using Utils.SharpDXExtensions;
-using ResourceTypes.Materials;
-using System.ComponentModel;
 using Utils.Extensions;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.FrameResource
 {

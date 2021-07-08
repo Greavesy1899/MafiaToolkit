@@ -1,33 +1,33 @@
-﻿using Rendering.Graphics;
-using Rendering.Input;
-using SharpDX.Windows;
-using System;
-using System.IO;
-using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Linq;
-using SharpDX;
-using ResourceTypes.FrameNameTable;
-using ResourceTypes.FrameResource;
-using ResourceTypes.BufferPools;
-using Collision = ResourceTypes.Collisions.Collision;
-using Utils.Settings;
-using Utils.Language;
+﻿using Forms.Docking;
 using Forms.EditorControls;
-using Utils.StringHelpers;
-using Forms.Docking;
-using WeifenLuo.WinFormsUI.Docking;
-using Utils.Models;
-using ResourceTypes.Navigation;
-using ResourceTypes.Materials;
-using Utils.SharpDXExtensions;
-using ResourceTypes.Collisions;
-using System.Diagnostics;
-using ResourceTypes.Actors;
-using Utils.Extensions;
+using Gibbed.Illusion.FileFormats.Hashing;
 using Rendering.Core;
 using Rendering.Factories;
-using Gibbed.Illusion.FileFormats.Hashing;
+using Rendering.Graphics;
+using Rendering.Input;
+using ResourceTypes.Actors;
+using ResourceTypes.BufferPools;
+using ResourceTypes.Collisions;
+using ResourceTypes.FrameNameTable;
+using ResourceTypes.FrameResource;
+using ResourceTypes.Materials;
+using ResourceTypes.Navigation;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Numerics;
+using System.Windows.Forms;
+using Toolkit.Core;
+using Utils.Extensions;
+using Utils.Language;
+using Utils.Models;
+using Utils.Settings;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
+using WeifenLuo.WinFormsUI.Docking;
+using Collision = ResourceTypes.Collisions.Collision;
 
 namespace Mafia2Tool
 {
@@ -107,6 +107,8 @@ namespace Mafia2Tool
 
         private void InitDockingControls()
         {
+            VS2015LightTheme BlueTheme = new VS2015LightTheme();
+            dockPanel1.Theme = BlueTheme;
             dockPanel1.Controls.Add(RenderPanel);
             RenderPanel.Resize += RenderPanel_Resize;
             RenderPanel.MouseWheel += RenderPanel_MouseWheel;
@@ -389,10 +391,10 @@ namespace Mafia2Tool
                             if(FrameResource.IsFrameType(tag))
                             {
                                 FrameObjectBase fObject = (tag as FrameObjectBase);
-                                var translation = MoveObjectWithMouse(fObject.LocalTransform.TranslationVector.Z, mousePos.X, mousePos.Y);
+                                var translation = MoveObjectWithMouse(fObject.LocalTransform.Translation.Z, mousePos.X, mousePos.Y);
                                 var local = fObject.LocalTransform;
-                                translation.Z = local.TranslationVector.Z;
-                                fObject.LocalTransform = MatrixExtensions.SetTranslationVector(local, translation);
+                                translation.Z = local.Translation.Z;
+                                fObject.LocalTransform = MatrixUtils.SetTranslationVector(local, translation);
                                 TreeViewUpdateSelected();
                                 ApplyChangesToRenderable(fObject);
                             }
@@ -645,7 +647,7 @@ namespace Mafia2Tool
                 for (int i = 0; i != SceneData.roadMap.splines.Length; i++)
                 {
                     RenderRoad road = new RenderRoad();
-                    int generatedID = StringHelpers.GetNewRefID();
+                    int generatedID = RefManager.GetNewRefID();
                     road.Init(SceneData.roadMap.splines[i]);
                     assets.Add(generatedID, road);
                     TreeNode child = new TreeNode(i.ToString());
@@ -657,7 +659,7 @@ namespace Mafia2Tool
 
                 for (int i = 0; i < SceneData.roadMap.junctionData.Length; i++)
                 {
-                    int generatedID = StringHelpers.GetNewRefID();
+                    int generatedID = RefManager.GetNewRefID();
                     RenderJunction junction = new RenderJunction();
                     junction.Init(SceneData.roadMap.junctionData[i]);
                     assets.Add(generatedID, junction);
@@ -672,14 +674,14 @@ namespace Mafia2Tool
             }
             if (SceneData.HPDData != null)
             {
-                int generatedID = StringHelpers.GetNewRefID();
+                int generatedID = RefManager.GetNewRefID();
                 TreeNode navNode = new TreeNode();
                 navNode.Text = string.Format("HPD");
                 navNode.Name = generatedID.ToString();
 
                 for (int i = 0; i < SceneData.HPDData.unkData.Count; i++)
                 {
-                    generatedID = StringHelpers.GetNewRefID();
+                    generatedID = RefManager.GetNewRefID();
                     TreeNode hpdNode = new TreeNode();
                     hpdNode.Text = string.Format("NODE: {0}", i);
                     hpdNode.Name = generatedID.ToString();
@@ -763,7 +765,7 @@ namespace Mafia2Tool
 
                     if (nodes.Length > 0)
                     {
-                        int refID = StringHelpers.GetNewRefID();
+                        int refID = RefManager.GetNewRefID();
                         RenderInstance instance = new RenderInstance();
                         instance.Init(RenderStorageSingleton.Instance.StaticCollisions[placement.Hash]);
                         instance.SetTransform(placement.Transform);
@@ -785,7 +787,7 @@ namespace Mafia2Tool
                 animalTrafficRoot.Tag = "Folder";
                 for (int i = 0; i < SceneData.ATLoader.Paths.Length; i++)
                 {
-                    int refID = StringHelpers.GetNewRefID();
+                    int refID = RefManager.GetNewRefID();
                     RenderATP atp = new RenderATP();
                     atp.Init(SceneData.ATLoader.Paths[i]);
                     TreeNode child = new TreeNode();
@@ -927,7 +929,7 @@ namespace Mafia2Tool
                                 definition.FrameIndex = (uint)frameIndexes[x];
                                 frame = nFrame;
                                 frame.Item = actor.Items[c];
-                                frame.LocalTransform = MatrixExtensions.SetMatrix(actor.Items[c].Rotation, actor.Items[c].Scale, actor.Items[c].Position);
+                                frame.LocalTransform = MatrixUtils.SetMatrix(actor.Items[c].Rotation, actor.Items[c].Scale, actor.Items[c].Position);
                                 sorted = true;
                             }
                         }
@@ -1101,8 +1103,8 @@ namespace Mafia2Tool
             SceneData.FrameResource.FrameMaterials.Add(model.FrameMaterial.RefID, model.FrameMaterial);
             SceneData.FrameResource.FrameGeometries.Add(model.FrameGeometry.RefID, model.FrameGeometry);
 
-            sm.LocalTransform = Matrix.Identity;
-            sm.WorldTransform = Matrix.Identity;
+            sm.LocalTransform = Matrix4x4.Identity;
+            sm.WorldTransform = Matrix4x4.Identity;
 
             CreateMeshBuffers(model);
             return sm;
@@ -1218,9 +1220,10 @@ namespace Mafia2Tool
                     continue;
                 }
 
-                var vWM = Matrix.Invert(model.Value.Transform);
+                Matrix4x4 vWM = Matrix4x4.Identity;
+                Matrix4x4.Invert(model.Value.Transform, out vWM);
                 var localRay = new Ray(
-                    Vector3.TransformCoordinate(ray.Position, vWM),
+                    Vector3Utils.TransformCoordinate(ray.Position, vWM),
                     Vector3.TransformNormal(ray.Direction, vWM)
                 );
                 if (model.Value is RenderModel)
@@ -1228,16 +1231,16 @@ namespace Mafia2Tool
                     RenderModel mesh = (model.Value as RenderModel);
                     var bbox = mesh.BoundingBox;
 
-                    if (!localRay.Intersects(ref bbox)) continue;
+                    if (localRay.Intersects(bbox) == 0.0f) continue;
 
                     for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
                     {
                         var v0 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3]].Position;
                         var v1 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 1]].Position;
                         var v2 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position;
-                        float t;
 
-                        if (!localRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+                        float t = 0.0f;
+                        if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
 
                         if (t < 0.0f || float.IsNaN(t))
                         {
@@ -1263,25 +1266,16 @@ namespace Mafia2Tool
                     RenderStaticCollision collision = instance.GetCollision();
                     var bbox = collision.BoundingBox;
 
-                    if (!localRay.Intersects(ref bbox)) continue;
+                    if (localRay.Intersects(bbox) == 0.0f) continue;
 
                     for (var i = 0; i < collision.Indices.Length / 3; i++)
                     {
                         var v0 = collision.Vertices[collision.Indices[i * 3]].Position;
                         var v1 = collision.Vertices[collision.Indices[i * 3 + 1]].Position;
                         var v2 = collision.Vertices[collision.Indices[i * 3 + 2]].Position;
-                        float t;
 
-                        if (!localRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
-
-                        if (t < 0.0f || float.IsNaN(t))
-                        {
-                            //if (SceneData.FrameResource.FrameObjects.ContainsKey(model.Key))
-                            //{
-                            //    var frame = (SceneData.FrameResource.FrameObjects[model.Key] as FrameObjectBase);
-                            //    Utils.Logging.Log.WriteLine(string.Format("The toolkit has failed to analyse a model: {0} {1}", frame.Name, t));
-                            //}
-                        }
+                        float t = 0.0f;                
+                        if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
 
                         var worldPosition = ray.Position + t * ray.Direction;
                         var distance = (worldPosition - ray.Position).LengthSquared();
@@ -1679,7 +1673,7 @@ namespace Mafia2Tool
                 int.TryParse(node.Text, out pIdxName);
                 pIdxName++;
 
-                int refID = StringHelpers.GetNewRefID();
+                int refID = RefManager.GetNewRefID();
                 TreeNode child = new TreeNode();
                 child.Text = pIdxName.ToString();
                 child.Name = refID.ToString();
@@ -1841,7 +1835,7 @@ namespace Mafia2Tool
             road.Backward.Lanes[0].Flags = LaneTypes.None;
 
 
-            int generatedID = StringHelpers.GetNewRefID();
+            int generatedID = RefManager.GetNewRefID();
             RenderStorageSingleton.Instance.SplineStorage.Add(spline);
             Graphics.InitObjectStack.Add(generatedID, road);
             int nodeID = (roadRoot.Nodes.Count);
@@ -1902,7 +1896,7 @@ namespace Mafia2Tool
             road.Backward.Lanes[0].Flags = LaneTypes.None;
 
 
-            int generatedID = StringHelpers.GetNewRefID();
+            int generatedID = RefManager.GetNewRefID();
             RenderStorageSingleton.Instance.SplineStorage.Add(spline);
             Graphics.InitObjectStack.Add(generatedID, road);
             int nodeID = (roadRoot.Nodes.Count);
@@ -1923,7 +1917,7 @@ namespace Mafia2Tool
             definition.JunctionIDX = junctionRoot.Nodes.Count;
             junction.Init(definition);
 
-            int generatedID = StringHelpers.GetNewRefID();
+            int generatedID = RefManager.GetNewRefID();
             Graphics.InitObjectStack.Add(generatedID, junction);
             int nodeID = (junctionRoot.Nodes.Count);
             TreeNode child = new TreeNode(nodeID.ToString());
@@ -2083,7 +2077,7 @@ namespace Mafia2Tool
             }
 
             // Add new Placement object
-            int refID = StringHelpers.GetNewRefID();
+            int refID = RefManager.GetNewRefID();
             TreeNode child = new TreeNode();
             child.Text = ExistingCollisionNode.Nodes.Count.ToString();
             child.Name = refID.ToString();
@@ -2133,9 +2127,23 @@ namespace Mafia2Tool
             {
                 bHideChildren = false;
             }
-            else if(e.KeyCode == Keys.Delete)
+            else if (e.KeyCode == Keys.Delete)
             {
                 dSceneTree.DeleteButton.PerformClick();
+            }
+            else if (e.KeyCode == Keys.Up)
+            {
+                if (dSceneTree.SelectedNode.PrevVisibleNode != null)
+                {
+                    dSceneTree.SelectedNode = dSceneTree.SelectedNode.PrevVisibleNode;
+                }
+            }
+            else if (e.KeyCode == Keys.Down)
+            {
+                if (dSceneTree.SelectedNode.NextVisibleNode != null)
+                {
+                    dSceneTree.SelectedNode = dSceneTree.SelectedNode.NextVisibleNode;
+                }
             }
 
             e.Handled = true;

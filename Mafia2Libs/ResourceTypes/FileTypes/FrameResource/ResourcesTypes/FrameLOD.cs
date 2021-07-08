@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using SharpDX;
-using Utils.Models;
-using Utils.SharpDXExtensions;
+using System.Numerics;
 using Utils.Extensions;
+using Utils.Models;
 using Utils.Types;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.FrameResource
 {

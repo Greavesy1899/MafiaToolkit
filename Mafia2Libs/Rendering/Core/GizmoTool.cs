@@ -1,8 +1,9 @@
 ﻿using Rendering.Graphics;
-using SharpDX;
-using SharpDX.Direct3D11;
-using SharpDX.Mathematics;
 using System;
+using System.Numerics;
+using Utils.VorticeUtils;
+using Vortice.Direct3D11;
+using Vortice.Mathematics;
 
 namespace Rendering.Core
 {
@@ -27,23 +28,23 @@ namespace Rendering.Core
             bIsActive = false;
         }
 
-        public void InitBuffers(Device d3d, DeviceContext d3dContext)
+        public void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext d3dContext)
         {
             GizmoModel.InitBuffers(d3d, d3dContext);
         }
 
-        public void UpdateBuffers(Device d3d, DeviceContext d3dContext)
+        public void UpdateBuffers(ID3D11Device d3d, ID3D11DeviceContext d3dContext)
         {
             GizmoModel.UpdateBuffers(d3d, d3dContext);
         }
 
-        public void Render(Device d3d, DeviceContext d3dContext, Camera camera)
+        public void Render(ID3D11Device d3d, ID3D11DeviceContext d3dContext, Camera camera)
         {
             GizmoModel.Render(d3d, d3dContext, camera);
         }
         
         // TODO: Consider this as an event?
-        public void OnSelectEntry(Matrix newTransform, bool bDoRender)
+        public void OnSelectEntry(Matrix4x4 newTransform, bool bDoRender)
         {
             GizmoModel.SetTransform(newTransform);
             GizmoModel.DoRender = bDoRender;
@@ -86,8 +87,8 @@ namespace Rendering.Core
             {
                 if (delta != Vector3.Zero)
                 {
-                    Matrix transform = GizmoModel.Transform;
-                    transform.TranslationVector += delta;
+                    Matrix4x4 transform = GizmoModel.Transform;
+                    transform.Translation += delta;
                     GizmoModel.SetTransform(transform);
                 }
             }
@@ -99,16 +100,17 @@ namespace Rendering.Core
         {
             var lowest = float.MaxValue;
             var materialID = -1;
-
-            var vWM = Matrix.Invert(GizmoModel.Transform);
+            
+            Matrix4x4 InvertedWM = Matrix4x4.Identity;
+            Matrix4x4.Invert(GizmoModel.Transform, out InvertedWM);
             var localRay = new Ray(
-                Vector3.TransformCoordinate(CameraRay.Position, vWM),
-                Vector3.TransformNormal(CameraRay.Direction, vWM)
+                Vector3Utils.TransformCoordinate(CameraRay.Position, InvertedWM),
+                Vector3.TransformNormal(CameraRay.Direction, InvertedWM)
             );
 
             var bbox = GizmoModel.BoundingBox;
 
-            if (!localRay.Intersects(ref bbox))
+            if (localRay.Intersects(bbox) > 0.0f)
             {
                 return -1;
             }
@@ -122,12 +124,12 @@ namespace Rendering.Core
                     var v0 = GizmoModel.LODs[0].Vertices[GizmoModel.LODs[0].Indices[x * 3]].Position;
                     var v1 = GizmoModel.LODs[0].Vertices[GizmoModel.LODs[0].Indices[x * 3 + 1]].Position;
                     var v2 = GizmoModel.LODs[0].Vertices[GizmoModel.LODs[0].Indices[x * 3 + 2]].Position;
-                    float t;
+                    float t = 1.0f;
 
-                    if (!localRay.Intersects(ref v0, ref v1, ref v2, out t))
+                    /*if (!localRay.Intersects(v0, v1, v2, out t))
                     {
                         continue;
-                    }
+                    }*/
 
                     WorldPosition = CameraRay.Position + t * CameraRay.Direction;
                     var distance = (WorldPosition - CameraRay.Position).LengthSquared();

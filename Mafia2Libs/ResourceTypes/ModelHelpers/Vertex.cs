@@ -1,6 +1,7 @@
 ﻿using System;
-using SharpDX;
-using Utils.SharpDXExtensions;
+using System.Numerics;
+using Vortice.Mathematics;
+using Utils.VorticeUtils;
 
 namespace Utils.Models
 {
@@ -175,7 +176,7 @@ namespace Utils.Models
             Array.Copy(tempPosData, 0, data, i, 2);
 
             //Do Y
-            UVs[uvNum].Y = -uvs[uvNum].Y;
+            UVs[uvNum] = new Half2(UVs[uvNum].X, (Vortice.Mathematics.Half)(-UVs[uvNum].Y));
             tempPosData = HalfExtenders.GetBytes(UVs[uvNum].Y);
             Array.Copy(tempPosData, 0, data, i + 2, 2);
         }

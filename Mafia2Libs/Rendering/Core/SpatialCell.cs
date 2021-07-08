@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Rendering.Graphics;
-using SharpDX.Direct3D11;
-using SharpDX;
+﻿using Rendering.Graphics;
 using ResourceTypes.Navigation;
+using System.Collections.Generic;
+using Toolkit.Core;
 using Utils.StringHelpers;
+using Vortice.Direct3D11;
+using Vortice.Mathematics;
 
 namespace Rendering.Core
 {
@@ -27,7 +27,7 @@ namespace Rendering.Core
             assets = new Dictionary<int, IRenderer>();
             RenderNavCell cell = new RenderNavCell();
             cell.Init(cellData);
-            assets.Add(StringHelpers.GetNewRefID(), cell);
+            assets.Add(RefManager.GetNewRefID(), cell);
             boundingBox = extents;
         }
 
@@ -36,7 +36,7 @@ namespace Rendering.Core
             assets.Add(key, asset);
         }
 
-        public void Initialise(Device device, DeviceContext deviceContext)
+        public void Initialise(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             foreach (KeyValuePair<int, IRenderer> entry in assets)
             {
@@ -44,7 +44,7 @@ namespace Rendering.Core
             }
         }
 
-        public void Render(Device device, DeviceContext deviceContext, Camera camera)
+        public void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
             foreach (KeyValuePair<int, IRenderer> entry in assets)
             {

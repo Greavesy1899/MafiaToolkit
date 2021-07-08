@@ -1,7 +1,7 @@
-﻿using SharpDX;
-using System.IO;
+﻿using System.IO;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.KeyParams
 {
@@ -37,7 +37,7 @@ namespace ResourceTypes.Cutscene.KeyParams
                 position.Unk01 = stream.ReadInt32(isBigEndian);
                 position.Unk02 = stream.ReadInt32(isBigEndian);
                 position.Unk03 = stream.ReadByte8();
-                position.Position = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+                position.Position = Vector3Utils.ReadFromFile(stream, isBigEndian);
                 Positions[i] = position;
             }
 

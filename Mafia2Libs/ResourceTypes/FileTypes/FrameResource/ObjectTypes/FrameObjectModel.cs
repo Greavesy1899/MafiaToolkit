@@ -1,10 +1,9 @@
-﻿using SharpDX;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
 using Utils.Types;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.FrameResource
 {
@@ -17,8 +16,8 @@ namespace ResourceTypes.FrameResource
         int blendInfoIndex;
         int skeletonIndex;
         int skeletonHierachyIndex;
-        Matrix[] restTransform;
-        Matrix unkTransform;
+        Matrix4x4[] restTransform;
+        Matrix4x4 unkTransform;
         AttachmentReference[] attachmentReferences;
         uint unkFlags;
         int physSplitSize;
@@ -46,11 +45,11 @@ namespace ResourceTypes.FrameResource
             get { return blendMeshSplits; }
             set { blendMeshSplits = value; }
         }
-        public Matrix[] RestTransform {
+        public Matrix4x4[] RestTransform {
             get { return restTransform; }
             set { restTransform = value; }
         }
-        public Matrix UnkTransform {
+        public Matrix4x4 UnkTransform {
             get { return unkTransform; }
             set { unkTransform = value; }
         }
@@ -94,7 +93,7 @@ namespace ResourceTypes.FrameResource
 
         public FrameObjectModel(FrameObjectSingleMesh other) : base(other)
         {
-            restTransform = new Matrix[0];
+            restTransform = new Matrix4x4[0];
             attachmentReferences = new AttachmentReference[0];
             blendMeshSplits = new WeightedByMeshSplit[0];
             hitBoxInfo = new HitBoxInfo[0];
@@ -108,13 +107,13 @@ namespace ResourceTypes.FrameResource
             skeleton = other.skeleton;
             blendInfo = other.blendInfo;
 
-            restTransform = new Matrix[skeleton.NumBones[0]];
+            restTransform = new Matrix4x4[skeleton.NumBones[0]];
             for (int i = 0; i != restTransform.Length; i++)
-            {
-                restTransform[i] = new Matrix(other.restTransform[i].ToArray());
+            {              
+                restTransform[i] = MatrixUtils.CopyFrom(other.restTransform[i]);
             }
 
-            unkTransform = new Matrix(other.unkTransform.ToArray());
+            unkTransform = MatrixUtils.CopyFrom(other.unkTransform);
 
             attachmentReferences = new AttachmentReference[other.attachmentReferences.Length];
             for (int i = 0; i != attachmentReferences.Length; i++)
@@ -152,14 +151,14 @@ namespace ResourceTypes.FrameResource
         public void ReadFromFilePart2(MemoryStream stream, bool isBigEndian)
         {
             //do rest matrices.
-            restTransform = new Matrix[skeleton.NumBones[0]];
+            restTransform = new Matrix4x4[skeleton.NumBones[0]];
             for (int i = 0; i < restTransform.Length; i++)
             {
-                restTransform[i] = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+                restTransform[i] = MatrixUtils.ReadFromFile(stream, isBigEndian);
             }
 
             //unknown transform.
-            unkTransform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            unkTransform = MatrixUtils.ReadFromFile(stream, isBigEndian);
 
             //attachments.
             int length1 = stream.ReadInt32(isBigEndian);
@@ -213,11 +212,11 @@ namespace ResourceTypes.FrameResource
             //do rest matrices.
             for (int i = 0; i < restTransform.Length; i++)
             {
-                MatrixExtensions.WriteToFile(restTransform[i], writer);
+                MatrixUtils.WriteToFile(restTransform[i], writer);
             }
 
             //unknown transform.
-            MatrixExtensions.WriteToFile(unkTransform, writer);
+            MatrixUtils.WriteToFile(unkTransform, writer);
 
             //attachments.
             writer.Write(attachmentReferences.Length);

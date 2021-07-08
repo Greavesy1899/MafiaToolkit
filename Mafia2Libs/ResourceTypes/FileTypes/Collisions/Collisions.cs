@@ -1,12 +1,13 @@
-﻿using System;
+﻿using ResourceTypes.Collisions.Opcode;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using ResourceTypes.Collisions.Opcode;
-using SharpDX;
+using System.Numerics;
 using Utils.Helpers;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.Collisions
 {
@@ -195,22 +196,22 @@ namespace ResourceTypes.Collisions
             public Vector3 RotationDegrees {
                 get {
                     Vector3 vec = new Vector3();
-                    vec.X = MathUtil.RadiansToDegrees(Rotation.X);
-                    vec.Y = MathUtil.RadiansToDegrees(Rotation.Y);
+                    vec.X = MathHelper.ToDegrees(Rotation.X);
+                    vec.Y = MathHelper.ToDegrees(Rotation.Y);
                     //vec.X = ((vec.X + vec.Y) * -1);
                     //vec.X = ((vec.X + vec.Y) * -1);
                     vec.Y = ((vec.X + vec.Y) * -1);
                     vec.X = 0.0f;
-                    vec.Z = /*Unk5 != 128 ? MathUtil.RadiansToDegrees(Rotation.Z) : */-MathUtil.RadiansToDegrees(Rotation.Z);
+                    vec.Z = /*Unk5 != 128 ? MathUtil.RadiansToDegrees(Rotation.Z) : */-MathHelper.ToRadians(Rotation.Z);
                     return vec;
                 }
                 set {
                     Vector3 vec = new Vector3();
-                    vec.X = MathUtil.DegreesToRadians(value.X);
-                    vec.Y = MathUtil.DegreesToRadians(value.Y);
+                    vec.X = MathHelper.ToRadians(value.X);
+                    vec.Y = MathHelper.ToRadians(value.Y);
                     //vec.X = ((vec.X + vec.Y) * -1);
                     //vec.Y = ((vec.X + vec.Y) * -1);
-                    vec.Z = /*Unk5 != 128 ? MathUtil.DegreesToRadians(value.Z) : */-MathUtil.DegreesToRadians(value.Z);
+                    vec.Z = /*Unk5 != 128 ? MathUtil.DegreesToRadians(value.Z) : */-MathHelper.ToRadians(value.Z);
                     Rotation = vec;
                 }
             }
@@ -218,12 +219,12 @@ namespace ResourceTypes.Collisions
             /// <summary>
             /// Helper property to easily build the transform for the Toolkit render system.
             /// </summary>
-            public Matrix Transform { 
+            public Matrix4x4 Transform { 
                 get {
-                    
-                    Matrix transform = MatrixExtensions.SetMatrix(RotationDegrees, Vector3.One, Position);
+
+                    Matrix4x4 transform = MatrixUtils.SetMatrix(RotationDegrees, Vector3.One, Position);
                     Debug.Assert(!transform.IsNaN());
-                    transform.TranslationVector = Position;
+                    transform.Translation = Position;
                     return transform;
                 }
             }
@@ -253,8 +254,8 @@ namespace ResourceTypes.Collisions
 
             public void ReadFromFile(BinaryReader reader)
             {
-                Position = Vector3Extenders.ReadFromFile(reader);
-                Rotation = Vector3Extenders.ReadFromFile(reader);
+                Position = Vector3Utils.ReadFromFile(reader);
+                Rotation = Vector3Utils.ReadFromFile(reader);
                 Hash = reader.ReadUInt64();
                 Unk4 = reader.ReadInt32();
                 Unk5 = reader.ReadByte();

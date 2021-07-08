@@ -1,7 +1,6 @@
 ﻿using System.Runtime.InteropServices;
-using SharpDX;
 
-namespace System
+namespace Toolkit.Mathematics
 {
     /// <summary>
     /// Helper class for Half conversions and some low level operations.

@@ -1,37 +1,37 @@
 ﻿using System.IO;
-using SharpDX;
-using Utils.SharpDXExtensions;
+using System.Numerics;
+using Utils.VorticeUtils;
 
 namespace ApexSDK
 {
-    public class ScaleAlongVelocityModifier : Modifier
+    public class SimpleScaleModifier : Modifier
     {
-        private float scaleFactor;
+        private Vector3 scaleFactor;
 
-        public float ScaleFactor {
+        public Vector3 ScaleFactor {
             get { return scaleFactor; }
             set { scaleFactor = value; }
         }
 
-        public ScaleAlongVelocityModifier()
+        public SimpleScaleModifier()
         {
-            Type = ModifierType.ScaleAlongVelocity;
+            Type = ModifierType.SimpleScale;
         }
 
-        public ScaleAlongVelocityModifier(BinaryReader reader)
+        public SimpleScaleModifier(BinaryReader reader)
         {
             ReadFromFile(reader);
-            Type = ModifierType.ScaleAlongVelocity;
+            Type = ModifierType.SimpleScale;
         }
 
         public override void ReadFromFile(BinaryReader reader)
         {
-            scaleFactor = reader.ReadSingle();
+            scaleFactor = Vector3Utils.ReadFromFile(reader);
         }
 
         public override void WriteToFile(BinaryWriter writer)
         {
-            writer.Write(scaleFactor);
+            Vector3Utils.WriteToFile(scaleFactor, writer);
         }
 
         public override string ToString()

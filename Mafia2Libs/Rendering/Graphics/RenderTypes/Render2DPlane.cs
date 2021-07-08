@@ -1,9 +1,8 @@
-﻿using SharpDX;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using Color = System.Drawing.Color;
-using Buffer = SharpDX.Direct3D11.Buffer;
+﻿using System.Numerics;
 using Utils.Extensions;
+using Vortice.Direct3D;
+using Vortice.Direct3D11;
+using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
 {
@@ -17,7 +16,7 @@ namespace Rendering.Graphics
         {
             DoRender = true;
             shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
-            Transform = Matrix.Identity;
+            Transform = Matrix4x4.Identity;
             colour = Color.White;
         }
 
@@ -53,7 +52,7 @@ namespace Rendering.Graphics
                     forward += new Vector2(points[i].X, points[i].Y) - new Vector2(points[(i - 1)%points.Length].X, points[(i - 1) % points.Length].Y);
                 }
 
-                forward.Normalize();
+                forward = Vector2.Normalize(forward);
                 Vector3 left = new Vector3(-forward.Y, forward.X, points[i].Z);
                 idx++;
                 vertices[idx] = new VertexLayouts.BasicLayout.Vertex();
@@ -112,26 +111,28 @@ namespace Rendering.Graphics
             colour = newColor;
         }
 
-        public override void InitBuffers(Device d3d, DeviceContext context)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext)
         {
-            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices);
-            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, indices);
+            vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, vertices);
+            indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, indices);
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
+            {
                 return;
+            }
 
-            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0));
-            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
-            deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+            deviceContext.IASetVertexBuffers(0, 1, new ID3D11Buffer[1] { vertexBuffer }, null, null);
+            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R16_UInt, 0);
+            deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
 
             shader.SetSceneVariables(deviceContext, Transform, camera);
             shader.Render(deviceContext, PrimitiveTopology.TriangleList, indices.Length, 0);
         }
 
-        public override void SetTransform(Matrix matrix)
+        public override void SetTransform(Matrix4x4 matrix)
         {
             this.Transform = matrix;
         }
@@ -146,7 +147,7 @@ namespace Rendering.Graphics
             vertexBuffer = null;
         }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             if(isUpdatedNeeded)
             {

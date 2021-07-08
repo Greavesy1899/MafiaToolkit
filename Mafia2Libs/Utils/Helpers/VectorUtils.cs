@@ -1,12 +1,23 @@
 ﻿using System;
 using System.IO;
-using SharpDX;
+using System.Numerics;
+using Vortice.Mathematics;
 using Utils.Extensions;
 
-namespace Utils.SharpDXExtensions
+namespace Utils.VorticeUtils
 {
-    public static class Vector3Extenders
+    public static class Vector3Utils
     {
+        public static Vector3 TransformCoordinate(this Vector3 coordinate, Matrix4x4 transform)
+        {
+            Vector4 vector = new Vector4();
+            vector.X = (coordinate.X * transform.M11) + (coordinate.Y * transform.M21) + (coordinate.Z * transform.M31) + transform.M41;
+            vector.Y = (coordinate.X * transform.M12) + (coordinate.Y * transform.M22) + (coordinate.Z * transform.M32) + transform.M42;
+            vector.Z = (coordinate.X * transform.M13) + (coordinate.Y * transform.M23) + (coordinate.Z * transform.M33) + transform.M43;
+            vector.W = 1f / ((coordinate.X * transform.M14) + (coordinate.Y * transform.M24) + (coordinate.Z * transform.M34) + transform.M44);
+
+            return new Vector3(vector.X * vector.W, vector.Y * vector.W, vector.Z * vector.W);
+        }
 
         public static Vector3 FromVector4(Vector4 vector4)
         {
@@ -126,18 +137,19 @@ namespace Utils.SharpDXExtensions
 
     public static class HalfExtenders
     {
-        public static byte[] GetBytes(this SharpDX.Half value)
+        public static byte[] GetBytes(this Vortice.Mathematics.Half value)
         {
-            return BitConverter.GetBytes(value.RawValue);
+            return BitConverter.GetBytes(value.PackedValue);
         }
     }
     public static class Half2Extenders
     {
         public static Half2 ReadFromFile(BinaryReader reader)
         {
-            Half2 half = new Half2();
-            half.X = reader.ReadSingle();
-            half.Y = reader.ReadSingle();
+            float XComp = reader.ReadSingle();
+            float YComp = reader.ReadSingle();
+
+            Half2 half = new Half2(XComp, YComp);
             return half;
         }
 

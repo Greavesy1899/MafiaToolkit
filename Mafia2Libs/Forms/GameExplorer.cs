@@ -1,17 +1,15 @@
-﻿using System;
+﻿using Core.IO;
+using Mafia2Tool.Forms;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
+using System.Numerics;
 using System.Windows.Forms;
 using Utils.Extensions;
-using System.Drawing;
 using Utils.Language;
 using Utils.Settings;
-using ResourceTypes.Misc;
-using Mafia2Tool.Forms;
-using SharpDX;
-using Core.IO;
-using Utils.Helpers;
 
 namespace Mafia2Tool
 {
@@ -450,7 +448,11 @@ namespace Mafia2Tool
 
         private void ContextOpenFolder_Click(object sender, EventArgs e)
         {
-            Process.Start(currentDirectory.FullName);
+            ProcessStartInfo StartInfo = new ProcessStartInfo();
+            StartInfo.UseShellExecute = true;
+            StartInfo.FileName = currentDirectory.FullName;
+
+            Process.Start(StartInfo);
         }
 
         private void OnOpening(object sender, CancelEventArgs e)

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using SharpDX;
-using Utils.SharpDXExtensions;
+using System.Numerics;
+using Vortice.Mathematics;
+using Utils.VorticeUtils;
 using Utils.StringHelpers;
 
 namespace ApexSDK
@@ -83,22 +84,22 @@ namespace ApexSDK
 
             vertices = new Vector3[numVerts2];
             for (int i = 0; i != numVerts2; i++)
-                vertices[i] = Vector3Extenders.ReadFromFile(reader);
+                vertices[i] = Vector3Utils.ReadFromFile(reader);
 
             numVerts3 = reader.ReadInt32();
             unkVectors1 = new Vector3[numVerts3];
             for (int i = 0; i != numVerts3; i++)
-                unkVectors1[i] = Vector3Extenders.ReadFromFile(reader);
+                unkVectors1[i] = Vector3Utils.ReadFromFile(reader);
 
             numVerts4 = reader.ReadInt32();
             unkVectors2 = new Vector3[numVerts4];
             for (int i = 0; i != numVerts4; i++)
-                unkVectors2[i] = Vector3Extenders.ReadFromFile(reader);
+                unkVectors2[i] = Vector3Utils.ReadFromFile(reader);
 
             numVerts5 = reader.ReadInt32();
             unkVectors3 = new Vector3[numVerts5];
             for (int i = 0; i != numVerts5; i++)
-                unkVectors3[i] = Vector3Extenders.ReadFromFile(reader);
+                unkVectors3[i] = Vector3Utils.ReadFromFile(reader);
 
             numVerts6 = reader.ReadInt32();
             boneIdx = new int[numVerts6];
@@ -138,10 +139,10 @@ namespace ApexSDK
 
             for(int i = 0; i != numTriangles; i++)
             {
-                Int3 int3 = new Int3();
-                int3.X = reader.ReadInt32();
-                int3.Y = reader.ReadInt32();
-                int3.Z = reader.ReadInt32();
+                int X = reader.ReadInt32();
+                int Y = reader.ReadInt32();
+                int Z = reader.ReadInt32();
+                Int3 int3 = new Int3(X, Y, Z);
                 triangles[i] = int3;
             }
 
