@@ -15,6 +15,8 @@ namespace Mafia2Tool
         private FileInfo prefabFile;
         private PrefabLoader prefabs;
 
+        private bool bIsFileEdited = false;
+
         public PrefabEditor(FileInfo file)
         {
             InitializeComponent();
@@ -29,6 +31,10 @@ namespace Mafia2Tool
             Button_Save.Text = Language.GetString("$SAVE");
             Button_Reload.Text = Language.GetString("$RELOAD");
             Button_Exit.Text = Language.GetString("$EXIT");
+            Button_Import.Text = Language.GetString("$IMPORT_PREFAB");
+            Button_Export.Text = Language.GetString("$EXPORT_PREFAB");
+            Button_Delete.Text = Language.GetString("$DELETE_PREFAB");
+            Context_Delete.Text = Language.GetString("$DELETE");
         }
 
         public void InitEditor(List<string> definitionNames)
@@ -67,36 +73,42 @@ namespace Mafia2Tool
 
         }
 
-        private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
+        private void Save()
         {
-            Grid_Prefabs.SelectedObject = e.Node.Tag;
+            List<PrefabLoader.PrefabStruct> NewPrefabs = new List<PrefabLoader.PrefabStruct>();
+
+            foreach (TreeNode Node in TreeView_Prefabs.Nodes)
+            {
+                if (Node.Tag is PrefabLoader.PrefabStruct)
+                {
+                    PrefabLoader.PrefabStruct Prefab = (Node.Tag as PrefabLoader.PrefabStruct);
+                    NewPrefabs.Add(Prefab);
+                }
+            }
+
+            // Create backup, set our new prefabs, and then save.
+            File.Copy(prefabFile.FullName, prefabFile.FullName + "_old", true);
+            prefabs.Prefabs = NewPrefabs.ToArray();
+            prefabs.WriteToFile(prefabFile);
+
+            Text = Language.GetString("PREFAB_EDITOR_TITLE");
+            bIsFileEdited = false;
         }
 
-        private void Button_Export_Click(object sender, EventArgs e)
+        private void Delete()
         {
             TreeNode SelectedNode = TreeView_Prefabs.SelectedNode;
 
             if (SelectedNode != null)
             {
-                if (SelectedNode.Tag is PrefabLoader.PrefabStruct)
-                {
-                    PrefabLoader.PrefabStruct Prefab = (SelectedNode.Tag as PrefabLoader.PrefabStruct);
-                    
-                    if(Browser_ExportPRB.ShowDialog() == DialogResult.OK)
-                    {
-                        string FileName = Browser_ExportPRB.FileName;
-
-                        using(BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Create)))
-                        {
-                            writer.WriteString16(Prefab.AssignedName);
-                            Prefab.WriteToFile(writer);
-                        }
-                    }
-                }
+                SelectedNode.Remove();
             }
+
+            Text = Language.GetString("PREFAB_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
-        private void Button_Import_Click(object sender, EventArgs e)
+        private void Import()
         {
             if (Browser_ImportPRB.ShowDialog() == DialogResult.OK)
             {
@@ -115,36 +127,73 @@ namespace Mafia2Tool
                 node.Text = NewPrefab.AssignedName;
                 node.Name = NewPrefab.AssignedName;
                 TreeView_Prefabs.Nodes.Add(node);
+
+                Text = Language.GetString("PREFAB_EDITOR_TITLE") + "*";
+                bIsFileEdited = true;
             }
         }
 
-        private void Button_Delete_Click(object sender, EventArgs e)
+        private void Export()
         {
             TreeNode SelectedNode = TreeView_Prefabs.SelectedNode;
 
-            if(SelectedNode != null)
+            if (SelectedNode != null)
             {
-                SelectedNode.Remove();
+                if (SelectedNode.Tag is PrefabLoader.PrefabStruct)
+                {
+                    PrefabLoader.PrefabStruct Prefab = (SelectedNode.Tag as PrefabLoader.PrefabStruct);
+
+                    if (Browser_ExportPRB.ShowDialog() == DialogResult.OK)
+                    {
+                        string FileName = Browser_ExportPRB.FileName;
+
+                        using (BinaryWriter writer = new BinaryWriter(File.Open(FileName, FileMode.Create)))
+                        {
+                            writer.WriteString16(Prefab.AssignedName);
+                            Prefab.WriteToFile(writer);
+                        }
+                    }
+                }
             }
         }
 
-        private void Button_Save_Click(object sender, EventArgs e)
+        private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
         {
-            List<PrefabLoader.PrefabStruct> NewPrefabs = new List<PrefabLoader.PrefabStruct>();
+            Grid_Prefabs.SelectedObject = e.Node.Tag;
+        }
 
-            foreach(TreeNode Node in TreeView_Prefabs.Nodes)
+        private void PrefabEditor_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.D)
             {
-                if(Node.Tag is PrefabLoader.PrefabStruct)
+                Grid_Prefabs.SelectedObject = null;
+                TreeView_Prefabs.SelectedNode = null;
+            }
+        }
+
+        private void Button_Export_Click(object sender, EventArgs e) => Export();
+
+        private void Button_Import_Click(object sender, EventArgs e) => Import();
+
+        private void Button_Delete_Click(object sender, EventArgs e) => Delete();
+        private void Button_Save_Click(object sender, EventArgs e) => Save();
+        private void Context_Delete_Click(object sender, EventArgs e) => Delete();
+
+        private void PrefabEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {
-                    PrefabLoader.PrefabStruct Prefab = (Node.Tag as PrefabLoader.PrefabStruct);
-                    NewPrefabs.Add(Prefab);
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
                 }
             }
-
-            // Create backup, set our new prefabs, and then save.
-            File.Copy(prefabFile.FullName, prefabFile.FullName + "_old", true);
-            prefabs.Prefabs = NewPrefabs.ToArray();
-            prefabs.WriteToFile(prefabFile);
         }
     }
 }

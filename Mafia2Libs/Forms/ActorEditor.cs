@@ -221,30 +221,10 @@ namespace Mafia2Tool
 
         private void ActorTreeView_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.C)
-            {
-                Copy();
-            }
-            else if (e.Control && e.KeyCode == Keys.V)
-            {
-                Paste();
-            }
-            else if (e.Control && e.KeyCode == Keys.Delete)
-            {
-                Delete();
-            }
-            else if (e.Control && e.KeyCode == Keys.D)
+            if (e.Control && e.KeyCode == Keys.D)
             {
                 ActorGrid.SelectedObject = null;
                 ActorTreeView.SelectedNode = null;
-            }
-            else if (e.Control && e.KeyCode == Keys.S)
-            {
-                Save();
-            }
-            else if (e.Control && e.KeyCode == Keys.R)
-            {
-                Reload();
             }
         }
 

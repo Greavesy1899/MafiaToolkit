@@ -162,29 +162,10 @@ namespace Toolkit.Forms
 
         private void EDSEditor_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (TreeView_Tables.Focused)
-            {
-                if (e.Control && e.KeyCode == Keys.C)
-                {
-                    CopyTagData();
-                }
-                else if (e.Control && e.KeyCode == Keys.V)
-                {
-                    PasteTagData();
-                }
-            }
-            else if (e.Control && e.KeyCode == Keys.D)
+            if (e.Control && e.KeyCode == Keys.D)
             {
                 PropertyGrid_Item.SelectedObject = null;
                 TreeView_Tables.SelectedNode = null;
-            }
-            else if (e.Control && e.KeyCode == Keys.S)
-            {
-                Save();
-            }
-            else if (e.Control && e.KeyCode == Keys.R)
-            {
-                Reload();
             }
         }
 
