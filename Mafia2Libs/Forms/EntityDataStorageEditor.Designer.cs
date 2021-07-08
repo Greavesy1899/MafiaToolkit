@@ -90,21 +90,23 @@
             // Button_Save
             // 
             this.Button_Save.Name = "Button_Save";
-            this.Button_Save.Size = new System.Drawing.Size(124, 22);
+            this.Button_Save.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.Button_Save.Size = new System.Drawing.Size(180, 22);
             this.Button_Save.Text = "$SAVE";
             this.Button_Save.Click += new System.EventHandler(this.Button_Save_OnClick);
             // 
             // Button_Reload
             // 
             this.Button_Reload.Name = "Button_Reload";
-            this.Button_Reload.Size = new System.Drawing.Size(124, 22);
+            this.Button_Reload.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.Button_Reload.Size = new System.Drawing.Size(180, 22);
             this.Button_Reload.Text = "$RELOAD";
             this.Button_Reload.Click += new System.EventHandler(this.Button_Reload_OnClick);
             // 
             // Button_Exit
             // 
             this.Button_Exit.Name = "Button_Exit";
-            this.Button_Exit.Size = new System.Drawing.Size(124, 22);
+            this.Button_Exit.Size = new System.Drawing.Size(180, 22);
             this.Button_Exit.Text = "$EXIT";
             this.Button_Exit.Click += new System.EventHandler(this.Button_Exit_OnClick);
             // 
@@ -125,28 +127,30 @@
             // Button_CopyData
             // 
             this.Button_CopyData.Name = "Button_CopyData";
-            this.Button_CopyData.Size = new System.Drawing.Size(151, 22);
+            this.Button_CopyData.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.Button_CopyData.Size = new System.Drawing.Size(180, 22);
             this.Button_CopyData.Text = "$COPY";
             this.Button_CopyData.Click += new System.EventHandler(this.Button_CopyData_Click);
             // 
             // Button_PasteData
             // 
             this.Button_PasteData.Name = "Button_PasteData";
-            this.Button_PasteData.Size = new System.Drawing.Size(151, 22);
+            this.Button_PasteData.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+            this.Button_PasteData.Size = new System.Drawing.Size(180, 22);
             this.Button_PasteData.Text = "$PASTE";
             this.Button_PasteData.Click += new System.EventHandler(this.Button_Paste_Click);
             // 
             // Button_ExportXML
             // 
             this.Button_ExportXML.Name = "Button_ExportXML";
-            this.Button_ExportXML.Size = new System.Drawing.Size(151, 22);
+            this.Button_ExportXML.Size = new System.Drawing.Size(180, 22);
             this.Button_ExportXML.Text = "$EXPORT_XML";
             this.Button_ExportXML.Click += new System.EventHandler(this.Button_ExportXML_Click);
             // 
             // Button_ImportXML
             // 
             this.Button_ImportXML.Name = "Button_ImportXML";
-            this.Button_ImportXML.Size = new System.Drawing.Size(151, 22);
+            this.Button_ImportXML.Size = new System.Drawing.Size(180, 22);
             this.Button_ImportXML.Text = "$IMPORT_XML";
             this.Button_ImportXML.Click += new System.EventHandler(this.Button_ImportXML_Click);
             // 
@@ -156,22 +160,24 @@
             this.ToolStrip_Copy,
             this.ToolStrip_Paste});
             this.Context_Menu.Name = "Context_Menu";
-            this.Context_Menu.Size = new System.Drawing.Size(168, 48);
+            this.Context_Menu.Size = new System.Drawing.Size(154, 48);
             this.Context_Menu.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenu_Opening);
             // 
             // ToolStrip_Copy
             // 
             this.ToolStrip_Copy.Name = "ToolStrip_Copy";
-            this.ToolStrip_Copy.ShortcutKeyDisplayString = "CTRL + C";
-            this.ToolStrip_Copy.Size = new System.Drawing.Size(167, 22);
+            this.ToolStrip_Copy.ShortcutKeyDisplayString = "";
+            this.ToolStrip_Copy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.ToolStrip_Copy.Size = new System.Drawing.Size(153, 22);
             this.ToolStrip_Copy.Text = "$COPY";
             this.ToolStrip_Copy.Click += new System.EventHandler(this.ToolStrip_Copy_Click);
             // 
             // ToolStrip_Paste
             // 
             this.ToolStrip_Paste.Name = "ToolStrip_Paste";
-            this.ToolStrip_Paste.ShortcutKeyDisplayString = "CTRL + V";
-            this.ToolStrip_Paste.Size = new System.Drawing.Size(167, 22);
+            this.ToolStrip_Paste.ShortcutKeyDisplayString = "";
+            this.ToolStrip_Paste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+            this.ToolStrip_Paste.Size = new System.Drawing.Size(153, 22);
             this.ToolStrip_Paste.Text = "$PASTE";
             this.ToolStrip_Paste.Click += new System.EventHandler(this.ToolStrip_Paste_Click);
             // 
@@ -185,7 +191,6 @@
             this.TreeView_Tables.Size = new System.Drawing.Size(368, 410);
             this.TreeView_Tables.TabIndex = 11;
             this.TreeView_Tables.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
-            this.TreeView_Tables.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form_OnKeyUp);
             // 
             // FileDialog_Open
             // 
@@ -201,6 +206,7 @@
             // 
             // EntityDataStorageEditor
             // 
+            this.KeyPreview = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
@@ -209,7 +215,9 @@
             this.Controls.Add(this.TreeView_Tables);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "EntityDataStorageEditor";
-            this.Text = "$ACTOR_EDITOR_TITLE";
+            this.Text = "$EDS_EDITOR_TITLE";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.EDSEditor_Closing);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.EDSEditor_OnKeyUp);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.Context_Menu.ResumeLayout(false);

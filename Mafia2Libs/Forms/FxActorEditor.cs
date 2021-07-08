@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using ResourceTypes.OC3.FaceFX;
 using Utils.Language;
+using Utils.Settings;
 
 namespace Toolkit.Forms
 {
@@ -12,6 +14,8 @@ namespace Toolkit.Forms
         private FxContainer<FxActor> ActorContainer;
 
         private object clipboard;
+
+        private bool bIsFileEdited = false;
 
         public FxActorEditor(FileInfo InOriginFile)
         {
@@ -25,6 +29,8 @@ namespace Toolkit.Forms
             BuildData();
 
             Show();
+
+            ToolkitSettings.UpdateRichPresence("Using the FxActor editor.");
         }
 
         private void Localise()
@@ -37,9 +43,12 @@ namespace Toolkit.Forms
             Button_Copy.Text = Language.GetString("$COPY");
             Button_Paste.Text = Language.GetString("$PASTE");
             Button_Delete.Text = Language.GetString("$DELETE");
+            Button_Import.Text = Language.GetString("$IMPORT");
+            Button_Export.Text = Language.GetString("$EXPORT");
             Context_Copy.Text = Language.GetString("$COPY");
             Context_Paste.Text = Language.GetString("$PASTE");
             Context_Delete.Text = Language.GetString("$DELETE");
+            Context_Export.Text = Language.GetString("$EXPORT");
         }
 
         private void BuildData()
@@ -69,10 +78,16 @@ namespace Toolkit.Forms
             {
                 ActorContainer.WriteToFile(writer);
             }
+
+            Text = Language.GetString("$FXACTOR_EDITOR");
+            bIsFileEdited = false;
         }
 
         private void Reload()
         {
+            Text = Language.GetString("$FXACTOR_EDITOR");
+            bIsFileEdited = false;
+
             Grid_Actors.SelectedObject = null;
             TreeView_FxActors.SelectedNode = null;
             TreeView_FxActors.Nodes.Clear();
@@ -99,6 +114,9 @@ namespace Toolkit.Forms
                 ActorNode.Tag = Actor;
 
                 TreeView_FxActors.Nodes.Add(ActorNode);
+
+                Text = Language.GetString("$FXACTOR_EDITOR") + "*";
+                bIsFileEdited = true;
             }
         }
 
@@ -108,6 +126,70 @@ namespace Toolkit.Forms
 
             ActorContainer.Archives.RemoveAt(Index);
             TreeView_FxActors.Nodes.Remove(TreeView_FxActors.SelectedNode);
+
+            Text = Language.GetString("$FXACTOR_EDITOR") + "*";
+            bIsFileEdited = true;
+        }
+
+        private void Import()
+        {
+            Microsoft.Win32.OpenFileDialog ImportActor = new Microsoft.Win32.OpenFileDialog();
+            ImportActor.InitialDirectory = FxActorFile.DirectoryName;
+            ImportActor.Multiselect = false;
+            ImportActor.Filter = "FxActor file (*.fxa)|*.fxa";
+
+            if (ImportActor.ShowDialog() == true)
+            {
+                FxContainer<FxActor> ImportActorContainer;
+
+                using (BinaryReader Reader = new BinaryReader(File.Open(ImportActor.FileName, FileMode.Open)))
+                {
+                    ImportActorContainer = new FxContainer<FxActor>();
+                    ImportActorContainer.ReadFromFile(Reader);
+                }
+
+                ActorContainer.Archives.AddRange(ImportActorContainer.Archives);
+                TreeView_FxActors.Nodes.Clear();
+
+                foreach (FxArchive Archive in ActorContainer.Archives)
+                {
+                    FxActor Actor = Archive.GetObjectAs<FxActor>();
+
+                    TreeNode ActorNode = new TreeNode(Actor.Name.ToString());
+
+                    ActorNode.Tag = Actor;
+
+                    TreeView_FxActors.Nodes.Add(ActorNode);
+                }
+
+                Text = Language.GetString("$FXACTOR_EDITOR") + "*";
+                bIsFileEdited = true;
+            }
+        }
+
+        private void Export()
+        {
+            int index = TreeView_FxActors.SelectedNode.Index;
+            FxArchive SelectedArchive = ActorContainer.Archives[index];
+
+            FxActor Actor = SelectedArchive.GetObjectAs<FxActor>();
+
+            Microsoft.Win32.SaveFileDialog ExportActor = new Microsoft.Win32.SaveFileDialog();
+            ExportActor.InitialDirectory = FxActorFile.DirectoryName;
+            ExportActor.FileName = Actor.Name.ToString();
+            ExportActor.Filter = "FxActor file (*.fxa)|*.fxa";
+
+            if (ExportActor.ShowDialog() == true)
+            {
+                FxContainer<FxActor> ExportActorContainer = new FxContainer<FxActor>();
+                ExportActorContainer.Archives = new List<FxArchive>();
+                ExportActorContainer.Archives.Add(SelectedArchive);
+
+                using (BinaryWriter Writer = new BinaryWriter(File.Open(ExportActor.FileName, FileMode.Create)))
+                {
+                    ExportActorContainer.WriteToFile(Writer);
+                }
+            }
         }
 
         private void TreeView_FxActors_AfterSelect(object sender, TreeViewEventArgs e)
@@ -115,19 +197,23 @@ namespace Toolkit.Forms
             Grid_Actors.SelectedObject = e.Node.Tag;
         }
 
-        private void TreeView_FxActors_OnKeyUp(object sender, KeyEventArgs e)
+        private void FxActorEditor_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.C)
+            //TODO: Event fires twice? Might be my keyboard though
+            if (TreeView_FxActors.Focused)
             {
-                Copy();
-            }
-            else if (e.Control && e.KeyCode == Keys.V)
-            {
-                Paste();
-            }
-            else if (e.Control && e.KeyCode == Keys.Delete)
-            {
-                Delete();
+                if (e.Control && e.KeyCode == Keys.C)
+                {
+                    Copy();
+                }
+                else if (e.Control && e.KeyCode == Keys.V)
+                {
+                    Paste();
+                }
+                else if (e.Control && e.KeyCode == Keys.Delete)
+                {
+                    Delete();
+                }
             }
             else if (e.Control && e.KeyCode == Keys.D)
             {
@@ -144,25 +230,43 @@ namespace Toolkit.Forms
             }
         }
 
-        private void Button_Exit_Click(object sender, System.EventArgs e)
+        private void Grid_Actors_PropertyChanged(object sender, PropertyValueChangedEventArgs e)
         {
-            System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNo);
+            if (e.ChangedItem.Label == "Name")
+                TreeView_FxActors.SelectedNode.Text = e.ChangedItem.Value.ToString();
 
-            if (SaveChanges == System.Windows.MessageBoxResult.Yes)
-            {
-                Save();
-            }
-
-            Close();
+            Text = Language.GetString("$FXACTOR_EDITOR") + "*";
+            bIsFileEdited = true;
         }
 
+        private void FxActorEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        private void Button_Exit_Click(object sender, System.EventArgs e) => Close();
         private void Button_Save_Click(object sender, System.EventArgs e) => Save();
         private void Button_Reload_Click(object sender, System.EventArgs e) => Reload();
         private void Button_Copy_Click(object sender, System.EventArgs e) => Copy();
         private void Button_Paste_Click(object sender, System.EventArgs e) => Paste();
         private void Button_Delete_Click(object sender, System.EventArgs e) => Delete();
+        private void Button_Import_Click(object sender, System.EventArgs e) => Import();
+        private void Button_Export_Click(object sender, System.EventArgs e) => Export();
         private void Context_Copy_Click(object sender, System.EventArgs e) => Copy();
         private void Context_Paste_Click(object sender, System.EventArgs e) => Paste();
         private void Context_Delete_Click(object sender, System.EventArgs e) => Delete();
+        private void Context_Export_Click(object sender, System.EventArgs e) => Export();
     }
 }
