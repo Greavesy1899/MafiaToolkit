@@ -167,6 +167,23 @@ namespace Mafia2Tool
             bIsFileEdited = true;
         }
 
+        private void SDSContentEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
+
         private void Button_Save_Click(object sender, EventArgs e) => Save();
         private void Button_Reload_Click(object sender, EventArgs e) => Reload();
         private void Button_Exit_Click(object sender, EventArgs e) => Close();

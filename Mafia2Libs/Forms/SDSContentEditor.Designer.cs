@@ -180,6 +180,7 @@
             this.Context_Menu.ResumeLayout(false);
             this.Tool_Strip.ResumeLayout(false);
             this.Tool_Strip.PerformLayout();
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SDSContentEditor_Closing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
