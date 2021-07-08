@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
-using SharpDX;
-using Utils.SharpDXExtensions;
+using System.Numerics;
+using Utils.VorticeUtils;
 
 namespace ApexSDK
 {
@@ -22,7 +22,7 @@ namespace ApexSDK
 
             for (int i = 0; i < size; i++)
             {
-                position[i] = Vector3Extenders.ReadFromFile(reader);
+                position[i] = Vector3Utils.ReadFromFile(reader);
             }
 
             size = reader.ReadInt32();
@@ -30,7 +30,7 @@ namespace ApexSDK
 
             for (int i = 0; i < size; i++)
             {
-                sphere[i] = Vector3Extenders.ReadFromFile(reader);
+                sphere[i] = Vector3Utils.ReadFromFile(reader);
             }
         }
 
@@ -39,12 +39,12 @@ namespace ApexSDK
             writer.Write(position.Length);
             for(int i = 0; i < position.Length; i++)
             {
-                Vector3Extenders.WriteToFile(position[i], writer);
+                Vector3Utils.WriteToFile(position[i], writer);
             }
             writer.Write(sphere.Length);
             for (int i = 0; i < sphere.Length; i++)
             {
-                Vector3Extenders.WriteToFile(sphere[i], writer);
+                Vector3Utils.WriteToFile(sphere[i], writer);
             }
         }
 

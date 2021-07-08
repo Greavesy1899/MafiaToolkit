@@ -1,9 +1,10 @@
-﻿using System.IO;
-using Rendering.Factories;
+﻿using Rendering.Factories;
 using Rendering.Graphics;
 using ResourceTypes.Actors;
-using SharpDX;
+using System.IO;
+using System.Numerics;
 using Utils.Types;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -54,7 +55,7 @@ namespace ResourceTypes.FrameResource
 
             if(ActorHash.Hash != 0)
             {
-                LocalTransform = Matrix.Identity;
+                LocalTransform = Matrix4x4.Identity;
             }
         }
 

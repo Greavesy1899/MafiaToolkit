@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using SharpDX;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
 using Utils.Types;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.FrameResource
 {
@@ -197,13 +197,13 @@ namespace ResourceTypes.FrameResource
             for (int i = 0; i < 4; i++)
                 names[i] = new HashName(reader, isBigEndian);
 
-            unkVector1 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-            unkVector2 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            unkVector1 = Vector3Utils.ReadFromFile(reader, isBigEndian);
+            unkVector2 = Vector3Utils.ReadFromFile(reader, isBigEndian);
             unk_byte3 = reader.ReadByte8();
-            unkVector3 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-            unkVector4 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-            unkVector5 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
-            unkVector6 = Vector3Extenders.ReadFromFile(reader, isBigEndian);
+            unkVector3 = Vector3Utils.ReadFromFile(reader, isBigEndian);
+            unkVector4 = Vector3Utils.ReadFromFile(reader, isBigEndian);
+            unkVector5 = Vector3Utils.ReadFromFile(reader, isBigEndian);
+            unkVector6 = Vector3Utils.ReadFromFile(reader, isBigEndian);
         }
         public override void WriteToFile(BinaryWriter writer)
         {

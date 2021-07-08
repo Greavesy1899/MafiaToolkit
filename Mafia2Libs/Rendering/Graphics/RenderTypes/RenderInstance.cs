@@ -1,5 +1,5 @@
-﻿using SharpDX;
-using SharpDX.Direct3D11;
+﻿using System.Numerics;
+using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
 {
@@ -10,17 +10,17 @@ namespace Rendering.Graphics
         public void Init(RenderStaticCollision col)
         {
             DoRender = true;
-            Transform = Matrix.Identity;
+            Transform = Matrix4x4.Identity;
             BoundingBox = col.BoundingBox;
             instance = col;
         }
 
-        public override void InitBuffers(Device d3d, DeviceContext context)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext context)
         {
             instance.InitBuffers(d3d, context);
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
                 return;
@@ -29,7 +29,7 @@ namespace Rendering.Graphics
             instance.Render(device, deviceContext, camera);   
         }
 
-        public override void SetTransform(Matrix matrix)
+        public override void SetTransform(Matrix4x4 matrix)
         {
             Transform = matrix;
             instance.SetTransform(matrix);
@@ -40,7 +40,7 @@ namespace Rendering.Graphics
             //not required
         }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             instance.UpdateBuffers(device, deviceContext);
         }

@@ -1,10 +1,11 @@
-﻿using System.ComponentModel;
-using System.IO;
-using Rendering.Factories;
+﻿using Rendering.Factories;
 using Rendering.Graphics;
-using SharpDX;
+using System.ComponentModel;
+using System.IO;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -34,30 +35,17 @@ namespace ResourceTypes.FrameResource
             get { return bounds; }
             set { bounds = value; }
         }
-
-        public float BoundsMinimumX {
-            get { return bounds.Minimum.X; }
-            set { bounds.Minimum.X = value; }
+        [TypeConverter(typeof(Vector3Converter))]
+        public Vector3 BoundaryBoxMinimum
+        {
+            get { return bounds.Minimum; }
+            set { bounds.SetMinimum(value); }
         }
-        public float BoundsMinimumY {
-            get { return bounds.Minimum.Y; }
-            set { bounds.Minimum.Y = value; }
-        }
-        public float BoundsMinimumZ {
-            get { return bounds.Minimum.Z; }
-            set { bounds.Minimum.Z = value; }
-        }
-        public float BoundsMaximumX {
-            get { return bounds.Maximum.X; }
-            set { bounds.Maximum.X = value; }
-        }
-        public float BoundsMaximumY {
-            get { return bounds.Maximum.Y; }
-            set { bounds.Maximum.Y = value; }
-        }
-        public float BoundsMaximumZ {
-            get { return bounds.Maximum.Z; }
-            set { bounds.Maximum.Z = value; }
+        [TypeConverter(typeof(Vector3Converter))]
+        public Vector3 BoundaryBoxMaximum
+        {
+            get { return bounds.Maximum; }
+            set { bounds.SetMaximum(value); }
         }
 
         public FrameObjectArea(MemoryStream reader, bool isBigEndian) : base()

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using SharpDX;
-using Utils.SharpDXExtensions;
+using System.Numerics;
 using Utils.StringHelpers;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.FaceFX
 {
@@ -102,7 +102,7 @@ namespace ResourceTypes.FaceFX
                 for (int i = 0; i != unkCount3; i++)
                     unkNums2[i] = reader.ReadInt32();
 
-                unkVector1 = Vector3Extenders.ReadFromFile(reader);
+                unkVector1 = Vector3Utils.ReadFromFile(reader);
                 reader.ReadInt64();
                 if (reader.ReadInt32() == -1)
                     Console.WriteLine("Reached 0xFFFF");
@@ -115,7 +115,7 @@ namespace ResourceTypes.FaceFX
 
                 public void ReadFromFile(BinaryReader reader)
                 {
-                    vector = Vector3Extenders.ReadFromFile(reader);
+                    vector = Vector3Utils.ReadFromFile(reader);
                     unk1 = reader.ReadInt32();
                 }
             }

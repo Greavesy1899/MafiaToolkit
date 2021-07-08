@@ -45,7 +45,7 @@
   <String ID="$REFRESH">Odśwież</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Ścieżka do folderu</String>
   <String ID="$UP_TOOLTIP">Widok w górę</String>
-  <String ID="$M1DE_OODLEERROR">Oodle DLL nie jest darmową biblioteką stworzoną przez RAD Game Tools i nie została ona umieszczona razem z Toolkitem. Skopiuj plik oo2core_8_win64.dll z folderu gry Folder instalacyjny Mafia: Definitive Edition do folderu gdzie znajduje się folder Libs programu Toolkit.</String>
+  <String ID="$M1DE_OODLEERROR">Biblioteka DLL Oodle jest płatną biblioteką RAD Game Tools objętą prawami autorskimi i w związku z tym nie została ona dołączona. Aby uruchomić Mafia Toolkit skopiuj tą bibliotekę o nazwie "oo2core_8_win64.dll" z folderu instalacyjnego gry Mafia: Edycja Ostateczna do folderu, gdzie znajduje się plik wykonywalny (.exe) Mafia Toolkit.</String>
 
   <!-- Game Selector -->
   <String ID="$START_TOOLKIT">Start Toolkit</String>

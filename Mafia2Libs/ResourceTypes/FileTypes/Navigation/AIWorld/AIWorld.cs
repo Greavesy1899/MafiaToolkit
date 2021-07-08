@@ -1,8 +1,8 @@
-﻿using SharpDX;
-using System;
+﻿using System;
 using System.IO;
-using Utils.SharpDXExtensions;
+using System.Numerics;
 using Utils.StringHelpers;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Navigation
 {
@@ -134,12 +134,12 @@ namespace ResourceTypes.Navigation
                 public void ReadFromFile(BinaryReader reader)
                 {
                     unk0 = reader.ReadByte();
-                    position = Vector3Extenders.ReadFromFile(reader);
-                    rotation = Vector3Extenders.ReadFromFile(reader);
+                    position = Vector3Utils.ReadFromFile(reader);
+                    rotation = Vector3Utils.ReadFromFile(reader);
                     unk1 = reader.ReadInt32();
                     unk2 = reader.ReadInt32();
                     unk3 = reader.ReadInt32();
-                    unk4 = Vector3Extenders.ReadFromFile(reader);
+                    unk4 = Vector3Utils.ReadFromFile(reader);
                     unk5 = reader.ReadInt32();
                     unk6 = reader.ReadByte();
                     unk7 = reader.ReadByte();
@@ -162,9 +162,9 @@ namespace ResourceTypes.Navigation
                 public void ReadFromFile(BinaryReader reader)
                 {
                     unk0 = reader.ReadInt16();
-                    position = Vector3Extenders.ReadFromFile(reader);
-                    rotation = Vector3Extenders.ReadFromFile(reader);
-                    unk1 = Vector3Extenders.ReadFromFile(reader);
+                    position = Vector3Utils.ReadFromFile(reader);
+                    rotation = Vector3Utils.ReadFromFile(reader);
+                    unk1 = Vector3Utils.ReadFromFile(reader);
                     unk2 = reader.ReadInt32();
                 }
             }
@@ -182,7 +182,7 @@ namespace ResourceTypes.Navigation
                 {
                     unk0 = reader.ReadByte();
                     unk1 = reader.ReadInt32();
-                    unk2 = Vector3Extenders.ReadFromFile(reader);
+                    unk2 = Vector3Utils.ReadFromFile(reader);
                     unk3 = reader.ReadSingle();
                     unk4 = reader.ReadSingle();
                     short count = reader.ReadInt16();
@@ -203,9 +203,9 @@ namespace ResourceTypes.Navigation
                 public void ReadFromFile(BinaryReader reader)
                 {
                     unk0 = reader.ReadByte();
-                    unk1 = Vector3Extenders.ReadFromFile(reader);
-                    unk2 = Vector3Extenders.ReadFromFile(reader);
-                    unk3 = Vector3Extenders.ReadFromFile(reader);
+                    unk1 = Vector3Utils.ReadFromFile(reader);
+                    unk2 = Vector3Utils.ReadFromFile(reader);
+                    unk3 = Vector3Utils.ReadFromFile(reader);
                     unk4 = reader.ReadSingle();
                 }
             }

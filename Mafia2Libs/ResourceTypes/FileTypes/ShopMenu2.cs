@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using Utils.Extensions;
 using System.IO;
-using SharpDX;
-using Utils.SharpDXExtensions;
+using System.Numerics;
+using System.Text.RegularExpressions;
+using Utils.Extensions;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.City
 {
@@ -179,7 +178,7 @@ namespace ResourceTypes.City
 
                 public void ReadFromFile(MemoryStream stream, bool isBigEndian)
                 {
-                    Position = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+                    Position = Vector3Utils.ReadFromFile(stream, isBigEndian);
                     Rotation = QuaternionExtensions.ReadFromFile(stream, isBigEndian);
                     Unk01 = stream.ReadSingle(isBigEndian);
                 }

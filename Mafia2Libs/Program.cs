@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Mafia2Tool.Forms;
 using Core.IO;
+using System.Text;
+using System.Runtime.Loader;
 
 namespace Mafia2Tool
 {
@@ -26,8 +28,10 @@ namespace Mafia2Tool
                 return;
             }
 
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            ToolkitAssemblyLoadContext.SetupLoadContext();
 
             CheckINIExists();
             ToolkitSettings.ReadINI();
@@ -120,6 +124,40 @@ namespace Mafia2Tool
             {
                 new IniFile();
             }
+        }
+    }
+
+    public static class ToolkitAssemblyLoadContext
+    {
+        private static bool bAppliedCallback = false;
+
+        public static void SetupLoadContext()
+        {
+            if (!bAppliedCallback)
+            {
+                AssemblyLoadContext.Default.Resolving += Default_Resolving;
+                bAppliedCallback = true;
+            }
+        }
+
+        private static System.Reflection.Assembly Default_Resolving(AssemblyLoadContext ALC, System.Reflection.AssemblyName AssemblyName)
+        {
+            string probeSetting = AppContext.GetData("SubdirectoriesToProbe") as string;
+            if (string.IsNullOrEmpty(probeSetting))
+            {
+                return null;
+            }
+
+            foreach (string subdirectory in probeSetting.Split(';'))
+            {
+                string pathMaybe = Path.Combine(AppContext.BaseDirectory, subdirectory, $"{AssemblyName.Name}.dll");
+                if (File.Exists(pathMaybe))
+                {
+                    return ALC.LoadFromAssemblyPath(pathMaybe);
+                }
+            }
+
+            return null;
         }
     }
 }

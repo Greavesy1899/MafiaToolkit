@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using SharpDX;
-using ResourceTypes.FrameResource;
-using Utils.SharpDXExtensions;
-using ResourceTypes.BufferPools;
-using System.Linq;
-using ResourceTypes.Materials;
+﻿using ResourceTypes.BufferPools;
 using ResourceTypes.Collisions;
 using ResourceTypes.Collisions.Opcode;
-using Utils.StringHelpers;
-using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.FrameResource;
+using ResourceTypes.Materials;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Numerics;
 using System.Windows.Forms;
+using Utils.StringHelpers;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace Utils.Models
 {
@@ -215,7 +215,8 @@ namespace Utils.Models
 
         public void FlipUVs()
         {
-            for (int i = 0; i != lods.Length; i++)
+            // TODO:
+            /*for (int i = 0; i != lods.Length; i++)
             {
                 for (int x = 0; x != lods[i].Vertices.Length; x++)
                 {
@@ -240,7 +241,7 @@ namespace Utils.Models
                         vert.UVs[3].Y = (1f - vert.UVs[3].Y);
                     }
                 }
-            }
+            }*/
         }
 
         public void ExportToM2T(string exportPath)
@@ -281,7 +282,7 @@ namespace Utils.Models
                         writer.Write(joint.ParentIndex);
                         Quaternion rotation;
                         Vector3 position, scale;
-                        joint.LocalTransform.Decompose(out scale, out rotation, out position);
+                        Matrix4x4.Decompose(joint.LocalTransform, out scale, out rotation, out position);
                         position.WriteToFile(writer);
                         rotation.WriteToFile(writer);
                         scale.WriteToFile(writer);
@@ -481,15 +482,15 @@ namespace Utils.Models
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
-                        vert.Position = Vector3Extenders.ReadFromFile(reader);
+                        vert.Position = Vector3Utils.ReadFromFile(reader);
                     }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
                     {
-                        vert.Normal = Vector3Extenders.ReadFromFile(reader);
+                        vert.Normal = Vector3Utils.ReadFromFile(reader);
                     }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
                     {
-                        vert.Tangent = Vector3Extenders.ReadFromFile(reader);
+                        vert.Tangent = Vector3Utils.ReadFromFile(reader);
                     }
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.TexCoords0))
                     {
@@ -551,10 +552,10 @@ namespace Utils.Models
                     joint.Name = reader.ReadString8();
                     joint.ParentIndex = reader.ReadByte();
                     joint.Parent = (joint.ParentIndex != 0xFF) ? skeleton.Joints[joint.ParentIndex] : null; //may crash because root will not be in range
-                    Vector3 position = Vector3Extenders.ReadFromFile(reader);
+                    Vector3 position = Vector3Utils.ReadFromFile(reader);
                     Quaternion rotation = QuaternionExtensions.ReadFromFile(reader);
-                    Vector3 scale = Vector3Extenders.ReadFromFile(reader);
-                    joint.WorldTransform = MatrixExtensions.SetMatrix(rotation, scale, position);
+                    Vector3 scale = Vector3Utils.ReadFromFile(reader);
+                    joint.WorldTransform = MatrixUtils.SetMatrix(rotation, scale, position);
                     skeleton.Joints[i] = joint;
                 }
             }
@@ -580,17 +581,17 @@ namespace Utils.Models
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Position))
                     {
-                        vert.Position = Vector3Extenders.ReadFromFile(reader);
+                        vert.Position = Vector3Utils.ReadFromFile(reader);
                     }
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Normals))
                     {
-                        vert.Normal = Vector3Extenders.ReadFromFile(reader);
+                        vert.Normal = Vector3Utils.ReadFromFile(reader);
                     }
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Tangent))
                     {
-                        vert.Tangent = Vector3Extenders.ReadFromFile(reader);
+                        vert.Tangent = Vector3Utils.ReadFromFile(reader);
                     }
 
                     if (Lods[i].VertexDeclaration.HasFlag(VertexFlags.Skin))
@@ -726,8 +727,8 @@ namespace Utils.Models
             string name;
             byte parentIndex;
             Joint parent;
-            Matrix localTransform;
-            Matrix worldTransform;
+            Matrix4x4 localTransform;
+            Matrix4x4 worldTransform;
 
             public string Name {
                 get { return name; }
@@ -741,11 +742,11 @@ namespace Utils.Models
                 get { return parentIndex; }
                 set { parentIndex = value; }
             }
-            public Matrix LocalTransform {
+            public Matrix4x4 LocalTransform {
                 get { return localTransform; }
                 set { localTransform = value; }
             }
-            public Matrix WorldTransform {
+            public Matrix4x4 WorldTransform {
                 get { return worldTransform; }
                 set { worldTransform = value; }
             }
@@ -759,19 +760,19 @@ namespace Utils.Models
 
             public void SetWorldPosition(Vector3 position)
             {
-                worldTransform.TranslationVector = position;
+                worldTransform.Translation = position;
             }
 
-            private Matrix GetRotationFromLocalTransform(bool transpose)
+            private Matrix4x4 GetRotationFromLocalTransform(bool transpose)
             {
                 Vector3 scale, position;
                 Quaternion rotation;
-                localTransform.Decompose(out scale, out rotation, out position);       
+                Matrix4x4.Decompose(localTransform, out scale, out rotation, out position);  
                 
-                var matrix = Matrix.RotationQuaternion(rotation);
+                var matrix = Matrix4x4.CreateFromQuaternion(rotation);
                 if (transpose)
                 {
-                    matrix.Transpose();
+                    matrix = Matrix4x4.Transpose(matrix);
                 }
 
                 return matrix;
@@ -780,7 +781,7 @@ namespace Utils.Models
             public void ComputeJointTransform()
             {
                 var parentJoint = Parent;
-                var invertedLocal = LocalTransform.TranslationVector;
+                var invertedLocal = LocalTransform.Translation;
                 while (parentJoint != null)
                 {
                     invertedLocal = parentJoint.GetWorldPosition(invertedLocal);
@@ -854,8 +855,7 @@ namespace Utils.Models
                     {
                         partVerts.Add(vertices[indices[i]].Position);
                     }
-                    BoundingBox bounds;
-                    BoundingBox.FromPoints(partVerts.ToArray(), out bounds);
+                    BoundingBox bounds = BoundingBox.CreateFromPoints(partVerts.ToArray());
                     parts[i].Bounds = bounds;
                 }
             }
@@ -896,7 +896,7 @@ namespace Utils.Models
 
                 for(int i = 0; i < vertices.Length; i++)
                 {
-                    normals[i].Normalize();
+                    normals[i] = Vector3.Normalize(normals[i]);
                     vertices[i].Normal = normals[i];
                 }
             }

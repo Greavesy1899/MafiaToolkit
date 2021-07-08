@@ -1,5 +1,6 @@
-﻿using SharpDX;
-using SharpDX.Direct3D11;
+﻿using System.Numerics;
+using Vortice.Direct3D11;
+using Vortice.Mathematics;
 
 namespace Rendering.Graphics
 {
@@ -7,19 +8,19 @@ namespace Rendering.Graphics
     {
         protected BaseShader shader;
         protected bool isUpdatedNeeded;
-        protected Buffer indexBuffer;
-        protected Buffer vertexBuffer;
+        protected ID3D11Buffer indexBuffer;
+        protected ID3D11Buffer vertexBuffer;
 
         public bool DoRender { get; set; }
-        public Matrix Transform { get; protected set; }
+        public Matrix4x4 Transform { get; protected set; }
         public BoundingBox BoundingBox { get; protected set; }
 
         public abstract void Select();
         public abstract void Unselect();
-        public abstract void InitBuffers(Device d3d, DeviceContext deviceContext);
-        public abstract void SetTransform(Matrix matrix);
-        public abstract void UpdateBuffers(Device device, DeviceContext deviceContext);
-        public abstract void Render(Device device, DeviceContext deviceContext, Camera camera);
+        public abstract void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext);
+        public abstract void SetTransform(Matrix4x4 matrix);
+        public abstract void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext);
+        public abstract void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera);
         public abstract void Shutdown();
 
     }

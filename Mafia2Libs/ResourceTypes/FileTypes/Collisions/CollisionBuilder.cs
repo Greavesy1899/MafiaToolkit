@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Gibbed.Illusion.FileFormats.Hashing;
+using ResourceTypes.Collisions.Opcode;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Gibbed.Illusion.FileFormats.Hashing;
-using ResourceTypes.Collisions.Opcode;
-using SharpDX;
-using Utils.SharpDXExtensions;
-using Utils.Models;
-using static Utils.Models.M2TStructure;
+using System.Numerics;
 using Utils.Helpers;
+using Utils.Models;
+using Utils.VorticeUtils;
+using static Utils.Models.M2TStructure;
 
 namespace ResourceTypes.Collisions
 {
@@ -110,7 +110,7 @@ namespace ResourceTypes.Collisions
             writer.Write(mesh.NumVertices);
             foreach (var Entry in mesh.Vertices)
             {
-                Vector3Extenders.WriteToFile(Entry, writer);
+                Vector3Utils.WriteToFile(Entry, writer);
             }
 
             writer.Write(mesh.NumTriangles * 3); // Write Number of Indices, not triangles.

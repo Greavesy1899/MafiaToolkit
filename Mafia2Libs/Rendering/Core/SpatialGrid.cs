@@ -1,11 +1,14 @@
-﻿using SharpDX;
-using System;
-using ResourceTypes.Translokator;
-using SharpDX.Direct3D11;
-using Rendering.Graphics;
-using Utils.StringHelpers;
+﻿using Rendering.Graphics;
 using ResourceTypes.Navigation;
+using ResourceTypes.Translokator;
+using System;
+using System.Numerics;
 using System.Windows.Forms;
+using Toolkit.Core;
+using Utils.StringHelpers;
+using Utils.VorticeUtils;
+using Vortice.Direct3D11;
+using Vortice.Mathematics;
 
 namespace Rendering.Core
 {
@@ -42,8 +45,11 @@ namespace Rendering.Core
             width = mesh.CellSizeY;
             height = mesh.CellSizeX;
             origin = new Vector3(gridBounds.Minimum.X, gridBounds.Minimum.Y, 0.0f);
-            cellSize = new Vector2(gridBounds.Width / width, gridBounds.Height / height);
+            cellSize = new Vector2(gridBounds.GetWidth() / width, gridBounds.GetHeight() / height);
             cells = new SpatialCell[width * height];
+
+            Vector3 TempMin = gridBounds.Minimum;
+            Vector3 TempMax = gridBounds.Maximum;
 
             var index = 0;
             for (int i = 0; i < width; i++)
@@ -56,17 +62,20 @@ namespace Rendering.Core
                     {
                         if (gridBounds.Minimum.Z < set.X)
                         {
-                            gridBounds.Minimum.Z = set.X;
+                            TempMin.Z = set.X;
                         }
                         if (gridBounds.Maximum.Z > set.Y)
                         {
-                            gridBounds.Maximum.Z = set.Y;
+                            TempMax.Z = set.Y;
                         }
                     }
-                
-                    var extents = new BoundingBox();
-                    extents.Minimum = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 0.0f);
-                    extents.Maximum = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 0.0f);
+
+                    gridBounds = new BoundingBox(TempMin, TempMax);
+
+                    Vector3 Min = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 0.0f);
+                    Vector3 Max = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 0.0f);
+                    BoundingBox extents = new BoundingBox(Min, Max);
+
                     cells[index] = new SpatialCell(cell, extents);
 
                     index++;
@@ -80,7 +89,7 @@ namespace Rendering.Core
             gridBounds = translokator.Bounds;
             width = translokator.Grids[0].Width;
             height = translokator.Grids[0].Height;
-            cellSize = new Vector2(gridBounds.Width / width, gridBounds.Height / height);
+            cellSize = new Vector2(gridBounds.GetWidth() / width, gridBounds.GetHeight() / height);
             cells = new SpatialCell[width * height];
             origin = gridBounds.Minimum;
 
@@ -89,9 +98,10 @@ namespace Rendering.Core
             {
                 for (int x = 0; x < height; x++)
                 {
-                    var extents = new BoundingBox();
-                    extents.Minimum = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 10.0f);
-                    extents.Maximum = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 10.0f);
+                    Vector3 ExtentsMin = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 10.0f);
+                    Vector3 ExtentsMax = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 10.0f);
+                    var extents = new BoundingBox(ExtentsMin, ExtentsMax);
+
                     cells[index++] = new SpatialCell(extents);
                 }
             }
@@ -109,15 +119,15 @@ namespace Rendering.Core
                         Instance instance = obj.Instances[y];
                         var cell = GetCell(instance.Position);
                         RenderBoundingBox box = new RenderBoundingBox();
-                        box.SetTransform(Matrix.Translation(instance.Position));
+                        box.SetTransform(Matrix4x4.CreateTranslation(instance.Position));
                         box.Init(new BoundingBox(-Vector3.One, Vector3.One));
-                        cells[cell].AddAsset(box, StringHelpers.GetNewRefID());
+                        cells[cell].AddAsset(box, RefManager.GetNewRefID());
                     }
                 }
             }
         }
 
-        public void Initialise(Device device, DeviceContext deviceContext)
+        public void Initialise(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             if (bIsReady)
             {
@@ -138,7 +148,7 @@ namespace Rendering.Core
             }
         }
 
-        public void Render(Device device, DeviceContext deviceContext, Camera camera)
+        public void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
             if (bIsReady)
             {

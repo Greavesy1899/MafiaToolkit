@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using Utils.Models;
 using ResourceTypes.FrameResource;
 using static ResourceTypes.FrameResource.FrameLOD;
-using System.Windows;
-using SharpDX;
+using System.Numerics;
+using Vortice.Mathematics;
 
 namespace Mafia2Tool.MafiaLib.ModelHelpers
 {
@@ -110,10 +107,10 @@ namespace Mafia2Tool.MafiaLib.ModelHelpers
             int index = 0;
             for (int y = 0; y != IndexBuffer.Length; y+=6)
             {
-                Int3 triangle = new Int3();
-                triangle.X = BitConverter.ToUInt16(IndexBuffer, y + 0);
-                triangle.Y = BitConverter.ToUInt16(IndexBuffer, y + 2);
-                triangle.Z = BitConverter.ToUInt16(IndexBuffer, y + 4);
+                int X = BitConverter.ToUInt16(IndexBuffer, y + 0);
+                int Y = BitConverter.ToUInt16(IndexBuffer, y + 2);
+                int Z = BitConverter.ToUInt16(IndexBuffer, y + 4);
+                Int3 triangle = new Int3(X, Y, Z);
                 Triangles[index] = triangle;
                 index++;
             }
