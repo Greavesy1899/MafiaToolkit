@@ -61,11 +61,7 @@ namespace Core.IO
 
         public virtual bool Open()
         {
-            ProcessStartInfo StartInfo = new ProcessStartInfo();
-            StartInfo.UseShellExecute = true;
-            StartInfo.FileName = file.FullName;
-
-            return (Process.Start(StartInfo) != null ? true : false);
+            return (OpenFileAsProcess() != null ? true : false);
         }
 
         public virtual void Save()
@@ -82,6 +78,16 @@ namespace Core.IO
                     file.Delete();
                 }
             }
+        }
+
+        // Utility function just in case a derived type can't call base.Open()
+        protected Process OpenFileAsProcess()
+        {
+            ProcessStartInfo StartInfo = new ProcessStartInfo();
+            StartInfo.UseShellExecute = true;
+            StartInfo.FileName = file.FullName;
+
+            return Process.Start(StartInfo);
         }
     }
 }

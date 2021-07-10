@@ -28,7 +28,8 @@ namespace Core.IO
             }
             else
             {
-                return (Process.Start(file.FullName) != null ? true : false);
+                // Base class *should* open as process.
+                return base.Open();
             }
         }
     }

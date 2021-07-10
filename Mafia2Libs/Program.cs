@@ -17,9 +17,6 @@ namespace Mafia2Tool
         [STAThread]
         static void Main(string[] args)
         {
-            //ResourceTypes.EntityActivator.EntityActivator entity = new ResourceTypes.EntityActivator.EntityActivator();
-            //entity.ReadFromFile(new FileInfo("EntityActivator.bin"));
-
             if (args.Length > 0)
             {
                 CheckINIExists();
@@ -47,7 +44,7 @@ namespace Mafia2Tool
             }
 
             GameSelector selector = new GameSelector();
-            if(selector.ShowDialog() == DialogResult.OK)
+            if (selector.ShowDialog() == DialogResult.OK)
             {
                 selector.Dispose();
                 OpenGameExplorer();
