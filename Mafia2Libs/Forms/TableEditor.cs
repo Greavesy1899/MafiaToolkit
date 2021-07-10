@@ -15,6 +15,8 @@ namespace Mafia2Tool
         private TableData data;
         private Dictionary<uint, string> columnNames = new Dictionary<uint, string>();
 
+        private bool bIsFileEdited = false;
+
         public TableEditor(FileInfo file)
         {
             InitializeComponent();
@@ -112,6 +114,9 @@ namespace Mafia2Tool
             {
                 DataGrid.Rows.Add(row.Values.ToArray());
             }
+
+            Text = Language.GetString("$TABLE_EDITOR_TITLE");
+            bIsFileEdited = false;
         }
 
         private void SaveTableData()
@@ -157,6 +162,9 @@ namespace Mafia2Tool
             }
 
             data = newData;
+
+            Text = Language.GetString("$TABLE_EDITOR_TITLE");
+            bIsFileEdited = false;
         }
 
         private void GetCellProperties(int r, int c)
@@ -195,6 +203,9 @@ namespace Mafia2Tool
                 }
             }
             DataGrid.Rows.Add(data.ToArray());
+
+            Text = Language.GetString("$TABLE_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
         private void OnSelectedChange(object sender, EventArgs e)
@@ -205,11 +216,37 @@ namespace Mafia2Tool
             }
         }
 
+        private void CellContent_Changed(object sender, DataGridViewCellEventArgs e)
+        {
+            Text = Language.GetString("$TABLE_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
+        }
+
         private void DeleteRowOnClick(object sender, EventArgs e)
         {
             if(DataGrid.SelectedRows.Count > 0)
             {
                 DataGrid.Rows.Remove(DataGrid.SelectedRows[0]);
+
+                Text = Language.GetString("$TABLE_EDITOR_TITLE") + "*";
+                bIsFileEdited = true;
+            }
+        }
+
+        private void TableEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    SaveTableData();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
             }
         }
     }

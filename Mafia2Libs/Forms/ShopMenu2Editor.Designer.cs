@@ -33,9 +33,9 @@
             this.PropertyGrid_ShopMenu2 = new System.Windows.Forms.PropertyGrid();
             this.TreeView_ShopMenu2 = new Mafia2Tool.Controls.MTreeView();
             this.Context_Menu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.Context_Delete = new System.Windows.Forms.ToolStripMenuItem();
             this.Context_AddType = new System.Windows.Forms.ToolStripMenuItem();
             this.Context_AddMetaInfo = new System.Windows.Forms.ToolStripMenuItem();
+            this.Context_Delete = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip_Main = new System.Windows.Forms.ToolStrip();
             this.Button_File = new System.Windows.Forms.ToolStripDropDownButton();
             this.Button_Save = new System.Windows.Forms.ToolStripMenuItem();
@@ -83,14 +83,6 @@
             this.Context_Menu.Name = "SDSContext";
             this.Context_Menu.Size = new System.Drawing.Size(170, 70);
             // 
-            // Context_Delete
-            // 
-            this.Context_Delete.Name = "Context_Delete";
-            this.Context_Delete.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
-            this.Context_Delete.Size = new System.Drawing.Size(169, 22);
-            this.Context_Delete.Text = "$DELETE";
-            this.Context_Delete.Click += new System.EventHandler(this.Context_Delete_OnClick);
-            // 
             // Context_AddType
             // 
             this.Context_AddType.Name = "Context_AddType";
@@ -104,6 +96,14 @@
             this.Context_AddMetaInfo.Size = new System.Drawing.Size(169, 22);
             this.Context_AddMetaInfo.Text = "$ADD_METAINFO";
             this.Context_AddMetaInfo.Click += new System.EventHandler(this.Context_AddMetaInfo_OnClick);
+            // 
+            // Context_Delete
+            // 
+            this.Context_Delete.Name = "Context_Delete";
+            this.Context_Delete.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
+            this.Context_Delete.Size = new System.Drawing.Size(169, 22);
+            this.Context_Delete.Text = "$DELETE";
+            this.Context_Delete.Click += new System.EventHandler(this.Context_Delete_OnClick);
             // 
             // ToolStrip_Main
             // 

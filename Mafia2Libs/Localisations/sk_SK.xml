@@ -81,6 +81,7 @@
   <String ID="$LANGUAGE_OPTION">Vybrať jazyk</String>
   <String ID="$DISCORD_STATE_CUSTOM">Použiť vlastný status v Discorde.</String>
   <String ID="$CHECK_FOR_UPDATES">Pozrieť sa či nie sú dostupné aktualizácie.</String>
+  <String ID="$SAVE_PROMPT">Uložiť pred zatvorením?</String>
   
   <!-- Model/Exporting Option Strings-->
   <String ID="$EXPORT_PATH_TITLE">Cesta exportu:</String>

@@ -76,6 +76,7 @@
   <String ID="$LANGUAGE_OPTION">Język intefejsu</String>
   <String ID="$DISCORD_STATE_CUSTOM">Użycie specjalnego opisu na Discordzie</String>
   <String ID="$CHECK_FOR_UPDATES">Sprawdź, czy są aktualizacje</String>
+  <String ID="$SAVE_PROMPT">Zapisać przed zamknięciem?</String>
 
   <!-- Map Editor -->
   <String ID="$NO_COL_FILE_CREATE_NEW">No Collision file is present. Create new Collision File?</String>

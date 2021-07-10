@@ -177,10 +177,10 @@
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "SDSContentEditor";
             this.Text = "$SDSCONTENT_EDITOR_TITLE";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SDSContentEditor_Closing);
             this.Context_Menu.ResumeLayout(false);
             this.Tool_Strip.ResumeLayout(false);
             this.Tool_Strip.PerformLayout();
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SDSContentEditor_Closing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
