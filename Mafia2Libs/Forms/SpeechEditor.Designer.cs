@@ -28,64 +28,41 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpeechEditor));
-            this.FrameResourceGrid = new System.Windows.Forms.PropertyGrid();
-            this.TreeView_Speech = new Controls.MTreeView();
-            this.CollisionContext = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ContextDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.deletePlacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Grid_Speech = new System.Windows.Forms.PropertyGrid();
+            this.TreeView_Speech = new Mafia2Tool.Controls.MTreeView();
             this.openM2T = new System.Windows.Forms.OpenFileDialog();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.fileToolButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.CollisionContext.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
+            this.Tool_Strip = new System.Windows.Forms.ToolStrip();
+            this.Button_File = new System.Windows.Forms.ToolStripDropDownButton();
+            this.Button_Save = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_Reload = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_Exit = new System.Windows.Forms.ToolStripMenuItem();
+            this.Tool_Strip.SuspendLayout();
             this.SuspendLayout();
             // 
-            // FrameResourceGrid
+            // Grid_Speech
             // 
-            this.FrameResourceGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.Grid_Speech.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FrameResourceGrid.Location = new System.Drawing.Point(402, 28);
-            this.FrameResourceGrid.Name = "FrameResourceGrid";
-            this.FrameResourceGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.FrameResourceGrid.Size = new System.Drawing.Size(386, 410);
-            this.FrameResourceGrid.TabIndex = 10;
+            this.Grid_Speech.Location = new System.Drawing.Point(469, 32);
+            this.Grid_Speech.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.Grid_Speech.Name = "Grid_Speech";
+            this.Grid_Speech.PropertySort = System.Windows.Forms.PropertySort.Categorized;
+            this.Grid_Speech.Size = new System.Drawing.Size(450, 473);
+            this.Grid_Speech.TabIndex = 10;
+            this.Grid_Speech.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.Grid_Speech_PropertyChanged);
             // 
             // TreeView_Speech
             // 
             this.TreeView_Speech.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.TreeView_Speech.ContextMenuStrip = this.CollisionContext;
-            this.TreeView_Speech.Location = new System.Drawing.Point(12, 28);
+            this.TreeView_Speech.Location = new System.Drawing.Point(14, 32);
+            this.TreeView_Speech.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.TreeView_Speech.Name = "TreeView_Speech";
-            this.TreeView_Speech.Size = new System.Drawing.Size(368, 410);
+            this.TreeView_Speech.Size = new System.Drawing.Size(429, 472);
             this.TreeView_Speech.TabIndex = 11;
             this.TreeView_Speech.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnNodeSelectSelect);
-            // 
-            // CollisionContext
-            // 
-            this.CollisionContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ContextDelete,
-            this.deletePlacementToolStripMenuItem});
-            this.CollisionContext.Name = "SDSContext";
-            this.CollisionContext.Size = new System.Drawing.Size(167, 48);
-            // 
-            // ContextDelete
-            // 
-            this.ContextDelete.Name = "ContextDelete";
-            this.ContextDelete.Size = new System.Drawing.Size(166, 22);
-            this.ContextDelete.Text = "Delete Collision";
-            // 
-            // deletePlacementToolStripMenuItem
-            // 
-            this.deletePlacementToolStripMenuItem.Name = "deletePlacementToolStripMenuItem";
-            this.deletePlacementToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.deletePlacementToolStripMenuItem.Text = "Delete Placement";
             // 
             // openM2T
             // 
@@ -93,64 +70,67 @@
             this.openM2T.Filter = "Model File|*.m2t|All Files|*.*|FBX Model|*.fbx";
             this.openM2T.Tag = "";
             // 
-            // toolStrip1
+            // Tool_Strip
             // 
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolButton});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(800, 25);
-            this.toolStrip1.TabIndex = 15;
-            this.toolStrip1.Text = "toolStrip1";
+            this.Tool_Strip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Button_File});
+            this.Tool_Strip.Location = new System.Drawing.Point(0, 0);
+            this.Tool_Strip.Name = "Tool_Strip";
+            this.Tool_Strip.Size = new System.Drawing.Size(933, 25);
+            this.Tool_Strip.TabIndex = 15;
+            this.Tool_Strip.Text = "toolStrip1";
             // 
-            // fileToolButton
+            // Button_File
             // 
-            this.fileToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.fileToolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem,
-            this.reloadToolStripMenuItem,
-            this.exitToolStripMenuItem});
-            this.fileToolButton.Image = ((System.Drawing.Image)(resources.GetObject("fileToolButton.Image")));
-            this.fileToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.fileToolButton.Name = "fileToolButton";
-            this.fileToolButton.Size = new System.Drawing.Size(47, 22);
-            this.fileToolButton.Text = "$FILE";
+            this.Button_File.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.Button_File.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Button_Save,
+            this.Button_Reload,
+            this.Button_Exit});
+            this.Button_File.Image = ((System.Drawing.Image)(resources.GetObject("Button_File.Image")));
+            this.Button_File.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Button_File.Name = "Button_File";
+            this.Button_File.Size = new System.Drawing.Size(47, 22);
+            this.Button_File.Text = "$FILE";
             // 
-            // saveToolStripMenuItem
+            // Button_Save
             // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.saveToolStripMenuItem.Text = "$SAVE";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            this.Button_Save.Name = "Button_Save";
+            this.Button_Save.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.Button_Save.Size = new System.Drawing.Size(165, 22);
+            this.Button_Save.Text = "$SAVE";
+            this.Button_Save.Click += new System.EventHandler(this.Button_Save_Click);
             // 
-            // reloadToolStripMenuItem
+            // Button_Reload
             // 
-            this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.reloadToolStripMenuItem.Text = "$RELOAD";
-            this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
+            this.Button_Reload.Name = "Button_Reload";
+            this.Button_Reload.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.Button_Reload.Size = new System.Drawing.Size(165, 22);
+            this.Button_Reload.Text = "$RELOAD";
+            this.Button_Reload.Click += new System.EventHandler(this.Button_Reload_Click);
             // 
-            // exitToolStripMenuItem
+            // Button_Exit
             // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.exitToolStripMenuItem.Text = "$EXIT";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.Button_Exit.Name = "Button_Exit";
+            this.Button_Exit.Size = new System.Drawing.Size(165, 22);
+            this.Button_Exit.Text = "$EXIT";
+            this.Button_Exit.Click += new System.EventHandler(this.Button_Exit_Click);
             // 
             // SpeechEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.FrameResourceGrid);
+            this.ClientSize = new System.Drawing.Size(933, 519);
+            this.Controls.Add(this.Tool_Strip);
+            this.Controls.Add(this.Grid_Speech);
             this.Controls.Add(this.TreeView_Speech);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "SpeechEditor";
             this.Text = "$SPEECH_EDITOR_TITLE";
-            this.CollisionContext.ResumeLayout(false);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SpeechEditor_Closing);
+            this.Tool_Strip.ResumeLayout(false);
+            this.Tool_Strip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -158,16 +138,17 @@
 
         #endregion
 
-        private System.Windows.Forms.PropertyGrid FrameResourceGrid;
-        private System.Windows.Forms.TreeView TreeView_Speech;
+        private System.Windows.Forms.PropertyGrid Grid_Speech;
         private System.Windows.Forms.OpenFileDialog openM2T;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripDropDownButton fileToolButton;
+        private System.Windows.Forms.ToolStrip Tool_Strip;
+        private System.Windows.Forms.ToolStripDropDownButton Button_Fille;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ContextMenuStrip CollisionContext;
-        private System.Windows.Forms.ToolStripMenuItem ContextDelete;
-        private System.Windows.Forms.ToolStripMenuItem deletePlacementToolStripMenuItem;
+        private Controls.MTreeView TreeView_Speech;
+        private System.Windows.Forms.ToolStripDropDownButton Button_File;
+        private System.Windows.Forms.ToolStripMenuItem Button_Save;
+        private System.Windows.Forms.ToolStripMenuItem Button_Reload;
+        private System.Windows.Forms.ToolStripMenuItem Button_Exit;
     }
 }

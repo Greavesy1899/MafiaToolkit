@@ -162,29 +162,10 @@ namespace Toolkit.Forms
 
         private void EDSEditor_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (TreeView_Tables.Focused)
-            {
-                if (e.Control && e.KeyCode == Keys.C)
-                {
-                    CopyTagData();
-                }
-                else if (e.Control && e.KeyCode == Keys.V)
-                {
-                    PasteTagData();
-                }
-            }
-            else if (e.Control && e.KeyCode == Keys.D)
+            if (e.Control && e.KeyCode == Keys.D)
             {
                 PropertyGrid_Item.SelectedObject = null;
                 TreeView_Tables.SelectedNode = null;
-            }
-            else if (e.Control && e.KeyCode == Keys.S)
-            {
-                Save();
-            }
-            else if (e.Control && e.KeyCode == Keys.R)
-            {
-                Reload();
             }
         }
 
@@ -284,7 +265,7 @@ namespace Toolkit.Forms
         {
             if (bIsFileEdited)
             {
-                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNoCancel);
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "", System.Windows.MessageBoxButton.YesNoCancel);
 
                 if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {

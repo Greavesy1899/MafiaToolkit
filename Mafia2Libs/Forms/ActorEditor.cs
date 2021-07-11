@@ -221,30 +221,10 @@ namespace Mafia2Tool
 
         private void ActorTreeView_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.C)
-            {
-                Copy();
-            }
-            else if (e.Control && e.KeyCode == Keys.V)
-            {
-                Paste();
-            }
-            else if (e.Control && e.KeyCode == Keys.Delete)
-            {
-                Delete();
-            }
-            else if (e.Control && e.KeyCode == Keys.D)
+            if (e.Control && e.KeyCode == Keys.D)
             {
                 ActorGrid.SelectedObject = null;
                 ActorTreeView.SelectedNode = null;
-            }
-            else if (e.Control && e.KeyCode == Keys.S)
-            {
-                Save();
-            }
-            else if (e.Control && e.KeyCode == Keys.R)
-            {
-                Reload();
             }
         }
 
@@ -263,7 +243,7 @@ namespace Mafia2Tool
         {
             if (bIsFileEdited)
             {
-                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNoCancel);
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "", System.Windows.MessageBoxButton.YesNoCancel);
 
                 if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {

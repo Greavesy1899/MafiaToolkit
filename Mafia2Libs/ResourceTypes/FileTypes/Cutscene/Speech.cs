@@ -62,6 +62,25 @@ namespace ResourceTypes.Speech
             }
         }
 
+        public void WriteToFile(BinaryWriter writer)
+        {
+            writer.Write(fileversion);
+            writer.Write(fileversion2);
+            writer.Write(numSpeechTypes);
+            writer.Write(numSpeechItems);
+
+            foreach (SpeechTypeData type in speechTypes)
+            {
+                type.WriteToFile(writer);
+            }
+
+            foreach (SpeechItemData item in speechItems)
+            {
+                item.WriteToFile(writer);
+            }
+
+        }
+
         public class SpeechTypeData
         {
             int unk0; //possible hash in int32.

@@ -199,34 +199,10 @@ namespace Toolkit.Forms
 
         private void FxActorEditor_OnKeyUp(object sender, KeyEventArgs e)
         {
-            //TODO: Event fires twice? Might be my keyboard though
-            if (TreeView_FxActors.Focused)
-            {
-                if (e.Control && e.KeyCode == Keys.C)
-                {
-                    Copy();
-                }
-                else if (e.Control && e.KeyCode == Keys.V)
-                {
-                    Paste();
-                }
-                else if (e.Control && e.KeyCode == Keys.Delete)
-                {
-                    Delete();
-                }
-            }
-            else if (e.Control && e.KeyCode == Keys.D)
+            if (e.Control && e.KeyCode == Keys.D)
             {
                 Grid_Actors.SelectedObject = null;
                 TreeView_FxActors.SelectedNode = null;
-            }
-            else if (e.Control && e.KeyCode == Keys.S)
-            {
-                Save();
-            }
-            else if (e.Control && e.KeyCode == Keys.R)
-            {
-                Reload();
             }
         }
 
@@ -243,7 +219,7 @@ namespace Toolkit.Forms
         {
             if (bIsFileEdited)
             {
-                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show("Save before closing?", "", System.Windows.MessageBoxButton.YesNoCancel);
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "", System.Windows.MessageBoxButton.YesNoCancel);
 
                 if (SaveChanges == System.Windows.MessageBoxResult.Yes)
                 {

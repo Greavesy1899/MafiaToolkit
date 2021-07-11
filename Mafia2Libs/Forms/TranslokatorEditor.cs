@@ -13,6 +13,8 @@ namespace Mafia2Tool.Forms
         private TranslokatorLoader translokator;
         private object clipboard;
 
+        private bool bIsFileEdited = false;
+
         public TranslokatorEditor(FileInfo info)
         {
             InitializeComponent();
@@ -30,8 +32,7 @@ namespace Mafia2Tool.Forms
             ReloadButton.Text = Language.GetString("$RELOAD");
             AddInstance.Text = Language.GetString("$ADD_INSTANCE");
             AddObject.Text = Language.GetString("$ADD_OBJECT");
-            DeleteInstance.Text = Language.GetString("$DELETE_INSTANCE");
-            DeleteObject.Text = Language.GetString("$DELETE_OBJECT");
+            Delete.Text = Language.GetString("$DELETE");
             Text = Language.GetString("$TRANSLOKATOR_EDITOR");
             CopyButton.Text = Language.GetString("$COPY");
             PasteButton.Text = Language.GetString("$PASTE");
@@ -83,6 +84,9 @@ namespace Mafia2Tool.Forms
             TranslokatorTree.Nodes.Add(headerData);
             TranslokatorTree.Nodes.Add(gridNode);
             TranslokatorTree.Nodes.Add(ogNode);
+
+            Text = Language.GetString("$TRANSLOKATOR_EDITOR");
+            bIsFileEdited = false;
         }
 
         private void SaveFile()
@@ -116,88 +120,9 @@ namespace Mafia2Tool.Forms
                 translokator.ObjectGroups[i] = objectGroup;
             }
             translokator.WriteToFile(file);
-        }
 
-        private void TranslokatorTree_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            if (TranslokatorTree?.SelectedNode.Tag != null)
-            {
-                PropertyGrid.SelectedObject = TranslokatorTree?.SelectedNode.Tag;
-            }
-        }
-
-        private void ReloadButton_Click(object sender, EventArgs e)
-        {
-            LoadFile();
-        }
-
-        private void SaveToolButton_Click(object sender, EventArgs e)
-        {
-            SaveFile();
-        }
-
-        private void ExitButton_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void TranslokatorContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            for (int i = 0; i != TranslokatorContext.Items.Count; i++)
-                TranslokatorContext.Items[i].Visible = false;
-
-            if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
-            {
-                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object))
-                    TranslokatorContext.Items[0].Visible = true;
-                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ObjectGroup))
-                    TranslokatorContext.Items[1].Visible = true;
-                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(Instance))
-                    TranslokatorContext.Items[2].Visible = true;
-                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object))
-                    TranslokatorContext.Items[3].Visible = true;
-
-                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object) ||
-                    TranslokatorTree.SelectedNode.Tag.GetType() == typeof(Instance))
-                {
-                    TranslokatorContext.Items[4].Visible = true;
-                    TranslokatorContext.Items[5].Visible = true;
-                }
-            }
-
-            bool nonVisible = true;
-            for (int i = 0; i != TranslokatorContext.Items.Count; i++)
-            {
-                if (!TranslokatorContext.Items[i].Visible)
-                    nonVisible = false;
-            }
-
-            if(nonVisible)
-                e.Cancel = true;
-        }
-
-        private void OnKeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Delete)
-            {
-                if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
-                    TranslokatorTree.Nodes.Remove(TranslokatorTree.SelectedNode);
-            }
-            else if(e.Control && e.KeyCode == Keys.A)
-            {
-                if (TranslokatorTree.SelectedNode.Tag is ObjectGroup)
-                    AddObjectNode();
-                else if (TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object || TranslokatorTree.SelectedNode.Tag is Instance)
-                    AddInstanceNode();
-            }
-            else if (e.Control && e.KeyCode == Keys.C)
-            {
-                Copy();
-            }
-            else if (e.Control && e.KeyCode == Keys.V)
-            {
-                Paste();
-            }
+            Text = Language.GetString("$TRANSLOKATOR_EDITOR");
+            bIsFileEdited = false;
         }
 
         private void AddInstanceNode()
@@ -209,6 +134,9 @@ namespace Mafia2Tool.Forms
                 TreeNode instanceNode = new TreeNode(obj.Name + " " + TranslokatorTree.SelectedNode.GetNodeCount(false));
                 instanceNode.Tag = instance;
                 TranslokatorTree.SelectedNode.Nodes.Add(instanceNode);
+
+                Text = Language.GetString("$TRANSLOKATOR_EDITOR") + "*";
+                bIsFileEdited = true;
             }
             if (TranslokatorTree.SelectedNode.Tag is Instance && TranslokatorTree.SelectedNode.Parent.Tag is ResourceTypes.Translokator.Object)
             {
@@ -217,6 +145,9 @@ namespace Mafia2Tool.Forms
                 TreeNode instanceNode = new TreeNode(obj.Name + " " + TranslokatorTree.SelectedNode.Parent.GetNodeCount(false));
                 instanceNode.Tag = instance;
                 TranslokatorTree.SelectedNode.Parent.Nodes.Add(instanceNode);
+
+                Text = Language.GetString("$TRANSLOKATOR_EDITOR") + "*";
+                bIsFileEdited = true;
             }
         }
         private void AddObjectNode()
@@ -229,12 +160,20 @@ namespace Mafia2Tool.Forms
                 TreeNode instanceNode = new TreeNode(obj.Name + " " + TranslokatorTree.SelectedNode.GetNodeCount(false));
                 instanceNode.Tag = obj;
                 TranslokatorTree.SelectedNode.Nodes.Add(instanceNode);
+
+                Text = Language.GetString("$TRANSLOKATOR_EDITOR") + "*";
+                bIsFileEdited = true;
             }
         }
         private void DeleteNode()
         {
             if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
+            {
                 TranslokatorTree.Nodes.Remove(TranslokatorTree.SelectedNode);
+
+                Text = Language.GetString("$TRANSLOKATOR_EDITOR") + "*";
+                bIsFileEdited = true;
+            }
         }
         private void Copy()
         {
@@ -259,17 +198,66 @@ namespace Mafia2Tool.Forms
                     {
                         TranslokatorTree.SelectedNode.Tag = new Instance((Instance)clipboard);
                     }
+
+                    Text = Language.GetString("$TRANSLOKATOR_EDITOR") + "*";
+                    bIsFileEdited = true;
                 }
             }
             PropertyGrid.SelectedObject = TranslokatorTree?.SelectedNode.Tag;
         }
 
-        private void AddObjectOnClick(object sender, EventArgs e) => AddObjectNode();
-        private void AddInstance_Click(object sender, EventArgs e) => AddInstanceNode();
-        private void DeleteInstance_Click(object sender, EventArgs e) => DeleteNode();
-        private void DeleteObject_Click(object sender, EventArgs e) => DeleteNode();
-        private void CopyButton_Click(object sender, EventArgs e) => Copy();
-        private void PasteButton_Click(object sender, EventArgs e) => Paste();
+        private void TranslokatorTree_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (TranslokatorTree?.SelectedNode.Tag != null)
+            {
+                PropertyGrid.SelectedObject = TranslokatorTree?.SelectedNode.Tag;
+            }
+        }
+
+        private void TranslokatorContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            for (int i = 0; i != TranslokatorContext.Items.Count; i++)
+                TranslokatorContext.Items[i].Visible = false;
+
+            if (TranslokatorTree.SelectedNode != null && TranslokatorTree.SelectedNode.Tag != null)
+            {
+                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object))
+                    TranslokatorContext.Items[0].Visible = true;
+                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ObjectGroup))
+                    TranslokatorContext.Items[1].Visible = true;
+                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(Instance) || TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object))
+                    TranslokatorContext.Items[2].Visible = true;
+
+                if (TranslokatorTree.SelectedNode.Tag.GetType() == typeof(ResourceTypes.Translokator.Object) ||
+                    TranslokatorTree.SelectedNode.Tag.GetType() == typeof(Instance))
+                {
+                    TranslokatorContext.Items[3].Visible = true;
+                    TranslokatorContext.Items[4].Visible = true;
+                }
+            }
+
+            bool nonVisible = true;
+            for (int i = 0; i != TranslokatorContext.Items.Count; i++)
+            {
+                if (!TranslokatorContext.Items[i].Visible)
+                    nonVisible = false;
+            }
+
+            if(nonVisible)
+                e.Cancel = true;
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.Control && e.KeyCode == Keys.A)
+            {
+                if (TranslokatorTree.SelectedNode.Tag is ObjectGroup)
+                    AddObjectNode();
+                else if (TranslokatorTree.SelectedNode.Tag is ResourceTypes.Translokator.Object || TranslokatorTree.SelectedNode.Tag is Instance)
+                    AddInstanceNode();
+            }
+        }
+
         private void PropertyGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             Cursor.Current = Cursors.WaitCursor;
@@ -289,6 +277,9 @@ namespace Mafia2Tool.Forms
 
             PropertyGrid.Refresh();
             Cursor.Current = Cursors.Default;
+
+            Text = Language.GetString("$TRANSLOKATOR_EDITOR") + "*";
+            bIsFileEdited = true;
         }
         private void ViewNumInstButton_Click(object sender, EventArgs e)
         {
@@ -386,7 +377,44 @@ namespace Mafia2Tool.Forms
                 TranslokatorTree.Nodes.Add(headerData);
                 TranslokatorTree.Nodes.Add(gridNode);
                 TranslokatorTree.Nodes.Add(ogNode);
+
+                Text = Language.GetString("$TRANSLOKATOR_EDITOR") + "*";
+                bIsFileEdited = true;
             }
         }
+
+        private void TranslocatorEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    SaveFile();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        private void ReloadButton_Click(object sender, EventArgs e)
+        {
+            LoadFile();
+
+            TranslokatorTree.SelectedNode = null;
+            PropertyGrid.SelectedObject = null;
+
+        }
+
+        private void AddObjectOnClick(object sender, EventArgs e) => AddObjectNode();
+        private void AddInstance_Click(object sender, EventArgs e) => AddInstanceNode();
+        private void Delete_Click(object sender, EventArgs e) => DeleteNode();
+        private void CopyButton_Click(object sender, EventArgs e) => Copy();
+        private void PasteButton_Click(object sender, EventArgs e) => Paste();
+        private void SaveToolButton_Click(object sender, EventArgs e) => SaveFile();
+        private void ExitButton_Click(object sender, EventArgs e) => Close();
     }
 }

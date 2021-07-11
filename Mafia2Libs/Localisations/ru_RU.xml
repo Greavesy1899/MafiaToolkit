@@ -73,6 +73,7 @@
   <String ID="$LANGUAGE_POLISH">Polish</String>
   <String ID="$LANGUAGE_SLOVAK">Slovenčina</String>
   <String ID="$LANGUAGE_OPTION">Язык</String>
+  <String ID="$SAVE_PROMPT">Сохранить перед закрытием?</String>
   
   <!-- Model/Exporting Option Strings-->
   <String ID="$EXPORT_PATH_TITLE">Путь</String>

@@ -81,6 +81,7 @@
   <String ID="$LANGUAGE_OPTION">Jazyk</String>
   <String ID="$DISCORD_STATE_CUSTOM">Použít vlastní status v discordu.</String>
   <String ID="$CHECK_FOR_UPDATES">Vyhledat aktualizace.</String>
+  <String ID="$SAVE_PROMPT">Uložit před zavřením?</String>
   
   <!-- Model/Exporting Option Strings-->
   <String ID="$EXPORT_PATH_TITLE">Umístění exportu:</String>

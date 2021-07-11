@@ -3,6 +3,8 @@ using ResourceTypes.Cutscene;
 using System;
 using System.Windows.Forms;
 using Utils.Helpers;
+using Utils.Language;
+using Utils.Settings;
 
 namespace Mafia2Tool.Forms
 {
@@ -13,18 +15,24 @@ namespace Mafia2Tool.Forms
 
         private CutsceneLoader.Cutscene[] Cutscenes;
 
+        private bool bIsFileEdited = false;
+
         public CutsceneEditor(FileCutscene CutsceneFile)
         {
             InitializeComponent();
             OriginalFile = CutsceneFile;
 
             Localise();
-            InitialiseData();
+            BuildData();
         }
 
         public void Localise()
         {
-
+            Text = Language.GetString("$CUTSCENE_EDITOR");
+            Button_File.Text = Language.GetString("$FILE");
+            Button_Save.Text = Language.GetString("$SAVE");
+            Button_Reload.Text = Language.GetString("$RELOAD");
+            Button_Exit.Text = Language.GetString("$EXIT");
         }
 
         private void AddCutsceneToTreeView(CutsceneLoader.Cutscene Cutscene)
@@ -68,7 +76,7 @@ namespace Mafia2Tool.Forms
             TreeView_Cutscene.Nodes.Add(CutsceneParent);
         }
 
-        public void InitialiseData()
+        public void BuildData()
         {
             Cutscenes = OriginalFile.GetCutsceneLoader().Cutscenes;
 
@@ -76,6 +84,25 @@ namespace Mafia2Tool.Forms
             {
                 AddCutsceneToTreeView(Cutscenes[i]);
             }
+        }
+
+        private void Save()
+        {
+            CutsceneLoader Loader = OriginalFile.GetCutsceneLoader();
+            Loader.WriteToFile(OriginalFile.GetUnderlyingFileInfo().FullName);
+
+            Text = Language.GetString("$CUTSCENE_EDITOR");
+            bIsFileEdited = false;
+        }
+
+        private void Reload()
+        {
+            PropertyGrid_Cutscene.SelectedObject = null;
+            TreeView_Cutscene.SelectedNode = null;
+            TreeView_Cutscene.Nodes.Clear();
+            BuildData();
+            Text = Language.GetString("$CUTSCENE_EDITOR");
+            bIsFileEdited = false;
         }
 
         private void TreeView_Cutscene_AfterSelect(object sender, TreeViewEventArgs e)
@@ -86,20 +113,45 @@ namespace Mafia2Tool.Forms
             }
         }
 
-        private void SaveButton_OnClick(object sender, EventArgs e)
+        private void PropertyGrid_Cutscene_PropertyChanged(object sender, PropertyValueChangedEventArgs e)
         {
-            CutsceneLoader Loader = OriginalFile.GetCutsceneLoader();
-            Loader.WriteToFile(OriginalFile.GetUnderlyingFileInfo().FullName);
+            if (e.ChangedItem.Label == "Name")
+                TreeView_Cutscene.SelectedNode.Text = e.ChangedItem.Value.ToString();
+
+            Text = Language.GetString("$CUTSCENE_EDITOR") + "*";
+            bIsFileEdited = true;
         }
 
-        private void ExitButton_OnClick(object sender, EventArgs e)
+        private void CutsceneEditor_OnKeyUp(object sender, KeyEventArgs e)
         {
-            Close();
+            if (e.Control && e.KeyCode == Keys.D)
+            {
+                PropertyGrid_Cutscene.SelectedObject = null;
+                TreeView_Cutscene.SelectedNode = null;
+            }
         }
 
-        private void Reload_OnClick(object sender, EventArgs e)
-        {
+        private void Button_Save_OnClick(object sender, EventArgs e) => Save();
 
+        private void Button_Exit_OnClick(object sender, EventArgs e) => Close();
+
+        private void Button_Reload_OnClick(object sender, EventArgs e) => Reload();
+
+        private void CutsceneEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 }
