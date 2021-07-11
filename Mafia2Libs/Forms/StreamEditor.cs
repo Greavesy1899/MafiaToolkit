@@ -17,6 +17,8 @@ namespace Mafia2Tool
         private StreamMapLoader stream;
         private object clipboard;
 
+        private bool bIsFileEdited = false;
+
         public StreamEditor(FileInfo file)
         {
             InitializeComponent();
@@ -284,16 +286,23 @@ namespace Mafia2Tool
                 blockView.Nodes.Add(node);
             }
 
+            Text = Language.GetString("$STREAM_EDITOR_TITLE");
+            bIsFileEdited = false;
+        }
+
+        private void Save()
+        {
+            UpdateStream();
+            stream.WriteToFile();
+
+            Text = Language.GetString("$STREAM_EDITOR_TITLE");
+            bIsFileEdited = false;
         }
 
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e) => PropertyGrid_Stream.SelectedObject = e.Node.Tag;
         private void ExitButtonPressed(object sender, System.EventArgs e) => Close();
         private void ReloadButtonPressed(object sender, System.EventArgs e) => BuildData();
-        private void SaveButtonPressed(object sender, System.EventArgs e)
-        {
-            UpdateStream();
-            stream.WriteToFile();
-        }
+        private void SaveButtonPressed(object sender, System.EventArgs e) => Save();
 
         private void OnContextMenuOpening(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -321,6 +330,9 @@ namespace Mafia2Tool
         private void DeleteLineButtonPressed(object sender, System.EventArgs e)
         {
             linesTree?.Nodes.Remove(linesTree.SelectedNode);
+
+            Text = Language.GetString("$STREAM_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
         private void AddLineButtonPressed(object sender, System.EventArgs e)
@@ -335,6 +347,9 @@ namespace Mafia2Tool
             child.Text = line.Name;
             child.Tag = line;
             node.Nodes.Add(child);
+
+            Text = Language.GetString("$STREAM_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
         private void OnKeyPressed(object sender, KeyPressEventArgs e)
@@ -375,6 +390,9 @@ namespace Mafia2Tool
                         parent.Nodes.Insert(index - 1, node);
                         node.TreeView.SelectedNode = node;
                     }
+
+                    Text = Language.GetString("$STREAM_EDITOR_TITLE") + "*";
+                    bIsFileEdited = true;
                 }
             }
         }
@@ -400,6 +418,9 @@ namespace Mafia2Tool
                         parent.Nodes.Insert(index + 1, node);
                         node.TreeView.SelectedNode = node;
                     }
+
+                    Text = Language.GetString("$STREAM_EDITOR_TITLE") + "*";
+                    bIsFileEdited = true;
                 }
             }
         }
@@ -422,6 +443,9 @@ namespace Mafia2Tool
                     newNode.Text = newLine.Name;
                     newNode.Tag = newLine;
                     node.Parent.Nodes.Insert(node.Index + 1, newNode);
+
+                    Text = Language.GetString("$STREAM_EDITOR_TITLE") + "*";
+                    bIsFileEdited = true;
                 }
             }
         }
@@ -453,34 +477,22 @@ namespace Mafia2Tool
 
             PropertyGrid_Stream.Refresh();
             Cursor.Current = Cursors.Default;
+
+            Text = Language.GetString("$STREAM_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
             if(linesTree.Focused)
             {
-                if (e.KeyCode == Keys.Delete)
-                {
-                    if (linesTree.SelectedNode != null && linesTree.SelectedNode.Tag != null && linesTree.SelectedNode.Tag is StreamLine)
-                    {
-                        linesTree.Nodes.Remove(linesTree.SelectedNode);
-                    }
-                }
-                else if (e.Control && e.KeyCode == Keys.C)
+                if (e.Control && e.KeyCode == Keys.C)
                 {
                     Copy();
                 }
                 else if (e.Control && e.KeyCode == Keys.V)
                 {
                     Paste();
-                }
-                else if(e.Control && e.KeyCode == Keys.U && linesTree.SelectedNode.Tag is StreamLine)
-                {
-                    MoveItemUp();
-                }
-                else if (e.Control && e.KeyCode == Keys.N && linesTree.SelectedNode.Tag is StreamLine)
-                {
-                    MoveItemDown();
                 }
             }
         }
@@ -499,6 +511,9 @@ namespace Mafia2Tool
                         linesTree.SelectedNode.Tag = newData;
                         linesTree.SelectedNode.Text = newData.Name;
                     }
+
+                    Text = Language.GetString("$STREAM_EDITOR_TITLE") + "*";
+                    bIsFileEdited = true;
                 }
             }
             PropertyGrid_Stream.SelectedObject = linesTree?.SelectedNode.Tag;
@@ -521,6 +536,26 @@ namespace Mafia2Tool
             NewHeaderNode.Text = "New_Line_Group";
             NewHeaderNode.Tag = HeaderGroup;
             linesTree.Nodes.Add(NewHeaderNode);
+
+            Text = Language.GetString("$STREAM_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
+        }
+
+        private void StreamEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
         }
     }
 
