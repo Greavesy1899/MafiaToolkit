@@ -56,6 +56,8 @@ namespace Core.IO
                     return new FileNavigation_NAV(info);
                 case "NOV":
                     return new FileNavigation_OBJ(info);
+                case "PCK":
+                    return new FilePck(info);
                 default:
                     return new FileBase(info);
             }
