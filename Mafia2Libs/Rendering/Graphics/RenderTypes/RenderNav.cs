@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using Rendering.Core;
 using ResourceTypes.Navigation;
-using SharpDX;
-using SharpDX.Direct3D11;
-using Utils.StringHelpers;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Numerics;
+using Vortice.Direct3D11;
+using Vortice.Mathematics;
 
 namespace Rendering.Graphics
 {
@@ -112,7 +112,7 @@ namespace Rendering.Graphics
         {
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
         }
 
@@ -120,7 +120,7 @@ namespace Rendering.Graphics
         {
         }
 
-        public override void SetTransform(Matrix matrix)
+        public override void SetTransform(Matrix4x4 matrix)
         {
             Transform = matrix;
         }
@@ -133,7 +133,7 @@ namespace Rendering.Graphics
         {
         }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
         }
     }

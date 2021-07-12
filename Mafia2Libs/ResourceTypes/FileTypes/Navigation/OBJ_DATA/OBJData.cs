@@ -1,12 +1,7 @@
-﻿using SharpDX;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utils.SharpDXExtensions;
-using Utils.StringHelpers;
+using System.Numerics;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Navigation
 {

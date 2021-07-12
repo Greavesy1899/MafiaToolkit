@@ -1,6 +1,6 @@
-﻿using SharpDX;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using static ResourceTypes.Collisions.Opcode.SerializationUtils;
 
 namespace ResourceTypes.Collisions.Opcode

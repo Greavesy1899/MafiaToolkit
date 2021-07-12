@@ -1,9 +1,10 @@
-﻿using System.IO;
-using Rendering.Factories;
+﻿using Rendering.Factories;
 using Rendering.Graphics;
 using ResourceTypes.Actors;
-using SharpDX;
+using System.IO;
+using System.Numerics;
 using Utils.Types;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -46,6 +47,16 @@ namespace ResourceTypes.FrameResource
         {
             base.WriteToFile(writer);
             actorHash.WriteToFile(writer);
+        }
+
+        protected override void SanitizeOnSave()
+        {
+            base.SanitizeOnSave();
+
+            if(ActorHash.Hash != 0)
+            {
+                LocalTransform = Matrix4x4.Identity;
+            }
         }
 
         public override string ToString()

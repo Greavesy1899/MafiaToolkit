@@ -1,8 +1,6 @@
 ﻿using ResourceTypes.Navigation;
-using SharpDX;
-using SharpDX.Direct3D11;
-using Utils.StringHelpers;
-using Utils.Types;
+using System.Numerics;
+using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
 {
@@ -20,7 +18,7 @@ namespace Rendering.Graphics
         public RenderATP(GraphicsClass InGraphicsOwner)
         {
             DoRender = true;
-            Transform = Matrix.Identity;
+            Transform = Matrix4x4.Identity;
             BBox = new RenderBoundingBox();
             Path = new RenderLine();
             OwnGraphics = InGraphicsOwner;
@@ -43,7 +41,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void InitBuffers(Device d3d, DeviceContext deviceContext)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext)
         {
             if (Path.GetVertices.Length > 1)
             {
@@ -58,7 +56,7 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
             if (DoRender != false)
             {
@@ -72,7 +70,7 @@ namespace Rendering.Graphics
             //BBox.Select();
             //Path.Select();
         }
-        public override void SetTransform(Matrix matrix)
+        public override void SetTransform(Matrix4x4 matrix)
         {
             this.Transform = matrix;
         }
@@ -89,7 +87,7 @@ namespace Rendering.Graphics
             //Path.Unselect();
         }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             //BBox.UpdateBuffers(device, deviceContext);
             //Path.UpdateBuffers(device, deviceContext);

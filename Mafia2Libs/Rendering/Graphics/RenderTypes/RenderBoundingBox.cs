@@ -1,6 +1,11 @@
-﻿using SharpDX;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
+﻿using System;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Vortice;
+using Vortice.Direct3D;
+using Vortice.Direct3D11;
+using Vortice.Mathematics;
 using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
@@ -23,27 +28,23 @@ namespace Rendering.Graphics
         public RenderBoundingBox()
         {
             DoRender = true;
-            SetTransform(Matrix.Identity);
-
-            UnselectedColour = Color.White;
-            CurrentColour = UnselectedColour;
+            SetTransform(Matrix4x4.Identity);
+            colour = Color.White;
         }
 
         public bool InitSwap(BoundingBox bbox)
         {
-            Vector3 pos = bbox.Maximum;
-            float y = pos.Y;
-            pos.Y = -pos.Z;
-            pos.Z = y;
-            bbox.Maximum = pos;
+            Vector3 NewMax = bbox.Maximum;
+            float y = NewMax.Y;
+            NewMax.Y = -NewMax.Z;
+            NewMax.Z = y;
 
-            pos = bbox.Minimum;
-            y = pos.Y;
-            pos.Y = -pos.Z;
-            pos.Z = y;
-            bbox.Minimum = pos;
+            Vector3 NewMin = bbox.Minimum;
+            y = NewMin.Y;
+            NewMin.Y = -NewMin.Z;
+            NewMin.Z = y;
 
-            return Init(bbox);
+            return Init(new BoundingBox(NewMin, NewMax));
         }
         public bool Init(BoundingBox bbox)
         {
@@ -69,10 +70,10 @@ namespace Rendering.Graphics
             Init(box);
         }
 
-        public override void InitBuffers(Device d3d, DeviceContext context)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext)
         {
-            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
-            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, ReadOnlyIndices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            indexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
         }
 
         public void SetColour(Color newColour, bool update = false)
@@ -83,19 +84,22 @@ namespace Rendering.Graphics
             isUpdatedNeeded = update;
         }
 
-        public override void SetTransform(Matrix matrix)
+        public override void SetTransform(Matrix4x4 matrix)
         {
             this.Transform = matrix;
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
+            {
                 return;
+            }
 
-            deviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0));
-            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
-            deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
+            VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
+            deviceContext.IASetVertexBuffers(0, VertexBufferView);
+            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R16_UInt, 0);
+            deviceContext.IASetPrimitiveTopology(PrimitiveTopology.LineList);
 
             shader.SetSceneVariables(deviceContext, Transform, camera);
             shader.Render(deviceContext, PrimitiveTopology.LineList, ReadOnlyIndices.Length, 0);
@@ -110,14 +114,16 @@ namespace Rendering.Graphics
             vertexBuffer = null;
         }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             if(isUpdatedNeeded)
             {
-                DataBox dataBox;
-                dataBox = deviceContext.MapSubresource(vertexBuffer, 0, MapMode.WriteDiscard, MapFlags.None);
-                Utilities.Write(dataBox.DataPointer, vertices, 0, vertices.Length);
-                deviceContext.UnmapSubresource(vertexBuffer, 0);
+                MappedSubresource mappedResource = deviceContext.Map(vertexBuffer, MapMode.WriteDiscard, MapFlags.None);
+                unsafe
+                {
+                    UnsafeUtilities.Write(mappedResource.DataPointer, vertices);
+                }
+                deviceContext.Unmap(vertexBuffer, 0);
                 isUpdatedNeeded = false;
             }
         }

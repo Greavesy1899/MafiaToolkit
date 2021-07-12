@@ -1,12 +1,7 @@
-﻿using SharpDX;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utils.SharpDXExtensions;
+﻿using System.IO;
+using System.Numerics;
 using Utils.StringHelpers;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.OC3.FaceFX
 {
@@ -18,9 +13,9 @@ namespace ResourceTypes.OC3.FaceFX
 
         public void ReadFromFile(BinaryReader reader)
         {
-            Position = Vector3Extenders.ReadFromFile(reader);
+            Position = Vector3Utils.ReadFromFile(reader);
             Rotation = QuaternionExtensions.ReadFromFile(reader);
-            Scale = Vector3Extenders.ReadFromFile(reader);
+            Scale = Vector3Utils.ReadFromFile(reader);
         }
     }
 

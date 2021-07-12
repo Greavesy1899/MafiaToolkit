@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel;
 using System.IO;
-using SharpDX;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
 using Utils.Types;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.FrameResource
 {
@@ -16,10 +17,10 @@ namespace ResourceTypes.FrameResource
         int[] unkLodData;
         byte idType;
         HashName[] boneNames;
-        Matrix[] jointTransforms; //maybe joint space
+        Matrix4x4[] jointTransforms; //maybe joint space
         int numUnkCount2;
         byte[] boneLODUsage;
-        Matrix[] worldTransforms; //world space = extract position matrix, extract rotation matrix, multiply -position * rotation
+        Matrix4x4[] worldTransforms; //world space = extract position matrix, extract rotation matrix, multiply -position * rotation
         MappingForBlendingInfo[] mappingForBlendingInfos;
 
         public int[] NumBones {
@@ -46,7 +47,7 @@ namespace ResourceTypes.FrameResource
             get { return boneNames; }
             set { boneNames = value; }
         }
-        public Matrix[] JointTransforms {
+        public Matrix4x4[] JointTransforms {
             get { return jointTransforms; }
             set { jointTransforms = value; }
         }
@@ -58,7 +59,7 @@ namespace ResourceTypes.FrameResource
             get { return boneLODUsage; }
             set { boneLODUsage = value; }
         }
-        public Matrix[] WorldTransforms {
+        public Matrix4x4[] WorldTransforms {
             get { return worldTransforms; }
             set { worldTransforms = value; }
         }
@@ -72,8 +73,8 @@ namespace ResourceTypes.FrameResource
             numBones = new int[4];
             unkLodData = new int[0];
             boneNames = new HashName[0];
-            jointTransforms = new Matrix[0];
-            worldTransforms = new Matrix[0];
+            jointTransforms = new Matrix4x4[0];
+            worldTransforms = new Matrix4x4[0];
             mappingForBlendingInfos = new MappingForBlendingInfo[0];
         }
 
@@ -86,7 +87,9 @@ namespace ResourceTypes.FrameResource
         {
             //all the same values?
             for (int i = 0; i != numBones.Length; i++)
+            {
                 numBones[i] = stream.ReadInt32(isBigEndian);
+            }
 
             numBlendIDs = stream.ReadInt32(isBigEndian);
             numLods = stream.ReadInt32(isBigEndian);
@@ -94,22 +97,26 @@ namespace ResourceTypes.FrameResource
             //unknown lod data; 
             unkLodData = new int[numLods];
             for (int i = 0; i != unkLodData.Length; i++)
+            {
                 unkLodData[i] = stream.ReadInt32(isBigEndian);
+            }
 
             idType = stream.ReadByte8();
 
             //Bone Names and LOD data.
             boneNames = new HashName[numBones[0]];
             for (int i = 0; i != boneNames.Length; i++)
+            {
                 boneNames[i] = new HashName(stream, isBigEndian);
+            }
 
             //Matrices;
-            jointTransforms = new Matrix[numBones[1]];
-            worldTransforms = new Matrix[numBones[3]];
+            jointTransforms = new Matrix4x4[numBones[1]];
+            worldTransforms = new Matrix4x4[numBones[3]];
 
             for (int i = 0; i != jointTransforms.Length; i++)
             {
-                jointTransforms[i] = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+                jointTransforms[i] = MatrixUtils.ReadFromFile(stream, isBigEndian);
             }
 
             numUnkCount2 = stream.ReadInt32(isBigEndian);
@@ -117,7 +124,7 @@ namespace ResourceTypes.FrameResource
 
             for (int i = 0; i != worldTransforms.Length; i++)
             {
-                worldTransforms[i] = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+                worldTransforms[i] = MatrixUtils.ReadFromFile(stream, isBigEndian);
             }
 
             //BoneMappings.

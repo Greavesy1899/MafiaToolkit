@@ -45,7 +45,7 @@
   <String ID="$REFRESH">Odśwież</String>
   <String ID="$FOLDER_PATH_TOOLTIP">Ścieżka do folderu</String>
   <String ID="$UP_TOOLTIP">Widok w górę</String>
-  <String ID="$M1DE_OODLEERROR">Oodle DLL nie jest darmową biblioteką stworzoną przez RAD Game Tools i nie została ona umieszczona razem z Toolkitem. Skopiuj plik oo2core_8_win64.dll z folderu gry Folder instalacyjny Mafia: Definitive Edition do folderu gdzie znajduje się folder Libs programu Toolkit.</String>
+  <String ID="$M1DE_OODLEERROR">Biblioteka DLL Oodle jest płatną biblioteką RAD Game Tools objętą prawami autorskimi i w związku z tym nie została ona dołączona. Aby uruchomić Mafia Toolkit skopiuj tą bibliotekę o nazwie "oo2core_8_win64.dll" z folderu instalacyjnego gry Mafia: Edycja Ostateczna do folderu, gdzie znajduje się plik wykonywalny (.exe) Mafia Toolkit.</String>
 
   <!-- Game Selector -->
   <String ID="$START_TOOLKIT">Start Toolkit</String>
@@ -169,9 +169,36 @@
   <String ID="$ACTOR_EDITOR_TITLE">Actor Editor</String>
   <String ID="$ADD_ITEM">Add Item</String>
   <String ID="$ADD_DEFINITION">Add Definition</String>
-  
+
   <!-- EntityDataStorage Editor -->
   <String ID="$EDS_EDITOR_TITLE">EntityDataStorage Editor</String>
+  <String ID="$SAVE_TITLE">Save File</String>
+  <String ID="$OPEN_TITLE">Open File</String>
+  <String ID="$EXPORT_XML">Export To XML</String>
+  <String ID="$IMPORT_XML">Import From XML</String>
+  <String ID="$PHYSICS_RB">Physics/Rigidbody</String>
+  <String ID="$MOTOR_TORQUE">Motor/Torque</String>
+  <String ID="$FUEL">Fuel</String>
+  <String ID="$GEARBOX">Gearbox</String>
+  <String ID="$STEERING">Steering</String>
+  <String ID="$DIFFERENTIAL">Differential</String>
+  <String ID="$BRAKES">Brakes</String>
+  <String ID="$AERODYNAMICS">Aerodynamics</String>
+  <String ID="$EFFECTS">Effects</String>
+  <String ID="$ENGINE">Engine</String>
+  <String ID="$ENVIRONMENT">Environment</String>
+  <String ID="$AIR_PUMP">Air Pump</String>
+  <String ID="$DOORS">Doors</String>
+  <String ID="$BONNET_TRUNK">Bonnet/Trunk</String>
+  <String ID="$WHEELS">Wheels</String>
+  <String ID="$HORN_SIREN">Horn/Siren</String>
+  <String ID="$GLASS_BREAK">Glass Effects</String>
+  <String ID="$EXPLOSION">Explosion Effects</String>
+  <String ID="$FIRE">Fire Effects</String>
+  <String ID="$RAIN_CONTACT">Rain Effects</String>
+  <String ID="$HEDGE_CONTACT">Hedge Collision Effects</String>
+  <String ID="$SKIDDING_SLIDING">Powersliding/Skidding</String>
+  <String ID="$ROLL">Rolling (Car Flipping, Upside down, etc)</String>
   
   <!-- NewObjForm Form Strings-->
   <String ID="$NEWOBJFORM_TITLE">Nazwa wejściowa</String>

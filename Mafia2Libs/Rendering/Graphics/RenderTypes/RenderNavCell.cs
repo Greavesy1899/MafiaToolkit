@@ -1,10 +1,8 @@
-﻿using System;
+﻿using ResourceTypes.Navigation;
+using System;
 using System.Collections.Generic;
-using SharpDX;
-using SharpDX.Direct3D11;
-using ResourceTypes.Navigation;
-using Rendering.Core;
-using Utils.StringHelpers;
+using System.Numerics;
+using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
 {
@@ -88,7 +86,7 @@ namespace Rendering.Graphics
             throw new NotImplementedException();
         }
 
-        public override void SetTransform(Matrix matrix)
+        public override void SetTransform(Matrix4x4 matrix)
         {
             Transform = matrix;
         }

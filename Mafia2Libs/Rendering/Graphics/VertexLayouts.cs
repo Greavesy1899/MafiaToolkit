@@ -1,14 +1,12 @@
-﻿using SharpDX;
-using SharpDX.Direct3D11;
-using System.Drawing;
+﻿using System.Numerics;
 using System.Runtime.InteropServices;
-using Color = System.Drawing.Color;
+using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
 {
-    public class VertexLayouts
+    public static class VertexLayouts
     {
-        public class BasicLayout
+        public static class BasicLayout
         {
             [StructLayout(LayoutKind.Sequential)]
             public struct Vertex
@@ -17,27 +15,27 @@ namespace Rendering.Graphics
                 public int Colour;
             }
 
-            public static InputElement[] GetLayout()
+            public static InputElementDescription[] GetLayout()
             {
-                return new InputElement[]
+                return new InputElementDescription[]
                 {
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "POSITION",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Format = Vortice.DXGI.Format.R32G32B32_Float,
                         Slot = 0,
                         AlignedByteOffset = 0,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "COLOR",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
+                        Format = Vortice.DXGI.Format.R8G8B8A8_UNorm,
                         Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
+                        AlignedByteOffset = InputElementDescription.AppendAligned,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
@@ -103,37 +101,37 @@ namespace Rendering.Graphics
                 public int Colour;
             }
 
-            public static InputElement[] GetLayout()
+            public static InputElementDescription[] GetLayout()
             {
-                return new InputElement[]
+                return new InputElementDescription[]
                 {
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "POSITION",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Format = Vortice.DXGI.Format.R32G32B32_Float,
                         Slot = 0,
                         AlignedByteOffset = 0,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "NORMAL",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Format = Vortice.DXGI.Format.R32G32B32_Float,
                         Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
+                        AlignedByteOffset = InputElementDescription.AppendAligned,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "COLOR",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
+                        Format = Vortice.DXGI.Format.R8G8B8A8_UNorm,
                         Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
+                        AlignedByteOffset = InputElementDescription.AppendAligned,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
@@ -155,67 +153,67 @@ namespace Rendering.Graphics
                 
             }
 
-            public static InputElement[] GetLayout()
+            public static InputElementDescription[] GetLayout()
             {
-                return new InputElement[]
+                return new InputElementDescription[]
                 {
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "POSITION",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Format = Vortice.DXGI.Format.R32G32B32_Float,
                         Slot = 0,
                         AlignedByteOffset = 0,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "NORMAL",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Format = Vortice.DXGI.Format.R32G32B32_Float,
                         Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
+                        AlignedByteOffset = InputElementDescription.AppendAligned,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "TANGENT",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Format = Vortice.DXGI.Format.R32G32B32_Float,
                         Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
+                        AlignedByteOffset = InputElementDescription.AppendAligned,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "BINORMAL",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Format = Vortice.DXGI.Format.R32G32B32_Float,
                         Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
+                        AlignedByteOffset = InputElementDescription.AppendAligned,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "TEXCOORD",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32_Float,
+                        Format = Vortice.DXGI.Format.R32G32_Float,
                         Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
+                        AlignedByteOffset = InputElementDescription.AppendAligned,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "TEXCOORD",
                         SemanticIndex = 1,
-                        Format = SharpDX.DXGI.Format.R32G32_Float,
+                        Format = Vortice.DXGI.Format.R32G32_Float,
                         Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
+                        AlignedByteOffset = InputElementDescription.AppendAligned,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     }

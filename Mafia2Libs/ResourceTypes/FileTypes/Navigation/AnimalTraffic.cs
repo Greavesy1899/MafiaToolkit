@@ -1,8 +1,9 @@
-﻿using SharpDX;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
-using Utils.SharpDXExtensions;
+using System.Numerics;
 using Utils.Types;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.Navigation
 {
@@ -183,8 +184,8 @@ namespace ResourceTypes.Navigation
                 for(int x = 0; x < pathSize; x++)
                 {
                     PathVectors vector = new PathVectors();
-                    vector.Position = Vector3Extenders.ReadFromFile(reader); //Very large differences between these two
-                    vector.Rotation = Vector3Extenders.ReadFromFile(reader); //2nd one could be rotation, in radians.
+                    vector.Position = Vector3Utils.ReadFromFile(reader); //Very large differences between these two
+                    vector.Rotation = Vector3Utils.ReadFromFile(reader); //2nd one could be rotation, in radians.
                     vector.Unk0 = reader.ReadByte(); //7 or 4
                     path.Vectors[x] = vector;
                 }
@@ -226,8 +227,8 @@ namespace ResourceTypes.Navigation
 
                     for (int x = 0; x < path.Vectors.Length; x++)
                     {
-                        Vector3Extenders.WriteToFile(path.Vectors[x].Position, writer);
-                        Vector3Extenders.WriteToFile(path.Vectors[x].Rotation, writer);
+                        Vector3Utils.WriteToFile(path.Vectors[x].Position, writer);
+                        Vector3Utils.WriteToFile(path.Vectors[x].Rotation, writer);
                         writer.Write(path.Vectors[x].Unk0);
                     }
                 }

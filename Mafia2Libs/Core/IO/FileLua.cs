@@ -36,7 +36,8 @@ namespace Core.IO
             }
             else
             {
-                Process.Start(file.FullName);
+                // base class *should* open as process
+                return base.Open();
             }
 
             return true;

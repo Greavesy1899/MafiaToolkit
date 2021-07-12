@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using SharpDX;
-using Utils.SharpDXExtensions;
+using System.Numerics;
+using Utils.VorticeUtils;
 
 namespace Utils.Models
 {
@@ -41,7 +40,7 @@ namespace Utils.Models
             {
                 int startIndex = offsets[VertexFlags.Position].Offset;
                 var output = ReadPositionDataFromVB(data, startIndex, scale, offset);
-                vertex.Position = Vector3Extenders.FromVector4(output);
+                vertex.Position = Vector3Utils.FromVector4(output);
                 vertex.Binormal = new Vector3(output.W);
             }
 
@@ -187,10 +186,11 @@ namespace Utils.Models
                 Array.Reverse(yData);
             }
 
-            System.Half x = System.Half.ToHalf(xData, 0);
-            System.Half y = System.Half.ToHalf(yData, 0);
-            y = -y;
-            return new Vector2(x, y);
+            Toolkit.Mathematics.Half X = Toolkit.Mathematics.Half.ToHalf(xData, 0);
+            Toolkit.Mathematics.Half Y = Toolkit.Mathematics.Half.ToHalf(yData, 0);
+
+            Y = -Y;
+            return new Vector2(X, Y);
         }
 
         private static int ReadDamageGroupFromVB(byte[] data, int i)

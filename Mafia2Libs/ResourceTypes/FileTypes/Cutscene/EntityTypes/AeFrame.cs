@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO;
-using SharpDX;
+using System.Numerics;
 using Utils.Extensions;
 
 namespace ResourceTypes.Cutscene.AnimEntities
@@ -41,10 +41,10 @@ namespace ResourceTypes.Cutscene.AnimEntities
     {
         public byte Unk06 { get; set; }
         public ulong Hash2 { get; set; }
-        public Matrix Transform { get; set; }
+        public Matrix4x4 Transform { get; set; }
         public float Unk07 { get; set; }
         public float Unk08 { get; set; }
-        public Matrix Transform1 { get; set; }
+        public Matrix4x4 Transform1 { get; set; }
         public ulong Hash3 { get; set; }
         public byte[] UnknownData { get; set; }
 

@@ -1,16 +1,14 @@
 ﻿using Rendering.Input;
 using System;
 using System.Windows.Forms;
-using SharpDX;
 using System.Collections.Generic;
 using Rendering.Core;
 using Utils.Models;
 using ResourceTypes.Translokator;
 using Utils.Settings;
-using Utils.SharpDXExtensions;
-using Utils.StringHelpers;
-using Mafia2Tool;
-using ResourceTypes.FrameResource;
+using Utils.VorticeUtils;
+using System.Numerics;
+using Vortice.Mathematics;
 
 namespace Rendering.Graphics
 {
@@ -293,25 +291,25 @@ namespace Rendering.Graphics
 
             if (Input.IsKeyDown(Keys.A))
             {
-                Camera.Position -= Vector3Extenders.FromVector4(Vector4.Multiply(Camera.ViewMatrix.Column1, speed));
+                Camera.Position -= Vector3Utils.FromVector4(Vector4.Multiply(Camera.ViewMatrix.GetColumn(0), speed));
                 bCameraUpdated = true;
             }
 
             if (Input.IsKeyDown(Keys.D))
             {
-                Camera.Position += Vector3Extenders.FromVector4(Vector4.Multiply(Camera.ViewMatrix.Column1, speed));
+                Camera.Position += Vector3Utils.FromVector4(Vector4.Multiply(Camera.ViewMatrix.GetColumn(0), speed));
                 bCameraUpdated = true;
             }
 
             if (Input.IsKeyDown(Keys.W))
             {
-                Camera.Position -= Vector3Extenders.FromVector4(Vector4.Multiply(Camera.ViewMatrix.Column3, speed));
+                Camera.Position -= Vector3Utils.FromVector4(Vector4.Multiply(Camera.ViewMatrix.GetColumn(2), speed));
                 bCameraUpdated = true;
             }
 
             if (Input.IsKeyDown(Keys.S))
             {
-                Camera.Position += Vector3Extenders.FromVector4(Vector4.Multiply(Camera.ViewMatrix.Column3, speed));
+                Camera.Position += Vector3Utils.FromVector4(Vector4.Multiply(Camera.ViewMatrix.GetColumn(2), speed));
                 bCameraUpdated = true;
             }
 

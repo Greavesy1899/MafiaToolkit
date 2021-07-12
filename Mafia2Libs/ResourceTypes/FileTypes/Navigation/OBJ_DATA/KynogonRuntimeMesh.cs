@@ -1,10 +1,9 @@
-﻿
-using SharpDX;
-using System;
+﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
+using System.Numerics;
 using System.IO;
-using Utils.SharpDXExtensions;
+using Vortice.Mathematics;
+using Utils.VorticeUtils;
 using Utils.StringHelpers;
 
 namespace ResourceTypes.Navigation
@@ -483,7 +482,7 @@ namespace ResourceTypes.Navigation
                             writer.SolveLooseObjectPtr("UNK14_BOX_OFFSET_" + z);
                             foreach (var point in set.unk14Boxes[z].Points)
                             {
-                                Vector3Extenders.WriteToFile(point, writer);
+                                Vector3Utils.WriteToFile(point, writer);
                             }
                         }
 

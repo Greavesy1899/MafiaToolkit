@@ -259,11 +259,6 @@ namespace ResourceTypes.FrameResource
             string ExportPath = Path.Combine(ToolkitSettings.ExportPath, FrameName);
             string ExportName = ExportPath + ".framedata";
 
-            if (!Directory.Exists(ExportPath))
-            {
-                Directory.CreateDirectory(ExportPath);
-            }
-
             using (BinaryWriter writer = new BinaryWriter(File.Open(ExportName, FileMode.Create)))
             {
                 SaveFrame(Frame, writer);

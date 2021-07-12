@@ -85,7 +85,7 @@ namespace Utils.Types
             typeExtension.Add("stbl", "SoundTable");
             typeExtension.Add("tra", "Translokator");
             typeExtension.Add("fxa", "FxActor");
-            typeExtension.Add("fxs", "FxAnimSet");
+            typeExtension.Add("fas", "FxAnimSet");
         }
 
         public static TreeNode BuildResourceTreeNode(string name, object data = null)

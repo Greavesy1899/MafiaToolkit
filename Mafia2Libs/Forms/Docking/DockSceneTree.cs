@@ -1,9 +1,8 @@
-﻿using WeifenLuo.WinFormsUI.Docking;
-using System.Windows.Forms;
-using ResourceTypes.FrameResource;
-using SharpDX;
+﻿using ResourceTypes.FrameResource;
 using System;
-using Utils.Helpers;
+using System.Numerics;
+using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Forms.Docking
 {

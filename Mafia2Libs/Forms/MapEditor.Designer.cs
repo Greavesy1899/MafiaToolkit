@@ -91,9 +91,10 @@ namespace Mafia2Tool
             this.CameraSpeedTool,
             this.Label_FPS,
             this.Label_MemoryUsage});
-            StatusStrip.Location = new System.Drawing.Point(0, 600);
+            StatusStrip.Location = new System.Drawing.Point(0, 692);
             StatusStrip.Name = "StatusStrip";
-            StatusStrip.Size = new System.Drawing.Size(1217, 24);
+            StatusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
+            StatusStrip.Size = new System.Drawing.Size(1420, 28);
             StatusStrip.TabIndex = 6;
             StatusStrip.Text = "statusStrip1";
             // 
@@ -103,7 +104,7 @@ namespace Mafia2Tool
             this.CurrentModeButton.Image = ((System.Drawing.Image)(resources.GetObject("CurrentModeButton.Image")));
             this.CurrentModeButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.CurrentModeButton.Name = "CurrentModeButton";
-            this.CurrentModeButton.Size = new System.Drawing.Size(128, 22);
+            this.CurrentModeButton.Size = new System.Drawing.Size(128, 26);
             this.CurrentModeButton.Text = "$CurrentModeLabel";
             this.CurrentModeButton.ButtonClick += new System.EventHandler(this.CurrentModeButton_ButtonClick);
             // 
@@ -131,7 +132,7 @@ namespace Mafia2Tool
             this.PositionXTool.Name = "PositionXTool";
             this.PositionXTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionXTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionXTool.Size = new System.Drawing.Size(64, 24);
+            this.PositionXTool.Size = new System.Drawing.Size(84, 28);
             this.PositionXTool.Text = "0.00000";
             this.PositionXTool.Value = new decimal(new int[] {
             0,
@@ -164,7 +165,7 @@ namespace Mafia2Tool
             this.PositionYTool.Name = "PositionYTool";
             this.PositionYTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionYTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionYTool.Size = new System.Drawing.Size(64, 24);
+            this.PositionYTool.Size = new System.Drawing.Size(84, 28);
             this.PositionYTool.Text = "0.00000";
             this.PositionYTool.Value = new decimal(new int[] {
             0,
@@ -197,7 +198,7 @@ namespace Mafia2Tool
             this.PositionZTool.Name = "PositionZTool";
             this.PositionZTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.PositionZTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.PositionZTool.Size = new System.Drawing.Size(64, 24);
+            this.PositionZTool.Size = new System.Drawing.Size(84, 28);
             this.PositionZTool.Text = "0.00000";
             this.PositionZTool.Value = new decimal(new int[] {
             0,
@@ -230,7 +231,7 @@ namespace Mafia2Tool
             this.CameraSpeedTool.Name = "CameraSpeedTool";
             this.CameraSpeedTool.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.CameraSpeedTool.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.CameraSpeedTool.Size = new System.Drawing.Size(64, 24);
+            this.CameraSpeedTool.Size = new System.Drawing.Size(84, 28);
             this.CameraSpeedTool.Text = "0.00000";
             this.CameraSpeedTool.Value = new decimal(new int[] {
             0,
@@ -244,13 +245,13 @@ namespace Mafia2Tool
             this.Label_FPS.Name = "Label_FPS";
             this.Label_FPS.Overflow = System.Windows.Forms.ToolStripItemOverflow.Always;
             this.Label_FPS.Padding = new System.Windows.Forms.Padding(41, 0, 0, 0);
-            this.Label_FPS.Size = new System.Drawing.Size(100, 19);
+            this.Label_FPS.Size = new System.Drawing.Size(100, 23);
             this.Label_FPS.Text = "Label_FPS";
             // 
             // Label_MemoryUsage
             // 
             this.Label_MemoryUsage.Name = "Label_MemoryUsage";
-            this.Label_MemoryUsage.Size = new System.Drawing.Size(117, 19);
+            this.Label_MemoryUsage.Size = new System.Drawing.Size(117, 23);
             this.Label_MemoryUsage.Text = "Label_MemoryUsage";
             // 
             // ToolbarStrip
@@ -264,7 +265,7 @@ namespace Mafia2Tool
             this.TextBox_WorldIntersect});
             this.ToolbarStrip.Location = new System.Drawing.Point(0, 0);
             this.ToolbarStrip.Name = "ToolbarStrip";
-            this.ToolbarStrip.Size = new System.Drawing.Size(1217, 25);
+            this.ToolbarStrip.Size = new System.Drawing.Size(1420, 25);
             this.ToolbarStrip.TabIndex = 1;
             this.ToolbarStrip.Text = "toolStrip1";
             // 
@@ -499,6 +500,7 @@ namespace Mafia2Tool
             // 
             // imageList1
             // 
+            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "StaticIcon");
@@ -508,8 +510,9 @@ namespace Mafia2Tool
             // 
             this.RenderPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RenderPanel.Location = new System.Drawing.Point(0, 25);
+            this.RenderPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.RenderPanel.Name = "RenderPanel";
-            this.RenderPanel.Size = new System.Drawing.Size(1217, 575);
+            this.RenderPanel.Size = new System.Drawing.Size(1420, 667);
             this.RenderPanel.TabIndex = 0;
             // 
             // MeshBrowser
@@ -523,10 +526,10 @@ namespace Mafia2Tool
             // dockPanel1
             // 
             this.dockPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dockPanel1.DocumentStyle = WeifenLuo.WinFormsUI.Docking.DocumentStyle.DockingWindow;
             this.dockPanel1.Location = new System.Drawing.Point(0, 25);
+            this.dockPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.dockPanel1.Name = "dockPanel1";
-            this.dockPanel1.Size = new System.Drawing.Size(1217, 575);
+            this.dockPanel1.Size = new System.Drawing.Size(1420, 667);
             this.dockPanel1.TabIndex = 0;
             // 
             // FrameBrowser
@@ -535,14 +538,15 @@ namespace Mafia2Tool
             // 
             // MapEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1217, 624);
+            this.ClientSize = new System.Drawing.Size(1420, 720);
             this.Controls.Add(this.dockPanel1);
             this.Controls.Add(this.RenderPanel);
             this.Controls.Add(StatusStrip);
             this.Controls.Add(this.ToolbarStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "MapEditor";
             this.Text = "Map Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);

@@ -1,12 +1,13 @@
-﻿using SharpDX;
-using System.IO;
+﻿using System.IO;
 using Utils.Extensions;
+using Utils.Helpers;
 using Utils.Helpers.Reflection;
-using Utils.SharpDXExtensions;
-using Utils.StringHelpers;
 
 namespace ResourceTypes.Actors
 {
+    /*
+     * Used with EntityDataStorage, NOT the actor (.act) data file.
+     */
     public class ActorCar : IActorExtraDataInterface
     {
         public class GearTableData
@@ -107,67 +108,146 @@ namespace ResourceTypes.Actors
         }
 
         public int[] UnkInts0 { get; set; }
+        #region Physics/RigidBody
+        [LocalisedCategory("$PHYSICS_RB")]
         public float Mass { get; set; }
-        public Vector3 CenterOfMass { get; set; }
+        [LocalisedCategory("$PHYSICS_RB")]
+        public EDSVector3 CenterOfMass { get; set; }
+        [LocalisedCategory("$PHYSICS_RB")]
         public float InteriaMax { get; set; }
-        public Vector3 Inertia { get; set; }
+        [LocalisedCategory("$PHYSICS_RB")]
+        public EDSVector3 Inertia { get; set; }
+        [LocalisedCategory("$PHYSICS_RB")]
         public int MaterialID { get; set; }
+        [LocalisedCategory("$PHYSICS_RB")]
         public float StaticFriction { get; set; }
+        [LocalisedCategory("$PHYSICS_RB")]
         public float DynamicFriction { get; set; }
+        [LocalisedCategory("$PHYSICS_RB")]
         public float Restitution { get; set; }
+        #endregion // Physics/RigidBody
+        #region Motor Torque
+        [LocalisedCategory("$MOTOR_TORQUE")]
         public float Power { get; set; }
+        [LocalisedCategory("$MOTOR_TORQUE")]
         public float RotationsMin { get; set; }
+        [LocalisedCategory("$MOTOR_TORQUE")]
         public float RotationsMax { get; set; }
+        [LocalisedCategory("$MOTOR_TORQUE")]
         public float RotationsMaxMax { get; set; }
+        [LocalisedCategory("$MOTOR_TORQUE")]
         public float TorqueStart { get; set; }
+        [LocalisedCategory("$MOTOR_TORQUE")]
         public float TorqueMax { get; set; }
+        [LocalisedCategory("$MOTOR_TORQUE")]
         public float TorqueEnd { get; set; }
+        [LocalisedCategory("$MOTOR_TORQUE")]
         public float RotationsTorqueLow { get; set; }
+        [LocalisedCategory("$MOTOR_TORQUE")]
         public float RotationsTorqueHigh { get; set; }
+        [LocalisedCategory("$MOTOR_TORQUE")]
         public float MotorBrakeTorque { get; set; }
+        [LocalisedCategory("$MOTOR_TORQUE")]
         public float MotorInertia { get; set; }
+        [LocalisedCategory("$MOTOR_TORQUE")]
         public float MotorOrientation { get; set; }
+        #endregion // Motor Torque
+        #region Fuel
+        [LocalisedCategory("$FUEL")]
         public float FuelConsumption { get; set; }
+        [LocalisedCategory("$FUEL")]
         public float FuelTankCapacity { get; set; }
+        #endregion // Fuel
+        #region Gearbox
+        [LocalisedCategory("$GEARBOX")]
         public int FinalGearCount { get; set; }
+        [LocalisedCategory("$GEARBOX")]
         public float FinalGearRatio0 { get; set; }
+        [LocalisedCategory("$GEARBOX")]
         public float FinalGearRatio1 { get; set; }
+        [LocalisedCategory("$GEARBOX")]
         public int GearCount { get; set; }
+        [LocalisedCategory("$GEARBOX")]
         public int GearReverseCount { get; set; }
+        [LocalisedCategory("$GEARBOX")]
         public GearTableData[] GearData { get; set; }
+        [LocalisedCategory("$GEARBOX")]
         public float MinClutchGlobal { get; set; }
+        [LocalisedCategory("$GEARBOX")]
         public float MinClutchAngleCoeffGlobal { get; set; }
+        #endregion // Gearbox
+        #region Steering
+        [LocalisedCategory("$STEERING")]
         public float MaxAccelSlowMode { get; set; }
+        [LocalisedCategory("$STEERING")]
         public float SteerAngleDiffMax { get; set; }
+        [LocalisedCategory("$STEERING")]
         public float SteerAngleMaxLow { get; set; }
+        [LocalisedCategory("$STEERING")]
         public float SteerAngleMaxHigh { get; set; }
+        [LocalisedCategory("$STEERING")]
         public float AngleChangeBackLow { get; set; }
+        [LocalisedCategory("$STEERING")]
         public float AngleChangeBackHigh { get; set; }
+        [LocalisedCategory("$STEERING")]
         public float AngleChangeLow { get; set; }
+        [LocalisedCategory("$STEERING")]
         public float AngleChangeHigh { get; set; }
+        [LocalisedCategory("$STEERING")]
         public float AngleChangeCoeff { get; set; }
+        #endregion // Steering
+        #region Differential
+        [LocalisedCategory("$DIFFERENTIAL")]
         public int MotorDifferentialIndex { get; set; }
+        [LocalisedCategory("$DIFFERENTIAL")]
         public DifferentialTableData[] DifferentialData { get; set; }
+        [LocalisedCategory("$DIFFERENTIAL")]
         public byte[] UnknownDifferential { get; set; }
+        [LocalisedCategory("$DIFFERENTIAL")]
         public float CDRatio { get; set; }
+        [LocalisedCategory("$DIFFERENTIAL")]
         public float CDViscousClutch { get; set; }
+        [LocalisedCategory("$DIFFERENTIAL")]
         public float CDDiffLock { get; set; }
+        [LocalisedCategory("$DIFFERENTIAL")]
         public int IndexAxleDifferentialFront { get; set; }
+        [LocalisedCategory("$DIFFERENTIAL")]
         public int IndexAxleDifferentialBack { get; set; }
+        [LocalisedCategory("$DIFFERENTIAL")]
         public float TyreLateralStiffnessCoeff { get; set; }
+        [LocalisedCategory("$DIFFERENTIAL")]
         public float TypeLateralDamperCoeff { get; set; }
+        #endregion // Differential
+        #region Wheel Variables 0
+        [LocalisedCategory("$WHEELS")]
         public WheelTableData[] WheelData { get; set; }
+        #endregion // Wheel Variables 0
+        #region Brakes
+        [LocalisedCategory("$BRAKES")]
         public float BrakeTorque { get; set; }
+        [LocalisedCategory("$BRAKES")]
         public float BrakeReaction { get; set; }
+        [LocalisedCategory("$BRAKES")]
         public float HandBrakeTorque { get; set; }
+        [LocalisedCategory("$BRAKES")]
         public float BrakeReactionLow { get; set; }
+        [LocalisedCategory("$BRAKES")]
         public float BrakeReactionHigh { get; set; }
+        #endregion // Brakes
+        #region Aerodynamic Variables
+        [LocalisedCategory("$AERODYNAMICS")]
         public float AerodynamicSurfaceSize { get; set; }
+        [LocalisedCategory("$AERODYNAMICS")]
         public float AerodynamicResistCoeff { get; set; }
+        [LocalisedCategory("$AERODYNAMICS")]
         public float FrontSpoilerSurfaceSize { get; set; }
+        [LocalisedCategory("$AERODYNAMICS")]
         public float FrontSpoilerResistCoeff { get; set; }
+        [LocalisedCategory("$AERODYNAMICS")]
         public float BackSpoilerSurfaceSize { get; set; }
+        [LocalisedCategory("$AERODYNAMICS")]
         public float BackSpoilerResistCoeff { get; set; }
+        #endregion // Aerodynamic Variables
         public bool ESM { get; set; }
         public bool ASP { get; set; }
         public float ArcadeMinCoeff { get; set; }
@@ -184,192 +264,410 @@ namespace ResourceTypes.Actors
         public bool AMFakeURVMUseASR { get; set; }
         public bool RightWheelForcePos { get; set; }
         public float FFRideMagnitudeCoeff { get; set; }
+        #region EffectID Variables 1
+        [LocalisedCategory("$EFFECTS")]
         public SmokeMotorTableData[] SmokeMotorData { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public short SmokeExhaustID { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public short ExplosionID { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public short FireID { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public short SlideEffectID { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public short CrashEffectID { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public short RimSparksID { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public short BurnOutID { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public short BreakTireID { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public short BreakGlassSideWindowID { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public short BreakGlassFrontWindowID { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public short[] HedgeIDs { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public int RainID { get; set; }
+        #endregion // EffectID Variables 1
         public float TimeFireMax { get; set; }
+        #region Engine Variables 1
+        [LocalisedCategory("$ENGINE")]
         public int EngineSwitchSndCategory10 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineSwitchSndId10 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineSwitchVolume10 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineSwitchStart10 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineSwitchSndCategory11 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineSwitchSndId11 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineSwitchVolume11 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineSwitchSndCategory12 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineSwitchSndId12 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineSwitchVolume12 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineMinRotSndCategory1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineMinRotSndID1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineMinRotVolume1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineMinRotRotVolHi1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineMinRotRotHi1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineNPCSndCategory1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineNPCSndID1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineNPCVolume1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineNPCFrqLo1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineNPCFrqHi1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineNPCRotLoVol1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineNPCRotHiVol1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineNPCLoVolume1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineVolEnvelopeRotLo1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineVolEnvelopeRotLoVol1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineVolEnvelopeRotHi1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineVolEnvelopeRotHiVol1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineCrossFadeTimePlus1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineCrossFadeTimeMinus1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public EngineTableData[] EngineFData { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public EngineTableData[] EngineBData { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineFizzSndCategory { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public EngineFizzTableData[] EngineFizzData { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineCoolingSndCategory1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineCoolingSndId1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineCoolingVolume1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineCoolingTemperatureVolume1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float EngineCoolingTemperatureSilencion1 { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineFanSndCategory { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public int EngineFanSndId { get; set; }
+        [LocalisedCategory("$ENGINE")]
         public float m_EngineFanVolume { get; set; }
+        #endregion // Engine Variables 1
+        #region Environment Variables
+        [LocalisedCategory("$ENVIRONMENT")]
         public int EnvironmentalSndCategory1 { get; set; }
+        [LocalisedCategory("$ENVIRONMENT")]
         public int EnvironmentalSndId1 { get; set; }
+        [LocalisedCategory("$ENVIRONMENT")]
         public float EnvironmentalVolume1 { get; set; }
+        [LocalisedCategory("$ENVIRONMENT")]
         public float EnvironmentalFrqLo1 { get; set; }
+        [LocalisedCategory("$ENVIRONMENT")]
         public float EnvironmentalFrqHi1 { get; set; }
+        [LocalisedCategory("$ENVIRONMENT")]
         public float EnvironmentalSpeedMaxVolume1 { get; set; }
+        #endregion // Environment Variables
+        #region AirPump Variables
+        [LocalisedCategory("$AIR_PUMP")]
         public int AirPumpSndCategory1 { get; set; }
+        [LocalisedCategory("$AIR_PUMP")]
         public int AirPumpSndId1 { get; set; }
+        [LocalisedCategory("$AIR_PUMP")]
         public float AirPumpVolume1 { get; set; }
+        #endregion // AirPump Variables
+        #region Door Variables
+        [LocalisedCategory("$DOORS")]
         public int DoorOpenSndCategory1 { get; set; }
+        [LocalisedCategory("$DOORS")]
         public int DoorOpenSndId1 { get; set; }
+        [LocalisedCategory("$DOORS")]
         public float DoorOpenVolume1 { get; set; }
+        [LocalisedCategory("$DOORS")]
         public float DoorOpenSndId1b { get; set; }
+        [LocalisedCategory("$DOORS")]
         public float DoorOpenVolume1b { get; set; }
+        [LocalisedCategory("$DOORS")]
         public int DoorCloseSndCategory1 { get; set; }
+        [LocalisedCategory("$DOORS")]
         public int DoorCloseSndId1 { get; set; }
+        [LocalisedCategory("$DOORS")]
         public float DoorCloseVolume1 { get; set; }
+        [LocalisedCategory("$DOORS")]
         public float DoorCloseSndId1b { get; set; }
+        [LocalisedCategory("$DOORS")]
         public float DoorCloseVolume1b { get; set; }
+        #endregion // Door Variables
+        #region Bonnet/Trunk Variables
+        [LocalisedCategory("$BONNET_TRUNK")]
         public int CoverOpenSndCategory1 { get; set; }
+        [LocalisedCategory("$BONNET_TRUNK")]
         public int CoverOpenSndId1 { get; set; }
+        [LocalisedCategory("$BONNET_TRUNK")]
         public float CoverOpenVolume1 { get; set; }
+        [LocalisedCategory("$BONNET_TRUNK")]
         public int CoverCloseSndCategory1 { get; set; }
+        [LocalisedCategory("$BONNET_TRUNK")]
         public int CoverCloseSndId1 { get; set; }
+        [LocalisedCategory("$BONNET_TRUNK")]
         public float CoverCloseVolume1 { get; set; }
+        [LocalisedCategory("$BONNET_TRUNK")]
         public int KnockingBonnetSndCategory1 { get; set; }
+        [LocalisedCategory("$BONNET_TRUNK")]
         public KnockingBonnetTableData[] KnockingBonnetData { get; set; }
+        [LocalisedCategory("$BONNET_TRUNK")]
         public int DropHoodSndCategory1 { get; set; }
+        [LocalisedCategory("$BONNET_TRUNK")]
         public int DropHoodSndId1 { get; set; }
+        [LocalisedCategory("$BONNET_TRUNK")]
         public float DropHoodVolume1 { get; set; }
+        #endregion // Bonnet/Trunk Variables
+        #region Environment Variables 2
+        [LocalisedCategory("$ENVIRONMENT")]
         public CrashTableData[] CrashData { get; set; }
+        #endregion // Environment Variables 2
+        #region Gearbox Variables 2
+        [LocalisedCategory("$GEARBOX")]
         public int GearboxShiftSndCategory1 { get; set; }
+        [LocalisedCategory("$GEARBOX")]
         public int GearboxShiftSndId1 { get; set; }
+        [LocalisedCategory("$GEARBOX")]
         public float GearboxShiftVolume1 { get; set; }
+        #endregion // Gearbox Variables 2
+        #region Brakes 1
+        [LocalisedCategory("$BRAKES")]
         public int HandbrakeSndCategory1 { get; set; }
+        [LocalisedCategory("$BRAKES")]
         public int HandbrakeSndId1 { get; set; }
+        [LocalisedCategory("$BRAKES")]
         public float HandbrakeVolume1 { get; set; }
+        #endregion // Brakes 1
+        #region Wheel Variables 1
+        [LocalisedCategory("$WHEELS")]
         public int WheelShankSndCategory1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public int WheelShankSndId11 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public int WheelShankSndId21 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public int WheelShankSndId31 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float WheelShankHeight11 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float WheelShankHeight21 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float WheelShankSpeed11 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float WheelShankSpeed21 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float WheelShankSpeed31 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float WheelShankVolume11 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float WheelShankVolume21 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float WheelShankVolume31 { get; set; }
+        #endregion // Wheel Variables 1
+        #region Horn/Siren Variables
+        [LocalisedCategory("$HORN_SIREN")]
         public int HornSndCategory1 { get; set; }
+        [LocalisedCategory("$HORN_SIREN")]
         public int HornSndId1 { get; set; }
+        [LocalisedCategory("$HORN_SIREN")]
         public float HornVolume1 { get; set; }
+        [LocalisedCategory("$HORN_SIREN")]
         public int SirenSndCategory1 { get; set; }
+        [LocalisedCategory("$HORN_SIREN")]
         public int SirenSndId1 { get; set; }
+        [LocalisedCategory("$HORN_SIREN")]
         public float SirenVolume1 { get; set; }
+        #endregion // Horn/Siren Variables
+        #region Wheel Variables 2 (Tyres)
+        [LocalisedCategory("$WHEELS")]
         public int TyreBreakSndCategory1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public int TyreBreakSndId1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float TyreBreakVolume1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public int TyreCrashSndCategory1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public int TyreCrashSndId1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float TyreCrashVolume1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float TyreCrashFrqLo1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float TyreCrashFrqHi1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float TyreCrashSpeedLoVol1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float TyreCrashSpeedHiVol1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public int RimRideSndCategory1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public int RimRideSndId1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float RimRideVolume1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float RimRideFrqLo1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float RimRideFrqHi1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float RimRideSpeedLoVol1 { get; set; }
+        [LocalisedCategory("$WHEELS")]
         public float RimRideSpeedHiVol1 { get; set; }
+        #endregion // Wheel Variables 2 (Tyres)
+        #region GlassBreak Variables
+        [LocalisedCategory("$GLASS_BREAK")]
         public int GlassBreakSndCategory { get; set; }
+        [LocalisedCategory("$GLASS_BREAK")]
         public int GlassBreakSndId { get; set; }
+        [LocalisedCategory("$GLASS_BREAK")]
         public float GlassBreakSndVolume { get; set; }
+        #endregion GlassBreak Variables
+        #region Explosion Variables
+        [LocalisedCategory("$EXPLOSION")]
         public int ExplosionSndCategory { get; set; }
+        [LocalisedCategory("$EXPLOSION")]
         public int ExplosionSndId { get; set; }
+        [LocalisedCategory("$EXPLOSION")]
         public float ExplosionSndVolume { get; set; }
+        #endregion Explosion Variables
+        #region Fire Variables
+        [LocalisedCategory("$FIRE")]
         public int FireSndCategory { get; set; }
+        [LocalisedCategory("$FIRE")]
         public int FireSndId { get; set; }
+        [LocalisedCategory("$FIRE")]
         public float FireSndVolume { get; set; }
+        #endregion // Fire Variables
+        #region Brakes 2
+        [LocalisedCategory("$BRAKES")]
         public int SqueakingBrakesSndCategory { get; set; }
+        [LocalisedCategory("$BRAKES")]
         public int SqueakingBrakesSndId { get; set; }
+        [LocalisedCategory("$BRAKES")]
         public float SqueakingBrakesVolume { get; set; }
+        [LocalisedCategory("$BRAKES")]
         public float SqueakingBrakesSpeedHi { get; set; }
+        #endregion // Brakes 2
+        #region Rain Contact
+        [LocalisedCategory("$RAIN_CONTACT")]
         public int RainSndCategory { get; set; }
+        [LocalisedCategory("$RAIN_CONTACT")]
         public int RainSndId { get; set; }
+        [LocalisedCategory("$RAIN_CONTACT")]
         public float RainVolumeLo { get; set; }
+        [LocalisedCategory("$RAIN_CONTACT")]
         public float RainVolumeHi { get; set; }
+        [LocalisedCategory("$RAIN_CONTACT")]
         public float RainFrqLo { get; set; }
+        [LocalisedCategory("$RAIN_CONTACT")]
         public float RainFrqHi { get; set; }
+        [LocalisedCategory("$RAIN_CONTACT")]
         public float RainDensityLo { get; set; }
+        [LocalisedCategory("$RAIN_CONTACT")]
         public float RainDensityHi { get; set; }
+        #endregion // Rain Contact
+        #region Hedge Contact
+        [LocalisedCategory("$HEDGE_CONTACT")]
         public int HedgeSndCategory { get; set; }
+        [LocalisedCategory("$HEDGE_CONTACT")]
         public int HedgeSndId { get; set; }
+        [LocalisedCategory("$HEDGE_CONTACT")]
         public float HedgeFrqLo { get; set; }
+        [LocalisedCategory("$HEDGE_CONTACT")]
         public float HedgeFrqHi { get; set; }
+        [LocalisedCategory("$HEDGE_CONTACT")]
         public float HedgeSpeedMidVolume { get; set; }
+        [LocalisedCategory("$HEDGE_CONTACT")]
         public float HedgeVolumeMid { get; set; }
+        [LocalisedCategory("$HEDGE_CONTACT")]
         public float HedgeSpeedMaxVolume { get; set; }
+        [LocalisedCategory("$HEDGE_CONTACT")]
         public float HedgeVolumeMax { get; set; }
+        #endregion // Hedge Contact
         public byte[] UnkBytes { get; set; }
+        #region Slide/Skidding Variables
+        [LocalisedCategory("$SKIDDING_SLIDING")]
         public float SlideId { get; set; }
+        [LocalisedCategory("$SKIDDING_SLIDING")]
         public float SlideSpeedMax { get; set; }
+        [LocalisedCategory("$SKIDDING_SLIDING")]
         public float SlideSpeedVolMax { get; set; }
+        [LocalisedCategory("$SKIDDING_SLIDING")]
         public int SlideMinVol { get; set; }
+        [LocalisedCategory("$SKIDDING_SLIDING")]
         public float SlideMaxVol { get; set; }
+        [LocalisedCategory("$SKIDDING_SLIDING")]
         public float SlideFreqLow { get; set; }
+        [LocalisedCategory("$SKIDDING_SLIDING")]
         public int SlideFreqHi { get; set; }
+        #endregion Slide/Skidding Variables
+        #region Roll Variables
+        [LocalisedCategory("$ROLL")]
         public float RollId { get; set; }
+        [LocalisedCategory("$ROLL")]
         public float RollSpeedMax { get; set; }
+        [LocalisedCategory("$ROLL")]
         public float RollSpeedVolMax { get; set; }
+        [LocalisedCategory("$ROLL")]
         public int RollMinVol { get; set; }
+        [LocalisedCategory("$ROLL")]
         public float RollMaxVol { get; set; }
+        [LocalisedCategory("$ROLL")]
         public float RollFreqLow { get; set; }
+        [LocalisedCategory("$ROLL")]
         public int RollFreqHi { get; set; }
-
+        #endregion Roll Variables
         public int SndChngVersionId { get; set; }
         public int SndBreakId { get; set; }
         public int SndDelayId { get; set; }
         public int SndDelayDelay { get; set; }
+        #region EffectID Variables 2
+        [LocalisedCategory("$EFFECTS")]
         public int ParticleHitId { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public int ParticleBreakId { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public int ParticleChngVersionId { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public int ParticleSlideId { get; set; }
+        [LocalisedCategory("$EFFECTS")]
         public int ParticleHitSpeedMin { get; set; }
+        #endregion // EffectID Variables 2
+        [LocalisedCategory("$EXPLOSION")]
         public int ExplodeID { get; set; }
 
         public ActorCar()
         {
             UnkInts0 = new int[8];
+            CenterOfMass = new EDSVector3();
+            Inertia = new EDSVector3();
             GearData = new GearTableData[7];
             DifferentialData = new DifferentialTableData[10];
             WheelData = new WheelTableData[10];
@@ -383,6 +681,9 @@ namespace ResourceTypes.Actors
 
         public ActorCar(MemoryStream stream, bool isBigEndian)
         {
+            CenterOfMass = new EDSVector3();
+            Inertia = new EDSVector3();
+
             ReadFromFile(stream, isBigEndian);
         }
 
@@ -405,9 +706,9 @@ namespace ResourceTypes.Actors
             }
 
             Mass = stream.ReadSingle(isBigEndian);
-            CenterOfMass = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            CenterOfMass.ReadFromFile(stream, isBigEndian);
             InteriaMax = stream.ReadSingle(isBigEndian);
-            Inertia = Vector3Extenders.ReadFromFile(stream, isBigEndian);
+            Inertia.ReadFromFile(stream, isBigEndian);
             MaterialID = stream.ReadInt32(isBigEndian);
             StaticFriction = stream.ReadSingle(isBigEndian);
             DynamicFriction = stream.ReadSingle(isBigEndian);

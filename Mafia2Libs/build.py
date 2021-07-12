@@ -1,6 +1,7 @@
 import os
+import zipfile
 
-def remove_dll(dllname):
+def move_dll(dllname):
     print("Moving " + dllname + " to libs..")
     exists = os.path.isfile(dllname)
     exists_in_libs = os.path.isfile("libs/"+dllname)
@@ -11,6 +12,20 @@ def remove_dll(dllname):
         os.remove("libs/"+dllname)
         os.rename(dllname, "libs/"+dllname)
         print("Deleted old libs and moved new libs.")            
+    else:
+        print("Did not find " + dllname + " did not move to libs.")
+    return;
+
+def move_from_libs(dllname):
+    print("Moving " + dllname + " from libs..")
+    exists = os.path.isfile("libs/"+dllname)
+    exists_in_root = os.path.isfile(dllname)
+    if exists and not exists_in_root:
+        os.rename("libs/"+dllname, dllname)
+        print("Moved " + dllname + ".")   
+    elif exists and exists_in_root:
+        os.remove(dllname)
+        os.rename("libs/"+dllname, dllname)      
     else:
         print("Did not find " + dllname + " did not move to libs.")
     return;
@@ -27,42 +42,42 @@ def remove_file(filename):
 
 print("Building Toolkit for release..")
 
-#remove libs
-remove_dll("Gibbed.IO.dll");
-remove_dll("SharpDX.D3DCompiler.dll");
-remove_dll("SharpDX.Desktop.dll");
-remove_dll("SharpDX.Direct3D11.dll");
-remove_dll("SharpDX.dll");
-remove_dll("SharpDX.DirectInput.dll");
-remove_dll("SharpDX.Mathematics.dll");
-remove_dll("SharpDX.DXGI.dll");
-remove_dll("WeifenLuo.WinFormsUI.Docking.dll");
-remove_dll("UnluacNET.dll");
-remove_dll("BitStreams.dll");
-remove_dll("Gibbed.Squish.dll");
-remove_dll("squish_32.dll");
-remove_dll("squish_64.dll");
-remove_dll("Octokit.dll");
-remove_dll("zlibnet.dll");
-remove_dll("OodleSharp.dll");
-remove_dll("oo2core_8_win64.dll");
+# remove libs
+move_dll("discord-rpc.dll")
+move_dll("M2FBX.dll")
+move_dll("M2PhysX.dll")
+#move_dll("OodleSharp.dll")
+#move_dll("Gibbed.IO.dll")
+#move_dll("SharpGen.Runtime.COM.dll")
+#move_dll("SharpGen.Runtime.dll")
+#move_dll("Vortice.D3DCompiler.dll")
+#move_dll("Vortice.Direct3D11.dll")
+#move_dll("Vortice.XInput.dll")
+#move_dll("Vortice.Mathematics.dll")
+#move_dll("Vortice.DXGI.dll")
+#move_dll("Vortice.DirectX.dll")
+#move_dll("WeifenLuo.WinFormsUI.Docking.dll")
+#move_dll("WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll")
+#move_dll("WinFormsUI.dll")
+#move_dll("UnluacNET.dll");
+#move_dll("BitStreams.dll");
+#move_dll("Gibbed.Squish.dll");
+#move_dll("squish_32.dll");
+#move_dll("squish_64.dll");
+#move_dll("Octokit.dll");
+#move_dll("zlibnet.dll");
+#move_dll("OodleSharp.dll");
+#move_dll("oo2core_8_win64.dll");
 
-#remove files
-remove_file("ToolkitUpdater.pdb")
-remove_file("Mafia2Toolkit.pdb")
-remove_file("Octokit.xml");
-remove_file("Gibbed.IO.pdb");
-remove_file("SharpDX.D3DCompiler.pdb");
-remove_file("SharpDX.D3DCompiler.xml");
-remove_file("SharpDX.Desktop.pdb");
-remove_file("SharpDX.Desktop.xml");
-remove_file("SharpDX.Direct3D11.pdb");
-remove_file("SharpDX.Direct3D11.xml");
-remove_file("SharpDX.pdb");
-remove_file("SharpDX.xml");
-remove_file("SharpDX.DirectInput.pdb");
-remove_file("SharpDX.DirectInput.xml");
-remove_file("SharpDX.Mathematics.pdb");
-remove_file("SharpDX.Mathematics.xml");
-remove_file("SharpDX.DXGI.pdb");
-remove_file("SharpDX.DXGI.xml");
+# remove files
+remove_file("MafiaToolkit.pdb")
+remove_file("OodleSharp.pdb")
+
+move_from_libs("Gibbed.IO.dll")
+move_from_libs("Gibbed.Squish.dll")
+move_from_libs("squish_32.dll")
+move_from_libs("squish_64.dll")
+move_from_libs("zlibnet.dll")
+move_from_libs("Octokit.dll")
+move_from_libs("OodleSharp.dll")
+move_from_libs("UnluacNET.dll")

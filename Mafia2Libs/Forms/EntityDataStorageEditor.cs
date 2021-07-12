@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using ResourceTypes.Actors;
@@ -7,8 +8,9 @@ using Utils.Helpers.Reflection;
 using Utils.Language;
 using Utils.Settings;
 
-namespace Mafia2Tool
+namespace Toolkit.Forms
 {
+    // TODO: IsTypeofInterface is going to be redundant once we merge branches.
     public partial class EntityDataStorageEditor : Form
     {
         private FileInfo edsFile;
@@ -21,7 +23,7 @@ namespace Mafia2Tool
             InitializeComponent();
             Localise();
             edsFile = file;
-            BuildData();
+            LoadAndBuildData();
             Show();
             ToolkitSettings.UpdateRichPresence("Using the EDS editor.");
         }
@@ -36,16 +38,26 @@ namespace Mafia2Tool
             Button_Exit.Text = Language.GetString("$EXIT");
             Button_CopyData.Text = Language.GetString("$COPY");
             Button_PasteData.Text = Language.GetString("$PASTE");
+            Button_ExportXML.Text = Language.GetString("$EXPORT_XML");
+            Button_ImportXML.Text = Language.GetString("$IMPORT_XML");
             ToolStrip_Copy.Text = Language.GetString("$COPY");
             ToolStrip_Paste.Text = Language.GetString("$PASTE");
+            FileDialog_Open.Title = Language.GetString("$OPEN_TITLE");
+            FileDialog_Save.Title = Language.GetString("$SAVE_TITLE");
         }
 
-        private void BuildData()
+        private void LoadAndBuildData()
         {
             tables = new EntityDataStorageLoader();
             tables.ReadFromFile(edsFile.FullName, false);
 
-            TreeNode entityNode = new TreeNode("Entity");
+            CreateTable();
+        }
+
+        private void CreateTable()
+        {
+            string EntityName = string.Format("Entity [{0}]", tables.Hash);
+            TreeNode entityNode = new TreeNode(EntityName);
             entityNode.Tag = tables;
             TreeView_Tables.Nodes.Add(entityNode);
 
@@ -53,7 +65,8 @@ namespace Mafia2Tool
             {
                 for (int i = 0; i < tables.Tables.Length; i++)
                 {
-                    TreeNode node = new TreeNode("Table_" + i);
+                    string TableName = string.Format("Table [{0}]", tables.TableHashes[i]);
+                    TreeNode node = new TreeNode(TableName);
                     node.Tag = tables.Tables[i];
                     entityNode.Nodes.Add(node);
                 }
@@ -84,7 +97,7 @@ namespace Mafia2Tool
         private void Button_Reload_OnClick(object sender, EventArgs e)
         {
             TreeView_Tables.Nodes.Clear();
-            BuildData();
+            LoadAndBuildData();
         }
 
         private void Button_Exit_OnClick(object sender, EventArgs e)
@@ -105,7 +118,6 @@ namespace Mafia2Tool
                     PasteTagData();
                 }
             }
-
         }
 
         private void CopyTagData()
@@ -174,6 +186,64 @@ namespace Mafia2Tool
         {
             Type TypeOfObject = ObjectToCheck.GetType();
             return InterfaceType.IsAssignableFrom(TypeOfObject);
+        }
+
+        private void Button_ExportXML_Click(object sender, EventArgs e)
+        {
+            if(FileDialog_Save.ShowDialog() == DialogResult.OK)
+            {
+                tables.ConvertToXML(FileDialog_Save.FileName);
+            }   
+        }
+
+        private void Button_ImportXML_Click(object sender, EventArgs e)
+        {
+            if(FileDialog_Open.ShowDialog() == DialogResult.OK)
+            {
+                string FileToOpen = FileDialog_Open.FileName;
+                if(File.Exists(FileToOpen))
+                {
+                    tables.ConvertFromXML(FileToOpen);
+
+                    // Reload TreeVieew and PropertyGrid, the import may mean our 'visual' part of the data is extremely outdated
+                    TreeView_Tables.Nodes.Clear();
+                    PropertyGrid_Item.SelectedObject = null;
+
+                    CreateTable();
+                }
+            }
+        }
+
+        private void PropertyGrid_OnValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            // Check if property 'Hash' needs to be updated
+            if (PropertyGrid_Item.SelectedObject is EntityDataStorageLoader)
+            {
+                if (e.ChangedItem.Label.Equals("Hash"))
+                {
+                    string NewEntityName = string.Format("Entity [{0}]", e.ChangedItem.Value);
+                    TreeView_Tables.SelectedNode.Text = NewEntityName;
+                    TreeView_Tables.SelectedNode.Name = NewEntityName;
+                }
+                else
+                {
+                    EntityDataStorageLoader EDSLoader = (PropertyGrid_Item.SelectedObject as EntityDataStorageLoader);
+                    string NewEntityName = string.Format("Entity [{0}]", EDSLoader.Hash);
+
+                    Debug.Assert(EDSLoader.TableHashes.Length == TreeView_Tables.SelectedNode.Nodes.Count, "WARNING: This editor does not support deleting/adding new tables. " +
+                        "The length of 'TableHashes' NEEDS to equal the same amount of child nodes attached to " + NewEntityName);
+
+                    int Index = 0;
+                    foreach (TreeNode ChildNode in TreeView_Tables.SelectedNode.Nodes)
+                    {
+                        string NewTableName = string.Format("Table [{0}]", EDSLoader.TableHashes[Index]);
+                        ChildNode.Text = NewTableName;
+                        ChildNode.Name = NewTableName;
+
+                        Index++;
+                    }
+                }
+            }
         }
     }
 }

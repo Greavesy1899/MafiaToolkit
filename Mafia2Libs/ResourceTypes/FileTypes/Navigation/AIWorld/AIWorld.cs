@@ -1,13 +1,8 @@
-﻿using Rendering.Core;
-using Rendering.Factories;
-using Rendering.Graphics;
-using SharpDX;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿﻿using System;
 using System.IO;
-using System.Windows.Forms;
+using System.Numerics;
 using Utils.StringHelpers;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Navigation
 {

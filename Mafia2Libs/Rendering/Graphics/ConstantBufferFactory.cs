@@ -1,57 +1,43 @@
-﻿using SharpDX;
-using SharpDX.Direct3D11;
+﻿using System;
+using System.Runtime.CompilerServices;
+using Vortice;
+using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
 {
     public class ConstantBufferFactory
     {
-        public static Buffer ConstructBuffer<T>(Device device, string debugName = "") where T : struct
+        public static ID3D11Buffer ConstructBuffer<T>(ID3D11Device device, string debugName = "") where T : struct
         {
             var bufferDesc = new BufferDescription()
             {
                 Usage = ResourceUsage.Dynamic,
-                SizeInBytes = Utilities.SizeOf<T>(),
+                SizeInBytes = Unsafe.SizeOf<T>(),
                 BindFlags = BindFlags.ConstantBuffer,
                 CpuAccessFlags = CpuAccessFlags.Write,
                 OptionFlags = ResourceOptionFlags.None,
                 StructureByteStride = 0
             };
 
-            Buffer buffer = new Buffer(device, bufferDesc);
+            ID3D11Buffer buffer = device.CreateBuffer(bufferDesc);
             buffer.DebugName = debugName;
             return buffer;
         }
 
-        private static void InternalUpdateBuffer<T>(DeviceContext context, ref Buffer buffer, T data) where T : struct
+        unsafe public static void UpdatePixelBuffer<T>(ID3D11DeviceContext context, ID3D11Buffer buffer, int slot, T data) where T : struct
         {
-            DataStream mappedResource;
-            context.MapSubresource(buffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
-            mappedResource.Write(data);
-            context.UnmapSubresource(buffer, 0);
-
-            mappedResource.Dispose();
+            MappedSubresource mappedResource = context.Map(buffer, MapMode.WriteDiscard, MapFlags.None);
+            Unsafe.Write((void*)mappedResource.DataPointer, data);
+            context.Unmap(buffer);
+            context.PSSetConstantBuffer(slot, buffer);
         }
 
-        public static void UpdatePixelBuffer<T>(DeviceContext context, Buffer buffer, int slot, T data) where T : struct
+        unsafe public static void UpdateVertexBuffer<T>(ID3D11DeviceContext context, ID3D11Buffer buffer, int slot, T data) where T : struct
         {
-            DataStream mappedResource;
-            context.MapSubresource(buffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
-            mappedResource.Write(data);
-            context.UnmapSubresource(buffer, 0);
-            context.PixelShader.SetConstantBuffer(slot, buffer);
-
-            mappedResource.Dispose();
-        }
-
-        public static void UpdateVertexBuffer<T>(DeviceContext context, Buffer buffer, int slot, T data) where T : struct
-        {
-            DataStream mappedResource;
-            context.MapSubresource(buffer, MapMode.WriteDiscard, MapFlags.None, out mappedResource);
-            mappedResource.Write(data);
-            context.UnmapSubresource(buffer, 0);
-            context.VertexShader.SetConstantBuffer(slot, buffer);
-
-            mappedResource.Dispose();
+            MappedSubresource mappedResource = context.Map(buffer, MapMode.WriteDiscard, MapFlags.None);
+            Unsafe.Write((void*)mappedResource.DataPointer, data);
+            context.Unmap(buffer);
+            context.VSSetConstantBuffer(slot, buffer);
         }
     }
 }

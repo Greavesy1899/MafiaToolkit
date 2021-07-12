@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using SharpDX;
+using System.Numerics;
 using Utils.Extensions;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
 
 namespace ResourceTypes.Cutscene.AnimEntities
 {
@@ -48,7 +48,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
         public byte Unk05 { get; set; }
         public int Unk06 { get; set; }
         public int Unk07 { get; set; }     
-        public Matrix Transform { get; set; }
+        public Matrix4x4 Transform { get; set; }
         public int Unk09 { get; set; }
         public int UnknownSize { get; set; }
         [TypeConverter(typeof(ExpandableObjectConverter))]
@@ -60,7 +60,7 @@ namespace ResourceTypes.Cutscene.AnimEntities
             Unk05 = stream.ReadByte8();
             Unk06 = stream.ReadInt32(isBigEndian);
             Unk07 = stream.ReadInt32(isBigEndian);
-            Transform = MatrixExtensions.ReadFromFile(stream, isBigEndian);
+            Transform = MatrixUtils.ReadFromFile(stream, isBigEndian);
             Unk09 = stream.ReadInt32(isBigEndian);
             UnknownSize = stream.ReadInt32(isBigEndian);
 

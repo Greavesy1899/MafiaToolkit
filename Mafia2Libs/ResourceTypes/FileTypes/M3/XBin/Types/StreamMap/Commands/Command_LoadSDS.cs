@@ -1,8 +1,5 @@
 ﻿using ResourceTypes.M3.XBin;
-using SharpDX;
-using System;
 using System.IO;
-using Utils.SharpDXExtensions;
 
 namespace FileTypes.XBin.StreamMap.Commands
 {

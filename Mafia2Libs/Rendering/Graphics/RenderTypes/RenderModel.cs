@@ -1,19 +1,19 @@
-﻿using SharpDX;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using System.Collections.Generic;
+﻿using ResourceTypes.BufferPools;
 using ResourceTypes.FrameResource;
 using ResourceTypes.Materials;
-using ResourceTypes.BufferPools;
-using Utils.Types;
-using Buffer = SharpDX.Direct3D11.Buffer;
-using Utils.Models;
-using Utils.SharpDXExtensions;
 using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Windows;
-using Color = System.Drawing.Color;
 using Utils.Extensions;
+using Utils.Models;
+using Utils.Types;
+using Utils.VorticeUtils;
+using Vortice.Direct3D;
+using Vortice.Direct3D11;
 using static Rendering.Graphics.BaseShader;
+using Color = System.Drawing.Color;
 
 namespace Rendering.Graphics
 {
@@ -29,7 +29,7 @@ namespace Rendering.Graphics
         }
 
         private HashName aoHash;
-        public ShaderResourceView AOTexture { get; set; }
+        public ID3D11ShaderResourceView AOTexture { get; set; }
         public Color SelectionColour { get; private set; }
 
         public struct LOD
@@ -47,7 +47,7 @@ namespace Rendering.Graphics
         {
             DoRender = true;
             isUpdatedNeeded = false;
-            Transform = Matrix.Identity;
+            Transform = Matrix4x4.Identity;
             SelectionColour = Color.White;
         }
 
@@ -200,11 +200,11 @@ namespace Rendering.Graphics
             }
         }
 
-        private void InitTextures(Device d3d, DeviceContext d3dContext)
+        private void InitTextures(ID3D11Device d3d, ID3D11DeviceContext d3dContext)
         {
             if (aoHash != null)
             {
-                ShaderResourceView texture;
+                ID3D11ShaderResourceView texture;
 
                 if (!RenderStorageSingleton.Instance.TextureCache.TryGetValue(aoHash.Hash, out texture))
                 {
@@ -238,33 +238,36 @@ namespace Rendering.Graphics
             }
         }
 
-        public override void InitBuffers(Device d3d, DeviceContext d3dContext)
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext d3dContext)
         {
-            vertexBuffer = Buffer.Create(d3d, BindFlags.VertexBuffer, LODs[0].Vertices);
-            indexBuffer = Buffer.Create(d3d, BindFlags.IndexBuffer, LODs[0].Indices);
+            vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
+            indexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
 
             VertexBufferBindings = new VertexBufferBinding[1];
             VertexBufferBindings[0] = new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
             InitTextures(d3d, d3dContext);
         }
 
-        public override void SetTransform(Matrix matrix)
+        public override void SetTransform(Matrix4x4 matrix)
         {
             Transform = matrix;
         }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera)
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
         {
             if (!DoRender)
+            {
                 return;
+            }
 
-           //if (!camera.CheckBBoxFrustum(Transform.TranslationVector, BoundingBox))
-           //     return;
+            //if (!camera.CheckBBoxFrustum(Transform.TranslationVector, BoundingBox))
+            //     return;
 
-            deviceContext.InputAssembler.SetVertexBuffers(0, VertexBufferBindings[0]);
-            deviceContext.InputAssembler.SetIndexBuffer(indexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
-            deviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
-            deviceContext.PixelShader.SetShaderResource(2, AOTexture);
+            VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
+            deviceContext.IASetVertexBuffers(0, VertexBufferView);
+            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
+            deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
+            deviceContext.PSSetShaderResource(2, AOTexture);
 
             for (int i = 0; i != LODs[0].ModelParts.Length; i++)
             {
@@ -287,7 +290,7 @@ namespace Rendering.Graphics
             indexBuffer = null;
         }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext)
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             if(isUpdatedNeeded)
             {
@@ -307,12 +310,12 @@ namespace Rendering.Graphics
             SelectionColour = Color.White;
         }
 
-        private void GetTextureFromSampler(Device d3d, DeviceContext d3dContext, ModelPart part, string SamplerKey)
+        private void GetTextureFromSampler(ID3D11Device d3d, ID3D11DeviceContext d3dContext, ModelPart part, string SamplerKey)
         {
             HashName sampler = part.Material.GetTextureByID(SamplerKey);
             if (sampler != null)
             {
-                ShaderResourceView texture;
+                ID3D11ShaderResourceView texture;
 
                 ulong SamplerHash = sampler.Hash;
                 string SamplerName = sampler.String;
