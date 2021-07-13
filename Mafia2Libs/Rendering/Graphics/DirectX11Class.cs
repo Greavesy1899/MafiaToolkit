@@ -27,15 +27,6 @@ namespace Rendering.Graphics
         private RasterizerDescription m_RSDesc;
         private FillMode m_FillMode = FillMode.Solid;
         private CullMode m_CullMode = CullMode.Back;
-
-        private static readonly FeatureLevel[] s_featureLevels = new[]
-{
-            FeatureLevel.Level_11_1,
-            FeatureLevel.Level_11_0,
-            FeatureLevel.Level_10_1,
-            FeatureLevel.Level_10_0
-        };
-
         public DirectX11Class()
         { }
 
@@ -67,7 +58,7 @@ namespace Rendering.Graphics
             // Create Device and DeviceContext
             ID3D11Device TempDevice = null;
             ID3D11DeviceContext TempDeviceContext = null;
-            D3D11.D3D11CreateDevice(adapter, DriverType.Hardware, DeviceCreationFlags.None, s_featureLevels, out TempDevice, out TempDeviceContext);
+            D3D11.D3D11CreateDevice(adapter, DriverType.Hardware, DeviceCreationFlags.None, null, out TempDevice, out TempDeviceContext);
             Device = TempDevice.QueryInterface<ID3D11Device1>();
             DeviceContext = TempDeviceContext.QueryInterface<ID3D11DeviceContext1>();
             TempDevice.Dispose();
