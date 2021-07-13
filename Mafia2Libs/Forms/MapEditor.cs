@@ -21,9 +21,6 @@ using System.Numerics;
 using System.Windows.Forms;
 using Toolkit.Core;
 using Utils.Extensions;
-using Rendering.Core;
-using Rendering.Factories;
-using Gibbed.Illusion.FileFormats.Hashing;
 using Utils.Helpers;
 using Utils.Language;
 using Utils.Models;
@@ -773,13 +770,13 @@ namespace Mafia2Tool
                 dSceneTree.AddToTree(node);
                 collisionRoot.Collapse(false);
             }
-            if(SceneData.ATLoader != null && ToolkitSettings.Experimental)
+            /*if(SceneData.ATLoader != null && ToolkitSettings.Experimental)
             {
-                /*animalTrafficRoot = new TreeNode("Animal Traffic Paths");
+                animalTrafficRoot = new TreeNode("Animal Traffic Paths");
                 animalTrafficRoot.Tag = "Folder";
                 for (int i = 0; i < SceneData.ATLoader.Paths.Length; i++)
                 {
-                    int refID = StringHelpers.GetNewRefID();
+                    int refID = RefManager.GetNewRefID();
                     RenderATP atp = new RenderATP(Graphics);
                     atp.Init(SceneData.ATLoader.Paths[i]);
                     TreeNode child = new TreeNode();
@@ -789,8 +786,8 @@ namespace Mafia2Tool
                     assets.Add(refID, atp);
                     animalTrafficRoot.Nodes.Add(child);
                 }
-                dSceneTree.AddToTree(animalTrafficRoot);*/
-            }
+                dSceneTree.AddToTree(animalTrafficRoot);
+            }*/
             if (SceneData.Actors.Length > 0 && ToolkitSettings.Experimental)
             {
                 actorRoot = new TreeNode("Actor Items");
@@ -1252,7 +1249,7 @@ namespace Mafia2Tool
 
             if (FrameResource.IsFrameType(SelectedNode.Tag))
             {
-                NewCameraPosition = ToolkitUtils.Cast<FrameObjectBase>(SelectedNode.Tag).WorldTransform.TranslationVector;
+                NewCameraPosition = ToolkitUtils.Cast<FrameObjectBase>(SelectedNode.Tag).WorldTransform.Translation;
             }
             else if(ToolkitUtils.IsSubclassOf<Collision.Placement>(SelectedNode.Tag))
             {

@@ -1,5 +1,6 @@
 ﻿using ResourceTypes.Navigation;
 using System.Numerics;
+using Toolkit.Core;
 using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
@@ -48,10 +49,10 @@ namespace Rendering.Graphics
                 BBox.InitBuffers(d3d, deviceContext);
                 Path.InitBuffers(d3d, deviceContext);
 
-                BBoxHandle = StringHelpers.GetNewRefID();
+                BBoxHandle = RefManager.GetNewRefID();
                 //OwnGraphics.OurPrimitiveManager.PushPrimitiveObject(Core.PrimitiveType.Box, BBoxHandle, BBox);
 
-                PathHandle = StringHelpers.GetNewRefID();
+                PathHandle = RefManager.GetNewRefID();
                // OwnGraphics.OurPrimitiveManager.PushPrimitiveObject(Core.PrimitiveType.Line, PathHandle, Path);
             }
         }

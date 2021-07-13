@@ -29,7 +29,7 @@ namespace Rendering.Graphics
         {
             DoRender = true;
             SetTransform(Matrix4x4.Identity);
-            colour = Color.White;
+            CurrentColour = Color.White;
         }
 
         public bool InitSwap(BoundingBox bbox)
@@ -73,7 +73,7 @@ namespace Rendering.Graphics
         public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext)
         {
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
-            indexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            indexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, Indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
         }
 
         public void SetColour(Color newColour, bool update = false)
@@ -98,7 +98,7 @@ namespace Rendering.Graphics
 
             VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
             deviceContext.IASetVertexBuffers(0, VertexBufferView);
-            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R16_UInt, 0);
+            deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
             deviceContext.IASetPrimitiveTopology(PrimitiveTopology.LineList);
 
             shader.SetSceneVariables(deviceContext, Transform, camera);
@@ -157,7 +157,7 @@ namespace Rendering.Graphics
 
             for(int i = 0; i < NewVertices.Length; i++)
             {
-                Vector4 Result = Vector3.Transform(vertices[i].Position, Transform);
+                Vector3 Result = Vector3.Transform(vertices[i].Position, Transform);
                 NewVertices[i].Position = new Vector3(Result.X, Result.Y, Result.Z);
             }
 

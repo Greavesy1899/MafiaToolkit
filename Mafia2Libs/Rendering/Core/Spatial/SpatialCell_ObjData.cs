@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Rendering.Graphics;
 using ResourceTypes.Navigation;
+using Toolkit.Core;
 using Utils.StringHelpers;
 
 namespace Rendering.Core
@@ -34,7 +35,7 @@ namespace Rendering.Core
 
             NavCell = new RenderNavCell(OwnGraphicsClass);
             NavCell.Init(OurCellInfo);
-            assets.Add(StringHelpers.GetNewRefID(), NavCell);
+            assets.Add(RefManager.GetNewRefID(), NavCell);
         }
 
         public override void SetVisibility(bool bNewVisiblity)

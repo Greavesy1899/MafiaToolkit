@@ -1,10 +1,10 @@
 ﻿using Rendering.Core;
 using Rendering.Graphics;
-using SharpDX;
 using System.IO;
+using System.Numerics;
 using System.Windows.Forms;
-using Utils.SharpDXExtensions;
-using Utils.StringHelpers;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.Navigation
 {
@@ -28,9 +28,9 @@ namespace ResourceTypes.Navigation
             base.Read(Reader);
 
             Unk0 = Reader.ReadByte();
-            Unk1 = Vector3Extenders.ReadFromFile(Reader);
-            Unk2 = Vector3Extenders.ReadFromFile(Reader);
-            Unk3 = Vector3Extenders.ReadFromFile(Reader);
+            Unk1 = Vector3Utils.ReadFromFile(Reader);
+            Unk2 = Vector3Utils.ReadFromFile(Reader);
+            Unk3 = Vector3Utils.ReadFromFile(Reader);
             Unk4 = Reader.ReadUInt32(); // int32 (could be split into two shorts)
         }
 
@@ -63,7 +63,7 @@ namespace ResourceTypes.Navigation
             RenderBoundingBox navigationBox = new RenderBoundingBox();
             navigationBox.SetColour(System.Drawing.Color.LightBlue);
             navigationBox.Init(new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f)));
-            navigationBox.SetTransform(Matrix.Translation(Unk1));
+            navigationBox.SetTransform(Matrix4x4.CreateTranslation(Unk1));
 
             BBoxBatcher.AddObject(RefID, navigationBox);
         }

@@ -1,5 +1,5 @@
 ﻿using Rendering.Graphics;
-using SharpDX.Direct3D11;
+using Vortice.Direct3D11;
 using System.Collections.Generic;
 
 namespace Rendering.Core
@@ -68,7 +68,7 @@ namespace Rendering.Core
             }
         }
 
-        public void RenderPrimitives(Device InDevice, DeviceContext InDeviceContext, Camera InCamera)
+        public void RenderPrimitives(ID3D11Device InDevice, ID3D11DeviceContext InDeviceContext, Camera InCamera)
         {
             foreach(PrimitiveBatch Batch in Batches.Values)
             {

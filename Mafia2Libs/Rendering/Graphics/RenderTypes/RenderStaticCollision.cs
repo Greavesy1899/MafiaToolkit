@@ -20,8 +20,6 @@ namespace Rendering.Graphics
         private CollisionMaterials[] materials;
         public Color SelectionColour { get; private set; }
 
-        private VertexBufferBinding OurVertexBufferBinding;
-
         public RenderStaticCollision()
         {
             DoRender = true;

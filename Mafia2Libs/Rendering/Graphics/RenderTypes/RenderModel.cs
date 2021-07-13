@@ -41,7 +41,7 @@ namespace Rendering.Graphics
 
         public LOD[] LODs { get; private set; }
 
-        private VertexBufferBinding[] VertexBufferBindings;
+        private VertexBufferView[] VertexBufferViews;
 
         public RenderModel()
         {
@@ -243,8 +243,9 @@ namespace Rendering.Graphics
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
             indexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
 
-            VertexBufferBindings = new VertexBufferBinding[1];
-            VertexBufferBindings[0] = new VertexBufferBinding(vertexBuffer, Utilities.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
+            VertexBufferViews = new VertexBufferView[1];
+            VertexBufferViews[0] = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
+
             InitTextures(d3d, d3dContext);
         }
 
@@ -263,8 +264,7 @@ namespace Rendering.Graphics
             //if (!camera.CheckBBoxFrustum(Transform.TranslationVector, BoundingBox))
             //     return;
 
-            VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.NormalLayout.Vertex>(), 0);
-            deviceContext.IASetVertexBuffers(0, VertexBufferView);
+            deviceContext.IASetVertexBuffers(0, VertexBufferViews[0]);
             deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
             deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
             deviceContext.PSSetShaderResource(2, AOTexture);

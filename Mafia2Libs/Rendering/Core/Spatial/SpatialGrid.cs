@@ -74,9 +74,9 @@ namespace Rendering.Core
                     }
 
                     // Construct cell extents
-                    BoundingBox CellExtents = new BoundingBox();
-                    CellExtents.Minimum = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 0.0f);
-                    CellExtents.Maximum = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 0.0f);
+                    Vector3 Minimum = new Vector3(origin.X + cellSize.X * x, origin.Y + cellSize.Y * i, 0.0f);
+                    Vector3 Maximum = new Vector3(origin.X + cellSize.X * (x + 1), origin.Y + cellSize.Y * (i + 1), 0.0f);
+                    BoundingBox CellExtents = new BoundingBox(Minimum, Maximum);
 
                     // Construct Init params
                     SpatialCell_ObjDataParams InitParams = new SpatialCell_ObjDataParams();

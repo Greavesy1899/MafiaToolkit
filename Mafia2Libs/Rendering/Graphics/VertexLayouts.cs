@@ -53,35 +53,35 @@ namespace Rendering.Graphics
                 public Vector3 InstancedPosition;
             }
 
-            public static InputElement[] GetLayout()
+            public static InputElementDescription[] GetLayout()
             {
-                return new InputElement[]
+                return new InputElementDescription[]
                 {
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "POSITION",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Format = Vortice.DXGI.Format.R32G32B32_Float,
                         Slot = 0,
                         AlignedByteOffset = 0,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "COLOR",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R8G8B8A8_UNorm,
+                        Format = Vortice.DXGI.Format.R8G8B8A8_UNorm,
                         Slot = 0,
-                        AlignedByteOffset = InputElement.AppendAligned,
+                        AlignedByteOffset = InputElementDescription.AppendAligned,
                         Classification = InputClassification.PerVertexData,
                         InstanceDataStepRate = 0
                     },
-                    new InputElement()
+                    new InputElementDescription()
                     {
                         SemanticName = "TEXCOORD",
                         SemanticIndex = 0,
-                        Format = SharpDX.DXGI.Format.R32G32B32_Float,
+                        Format = Vortice.DXGI.Format.R32G32B32_Float,
                         Slot = 1,
                         AlignedByteOffset = 0,
                         Classification = InputClassification.PerInstanceData,

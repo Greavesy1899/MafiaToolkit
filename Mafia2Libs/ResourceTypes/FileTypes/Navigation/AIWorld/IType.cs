@@ -1,8 +1,8 @@
 ﻿using Rendering.Core;
-using SharpDX;
 using System.IO;
+using System.Numerics;
 using System.Windows.Forms;
-using Utils.StringHelpers;
+using Toolkit.Core;
 
 namespace ResourceTypes.Navigation
 {
@@ -15,7 +15,7 @@ namespace ResourceTypes.Navigation
 
         public IType(AIWorld InWorld) 
         { 
-            RefID = StringHelpers.GetNewRefID(); 
+            RefID = RefManager.GetNewRefID(); 
             OwnWorld = InWorld;
             bIsVisible = true;
         }

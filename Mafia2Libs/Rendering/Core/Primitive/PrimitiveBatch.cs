@@ -1,11 +1,12 @@
 ﻿using Rendering.Graphics;
-using SharpDX;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using Utils.Extensions;
+using Vortice;
+using Vortice.Direct3D;
+using Vortice.Direct3D11;
 
 namespace Rendering.Core
 {
@@ -16,8 +17,8 @@ namespace Rendering.Core
         public Dictionary<int, IRenderer> Objects { get; private set; }
 
         private bool bIsDirty;
-        private Buffer VertexBuffer;
-        private Buffer IndexBuffer;
+        private ID3D11Buffer VertexBuffer;
+        private ID3D11Buffer IndexBuffer;
         private int SizeToRender;
 
         public PrimitiveBatch(PrimitiveType InType, string InBatchID)
@@ -90,7 +91,7 @@ namespace Rendering.Core
             return false;
         }
 
-        public void RenderBatch(Device InDevice, DeviceContext InDeviceContext, Camera InCamera)
+        public void RenderBatch(ID3D11Device InDevice, ID3D11DeviceContext InDeviceContext, Camera InCamera)
         {
             if(bIsDirty)
             {
@@ -99,15 +100,15 @@ namespace Rendering.Core
 
             if (BatchType == PrimitiveType.Box)
             {
-                RenderBBox(InDevice, InDeviceContext, InCamera);
+                RenderBBox(InDeviceContext, InCamera);
             }
             else if (BatchType == PrimitiveType.Line)
             {
-                RenderLines(InDevice, InDeviceContext, InCamera);
+                RenderLines(InDeviceContext, InCamera);
             }
         }
 
-        private void UpdateBuffer(Device InDevice, DeviceContext InDContext)
+        private void UpdateBuffer(ID3D11Device InDevice, ID3D11DeviceContext InDContext)
         {
             if(Objects.Count > 0)
             {
@@ -124,7 +125,7 @@ namespace Rendering.Core
             bIsDirty = false;
         }
 
-        private void UpdateBBox(Device InDevice, DeviceContext InDContext)
+        private void UpdateBBox(ID3D11Device InDevice, ID3D11DeviceContext InDContext)
         {
             // Update vertex buffer
             VertexLayouts.BasicLayout.Vertex[] BBoxVertices = new VertexLayouts.BasicLayout.Vertex[Objects.Count * 8];
@@ -157,28 +158,31 @@ namespace Rendering.Core
             SizeToRender = Objects.Count * 24;
             if (VertexBuffer == null && IndexBuffer == null)
             {
-                VertexBuffer = Buffer.Create(InDevice, BindFlags.VertexBuffer, BBoxVertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
-                IndexBuffer = Buffer.Create(InDevice, BindFlags.IndexBuffer, BBoxIndices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+                VertexBuffer = InDevice.CreateBuffer(BindFlags.VertexBuffer, BBoxVertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+                IndexBuffer = InDevice.CreateBuffer(BindFlags.IndexBuffer, BBoxIndices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
             }
             else
             {
-                DataStream Stream;
-                InDContext.MapSubresource(VertexBuffer, MapMode.WriteDiscard, MapFlags.None, out Stream);
-                Stream.WriteRange(BBoxVertices);
-                InDContext.UnmapSubresource(VertexBuffer, 0);
-                Stream.Dispose();
+                // TODO: Templatize this
+                MappedSubresource mappedResource = InDContext.Map(VertexBuffer, MapMode.WriteDiscard, MapFlags.None);
+                unsafe
+                {
+                    UnsafeUtilities.Write(mappedResource.DataPointer, BBoxVertices);
+                }
+                InDContext.Unmap(VertexBuffer);
 
-                DataStream Stream2;
-                InDContext.MapSubresource(IndexBuffer, MapMode.WriteDiscard, MapFlags.None, out Stream2);
-                Stream2.WriteRange(BBoxIndices);
-                InDContext.UnmapSubresource(IndexBuffer, 0);
-                Stream2.Dispose();
+                mappedResource = InDContext.Map(IndexBuffer, MapMode.WriteDiscard, MapFlags.None);
+                unsafe
+                {
+                    UnsafeUtilities.Write(mappedResource.DataPointer, BBoxIndices);
+                }
+                InDContext.Unmap(IndexBuffer);
             }
 
 
         }
 
-        private void UpdateLines(Device InDevice, DeviceContext InDContext)
+        private void UpdateLines(ID3D11Device InDevice, ID3D11DeviceContext InDContext)
         {
             // Update buffers
             List<VertexLayouts.BasicLayout.Vertex> TempLineVertices = new List<VertexLayouts.BasicLayout.Vertex>();
@@ -204,45 +208,50 @@ namespace Rendering.Core
             SizeToRender = TempLineIndices.Count;
             if (VertexBuffer == null && IndexBuffer == null)
             {
-                VertexBuffer = Buffer.Create(InDevice, BindFlags.VertexBuffer, TempLineVertices.ToArray(), 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
-                IndexBuffer = Buffer.Create(InDevice, BindFlags.IndexBuffer, TempLineIndices.ToArray(), 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+                VertexBuffer = InDevice.CreateBuffer(BindFlags.VertexBuffer, TempLineVertices.ToArray(), 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+                IndexBuffer = InDevice.CreateBuffer(BindFlags.IndexBuffer, TempLineIndices.ToArray(), 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
             }
             else
             {
-                DataStream Stream;
-                InDContext.MapSubresource(VertexBuffer, MapMode.WriteDiscard, MapFlags.None, out Stream);
-                Stream.WriteRange(TempLineVertices.ToArray());
-                InDContext.UnmapSubresource(VertexBuffer, 0);
-                Stream.Dispose();
+                // TODO: Templatize this
+                MappedSubresource mappedResource = InDContext.Map(VertexBuffer, MapMode.WriteDiscard, MapFlags.None);
+                unsafe
+                {
+                    UnsafeUtilities.Write(mappedResource.DataPointer, TempLineVertices.ToArray());
+                }
+                InDContext.Unmap(VertexBuffer);
 
-                DataStream Stream2;
-                InDContext.MapSubresource(IndexBuffer, MapMode.WriteDiscard, MapFlags.None, out Stream2);
-                Stream2.WriteRange(TempLineIndices.ToArray());
-                InDContext.UnmapSubresource(IndexBuffer, 0);
-                Stream2.Dispose();
+                mappedResource = InDContext.Map(IndexBuffer, MapMode.WriteDiscard, MapFlags.None);
+                unsafe
+                {
+                    UnsafeUtilities.Write(mappedResource.DataPointer, TempLineIndices.ToArray());
+                }
+                InDContext.Unmap(IndexBuffer);
             }
         }
 
-        private void RenderBBox(Device InDevice, DeviceContext InDeviceContext, Camera InCamera)
+        private void RenderBBox(ID3D11DeviceContext InDeviceContext, Camera InCamera)
         {
-            InDeviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0));
-            InDeviceContext.InputAssembler.SetIndexBuffer(IndexBuffer, SharpDX.DXGI.Format.R32_UInt, 0);
-            InDeviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineList;
+            VertexBufferView BufferView = new VertexBufferView(VertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
+            InDeviceContext.IASetVertexBuffers(0, BufferView);
+            InDeviceContext.IASetIndexBuffer(IndexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
+            InDeviceContext.IASetPrimitiveTopology(PrimitiveTopology.LineList);
 
             BaseShader Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
-            Shader.SetSceneVariables(InDeviceContext, Matrix.Identity, InCamera);
+            Shader.SetSceneVariables(InDeviceContext, Matrix4x4.Identity, InCamera);
             Shader.Render(InDeviceContext, PrimitiveTopology.LineList, SizeToRender, 0);
         }
 
-        private void RenderLines(Device InDevice, DeviceContext InDeviceContext, Camera InCamera)
+        private void RenderLines(ID3D11DeviceContext InDeviceContext, Camera InCamera)
         {
-            InDeviceContext.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(VertexBuffer, Utilities.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0));
-            InDeviceContext.InputAssembler.SetIndexBuffer(IndexBuffer, SharpDX.DXGI.Format.R16_UInt, 0);
-            InDeviceContext.InputAssembler.PrimitiveTopology = PrimitiveTopology.LineStrip;
+            VertexBufferView BufferView = new VertexBufferView(VertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
+            InDeviceContext.IASetVertexBuffers(0, BufferView);
+            InDeviceContext.IASetIndexBuffer(IndexBuffer, Vortice.DXGI.Format.R16_UInt, 0);
+            InDeviceContext.IASetPrimitiveTopology(PrimitiveTopology.LineStrip);
 
             BaseShader Shader = RenderStorageSingleton.Instance.ShaderManager.shaders[1];
-            Shader.SetSceneVariables(InDeviceContext, Matrix.Identity, InCamera);
-            Shader.Render(InDeviceContext, PrimitiveTopology.LineStrip, SizeToRender, 0);
+            Shader.SetSceneVariables(InDeviceContext, Matrix4x4.Identity, InCamera);
+            Shader.Render(InDeviceContext, PrimitiveTopology.LineList, SizeToRender, 0);
         }
 
         public void SetIsDirty()

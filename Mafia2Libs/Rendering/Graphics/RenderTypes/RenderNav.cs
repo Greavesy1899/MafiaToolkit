@@ -1,7 +1,9 @@
+using Rendering.Core;
 using ResourceTypes.Navigation;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using Toolkit.Core;
 using Vortice.Direct3D11;
 using Vortice.Mathematics;
 
@@ -31,7 +33,7 @@ namespace Rendering.Graphics
 
             ConnectionsList = new List<RenderLine>();
 
-            string ConnectionList = string.Format("NavConnectionList_{0}", StringHelpers.GetNewRefID());
+            string ConnectionList = string.Format("NavConnectionList_{0}", RefManager.GetNewRefID());
             PointConnectionsBatch = new PrimitiveBatch(PrimitiveType.Line, ConnectionList);
         }
 
@@ -40,16 +42,16 @@ namespace Rendering.Graphics
             DoRender = true;
             this.data = data;
 
-            string VertexBatchID = string.Format("NavObjData_{0}", StringHelpers.GetNewRefID());
+            string VertexBatchID = string.Format("NavObjData_{0}", RefManager.GetNewRefID());
             PathVertexBatch = new PrimitiveBatch(PrimitiveType.Box, VertexBatchID);
             foreach (OBJData.VertexStruct Vertex in data.vertices)
             {
                 RenderBoundingBox navigationBox = new RenderBoundingBox();
                 navigationBox.Init(new BoundingBox(new Vector3(-0.1f), new Vector3(0.1f)));
                 navigationBox.SetColour(System.Drawing.Color.Green);
-                navigationBox.SetTransform(Matrix.Translation(Vertex.Position));
+                navigationBox.SetTransform(Matrix4x4.CreateTranslation(Vertex.Position));
 
-                int PathHandle = StringHelpers.GetNewRefID();
+                int PathHandle = RefManager.GetNewRefID();
                 PathVertexBatch.AddObject(PathHandle, navigationBox);
                 BoundingBoxes.Add(navigationBox);
             }
@@ -79,20 +81,20 @@ namespace Rendering.Graphics
             RenderLine FromC = CreateConnectionLine(PathPoint, data.vertices[PathPoint.Unk5], System.Drawing.Color.Red);
 
             PointConnectionsBatch.ClearObjects();
-            PointConnectionsBatch.AddObject(StringHelpers.GetNewRefID(), FromA);
-            PointConnectionsBatch.AddObject(StringHelpers.GetNewRefID(), FromB);
-            PointConnectionsBatch.AddObject(StringHelpers.GetNewRefID(), FromC);
+            PointConnectionsBatch.AddObject(RefManager.GetNewRefID(), FromA);
+            PointConnectionsBatch.AddObject(RefManager.GetNewRefID(), FromB);
+            PointConnectionsBatch.AddObject(RefManager.GetNewRefID(), FromC);
 
             foreach (var IncomingPoint in PathPoint.IncomingConnections)
             {
                 RenderLine Connection = CreateConnectionLine(PathPoint, IncomingPoint, System.Drawing.Color.Green);
-                PointConnectionsBatch.AddObject(StringHelpers.GetNewRefID(), Connection);
+                PointConnectionsBatch.AddObject(RefManager.GetNewRefID(), Connection);
             }
 
             foreach (var OutgoingPoint in PathPoint.OutgoingConnections)
             {
                 RenderLine Connection = CreateConnectionLine(PathPoint, OutgoingPoint, System.Drawing.Color.Blue);
-                PointConnectionsBatch.AddObject(StringHelpers.GetNewRefID(), Connection);
+                PointConnectionsBatch.AddObject(RefManager.GetNewRefID(), Connection);
             }
 
             PointConnectionsBatch.SetIsDirty();
@@ -108,33 +110,21 @@ namespace Rendering.Graphics
             return navigationLine;
         }
 
-        public override void InitBuffers(Device d3d, DeviceContext deviceContext)
-        {
-        }
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext) { }
 
-        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera)
-        {
-        }
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera) { }
 
-        public override void Select()
-        {
-        }
+        public override void Select() { }
 
         public override void SetTransform(Matrix4x4 matrix)
         {
             Transform = matrix;
         }
 
-        public override void Shutdown()
-        {
-        }
+        public override void Shutdown() { }
 
-        public override void Unselect()
-        {
-        }
+        public override void Unselect() { }
 
-        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext)
-        {
-        }
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext) { }
     }
 }

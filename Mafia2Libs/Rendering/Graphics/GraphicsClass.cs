@@ -9,6 +9,9 @@ using Utils.Settings;
 using Utils.VorticeUtils;
 using System.Numerics;
 using Vortice.Mathematics;
+using Toolkit.Core;
+using Mafia2Tool;
+using ResourceTypes.FrameResource;
 
 namespace Rendering.Graphics
 {
@@ -67,10 +70,10 @@ namespace Rendering.Graphics
             OnSelectedObjectUpdated += OnSelectedObjectHasUpdated;
 
             // Create bespoke batches for any lines or boxes passed in via the construct stack
-            string LineBatchID = string.Format("Graphics_LineBatcher_{0}", StringHelpers.GetNewRefID());
+            string LineBatchID = string.Format("Graphics_LineBatcher_{0}", RefManager.GetNewRefID());
             LineBatch = new PrimitiveBatch(PrimitiveType.Line, LineBatchID);
 
-            string BBoxBatchID = string.Format("Graphics_BBoxBatcher_{0}", StringHelpers.GetNewRefID());
+            string BBoxBatchID = string.Format("Graphics_BBoxBatcher_{0}", RefManager.GetNewRefID());
             BBoxBatch = new PrimitiveBatch(PrimitiveType.Box, BBoxBatchID);
 
             OurPrimitiveManager.AddPrimitiveBatch(LineBatch);
@@ -117,7 +120,7 @@ namespace Rendering.Graphics
 
             CoordBox = new RenderBoundingBox();
             CoordBox.Init(new BoundingBox(new Vector3(-1.0f), new Vector3(1.0f)));
-            CoordBoxID = StringHelpers.GetNewRefID();
+            CoordBoxID = RefManager.GetNewRefID();
             BBoxBatch.AddObject(CoordBoxID, CoordBox);
             return true;
         }
@@ -181,17 +184,19 @@ namespace Rendering.Graphics
                     continue;
                 }
 
-                var vWM = Matrix.Invert(model.Value.Transform);
+                Matrix4x4 vWM = Matrix4x4.Identity;
+                Matrix4x4.Invert(model.Value.Transform, out vWM);
                 var localRay = new Ray(
-                    Vector3.TransformCoordinate(ray.Position, vWM),
+                    Vector3Utils.TransformCoordinate(ray.Position, vWM),
                     Vector3.TransformNormal(ray.Direction, vWM)
                 );
+
                 if (model.Value is RenderModel)
                 {
                     RenderModel mesh = (model.Value as RenderModel);
                     var bbox = mesh.BoundingBox;
 
-                    if (!localRay.Intersects(ref bbox)) continue;
+                    if (localRay.Intersects(bbox) == 0.0f) continue;
 
                     for (var i = 0; i < mesh.LODs[0].Indices.Length / 3; i++)
                     {
@@ -200,7 +205,7 @@ namespace Rendering.Graphics
                         var v2 = mesh.LODs[0].Vertices[mesh.LODs[0].Indices[i * 3 + 2]].Position;
                         float t;
 
-                        if (!localRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+                        if(!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
 
                         if (t < 0.0f || float.IsNaN(t))
                         {
@@ -228,7 +233,7 @@ namespace Rendering.Graphics
                     RenderStaticCollision collision = instance.GetCollision();
                     var bbox = collision.BoundingBox;
 
-                    if (!localRay.Intersects(ref bbox)) continue;
+                    if (localRay.Intersects(bbox) == 0.0f) continue;
 
                     for (var i = 0; i < collision.Indices.Length / 3; i++)
                     {
@@ -237,7 +242,7 @@ namespace Rendering.Graphics
                         var v2 = collision.Vertices[collision.Indices[i * 3 + 2]].Position;
                         float t;
 
-                        if (!localRay.Intersects(ref v0, ref v1, ref v2, out t)) continue;
+                        if (!Toolkit.Mathematics.Collision.RayIntersectsTriangle(ref localRay, ref v0, ref v1, ref v2, out t)) continue;
 
                         if (t < 0.0f || float.IsNaN(t))
                         {

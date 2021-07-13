@@ -113,7 +113,7 @@ namespace Rendering.Graphics
             return Indices;
         }
 
-        public override void SetTransform(Matrix matrix)
+        public override void SetTransform(Matrix4x4 matrix)
         {
             this.Transform = matrix;
         }

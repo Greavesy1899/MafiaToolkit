@@ -32,7 +32,7 @@ namespace Rendering.Core
 
             assets = new Dictionary<int, IRenderer>();
 
-            RefID = StringHelpers.GetNewRefID();
+            RefID = RefManager.GetNewRefID();
         }
 
         public void AddAsset(IRenderer asset, int key)
@@ -41,7 +41,7 @@ namespace Rendering.Core
         }
 
         public virtual void PreInitialise() { }
-        public void Initialise(Device device, DeviceContext deviceContext)
+        public void Initialise(ID3D11Device device, ID3D11DeviceContext deviceContext)
         {
             foreach (KeyValuePair<int, IRenderer> entry in assets)
             {

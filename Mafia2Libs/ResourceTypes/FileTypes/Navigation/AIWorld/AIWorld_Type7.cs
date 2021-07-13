@@ -1,10 +1,11 @@
 ﻿using Rendering.Core;
 using Rendering.Graphics;
-using SharpDX;
 using System.ComponentModel;
 using System.IO;
+using System.Numerics;
 using System.Windows.Forms;
-using Utils.SharpDXExtensions;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.Navigation
 {
@@ -33,9 +34,9 @@ namespace ResourceTypes.Navigation
             base.Read(Reader);
 
             Unk0 = Reader.ReadUInt16();
-            Position = Vector3Extenders.ReadFromFile(Reader);
-            Direction = Vector3Extenders.ReadFromFile(Reader);
-            Unk2 = Vector3Extenders.ReadFromFile(Reader);
+            Position = Vector3Utils.ReadFromFile(Reader);
+            Direction = Vector3Utils.ReadFromFile(Reader);
+            Unk2 = Vector3Utils.ReadFromFile(Reader);
             Unk3 = Reader.ReadUInt32();
 
             Minimum = new Vector3(-Unk2.Y, -Unk2.X, -Unk2.Z);
@@ -72,15 +73,13 @@ namespace ResourceTypes.Navigation
             RenderBoundingBox navigationBox = new RenderBoundingBox();
             navigationBox.SetColour(System.Drawing.Color.Yellow);
 
-            BoundingBox BBox = new BoundingBox();
-            BBox.Minimum = Minimum;
-            BBox.Maximum = Maximum;
+            BoundingBox BBox = new BoundingBox(Minimum, Maximum);
 
-            Matrix RotationMatrix = MatrixExtensions.ConvertFromDirection(Direction);
-            RotationMatrix.TranslationVector = Position;
+            //Matrix4x4 RotationMatrix = MatrixExtensions.ConvertFromDirection(Direction);
+            //RotationMatrix.TranslationVector = Position;
 
             navigationBox.Init(BBox);
-            navigationBox.SetTransform(RotationMatrix);
+            navigationBox.SetTransform(Matrix4x4.CreateTranslation(Position));
 
             BBoxBatcher.AddObject(RefID, navigationBox);
         }

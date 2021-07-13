@@ -2,6 +2,7 @@
 using System;
 using System.Numerics;
 using System.Windows.Forms;
+using Utils.Helpers;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Forms.Docking

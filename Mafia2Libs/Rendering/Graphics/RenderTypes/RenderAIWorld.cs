@@ -1,13 +1,8 @@
 ﻿using Rendering.Core;
 using ResourceTypes.Navigation;
-using SharpDX;
-using SharpDX.Direct3D11;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utils.StringHelpers;
+using System.Numerics;
+using Toolkit.Core;
+using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
 {
@@ -27,7 +22,7 @@ namespace Rendering.Graphics
         {
             InitWorldInfo = WorldInfo;
 
-            string BoxID = string.Format("AIWorld_{0}", StringHelpers.GetNewRefID());
+            string BoxID = string.Format("AIWorld_{0}", RefManager.GetNewRefID());
             AIWorldBatch = new PrimitiveBatch(PrimitiveType.Box, BoxID);
             WorldInfo.PopulatePrimitiveBatch(AIWorldBatch);
 
@@ -38,20 +33,20 @@ namespace Rendering.Graphics
         {
             OwnGraphics.OurPrimitiveManager.RemovePrimitiveBatch(AIWorldBatch);
 
-            string BoxID = string.Format("AIWorld_{0}", StringHelpers.GetNewRefID());
+            string BoxID = string.Format("AIWorld_{0}", RefManager.GetNewRefID());
             AIWorldBatch = new PrimitiveBatch(PrimitiveType.Box, BoxID);
             InitWorldInfo.PopulatePrimitiveBatch(AIWorldBatch);
 
             OwnGraphics.OurPrimitiveManager.AddPrimitiveBatch(AIWorldBatch);
         }
 
-        public override void InitBuffers(Device d3d, DeviceContext deviceContext) { }
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext) { }
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera) { }
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera) { }
 
         public override void Select() { }
 
-        public override void SetTransform(Matrix matrix) { }
+        public override void SetTransform(Matrix4x4 matrix) { }
 
         public override void Shutdown()
         {
@@ -61,6 +56,6 @@ namespace Rendering.Graphics
 
         public override void Unselect() { }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext) { }
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext) { }
     }
 }

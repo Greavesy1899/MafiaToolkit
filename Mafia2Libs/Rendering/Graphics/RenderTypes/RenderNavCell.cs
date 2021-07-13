@@ -1,7 +1,9 @@
-﻿using ResourceTypes.Navigation;
+﻿using Rendering.Core;
+using ResourceTypes.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Toolkit.Core;
 using Vortice.Direct3D11;
 
 namespace Rendering.Graphics
@@ -21,7 +23,7 @@ namespace Rendering.Graphics
             OwnGraphics = InGraphicsOwner;
             Lines = new List<RenderLine>();
 
-            string LineBatchID = string.Format("NavCellLineBatch_{0}", StringHelpers.GetNewRefID());
+            string LineBatchID = string.Format("NavCellLineBatch_{0}", RefManager.GetNewRefID());
             LineBatch = new PrimitiveBatch(PrimitiveType.Line, LineBatchID);
         }
 
@@ -77,9 +79,9 @@ namespace Rendering.Graphics
             Update();
         }
 
-        public override void InitBuffers(Device d3d, DeviceContext deviceContext) {}
+        public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext) {}
 
-        public override void Render(Device device, DeviceContext deviceContext, Camera camera) {}
+        public override void Render(ID3D11Device device, ID3D11DeviceContext deviceContext, Camera camera) {}
 
         public override void Select()
         {
@@ -105,7 +107,7 @@ namespace Rendering.Graphics
             throw new NotImplementedException();
         }
 
-        public override void UpdateBuffers(Device device, DeviceContext deviceContext) {}
+        public override void UpdateBuffers(ID3D11Device device, ID3D11DeviceContext deviceContext) {}
 
         public void SetVisibility(bool bNewVisibility)
         {
@@ -124,12 +126,12 @@ namespace Rendering.Graphics
             {
                 if (Lines.Count > 0)
                 {
-                    string LineBatchID = string.Format("NavCellLineBatch_{0}", StringHelpers.GetNewRefID());
+                    string LineBatchID = string.Format("NavCellLineBatch_{0}", RefManager.GetNewRefID());
                     LineBatch = new PrimitiveBatch(PrimitiveType.Line, LineBatchID);
 
                     foreach (RenderLine line in Lines)
                     {
-                        int PathHandle = StringHelpers.GetNewRefID();
+                        int PathHandle = RefManager.GetNewRefID();
                         LineBatch.AddObject(PathHandle, line);
                     }
 

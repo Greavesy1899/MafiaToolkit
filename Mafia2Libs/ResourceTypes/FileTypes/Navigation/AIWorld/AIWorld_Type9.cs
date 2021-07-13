@@ -1,13 +1,13 @@
 ﻿using Rendering.Core;
 using Rendering.Graphics;
-using SharpDX;
 using System.IO;
+using System.Numerics;
 using System.Windows.Forms;
-using Utils.SharpDXExtensions;
-using Utils.StringHelpers;
+using Utils.VorticeUtils;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.Navigation
-{ 
+{
     public class AIWorld_Type9 : IType
     {
         public byte Unk0 { get; set; }
@@ -29,7 +29,7 @@ namespace ResourceTypes.Navigation
 
             Unk0 = Reader.ReadByte();
             Unk1 = Reader.ReadUInt32();
-            Unk2 = Vector3Extenders.ReadFromFile(Reader);
+            Unk2 = Vector3Utils.ReadFromFile(Reader);
             Unk3 = Reader.ReadSingle();
             Unk4 = Reader.ReadSingle();
 
@@ -83,7 +83,7 @@ namespace ResourceTypes.Navigation
             RenderBoundingBox navigationBox = new RenderBoundingBox();
             navigationBox.SetColour(System.Drawing.Color.Blue);
             navigationBox.Init(new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f)));
-            navigationBox.SetTransform(Matrix.Translation(Unk2));
+            navigationBox.SetTransform(Matrix4x4.CreateTranslation(Unk2));
 
             BBoxBatcher.AddObject(RefID, navigationBox);
         }

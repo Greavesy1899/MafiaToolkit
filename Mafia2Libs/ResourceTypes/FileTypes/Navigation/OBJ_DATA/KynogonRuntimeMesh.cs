@@ -273,7 +273,7 @@ namespace ResourceTypes.Navigation
 
                             for (int f = 0; f < dataSet.Points.Length; f++)
                             {
-                                dataSet.Points[f] = Vector3Extenders.ReadFromFile(reader);
+                                dataSet.Points[f] = Vector3Utils.ReadFromFile(reader);
                             }
 
                             set.unk14Boxes[x] = dataSet;
@@ -328,7 +328,7 @@ namespace ResourceTypes.Navigation
 
                             for(int f = 0; f < dataSet.Points.Length; f++)
                             {
-                                dataSet.Points[f] = Vector3Extenders.ReadFromFile(reader);
+                                dataSet.Points[f] = Vector3Utils.ReadFromFile(reader);
                             }
 
                             currentOffset = dataSet.Offset;
@@ -532,7 +532,7 @@ namespace ResourceTypes.Navigation
                         {
                             for (int c = 0; c < set.unk18Set[z].Points.Length; c++)
                             {
-                                Vector3Extenders.WriteToFile(set.unk18Set[z].Points[c], writer);
+                                Vector3Utils.WriteToFile(set.unk18Set[z].Points[c], writer);
                             }
 
                             writer.SolveLooseObjectPtr("UNK18_SET_OFFSET_" + z);

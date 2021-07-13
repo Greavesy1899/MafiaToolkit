@@ -123,7 +123,7 @@ namespace ResourceTypes.Navigation
             {
                 VertexStruct vertex = new VertexStruct();
                 vertex.Unk7 = reader.ReadUInt32(); // ^ 0x80000000
-                vertex.Position = Vector3Extenders.ReadFromFile(reader);  // TODO: Construct KynogonUtils to accomodate this
+                vertex.Position = Vector3Utils.ReadFromFile(reader);  // TODO: Construct KynogonUtils to accomodate this
                 Vector3 pos = vertex.Position;
                 float y = pos.Y;
                 pos.Y = -pos.Z;
@@ -187,7 +187,7 @@ namespace ResourceTypes.Navigation
                 float z = pos.Z; // TODO: Construct KynogonUtils to accomodate this
                 pos.Z = -pos.Y;
                 pos.Y = z;
-                Vector3Extenders.WriteToFile(pos, writer); // NB: DO NOT SET vertex.Position as pos!!
+                Vector3Utils.WriteToFile(pos, writer); // NB: DO NOT SET vertex.Position as pos!!
                 writer.Write(vertex.Unk0);
                 writer.Write(vertex.Unk1);
                 writer.Write(vertex.Unk2);

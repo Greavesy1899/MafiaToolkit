@@ -1,8 +1,9 @@
 ﻿using Rendering.Core;
 using Rendering.Graphics;
-using SharpDX;
 using System.IO;
+using System.Numerics;
 using System.Windows.Forms;
+using Vortice.Mathematics;
 
 namespace ResourceTypes.Navigation
 {
@@ -40,7 +41,7 @@ namespace ResourceTypes.Navigation
             RenderBoundingBox navigationBox = new RenderBoundingBox();
             navigationBox.SetColour(System.Drawing.Color.Blue);
             navigationBox.Init(new BoundingBox(new Vector3(-0.5f), new Vector3(0.5f)));
-            navigationBox.SetTransform(Matrix.Translation(Unk2));
+            navigationBox.SetTransform(Matrix4x4.CreateTranslation(Unk2));
 
             BBoxBatcher.AddObject(RefID, navigationBox);
         }
