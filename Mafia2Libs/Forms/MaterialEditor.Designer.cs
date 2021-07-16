@@ -27,17 +27,19 @@
             this.MaterialSearch = new System.Windows.Forms.TextBox();
             this.MaterialGrid = new System.Windows.Forms.PropertyGrid();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.contextFileButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.contextOpenButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextReloadButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextSaveButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextExitButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_File = new System.Windows.Forms.ToolStripDropDownButton();
+            this.Button_Open = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_Reload = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_Save = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_Exit = new System.Windows.Forms.ToolStripMenuItem();
             this.toolButton = new System.Windows.Forms.ToolStripDropDownButton();
-            this.addMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.DeleteSelectedMaterialButton = new System.Windows.Forms.ToolStripMenuItem();
-            this.MergeMTLButton = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_AddMaterial = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_Delete = new System.Windows.Forms.ToolStripMenuItem();
+            this.Button_MergeMTL = new System.Windows.Forms.ToolStripMenuItem();
             this.Button_ExportSelected = new System.Windows.Forms.ToolStripMenuItem();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.Button_Debug = new System.Windows.Forms.ToolStripDropDownButton();
+            this.Button_DumpTextures = new System.Windows.Forms.ToolStripMenuItem();
+            this.GirdView_Materials = new System.Windows.Forms.DataGridView();
             this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.columnHash = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MTLBrowser = new System.Windows.Forms.OpenFileDialog();
@@ -55,10 +57,8 @@
             this.MergeButton = new System.Windows.Forms.Button();
             this.OverwriteListBox = new System.Windows.Forms.CheckedListBox();
             this.MTLSaveDialog = new System.Windows.Forms.SaveFileDialog();
-            this.Button_Debug = new System.Windows.Forms.ToolStripDropDownButton();
-            this.Button_DumpTextures = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.GirdView_Materials)).BeginInit();
             this.Panel_Main.SuspendLayout();
             this.MergePanel.SuspendLayout();
             this.SuspendLayout();
@@ -88,7 +88,7 @@
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.contextFileButton,
+            this.Button_File,
             this.toolButton,
             this.Button_Debug});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -97,55 +97,55 @@
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // contextFileButton
+            // Button_File
             // 
-            this.contextFileButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.contextFileButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.contextOpenButton,
-            this.contextReloadButton,
-            this.contextSaveButton,
-            this.contextExitButton});
-            this.contextFileButton.Image = ((System.Drawing.Image)(resources.GetObject("contextFileButton.Image")));
-            this.contextFileButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.contextFileButton.Name = "contextFileButton";
-            this.contextFileButton.Size = new System.Drawing.Size(38, 22);
-            this.contextFileButton.Text = "File";
+            this.Button_File.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.Button_File.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Button_Open,
+            this.Button_Reload,
+            this.Button_Save,
+            this.Button_Exit});
+            this.Button_File.Image = ((System.Drawing.Image)(resources.GetObject("Button_File.Image")));
+            this.Button_File.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Button_File.Name = "Button_File";
+            this.Button_File.Size = new System.Drawing.Size(38, 22);
+            this.Button_File.Text = "File";
             // 
-            // contextOpenButton
+            // Button_Open
             // 
-            this.contextOpenButton.Enabled = false;
-            this.contextOpenButton.Name = "contextOpenButton";
-            this.contextOpenButton.Size = new System.Drawing.Size(110, 22);
-            this.contextOpenButton.Text = "Open";
+            this.Button_Open.Enabled = false;
+            this.Button_Open.Name = "Button_Open";
+            this.Button_Open.Size = new System.Drawing.Size(180, 22);
+            this.Button_Open.Text = "Open";
             // 
-            // contextReloadButton
+            // Button_Reload
             // 
-            this.contextReloadButton.Name = "contextReloadButton";
-            this.contextReloadButton.Size = new System.Drawing.Size(110, 22);
-            this.contextReloadButton.Text = "Reload";
-            this.contextReloadButton.Click += new System.EventHandler(this.UpdateList);
+            this.Button_Reload.Name = "Button_Reload";
+            this.Button_Reload.Size = new System.Drawing.Size(180, 22);
+            this.Button_Reload.Text = "Reload";
+            this.Button_Reload.Click += new System.EventHandler(this.Button_Reload_Click);
             // 
-            // contextSaveButton
+            // Button_Save
             // 
-            this.contextSaveButton.Name = "contextSaveButton";
-            this.contextSaveButton.Size = new System.Drawing.Size(110, 22);
-            this.contextSaveButton.Text = "Save";
-            this.contextSaveButton.Click += new System.EventHandler(this.SaveButton_Click);
+            this.Button_Save.Name = "Button_Save";
+            this.Button_Save.Size = new System.Drawing.Size(180, 22);
+            this.Button_Save.Text = "Save";
+            this.Button_Save.Click += new System.EventHandler(this.Button_Save_Click);
             // 
-            // contextExitButton
+            // Button_Exit
             // 
-            this.contextExitButton.Name = "contextExitButton";
-            this.contextExitButton.Size = new System.Drawing.Size(110, 22);
-            this.contextExitButton.Text = "Exit";
-            this.contextExitButton.Click += new System.EventHandler(this.ExitButton_Click);
+            this.Button_Exit.Name = "Button_Exit";
+            this.Button_Exit.Size = new System.Drawing.Size(180, 22);
+            this.Button_Exit.Text = "Exit";
+            this.Button_Exit.Click += new System.EventHandler(this.Button_Exit_Click);
             // 
             // toolButton
             // 
             this.toolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addMaterialToolStripMenuItem,
-            this.DeleteSelectedMaterialButton,
-            this.MergeMTLButton,
+            this.Button_AddMaterial,
+            this.Button_Delete,
+            this.Button_MergeMTL,
             this.Button_ExportSelected});
             this.toolButton.Image = ((System.Drawing.Image)(resources.GetObject("toolButton.Image")));
             this.toolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -153,51 +153,69 @@
             this.toolButton.Size = new System.Drawing.Size(47, 22);
             this.toolButton.Text = "Tools";
             // 
-            // addMaterialToolStripMenuItem
+            // Button_AddMaterial
             // 
-            this.addMaterialToolStripMenuItem.Name = "addMaterialToolStripMenuItem";
-            this.addMaterialToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.addMaterialToolStripMenuItem.Text = "Add Material";
-            this.addMaterialToolStripMenuItem.Click += new System.EventHandler(this.AddMaterial);
+            this.Button_AddMaterial.Name = "Button_AddMaterial";
+            this.Button_AddMaterial.Size = new System.Drawing.Size(180, 22);
+            this.Button_AddMaterial.Text = "Add Material";
+            this.Button_AddMaterial.Click += new System.EventHandler(this.Button_AddMaterial_Click);
             // 
-            // DeleteSelectedMaterialButton
+            // Button_Delete
             // 
-            this.DeleteSelectedMaterialButton.Name = "DeleteSelectedMaterialButton";
-            this.DeleteSelectedMaterialButton.Size = new System.Drawing.Size(180, 22);
-            this.DeleteSelectedMaterialButton.Text = "$DELETE_SEL_MAT";
-            this.DeleteSelectedMaterialButton.Click += new System.EventHandler(this.DeleteMaterial);
+            this.Button_Delete.Name = "Button_Delete";
+            this.Button_Delete.Size = new System.Drawing.Size(180, 22);
+            this.Button_Delete.Text = "$DELETE_SEL_MAT";
+            this.Button_Delete.Click += new System.EventHandler(this.Button_Delete_Click);
             // 
-            // MergeMTLButton
+            // Button_MergeMTL
             // 
-            this.MergeMTLButton.Name = "MergeMTLButton";
-            this.MergeMTLButton.Size = new System.Drawing.Size(180, 22);
-            this.MergeMTLButton.Text = "$MERGE_MTL";
-            this.MergeMTLButton.Click += new System.EventHandler(this.MergeMTLButton_Click);
+            this.Button_MergeMTL.Name = "Button_MergeMTL";
+            this.Button_MergeMTL.Size = new System.Drawing.Size(180, 22);
+            this.Button_MergeMTL.Text = "$MERGE_MTL";
+            this.Button_MergeMTL.Click += new System.EventHandler(this.Button_MergeMTL_Click);
             // 
             // Button_ExportSelected
             // 
             this.Button_ExportSelected.Name = "Button_ExportSelected";
             this.Button_ExportSelected.Size = new System.Drawing.Size(180, 22);
             this.Button_ExportSelected.Text = "$EXPORT_SELECTED";
-            this.Button_ExportSelected.Click += new System.EventHandler(this.Button_ExportedSelected_Clicked);
+            this.Button_ExportSelected.Click += new System.EventHandler(this.Button_ExportedSelected_Click);
             // 
-            // dataGridView1
+            // Button_Debug
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.Button_Debug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.Button_Debug.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Button_DumpTextures});
+            this.Button_Debug.Image = ((System.Drawing.Image)(resources.GetObject("Button_Debug.Image")));
+            this.Button_Debug.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.Button_Debug.Name = "Button_Debug";
+            this.Button_Debug.Size = new System.Drawing.Size(85, 22);
+            this.Button_Debug.Text = "Debug Tools";
+            // 
+            // Button_DumpTextures
+            // 
+            this.Button_DumpTextures.Name = "Button_DumpTextures";
+            this.Button_DumpTextures.Size = new System.Drawing.Size(188, 22);
+            this.Button_DumpTextures.Text = "Dump Texture Names";
+            this.Button_DumpTextures.Click += new System.EventHandler(this.Button_DumpTextures_Click);
+            // 
+            // GirdView_Materials
+            // 
+            this.GirdView_Materials.AllowUserToAddRows = false;
+            this.GirdView_Materials.AllowUserToDeleteRows = false;
+            this.GirdView_Materials.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.GirdView_Materials.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.GirdView_Materials.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.GirdView_Materials.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.columnName,
             this.columnHash});
-            this.dataGridView1.Location = new System.Drawing.Point(3, 54);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(329, 346);
-            this.dataGridView1.TabIndex = 3;
-            this.dataGridView1.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnMaterialSelected);
+            this.GirdView_Materials.Location = new System.Drawing.Point(3, 54);
+            this.GirdView_Materials.Name = "GirdView_Materials";
+            this.GirdView_Materials.ReadOnly = true;
+            this.GirdView_Materials.Size = new System.Drawing.Size(329, 346);
+            this.GirdView_Materials.TabIndex = 3;
+            this.GirdView_Materials.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.OnMaterialSelected);
             // 
             // columnName
             // 
@@ -223,7 +241,7 @@
             this.Panel_Main.Controls.Add(this.Button_Search);
             this.Panel_Main.Controls.Add(this.Label_SearchType);
             this.Panel_Main.Controls.Add(this.ComboBox_SearchType);
-            this.Panel_Main.Controls.Add(this.dataGridView1);
+            this.Panel_Main.Controls.Add(this.GirdView_Materials);
             this.Panel_Main.Controls.Add(this.MaterialSearch);
             this.Panel_Main.Controls.Add(this.MaterialGrid);
             this.Panel_Main.Location = new System.Drawing.Point(0, 28);
@@ -345,7 +363,7 @@
             this.CancelButton.TabIndex = 3;
             this.CancelButton.Text = "$CANCEL";
             this.CancelButton.UseVisualStyleBackColor = true;
-            this.CancelButton.Click += new System.EventHandler(this.CancelButton_Click);
+            this.CancelButton.Click += new System.EventHandler(this.Button_Cancel_Click);
             // 
             // MergeButton
             // 
@@ -356,7 +374,7 @@
             this.MergeButton.TabIndex = 2;
             this.MergeButton.Text = "$MERGE";
             this.MergeButton.UseVisualStyleBackColor = true;
-            this.MergeButton.Click += new System.EventHandler(this.MergeButton_Click);
+            this.MergeButton.Click += new System.EventHandler(this.Button_Merge_Click);
             // 
             // OverwriteListBox
             // 
@@ -372,26 +390,9 @@
             // 
             this.MTLSaveDialog.Filter = "Material Library|*.mtl";
             // 
-            // Button_Debug
-            // 
-            this.Button_Debug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.Button_Debug.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Button_DumpTextures});
-            this.Button_Debug.Image = ((System.Drawing.Image)(resources.GetObject("Button_Debug.Image")));
-            this.Button_Debug.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.Button_Debug.Name = "Button_Debug";
-            this.Button_Debug.Size = new System.Drawing.Size(85, 22);
-            this.Button_Debug.Text = "Debug Tools";
-            // 
-            // Button_DumpTextures
-            // 
-            this.Button_DumpTextures.Name = "Button_DumpTextures";
-            this.Button_DumpTextures.Size = new System.Drawing.Size(188, 22);
-            this.Button_DumpTextures.Text = "Dump Texture Names";
-            this.Button_DumpTextures.Click += new System.EventHandler(this.Button_DumpTextures_Click);
-            // 
             // MaterialEditor
             // 
+            this.KeyPreview = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(785, 431);
@@ -403,11 +404,13 @@
             this.Text = "Material Library Editor";
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.GirdView_Materials)).EndInit();
             this.Panel_Main.ResumeLayout(false);
             this.Panel_Main.PerformLayout();
             this.MergePanel.ResumeLayout(false);
             this.MergePanel.PerformLayout();
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MaterialEditor_Closing);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.MaterialEditor_OnKeyUp);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -418,18 +421,18 @@
         private System.Windows.Forms.TextBox MaterialSearch;
         private System.Windows.Forms.PropertyGrid MaterialGrid;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripDropDownButton contextFileButton;
-        private System.Windows.Forms.ToolStripMenuItem contextOpenButton;
-        private System.Windows.Forms.ToolStripMenuItem contextSaveButton;
-        private System.Windows.Forms.ToolStripMenuItem contextExitButton;
+        private System.Windows.Forms.ToolStripDropDownButton Button_File;
+        private System.Windows.Forms.ToolStripMenuItem Button_Open;
+        private System.Windows.Forms.ToolStripMenuItem Button_Save;
+        private System.Windows.Forms.ToolStripMenuItem Button_Exit;
         private System.Windows.Forms.ToolStripDropDownButton toolButton;
-        private System.Windows.Forms.ToolStripMenuItem addMaterialToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem DeleteSelectedMaterialButton;
-        private System.Windows.Forms.ToolStripMenuItem contextReloadButton;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.ToolStripMenuItem Button_AddMaterial;
+        private System.Windows.Forms.ToolStripMenuItem Button_Delete;
+        private System.Windows.Forms.ToolStripMenuItem Button_Reload;
+        private System.Windows.Forms.DataGridView GirdView_Materials;
         private System.Windows.Forms.DataGridViewTextBoxColumn columnName;
         private System.Windows.Forms.DataGridViewTextBoxColumn columnHash;
-        private System.Windows.Forms.ToolStripMenuItem MergeMTLButton;
+        private System.Windows.Forms.ToolStripMenuItem Button_MergeMTL;
         private System.Windows.Forms.OpenFileDialog MTLBrowser;
         private System.Windows.Forms.Panel Panel_Main;
         private System.Windows.Forms.Panel MergePanel;

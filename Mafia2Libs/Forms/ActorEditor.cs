@@ -18,6 +18,8 @@ namespace Mafia2Tool
 
         private object clipboard;
 
+        private bool bIsFileEdited = false;
+
 
         public ActorEditor(FileInfo file)
         {
@@ -84,6 +86,30 @@ namespace Mafia2Tool
             ActorTreeView.Nodes.Add(items);
         }
 
+        private void Save()
+        {
+            File.Copy(actorFile.FullName, actorFile.FullName + "_old", true);
+            using (BinaryWriter writer = new BinaryWriter(File.Open(actorFile.FullName, FileMode.Create)))
+            {
+                actors.WriteToFile(writer);
+            }
+
+            Text = Language.GetString("$ACTOR_EDITOR_TITLE");
+            bIsFileEdited = false;
+        }
+
+        private void Reload()
+        {
+            ActorTreeView.Nodes.Clear();
+            BuildData();
+
+            ActorGrid.SelectedObject = null;
+            ActorTreeView.SelectedNode = null;
+
+            Text = Language.GetString("$ACTOR_EDITOR_TITLE");
+            bIsFileEdited = false;
+        }
+
         private void Copy()
         {
             TreeNode SelectedNode = ActorTreeView.SelectedNode;
@@ -110,15 +136,13 @@ namespace Mafia2Tool
                         ExistingExtraData.Data = NewExtraData;
                     }
                 }
+
+                Text = Language.GetString("$ACTOR_EDITOR_TITLE") + "*";
+                bIsFileEdited = true;
             }
         }
 
-        private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
-        {
-            ActorGrid.SelectedObject = e.Node.Tag;
-        }
-
-        private void ContextDelete_Click(object sender, System.EventArgs e)
+        private void Delete()
         {
             object data = ActorTreeView.SelectedNode.Tag;
             bool isDeleted = false;
@@ -127,31 +151,24 @@ namespace Mafia2Tool
                 actors.Items.Remove((ActorEntry)data);
                 isDeleted = true;
             }
-            else if(data is ActorDefinition)
+            else if (data is ActorDefinition)
             {
                 actors.Definitions.Remove((ActorDefinition)data);
                 isDeleted = true;
             }
 
-            if(isDeleted)
+            if (isDeleted)
             {
                 ActorTreeView.Nodes.Remove(ActorTreeView.SelectedNode);
+
+                Text = Language.GetString("$ACTOR_EDITOR_TITLE") + "*";
+                bIsFileEdited = true;
             }
         }
 
-        private void SaveButton_OnClick(object sender, System.EventArgs e)
+        private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
         {
-            File.Copy(actorFile.FullName, actorFile.FullName + "_old", true);
-            using (BinaryWriter writer = new BinaryWriter(File.Open(actorFile.FullName, FileMode.Create)))
-            {
-                actors.WriteToFile(writer);
-            }
-        }
-
-        private void ReloadButton_OnClick(object sender, System.EventArgs e)
-        {
-            ActorTreeView.Nodes.Clear();
-            BuildData();
+            ActorGrid.SelectedObject = e.Node.Tag;
         }
 
         private void AddItemButton_Click(object sender, System.EventArgs e)
@@ -178,6 +195,9 @@ namespace Mafia2Tool
                 items.Nodes.Add(node);
             }
 
+            Text = Language.GetString("$ACTOR_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
+
             objectForm.Dispose();
         }
 
@@ -193,29 +213,55 @@ namespace Mafia2Tool
                 node.Name = definition.FrameNameHash.ToString();
                 node.Tag = definition;
                 definitions.Nodes.Add(node);
+
+                Text = Language.GetString("$ACTOR_EDITOR_TITLE") + "*";
+                bIsFileEdited = true;
             }
         }
 
         private void ActorTreeView_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.C)
+            if (e.Control && e.KeyCode == Keys.D)
             {
-                Copy();
-            }
-            else if (e.Control && e.KeyCode == Keys.V)
-            {
-                Paste();
+                ActorGrid.SelectedObject = null;
+                ActorTreeView.SelectedNode = null;
             }
         }
 
+        private void ActorGrid_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            if (e.ChangedItem.Label == "Name" || e.ChangedItem.Label == "EntityName")
+                ActorTreeView.SelectedNode.Text = e.ChangedItem.Value.ToString();
+
+            Text = Language.GetString("$ACTOR_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
+
+            ActorGrid.Refresh();
+        }
+
+        private void ActorEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        private void ContextDelete_Click(object sender, System.EventArgs e) => Delete();
+        private void SaveButton_OnClick(object sender, System.EventArgs e) => Save();
+        private void ReloadButton_OnClick(object sender, System.EventArgs e) => Reload();
         private void ExitButton_OnClick(object sender, System.EventArgs e) => Close();
-
-        private void ActorGrid_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e) => ActorGrid.Refresh();
-
         private void ContextCopy_Click(object sender, System.EventArgs e) => Copy();
-
         private void ContextPaste_Click(object sender, System.EventArgs e) => Paste();
-
         private void ContextMenu_OnOpening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             ContextCopy.Visible = false;

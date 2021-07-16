@@ -76,6 +76,7 @@
   <String ID="$LANGUAGE_OPTION">Interface Language</String>
   <String ID="$DISCORD_STATE_CUSTOM">Use a custom discord state.</String>
   <String ID="$CHECK_FOR_UPDATES">Check for Updates.</String>
+  <String ID="$SAVE_PROMPT">Save before closing?</String>
   
   <!-- Model/Exporting Option Strings-->
   <String ID="$EXPORT_PATH_TITLE">Export Path:</String>

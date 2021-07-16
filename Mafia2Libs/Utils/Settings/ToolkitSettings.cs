@@ -129,7 +129,7 @@ namespace Utils.Settings
                 largeImageText = "",
                 startTimestamp = ElapsedTime
             };
-            UpdateRichPresence("Using the Game Explorer");
+            UpdateRichPresence("Using the Game Explorer.");
         }
 
         public static void UpdateRichPresence(string details = null)

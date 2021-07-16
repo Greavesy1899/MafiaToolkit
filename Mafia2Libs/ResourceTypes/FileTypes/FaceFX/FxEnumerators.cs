@@ -1,5 +1,53 @@
 ﻿namespace ResourceTypes.OC3.FaceFX
 {
+    public enum FxInputOp : uint
+    {
+        IO_Invalid = 0xFFFFFFFF,
+        IO_Sum = 0x0,
+        IO_Multiply = 0x1,
+        IO_Max = 0x2,
+        IO_Min = 0x3,
+    }
+
+    public enum FxLinkFnType : uint
+    {
+        LFT_Invalid = 0xFFFFFFFF,
+        LFT_Null = 0x0,
+        LFT_Linear = 0x1,
+        LFT_Quadratic = 0x2,
+        LFT_Cubic = 0x3,
+        LFT_Sqrt = 0x4,
+        LFT_Negate = 0x5,
+        LFT_Inverse = 0x6,
+        LFT_OneClamp = 0x7,
+        LFT_Constant = 0x8,
+        LFT_Corrective = 0x9,
+        LFT_ClampedLinear = 0xA,
+        LFT_TrueQuadratic = 0xB,
+        LFT_First = 0x0,
+        LFT_Last = 0xB,
+        LFT_NumLinkFnTypes = 0xC,
+    }
+
+    public enum FxCompiledFaceGraphNodeType : uint
+    {
+        NT_Invalid = 0xFFFFFFFF,
+        NT_Combiner = 0x0,
+        NT_Delta = 0x1,
+        NT_CurrentTime = 0x2,
+        NT_GenericTarget = 0x3,
+        NT_BonePose = 0x4,
+        NT_MorphTarget = 0x5,
+        NT_MaterialParameter = 0x6,
+        NT_MaterialParameterUE3 = 0x7,
+        NT_MorphTargetUE3 = 0x8,
+        NT_BoneWeight = 0x9,
+        NT_Attribute = 0xA,
+        NT_First = 0x0,
+        NT_Last = 0xA,
+        NT_NumNodeTypes = 0xB,
+    }
+
     public enum FxPhoneme : uint
     {
         PHON_INVALID = 0xFFFFFFFF,

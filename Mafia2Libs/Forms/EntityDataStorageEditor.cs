@@ -18,6 +18,8 @@ namespace Toolkit.Forms
 
         private object OurClipboard;
 
+        private bool bIsFileEdited = false;
+
         public EntityDataStorageEditor(FileInfo file)
         {
             InitializeComponent();
@@ -73,18 +75,25 @@ namespace Toolkit.Forms
             }
         }
 
-        private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
+        private void FileIsEdited()
         {
-            PropertyGrid_Item.SelectedObject = e.Node.Tag;
+            Text = Language.GetString("$EDS_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
-        private void Button_Save_OnClick(object sender, EventArgs e)
+        private void FileIsNotEdited()
+        {
+            Text = Language.GetString("$EDS_EDITOR_TITLE");
+            bIsFileEdited = false;
+        }
+
+        private void Save()
         {
             TreeNode TableRoot = TreeView_Tables.Nodes[0];
 
             // Update tables from treeview
             tables.Tables = new IActorExtraDataInterface[TableRoot.Nodes.Count];
-            for(int i = 0; i < tables.Tables.Length; i++)
+            for (int i = 0; i < tables.Tables.Length; i++)
             {
                 tables.Tables[i] = (IActorExtraDataInterface)TableRoot.Nodes[i].Tag;
             }
@@ -92,32 +101,19 @@ namespace Toolkit.Forms
             // Write to file
             File.Copy(edsFile.FullName, edsFile.FullName + "_old", true);
             tables.WriteToFile(edsFile.FullName, false);
+
+            FileIsNotEdited();
         }
 
-        private void Button_Reload_OnClick(object sender, EventArgs e)
+        private void Reload()
         {
             TreeView_Tables.Nodes.Clear();
             LoadAndBuildData();
-        }
 
-        private void Button_Exit_OnClick(object sender, EventArgs e)
-        {
-            Close();
-        }
+            PropertyGrid_Item.SelectedObject = null;
+            TreeView_Tables.SelectedNode = null;
 
-        private void Form_OnKeyUp(object sender, KeyEventArgs e)
-        {
-            if (TreeView_Tables.Focused)
-            {
-                if (e.Control && e.KeyCode == Keys.C)
-                {
-                    CopyTagData();
-                }
-                else if (e.Control && e.KeyCode == Keys.V)
-                {
-                    PasteTagData();
-                }
-            }
+            FileIsNotEdited();
         }
 
         private void CopyTagData()
@@ -154,17 +150,32 @@ namespace Toolkit.Forms
                     // Force reload
                     PropertyGrid_Item.SelectedObject = SelectedNode.Tag;
                 }
+
+                FileIsEdited();
             }
         }
 
+        private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
+        {
+            PropertyGrid_Item.SelectedObject = e.Node.Tag;
+        }
+
+        private void EDSEditor_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.D)
+            {
+                PropertyGrid_Item.SelectedObject = null;
+                TreeView_Tables.SelectedNode = null;
+            }
+        }
+
+        private void Button_Save_OnClick(object sender, EventArgs e) => Save();
+        private void Button_Reload_OnClick(object sender, EventArgs e) => Reload();
+        private void Button_Exit_OnClick(object sender, EventArgs e) => Close();
         private void Button_CopyData_Click(object sender, EventArgs e) => CopyTagData();
-
         private void Button_Paste_Click(object sender, EventArgs e) => PasteTagData();
-
         private void ToolStrip_Copy_Click(object sender, EventArgs e) => CopyTagData();
-
         private void ToolStrip_Paste_Click(object sender, EventArgs e) => PasteTagData();
-
         private void ContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             TreeNode SelectedNode = TreeView_Tables.SelectedNode;
@@ -210,12 +221,16 @@ namespace Toolkit.Forms
                     PropertyGrid_Item.SelectedObject = null;
 
                     CreateTable();
+
+                    FileIsEdited();
                 }
             }
         }
 
         private void PropertyGrid_OnValueChanged(object s, PropertyValueChangedEventArgs e)
         {
+            FileIsEdited();
+
             // Check if property 'Hash' needs to be updated
             if (PropertyGrid_Item.SelectedObject is EntityDataStorageLoader)
             {
@@ -242,6 +257,23 @@ namespace Toolkit.Forms
 
                         Index++;
                     }
+                }
+            }
+        }
+
+        private void EDSEditor_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (bIsFileEdited)
+            {
+                System.Windows.MessageBoxResult SaveChanges = System.Windows.MessageBox.Show(Language.GetString("$SAVE_PROMPT"), "", System.Windows.MessageBoxButton.YesNoCancel);
+
+                if (SaveChanges == System.Windows.MessageBoxResult.Yes)
+                {
+                    Save();
+                }
+                else if (SaveChanges == System.Windows.MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
                 }
             }
         }

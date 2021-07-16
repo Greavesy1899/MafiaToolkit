@@ -53,6 +53,11 @@ Notes
 Popis
 Possibility
 Power0
+PowerA
+PowerB
+RangeA
+RangeB
+RangeC
 Price
 Priorita
 Priority
