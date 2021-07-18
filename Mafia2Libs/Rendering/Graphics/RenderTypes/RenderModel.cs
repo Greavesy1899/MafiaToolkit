@@ -239,7 +239,7 @@ namespace Rendering.Graphics
         public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext d3dContext)
         {
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Vertices, 0, ResourceUsage.Default, CpuAccessFlags.None);
-            indexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, LODs[0].Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
+            indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, LODs[0].Indices, 0, ResourceUsage.Default, CpuAccessFlags.None);
 
             InitTextures(d3d, d3dContext);
         }

@@ -1,9 +1,8 @@
 ﻿using System;
-using Vortice;
+using Utils.Settings;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using Vortice.DXGI;
-using Utils.Settings;
 using Vortice.Mathematics;
 
 namespace Rendering.Graphics
@@ -59,6 +58,7 @@ namespace Rendering.Graphics
             ID3D11Device TempDevice = null;
             ID3D11DeviceContext TempDeviceContext = null;
             D3D11.D3D11CreateDevice(adapter, DriverType.Hardware, DeviceCreationFlags.None, null, out TempDevice, out TempDeviceContext);
+
             Device = TempDevice.QueryInterface<ID3D11Device1>();
             DeviceContext = TempDeviceContext.QueryInterface<ID3D11DeviceContext1>();
             TempDevice.Dispose();

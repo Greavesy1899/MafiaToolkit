@@ -142,7 +142,13 @@ namespace Mafia2Tool
 
         private void RenderPanel_Resize(object sender, EventArgs e)
         {
-            Graphics.OnResize(RenderPanel.Width, RenderPanel.Height);
+            // TODO: Do we need to restructure the initialisation order for this form?
+
+            // On some PCs this resized before graphics has initialised.
+            if (Graphics != null)
+            {
+                Graphics.OnResize(RenderPanel.Width, RenderPanel.Height);
+            }
         }
         
         private void LinkToActor_Click(object sender, EventArgs e)

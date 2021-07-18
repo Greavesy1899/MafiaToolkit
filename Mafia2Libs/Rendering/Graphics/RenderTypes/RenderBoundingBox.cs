@@ -70,7 +70,7 @@ namespace Rendering.Graphics
         public override void InitBuffers(ID3D11Device d3d, ID3D11DeviceContext deviceContext)
         {
             vertexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, vertices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
-            indexBuffer = d3d.CreateBuffer(BindFlags.VertexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
+            indexBuffer = d3d.CreateBuffer(BindFlags.IndexBuffer, indices, 0, ResourceUsage.Dynamic, CpuAccessFlags.Write);
         }
 
         public void SetColour(Color newColour, bool update = false)

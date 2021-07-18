@@ -255,6 +255,7 @@ namespace Rendering.Graphics
             sky.DoRender = WorldSettings.RenderSky;
             sky.UpdateBuffers(D3D.Device, D3D.DeviceContext);
             sky.Render(D3D.Device, D3D.DeviceContext, Camera);
+
             D3D.EndScene();
             return true;
         }
