@@ -36,6 +36,8 @@ using System.Xml.XPath;
 using Utils.Language;
 using Utils.Logging;
 using Utils.Settings;
+using Utils.Types;
+using System.Diagnostics;
 
 namespace Gibbed.Mafia2.FileFormats
 {
@@ -343,8 +345,19 @@ namespace Gibbed.Mafia2.FileFormats
             string sdsFolder = folder;
             XmlDocument document = null;
 
-            // Open a FileStream which contains the SDSContent data.
             string SDSContentPath = Path.Combine(sdsFolder, "SDSContent.xml");
+
+            // Attempt to sort the file.
+            // Only works for M2 and M2DE.
+            if (ChosenGameType == GamesEnumerator.MafiaII || ChosenGameType == GamesEnumerator.MafiaII_DE)
+            {
+                // Loading then saving automatically sorts.
+                SDSContentFile SDSContent = new SDSContentFile();
+                SDSContent.ReadFromFile(new FileInfo(SDSContentPath));
+                SDSContent.WriteToFile();
+            }
+
+            // Open a FileStream which contains the SDSContent data.
             using (FileStream XMLStream = new FileStream(SDSContentPath, FileMode.Open))
             {
                 try

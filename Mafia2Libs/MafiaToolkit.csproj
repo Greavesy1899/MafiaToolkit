@@ -208,7 +208,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Content Include="Resources\GameData\XBin_Hashes.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Update="Resources\GizmoModel.m2t">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -240,8 +240,12 @@
     <None Update="Resources\weather_clouds.m2t">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="Resources\GameData\M1_Textures.txt" />
-    <Content Include="Resources\GameData\M3DE_ResourceNameDatabase.txt" />
+    <Content Include="Resources\GameData\M1_Textures.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GameData\M3DE_ResourceNameDatabase.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\GameImages\m1de_logo.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

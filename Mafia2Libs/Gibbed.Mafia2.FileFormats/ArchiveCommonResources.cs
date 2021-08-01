@@ -604,8 +604,11 @@ namespace Gibbed.Mafia2.FileFormats
             string file = nodes.Current.Value;
             nodes.Current.MoveToNext();
             entry.Version = Convert.ToUInt16(nodes.Current.Value);
-            entry.Data = File.ReadAllBytes(sdsFolder + "/" + file);
-            //finish
+
+            // Read File contents
+            string FileToRead = Path.Combine(sdsFolder, file);
+            entry.Data = File.ReadAllBytes(FileToRead);
+
             descNode.InnerText = file.Remove(file.Length - 4, 4);
             return entry;
         }

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using Utils.Extensions;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
@@ -124,7 +125,8 @@ namespace Rendering.Graphics
                 return;
             }
 
-            deviceContext.IASetVertexBuffers(0, 1, new ID3D11Buffer[1] { vertexBuffer }, null, null);
+            VertexBufferView VertexBufferView = new VertexBufferView(vertexBuffer, Unsafe.SizeOf<VertexLayouts.BasicLayout.Vertex>(), 0);
+            deviceContext.IASetVertexBuffers(0, VertexBufferView);
             deviceContext.IASetIndexBuffer(indexBuffer, Vortice.DXGI.Format.R16_UInt, 0);
             deviceContext.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
 
