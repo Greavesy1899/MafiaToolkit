@@ -221,7 +221,7 @@ namespace Gibbed.Mafia2.FileFormats
 
             if (IsGameType(GamesEnumerator.MafiaI_DE))
             {
-                if (!File.Exists("libs/oo2core_8_win64.dll"))
+                if (!File.Exists("oo2core_8_win64.dll"))
                 {
                     MessageBox.Show(Language.GetString("$M1DE_OODLEERROR"), "Toolkit");
                     return;
