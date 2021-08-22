@@ -272,7 +272,7 @@ namespace Gibbed.Mafia2.ResourceFormats
                     switch (column.Type)
                     {
                         case ColumnType.Boolean:
-                            writer.Write(ConvertToType<bool>(value, ref isValid));
+                            writer.Write(ConvertToType<int>(value, ref isValid));
                             break;
                         case ColumnType.Float32:
                             writer.Write(ConvertToType<float>(value, ref isValid));
