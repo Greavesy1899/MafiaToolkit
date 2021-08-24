@@ -60,6 +60,8 @@ namespace Core.IO
                     return new FileFxActor(info);
                 case "FAS":
                     return new FileFxAnimSet(info);
+                case "PCK":
+                    return new FilePCK(info);
                 default:
                     return new FileBase(info);
             }
