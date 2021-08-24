@@ -1,7 +1,10 @@
 ﻿using ResourceTypes.FrameResource;
 using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
 using System.Windows.Forms;
+using Utils.Language;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Forms.Docking
@@ -16,6 +19,16 @@ namespace Forms.Docking
         public DockSceneTree()
         {
             InitializeComponent();
+
+            Localize();
+        }
+
+        public void Localize()
+        {
+            Text = Language.GetString("$SCENE_OUTLINER_FORMNAME");
+            tabPage1.Text = Language.GetString("$SCENE_OUTLINER_EXPLORER");
+            tabPage2.Text = Language.GetString("$SCENE_OUTLINER_SEARCHER");
+            Label_SearchByName.Text = Language.GetString("$SEARCH_OUTLINER_SEARCHBYNAME");
         }
 
         /* Abstract Functions for the outliner */
@@ -233,18 +246,62 @@ namespace Forms.Docking
 
         private void OnDoubleClick(object sender, EventArgs e)
         {
-            var localPosition = treeView1.PointToClient(Cursor.Position);
-            var hitTestInfo = treeView1.HitTest(localPosition);
+            Point localPosition = treeView1.PointToClient(Cursor.Position);
+
+            TreeViewHitTestInfo hitTestInfo = treeView1.HitTest(localPosition);
             if (hitTestInfo.Location == TreeViewHitTestLocations.StateImage)
+            {
                 return;
+            }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button_Search_OnClick(object sender, EventArgs e)
         {
+            mTreeView1.Nodes.Clear();
+
+            if (treeView1.Nodes.Count > 0)
+            {
+                List<TreeNode> CurrentNodeMatches = new List<TreeNode>();
+                List<TreeNode> FoundNodes = SearchNodes(TextBox_Search.Text, treeView1.Nodes[0], ref CurrentNodeMatches);
+                foreach(TreeNode Tree in FoundNodes)
+                {
+                    TreeNode CloneNode = (TreeNode)Tree.Clone();
+                    mTreeView1.Nodes.Add(CloneNode);
+                }
+            }
         }
 
-        private void Button_Filter_Click(object sender, EventArgs e)
+        private List<TreeNode> SearchNodes(string SearchText, TreeNode StartNode, ref List<TreeNode> CurrentNodeMatches)
         {
+            while (StartNode != null)
+            {
+                if (StartNode.Text.ToLower().Contains(SearchText.ToLower()))
+                {
+                    CurrentNodeMatches.Add(StartNode);
+                };
+                if (StartNode.Nodes.Count != 0)
+                {
+                    SearchNodes(SearchText, StartNode.Nodes[0], ref CurrentNodeMatches);
+                };
+                StartNode = StartNode.NextNode;
+            };
+
+            return CurrentNodeMatches;
+        }
+
+        private void SearchContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // TODO..
+        }
+
+        private void Button_JumpToTreeView_OnClick(object sender, EventArgs e)
+        {
+            TreeNode[] SearchResult = treeView1.Nodes.Find(mTreeView1.SelectedNode.Name, true);
+            if(SearchResult.Length > 0)
+            {
+                treeView1.SelectedNode = SearchResult[0];
+                Tab_Explorer.SelectedTab = tabPage1;
+            }
         }
     }
 }
