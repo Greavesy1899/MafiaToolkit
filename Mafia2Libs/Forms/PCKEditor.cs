@@ -80,6 +80,9 @@ namespace Mafia2Tool
             Wem SelWem = (Wem)TreeView_Wems.SelectedNode.Tag;
             pck.WemList.Remove(SelWem);
             TreeView_Wems.Nodes.Remove(TreeView_Wems.SelectedNode);
+
+            Text = Language.GetString("$PCK_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
@@ -131,6 +134,9 @@ namespace Mafia2Tool
                     pck.WemList.Add(newWem);
                 }
             }
+
+            Text = Language.GetString("$PCK_EDITOR_TITLE") + "*";
+            bIsFileEdited = true;
         }
 
         private void PckTreeView_OnKeyUp(object sender, KeyEventArgs e)
