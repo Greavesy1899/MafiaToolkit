@@ -62,6 +62,8 @@ namespace Core.IO
                     return new FileFxAnimSet(info);
                 case "PCK":
                     return new FilePCK(info);
+                case "BNK":
+                    return new FileBNK(info);
                 default:
                     return new FileBase(info);
             }

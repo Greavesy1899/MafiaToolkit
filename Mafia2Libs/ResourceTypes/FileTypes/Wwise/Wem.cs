@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Threading.Tasks;
-using ResourceTypes.Wwise.HIRC;
 using System.ComponentModel;
 
 namespace ResourceTypes.Wwise

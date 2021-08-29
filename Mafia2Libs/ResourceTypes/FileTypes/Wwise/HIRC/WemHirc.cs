@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ResourceTypes.Wwise.HIRC
+namespace ResourceTypes.Wwise
 {
     public class WemHirc
     {
