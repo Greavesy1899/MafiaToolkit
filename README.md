@@ -47,7 +47,7 @@ A basic table editor which allows modders to manipulate data and add new rows.
 
 ## Mafia III & Mafia I: DE:
 
-** XBin Editor: **
+**XBin Editor:**
 
 An extremely prototype editor, capable of loading & saving certain XBin files. This editor also has the ability to export these XBins to a friendly XML format, which can also be re-imported. This does not support all types of XBin's yet, but support is coming. 
 
