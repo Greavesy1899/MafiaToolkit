@@ -15,6 +15,7 @@ namespace ResourceTypes.Wwise
         public uint LanguageEnum { get; set; }
         [Browsable(false)]
         public uint Offset { get; set; }
+        [Browsable(false)]
         public WemHirc AssignedHirc { get; set; }
         [Browsable(false)]
         public byte[] file { get; set; }

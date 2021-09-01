@@ -85,6 +85,28 @@ namespace Mafia2Tool
             bIsFileEdited = true;
         }
 
+        private void Export(OpenFileDialog exportFile, DialogResult exportIds, Wem wem)
+        {
+            string fullPath = exportFile.FileName;
+            string savePath = Path.GetDirectoryName(fullPath);
+            string name;
+
+            if (exportIds == DialogResult.Yes)
+            {
+                name = savePath + "\\" + wem.Name + ".wem";
+            }
+            else
+            {
+                name = savePath + "\\" + wem.ID + ".wem";
+            }
+
+            using (BinaryWriter bw = new BinaryWriter(new FileStream(name, FileMode.OpenOrCreate)))
+            {
+                bw.Write(wem.file);
+                bw.Close();
+            }
+        }
+
         private void OnNodeSelectSelect(object sender, TreeViewEventArgs e)
         {
             WemGrid.SelectedObject = e.Node.Tag;
@@ -137,6 +159,43 @@ namespace Mafia2Tool
 
             Text = Language.GetString("$PCK_EDITOR_TITLE") + "*";
             bIsFileEdited = true;
+        }
+
+        private void Button_ExportWem_Click(object sender, System.EventArgs e)
+        {
+            OpenFileDialog exportFile = new OpenFileDialog();
+            exportFile.InitialDirectory = PckFile.DirectoryName;
+            exportFile.CheckFileExists = false;
+            exportFile.FileName = "Save Here";
+
+            if (exportFile.ShowDialog() == DialogResult.OK)
+            {
+                DialogResult exportIds = MessageBox.Show("Export with name?", "Export Wem", MessageBoxButtons.YesNo);
+                int itemIndex = pck.WemList.IndexOf((Wem)WemGrid.SelectedObject);
+
+                if (itemIndex != -1)
+                {
+                    Wem wem = pck.WemList[itemIndex];
+                    Export(exportFile, exportIds, wem);
+                }
+            }
+        }
+
+        private void Button_ExportAll_Click(object sender, System.EventArgs e)
+        {
+            OpenFileDialog exportFile = new OpenFileDialog();
+            exportFile.InitialDirectory = PckFile.DirectoryName;
+            exportFile.CheckFileExists = false;
+            exportFile.FileName = "Save Here";
+
+            if (exportFile.ShowDialog() == DialogResult.OK)
+            {
+                DialogResult exportIds = MessageBox.Show("Export with name?", "Export Wem", MessageBoxButtons.YesNo);
+                foreach (Wem wem in pck.WemList)
+                {
+                    Export(exportFile, exportIds, wem);
+                }
+            }
         }
 
         private void PckTreeView_OnKeyUp(object sender, KeyEventArgs e)
