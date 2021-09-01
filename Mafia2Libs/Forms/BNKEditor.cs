@@ -36,6 +36,11 @@ namespace Mafia2Tool
             ExitButton.Text = Language.GetString("$EXIT");
             EditButton.Text = Language.GetString("$EDIT");
             Button_ImportWem.Text = Language.GetString("$IMPORT_WEM");
+            Button_ExportWem.Text = Language.GetString("$EXPORT_WEM");
+            Button_ExportAll.Text = Language.GetString("$EXPORT_ALL_WEMS");
+            Button_DeleteWem.Text = Language.GetString("$DELETE_WEM");
+            ContextExport.Text = Language.GetString("$EXPORT_WEM");
+            ContextDelete.Text = Language.GetString("$DELETE_WEM");
         }
 
         private void BuildData()
@@ -103,7 +108,6 @@ namespace Mafia2Tool
             using (BinaryWriter bw = new BinaryWriter(new FileStream(name, FileMode.OpenOrCreate)))
             {
                 bw.Write(wem.file);
-                bw.Close();
             }
         }
 
@@ -140,14 +144,16 @@ namespace Mafia2Tool
                     {
                         if (wem.ID == newWem.ID) //Check if Wem exists
                         {
-                            MessageBox.Show("A Wem with the same ID already exists, it will be skipped.", "Import");
+                            MessageBox.Show(Language.GetString("$WEM_EXIST_SKIP"), "Toolkit");
                             hasConflict = true;
                             break;
                         }
                     }
 
                     if (hasConflict)
+                    {
                         continue;
+                    }
 
                     TreeNode node = new TreeNode(newWem.Name);
                     node.Name = newWem.ID.ToString();
@@ -170,7 +176,7 @@ namespace Mafia2Tool
 
             if (exportFile.ShowDialog() == DialogResult.OK)
             {
-                DialogResult exportIds = MessageBox.Show("Export with name?", "Export Wem", MessageBoxButtons.YesNo);
+                DialogResult exportIds = MessageBox.Show(Language.GetString("$EXPORT_WEM_WITH_NAME"), "Toolkit", MessageBoxButtons.YesNo);
                 int itemIndex = bnk.WemList.IndexOf((Wem)WemGrid.SelectedObject);
 
                 if (itemIndex != -1)
@@ -190,7 +196,7 @@ namespace Mafia2Tool
 
             if (exportFile.ShowDialog() == DialogResult.OK)
             {
-                DialogResult exportIds = MessageBox.Show("Export with name?", "Export Wem", MessageBoxButtons.YesNo);
+                DialogResult exportIds = MessageBox.Show(Language.GetString("$EXPORT_WEM_WITH_NAME"), "Toolkit", MessageBoxButtons.YesNo);
                 foreach (Wem wem in bnk.WemList)
                 {
                     Export(exportFile, exportIds, wem);
@@ -210,7 +216,9 @@ namespace Mafia2Tool
         private void WemGrid_OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
             if (e.ChangedItem.Label == "Name")
+            {
                 TreeView_Wems.SelectedNode.Text = e.ChangedItem.Value.ToString();
+            }
 
             Text = Language.GetString("$BNK_EDITOR_TITLE") + "*";
             bIsFileEdited = true;
